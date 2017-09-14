@@ -1154,6 +1154,19 @@ public class DexCollectionService extends Service {
         return dataMap;
     }
 
+    public static final String LIMITTER_NAME = "LimiTTer";
+    public static String getBestLimitterHardwareName() {
+        if (static_use_nrf) {
+            return "BlueReader";
+        } else if (static_use_blukon) {
+            return xdrip.getAppContext().getString(R.string.blukon);
+        } else if (static_use_transmiter_pl_bluetooth) {
+            return "Transmiter PL";
+        } else if (static_use_rfduino_bluetooth) {
+            return "Rfduino";
+        } else return LIMITTER_NAME;
+    }
+
     // data for MegaStatus
     public static List<StatusItem> megaStatus() {
         final List<StatusItem> l = new ArrayList<>();
