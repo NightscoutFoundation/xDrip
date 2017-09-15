@@ -27,9 +27,12 @@ import android.support.wearable.complications.ComplicationText;
 import android.support.wearable.complications.ProviderUpdateRequester;
 import android.util.Log;
 
+import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.xdrip;
+
+import static com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder.unitizedDeltaString;
 
 /**
  * Example watch face complication data provider provides a number that can be incremented on tap.
@@ -75,13 +78,13 @@ public class CustomComplicationProviderService extends ComplicationProviderServi
                         this, thisProvider, complicationId);
 
         String numberText = "";
-
+        BgReading bgReading = null;
         if (BgReading.last_within_minutes(15)) {
-            final BgReading bgReading = BgReading.last();
+            bgReading = BgReading.last();
             if (bgReading == null) {
                 numberText = "null";
             } else {
-                numberText = bgReading.displayValue(this);
+                numberText = bgReading.displayValue(this) + " " + bgReading.slopeArrow();
             }
             Log.d(TAG, "Returning complication text: " + numberText);
         } else {
@@ -90,12 +93,14 @@ public class CustomComplicationProviderService extends ComplicationProviderServi
 
         ComplicationData complicationData = null;
 
+        final boolean doMgdl = Home.getPreferencesStringWithDefault("units", "mgdl").equals("mgdl");
         switch (dataType) {
             case ComplicationData.TYPE_SHORT_TEXT:
                 complicationData =
                         new ComplicationData.Builder(ComplicationData.TYPE_SHORT_TEXT)
                                 .setShortText(ComplicationText.plainText(numberText))
                                 .setTapAction(complicationPendingIntent)
+                                .setShortTitle(ComplicationText.plainText(bgReading != null ? unitizedDeltaString(false, false, Home.get_follower(), doMgdl) : "null"))
                                 .build();
                 break;
             default:
