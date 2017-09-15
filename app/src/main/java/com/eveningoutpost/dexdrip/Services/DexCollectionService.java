@@ -18,6 +18,7 @@ package com.eveningoutpost.dexdrip.Services;
 import android.annotation.TargetApi;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.app.UiModeManager;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
@@ -32,6 +33,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.PowerManager;
@@ -54,6 +56,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.HM10Attributes;
+import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.UtilityModels.XbridgePlus;
 import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
@@ -223,10 +226,13 @@ public class DexCollectionService extends Service {
 
     private static boolean shouldServiceRun() {
         if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) return false;
-        final boolean result = (DexCollectionType.hasXbridgeWixel() || DexCollectionType.hasBtWixel()) && !Home.get_forced_wear();
+        final boolean result = (DexCollectionType.hasXbridgeWixel() || DexCollectionType.hasBtWixel())
+                && ((!Home.get_forced_wear() && (((UiModeManager) xdrip.getAppContext().getSystemService(UI_MODE_SERVICE)).getCurrentModeType() != Configuration.UI_MODE_TYPE_WATCH))
+                || PersistentStore.getBoolean(CollectionServiceStarter.pref_run_wear_collector));
         if (d) Log.d(TAG, "shouldServiceRun() returning: " + result);
         return result;
     }
+
 
     @Override
     public void onDestroy() {
@@ -1152,6 +1158,19 @@ public class DexCollectionService extends Service {
         dataMap.putString("static_last_hexdump", static_last_hexdump);
         dataMap.putString("static_last_sent_hexdump", static_last_sent_hexdump);
         return dataMap;
+    }
+
+    public static final String LIMITTER_NAME = "LimiTTer";
+    public static String getBestLimitterHardwareName() {
+        if (static_use_nrf) {
+            return "BlueReader";
+        } else if (static_use_blukon) {
+            return xdrip.getAppContext().getString(R.string.blukon);
+        } else if (static_use_transmiter_pl_bluetooth) {
+            return "Transmiter PL";
+        } else if (static_use_rfduino_bluetooth) {
+            return "Rfduino";
+        } else return LIMITTER_NAME;
     }
 
     // data for MegaStatus

@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.BatteryManager;
 import android.os.Build;
+import android.os.PowerManager;
 import android.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.Home;
@@ -220,13 +221,18 @@ public class NightscoutUploader {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                final PowerManager.WakeLock wl = JoH.getWakeLock("ns-download-rest", 180000);
                 try {
-                    if (sleep > 0) Thread.sleep(sleep);
-                } catch (InterruptedException e) {
-                    //
-                }
-                if (doRESTtreatmentDownload(prefs)) {
-                    Home.staticRefreshBGCharts();
+                    try {
+                        if (sleep > 0) Thread.sleep(sleep);
+                    } catch (InterruptedException e) {
+                        //
+                    }
+                    if (doRESTtreatmentDownload(prefs)) {
+                        Home.staticRefreshBGCharts();
+                    }
+                } finally {
+                    JoH.releaseWakeLock(wl);
                 }
             }
         }).start();

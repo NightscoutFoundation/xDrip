@@ -191,5 +191,6 @@
     <string name="TreatmentsTable">Treatments Table</string>
     <string name="notify_refreshdb">Requested Wear DB refresh</string>
     <string name="notify_table_size">Table %1$s contains %2$d entries.</string>
-
+    <string name="blukon">Blucon</string>
+    <string name="ok">OK</string>
 </resources>

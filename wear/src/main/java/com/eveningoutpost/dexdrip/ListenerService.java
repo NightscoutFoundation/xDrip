@@ -13,6 +13,7 @@ import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.Models.PebbleMovement;
+import com.eveningoutpost.dexdrip.Services.CustomComplicationProviderService;
 import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.Services.G5CollectionService;//KS
 import com.eveningoutpost.dexdrip.UtilityModels.*;
@@ -1467,6 +1468,9 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             final String extra_tags_for_logging = dataMap.getString("extra_tags_for_logging", "");
             prefs.putString("extra_tags_for_logging", extra_tags_for_logging);
 
+            final String blukon_pin = dataMap.getString(Blukon.BLUKON_PIN_PREF, "");
+            prefs.putString(Blukon.BLUKON_PIN_PREF, blukon_pin);
+
             //Advanced Bluetooth Settings used by G4+xBridge DexCollectionService - temporarily just use the Phone's settings
             //Therefore, change requires collector restart
             prefs.putBoolean("use_transmiter_pl_bluetooth", dataMap.getBoolean("use_transmiter_pl_bluetooth", false));
@@ -2128,6 +2132,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                 if (changed) {//otherwise, wait for doBackground ACTION_RESEND
                     Log.d(TAG, "syncBGData BG data has changed, refresh watchface, phone battery=" + battery );
                     resendData(getApplicationContext(), battery);
+                    CustomComplicationProviderService.refresh();
                 }
                 else
                     Log.d(TAG, "syncBGData BG data has NOT changed, do not refresh watchface, phone battery=" + battery );
@@ -2187,9 +2192,11 @@ public class ListenerService extends WearableListenerService implements GoogleAp
 
         // Display Activity to get user permission
         if (!mLocationPermissionApproved) {
-            Intent permissionIntent = new Intent(getApplicationContext(), LocationPermissionActivity.class);
-            permissionIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(permissionIntent);
+            if (JoH.ratelimit("location_permission", 20)) {
+                Intent permissionIntent = new Intent(getApplicationContext(), LocationPermissionActivity.class);
+                permissionIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(permissionIntent);
+            }
         }
         // Enables app to handle 23+ (M+) style permissions.
         mLocationPermissionApproved =
