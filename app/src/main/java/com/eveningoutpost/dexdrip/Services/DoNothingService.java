@@ -146,8 +146,7 @@ public class DoNothingService extends Service {
             final long retry_in = (5 * 60 * 1000);
             UserError.Log.d(TAG, "setFailoverTimer: Restarting in: " + (retry_in / (60 * 1000)) + " minutes");
             nextWakeUpTime = JoH.tsl() + retry_in;
-
-            final PendingIntent wakeIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), PendingIntent.FLAG_UPDATE_CURRENT);
+            final PendingIntent wakeIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), 0);
             JoH.wakeUpIntent(this, retry_in, wakeIntent);
 
         } else {
