@@ -30,6 +30,7 @@ import android.util.Log;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import static com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder.unitizedDeltaString;
@@ -79,17 +80,19 @@ public class CustomComplicationProviderService extends ComplicationProviderServi
 
         String numberText = "";
         BgReading bgReading = null;
-        if (BgReading.last_within_minutes(15)) {
-            bgReading = BgReading.last();
-            if (bgReading == null) {
-                numberText = "null";
-            } else {
-                numberText = bgReading.displayValue(this) + " " + bgReading.slopeArrow();
-            }
-            Log.d(TAG, "Returning complication text: " + numberText);
+
+        bgReading = BgReading.last(false);
+        if (bgReading == null) {
+            numberText = "null";
         } else {
-            numberText = "old";
+            if (JoH.msSince(bgReading.timestamp) < Constants.MINUTE_IN_MS * 15) {
+                numberText = bgReading.displayValue(this) + " " + bgReading.slopeArrow();
+            } else {
+                numberText = "old " + ((int) (JoH.msSince(bgReading.timestamp) / Constants.MINUTE_IN_MS));
+            }
         }
+        Log.d(TAG, "Returning complication text: " + numberText);
+
 
         ComplicationData complicationData = null;
 
