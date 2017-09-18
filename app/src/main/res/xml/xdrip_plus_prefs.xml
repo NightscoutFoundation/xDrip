@@ -359,6 +359,11 @@
                 android:title="@string/always_show_bolus_wizard_preview" />
             <CheckBoxPreference
                 android:defaultValue="true"
+                android:key="high_priority_notifications"
+                android:summary="Show notifications and graph at the top (also useful on lockscreen)"
+                android:title="High Priority Notifications" />
+            <CheckBoxPreference
+                android:defaultValue="true"
                 android:key="plus_extra_features"
                 android:summary="@string/show_test_features"
                 android:title="@string/parakeet_and_extra_features" />

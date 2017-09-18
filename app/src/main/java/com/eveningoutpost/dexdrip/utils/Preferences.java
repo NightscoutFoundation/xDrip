@@ -61,6 +61,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.pebble.watchface.InstallPebbleWa
 import com.eveningoutpost.dexdrip.WidgetUpdateService;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileEditor;
+import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.eveningoutpost.dexdrip.xDripWidget;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.zxing.integration.android.IntentIntegrator;
@@ -167,7 +168,7 @@ public class Preferences extends PreferenceActivity {
                     return;
                 }
 
-                SharedPreferences.Editor editor = prefs.edit();
+                final SharedPreferences.Editor editor = prefs.edit();
                 int changes = 0;
                 for (Map.Entry<String, String> entry : prefsmap.entrySet()) {
                     String key = entry.getKey();
@@ -183,6 +184,7 @@ public class Preferences extends PreferenceActivity {
                 }
                 editor.apply();
                 refreshFragments();
+                ExtraLogTags.readPreference(Home.getPreferencesStringDefaultBlank("extra_tags_for_logging"));
                 Toast.makeText(getApplicationContext(), "Loaded " + Integer.toString(changes) + " preferences from QR code", Toast.LENGTH_LONG).show();
                 PlusSyncService.clearandRestartSyncService(getApplicationContext());
                 if (prefs.getString("dex_collection_method", "").equals("Follower")) {
@@ -762,6 +764,15 @@ public class Preferences extends PreferenceActivity {
             final PreferenceCategory displayCategory = (PreferenceCategory) findPreference("xdrip_plus_display_category");
 
 
+            findPreference("wear_sync").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                                                                          @Override
+                                                                          public boolean onPreferenceChange(Preference preference, Object newValue) {
+
+                                                                           WatchUpdaterService.startSelf();
+                                                                               return true;
+                                                                          }
+                                                                      }
+            );
             findPreference("bluetooth_meter_enabled").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {

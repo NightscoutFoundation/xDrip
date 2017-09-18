@@ -34,6 +34,7 @@ public class CollectionServiceStarter {
     private Context mContext;
 
     private final static String TAG = CollectionServiceStarter.class.getSimpleName();
+    final public static String pref_run_wear_collector = "run_wear_collector"; // only used on wear but here for code compatibility
 
     public static boolean isFollower(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context).getString("dex_collection_method", "").equals("Follower");

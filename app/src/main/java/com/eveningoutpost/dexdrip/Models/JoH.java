@@ -9,6 +9,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothManager;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
@@ -67,6 +68,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.net.URLEncoder;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -100,7 +102,9 @@ public class JoH {
 
     private static double benchmark_time = 0;
     private static Map<String, Double> benchmarks = new HashMap<String, Double>();
-    private static final Map<String, Long> rateLimits = new HashMap<String, Long>();
+    private static final Map<String, Long> rateLimits = new HashMap<>();
+
+    public static boolean buggy_samsung = false; // flag set when we detect samsung devices which do not perform to android specifications
 
     // qs = quick string conversion of double for printing
     public static String qs(double x) {
@@ -379,6 +383,15 @@ public class JoH {
         if (this_hash.equals(last_hash)) return false;
         PersistentStore.setString(id, this_hash);
         return true;
+    }
+
+    public static synchronized void clearRatelimit(final String name) {
+        if (PersistentStore.getLong(name) > 0) {
+            PersistentStore.setLong(name, 0);
+        }
+        if (rateLimits.containsKey(name)) {
+            rateLimits.remove(name);
+        }
     }
 
     // return true if below rate limit (persistent version)
@@ -952,7 +965,11 @@ public class JoH {
                 Log.e(TAG, "Exception cancelling alarm in wakeUpIntent: " + e);
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                alarm.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
+                if (buggy_samsung) {
+                    alarm.setAlarmClock(new AlarmManager.AlarmClockInfo(wakeTime, null), pendingIntent);
+                } else {
+                    alarm.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
+                }
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 alarm.setExact(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
             } else
@@ -1137,6 +1154,19 @@ public class JoH {
         } catch (Exception e) {
             return "";
         }
+    }
+
+    public static boolean refreshDeviceCache(String thisTAG, BluetoothGatt gatt){
+        try {
+            final Method method = gatt.getClass().getMethod("refresh", new Class[0]);
+            if (method != null) {
+                return (Boolean) method.invoke(gatt, new Object[0]);
+            }
+        }
+        catch (Exception e) {
+            Log.e(thisTAG, "An exception occured while refreshing gatt device cache: "+e);
+        }
+        return false;
     }
 
     public synchronized static void setBluetoothEnabled(Context context, boolean state) {

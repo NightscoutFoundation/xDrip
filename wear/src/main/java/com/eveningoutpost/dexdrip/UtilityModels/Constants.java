@@ -17,4 +17,17 @@ public class Constants {
     public static final long MONTH_IN_MS = DAY_IN_MS * 30;
 
 
+    public static final double LIBRE_MULTIPLIER = 117.64705; // to match (raw/8.5)*1000
+
+
+    /* Notification IDs */
+
+    static final int NIGHTSCOUT_ERROR_NOTIFICATION_ID = 2001;
+
+
+    public static final int WIFI_COLLECTION_SERVICE_ID = 1001;
+    public static final int DEX_COLLECTION_SERVICE_RETRY_ID = 1002;
+    public static final int DEX_COLLECTION_SERVICE_FAILOVER_ID = 1003;
+
+
 }

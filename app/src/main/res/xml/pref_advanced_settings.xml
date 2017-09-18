@@ -485,6 +485,12 @@
                     android:key="infrequent_calibration"
                     android:summary="@string/use_infrequent_calibrations"
                     android:title="@string/infrequent_calibrations" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="use_non_fixed_li_parameters"
+                    android:summary="Enable to allow variable slopes with Libre collection methods"
+                    android:title="Non-fixed Libre slopes" />
+
             </PreferenceScreen>
 
             <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
@@ -534,10 +540,15 @@
                     android:title="@string/rfduino_support" />
                 <CheckBoxPreference
                     android:defaultValue="false"
-                    android:dependency="engineering_mode"
                     android:key="pref_dex_collection_polling"
                     android:summary="Experimental support for xBridge+ polling feature"
                     android:title="xBridge+ Polling Mode" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:dependency="engineering_mode"
+                    android:key="always_discover_services"
+                    android:summary="Probe Bluetooth services on every connect"
+                    android:title="Always discover services" />
             </PreferenceScreen>
             <CheckBoxPreference
                 android:defaultValue="true"

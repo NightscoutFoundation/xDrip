@@ -107,6 +107,22 @@ class LiParameters extends SlopeParameters {
     }
 }
 
+/* Alternate Li Parameters which don't use a fixed slope */
+class LiParametersNonFixed extends SlopeParameters {
+    LiParametersNonFixed() {
+        LOW_SLOPE_1 = 0.55;
+        LOW_SLOPE_2 = 0.50;
+        HIGH_SLOPE_1 = 1.5;
+        HIGH_SLOPE_2 = 1.6;
+        DEFAULT_LOW_SLOPE_LOW = 0.55;
+        DEFAULT_LOW_SLOPE_HIGH = 0.50;
+        DEFAULT_SLOPE = 1;
+        DEFAULT_HIGH_SLOPE_HIGH = 1.5;
+        DEFAULT_HIGH_SLOPE_LOW = 1.4;
+    }
+
+}
+
 class TestParameters extends SlopeParameters {
     TestParameters() {
         LOW_SLOPE_1 = 0.85; //0.95
@@ -674,8 +690,13 @@ public class Calibration extends Model {
     private static SlopeParameters getSlopeParameters() {
 
         if (CollectionServiceStarter.isLimitter()) {
-            return new LiParameters();
+            if (Home.getPreferencesBooleanDefaultFalse("use_non_fixed_li_parameters")) {
+                return new LiParametersNonFixed();
+            } else {
+                return new LiParameters();
+            }
         }
+        // open question about parameters used with LibreAlarm
 
         if (Home.getPreferencesBooleanDefaultFalse("engineering_mode") && Home.getPreferencesBooleanDefaultFalse("old_school_calibration_mode")) {
             JoH.static_toast_long("Using old pre-2017 calibration mode!");

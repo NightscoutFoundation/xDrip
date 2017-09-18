@@ -11,10 +11,12 @@
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <!-- Declaration that this app is usable on phones with Bluetooth Low Energy. -->
     <uses-feature android:name="android.hardware.bluetooth_le" android:required="true"/>
+    <uses-permission-sdk-23 android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
     <uses-permission-sdk-23 android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="com.google.android.gms.permission.ACTIVITY_RECOGNITION" />
+    <uses-permission android:name="com.google.android.wearable.permission.BIND_COMPLICATION_PROVIDER"/>
     <uses-permission android:name="android.permission.VIBRATE" />
 
 
@@ -149,10 +151,29 @@
             android:name=".Services.MissedReadingService"
             android:enabled="true"
             android:exported="true" />
+        <service
+            android:name=".Services.CustomComplicationProviderService"
+            android:icon="@drawable/ic_watch_white"
+            android:label="xDrip Complication Provider"
+            android:permission="com.google.android.wearable.permission.BIND_COMPLICATION_PROVIDER">
+            <intent-filter>
+                <action android:name="android.support.wearable.complications.ACTION_COMPLICATION_UPDATE_REQUEST" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.support.wearable.complications.SUPPORTED_TYPES"
+                android:value="SHORT_TEXT" />
+            <meta-data
+                android:name="android.support.wearable.complications.UPDATE_PERIOD_SECONDS"
+                android:value="0" />
+        </service>
+        <receiver android:name=".Services.ComplicationTapBroadcastReceiver" />
         <activity
             android:name=".NWPreferences"
             android:icon="@drawable/ic_icon"
+            android:launchMode="singleTask"
             android:label="@string/app_name">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -189,6 +210,7 @@
             </intent-filter>
         </activity>
         <activity
+            android:launchMode="singleTop"
             android:name=".LocationPermissionActivity"
             android:label="title_activity_location_permission" >
             android:theme="android:theme="@style/Theme.AppCompat.Light"

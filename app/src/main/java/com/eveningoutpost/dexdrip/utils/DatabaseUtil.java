@@ -196,7 +196,7 @@ public class DatabaseUtil {
     /**
      * Generate a csv that can be imported by SiDiary
      * */
-    public static String saveCSV(Context context) {
+    public static String saveCSV(Context context, long from) {
 
         FileOutputStream foStream = null;
         PrintStream printStream = null;
@@ -205,9 +205,6 @@ public class DatabaseUtil {
 
 
         try {
-
-            //seems to be not used?
-            // final String databaseName = new Configuration.Builder(context).create().getDatabaseName();
 
             final String dir = getExternalDir();
             makeSureDirectoryExists(dir);
@@ -246,7 +243,7 @@ public class DatabaseUtil {
                 Date date = new Date();
 
                 //Extract CGMS-Values
-                Cursor cur = db.query("bgreadings", new String[]{"timestamp", "calculated_value"}, null, null, null, null, "timestamp ASC");//KS
+                Cursor cur = db.query("bgreadings", new String[]{"timestamp", "calculated_value"}, "timestamp >= " + from, null, null, null, "timestamp ASC");//KS
                 if (cur.moveToFirst()) {
                     do {
                         timestamp = cur.getLong(0);
@@ -259,7 +256,7 @@ public class DatabaseUtil {
                 }
 
                 //Extract Calibration-BG-Values
-                cur = db.query("Calibration", new String[]{"timestamp", "bg"}, null, null, null, null, "timestamp ASC");
+                cur = db.query("Calibration", new String[]{"timestamp", "bg"}, "timestamp >= " + from, null, null, null, "timestamp ASC");
                 if (cur.moveToFirst()) {
                     do {
                         timestamp = cur.getLong(0);
@@ -272,7 +269,7 @@ public class DatabaseUtil {
                 }
 
                 //Extract Treatment-Values
-                cur = db.query("Treatments", new String[]{"timestamp", "carbs", "insulin", "notes"}, null, null, null, null, "timestamp ASC");
+                cur = db.query("Treatments", new String[]{"timestamp", "carbs", "insulin", "notes"}, "timestamp >= " + from, null, null, null, "timestamp ASC");
                 if (cur.moveToFirst()) {
                     do {
                         timestamp  = cur.getLong(0);
