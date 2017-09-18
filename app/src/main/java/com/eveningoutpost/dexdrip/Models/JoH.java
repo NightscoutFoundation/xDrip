@@ -104,6 +104,8 @@ public class JoH {
     private static Map<String, Double> benchmarks = new HashMap<String, Double>();
     private static final Map<String, Long> rateLimits = new HashMap<>();
 
+    public static boolean buggy_samsung = false; // flag set when we detect samsung devices which do not perform to android specifications
+
     // qs = quick string conversion of double for printing
     public static String qs(double x) {
         return qs(x, 2);
@@ -963,7 +965,11 @@ public class JoH {
                 Log.e(TAG, "Exception cancelling alarm in wakeUpIntent: " + e);
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                alarm.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
+                if (buggy_samsung) {
+                    alarm.setAlarmClock(new AlarmManager.AlarmClockInfo(wakeTime, null), pendingIntent);
+                } else {
+                    alarm.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
+                }
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 alarm.setExact(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
             } else
