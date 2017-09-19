@@ -16,6 +16,7 @@ import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.Services.DexShareCollectionService;
 import com.eveningoutpost.dexdrip.Services.DoNothingService;
 import com.eveningoutpost.dexdrip.Services.G5CollectionService;
+import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.Services.SyncService;
 import com.eveningoutpost.dexdrip.Services.WifiCollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleUtil;
@@ -346,10 +347,17 @@ public class CollectionServiceStarter {
     }
 
     private void startBtG5Service() {
+        Log.d(TAG,"stopping G5 service");
+        stopG5ShareService();
         Log.d(TAG, "starting G5 service");
         //if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
-        G5CollectionService.keep_running = true;
-        this.mContext.startService(new Intent(this.mContext, G5CollectionService.class));
+       if (!Home.getPreferencesBooleanDefaultFalse(Ob1G5CollectionService.OB1G5_PREFS)) {
+           G5CollectionService.keep_running = true;
+           this.mContext.startService(new Intent(this.mContext, G5CollectionService.class));
+       } else {
+           Ob1G5CollectionService.keep_running = true;
+           this.mContext.startService(new Intent(this.mContext, Ob1G5CollectionService.class));
+       }
         //}
     }
 
@@ -405,6 +413,8 @@ public class CollectionServiceStarter {
         Log.d(TAG, "stopping G5  service");
         G5CollectionService.keep_running = false; // ensure zombie stays down
         this.mContext.stopService(new Intent(this.mContext, G5CollectionService.class));
+        Ob1G5CollectionService.keep_running = false; // ensure zombie stays down
+        this.mContext.stopService(new Intent(this.mContext, Ob1G5CollectionService.class));
     }
 
 }
