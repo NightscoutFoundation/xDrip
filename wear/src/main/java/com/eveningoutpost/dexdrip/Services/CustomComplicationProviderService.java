@@ -27,9 +27,11 @@ import android.support.wearable.complications.ComplicationText;
 import android.support.wearable.complications.ProviderUpdateRequester;
 import android.util.Log;
 
+import com.activeandroid.ActiveAndroid;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import static com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder.unitizedDeltaString;
@@ -40,7 +42,8 @@ import static com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder.unitizedDe
 public class CustomComplicationProviderService extends ComplicationProviderService {
 
     private static final String TAG = "ComplicationProvider";
-
+    private static final long STALE_MS = Constants.MINUTE_IN_MS * 15;
+    private static final long FRESH_MS = Constants.MINUTE_IN_MS * 5;
     /*
      * Called when a complication has been activated. The method is for any one-time
      * (per complication) set-up.
@@ -69,7 +72,6 @@ public class CustomComplicationProviderService extends ComplicationProviderServi
     public void onComplicationUpdate(
             int complicationId, int dataType, ComplicationManager complicationManager) {
         Log.d(TAG, "onComplicationUpdate() id: " + complicationId);
-
         // Create Tap Action so that the user can trigger an update by tapping the complication.
         final ComponentName thisProvider = new ComponentName(this, getClass());
         // We pass the complication id, so we can only update the specific complication tapped.
@@ -78,18 +80,30 @@ public class CustomComplicationProviderService extends ComplicationProviderServi
                         this, thisProvider, complicationId);
 
         String numberText = "";
-        BgReading bgReading = null;
-        if (BgReading.last_within_minutes(15)) {
-            bgReading = BgReading.last();
-            if (bgReading == null) {
-                numberText = "null";
-            } else {
-                numberText = bgReading.displayValue(this) + " " + bgReading.slopeArrow();
+        BgReading bgReading = BgReading.last(false);
+        if ((bgReading == null) || (JoH.msSince(bgReading.timestamp) >= FRESH_MS)) {
+            try {
+                ActiveAndroid.clearCache(); // we may be in another process!
+            } catch (Exception e) {
+                Log.d(TAG, "Couldn't clear cache: " + e);
             }
-            Log.d(TAG, "Returning complication text: " + numberText);
-        } else {
-            numberText = "old";
+            bgReading = BgReading.last(false);
         }
+
+        boolean is_stale = false;
+
+        if (bgReading == null) {
+            numberText = "null";
+        } else {
+            if (JoH.msSince(bgReading.timestamp) < STALE_MS) {
+                numberText = bgReading.displayValue(this) + " " + bgReading.slopeArrow();
+            } else {
+                numberText = "old " + ((int) (JoH.msSince(bgReading.timestamp) / Constants.MINUTE_IN_MS));
+                is_stale = true;
+            }
+        }
+        Log.d(TAG, "Returning complication text: " + numberText);
+
 
         ComplicationData complicationData = null;
 
@@ -100,7 +114,7 @@ public class CustomComplicationProviderService extends ComplicationProviderServi
                         new ComplicationData.Builder(ComplicationData.TYPE_SHORT_TEXT)
                                 .setShortText(ComplicationText.plainText(numberText))
                                 .setTapAction(complicationPendingIntent)
-                                .setShortTitle(ComplicationText.plainText(bgReading != null ? unitizedDeltaString(false, false, Home.get_follower(), doMgdl) : "null"))
+                                .setShortTitle(!is_stale ? (ComplicationText.plainText(bgReading != null ? unitizedDeltaString(false, false, Home.get_follower(), doMgdl) : "null")) : ComplicationText.plainText(""))
                                 .build();
                 break;
             default:
