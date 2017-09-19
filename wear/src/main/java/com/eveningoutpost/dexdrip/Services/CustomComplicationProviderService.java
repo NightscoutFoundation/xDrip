@@ -43,6 +43,7 @@ public class CustomComplicationProviderService extends ComplicationProviderServi
 
     private static final String TAG = "ComplicationProvider";
     private static final long STALE_MS = Constants.MINUTE_IN_MS * 15;
+    private static final long FRESH_MS = Constants.MINUTE_IN_MS * 5;
     /*
      * Called when a complication has been activated. The method is for any one-time
      * (per complication) set-up.
@@ -80,13 +81,13 @@ public class CustomComplicationProviderService extends ComplicationProviderServi
 
         String numberText = "";
         BgReading bgReading = BgReading.last(false);
-        if ((bgReading == null) || (JoH.msSince(bgReading.timestamp) >= STALE_MS)) {
+        if ((bgReading == null) || (JoH.msSince(bgReading.timestamp) >= FRESH_MS)) {
             ActiveAndroid.clearCache(); // we may be in another process!
             bgReading = BgReading.last(false);
         }
 
         boolean is_stale = false;
-        
+
         if (bgReading == null) {
             numberText = "null";
         } else {
