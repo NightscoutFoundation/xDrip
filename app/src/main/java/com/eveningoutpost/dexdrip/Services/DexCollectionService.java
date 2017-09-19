@@ -18,6 +18,7 @@ package com.eveningoutpost.dexdrip.Services;
 import android.annotation.TargetApi;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.app.UiModeManager;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
@@ -32,6 +33,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.PowerManager;
@@ -41,6 +43,7 @@ import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
@@ -53,6 +56,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.HM10Attributes;
+import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.UtilityModels.XbridgePlus;
 import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
@@ -69,6 +73,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.getStatusName;
 import static com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder.DEXCOM_PERIOD;
 
 @TargetApi(Build.VERSION_CODES.KITKAT)
@@ -90,12 +95,14 @@ public class DexCollectionService extends Service {
     private static int mStaticStateWatch = 0; // default unknown
     private static byte[] immediateSend;
     private static String bondedState;
+    private static int bondingTries = 0;
     private BluetoothDevice device;
     private BluetoothGattCharacteristic mCharacteristic;
     // Experimental support for rfduino from Tomasz Stachowicz
     private BluetoothGattCharacteristic mCharacteristicSend;
     long lastPacketTime;
     private byte[] lastdata = null;
+    private final Object mLock = new Object();
     //private Context mContext;
     private static final int STATE_DISCONNECTED = BluetoothProfile.STATE_DISCONNECTED;
     private static final int STATE_DISCONNECTING = BluetoothProfile.STATE_DISCONNECTING;
@@ -105,6 +112,7 @@ public class DexCollectionService extends Service {
     private static final String PREF_DEX_COLLECTION_POLLING = "pref_dex_collection_polling";
     private static final long POLLING_PERIOD = (Constants.MINUTE_IN_MS * 5) - Constants.SECOND_IN_MS;
     private static final long RETRY_PERIOD = DEXCOM_PERIOD - (Constants.SECOND_IN_MS * 35);
+    private static final long TOLERABLE_JITTER = 10000;
 
     public static double last_time_seen = 0;
     public static String lastState = "Not running";
@@ -114,13 +122,17 @@ public class DexCollectionService extends Service {
     private static long failover_time = 0;
     private static long poll_backoff = 0;
     private static long retry_backoff = 0;
+    private static long descriptor_time = 0;
     private static int watchdog_count = 0;
-    private static Boolean servicesDiscovered;
+    private static long max_wakeup_jitter = 0;
+    private static DISCOVERED servicesDiscovered = DISCOVERED.NULL;
+
 
     private static boolean static_use_transmiter_pl_bluetooth = false;
     private static boolean static_use_rfduino_bluetooth = false;
     private static boolean static_use_polling = false;
     private static boolean static_use_blukon = false;
+    private static boolean static_use_nrf = false;
     private static String static_last_hexdump;
     private static String static_last_sent_hexdump;
 
@@ -152,6 +164,12 @@ public class DexCollectionService extends Service {
     public final UUID nrfDataTXCharacteristic = UUID.fromString(HM10Attributes.NRF_UART_RX);
 
     private final UUID blukonDataService = UUID.fromString(HM10Attributes.BLUKON_SERVICE);
+
+    private enum DISCOVERED {
+        NULL,
+        PENDING,
+        COMPLETE
+    }
 
     private static String getDefaultPin() {
         final String bk_pin = Blukon.getPin();
@@ -187,6 +205,18 @@ public class DexCollectionService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         final PowerManager.WakeLock wl = JoH.getWakeLock("dexcollect-service", 120000);
+        if (retry_time > 0 && failover_time > 0) {
+            final long requested_wake_time = Math.min(retry_time, failover_time);
+            final long wakeup_jitter = JoH.msSince(requested_wake_time);
+            Log.d(TAG, "Wake up jitter: " + JoH.niceTimeScalar(wakeup_jitter));
+            if ((wakeup_jitter > TOLERABLE_JITTER) && (!JoH.buggy_samsung) && (Build.MANUFACTURER.toLowerCase().contains("samsung"))) {
+                UserError.Log.wtf(TAG, "Enabled Buggy Samsung workaround due to jitter of: " + JoH.niceTimeScalar(wakeup_jitter));
+                JoH.buggy_samsung = true;
+                max_wakeup_jitter = 0;
+            } else {
+                max_wakeup_jitter = Math.max(max_wakeup_jitter, wakeup_jitter);
+            }
+        }
         retry_time = 0;
         failover_time = 0;
         static_use_rfduino_bluetooth = use_rfduino_bluetooth;
@@ -202,7 +232,7 @@ public class DexCollectionService extends Service {
             return START_NOT_STICKY;
         }
         lastdata = null;
-        attemptConnection();
+        checkConnection();
         watchdog();
         JoH.releaseWakeLock(wl);
         return START_STICKY;
@@ -211,10 +241,13 @@ public class DexCollectionService extends Service {
 
     private static boolean shouldServiceRun() {
         if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) return false;
-        final boolean result = (DexCollectionType.hasXbridgeWixel() || DexCollectionType.hasBtWixel()) && !Home.get_forced_wear();
+        final boolean result = (DexCollectionType.hasXbridgeWixel() || DexCollectionType.hasBtWixel())
+                && ((!Home.get_forced_wear() && (((UiModeManager) xdrip.getAppContext().getSystemService(UI_MODE_SERVICE)).getCurrentModeType() != Configuration.UI_MODE_TYPE_WATCH))
+                || PersistentStore.getBoolean(CollectionServiceStarter.pref_run_wear_collector));
         if (d) Log.d(TAG, "shouldServiceRun() returning: " + result);
         return result;
     }
+
 
     @Override
     public void onDestroy() {
@@ -247,6 +280,8 @@ public class DexCollectionService extends Service {
 
         retry_backoff = 0;
         poll_backoff = 0;
+        servicesDiscovered = DISCOVERED.NULL;
+        bondingTries = 0;
 
         Log.i(TAG, "SERVICE STOPPED");
     }
@@ -282,8 +317,7 @@ public class DexCollectionService extends Service {
             //final long retry_in = (Constants.SECOND_IN_MS * 25);
             final long retry_in = whenToRetryNext();
             Log.d(TAG, "setRetryTimer: Restarting in: " + (retry_in / Constants.SECOND_IN_MS) + " seconds");
-            //JoH.cancelAlarm(this, serviceIntent);
-            serviceIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), PendingIntent.FLAG_UPDATE_CURRENT);
+            serviceIntent = PendingIntent.getService(this, Constants.DEX_COLLECTION_SERVICE_RETRY_ID, new Intent(this, this.getClass()), 0);
             retry_time = JoH.wakeUpIntent(this, retry_in, serviceIntent);
         } else {
             Log.d(TAG, "Not setting retry timer as service should not be running");
@@ -294,8 +328,7 @@ public class DexCollectionService extends Service {
         if (shouldServiceRun()) {
             final long retry_in = use_polling ? whenToPollNext() : (Constants.MINUTE_IN_MS * 6);
             Log.d(TAG, "setFailoverTimer: Fallover Restarting in: " + (retry_in / (Constants.MINUTE_IN_MS)) + " minutes");
-            //JoH.cancelAlarm(this, serviceFailoverIntent);
-            serviceFailoverIntent = PendingIntent.getService(this, 1, new Intent(this, this.getClass()), PendingIntent.FLAG_UPDATE_CURRENT);
+            serviceFailoverIntent = PendingIntent.getService(this, Constants.DEX_COLLECTION_SERVICE_FAILOVER_ID, new Intent(this, this.getClass()), 0);
             failover_time = JoH.wakeUpIntent(this, retry_in, serviceFailoverIntent);
             retry_time = 0; // only one alarm will run
         } else {
@@ -325,7 +358,7 @@ public class DexCollectionService extends Service {
         lastState = msg + " " + JoH.hourMinuteString();
     }
 
-    synchronized void attemptConnection() {
+    synchronized void checkConnection() {
         status("Attempting connection");
         final BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
         if (bluetoothManager == null) {
@@ -360,7 +393,7 @@ public class DexCollectionService extends Service {
             }
         }
 
-        Log.i(TAG, "attemptConnection: Connection state: " + getStateStr(mConnectionState));
+        Log.i(TAG, "checkConnection: Connection state: " + getStateStr(mConnectionState));
         if (mConnectionState == STATE_DISCONNECTED || mConnectionState == STATE_DISCONNECTING) {
             final ActiveBluetoothDevice btDevice = ActiveBluetoothDevice.first();
             if (btDevice != null) {
@@ -379,7 +412,7 @@ public class DexCollectionService extends Service {
             }
         } else if (mConnectionState == STATE_CONNECTED) { //WOOO, we are good to go, nothing to do here!
             status("Last Connected");
-            Log.i(TAG, "attemptConnection: Looks like we are already connected, ready to receive");
+            Log.i(TAG, "checkConnection: Looks like we are already connected, ready to receive");
             mStaticState = mConnectionState;
             if (use_polling && (JoH.msSince(lastPacketTime) >= POLLING_PERIOD)) {
                 pollForData();
@@ -391,20 +424,20 @@ public class DexCollectionService extends Service {
 
     private synchronized void checkImmediateSend() {
         if (immediateSend != null) {
-            Log.d(TAG,"Sending immediate data: "+JoH.bytesToHex(immediateSend));
+            Log.d(TAG, "Sending immediate data: " + JoH.bytesToHex(immediateSend));
             sendBtMessage(immediateSend);
             immediateSend = null;
         }
     }
 
     private synchronized void pollForData() {
-        if (JoH.ratelimit("poll-for-data", 2)) {
+        if (JoH.ratelimit("poll-for-data", 5)) {
             new Thread() {
                 @Override
                 public void run() {
                     Log.d(TAG, "Polling for data");
                     int wait_counter = 0;
-                    while (!servicesDiscovered && wait_counter < 10) {
+                    while (servicesDiscovered != DISCOVERED.COMPLETE && wait_counter < 10) {
                         Log.d(TAG, "Waiting for service discovery: " + servicesDiscovered + " count: " + wait_counter);
                         try {
                             Thread.sleep(200); // delay for wakeup readiness
@@ -412,6 +445,17 @@ public class DexCollectionService extends Service {
                             //
                         }
                         wait_counter++;
+                    }
+                    if (servicesDiscovered == DISCOVERED.NULL) {
+                        Log.e(TAG, "Failed to discover services!");
+                        try {
+                            if (JoH.ratelimit("rediscover-services", 30)) {
+                                Log.d(TAG, "Refresh result: " + JoH.refreshDeviceCache(TAG, mBluetoothGatt));
+                                mBluetoothGatt.discoverServices();
+                            }
+                        } catch (Exception e) {
+                            Log.d(TAG, "Exception discovering services: " + e);
+                        }
                     }
                     last_poll_sent = JoH.tsl();
                     if ((JoH.msSince(lastPacketTime) > Home.stale_data_millis()) && (JoH.ratelimit("poll-request-part-b", 15))) {
@@ -451,7 +495,7 @@ public class DexCollectionService extends Service {
 
     private final BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {
         @Override
-        public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
+        public synchronized void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
             final PowerManager.WakeLock wl = JoH.getWakeLock("bluetooth-gatt", 60000);
             try {
                 if (Home.getPreferencesBoolean("bluetooth_excessive_wakelocks", true)) {
@@ -465,14 +509,22 @@ public class DexCollectionService extends Service {
                 switch (newState) {
                     case BluetoothProfile.STATE_CONNECTED:
                         mConnectionState = STATE_CONNECTED;
-                        servicesDiscovered = false;
+                        if ((servicesDiscovered == DISCOVERED.NULL) || Home.getPreferencesBoolean("always_discover_services", true)) {
+                            Log.d(TAG, "Requesting to discover services: previous: " + servicesDiscovered);
+                            servicesDiscovered = DISCOVERED.PENDING;
+                        }
                         ActiveBluetoothDevice.connected();
                         Log.i(TAG, "onConnectionStateChange: Connected to GATT server.");
                         if (JoH.ratelimit("attempt-connection", 30)) {
-                            attemptConnection(); // refresh status info
+                            checkConnection(); // refresh status info
                         }
-                        Log.d(TAG,"Calling discoverServices");
-                        mBluetoothGatt.discoverServices();
+                        if (servicesDiscovered != DISCOVERED.COMPLETE) {
+                            Log.d(TAG, "Calling discoverServices");
+                            mBluetoothGatt.discoverServices();
+                        } else {
+                            Log.d(TAG, "Services already discovered");
+                            checkImmediateSend();
+                        }
                         break;
                     case BluetoothProfile.STATE_DISCONNECTED:
                         Log.i(TAG, "onConnectionStateChange: State disconnected.");
@@ -481,9 +533,13 @@ public class DexCollectionService extends Service {
                         if (prefs.getBoolean("close_gatt_on_ble_disconnect", true)) {
                             if (mBluetoothGatt != null) {
                                 Log.i(TAG, "onConnectionStateChange: mBluetoothGatt is not null, closing.");
+                                if (JoH.ratelimit("refresh-gatt", 60)) {
+                                    Log.d(TAG, "Refresh result state close: " + JoH.refreshDeviceCache(TAG, mBluetoothGatt));
+                                }
                                 mBluetoothGatt.close();
                                 mBluetoothGatt = null;
                                 mCharacteristic = null;
+                                servicesDiscovered = DISCOVERED.NULL;
                             }
                             lastdata = null;
                         }
@@ -491,6 +547,9 @@ public class DexCollectionService extends Service {
                         setRetryTimer();
                         break;
                 }
+            } catch (Exception e) {
+                UserError.Log.wtf(TAG, "Caught exception in Gatt callback " + e);
+                UserError.Log.wtf(TAG, e);
             } finally {
                 JoH.releaseWakeLock(wl);
             }
@@ -511,16 +570,22 @@ public class DexCollectionService extends Service {
                 if ((mDeviceAddress != null) && (device != null) && (!areWeBonded(mDeviceAddress))) {
                     if (JoH.ratelimit("dexcollect-create-bond", 20)) {
                         Log.d(TAG, "Attempting to create bond to: " + mDeviceAddress);
-                        device.setPin(JoH.convertPinToBytes(DEFAULT_BT_PIN));
-                        device.createBond();
+                        bondingTries++;
+                        if (bondingTries > 5) {
+                            Home.toaststaticnext("Bonding failing so disabling bonding feature");
+                            Home.setPreferencesBoolean(PREF_DEX_COLLECTION_BONDING, false);
+                        } else {
+                            device.setPin(JoH.convertPinToBytes(DEFAULT_BT_PIN));
+                            device.createBond();
+                        }
                     }
                 }
             }
 
             final BluetoothGattService gattService = mBluetoothGatt.getService(xDripDataService);
             if (gattService == null) {
-                Log.w(TAG, "onServicesDiscovered: service " + xDripDataService + " not found");
-                if (!static_use_blukon) {
+                if ((!static_use_blukon) && (!static_use_nrf)) {
+                    Log.w(TAG, "onServicesDiscovered: xdrip service " + xDripDataService + " not found");
                     // TODO this should be reworked to be an efficient selector
                     listAvailableServices(mBluetoothGatt);
                 }
@@ -547,6 +612,7 @@ public class DexCollectionService extends Service {
                         final BluetoothGattDescriptor bdescriptor = gattCharacteristic.getDescriptor(UUID.fromString(HM10Attributes.CLIENT_CHARACTERISTIC_CONFIG));
                         Log.i(TAG, "Bluetooth Notification Descriptor found: " + bdescriptor.getUuid());
                         bdescriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                        descriptor_time = JoH.tsl();
                         mBluetoothGatt.writeDescriptor(bdescriptor);
                     } catch (Exception e) {
                         Log.e(TAG, "Error setting notification value descriptor: " + e);
@@ -597,6 +663,7 @@ public class DexCollectionService extends Service {
                     Log.d(TAG,"onServicesDiscovered: returning due to null nrf characteristic");
                     return;
                 } else {
+                    static_use_nrf = true;
                     mCharacteristic = nrfGattCharacteristic;
                     final int charaProp = nrfGattCharacteristic.getProperties();
                     if ((charaProp | BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
@@ -651,14 +718,18 @@ public class DexCollectionService extends Service {
                 status("Enabled " + getString(R.string.blukon));
                 static_use_blukon = true; // doesn't ever get unset
                 Blukon.initialize();
-                
+
             }
 
             // TODO is this duplicated in some situations?
-            final BluetoothGattDescriptor descriptor = mCharacteristic.getDescriptor(CCCD);
-            if (descriptor != null) {
-                descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-                mBluetoothGatt.writeDescriptor(descriptor);
+            try {
+                final BluetoothGattDescriptor descriptor = mCharacteristic.getDescriptor(CCCD);
+                if (descriptor != null) {
+                    descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                    mBluetoothGatt.writeDescriptor(descriptor);
+                }
+            } catch (NullPointerException e) {
+                Log.e(TAG, "Got null pointer trying to set CCCD descriptor");
             }
             try {
                 mBluetoothGatt.readCharacteristic(mCharacteristic);
@@ -666,9 +737,26 @@ public class DexCollectionService extends Service {
                 Log.e(TAG, "Got null pointer trying to readCharacteristic");
             }
             Log.d(TAG, "Services discovered end");
-            servicesDiscovered = true;
+            servicesDiscovered = DISCOVERED.COMPLETE;
+            // waitFor(300);
+            Log.d(TAG, "Services discovered release");
             checkImmediateSend(); // TODO maybe find a better home for this
             JoH.releaseWakeLock(wl);
+        }
+
+        @Override
+        public void onCharacteristicWrite(final BluetoothGatt gatt, final BluetoothGattCharacteristic characteristic, final int status) {
+            try {
+                final String msg = "OnCharacteristic WRITE: "
+                        + " status: " + getStatusName(status) + " data: " + JoH.bytesToHex(characteristic.getValue()) + " uuid: " + characteristic.getUuid();
+                if (status == 0) {
+                    Log.d(TAG, msg);
+                } else {
+                    UserError.Log.e(TAG, msg);
+                }
+            } catch (Exception e) {
+                UserError.Log.wtf(TAG, "Got exception trying to display data: " + e);
+            }
         }
 
         @Override
@@ -712,6 +800,7 @@ public class DexCollectionService extends Service {
             } else {
                 Log.d(TAG, "onDescriptorWrite: Error writing GATT Descriptor: " + status);
             }
+            descriptor_time = 0;
         }
     };
 
@@ -739,6 +828,7 @@ public class DexCollectionService extends Service {
         if (mBluetoothGatt == null) {
             Log.w(TAG, "sendBtMessage: lost connection");
             if (JoH.ratelimit("sendbtmessagelost", 60)) {
+                mConnectionState = STATE_DISCONNECTED;
                 setRetryTimer();
             }
             return false;
@@ -750,31 +840,60 @@ public class DexCollectionService extends Service {
         Log.i(TAG, "sendBtMessage: sending message: " + static_last_sent_hexdump);
 
         // Experimental support for rfduino from Tomasz Stachowicz
-        if (use_rfduino_bluetooth ) {
+        if (use_rfduino_bluetooth) {
             Log.w(TAG, "sendBtMessage: use_rfduino_bluetooth");
             if (mCharacteristicSend == null) {
                 status("Error: mCharacteristicSend was null in sendBtMessage");
                 Log.e(TAG, lastState);
+                servicesDiscovered = DISCOVERED.NULL;
                 return false;
             }
-            mCharacteristicSend.setValue(value);
-            return mBluetoothGatt.writeCharacteristic(mCharacteristicSend);
+            //mCharacteristicSend.setValue(value);
+            //return mBluetoothGatt.writeCharacteristic(mCharacteristicSend);
+            return writeChar(mCharacteristicSend, value);
         }
 
         if (mCharacteristic == null) {
             status("Error: mCharacteristic was null in sendBtMessage");
             Log.e(TAG, lastState);
+            servicesDiscovered = DISCOVERED.NULL;
             return false;
         }
 
-        if(mCharacteristicSend!=null && mCharacteristicSend != mCharacteristic)
-        {
-            mCharacteristicSend.setValue(value);
-            return mBluetoothGatt.writeCharacteristic(mCharacteristicSend);
+        if (mCharacteristicSend != null && mCharacteristicSend != mCharacteristic) {
+            // mCharacteristicSend.setValue(value);
+            //  return mBluetoothGatt.writeCharacteristic(mCharacteristicSend);
+            return writeChar(mCharacteristicSend, value);
+
         }
 
-        mCharacteristic.setValue(value);
-        return mBluetoothGatt.writeCharacteristic(mCharacteristic);
+        // mCharacteristic.setValue(value);
+        // return mBluetoothGatt.writeCharacteristic(mCharacteristic);
+        return writeChar(mCharacteristic, value);
+    }
+
+    private boolean writeChar(final BluetoothGattCharacteristic localmCharacteristic, final byte[] value) {
+        localmCharacteristic.setValue(value);
+        boolean result = mBluetoothGatt.writeCharacteristic(localmCharacteristic);
+        if (!result) {
+            UserError.Log.d(TAG, "Error writing characteristic: " + localmCharacteristic.getUuid() + " " + JoH.bytesToHex(value));
+            JoH.runOnUiThreadDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        boolean result = mBluetoothGatt.writeCharacteristic(localmCharacteristic);
+                        if (!result) {
+                            UserError.Log.e(TAG, "Error writing characteristic: (2nd try) " + localmCharacteristic.getUuid() + " " + JoH.bytesToHex(value));
+                        } else {
+                            UserError.Log.d(TAG, "Succeeded writing characteristic: (2nd try) " + localmCharacteristic.getUuid() + " " + JoH.bytesToHex(value));
+                        }
+                    } catch (Exception e) {
+                        UserError.Log.wtf(TAG, "Exception during 2nd try write: " + e + " " + localmCharacteristic.getUuid() + " " + JoH.bytesToHex(value));
+                    }
+                }
+            }, 500);
+        }
+        return result;
     }
 
     private static Integer convertSrc(final String Src) {
@@ -807,6 +926,9 @@ public class DexCollectionService extends Service {
         if (mBluetoothGatt != null) {
             Log.i(TAG, "connect: mBluetoothGatt isnt null, Closing.");
             try {
+                if (JoH.ratelimit("refresh-gatt", 60)) {
+                    Log.d(TAG, "Refresh result close: " + JoH.refreshDeviceCache(TAG, mBluetoothGatt));
+                }
                 mBluetoothGatt.close();
             } catch (NullPointerException e) {
                 Log.wtf(TAG, "Concurrency related null pointer in connect");
@@ -841,12 +963,13 @@ public class DexCollectionService extends Service {
         mBluetoothGatt = null;
         mCharacteristic = null;
         mConnectionState = STATE_DISCONNECTED;
+        servicesDiscovered = DISCOVERED.NULL;
     }
 
     public synchronized void setSerialDataToTransmitterRawData(byte[] buffer, int len) {
         long timestamp = new Date().getTime();
         last_time_seen = JoH.ts();
-        watchdog_count=0;
+        watchdog_count = 0;
         if (static_use_blukon && Blukon.checkBlukonPacket(buffer)) {
             final byte[] reply = Blukon.decodeBlukonPacket(buffer);
             if (reply != null) {
@@ -863,6 +986,9 @@ public class DexCollectionService extends Service {
         } else {
 
             if (((buffer.length > 0) && (buffer[0] == 0x07 || buffer[0] == 0x11 || buffer[0] == 0x15)) || CollectionServiceStarter.isDexBridgeOrWifiandDexBridge()) {
+                if ((buffer.length == 1) && (buffer[0] == 0x00)) {
+                    return; // null packet
+                }
                 Log.i(TAG, "setSerialDataToTransmitterRawData: Dealing with Dexbridge packet!");
                 int DexSrc;
                 int TransmitterID;
@@ -906,7 +1032,7 @@ public class DexCollectionService extends Service {
                             sendBtMessage(txidMessage);
                         }
                         Home.setPreferencesInt("bridge_battery", ByteBuffer.wrap(buffer).get(11));
-                       // PreferenceManager.getDefaultSharedPreferences(mContext).edit().putInt("bridge_battery", ByteBuffer.wrap(buffer).get(11)).apply();
+                        // PreferenceManager.getDefaultSharedPreferences(mContext).edit().putInt("bridge_battery", ByteBuffer.wrap(buffer).get(11)).apply();
                         last_battery_level = Home.getPreferencesInt("bridge_battery", -1);
                         //All is OK, so process it.
                         //first, tell the wixel it is OK to sleep.
@@ -926,10 +1052,9 @@ public class DexCollectionService extends Service {
                         CheckBridgeBattery.checkBridgeBattery();
                     }
                 }
-            } else if(buffer.length>10 && new String(buffer) != null && new String(buffer).startsWith("battery: ")){
+            } else if (buffer.length > 10 && new String(buffer) != null && new String(buffer).startsWith("battery: ")) {
                 //bluereader intermidiate support
-                if(BgReading.last()==null || BgReading.last().timestamp + (4*60*1000) < System.currentTimeMillis())
-                {
+                if (BgReading.last() == null || BgReading.last().timestamp + (4 * 60 * 1000) < System.currentTimeMillis()) {
                     sendBtMessage(new byte[]{0x6C});
                 }
             } else {
@@ -956,7 +1081,8 @@ public class DexCollectionService extends Service {
 
 
 
-        sensor.latest_battery_level = (sensor.latest_battery_level != 0) ? Math.min(sensor.latest_battery_level, transmitterData.sensor_battery_level) : transmitterData.sensor_battery_level;
+        //sensor.latest_battery_level = (sensor.latest_battery_level != 0) ? Math.min(sensor.latest_battery_level, transmitterData.sensor_battery_level) : transmitterData.sensor_battery_level;
+        sensor.latest_battery_level = transmitterData.sensor_battery_level; // allow level to go up and down
         sensor.save();
 
         last_transmitter_Data = transmitterData;
@@ -1006,6 +1132,17 @@ public class DexCollectionService extends Service {
         }
     }
 
+    public void waitFor(final int millis) {
+        synchronized (mLock) {
+            try {
+                UserError.Log.d(TAG, "waiting " + millis + "ms");
+                mLock.wait(millis);
+            } catch (final InterruptedException e) {
+                UserError.Log.e(TAG, "Sleeping interrupted", e);
+            }
+        }
+    }
+
     // Status for Watchface
     public static boolean isRunning() {
         return lastState.equals("Not Running") || lastState.startsWith("Stopping", 0) ? false : true;
@@ -1036,6 +1173,19 @@ public class DexCollectionService extends Service {
         return dataMap;
     }
 
+    public static final String LIMITTER_NAME = "LimiTTer";
+    public static String getBestLimitterHardwareName() {
+        if (static_use_nrf) {
+            return "BlueReader";
+        } else if (static_use_blukon) {
+            return xdrip.getAppContext().getString(R.string.blukon);
+        } else if (static_use_transmiter_pl_bluetooth) {
+            return "Transmiter PL";
+        } else if (static_use_rfduino_bluetooth) {
+            return "Rfduino";
+        } else return LIMITTER_NAME;
+    }
+
     // data for MegaStatus
     public static List<StatusItem> megaStatus() {
         final List<StatusItem> l = new ArrayList<>();
@@ -1057,6 +1207,15 @@ public class DexCollectionService extends Service {
             l.add(new StatusItem("Hardware", "Rfduino"));
         }
 
+        if (static_use_blukon) {
+            l.add(new StatusItem("Hardware", xdrip.getAppContext().getString(R.string.blukon)));
+        }
+
+        if (static_use_nrf) {
+            l.add(new StatusItem("Hardware", "BlueReader"));
+        }
+
+
         // TODO add LimiTTer info
 
         if (last_transmitter_Data != null) {
@@ -1068,7 +1227,7 @@ public class DexCollectionService extends Service {
 
         if (Home.getPreferencesBooleanDefaultFalse(PREF_DEX_COLLECTION_BONDING)) {
             if (bondedState != null) {
-                l.add(new StatusItem("Bluetooth Pairing", (bondedState.length() > 0) ? "Bonded" : "Not bonded", (bondedState.length() > 0) ? StatusItem.Highlight.GOOD : StatusItem.Highlight.NOTICE, "long-press",
+                l.add(new StatusItem("Bluetooth Pairing", (bondedState.length() > 0) ? "Bonded" : "Not bonded" + (bondingTries > 1 ? " (" + bondingTries + ")" : ""), (bondedState.length() > 0) ? StatusItem.Highlight.GOOD : StatusItem.Highlight.NOTICE, "long-press",
                         new Runnable() {
                             @Override
                             public void run() {
@@ -1104,10 +1263,15 @@ public class DexCollectionService extends Service {
                         }
                     }));
         }
-
-        if (retry_time > 0) l.add(new StatusItem("Next Retry", JoH.niceTimeTill(retry_time)));
+        if (max_wakeup_jitter > 2000) {
+            l.add(new StatusItem("Slowest wake up", JoH.niceTimeScalar(max_wakeup_jitter) + " late", max_wakeup_jitter > 61000 ? StatusItem.Highlight.CRITICAL : StatusItem.Highlight.NORMAL));
+        }
+        if (JoH.buggy_samsung) {
+            l.add(new StatusItem("Buggy Samsung", "Using workaround", max_wakeup_jitter < TOLERABLE_JITTER ? StatusItem.Highlight.GOOD : StatusItem.Highlight.BAD));
+        }
+        if (retry_time > 0) l.add(new StatusItem("Next Retry", JoH.niceTimeTill(retry_time), JoH.msTill(retry_time)< -2 ? StatusItem.Highlight.CRITICAL : StatusItem.Highlight.NORMAL));
         if (failover_time > 0)
-            l.add(new StatusItem("Next Wake up", JoH.niceTimeTill(failover_time)));
+            l.add(new StatusItem("Next Wake up", JoH.niceTimeTill(failover_time), JoH.msTill(failover_time) < -2 ? StatusItem.Highlight.CRITICAL : StatusItem.Highlight.NORMAL));
 
         if (Home.get_engineering_mode() && DexCollectionType.hasLibre()) {
             l.add(new StatusItem("Request Data", "Test for xBridgePlus protocol", immediateSend == null ? StatusItem.Highlight.NORMAL : StatusItem.Highlight.NOTICE, "long-press", new Runnable() {

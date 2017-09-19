@@ -577,9 +577,12 @@ public class Notifications extends IntentService {
                         PendingIntent.FLAG_UPDATE_CURRENT
                 );
 
-        NotificationCompat.Builder b = new NotificationCompat.Builder(mContext);
+        final NotificationCompat.Builder b = new NotificationCompat.Builder(mContext);
         //b.setOngoing(true);
         b.setCategory(NotificationCompat.CATEGORY_STATUS);
+        if (Home.getPreferencesBooleanDefaultFalse("high_priority_notifications")) {
+            b.setPriority(Notification.PRIORITY_HIGH);
+        }
         final BestGlucose.DisplayGlucose dg = (use_best_glucose) ? BestGlucose.getDisplayGlucose() : null;
         final boolean use_color_in_notification = false; // could be preference option
         final SpannableString titleString = new SpannableString(lastReading == null ? "BG Reading Unavailable" : (dg != null) ? (dg.spannableString(dg.unitized + " " + dg.delta_arrow,use_color_in_notification))
@@ -739,6 +742,7 @@ public class Notifications extends IntentService {
                 .setSmallIcon(R.drawable.ic_action_communication_invert_colors_on)
                 .setContentTitle(title)
                 .setContentText(content)
+                .setPriority(Home.getPreferencesBooleanDefaultFalse("high_priority_notifications") ? Notification.PRIORITY_HIGH : Notification.PRIORITY_DEFAULT)
                 .setContentIntent(notificationIntent(intent));
     }
 

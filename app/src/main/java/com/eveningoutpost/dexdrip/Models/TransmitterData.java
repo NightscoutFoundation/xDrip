@@ -113,7 +113,7 @@ public class TransmitterData extends Model {
             //Stop allowing readings that are older than the last one - or duplicate data, its bad! (from savek-cc)
             final TransmitterData lastTransmitterData = TransmitterData.last();
             if (lastTransmitterData != null && lastTransmitterData.timestamp >= transmitterData.timestamp) {
-                Log.e(TAG, "Rejecting TransmitterData constraint: last: " + JoH.dateTimeText(lastTransmitterData.timestamp) + " > this: " + JoH.dateTimeText(transmitterData.timestamp));
+                Log.e(TAG, "Rejecting TransmitterData constraint: last: " + JoH.dateTimeText(lastTransmitterData.timestamp) + " >= this: " + JoH.dateTimeText(transmitterData.timestamp));
                 return null;
             }
             if (lastTransmitterData != null && lastTransmitterData.raw_data == transmitterData.raw_data && Math.abs(lastTransmitterData.timestamp - transmitterData.timestamp) < (Constants.MINUTE_IN_MS * 2)) {

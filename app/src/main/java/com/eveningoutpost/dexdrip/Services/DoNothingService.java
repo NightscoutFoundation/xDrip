@@ -17,7 +17,9 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
+import com.eveningoutpost.dexdrip.UtilityModels.InstalledApps;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
+import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -46,6 +48,7 @@ public class DoNothingService extends Service {
 
     private static long nextWakeUpTime = -1;
     private static long wake_time_difference = 0;
+    private static long max_wake_time_difference = 0;
     private static int wakeUpErrors = 0;
     private static String lastState = "Not running";
 
@@ -83,6 +86,7 @@ public class DoNothingService extends Service {
             if (wake_time_difference > 10000) {
                 UserError.Log.e(TAG, "Slow Wake up! time difference in ms: " + wake_time_difference);
                 wakeUpErrors = wakeUpErrors + 3;
+                max_wake_time_difference = Math.max(max_wake_time_difference, wake_time_difference);
             } else {
                 if (wakeUpErrors > 0) wakeUpErrors--;
             }
@@ -142,8 +146,7 @@ public class DoNothingService extends Service {
             final long retry_in = (5 * 60 * 1000);
             UserError.Log.d(TAG, "setFailoverTimer: Restarting in: " + (retry_in / (60 * 1000)) + " minutes");
             nextWakeUpTime = JoH.tsl() + retry_in;
-
-            final PendingIntent wakeIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), PendingIntent.FLAG_UPDATE_CURRENT);
+            final PendingIntent wakeIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), 0);
             JoH.wakeUpIntent(this, retry_in, wakeIntent);
 
         } else {
@@ -161,6 +164,9 @@ public class DoNothingService extends Service {
 
     public static List<StatusItem> megaStatus() {
         final List<StatusItem> l = new ArrayList<>();
+        if (GcmActivity.cease_all_activity) {
+            l.add(new StatusItem("SYNC DISABLED", Home.getPreferencesBooleanDefaultFalse("disable_all_sync") ? "By preference option" : (InstalledApps.isGooglePlayInstalled(xdrip.getAppContext()) ? "Not by preference option" : "By missing Google Play services"), StatusItem.Highlight.CRITICAL));
+        }
         if (Home.get_master()) {
             l.add(new StatusItem("Service State", "We are the Master"));
 
@@ -182,6 +188,9 @@ public class DoNothingService extends Service {
             if (wakeUpErrors > 0) {
                 l.add(new StatusItem("Slow Wake up", JoH.niceTimeScalar(wake_time_difference)));
                 l.add(new StatusItem("Wake Up Errors", wakeUpErrors));
+            }
+            if (max_wake_time_difference > 0) {
+                l.add(new StatusItem("Slowest Wake up", JoH.niceTimeScalar(max_wake_time_difference)));
             }
 
             if (nextWakeUpTime != -1) {

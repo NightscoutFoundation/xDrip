@@ -27,6 +27,7 @@ import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.Services.PlusSyncService;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.UtilityModels.InstalledApps;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
 import com.eveningoutpost.dexdrip.utils.DisplayQRCode;
@@ -362,7 +363,7 @@ public class GcmActivity extends FauxActivity {
     }
 
     public static void sendSensorBattery(final int battery) {
-        if (JoH.pratelimit("gcm-sbu", 300)) {
+        if (JoH.pratelimit("gcm-sbu", 3600)) {
             GcmActivity.sendMessage("sbu", Integer.toString(battery));
         }
     }
@@ -735,6 +736,17 @@ public class GcmActivity extends FauxActivity {
         Log.d(TAG, "try GCMcreate");
         checkCease();
         if (cease_all_activity) return;
+
+        if (!InstalledApps.isGooglePlayInstalled(xdrip.getAppContext())) {
+            if (JoH.pratelimit("gms-missing-msg", 86400)) {
+                final String msg = "Google Play services - not installed!\nInstall it or disable xDrip+ sync options";
+                JoH.static_toast_long(msg);
+                Home.toaststaticnext(msg);
+            }
+            cease_all_activity = true;
+            return;
+        }
+
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {

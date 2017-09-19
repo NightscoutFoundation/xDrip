@@ -36,6 +36,7 @@ import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.Services.DoNothingService;
 import com.eveningoutpost.dexdrip.Services.G5CollectionService;
+import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.Services.WifiCollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.JamorhamShowcaseDrawer;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
@@ -116,7 +117,11 @@ public class MegaStatus extends ActivityWithMenu {
                 addAsection(G4_STATUS, "Bluetooth Collector Status");
             }
             if (dexCollectionType.equals(DexcomG5)) {
-                addAsection(G5_STATUS, "G5 Collector and Transmitter Status");
+                if (Home.getPreferencesBooleanDefaultFalse(Ob1G5CollectionService.OB1G5_PREFS)) {
+                    addAsection(G5_STATUS, "OB1 G5 Collector and Transmitter Status");
+                } else {
+                    addAsection(G5_STATUS, "G5 Collector and Transmitter Status");
+                }
             }
             if (DexCollectionType.hasWifi()) {
                 addAsection(IP_COLLECTOR, "Wifi Wixel / Parakeet Status");
@@ -150,7 +155,11 @@ public class MegaStatus extends ActivityWithMenu {
                 la.addRows(DexCollectionService.megaStatus());
                 break;
             case G5_STATUS:
-                la.addRows(G5CollectionService.megaStatus());
+                if (Home.getPreferencesBooleanDefaultFalse(Ob1G5CollectionService.OB1G5_PREFS)) {
+                    la.addRows(Ob1G5CollectionService.megaStatus());
+                } else {
+                    la.addRows(G5CollectionService.megaStatus());
+                }
                 break;
             case IP_COLLECTOR:
                 la.addRows(WifiCollectionService.megaStatus(mActivity));

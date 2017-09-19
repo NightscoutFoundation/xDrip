@@ -1,10 +1,15 @@
 package com.eveningoutpost.dexdrip;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.net.Uri;
+import android.os.Build;
+import android.os.PowerManager;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.wearable.watchface.WatchFaceStyle;
@@ -15,9 +20,9 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.ustwo.clockwise.common.WatchMode;
-
+import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
+import com.ustwo.clockwise.common.WatchMode;
 
 public class Home extends BaseWatchFace {
     //KS the following were copied from app/home
@@ -47,6 +52,7 @@ public class Home extends BaseWatchFace {
         LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
         layoutView = inflater.inflate(R.layout.activity_home, null);
         performViewSetup();
+        //checkBatteryOptimization();
     }
 
     @Override
@@ -413,6 +419,17 @@ public class Home extends BaseWatchFace {
         return false;
     }
 
+    public static boolean removePreferencesItem(final String pref) {
+        if ((prefs == null) && (xdrip.getAppContext() != null)) {
+            prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
+        }
+        if (prefs != null) {
+            prefs.edit().remove(pref).apply();
+            return true;
+        }
+        return false;
+    }
+
     public static double convertToMgDlIfMmol(double value) {
         if (!getPreferencesStringWithDefault("units", "mgdl").equals("mgdl")) {
             return value * com.eveningoutpost.dexdrip.UtilityModels.Constants.MMOLL_TO_MGDL;
@@ -439,5 +456,49 @@ public class Home extends BaseWatchFace {
             Home.getPreferencesBooleanDefaultFalse("engineering_mode")) return (60000 * 5);
         return (60000 * 11);
     }
+
+    private void checkBatteryOptimization() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            final String packageName = getPackageName();
+            //Log.d(TAG, "Maybe ignoring battery optimization");
+            final PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+            if (!pm.isIgnoringBatteryOptimizations(packageName)) {
+                // &&
+                //            !prefs.getBoolean("requested_ignore_battery_optimizations_new", false)) {
+                Log.d(TAG, "Requesting ignore battery optimization");
+
+                // if (PersistentStore.incrementLong("asked_battery_optimization") < 40) {
+                // JoH.show_ok_dialog(this, "Please Allow Permission", "xDrip+ needs whitelisting for proper performance", new Runnable() {
+
+                //     @Override
+                //    public void run() {
+                try {
+                    final Intent intent = new Intent();
+
+                    // ignoring battery optimizations required for constant connection
+                    // to peripheral device - eg CGM transmitter.
+                    intent.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.setData(Uri.parse("package:" + packageName));
+                    startActivity(intent);
+
+                } catch (ActivityNotFoundException e) {
+                    final String msg = "Device does not appear to support battery optimization whitelisting!";
+                    JoH.static_toast_short(msg);
+                    UserError.Log.wtf(TAG, msg);
+                }
+                //      }
+                //     });
+            } else {
+                JoH.static_toast_long("This app needs battery optimization whitelisting or it will not work well. Please reset app preferences");
+            }
+        }
+    }
+    // just for code compatibility
+    public static boolean get_master() {
+        return false;
+    }
 }
+
+
 

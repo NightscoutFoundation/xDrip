@@ -456,7 +456,15 @@ public class BgGraphBuilder {
     }
 
     public double unitized(double value) {
-        if(doMgdl) {
+        if (doMgdl) {
+            return value;
+        } else {
+            return mmolConvert(value);
+        }
+    }
+
+    public static double unitized(double value, boolean doMgdl) {
+        if (doMgdl) {
             return value;
         } else {
             return mmolConvert(value);
@@ -515,7 +523,83 @@ public class BgGraphBuilder {
         }
     }
 
+
     public String unitizedDeltaString(boolean showUnit, boolean highGranularity) {
+        return unitizedDeltaString( showUnit, highGranularity,Home.get_follower());
+    }
+
+    public String unitizedDeltaString(boolean showUnit, boolean highGranularity, boolean is_follower) {
+        return unitizedDeltaString(showUnit, highGranularity, is_follower, doMgdl);
+    }
+
+    public static String unitizedDeltaString(boolean showUnit, boolean highGranularity, boolean is_follower, boolean doMgdl) {
+
+        List<BgReading> last2 = BgReading.latest(2,is_follower);
+        if (last2.size() < 2 || last2.get(0).timestamp - last2.get(1).timestamp > 20 * 60 * 1000) {
+            // don't show delta if there are not enough values or the values are more than 20 mintes apart
+            return "???";
+        }
+
+        double value = BgReading.currentSlope(is_follower) * 5 * 60 * 1000;
+
+        return unitizedDeltaStringRaw(showUnit, highGranularity, value, doMgdl);
+    }
+
+    public String unitizedDeltaStringRaw(boolean showUnit, boolean highGranularity, double value) {
+        return unitizedDeltaStringRaw(showUnit, highGranularity, value, doMgdl);
+    }
+
+    public static String unitizedDeltaStringRaw(boolean showUnit, boolean highGranularity,double value, boolean doMgdl) {
+
+
+        if (Math.abs(value) > 100) {
+            // a delta > 100 will not happen with real BG values -> problematic sensor data
+            return "ERR";
+        }
+
+        // TODO: allow localization from os settings once pebble doesn't require english locale
+        DecimalFormat df = new DecimalFormat("#", new DecimalFormatSymbols(Locale.ENGLISH));
+        String delta_sign = "";
+        if (value > 0) {
+            delta_sign = "+";
+        }
+        if (doMgdl) {
+
+            if (highGranularity) {
+                df.setMaximumFractionDigits(1);
+            } else {
+                df.setMaximumFractionDigits(0);
+            }
+
+            return delta_sign + df.format(unitized(value,doMgdl)) + (showUnit ? " mg/dl" : "");
+        } else {
+            // only show 2 decimal places on mmol/l delta when less than 0.1 mmol/l
+            if (highGranularity && (Math.abs(value) < (Constants.MMOLL_TO_MGDL * 0.1))) {
+                df.setMaximumFractionDigits(2);
+            } else {
+                df.setMaximumFractionDigits(1);
+            }
+
+            df.setMinimumFractionDigits(1);
+            df.setMinimumIntegerDigits(1);
+            return delta_sign + df.format(unitized(value,doMgdl)) + (showUnit ? " mmol/l" : "");
+        }
+    }
+
+    public String unit() {
+        return unit(doMgdl);
+    }
+
+    public static String unit(boolean doMgdl) {
+        if (doMgdl) {
+            return "mg/dl";
+        } else {
+            return "mmol";
+        }
+    }
+
+
+    public String oldunitizedDeltaString(boolean showUnit, boolean highGranularity) {
 
         List<BgReading> last2 = BgReading.latest(2);
         if(last2.size() < 2 || last2.get(0).timestamp - last2.get(1).timestamp > MAX_SLOPE_MINUTES * 60 * 1000){
@@ -562,14 +646,6 @@ public class BgGraphBuilder {
         return mgdl * Constants.MGDL_TO_MMOLL;
     }
 
-    public String unit() {
-        if(doMgdl){
-            return "mg/dl";
-        } else {
-            return "mmol";
-        }
-
-    }
 
     public OnValueSelectTooltipListener getOnValueSelectTooltipListener(){
         return new OnValueSelectTooltipListener();

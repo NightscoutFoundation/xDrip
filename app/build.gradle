@@ -8,6 +8,7 @@ buildscript {
      }
 }
 apply plugin: 'com.android.application'
+apply plugin: 'me.tatarka.retrolambda'
 //apply plugin: 'io.fabric'
 
 repositories {
@@ -96,7 +97,7 @@ android {
 
     defaultConfig {
         applicationId "com.eveningoutpost.dexdrip"
-        minSdkVersion 17
+        minSdkVersion 18
         targetSdkVersion 23
         // change versionCode only when downgrade should be prevented
         // eg, when data structures are incompatible
@@ -113,6 +114,11 @@ android {
 
     packagingOptions {
         exclude 'META-INF/INDEX.LIST'
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 
     buildTypes {
@@ -189,8 +195,10 @@ dependencies {
     compile 'com.squareup.retrofit:converter-gson:2.0.0-beta2'
     compile 'com.squareup.retrofit:retrofit:2.0.0-beta2'
     compile 'com.getpebble:pebblekit:3.1.0'
-    compile 'io.reactivex:rxjava:1.0.0'
+    compile 'io.reactivex:rxjava:1.3.0'
+    //compile 'com.activeandroid:thread-safe-active-android:3.1.1'
     compile 'com.github.lecho:hellocharts-android:v1.5.8'
+    compile "com.polidea.rxandroidble:rxandroidble:1.4.0"
     compile 'com.google.guava:guava:18.0'
     compile 'com.embarkmobile:zxing-android-minimal:2.0.0@aar'
     compile 'com.embarkmobile:zxing-android-integration:2.0.0@aar'
@@ -203,7 +211,7 @@ dependencies {
     compile('com.crashlytics.sdk.android:crashlytics:2.6.6@aar') {
         transitive = true;
     }
-    compile 'uk.com.robust-it:cloning:1.9.2'
+    compile 'uk.com.robust-it:cloning:1.9.5'
     compile 'com.github.amlcurran.showcaseview:library:5.4.3'
    // compile 'com.itextpdf:itextg:5.5.9'
 

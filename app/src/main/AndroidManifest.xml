@@ -74,7 +74,9 @@
         </activity>
         <activity
             android:name=".BluetoothScan"
-            android:label="@string/title_activity_bluetooth_scan" />
+            android:configChanges="orientation|screenSize"
+            android:label="@string/title_activity_bluetooth_scan"
+            />
 
         <service
             android:name=".Services.DexCollectionService"
@@ -154,6 +156,7 @@
             android:theme="@style/PopUpKeypad" />
         <activity
             android:name=".NoteSearch"
+            android:configChanges="orientation|screenSize"
             android:label="Note Search" />
 
         <receiver android:name=".AutoStart">
@@ -240,6 +243,7 @@
             android:label="@string/calibration_graph" />
         <activity
             android:name=".LicenseAgreementActivity"
+            android:configChanges="orientation|screenSize"
             android:label="@string/end_user_license_agreement" />
         <activity
             android:name=".CalibrationCheckInActivity"
@@ -298,6 +302,9 @@
             android:name=".Services.G5CollectionService"
             android:enabled="true"
             android:exported="true" />
+        <service
+            android:name=".Services.Ob1G5CollectionService"
+            android:enabled="true" />
 
         <activity
             android:name=".ShareTest"

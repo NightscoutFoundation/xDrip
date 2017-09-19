@@ -1,5 +1,7 @@
 package com.eveningoutpost.dexdrip;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -9,6 +11,7 @@ import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -52,9 +55,19 @@ public class DoubleCalibrationActivity extends ActivityWithMenu {
     public void addListenerOnButton() {
 
         button = (Button) findViewById(R.id.save_calibration_button);
-
+        final Activity activity = this;
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+
+                try {
+                    View view = activity.getCurrentFocus();
+                    if (view != null) {
+                        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                    }
+                } catch (Exception e) {
+                    // failed to close keyboard
+                }
 
                 if (Sensor.isActive()) {
                     final EditText value_1 = (EditText) findViewById(R.id.bg_value_1);
