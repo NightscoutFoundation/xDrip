@@ -82,7 +82,11 @@ public class CustomComplicationProviderService extends ComplicationProviderServi
         String numberText = "";
         BgReading bgReading = BgReading.last(false);
         if ((bgReading == null) || (JoH.msSince(bgReading.timestamp) >= FRESH_MS)) {
-            ActiveAndroid.clearCache(); // we may be in another process!
+            try {
+                ActiveAndroid.clearCache(); // we may be in another process!
+            } catch (Exception e) {
+                Log.d(TAG, "Couldn't clear cache: " + e);
+            }
             bgReading = BgReading.last(false);
         }
 
