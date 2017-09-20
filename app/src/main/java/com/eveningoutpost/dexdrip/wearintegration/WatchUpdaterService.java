@@ -1440,6 +1440,7 @@ public class WatchUpdaterService extends WearableListenerService implements
             }
 
             dataMap.putBoolean("show_wear_treatments", Home.getPreferencesBooleanDefaultFalse("show_wear_treatments"));
+            dataMap.putBoolean("use_ob1_g5_collector_service", Home.getPreferencesBooleanDefaultFalse("use_ob1_g5_collector_service"));
             dataMap.putString(Blukon.BLUKON_PIN_PREF, Home.getPreferencesStringDefaultBlank(Blukon.BLUKON_PIN_PREF));
         }
         //Step Counter

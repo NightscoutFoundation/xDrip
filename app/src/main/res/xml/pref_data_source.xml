@@ -96,7 +96,6 @@
 
             <CheckBoxPreference
                 android:defaultValue="false"
-                android:dependency="engineering_mode"
                 android:key="use_ob1_g5_collector_service"
                 android:summary="Complete re-write, should work on Android 4.4 and more"
                 android:title="Try the new OB1 G5 Collector" />

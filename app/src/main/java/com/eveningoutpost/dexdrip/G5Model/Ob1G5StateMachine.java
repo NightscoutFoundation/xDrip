@@ -111,10 +111,12 @@ public class Ob1G5StateMachine {
                                                                                                     } else {
                                                                                                         parent.msg("Not Authorized!");
                                                                                                         UserError.Log.wtf(TAG, "Authentication failed!!!!");
+                                                                                                        parent.incrementErrors();
                                                                                                         // TODO? try again?
                                                                                                     }
                                                                                                 } else {
-                                                                                                    UserError.Log.e(TAG, "Got unexpected packet when looking for auth status: " + status_packet.type);
+                                                                                                    UserError.Log.e(TAG, "Got unexpected packet when looking for auth status: " + status_packet.type + " " + JoH.bytesToHex(status_value));
+                                                                                                    parent.incrementErrors();
                                                                                                     // TODO what to do here?
                                                                                                 }
 
@@ -127,18 +129,21 @@ public class Ob1G5StateMachine {
                                                                                             });
                                                                                 }, throwable -> {
                                                                                     UserError.Log.e(TAG, "Could not write auth challenge reply: " + throwable);
+                                                                                    parent.incrementErrors();
                                                                                 });
 
                                                             } else {
                                                                 UserError.Log.wtf(TAG, "Could not generate challenge hash! - resetting");
                                                                 parent.changeState(Ob1G5CollectionService.STATE.INIT);
+                                                                parent.incrementErrors();
                                                                 return;
                                                             }
 
                                                             break;
 
                                                         default:
-                                                            UserError.Log.wtf(TAG, "Unhandled packet type in reply: " + pkt.type);
+                                                            UserError.Log.wtf(TAG, "Unhandled packet type in reply: " + pkt.type + " " + JoH.bytesToHex(readValue));
+                                                            parent.incrementErrors();
                                                             // TODO what to do here?
                                                             break;
                                                     }
@@ -150,6 +155,7 @@ public class Ob1G5StateMachine {
                                     },
                                     throwable -> {
                                         UserError.Log.e(TAG, "Could not write AuthRequestTX: " + throwable);
+                                        parent.incrementErrors();
                                     }
 
                             );
@@ -163,6 +169,7 @@ public class Ob1G5StateMachine {
                     if (!(throwable instanceof OperationSuccess)) {
                         if ((parent.getState() == Ob1G5CollectionService.STATE.CLOSED) && (throwable instanceof BleDisconnectedException)) {
                             UserError.Log.d(TAG, "normal authentication notification throwable: (" + parent.getState() + ") " + throwable + " " + JoH.dateTimeText(JoH.tsl()));
+                            parent.connectionStateChange("Closed OK");
                         } else {
                             UserError.Log.e(TAG, "authentication notification  throwable: (" + parent.getState() + ") " + throwable + " " + JoH.dateTimeText(JoH.tsl()));
                         }
@@ -265,6 +272,7 @@ public class Ob1G5StateMachine {
                                 processSensorRxMessage((SensorRxMessage) data_packet.msg);
                                 parent.msg("Got data");
                                 parent.updateLast(JoH.tsl());
+                                parent.clearErrors();
                             }
 
 
