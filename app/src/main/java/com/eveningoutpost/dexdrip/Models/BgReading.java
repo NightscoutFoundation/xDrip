@@ -839,6 +839,7 @@ public class BgReading extends Model implements ShareUploadableBg {
                 .where("timestamp <= " + endTime)
                 .where("calculated_value != 0")
                 .where("raw_data != 0")
+                .where("calibration_uuid != \"\"")
                 .orderBy("timestamp desc")
                 .limit(number)
                 .execute();
