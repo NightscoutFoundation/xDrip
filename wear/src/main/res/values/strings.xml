@@ -102,6 +102,10 @@
     <string name="pref_summary_refresh_on_change">Refresh face on data change instead of every minute</string>
     <string name="pref_show_treatments">Show Treatments</string>
     <string name="pref_summary_show_treatments">Show Treatment points on graph</string>
+    <string name="pref_show_toasts">Show Toasts</string>
+    <string name="pref_summary_show_toasts">Show Steps and Extra Status toast popup messages</string>
+    <string name="pref_use_24HourFormat">24 HR Format</string>
+    <string name="pref_summary_use_24HourFormat">Format time using 24 Hour Format</string>
     <string name="pref_show_steps">Show Steps</string>
     <string name="pref_summary_show_steps">Show Step Counter</string>
     <string name="pref_show_external_status">Show Status</string>

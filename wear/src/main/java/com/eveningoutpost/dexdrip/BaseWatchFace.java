@@ -43,6 +43,7 @@ import com.ustwo.clockwise.common.WatchFaceTime;
 import com.ustwo.clockwise.common.WatchShape;
 
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -286,7 +287,8 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
         if (newTime.hasHourChanged(oldTime) || newTime.hasMinuteChanged(oldTime)) {
             if (layoutSet) {
                 wakeLock.acquire(50);
-                final java.text.DateFormat timeFormat = DateFormat.getTimeFormat(BaseWatchFace.this);
+                //final java.text.DateFormat timeFormat = DateFormat.getTimeFormat(BaseWatchFace.this);
+                final SimpleDateFormat timeFormat = new SimpleDateFormat(sharedPrefs.getBoolean("use24HourFormat", false) ? "HH:mm" : "h:mm a");
                 mTime.setText(timeFormat.format(System.currentTimeMillis()));
                 showAgoRawBattStatus();
 
@@ -390,7 +392,8 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
                     mSgv.setPaintFlags(mSgv.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
                 }
 
-                final java.text.DateFormat timeFormat = DateFormat.getTimeFormat(BaseWatchFace.this);
+                //final java.text.DateFormat timeFormat = DateFormat.getTimeFormat(BaseWatchFace.this);
+                final SimpleDateFormat timeFormat = new SimpleDateFormat(sharedPrefs.getBoolean("use24HourFormat", false) ? "HH:mm" : "h:mm a");
                 mTime.setText(timeFormat.format(System.currentTimeMillis()));
 
                 mDirection.setText(dataMap.getString("slopeArrow"));
@@ -644,6 +647,8 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key){
         setColor();
         if(layoutSet){
+            final SimpleDateFormat timeFormat = new SimpleDateFormat(sharedPrefs.getBoolean("use24HourFormat", false) ? "HH:mm" : "h:mm a");
+            mTime.setText(timeFormat.format(System.currentTimeMillis()));
             clearTreatmentLists();
             showAgoRawBattStatus();
             setSmallFontsize(false);
@@ -826,9 +831,9 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
             int timeframe = Integer.parseInt(sharedPrefs.getString("chart_timeframe", "5"));
             boolean doMgdl = (sharedPrefs.getString("units", "mgdl").equals("mgdl"));
             if (lowResMode) {
-                bgGraphBuilder = new BgGraphBuilder(getApplicationContext(), bgDataList, treatsDataList, calDataList, btDataList, pointSize, midColor, timeframe, doMgdl);
+                bgGraphBuilder = new BgGraphBuilder(getApplicationContext(), bgDataList, treatsDataList, calDataList, btDataList, pointSize, midColor, timeframe, doMgdl, sharedPrefs.getBoolean("use24HourFormat", false));
             } else {
-                bgGraphBuilder = new BgGraphBuilder(getApplicationContext(), bgDataList, treatsDataList, calDataList, btDataList, pointSize, highColor, lowColor, midColor, timeframe, doMgdl);
+                bgGraphBuilder = new BgGraphBuilder(getApplicationContext(), bgDataList, treatsDataList, calDataList, btDataList, pointSize, highColor, lowColor, midColor, timeframe, doMgdl, sharedPrefs.getBoolean("use24HourFormat", false));
             }
 
             chart.setLineChartData(bgGraphBuilder.lineData());

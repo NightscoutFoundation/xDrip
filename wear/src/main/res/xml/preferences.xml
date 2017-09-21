@@ -95,7 +95,7 @@
             android:key="showRawNoise" />
          -->
         <CheckBoxPreference
-            android:defaultValue="false"
+            android:defaultValue="true"
             android:key="refresh_on_change"
             android:title="@string/pref_refresh_on_change"
             android:summary="@string/pref_summary_refresh_on_change"
@@ -106,6 +106,20 @@
             android:key="show_wear_treatments"
             android:title="@string/pref_show_treatments"
             android:summary="@string/pref_summary_show_treatments"
+            app:wear_iconOff="@drawable/settings_off"
+            app:wear_iconOn="@drawable/settings_on" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="use24HourFormat"
+            android:title="@string/pref_use_24HourFormat"
+            android:summary="@string/pref_summary_use_24HourFormat"
+            app:wear_iconOff="@drawable/settings_off"
+            app:wear_iconOn="@drawable/settings_on" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="show_toasts"
+            android:title="@string/pref_show_toasts"
+            android:summary="@string/pref_summary_show_toasts"
             app:wear_iconOff="@drawable/settings_off"
             app:wear_iconOn="@drawable/settings_on" />
         <CheckBoxPreference

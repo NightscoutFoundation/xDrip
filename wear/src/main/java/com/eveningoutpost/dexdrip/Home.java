@@ -74,17 +74,19 @@ public class Home extends BaseWatchFace {
             }
             fontsizeTapTime = eventTime;
         }
-        if (tapType == TAP_TYPE_TOUCH && linearLayout(mLinearLayout, x, y)) {
-            JoH.static_toast_short(mStatusLine);
-        }
-        if (tapType == TAP_TYPE_TOUCH && linearLayout(mStepsLinearLayout, x, y)) {
-            if (sharedPrefs.getBoolean("showSteps", false) && mStepsCount > 0) {
-                JoH.static_toast_long(mStepsToast);
+        if (sharedPrefs.getBoolean("show_toasts", true)) {
+            if (tapType == TAP_TYPE_TOUCH && linearLayout(mLinearLayout, x, y)) {
+                JoH.static_toast_short(mStatusLine);
             }
-        }
-        if (tapType == TAP_TYPE_TOUCH && linearLayout(mDirectionDelta, x, y)) {
-            if (sharedPrefs.getBoolean("extra_status_line", false) && mExtraStatusLine != null && !mExtraStatusLine.isEmpty()) {
-                JoH.static_toast_long(mExtraStatusLine);
+            if (tapType == TAP_TYPE_TOUCH && linearLayout(mStepsLinearLayout, x, y)) {
+                if (sharedPrefs.getBoolean("showSteps", false) && mStepsCount > 0) {
+                    JoH.static_toast_long(mStepsToast);
+                }
+            }
+            if (tapType == TAP_TYPE_TOUCH && linearLayout(mDirectionDelta, x, y)) {
+                if (sharedPrefs.getBoolean("extra_status_line", false) && mExtraStatusLine != null && !mExtraStatusLine.isEmpty()) {
+                    JoH.static_toast_long(mExtraStatusLine);
+                }
             }
         }
         if (tapType == TAP_TYPE_TOUCH && linearLayout(mMenuLinearLayout, x, y)) {
