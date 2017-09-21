@@ -1402,7 +1402,8 @@ public class Preferences extends PreferenceActivity {
                     return true;
                 }
             });
-            bindPreferenceSummaryToValue(transmitterId);
+
+            bindPreferenceSummaryToValue(transmitterId); // duplicated below but this sets initial value
             transmitterId.getEditText().setFilters(new InputFilter[]{new InputFilter.AllCaps()}); // TODO filter O ?
             transmitterId.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
@@ -1415,9 +1416,11 @@ public class Preferences extends PreferenceActivity {
                             } catch (InterruptedException e) {
                                 //
                             }
+                            Log.d(TAG, "Trying to restart collector due to tx id change");
                             CollectionServiceStarter.restartCollectionService(xdrip.getAppContext());
                         }
                     }).start();
+                    sBindPreferenceSummaryToValueListener.onPreferenceChange(preference, newValue);
 
                     return true;
                 }
