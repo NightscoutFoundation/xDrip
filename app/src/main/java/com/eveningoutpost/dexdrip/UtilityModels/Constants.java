@@ -28,4 +28,5 @@ public class Constants {
     public static final int DEX_COLLECTION_SERVICE_RETRY_ID = 1002;
     public static final int DEX_COLLECTION_SERVICE_FAILOVER_ID = 1003;
 
+    public static final int SYNC_QUEUE_RETRY_ID = 1004;
 }
