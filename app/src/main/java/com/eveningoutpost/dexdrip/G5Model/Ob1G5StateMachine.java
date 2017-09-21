@@ -13,6 +13,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.utils.PowerStateReceiver;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.polidea.rxandroidble.RxBleConnection;
+import com.polidea.rxandroidble.exceptions.BleCannotSetCharacteristicNotificationException;
 import com.polidea.rxandroidble.exceptions.BleDisconnectedException;
 
 import java.io.UnsupportedEncodingException;
@@ -172,6 +173,10 @@ public class Ob1G5StateMachine {
                             parent.connectionStateChange("Closed OK");
                         } else {
                             UserError.Log.e(TAG, "authentication notification  throwable: (" + parent.getState() + ") " + throwable + " " + JoH.dateTimeText(JoH.tsl()));
+                            parent.incrementErrors();
+                            if (throwable instanceof BleCannotSetCharacteristicNotificationException) {
+                                parent.tryGattRefresh();
+                            }
                         }
                         if ((throwable instanceof BleDisconnectedException) || (throwable instanceof TimeoutException)) {
                             if ((parent.getState() == Ob1G5CollectionService.STATE.BOND) || (parent.getState() == Ob1G5CollectionService.STATE.CHECK_AUTH)) {
@@ -451,19 +456,24 @@ public class Ob1G5StateMachine {
         try {
             return new BatteryInfoRxMessage(PersistentStore.getBytes(G5_BATTERY_MARKER + tx_id));
         } catch (Exception e) {
-            UserError.Log.wtf(TAG, "Exception in getFirmwareDetails: " + e);
+            if (JoH.quietratelimit("bi-exception", 15)) UserError.Log.wtf(TAG, "Exception in getBatteryDetails: " + e);
             return null;
         }
     }
 
     public static VersionRequestRxMessage getFirmwareDetails(String tx_id) {
+        if (tx_id == null) {
+            if (JoH.quietratelimit("txid-null",15)) UserError.Log.wtf(TAG, "TX ID is null in getFirmwareDetails");
+            return null;
+        }
         try {
             byte[] stored = getStoredFirmwareBytes(tx_id);
             if ((stored != null) && (stored.length > 9)) {
                 return new VersionRequestRxMessage(stored);
             }
         } catch (Exception e) {
-            UserError.Log.wtf(TAG, "Exception in getFirmwareDetails: " + e);
+            if (JoH.quietratelimit("fi-exception", 15))
+                UserError.Log.wtf(TAG, "Exception in getFirmwareDetails: " + e);
             return null;
         }
         return null;

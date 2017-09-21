@@ -12,6 +12,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.PowerManager;
@@ -64,7 +65,6 @@ import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.G5_BATTERY_FR
 /**
  * OB1 G5 collector
  * Created by jamorham on 16/09/2017.
- *
  */
 
 // TODO Unify detect AW screen mode - set flag - trigger PersistentStore.setBoolean(G5_BATTERY_WEARABLE_SEND, true);
@@ -101,6 +101,8 @@ public class Ob1G5CollectionService extends Service {
 
     public static boolean keep_running = true;
 
+    public static boolean android_wear = false;
+
     private Subscription scanSubscription;
     private Subscription connectionSubscription;
     private Subscription stateSubscription;
@@ -114,6 +116,8 @@ public class Ob1G5CollectionService extends Service {
     private boolean background_launch_waiting = false;
     private static long last_scan_started = -1;
     private static int error_count = 0;
+    private static int connectNowFailures = 0;
+    private static int connectFailures = 0;
     private int error_backoff_ms = 1000;
     private static final int max_error_backoff_ms = 10000;
     private static final long TOLERABLE_JITTER = 10000;
@@ -284,7 +288,7 @@ public class Ob1G5CollectionService extends Service {
                 transmitterMAC = null; // reset if set
                 last_scan_started = JoH.tsl();
                 scanWakeLock = JoH.getWakeLock("xdrip-jam-g5-scan", (int) Constants.MINUTE_IN_MS * 6);
-                RxBleClient.setLogLevel(RxBleLog.DEBUG);
+
                 scanSubscription = rxBleClient.scanBleDevices(
                         new ScanSettings.Builder()
                                 .setScanMode(ScanSettings.SCAN_MODE_BALANCED)
@@ -326,12 +330,15 @@ public class Ob1G5CollectionService extends Service {
                 if (d)
                     UserError.Log.d(TAG, "Local bonding state: " + (isDeviceLocallyBonded() ? "BONDED" : "NOT Bonded"));
                 stopConnect();
+
                 bleDevice = rxBleClient.getBleDevice(transmitterMAC);
 
                 // Listen for connection state changes
                 stateSubscription = bleDevice.observeConnectionStateChanges()
                         // .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(this::onConnectionStateChange);
+                        .subscribe(this::onConnectionStateChange, throwable -> {
+                            UserError.Log.wtf(TAG, "Got Error from state subscription: " + throwable);
+                        });
 
                 // Attempt to establish a connection
                 connectionSubscription = bleDevice.establishConnection(auto)
@@ -376,9 +383,7 @@ public class Ob1G5CollectionService extends Service {
         if (state == STATE.BOND) {
             try {
                 msg("Bonding");
-                UserError.Log.d(TAG, "Attempting to create bond, device is : " + (isDeviceLocallyBonded() ? "BONDED" : "NOT Bonded"));
-                unBond();
-                bleDevice.getBluetoothDevice().createBond();
+                do_create_bond();
                 //state = STATE.CONNECT_NOW;
                 //background_automata(15000);
             } catch (Exception e) {
@@ -386,6 +391,19 @@ public class Ob1G5CollectionService extends Service {
             }
         } else {
             UserError.Log.wtf(TAG, "Attempt to bond when not in BOND state");
+        }
+    }
+
+    private synchronized void do_create_bond() {
+        UserError.Log.d(TAG, "Attempting to create bond, device is : " + (isDeviceLocallyBonded() ? "BONDED" : "NOT Bonded"));
+        try {
+            unBond();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                UserError.Log.d(TAG, "Attempting to initiate bond");
+                bleDevice.getBluetoothDevice().createBond();
+            }
+        } catch (Exception e) {
+            UserError.Log.wtf(TAG, "Got exception in do_create_bond() " + e);
         }
     }
 
@@ -446,7 +464,7 @@ public class Ob1G5CollectionService extends Service {
                 if (!mBluetoothAdapter.isEnabled()) {
                     if (JoH.ratelimit("g5-enabling-bluetooth", 30)) {
                         JoH.setBluetoothEnabled(this, true);
-                        UserError.Log.e(TAG,"Enabling bluetooth");
+                        UserError.Log.e(TAG, "Enabling bluetooth");
                     }
                 }
             }
@@ -490,7 +508,12 @@ public class Ob1G5CollectionService extends Service {
     }
 
     private void handleWakeup() {
-        changeState(STATE.CONNECT_NOW);
+        if ((connectNowFailures > 1) && (connectFailures < 0)) {
+            UserError.Log.e(TAG, "Avoiding power connect due to failure metric: " + connectNowFailures);
+            changeState(STATE.CONNECT);
+        } else {
+            changeState(STATE.CONNECT_NOW);
+        }
     }
 
     private synchronized void prepareToWakeup() {
@@ -542,7 +565,7 @@ public class Ob1G5CollectionService extends Service {
     public void onCreate() {
         super.onCreate();
 
-        if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
             UserError.Log.wtf(TAG, "Not high enough Android version to run: " + Build.VERSION.SDK_INT);
         } else {
 
@@ -551,7 +574,15 @@ public class Ob1G5CollectionService extends Service {
             registerReceiver(mPairingRequestRecevier, pairingRequestFilter);
 
             checkAlwaysScanModels();
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
+                android_wear = (getResources().getConfiguration().uiMode & Configuration.UI_MODE_TYPE_MASK) == Configuration.UI_MODE_TYPE_WATCH;
+                if (android_wear) {
+                    UserError.Log.d(TAG,"We are running on Android Wear");
+                }
+            }
         }
+        if (d) RxBleClient.setLogLevel(RxBleLog.DEBUG);
     }
 
     @Override
@@ -672,7 +703,7 @@ public class Ob1G5CollectionService extends Service {
         } else {
             String this_mac = bleScanResult.getBleDevice().getMacAddress();
             if (this_mac == null) this_mac = "NULL";
-            if (JoH.ratelimit("bt-obi1-null-match" + this_mac, 15)) {
+            if (JoH.quietratelimit("bt-obi1-null-match" + this_mac, 15)) {
                 UserError.Log.d(TAG, "Bluetooth scanned device doesn't match (" + search_name + ") found: " + this_name + " " + bleScanResult.getBleDevice().getMacAddress());
             }
         }
@@ -706,14 +737,28 @@ public class Ob1G5CollectionService extends Service {
         // TODO under what circumstances should we change state or do something here?
         UserError.Log.d(TAG, "Connection Disconnected/Failed: " + throwable);
 
+        if (state == STATE.DISCOVER) {
+            // possible encryption failure
+            if (JoH.pratelimit("ob1-bond-cycle", 7200)) {
+                UserError.Log.e(TAG, "Attempting to refresh bond state");
+                msg("Resetting Bond");
+                do_create_bond();
+            }
+        }
 
         if (state == STATE.CONNECT_NOW) {
+            connectNowFailures++;
+            UserError.Log.d(TAG,"Connect Now failures incremented to: "+connectNowFailures);
             changeState(STATE.CONNECT);
+        }
+
+        if (state == STATE.CONNECT) {
+            connectFailures++;
         }
 
     }
 
-    private void tryGattRefresh() {
+    public void tryGattRefresh() {
         if (JoH.ratelimit("ob1-gatt-refresh", 60)) {
             try {
                 if (connection != null)
@@ -739,6 +784,14 @@ public class Ob1G5CollectionService extends Service {
         // TODO check connection already exists - close etc?
         if (connection_linger != null) JoH.releaseWakeLock(connection_linger);
         connection = this_connection;
+
+        if (state == STATE.CONNECT_NOW) {
+            connectNowFailures = -3; // mark good
+        }
+        if (state == STATE.CONNECT) {
+            connectFailures = -1; // mark good
+        }
+
         if (JoH.ratelimit("g5-to-discover", 1)) {
             changeState(STATE.DISCOVER);
         }
@@ -763,7 +816,7 @@ public class Ob1G5CollectionService extends Service {
         static_connection_state = connection_state;
         UserError.Log.d(TAG, "Bluetooth connection: " + static_connection_state);
         if (connection_state.equals("Disconnecting")) {
-          //tryGattRefresh();
+            //tryGattRefresh();
         }
     }
 
@@ -864,8 +917,14 @@ public class Ob1G5CollectionService extends Service {
 
     private static class GattRefreshOperation implements RxBleCustomOperation<Void> {
         private long delay_ms = 500;
-        GattRefreshOperation() {}
-        GattRefreshOperation(long delay_ms) { this.delay_ms = delay_ms; }
+
+        GattRefreshOperation() {
+        }
+
+        GattRefreshOperation(long delay_ms) {
+            this.delay_ms = delay_ms;
+        }
+
         @NonNull
         @Override
         public Observable<Void> asObservable(BluetoothGatt bluetoothGatt,

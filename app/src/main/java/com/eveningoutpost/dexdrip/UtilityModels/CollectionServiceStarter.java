@@ -206,6 +206,8 @@ public class CollectionServiceStarter {
                 this.mContext.startService(new Intent(context, WatchUpdaterService.class));
                 if (!enable_wearG5 || (enable_wearG5 && !force_wearG5)) { //don't start if Wear G5 Collector Service is active
                     startBtG5Service();
+                } else {
+                    Log.d(TAG, "Not starting because of force wear");
                 }
             }
             else {

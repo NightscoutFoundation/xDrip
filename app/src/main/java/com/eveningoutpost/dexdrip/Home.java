@@ -2105,6 +2105,9 @@ public class Home extends ActivityWithMenu {
         } else if (!alreadyDisplayedBgInfoCommon && DexCollectionType.getDexCollectionType() == DexCollectionType.LibreAlarm) {
             updateCurrentBgInfoCommon(notificationText);
         }
+        if (collector.equals(DexCollectionType.Disabled)) {
+            notificationText.append("\n DATA SOURCE DISABLED");
+        }
         if (prefs.getLong("alerts_disabled_until", 0) > new Date().getTime()) {
             notificationText.append("\n ALL ALERTS CURRENTLY DISABLED");
         } else if (prefs.getLong("low_alerts_disabled_until", 0) > new Date().getTime()

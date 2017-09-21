@@ -12,6 +12,7 @@
         <item>xDrip+ Sync Follower</item>
         <item>LibreAlarm</item>
         <item>640G / EverSense</item>
+        <item>Disable Collection</item>
     </string-array>
 
     <string-array name="DexCollectionMethodValues">
@@ -26,7 +27,7 @@
         <item>Follower</item>
         <item>LibreAlarm</item>
         <item>NSEmulator</item>
-
+        <item>Disabled</item>
     </string-array>
 
     <string-array name="SendToPebbleChoice">
