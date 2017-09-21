@@ -116,7 +116,7 @@
             app:wear_iconOff="@drawable/settings_off"
             app:wear_iconOn="@drawable/settings_on" />
         <CheckBoxPreference
-            android:defaultValue="true"
+            android:defaultValue="false"
             android:key="show_toasts"
             android:title="@string/pref_show_toasts"
             android:summary="@string/pref_summary_show_toasts"
