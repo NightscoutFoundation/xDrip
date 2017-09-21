@@ -2159,8 +2159,9 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     private boolean isCollectorRunning() {
         Class<?> serviceClass = DexCollectionType.getCollectorServiceClass();
         if (serviceClass != null) {
-            Log.d(TAG, "DexCollectionType.getCollectorServiceClass(): " + serviceClass.getName());
-            return isServiceRunning(serviceClass);
+            final boolean result = isServiceRunning(serviceClass);
+            Log.d(TAG, "DexCollectionType.getCollectorServiceClass(): " + serviceClass.getName() + " Running: " + true);
+            return result;
         }
         return false;
     }
@@ -2174,10 +2175,11 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                 //    stopBtService();
                 //}
                 if (!isCollectorRunning()) {
-                    CollectionServiceStarter.startBtService(getApplicationContext());
+                    if (JoH.ratelimit("start-collector", 2)) {
+                        CollectionServiceStarter.startBtService(getApplicationContext());
+                    }
                     Log.d(TAG, "startBtService AFTER startService mLocationPermissionApproved " + mLocationPermissionApproved);
-                }
-                else {
+                } else {
                     Log.d(TAG, "startBtService collector already running!");
                 }
             }
