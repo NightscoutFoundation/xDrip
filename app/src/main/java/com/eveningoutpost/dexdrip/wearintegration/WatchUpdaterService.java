@@ -299,8 +299,8 @@ public class WatchUpdaterService extends WearableListenerService implements
         boolean force_wearG5 = mPrefs.getBoolean("force_wearG5", false);
 
         if (wear_integration) {
+            initWearData();
             if (enable_wearG5) {
-                initWearData();
                 if (force_wearG5) {
                     Log.d(TAG, "processConnect force_wearG5=true - stopBtService");
                     stopBtService();
@@ -652,7 +652,8 @@ public class WatchUpdaterService extends WearableListenerService implements
     }
 
     @Override
-    public void onPeerConnected(com.google.android.gms.wearable.Node peer) {//KS
+    public void onPeerConnected(com.google.android.gms.wearable.Node peer) {//KS onPeerConnected and onPeerDisconnected deprecated at the same time as BIND_LISTENER
+
         super.onPeerConnected(peer);
         String id = peer.getId();
         String name = peer.getDisplayName();
@@ -673,7 +674,7 @@ public class WatchUpdaterService extends WearableListenerService implements
     }
 
     @Override
-    public void onPeerDisconnected(com.google.android.gms.wearable.Node peer) {//KS
+    public void onPeerDisconnected(com.google.android.gms.wearable.Node peer) {//KS onPeerConnected and onPeerDisconnected deprecated at the same time as BIND_LISTENER
         super.onPeerDisconnected(peer);
         String id = peer.getId();
         String name = peer.getDisplayName();
@@ -851,7 +852,7 @@ public class WatchUpdaterService extends WearableListenerService implements
                                 && (is_using_bt)) { //KS only send BGs if using Phone's G5 Collector Server
                             sendWearBgData(1);
                         }*/
-                        Log.d(TAG, "onStartCommand Action=" + " Path=" + WEARABLE_BG_DATA_PATH);
+                        Log.d(TAG, "onStartCommand Action=" + " Path=" + WEARABLE_DATA_PATH);
                         sendData();//ensure BgReading.Last is displayed on watch
                     }
                 } else {
@@ -972,21 +973,18 @@ public class WatchUpdaterService extends WearableListenerService implements
                             if (wearNode.equals(node_wearG5)) {
                                 isConnectedToWearable = true;
                                 sendPrefSettings();
+                                break;
                             }
                             else if (node_wearG5.equals("")) {
                                 isConnectedToWearable = true;
                                 prefs.putString("node_wearG5", wearNode);
                                 prefs.commit();
+                                break;
                             }
-                            else
-                                sendPrefSettings();
-                            if (enable_wearG5) {//watch_integration
-                                Log.d(TAG, "CheckWearableConnected onPeerConnected call initWearData for node=" + peer.getDisplayName());
-                                initWearData();
-                            }
-                            else if (mPrefs.getBoolean("show_wear_treatments", false))
-                                initWearTreatments();
+
                         }
+                        sendPrefSettings();
+                        initWearData();
                         if (enable_wearG5) {
                             //Only stop service if Phone will rely on Wear Collection Service
                             if (force_wearG5 && isConnectedToWearable) {
@@ -1463,35 +1461,47 @@ public class WatchUpdaterService extends WearableListenerService implements
         new SendToDataLayerThread(WEARABLE_PREF_DATA_PATH, googleApiClient).executeOnExecutor(xdrip.executor, dataMap);
     }
 
-    private void sendSensorData() {//KS
-        if (is_using_bt) {
-            forceGoogleApiConnect();
-            Sensor sensor = Sensor.currentSensor();
-            if (sensor != null) {
-                if (wear_integration) {
-                    DataMap dataMap = new DataMap();
-                    Log.d(TAG, "Sensor sendSensorData uuid=" + sensor.uuid + " started_at=" + sensor.started_at + " active=" + Sensor.isActive() + " battery=" + sensor.latest_battery_level + " location=" + sensor.sensor_location + " stopped_at=" + sensor.stopped_at);
-                    String json = sensor.toS();
-                    Log.d(TAG, "dataMap sendSensorData GSON: " + json);
+    private boolean sendSensorData() {//KS
+        try {
 
-                    dataMap.putLong("time", new Date().getTime()); // MOST IMPORTANT LINE FOR TIMESTAMP
-
-                    dataMap.putString("dex_txid", mPrefs.getString("dex_txid", "ABCDEF"));//KS
-                    dataMap.putLong("started_at", sensor.started_at);
-                    dataMap.putString("uuid", sensor.uuid);
-                    dataMap.putInt("latest_battery_level", sensor.latest_battery_level);
-                    dataMap.putString("sensor_location", sensor.sensor_location);
-
-                    new SendToDataLayerThread(WEARABLE_SENSOR_DATA_PATH, googleApiClient).executeOnExecutor(xdrip.executor, dataMap);
-                }
+            if (googleApiClient != null && !googleApiClient.isConnected() && !googleApiClient.isConnecting()) {
+                googleApiClient.connect();
             }
-        } else {
-            Log.d(TAG, "Not sending sensor data as we are not using bt");
+            if (googleApiClient != null) {
+                Sensor sensor = Sensor.currentSensor();
+                if (sensor != null) {
+                    if (wear_integration) {
+                        DataMap dataMap = new DataMap();
+                        Log.d(TAG, "Sensor sendSensorData uuid=" + sensor.uuid + " started_at=" + sensor.started_at + " active=" + Sensor.isActive() + " battery=" + sensor.latest_battery_level + " location=" + sensor.sensor_location + " stopped_at=" + sensor.stopped_at);
+                        String json = sensor.toS();
+                        Log.d(TAG, "dataMap sendSensorData GSON: " + json);
+
+                        dataMap.putLong("time", new Date().getTime()); // MOST IMPORTANT LINE FOR TIMESTAMP
+
+                        dataMap.putString("dex_txid", mPrefs.getString("dex_txid", "ABCDEF"));//KS
+                        dataMap.putLong("started_at", sensor.started_at);
+                        dataMap.putString("uuid", sensor.uuid);
+                        dataMap.putInt("latest_battery_level", sensor.latest_battery_level);
+                        dataMap.putString("sensor_location", sensor.sensor_location);
+
+                        new SendToDataLayerThread(WEARABLE_SENSOR_DATA_PATH, googleApiClient).executeOnExecutor(xdrip.executor, dataMap);
+                        return true;
+                    }
+                } else
+                    Log.e(TAG, "sendSensorData current sensor is null!");
+            } else {
+                Log.e(TAG, "sendSensorData No connection to wearable available for send Sensor!");
+                return false;
+            }
+        } catch (NullPointerException e) {
+            Log.e(TAG, "Nullpointer exception in sendWearCalibrationData: " + e);
+            return false;
         }
+        return true;
     }
 
     private void sendActiveBtDeviceData() {//KS
-        if (is_using_bt) {
+        if (is_using_bt) {//only required for Collector running on watch
             forceGoogleApiConnect();
             ActiveBluetoothDevice btDevice = ActiveBluetoothDevice.first();
             if (btDevice != null) {
@@ -1834,7 +1844,8 @@ public class WatchUpdaterService extends WearableListenerService implements
 
     private void initWearData() {
         if (JoH.ratelimit("watch_init_wear_data",120)) {
-            if (is_using_bt) {
+            wear_integration = mPrefs.getBoolean("wear_sync", false);
+            if (wear_integration) {//is_using_bt
                 Log.d(TAG, "***initWearData***");
                 sendSensorData();
                 sendActiveBtDeviceData();
@@ -1847,7 +1858,7 @@ public class WatchUpdaterService extends WearableListenerService implements
                 }
                 sendData();//ensure BgReading.Last is displayed on watch
             } else {
-                Log.d(TAG, "Not doing initWearData as we are not using G5 as data source");
+                Log.d(TAG, "Skip initWearData as wear integration is disabled");
             }
         }
         else
