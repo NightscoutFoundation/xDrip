@@ -1543,7 +1543,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             node_wearG5 = mPrefs.getString("node_wearG5", "");
             Log.d(TAG, "syncPrefData exit enable_wearG5: " + enable_wearG5 + " force_wearG5:" + force_wearG5 + " node_wearG5:" + node_wearG5);
 
-            if (enable_wearG5 && is_using_bt && !Sensor.isActive()) {
+            if (!Sensor.isActive()) {
                 Log.d(TAG, "syncPrefData No Active Sensor!! Request WEARABLE_INITDB_PATH before starting BT Collection Service: " + DexCollectionType.getDexCollectionType());
                 sendData(WEARABLE_INITDB_PATH, null);
             }
@@ -1767,6 +1767,10 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                         }
                     }
                 }
+            }
+            else {
+                Log.d(TAG, "syncCalibrationData No Active Sensor!! Request WEARABLE_INITDB_PATH");
+                sendData(WEARABLE_INITDB_PATH, null);
             }
             if (changed) {
                 showTreatments(context, "cals");
@@ -2132,15 +2136,19 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                         }
                     }
                 }
-                if (changed) {//otherwise, wait for doBackground ACTION_RESEND
-                    Log.d(TAG, "syncBGData BG data has changed, refresh watchface, phone battery=" + battery );
-                    resendData(getApplicationContext(), battery);
-                    CustomComplicationProviderService.refresh();
-                }
-                else
-                    Log.d(TAG, "syncBGData BG data has NOT changed, do not refresh watchface, phone battery=" + battery );
+            }
+            else {
+                Log.d(TAG, "syncBGData No Active Sensor!! Request WEARABLE_INITDB_PATH");
+                sendData(WEARABLE_INITDB_PATH, null);
             }
         }
+        if (changed) {//otherwise, wait for doBackground ACTION_RESEND
+            Log.d(TAG, "syncBGData BG data has changed, refresh watchface, phone battery=" + battery );
+            resendData(getApplicationContext(), battery);
+            CustomComplicationProviderService.refresh();
+        }
+        else
+            Log.d(TAG, "syncBGData BG data has NOT changed, do not refresh watchface, phone battery=" + battery );
     }
 
     // Custom method to determine whether a service is running
