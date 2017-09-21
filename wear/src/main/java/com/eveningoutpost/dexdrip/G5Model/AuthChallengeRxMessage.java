@@ -11,7 +11,7 @@ import java.util.Arrays;
  * Created by joeginley on 3/16/16.
  */
 public class AuthChallengeRxMessage extends TransmitterMessage {
-    int opcode = 0x3;
+    public static final int opcode = 0x3;
     public byte[] tokenHash;
     public byte[] challenge;
     private final static String TAG = G5CollectionService.TAG; // meh
