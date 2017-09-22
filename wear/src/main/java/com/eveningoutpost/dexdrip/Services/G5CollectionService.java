@@ -1948,7 +1948,7 @@ public class G5CollectionService extends G5BaseService {
         return lastState.equals("Not running") || lastState.equals("Stopped") ? false : true;
     }
 
-    public static void setWatchStatus(DataMap dataMap) {
+   /* public static void setWatchStatus(DataMap dataMap) {
         lastStateWatch = dataMap.getString("lastState", "");
         static_last_timestamp_watch = dataMap.getLong("timestamp", 0);
     }
@@ -1958,7 +1958,7 @@ public class G5CollectionService extends G5BaseService {
         dataMap.putString("lastState", lastState);
         dataMap.putLong("timestamp", static_last_timestamp);
         return dataMap;
-    }
+    }*/
 
     // data for MegaStatus
     public static List<StatusItem> megaStatus() {
