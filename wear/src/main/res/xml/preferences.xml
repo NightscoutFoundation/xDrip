@@ -109,7 +109,7 @@
             app:wear_iconOff="@drawable/settings_off"
             app:wear_iconOn="@drawable/settings_on" />
         <CheckBoxPreference
-            android:defaultValue="false"
+            android:defaultValue="true"
             android:key="use24HourFormat"
             android:title="@string/pref_use_24HourFormat"
             android:summary="@string/pref_summary_use_24HourFormat"
