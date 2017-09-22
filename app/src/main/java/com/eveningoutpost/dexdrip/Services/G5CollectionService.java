@@ -96,7 +96,7 @@ import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.getStatusName
 import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.getUUIDName;
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-public class G5CollectionService extends Service {
+public class G5CollectionService extends G5BaseService {
 
     public final static String TAG = G5CollectionService.class.getSimpleName();
 
@@ -162,10 +162,10 @@ public class G5CollectionService extends Service {
 
     private static final int LOW_BATTERY_WARNING_LEVEL = 300; // voltage a < this value raises warnings
 
-    private static String lastState = "Not running";
-    private static String lastStateWatch = "Not running";
-    private static long static_last_timestamp = 0;
-    private static long static_last_timestamp_watch = 0;
+   // private static String lastState = "Not running";
+  //  private static String lastStateWatch = "Not running";
+   // private static long static_last_timestamp = 0;
+   // private static long static_last_timestamp_watch = 0;
     private static long last_transmitter_timestamp = 0;
 
     public static boolean getBatteryStatusNow = false;
@@ -1868,7 +1868,7 @@ public class G5CollectionService extends Service {
         return lastState.equals("Not running") || lastState.equals("Stopped") ? false : true;
     }
 
-    public static void setWatchStatus(DataMap dataMap) {
+   /* public static void setWatchStatus(DataMap dataMap) {
         lastStateWatch = dataMap.getString("lastState", "");
         static_last_timestamp_watch = dataMap.getLong("timestamp", 0);
     }
@@ -1878,7 +1878,7 @@ public class G5CollectionService extends Service {
         dataMap.putString("lastState", lastState);
         dataMap.putLong("timestamp", static_last_timestamp);
         return dataMap;
-    }
+    }*/
 
     // data for MegaStatus
     public static List<StatusItem> megaStatus() {
@@ -1916,11 +1916,13 @@ public class G5CollectionService extends Service {
             if ((vr != null) && (vr.firmware_version_string.length() > 0)) {
 
                 l.add(new StatusItem("Firmware Version", vr.firmware_version_string));
-                l.add(new StatusItem("Bluetooth Version", vr.bluetooth_firmware_version_string));
-                l.add(new StatusItem("Other Version", vr.other_firmware_version));
-                l.add(new StatusItem("Hardware Version", vr.hardwarev));
-                if (vr.asic != 61440)
-                    l.add(new StatusItem("ASIC", vr.asic, StatusItem.Highlight.NOTICE)); // TODO color code
+                if (Home.get_engineering_mode()) {
+                    l.add(new StatusItem("Bluetooth Version", vr.bluetooth_firmware_version_string));
+                    l.add(new StatusItem("Other Version", vr.other_firmware_version));
+                    l.add(new StatusItem("Hardware Version", vr.hardwarev));
+                    if (vr.asic != 61440)
+                        l.add(new StatusItem("ASIC", vr.asic, StatusItem.Highlight.NOTICE)); // TODO color code
+                }
             }
         } catch (NullPointerException e) {
             l.add(new StatusItem("Version", "Information corrupted", StatusItem.Highlight.BAD));

@@ -106,6 +106,8 @@ public class JoH {
     private static Map<String, Double> benchmarks = new HashMap<String, Double>();
     private static final Map<String, Long> rateLimits = new HashMap<String, Long>();
 
+    public static boolean buggy_samsung = false; // flag set when we detect samsung devices which do not perform to android specifications
+
     // qs = quick string conversion of double for printing
     public static String qs(double x) {
         return qs(x, 2);
@@ -970,7 +972,7 @@ public class JoH {
         }
     }
 
-    public static long wakeUpIntent(Context context, long delayMs, PendingIntent pendingIntent) {
+    public static long wakeUpIntentOld(Context context, long delayMs, PendingIntent pendingIntent) {
         final long wakeTime = JoH.tsl() + delayMs;
         Log.d(TAG, "Scheduling wakeup intent: " + dateTimeText(wakeTime));
         final AlarmManager alarm = (AlarmManager) context.getSystemService(ALARM_SERVICE);
@@ -980,6 +982,32 @@ public class JoH {
             alarm.setExact(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
         } else
             alarm.set(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
+        return wakeTime;
+    }
+
+    public static long wakeUpIntent(Context context, long delayMs, PendingIntent pendingIntent) {
+        final long wakeTime = JoH.tsl() + delayMs;
+        if (pendingIntent != null) {
+            Log.d(TAG, "Scheduling wakeup intent: " + dateTimeText(wakeTime));
+            final AlarmManager alarm = (AlarmManager) context.getSystemService(ALARM_SERVICE);
+            try {
+                alarm.cancel(pendingIntent);
+            } catch (Exception e) {
+                Log.e(TAG, "Exception cancelling alarm in wakeUpIntent: " + e);
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (buggy_samsung) {
+                    alarm.setAlarmClock(new AlarmManager.AlarmClockInfo(wakeTime, null), pendingIntent);
+                } else {
+                    alarm.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
+                }
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                alarm.setExact(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
+            } else
+                alarm.set(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
+        } else {
+            Log.e(TAG, "wakeUpIntent - pending intent was null!");
+        }
         return wakeTime;
     }
 

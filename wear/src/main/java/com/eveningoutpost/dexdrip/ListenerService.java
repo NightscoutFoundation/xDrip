@@ -15,7 +15,9 @@ import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.Models.PebbleMovement;
 import com.eveningoutpost.dexdrip.Services.CustomComplicationProviderService;
 import com.eveningoutpost.dexdrip.Services.DexCollectionService;
+import com.eveningoutpost.dexdrip.Services.G5BaseService;
 import com.eveningoutpost.dexdrip.Services.G5CollectionService;//KS
+import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.*;
 import com.eveningoutpost.dexdrip.stats.StatsResult;
 import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
@@ -1234,7 +1236,12 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         DataMap dataMap = new DataMap();
         switch (DexCollectionType.getDexCollectionType()) {
             case DexcomG5:
-                dataMap = G5CollectionService.getWatchStatus();//msg, last_timestamp
+
+                if (DexCollectionType.getCollectorServiceClass() == G5CollectionService.class) {
+                    dataMap = G5CollectionService.getWatchStatus();//msg, last_timestamp
+                } else {
+                    dataMap = Ob1G5CollectionService.getWatchStatus();//msg, last_timestamp
+                }
                 break;
             case DexcomShare://TODO getLastState() in non-G5 Services
                 BluetoothManager mBluetoothManager = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
@@ -2174,7 +2181,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         return false;
     }
 
-    private void startBtService() {//KS
+    private synchronized void startBtService() {//KS
         Log.d(TAG, "startBtService");
         if (is_using_bt) {
             if (checkLocationPermissions()) {

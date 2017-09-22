@@ -4,6 +4,7 @@ import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.Services.DexShareCollectionService;
 import com.eveningoutpost.dexdrip.Services.G5CollectionService;
+import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -126,7 +127,11 @@ public enum DexCollectionType {
     public static Class<?> getCollectorServiceClass() {
         switch (getDexCollectionType()) {
             case DexcomG5:
-                return G5CollectionService.class;
+                if (Home.getPreferencesBooleanDefaultFalse(Ob1G5CollectionService.OB1G5_PREFS)) {
+                    return Ob1G5CollectionService.class;
+                } else {
+                    return G5CollectionService.class;
+                }
             case DexcomShare:
                 return DexShareCollectionService.class;
             default:

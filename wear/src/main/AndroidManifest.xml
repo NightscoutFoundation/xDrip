@@ -134,6 +134,9 @@
             android:exported="true" >
         </service>
         <service
+            android:name=".Services.Ob1G5CollectionService"
+            android:enabled="true" />
+        <service
             android:name=".Services.DexCollectionService"
             android:enabled="true"
             android:exported="true" />

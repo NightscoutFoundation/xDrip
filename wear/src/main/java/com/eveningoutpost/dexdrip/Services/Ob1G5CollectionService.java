@@ -1052,13 +1052,11 @@ public class Ob1G5CollectionService extends G5BaseService {
             if ((vr != null) && (vr.firmware_version_string.length() > 0)) {
 
                 l.add(new StatusItem("Firmware Version", vr.firmware_version_string));
-                if (Home.get_engineering_mode()) {
-                    l.add(new StatusItem("Bluetooth Version", vr.bluetooth_firmware_version_string));
-                    l.add(new StatusItem("Other Version", vr.other_firmware_version));
-                    l.add(new StatusItem("Hardware Version", vr.hardwarev));
-                    if (vr.asic != 61440)
-                        l.add(new StatusItem("ASIC", vr.asic, StatusItem.Highlight.NOTICE)); // TODO color code
-                }
+                l.add(new StatusItem("Bluetooth Version", vr.bluetooth_firmware_version_string));
+                l.add(new StatusItem("Other Version", vr.other_firmware_version));
+                l.add(new StatusItem("Hardware Version", vr.hardwarev));
+                if (vr.asic != 61440)
+                    l.add(new StatusItem("ASIC", vr.asic, StatusItem.Highlight.NOTICE)); // TODO color code
             }
         } catch (NullPointerException e) {
             l.add(new StatusItem("Version", "Information corrupted", StatusItem.Highlight.BAD));

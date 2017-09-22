@@ -241,7 +241,9 @@ public class MegaStatus extends ActivityWithMenu {
                         case WatchUpdaterService.ACTION_BLUETOOTH_COLLECTION_SERVICE_UPDATE:
                             switch (DexCollectionType.getDexCollectionType()) {
                                 case DexcomG5:
+                                    // as this is fairly lightweight just write the data to both G5 collectors
                                     G5CollectionService.setWatchStatus(dataMap);//msg, last_timestamp
+                                    Ob1G5CollectionService.setWatchStatus(dataMap);//msg, last_timestamp
                                     break;
                                 case DexcomShare:
                                     if (lastState != null && !lastState.isEmpty()) {

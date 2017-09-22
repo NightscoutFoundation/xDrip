@@ -95,7 +95,7 @@ import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.getStatusName
 import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.getUUIDName;
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-public class G5CollectionService extends Service {
+public class G5CollectionService extends G5BaseService {
 
     public final static String TAG = G5CollectionService.class.getSimpleName();
 
