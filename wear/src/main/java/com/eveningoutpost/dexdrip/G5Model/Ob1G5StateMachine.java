@@ -31,6 +31,8 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 
+import rx.schedulers.Schedulers;
+
 import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.Authentication;
 import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.Control;
 
@@ -51,6 +53,7 @@ public class Ob1G5StateMachine {
     private static final boolean getVersionDetails = true; // try to load firmware version details
     private static final boolean getBatteryDetails = true; // try to load battery info details
 
+    private static boolean speakSlowly = false; // slow down bluetooth comms for android wear etc
 
     private static final boolean d = false;
 
@@ -58,14 +61,20 @@ public class Ob1G5StateMachine {
     public static boolean doCheckAuth(Ob1G5CollectionService parent, RxBleConnection connection) {
 
         if (connection == null) return false;
-
         parent.msg("Authorizing");
+
+        if (parent.android_wear) {
+            speakSlowly = true;
+            UserError.Log.d(TAG, "Setting speak slowly to true"); // WARN should be reactive or on named devices
+        }
+
         final AuthRequestTxMessage authRequest = new AuthRequestTxMessage(getTokenSize());
         UserError.Log.i(TAG, "AuthRequestTX: " + JoH.bytesToHex(authRequest.byteSequence));
 
         connection.setupNotification(Authentication)
-                .timeout(10, TimeUnit.SECONDS)
-
+               // .timeout(10, TimeUnit.SECONDS)
+                .timeout(15, TimeUnit.SECONDS) // WARN
+               // .observeOn(Schedulers.newThread()) // needed?
                 .doOnNext(notificationObservable -> {
                     connection.writeCharacteristic(Authentication, authRequest.byteSequence)
                             .subscribe(
@@ -73,6 +82,7 @@ public class Ob1G5StateMachine {
                                         // Characteristic value confirmed.
                                         if (d)
                                             UserError.Log.d(TAG, "Wrote authrequest, got: " + JoH.bytesToHex(characteristicValue));
+                                        speakSlowly();
                                         connection.readCharacteristic(Authentication).subscribe(
                                                 readValue -> {
                                                     PacketShop pkt = classifyPacket(readValue);
@@ -91,7 +101,12 @@ public class Ob1G5StateMachine {
                                                                 connection.writeCharacteristic(Authentication, new AuthChallengeTxMessage(challengeHash).byteSequence)
                                                                         .subscribe(
                                                                                 challenge_value -> {
-                                                                                    connection.readCharacteristic(Authentication).subscribe(
+
+                                                                                    speakSlowly();
+
+                                                                                    connection.readCharacteristic(Authentication)
+                                                                                    //.observeOn(Schedulers.io())
+                                                                                            .subscribe(
                                                                                             status_value -> {
                                                                                                 // interpret authentication response
                                                                                                 final PacketShop status_packet = classifyPacket(status_value);
@@ -106,6 +121,7 @@ public class Ob1G5StateMachine {
                                                                                                             parent.changeState(Ob1G5CollectionService.STATE.GET_DATA);
                                                                                                             throw new OperationSuccess("Authenticated");
                                                                                                         } else {
+                                                                                                            //parent.unBond(); // bond must be invalid or not existing // WARN
                                                                                                             parent.changeState(Ob1G5CollectionService.STATE.PREBOND);
                                                                                                             // TODO what to do here?
                                                                                                         }
@@ -126,6 +142,8 @@ public class Ob1G5StateMachine {
                                                                                                     UserError.Log.d(TAG, "Stopping auth challenge listener due to success");
                                                                                                 } else {
                                                                                                     UserError.Log.e(TAG, "Could not read reply to auth challenge: " + throwable);
+                                                                                                    parent.incrementErrors();
+                                                                                                    speakSlowly = true;
                                                                                                 }
                                                                                             });
                                                                                 }, throwable -> {
@@ -162,6 +180,7 @@ public class Ob1G5StateMachine {
                             );
                 }).flatMap(notificationObservable -> notificationObservable)
                 //.timeout(5, TimeUnit.SECONDS)
+                //.observeOn(Schedulers.newThread())
                 .subscribe(bytes -> {
                     // incoming notifications
                     UserError.Log.e(TAG, "Received Authentication notification bytes: " + JoH.bytesToHex(bytes));
@@ -171,6 +190,11 @@ public class Ob1G5StateMachine {
                         if ((parent.getState() == Ob1G5CollectionService.STATE.CLOSED) && (throwable instanceof BleDisconnectedException)) {
                             UserError.Log.d(TAG, "normal authentication notification throwable: (" + parent.getState() + ") " + throwable + " " + JoH.dateTimeText(JoH.tsl()));
                             parent.connectionStateChange("Closed OK");
+                        } else if ((parent.getState() == Ob1G5CollectionService.STATE.BOND) && (throwable instanceof TimeoutException)) {
+                            // TODO Trigger on Error count / Android wear metric
+                            // UserError.Log.e(TAG,"Attempting to reset/create bond due to: "+throwable);
+                            // parent.reset_bond(true);
+                            // parent.unBond(); // WARN
                         } else {
                             UserError.Log.e(TAG, "authentication notification  throwable: (" + parent.getState() + ") " + throwable + " " + JoH.dateTimeText(JoH.tsl()));
                             parent.incrementErrors();
@@ -180,6 +204,11 @@ public class Ob1G5StateMachine {
                         }
                         if ((throwable instanceof BleDisconnectedException) || (throwable instanceof TimeoutException)) {
                             if ((parent.getState() == Ob1G5CollectionService.STATE.BOND) || (parent.getState() == Ob1G5CollectionService.STATE.CHECK_AUTH)) {
+
+                               if (parent.getState() == Ob1G5CollectionService.STATE.BOND) {
+                                   UserError.Log.d(TAG,"SLEEPING BEFORE RECONNECT");
+                                   threadSleep(15000);
+                               }
                                 UserError.Log.d(TAG, "REQUESTING RECONNECT");
                                 parent.changeState(Ob1G5CollectionService.STATE.SCAN);
                             }
@@ -187,6 +216,21 @@ public class Ob1G5StateMachine {
                     }
                 });
         return true;
+    }
+
+    private static void speakSlowly() {
+        if (speakSlowly) {
+            UserError.Log.d(TAG,"Speaking slowly");
+            threadSleep(100);
+        }
+    }
+
+    private static void threadSleep(int ms) {
+        try {
+            Thread.sleep(ms);
+        } catch (Exception e) {
+            UserError.Log.e(TAG,"Failed to sleep for "+ms+" due to: "+e);
+        }
     }
 
     // Handle bonding
@@ -198,13 +242,30 @@ public class Ob1G5StateMachine {
                 .subscribe(
                         characteristicValue -> {
                             UserError.Log.d(TAG, "Wrote keep-alive request successfully");
-
+                            speakSlowly(); // is this really needed here?
                             connection.writeCharacteristic(Authentication, new BondRequestTxMessage().byteSequence)
                                     .subscribe(
                                             bondRequestValue -> {
-                                                UserError.Log.d(TAG, "Wrote bond request successfully");
-                                                parent.changeState(Ob1G5CollectionService.STATE.BOND);
-                                                throw new OperationSuccess("Bond requested");
+                                                speakSlowly();
+//                                                connection.readCharacteristic(Authentication)
+//                                                        .observeOn(Schedulers.io())
+//                                                        .timeout(10,TimeUnit.SECONDS)
+//                                                        .subscribe(
+//                                                                status_value -> {
+//                                                                    UserError.Log.d(TAG,"Got status read after keepalive "+JoH.bytesToHex(status_value));
+
+                                                                    UserError.Log.d(TAG, "Wrote bond request successfully");
+                                                                    parent.waitingBondConfirmation = 1; // waiting
+                                                                    parent.instantCreateBond();
+                                                                    parent.changeState(Ob1G5CollectionService.STATE.BOND);
+                                                                    throw new OperationSuccess("Bond requested");
+
+//
+//                                                                }, throwable -> {
+//                                                                    UserError.Log.e(TAG,"Throwable when reading characteristic after keepalive: "+throwable);
+//                                                                });
+
+                                              // Wrote bond request successfully was here moved above - is this right?
                                             }, throwable -> {
                                                 // failed to write bond request retry?
                                                 if (!(throwable instanceof OperationSuccess)) {
@@ -231,7 +292,7 @@ public class Ob1G5StateMachine {
                 .doOnNext(notificationObservable -> {
 
                     if (d) UserError.Log.d(TAG, "Notifications enabled");
-
+                    speakSlowly();
                     connection.writeCharacteristic(Control, new SensorTxMessage().byteSequence)
                             .subscribe(
                                     characteristicValue -> {

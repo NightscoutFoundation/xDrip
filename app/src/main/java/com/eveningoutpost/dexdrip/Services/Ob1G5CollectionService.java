@@ -2,8 +2,6 @@ package com.eveningoutpost.dexdrip.Services;
 
 import android.annotation.TargetApi;
 import android.app.PendingIntent;
-import android.app.Service;
-import android.app.UiModeManager;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
@@ -35,7 +33,6 @@ import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.xdrip;
-import com.google.android.gms.wearable.DataMap;
 import com.google.common.collect.Sets;
 import com.polidea.rxandroidble.RxBleClient;
 import com.polidea.rxandroidble.RxBleConnection;
@@ -71,8 +68,6 @@ import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.G5_BATTERY_FR
  * Created by jamorham on 16/09/2017.
  */
 
-// TODO Unify detect AW screen mode - set flag - trigger PersistentStore.setBoolean(G5_BATTERY_WEARABLE_SEND, true);
-
 
 public class Ob1G5CollectionService extends G5BaseService {
 
@@ -99,6 +94,7 @@ public class Ob1G5CollectionService extends G5BaseService {
     private static long last_transmitter_timestamp = 0;
     private static long lastStateUpdated = 0;
     private static long wakeup_time = 0;
+    private static long wakeup_jitter = 0;
     private static long max_wakeup_jitter = 0;
 
     public static boolean getBatteryStatusNow = false;
@@ -130,10 +126,12 @@ public class Ob1G5CollectionService extends G5BaseService {
 
     private static boolean always_scan = false;
     private static boolean always_discover = false;
+    private static boolean always_connect = false;
     private static boolean do_discovery = true;
 
-    private static final Set<String> alwaysScanModels = Sets.newHashSet("SM-N910V");
+    private static final Set<String> alwaysScanModels = Sets.newHashSet("SM-N910V","G Watch");
     private static final List<String> alwaysScanModelFamilies = Arrays.asList("SM-N910");
+    private static final Set<String> alwaysConnectModels = Sets.newHashSet("G Watch");
 
     // Internal process state tracking
     public enum STATE {
@@ -398,6 +396,14 @@ public class Ob1G5CollectionService extends G5BaseService {
         }
     }
 
+    public synchronized void reset_bond(boolean allow) {
+        if (allow || (JoH.pratelimit("ob1-bond-cycle", 7200))) {
+            UserError.Log.e(TAG, "Attempting to refresh bond state");
+            msg("Resetting Bond");
+            do_create_bond();
+        }
+    }
+
     private synchronized void do_create_bond() {
         UserError.Log.d(TAG, "Attempting to create bond, device is : " + (isDeviceLocallyBonded() ? "BONDED" : "NOT Bonded"));
         try {
@@ -491,7 +497,7 @@ public class Ob1G5CollectionService extends G5BaseService {
         }
     }
 
-    private synchronized void unBond() {
+    public synchronized void unBond() {
 
         UserError.Log.d(TAG, "unBond() start");
         if (transmitterMAC == null) return;
@@ -537,8 +543,17 @@ public class Ob1G5CollectionService extends G5BaseService {
         if (JoH.ratelimit("g5-wakeup-timer", 5)) {
             scheduleWakeUp(Constants.SECOND_IN_MS * 285, "anticipate");
         }
-        state = STATE.CLOSED; // Don't poll automata as we want to do this on waking
-        stopConnect();
+
+        if ((android_wear && wakeup_jitter > TOLERABLE_JITTER) || always_connect) {
+            // TODO should be max_wakeup_jitter perhaps or set always_connect flag
+            UserError.Log.d(TAG, "Not stopping connect due to " + (always_connect ? "always_connect flag" : "unreliable wake up"));
+            state = STATE.CONNECT;
+            background_automata(6000);
+        } else {
+            state = STATE.CLOSED; // Don't poll automata as we want to do this on waking
+            stopConnect();
+        }
+
     }
 
     private void scheduleWakeUp(long future, final String info) {
@@ -563,6 +578,7 @@ public class Ob1G5CollectionService extends G5BaseService {
 
     private void checkAlwaysScanModels() {
         final String this_model = Build.MODEL;
+        always_connect = alwaysConnectModels.contains(this_model);
         UserError.Log.d(TAG, "Checking model: " + this_model);
         if (alwaysScanModels.contains(this_model)) {
             UserError.Log.e(TAG, "Always scan model exact match for: " + this_model);
@@ -586,8 +602,11 @@ public class Ob1G5CollectionService extends G5BaseService {
             UserError.Log.wtf(TAG, "Not high enough Android version to run: " + Build.VERSION.SDK_INT);
         } else {
 
+            registerReceiver(mBondStateReceiver, new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED));
+
             final IntentFilter pairingRequestFilter = new IntentFilter(BluetoothDevice.ACTION_PAIRING_REQUEST);
             pairingRequestFilter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY - 1);
+
             registerReceiver(mPairingRequestRecevier, pairingRequestFilter);
 
             checkAlwaysScanModels();
@@ -610,7 +629,7 @@ public class Ob1G5CollectionService extends G5BaseService {
             UserError.Log.d(TAG, "WAKE UP WAKE UP WAKE UP WAKE UP @ " + JoH.dateTimeText(JoH.tsl()));
             msg("Wake up");
             if (wakeup_time > 0) {
-                final long wakeup_jitter = JoH.msSince(wakeup_time);
+                wakeup_jitter = JoH.msSince(wakeup_time);
                 if (wakeup_jitter < 0) {
                     UserError.Log.d(TAG, "Woke up Early..");
                 } else {
@@ -636,7 +655,7 @@ public class Ob1G5CollectionService extends G5BaseService {
 
 
             scheduleWakeUp(Constants.MINUTE_IN_MS * 6, "fail-over");
-            if (state == STATE.BOND) state = STATE.SCAN;
+            if ((state == STATE.BOND) || (state == STATE.PREBOND)) state = STATE.SCAN;
 
             checkAndEnableBT();
 
@@ -665,15 +684,25 @@ public class Ob1G5CollectionService extends G5BaseService {
         stateSubscription = null;
         discoverSubscription = null;
 
+        unregisterPairingReceiver();
+
         try {
-            unregisterReceiver(mPairingRequestRecevier);
+            unregisterReceiver(mBondStateReceiver);
         } catch (Exception e) {
-            UserError.Log.e(TAG, "Got exception unregistering pairing receiver: ", e);
+            UserError.Log.e(TAG, "Got exception unregistering pairing receiver: "+ e);
         }
 
         state = STATE.INIT; // Should be STATE.END ?
         msg("Service Stopped");
         super.onDestroy();
+    }
+
+    public void unregisterPairingReceiver() {
+        try {
+            unregisterReceiver(mPairingRequestRecevier);
+        } catch (Exception e) {
+            UserError.Log.e(TAG, "Got exception unregistering pairing receiver: "+ e);
+        }
     }
 
     private synchronized void stopScan() {
@@ -756,11 +785,7 @@ public class Ob1G5CollectionService extends G5BaseService {
 
         if (state == STATE.DISCOVER) {
             // possible encryption failure
-            if (JoH.pratelimit("ob1-bond-cycle", 7200)) {
-                UserError.Log.e(TAG, "Attempting to refresh bond state");
-                msg("Resetting Bond");
-                do_create_bond();
-            }
+           reset_bond(false);
         }
 
         if (state == STATE.CONNECT_NOW) {
@@ -959,12 +984,70 @@ public class Ob1G5CollectionService extends G5BaseService {
         }
     }
 
+    private int currentBondState = 0;
+    public int waitingBondConfirmation = 0; // 0 = not waiting, 1 = waiting, 2 = received
+    final BroadcastReceiver mBondStateReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+            UserError.Log.d(TAG, "BondState: onReceive ACTION: " + action);
+            if (BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)) {
+                final BluetoothDevice parcel_device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                currentBondState = parcel_device.getBondState();
+                final int bond_state_extra = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, -1);
+                final int previous_bond_state_extra = intent.getIntExtra(BluetoothDevice.EXTRA_PREVIOUS_BOND_STATE, -1);
+
+                UserError.Log.e(TAG, "onReceive UPDATE Name " + parcel_device.getName() + " Value " + parcel_device.getAddress()
+                        + " Bond state " + parcel_device.getBondState() + bondState(parcel_device.getBondState()) + " "
+                        + "bs: " + bondState(bond_state_extra) + " was " + bondState(previous_bond_state_extra));
+                try {
+                    if (parcel_device.getAddress().equals(bleDevice.getBluetoothDevice().getAddress())) {
+                        msg(bondState(bond_state_extra).replace(" ", ""));
+                        if (parcel_device.getBondState() == BluetoothDevice.BOND_BONDED) {
+
+                            if (waitingBondConfirmation == 1) {
+                                waitingBondConfirmation = 2; // received
+                                UserError.Log.e(TAG, "Bond confirmation received!");
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                                    UserError.Log.d(TAG, "Sleeping before create bond");
+                                    try {
+                                        Thread.sleep(1000);
+                                    } catch (InterruptedException e) {
+                                        //
+                                    }
+                                    instantCreateBond();
+                                }
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    UserError.Log.wtf(TAG, "Got exception trying to process bonded confirmation: ", e);
+                }
+            }
+        }
+    };
+
+    public void instantCreateBond() {
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                UserError.Log.d(TAG, "instantCreateBond() called");
+                bleDevice.getBluetoothDevice().createBond();
+            }
+        } catch (Exception e) {
+            UserError.Log.e(TAG, "Got exception in instantCreateBond() " + e);
+        }
+    }
+
+
     private final BroadcastReceiver mPairingRequestRecevier = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if ((bleDevice != null) && (bleDevice.getBluetoothDevice().getAddress() != null)) {
                 UserError.Log.e(TAG, "Processing mPairingRequestReceiver");
-                JoH.doPairingRequest(context, this, intent, bleDevice.getBluetoothDevice().getAddress());
+                if (!JoH.doPairingRequest(context, this, intent, bleDevice.getBluetoothDevice().getAddress())) {
+                    unregisterPairingReceiver();
+                    UserError.Log.e(TAG, "Pairing failed so removing pairing automation");
+                }
             } else {
                 UserError.Log.e(TAG, "Received pairing request but device was null");
             }

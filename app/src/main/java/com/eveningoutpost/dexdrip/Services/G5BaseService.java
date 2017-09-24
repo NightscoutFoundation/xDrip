@@ -1,6 +1,7 @@
 package com.eveningoutpost.dexdrip.Services;
 
 import android.app.Service;
+import android.bluetooth.BluetoothDevice;
 
 import com.google.android.gms.wearable.DataMap;
 
@@ -25,6 +26,22 @@ public abstract class G5BaseService extends Service {
         dataMap.putString("lastState", lastState);
         dataMap.putLong("timestamp", static_last_timestamp);
         return dataMap;
+    }
+
+    protected static String bondState(int bs) {
+        String bondState;
+        if (bs == BluetoothDevice.BOND_NONE) {
+            bondState = " Unpaired";
+        } else if (bs == BluetoothDevice.BOND_BONDING) {
+            bondState = " Pairing";
+        } else if (bs == BluetoothDevice.BOND_BONDED) {
+            bondState = " Paired";
+        } else if (bs == 0) {
+            bondState = " Startup";
+        } else {
+            bondState = " Unknown bond state: " + bs;
+        }
+        return bondState;
     }
 
 
