@@ -204,7 +204,10 @@ public class Blukon {
                 UserError.Log.e(TAG, "Sensor is not ready, stop!");
                 currentCommand = "";
             }
-
+/*
+            currentCommand = "810a00";
+            UserError.Log.i(TAG, "Send ACK");
+*/
         } else if (currentCommand.startsWith("010d0b00") /*getUnknownCmd1*/ && strRecCmd.startsWith("8bdb")) {
             cmdFound = 1;
             UserError.Log.i(TAG, "gotUnknownCmd1 (010d0b00): "+strRecCmd);
@@ -258,9 +261,10 @@ public class Blukon {
             cmdFound = 1;
             // calculate time delta to last valid BG reading
             m_minutesDiffToLastReading = (int)((((JoH.tsl() - m_timeLastBg)/1000)+30)/60);
+            UserError.Log.i(TAG, "m_minutesDiffToLastReading=" + m_minutesDiffToLastReading);
             // check time range for valid backfilling
             if ( (m_minutesDiffToLastReading > 9) && (m_minutesDiffToLastReading < (8*60))  ) {
-                UserError.Log.i(TAG, "last reading " + m_minutesDiffToLastReading + " mins old, start backfilling");
+                UserError.Log.i(TAG, "start backfilling");
                 m_getOlderReading = true;
             } else {
                 m_getOlderReading = false;
@@ -285,7 +289,7 @@ public class Blukon {
                 } else if ( m_minutesBack > 7 ) {
                     m_minutesBack = 5;
                 }
-                UserError.Log.i(TAG, "backfilling, get trend buffer with " + m_minutesBack + " min timestamp");
+                UserError.Log.i(TAG, "read " + m_minutesBack + " mins old trend data");
                 for ( int i = 0 ; i < m_minutesBack ; i++ ) {
                     if ( --delayedTrendIndex < 0)
                        delayedTrendIndex = 15;
@@ -313,14 +317,14 @@ public class Blukon {
                 m_getNowGlucoseDataCommand = false;
             }
             else {
-                UserError.Log.i(TAG, "backfilling, process BG reading with timestamp of " + m_minutesBack + " min");
+                UserError.Log.i(TAG, "bf: processNewTransmitterData with delayed timestamp of " + m_minutesBack + " min");
                 processNewTransmitterData(TransmitterData.create(currentGlucose, currentGlucose, 0 /*battery level force to 0 as unknown*/, JoH.tsl()-(m_minutesBack*60*1000)));
                 // @keencave - count down for next backfilling entry
                 m_minutesBack -= 5;
                 if ( m_minutesBack < 5 ) {
                     m_getOlderReading = false;
                 }
-                UserError.Log.i(TAG, "backfilling, get trend buffer with " + m_minutesBack + " min timestamp");
+                UserError.Log.i(TAG, "bf: calculate next trend buffer with " + m_minutesBack + " min timestamp");
                 int delayedTrendIndex = m_currentTrendIndex;
                 for ( int i = 0 ; i < m_minutesBack ; i++ ) {
                     if ( --delayedTrendIndex < 0)
@@ -328,7 +332,7 @@ public class Blukon {
                 }
                 int delayedBlockNumber = blockNumberForNowGlucoseDataDelayed(delayedTrendIndex);
                 currentCommand = "010d0e010" + Integer.toHexString(delayedBlockNumber);//getNowGlucoseData
-                UserError.Log.i(TAG, "backfilling, get next block: " + currentCommand);
+                UserError.Log.i(TAG, "bf: read next block: " + currentCommand);
             }
 
 
@@ -402,56 +406,42 @@ public class Blukon {
         return ret;
     }
 
-
-
-/*
-
-String decode_serial_number(unsigned char *data)
-{
-  unsigned char uuid[8];
-  String lookupTable[32] =
-  {
-    "0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
-    "A", "C", "D", "E", "F", "G", "H", "J", "K", "L",
-    "M", "N", "P", "Q", "R", "T", "U", "V", "W", "X",
-    "Y", "Z"
-  };
-  unsigned char uuidShort[8];
-  int x;
-  int i;
-
-  for (int i = 0; i < 8; i++)  uuidShort[i] = data[8-i];
-
-  uuidShort[6] = 0x00;
-  uuidShort[7] = 0x00;
-  String binary = "";
-  String binS = "";
-  for (int i = 0; i < 8; i++)
-  {
-    binS = String(uuidShort[i], BIN);
-    int l = binS.length();
-    if (l == 1) binS = "0000000" + binS;
-    else if (l == 6) binS = "00" + binS;
-    else if (l == 7) binS = "0" + binS;
-    binary += binS;
-  }
-  String v = "0";
-  char pozS[5];
-  for (int i = 0; i < 10; i++)
-  {
-    for (int k = 0; k < 5; k++) pozS[k] = binary[(5 * i) + k];
-    int value = (pozS[0] - '0') * 16 + (pozS[1] - '0') * 8 + (pozS[2] - '0') * 4 + (pozS[3] - '0') * 2 + (pozS[4] - '0') * 1;
-    v += lookupTable[value];
-  }
-
-  return v;
-}
- */
-
     private static void decodeSerialNumber(byte[] input) {
 
+        byte[] uuid = new byte[] {0, 0, 0, 0, 0, 0, 0, 0};
+        String lookupTable[] =
+        {
+            "0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
+            "A", "C", "D", "E", "F", "G", "H", "J", "K", "L",
+            "M", "N", "P", "Q", "R", "T", "U", "V", "W", "X",
+            "Y", "Z"
+        };
+        byte[] uuidShort = new byte[] {0, 0, 0, 0, 0, 0, 0, 0};
+        int i;
 
-        //PersistentStore.setString("blukon-serial-number",);
+        for ( i = 2; i < 8; i++)  uuidShort[i-2] = input[(2+8)-i];
+        uuidShort[6] = 0x00;
+        uuidShort[7] = 0x00;
+
+        String binary = "";
+        String binS = "";
+        for ( i = 0; i < 8; i++ )
+        {
+            binS = String.format("%8s", Integer.toBinaryString(uuidShort[i]&0xFF)).replace(' ', '0');
+            binary += binS;
+        }
+
+        String v = "0";
+        char[] pozS = {0, 0, 0, 0, 0};
+        for ( i = 0; i < 10; i++ )
+        {
+            for (int k = 0; k < 5; k++) pozS[k] = binary.charAt((5 * i) + k);
+            int value = (pozS[0] - '0') * 16 + (pozS[1] - '0') * 8 + (pozS[2] - '0') * 4 + (pozS[3] - '0') * 2 + (pozS[4] - '0') * 1;
+            v += lookupTable[value];
+        }
+        UserError.Log.e(TAG, "decodeSerialNumber=" + v);
+
+        PersistentStore.setString("blukon-serial-number", v);
     }
 
 
@@ -502,7 +492,7 @@ String decode_serial_number(unsigned char *data)
         // calculate offset of the 2 bytes in the block
         m_nowGlucoseOffset = nowGlucoseIndex2 % 8;
 
-        UserError.Log.i(TAG, "++++ trend: index " + m_currentTrendIndex + ", block " + nowGlucoseIndex3 +", offset " + m_nowGlucoseOffset);
+        UserError.Log.i(TAG, "++++++++currentTrendData: index " + m_currentTrendIndex + ", block " + nowGlucoseIndex3 +", offset " + m_nowGlucoseOffset);
 
         return (nowGlucoseIndex3);
     }
@@ -525,7 +515,7 @@ String decode_serial_number(unsigned char *data)
 
         // calculate the offset in the block
         m_nowGlucoseOffset = ngi2 % 8;
-        UserError.Log.i(TAG, "++++ backfilling: index " + delayedIndex + ", block " + ngi3 + ", offset " + m_nowGlucoseOffset);
+        UserError.Log.i(TAG, "++++++++backfillingTrendData: index " + delayedIndex + ", block " + ngi3 + ", offset " + m_nowGlucoseOffset);
 
         return(ngi3);
     }
@@ -554,7 +544,7 @@ String decode_serial_number(unsigned char *data)
 
         // grep 2 bytes with BG data from input bytearray, mask out 12 LSB bits and rescale for xDrip+
         rawGlucose = ((input[3 + m_nowGlucoseOffset + 1] & 0x0F) << 8) | (input[3 + m_nowGlucoseOffset] & 0xFF);
-        UserError.Log.i(TAG, "rawGlucose=" + rawGlucose + "m_nowGlucoseOffset" + m_nowGlucoseOffset);
+        UserError.Log.i(TAG, "rawGlucose=" + rawGlucose + ", m_nowGlucoseOffset=" + m_nowGlucoseOffset);
 
         // rescale
         curGluc = getGlucose(rawGlucose);
