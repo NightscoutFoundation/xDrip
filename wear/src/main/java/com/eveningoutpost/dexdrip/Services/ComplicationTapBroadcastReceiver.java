@@ -26,6 +26,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.wearable.complications.ProviderUpdateRequester;
 
+import com.eveningoutpost.dexdrip.KeypadInputActivity;
+import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
+import com.eveningoutpost.dexdrip.xdrip;
+
 /**
  * Simple {@link BroadcastReceiver} subclass for asynchronously incrementing an integer for any
  * complication id triggered via TapAction on complication. Also, provides static method to create
@@ -37,18 +42,35 @@ public class ComplicationTapBroadcastReceiver extends BroadcastReceiver {
             "com.eveningoutpost.dexdrip.wearable.watchface.provider.action.PROVIDER_COMPONENT";
     private static final String EXTRA_COMPLICATION_ID =
             "com.eveningoutpost.dexdrip.wearable.watchface.provider.action.COMPLICATION_ID";
-
+    static final String COMPLICATION_STORE = "complication-state-enum";
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Bundle extras = intent.getExtras();
-        ComponentName provider = extras.getParcelable(EXTRA_PROVIDER_COMPONENT);
+        final Bundle extras = intent.getExtras();
+        final ComponentName provider = extras.getParcelable(EXTRA_PROVIDER_COMPONENT);
         int complicationId = extras.getInt(EXTRA_COMPLICATION_ID);
+
+
+        PersistentStore.incrementLong(COMPLICATION_STORE);
+        if (PersistentStore.getLong(COMPLICATION_STORE) == CustomComplicationProviderService.COMPLICATION_STATE.RESET.getValue()) {
+            PersistentStore.setLong(COMPLICATION_STORE, 0);
+        }
 
 
         // Request an update for the complication that has just been tapped.
         ProviderUpdateRequester requester = new ProviderUpdateRequester(context, provider);
         requester.requestUpdate(complicationId);
+
+        if (!JoH.ratelimit("complication-double-tap", 1)) {
+            startIntent(KeypadInputActivity.class);
+            // if we get mre than two states we will need to handle restoring the previous state instead of just incrementing so the complication remains where it was before the double tap
+        }
+    }
+
+    private void startIntent(Class name) {
+        Intent intent = new Intent(xdrip.getAppContext(), name);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        xdrip.getAppContext().startActivity(intent);
     }
 
     /**
