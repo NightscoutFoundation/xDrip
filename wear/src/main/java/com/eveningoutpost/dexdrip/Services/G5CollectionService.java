@@ -217,6 +217,15 @@ public class G5CollectionService extends G5BaseService {
     final BroadcastReceiver mPairReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            if (!keep_running) {
+                try {
+                    UserError.Log.e(TAG, "Rogue pair receiver still active - unregistering");
+                    unregisterReceiver(mPairReceiver);
+                } catch (Exception e) {
+                    //
+                }
+                return;
+            }
             final String action = intent.getAction();
             Log.d(TAG, "onReceive ACTION: " + action);
             // When discovery finds a device
@@ -1743,6 +1752,15 @@ public class G5CollectionService extends G5BaseService {
     private final BroadcastReceiver mPairingRequestRecevier = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            if (!keep_running) {
+                try {
+                    UserError.Log.e(TAG, "Rogue pairing request receiver still active - unregistering");
+                    unregisterReceiver(mPairingRequestRecevier);
+                } catch (Exception e) {
+                    //
+                }
+                return;
+            }
             if ((device != null) && (device.getAddress() != null)) {
                 Log.e(TAG,"Processing mPairingRequestReceiver");
                 JoH.doPairingRequest(context, this, intent, device.getAddress());

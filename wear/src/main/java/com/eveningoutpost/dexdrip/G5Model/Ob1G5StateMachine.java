@@ -1,5 +1,7 @@
 package com.eveningoutpost.dexdrip.G5Model;
 
+import android.bluetooth.BluetoothGatt;
+import android.os.Build;
 import android.os.PowerManager;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
@@ -15,6 +17,7 @@ import com.eveningoutpost.dexdrip.xdrip;
 import com.polidea.rxandroidble.RxBleConnection;
 import com.polidea.rxandroidble.exceptions.BleCannotSetCharacteristicNotificationException;
 import com.polidea.rxandroidble.exceptions.BleDisconnectedException;
+import com.polidea.rxandroidble.exceptions.BleGattCharacteristicException;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
@@ -72,9 +75,9 @@ public class Ob1G5StateMachine {
         UserError.Log.i(TAG, "AuthRequestTX: " + JoH.bytesToHex(authRequest.byteSequence));
 
         connection.setupNotification(Authentication)
-               // .timeout(10, TimeUnit.SECONDS)
+                // .timeout(10, TimeUnit.SECONDS)
                 .timeout(15, TimeUnit.SECONDS) // WARN
-               // .observeOn(Schedulers.newThread()) // needed?
+                // .observeOn(Schedulers.newThread()) // needed?
                 .doOnNext(notificationObservable -> {
                     connection.writeCharacteristic(Authentication, authRequest.byteSequence)
                             .subscribe(
@@ -105,47 +108,48 @@ public class Ob1G5StateMachine {
                                                                                     speakSlowly();
 
                                                                                     connection.readCharacteristic(Authentication)
-                                                                                    //.observeOn(Schedulers.io())
+                                                                                            //.observeOn(Schedulers.io())
                                                                                             .subscribe(
-                                                                                            status_value -> {
-                                                                                                // interpret authentication response
-                                                                                                final PacketShop status_packet = classifyPacket(status_value);
-                                                                                                UserError.Log.d(TAG, status_packet.type + " " + JoH.bytesToHex(status_value));
-                                                                                                if (status_packet.type == PACKET.AuthStatusRxMessage) {
-                                                                                                    final AuthStatusRxMessage status = (AuthStatusRxMessage) status_packet.msg;
-                                                                                                    if (d)
-                                                                                                        UserError.Log.d(TAG, ("Authenticated: " + status.isAuthenticated() + " " + status.isBonded()));
-                                                                                                    if (status.isAuthenticated()) {
-                                                                                                        if (status.isBonded()) {
-                                                                                                            parent.msg("Authenticated");
-                                                                                                            parent.changeState(Ob1G5CollectionService.STATE.GET_DATA);
-                                                                                                            throw new OperationSuccess("Authenticated");
+                                                                                                    status_value -> {
+                                                                                                        // interpret authentication response
+                                                                                                        final PacketShop status_packet = classifyPacket(status_value);
+                                                                                                        UserError.Log.d(TAG, status_packet.type + " " + JoH.bytesToHex(status_value));
+                                                                                                        if (status_packet.type == PACKET.AuthStatusRxMessage) {
+                                                                                                            final AuthStatusRxMessage status = (AuthStatusRxMessage) status_packet.msg;
+                                                                                                            if (d)
+                                                                                                                UserError.Log.d(TAG, ("Authenticated: " + status.isAuthenticated() + " " + status.isBonded()));
+                                                                                                            if (status.isAuthenticated()) {
+                                                                                                                if (status.isBonded()) {
+                                                                                                                    parent.msg("Authenticated");
+                                                                                                                    parent.authResult(true);
+                                                                                                                    parent.changeState(Ob1G5CollectionService.STATE.GET_DATA);
+                                                                                                                    throw new OperationSuccess("Authenticated");
+                                                                                                                } else {
+                                                                                                                    //parent.unBond(); // bond must be invalid or not existing // WARN
+                                                                                                                    parent.changeState(Ob1G5CollectionService.STATE.PREBOND);
+                                                                                                                    // TODO what to do here?
+                                                                                                                }
+                                                                                                            } else {
+                                                                                                                parent.msg("Not Authorized!");
+                                                                                                                UserError.Log.wtf(TAG, "Authentication failed!!!!");
+                                                                                                                parent.incrementErrors();
+                                                                                                                // TODO? try again?
+                                                                                                            }
                                                                                                         } else {
-                                                                                                            //parent.unBond(); // bond must be invalid or not existing // WARN
-                                                                                                            parent.changeState(Ob1G5CollectionService.STATE.PREBOND);
+                                                                                                            UserError.Log.e(TAG, "Got unexpected packet when looking for auth status: " + status_packet.type + " " + JoH.bytesToHex(status_value));
+                                                                                                            parent.incrementErrors();
                                                                                                             // TODO what to do here?
                                                                                                         }
-                                                                                                    } else {
-                                                                                                        parent.msg("Not Authorized!");
-                                                                                                        UserError.Log.wtf(TAG, "Authentication failed!!!!");
-                                                                                                        parent.incrementErrors();
-                                                                                                        // TODO? try again?
-                                                                                                    }
-                                                                                                } else {
-                                                                                                    UserError.Log.e(TAG, "Got unexpected packet when looking for auth status: " + status_packet.type + " " + JoH.bytesToHex(status_value));
-                                                                                                    parent.incrementErrors();
-                                                                                                    // TODO what to do here?
-                                                                                                }
 
-                                                                                            }, throwable -> {
-                                                                                                if (throwable instanceof OperationSuccess) {
-                                                                                                    UserError.Log.d(TAG, "Stopping auth challenge listener due to success");
-                                                                                                } else {
-                                                                                                    UserError.Log.e(TAG, "Could not read reply to auth challenge: " + throwable);
-                                                                                                    parent.incrementErrors();
-                                                                                                    speakSlowly = true;
-                                                                                                }
-                                                                                            });
+                                                                                                    }, throwable -> {
+                                                                                                        if (throwable instanceof OperationSuccess) {
+                                                                                                            UserError.Log.d(TAG, "Stopping auth challenge listener due to success");
+                                                                                                        } else {
+                                                                                                            UserError.Log.e(TAG, "Could not read reply to auth challenge: " + throwable);
+                                                                                                            parent.incrementErrors();
+                                                                                                            speakSlowly = true;
+                                                                                                        }
+                                                                                                    });
                                                                                 }, throwable -> {
                                                                                     UserError.Log.e(TAG, "Could not write auth challenge reply: " + throwable);
                                                                                     parent.incrementErrors();
@@ -205,10 +209,10 @@ public class Ob1G5StateMachine {
                         if ((throwable instanceof BleDisconnectedException) || (throwable instanceof TimeoutException)) {
                             if ((parent.getState() == Ob1G5CollectionService.STATE.BOND) || (parent.getState() == Ob1G5CollectionService.STATE.CHECK_AUTH)) {
 
-                               if (parent.getState() == Ob1G5CollectionService.STATE.BOND) {
-                                   UserError.Log.d(TAG,"SLEEPING BEFORE RECONNECT");
-                                   threadSleep(15000);
-                               }
+                                if (parent.getState() == Ob1G5CollectionService.STATE.BOND) {
+                                    UserError.Log.d(TAG, "SLEEPING BEFORE RECONNECT");
+                                    threadSleep(15000);
+                                }
                                 UserError.Log.d(TAG, "REQUESTING RECONNECT");
                                 parent.changeState(Ob1G5CollectionService.STATE.SCAN);
                             }
@@ -220,8 +224,8 @@ public class Ob1G5StateMachine {
 
     private static void speakSlowly() {
         if (speakSlowly) {
-            UserError.Log.d(TAG,"Speaking slowly");
-            threadSleep(100);
+            UserError.Log.d(TAG, "Speaking slowly");
+            threadSleep(300);
         }
     }
 
@@ -229,43 +233,61 @@ public class Ob1G5StateMachine {
         try {
             Thread.sleep(ms);
         } catch (Exception e) {
-            UserError.Log.e(TAG,"Failed to sleep for "+ms+" due to: "+e);
+            UserError.Log.e(TAG, "Failed to sleep for " + ms + " due to: " + e);
         }
     }
 
     // Handle bonding
-    public static boolean doKeepAliveAndBondRequest(Ob1G5CollectionService parent, RxBleConnection connection) {
+    public synchronized static boolean doKeepAliveAndBondRequest(Ob1G5CollectionService parent, RxBleConnection connection) {
 
         if (connection == null) return false;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            UserError.Log.d(TAG, "Requesting high priority");
+            connection.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH, 500, TimeUnit.MILLISECONDS);
+        }
         UserError.Log.e(TAG, "Sending keepalive..");
         connection.writeCharacteristic(Authentication, new KeepAliveTxMessage(25).byteSequence)
                 .subscribe(
                         characteristicValue -> {
                             UserError.Log.d(TAG, "Wrote keep-alive request successfully");
                             speakSlowly(); // is this really needed here?
+                            parent.unBond();
+                            parent.instantCreateBond();
+                            speakSlowly();
                             connection.writeCharacteristic(Authentication, new BondRequestTxMessage().byteSequence)
                                     .subscribe(
                                             bondRequestValue -> {
+                                                UserError.Log.d(TAG, "Wrote bond request value: " + JoH.bytesToHex(bondRequestValue));
                                                 speakSlowly();
-//                                                connection.readCharacteristic(Authentication)
-//                                                        .observeOn(Schedulers.io())
-//                                                        .timeout(10,TimeUnit.SECONDS)
-//                                                        .subscribe(
-//                                                                status_value -> {
-//                                                                    UserError.Log.d(TAG,"Got status read after keepalive "+JoH.bytesToHex(status_value));
+                                                connection.readCharacteristic(Authentication)
+                                                        .observeOn(Schedulers.io())
+                                                        .timeout(10, TimeUnit.SECONDS)
+                                                        .subscribe(
+                                                                status_value -> {
+                                                                    UserError.Log.d(TAG, "Got status read after keepalive " + JoH.bytesToHex(status_value));
 
                                                                     UserError.Log.d(TAG, "Wrote bond request successfully");
                                                                     parent.waitingBondConfirmation = 1; // waiting
+
                                                                     parent.instantCreateBond();
+                                                                    UserError.Log.d(TAG, "Sleeping for bond");
+                                                                    for (int i = 0; i < 9; i++) {
+                                                                        if (parent.waitingBondConfirmation == 2) {
+                                                                            UserError.Log.d(TAG, "Bond confirmation received - continuing!");
+                                                                            break;
+                                                                        }
+                                                                        threadSleep(1000);
+                                                                    }
                                                                     parent.changeState(Ob1G5CollectionService.STATE.BOND);
                                                                     throw new OperationSuccess("Bond requested");
 
 //
-//                                                                }, throwable -> {
-//                                                                    UserError.Log.e(TAG,"Throwable when reading characteristic after keepalive: "+throwable);
-//                                                                });
+                                                                }, throwable -> {
+                                                                    UserError.Log.e(TAG, "Throwable when reading characteristic after keepalive: " + throwable);
+                                                                });
 
-                                              // Wrote bond request successfully was here moved above - is this right?
+                                                // Wrote bond request successfully was here moved above - is this right?
                                             }, throwable -> {
                                                 // failed to write bond request retry?
                                                 if (!(throwable instanceof OperationSuccess)) {
@@ -277,6 +299,7 @@ public class Ob1G5StateMachine {
                             // Could not write keep alive ? retry?
                             UserError.Log.e(TAG, "Failed writing keep-alive request! " + throwable);
                         });
+        UserError.Log.d(TAG, "Exiting doKeepAliveBondRequest");
         final PowerManager.WakeLock linger = JoH.getWakeLock("jam-g5-bond-linger", 30000);
         return true;
     }
@@ -300,6 +323,14 @@ public class Ob1G5StateMachine {
                                             UserError.Log.d(TAG, "Wrote SensorTxMessage request");
                                     }, throwable -> {
                                         UserError.Log.e(TAG, "Failed to write SensorTxMessage: " + throwable);
+                                        if (throwable instanceof BleGattCharacteristicException) {
+                                            final int status = ((BleGattCharacteristicException) throwable).getStatus();
+                                            UserError.Log.e(TAG, "Got status message: " + BluetoothServices.getStatusName(status));
+                                            if (status == 8) {
+                                                UserError.Log.e(TAG, "Request rejected due to Insufficient Authorization failure!");
+                                                parent.authResult(false);
+                                            }
+                                        }
                                     });
 
                 })
@@ -380,8 +411,11 @@ public class Ob1G5StateMachine {
     private static void disconnectNow(Ob1G5CollectionService parent, RxBleConnection connection) {
         // tell device to disconnect now
         UserError.Log.d(TAG, "Disconnect NOW: " + JoH.dateTimeText(JoH.tsl()));
-        connection.writeCharacteristic(Authentication, new DisconnectTxMessage().byteSequence)
+        speakSlowly();
+        connection.writeCharacteristic(Control, new DisconnectTxMessage().byteSequence)
                 .timeout(2, TimeUnit.SECONDS)
+                //  .observeOn(Schedulers.newThread())
+                //  .subscribeOn(Schedulers.newThread())
                 .subscribe(disconnectValue -> {
                     if (d) UserError.Log.d(TAG, "Wrote disconnect request");
                     parent.changeState(Ob1G5CollectionService.STATE.CLOSE);
@@ -396,9 +430,10 @@ public class Ob1G5StateMachine {
                             UserError.Log.e(TAG, "Failed to write DisconnectTxMessage: " + throwable);
 
                         }
+                        parent.changeState(Ob1G5CollectionService.STATE.CLOSE);
                     }
                 });
-
+        UserError.Log.d(TAG, "Disconnect NOW exit: " + JoH.dateTimeText(JoH.tsl()));
     }
 
     private static void processSensorRxMessage(SensorRxMessage sensorRx) {
@@ -517,14 +552,16 @@ public class Ob1G5StateMachine {
         try {
             return new BatteryInfoRxMessage(PersistentStore.getBytes(G5_BATTERY_MARKER + tx_id));
         } catch (Exception e) {
-            if (JoH.quietratelimit("bi-exception", 15)) UserError.Log.wtf(TAG, "Exception in getBatteryDetails: " + e);
+            if (JoH.quietratelimit("bi-exception", 15))
+                UserError.Log.wtf(TAG, "Exception in getBatteryDetails: " + e);
             return null;
         }
     }
 
     public static VersionRequestRxMessage getFirmwareDetails(String tx_id) {
         if (tx_id == null) {
-            if (JoH.quietratelimit("txid-null",15)) UserError.Log.wtf(TAG, "TX ID is null in getFirmwareDetails");
+            if (JoH.quietratelimit("txid-null", 15))
+                UserError.Log.wtf(TAG, "TX ID is null in getFirmwareDetails");
             return null;
         }
         try {
