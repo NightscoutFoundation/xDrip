@@ -16,6 +16,7 @@ import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.DexCollectionService;
+import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
 import com.eveningoutpost.dexdrip.xdrip;
 
@@ -351,6 +352,8 @@ public class Blukon {
         if (!gotLowBat) {
             Home.setPreferencesInt("bridge_battery", 100);
         }
+
+        CheckBridgeBattery.checkBridgeBattery();
 
         if (currentCommand.length() > 0 && cmdFound == 1) {
             UserError.Log.i(TAG, "Sending reply: " + currentCommand);
