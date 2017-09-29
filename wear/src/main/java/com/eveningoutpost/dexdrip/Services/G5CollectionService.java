@@ -95,7 +95,7 @@ import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.getStatusName
 import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.getUUIDName;
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-public class G5CollectionService extends Service {
+public class G5CollectionService extends G5BaseService {
 
     public final static String TAG = G5CollectionService.class.getSimpleName();
 
@@ -217,6 +217,15 @@ public class G5CollectionService extends Service {
     final BroadcastReceiver mPairReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            if (!keep_running) {
+                try {
+                    UserError.Log.e(TAG, "Rogue pair receiver still active - unregistering");
+                    unregisterReceiver(mPairReceiver);
+                } catch (Exception e) {
+                    //
+                }
+                return;
+            }
             final String action = intent.getAction();
             Log.d(TAG, "onReceive ACTION: " + action);
             // When discovery finds a device
@@ -253,21 +262,7 @@ public class G5CollectionService extends Service {
         }
     };
 
-    private String bondState(int bs) {
-        String bondState;
-        if (bs == BluetoothDevice.BOND_NONE) {
-            bondState = " Unpaired";
-        } else if (bs == BluetoothDevice.BOND_BONDING) {
-            bondState = " Pairing";
-        } else if (bs == BluetoothDevice.BOND_BONDED) {
-            bondState = " Paired";
-        } else if (bs == 0) {
-            bondState = " Startup";
-        } else {
-            bondState = " Unknown bond state: " + bs;
-        }
-        return bondState;
-    }
+
 
     public SharedPreferences.OnSharedPreferenceChangeListener prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
         public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
@@ -1757,6 +1752,15 @@ public class G5CollectionService extends Service {
     private final BroadcastReceiver mPairingRequestRecevier = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            if (!keep_running) {
+                try {
+                    UserError.Log.e(TAG, "Rogue pairing request receiver still active - unregistering");
+                    unregisterReceiver(mPairingRequestRecevier);
+                } catch (Exception e) {
+                    //
+                }
+                return;
+            }
             if ((device != null) && (device.getAddress() != null)) {
                 Log.e(TAG,"Processing mPairingRequestReceiver");
                 JoH.doPairingRequest(context, this, intent, device.getAddress());
@@ -1948,7 +1952,7 @@ public class G5CollectionService extends Service {
         return lastState.equals("Not running") || lastState.equals("Stopped") ? false : true;
     }
 
-    public static void setWatchStatus(DataMap dataMap) {
+   /* public static void setWatchStatus(DataMap dataMap) {
         lastStateWatch = dataMap.getString("lastState", "");
         static_last_timestamp_watch = dataMap.getLong("timestamp", 0);
     }
@@ -1958,7 +1962,7 @@ public class G5CollectionService extends Service {
         dataMap.putString("lastState", lastState);
         dataMap.putLong("timestamp", static_last_timestamp);
         return dataMap;
-    }
+    }*/
 
     // data for MegaStatus
     public static List<StatusItem> megaStatus() {

@@ -18,6 +18,7 @@
         android:text=""
         android:hint="@string/please_enter_your_question_or_comments_here"
         android:layout_below="@+id/contactText"
+        android:layout_above="@+id/ratingtext"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true" />
 

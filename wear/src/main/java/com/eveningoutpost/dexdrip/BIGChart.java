@@ -44,6 +44,7 @@ import com.ustwo.clockwise.common.WatchMode;
 import com.ustwo.clockwise.common.WatchShape;
 
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -190,14 +191,16 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
             }
             chartTapTime = eventTime;
         }
-        if (tapType == TAP_TYPE_TOUCH && linearLayout(mStepsLinearLayout, x, y)) {
-            if (sharedPrefs.getBoolean("showSteps", false) && mStepsCount > 0) {
-                JoH.static_toast_long(mStepsToast);
+        if (sharedPrefs.getBoolean("show_toasts", true)) {
+            if (tapType == TAP_TYPE_TOUCH && linearLayout(mStepsLinearLayout, x, y)) {
+                if (sharedPrefs.getBoolean("showSteps", false) && mStepsCount > 0) {
+                    JoH.static_toast_long(mStepsToast);
+                }
             }
-        }
-        if (tapType == TAP_TYPE_TOUCH && linearLayout(mDirectionDelta, x, y)) {
-            if (sharedPrefs.getBoolean("extra_status_line", false) && mExtraStatusLine != null && !mExtraStatusLine.isEmpty()) {
-                JoH.static_toast_long(mExtraStatusLine);
+            if (tapType == TAP_TYPE_TOUCH && linearLayout(mDirectionDelta, x, y)) {
+                if (sharedPrefs.getBoolean("extra_status_line", false) && mExtraStatusLine != null && !mExtraStatusLine.isEmpty()) {
+                    JoH.static_toast_long(mExtraStatusLine);
+                }
             }
         }
         if (tapType == TAP_TYPE_TOUCH && linearLayout(mMenuLinearLayout, x, y)) {
@@ -309,7 +312,8 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
         if (newTime.hasHourChanged(oldTime) || newTime.hasMinuteChanged(oldTime)) {
             if (layoutSet) {
                 wakeLock.acquire(50);
-                final java.text.DateFormat timeFormat = DateFormat.getTimeFormat(BIGChart.this);
+                //final java.text.DateFormat timeFormat = DateFormat.getTimeFormat(BIGChart.this);
+                final SimpleDateFormat timeFormat = new SimpleDateFormat(sharedPrefs.getBoolean("use24HourFormat", false) ? "HH:mm" : "h:mm a");
                 mTime.setText(timeFormat.format(System.currentTimeMillis()));
                 showAgeAndStatus();
 
@@ -401,7 +405,8 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
                     mSgv.setPaintFlags(mSgv.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
                 }
 
-                final java.text.DateFormat timeFormat = DateFormat.getTimeFormat(BIGChart.this);
+                //final java.text.DateFormat timeFormat = DateFormat.getTimeFormat(BIGChart.this);
+                final SimpleDateFormat timeFormat = new SimpleDateFormat(sharedPrefs.getBoolean("use24HourFormat", false) ? "HH:mm" : "h:mm a");
                 mTime.setText(timeFormat.format(System.currentTimeMillis()));
 
                 String delta = dataMap.getString("delta");
@@ -455,7 +460,8 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
                 mRelativeLayout.measure(specW, specH);
                 mRelativeLayout.layout(0, 0, mRelativeLayout.getMeasuredWidth(),
                         mRelativeLayout.getMeasuredHeight());
-                //invalidate();//to conserve battery, use onTimeChanged() default of one minute
+                if (sharedPrefs.getBoolean("refresh_on_change", false))
+                    invalidate();//to conserve battery, use onTimeChanged() default of one minute instead
                 setColor();
             }
         }
@@ -532,6 +538,8 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key){
         setColor();
         if(layoutSet){
+            final SimpleDateFormat timeFormat = new SimpleDateFormat(sharedPrefs.getBoolean("use24HourFormat", false) ? "HH:mm" : "h:mm a");
+            mTime.setText(timeFormat.format(System.currentTimeMillis()));
             clearTreatmentLists();
             showAgeAndStatus();
             mRelativeLayout.measure(specW, specH);
@@ -833,9 +841,9 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
             int timeframe = Integer.parseInt(sharedPrefs.getString("chart_timeframe", "5"));
             boolean doMgdl = (sharedPrefs.getString("units", "mgdl").equals("mgdl"));
             if (lowResMode) {
-                bgGraphBuilder = new BgGraphBuilder(getApplicationContext(), bgDataList, treatsDataList, calDataList, btDataList, pointSize, midColor, timeframe, doMgdl);
+                bgGraphBuilder = new BgGraphBuilder(getApplicationContext(), bgDataList, treatsDataList, calDataList, btDataList, pointSize, midColor, timeframe, doMgdl, sharedPrefs.getBoolean("use24HourFormat", false));
             } else {
-                bgGraphBuilder = new BgGraphBuilder(getApplicationContext(), bgDataList, treatsDataList, calDataList, btDataList, pointSize, highColor, lowColor, midColor, timeframe, doMgdl);
+                bgGraphBuilder = new BgGraphBuilder(getApplicationContext(), bgDataList, treatsDataList, calDataList, btDataList, pointSize, highColor, lowColor, midColor, timeframe, doMgdl, sharedPrefs.getBoolean("use24HourFormat", false));
             }
 
             chart.setLineChartData(bgGraphBuilder.lineData());

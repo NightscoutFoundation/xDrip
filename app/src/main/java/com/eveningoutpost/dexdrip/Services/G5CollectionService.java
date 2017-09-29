@@ -96,7 +96,7 @@ import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.getStatusName
 import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.getUUIDName;
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-public class G5CollectionService extends Service {
+public class G5CollectionService extends G5BaseService {
 
     public final static String TAG = G5CollectionService.class.getSimpleName();
 
@@ -133,6 +133,8 @@ public class G5CollectionService extends Service {
     private BluetoothDevice device;
     private Boolean isBondedOrBonding = false;
     private Boolean isBonded = false;
+    private static String static_device_address;
+    private static boolean static_is_bonded = false;
     private int currentBondState = 0;
     private int waitingBondConfirmation = 0; // 0 = not waiting, 1 = waiting, 2 = received
     public static boolean keep_running = true;
@@ -160,10 +162,10 @@ public class G5CollectionService extends Service {
 
     private static final int LOW_BATTERY_WARNING_LEVEL = 300; // voltage a < this value raises warnings
 
-    private static String lastState = "Not running";
-    private static String lastStateWatch = "Not running";
-    private static long static_last_timestamp = 0;
-    private static long static_last_timestamp_watch = 0;
+   // private static String lastState = "Not running";
+  //  private static String lastStateWatch = "Not running";
+   // private static long static_last_timestamp = 0;
+   // private static long static_last_timestamp_watch = 0;
     private static long last_transmitter_timestamp = 0;
 
     public static boolean getBatteryStatusNow = false;
@@ -251,21 +253,6 @@ public class G5CollectionService extends Service {
         }
     };
 
-    private String bondState(int bs) {
-        String bondState;
-        if (bs == BluetoothDevice.BOND_NONE) {
-            bondState = " Unpaired";
-        } else if (bs == BluetoothDevice.BOND_BONDING) {
-            bondState = " Pairing";
-        } else if (bs == BluetoothDevice.BOND_BONDED) {
-            bondState = " Paired";
-        } else if (bs == 0) {
-            bondState = " Startup";
-        } else {
-            bondState = " Unknown bond state: " + bs;
-        }
-        return bondState;
-    }
 
     public SharedPreferences.OnSharedPreferenceChangeListener prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
         public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
@@ -364,6 +351,7 @@ public class G5CollectionService extends Service {
         final boolean previousBondedState = isBonded;
         isBondedOrBonding = false;
         isBonded = false;
+        static_is_bonded = false;
         if (mBluetoothAdapter == null) {
             Log.wtf(TAG, "No bluetooth adapter");
             return;
@@ -379,6 +367,7 @@ public class G5CollectionService extends Service {
                     if (transmitterIdLastTwo.equals(deviceNameLastTwo)) {
                         isBondedOrBonding = true;
                         isBonded=true;
+                        static_is_bonded = true;
                         if (!previousBondedState) Log.e(TAG,"Device is now detected as bonded!");
                     // TODO should we break here for performance?
                     } else {
@@ -850,6 +839,7 @@ public class G5CollectionService extends Service {
                         isIntialScan = false;
                         //device = btDevice;
                         device = mBluetoothAdapter.getRemoteDevice(btDevice.getAddress());
+                        static_device_address = btDevice.getAddress();
                         stopScan();
                         connectToDevice(btDevice);
                     } else {
@@ -1863,7 +1853,7 @@ public class G5CollectionService extends Service {
         return lastState.equals("Not running") || lastState.equals("Stopped") ? false : true;
     }
 
-    public static void setWatchStatus(DataMap dataMap) {
+   /* public static void setWatchStatus(DataMap dataMap) {
         lastStateWatch = dataMap.getString("lastState", "");
         static_last_timestamp_watch = dataMap.getLong("timestamp", 0);
     }
@@ -1873,7 +1863,7 @@ public class G5CollectionService extends Service {
         dataMap.putString("lastState", lastState);
         dataMap.putLong("timestamp", static_last_timestamp);
         return dataMap;
-    }
+    }*/
 
     // data for MegaStatus
     public static List<StatusItem> megaStatus() {
@@ -1882,6 +1872,14 @@ public class G5CollectionService extends Service {
         l.add(new StatusItem("Phone Service State", lastState));
         if (static_last_timestamp > 0) {
             l.add(new StatusItem("Phone got Glucose", JoH.niceTimeSince(static_last_timestamp) + " ago"));
+        } else {
+            if (static_device_address != null) {
+                if (Home.get_engineering_mode())
+                    l.add(new StatusItem("Bluetooth Device", static_device_address));
+                l.add(new StatusItem("Bonded", static_is_bonded ? "Yes" : "No", static_is_bonded ? StatusItem.Highlight.GOOD : StatusItem.Highlight.NOTICE));
+            } else {
+                l.add(new StatusItem("Bluetooth Device", "Not yet found"));
+            }
         }
 
         if (Home.getPreferencesBooleanDefaultFalse("wear_sync") &&
@@ -1895,18 +1893,27 @@ public class G5CollectionService extends Service {
         final String tx_id = Home.getPreferencesStringDefaultBlank("dex_txid");
 
         l.add(new StatusItem("Transmitter ID", tx_id));
-        // get firmware details
-        VersionRequestRxMessage vr = getFirmwareDetails(tx_id);
-        if ((vr != null) && (vr.firmware_version_string.length() > 0)) {
 
-            l.add(new StatusItem("Firmware Version", vr.firmware_version_string));
-            l.add(new StatusItem("Bluetooth Version", vr.bluetooth_firmware_version_string));
-            l.add(new StatusItem("Other Version", vr.other_firmware_version));
-            l.add(new StatusItem("Hardware Version", vr.hardwarev));
-           if (vr.asic != 61440) l.add(new StatusItem("ASIC", vr.asic, StatusItem.Highlight.NOTICE)); // TODO color code
+
+        // show firmware details
+        final VersionRequestRxMessage vr = getFirmwareDetails(tx_id);
+        try {
+            if ((vr != null) && (vr.firmware_version_string.length() > 0)) {
+
+                l.add(new StatusItem("Firmware Version", vr.firmware_version_string));
+                if (Home.get_engineering_mode()) {
+                    l.add(new StatusItem("Bluetooth Version", vr.bluetooth_firmware_version_string));
+                    l.add(new StatusItem("Other Version", vr.other_firmware_version));
+                    l.add(new StatusItem("Hardware Version", vr.hardwarev));
+                    if (vr.asic != 61440)
+                        l.add(new StatusItem("ASIC", vr.asic, StatusItem.Highlight.NOTICE)); // TODO color code
+                }
+            }
+        } catch (NullPointerException e) {
+            l.add(new StatusItem("Version", "Information corrupted", StatusItem.Highlight.BAD));
         }
 
-        BatteryInfoRxMessage bt = getBatteryDetails(tx_id);
+        final BatteryInfoRxMessage bt = getBatteryDetails(tx_id);
         long last_battery_query = PersistentStore.getLong(G5_BATTERY_FROM_MARKER + tx_id);
         if (getBatteryStatusNow) {
             l.add(new StatusItem("Battery Status Request Queued", "Will attempt to read battery status on next sensor reading", StatusItem.Highlight.NOTICE, "long-press",

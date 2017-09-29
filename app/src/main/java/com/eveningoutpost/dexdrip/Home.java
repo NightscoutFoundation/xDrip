@@ -92,6 +92,8 @@ import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
 import com.eveningoutpost.dexdrip.calibrations.CalibrationAbstract;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.languageeditor.LanguageEditor;
+import com.eveningoutpost.dexdrip.profileeditor.DatePickerFragment;
+import com.eveningoutpost.dexdrip.profileeditor.ProfileAdapter;
 import com.eveningoutpost.dexdrip.stats.StatsResult;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.eveningoutpost.dexdrip.utils.BgToSpeech;
@@ -117,6 +119,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
@@ -128,7 +131,6 @@ import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.view.LineChartView;
 import lecho.lib.hellocharts.view.PreviewLineChartView;
 
-import static com.eveningoutpost.dexdrip.Models.BloodTest.pushBloodTestSyncToWatch;
 import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.X;
 import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.getCol;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.DAY_IN_MS;
@@ -1009,6 +1011,8 @@ public class Home extends ActivityWithMenu {
                 (btnCarbohydrates.getVisibility() == View.INVISIBLE) &&
                 (btnInsulinDose.getVisibility() == View.INVISIBLE)) {
             hideAllTreatmentButtons(); // we clear values here also
+            //send toast to wear - closes the confirmation activity on the watch
+            WatchUpdaterService.sendWearToast("Treatment processed", Toast.LENGTH_LONG);
             return true;
         } else {
             return false;
@@ -2101,6 +2105,9 @@ public class Home extends ActivityWithMenu {
         } else if (!alreadyDisplayedBgInfoCommon && DexCollectionType.getDexCollectionType() == DexCollectionType.LibreAlarm) {
             updateCurrentBgInfoCommon(notificationText);
         }
+        if (collector.equals(DexCollectionType.Disabled)) {
+            notificationText.append("\n DATA SOURCE DISABLED");
+        }
         if (prefs.getLong("alerts_disabled_until", 0) > new Date().getTime()) {
             notificationText.append("\n ALL ALERTS CURRENTLY DISABLED");
         } else if (prefs.getLong("low_alerts_disabled_until", 0) > new Date().getTime()
@@ -2367,12 +2374,17 @@ public class Home extends ActivityWithMenu {
             } else {
                 if (isDexbridge) {
                     dexbridgeBattery.setText(getString(R.string.xbridge_battery) + ": " + bridgeBattery + "%");
-                } else if (isLimitter){
-                    dexbridgeBattery.setText(getString(R.string.limitter_battery) + ": " + bridgeBattery + "%");
+                } else if (isLimitter) {
+                    final String limitterName = DexCollectionService.getBestLimitterHardwareName();
+                    if (limitterName.equals(DexCollectionService.LIMITTER_NAME)) {
+                        dexbridgeBattery.setText(getString(R.string.limitter_battery) + ": " + bridgeBattery + "%");
+                    } else {
+                        dexbridgeBattery.setText(limitterName + " " + getString(R.string.battery) + ": " + bridgeBattery + "%");
+                    }
                 } else {
-                    dexbridgeBattery.setText("Bridge battery"+ ": " + bridgeBattery + ((bridgeBattery < 200) ? "%" : "mV"));
+                    dexbridgeBattery.setText("Bridge battery" + ": " + bridgeBattery + ((bridgeBattery < 200) ? "%" : "mV"));
                 }
-                }
+            }
             if (bridgeBattery < 50) dexbridgeBattery.setTextColor(Color.YELLOW);
             if (bridgeBattery < 25) dexbridgeBattery.setTextColor(Color.RED);
             else dexbridgeBattery.setTextColor(Color.GREEN);
@@ -3182,33 +3194,41 @@ public class Home extends ActivityWithMenu {
 
 
         if (item.getItemId() == R.id.action_export_csv_sidiary) {
-            new AsyncTask<Void, Void, String>() {
+
+            long from = Home.getPreferencesLong("sidiary_last_exportdate", 0);
+            final GregorianCalendar date = new GregorianCalendar();
+            final DatePickerFragment datePickerFragment = new DatePickerFragment();
+            if(from > 0)datePickerFragment.setInitiallySelectedDate(from);
+            datePickerFragment.setAllowFuture(false);
+            datePickerFragment.setTitle(getString(R.string.sidiary_date_title));
+            datePickerFragment.setDateCallback(new ProfileAdapter.DatePickerCallbacks() {
                 @Override
-                protected String doInBackground(Void... params) {
-                    return DatabaseUtil.saveCSV(getBaseContext());
+                public void onDateSet(int year, int month, int day) {
+                    date.set(year, month, day);
+                    date.set(Calendar.HOUR_OF_DAY, 0);
+                    date.set(Calendar.MINUTE, 0);
+                    date.set(Calendar.SECOND, 0);
+                    date.set(Calendar.MILLISECOND, 0);
+                    new AsyncTask<Void, Void, String>() {
+                        @Override
+                        protected String doInBackground(Void... params) {
+                            return DatabaseUtil.saveCSV(getBaseContext(), date.getTimeInMillis());
+                        }
+
+                        @Override
+                        protected void onPostExecute(String filename) {
+                            super.onPostExecute(filename);
+                            if (filename != null) {
+                                Home.setPreferencesLong("sidiary_last_exportdate", System.currentTimeMillis());
+                                snackBar(R.string.share, getString(R.string.exported_to) + filename, makeSnackBarUriLauncher(Uri.fromFile(new File(filename)), "Share database..."), Home.this);
+                            } else {
+                                Toast.makeText(Home.this, "Could not export CSV :(", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    }.execute();
                 }
-
-                @Override
-                protected void onPostExecute(String filename) {
-                    super.onPostExecute(filename);
-                    if (filename != null) {
-
-                        snackBar(R.string.share, getString(R.string.exported_to) + filename, makeSnackBarUriLauncher(Uri.fromFile(new File(filename)), "Share database..."), Home.this);
-
-                       /* SnackbarManager.show(
-                                Snackbar.with(Home.this)
-                                        .type(SnackbarType.MULTI_LINE)
-                                        .duration(4000)
-                                        .text("Exported to " + filename) // text to display
-                                        .actionLabel("Share") // action button label
-                                        .actionListener(new SnackbarUriListener(Uri.fromFile(new File(filename)))),
-                                Home.this);*/
-                    } else {
-                        Toast.makeText(Home.this, "Could not export CSV :(", Toast.LENGTH_LONG).show();
-                    }
-                }
-            }.execute();
-
+            });
+            datePickerFragment.show(getFragmentManager(), "DatePicker");
             return true;
         }
 
@@ -3224,6 +3244,7 @@ public class Home extends ActivityWithMenu {
         return super.onOptionsItemSelected(item);
     }
 
+    // TODO reduce duplicated functionality
     public static boolean getPreferencesBooleanDefaultFalse(final String pref) {
         if ((prefs == null) && (xdrip.getAppContext() != null)) {
             prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
@@ -3335,6 +3356,18 @@ public class Home extends ActivityWithMenu {
         }
         return false;
     }
+
+    public static boolean removePreferencesItem(final String pref) {
+        if ((prefs == null) && (xdrip.getAppContext() != null)) {
+            prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
+        }
+        if (prefs != null) {
+            prefs.edit().remove(pref).apply();
+            return true;
+        }
+        return false;
+    }
+
 
     public static double convertToMgDlIfMmol(double value) {
         if (!getPreferencesStringWithDefault("units", "mgdl").equals("mgdl")) {

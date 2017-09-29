@@ -510,6 +510,7 @@
     <string name="alert">alert</string>
     <string name="high_alert">High Alert</string>
     <string name="low_alert">Low Alert</string>
+    <string name="battery">Battery</string>
     <string name="xbridge_battery">xBridge Battery</string>
     <string name="limitter_battery">LimiTTer Battery</string>
     <string name="parakeet_battery">Parakeet Battery</string>
@@ -816,4 +817,6 @@
     <string name="enable_telemetry">Enable Telemetry</string>
     <string name="send_data_to_developers">Send data to developers about success rates of different devices</string>
     <string name="try_to_work_around_noisy_readings_ultrasensitive">Start to work around noisy readings even on very low noise levels (engineering mode ony)</string>
+    <string name="sidiary_date_title">Export starting from when?</string>
+    <string name="blukon">Blucon</string>
 </resources>

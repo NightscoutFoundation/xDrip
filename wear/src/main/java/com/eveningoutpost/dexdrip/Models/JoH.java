@@ -9,6 +9,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothManager;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
@@ -68,6 +69,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.net.URLEncoder;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -103,6 +105,8 @@ public class JoH {
     private static double benchmark_time = 0;
     private static Map<String, Double> benchmarks = new HashMap<String, Double>();
     private static final Map<String, Long> rateLimits = new HashMap<String, Long>();
+
+    public static boolean buggy_samsung = false; // flag set when we detect samsung devices which do not perform to android specifications
 
     // qs = quick string conversion of double for printing
     public static String qs(double x) {
@@ -396,6 +400,15 @@ public class JoH {
         PersistentStore.setString(id, this_hash);
         return true;
     }*/
+
+    public static synchronized void clearRatelimit(final String name) {
+        if (PersistentStore.getLong(name) > 0) {
+            PersistentStore.setLong(name, 0);
+        }
+        if (rateLimits.containsKey(name)) {
+            rateLimits.remove(name);
+        }
+    }
 
     // return true if below rate limit (persistent version)
     public static synchronized boolean pratelimit(String name, int seconds) {
@@ -959,7 +972,7 @@ public class JoH {
         }
     }
 
-    public static long wakeUpIntent(Context context, long delayMs, PendingIntent pendingIntent) {
+    public static long wakeUpIntentOld(Context context, long delayMs, PendingIntent pendingIntent) {
         final long wakeTime = JoH.tsl() + delayMs;
         Log.d(TAG, "Scheduling wakeup intent: " + dateTimeText(wakeTime));
         final AlarmManager alarm = (AlarmManager) context.getSystemService(ALARM_SERVICE);
@@ -969,6 +982,32 @@ public class JoH {
             alarm.setExact(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
         } else
             alarm.set(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
+        return wakeTime;
+    }
+
+    public static long wakeUpIntent(Context context, long delayMs, PendingIntent pendingIntent) {
+        final long wakeTime = JoH.tsl() + delayMs;
+        if (pendingIntent != null) {
+            Log.d(TAG, "Scheduling wakeup intent: " + dateTimeText(wakeTime));
+            final AlarmManager alarm = (AlarmManager) context.getSystemService(ALARM_SERVICE);
+            try {
+                alarm.cancel(pendingIntent);
+            } catch (Exception e) {
+                Log.e(TAG, "Exception cancelling alarm in wakeUpIntent: " + e);
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (buggy_samsung) {
+                    alarm.setAlarmClock(new AlarmManager.AlarmClockInfo(wakeTime, null), pendingIntent);
+                } else {
+                    alarm.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
+                }
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                alarm.setExact(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
+            } else
+                alarm.set(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
+        } else {
+            Log.e(TAG, "wakeUpIntent - pending intent was null!");
+        }
         return wakeTime;
     }
 
@@ -1083,12 +1122,12 @@ public class JoH {
         return pinBytes;
     }
 
-    public static void doPairingRequest(Context context, BroadcastReceiver broadcastReceiver, Intent intent, String mBluetoothDeviceAddress) {
-        doPairingRequest(context, broadcastReceiver, intent, mBluetoothDeviceAddress, null);
+    public static boolean doPairingRequest(Context context, BroadcastReceiver broadcastReceiver, Intent intent, String mBluetoothDeviceAddress) {
+        return doPairingRequest(context, broadcastReceiver, intent, mBluetoothDeviceAddress, null);
     }
 
     @TargetApi(19)
-    public static void doPairingRequest(Context context, BroadcastReceiver broadcastReceiver, Intent intent, String mBluetoothDeviceAddress, String pinHint) {
+    public static boolean doPairingRequest(Context context, BroadcastReceiver broadcastReceiver, Intent intent, String mBluetoothDeviceAddress, String pinHint) {
         if (BluetoothDevice.ACTION_PAIRING_REQUEST.equals(intent.getAction())) {
             final BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
             if (device != null) {
@@ -1101,18 +1140,25 @@ public class JoH {
                     }
                     try {
                         UserError.Log.e(TAG, "Pairing type: " + type);
-                        device.setPairingConfirmation(true);
-                        JoH.static_toast_short("Pairing");
-                        broadcastReceiver.abortBroadcast();
+                        if (type != PAIRING_VARIANT_PIN) {
+                            device.setPairingConfirmation(true);
+                            JoH.static_toast_short("xDrip Pairing");
+                            broadcastReceiver.abortBroadcast();
+                        } else {
+                            Log.d(TAG,"Attempting to passthrough PIN pairing");
+                        }
+
                     } catch (Exception e) {
                         UserError.Log.e(TAG, "Could not set pairing confirmation due to exception: " + e);
                         if (JoH.ratelimit("failed pair confirmation", 200)) {
                             // BluetoothDevice.PAIRING_VARIANT_CONSENT)
                             if (type == 3) {
                                 JoH.static_toast_long("Please confirm the bluetooth pairing request");
+                                return false;
                             } else {
                                 JoH.static_toast_long("Failed to pair, may need to do it via Android Settings");
                                 device.createBond(); // for what it is worth
+                                return false;
                             }
                         }
                     }
@@ -1123,7 +1169,9 @@ public class JoH {
                 UserError.Log.e(TAG, "Device was null in pairing receiver");
             }
         }
+        return true;
     }
+
 
     public static String getLocalBluetoothName() {
         try {
@@ -1181,6 +1229,25 @@ public class JoH {
                 restartBluetooth(context);
             }
         }
+    }
+
+    public static boolean refreshDeviceCache(String thisTAG, BluetoothGatt gatt){
+        try {
+            final Method method = gatt.getClass().getMethod("refresh", new Class[0]);
+            if (method != null) {
+                return (Boolean) method.invoke(gatt, new Object[0]);
+            }
+        }
+        catch (Exception e) {
+            Log.e(thisTAG, "An exception occured while refreshing gatt device cache: "+e);
+        }
+        return false;
+    }
+
+    public static ByteBuffer bArrayAsBuffer(byte[] bytes) {
+        final ByteBuffer bb = ByteBuffer.allocate(bytes.length);
+        bb.put(bytes);
+        return bb;
     }
 
     public synchronized static void restartBluetooth(final Context context) {

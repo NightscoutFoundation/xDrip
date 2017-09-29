@@ -10,6 +10,7 @@ buildscript {
 }
 
 apply plugin: 'com.android.application'
+apply plugin: 'me.tatarka.retrolambda'
 
 android {
     compileSdkVersion 23
@@ -36,6 +37,12 @@ android {
         resValue "string", "app_settings", "XDrip Settings"
 
     }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
     buildTypes {
         release {
             minifyEnabled true
@@ -57,8 +64,10 @@ allprojects {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+    provided 'com.google.android.wearable:wearable:2.0.1'
+    compile 'com.google.android.support:wearable:2.0.1'
     compile 'com.android.support:appcompat-v7:23.1.1'
-    compile 'com.google.android.support:wearable:1.4.0'
+   // compile 'com.google.android.support:wearable:1.4.0'
     compile 'com.google.android.gms:play-services-wearable:9.4.0'
     compile 'com.squareup.wire:wire-runtime:2.2.0'
     //compile 'com.ustwo.android:clockwise-wearable:1.0.2'
@@ -68,4 +77,5 @@ dependencies {
     compile 'com.google.code.gson:gson:2.4'
     compile 'io.reactivex:rxjava:1.0.0'
     compile 'com.google.guava:guava:18.0'
+    compile 'com.polidea.rxandroidble:rxandroidble:1.4.1'
 }
