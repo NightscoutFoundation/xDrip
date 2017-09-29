@@ -1806,7 +1806,7 @@ public class WatchUpdaterService extends WearableListenerService implements
                     final Sensor sensor = Sensor.currentSensor();
                     if ((sensor != null) && (sensor.uuid != null)) {
                         for (BgReading bg : latest) {
-                            if ((bg != null) && (bg.sensor_uuid != null) && (bg.sensor_uuid.equals(sensor.uuid))) {
+                            if ((bg != null) && (bg.sensor_uuid != null) && (bg.sensor_uuid.equals(sensor.uuid) && (bg.calibration_uuid != null))) {
                                 dataMaps.add(dataMap(bg));
                             }
                         }

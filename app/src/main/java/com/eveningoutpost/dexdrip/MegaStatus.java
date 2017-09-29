@@ -131,7 +131,8 @@ public class MegaStatus extends ActivityWithMenu {
             }
             if (Home.getPreferencesBooleanDefaultFalse("cloud_storage_mongodb_enable")
                     || Home.getPreferencesBooleanDefaultFalse("cloud_storage_api_enable")
-                    || Home.getPreferencesBooleanDefaultFalse("share_upload")) {
+                    || Home.getPreferencesBooleanDefaultFalse("share_upload")
+                    || (Home.getPreferencesBooleanDefaultFalse("wear_sync") && Home.get_engineering_mode())) {
                 addAsection(UPLOADERS, "Cloud Uploader Queues");
             }
 

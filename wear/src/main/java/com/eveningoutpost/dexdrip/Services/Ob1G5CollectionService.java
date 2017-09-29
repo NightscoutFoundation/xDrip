@@ -118,6 +118,7 @@ public class Ob1G5CollectionService extends G5BaseService {
     private static int error_count = 0;
     private static int connectNowFailures = 0;
     private static int connectFailures = 0;
+    private static boolean auth_succeeded = false;
     private int error_backoff_ms = 1000;
     private static final int max_error_backoff_ms = 10000;
     private static final long TOLERABLE_JITTER = 10000;
@@ -128,7 +129,10 @@ public class Ob1G5CollectionService extends G5BaseService {
     private static boolean always_discover = false;
     private static boolean always_connect = false;
     private static boolean do_discovery = true;
+    private static final boolean do_auth = true;
+    private static boolean initiate_bonding = false;
 
+    //private static final Set<String> alwaysScanModels = Sets.newHashSet("SM-N910V","G Watch","SmartWatch 3");
     private static final Set<String> alwaysScanModels = Sets.newHashSet("SM-N910V","G Watch");
     private static final List<String> alwaysScanModelFamilies = Arrays.asList("SM-N910");
     private static final Set<String> alwaysConnectModels = Sets.newHashSet("G Watch");
@@ -163,6 +167,10 @@ public class Ob1G5CollectionService extends G5BaseService {
         }
     }
 
+    public void authResult(boolean good) {
+        auth_succeeded = good;
+    }
+
     private synchronized void backoff_automata() {
         background_automata(error_backoff_ms);
         if (error_backoff_ms < max_error_backoff_ms) error_backoff_ms += 100;
@@ -186,7 +194,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                 //
             }
             background_launch_waiting = false;
-            wl.release();
+            JoH.releaseWakeLock(wl);
             automata();
         }).start();
     }
@@ -220,8 +228,13 @@ public class Ob1G5CollectionService extends G5BaseService {
                         }
                         break;
                     case CHECK_AUTH:
-                        final PowerManager.WakeLock linger_wl_connect = JoH.getWakeLock("jam-g5-check-linger", 6000);
-                        if (!Ob1G5StateMachine.doCheckAuth(this, connection)) resetState();
+                        if (do_auth) {
+                            final PowerManager.WakeLock linger_wl_connect = JoH.getWakeLock("jam-g5-check-linger", 6000);
+                            if (!Ob1G5StateMachine.doCheckAuth(this, connection)) resetState();
+                        } else {
+                            UserError.Log.d(TAG, "Skipping authentication");
+                            changeState(STATE.GET_DATA);
+                        }
                         break;
                     case PREBOND:
                         final PowerManager.WakeLock linger_wl_prebond = JoH.getWakeLock("jam-g5-prebond-linger", 16000);
@@ -408,10 +421,7 @@ public class Ob1G5CollectionService extends G5BaseService {
         UserError.Log.d(TAG, "Attempting to create bond, device is : " + (isDeviceLocallyBonded() ? "BONDED" : "NOT Bonded"));
         try {
             unBond();
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                UserError.Log.d(TAG, "Attempting to initiate bond");
-                bleDevice.getBluetoothDevice().createBond();
-            }
+            instantCreateBond();
         } catch (Exception e) {
             UserError.Log.wtf(TAG, "Got exception in do_create_bond() " + e);
         }
@@ -606,7 +616,6 @@ public class Ob1G5CollectionService extends G5BaseService {
 
             final IntentFilter pairingRequestFilter = new IntentFilter(BluetoothDevice.ACTION_PAIRING_REQUEST);
             pairingRequestFilter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY - 1);
-
             registerReceiver(mPairingRequestRecevier, pairingRequestFilter);
 
             checkAlwaysScanModels();
@@ -902,7 +911,7 @@ public class Ob1G5CollectionService extends G5BaseService {
             final String ref = "last-ob1-data-" + transmitterID;
             if (PersistentStore.getLong(ref) == 0) {
                 PersistentStore.setLong(ref, timestamp);
-                JoH.playResourceAudio(R.raw.labbed_musical_chime);
+                if (!android_wear) JoH.playResourceAudio(R.raw.labbed_musical_chime);
             }
         }
         static_last_timestamp = timestamp;
@@ -989,6 +998,15 @@ public class Ob1G5CollectionService extends G5BaseService {
     final BroadcastReceiver mBondStateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            if (!keep_running) {
+                try {
+                    UserError.Log.e(TAG, "Rogue bond state receiver still active - unregistering");
+                    unregisterReceiver(mBondStateReceiver);
+                } catch (Exception e) {
+                    //
+                }
+                return;
+            }
             final String action = intent.getAction();
             UserError.Log.d(TAG, "BondState: onReceive ACTION: " + action);
             if (BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)) {
@@ -1001,7 +1019,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                         + " Bond state " + parcel_device.getBondState() + bondState(parcel_device.getBondState()) + " "
                         + "bs: " + bondState(bond_state_extra) + " was " + bondState(previous_bond_state_extra));
                 try {
-                    if (parcel_device.getAddress().equals(bleDevice.getBluetoothDevice().getAddress())) {
+                    if (parcel_device.getAddress().equals(transmitterMAC)) {
                         msg(bondState(bond_state_extra).replace(" ", ""));
                         if (parcel_device.getBondState() == BluetoothDevice.BOND_BONDED) {
 
@@ -1028,13 +1046,17 @@ public class Ob1G5CollectionService extends G5BaseService {
     };
 
     public void instantCreateBond() {
-        try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                UserError.Log.d(TAG, "instantCreateBond() called");
-                bleDevice.getBluetoothDevice().createBond();
+        if (initiate_bonding) {
+            try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    UserError.Log.d(TAG, "instantCreateBond() called");
+                    bleDevice.getBluetoothDevice().createBond();
+                }
+            } catch (Exception e) {
+                UserError.Log.e(TAG, "Got exception in instantCreateBond() " + e);
             }
-        } catch (Exception e) {
-            UserError.Log.e(TAG, "Got exception in instantCreateBond() " + e);
+        } else {
+            UserError.Log.e(TAG,"instantCreateBond blocked by initiate_bonding flag");
         }
     }
 
@@ -1042,14 +1064,23 @@ public class Ob1G5CollectionService extends G5BaseService {
     private final BroadcastReceiver mPairingRequestRecevier = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            if (!keep_running) {
+                try {
+                    UserError.Log.e(TAG, "Rogue pairing request receiver still active - unregistering");
+                    unregisterReceiver(mPairingRequestRecevier);
+                } catch (Exception e) {
+                    //
+                }
+                return;
+            }
             if ((bleDevice != null) && (bleDevice.getBluetoothDevice().getAddress() != null)) {
-                UserError.Log.e(TAG, "Processing mPairingRequestReceiver");
+                UserError.Log.e(TAG, "Processing mPairingRequestReceiver !!!");
                 if (!JoH.doPairingRequest(context, this, intent, bleDevice.getBluetoothDevice().getAddress())) {
                     unregisterPairingReceiver();
                     UserError.Log.e(TAG, "Pairing failed so removing pairing automation");
                 }
             } else {
-                UserError.Log.e(TAG, "Received pairing request but device was null");
+                UserError.Log.e(TAG, "Received pairing request but device was null !!!");
             }
         }
     };

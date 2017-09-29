@@ -41,9 +41,15 @@ Huawei Y6 (SCL-L21) | 5.1
 Huawei P8 Lite (ALE-L21) | 6.0
 LG V10c (LG-D415) | 5.0.2
 Doogee X5 Max Pro | 6.0.1 |
+Doogee X5S | 5.1 | OB1
 Melrose S9 | 4.4.2 | OB1
 Samsung A3 2017 | 6.0.1 | OB1
 ZTE Axon 7 Mini | 7.1.1 | OB1
+
+## Tips
+
+On Doogee / MTK phones disable `Intelligent power saving standby` in `Android Settings` -> `Battery` or you will only receive a reading every 10 minutes.
+
 
 Does your phone achieve better than 90% capture rate with G5 but isn't on this list? Please let us know!
 
