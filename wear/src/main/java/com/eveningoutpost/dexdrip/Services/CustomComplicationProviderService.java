@@ -20,6 +20,7 @@ package com.eveningoutpost.dexdrip.Services;
 
 import android.app.PendingIntent;
 import android.content.ComponentName;
+import android.os.Bundle;
 import android.support.wearable.complications.ComplicationData;
 import android.support.wearable.complications.ComplicationManager;
 import android.support.wearable.complications.ComplicationProviderService;
@@ -35,6 +36,7 @@ import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.xdrip;
+import com.google.android.gms.wearable.DataMap;
 
 import static com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder.unitizedDeltaString;
 
@@ -46,6 +48,7 @@ public class CustomComplicationProviderService extends ComplicationProviderServi
     private static final String TAG = "ComplicationProvider";
     private static final long STALE_MS = Constants.MINUTE_IN_MS * 15;
     private static final long FRESH_MS = Constants.MINUTE_IN_MS * 5;
+    private String externalStatusString = "no status";
 
     enum COMPLICATION_STATE {
         DELTA(0),
@@ -129,33 +132,55 @@ public class CustomComplicationProviderService extends ComplicationProviderServi
                 is_stale = true;
             }
         }
+
+        //Loop status by @gregorybel
+        String externalStatusString = PersistentStore.getString("remote-status-string");
+
         Log.d(TAG, "Returning complication text: " + numberText);
+        Log.d(TAG, "Returning complication status: " + externalStatusString);
 
         COMPLICATION_STATE state = COMPLICATION_STATE.get_enum((int) PersistentStore.getLong(ComplicationTapBroadcastReceiver.COMPLICATION_STORE));
         if (state == null) state = COMPLICATION_STATE.DELTA;
 
         ComplicationData complicationData = null;
-
         final boolean doMgdl = Home.getPreferencesStringWithDefault("units", "mgdl").equals("mgdl");
+        String deltaText = (!is_stale ? (bgReading != null ? unitizedDeltaString(false, false, Home.get_follower(), doMgdl) : "null") : "");
+
         switch (dataType) {
             case ComplicationData.TYPE_SHORT_TEXT:
 
                 final ComplicationData.Builder builder = new ComplicationData.Builder(ComplicationData.TYPE_SHORT_TEXT)
                         .setShortText(ComplicationText.plainText(numberText))
                         .setTapAction(complicationPendingIntent);
-                UserError.Log.d(TAG, "Current complication state:" + state);
+
+                UserError.Log.d(TAG, "TYPE_SHORT_TEXT Current complication state:" + state);
                 switch (state) {
                     case DELTA:
-                        builder.setShortTitle(!is_stale ? (ComplicationText.plainText(bgReading != null ? unitizedDeltaString(false, false, Home.get_follower(), doMgdl) : "null")) : ComplicationText.plainText(""));
+                        builder.setShortTitle(ComplicationText.plainText(deltaText));
                         break;
                     case AGO:
                         builder.setShortTitle(ComplicationText.plainText(niceTimeSinceBgReading(bgReading)));
+                        builder.setShortText(ComplicationText.plainText(externalStatusString));
                         break;
                     default:
                         builder.setShortTitle(ComplicationText.plainText("ERR!"));
                 }
 
                 complicationData = builder.build();
+                break;
+            case ComplicationData.TYPE_LONG_TEXT:
+                String numberTextLong = numberText + " " + deltaText;
+                Log.d(TAG, "Returning complication text Long: " + numberTextLong);
+
+
+                final ComplicationData.Builder builderLong = new ComplicationData.Builder(ComplicationData.TYPE_LONG_TEXT)
+                        .setLongTitle(ComplicationText.plainText(numberTextLong))
+                        .setLongText(ComplicationText.plainText(externalStatusString))
+                        .setTapAction(complicationPendingIntent);
+
+                UserError.Log.d(TAG, "TYPE_LONG_TEXT Current complication state:" + state);
+                complicationData = builderLong.build();
+
                 break;
             default:
                 if (Log.isLoggable(TAG, Log.WARN)) {

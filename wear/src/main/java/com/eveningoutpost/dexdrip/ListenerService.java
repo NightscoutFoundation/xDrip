@@ -922,8 +922,13 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                     dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
                     boolean showExternalStatus = mPrefs.getBoolean("showExternalStatus", true);
                     Log.d(TAG, "onDataChanged NEW_STATUS_PATH=" + path + " showExternalStatus=" + showExternalStatus);
-                    if (showExternalStatus)
+
+                    if (showExternalStatus) {
                         sendLocalMessage("status", dataMap);
+                        String externalStatusString = dataMap.getString("externalStatusString");
+                        PersistentStore.setString("remote-status-string",externalStatusString);
+                        CustomComplicationProviderService.refresh();
+                    }
                 } else if (path.equals(WEARABLE_TOAST_LOCAL_NOTIFICATON)) {
                     dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
                     sendLocalMessage("msg", dataMap);
