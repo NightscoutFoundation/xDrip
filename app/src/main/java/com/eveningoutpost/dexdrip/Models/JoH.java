@@ -50,6 +50,7 @@ import android.view.Surface;
 import android.view.View;
 import android.widget.Toast;
 
+import com.activeandroid.ActiveAndroid;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
@@ -607,6 +608,14 @@ public class JoH {
     public static void releaseWakeLock(PowerManager.WakeLock wl) {
         if (debug_wakelocks) Log.d(TAG, "releaseWakeLock: " + wl.toString());
         if (wl.isHeld()) wl.release();
+    }
+
+    public static void clearCache() {
+        try {
+            ActiveAndroid.clearCache();
+        } catch (Exception e) {
+            Log.e(TAG, "Error clearing active android cache: " + e);
+        }
     }
 
     public static boolean isLANConnected() {

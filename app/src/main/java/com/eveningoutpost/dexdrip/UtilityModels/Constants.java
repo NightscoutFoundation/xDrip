@@ -18,6 +18,9 @@ public class Constants {
 
     public static final double LIBRE_MULTIPLIER = 117.64705; // to match (raw/8.5)*1000
 
+    /* Configuration parameters */
+
+    public static final long STALE_CALIBRATION_CUT_OFF = Constants.MINUTE_IN_MS * 16;
 
     /* Notification IDs */
 

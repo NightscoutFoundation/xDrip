@@ -1695,7 +1695,6 @@ public class Home extends ActivityWithMenu {
 
     @Override
     protected void onResume() {
-
         xdrip.checkForcedEnglish(xdrip.getAppContext());
         super.onResume();
         handleFlairColors();
@@ -2263,8 +2262,9 @@ public class Home extends ActivityWithMenu {
             return;
         }
 
-        if (BgReading.latest(2).size() > 1) {
-            List<Calibration> calibrations = Calibration.latestValid(2);
+        if (BgReading.latest(3).size() > 2) {
+            // TODO potential to calibrate off stale data here
+            final List<Calibration> calibrations = Calibration.latestValid(2);
             if (calibrations.size() > 1) {
                 if (calibrations.get(0).possible_bad != null && calibrations.get(0).possible_bad == true && calibrations.get(1).possible_bad != null && calibrations.get(1).possible_bad != true) {
                     notificationText.setText(R.string.possible_bad_calibration);
@@ -2277,7 +2277,7 @@ public class Home extends ActivityWithMenu {
                 promptForCalibration();
             }
         } else {
-            if (BgReading.latestUnCalculated(2).size() < 2) {
+            if (!BgReading.isDataSuitableForDoubleCalibration()) {
                 notificationText.setText(R.string.please_wait_need_two_readings_first);
             } else {
                 List<Calibration> calibrations = Calibration.latest(2);

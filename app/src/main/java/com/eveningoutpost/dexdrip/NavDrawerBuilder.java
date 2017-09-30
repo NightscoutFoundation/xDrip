@@ -70,6 +70,7 @@ public class NavDrawerBuilder {
                 if (!CollectionServiceStarter.isBTShare(context)) {
                     if (last_two_bgReadings.size() > 1) {
                         if (last_two_calibrations.size() > 1) {
+                            // TODO tighten this time limit
                             if (bGreadings_in_last_30_mins.size() >= 2) {
                                 if (time_now - last_two_calibrations.get(0).timestamp < (1000 * 60 * 60)) { //Put steps in place to discourage over calibration
                                     this.nav_drawer_options.add(CalibrationOverride.menu_name);
@@ -83,8 +84,10 @@ public class NavDrawerBuilder {
                                 this.nav_drawer_intents.add(new Intent(context, Home.class));
                             }
                         } else {
-                            this.nav_drawer_options.add(DoubleCalibrationActivity.menu_name);
-                            this.nav_drawer_intents.add(new Intent(context, DoubleCalibrationActivity.class));
+                            if (BgReading.isDataSuitableForDoubleCalibration()) {
+                                this.nav_drawer_options.add(DoubleCalibrationActivity.menu_name);
+                                this.nav_drawer_intents.add(new Intent(context, DoubleCalibrationActivity.class));
+                            }
                         }
                     }
                 }

@@ -47,6 +47,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
+import static com.eveningoutpost.dexdrip.UtilityModels.Constants.STALE_CALIBRATION_CUT_OFF;
 import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.getCalibrationPluginFromPreferences;
 import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.newCloseSensorData;
 
@@ -885,6 +886,12 @@ public class BgReading extends Model implements ShareUploadableBg {
                 .execute();
     }
 
+    public static boolean isDataSuitableForDoubleCalibration() {
+        final List<BgReading> uncalculated = BgReading.latestUnCalculated(3);
+        return !(uncalculated == null || (uncalculated.size() < 3) || (JoH.msSince(uncalculated.get(2).timestamp) > STALE_CALIBRATION_CUT_OFF));
+    }
+
+
     public static List<BgReading> futureReadings() {
         double timestamp = new Date().getTime();
         return new Select()
@@ -1196,6 +1203,7 @@ public class BgReading extends Model implements ShareUploadableBg {
 
 
     public void find_new_curve() {
+        JoH.clearCache();
         List<BgReading> last_3 = BgReading.latest(3);
         if ((last_3 != null) && (last_3.size() == 3)) {
             BgReading latest = last_3.get(0);
@@ -1259,6 +1267,7 @@ public class BgReading extends Model implements ShareUploadableBg {
     }
 
     void find_new_raw_curve() {
+        JoH.clearCache();
         final List<BgReading> last_3 = BgReading.latest(3);
         if ((last_3 != null) && (last_3.size() == 3)) {
 
