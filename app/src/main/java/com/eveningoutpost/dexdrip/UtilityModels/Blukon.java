@@ -50,6 +50,7 @@ public class Blukon {
     private static final String BLUKON_GETSENSORAGE_TIMER = "blukon-getSensorAge-timer";
     private static boolean m_getNowGlucoseDataCommand = false;// to be sure we wait for a GlucoseData Block and not using another block
     private static long m_timeLastBg = 0;
+    private static long m_persistentTimeLastBg;
 
     public static String getPin() {
         final String thepin = Home.getPreferencesStringWithDefault(BLUKON_PIN_PREF, null);
@@ -75,11 +76,13 @@ public class Blukon {
         JoH.clearRatelimit(BLUKON_GETSENSORAGE_TIMER);
         m_getNowGlucoseDataCommand = false;
         m_getNowGlucoseDataIndexCommand = false;
-
         m_getOlderReading = false;
         // @keencave - initialize only once during initial to ensure no backfilling at start
  //       m_timeLastBg = 0;
 
+        UserError.Log.i(TAG, "after initialize: m_timeLastBg=" + JoH.dateTimeText(m_timeLastBg));
+        m_persistentTimeLastBg = PersistentStore.getLong("blukon-time-of-last-reading");
+        UserError.Log.i(TAG, "after initialize: m_persistentTimeLastBg=" + JoH.dateTimeText(m_persistentTimeLastBg));
     }
 
     public static boolean isBlukonPacket(byte[] buffer) {
@@ -205,10 +208,7 @@ public class Blukon {
                 UserError.Log.e(TAG, "Sensor is not ready, stop!");
                 currentCommand = "";
             }
-/*
-            currentCommand = "810a00";
-            UserError.Log.i(TAG, "Send ACK");
-*/
+
         } else if (currentCommand.startsWith("010d0b00") /*getUnknownCmd1*/ && strRecCmd.startsWith("8bdb")) {
             cmdFound = 1;
             UserError.Log.i(TAG, "gotUnknownCmd1 (010d0b00): "+strRecCmd);
@@ -261,8 +261,13 @@ public class Blukon {
         } else if (currentCommand.startsWith("010d0e0103") /*getNowDataIndex*/ && m_getNowGlucoseDataIndexCommand == true && strRecCmd.startsWith("8bde")) {
             cmdFound = 1;
             // calculate time delta to last valid BG reading
-            m_minutesDiffToLastReading = (int)((((JoH.tsl() - m_timeLastBg)/1000)+30)/60);
-            UserError.Log.i(TAG, "m_minutesDiffToLastReading=" + m_minutesDiffToLastReading);
+//            m_minutesDiffToLastReading = (int)((((JoH.tsl() - m_timeLastBg)/1000)+30)/60);
+            m_persistentTimeLastBg = PersistentStore.getLong("blukon-time-of-last-reading");
+            m_minutesDiffToLastReading = (int)((((JoH.tsl() - m_persistentTimeLastBg)/1000)+30)/60);
+
+            UserError.Log.i(TAG, "m_minutesDiffToLastReading=" + m_minutesDiffToLastReading + ", m_timeLastBg=" + JoH.dateTimeText(m_timeLastBg));
+            UserError.Log.i(TAG, "m_persistenTimeLastBg=" + JoH.dateTimeText(m_persistentTimeLastBg));
+
             // check time range for valid backfilling
             if ( (m_minutesDiffToLastReading > 9) && (m_minutesDiffToLastReading < (8*60))  ) {
                 UserError.Log.i(TAG, "start backfilling");
@@ -311,8 +316,11 @@ public class Blukon {
             if ( !m_getOlderReading ) {
                 processNewTransmitterData(TransmitterData.create(currentGlucose, currentGlucose, 0 /*battery level force to 0 as unknown*/, JoH.tsl()));
 
-
                 m_timeLastBg = JoH.tsl();
+
+                PersistentStore.setLong("blukon-time-of-last-reading", m_timeLastBg);
+                UserError.Log.i(TAG, "time of last valid reading persistent stored: " + JoH.dateTimeText(m_timeLastBg));
+
                 currentCommand = "010c0e00";
                 UserError.Log.i(TAG, "Send sleep cmd");
                 m_getNowGlucoseDataCommand = false;
@@ -406,7 +414,9 @@ public class Blukon {
             Home.toaststaticnext("Can't use this sensor as it is "+sensorStatusString);
         }
 
-        return ret;
+//        return ret;
+        // to use dead sensors for test
+        return(true);
     }
 
     private static void decodeSerialNumber(byte[] input) {
