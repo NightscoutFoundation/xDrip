@@ -475,6 +475,7 @@ public class BgReading extends Model implements ShareUploadableBg {
 
                 context.startService(new Intent(context, Notifications.class));
             }
+            bgReading.injectNoise(true); // Add noise parameter for nightscout
             BgSendQueue.handleNewBgReading(bgReading, "create", context, Home.get_follower(), quick);
         }
 
@@ -1343,6 +1344,24 @@ public class BgReading extends Model implements ShareUploadableBg {
         } else {
             return Integer.valueOf(noise);
         }
+    }
+
+    public BgReading injectNoise(boolean save) {
+        final BgReading bgReading = this;
+        if (JoH.msSince(bgReading.timestamp) > Constants.MINUTE_IN_MS * 20) {
+            bgReading.noise = "0";
+        } else {
+            BgGraphBuilder.refreshNoiseIfOlderThan(bgReading.timestamp);
+            if (BgGraphBuilder.last_noise > BgGraphBuilder.NOISE_HIGH) {
+                bgReading.noise = "4";
+            } else if (BgGraphBuilder.last_noise > BgGraphBuilder.NOISE_TOO_HIGH_FOR_PREDICT) {
+                bgReading.noise = "3";
+            } else if (BgGraphBuilder.last_noise > BgGraphBuilder.NOISE_TRIGGER) {
+                bgReading.noise = "2";
+            }
+        }
+        if (save) bgReading.save();
+        return bgReading;
     }
 
     // list(0) is the most recent reading.
