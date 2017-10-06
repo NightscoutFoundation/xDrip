@@ -170,9 +170,13 @@ public class BgReading extends Model implements ShareUploadableBg {
     public String dg_delta_name;
 
     public static void updateDB(){
-        SQLiteUtils.execSql("ALTER TABLE BgReadings ADD COLUMN dg_mgdl REAL;");
-        SQLiteUtils.execSql("ALTER TABLE BgReadings ADD COLUMN dg_slope REAL;");
-        SQLiteUtils.execSql("ALTER TABLE BgReadings ADD COLUMN dg_delta_name TEXT;");
+        String[] updates = new String[]{"ALTER TABLE BgReadings ADD COLUMN dg_mgdl REAL;", "ALTER TABLE BgReadings ADD COLUMN dg_slope REAL;", "ALTER TABLE BgReadings ADD COLUMN dg_delta_name TEXT;"};
+        for (String patch:updates) {
+            try {
+                SQLiteUtils.execSql(patch);
+            } catch (Exception e){
+            }
+        }
 
     }
 
@@ -195,9 +199,9 @@ public class BgReading extends Model implements ShareUploadableBg {
         return mmolConvert(calculated_value);
     }
 
-    public void setDisplayGlucose(BestGlucose.DisplayGlucose displayGlucose){
+    public void injectDisplayGlucose(BestGlucose.DisplayGlucose displayGlucose){
         //displayGlucose can be null. E.g. when out of order values come in
-        if (displayGlucose != null && dg_mgdl != 0){
+        if (displayGlucose != null){
             dg_mgdl = displayGlucose.mgdl;
             dg_slope = displayGlucose.slope;
             dg_delta_name = displayGlucose.delta_name;
@@ -521,7 +525,7 @@ public class BgReading extends Model implements ShareUploadableBg {
                 context.startService(new Intent(context, Notifications.class));
             }
             bgReading.injectNoise(true); // Add noise parameter for nightscout
-            bgReading.setDisplayGlucose(BestGlucose.getDisplayGlucose()); // Add display glucose for nightscout
+            bgReading.injectDisplayGlucose(BestGlucose.getDisplayGlucose()); // Add display glucose for nightscout
             BgSendQueue.handleNewBgReading(bgReading, "create", context, Home.get_follower(), quick);
         }
 
