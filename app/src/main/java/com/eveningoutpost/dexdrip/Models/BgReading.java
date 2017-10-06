@@ -11,6 +11,7 @@ import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 import com.activeandroid.util.SQLiteUtils;
+import com.eveningoutpost.dexdrip.BestGlucose;
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.EGVRecord;
@@ -156,8 +157,52 @@ public class BgReading extends Model implements ShareUploadableBg {
     @Column(name = "noise")
     public String noise;
 
+    @Expose
+    @Column(name = "dg_mgdl")
+    public double dg_mgdl = 0d;
+
+    @Expose
+    @Column(name = "dg_slope")
+    public double dg_slope = 0d;
+
+    @Expose
+    @Column(name = "dg_delta_name")
+    public String dg_delta_name;
+
+    public static void updateDB(){
+        SQLiteUtils.execSql("ALTER TABLE BgReadings ADD COLUMN dg_mgdl REAL;");
+        SQLiteUtils.execSql("ALTER TABLE BgReadings ADD COLUMN dg_slope REAL;");
+        SQLiteUtils.execSql("ALTER TABLE BgReadings ADD COLUMN dg_delta_name TEXT;");
+
+    }
+
+    public double getDg_mgdl(){
+        if(dg_mgdl != 0) return dg_mgdl;
+        return calculated_value;
+    }
+
+    public double getDg_slope(){
+        if(dg_mgdl != 0) return dg_slope;
+        return currentSlope();
+    }
+
+    public String getDg_deltaName(){
+        if(dg_mgdl != 0 && dg_delta_name != null) return dg_delta_name;
+        return slopeName();
+    }
+
     public double calculated_value_mmol() {
         return mmolConvert(calculated_value);
+    }
+
+    public void setDisplayGlucose(BestGlucose.DisplayGlucose displayGlucose){
+        //displayGlucose can be null. E.g. when out of order values come in
+        if (displayGlucose != null && dg_mgdl != 0){
+            dg_mgdl = displayGlucose.mgdl;
+            dg_slope = displayGlucose.slope;
+            dg_delta_name = displayGlucose.delta_name;
+            this.save();
+        }
     }
 
     public double mmolConvert(double mgdl) {
@@ -476,6 +521,7 @@ public class BgReading extends Model implements ShareUploadableBg {
                 context.startService(new Intent(context, Notifications.class));
             }
             bgReading.injectNoise(true); // Add noise parameter for nightscout
+            bgReading.setDisplayGlucose(BestGlucose.getDisplayGlucose()); // Add display glucose for nightscout
             BgSendQueue.handleNewBgReading(bgReading, "create", context, Home.get_follower(), quick);
         }
 
