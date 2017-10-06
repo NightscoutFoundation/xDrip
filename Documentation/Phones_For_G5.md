@@ -23,6 +23,7 @@ Samsung Galaxy S7 (SM-G930W8) | 6.0.1
 Samsung Galaxy S7 edge (SM-G935V) | 7.0
 Samsung Galaxy S7 edge (G935T) | 7.0
 Samsung Galaxy Express Prime (SM-J320A) | 6.0.1
+Essential Phone | PH-1 |
 HTC 10 | 7.0
 Nexus 5 | 6.0
 Nexus 5X | 7.1.1
