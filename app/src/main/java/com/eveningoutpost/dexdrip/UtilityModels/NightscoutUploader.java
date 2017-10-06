@@ -678,7 +678,7 @@ public class NightscoutUploader {
         if (record != null) {//KS
             json.put("date", record.timestamp);
             json.put("dateString", format.format(record.timestamp));
-            if(true){ //TODO Adrian: if upload display glucose
+            if(prefs.getBoolean("cloud_storage_api_use_best_glucose", false)){
                 json.put("sgv", (int) record.getDg_mgdl());
                 json.put("delta", new BigDecimal(record.getDg_slope() * 5 * 60 * 1000).setScale(3, BigDecimal.ROUND_HALF_UP));
                 json.put("direction", record.getDg_deltaName());

@@ -72,6 +72,11 @@
                     android:key="cloud_storage_api_use_mobile"
                     android:summary="Upload even when using mobile data"
                     android:title="Use mobile data" />
+                <SwitchPreference
+                    android:dependency="cloud_storage_api_enable"
+                    android:key="cloud_storage_api_use_best_glucose"
+                    android:summary="@string/use_plugins_for_brodcast"
+                    android:title="@string/send_display_glucose" />
                 <EditTextPreference
                     android:defaultValue="@string/pref_default_api_url"
                     android:dependency="cloud_storage_api_enable"
