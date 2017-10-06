@@ -41,6 +41,7 @@ public enum DexCollectionType {
     private static final HashSet<DexCollectionType> usesLibre = new HashSet<>();
     private static final HashSet<DexCollectionType> usesBattery = new HashSet<>();
     private static final HashSet<DexCollectionType> usesDexcomRaw = new HashSet<>();
+    private static final HashSet<DexCollectionType> usesTransmitterBattery = new HashSet<>();
 
     public static final String DEX_COLLECTION_METHOD = "dex_collection_method";
 
@@ -62,6 +63,7 @@ public enum DexCollectionType {
         Collections.addAll(usesLibre, LimiTTer, LibreAlarm);
         Collections.addAll(usesBattery, BluetoothWixel, DexbridgeWixel, WifiBlueToothWixel, WifiDexBridgeWixel, Follower, LimiTTer, LibreAlarm); // parakeet separate
         Collections.addAll(usesDexcomRaw, BluetoothWixel, DexbridgeWixel, WifiBlueToothWixel, DexcomG5, WifiDexBridgeWixel);
+        Collections.addAll(usesTransmitterBattery, WifiWixel, BluetoothWixel, DexbridgeWixel, WifiBlueToothWixel, WifiDexBridgeWixel); // G4 transmitter battery
     }
 
 
@@ -114,6 +116,8 @@ public enum DexCollectionType {
 
     public static boolean usesDexCollectionService(DexCollectionType type) { return usesBtWixel.contains(type) || usesXbridge.contains(type) || type.equals(LimiTTer); }
 
+    public static boolean usesClassicTransmitterBattery() { return usesTransmitterBattery.contains(getDexCollectionType()); }
+
     public static boolean hasDexcomRaw(DexCollectionType type) {
         return usesDexcomRaw.contains(type);
     }
@@ -136,6 +140,25 @@ public enum DexCollectionType {
                 return DexShareCollectionService.class;
             default:
                 return DexCollectionService.class;
+        }
+    }
+
+    public static String getBestCollectorHardwareName() {
+        final DexCollectionType dct = getDexCollectionType();
+        switch (dct) {
+            case NSEmulator:
+                return "Other App";
+            case WifiWixel:
+                return "Network G4";
+            case LimiTTer:
+                return DexCollectionService.getBestLimitterHardwareName();
+            case WifiDexBridgeWixel:
+                return "Network G4 and xBridge";
+            case WifiBlueToothWixel:
+                return "Network G4 and Classic xDrip";
+
+            default:
+                return dct.name();
         }
     }
 
