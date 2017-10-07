@@ -579,7 +579,7 @@ public class Notifications extends IntentService {
 
         final NotificationCompat.Builder b = new NotificationCompat.Builder(mContext);
         //b.setOngoing(true);
-        b.setVisibility(Notification.VISIBILITY_PUBLIC);
+        b.setVisibility(Home.getPreferencesBooleanDefaultFalse("public_notifications") ? Notification.VISIBILITY_PUBLIC : Notification.VISIBILITY_PRIVATE);
         b.setCategory(NotificationCompat.CATEGORY_STATUS);
         if (Home.getPreferencesBooleanDefaultFalse("high_priority_notifications")) {
             b.setPriority(Notification.PRIORITY_HIGH);
@@ -725,7 +725,7 @@ public class Notifications extends IntentService {
 
     private void calibrationNotificationCreate(String title, String content, Intent intent, int notificationId) {
         NotificationCompat.Builder mBuilder = notificationBuilder(title, content, intent);
-        mBuilder.setVisibility(Notification.VISIBILITY_PUBLIC);
+        mBuilder.setVisibility(Home.getPreferencesBooleanDefaultFalse("public_notifications") ? Notification.VISIBILITY_PUBLIC : Notification.VISIBILITY_PRIVATE);
         mBuilder.setVibrate(vibratePattern);
         mBuilder.setLights(0xff00ff00, 300, 1000);
         if(calibration_override_silent) {
@@ -741,7 +741,7 @@ public class Notifications extends IntentService {
 
     private NotificationCompat.Builder notificationBuilder(String title, String content, Intent intent) {
         return new NotificationCompat.Builder(mContext)
-                .setVisibility(Notification.VISIBILITY_PUBLIC)
+                .setVisibility(Home.getPreferencesBooleanDefaultFalse("public_notifications") ? Notification.VISIBILITY_PUBLIC : Notification.VISIBILITY_PRIVATE)
                 .setSmallIcon(R.drawable.ic_action_communication_invert_colors_on)
                 .setContentTitle(title)
                 .setContentText(content)
@@ -890,7 +890,7 @@ public class Notifications extends IntentService {
             Intent intent = new Intent(context, Home.class);
             NotificationCompat.Builder mBuilder =
                     new NotificationCompat.Builder(context)
-                            .setVisibility(Notification.VISIBILITY_PUBLIC)
+                            .setVisibility(Home.getPreferencesBooleanDefaultFalse("public_notifications") ? Notification.VISIBILITY_PUBLIC : Notification.VISIBILITY_PRIVATE)
                             .setSmallIcon(R.drawable.ic_action_communication_invert_colors_on)
                             .setContentTitle(message)
                             .setContentText(message)
