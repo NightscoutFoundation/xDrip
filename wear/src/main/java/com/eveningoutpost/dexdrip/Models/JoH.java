@@ -632,8 +632,18 @@ public class JoH {
 
     public static void releaseWakeLock(PowerManager.WakeLock wl) {
         if (debug_wakelocks) Log.d(TAG, "releaseWakeLock: " + wl.toString());
+        if (wl == null) return;
         if (wl.isHeld()) wl.release();
     }
+
+    public static PowerManager.WakeLock fullWakeLock(final String name, long millis) {
+        final PowerManager pm = (PowerManager) xdrip.getAppContext().getSystemService(Context.POWER_SERVICE);
+        PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.ON_AFTER_RELEASE, name);
+        wl.acquire(millis);
+        if (debug_wakelocks) Log.d(TAG, "fullWakeLock: " + name + " " + wl.toString());
+        return wl;
+    }
+
 
     public static boolean isLANConnected() {
         final ConnectivityManager cm =

@@ -131,7 +131,7 @@ public class Ob1G5StateMachine {
                                                                                                                 }
                                                                                                             } else {
                                                                                                                 parent.msg("Not Authorized!");
-                                                                                                                UserError.Log.wtf(TAG, "Authentication failed!!!!");
+                                                                                                                UserError.Log.e(TAG, "Authentication failed!!!!");
                                                                                                                 parent.incrementErrors();
                                                                                                                 // TODO? try again?
                                                                                                             }
@@ -156,7 +156,7 @@ public class Ob1G5StateMachine {
                                                                                 });
 
                                                             } else {
-                                                                UserError.Log.wtf(TAG, "Could not generate challenge hash! - resetting");
+                                                                UserError.Log.e(TAG, "Could not generate challenge hash! - resetting");
                                                                 parent.changeState(Ob1G5CollectionService.STATE.INIT);
                                                                 parent.incrementErrors();
                                                                 return;
@@ -165,7 +165,7 @@ public class Ob1G5StateMachine {
                                                             break;
 
                                                         default:
-                                                            UserError.Log.wtf(TAG, "Unhandled packet type in reply: " + pkt.type + " " + JoH.bytesToHex(readValue));
+                                                            UserError.Log.e(TAG, "Unhandled packet type in reply: " + pkt.type + " " + JoH.bytesToHex(readValue));
                                                             parent.incrementErrors();
                                                             // TODO what to do here?
                                                             break;
@@ -377,21 +377,21 @@ public class Ob1G5StateMachine {
 
                         case VersionRequestRxMessage:
                             if (!setStoredFirmwareBytes(Ob1G5CollectionService.getTransmitterID(), bytes, true)) {
-                                UserError.Log.wtf(TAG, "Could not save out firmware version!");
+                                UserError.Log.e(TAG, "Could not save out firmware version!");
                             }
                             disconnectNow(parent, connection);
                             throw new OperationSuccess("Received Version Info");
                             //break;
                         case BatteryInfoRxMessage:
                             if (!setStoredBatteryBytes(Ob1G5CollectionService.getTransmitterID(), bytes)) {
-                                UserError.Log.wtf(TAG, "Could not save out battery data!");
+                                UserError.Log.e(TAG, "Could not save out battery data!");
                             }
                             disconnectNow(parent, connection);
                             throw new OperationSuccess("Received Battery Info");
                             //break;
 
                         default:
-                            UserError.Log.wtf(TAG, "Got unknown packet instead of sensor rx: " + JoH.bytesToHex(bytes));
+                            UserError.Log.e(TAG, "Got unknown packet instead of sensor rx: " + JoH.bytesToHex(bytes));
                             break;
                     }
                 }, throwable -> {
@@ -451,7 +451,7 @@ public class Ob1G5StateMachine {
 
         UserError.Log.d(TAG, "SUCCESS!! unfiltered: " + sensorRx.unfiltered + " timestamp: " + sensorRx.timestamp + " " + JoH.qs((double) sensorRx.timestamp / 86400, 1) + " days");
         if (sensorRx.unfiltered == 0) {
-            UserError.Log.wtf(TAG, "Transmitter sent raw sensor value of 0 !! This isn't good. " + JoH.hourMinuteString());
+            UserError.Log.e(TAG, "Transmitter sent raw sensor value of 0 !! This isn't good. " + JoH.hourMinuteString());
         } else {
             processNewTransmitterData(sensorRx.unfiltered, sensorRx.filtered, sensor_battery_level, new Date().getTime());
         }
@@ -465,6 +465,7 @@ public class Ob1G5StateMachine {
             UserError.Log.e(TAG, "TransmitterData.create failed: Duplicate packet");
             return;
         } else {
+            UserError.Log.d(TAG, "Created transmitter data " + transmitterData.uuid + " " + JoH.dateTimeText(transmitterData.timestamp));
             // TODO timeInMillisecondsOfLastSuccessfulSensorRead = captureTime;
         }
         Sensor sensor = Sensor.currentSensor();
@@ -479,12 +480,14 @@ public class Ob1G5StateMachine {
         if (d)
             UserError.Log.i(TAG, "timestamp create: " + Long.toString(transmitterData.timestamp));
 
-        BgReading.create(transmitterData.raw_data, transmitterData.filtered_data, xdrip.getAppContext(), transmitterData.timestamp);
+        BgReading bgreading = BgReading.create(transmitterData.raw_data, transmitterData.filtered_data, xdrip.getAppContext(), transmitterData.timestamp);
 
         UserError.Log.d(TAG, "Dex raw_data " + Double.toString(transmitterData.raw_data));//KS
         UserError.Log.d(TAG, "Dex filtered_data " + Double.toString(transmitterData.filtered_data));//KS
         UserError.Log.d(TAG, "Dex sensor_battery_level " + Double.toString(transmitterData.sensor_battery_level));//KS
         UserError.Log.d(TAG, "Dex timestamp " + JoH.dateTimeText(transmitterData.timestamp));//KS
+
+        UserError.Log.d(TAG, "BgReading created: " + bgreading.uuid + " " + JoH.dateTimeText(bgreading.timestamp));
 
         // TODO static_last_timestamp =  transmitterData.timestamp;
 
@@ -529,7 +532,7 @@ public class Ob1G5StateMachine {
         if (transmitterId.length() != 6) return false;
         if (data.length < 10) return false;
         final BatteryInfoRxMessage batteryInfoRxMessage = new BatteryInfoRxMessage(data);
-        UserError.Log.wtf(TAG, "Saving battery data: " + batteryInfoRxMessage.toString());
+        UserError.Log.e(TAG, "Saving battery data: " + batteryInfoRxMessage.toString());
         PersistentStore.setBytes(G5_BATTERY_MARKER + transmitterId, data);
         PersistentStore.setLong(G5_BATTERY_FROM_MARKER + transmitterId, JoH.tsl());
 
@@ -553,7 +556,7 @@ public class Ob1G5StateMachine {
             return new BatteryInfoRxMessage(PersistentStore.getBytes(G5_BATTERY_MARKER + tx_id));
         } catch (Exception e) {
             if (JoH.quietratelimit("bi-exception", 15))
-                UserError.Log.wtf(TAG, "Exception in getBatteryDetails: " + e);
+                UserError.Log.e(TAG, "Exception in getBatteryDetails: " + e);
             return null;
         }
     }
@@ -561,7 +564,7 @@ public class Ob1G5StateMachine {
     public static VersionRequestRxMessage getFirmwareDetails(String tx_id) {
         if (tx_id == null) {
             if (JoH.quietratelimit("txid-null", 15))
-                UserError.Log.wtf(TAG, "TX ID is null in getFirmwareDetails");
+                UserError.Log.e(TAG, "TX ID is null in getFirmwareDetails");
             return null;
         }
         try {
@@ -571,7 +574,7 @@ public class Ob1G5StateMachine {
             }
         } catch (Exception e) {
             if (JoH.quietratelimit("fi-exception", 15))
-                UserError.Log.wtf(TAG, "Exception in getFirmwareDetails: " + e);
+                UserError.Log.e(TAG, "Exception in getFirmwareDetails: " + e);
             return null;
         }
         return null;
