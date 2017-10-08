@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 
+import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.SnoozeActivity;
 import com.eveningoutpost.dexdrip.Models.AlertType;
@@ -27,6 +28,7 @@ public class IdempotentMigrations {
     public void performAll() {
         migrateBGAlerts();
         migrateToNewStyleRestUris();
+        BgReading.updateDB();
     }
 
     private void migrateBGAlerts() {
