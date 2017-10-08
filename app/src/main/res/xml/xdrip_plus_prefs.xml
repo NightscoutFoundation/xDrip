@@ -363,6 +363,11 @@
                 android:summary="Show notifications and graph at the top (also useful on lockscreen)"
                 android:title="High Priority Notifications" />
             <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="public_notifications"
+                android:summary="Show notification content on secure lockscreen"
+                android:title="Public Notifications" />
+            <CheckBoxPreference
                 android:defaultValue="true"
                 android:key="plus_extra_features"
                 android:summary="@string/show_test_features"
