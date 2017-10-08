@@ -1,8 +1,8 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
@@ -579,7 +579,7 @@ public class Blukon {
         builder.setPositiveButton(activity.getString(R.string.ok), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                setPin(((EditText)input.findViewById(R.id.pinfield)).getText().toString().trim());
+                setPin(((EditText) input.findViewById(R.id.pinfield)).getText().toString().trim());
                 if (getPin() != null) {
                     JoH.static_toast_long("Data source set to: " + activity.getString(R.string.blukon) + " pin: " + getPin());
                     runnable.run();
@@ -603,6 +603,7 @@ public class Blukon {
         try {
             dialog.show();
         } catch (IllegalStateException e) {
+            UserError.Log.e(TAG, e.toString());
             JoH.static_toast_long("Error displaying PIN entry. Please contact us if this keeps happening");
         }
     }
