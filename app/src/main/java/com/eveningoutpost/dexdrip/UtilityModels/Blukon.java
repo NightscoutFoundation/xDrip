@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+import android.content.Context;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
@@ -7,6 +8,15 @@ import android.text.InputType;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import java.text.SimpleDateFormat;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Date;
 
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
@@ -50,6 +60,10 @@ public class Blukon {
     private static final String BLUKON_GETSENSORAGE_TIMER = "blukon-getSensorAge-timer";
     private static boolean m_getNowGlucoseDataCommand = false;// to be sure we wait for a GlucoseData Block and not using another block
     private static long m_timeLastBg = 0;
+    
+    private static int m_bbbblockNumber = 0;
+    private static int m_block_number = 0;
+    private static byte[] m_full_data = new byte [344];
 
     public static String getPin() {
         final String thepin = Home.getPreferencesStringWithDefault(BLUKON_PIN_PREF, null);
@@ -77,6 +91,7 @@ public class Blukon {
         m_getNowGlucoseDataIndexCommand = false;
 
         m_getOlderReading = false;
+        m_block_number = 0;
         // @keencave - initialize only once during initial to ensure no backfilling at start
  //       m_timeLastBg = 0;
 
@@ -91,9 +106,43 @@ public class Blukon {
         return isBlukonPacket(buffer) && getPin() != null; // TODO can't be unset yet and isn't proper subtype test yet
     }
 
+    public static String byteArrayToHex(byte[] a) {
+        if(a == null) {
+            return null;
+        }
+        StringBuilder sb = new StringBuilder(a.length * 2);
+        for(byte b: a)
+            sb.append(String.format("0x%02x ", b));
+        return sb.toString();
+    }
+    
+    public static void writeToFile(String file, byte []data) {
+
+        Context context = xdrip.getAppContext();
+        
+        String dir = context.getFilesDir().getPath();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
+        String currentDateandTime = sdf.format(new Date());
+
+        String file_name = dir + '/' + file+ "_" + currentDateandTime + ".dat";
+        UserError.Log.e(TAG, "Writing to file" + file_name);
+        try {
+            //XposedBridge.log("Writing to file " + file_name + ", size = " + (data == null ? 0 : data.length));
+            FileOutputStream f = new FileOutputStream(new File(file_name));
+            if(data != null) {
+                // file will be written with zero length to let the user know what is happening.
+                f.write(data);
+            }
+            f.close();
+        }catch (IOException e) {
+        	UserError.Log.e(TAG, "Cought exception when trying to write file", e);
+        }
+    }
+    
 
     // .*(dexdrip|gatt|Blukon).
-    public static byte[] decodeBlukonPacket(byte[] buffer) {
+    @SuppressWarnings("unused")
+	public static byte[] decodeBlukonPacket(byte[] buffer) {
         int cmdFound = 0;
         Boolean gotLowBat = false;
 
@@ -104,7 +153,7 @@ public class Blukon {
 
         //BluCon code by gregorybel
         final String strRecCmd = CipherUtils.bytesToHex(buffer).toLowerCase();
-        UserError.Log.i(TAG, "BlueCon data: " + strRecCmd);
+        UserError.Log.i(TAG, "BlueCon data: " + strRecCmd + " " + byteArrayToHex(buffer));
 
         if (strRecCmd.equalsIgnoreCase("cb010000")) {
             UserError.Log.i(TAG, "Reset currentCommand");
@@ -147,6 +196,12 @@ public class Blukon {
         if (strRecCmd.startsWith("8b1a02")) {
             cmdFound = 1;
             UserError.Log.e(TAG, "Got NACK on cmd=" + currentCommand + " with error=" + strRecCmd.substring(6));
+            
+            if(m_block_number == 43){
+            	// write to file
+            }
+            UserError.Log.e(TAG, "Full data that was recieved is " + byteArrayToHex(m_full_data));
+            writeToFile("xDripData", m_full_data);
 
             if (strRecCmd.startsWith("8b1a020014")) {
                 UserError.Log.e(TAG, "Timeout: please wait 5min or push button to restart!");
@@ -205,10 +260,10 @@ public class Blukon {
                 UserError.Log.e(TAG, "Sensor is not ready, stop!");
                 currentCommand = "";
             }
-/*
+//??????? Add this code to allow reading the dead sensors
             currentCommand = "810a00";
             UserError.Log.i(TAG, "Send ACK");
-*/
+
         } else if (currentCommand.startsWith("010d0b00") /*getUnknownCmd1*/ && strRecCmd.startsWith("8bdb")) {
             cmdFound = 1;
             UserError.Log.i(TAG, "gotUnknownCmd1 (010d0b00): "+strRecCmd);
@@ -307,37 +362,55 @@ public class Blukon {
             int currentGlucose = nowGetGlucoseValue(buffer);
 
             UserError.Log.i(TAG, "********got getNowGlucoseData=" + currentGlucose);
-
-            if ( !m_getOlderReading ) {
-                processNewTransmitterData(TransmitterData.create(currentGlucose, currentGlucose, 0 /*battery level force to 0 as unknown*/, JoH.tsl()));
-
-
-                m_timeLastBg = JoH.tsl();
-                currentCommand = "010c0e00";
-                UserError.Log.i(TAG, "Send sleep cmd");
-                m_getNowGlucoseDataCommand = false;
+            
+            if(m_bbbblockNumber < 10) {
+            	currentCommand = "010d0e010" + Integer.toHexString(m_bbbblockNumber);//getNowGlucoseData
+            } else {
+            	//currentCommand = "010d0e01" + Integer.toHexString(m_bbbblockNumber);//getNowGlucoseData
+            	currentCommand = "010d0f02002b"; //0f1c - takes me till the end
             }
-            else {
-                UserError.Log.i(TAG, "bf: processNewTransmitterData with delayed timestamp of " + m_minutesBack + " min");
-                processNewTransmitterData(TransmitterData.create(currentGlucose, currentGlucose, 0 /*battery level force to 0 as unknown*/, JoH.tsl()-(m_minutesBack*60*1000)));
-                // @keencave - count down for next backfilling entry
-                m_minutesBack -= 5;
-                if ( m_minutesBack < 5 ) {
-                    m_getOlderReading = false;
-                }
-                UserError.Log.i(TAG, "bf: calculate next trend buffer with " + m_minutesBack + " min timestamp");
-                int delayedTrendIndex = m_currentTrendIndex;
-                for ( int i = 0 ; i < m_minutesBack ; i++ ) {
-                    if ( --delayedTrendIndex < 0)
-                        delayedTrendIndex = 15;
-                }
-                int delayedBlockNumber = blockNumberForNowGlucoseDataDelayed(delayedTrendIndex);
-                currentCommand = "010d0e010" + Integer.toHexString(delayedBlockNumber);//getNowGlucoseData
-                UserError.Log.i(TAG, "bf: read next block: " + currentCommand);
-            }
+            UserError.Log.i(TAG, "bf: read next block: " + currentCommand);
+            m_bbbblockNumber++;
+            
+            if(false) {
+		            if ( !m_getOlderReading ) {
+		                processNewTransmitterData(TransmitterData.create(currentGlucose, currentGlucose, 0 /*battery level force to 0 as unknown*/, JoH.tsl()));
+		
+		
+		                m_timeLastBg = JoH.tsl();
+		                currentCommand = "010c0e00";
+		                UserError.Log.i(TAG, "Send sleep cmd");
+		                m_getNowGlucoseDataCommand = false;
+		            }
+		            else {
+		                UserError.Log.i(TAG, "bf: processNewTransmitterData with delayed timestamp of " + m_minutesBack + " min");
+		                processNewTransmitterData(TransmitterData.create(currentGlucose, currentGlucose, 0 /*battery level force to 0 as unknown*/, JoH.tsl()-(m_minutesBack*60*1000)));
+		                // @keencave - count down for next backfilling entry
+		                m_minutesBack -= 5;
+		                if ( m_minutesBack < 5 ) {
+		                    m_getOlderReading = false;
+		                }
+		                UserError.Log.i(TAG, "bf: calculate next trend buffer with " + m_minutesBack + " min timestamp");
+		                int delayedTrendIndex = m_currentTrendIndex;
+		                for ( int i = 0 ; i < m_minutesBack ; i++ ) {
+		                    if ( --delayedTrendIndex < 0)
+		                        delayedTrendIndex = 15;
+		                }
+		                int delayedBlockNumber = blockNumberForNowGlucoseDataDelayed(delayedTrendIndex);
+		                currentCommand = "010d0e010" + Integer.toHexString(delayedBlockNumber);//getNowGlucoseData
+		                UserError.Log.i(TAG, "bf: read next block: " + currentCommand);
+		            }
 
-
-        }  else if (strRecCmd.startsWith("cb020000")) {
+            } /* end of false */
+        }  else if ((currentCommand.startsWith("010d0f02002b") /*getHistoricData */ || (currentCommand.isEmpty() && m_block_number > 0)) && m_getNowGlucoseDataCommand == true && strRecCmd.startsWith("8bdf")) {
+        	cmdFound = 1;
+            UserError.Log.e(TAG, "recieved historic data, m_block_number = " + m_block_number);
+            int len = m_block_number < 42 ? 16 : 8;
+            System.arraycopy(buffer, 4, m_full_data, 8 * m_block_number, len);
+            currentCommand = "";
+            
+            m_block_number += 2;
+        }else if (strRecCmd.startsWith("cb020000")) {
             cmdFound = 1;
             UserError.Log.e(TAG, "is bridge battery low????!");
             Home.setPreferencesInt("bridge_battery", 3);
