@@ -215,7 +215,7 @@ dependencies {
     //compile 'com.activeandroid:thread-safe-active-android:3.1.1'
     compile 'com.github.lecho:hellocharts-android:v1.5.8'
     compile "com.polidea.rxandroidble:rxandroidble:1.4.1"
-    compile 'com.google.guava:guava:18.0'
+    compile 'com.google.guava:guava:20.0'
     compile 'com.embarkmobile:zxing-android-minimal:2.0.0@aar'
     compile 'com.embarkmobile:zxing-android-integration:2.0.0@aar'
     //compile 'com.embarkmobile:zxing-android-legacy:2.0.0@aar'
@@ -240,6 +240,11 @@ dependencies {
 //    compile 'com.google.dagger:dagger:2.11'
 //    //compile 'com.google.dagger:dagger-android-support:2.x' // if you use the support libraries
 //    annotationProcessor 'com.google.dagger:dagger-compiler:2.11'
+
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.objenesis:objenesis:2.5.1'
+    testCompile 'org.hamcrest:hamcrest-library:1.3'
+    testCompile "org.robolectric:robolectric:3.4.2"
 
 }
 
