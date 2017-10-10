@@ -47,6 +47,7 @@ Doogee X5S | 5.1 | OB1
 Melrose S9 | 4.4.2 | OB1
 Samsung A3 2017 | 6.0.1 | OB1
 ZTE Axon 7 Mini | 7.1.1 | OB1
+ZTE Axon 7 | 7.1.2 | OB1
 
 ## Tips
 
