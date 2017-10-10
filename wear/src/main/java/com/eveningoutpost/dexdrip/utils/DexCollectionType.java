@@ -31,6 +31,7 @@ public enum DexCollectionType {
     LibreAlarm("LibreAlarm"),
     NSEmulator("NSEmulator"),
     Disabled("Disabled"),
+    Mock("Mock"),
     Manual("Manual");
 
     String internalName;
@@ -59,9 +60,9 @@ public enum DexCollectionType {
 
         Collections.addAll(usesBluetooth, BluetoothWixel, DexcomShare, DexbridgeWixel, LimiTTer, WifiBlueToothWixel, DexcomG5, WifiDexBridgeWixel);
         Collections.addAll(usesBtWixel, BluetoothWixel, LimiTTer, WifiBlueToothWixel);
-        Collections.addAll(usesWifi, WifiBlueToothWixel,WifiWixel,WifiDexBridgeWixel);
+        Collections.addAll(usesWifi, WifiBlueToothWixel,WifiWixel,WifiDexBridgeWixel, Mock);
         Collections.addAll(usesXbridge, DexbridgeWixel,WifiDexBridgeWixel);
-        Collections.addAll(usesFiltered, DexbridgeWixel, WifiDexBridgeWixel, DexcomG5, WifiWixel, Follower); // Bluetooth and Wifi+Bluetooth need dynamic mode
+        Collections.addAll(usesFiltered, DexbridgeWixel, WifiDexBridgeWixel, DexcomG5, WifiWixel, Follower, Mock); // Bluetooth and Wifi+Bluetooth need dynamic mode
         Collections.addAll(usesLibre, LimiTTer, LibreAlarm);
         Collections.addAll(usesBattery, BluetoothWixel, DexbridgeWixel, WifiBlueToothWixel, WifiDexBridgeWixel, Follower, LimiTTer, LibreAlarm); // parakeet separate
         Collections.addAll(usesDexcomRaw, BluetoothWixel, DexbridgeWixel, WifiBlueToothWixel, DexcomG5, WifiDexBridgeWixel);

@@ -124,7 +124,7 @@ public class MegaStatus extends ActivityWithMenu {
                 }
             }
             if (DexCollectionType.hasWifi()) {
-                addAsection(IP_COLLECTOR, "Wifi Wixel / Parakeet Status");
+                addAsection(IP_COLLECTOR, dexCollectionType == DexCollectionType.Mock ? "FAKE / MOCK DATA SOURCE" : "Wifi Wixel / Parakeet Status");
             }
             if (Home.get_master_or_follower()) {
                 addAsection(XDRIP_PLUS_SYNC, "xDrip+ Sync Group");

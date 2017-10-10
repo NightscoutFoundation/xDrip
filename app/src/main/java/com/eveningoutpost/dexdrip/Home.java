@@ -1269,6 +1269,9 @@ public class Home extends ActivityWithMenu {
         } else if (allWords.contentEquals("enable engineering mode")) {
             Home.setPreferencesBoolean("engineering_mode", true);
             JoH.static_toast(getApplicationContext(), "Engineering mode enabled - be careful", Toast.LENGTH_LONG);
+        } else if (get_engineering_mode() && allWords.contentEquals("enable fake data source")) {
+            Home.setPreferencesString(DexCollectionType.DEX_COLLECTION_METHOD, DexCollectionType.Mock.toString());
+            JoH.static_toast_long("YOU ARE NOW USING FAKE DATA!!!");
         } else if (allWords.contentEquals("vehicle mode test")) {
             ActivityRecognizedService.spoofActivityRecogniser(mActivity, JoH.tsl() + "^" + 0);
             staticRefreshBGCharts();
@@ -2104,7 +2107,7 @@ public class Home extends ActivityWithMenu {
         if (isBTWixel || isDexbridgeWixel || isWifiBluetoothWixel) {
             updateCurrentBgInfoForBtBasedWixel(notificationText);
         }
-        if (isWifiWixel || isWifiBluetoothWixel) {
+        if (isWifiWixel || isWifiBluetoothWixel || collector.equals(DexCollectionType.Mock)) {
             updateCurrentBgInfoForWifiWixel(notificationText);
         } else if (is_follower || collector.equals(DexCollectionType.NSEmulator)) {
             displayCurrentInfo();
@@ -2114,6 +2117,8 @@ public class Home extends ActivityWithMenu {
         }
         if (collector.equals(DexCollectionType.Disabled)) {
             notificationText.append("\n DATA SOURCE DISABLED");
+        } else if (collector.equals(DexCollectionType.Mock)) {
+            notificationText.append("\n USING FAKE DATA SOURCE !!!");
         }
         if (prefs.getLong("alerts_disabled_until", 0) > new Date().getTime()) {
             notificationText.append("\n ALL ALERTS CURRENTLY DISABLED");
@@ -2316,6 +2321,7 @@ public class Home extends ActivityWithMenu {
         initial_status_binding.setPrefs(new PrefsViewImpl());
         builder.setView(initial_status_binding.getRoot());
         status_helper_dialog = builder.create();
+        status_helper_dialog.setCanceledOnTouchOutside(true);
         try {
             status_helper_dialog.show();
         } catch (Exception e) {
