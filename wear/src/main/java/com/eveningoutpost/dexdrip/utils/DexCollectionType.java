@@ -5,7 +5,9 @@ import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.Services.DexShareCollectionService;
 import com.eveningoutpost.dexdrip.Services.G5CollectionService;
 import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
+import com.eveningoutpost.dexdrip.Services.WifiCollectionService;
 
+import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -138,8 +140,19 @@ public enum DexCollectionType {
                 }
             case DexcomShare:
                 return DexShareCollectionService.class;
+            case WifiWixel:
+                return WifiCollectionService.class;
             default:
                 return DexCollectionService.class;
+        }
+    }
+
+    public static Boolean getServiceRunningState() {
+        try {
+            final Method method = getCollectorServiceClass().getMethod("isRunning");
+            return (Boolean)method.invoke(null);
+        } catch (Exception e) {
+            return null;
         }
     }
 
@@ -161,5 +174,6 @@ public enum DexCollectionType {
                 return dct.name();
         }
     }
+
 
 }

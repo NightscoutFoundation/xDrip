@@ -152,6 +152,11 @@ public class WifiCollectionService extends Service {
          task.executeOnExecutor(xdrip.executor);
     }
 
+    // For DexCollectionType probe
+    public static boolean isRunning() {
+        return lastState.equals("Not Running") || lastState.startsWith("Stopping", 0) ? false : true;
+    }
+
     // data for MegaStatus
     public static List<StatusItem> megaStatus(Context context) {
         final List<StatusItem> l = new ArrayList<>();
