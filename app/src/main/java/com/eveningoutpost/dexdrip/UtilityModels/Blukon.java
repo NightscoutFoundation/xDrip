@@ -8,14 +8,6 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
 
-import java.text.SimpleDateFormat;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Date;
 
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
@@ -27,6 +19,7 @@ import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
+import com.eveningoutpost.dexdrip.utils.FileUtils;
 import com.eveningoutpost.dexdrip.xdrip;
 
 /**
@@ -105,40 +98,6 @@ public class Blukon {
         return isBlukonPacket(buffer) && getPin() != null; // TODO can't be unset yet and isn't proper subtype test yet
     }
 
-    public static String byteArrayToHex(byte[] a) {
-        if(a == null) {
-            return null;
-        }
-        StringBuilder sb = new StringBuilder(a.length * 2);
-        for(byte b: a)
-            sb.append(String.format("0x%02x ", b));
-        return sb.toString();
-    }
-    
-    public static void writeToFile(String file, byte []data) {
-
-        Context context = xdrip.getAppContext();
-        
-        String dir = context.getFilesDir().getPath();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
-        String currentDateandTime = sdf.format(new Date());
-
-        String file_name = dir + '/' + file+ "_" + currentDateandTime + ".dat";
-        UserError.Log.e(TAG, "Writing to file" + file_name);
-        try {
-            //XposedBridge.log("Writing to file " + file_name + ", size = " + (data == null ? 0 : data.length));
-            FileOutputStream f = new FileOutputStream(new File(file_name));
-            if(data != null) {
-                // file will be written with zero length to let the user know what is happening.
-                f.write(data);
-            }
-            f.close();
-        }catch (IOException e) {
-        	UserError.Log.e(TAG, "Cought exception when trying to write file", e);
-        }
-    }
-    
-
     // .*(dexdrip|gatt|Blukon).
 	public static byte[] decodeBlukonPacket(byte[] buffer) {
         int cmdFound = 0;
@@ -151,7 +110,7 @@ public class Blukon {
 
         //BluCon code by gregorybel
         final String strRecCmd = CipherUtils.bytesToHex(buffer).toLowerCase();
-        UserError.Log.i(TAG, "BlueCon data: " + strRecCmd + " " + byteArrayToHex(buffer));
+        UserError.Log.i(TAG, "BlueCon data: " + strRecCmd + " " + CipherUtils.byteArrayToHumanReadableHex(buffer));
 
         if (strRecCmd.equalsIgnoreCase("cb010000")) {
             UserError.Log.i(TAG, "Reset currentCommand");
@@ -476,8 +435,8 @@ public class Blukon {
             currentCommand = "010c0e00";
             UserError.Log.i(TAG, "Send sleep cmd");
             
-            UserError.Log.e(TAG, "Full data that was recieved is " + byteArrayToHex(m_full_data));
-            writeToFile("xDripData", m_full_data);
+            UserError.Log.e(TAG, "Full data that was recieved is " + CipherUtils.byteArrayToHumanReadableHex(m_full_data));
+            FileUtils.writeToFileWithCurrentDate(TAG, "xDripData", m_full_data);
 
         } else {
         	currentCommand = "";
