@@ -938,8 +938,7 @@ public class BgReading extends Model implements ShareUploadableBg {
     }
 
     public static boolean isDataSuitableForDoubleCalibration() {
-        final List<BgReading> uncalculated = BgReading.latestUnCalculated(3);
-        return !(uncalculated == null || (uncalculated.size() < 3) || (JoH.msSince(uncalculated.get(2).timestamp) > STALE_CALIBRATION_CUT_OFF));
+        return ProcessInitialDataQuality.getInitialDataQuality().pass;
     }
 
 
