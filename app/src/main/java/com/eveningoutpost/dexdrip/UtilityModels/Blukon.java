@@ -54,7 +54,6 @@ public class Blukon {
     private static long m_timeLastBg = 0;
     private static long m_persistentTimeLastBg;
     private static int m_blockNumber = 0;
-    private static boolean m_readFullNfcData = false;
     private static byte[] m_full_data = new byte [344];
 
     public static String getPin() {
@@ -138,7 +137,7 @@ public class Blukon {
                         currentCommand = "010d0e0127";
                         UserError.Log.i(TAG, "getSensorAge");
                     } else {
-                        if(m_readFullNfcData) {
+                        if(Home.getPreferencesBooleanDefaultFalse("external_blukon_algorithm")) {
                             // Send the command to getHistoricData (read all blcoks from 0 to 0x2b)
                             UserError.Log.i(TAG, "getHistoricData (1)");
                             currentCommand = "010d0f02002b";
@@ -219,7 +218,7 @@ public class Blukon {
                 currentCommand = "";
             }
 /*
-            Uncoment this code to allow reading dead sensors.
+            //Uncoment this code to allow reading dead sensors.
             currentCommand = "810a00";
             UserError.Log.i(TAG, "Send ACK");
 */
@@ -254,7 +253,7 @@ public class Blukon {
                 currentCommand = "010d0e0127";
                 UserError.Log.i(TAG, "getSensorAge");
             } else {
-                if(m_readFullNfcData) {
+                if(Home.getPreferencesBooleanDefaultFalse("external_blukon_algorithm")) {
                     // Send the command to getHistoricData (read all blcoks from 0 to 0x2b)
                     UserError.Log.i(TAG, "getHistoricData (2)");
                     currentCommand = "010d0f02002b";
@@ -275,7 +274,7 @@ public class Blukon {
             if ((sensorAge > 0) && (sensorAge < 200000)) {
                 Home.setPreferencesInt("nfc_sensor_age", sensorAge);//in min
             }
-            if(m_readFullNfcData) {
+            if(Home.getPreferencesBooleanDefaultFalse("external_blukon_algorithm")) {
                 // Send the command to getHistoricData (read all blcoks from 0 to 0x2b)
                 UserError.Log.i(TAG, "getHistoricData (3)");
                 currentCommand = "010d0f02002b";
