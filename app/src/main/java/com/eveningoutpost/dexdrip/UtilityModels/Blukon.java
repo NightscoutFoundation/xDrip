@@ -4,6 +4,8 @@ import android.content.Context;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
@@ -443,7 +445,14 @@ public class Blukon {
 
             UserError.Log.e(TAG, "Full data that was received is " + HexDump.dumpHexString(m_full_data));
             FileUtils.writeToFileWithCurrentDate(TAG, "xDripData", m_full_data);
-
+            
+            Intent intent = new Intent(Intents.XDRIP_PLUS_LIBRE_DATA);
+            Bundle bundle = new Bundle();
+            bundle.putByteArray(Intents.LIBRE_DATA_BUFFER, m_full_data);
+            bundle.putLong(Intents.LIBRE_DATA_TIMESTAMP, JoH.tsl());
+            intent.putExtras(bundle);
+            intent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
+            xdrip.getAppContext().sendBroadcast(intent);
         } else {
             currentCommand = "";
         }
