@@ -216,15 +216,5 @@ public class CipherUtils {
     public static String getRandomHexKey() {
         return bytesToHex(getRandomKey());
     }
-    
-    public static String byteArrayToHumanReadableHex(byte[] a) {
-        if(a == null) {
-            return "";
-        }
-        StringBuilder sb = new StringBuilder(a.length * 2);
-        for(byte b: a)
-            sb.append(String.format("0x%02x ", b));
-        return sb.toString();
-    }
 }
 

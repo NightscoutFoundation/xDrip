@@ -21,6 +21,7 @@ import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
 import com.eveningoutpost.dexdrip.utils.FileUtils;
 import com.eveningoutpost.dexdrip.xdrip;
+import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 
 /**
  * Created by gregorybel / jamorham on 02/09/2017.
@@ -109,7 +110,7 @@ public class Blukon {
 
         //BluCon code by gregorybel
         final String strRecCmd = CipherUtils.bytesToHex(buffer).toLowerCase();
-        UserError.Log.i(TAG, "BlueCon data: " + strRecCmd + " " + CipherUtils.byteArrayToHumanReadableHex(buffer));
+        UserError.Log.i(TAG, "BlueCon data: " + strRecCmd + " " + HexDump.dumpHexString(buffer));
 
         if (strRecCmd.equalsIgnoreCase("cb010000")) {
             UserError.Log.i(TAG, "Reset currentCommand");
@@ -434,7 +435,7 @@ public class Blukon {
             currentCommand = "010c0e00";
             UserError.Log.i(TAG, "Send sleep cmd");
             
-            UserError.Log.e(TAG, "Full data that was recieved is " + CipherUtils.byteArrayToHumanReadableHex(m_full_data));
+            UserError.Log.e(TAG, "Full data that was recieved is " + HexDump.dumpHexString(m_full_data));
             FileUtils.writeToFileWithCurrentDate(TAG, "xDripData", m_full_data);
 
         } else {
