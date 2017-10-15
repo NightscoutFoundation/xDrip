@@ -187,7 +187,7 @@ public class StartNewSensor extends ActivityWithMenu {
 
         CollectionServiceStarter.newStart(getApplicationContext());
         Intent intent;
-        if (prefs.getBoolean("store_sensor_location", true) && Experience.gotData()) {
+        if (prefs.getBoolean("store_sensor_location", false) && Experience.gotData()) {
             intent = new Intent(getApplicationContext(), NewSensorLocation.class);
         } else {
             intent = new Intent(getApplicationContext(), Home.class);

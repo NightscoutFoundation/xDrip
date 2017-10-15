@@ -288,6 +288,16 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                                         sendMessagePayload(node, "WEARABLE_RESEND_PATH", path, payload);
                                     default://SYNC_ALL_DATA
                                         Log.d(TAG, "doInBackground SYNC_ALL_DATA");
+                                        if (sync_step_counter) {
+                                            datamap = getWearStepSensorData(send_step_count, last_send_previous_step_sensor, 0);
+                                            if (datamap != null) {
+                                                sendMessagePayload(node, "SYNC_STEP_SENSOR_PATH", SYNC_STEP_SENSOR_PATH, datamap.toByteArray());
+                                            }
+                                        }
+                                        datamap = getWearTreatmentsData(send_treatments_count, last_send_previous_treatments, 0);
+                                        if (datamap != null) {
+                                            sendMessagePayload(node, "SYNC_TREATMENTS_PATH", SYNC_TREATMENTS_PATH, datamap.toByteArray());
+                                        }
                                         if (enable_wearG5) {//KS
                                             datamap = getWearTransmitterData(send_bg_count, last_send_previous, 0);//KS 36 data for last 3 hours; 288 for 1 day
                                             if (datamap != null) {
@@ -300,16 +310,6 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                                                 byte[] compressPayload = JoH.compressBytesToBytesGzip((datamap.toByteArray()));
                                                 sendMessagePayload(node, "SYNC_LOGS_PATH", SYNC_LOGS_PATH, compressPayload);
                                             }
-                                        }
-                                        if (sync_step_counter) {
-                                            datamap = getWearStepSensorData(send_step_count, last_send_previous_step_sensor, 0);
-                                            if (datamap != null) {
-                                                sendMessagePayload(node, "SYNC_STEP_SENSOR_PATH", SYNC_STEP_SENSOR_PATH, datamap.toByteArray());
-                                            }
-                                        }
-                                        datamap = getWearTreatmentsData(send_treatments_count, last_send_previous_treatments, 0);
-                                        if (datamap != null) {
-                                            sendMessagePayload(node, "SYNC_TREATMENTS_PATH", SYNC_TREATMENTS_PATH, datamap.toByteArray());
                                         }
                                         //sendMessagePayload(node, "WEARABLE_RESEND_PATH", path, payload);
                                         if (PersistentStore.getBoolean(G5_BATTERY_WEARABLE_SEND)) {
@@ -1063,6 +1063,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                     Log.d(TAG, "onDataChanged path=" + path);
                     dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
                     G5CollectionService.getBatteryStatusNow = dataMap.getBoolean("getBatteryStatusNow", false);
+                    Ob1G5CollectionService.getBatteryStatusNow = dataMap.getBoolean("getBatteryStatusNow", false);
                     sendCollectorStatus(getApplicationContext(), path);
                     sendPersistentStore();
                 } else if (path.equals(WEARABLE_SENSOR_DATA_PATH)) {//KS

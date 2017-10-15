@@ -50,6 +50,7 @@ import com.google.zxing.integration.android.IntentResult;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -413,7 +414,7 @@ public class BluetoothScan extends ListActivityWithMenu {
             }
 
         } catch (UnsupportedEncodingException | NullPointerException e) {
-            Log.d(TAG, "Got exception in listitemclick: " + e);
+            Log.d(TAG, "Got exception in listitemclick: "+ Arrays.toString(e.getStackTrace()));
         }
     }
 

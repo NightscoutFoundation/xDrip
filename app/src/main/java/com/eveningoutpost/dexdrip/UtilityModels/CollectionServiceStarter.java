@@ -132,7 +132,7 @@ public class CollectionServiceStarter {
     }
 
     public static boolean isWifiWixel(String collection_method) {
-        return collection_method.equals("WifiWixel");
+        return collection_method.equals("WifiWixel") || DexCollectionType.getDexCollectionType() == DexCollectionType.Mock;
     }
 
     public static boolean isFollower(String collection_method) {

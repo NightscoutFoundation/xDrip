@@ -1849,9 +1849,9 @@ public class G5CollectionService extends G5BaseService {
     }
 
     // Status for Watchface
-    public static boolean isRunning() {
-        return lastState.equals("Not running") || lastState.equals("Stopped") ? false : true;
-    }
+    //public static boolean isRunning() {
+   //     return lastState.equals("Not running") || lastState.equals("Stopped") ? false : true;
+   // }
 
    /* public static void setWatchStatus(DataMap dataMap) {
         lastStateWatch = dataMap.getString("lastState", "");

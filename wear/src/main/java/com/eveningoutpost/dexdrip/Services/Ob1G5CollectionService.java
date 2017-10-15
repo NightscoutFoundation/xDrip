@@ -74,6 +74,7 @@ public class Ob1G5CollectionService extends G5BaseService {
     public static final String TAG = Ob1G5CollectionService.class.getSimpleName();
     public static final String OB1G5_PREFS = "use_ob1_g5_collector_service";
     private static final String OB1G5_MACSTORE = "G5-mac-for-txid-";
+    private static final String BUGGY_SAMSUNG_ENABLED = "buggy-samsung-enabled";
     private static STATE state = STATE.INIT;
     private static STATE last_automata_state = STATE.CLOSED;
 
@@ -96,6 +97,7 @@ public class Ob1G5CollectionService extends G5BaseService {
     private static long wakeup_time = 0;
     private static long wakeup_jitter = 0;
     private static long max_wakeup_jitter = 0;
+    private static long connecting_time = 0;
 
     public static boolean getBatteryStatusNow = false;
 
@@ -112,6 +114,8 @@ public class Ob1G5CollectionService extends G5BaseService {
 
     private PowerManager.WakeLock connection_linger;
     private PowerManager.WakeLock scanWakeLock;
+    private PowerManager.WakeLock floatingWakeLock;
+    private PowerManager.WakeLock fullWakeLock;
 
     private boolean background_launch_waiting = false;
     private static long last_scan_started = -1;
@@ -541,13 +545,23 @@ public class Ob1G5CollectionService extends G5BaseService {
     }
 
     private void handleWakeup() {
-        if ((connectNowFailures > 1) && (connectFailures < 0)) {
-            UserError.Log.d(TAG, "Avoiding power connect due to failure metric: " + connectNowFailures + " " + connectFailures);
-            changeState(STATE.CONNECT);
+        if (always_scan) {
+            UserError.Log.d(TAG, "Always scan mode");
+            changeState(STATE.SCAN);
         } else {
-            changeState(STATE.CONNECT_NOW);
+            if (connectFailures > 0) {
+                always_scan = true;
+                UserError.Log.e(TAG, "Switching to scan always mode due to connect failures metric: " + connectFailures);
+                changeState(STATE.SCAN);
+            } else if ((connectNowFailures > 1) && (connectFailures < 0)) {
+                UserError.Log.d(TAG, "Avoiding power connect due to failure metric: " + connectNowFailures + " " + connectFailures);
+                changeState(STATE.CONNECT);
+            } else {
+                changeState(STATE.CONNECT_NOW);
+            }
         }
     }
+
 
     private synchronized void prepareToWakeup() {
         if (JoH.ratelimit("g5-wakeup-timer", 5)) {
@@ -588,8 +602,15 @@ public class Ob1G5CollectionService extends G5BaseService {
 
     private void checkAlwaysScanModels() {
         final String this_model = Build.MODEL;
-        always_connect = alwaysConnectModels.contains(this_model);
         UserError.Log.d(TAG, "Checking model: " + this_model);
+
+        if ((isSamsung() && PersistentStore.getLong(BUGGY_SAMSUNG_ENABLED) > 4)) {
+            UserError.Log.d(TAG, "Enabling buggy samsung due to persistent metric");
+            JoH.buggy_samsung = true;
+        }
+
+        always_connect = alwaysConnectModels.contains(this_model);
+
         if (alwaysScanModels.contains(this_model)) {
             UserError.Log.e(TAG, "Always scan model exact match for: " + this_model);
             always_scan = true;
@@ -630,6 +651,10 @@ public class Ob1G5CollectionService extends G5BaseService {
         if (d) RxBleClient.setLogLevel(RxBleLog.DEBUG);
     }
 
+    private static boolean isSamsung() {
+        return Build.MANUFACTURER.toLowerCase().contains("samsung");
+    }
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         xdrip.checkAppContext(getApplicationContext());
@@ -644,9 +669,10 @@ public class Ob1G5CollectionService extends G5BaseService {
                 } else {
                     if (wakeup_jitter > 1000) {
                         UserError.Log.d(TAG, "Wake up, time jitter: " + JoH.niceTimeScalar(wakeup_jitter));
-                        if ((wakeup_jitter > TOLERABLE_JITTER) && (!JoH.buggy_samsung) && (Build.MANUFACTURER.toLowerCase().contains("samsung"))) {
+                        if ((wakeup_jitter > TOLERABLE_JITTER) && (!JoH.buggy_samsung) && isSamsung()) {
                             UserError.Log.wtf(TAG, "Enabled Buggy Samsung workaround due to jitter of: " + JoH.niceTimeScalar(wakeup_jitter));
                             JoH.buggy_samsung = true;
+                            PersistentStore.incrementLong(BUGGY_SAMSUNG_ENABLED);
                             max_wakeup_jitter = 0;
                         } else {
                             max_wakeup_jitter = Math.max(max_wakeup_jitter, wakeup_jitter);
@@ -853,15 +879,28 @@ public class Ob1G5CollectionService extends G5BaseService {
         switch (newState) {
             case CONNECTING:
                 connection_state = "Connecting";
+                connecting_time = JoH.tsl();
                 break;
             case CONNECTED:
                 connection_state = "Connected";
+                JoH.releaseWakeLock(floatingWakeLock);
+                floatingWakeLock = JoH.getWakeLock("floating-connected", 40000);
+                final long since_connecting = JoH.msSince(connecting_time);
+                if ((connecting_time > static_last_timestamp) && (since_connecting > Constants.SECOND_IN_MS * 310) && (since_connecting < Constants.SECOND_IN_MS * 620)) {
+                    if (!always_scan) {
+                        UserError.Log.e(TAG, "Connection time shows missed reading, switching to always scan, metric: " + JoH.niceTimeScalar(since_connecting));
+                        always_scan = true;
+                    } else {
+                        UserError.Log.e(TAG, "Connection time shows missed reading, despite always scan, metric: " + JoH.niceTimeScalar(since_connecting));
+                    }
+                }
                 break;
             case DISCONNECTING:
                 connection_state = "Disconnecting";
                 break;
             case DISCONNECTED:
                 connection_state = "Disconnected";
+                JoH.releaseWakeLock(floatingWakeLock);
                 break;
         }
         static_connection_state = connection_state;
@@ -1039,7 +1078,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                         }
                     }
                 } catch (Exception e) {
-                    UserError.Log.wtf(TAG, "Got exception trying to process bonded confirmation: ", e);
+                    UserError.Log.e(TAG, "Got exception trying to process bonded confirmation: ", e);
                 }
             }
         }
@@ -1075,9 +1114,12 @@ public class Ob1G5CollectionService extends G5BaseService {
             }
             if ((bleDevice != null) && (bleDevice.getBluetoothDevice().getAddress() != null)) {
                 UserError.Log.e(TAG, "Processing mPairingRequestReceiver !!!");
+                JoH.releaseWakeLock(fullWakeLock);
+                fullWakeLock = JoH.fullWakeLock("pairing-screen-wake", 30 * Constants.SECOND_IN_MS);
+                if (!android_wear) Home.startHomeWithExtra(context, Home.HOME_FULL_WAKEUP, "1");
                 if (!JoH.doPairingRequest(context, this, intent, bleDevice.getBluetoothDevice().getAddress())) {
                     unregisterPairingReceiver();
-                    UserError.Log.e(TAG, "Pairing failed so removing pairing automation");
+                    UserError.Log.e(TAG, "Pairing failed so removing pairing automation"); // todo use flag
                 }
             } else {
                 UserError.Log.e(TAG, "Received pairing request but device was null !!!");

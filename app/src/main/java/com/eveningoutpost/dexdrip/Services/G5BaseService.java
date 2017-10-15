@@ -44,5 +44,9 @@ public abstract class G5BaseService extends Service {
         return bondState;
     }
 
+    public static boolean isRunning() {
+        return lastState.equals("Not Running") || lastState.contains("Stop") ? false : true;
+    }
+
 
 }

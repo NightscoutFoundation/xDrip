@@ -159,10 +159,10 @@ public class G5CollectionService extends G5BaseService {
     public Context mContext;//KS
     //private boolean delays = false;
 
-    private static String lastState = "Not running";
-    private static String lastStateWatch = "Not running";
-    private static long static_last_timestamp = 0;
-    private static long static_last_timestamp_watch = 0;
+    //private static String lastState = "Not running";
+    //private static String lastStateWatch = "Not running";
+    //private static long static_last_timestamp = 0;
+    //private static long static_last_timestamp_watch = 0;
     private static long last_transmitter_timestamp = 0;
 
     public static boolean getBatteryStatusNow = false;

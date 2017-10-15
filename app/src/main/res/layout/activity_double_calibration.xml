@@ -1,65 +1,85 @@
-<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:id="@+id/drawer_layout"
-    android:layout_width="match_parent" android:layout_height="match_parent"
-    tools:context="com.eveningoutpost.dexdrip.Home">
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:gravity="center_horizontal">
-        <ScrollView
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+
+        <variable
+            name="prefs"
+            type="com.eveningoutpost.dexdrip.UtilityModels.PrefsView" />
+        <import type="android.view.View"/>
+    </data>
+
+    <android.support.v4.widget.DrawerLayout
+
+        android:id="@+id/drawer_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.eveningoutpost.dexdrip.Home">
+
+        <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:id="@+id/scrollView4" >
-            <LinearLayout
-                android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <ScrollView
+                android:id="@+id/scrollView4"
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:gravity="center_horizontal">
-                <EditText
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:inputType="numberDecimal"
-                    android:ems="10"
-                    android:id="@+id/bg_value_1"
-                    android:textAlignment="center"
-                    android:textSize="24sp"
-                    android:hint="@string/enter_first_bg_value"
-                    android:layout_marginTop="10dp" />
-                <EditText
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:inputType="numberDecimal"
-                    android:ems="10"
-                    android:id="@+id/bg_value_2"
-                    android:textAlignment="center"
-                    android:textSize="24sp"
-                    android:hint="@string/enter_second_bg_value"
-                    android:layout_marginTop="20dp" />
+                android:layout_height="fill_parent">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="@string/in_order_to_get_started_please_perform_two_finger"
-                    android:layout_margin="15dp" />
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical">
+
+                    <EditText
+                        android:id="@+id/bg_value_1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:ems="10"
+                        android:hint="@string/enter_first_bg_value"
+                        android:inputType="numberDecimal"
+                        android:textAlignment="center"
+                        android:textSize="24sp" />
+
+                    <EditText
+                        android:id="@+id/bg_value_2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:ems="10"
+                        android:hint="@string/enter_second_bg_value"
+                        android:inputType="numberDecimal"
+                        android:textAlignment="center"
+                        android:visibility="@{prefs.getbool(`use_double_calibrations`) ? View.VISIBLE : View.GONE}"
+                        android:textSize="24sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="15dp"
+                        android:text="@{prefs.getbool(`use_double_calibrations`) ? @string/in_order_to_get_started_please_perform_two_finger : @string/enter_blood_glucose_value}"
+                        android:textAppearance="?android:attr/textAppearanceMedium" />
 
 
+                    <Button
+                        android:id="@+id/save_calibration_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/done" />
 
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/done"
-                    android:id="@+id/save_calibration_button" />
+                </LinearLayout>
+            </ScrollView>
+        </LinearLayout>
 
-            </LinearLayout>
-        </ScrollView>
-    </LinearLayout>
-    <fragment android:id="@+id/navigation_drawer"
-        android:layout_width="@dimen/navigation_drawer_width" android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:name="com.eveningoutpost.dexdrip.NavigationDrawerFragment"
-        tools:layout="@layout/fragment_navigation_drawer" />
+        <fragment
+            android:id="@+id/navigation_drawer"
+            android:name="com.eveningoutpost.dexdrip.NavigationDrawerFragment"
+            android:layout_width="@dimen/navigation_drawer_width"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            tools:layout="@layout/fragment_navigation_drawer" />
 
-</android.support.v4.widget.DrawerLayout>
-
+    </android.support.v4.widget.DrawerLayout>
+</layout>

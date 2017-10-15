@@ -97,6 +97,10 @@
     rx.internal.util.atomic.LinkedQueueNode consumerNode;
 }
 
+-keepclassmembers class com.eveningoutpost.dexdrip.** {
+   public static boolean isRunning();
+}
+
 -dontnote rx.internal.util.PlatformDependent
 
 -dontwarn java.lang.invoke.*

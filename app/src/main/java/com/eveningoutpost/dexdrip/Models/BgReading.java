@@ -11,6 +11,7 @@ import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 import com.activeandroid.util.SQLiteUtils;
+import com.eveningoutpost.dexdrip.BestGlucose;
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.EGVRecord;
@@ -156,8 +157,56 @@ public class BgReading extends Model implements ShareUploadableBg {
     @Column(name = "noise")
     public String noise;
 
+    @Expose
+    @Column(name = "dg_mgdl")
+    public double dg_mgdl = 0d;
+
+    @Expose
+    @Column(name = "dg_slope")
+    public double dg_slope = 0d;
+
+    @Expose
+    @Column(name = "dg_delta_name")
+    public String dg_delta_name;
+
+    public static void updateDB(){
+        String[] updates = new String[]{"ALTER TABLE BgReadings ADD COLUMN dg_mgdl REAL;", "ALTER TABLE BgReadings ADD COLUMN dg_slope REAL;", "ALTER TABLE BgReadings ADD COLUMN dg_delta_name TEXT;"};
+        for (String patch:updates) {
+            try {
+                SQLiteUtils.execSql(patch);
+            } catch (Exception e){
+            }
+        }
+
+    }
+
+    public double getDg_mgdl(){
+        if(dg_mgdl != 0) return dg_mgdl;
+        return calculated_value;
+    }
+
+    public double getDg_slope(){
+        if(dg_mgdl != 0) return dg_slope;
+        return currentSlope();
+    }
+
+    public String getDg_deltaName(){
+        if(dg_mgdl != 0 && dg_delta_name != null) return dg_delta_name;
+        return slopeName();
+    }
+
     public double calculated_value_mmol() {
         return mmolConvert(calculated_value);
+    }
+
+    public void injectDisplayGlucose(BestGlucose.DisplayGlucose displayGlucose){
+        //displayGlucose can be null. E.g. when out of order values come in
+        if (displayGlucose != null){
+            dg_mgdl = displayGlucose.mgdl;
+            dg_slope = displayGlucose.slope;
+            dg_delta_name = displayGlucose.delta_name;
+            this.save();
+        }
     }
 
     public double mmolConvert(double mgdl) {
@@ -475,6 +524,8 @@ public class BgReading extends Model implements ShareUploadableBg {
 
                 context.startService(new Intent(context, Notifications.class));
             }
+            bgReading.injectNoise(true); // Add noise parameter for nightscout
+            bgReading.injectDisplayGlucose(BestGlucose.getDisplayGlucose()); // Add display glucose for nightscout
             BgSendQueue.handleNewBgReading(bgReading, "create", context, Home.get_follower(), quick);
         }
 
@@ -887,8 +938,7 @@ public class BgReading extends Model implements ShareUploadableBg {
     }
 
     public static boolean isDataSuitableForDoubleCalibration() {
-        final List<BgReading> uncalculated = BgReading.latestUnCalculated(3);
-        return !(uncalculated == null || (uncalculated.size() < 3) || (JoH.msSince(uncalculated.get(2).timestamp) > STALE_CALIBRATION_CUT_OFF));
+        return ProcessInitialDataQuality.getInitialDataQuality().pass;
     }
 
 
@@ -1343,6 +1393,24 @@ public class BgReading extends Model implements ShareUploadableBg {
         } else {
             return Integer.valueOf(noise);
         }
+    }
+
+    public BgReading injectNoise(boolean save) {
+        final BgReading bgReading = this;
+        if (JoH.msSince(bgReading.timestamp) > Constants.MINUTE_IN_MS * 20) {
+            bgReading.noise = "0";
+        } else {
+            BgGraphBuilder.refreshNoiseIfOlderThan(bgReading.timestamp);
+            if (BgGraphBuilder.last_noise > BgGraphBuilder.NOISE_HIGH) {
+                bgReading.noise = "4";
+            } else if (BgGraphBuilder.last_noise > BgGraphBuilder.NOISE_TOO_HIGH_FOR_PREDICT) {
+                bgReading.noise = "3";
+            } else if (BgGraphBuilder.last_noise > BgGraphBuilder.NOISE_TRIGGER) {
+                bgReading.noise = "2";
+            }
+        }
+        if (save) bgReading.save();
+        return bgReading;
     }
 
     // list(0) is the most recent reading.

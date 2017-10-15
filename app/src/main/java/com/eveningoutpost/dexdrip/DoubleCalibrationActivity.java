@@ -18,6 +18,8 @@ import android.widget.EditText;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.UtilityModels.PrefsViewImpl;
+import com.eveningoutpost.dexdrip.databinding.ActivityDoubleCalibrationBinding;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
@@ -37,7 +39,9 @@ public class DoubleCalibrationActivity extends ActivityWithMenu {
             startActivity(intent);
             finish();
         }
-        setContentView(R.layout.activity_double_calibration);
+        ActivityDoubleCalibrationBinding binding = ActivityDoubleCalibrationBinding.inflate(getLayoutInflater());
+        binding.setPrefs(new PrefsViewImpl());
+        setContentView(binding.getRoot());
         addListenerOnButton();
     }
 

@@ -224,9 +224,10 @@ public class Preferences extends PreferenceActivity {
             String scanresults = scanResult.getContents();
             if (scanresults.startsWith(DisplayQRCode.qrmarker)) {
                 installxDripPlusPreferencesFromQRCode(prefs, scanresults);
+                return;
             }
 
-            NSBarcodeConfig barcode = new NSBarcodeConfig(scanresults);
+            final NSBarcodeConfig barcode = new NSBarcodeConfig(scanresults);
             if (barcode.hasMongoConfig()) {
                 if (barcode.getMongoUri().isPresent()) {
                     SharedPreferences.Editor editor = prefs.edit();

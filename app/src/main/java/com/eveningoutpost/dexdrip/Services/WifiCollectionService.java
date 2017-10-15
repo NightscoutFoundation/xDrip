@@ -2,7 +2,6 @@
 package com.eveningoutpost.dexdrip.Services;
 
 import android.annotation.TargetApi;
-import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
@@ -16,12 +15,11 @@ import android.preference.PreferenceManager;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
-import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
-import com.eveningoutpost.dexdrip.utils.BgToSpeech;
+import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.Mdns;
 import com.eveningoutpost.dexdrip.xdrip;
 
@@ -57,38 +55,32 @@ public class WifiCollectionService extends Service {
         dexCollectionService = this;
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         listenForChangeInSettings();
-       // bgToSpeech = BgToSpeech.setupTTS(mContext); //keep reference to not being garbage collected
+        // bgToSpeech = BgToSpeech.setupTTS(mContext); //keep reference to not being garbage collected
         Log.i(TAG, "onCreate: STARTING SERVICE");
-        lastState = "Starting up "+JoH.hourMinuteString();
+        lastState = "Starting up " + JoH.hourMinuteString();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        // TODO use JoH.getWakeLock()
-        final PowerManager pm = (PowerManager) xdrip.getAppContext().getSystemService(Context.POWER_SERVICE);
-        final PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "xdrip-wificolsvc-onStart");
+        final PowerManager.WakeLock wl = JoH.getWakeLock("xdrip-wificolsvc-onStart", 60000);
 
-        wl.acquire(60000);
-
-        if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
+      /*  if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
             stopSelf();
             if (wl.isHeld()) wl.release();
             return START_NOT_STICKY;
-        }
-        // TODO use DexCollectionType.hasWifi
-        if (CollectionServiceStarter.isWifiWixel(getApplicationContext())
-                || CollectionServiceStarter.isWifiandBTWixel(getApplicationContext())
-                || CollectionServiceStarter.isWifiandDexBridge()) {
+        }*/
+
+        if (DexCollectionType.hasWifi()) {
             runWixelReader();
             // For simplicity done here, would better happen once we know if we have a packet or not...
             setFailoverTimer();
         } else {
-            lastState = "Stopping "+ JoH.hourMinuteString();
+            lastState = "Stopping " + JoH.hourMinuteString();
             stopSelf();
             if (wl.isHeld()) wl.release();
             return START_NOT_STICKY;
         }
-        lastState="Started "+ JoH.hourMinuteString();
+        lastState = "Started " + JoH.hourMinuteString();
         if (wl.isHeld()) wl.release();
         return START_STICKY;
     }
@@ -125,11 +117,9 @@ public class WifiCollectionService extends Service {
     };
 
     private static final String WIFI_COLLECTION_WAKEUP = "WifiCollectionWakeupTime";
+
     public void setFailoverTimer() {
-        // TODO use DexCollectionType.hasWifi()
-        if (CollectionServiceStarter.isWifiWixel(getApplicationContext())
-                || CollectionServiceStarter.isWifiandBTWixel(getApplicationContext())
-                || CollectionServiceStarter.isWifiandDexBridge()) {
+        if (DexCollectionType.hasWifi()) {
             final long retry_in = WixelReader.timeForNextRead();
             Log.d(TAG, "setFailoverTimer: Fallover Restarting in: " + (retry_in / (60 * 1000)) + " minutes");
             final Calendar calendar = Calendar.getInstance();
@@ -143,13 +133,18 @@ public class WifiCollectionService extends Service {
     public void listenForChangeInSettings() {
         prefs.registerOnSharedPreferenceChangeListener(prefListener);
     }
-    
+
     private void runWixelReader() {
         // Theoretically can create more than one task. Should not be a problem since android runs them
         // on the same thread.
         WixelReader task = new WixelReader(getApplicationContext());
         // Assume here that task will execute, otheirwise we leak a wake lock...
-         task.executeOnExecutor(xdrip.executor);
+        task.executeOnExecutor(xdrip.executor);
+    }
+
+    // For DexCollectionType probe
+    public static boolean isRunning() {
+        return lastState.equals("Not Running") || lastState.startsWith("Stopping", 0) ? false : true;
     }
 
     // data for MegaStatus

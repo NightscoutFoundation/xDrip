@@ -1,12 +1,11 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.support.v7.app.AlertDialog;
-import android.text.InputType;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
@@ -50,6 +49,7 @@ public class Blukon {
     private static final String BLUKON_GETSENSORAGE_TIMER = "blukon-getSensorAge-timer";
     private static boolean m_getNowGlucoseDataCommand = false;// to be sure we wait for a GlucoseData Block and not using another block
     private static long m_timeLastBg = 0;
+    private static long m_persistentTimeLastBg;
 
     public static String getPin() {
         final String thepin = Home.getPreferencesStringWithDefault(BLUKON_PIN_PREF, null);
@@ -261,10 +261,12 @@ public class Blukon {
         } else if (currentCommand.startsWith("010d0e0103") /*getNowDataIndex*/ && m_getNowGlucoseDataIndexCommand == true && strRecCmd.startsWith("8bde")) {
             cmdFound = 1;
             // calculate time delta to last valid BG reading
-            m_minutesDiffToLastReading = (int)((((JoH.tsl() - m_timeLastBg)/1000)+30)/60);
-            UserError.Log.i(TAG, "m_minutesDiffToLastReading=" + m_minutesDiffToLastReading);
+            m_persistentTimeLastBg = PersistentStore.getLong("blukon-time-of-last-reading");
+            m_minutesDiffToLastReading = (int)((((JoH.tsl() - m_persistentTimeLastBg)/1000)+30)/60);
+            UserError.Log.i(TAG, "m_minutesDiffToLastReading=" + m_minutesDiffToLastReading + ", last reading: " + JoH.dateTimeText(m_persistentTimeLastBg));
+
             // check time range for valid backfilling
-            if ( (m_minutesDiffToLastReading > 9) && (m_minutesDiffToLastReading < (8*60))  ) {
+            if ( (m_minutesDiffToLastReading > 7) && (m_minutesDiffToLastReading < (8*60))  ) {
                 UserError.Log.i(TAG, "start backfilling");
                 m_getOlderReading = true;
             } else {
@@ -311,8 +313,11 @@ public class Blukon {
             if ( !m_getOlderReading ) {
                 processNewTransmitterData(TransmitterData.create(currentGlucose, currentGlucose, 0 /*battery level force to 0 as unknown*/, JoH.tsl()));
 
-
                 m_timeLastBg = JoH.tsl();
+
+                PersistentStore.setLong("blukon-time-of-last-reading", m_timeLastBg);
+                UserError.Log.i(TAG, "time of current reading: " + JoH.dateTimeText(m_timeLastBg));
+
                 currentCommand = "010c0e00";
                 UserError.Log.i(TAG, "Send sleep cmd");
                 m_getNowGlucoseDataCommand = false;
@@ -388,9 +393,12 @@ public class Blukon {
                 break;
             case 0x04:
                 sensorStatusString = "expired";
+                ret = true;
                 break;
             case 0x05:
                 sensorStatusString = "shutdown";
+                // @keencave: to use dead sensors for test
+//                ret = true;
                 break;
             case 0x06:
                 sensorStatusString = "in failure";
@@ -566,14 +574,12 @@ public class Blukon {
     public static void doPinDialog(final Activity activity, final Runnable runnable) {
         final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("Please enter " + activity.getString(R.string.blukon) + " device PIN number");
-        final EditText input = new EditText(activity);
-        input.setInputType(InputType.TYPE_CLASS_NUMBER);
-
+        final View input = activity.getLayoutInflater().inflate(R.layout.dialog_pin_entry, null);
         builder.setView(input);
         builder.setPositiveButton(activity.getString(R.string.ok), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                setPin(input.getText().toString().trim());
+                setPin(((EditText) input.findViewById(R.id.pinfield)).getText().toString().trim());
                 if (getPin() != null) {
                     JoH.static_toast_long("Data source set to: " + activity.getString(R.string.blukon) + " pin: " + getPin());
                     runnable.run();
@@ -588,12 +594,17 @@ public class Blukon {
                 dialog.cancel();
             }
         });
-        AlertDialog dialog = builder.create();
+        final AlertDialog dialog = builder.create();
         try {
             dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         } catch (NullPointerException e) {
             //
         }
-        dialog.show();
+        try {
+            dialog.show();
+        } catch (IllegalStateException e) {
+            UserError.Log.e(TAG, e.toString());
+            JoH.static_toast_long("Error displaying PIN entry. Please contact us if this keeps happening");
+        }
     }
 }

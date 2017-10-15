@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+        <variable
+            name="idq"
+            type="com.eveningoutpost.dexdrip.Models.ProcessInitialDataQuality.InitialDataQuality" />
+
+        <variable
+            name="prefs"
+            type="com.eveningoutpost.dexdrip.UtilityModels.PrefsView" />
+    </data>
+
+    <LinearLayout xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+        <ProgressBar
+            android:id="@+id/progressBar2"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <RadioButton
+            android:id="@+id/collector_running_indicator"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@{idq.collector_running ? @android:color/transparent : @android:color/holo_red_dark}"
+            android:checked="@{idq.collector_running}"
+            android:clickable="false"
+            android:enabled="true"
+            android:text="Data Collector Running" />
+
+        <RadioButton
+            android:id="@+id/received_data_indicator"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="@{idq.received_raw_data}"
+            android:clickable="false"
+            android:text="Receiving Data from Collector" />
+
+        <RadioButton
+            android:id="@+id/recent_data_indicator"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="@{idq.recent_data}"
+            android:clickable="false"
+            android:text="Received Recent Data" />
+
+        <TextView
+            android:id="@+id/advice_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:padding="10dp"
+            android:text="@{idq.advice}"
+            android:textStyle="bold|italic" />
+
+        <CheckBox
+            android:id="@+id/play_sound_for_calibration"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="@{prefs.getbool(`play_sound_for_initial_calibration`)}"
+            android:onClick="@{() -> prefs.togglebool(`play_sound_for_initial_calibration`)}"
+            android:text="Play sound when ready for Calibration" />
+    </LinearLayout>
+</layout>

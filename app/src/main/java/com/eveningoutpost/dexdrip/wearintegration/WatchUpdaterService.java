@@ -27,6 +27,7 @@ import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.G5CollectionService;
+import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
@@ -202,6 +203,8 @@ public class WatchUpdaterService extends WearableListenerService implements
                 if (watch_last_battery_query > phone_last_battery_query) {
                     G5CollectionService.setStoredBatteryBytes(dex_txid, G5_BATTERY_MARKER);
                     PersistentStore.setLong(G5CollectionService.G5_BATTERY_FROM_MARKER + dex_txid, watch_last_battery_query);
+                    G5CollectionService.getBatteryStatusNow = false;
+                    Ob1G5CollectionService.getBatteryStatusNow = false;
                 }
             }
             if (G5_FIRMWARE_MARKER != null) {
