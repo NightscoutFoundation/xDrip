@@ -81,6 +81,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.Experience;
 import com.eveningoutpost.dexdrip.UtilityModels.Intents;
 import com.eveningoutpost.dexdrip.UtilityModels.JamorhamShowcaseDrawer;
 import com.eveningoutpost.dexdrip.UtilityModels.NightscoutUploader;
+import com.eveningoutpost.dexdrip.UtilityModels.NotificationChannels;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.PrefsViewImpl;
@@ -255,10 +256,13 @@ public class Home extends ActivityWithMenu {
 
     private static String statusIOB = "";
     private static String statusBWP = "";
+    private NotificationChannels notifChannels;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         mActivity = this;
+        // Builds notification channels if supported
+        notifChannels = new NotificationChannels(mActivity);
 
         if (!xdrip.checkAppContext(getApplicationContext())) {
             toast("Unusual internal context problem - please report");
