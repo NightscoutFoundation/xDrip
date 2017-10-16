@@ -328,7 +328,7 @@ public class Home extends ActivityWithMenu {
             //Log.d(TAG, "Maybe ignoring battery optimization");
             final PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
             if (!pm.isIgnoringBatteryOptimizations(packageName) &&
-                    !prefs.getBoolean("requested_ignore_battery_optimizations_new", false)) {
+                    !prefs.getBoolean("requested_ignore_battery_optimizations_new", false) && !xdrip.isRunningTest()) {
                 Log.d(TAG, "Requesting ignore battery optimization");
 
                 if (PersistentStore.incrementLong("asked_battery_optimization") < 40) {

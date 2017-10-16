@@ -37,6 +37,7 @@ public class xdrip extends Application {
     private static Locale LOCALE;
     public static PlusAsyncExecutor executor;
     public static boolean useBF = false;
+    private static Boolean isRunningTestCache;
 
 
     @Override
@@ -64,21 +65,28 @@ public class xdrip extends Application {
 
         JoH.ratelimit("policy-never", 3600); // don't on first load
         new IdempotentMigrations(getApplicationContext()).performAll();
-        NFCReaderX.handleHomeScreenScanPreference(getApplicationContext());
-        AlertType.fromSettings(getApplicationContext());
-        new CollectionServiceStarter(getApplicationContext()).start(getApplicationContext());
-        PlusSyncService.startSyncService(context, "xdrip.java");
-        if (Home.getPreferencesBoolean("motion_tracking_enabled", false)) {
-            ActivityRecognizedService.startActivityRecogniser(getApplicationContext());
+
+
+        if (!isRunningTest()) {
+
+            NFCReaderX.handleHomeScreenScanPreference(getApplicationContext());
+            AlertType.fromSettings(getApplicationContext());
+            new CollectionServiceStarter(getApplicationContext()).start(getApplicationContext());
+            PlusSyncService.startSyncService(context, "xdrip.java");
+            if (Home.getPreferencesBoolean("motion_tracking_enabled", false)) {
+                ActivityRecognizedService.startActivityRecogniser(getApplicationContext());
+            }
+            BluetoothGlucoseMeter.startIfEnabled();
+
+        } else {
+            Log.d(TAG, "Detected running test mode, holding back on background processes");
         }
-        BluetoothGlucoseMeter.startIfEnabled();
         Reminder.firstInit(xdrip.getAppContext());
         PluggableCalibration.invalidateCache();
-
     }
 
     public synchronized static void initCrashlytics(Context context) {
-        if (!fabricInited) {
+        if ((!fabricInited) && !isRunningTest()) {
             try {
                 Crashlytics crashlyticsKit = new Crashlytics.Builder()
                         .core(new CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build())
@@ -89,6 +97,20 @@ public class xdrip extends Application {
             }
             fabricInited = true;
         }
+    }
+
+    public static synchronized boolean isRunningTest() {
+        if (null == isRunningTestCache) {
+            boolean test_framework;
+            try {
+                Class.forName("android.support.test.espresso.Espresso");
+                test_framework = true;
+            } catch (ClassNotFoundException e) {
+                test_framework = false;
+            }
+            isRunningTestCache = test_framework;
+        }
+        return isRunningTestCache;
     }
 
     public synchronized static void initBF() {
@@ -147,7 +169,8 @@ public class xdrip extends Application {
                     Log.i(TAG, "Using activity context instead of base for Locale change");
                     context.getResources().updateConfiguration(config, context.getResources().getDisplayMetrics());
                 }
-            } Log.d(TAG,"Already set to locale: " + forced_language);
+            }
+            Log.d(TAG, "Already set to locale: " + forced_language);
         }
     }
     //}
