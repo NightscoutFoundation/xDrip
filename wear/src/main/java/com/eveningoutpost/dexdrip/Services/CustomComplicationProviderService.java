@@ -152,10 +152,6 @@ public class CustomComplicationProviderService extends ComplicationProviderServi
                         break;
                     case AGO:
                         builder.setShortTitle(ComplicationText.plainText(niceTimeSinceBgReading(bgReading)));
-                        //Loop status by @gregorybel
-                        String externalStatusString = PersistentStore.getString("remote-status-string");
-                        Log.d(TAG, "Returning complication status: " + externalStatusString);
-                        builder.setShortText(ComplicationText.plainText(externalStatusString));
                         break;
                     default:
                         builder.setShortTitle(ComplicationText.plainText("ERR!"));
