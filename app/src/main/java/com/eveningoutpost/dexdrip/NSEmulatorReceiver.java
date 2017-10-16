@@ -68,13 +68,14 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
                             case Intents.XDRIP_PLUS_NS_EMULATOR:
 
                                 // in future this could have its own data source perhaps instead of follower
-                                if (!Home.get_follower() && DexCollectionType.getDexCollectionType() != DexCollectionType.NSEmulator) {
+                                if (!Home.get_follower() && DexCollectionType.getDexCollectionType() != DexCollectionType.NSEmulator && 
+                                    !Home.getPreferencesBooleanDefaultFalse("external_blukon_algorithm")) { //???DexCollectionType
                                     Log.e(TAG, "Received NSEmulator data but we are not a follower or emulator receiver");
                                     return;
                                 }
 
                                 if (!Home.get_follower()) {
-                                    // must be NSEmulator here
+                                    // must be NSEmulator here ???? Not true anymore.
                                     if (!Sensor.isActive()) {
                                         // warn about problems running without a sensor record
                                         Home.toaststaticnext("Please use: Start Sensor from the menu for best results!");

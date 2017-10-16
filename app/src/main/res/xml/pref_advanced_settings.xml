@@ -645,6 +645,14 @@
                     android:key="predictive_bg"
                     android:summary="@string/predictive_readings_old"
                     android:title="@string/display_predictive_values" />
+                
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:dependency="engineering_mode"
+                    android:key="external_blukon_algorithm"
+                    android:summary="@string/use_external_blukon_algorithm_summary"
+                    android:title="@string/use_external_blukon_algorithm" />
+                
             </PreferenceScreen>
             <PreferenceCategory
                 android:key="community_help_category"
