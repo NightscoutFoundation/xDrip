@@ -29,6 +29,13 @@ public class NotificationChannels extends ContextWrapper {
     public static final String PARAKEET_STATUS_CHANNEL = "parakeetStatusChannel";
     public static final String REMINDER_CHANNEL = "reminderChannel";
     public static final String BG_ALERT_CHANNEL = "bgAlertChannel";
+    public static final String BG_MISSED_ALERT_CHANNEL = "bgMissedAlertChannel";
+    public static final String BG_RISE_DROP_CHANNEL = "bgRiseDropChannel";
+    public static final String BG_PREDICTED_LOW_CHANNEL = "bgPredictedLowChannel";
+    public static final String BG_PERSISTENT_HIGH_CHANNEL = "bgPersistentHighChannel";
+    public static final String CALIBRATION_CHANNEL = "calibrationChannel";
+    public static final String ONGOING_CHANNEL = "ongoingChannel";
+
 
     @TargetApi(Build.VERSION_CODES.O)
     public NotificationChannels(Context ctx) {
@@ -63,6 +70,30 @@ public class NotificationChannels extends ContextWrapper {
         notifChannels.add(new NotificationChannel(
                 BG_ALERT_CHANNEL,
                 "Blood Glucose Alert",
+                NotificationManager.IMPORTANCE_DEFAULT));
+        notifChannels.add(new NotificationChannel(
+                BG_MISSED_ALERT_CHANNEL,
+                "BG Missed Readings",
+                NotificationManager.IMPORTANCE_DEFAULT));
+        notifChannels.add(new NotificationChannel(
+                BG_RISE_DROP_CHANNEL,
+                "BG Rise/Drop",
+                NotificationManager.IMPORTANCE_DEFAULT));
+        notifChannels.add(new NotificationChannel(
+                BG_PREDICTED_LOW_CHANNEL,
+                "BG Predicted Low",
+                NotificationManager.IMPORTANCE_DEFAULT));
+        notifChannels.add(new NotificationChannel(
+                BG_PERSISTENT_HIGH_CHANNEL,
+                "BG Persistent High",
+                NotificationManager.IMPORTANCE_DEFAULT));
+        notifChannels.add(new NotificationChannel(
+                CALIBRATION_CHANNEL,
+                "Calibration",
+                NotificationManager.IMPORTANCE_DEFAULT));
+        notifChannels.add(new NotificationChannel(
+                ONGOING_CHANNEL,
+                "Ongoing",
                 NotificationManager.IMPORTANCE_DEFAULT));
 
         getNotifManager().createNotificationChannels(notifChannels);
