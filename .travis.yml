@@ -1,0 +1,26 @@
+language: android
+
+android:
+  components:
+    - tools
+    - platform-tools
+    - tools
+
+    - build-tools-25.0.0
+    - build-tools-26.0.2
+    - android-23
+    - android-26
+    - extra-google-m2repository
+    - extra-android-m2repository
+    - extra-android-support
+    - extra-google-google_play_services
+
+  licenses:
+      - 'android-sdk-license-.+'
+      - 'google-gdk-license-.+'
+
+before_install:
+  - chmod +x gradlew
+
+script:
+  - ./gradlew assembleRelease && ./gradlew test

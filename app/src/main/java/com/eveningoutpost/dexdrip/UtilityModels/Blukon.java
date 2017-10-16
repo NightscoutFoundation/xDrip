@@ -1,11 +1,13 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+import android.content.Context;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
+
 
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
@@ -17,7 +19,9 @@ import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
+import com.eveningoutpost.dexdrip.utils.FileUtils;
 import com.eveningoutpost.dexdrip.xdrip;
+import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 
 /**
  * Created by gregorybel / jamorham on 02/09/2017.
@@ -50,6 +54,8 @@ public class Blukon {
     private static boolean m_getNowGlucoseDataCommand = false;// to be sure we wait for a GlucoseData Block and not using another block
     private static long m_timeLastBg = 0;
     private static long m_persistentTimeLastBg;
+    private static int m_blockNumber = 0;
+    private static byte[] m_full_data = new byte [344];
 
     public static String getPin() {
         final String thepin = Home.getPreferencesStringWithDefault(BLUKON_PIN_PREF, null);
@@ -77,6 +83,7 @@ public class Blukon {
         m_getNowGlucoseDataIndexCommand = false;
 
         m_getOlderReading = false;
+        m_blockNumber = 0;
         // @keencave - initialize only once during initial to ensure no backfilling at start
  //       m_timeLastBg = 0;
 
@@ -91,9 +98,8 @@ public class Blukon {
         return isBlukonPacket(buffer) && getPin() != null; // TODO can't be unset yet and isn't proper subtype test yet
     }
 
-
     // .*(dexdrip|gatt|Blukon).
-    public static byte[] decodeBlukonPacket(byte[] buffer) {
+	public static byte[] decodeBlukonPacket(byte[] buffer) {
         int cmdFound = 0;
         Boolean gotLowBat = false;
 
@@ -104,7 +110,7 @@ public class Blukon {
 
         //BluCon code by gregorybel
         final String strRecCmd = CipherUtils.bytesToHex(buffer).toLowerCase();
-        UserError.Log.i(TAG, "BlueCon data: " + strRecCmd);
+        UserError.Log.i(TAG, "BlueCon data: " + strRecCmd + " " + HexDump.dumpHexString(buffer));
 
         if (strRecCmd.equalsIgnoreCase("cb010000")) {
             UserError.Log.i(TAG, "Reset currentCommand");
@@ -132,9 +138,16 @@ public class Blukon {
                         currentCommand = "010d0e0127";
                         UserError.Log.i(TAG, "getSensorAge");
                     } else {
-                        currentCommand = "010d0e0103";
-                        m_getNowGlucoseDataIndexCommand = true;//to avoid issue when gotNowDataIndex cmd could be same as getNowGlucoseData (case block=3)
-                        UserError.Log.i(TAG, "getNowGlucoseDataIndexCommand");
+                        if(Home.getPreferencesBooleanDefaultFalse("external_blukon_algorithm")) {
+                            // Send the command to getHistoricData (read all blcoks from 0 to 0x2b)
+                            UserError.Log.i(TAG, "getHistoricData (1)");
+                            currentCommand = "010d0f02002b";
+                            m_blockNumber = 0;
+                        } else {
+	                        currentCommand = "010d0e0103";
+	                        m_getNowGlucoseDataIndexCommand = true;//to avoid issue when gotNowDataIndex cmd could be same as getNowGlucoseData (case block=3)
+	                        UserError.Log.i(TAG, "getNowGlucoseDataIndexCommand");
+                        }
                     }
                 }
 
@@ -206,6 +219,7 @@ public class Blukon {
                 currentCommand = "";
             }
 /*
+            //Uncoment this code to allow reading dead sensors.
             currentCommand = "810a00";
             UserError.Log.i(TAG, "Send ACK");
 */
@@ -240,9 +254,16 @@ public class Blukon {
                 currentCommand = "010d0e0127";
                 UserError.Log.i(TAG, "getSensorAge");
             } else {
-                currentCommand = "010d0e0103";
-                m_getNowGlucoseDataIndexCommand = true;//to avoid issue when gotNowDataIndex cmd could be same as getNowGlucoseData (case block=3)
-                UserError.Log.i(TAG, "getNowGlucoseDataIndexCommand");
+                if(Home.getPreferencesBooleanDefaultFalse("external_blukon_algorithm")) {
+                    // Send the command to getHistoricData (read all blcoks from 0 to 0x2b)
+                    UserError.Log.i(TAG, "getHistoricData (2)");
+                    currentCommand = "010d0f02002b";
+                    m_blockNumber = 0;
+                } else {
+                    currentCommand = "010d0e0103";
+                    m_getNowGlucoseDataIndexCommand = true;//to avoid issue when gotNowDataIndex cmd could be same as getNowGlucoseData (case block=3)
+                    UserError.Log.i(TAG, "getNowGlucoseDataIndexCommand");
+                }
             }
 
         } else if (currentCommand.startsWith("010d0e0127") /*getSensorAge*/ && strRecCmd.startsWith("8bde")) {
@@ -254,9 +275,16 @@ public class Blukon {
             if ((sensorAge > 0) && (sensorAge < 200000)) {
                 Home.setPreferencesInt("nfc_sensor_age", sensorAge);//in min
             }
-            currentCommand = "010d0e0103";
-            m_getNowGlucoseDataIndexCommand = true;//to avoid issue when gotNowDataIndex cmd could be same as getNowGlucoseData (case block=3)
-            UserError.Log.i(TAG, "getNowGlucoseDataIndexCommand");
+            if(Home.getPreferencesBooleanDefaultFalse("external_blukon_algorithm")) {
+                // Send the command to getHistoricData (read all blcoks from 0 to 0x2b)
+                UserError.Log.i(TAG, "getHistoricData (3)");
+                currentCommand = "010d0f02002b";
+                m_blockNumber = 0;
+            } else {
+                currentCommand = "010d0e0103";
+                m_getNowGlucoseDataIndexCommand = true;//to avoid issue when gotNowDataIndex cmd could be same as getNowGlucoseData (case block=3)
+                UserError.Log.i(TAG, "getNowGlucoseDataIndexCommand");
+            }
 
         } else if (currentCommand.startsWith("010d0e0103") /*getNowDataIndex*/ && m_getNowGlucoseDataIndexCommand == true && strRecCmd.startsWith("8bde")) {
             cmdFound = 1;
@@ -315,8 +343,8 @@ public class Blukon {
 
                 m_timeLastBg = JoH.tsl();
 
-                PersistentStore.setLong("blukon-time-of-last-reading", m_timeLastBg);
-                UserError.Log.i(TAG, "time of current reading: " + JoH.dateTimeText(m_timeLastBg));
+                    PersistentStore.setLong("blukon-time-of-last-reading", m_timeLastBg);
+                    UserError.Log.i(TAG, "time of current reading: " + JoH.dateTimeText(m_timeLastBg));
 
                 currentCommand = "010c0e00";
                 UserError.Log.i(TAG, "Send sleep cmd");
@@ -339,9 +367,12 @@ public class Blukon {
                 int delayedBlockNumber = blockNumberForNowGlucoseDataDelayed(delayedTrendIndex);
                 currentCommand = "010d0e010" + Integer.toHexString(delayedBlockNumber);//getNowGlucoseData
                 UserError.Log.i(TAG, "bf: read next block: " + currentCommand);
+
+
             }
-
-
+        }  else if ((currentCommand.startsWith("010d0f02002b") /*getHistoricData */ || (currentCommand.isEmpty() && m_blockNumber > 0)) && strRecCmd.startsWith("8bdf")) {
+        	cmdFound = 1;
+        	handlegetHistoricDataResponse(buffer);
         }  else if (strRecCmd.startsWith("cb020000")) {
             cmdFound = 1;
             UserError.Log.e(TAG, "is bridge battery low????!");
@@ -373,7 +404,44 @@ public class Blukon {
 
     }
 
+	private static void handlegetHistoricDataResponse(byte[] buffer)
+	{
+		UserError.Log.e(TAG, "recieved historic data, m_block_number = " + m_blockNumber);
+		// We are looking for 43 blocks of 8 bytes.
+        // The bluekon will send them as 21 blocks of 16 bytes, and the last one of 8 bytes. 
+        // The packet will look like "0x8b 0xdf 0xblocknumber 0x02 DATA" (so data starts at place 4)
+        if(m_blockNumber > 42) {
+        	UserError.Log.e(TAG, "recieved historic data, but block number is too big " + m_blockNumber);
+        	return;
+        }
+        
+        int len = buffer.length - 4;
+        UserError.Log.e(TAG,"len = " + len +" " + len + " blocknum " + buffer[2]);
+        
+        if(buffer[2] != m_blockNumber) {
+        	UserError.Log.e(TAG, "We have recieved a bad block number buffer[2] = " + buffer[2] + " m_blockNumber = " + m_blockNumber);
+        	return;
+        }
+        if(8 * m_blockNumber + len > m_full_data.length) {
+        	UserError.Log.e(TAG, "We have recieved too much data  m_blockNumber = " + m_blockNumber + " len = " + len + 
+        			" m_full_data.length = " + m_full_data.length);        	
+        	return;
+        }
+        
+        System.arraycopy(buffer, 4, m_full_data, 8 * m_blockNumber, len);
+        m_blockNumber += len / 8;
+        
+        if(m_blockNumber >= 43) {
+            currentCommand = "010c0e00";
+            UserError.Log.i(TAG, "Send sleep cmd");
+            
+            UserError.Log.e(TAG, "Full data that was recieved is " + HexDump.dumpHexString(m_full_data));
+            FileUtils.writeToFileWithCurrentDate(TAG, "xDripData", m_full_data);
 
+        } else {
+        	currentCommand = "";
+        }
+	}
 
     private static boolean isSensorReady(byte sensorStatusByte) {
 
