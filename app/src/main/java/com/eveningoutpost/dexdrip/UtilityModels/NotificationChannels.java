@@ -26,6 +26,9 @@ public class NotificationChannels extends ContextWrapper {
     public static final String LOW_BRIDGE_BATTERY_CHANNEL = "lowBridgeBattery";
     public static final String LOW_TRANSMITTER_BATTERY_CHANNEL = "lowTransmitterBattery";
     public static final String NIGHTSCOUT_UPLOADER_CHANNEL = "nightscoutUploaderChannel";
+    public static final String PARAKEET_STATUS_CHANNEL = "parakeetStatusChannel";
+    public static final String REMINDER_CHANNEL = "reminderChannel";
+    public static final String BG_ALERT_CHANNEL = "bgAlertChannel";
 
     @TargetApi(Build.VERSION_CODES.O)
     public NotificationChannels(Context ctx) {
@@ -48,6 +51,18 @@ public class NotificationChannels extends ContextWrapper {
         notifChannels.add(new NotificationChannel(
                 NIGHTSCOUT_UPLOADER_CHANNEL,
                 "Nightscout Uploader",
+                NotificationManager.IMPORTANCE_DEFAULT));
+        notifChannels.add(new NotificationChannel(
+                PARAKEET_STATUS_CHANNEL,
+                "Parakeet Status",
+                NotificationManager.IMPORTANCE_DEFAULT));
+        notifChannels.add(new NotificationChannel(
+                REMINDER_CHANNEL,
+                "Reminders",
+                NotificationManager.IMPORTANCE_DEFAULT));
+        notifChannels.add(new NotificationChannel(
+                BG_ALERT_CHANNEL,
+                "Blood Glucose Alert",
                 NotificationManager.IMPORTANCE_DEFAULT));
 
         getNotifManager().createNotificationChannels(notifChannels);
