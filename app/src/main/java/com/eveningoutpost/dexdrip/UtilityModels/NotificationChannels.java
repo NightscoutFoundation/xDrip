@@ -23,6 +23,10 @@ public class NotificationChannels extends ContextWrapper {
     public static final String TAG = NotificationChannels.class.getSimpleName();
     private NotificationManager notifManager;
 
+    public static final String LOW_BRIDGE_BATTERY_CHANNEL = "lowBridgeBattery";
+    public static final String LOW_TRANSMITTER_BATTERY_CHANNEL = "lowTransmitterBattery";
+    public static final String NIGHTSCOUT_UPLOADER_CHANNEL = "nightscoutUploaderChannel";
+
     @TargetApi(Build.VERSION_CODES.O)
     public NotificationChannels(Context ctx) {
         super(ctx);
@@ -33,6 +37,19 @@ public class NotificationChannels extends ContextWrapper {
         }
 
         List<NotificationChannel> notifChannels = new ArrayList<>();
+        notifChannels.add(new NotificationChannel(
+                LOW_BRIDGE_BATTERY_CHANNEL,
+                "Low bridge battery",
+                NotificationManager.IMPORTANCE_DEFAULT));
+        notifChannels.add(new NotificationChannel(
+                LOW_TRANSMITTER_BATTERY_CHANNEL,
+                "Low transmitter battery",
+                NotificationManager.IMPORTANCE_DEFAULT));
+        notifChannels.add(new NotificationChannel(
+                NIGHTSCOUT_UPLOADER_CHANNEL,
+                "Nightscout Uploader",
+                NotificationManager.IMPORTANCE_DEFAULT));
+
         getNotifManager().createNotificationChannels(notifChannels);
         Log.d(TAG, "Notification channels created.");
     }
