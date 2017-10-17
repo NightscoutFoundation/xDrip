@@ -23,7 +23,7 @@ before_install:
   - chmod +x gradlew
 
 before_script:
-  - echo no | android create avd --force -n test -t android-22 --abi x86 --tag google_apis
+  - echo no | android create avd --force -n test -t android-22 --abi armeabi-v7a --tag google_apis
   - emulator -avd test -no-skin -no-audio -no-window &
   - android-wait-for-emulator
   - adb shell settings put global window_animation_scale 0 &
