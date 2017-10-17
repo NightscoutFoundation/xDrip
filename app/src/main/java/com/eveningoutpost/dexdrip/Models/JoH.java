@@ -38,6 +38,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.provider.Settings;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ContextThemeWrapper;
@@ -1016,11 +1017,15 @@ public class JoH {
     }
 
     public static void showNotification(String title, String content, PendingIntent intent, int notificationId, boolean sound, boolean vibrate, PendingIntent deleteIntent, Uri sound_uri) {
-        showNotification(title, content, intent, notificationId, sound, vibrate, deleteIntent, sound_uri, null);
+        showNotification(title, content, intent, notificationId, null, sound, vibrate, deleteIntent, sound_uri, null);
     }
 
     public static void showNotification(String title, String content, PendingIntent intent, int notificationId, boolean sound, boolean vibrate, PendingIntent deleteIntent, Uri sound_uri, String bigmsg) {
-        final Notification.Builder mBuilder = notificationBuilder(title, content, intent);
+        showNotification(title, content, intent, notificationId, null, sound, vibrate, deleteIntent, sound_uri, bigmsg);
+    }
+
+    public static void showNotification(String title, String content, PendingIntent intent, int notificationId, String channelId, boolean sound, boolean vibrate, PendingIntent deleteIntent, Uri sound_uri, String bigmsg) {
+        final NotificationCompat.Builder mBuilder = notificationBuilder(title, content, intent, channelId);
         final long[] vibratePattern = {0, 1000, 300, 1000, 300, 1000};
         if (vibrate) mBuilder.setVibrate(vibratePattern);
         if (deleteIntent != null) mBuilder.setDeleteIntent(deleteIntent);
@@ -1031,7 +1036,7 @@ public class JoH {
         }
 
         if (bigmsg != null) {
-            mBuilder.setStyle(new Notification.BigTextStyle().bigText(bigmsg));
+            mBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(bigmsg));
         }
 
         final NotificationManager mNotifyMgr = (NotificationManager) xdrip.getAppContext().getSystemService(Context.NOTIFICATION_SERVICE);
@@ -1040,8 +1045,8 @@ public class JoH {
         mNotifyMgr.notify(notificationId, mBuilder.build());
     }
 
-    private static Notification.Builder notificationBuilder(String title, String content, PendingIntent intent) {
-        return new Notification.Builder(xdrip.getAppContext())
+    private static NotificationCompat.Builder notificationBuilder(String title, String content, PendingIntent intent, String channelId) {
+        return new NotificationCompat.Builder(xdrip.getAppContext(), channelId)
                 .setSmallIcon(R.drawable.ic_action_communication_invert_colors_on)
                 .setContentTitle(title)
                 .setContentText(content)

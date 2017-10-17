@@ -6,6 +6,7 @@ import android.content.Intent;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.UtilityModels.NotificationChannels;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import static com.eveningoutpost.dexdrip.Models.JoH.cancelNotification;
@@ -48,7 +49,8 @@ public class CheckBridgeBattery {
                     notification_showing = true;
                     lowbattery = true;
                     final PendingIntent pendingIntent = android.app.PendingIntent.getActivity(xdrip.getAppContext(), 0, new Intent(xdrip.getAppContext(), Home.class), android.app.PendingIntent.FLAG_UPDATE_CURRENT);
-                    showNotification("Low bridge battery", "Bridge battery dropped to: " + this_level + "%", pendingIntent, NOTIFICATION_ITEM, true, true, false);
+                    showNotification("Low bridge battery", "Bridge battery dropped to: " + this_level + "%",
+                            pendingIntent, NOTIFICATION_ITEM, NotificationChannels.LOW_BRIDGE_BATTERY_CHANNEL, true, true, null, null, null);
                 }
             } else {
                 if (notification_showing) {
@@ -78,7 +80,8 @@ public class CheckBridgeBattery {
                 if (JoH.pratelimit("parakeet-battery-warning", repeat_seconds)) {
                     parakeet_notification_showing = true;
                     final PendingIntent pendingIntent = android.app.PendingIntent.getActivity(xdrip.getAppContext(), 0, new Intent(xdrip.getAppContext(), Home.class), android.app.PendingIntent.FLAG_UPDATE_CURRENT);
-                    showNotification("Low Parakeet battery", "Parakeet battery dropped to: " + this_level + "%", pendingIntent, PARAKEET_NOTIFICATION_ITEM, true, true, false);
+                    showNotification("Low Parakeet battery", "Parakeet battery dropped to: " + this_level + "%",
+                            pendingIntent, PARAKEET_NOTIFICATION_ITEM, NotificationChannels.LOW_BRIDGE_BATTERY_CHANNEL, true, true, null, null, null);
                 }
             } else {
                 if (parakeet_notification_showing) {

@@ -17,6 +17,7 @@ import com.eveningoutpost.dexdrip.Services.BluetoothGlucoseMeter;
 import com.eveningoutpost.dexdrip.Services.PlusSyncService;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.IdempotentMigrations;
+import com.eveningoutpost.dexdrip.UtilityModels.NotificationChannels;
 import com.eveningoutpost.dexdrip.UtilityModels.PlusAsyncExecutor;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 
@@ -35,6 +36,7 @@ public class xdrip extends Application {
     private static boolean fabricInited = false;
     private static boolean bfInited = false;
     private static Locale LOCALE;
+    private static NotificationChannels notifChannels;
     public static PlusAsyncExecutor executor;
     public static boolean useBF = false;
     private static Boolean isRunningTestCache;
@@ -62,6 +64,8 @@ public class xdrip extends Application {
 
         checkForcedEnglish(xdrip.context);
 
+        // Builds notification channels if supported
+        notifChannels = new NotificationChannels(this);
 
         JoH.ratelimit("policy-never", 3600); // don't on first load
         new IdempotentMigrations(getApplicationContext()).performAll();
