@@ -10,7 +10,9 @@
         android:name="android.hardware.bluetooth_le"
         android:required="true" />
     <uses-feature android:name="android.hardware.usb.host" />
-    <uses-feature android:name="android.hardware.nfc" android:required="false" />
+    <uses-feature
+        android:name="android.hardware.nfc"
+        android:required="false" />
 
     <uses-permission android:name="android.permission.NFC" />
     <uses-permission android:name="com.google.android.permission.PROVIDE_BACKGROUND" />
@@ -75,8 +77,7 @@
         <activity
             android:name=".BluetoothScan"
             android:configChanges="orientation|screenSize"
-            android:label="@string/title_activity_bluetooth_scan"
-            />
+            android:label="@string/title_activity_bluetooth_scan" />
 
         <service
             android:name=".Services.DexCollectionService"
@@ -100,7 +101,10 @@
                     android:host="*"
                     android:pathPrefix="/xdrip"
                     android:scheme="wear" />
-                <data android:scheme="wear" android:host="*" android:pathPrefix="/nightscout"/>
+                <data
+                    android:host="*"
+                    android:pathPrefix="/nightscout"
+                    android:scheme="wear" />
             </intent-filter>
         </service>
         <service
@@ -417,8 +421,7 @@
         </receiver>
         <receiver
             android:name=".localeTasker.receiver.FireReceiver"
-            android:exported="true"
-            >
+            android:exported="true">
             <intent-filter>
                 <action android:name="com.twofortyfouram.locale.intent.action.FIRE_SETTING" />
             </intent-filter>
@@ -443,6 +446,9 @@
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
+            <meta-data
+                android:name="android.service.dream"
+                android:resource="@xml/xdrip_dream" />
         </service>
         <service
             android:name=".Services.PlusSyncService"
@@ -480,7 +486,7 @@
              Note that the API key is linked to the encryption key used to sign the APK.
              You need a different API key for each encryption key, including the release key that is used to
              sign the APK for publishing.
-             You can define the keys for the debug and release targets in src/debug/ and src/release/. 
+             You can define the keys for the debug and release targets in src/debug/ and src/release/.
         -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -548,20 +554,34 @@
             android:name=".Reminders"
             android:configChanges="orientation|screenSize"
             android:launchMode="singleTask"
-            android:windowSoftInputMode="adjustPan">
-        </activity>
+            android:windowSoftInputMode="adjustPan"></activity>
         <activity
             android:name=".NightscoutBackfillActivity"
             android:configChanges="orientation|screenSize"
             android:launchMode="singleTask"
-            android:windowSoftInputMode="adjustPan">
-        </activity>
-        <uses-library android:required="false" android:name="com.sec.android.app.multiwindow" />
-        <meta-data android:name="com.sec.android.support.multiwindow" android:value="true" />
-        <meta-data android:name="com.sec.android.multiwindow.DEFAULT_SIZE_W" android:value="632.0dip" />
-        <meta-data android:name="com.sec.android.multiwindow.DEFAULT_SIZE_H" android:value="598.0dip" />
-        <meta-data android:name="com.sec.android.multiwindow.MINIMUM_SIZE_W" android:value="632.0dip" />
-        <meta-data android:name="com.sec.android.multiwindow.MINIMUM_SIZE_H" android:value="598.0dip" />
+            android:windowSoftInputMode="adjustPan"></activity>
+
+        <uses-library
+            android:name="com.sec.android.app.multiwindow"
+            android:required="false" />
+
+        <meta-data
+            android:name="com.sec.android.support.multiwindow"
+            android:value="true" />
+        <meta-data
+            android:name="com.sec.android.multiwindow.DEFAULT_SIZE_W"
+            android:value="632.0dip" />
+        <meta-data
+            android:name="com.sec.android.multiwindow.DEFAULT_SIZE_H"
+            android:value="598.0dip" />
+        <meta-data
+            android:name="com.sec.android.multiwindow.MINIMUM_SIZE_W"
+            android:value="632.0dip" />
+        <meta-data
+            android:name="com.sec.android.multiwindow.MINIMUM_SIZE_H"
+            android:value="598.0dip" />
+
+        <activity android:name=".UtilityModels.XDripDreamSettingsActivity"></activity>
     </application>
 
 </manifest>
