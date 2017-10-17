@@ -20,6 +20,7 @@ package com.eveningoutpost.dexdrip.Services;
 
 import android.app.PendingIntent;
 import android.content.ComponentName;
+import android.os.Bundle;
 import android.support.wearable.complications.ComplicationData;
 import android.support.wearable.complications.ComplicationManager;
 import android.support.wearable.complications.ComplicationProviderService;
@@ -129,6 +130,7 @@ public class CustomComplicationProviderService extends ComplicationProviderServi
                 is_stale = true;
             }
         }
+
         Log.d(TAG, "Returning complication text: " + numberText);
 
         COMPLICATION_STATE state = COMPLICATION_STATE.get_enum((int) PersistentStore.getLong(ComplicationTapBroadcastReceiver.COMPLICATION_STORE));
@@ -136,17 +138,17 @@ public class CustomComplicationProviderService extends ComplicationProviderServi
 
         ComplicationData complicationData = null;
 
-        final boolean doMgdl = Home.getPreferencesStringWithDefault("units", "mgdl").equals("mgdl");
         switch (dataType) {
             case ComplicationData.TYPE_SHORT_TEXT:
 
                 final ComplicationData.Builder builder = new ComplicationData.Builder(ComplicationData.TYPE_SHORT_TEXT)
                         .setShortText(ComplicationText.plainText(numberText))
                         .setTapAction(complicationPendingIntent);
-                UserError.Log.d(TAG, "Current complication state:" + state);
+
+                UserError.Log.d(TAG, "TYPE_SHORT_TEXT Current complication state:" + state);
                 switch (state) {
                     case DELTA:
-                        builder.setShortTitle(!is_stale ? (ComplicationText.plainText(bgReading != null ? unitizedDeltaString(false, false, Home.get_follower(), doMgdl) : "null")) : ComplicationText.plainText(""));
+                        builder.setShortTitle(ComplicationText.plainText(getDeltaText(bgReading, is_stale)));
                         break;
                     case AGO:
                         builder.setShortTitle(ComplicationText.plainText(niceTimeSinceBgReading(bgReading)));
@@ -156,6 +158,23 @@ public class CustomComplicationProviderService extends ComplicationProviderServi
                 }
 
                 complicationData = builder.build();
+                break;
+            case ComplicationData.TYPE_LONG_TEXT:
+                String numberTextLong = numberText + " " + getDeltaText(bgReading, is_stale);
+                Log.d(TAG, "Returning complication text Long: " + numberTextLong);
+
+                //Loop status by @gregorybel
+                String externalStatusString = PersistentStore.getString("remote-status-string");
+                Log.d(TAG, "Returning complication status: " + externalStatusString);
+
+                final ComplicationData.Builder builderLong = new ComplicationData.Builder(ComplicationData.TYPE_LONG_TEXT)
+                        .setLongTitle(ComplicationText.plainText(numberTextLong))
+                        .setLongText(ComplicationText.plainText(externalStatusString))
+                        .setTapAction(complicationPendingIntent);
+
+                UserError.Log.d(TAG, "TYPE_LONG_TEXT Current complication state:" + state);
+                complicationData = builderLong.build();
+
                 break;
             default:
                 if (Log.isLoggable(TAG, Log.WARN)) {
@@ -175,6 +194,11 @@ public class CustomComplicationProviderService extends ComplicationProviderServi
 
     private static String niceTimeSinceBgReading(BgReading bgReading) {
         return bgReading != null ? JoH.niceTimeSince(bgReading.timestamp).replaceAll(" ", "").replaceAll("(^[0-9]+[a-zA-Z])[a-zA-Z]*$", "$1") : "";
+    }
+
+    private static String getDeltaText(BgReading bgReading, boolean is_stale) {
+        final boolean doMgdl = Home.getPreferencesStringWithDefault("units", "mgdl").equals("mgdl");
+        return (!is_stale ? (bgReading != null ? unitizedDeltaString(false, false, Home.get_follower(), doMgdl) : "null") : "");
     }
 
     /*
