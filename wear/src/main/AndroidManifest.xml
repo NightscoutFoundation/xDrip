@@ -10,7 +10,7 @@
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <!-- Declaration that this app is usable on phones with Bluetooth Low Energy. -->
-    <uses-feature android:name="android.hardware.bluetooth_le" android:required="true"/>
+    <uses-feature android:name="android.hardware.bluetooth_le" android:required="false"/>
     <uses-permission-sdk-23 android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
     <uses-permission-sdk-23 android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -134,6 +134,9 @@
             android:exported="true" >
         </service>
         <service
+            android:name=".Services.Ob1G5CollectionService"
+            android:enabled="true" />
+        <service
             android:name=".Services.DexCollectionService"
             android:enabled="true"
             android:exported="true" />
@@ -162,10 +165,10 @@
 
             <meta-data
                 android:name="android.support.wearable.complications.SUPPORTED_TYPES"
-                android:value="SHORT_TEXT" />
+                android:value="SHORT_TEXT,LONG_TEXT" />
             <meta-data
                 android:name="android.support.wearable.complications.UPDATE_PERIOD_SECONDS"
-                android:value="0" />
+                android:value="300" />
         </service>
         <receiver android:name=".Services.ComplicationTapBroadcastReceiver" />
         <activity

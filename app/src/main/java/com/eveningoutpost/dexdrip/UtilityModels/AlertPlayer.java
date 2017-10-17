@@ -417,7 +417,7 @@ public class AlertPlayer {
 
         boolean localOnly = (Home.get_forced_wear() && PersistentStore.getBoolean("bg_notifications_watch"));
         Log.d(TAG, "NotificationCompat.Builder localOnly=" + localOnly);
-        NotificationCompat.Builder  builder = new NotificationCompat.Builder(ctx)//KS Notification
+        NotificationCompat.Builder  builder = new NotificationCompat.Builder(ctx, NotificationChannels.BG_ALERT_CHANNEL)//KS Notification
             .setSmallIcon(R.drawable.ic_action_communication_invert_colors_on)
             .setContentTitle(title)
             .setContentText(content)

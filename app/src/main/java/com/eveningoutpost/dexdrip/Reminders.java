@@ -55,6 +55,7 @@ import com.eveningoutpost.dexdrip.Models.Reminder;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.JamorhamShowcaseDrawer;
+import com.eveningoutpost.dexdrip.UtilityModels.NotificationChannels;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.ShotStateStore;
 import com.eveningoutpost.dexdrip.profileeditor.DatePickerFragment;
@@ -974,7 +975,8 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
                 final PendingIntent deleteIntent = PendingIntent.getActivity(xdrip.getAppContext(), NOTIFICATION_ID + 1, notificationDeleteIntent, 0);
                 final PendingIntent pendingIntent = PendingIntent.getActivity(xdrip.getAppContext(), NOTIFICATION_ID, notificationIntent, 0);
 
-                JoH.showNotification(reminder.getTitle(), "Reminder due " + JoH.hourMinuteString(reminder.next_due), pendingIntent, NOTIFICATION_ID, true, true, deleteIntent, JoH.isOngoingCall() ? null : (reminder.sound_uri != null) ? Uri.parse(reminder.sound_uri) : Uri.parse(JoH.getResourceURI(R.raw.reminder_default_notification)));
+                JoH.showNotification(reminder.getTitle(), "Reminder due " + JoH.hourMinuteString(reminder.next_due),
+                        pendingIntent, NOTIFICATION_ID, NotificationChannels.REMINDER_CHANNEL, true, true, deleteIntent, JoH.isOngoingCall() ? null : (reminder.sound_uri != null) ? Uri.parse(reminder.sound_uri) : Uri.parse(JoH.getResourceURI(R.raw.reminder_default_notification)), null);
                 UserError.Log.ueh("Reminder Alert", reminder.getTitle() + " due: " + JoH.dateTimeText(reminder.next_due) + ((reminder.snoozed_till > reminder.next_due) ? " snoozed till: " + JoH.dateTimeText(reminder.snoozed_till) : ""));
                 reminder.notified();
             }

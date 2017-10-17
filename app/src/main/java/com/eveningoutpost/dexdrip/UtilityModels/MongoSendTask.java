@@ -43,6 +43,10 @@ public class MongoSendTask extends AsyncTask<String, Void, Void> {
             types.add(BloodTest.class.getSimpleName());
             types.add(Treatments.class.getSimpleName());
 
+            if (Home.getPreferencesBooleanDefaultFalse("wear_sync")) {
+                circuits.add(UploaderQueue.WATCH_WEARAPI);
+            }
+
             if (Home.getPreferencesBooleanDefaultFalse("cloud_storage_mongodb_enable")) {
                 circuits.add(UploaderQueue.MONGO_DIRECT);
             }
@@ -56,9 +60,7 @@ public class MongoSendTask extends AsyncTask<String, Void, Void> {
             if (Home.getPreferencesBooleanDefaultFalse("cloud_storage_influxdb_enable")) {
                 circuits.add(UploaderQueue.INFLUXDB_RESTAPI);
             }
-            if (Home.getPreferencesBooleanDefaultFalse("wear_sync")) {
-                circuits.add(UploaderQueue.WATCH_WEARAPI);
-            }
+
 
 
             for (long THIS_QUEUE : circuits) {

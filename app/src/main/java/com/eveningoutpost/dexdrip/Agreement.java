@@ -30,6 +30,9 @@ public class Agreement extends AppCompatActivity {
         agreeCheckBox.setChecked(IUnderstand);
         saveButton = (Button) findViewById(R.id.saveButton2);
         addListenerOnButton();
+        if (xdrip.isRunningTest()) {
+            findViewById(R.id.scrollView6).setScrollBarFadeDuration(100); // avoid espresso lameness
+        }
     }
 
     public void addListenerOnButton() {

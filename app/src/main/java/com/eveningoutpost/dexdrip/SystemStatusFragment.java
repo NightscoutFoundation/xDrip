@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.databinding.DataBindingUtil;
 import android.graphics.Point;
 import android.os.Build;
 import android.os.Bundle;
@@ -39,9 +40,11 @@ import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.Services.DexCollectionService;
-import com.eveningoutpost.dexdrip.Services.DexShareCollectionService;
 import com.eveningoutpost.dexdrip.Services.G5CollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.databinding.ActivitySystemStatusBinding;
+import com.eveningoutpost.dexdrip.ui.MicroStatus;
+import com.eveningoutpost.dexdrip.ui.MicroStatusImpl;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.google.android.gms.wearable.DataMap;
@@ -78,9 +81,14 @@ public class SystemStatusFragment extends Fragment {
     private static final String TAG = "SystemStatus";
     private BroadcastReceiver serviceDataReceiver;
 
+    //@Inject
+    MicroStatus microStatus;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
+        //Injectors.getMicroStatusComponent().inject(this);
         requestWearCollectorStatus();
         serviceDataReceiver = new BroadcastReceiver() {
             @Override
@@ -116,7 +124,11 @@ public class SystemStatusFragment extends Fragment {
                 }
             }
         };
-        return inflater.inflate(R.layout.activity_system_status, container, false);
+        final ActivitySystemStatusBinding binding = DataBindingUtil.inflate(
+                inflater, R.layout.activity_system_status, container, false);
+        microStatus = new MicroStatusImpl();
+        binding.setMs(microStatus);
+        return binding.getRoot();
     }
 
     private void requestWearCollectorStatus() {
@@ -154,7 +166,7 @@ public class SystemStatusFragment extends Fragment {
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        super.onActivityCreated(savedInstanceState);
         // setContentView(R.layout.activity_system_status);
         // JoH.fixActionBar(this);
         prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
@@ -213,7 +225,7 @@ public class SystemStatusFragment extends Fragment {
             mBluetoothManager = (BluetoothManager) safeGetContext().getSystemService(Context.BLUETOOTH_SERVICE);
         }
         setVersionName();
-        setCollectionMethod();
+        //setCollectionMethod();
         setCurrentDevice();
         if (Home.get_follower()) {
             setConnectionStatusFollower();

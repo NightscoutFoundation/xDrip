@@ -874,14 +874,14 @@ public class DexCollectionService extends Service {
 
     private boolean writeChar(final BluetoothGattCharacteristic localmCharacteristic, final byte[] value) {
         localmCharacteristic.setValue(value);
-        boolean result = mBluetoothGatt.writeCharacteristic(localmCharacteristic);
+        boolean result = mBluetoothGatt != null && mBluetoothGatt.writeCharacteristic(localmCharacteristic);
         if (!result) {
             UserError.Log.d(TAG, "Error writing characteristic: " + localmCharacteristic.getUuid() + " " + JoH.bytesToHex(value));
             JoH.runOnUiThreadDelayed(new Runnable() {
                 @Override
                 public void run() {
                     try {
-                        boolean result = mBluetoothGatt.writeCharacteristic(localmCharacteristic);
+                        boolean result = mBluetoothGatt != null && mBluetoothGatt.writeCharacteristic(localmCharacteristic);
                         if (!result) {
                             UserError.Log.e(TAG, "Error writing characteristic: (2nd try) " + localmCharacteristic.getUuid() + " " + JoH.bytesToHex(value));
                         } else {

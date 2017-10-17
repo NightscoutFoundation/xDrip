@@ -47,7 +47,6 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -67,6 +66,7 @@ import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.HeartRate;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.PebbleMovement;
+import com.eveningoutpost.dexdrip.Models.ProcessInitialDataQuality;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
@@ -83,6 +83,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.JamorhamShowcaseDrawer;
 import com.eveningoutpost.dexdrip.UtilityModels.NightscoutUploader;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
+import com.eveningoutpost.dexdrip.UtilityModels.PrefsViewImpl;
 import com.eveningoutpost.dexdrip.UtilityModels.PumpStatus;
 import com.eveningoutpost.dexdrip.UtilityModels.SendFeedBack;
 import com.eveningoutpost.dexdrip.UtilityModels.ShotStateStore;
@@ -91,6 +92,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.UpdateActivity;
 import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
 import com.eveningoutpost.dexdrip.calibrations.CalibrationAbstract;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
+import com.eveningoutpost.dexdrip.databinding.PopupInitialStatusHelperBinding;
 import com.eveningoutpost.dexdrip.languageeditor.LanguageEditor;
 import com.eveningoutpost.dexdrip.profileeditor.DatePickerFragment;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileAdapter;
@@ -242,6 +244,10 @@ public class Home extends ActivityWithMenu {
     private wordDataWrapper searchWords = null;
     private AlertDialog dialog;
     private AlertDialog helper_dialog;
+    private AlertDialog status_helper_dialog;
+    private PopupInitialStatusHelperBinding initial_status_binding;
+
+    private ProcessInitialDataQuality.InitialDataQuality initialDataQuality;
 
     private static final boolean oneshot = true;
     private static ShowcaseView myShowcase;
@@ -322,7 +328,7 @@ public class Home extends ActivityWithMenu {
             //Log.d(TAG, "Maybe ignoring battery optimization");
             final PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
             if (!pm.isIgnoringBatteryOptimizations(packageName) &&
-                    !prefs.getBoolean("requested_ignore_battery_optimizations_new", false)) {
+                    !prefs.getBoolean("requested_ignore_battery_optimizations_new", false) && !xdrip.isRunningTest()) {
                 Log.d(TAG, "Requesting ignore battery optimization");
 
                 if (PersistentStore.incrementLong("asked_battery_optimization") < 40) {
@@ -874,12 +880,7 @@ public class Home extends ActivityWithMenu {
                 if (!JoH.isScreenOn()) {
                     final int timeout = 60000;
                     final PowerManager.WakeLock wl = JoH.getWakeLock("full-wakeup", timeout + 1000);
-                    final Window win = getWindow();
-                    win.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
-                            WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD |
-                            WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON |
-                            WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON |
-                            WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON);
+                    keepScreenOn();
                     final Timer t = new Timer();
                     t.schedule(new TimerTask() {
                         @Override
@@ -974,6 +975,14 @@ public class Home extends ActivityWithMenu {
                 }
             }
         }
+    }
+
+    private void keepScreenOn() {
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
+                WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD |
+                WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON |
+                WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON |
+                WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON);
     }
 
 
@@ -1260,6 +1269,9 @@ public class Home extends ActivityWithMenu {
         } else if (allWords.contentEquals("enable engineering mode")) {
             Home.setPreferencesBoolean("engineering_mode", true);
             JoH.static_toast(getApplicationContext(), "Engineering mode enabled - be careful", Toast.LENGTH_LONG);
+        } else if (get_engineering_mode() && allWords.contentEquals("enable fake data source")) {
+            Home.setPreferencesString(DexCollectionType.DEX_COLLECTION_METHOD, DexCollectionType.Mock.toString());
+            JoH.static_toast_long("YOU ARE NOW USING FAKE DATA!!!");
         } else if (allWords.contentEquals("vehicle mode test")) {
             ActivityRecognizedService.spoofActivityRecogniser(mActivity, JoH.tsl() + "^" + 0);
             staticRefreshBGCharts();
@@ -1695,13 +1707,11 @@ public class Home extends ActivityWithMenu {
 
     @Override
     protected void onResume() {
-
         xdrip.checkForcedEnglish(xdrip.getAppContext());
         super.onResume();
         handleFlairColors();
         checkEula();
         set_is_follower();
-
         // status line must only have current bwp/iob data
         statusIOB="";
         statusBWP="";
@@ -2097,13 +2107,18 @@ public class Home extends ActivityWithMenu {
         if (isBTWixel || isDexbridgeWixel || isWifiBluetoothWixel) {
             updateCurrentBgInfoForBtBasedWixel(notificationText);
         }
-        if (isWifiWixel || isWifiBluetoothWixel) {
+        if (isWifiWixel || isWifiBluetoothWixel || collector.equals(DexCollectionType.Mock)) {
             updateCurrentBgInfoForWifiWixel(notificationText);
         } else if (is_follower || collector.equals(DexCollectionType.NSEmulator)) {
             displayCurrentInfo();
             getApplicationContext().startService(new Intent(getApplicationContext(), Notifications.class));
         } else if (!alreadyDisplayedBgInfoCommon && DexCollectionType.getDexCollectionType() == DexCollectionType.LibreAlarm) {
             updateCurrentBgInfoCommon(notificationText);
+        }
+        if (collector.equals(DexCollectionType.Disabled)) {
+            notificationText.append("\n DATA SOURCE DISABLED");
+        } else if (collector.equals(DexCollectionType.Mock)) {
+            notificationText.append("\n USING FAKE DATA SOURCE !!!");
         }
         if (prefs.getLong("alerts_disabled_until", 0) > new Date().getTime()) {
             notificationText.append("\n ALL ALERTS CURRENTLY DISABLED");
@@ -2260,8 +2275,9 @@ public class Home extends ActivityWithMenu {
             return;
         }
 
-        if (BgReading.latest(2).size() > 1) {
-            List<Calibration> calibrations = Calibration.latestValid(2);
+        if (BgReading.latest(3).size() > 2) {
+            // TODO potential to calibrate off stale data here
+            final List<Calibration> calibrations = Calibration.latestValid(2);
             if (calibrations.size() > 1) {
                 if (calibrations.get(0).possible_bad != null && calibrations.get(0).possible_bad == true && calibrations.get(1).possible_bad != null && calibrations.get(1).possible_bad != true) {
                     notificationText.setText(R.string.possible_bad_calibration);
@@ -2274,8 +2290,9 @@ public class Home extends ActivityWithMenu {
                 promptForCalibration();
             }
         } else {
-            if (BgReading.latestUnCalculated(2).size() < 2) {
+            if (!BgReading.isDataSuitableForDoubleCalibration()) {
                 notificationText.setText(R.string.please_wait_need_two_readings_first);
+                showInitialStatusHelper();
             } else {
                 List<Calibration> calibrations = Calibration.latest(2);
                 if (calibrations.size() < 2) {
@@ -2288,7 +2305,35 @@ public class Home extends ActivityWithMenu {
         }
     }
 
+    private synchronized void showInitialStatusHelper() {
+        initialDataQuality = ProcessInitialDataQuality.getInitialDataQuality(); // update
+        if ((helper_dialog != null) && (helper_dialog.isShowing())) helper_dialog.dismiss();
+        if ((status_helper_dialog != null) && (status_helper_dialog.isShowing())) {
+            if (initial_status_binding != null)
+                initial_status_binding.setIdq(initialDataQuality); // update data
+            return;
+        }
+
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Collecting Initial Readings");
+        initial_status_binding = PopupInitialStatusHelperBinding.inflate(getLayoutInflater());
+        initial_status_binding.setIdq(initialDataQuality);
+        initial_status_binding.setPrefs(new PrefsViewImpl());
+        builder.setView(initial_status_binding.getRoot());
+        status_helper_dialog = builder.create();
+        status_helper_dialog.setCanceledOnTouchOutside(true);
+        try {
+            status_helper_dialog.show();
+        } catch (Exception e) {
+            UserError.Log.e(TAG, "Could not display calibration prompt helper: " + e);
+        }
+        keepScreenOn();
+    }
+
+
     private synchronized void promptForCalibration() {
+        if ((status_helper_dialog != null) && (status_helper_dialog.isShowing()))
+            status_helper_dialog.dismiss();
         if ((helper_dialog != null) && (helper_dialog.isShowing())) return;
         if (JoH.ratelimit("calibrate-sensor_prompt", 10)) {
             final AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -2315,6 +2360,13 @@ public class Home extends ActivityWithMenu {
             } catch (Exception e) {
                 UserError.Log.e(TAG, "Could not display calibration prompt helper: " + e);
             }
+            if (getPreferencesBooleanDefaultFalse("play_sound_for_initial_calibration")) {
+                if (JoH.ratelimit("play_calibration_sound", 280)) {
+                    JoH.playSoundUri(JoH.getResourceURI(R.raw.reminder_default_notification));
+                }
+            }
+            keepScreenOn();
+
         }
     }
 

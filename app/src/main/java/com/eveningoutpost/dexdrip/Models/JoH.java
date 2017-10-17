@@ -38,6 +38,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.provider.Settings;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ContextThemeWrapper;
@@ -50,6 +51,7 @@ import android.view.Surface;
 import android.view.View;
 import android.widget.Toast;
 
+import com.activeandroid.ActiveAndroid;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
@@ -606,7 +608,25 @@ public class JoH {
 
     public static void releaseWakeLock(PowerManager.WakeLock wl) {
         if (debug_wakelocks) Log.d(TAG, "releaseWakeLock: " + wl.toString());
+        if (wl == null) return;
         if (wl.isHeld()) wl.release();
+    }
+
+    public static PowerManager.WakeLock fullWakeLock(final String name, long millis) {
+        final PowerManager pm = (PowerManager) xdrip.getAppContext().getSystemService(Context.POWER_SERVICE);
+        PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.ON_AFTER_RELEASE, name);
+        wl.acquire(millis);
+        if (debug_wakelocks) Log.d(TAG, "fullWakeLock: " + name + " " + wl.toString());
+        return wl;
+    }
+
+
+    public static void clearCache() {
+        try {
+            ActiveAndroid.clearCache();
+        } catch (Exception e) {
+            Log.e(TAG, "Error clearing active android cache: " + e);
+        }
     }
 
     public static boolean isLANConnected() {
@@ -997,11 +1017,15 @@ public class JoH {
     }
 
     public static void showNotification(String title, String content, PendingIntent intent, int notificationId, boolean sound, boolean vibrate, PendingIntent deleteIntent, Uri sound_uri) {
-        showNotification(title, content, intent, notificationId, sound, vibrate, deleteIntent, sound_uri, null);
+        showNotification(title, content, intent, notificationId, null, sound, vibrate, deleteIntent, sound_uri, null);
     }
 
     public static void showNotification(String title, String content, PendingIntent intent, int notificationId, boolean sound, boolean vibrate, PendingIntent deleteIntent, Uri sound_uri, String bigmsg) {
-        final Notification.Builder mBuilder = notificationBuilder(title, content, intent);
+        showNotification(title, content, intent, notificationId, null, sound, vibrate, deleteIntent, sound_uri, bigmsg);
+    }
+
+    public static void showNotification(String title, String content, PendingIntent intent, int notificationId, String channelId, boolean sound, boolean vibrate, PendingIntent deleteIntent, Uri sound_uri, String bigmsg) {
+        final NotificationCompat.Builder mBuilder = notificationBuilder(title, content, intent, channelId);
         final long[] vibratePattern = {0, 1000, 300, 1000, 300, 1000};
         if (vibrate) mBuilder.setVibrate(vibratePattern);
         if (deleteIntent != null) mBuilder.setDeleteIntent(deleteIntent);
@@ -1012,7 +1036,7 @@ public class JoH {
         }
 
         if (bigmsg != null) {
-            mBuilder.setStyle(new Notification.BigTextStyle().bigText(bigmsg));
+            mBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(bigmsg));
         }
 
         final NotificationManager mNotifyMgr = (NotificationManager) xdrip.getAppContext().getSystemService(Context.NOTIFICATION_SERVICE);
@@ -1021,8 +1045,8 @@ public class JoH {
         mNotifyMgr.notify(notificationId, mBuilder.build());
     }
 
-    private static Notification.Builder notificationBuilder(String title, String content, PendingIntent intent) {
-        return new Notification.Builder(xdrip.getAppContext())
+    private static NotificationCompat.Builder notificationBuilder(String title, String content, PendingIntent intent, String channelId) {
+        return new NotificationCompat.Builder(xdrip.getAppContext(), channelId)
                 .setSmallIcon(R.drawable.ic_action_communication_invert_colors_on)
                 .setContentTitle(title)
                 .setContentText(content)
@@ -1099,12 +1123,12 @@ public class JoH {
         return pinBytes;
     }
 
-    public static void doPairingRequest(Context context, BroadcastReceiver broadcastReceiver, Intent intent, String mBluetoothDeviceAddress) {
-        doPairingRequest(context, broadcastReceiver, intent, mBluetoothDeviceAddress, null);
+    public static boolean doPairingRequest(Context context, BroadcastReceiver broadcastReceiver, Intent intent, String mBluetoothDeviceAddress) {
+        return doPairingRequest(context, broadcastReceiver, intent, mBluetoothDeviceAddress, null);
     }
 
     @TargetApi(19)
-    public static void doPairingRequest(Context context, BroadcastReceiver broadcastReceiver, Intent intent, String mBluetoothDeviceAddress, String pinHint) {
+    public static boolean doPairingRequest(Context context, BroadcastReceiver broadcastReceiver, Intent intent, String mBluetoothDeviceAddress, String pinHint) {
         if (BluetoothDevice.ACTION_PAIRING_REQUEST.equals(intent.getAction())) {
             final BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
             if (device != null) {
@@ -1131,9 +1155,11 @@ public class JoH {
                             // BluetoothDevice.PAIRING_VARIANT_CONSENT)
                             if (type == 3) {
                                 JoH.static_toast_long("Please confirm the bluetooth pairing request");
+                                return false;
                             } else {
                                 JoH.static_toast_long("Failed to pair, may need to do it via Android Settings");
                                 device.createBond(); // for what it is worth
+                                return false;
                             }
                         }
                     }
@@ -1144,6 +1170,7 @@ public class JoH {
                 UserError.Log.e(TAG, "Device was null in pairing receiver");
             }
         }
+        return true;
     }
 
     public static String getLocalBluetoothName() {

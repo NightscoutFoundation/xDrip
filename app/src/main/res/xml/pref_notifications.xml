@@ -126,6 +126,11 @@
                     android:numeric="integer"
                     android:summary="@string/calibration_minutes_reraise"
                     android:title="@string/alert_repeat_minutes" />
+                <SwitchPreference
+                    android:defaultValue="true"
+                    android:key="play_sound_for_initial_calibration"
+                    android:summary="Play sound when Initial Calibration is requested"
+                    android:title="Initial Alert" />
             </PreferenceScreen>
 
             <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"

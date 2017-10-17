@@ -34,7 +34,7 @@
     <string name="title_activity_main">Main Activity</string>
     <string name="title_activity_fake_numbers">Fake Numbers</string>
     <string name="title_activity_edit_alert">Edit Alert</string>
-    <string name="title_activity_double_calibration">Double Calibration</string>
+    <string name="title_activity_double_calibration">Initial Calibration</string>
     <string name="title_activity_calibration_override">Calibration Override</string>
     <string name="pref_header_cloud_storage">Cloud Storage</string>
     <string name="auto_configure_title">Auto configure</string>
@@ -599,7 +599,9 @@
     <string name="repeatedly_restart_collection_service">Repeatedly restart the collection service at any hint of missing data. Enable only if you are getting data loss.</string>
     <string name="aggressive_service_restarts">Aggressive service restarts</string>
     <string name="predictive_readings_old">Old method - Not Recommended! Attempts to predict readings each minute based on the past few values.</string>
+    <string name="use_external_blukon_algorithm_summary">Use an out of process blukon algorithm.</string>
     <string name="display_predictive_values">Display Predictive Values</string>
+    <string name="use_external_blukon_algorithm">Out of process blukon algorithm.</string>
     <string name="interpret_share_raw">If using Share, xDrip will show values when they are normally hidden on the receiver.</string>
     <string name="interpret_raw">Interpret Raw Values</string>
     <string name="use_infrequent_calibrations">If needed, use calibrations from longer ago, eg if calibrations are supplied infrequently.</string>
@@ -819,4 +821,5 @@
     <string name="try_to_work_around_noisy_readings_ultrasensitive">Start to work around noisy readings even on very low noise levels (engineering mode ony)</string>
     <string name="sidiary_date_title">Export starting from when?</string>
     <string name="blukon">Blucon</string>
+    <string name="use_gravity_sensor_to_rotate_items">Use Gravity Sensor to rotate items</string>
 </resources>

@@ -18,6 +18,9 @@ public class Constants {
 
     public static final double LIBRE_MULTIPLIER = 117.64705; // to match (raw/8.5)*1000
 
+    /* Configuration parameters */
+
+    public static final long STALE_CALIBRATION_CUT_OFF = Constants.MINUTE_IN_MS * 16;
 
     /* Notification IDs */
 
@@ -28,4 +31,5 @@ public class Constants {
     public static final int DEX_COLLECTION_SERVICE_RETRY_ID = 1002;
     public static final int DEX_COLLECTION_SERVICE_FAILOVER_ID = 1003;
 
+    public static final int SYNC_QUEUE_RETRY_ID = 1004;
 }

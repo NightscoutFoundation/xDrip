@@ -20,6 +20,7 @@ package com.eveningoutpost.dexdrip.Services;
 
 import android.app.PendingIntent;
 import android.content.ComponentName;
+import android.os.Bundle;
 import android.support.wearable.complications.ComplicationData;
 import android.support.wearable.complications.ComplicationManager;
 import android.support.wearable.complications.ComplicationProviderService;
@@ -27,9 +28,13 @@ import android.support.wearable.complications.ComplicationText;
 import android.support.wearable.complications.ProviderUpdateRequester;
 import android.util.Log;
 
+import com.activeandroid.ActiveAndroid;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import static com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder.unitizedDeltaString;
@@ -40,6 +45,32 @@ import static com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder.unitizedDe
 public class CustomComplicationProviderService extends ComplicationProviderService {
 
     private static final String TAG = "ComplicationProvider";
+    private static final long STALE_MS = Constants.MINUTE_IN_MS * 15;
+    private static final long FRESH_MS = Constants.MINUTE_IN_MS * 5;
+
+    enum COMPLICATION_STATE {
+        DELTA(0),
+        AGO(1),
+        RESET(2);
+
+        private int enum_value;
+
+        COMPLICATION_STATE(int value) {
+            this.enum_value = value;
+        }
+
+        public int getValue() {
+            return enum_value;
+        }
+
+        public static COMPLICATION_STATE get_enum(int value) {
+            for (COMPLICATION_STATE state : COMPLICATION_STATE.values()) {
+                if (state.getValue() == value) return state;
+            }
+            return null;
+        }
+    }
+
 
     /*
      * Called when a complication has been activated. The method is for any one-time
@@ -69,39 +100,81 @@ public class CustomComplicationProviderService extends ComplicationProviderServi
     public void onComplicationUpdate(
             int complicationId, int dataType, ComplicationManager complicationManager) {
         Log.d(TAG, "onComplicationUpdate() id: " + complicationId);
-
         // Create Tap Action so that the user can trigger an update by tapping the complication.
         final ComponentName thisProvider = new ComponentName(this, getClass());
         // We pass the complication id, so we can only update the specific complication tapped.
-        PendingIntent complicationPendingIntent =
+        final PendingIntent complicationPendingIntent =
                 ComplicationTapBroadcastReceiver.getToggleIntent(
                         this, thisProvider, complicationId);
 
         String numberText = "";
-        BgReading bgReading = null;
-        if (BgReading.last_within_minutes(15)) {
-            bgReading = BgReading.last();
-            if (bgReading == null) {
-                numberText = "null";
-            } else {
-                numberText = bgReading.displayValue(this) + " " + bgReading.slopeArrow();
+        BgReading bgReading = BgReading.last(false);
+        if ((bgReading == null) || (JoH.msSince(bgReading.timestamp) >= FRESH_MS)) {
+            try {
+                ActiveAndroid.clearCache(); // we may be in another process!
+            } catch (Exception e) {
+                Log.d(TAG, "Couldn't clear cache: " + e);
             }
-            Log.d(TAG, "Returning complication text: " + numberText);
-        } else {
-            numberText = "old";
+            bgReading = BgReading.last(false);
         }
+
+        boolean is_stale = false;
+
+        if (bgReading == null) {
+            numberText = "null";
+        } else {
+            if (JoH.msSince(bgReading.timestamp) < STALE_MS) {
+                numberText = bgReading.displayValue(this) + " " + bgReading.slopeArrow();
+            } else {
+                numberText = "old " + niceTimeSinceBgReading(bgReading);
+                is_stale = true;
+            }
+        }
+
+        Log.d(TAG, "Returning complication text: " + numberText);
+
+        COMPLICATION_STATE state = COMPLICATION_STATE.get_enum((int) PersistentStore.getLong(ComplicationTapBroadcastReceiver.COMPLICATION_STORE));
+        if (state == null) state = COMPLICATION_STATE.DELTA;
 
         ComplicationData complicationData = null;
 
-        final boolean doMgdl = Home.getPreferencesStringWithDefault("units", "mgdl").equals("mgdl");
         switch (dataType) {
             case ComplicationData.TYPE_SHORT_TEXT:
-                complicationData =
-                        new ComplicationData.Builder(ComplicationData.TYPE_SHORT_TEXT)
-                                .setShortText(ComplicationText.plainText(numberText))
-                                .setTapAction(complicationPendingIntent)
-                                .setShortTitle(ComplicationText.plainText(bgReading != null ? unitizedDeltaString(false, false, Home.get_follower(), doMgdl) : "null"))
-                                .build();
+
+                final ComplicationData.Builder builder = new ComplicationData.Builder(ComplicationData.TYPE_SHORT_TEXT)
+                        .setShortText(ComplicationText.plainText(numberText))
+                        .setTapAction(complicationPendingIntent);
+
+                UserError.Log.d(TAG, "TYPE_SHORT_TEXT Current complication state:" + state);
+                switch (state) {
+                    case DELTA:
+                        builder.setShortTitle(ComplicationText.plainText(getDeltaText(bgReading, is_stale)));
+                        break;
+                    case AGO:
+                        builder.setShortTitle(ComplicationText.plainText(niceTimeSinceBgReading(bgReading)));
+                        break;
+                    default:
+                        builder.setShortTitle(ComplicationText.plainText("ERR!"));
+                }
+
+                complicationData = builder.build();
+                break;
+            case ComplicationData.TYPE_LONG_TEXT:
+                String numberTextLong = numberText + " " + getDeltaText(bgReading, is_stale);
+                Log.d(TAG, "Returning complication text Long: " + numberTextLong);
+
+                //Loop status by @gregorybel
+                String externalStatusString = PersistentStore.getString("remote-status-string");
+                Log.d(TAG, "Returning complication status: " + externalStatusString);
+
+                final ComplicationData.Builder builderLong = new ComplicationData.Builder(ComplicationData.TYPE_LONG_TEXT)
+                        .setLongTitle(ComplicationText.plainText(numberTextLong))
+                        .setLongText(ComplicationText.plainText(externalStatusString))
+                        .setTapAction(complicationPendingIntent);
+
+                UserError.Log.d(TAG, "TYPE_LONG_TEXT Current complication state:" + state);
+                complicationData = builderLong.build();
+
                 break;
             default:
                 if (Log.isLoggable(TAG, Log.WARN)) {
@@ -117,6 +190,15 @@ public class CustomComplicationProviderService extends ComplicationProviderServi
             // job can finish and the wake lock isn't held any longer than necessary.
             complicationManager.noUpdateRequired(complicationId);
         }
+    }
+
+    private static String niceTimeSinceBgReading(BgReading bgReading) {
+        return bgReading != null ? JoH.niceTimeSince(bgReading.timestamp).replaceAll(" ", "").replaceAll("(^[0-9]+[a-zA-Z])[a-zA-Z]*$", "$1") : "";
+    }
+
+    private static String getDeltaText(BgReading bgReading, boolean is_stale) {
+        final boolean doMgdl = Home.getPreferencesStringWithDefault("units", "mgdl").equals("mgdl");
+        return (!is_stale ? (bgReading != null ? unitizedDeltaString(false, false, Home.get_follower(), doMgdl) : "null") : "");
     }
 
     /*

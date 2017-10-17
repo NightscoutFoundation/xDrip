@@ -1,0 +1,36 @@
+language: android
+
+android:
+  components:
+    - tools
+    - platform-tools
+    - tools
+
+    - build-tools-25.0.0
+    - build-tools-26.0.2
+    - android-23
+    - android-26
+    - extra-google-m2repository
+    - extra-android-m2repository
+    - extra-android-support
+    - extra-google-google_play_services
+    - sys-img-armeabi-v7a-google_apis-25
+  licenses:
+      - 'android-sdk-license-.+'
+      - 'google-gdk-license-.+'
+
+before_install:
+  - chmod +x gradlew
+
+before_script:
+  - android list targets
+  - echo no | android create avd --force -n test -t android-25 --abi armeabi-v7a --tag google_apis
+  - emulator -avd test -no-skin -no-audio -no-window &
+  - android-wait-for-emulator
+  - adb shell settings put global window_animation_scale 0 &
+  - adb shell settings put global transition_animation_scale 0 &
+  - adb shell settings put global animator_duration_scale 0 &
+  - adb shell input keyevent 82 &
+
+script:
+  - ./gradlew assembleRelease && ./gradlew test && ./gradlew connectedAndroidTest

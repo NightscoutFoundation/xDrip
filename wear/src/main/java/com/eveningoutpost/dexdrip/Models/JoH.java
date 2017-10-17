@@ -106,6 +106,8 @@ public class JoH {
     private static Map<String, Double> benchmarks = new HashMap<String, Double>();
     private static final Map<String, Long> rateLimits = new HashMap<String, Long>();
 
+    public static boolean buggy_samsung = false; // flag set when we detect samsung devices which do not perform to android specifications
+
     // qs = quick string conversion of double for printing
     public static String qs(double x) {
         return qs(x, 2);
@@ -630,8 +632,18 @@ public class JoH {
 
     public static void releaseWakeLock(PowerManager.WakeLock wl) {
         if (debug_wakelocks) Log.d(TAG, "releaseWakeLock: " + wl.toString());
+        if (wl == null) return;
         if (wl.isHeld()) wl.release();
     }
+
+    public static PowerManager.WakeLock fullWakeLock(final String name, long millis) {
+        final PowerManager pm = (PowerManager) xdrip.getAppContext().getSystemService(Context.POWER_SERVICE);
+        PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.ON_AFTER_RELEASE, name);
+        wl.acquire(millis);
+        if (debug_wakelocks) Log.d(TAG, "fullWakeLock: " + name + " " + wl.toString());
+        return wl;
+    }
+
 
     public static boolean isLANConnected() {
         final ConnectivityManager cm =
@@ -970,7 +982,7 @@ public class JoH {
         }
     }
 
-    public static long wakeUpIntent(Context context, long delayMs, PendingIntent pendingIntent) {
+    public static long wakeUpIntentOld(Context context, long delayMs, PendingIntent pendingIntent) {
         final long wakeTime = JoH.tsl() + delayMs;
         Log.d(TAG, "Scheduling wakeup intent: " + dateTimeText(wakeTime));
         final AlarmManager alarm = (AlarmManager) context.getSystemService(ALARM_SERVICE);
@@ -980,6 +992,32 @@ public class JoH {
             alarm.setExact(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
         } else
             alarm.set(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
+        return wakeTime;
+    }
+
+    public static long wakeUpIntent(Context context, long delayMs, PendingIntent pendingIntent) {
+        final long wakeTime = JoH.tsl() + delayMs;
+        if (pendingIntent != null) {
+            Log.d(TAG, "Scheduling wakeup intent: " + dateTimeText(wakeTime));
+            final AlarmManager alarm = (AlarmManager) context.getSystemService(ALARM_SERVICE);
+            try {
+                alarm.cancel(pendingIntent);
+            } catch (Exception e) {
+                Log.e(TAG, "Exception cancelling alarm in wakeUpIntent: " + e);
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (buggy_samsung) {
+                    alarm.setAlarmClock(new AlarmManager.AlarmClockInfo(wakeTime, null), pendingIntent);
+                } else {
+                    alarm.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
+                }
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                alarm.setExact(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
+            } else
+                alarm.set(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
+        } else {
+            Log.e(TAG, "wakeUpIntent - pending intent was null!");
+        }
         return wakeTime;
     }
 
@@ -997,6 +1035,11 @@ public class JoH {
 
     public static void showNotification(String title, String content, PendingIntent intent, int notificationId, boolean sound, boolean vibrate, boolean onetime) {
         showNotification(title, content, intent, notificationId, sound, vibrate, null, null);
+    }
+
+    // ignore channel id and bigmsg
+    public static void showNotification(String title, String content, PendingIntent intent, int notificationId, String channelId, boolean sound, boolean vibrate, PendingIntent deleteIntent, Uri sound_uri, String bigmsg) {
+        showNotification(title, content, intent, notificationId, sound, vibrate, deleteIntent, sound_uri);
     }
 
     public static void showNotification(String title, String content, PendingIntent intent, int notificationId, boolean sound, boolean vibrate, PendingIntent deleteIntent, Uri sound_uri) {
@@ -1094,12 +1137,12 @@ public class JoH {
         return pinBytes;
     }
 
-    public static void doPairingRequest(Context context, BroadcastReceiver broadcastReceiver, Intent intent, String mBluetoothDeviceAddress) {
-        doPairingRequest(context, broadcastReceiver, intent, mBluetoothDeviceAddress, null);
+    public static boolean doPairingRequest(Context context, BroadcastReceiver broadcastReceiver, Intent intent, String mBluetoothDeviceAddress) {
+        return doPairingRequest(context, broadcastReceiver, intent, mBluetoothDeviceAddress, null);
     }
 
     @TargetApi(19)
-    public static void doPairingRequest(Context context, BroadcastReceiver broadcastReceiver, Intent intent, String mBluetoothDeviceAddress, String pinHint) {
+    public static boolean doPairingRequest(Context context, BroadcastReceiver broadcastReceiver, Intent intent, String mBluetoothDeviceAddress, String pinHint) {
         if (BluetoothDevice.ACTION_PAIRING_REQUEST.equals(intent.getAction())) {
             final BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
             if (device != null) {
@@ -1112,18 +1155,25 @@ public class JoH {
                     }
                     try {
                         UserError.Log.e(TAG, "Pairing type: " + type);
-                        device.setPairingConfirmation(true);
-                        JoH.static_toast_short("Pairing");
-                        broadcastReceiver.abortBroadcast();
+                        if (type != PAIRING_VARIANT_PIN) {
+                            device.setPairingConfirmation(true);
+                            JoH.static_toast_short("xDrip Pairing");
+                            broadcastReceiver.abortBroadcast();
+                        } else {
+                            Log.d(TAG,"Attempting to passthrough PIN pairing");
+                        }
+
                     } catch (Exception e) {
                         UserError.Log.e(TAG, "Could not set pairing confirmation due to exception: " + e);
                         if (JoH.ratelimit("failed pair confirmation", 200)) {
                             // BluetoothDevice.PAIRING_VARIANT_CONSENT)
                             if (type == 3) {
                                 JoH.static_toast_long("Please confirm the bluetooth pairing request");
+                                return false;
                             } else {
                                 JoH.static_toast_long("Failed to pair, may need to do it via Android Settings");
                                 device.createBond(); // for what it is worth
+                                return false;
                             }
                         }
                     }
@@ -1134,7 +1184,9 @@ public class JoH {
                 UserError.Log.e(TAG, "Device was null in pairing receiver");
             }
         }
+        return true;
     }
+
 
     public static String getLocalBluetoothName() {
         try {

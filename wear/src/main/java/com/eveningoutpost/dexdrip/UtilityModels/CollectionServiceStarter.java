@@ -19,6 +19,7 @@ import com.eveningoutpost.dexdrip.Services.G5CollectionService;
 //KS import com.eveningoutpost.dexdrip.Services.WifiCollectionService;
 //KS import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleUtil;
 //KS import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleWatchSync;
+import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 //KS import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -326,8 +327,14 @@ public class CollectionServiceStarter {
         Log.d(TAG, "starting G5 service");
         //if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
         PersistentStore.setBoolean(pref_run_wear_collector, true);
-        G5CollectionService.keep_running = true;
-        this.mContext.startService(new Intent(this.mContext, G5CollectionService.class));
+
+        if (!Home.getPreferencesBooleanDefaultFalse(Ob1G5CollectionService.OB1G5_PREFS)) {
+            G5CollectionService.keep_running = true;
+            this.mContext.startService(new Intent(this.mContext, G5CollectionService.class));
+        } else {
+            Ob1G5CollectionService.keep_running = true;
+            this.mContext.startService(new Intent(this.mContext, Ob1G5CollectionService.class));
+        }
         //}
     }
 
@@ -385,6 +392,8 @@ public class CollectionServiceStarter {
         Log.d(TAG, "stopping G5 service");
         G5CollectionService.keep_running = false; // ensure zombie stays down
         this.mContext.stopService(new Intent(this.mContext, G5CollectionService.class));
+        Ob1G5CollectionService.keep_running = false; // ensure zombie stays down
+        this.mContext.stopService(new Intent(this.mContext, Ob1G5CollectionService.class));
     }
 
 }

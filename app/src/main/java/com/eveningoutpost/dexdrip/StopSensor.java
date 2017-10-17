@@ -52,7 +52,7 @@ public class StopSensor extends ActivityWithMenu {
                 AlertPlayer.getPlayer().stopAlert(getApplicationContext(), true, false);
 
                 Toast.makeText(getApplicationContext(), "Sensor stopped", Toast.LENGTH_LONG).show();
-
+                JoH.clearCache();
                 LibreAlarmReceiver.clearSensorStats();
                 PluggableCalibration.invalidateAllCaches();
 

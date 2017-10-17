@@ -35,6 +35,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import static com.eveningoutpost.dexdrip.UtilityModels.Constants.STALE_CALIBRATION_CUT_OFF;
 import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.newFingerStickData;
 
 
@@ -255,17 +256,25 @@ public class Calibration extends Model {
     public static void initialCalibration(double bg1, double bg2, Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String unit = prefs.getString("units", "mgdl");
-
         if (unit.compareTo("mgdl") != 0) {
             bg1 = bg1 * Constants.MMOLL_TO_MGDL;
             bg2 = bg2 * Constants.MMOLL_TO_MGDL;
         }
         clear_all_existing_calibrations();
+        JoH.clearCache();
+        final Calibration higherCalibration = new Calibration();
+        final Calibration lowerCalibration = new Calibration();
+        final Sensor sensor = Sensor.currentSensor();
+        final List<BgReading> bgReadings = BgReading.latest_by_size(3);
 
-        Calibration higherCalibration = new Calibration();
-        Calibration lowerCalibration = new Calibration();
-        Sensor sensor = Sensor.currentSensor();
-        List<BgReading> bgReadings = BgReading.latest_by_size(2);
+        // don't allow initial calibration if data would be stale
+            if ((bgReadings == null) || (bgReadings.size() != 3 || (JoH.msSince(bgReadings.get(2).timestamp) > STALE_CALIBRATION_CUT_OFF))) {
+            UserError.Log.wtf(TAG, "Did not find 3 readings for initial calibration - aborting");
+            JoH.static_toast_long("Not enough recent sensor data! - cancelling!");
+            return;
+        }
+
+
         BgReading bgReading1 = bgReadings.get(0);
         BgReading bgReading2 = bgReadings.get(1);
         BgReading highBgReading;
@@ -273,6 +282,7 @@ public class Calibration extends Model {
         double higher_bg = Math.max(bg1, bg2);
         double lower_bg = Math.min(bg1, bg2);
 
+        // TODO This should be reworked in the future as it doesn't really make sense
         if (bgReading1.raw_data > bgReading2.raw_data) {
             highBgReading = bgReading1;
             lowBgReading = bgReading2;
@@ -313,12 +323,14 @@ public class Calibration extends Model {
         lowBgReading.save();
         lowerCalibration.save();
 
+        JoH.clearCache();
         highBgReading.find_new_curve();
         highBgReading.find_new_raw_curve();
         lowBgReading.find_new_curve();
         lowBgReading.find_new_raw_curve();
 
-        List<Calibration> calibrations = new ArrayList<Calibration>();
+        JoH.clearCache();
+        final List<Calibration> calibrations = new ArrayList<Calibration>();
         calibrations.add(lowerCalibration);
         calibrations.add(higherCalibration);
 
@@ -333,11 +345,12 @@ public class Calibration extends Model {
             calibration.sensor_age_at_time_of_estimation = calibration.timestamp - sensor.started_at;
             calibration.uuid = UUID.randomUUID().toString();
             calibration.save();
-
+            JoH.clearCache();
             calculate_w_l_s();
             newFingerStickData();
             CalibrationSendQueue.addToQueue(calibration, context);
         }
+        JoH.clearCache();
         adjustRecentBgReadings(5);
         CalibrationRequest.createOffset(lowerCalibration.bg, 35);
         context.startService(new Intent(context, Notifications.class));

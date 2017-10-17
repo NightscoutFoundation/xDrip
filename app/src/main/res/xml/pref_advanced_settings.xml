@@ -475,6 +475,11 @@
                     android:switchTextOn="@string/short_on_text_for_switches"
                     android:title="@string/plugin_override_all" />
                 <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="use_double_calibrations"
+                    android:summary="Ask for a second optional initial calibration blood test"
+                    android:title="Double Calibrations" />
+                <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="engineering_mode"
                     android:key="old_school_calibration_mode"
@@ -486,7 +491,7 @@
                     android:summary="@string/use_infrequent_calibrations"
                     android:title="@string/infrequent_calibrations" />
                 <CheckBoxPreference
-                    android:defaultValue="false"
+                    android:defaultValue="true"
                     android:key="use_non_fixed_li_parameters"
                     android:summary="Enable to allow variable slopes with Libre collection methods"
                     android:title="Non-fixed Libre slopes" />
@@ -640,6 +645,14 @@
                     android:key="predictive_bg"
                     android:summary="@string/predictive_readings_old"
                     android:title="@string/display_predictive_values" />
+                
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:dependency="engineering_mode"
+                    android:key="external_blukon_algorithm"
+                    android:summary="@string/use_external_blukon_algorithm_summary"
+                    android:title="@string/use_external_blukon_algorithm" />
+                
             </PreferenceScreen>
             <PreferenceCategory
                 android:key="community_help_category"

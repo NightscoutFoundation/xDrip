@@ -224,9 +224,10 @@ public class Preferences extends PreferenceActivity {
             String scanresults = scanResult.getContents();
             if (scanresults.startsWith(DisplayQRCode.qrmarker)) {
                 installxDripPlusPreferencesFromQRCode(prefs, scanresults);
+                return;
             }
 
-            NSBarcodeConfig barcode = new NSBarcodeConfig(scanresults);
+            final NSBarcodeConfig barcode = new NSBarcodeConfig(scanresults);
             if (barcode.hasMongoConfig()) {
                 if (barcode.getMongoUri().isPresent()) {
                     SharedPreferences.Editor editor = prefs.edit();
@@ -631,6 +632,25 @@ public class Preferences extends PreferenceActivity {
                     return true;
                 }
 
+            });
+
+            findPreference("use_ob1_g5_collector_service").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e) {
+                                //
+                            }
+                            CollectionServiceStarter.restartCollectionService(xdrip.getAppContext());
+                        }
+                    }).start();
+
+                    return true;
+                }
             });
 
             final Preference profile_carb_absorption_default = findPreference("profile_carb_absorption_default");
@@ -1383,8 +1403,29 @@ public class Preferences extends PreferenceActivity {
                     return true;
                 }
             });
-            bindPreferenceSummaryToValue(transmitterId);
-            transmitterId.getEditText().setFilters(new InputFilter[]{new InputFilter.AllCaps()});
+
+            bindPreferenceSummaryToValue(transmitterId); // duplicated below but this sets initial value
+            transmitterId.getEditText().setFilters(new InputFilter[]{new InputFilter.AllCaps()}); // TODO filter O ?
+            transmitterId.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e) {
+                                //
+                            }
+                            Log.d(TAG, "Trying to restart collector due to tx id change");
+                            CollectionServiceStarter.restartCollectionService(xdrip.getAppContext());
+                        }
+                    }).start();
+                    sBindPreferenceSummaryToValueListener.onPreferenceChange(preference, newValue);
+
+                    return true;
+                }
+            });
 
             // when changing collection method
                     collectionMethod.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {

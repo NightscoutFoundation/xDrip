@@ -15,7 +15,9 @@ import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.Models.PebbleMovement;
 import com.eveningoutpost.dexdrip.Services.CustomComplicationProviderService;
 import com.eveningoutpost.dexdrip.Services.DexCollectionService;
+import com.eveningoutpost.dexdrip.Services.G5BaseService;
 import com.eveningoutpost.dexdrip.Services.G5CollectionService;//KS
+import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.*;
 import com.eveningoutpost.dexdrip.stats.StatsResult;
 import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
@@ -286,6 +288,16 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                                         sendMessagePayload(node, "WEARABLE_RESEND_PATH", path, payload);
                                     default://SYNC_ALL_DATA
                                         Log.d(TAG, "doInBackground SYNC_ALL_DATA");
+                                        if (sync_step_counter) {
+                                            datamap = getWearStepSensorData(send_step_count, last_send_previous_step_sensor, 0);
+                                            if (datamap != null) {
+                                                sendMessagePayload(node, "SYNC_STEP_SENSOR_PATH", SYNC_STEP_SENSOR_PATH, datamap.toByteArray());
+                                            }
+                                        }
+                                        datamap = getWearTreatmentsData(send_treatments_count, last_send_previous_treatments, 0);
+                                        if (datamap != null) {
+                                            sendMessagePayload(node, "SYNC_TREATMENTS_PATH", SYNC_TREATMENTS_PATH, datamap.toByteArray());
+                                        }
                                         if (enable_wearG5) {//KS
                                             datamap = getWearTransmitterData(send_bg_count, last_send_previous, 0);//KS 36 data for last 3 hours; 288 for 1 day
                                             if (datamap != null) {
@@ -298,16 +310,6 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                                                 byte[] compressPayload = JoH.compressBytesToBytesGzip((datamap.toByteArray()));
                                                 sendMessagePayload(node, "SYNC_LOGS_PATH", SYNC_LOGS_PATH, compressPayload);
                                             }
-                                        }
-                                        if (sync_step_counter) {
-                                            datamap = getWearStepSensorData(send_step_count, last_send_previous_step_sensor, 0);
-                                            if (datamap != null) {
-                                                sendMessagePayload(node, "SYNC_STEP_SENSOR_PATH", SYNC_STEP_SENSOR_PATH, datamap.toByteArray());
-                                            }
-                                        }
-                                        datamap = getWearTreatmentsData(send_treatments_count, last_send_previous_treatments, 0);
-                                        if (datamap != null) {
-                                            sendMessagePayload(node, "SYNC_TREATMENTS_PATH", SYNC_TREATMENTS_PATH, datamap.toByteArray());
                                         }
                                         //sendMessagePayload(node, "WEARABLE_RESEND_PATH", path, payload);
                                         if (PersistentStore.getBoolean(G5_BATTERY_WEARABLE_SEND)) {
@@ -920,8 +922,13 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                     dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
                     boolean showExternalStatus = mPrefs.getBoolean("showExternalStatus", true);
                     Log.d(TAG, "onDataChanged NEW_STATUS_PATH=" + path + " showExternalStatus=" + showExternalStatus);
-                    if (showExternalStatus)
+
+                    if (showExternalStatus) {
                         sendLocalMessage("status", dataMap);
+                        String externalStatusString = dataMap.getString("externalStatusString");
+                        PersistentStore.setString("remote-status-string",externalStatusString);
+                        CustomComplicationProviderService.refresh();
+                    }
                 } else if (path.equals(WEARABLE_TOAST_LOCAL_NOTIFICATON)) {
                     dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
                     sendLocalMessage("msg", dataMap);
@@ -1056,6 +1063,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                     Log.d(TAG, "onDataChanged path=" + path);
                     dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
                     G5CollectionService.getBatteryStatusNow = dataMap.getBoolean("getBatteryStatusNow", false);
+                    Ob1G5CollectionService.getBatteryStatusNow = dataMap.getBoolean("getBatteryStatusNow", false);
                     sendCollectorStatus(getApplicationContext(), path);
                     sendPersistentStore();
                 } else if (path.equals(WEARABLE_SENSOR_DATA_PATH)) {//KS
@@ -1234,7 +1242,12 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         DataMap dataMap = new DataMap();
         switch (DexCollectionType.getDexCollectionType()) {
             case DexcomG5:
-                dataMap = G5CollectionService.getWatchStatus();//msg, last_timestamp
+
+                if (DexCollectionType.getCollectorServiceClass() == G5CollectionService.class) {
+                    dataMap = G5CollectionService.getWatchStatus();//msg, last_timestamp
+                } else {
+                    dataMap = Ob1G5CollectionService.getWatchStatus();//msg, last_timestamp
+                }
                 break;
             case DexcomShare://TODO getLastState() in non-G5 Services
                 BluetoothManager mBluetoothManager = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
@@ -1468,6 +1481,9 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             final String extra_tags_for_logging = dataMap.getString("extra_tags_for_logging", "");
             prefs.putString("extra_tags_for_logging", extra_tags_for_logging);
 
+            prefs.putBoolean("use_ob1_g5_collector_service", dataMap.getBoolean("use_ob1_g5_collector_service", false));
+
+
             final String blukon_pin = dataMap.getString(Blukon.BLUKON_PIN_PREF, "");
             prefs.putString(Blukon.BLUKON_PIN_PREF, blukon_pin);
 
@@ -1540,7 +1556,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             node_wearG5 = mPrefs.getString("node_wearG5", "");
             Log.d(TAG, "syncPrefData exit enable_wearG5: " + enable_wearG5 + " force_wearG5:" + force_wearG5 + " node_wearG5:" + node_wearG5);
 
-            if (enable_wearG5 && is_using_bt && !Sensor.isActive()) {
+            if (!Sensor.isActive()) {
                 Log.d(TAG, "syncPrefData No Active Sensor!! Request WEARABLE_INITDB_PATH before starting BT Collection Service: " + DexCollectionType.getDexCollectionType());
                 sendData(WEARABLE_INITDB_PATH, null);
             }
@@ -1764,6 +1780,10 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                         }
                     }
                 }
+            }
+            else {
+                Log.d(TAG, "syncCalibrationData No Active Sensor!! Request WEARABLE_INITDB_PATH");
+                sendData(WEARABLE_INITDB_PATH, null);
             }
             if (changed) {
                 showTreatments(context, "cals");
@@ -2129,15 +2149,19 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                         }
                     }
                 }
-                if (changed) {//otherwise, wait for doBackground ACTION_RESEND
-                    Log.d(TAG, "syncBGData BG data has changed, refresh watchface, phone battery=" + battery );
-                    resendData(getApplicationContext(), battery);
-                    CustomComplicationProviderService.refresh();
-                }
-                else
-                    Log.d(TAG, "syncBGData BG data has NOT changed, do not refresh watchface, phone battery=" + battery );
+            }
+            else {
+                Log.d(TAG, "syncBGData No Active Sensor!! Request WEARABLE_INITDB_PATH");
+                sendData(WEARABLE_INITDB_PATH, null);
             }
         }
+        if (changed) {//otherwise, wait for doBackground ACTION_RESEND
+            Log.d(TAG, "syncBGData BG data has changed, refresh watchface, phone battery=" + battery );
+            resendData(getApplicationContext(), battery);
+            CustomComplicationProviderService.refresh();
+        }
+        else
+            Log.d(TAG, "syncBGData BG data has NOT changed, do not refresh watchface, phone battery=" + battery );
     }
 
     // Custom method to determine whether a service is running
@@ -2156,13 +2180,14 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     private boolean isCollectorRunning() {
         Class<?> serviceClass = DexCollectionType.getCollectorServiceClass();
         if (serviceClass != null) {
-            Log.d(TAG, "DexCollectionType.getCollectorServiceClass(): " + serviceClass.getName());
-            return isServiceRunning(serviceClass);
+            final boolean result = isServiceRunning(serviceClass);
+            Log.d(TAG, "DexCollectionType.getCollectorServiceClass(): " + serviceClass.getName() + " Running: " + true);
+            return result;
         }
         return false;
     }
 
-    private void startBtService() {//KS
+    private synchronized void startBtService() {//KS
         Log.d(TAG, "startBtService");
         if (is_using_bt) {
             if (checkLocationPermissions()) {
@@ -2171,10 +2196,11 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                 //    stopBtService();
                 //}
                 if (!isCollectorRunning()) {
-                    CollectionServiceStarter.startBtService(getApplicationContext());
+                    if (JoH.ratelimit("start-collector", 2)) {
+                        CollectionServiceStarter.startBtService(getApplicationContext());
+                    }
                     Log.d(TAG, "startBtService AFTER startService mLocationPermissionApproved " + mLocationPermissionApproved);
-                }
-                else {
+                } else {
                     Log.d(TAG, "startBtService collector already running!");
                 }
             }

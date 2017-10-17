@@ -112,6 +112,7 @@ public class DexCollectionService extends Service {
     private static final String PREF_DEX_COLLECTION_POLLING = "pref_dex_collection_polling";
     private static final long POLLING_PERIOD = (Constants.MINUTE_IN_MS * 5) - Constants.SECOND_IN_MS;
     private static final long RETRY_PERIOD = DEXCOM_PERIOD - (Constants.SECOND_IN_MS * 35);
+    private static final long TOLERABLE_JITTER = 10000;
 
     public static double last_time_seen = 0;
     public static String lastState = "Not running";
@@ -123,7 +124,9 @@ public class DexCollectionService extends Service {
     private static long retry_backoff = 0;
     private static long descriptor_time = 0;
     private static int watchdog_count = 0;
+    private static long max_wakeup_jitter = 0;
     private static DISCOVERED servicesDiscovered = DISCOVERED.NULL;
+
 
     private static boolean static_use_transmiter_pl_bluetooth = false;
     private static boolean static_use_rfduino_bluetooth = false;
@@ -202,6 +205,18 @@ public class DexCollectionService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         final PowerManager.WakeLock wl = JoH.getWakeLock("dexcollect-service", 120000);
+        if (retry_time > 0 && failover_time > 0) {
+            final long requested_wake_time = Math.min(retry_time, failover_time);
+            final long wakeup_jitter = JoH.msSince(requested_wake_time);
+            Log.d(TAG, "Wake up jitter: " + JoH.niceTimeScalar(wakeup_jitter));
+            if ((wakeup_jitter > TOLERABLE_JITTER) && (!JoH.buggy_samsung) && (Build.MANUFACTURER.toLowerCase().contains("samsung"))) {
+                UserError.Log.wtf(TAG, "Enabled Buggy Samsung workaround due to jitter of: " + JoH.niceTimeScalar(wakeup_jitter));
+                JoH.buggy_samsung = true;
+                max_wakeup_jitter = 0;
+            } else {
+                max_wakeup_jitter = Math.max(max_wakeup_jitter, wakeup_jitter);
+            }
+        }
         retry_time = 0;
         failover_time = 0;
         static_use_rfduino_bluetooth = use_rfduino_bluetooth;
@@ -859,14 +874,14 @@ public class DexCollectionService extends Service {
 
     private boolean writeChar(final BluetoothGattCharacteristic localmCharacteristic, final byte[] value) {
         localmCharacteristic.setValue(value);
-        boolean result = mBluetoothGatt.writeCharacteristic(localmCharacteristic);
+        boolean result = mBluetoothGatt != null && mBluetoothGatt.writeCharacteristic(localmCharacteristic);
         if (!result) {
             UserError.Log.d(TAG, "Error writing characteristic: " + localmCharacteristic.getUuid() + " " + JoH.bytesToHex(value));
             JoH.runOnUiThreadDelayed(new Runnable() {
                 @Override
                 public void run() {
                     try {
-                        boolean result = mBluetoothGatt.writeCharacteristic(localmCharacteristic);
+                        boolean result = mBluetoothGatt != null && mBluetoothGatt.writeCharacteristic(localmCharacteristic);
                         if (!result) {
                             UserError.Log.e(TAG, "Error writing characteristic: (2nd try) " + localmCharacteristic.getUuid() + " " + JoH.bytesToHex(value));
                         } else {
@@ -1248,7 +1263,12 @@ public class DexCollectionService extends Service {
                         }
                     }));
         }
-
+        if (max_wakeup_jitter > 2000) {
+            l.add(new StatusItem("Slowest wake up", JoH.niceTimeScalar(max_wakeup_jitter) + " late", max_wakeup_jitter > 61000 ? StatusItem.Highlight.CRITICAL : StatusItem.Highlight.NORMAL));
+        }
+        if (JoH.buggy_samsung) {
+            l.add(new StatusItem("Buggy Samsung", "Using workaround", max_wakeup_jitter < TOLERABLE_JITTER ? StatusItem.Highlight.GOOD : StatusItem.Highlight.BAD));
+        }
         if (retry_time > 0) l.add(new StatusItem("Next Retry", JoH.niceTimeTill(retry_time), JoH.msTill(retry_time)< -2 ? StatusItem.Highlight.CRITICAL : StatusItem.Highlight.NORMAL));
         if (failover_time > 0)
             l.add(new StatusItem("Next Wake up", JoH.niceTimeTill(failover_time), JoH.msTill(failover_time) < -2 ? StatusItem.Highlight.CRITICAL : StatusItem.Highlight.NORMAL));
