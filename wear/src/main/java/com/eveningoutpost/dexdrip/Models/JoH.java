@@ -1037,6 +1037,11 @@ public class JoH {
         showNotification(title, content, intent, notificationId, sound, vibrate, null, null);
     }
 
+    // ignore channel id and bigmsg
+    public static void showNotification(String title, String content, PendingIntent intent, int notificationId, String channelId, boolean sound, boolean vibrate, PendingIntent deleteIntent, Uri sound_uri, String bigmsg) {
+        showNotification(title, content, intent, notificationId, sound, vibrate, deleteIntent, sound_uri);
+    }
+
     public static void showNotification(String title, String content, PendingIntent intent, int notificationId, boolean sound, boolean vibrate, PendingIntent deleteIntent, Uri sound_uri) {
         final Notification.Builder mBuilder = notificationBuilder(title, content, intent);
         final long[] vibratePattern = {0, 1000, 300, 1000, 300, 1000};
