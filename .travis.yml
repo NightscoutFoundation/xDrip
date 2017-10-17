@@ -14,7 +14,7 @@ android:
     - extra-android-m2repository
     - extra-android-support
     - extra-google-google_play_services
-    - sys-img-armeabi-v7a-google_apis-22
+    - sys-img-armeabi-v7a-google_apis-25
   licenses:
       - 'android-sdk-license-.+'
       - 'google-gdk-license-.+'
@@ -23,7 +23,8 @@ before_install:
   - chmod +x gradlew
 
 before_script:
-  - echo no | android create avd --force -n test -t android-22 --abi armeabi-v7a --tag google_apis
+  - android list targets
+  - echo no | android create avd --force -n test -t android-25 --abi armeabi-v7a --tag google_apis
   - emulator -avd test -no-skin -no-audio -no-window &
   - android-wait-for-emulator
   - adb shell settings put global window_animation_scale 0 &
