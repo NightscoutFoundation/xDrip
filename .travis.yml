@@ -3,6 +3,8 @@ sudo: required
 
 env:
   global:
+    - EMULATOR_API_LEVEL=21
+    - ANDROID_ABI=google_apis/armeabi-v7a
     - ADB_INSTALL_TIMEOUT=8
     - AVD_DEBUG='init,avd_config,nand_limits,keys,adb,adbserver,adbclient'
 
@@ -20,7 +22,8 @@ android:
     - extra-android-m2repository
     - extra-android-support
     - extra-google-google_play_services
-    - sys-img-armeabi-v7a-google_apis-25
+    - addon-google_apis-google-$EMULATOR_API_LEVEL
+    - sys-img-armeabi-v7a-google_apis-google-$EMULATOR_API_LEVEL
   licenses:
       - 'android-sdk-license-.+'
       - 'google-gdk-license-.+'
@@ -30,7 +33,7 @@ before_install:
 
 before_script:
   - android list targets
-  - echo no | android create avd --force -n test -t android-25 --abi armeabi-v7a --tag google_apis
+  - echo no | android create avd --force -n test -t android-21 --abi armeabi-v7a --tag google_apis
   - export QEMU_AUDIO_DRV=none && emulator -engine classic -avd test -no-window &
   - android-wait-for-emulator
   - adb shell settings put global window_animation_scale 0 &
