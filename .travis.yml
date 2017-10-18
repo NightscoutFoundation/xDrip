@@ -1,6 +1,11 @@
 language: android
 sudo: required
 
+env:
+  global:
+    - ADB_INSTALL_TIMEOUT=8
+    - AVD_DEBUG='init,avd_config,nand_limits,keys,adb,adbserver,adbclient'
+
 android:
   components:
     - tools
@@ -34,4 +39,4 @@ before_script:
   - adb shell input keyevent 82 &
 
 script:
-  - ./gradlew assembleRelease && ./gradlew test && ./gradlew connectedAndroidTest
+  - ./gradlew connectedAndroidTest && ./gradlew assembleRelease && ./gradlew test
