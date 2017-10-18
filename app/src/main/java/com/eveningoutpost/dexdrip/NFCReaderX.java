@@ -17,7 +17,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Vibrator;
-import android.util.Log;
 import android.view.View;
 
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
@@ -27,6 +26,7 @@ import com.eveningoutpost.dexdrip.Models.PredictionData;
 import com.eveningoutpost.dexdrip.Models.ReadingData;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -294,7 +294,7 @@ public class NFCReaderX {
                 
                 internalHandle.close();
                 WriteToFile(Directory, "scan", data);
-                Log.e(TAG, "After readPatchFram data = " + bytesToHex(data));
+                Log.e(TAG, "After readPatchFram data = " + HexDump.dumpHexString(data));
                 //Log.e(TAG, "Writing to file " + file_num + ", size = " + data.length);
 
                 //FileOutputStream f = new FileOutputStream(new File("/data/data/com.eveningoutpost.dexdrip/files/scan"+ file_num + ".dat"));
