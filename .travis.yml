@@ -23,7 +23,8 @@ android:
     - extra-android-support
     - extra-google-google_play_services
     - addon-google_apis-google-$EMULATOR_API_LEVEL
-    - sys-img-armeabi-v7a-google_apis-google-$EMULATOR_API_LEVEL
+    - sys-img-armeabi-v7a-google_apis-$EMULATOR_API_LEVEL
+    
   licenses:
       - 'android-sdk-license-.+'
       - 'google-gdk-license-.+'
