@@ -577,7 +577,8 @@ public class Notifications extends IntentService {
                         PendingIntent.FLAG_UPDATE_CURRENT
                 );
 
-        final NotificationCompat.Builder b = new NotificationCompat.Builder(mContext, NotificationChannels.ONGOING_CHANNEL);
+        //final NotificationCompat.Builder b = new NotificationCompat.Builder(mContext, NotificationChannels.ONGOING_CHANNEL);
+        final NotificationCompat.Builder b = new NotificationCompat.Builder(mContext); // temporary fix until ONGOING CHANNEL is silent by default on android 8+
         //b.setOngoing(true);
         b.setVisibility(Home.getPreferencesBooleanDefaultFalse("public_notifications") ? Notification.VISIBILITY_PUBLIC : Notification.VISIBILITY_PRIVATE);
         b.setCategory(NotificationCompat.CATEGORY_STATUS);
