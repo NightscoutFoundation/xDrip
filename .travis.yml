@@ -39,9 +39,10 @@ before_script:
   - export QEMU_AUDIO_DRV=none && emulator -engine classic -avd test -no-window &
 
 script:
+  - ./gradlew assembleRelease && ./gradlew test
   - android-wait-for-emulator
   - adb shell settings put global window_animation_scale 0 &
   - adb shell settings put global transition_animation_scale 0 &
   - adb shell settings put global animator_duration_scale 0 &
   - adb shell input keyevent 82 &
-  - ./gradlew connectedAndroidTest && ./gradlew assembleRelease && ./gradlew test
+  - ./gradlew connectedAndroidTest
