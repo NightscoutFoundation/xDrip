@@ -1,4 +1,5 @@
 language: android
+sudo: required
 
 android:
   components:
