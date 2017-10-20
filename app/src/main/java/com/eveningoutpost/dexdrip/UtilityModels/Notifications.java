@@ -735,9 +735,11 @@ public class Notifications extends IntentService {
             mBuilder.setSound(Uri.parse(calibration_notification_sound));
         }
 
+
+
         NotificationManager mNotifyMgr = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
         //mNotifyMgr.cancel(notificationId);
-        mNotifyMgr.notify(notificationId, mBuilder.build());
+        mNotifyMgr.notify(notificationId, XdripNotificationCompat.build(mBuilder));
     }
 
     private NotificationCompat.Builder notificationBuilder(String title, String content, Intent intent) {
@@ -919,7 +921,7 @@ public class Notifications extends IntentService {
             //mNotifyMgr.cancel(notificatioId);
             //Log.d(TAG, "Notify");
             Log.ueh("Other Alert",message);
-            mNotifyMgr.notify(notificatioId, mBuilder.build());
+            mNotifyMgr.notify(notificatioId, XdripNotificationCompat.build(mBuilder));
         }
     }
 

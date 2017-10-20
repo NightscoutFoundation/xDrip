@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.UtilityModels.NotificationChannels;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
+import com.eveningoutpost.dexdrip.UtilityModels.XdripNotificationCompat;
 import com.eveningoutpost.dexdrip.utils.PowerStateReceiver;
 import com.eveningoutpost.dexdrip.utils.Preferences;
 import com.eveningoutpost.dexdrip.utils.WebAppHelper;
@@ -183,7 +184,7 @@ public class ParakeetHelper {
                     (NotificationManager) xdrip.getAppContext().getSystemService(Context.NOTIFICATION_SERVICE);
 
             notificationManager.cancel(Notifications.parakeetMissingId);
-            notificationManager.notify(Notifications.parakeetMissingId, notificationBuilder.build());
+            notificationManager.notify(Notifications.parakeetMissingId, XdripNotificationCompat.build(notificationBuilder));
         } else {
             Log.d(TAG, "Not sending parakeet notification as they are disabled: " + body);
         }

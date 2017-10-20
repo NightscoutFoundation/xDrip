@@ -822,4 +822,6 @@
     <string name="sidiary_date_title">Export starting from when?</string>
     <string name="blukon">Blucon</string>
     <string name="use_gravity_sensor_to_rotate_items">Use Gravity Sensor to rotate items</string>
+    <string name="low_bridge_battery">Low bridge battery</string>
+    <string name="reminders">Reminders</string>
 </resources>

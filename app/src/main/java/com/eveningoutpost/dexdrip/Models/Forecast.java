@@ -46,7 +46,7 @@ public class Forecast {
                     y[i] = Math.log(y[i]);
                 }
             }
-            OLSMultipleLinearRegression ols = new OLSMultipleLinearRegression();
+            final OLSMultipleLinearRegression ols = new OLSMultipleLinearRegression();
             ols.setNoIntercept(true); // let the implementation include a constant in xVector if desired
             ols.newSampleData(y, xData); // provide the data to the model
             coef = MatrixUtils.createColumnRealMatrix(ols.estimateRegressionParameters()); // get our coefs

@@ -64,8 +64,6 @@ public class xdrip extends Application {
 
         checkForcedEnglish(xdrip.context);
 
-        // Builds notification channels if supported
-        notifChannels = new NotificationChannels(this);
 
         JoH.ratelimit("policy-never", 3600); // don't on first load
         new IdempotentMigrations(getApplicationContext()).performAll();
