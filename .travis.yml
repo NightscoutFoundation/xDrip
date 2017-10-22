@@ -1,5 +1,5 @@
 language: android
-sudo: required
+#sudo: required
 
 env:
   global:
@@ -40,7 +40,7 @@ before_script:
 
 script:
   - ./gradlew test -PdisablePreDex
-  - ./gradlew assembleDebugTest -PdisablePreDex
+  - ./gradlew assembleAndroidTest -PdisablePreDex
   - android-wait-for-emulator
   - adb -e logcat -t 20
   - adb shell settings put global window_animation_scale 0
@@ -48,5 +48,6 @@ script:
   - adb shell settings put global animator_duration_scale 0
   - adb shell input keyevent 82
   - adb devices
+  - ./gradlew installDebugAndroidTest  -PdisablePreDex
   - ./gradlew connectedAndroidTest -PdisablePreDex
   - ./gradlew assembleRelease
