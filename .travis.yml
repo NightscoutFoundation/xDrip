@@ -5,7 +5,7 @@ env:
   global:
     - EMULATOR_API_LEVEL=21
     - ANDROID_ABI=armeabi-v7a
-    - ADB_INSTALL_TIMEOUT=8
+    - ADB_INSTALL_TIMEOUT=15
     - AVD_DEBUG='init,avd_config,nand_limits,keys,adb,adbserver,adbclient'
 
 android:
@@ -40,7 +40,7 @@ before_script:
 
 script:
   - ./gradlew test -PdisablePreDex
-  - ./gradlew assembleAndroidTest -PdisablePreDex
+  - ./gradlew app:assembleAndroidTest -PdisablePreDex
   - android-wait-for-emulator
   - adb -e logcat -t 20
   - adb shell settings put global window_animation_scale 0
@@ -48,6 +48,6 @@ script:
   - adb shell settings put global animator_duration_scale 0
   - adb shell input keyevent 82
   - adb devices
-  - ./gradlew installDebugAndroidTest  -PdisablePreDex
-  - ./gradlew connectedAndroidTest -PdisablePreDex
+  - ./gradlew app:installDebugAndroidTest  -PdisablePreDex
+  - ./gradlew app:connectedAndroidTest -PdisablePreDex
   - ./gradlew assembleRelease
