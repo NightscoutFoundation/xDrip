@@ -48,6 +48,6 @@ script:
   - adb shell settings put global animator_duration_scale 0
   - adb shell input keyevent 82
   - adb devices
-  - ./gradlew app:installDebugAndroidTest  -PdisablePreDex
+#  - ./gradlew app:installDebugAndroidTest  -PdisablePreDex
   - ./gradlew app:connectedAndroidTest -PdisablePreDex
   - ./gradlew assembleRelease
