@@ -6,6 +6,7 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.google.common.collect.ImmutableSet;
 
+import java.io.File;
 import java.util.Locale;
 
 /**
@@ -47,6 +48,16 @@ public class Experience {
         } else {
             return false;
         }
+    }
+
+    public static boolean backupAvailable() {
+        final String backup_file = Home.getPreferencesStringWithDefault("last-saved-database-zip", "");
+        if (backup_file.length() > 0) {
+            if (new File(backup_file).exists()) {
+                return true;
+            }
+        }
+        return false;
     }
 
 
