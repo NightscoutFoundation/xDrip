@@ -132,7 +132,11 @@ public class ActivityWithRecycler extends AppCompatActivity {
             };
 
             linearSmoothScroller.setTargetPosition(position);
-            startSmoothScroll(linearSmoothScroller);
+            try {
+                startSmoothScroll(linearSmoothScroller);
+            } catch (IllegalArgumentException e) {
+                // couldn't scroll for some reason, just ignore
+            }
         }
     }
 
