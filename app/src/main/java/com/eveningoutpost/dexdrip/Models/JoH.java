@@ -621,6 +621,15 @@ public class JoH {
         return wl;
     }
 
+    public static void fullDatabaseReset() {
+        try {
+            clearCache();
+            ActiveAndroid.dispose();
+            ActiveAndroid.initialize(xdrip.getAppContext());
+        } catch (Exception e) {
+            Log.e(TAG,"Error restarting active android db");
+        }
+    }
 
     public static void clearCache() {
         try {
