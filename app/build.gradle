@@ -242,9 +242,9 @@ dependencies {
     compile 'com.bugfender.sdk:android:0.+'
     // compile 'com.rarepebble:colorpicker:1.7.0'
     compile(name: 'colorpicker', ext: 'aar')
-//    compile 'com.google.dagger:dagger:2.11'
+    compile 'com.google.dagger:dagger:2.11'
 //    //compile 'com.google.dagger:dagger-android-support:2.x' // if you use the support libraries
-//    annotationProcessor 'com.google.dagger:dagger-compiler:2.11'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.11'
 
     testCompile 'junit:junit:4.12'
     testCompile 'org.objenesis:objenesis:2.5.1'
