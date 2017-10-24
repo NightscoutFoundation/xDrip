@@ -18,6 +18,7 @@ app/autoinstallviausb
 bin/
 gen/
 scripts/
+app/defunct
 
 # Gradle files
 .gradle/
