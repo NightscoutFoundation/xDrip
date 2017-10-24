@@ -1,5 +1,12 @@
-<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable name="vs" type="com.eveningoutpost.dexdrip.ui.BaseShelf"/>
+        <import type="android.view.View"/>
+    </data>
+
+    <android.support.v4.widget.DrawerLayout
+
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
@@ -404,17 +411,52 @@
 
         </RelativeLayout>
 
+        <LinearLayout
+            android:visibility='@{safeUnbox(vs.included[`time_buttons`]) ? View.VISIBLE : View.GONE}'
+            android:id="@+id/time_buttons"
+            android:gravity="center_horizontal"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:onClick="timeButtonClick"
+                android:id="@+id/hourbutton24"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="24 Hour" />
+            <Button
+                android:onClick="timeButtonClick"
+                android:id="@+id/hourbutton12"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="12 Hour" />
+            <Button
+                android:onClick="timeButtonClick"
+                android:id="@+id/hourbutton6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="6 Hour" />
+
+            <Button
+                android:onClick="timeButtonClick"
+                android:id="@+id/hourbutton3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="3 Hour" />
+
+        </LinearLayout>
+
         <lecho.lib.hellocharts.view.PreviewLineChartView
+            android:visibility="@{safeUnbox(vs.included[`chart_preview`]) ? View.VISIBLE : View.GONE}"
             android:id="@+id/chart_preview"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_alignParentBottom="true"
             android:layout_alignParentStart="true"
             android:layout_weight=".20">
-
         </lecho.lib.hellocharts.view.PreviewLineChartView>
-
-
 
     </LinearLayout>
 
@@ -431,3 +473,4 @@
         tools:layout="@layout/fragment_navigation_drawer" />
 </android.support.v4.widget.DrawerLayout>
 
+</layout>
