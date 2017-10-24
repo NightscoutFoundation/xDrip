@@ -150,6 +150,7 @@ public class NotificationChannels {
     public static NotificationChannel getChan(NotificationCompat.Builder wip) {
 
         final Notification temp = wip.build();
+        if (temp.getChannelId() == null) return null;
 
         // create generic audio attributes
         final AudioAttributes generic_audio = new AudioAttributes.Builder()

@@ -18,8 +18,13 @@ public class XdripNotificationCompat extends NotificationCompat {
         if ((Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O)) {
             if (Home.getPreferencesBooleanDefaultFalse("use_notification_channels")) {
                 // get dynamic channel based on contents of the builder
-                final String id = NotificationChannels.getChan(builder).getId();
-                builder.setChannelId(id);
+                try {
+                    final String id = NotificationChannels.getChan(builder).getId();
+                    builder.setChannelId(id);
+                } catch (NullPointerException e) {
+                    //noinspection ConstantConditions
+                    builder.setChannelId(null);
+                }
             } else {
                 //noinspection ConstantConditions
                 builder.setChannelId(null);
