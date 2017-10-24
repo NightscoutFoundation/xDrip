@@ -1527,6 +1527,7 @@ public class BgGraphBuilder {
     public static synchronized double getCurrentLowOccursAt() {
         try {
             final long last_bg_reading_timestamp = BgReading.last().timestamp;
+            // TODO remove any duplication by using refreshNoiseIfOlderThan()
             if (low_occurs_at_processed_till_timestamp < last_bg_reading_timestamp) {
                 Log.d(TAG, "Recalculating lowOccursAt: " + JoH.dateTimeText((long) low_occurs_at_processed_till_timestamp) + " vs " + JoH.dateTimeText(last_bg_reading_timestamp));
                 // new only the last hour worth of data for this
@@ -1753,9 +1754,9 @@ public class BgGraphBuilder {
     }
 */
     /////////VIEWPORT RELATED//////////////
-    public Viewport advanceViewport(Chart chart, Chart previewChart) {
+    public Viewport advanceViewport(Chart chart, Chart previewChart, float hours) {
         viewport = new Viewport(previewChart.getMaximumViewport());
-        viewport.inset((float) ((86400000 / 2.5) / FUZZER), 0);
+        viewport.inset((float) ((86400000 / hours) / FUZZER), 0);
         double distance_to_move = ((new Date().getTime()) / FUZZER) - viewport.left - (((viewport.right - viewport.left) / 2));
         viewport.offset((float) distance_to_move, 0);
         return viewport;
