@@ -38,9 +38,10 @@ public class SdcardImportExport extends AppCompatActivity {
 
     private final static String TAG = "jamorham sdcard";
     private final static int MY_PERMISSIONS_REQUEST_STORAGE = 104;
+    public final static int TRIGGER_RESTORE_PERMISSIONS_REQUEST_STORAGE = 9104;
     private final static String PREFERENCES_FILE = "shared_prefs/" + xdrip.getAppContext().getString(R.string.local_target_package) + "_preferences.xml";
     private final static String EXPORT_FOLDER = "xDrip-export";
-    private static Activity activity;
+    //private static Activity activity;
     public static boolean deleteFolder(File path, boolean recursion) {
         try {
             Log.d(TAG, "deleteFolder called with: " + path.toString());
@@ -67,21 +68,24 @@ public class SdcardImportExport extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        activity = this;
+        //activity = this;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sdcard_import_export);
         JoH.fixActionBar(this);
 
         // SUPER DATABASE DEBUG COPY FOR NON ROOTED
         //directCopyFile(new File("/data/data/com.eveningoutpost.dexdrip/databases/DexDrip.db"),new File("/sdcard/DexDrip-debug.db"));
-
+        if (getIntent().getStringExtra("backup") != null) {
+            savePreferencesToSD(null);
+            finish();
+        }
     }
 
     private boolean checkPermissions() {
-        return checkPermissions(this, true); // ask by default
+        return checkPermissions(this, true, MY_PERMISSIONS_REQUEST_STORAGE); // ask by default
     }
 
-    private static boolean checkPermissions(Activity context, boolean ask) {
+    private static boolean checkPermissions(Activity context, boolean ask, int request_code) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(context,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -89,7 +93,7 @@ public class SdcardImportExport extends AppCompatActivity {
                 if (ask) {
                     ActivityCompat.requestPermissions(context,
                             new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                            MY_PERMISSIONS_REQUEST_STORAGE);
+                            request_code);
                 }
                 return false;
             }
@@ -102,13 +106,18 @@ public class SdcardImportExport extends AppCompatActivity {
         if (savePreferencesToSD()) {
             toast(getString(R.string.preferences_saved_in_sdcard_downloads));
         } else {
-            if (checkPermissions(this, false)) {
+            if (checkPermissions(this, false, MY_PERMISSIONS_REQUEST_STORAGE)) {
                 toast(getString(R.string.could_not_write_to_sdcard_check_perms));
             }
         }
     }
 
     public static void hardReset() {
+        JoH.wakeUpIntent(xdrip.getAppContext(), 1000, Home.getHomePendingIntent());
+        hardReset_orig();
+    }
+
+    public static void hardReset_orig() {
         // shared preferences are cached so we need a hard restart
         GcmActivity.last_sync_request = 0;
         android.os.Process.killProcess(android.os.Process.myPid());
@@ -244,42 +253,49 @@ public class SdcardImportExport extends AppCompatActivity {
     public static boolean handleBackup(final Activity activity) {
         final List<String> results = findAnyBackups(activity);
         if ((results != null) && (results.size() > 0)) {
-            Log.e(TAG,"Found: "+results.size()+" backup files");
+            Log.e(TAG, "Found: " + results.size() + " backup files");
 
-                final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-                builder.setTitle("Backup detected");
-                builder.setMessage("It looks like you maybe have a settings backup, shall we try to restore it?");
+            final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+            builder.setTitle("Backup detected");
+            builder.setMessage("It looks like you maybe have a settings backup, shall we try to restore it?");
 
-                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
+            builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+
+            builder.setPositiveButton("Restore Settings", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if (checkPermissions(activity, true, TRIGGER_RESTORE_PERMISSIONS_REQUEST_STORAGE)) {
+                        // one entry do it!
+                        restoreSettingsNow(activity);
+                    } else {
+                        handleBackup(activity); // try try again
                     }
-                });
+                    dialog.dismiss();
+                }
+            });
 
-                builder.setPositiveButton("Restore Settings", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (checkPermissions(activity, true)) {
-                            // one entry do it!
-                            JoH.static_toast_long("Restoring Settings");
-                            if (copyPreferencesFileBack(activity, results.get(0))) {
-                                Log.e(TAG, "Restoring preferences succeeded from first match: " + results.get(0));
-                                hardReset();
-                            } else {
-                                JoH.static_toast_long("Couldn't restore preferences from: " + results.get(0));
-                            }
-                        } else {
-                            handleBackup(activity); // try try again
-                        }
-                            dialog.dismiss();
-                    }
-                });
-
-                builder.create().show();
+            builder.create().show();
 
             return true; // something happened
         } else {
             return false; // no backup nada
+        }
+    }
+
+    public static void restoreSettingsNow(Activity activity) {
+        final List<String> results = findAnyBackups(activity);
+        if ((results != null) && (results.size() > 0)) {
+            JoH.static_toast_long("Restoring Settings");
+            if (copyPreferencesFileBack(activity, results.get(0))) {
+                Log.e(TAG, "Restoring preferences succeeded from first match: " + results.get(0));
+                hardReset();
+            } else {
+                JoH.static_toast_long("Couldn't restore preferences from: " + results.get(0));
+            }
         }
     }
 
