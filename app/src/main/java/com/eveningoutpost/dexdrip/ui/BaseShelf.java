@@ -20,6 +20,7 @@ public abstract class BaseShelf implements ViewShelf {
     public ObservableArrayMap<String, Boolean> included = new ObservableArrayMap<>();
 
     final HashMap<String, String> map = new HashMap<>();
+    final HashMap<String, Boolean> defaults = new HashMap<>();
     String PREFS_PREFIX = null;
 
 
@@ -61,7 +62,7 @@ public abstract class BaseShelf implements ViewShelf {
 
     // implementation for loading from persistent store
     private boolean gpb(String id) {
-        return Home.getPreferencesBooleanDefaultFalse(PREFS_PREFIX + id);
+        return Home.getPreferencesBoolean(PREFS_PREFIX + id, defaults.containsKey(id) ? defaults.get(id) : false);
     }
 
 
