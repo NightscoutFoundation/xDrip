@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records;
 
-import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Constants;
+import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Dex_Constants;
 
 import java.util.Date;
 
@@ -13,7 +13,7 @@ public class GlucoseDataSet {
     private Date systemTime;
     private Date displayTime;
     private int bGValue;
-    private Constants.TREND_ARROW_VALUES trend;
+    private Dex_Constants.TREND_ARROW_VALUES trend;
     private long unfiltered;
     private long filtered;
     private int rssi;
@@ -41,7 +41,7 @@ public class GlucoseDataSet {
         return bGValue;
     }
 
-    public Constants.TREND_ARROW_VALUES getTrend() {
+    public Dex_Constants.TREND_ARROW_VALUES getTrend() {
         return trend;
     }
 

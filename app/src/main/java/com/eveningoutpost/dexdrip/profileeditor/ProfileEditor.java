@@ -21,7 +21,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.eveningoutpost.dexdrip.Home;
-import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Constants;
+import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Dex_Constants;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Profile;
 import com.eveningoutpost.dexdrip.Models.UserError;
@@ -373,7 +373,7 @@ public class ProfileEditor extends AppCompatActivity {
 
         Home.setPreferencesString("saved_profile_list_json", data);
         Home.setPreferencesString("saved_profile_list_json_working", "");
-        UserError.Log.uel(TAG, "Converted Profile data with multiplier: " + ((multiplier == Constants.MG_DL_TO_MMOL_L) ? " to mmol/l" : "to mg/dl"));
+        UserError.Log.uel(TAG, "Converted Profile data with multiplier: " + ((multiplier == Dex_Constants.MG_DL_TO_MMOL_L) ? " to mmol/l" : "to mg/dl"));
     }
 
     public static List<ProfileItem> loadData(boolean buttons) {
