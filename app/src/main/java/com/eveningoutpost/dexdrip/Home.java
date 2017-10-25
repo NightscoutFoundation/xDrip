@@ -177,6 +177,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     private boolean updateStuff;
     private boolean updatingPreviewViewport = false;
     private boolean updatingChartViewport = false;
+    private boolean screen_forced_on = false;
     public BgGraphBuilder bgGraphBuilder;
     private static SharedPreferences prefs;
     private Viewport tempViewport = new Viewport();
@@ -926,6 +927,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                         @Override
                         public void run() {
                             JoH.releaseWakeLock(wl);
+                            dontKeepScreenOn();
                             finish();
                         }
                     }, timeout);
@@ -1018,12 +1020,19 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         }
     }
 
+    private static final int screenAlwaysOnFlags = WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
+            WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD |
+            WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON |
+            WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON |
+            WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON;
     private void keepScreenOn() {
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
-                WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD |
-                WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON |
-                WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON |
-                WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON);
+        screen_forced_on = true;
+        getWindow().addFlags(screenAlwaysOnFlags);
+    }
+
+    private void dontKeepScreenOn() {
+        getWindow().clearFlags(screenAlwaysOnFlags);
+        screen_forced_on = false;
     }
 
 
@@ -2373,11 +2382,13 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                     notificationText.setText(R.string.possible_bad_calibration);
                 }
                 displayCurrentInfo();
+                if (screen_forced_on)  dontKeepScreenOn();
             } else {
                 notificationText.setText(R.string.please_enter_two_calibrations_to_get_started);
                 showUncalibratedSlope();
                 Log.d(TAG, "Asking for calibration A: Uncalculated BG readings: " + BgReading.latest(2).size() + " / Calibrations size: " + calibrations.size());
                 promptForCalibration();
+                dontKeepScreenOn();
             }
         } else {
             if (!BgReading.isDataSuitableForDoubleCalibration()) {
@@ -2390,6 +2401,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                     showUncalibratedSlope();
                     Log.d(TAG, "Asking for calibration B: Uncalculated BG readings: " + BgReading.latestUnCalculated(2).size() + " / Calibrations size: " + calibrations.size());
                     promptForCalibration();
+                    dontKeepScreenOn();
                 }
             }
         }
