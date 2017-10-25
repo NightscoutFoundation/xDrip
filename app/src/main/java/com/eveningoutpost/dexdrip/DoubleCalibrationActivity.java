@@ -84,21 +84,25 @@ public class DoubleCalibrationActivity extends ActivityWithMenu {
                             string_value_2 = string_value_1; // just use single calibration if all that is entered
                         }
                         if (!TextUtils.isEmpty(string_value_2)) {
-                            final double calValue_1 = Double.parseDouble(string_value_1);
-                            final double calValue_2 = Double.parseDouble(string_value_2);
+                            try {
+                                final double calValue_1 = Double.parseDouble(string_value_1);
+                                final double calValue_2 = Double.parseDouble(string_value_2);
 
-                            final double multiplier = Home.getPreferencesStringWithDefault("units", "mgdl").equals("mgdl") ? 1 : Constants.MMOLL_TO_MGDL;
-                            if ((calValue_1 * multiplier < 40) || (calValue_1 * multiplier > 400)
-                                    || (calValue_2 * multiplier < 40) || (calValue_2 * multiplier > 400)) {
-                                JoH.static_toast_long("Calibration out of range");
-                            } else {
-                                Calibration.initialCalibration(calValue_1, calValue_2, getApplicationContext());
+                                final double multiplier = Home.getPreferencesStringWithDefault("units", "mgdl").equals("mgdl") ? 1 : Constants.MMOLL_TO_MGDL;
+                                if ((calValue_1 * multiplier < 40) || (calValue_1 * multiplier > 400)
+                                        || (calValue_2 * multiplier < 40) || (calValue_2 * multiplier > 400)) {
+                                    JoH.static_toast_long("Calibration out of range");
+                                } else {
+                                    Calibration.initialCalibration(calValue_1, calValue_2, getApplicationContext());
 
-                                //startWatchUpdaterService(v.getContext(), WatchUpdaterService.ACTION_SYNC_CALIBRATION, TAG);
+                                    //startWatchUpdaterService(v.getContext(), WatchUpdaterService.ACTION_SYNC_CALIBRATION, TAG);
 
-                                Intent tableIntent = new Intent(v.getContext(), Home.class);
-                                startActivity(tableIntent);
-                                finish();
+                                    Intent tableIntent = new Intent(v.getContext(), Home.class);
+                                    startActivity(tableIntent);
+                                    finish();
+                                }
+                            } catch (NumberFormatException e) {
+                                JoH.static_toast_long("Invalid calibration number!");
                             }
                         } else {
                             value_2.setError("Calibration Can Not be blank");
