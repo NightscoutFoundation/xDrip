@@ -5,6 +5,9 @@ import android.content.Intent;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+
+import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 import com.eveningoutpost.dexdrip.Home;
@@ -13,6 +16,7 @@ import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
 import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Models.UserNotification;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
+import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
@@ -23,6 +27,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
  */
 public class SnoozeOnNotificationDismissService extends IntentService {
     private final static String TAG = AlertPlayer.class.getSimpleName();
+    private final static long MINIMUM_CANCEL_DELAY = 3 * Constants.SECOND_IN_MS;
 
     public SnoozeOnNotificationDismissService() {
         super("SnoozeOnNotificationDismissService");
@@ -32,28 +37,32 @@ public class SnoozeOnNotificationDismissService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         String alertType = (intent != null) ? intent.getStringExtra("alertType") : "null intent"; // Replace by constant
         if (alertType == null) alertType = "null";
-        Log.e(TAG, "SnoozeOnNotificationDismissService called source = " + alertType);
-        if(alertType.equals("bg_alerts")  ) {
+        final long time_showing = (intent != null) ? JoH.msSince(intent.getLongExtra("raisedTimeStamp", JoH.tsl() - 10 * Constants.MINUTE_IN_MS)) : 10 * Constants.MINUTE_IN_MS;
+        if (time_showing <= MINIMUM_CANCEL_DELAY) {
+            UserError.Log.wtf(TAG, "Attempt to cancel alert (" + alertType + ") within minimum limit of: " + JoH.niceTimeScalar(MINIMUM_CANCEL_DELAY));
+        }
+        Log.e(TAG, "SnoozeOnNotificationDismissService called source = " + alertType + " shown for: " + JoH.niceTimeScalar(time_showing));
+        if (alertType.equals("bg_alerts") && (time_showing > MINIMUM_CANCEL_DELAY)) {
             snoozeBgAlert();
             return;
         }
-        if(alertType.equals("bg_unclear_readings_alert") || 
-           alertType.equals("bg_missed_alerts")) {
+        if (alertType.equals("bg_unclear_readings_alert") ||
+                alertType.equals("bg_missed_alerts")) {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
             boolean enableAlertsReraise = prefs.getBoolean(alertType + "_enable_alerts_reraise", false);
-            if(enableAlertsReraise) {
+            if (enableAlertsReraise && (time_showing > MINIMUM_CANCEL_DELAY)) {
                 // Only snooze these alert if it the reraise function is enabled. 
                 snoozeOtherAlert(alertType);
             }
             return;
         }
-        
-        if(alertType.equals("bg_predict_alert") ||
+
+        if (alertType.equals("bg_predict_alert") ||
                 alertType.equals("persistent_high_alert")) {
             Log.wtf(TAG, "SnoozeOnNotificationDismissService called for unsupported type!!! source = " + alertType);
-            
+
         }
-        
+
         Log.e(TAG, "SnoozeOnNotificationDismissService called for unknown source = " + alertType);
     }
     
