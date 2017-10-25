@@ -926,8 +926,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                     t.schedule(new TimerTask() {
                         @Override
                         public void run() {
-                            JoH.releaseWakeLock(wl);
                             dontKeepScreenOn();
+                            JoH.releaseWakeLock(wl);
                             finish();
                         }
                     }, timeout);
@@ -1025,13 +1025,14 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON |
             WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON |
             WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON;
+
     private void keepScreenOn() {
         screen_forced_on = true;
-        getWindow().addFlags(screenAlwaysOnFlags);
+        JoH.runOnUiThread(() -> getWindow().addFlags(screenAlwaysOnFlags));
     }
 
     private void dontKeepScreenOn() {
-        getWindow().clearFlags(screenAlwaysOnFlags);
+        JoH.runOnUiThread(() -> getWindow().clearFlags(screenAlwaysOnFlags));
         screen_forced_on = false;
     }
 
