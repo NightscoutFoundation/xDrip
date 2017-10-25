@@ -129,7 +129,7 @@ public class NightscoutUploader {
 
             @GET("treatments")
                 // retrofit2/okhttp3 could do the if-modified-since natively using cache
-            Call<ResponseBody> downloadTreatments(@Header("api-secret") String secret, @Header("If-Modified-Since") String ifmodified);
+            Call<ResponseBody> downloadTreatments(@Header("api-secret") String secret, @Header("BROKEN-If-Modified-Since") String ifmodified);
 
             @GET("treatments.json")
             Call<ResponseBody> findTreatmentByUUID(@Header("api-secret") String secret, @Query("find[uuid]") String uuid);
