@@ -23,6 +23,7 @@ import java.util.Map;
 @Table(name = "Accuracy", id = BaseColumns._ID)
 public class Accuracy extends PlusModel {
     private static final String TAG = "Accuracy";
+    private static boolean patched = false;
     static final String[] schema = {
             "CREATE TABLE Accuracy (_id INTEGER PRIMARY KEY AUTOINCREMENT);",
             "ALTER TABLE Accuracy ADD COLUMN timestamp INTEGER;",
@@ -82,7 +83,7 @@ public class Accuracy extends PlusModel {
 
     public static Accuracy create(BloodTest bloodTest, BgReading bgReading, String plugin) {
         if ((bloodTest == null) || (bgReading == null)) return null;
-        fixUpTable(schema);
+        patched = fixUpTable(schema, patched);
         if (getForPreciseTimestamp(bgReading.timestamp, Constants.MINUTE_IN_MS, plugin) != null) {
             UserError.Log.d(TAG, "Duplicate accuracy timestamp for: " + JoH.dateTimeText(bgReading.timestamp));
             return null;
@@ -101,7 +102,7 @@ public class Accuracy extends PlusModel {
     }
 
     static Accuracy getForPreciseTimestamp(double timestamp, double precision, String plugin) {
-        fixUpTable(schema);
+        patched = fixUpTable(schema, patched);
         final Accuracy accuracy = new Select()
                 .from(Accuracy.class)
                 .where("timestamp <= ?", (timestamp + precision))
@@ -125,7 +126,7 @@ public class Accuracy extends PlusModel {
                     .limit(number)
                     .execute();
         } catch (android.database.sqlite.SQLiteException e) {
-            fixUpTable(schema);
+            patched = fixUpTable(schema, patched);
             return new ArrayList<>();
         }
     }
