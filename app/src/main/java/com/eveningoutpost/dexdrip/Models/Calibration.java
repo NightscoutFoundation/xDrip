@@ -1243,6 +1243,7 @@ public class Calibration extends Model {
                 cal.invalidate();
             }
         }
+        JoH.clearCache();
         String msg = "Deleted all calibrations for sensor";
         Log.ueh(TAG, msg);
         JoH.static_toast_long(msg);
