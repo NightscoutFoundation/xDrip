@@ -35,6 +35,9 @@ public class IdempotentMigrations {
         LibreBlock.updateDB();
         LibreData.updateDB();
         JoH.clearCache();
+
+        IncompatibleApps.notifyAboutIncompatibleApps();
+
     }
 
     private void migrateBGAlerts() {
