@@ -1884,7 +1884,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
         //Transmitter Battery Level
         final Sensor sensor = Sensor.currentSensor();
-        if (sensor != null && sensor.latest_battery_level != 0 && sensor.latest_battery_level <= Dex_Constants.TRANSMITTER_BATTERY_LOW && !prefs.getBoolean("disable_battery_warning", false)) {
+        if (sensor != null && sensor.latest_battery_level != 0 && !DexCollectionService.getBestLimitterHardwareName().equalsIgnoreCase("BlueReader") && sensor.latest_battery_level <= Dex_Constants.TRANSMITTER_BATTERY_LOW && !prefs.getBoolean("disable_battery_warning", false)) {
             Drawable background = new Drawable() {
 
                 @Override
@@ -2531,7 +2531,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                     if (limitterName.equals(DexCollectionService.LIMITTER_NAME)) {
                         dexbridgeBattery.setText(getString(R.string.limitter_battery) + ": " + bridgeBattery + "%");
                     } else {
-                        dexbridgeBattery.setText(limitterName + " " + getString(R.string.battery) + ": " + bridgeBattery + "%");
+                        dexbridgeBattery.setText(limitterName + " " + getString(R.string.battery) + ": " + bridgeBattery + "% (" + prefs.getString( "bridge_battery_days", "0") + "days)");
                     }
                 } else {
                     dexbridgeBattery.setText("Bridge battery" + ": " + bridgeBattery + ((bridgeBattery < 200) ? "%" : "mV"));
