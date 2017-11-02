@@ -263,10 +263,10 @@ public class SystemStatusFragment extends Fragment {
         } else {
             transmitter_status_view.setText("" + td.sensor_battery_level);
             GcmActivity.requestSensorBatteryUpdate(); // always ask
-            if (prefs.getString("btDevice","").equals("blueReader")) {
-                if (td.sensor_battery_level <= 3200) {
+            if (getBestLimitterHardwareName().equals("BlueReader")) {
+                if (td.sensor_battery_level <= 3300) {
                     transmitter_status_view.append(" - very low");
-                } else if (td.sensor_battery_level <= 3400) {
+                } else if (td.sensor_battery_level <= 3650) {
                     transmitter_status_view.append(" - low");
                 } else {
                     transmitter_status_view.append(" - ok");
