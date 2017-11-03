@@ -37,7 +37,7 @@ public class IncompatibleApps {
         package_name = "it.ct.glicemia";
         if (InstalledApps.checkPackageExists(context, package_name)) {
             if (JoH.pratelimit(package_name + NOTIFY_MARKER, RENOTIFY_TIME)) {
-                id = notify("Glimp", package_name, "Glimp" + " " + use_conflict_msg, id);
+                id = notify("Glimp", package_name, "Glimp" + " " + use_conflict_msg + "\n\nYou can adjust Glimp Settings: options -> devices -> unselect Bluetooth option", id);
             }
         }
 
