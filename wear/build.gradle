@@ -14,8 +14,6 @@ apply plugin: 'com.android.application'
 //apply plugin: 'me.tatarka.retrolambda'
 
 android {
-    signingConfigs {
-    }
     compileSdkVersion 23
     buildToolsVersion '26.0.2'
     lintOptions {
