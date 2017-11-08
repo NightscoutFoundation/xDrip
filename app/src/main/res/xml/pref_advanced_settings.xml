@@ -179,6 +179,11 @@
                 android:key="pebble_vibrate_no_bluetooth"
                 android:summary="@string/vibrate_watch_to_alert_no_bluetooth"
                 android:title="@string/vibrate_when_no_bluetooth" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="pebble_show_bwp"
+                android:summary="Show Bolus Wizard Preview Insulin value on watch when appropriate"
+                android:title="Display BWP Insulin" />
             <EditTextPreference
                 android:defaultValue="99"
                 android:dependency="broadcast_to_pebble"

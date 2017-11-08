@@ -124,6 +124,10 @@ public class BgGraphBuilder {
     public double end_time = (new Date().getTime() + (60000 * 10)) / FUZZER;
     public double predictive_end_time;
     public double start_time = end_time - ((60000 * 60 * 24)) / FUZZER;
+
+    public static String bwp_last_insulin;
+    public static long bwp_last_insulin_timestamp = -1;
+
     private final static double timeshift = 500000;
     private static final int NUM_VALUES = (60 / 5) * 24;
 
@@ -1494,6 +1498,7 @@ public class BgGraphBuilder {
                         // }
 
                         String bwp_update = "";
+                        bwp_last_insulin_timestamp = -1;
                         if (d)
                             Log.i(TAG, "Predictive BWP: Current prediction: " + JoH.qs(predictedbg) + " / carbs: " + JoH.qs(evaluation[0]) + " insulin: " + JoH.qs(evaluation[1]));
                         if (!BgReading.isDataStale()) {
@@ -1506,7 +1511,8 @@ public class BgGraphBuilder {
                                 } else if (evaluation[1] > Profile.minimum_insulin_recommendation) {
                                     //PointValue iv = new PointValue((float) fuzzed_timestamp, (float) (11 * bgScale));
                                     //iv.setLabel("+Insulin: " + JoH.qs(evaluation[1], 1));
-
+                                    bwp_last_insulin = JoH.qs(evaluation[1], 1) + ((low_occurs_at > 0) ? ("\u26A0") : "");
+                                    bwp_last_insulin_timestamp = JoH.tsl();
                                     bwp_update = "\u224F" + " Insulin: " + JoH.qs(evaluation[1], 1) + ((low_occurs_at > 0) ? (" " + "\u26A0") : ""); // warning symbol
                                     //annotationValues.add(iv); // needs to be different value list so we can make annotation nicer
                                 }
