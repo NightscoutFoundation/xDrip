@@ -227,7 +227,6 @@ public class NFCReaderX {
                 if (!NFCReaderX.useNFC()) return;
                 if (succeeded) {
                     final String tagId = bytesToHexString(tag.getId());
-                    Log.w("LibreRawData",bytesToHexString(data)); //todo hierDW
                     mResult = parseData(0, tagId, data);
                     new Thread() {
                         @Override
