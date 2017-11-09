@@ -3,11 +3,9 @@ package com.eveningoutpost.dexdrip.UtilityModels;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
-import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -17,7 +15,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.R;
 import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.Interceptor;
@@ -27,22 +24,13 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.concurrent.TimeUnit;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 import okio.Buffer;
 import okio.BufferedSink;
 import okio.GzipSink;
 import okio.Okio;
-
-import static com.eveningoutpost.dexdrip.utils.FileUtils.getExternalDir;
-import static com.eveningoutpost.dexdrip.utils.FileUtils.makeSureDirectoryExists;
 
 public class SendFeedBack extends AppCompatActivity {
 
@@ -88,55 +76,6 @@ public class SendFeedBack extends AppCompatActivity {
                     type_of_message = "Log Push";
                     myrating.setVisibility(View.GONE);
                     ratingtext.setVisibility(View.GONE);
-
-                    //zeitlich begrenzt
-                    FileOutputStream foStream = null;
-                    PrintStream printStream = null;
-                    ZipOutputStream zipOutputStream =null;
-                    String zipFilename = null;
-
-
-                    try {
-
-                        final String dir = getExternalDir();
-                        makeSureDirectoryExists(dir);
-
-                        final StringBuilder sb = new StringBuilder();
-                        sb.append(dir);
-                        sb.append("/exportlog");
-                        sb.append(DateFormat.format("yyyyMMdd-kkmmss", System.currentTimeMillis()));
-                        sb.append(".zip");
-                        zipFilename = sb.toString();
-                        final File sd = Environment.getExternalStorageDirectory();
-                        if (sd.canWrite()) {
-                            final File zipOutputFile = new File(zipFilename);
-
-                            foStream = new FileOutputStream(zipOutputFile);
-                            zipOutputStream = new ZipOutputStream(new BufferedOutputStream(foStream));
-                            zipOutputStream.putNextEntry(new ZipEntry("exportlog" + DateFormat.format("yyyyMMdd-kkmmss", System.currentTimeMillis()) + ".txt"));
-                            printStream = new PrintStream(zipOutputStream);
-
-                            //add Treatment and BGlucose Header
-                            printStream.println(log_data);
-                            printStream.flush();
-
-
-                        } else {
-                            UserError.Log.d(TAG, "SD card not writable!");
-                        }
-
-                    } catch (IOException e) {
-                        UserError.Log.e(TAG, "Exception while writing DB", e);
-                    } finally {
-                        if (printStream != null) {
-                            printStream.close();
-                        }
-                        if (zipOutputStream != null) try {
-                            zipOutputStream.close();
-                        } catch (IOException e1) {
-                            UserError.Log.e(TAG, "Something went wrong closing: ", e1);
-                        }
-                    }
                 }
             }
         }
