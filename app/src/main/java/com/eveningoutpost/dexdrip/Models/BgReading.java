@@ -1102,7 +1102,9 @@ public class BgReading extends Model implements ShareUploadableBg {
         }
         try {
             Log.d(TAG, "Processing incoming json: " + json);
-           return new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create().fromJson(json,BgReading.class);
+            BgReading bgReading =  new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create().fromJson(json,BgReading.class);
+            bgReading.uuid = UUID.randomUUID().toString();
+            return bgReading;
         } catch (Exception e) {
             Log.d(TAG, "Got exception parsing BgReading json: " + e.toString());
             Home.toaststaticnext("Error on BGReading sync, probably decryption key mismatch");
