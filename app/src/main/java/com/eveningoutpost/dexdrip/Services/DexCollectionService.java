@@ -1052,6 +1052,14 @@ public class DexCollectionService extends Service {
                         CheckBridgeBattery.checkBridgeBattery();
                     }
                 }
+            } else if (new String(buffer) != null && (new String(buffer).startsWith("TRANS_FAILED") || new String(buffer).startsWith("HYBERNATE SUCCESS") || new String(buffer).startsWith("not ready for") || new String(buffer).startsWith("NFC_DISABLED") )) {
+                if (static_use_nrf) {
+                    Log.e(TAG, "blueReader-message: " + new String(buffer));
+                    if (new String(buffer).startsWith("TRANS_FAILED") || new String(buffer).startsWith("not ready for") ) {
+                        Log.e(TAG, "Found blueReader in a ugly State, send hibernate to reset!");
+                        sendBtMessage(new byte[]{0x68}); //send hard hibernate, because bluereader is in a ugly state
+                    }
+                }
             } else if (buffer.length > 10 && new String(buffer) != null && new String(buffer).startsWith("battery: ")) {
                 //bluereader intermidiate support
                 if (BgReading.last() == null || BgReading.last().timestamp + (4 * 60 * 1000) < System.currentTimeMillis()) {
@@ -1065,10 +1073,6 @@ public class DexCollectionService extends Service {
 
     private synchronized void processNewTransmitterData(TransmitterData transmitterData, long timestamp) {
         if (transmitterData == null) {
-            if (static_use_nrf) {
-                Log.e(TAG, "Found blueReader in a ugly State,send Reset");
-                sendBtMessage(new byte[]{0x79}); //send hard reset, because bluereader is in a ugly state
-            }
             return;
         }
 
