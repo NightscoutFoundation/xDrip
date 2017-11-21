@@ -16,6 +16,8 @@ import com.eveningoutpost.dexdrip.UtilityModels.Intents;
 import com.eveningoutpost.dexdrip.UtilityModels.PumpStatus;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
+import java.util.UUID;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -109,7 +111,8 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
                                                         // fake up some extra data
                                                         faux_bgr.put("raw_data", json_object.getDouble("sgv"));
                                                         faux_bgr.put("filtered_data", json_object.getDouble("sgv"));
-
+                                                        faux_bgr.put("uuid", UUID.randomUUID().toString());
+                                                         
                                                         Log.d(TAG, "Received NSEmulator SGV: " + faux_bgr);
                                                         bgReadingInsertFromJson(faux_bgr.toString(), true, true); // notify and force sensor
                                                         break;
