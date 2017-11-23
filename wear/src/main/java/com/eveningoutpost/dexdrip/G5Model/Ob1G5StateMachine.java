@@ -131,7 +131,7 @@ public class Ob1G5StateMachine {
                                                                                                                     // TODO what to do here?
                                                                                                                 }
                                                                                                             } else {
-                                                                                                                parent.msg("Not Authorized!");
+                                                                                                                parent.msg("Not Authorized! (Wrong TxID?)");
                                                                                                                 UserError.Log.e(TAG, "Authentication failed!!!!");
                                                                                                                 parent.incrementErrors();
                                                                                                                 // TODO? try again?
