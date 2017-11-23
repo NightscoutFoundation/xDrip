@@ -37,6 +37,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
+import android.os.Vibrator;
 import android.provider.Settings;
 //KS import android.support.v7.app.AlertDialog;
 //KS import android.support.v4.app.NotificationCompat;
@@ -90,6 +91,7 @@ import java.util.zip.Inflater;
 
 import static android.bluetooth.BluetoothDevice.PAIRING_VARIANT_PIN;
 import static android.content.Context.ALARM_SERVICE;
+import static android.content.Context.VIBRATOR_SERVICE;
 //KS import static com.eveningoutpost.dexdrip.stats.StatsActivity.SHOW_STATISTICS_PRINT_COLOR;
 
 /**
@@ -146,6 +148,7 @@ public class JoH {
     public static long msSince(long when) {
         return (tsl() - when);
     }
+
     public static long msTill(long when) {
         return (when - tsl());
     }
@@ -180,7 +183,6 @@ public class JoH {
             return null;
         }
     }
-
 
 
     public static String compressString(String source) {
@@ -562,6 +564,7 @@ public class JoH {
     public static String niceTimeTill(long t) {
         return niceTimeScalar(-msSince(t));
     }
+
     // temporary
     public static String niceTimeScalar(long t) {
         String unit = "second";
@@ -705,8 +708,9 @@ public class JoH {
                             || wifi_state == NetworkInfo.DetailedState.CAPTIVE_PORTAL_CHECK) {
                         String ssid = wifiInfo.getSSID();
                         if (ssid.equals("<unknown ssid>")) return null; // WifiSsid.NONE;
-                        if (ssid.charAt(0)=='"') ssid=ssid.substring(1);
-                        if (ssid.charAt(ssid.length()-1)=='"') ssid=ssid.substring(0,ssid.length()-1);
+                        if (ssid.charAt(0) == '"') ssid = ssid.substring(1);
+                        if (ssid.charAt(ssid.length() - 1) == '"')
+                            ssid = ssid.substring(0, ssid.length() - 1);
                         return ssid;
                     }
                 }
@@ -748,8 +752,7 @@ public class JoH {
         return mainHandler.postDelayed(theRunnable, delay);
     }
 
-    public static void removeUiThreadRunnable(Runnable theRunnable)
-    {
+    public static void removeUiThreadRunnable(Runnable theRunnable) {
         final Handler mainHandler = new Handler(xdrip.getAppContext().getMainLooper());
         mainHandler.removeCallbacks(theRunnable);
     }
@@ -1141,6 +1144,13 @@ public class JoH {
         return doPairingRequest(context, broadcastReceiver, intent, mBluetoothDeviceAddress, null);
     }
 
+    public static void vibrateNotice() {
+        final Vibrator vibrator = (Vibrator) xdrip.getAppContext().getSystemService(VIBRATOR_SERVICE);
+        long[] vibrationPattern = {0, 500, 50, 300};
+        final int indexInPatternToRepeat = -1;
+        vibrator.vibrate(vibrationPattern, indexInPatternToRepeat);
+    }
+
     @TargetApi(19)
     public static boolean doPairingRequest(Context context, BroadcastReceiver broadcastReceiver, Intent intent, String mBluetoothDeviceAddress, String pinHint) {
         if (BluetoothDevice.ACTION_PAIRING_REQUEST.equals(intent.getAction())) {
@@ -1165,6 +1175,7 @@ public class JoH {
 
                     } catch (Exception e) {
                         UserError.Log.e(TAG, "Could not set pairing confirmation due to exception: " + e);
+                        vibrateNotice();
                         if (JoH.ratelimit("failed pair confirmation", 200)) {
                             // BluetoothDevice.PAIRING_VARIANT_CONSENT)
                             if (type == 3) {
