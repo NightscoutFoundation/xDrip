@@ -27,7 +27,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.Constants;
  */
 public class SnoozeOnNotificationDismissService extends IntentService {
     private final static String TAG = AlertPlayer.class.getSimpleName();
-    private final static long MINIMUM_CANCEL_DELAY = 3 * Constants.SECOND_IN_MS;
+    private final static long MINIMUM_CANCEL_DELAY = 2 * Constants.SECOND_IN_MS;
 
     public SnoozeOnNotificationDismissService() {
         super("SnoozeOnNotificationDismissService");
