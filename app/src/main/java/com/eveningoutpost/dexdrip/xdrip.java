@@ -36,7 +36,6 @@ public class xdrip extends Application {
     private static boolean fabricInited = false;
     private static boolean bfInited = false;
     private static Locale LOCALE;
-    private static NotificationChannels notifChannels;
     public static PlusAsyncExecutor executor;
     public static boolean useBF = false;
     private static Boolean isRunningTestCache;
