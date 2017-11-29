@@ -430,6 +430,9 @@ public class SystemStatusFragment extends Fragment {
     private void setNotes() {
         try {
 
+            if(!prefs.getString("blueReader_Version","empty").startsWith("empty")) {
+                notes.append("\n- blueReader Firmware: " + prefs.getString("blueReader_Version","empty"));
+            }
             if ((mBluetoothManager == null) || ((android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) && (mBluetoothManager.getAdapter() == null))) {
                 notes.append("\n- This device does not seem to support bluetooth");
             } else {
