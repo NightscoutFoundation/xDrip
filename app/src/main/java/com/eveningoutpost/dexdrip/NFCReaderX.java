@@ -23,6 +23,7 @@ import android.view.View;
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.Models.GlucoseData;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.LibreBlock;
 import com.eveningoutpost.dexdrip.Models.PredictionData;
 import com.eveningoutpost.dexdrip.Models.ReadingData;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
@@ -30,7 +31,6 @@ import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -227,6 +227,9 @@ public class NFCReaderX {
                 if (!NFCReaderX.useNFC()) return;
                 if (succeeded) {
                     final String tagId = bytesToHexString(tag.getId());
+
+                    // Save raw block record (we start from block 0)
+                    LibreBlock.createAndSave(tagId, data, 0);
 
                     mResult = parseData(0, tagId, data);
                     new Thread() {
