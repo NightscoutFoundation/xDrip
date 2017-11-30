@@ -2186,7 +2186,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         }
         if (isWifiWixel || isWifiBluetoothWixel || collector.equals(DexCollectionType.Mock)) {
             updateCurrentBgInfoForWifiWixel(notificationText);
-        } else if (is_follower || collector.equals(DexCollectionType.NSEmulator)) {
+        } else if (is_follower || collector.equals(DexCollectionType.NSEmulator) ||DexCollectionType.isLibreOOPAlgorithm()) {
             displayCurrentInfo();
             getApplicationContext().startService(new Intent(getApplicationContext(), Notifications.class));
         } else if (!alreadyDisplayedBgInfoCommon && DexCollectionType.getDexCollectionType() == DexCollectionType.LibreAlarm) {
@@ -2374,7 +2374,11 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             showUncalibratedSlope();
             return;
         }
-
+        if(DexCollectionType.isLibreOOPAlgorithm()) {
+        	// Rest of this function deals with initial calibration. Since we currently don't have a way to calibrate,
+        	// And even once we will have, there is probably no need to force a calibration at start of sensor use.
+        	return;
+        }
         if (BgReading.latest(3).size() > 2) {
             // TODO potential to calibrate off stale data here
             final List<Calibration> calibrations = Calibration.latestValid(2);
@@ -2511,7 +2515,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     private void displayCurrentInfo() {
         DecimalFormat df = new DecimalFormat("#");
         df.setMaximumFractionDigits(0);
-
+        
         final boolean isDexbridge = CollectionServiceStarter.isDexBridgeOrWifiandDexBridge();
         // final boolean hasBtWixel = DexCollectionType.hasBtWixel();
         final boolean isLimitter = CollectionServiceStarter.isLimitter();

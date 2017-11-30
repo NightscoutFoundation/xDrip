@@ -130,6 +130,11 @@ public enum DexCollectionType {
     public static boolean hasFiltered() {
         return does_have_filtered || usesFiltered.contains(getDexCollectionType());
     }
+    
+    public static boolean isLibreOOPAlgorithm() {
+        return DexCollectionType.getDexCollectionType() == DexCollectionType.LimiTTer && 
+               Home.getPreferencesBooleanDefaultFalse("external_blukon_algorithm"); 
+    }
 
     public static Class<?> getCollectorServiceClass() {
         switch (getDexCollectionType()) {
