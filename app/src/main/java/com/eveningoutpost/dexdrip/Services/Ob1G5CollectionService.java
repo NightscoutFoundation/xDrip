@@ -66,6 +66,9 @@ import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.G5_BATTERY_FR
 /**
  * OB1 G5 collector
  * Created by jamorham on 16/09/2017.
+ *
+ * App version is master, best to avoid editing wear version directly
+ *
  */
 
 
@@ -1118,8 +1121,10 @@ public class Ob1G5CollectionService extends G5BaseService {
                 fullWakeLock = JoH.fullWakeLock("pairing-screen-wake", 30 * Constants.SECOND_IN_MS);
                 if (!android_wear) Home.startHomeWithExtra(context, Home.HOME_FULL_WAKEUP, "1");
                 if (!JoH.doPairingRequest(context, this, intent, bleDevice.getBluetoothDevice().getAddress())) {
-                    unregisterPairingReceiver();
-                    UserError.Log.e(TAG, "Pairing failed so removing pairing automation"); // todo use flag
+                    if (!android_wear) {
+                        unregisterPairingReceiver();
+                        UserError.Log.e(TAG, "Pairing failed so removing pairing automation"); // todo use flag
+                    }
                 }
             } else {
                 UserError.Log.e(TAG, "Received pairing request but device was null !!!");
