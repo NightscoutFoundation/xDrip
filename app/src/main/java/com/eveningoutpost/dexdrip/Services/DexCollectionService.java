@@ -1055,7 +1055,7 @@ public class DexCollectionService extends Service {
             } else if (new String(buffer) != null && (new String(buffer).startsWith("IDR") || new String(buffer).startsWith("TRANS_FAILED") || new String(buffer).startsWith("HYBERNATE SUCCESS") || new String(buffer).startsWith("not ready for") || new String(buffer).startsWith("NFC_DISABLED") )) {
                 if (static_use_nrf) {
                     Log.e(TAG, "blueReader-message: " + new String(buffer));
-                    if (new String(buffer).startsWith("TRANS_FAILED") || new String(buffer).startsWith("not ready for") ) {
+                    if (new String(buffer).startsWith("not ready for") ) { //delete the trans_failed, because its normal only if the bluereader could not read the sensor.
                         Log.e(TAG, "Found blueReader in a ugly State, send hibernate to reset!");
                         sendBtMessage(new byte[]{0x68}); //send hard hibernate, because bluereader is in a ugly state
                     }
