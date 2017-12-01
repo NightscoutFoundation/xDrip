@@ -114,6 +114,9 @@ public class JoH {
         return qs(x, 2);
     }
 
+    // singletons to avoid repeated allocation
+    private static DecimalFormatSymbols dfs;
+    private static DecimalFormat df;
     public static String qs(double x, int digits) {
 
         if (digits == -1) {
@@ -127,12 +130,27 @@ public class JoH {
             }
         }
 
-        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
-        symbols.setDecimalSeparator('.');
-        DecimalFormat df = new DecimalFormat("#", symbols);
-        df.setMaximumFractionDigits(digits);
-        df.setMinimumIntegerDigits(1);
-        return df.format(x);
+        if (dfs == null) {
+            final DecimalFormatSymbols local_dfs = new DecimalFormatSymbols();
+            local_dfs.setDecimalSeparator('.');
+            dfs = local_dfs; // avoid race condition
+        }
+
+        final DecimalFormat this_df;
+        // use singleton if on ui thread otherwise allocate new as DecimalFormat is not thread safe
+        if (Thread.currentThread().getId() == 1) {
+            if (df == null) {
+                final DecimalFormat local_df = new DecimalFormat("#", dfs);
+                local_df.setMinimumIntegerDigits(1);
+                df = local_df; // avoid race condition
+            }
+            this_df = df;
+        } else {
+            this_df = new DecimalFormat("#", dfs);
+        }
+
+        this_df.setMaximumFractionDigits(digits);
+        return this_df.format(x);
     }
 
     public static double ts() {
@@ -141,7 +159,8 @@ public class JoH {
 
     // TODO can we optimize this with System.currentTimeMillis ?
     public static long tsl() {
-        return new Date().getTime();
+        //return new Date().getTime();
+        return System.currentTimeMillis();
     }
 
     public static long msSince(long when) {
