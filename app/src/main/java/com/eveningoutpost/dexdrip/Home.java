@@ -2186,7 +2186,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         }
         if (isWifiWixel || isWifiBluetoothWixel || collector.equals(DexCollectionType.Mock)) {
             updateCurrentBgInfoForWifiWixel(notificationText);
-        } else if (is_follower || collector.equals(DexCollectionType.NSEmulator) ||DexCollectionType.isLibreOOPAlgorithm()) {
+        } else if (is_follower || collector.equals(DexCollectionType.NSEmulator) ||DexCollectionType.isLibreOOPAlgorithm(collector)) {
             displayCurrentInfo();
             getApplicationContext().startService(new Intent(getApplicationContext(), Notifications.class));
         } else if (!alreadyDisplayedBgInfoCommon && DexCollectionType.getDexCollectionType() == DexCollectionType.LibreAlarm) {
@@ -2374,7 +2374,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             showUncalibratedSlope();
             return;
         }
-        if(DexCollectionType.isLibreOOPAlgorithm()) {
+        if(DexCollectionType.isLibreOOPAlgorithm(null)) {
         	// Rest of this function deals with initial calibration. Since we currently don't have a way to calibrate,
         	// And even once we will have, there is probably no need to force a calibration at start of sensor use.
         	return;
