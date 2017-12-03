@@ -14,6 +14,7 @@ import android.widget.EditText;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.LibreBlock;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.UserError;
@@ -120,7 +121,7 @@ public class Blukon {
 
         //BluCon code by gregorybel
         final String strRecCmd = CipherUtils.bytesToHex(buffer).toLowerCase();
-        Log.i(TAG, "BlueCon data: " + strRecCmd);
+        Log.i(TAG, "Blukon data: " + strRecCmd);
 
         if (Home.getPreferencesBooleanDefaultFalse("external_blukon_algorithm")) {
             Log.i(TAG, HexDump.dumpHexString(buffer));
@@ -341,6 +342,13 @@ public class Blukon {
             m_getNowGlucoseDataCommand = true;
 
         } else if (currentCommand.startsWith("010d0e01") /*getNowGlucoseData*/ && m_getNowGlucoseDataCommand == true && strRecCmd.startsWith("8bde")) {
+        	Log.d(TAG, "Before Saving data: + currentCommand = " + currentCommand);
+            String blockId = currentCommand.substring("010d0e01".length());
+            if(!blockId.isEmpty()) {
+                Log.d(TAG, "Saving data: + blockid = " + Integer.parseInt(blockId, 16));
+                LibreBlock.createAndSave("blukon", buffer, Integer.parseInt(blockId, 16) * 8);
+            }
+
             cmdFound = 1;
             int currentGlucose = nowGetGlucoseValue(buffer);
 
@@ -444,8 +452,8 @@ public class Blukon {
             Log.i(TAG, "Send sleep cmd");
             m_communicationStarted = false;
 
-            Log.e(TAG, "Full data that was received is " + HexDump.dumpHexString(m_full_data));
-            FileUtils.writeToFileWithCurrentDate(TAG, "xDripData", m_full_data);
+            Log.i(TAG, "Full data that was received is " + HexDump.dumpHexString(m_full_data));
+            LibreBlock.createAndSave("blukon", m_full_data, 0);
             
             Intent intent = new Intent(Intents.XDRIP_PLUS_LIBRE_DATA);
             Bundle bundle = new Bundle();
