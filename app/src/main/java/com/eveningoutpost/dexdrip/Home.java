@@ -2179,18 +2179,18 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             updateCurrentBgInfoForBtShare(notificationText);
         }
         if (isG5Share) {
-            updateCurrentBgInfoCommon(notificationText);
+            updateCurrentBgInfoCommon(collector, notificationText);
         }
         if (isBTWixel || isDexbridgeWixel || isWifiBluetoothWixel) {
-            updateCurrentBgInfoForBtBasedWixel(notificationText);
+            updateCurrentBgInfoForBtBasedWixel(collector, notificationText);
         }
         if (isWifiWixel || isWifiBluetoothWixel || collector.equals(DexCollectionType.Mock)) {
-            updateCurrentBgInfoForWifiWixel(notificationText);
-        } else if (is_follower || collector.equals(DexCollectionType.NSEmulator)) {
+            updateCurrentBgInfoForWifiWixel(collector, notificationText);
+        } else if (is_follower || collector.equals(DexCollectionType.NSEmulator) ||DexCollectionType.isLibreOOPAlgorithm(collector)) {
             displayCurrentInfo();
             getApplicationContext().startService(new Intent(getApplicationContext(), Notifications.class));
         } else if (!alreadyDisplayedBgInfoCommon && DexCollectionType.getDexCollectionType() == DexCollectionType.LibreAlarm) {
-            updateCurrentBgInfoCommon(notificationText);
+            updateCurrentBgInfoCommon(collector, notificationText);
         }
         if (collector.equals(DexCollectionType.Disabled)) {
             notificationText.append("\n DATA SOURCE DISABLED");
@@ -2289,17 +2289,17 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     }
 
 
-    private void updateCurrentBgInfoForWifiWixel(TextView notificationText) {
+    private void updateCurrentBgInfoForWifiWixel(DexCollectionType collector, TextView notificationText) {
         if (!WixelReader.IsConfigured(getApplicationContext())) {
             notificationText.setText(R.string.first_configure_ip_address);
             return;
         }
 
-        updateCurrentBgInfoCommon(notificationText);
+        updateCurrentBgInfoCommon(collector, notificationText);
 
     }
 
-    private void updateCurrentBgInfoForBtBasedWixel(TextView notificationText) {
+    private void updateCurrentBgInfoForBtBasedWixel(DexCollectionType collector, TextView notificationText) {
         if ((android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN_MR2)) {
             notificationText.setText(R.string.unfortunately_andoird_version_no_blueooth_low_energy);
             return;
@@ -2309,10 +2309,10 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             notificationText.setText(R.string.first_use_menu_to_scan);
             return;
         }
-        updateCurrentBgInfoCommon(notificationText);
+        updateCurrentBgInfoCommon(collector, notificationText);
     }
 
-    private void updateCurrentBgInfoCommon(TextView notificationText) {
+    private void updateCurrentBgInfoCommon(DexCollectionType collector, TextView notificationText) {
         if (alreadyDisplayedBgInfoCommon) return; // with bluetooth and wifi, skip second time
         alreadyDisplayedBgInfoCommon = true;
 
@@ -2374,7 +2374,11 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             showUncalibratedSlope();
             return;
         }
-
+        if(DexCollectionType.isLibreOOPAlgorithm(collector)) {
+        	// Rest of this function deals with initial calibration. Since we currently don't have a way to calibrate,
+        	// And even once we will have, there is probably no need to force a calibration at start of sensor use.
+        	return;
+        }
         if (BgReading.latest(3).size() > 2) {
             // TODO potential to calibrate off stale data here
             final List<Calibration> calibrations = Calibration.latestValid(2);
@@ -2511,7 +2515,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     private void displayCurrentInfo() {
         DecimalFormat df = new DecimalFormat("#");
         df.setMaximumFractionDigits(0);
-
+        
         final boolean isDexbridge = CollectionServiceStarter.isDexBridgeOrWifiandDexBridge();
         // final boolean hasBtWixel = DexCollectionType.hasBtWixel();
         final boolean isLimitter = CollectionServiceStarter.isLimitter();
