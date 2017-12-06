@@ -35,6 +35,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import static com.eveningoutpost.dexdrip.Models.BgReading.isDataSuitableForDoubleCalibration;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.STALE_CALIBRATION_CUT_OFF;
 import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.newFingerStickData;
 
@@ -268,7 +269,7 @@ public class Calibration extends Model {
         final List<BgReading> bgReadings = BgReading.latest_by_size(3);
 
         // don't allow initial calibration if data would be stale
-            if ((bgReadings == null) || (bgReadings.size() != 3 || (JoH.msSince(bgReadings.get(2).timestamp) > STALE_CALIBRATION_CUT_OFF))) {
+            if ((bgReadings == null) || (bgReadings.size() != 3) || !isDataSuitableForDoubleCalibration() ){
             UserError.Log.wtf(TAG, "Did not find 3 readings for initial calibration - aborting");
             JoH.static_toast_long("Not enough recent sensor data! - cancelling!");
             return;

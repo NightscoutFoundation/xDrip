@@ -500,6 +500,12 @@
                     android:key="use_non_fixed_li_parameters"
                     android:summary="Enable to allow variable slopes with Libre collection methods"
                     android:title="Non-fixed Libre slopes" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="bypass_calibration_quality_check"
+                    android:summary="Allow initial calibration even if we don't have good enough data. Beware could result in inaccurate calibration!"
+                    android:title="Bypass quality check" />
+
 
             </PreferenceScreen>
 

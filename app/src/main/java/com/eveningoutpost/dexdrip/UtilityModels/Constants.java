@@ -20,7 +20,7 @@ public class Constants {
 
     /* Configuration parameters */
 
-    public static final long STALE_CALIBRATION_CUT_OFF = Constants.MINUTE_IN_MS * 16;
+    public static final long STALE_CALIBRATION_CUT_OFF = Constants.MINUTE_IN_MS * 21;
 
     /* Notification IDs */
 
