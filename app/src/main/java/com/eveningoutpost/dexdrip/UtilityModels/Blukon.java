@@ -345,8 +345,11 @@ public class Blukon {
         	Log.d(TAG, "Before Saving data: + currentCommand = " + currentCommand);
             String blockId = currentCommand.substring("010d0e01".length());
             if(!blockId.isEmpty()) {
-                Log.d(TAG, "Saving data: + blockid = " + Integer.parseInt(blockId, 16));
-                LibreBlock.createAndSave("blukon", buffer, Integer.parseInt(blockId, 16) * 8);
+            	int blockNum = JoH.parseIntWithDefault(blockId, 16, -1);
+            	if(blockNum != -1) {
+            		Log.d(TAG, "Saving data: + blockid = " + blockNum);
+            		LibreBlock.createAndSave("blukon", buffer, blockNum * 8);
+            	}
             }
 
             cmdFound = 1;

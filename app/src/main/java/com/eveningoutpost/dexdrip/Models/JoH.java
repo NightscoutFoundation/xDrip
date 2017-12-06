@@ -1343,4 +1343,13 @@ public class JoH {
         final long buffer_crc = UnsignedInts.toLong(ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).getInt(bytes.length - 4));
         return buffer_crc == crc.getValue();
     }
+    
+    public static int parseIntWithDefault(String number, int radix, int defaultVal) {
+    	try {
+    		return Integer.parseInt(number, radix);
+    	}	 catch (NumberFormatException e) {
+    		Log.e(TAG, "Error parsing integer number = " + number + " radix = " + radix);
+    		return defaultVal;
+    	}
+	}
 }
