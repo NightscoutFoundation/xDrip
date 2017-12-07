@@ -342,14 +342,14 @@ public class Blukon {
             m_getNowGlucoseDataCommand = true;
 
         } else if (currentCommand.startsWith("010d0e01") /*getNowGlucoseData*/ && m_getNowGlucoseDataCommand == true && strRecCmd.startsWith("8bde")) {
-        	Log.d(TAG, "Before Saving data: + currentCommand = " + currentCommand);
+            Log.d(TAG, "Before Saving data: + currentCommand = " + currentCommand);
             String blockId = currentCommand.substring("010d0e01".length());
             if(!blockId.isEmpty()) {
-            	int blockNum = JoH.parseIntWithDefault(blockId, 16, -1);
-            	if(blockNum != -1) {
-            		Log.d(TAG, "Saving data: + blockid = " + blockNum);
-            		LibreBlock.createAndSave("blukon", buffer, blockNum * 8);
-            	}
+                int blockNum = JoH.parseIntWithDefault(blockId, 16, -1);
+                if(blockNum != -1) {
+                    Log.d(TAG, "Saving data: + blockid = " + blockNum);
+                    LibreBlock.createAndSave("blukon", buffer, blockNum * 8);
+                }
             }
 
             cmdFound = 1;
