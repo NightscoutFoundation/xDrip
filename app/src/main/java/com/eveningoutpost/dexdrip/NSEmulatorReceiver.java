@@ -110,6 +110,7 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
                                                         // sanity checking???
                                                         // fake up some extra data
                                                         faux_bgr.put("raw_data", json_object.getDouble("sgv"));
+                                                        faux_bgr.put("age_adjusted_raw_value", json_object.getDouble("sgv"));
                                                         faux_bgr.put("filtered_data", json_object.getDouble("sgv"));
                                                         faux_bgr.put("uuid", UUID.randomUUID().toString());
                                                          
