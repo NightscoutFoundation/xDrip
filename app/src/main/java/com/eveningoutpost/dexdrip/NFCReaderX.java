@@ -24,6 +24,7 @@ import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.Models.GlucoseData;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.LibreBlock;
+import com.eveningoutpost.dexdrip.Models.LibreOOPAlgorithm;
 import com.eveningoutpost.dexdrip.Models.PredictionData;
 import com.eveningoutpost.dexdrip.Models.ReadingData;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
@@ -165,6 +166,8 @@ public class NFCReaderX {
     }
 
     private static synchronized void doTheScan(final Activity context, Tag tag, boolean showui) {
+    	if (d)
+            Log.d(TAG, "doTheScan called");
         synchronized (tag_lock) {
             if (!tag_discovered) {
                 if (!useNFC()) return;
@@ -222,9 +225,13 @@ public class NFCReaderX {
 
         @Override
         protected void onPostExecute(Tag tag) {
+                Log.d(TAG, "onPostExecute called");
             try {
                 if (tag == null) return;
                 if (!NFCReaderX.useNFC()) return;
+                if (Home.getPreferencesBooleanDefaultFalse("external_blukon_algorithm")) {
+                	return;
+                }
                 if (succeeded) {
                     final String tagId = bytesToHexString(tag.getId());
 
@@ -381,6 +388,7 @@ public class NFCReaderX {
         protected Tag doInBackground(Tag... params) {
             if (!NFCReaderX.useNFC()) return null;
             if (read_lock.tryLock()) {
+            	Log.d(TAG, "readlock locked");
 
                 try {
                     Tag tag = params[0];
@@ -400,7 +408,12 @@ public class NFCReaderX {
                             Thread.sleep(250);
                             nfcvTag.connect();
                         }
-                        boolean readPatchSucceeded = readPatch(tag, nfcvTag);
+                        boolean readPatchSucceeded;
+                        if (Home.getPreferencesBooleanDefaultFalse("external_blukon_algorithm")) {
+                        	readPatchSucceeded = LibreOOPAlgorithm.readOOPData(nfcvTag);
+                        } else {
+                        	readPatchSucceeded = readPatch(tag, nfcvTag);
+                        }
                         if(!readPatchSucceeded) {
                         	// Not logging here, since log has happened in all places where false was returned.
                         	return null;
@@ -433,6 +446,7 @@ public class NFCReaderX {
                     if (d) Log.d(TAG, "Tag data reader exiting");
                     return tag;
                 } finally {
+                	Log.d(TAG, "readlock unlocked");
                     read_lock.unlock();
                     Home.staticBlockUI(context, false);
                 }
