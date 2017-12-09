@@ -914,11 +914,7 @@ public class BgReading extends Model implements ShareUploadableBg {
     }
 
     public static BgReading readingNearTimeStamp(double startTime) {
-        double margin = (4 * 60*1000);
-        if(DexCollectionType.hasLibre()) {
-        	// Libre has data every 1 minute (and we force this in the scan functions).
-        	margin = 59*1000;
-        }
+        final double margin = (4 * 60*1000);
         final DecimalFormat df = new DecimalFormat("#");
         df.setMaximumFractionDigits(1);
         return new Select()
