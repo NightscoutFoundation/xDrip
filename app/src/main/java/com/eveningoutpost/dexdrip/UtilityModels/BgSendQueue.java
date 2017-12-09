@@ -56,44 +56,6 @@ public class BgSendQueue extends Model {
     @Column(name = "operation_type")
     public String operation_type;
 
-    /*
-        public static List<BgSendQueue> queue() {
-            return new Select()
-                    .from(BgSendQueue.class)
-                    .where("success = ?", false)
-                    .orderBy("_ID asc")
-                    .limit(20)
-                    .execute();
-        }
-    */
-    public static List<BgSendQueue> mongoQueue() {
-        return new Select()
-                .from(BgSendQueue.class)
-                .where("mongo_success = ?", false)
-                .where("operation_type = ?", "create")
-                .orderBy("_ID desc")
-                .limit(30)
-                .execute();
-    }
-
-    public static List<BgSendQueue> cleanQueue() {
-        return new Delete()
-                .from(BgSendQueue.class)
-                .where("mongo_success = ?", true)
-                .where("operation_type = ?", "create")
-                .execute();
-    }
-
-    private static void addToQueue(BgReading bgReading, String operation_type) {
-        BgSendQueue bgSendQueue = new BgSendQueue();
-        bgSendQueue.operation_type = operation_type;
-        bgSendQueue.bgReading = bgReading;
-        bgSendQueue.success = false;
-        bgSendQueue.mongo_success = false;
-        bgSendQueue.save();
-        Log.d("BGQueue", "New value added to queue!");
-    }
-
     public static void handleNewBgReading(BgReading bgReading, String operation_type, Context context) {
         handleNewBgReading(bgReading, operation_type, context, false);
     }
@@ -270,11 +232,6 @@ public class BgSendQueue extends Model {
         }
     }
 
-    public void markMongoSuccess() {
-        this.mongo_success = true;
-        save();
-    }
-
     public static int getBatteryLevel(Context context) {
         final Intent batteryIntent = context.registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
         try {
@@ -288,4 +245,5 @@ public class BgSendQueue extends Model {
             return 50;
         }
     }
+    
 }
