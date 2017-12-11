@@ -17,6 +17,7 @@ import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.BloodTest;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.google.gson.Gson;
@@ -143,7 +144,7 @@ public class UploaderQueue extends Model {
     //////////////////////////////////////////
 
     public static UploaderQueue newEntry(String action, Model obj) {
-        UserError.Log.d(TAG, "new entry called");
+        Log.d(TAG, "new entry called");
         final UploaderQueue result = new UploaderQueue();
         result.bitfield_wanted = DEFAULT_UPLOAD_CIRCUITS
                 | (Home.getPreferencesBooleanDefaultFalse("cloud_storage_mongodb_enable") ? MONGO_DIRECT : 0)
@@ -162,6 +163,8 @@ public class UploaderQueue extends Model {
             result.reference_uuid = obj instanceof Calibration ? ((Calibration) obj).uuid : null;
         if (result.reference_uuid == null)
             result.reference_uuid = obj instanceof BloodTest ? ((BloodTest) obj).uuid : null;
+        if (result.reference_uuid == null)
+            result.reference_uuid = obj instanceof TransmitterData ? ((TransmitterData) obj).uuid : null;
 
         if (result.reference_uuid == null) {
             Log.d(TAG, "reference_uuid was null so refusing to create new entry");

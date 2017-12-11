@@ -58,6 +58,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.HM10Attributes;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
+import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.XbridgePlus;
 import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
@@ -1046,7 +1047,9 @@ public class DexCollectionService extends Service {
                         poll_backoff = 0;
                         retry_backoff = 0;
                         Log.v(TAG, "setSerialDataToTransmitterRawData: Creating TransmitterData at " + timestamp);
-                        processNewTransmitterData(TransmitterData.create(buffer, len, timestamp), timestamp);
+                        TransmitterData transmitterData = TransmitterData.create(buffer, len, timestamp);
+                        UploaderQueue.newEntry("create", transmitterData);
+                        processNewTransmitterData(transmitterData, timestamp);
                         if (Home.get_master())
                             GcmActivity.sendBridgeBattery(Home.getPreferencesInt("bridge_battery", -1));
                         CheckBridgeBattery.checkBridgeBattery();
@@ -1058,7 +1061,9 @@ public class DexCollectionService extends Service {
                     sendBtMessage(new byte[]{0x6C});
                 }
             } else {
-                processNewTransmitterData(TransmitterData.create(buffer, len, timestamp), timestamp);
+            	TransmitterData transmitterData = TransmitterData.create(buffer, len, timestamp);
+            	UploaderQueue.newEntry("create", transmitterData);
+                processNewTransmitterData(transmitterData, timestamp);
             }
         }
     }

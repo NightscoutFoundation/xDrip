@@ -17,6 +17,7 @@ import com.eveningoutpost.dexdrip.Models.BloodTest;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.DateUtil;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
@@ -261,13 +262,13 @@ public class NightscoutUploader {
         return apiStatus;
     }
 
-    public boolean uploadMongo(List<BgReading> glucoseDataSets, List<Calibration> meterRecords, List<Calibration> calRecords) {
+    public boolean uploadMongo(List<BgReading> glucoseDataSets, List<Calibration> meterRecords, List<Calibration> calRecords, List<TransmitterData> transmittersData) {
         boolean mongoStatus = false;
 
 
         if (enableMongoUpload) {
             double start = new Date().getTime();
-            mongoStatus = doMongoUpload(prefs, glucoseDataSets, meterRecords, calRecords);
+            mongoStatus = doMongoUpload(prefs, glucoseDataSets, meterRecords, calRecords, transmittersData);
             Log.i(TAG, String.format("Finished upload of %s record using a Mongo in %s ms result: %b", glucoseDataSets.size() + meterRecords.size(), System.currentTimeMillis() - start, mongoStatus));
         }
 
@@ -994,7 +995,7 @@ public class NightscoutUploader {
     }
 
         private boolean doMongoUpload(SharedPreferences prefs, List<BgReading> glucoseDataSets,
-                                      List<Calibration> meterRecords,  List<Calibration> calRecords) {
+                                      List<Calibration> meterRecords,  List<Calibration> calRecords, List<TransmitterData> transmittersData) {
             final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.US);
             format.setTimeZone(TimeZone.getDefault());
 
@@ -1080,6 +1081,25 @@ public class NightscoutUploader {
                             }
                             testData.put("type", "cal");
                             dexcomData.insert(testData, WriteConcern.UNACKNOWLEDGED);
+                        }
+                        
+                        DBCollection tdCollection = db.getCollection("TransmitterData");
+                        for (TransmitterData transmitterData : transmittersData) {
+                            // make db object
+                            BasicDBObject testData = new BasicDBObject();
+                            testData.put("CaptureDateTime", transmitterData.timestamp);
+                            testData.put("RawValue", transmitterData.raw_data);
+                            testData.put("FilteredValue", transmitterData.filtered_data);
+                            testData.put("BatteryLife", transmitterData.sensor_battery_level);
+                            testData.put("DebugInfo", android.os.Build.MODEL + " " + new Date(transmitterData.timestamp).toLocaleString());
+                            testData.put("UploaderBatteryLife",getBatteryLevel());
+                            
+                            // This are fields that the receiver is expecting, but we don't have good data for them
+                            testData.put("TransmissionId",-1);
+                            testData.put("TransmitterId", "TransmitterId");
+                            testData.put("ReceivedSignalStrength",-1);
+                            
+                            tdCollection.insert(testData, WriteConcern.UNACKNOWLEDGED);
                         }
 
                         // TODO: quick port from original code, revisit before release
