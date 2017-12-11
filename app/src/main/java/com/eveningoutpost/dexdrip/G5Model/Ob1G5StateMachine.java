@@ -13,6 +13,7 @@ import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.NotificationChannels;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
+import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
 import com.eveningoutpost.dexdrip.utils.PowerStateReceiver;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.polidea.rxandroidble.RxBleConnection;
@@ -467,6 +468,7 @@ public class Ob1G5StateMachine {
             return;
         } else {
             UserError.Log.d(TAG, "Created transmitter data " + transmitterData.uuid + " " + JoH.dateTimeText(transmitterData.timestamp));
+            UploaderQueue.newTransmitterDataEntry("create", transmitterData);
             // TODO timeInMillisecondsOfLastSuccessfulSensorRead = captureTime;
         }
         Sensor sensor = Sensor.currentSensor();
