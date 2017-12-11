@@ -471,7 +471,11 @@ public class G5CollectionService extends G5BaseService {
             single_timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    if (mBluetoothAdapter != null) mBluetoothAdapter.enable();
+                    try {
+                        if (mBluetoothAdapter != null) mBluetoothAdapter.enable();
+                    } catch (SecurityException e) {
+                        JoH.static_toast_short("Please enable Bluetooth!");
+                    }
                 }
             }, 1000);
             single_timer.schedule(new TimerTask() {

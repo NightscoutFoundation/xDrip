@@ -19,8 +19,11 @@ public class LibreBlock extends PlusModel {
             "ALTER TABLE LibreBlock ADD COLUMN timestamp INTEGER;",
             "ALTER TABLE LibreBlock ADD COLUMN reference TEXT;",
             "ALTER TABLE LibreBlock ADD COLUMN blockbytes BLOB;",
-
-            "CREATE INDEX index_LibreBlock_timestamp on LibreBlock(timestamp);"
+            "ALTER TABLE LibreBlock ADD COLUMN bytestart INTEGER;",
+            "ALTER TABLE LibreBlock ADD COLUMN byteend INTEGER;",
+            "CREATE INDEX index_LibreBlock_timestamp on LibreBlock(timestamp);",
+            "CREATE INDEX index_LibreBlock_bytestart on LibreBlock(bytestart);",
+            "CREATE INDEX index_LibreBlock_byteend on LibreBlock(byteend);"
     };
 
 
@@ -28,7 +31,13 @@ public class LibreBlock extends PlusModel {
     @Column(name = "timestamp", index = true)
     public long timestamp;
 
-    // TODO some numerical reference to start + end byte position?
+    @Expose
+    @Column(name = "bytestart", index = true)
+    public long byte_start;
+
+    @Expose
+    @Column(name = "byteend", index = true)
+    public long byte_end;
 
     @Expose
     @Column(name = "reference", index = true)
@@ -38,8 +47,16 @@ public class LibreBlock extends PlusModel {
     @Column(name = "blockbytes")
     public byte[] blockbytes;
 
+    // if you are indexing by block then just * 8 to get byte start
+    public static LibreBlock createAndSave(String reference, byte[] blocks, int byte_start) {
+        final LibreBlock lb = create(reference, blocks, byte_start);
+        if (lb != null) {
+            lb.save();
+        }
+        return lb;
+    }
 
-    public static LibreBlock create(String reference, byte[] blocks) {
+    public static LibreBlock create(String reference, byte[] blocks, int byte_start) {
         if (reference == null || blocks == null) {
             UserError.Log.e(TAG, "Cannot save block will null data");
             return null;
@@ -47,6 +64,8 @@ public class LibreBlock extends PlusModel {
         final LibreBlock lb = new LibreBlock();
         lb.reference = reference;
         lb.blockbytes = blocks;
+        lb.byte_start = byte_start;
+        lb.byte_end = byte_start + blocks.length;
         lb.timestamp = JoH.tsl();
         return lb;
     }

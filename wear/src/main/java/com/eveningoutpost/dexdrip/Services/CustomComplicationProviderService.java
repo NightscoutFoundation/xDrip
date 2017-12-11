@@ -160,7 +160,7 @@ public class CustomComplicationProviderService extends ComplicationProviderServi
                 complicationData = builder.build();
                 break;
             case ComplicationData.TYPE_LONG_TEXT:
-                String numberTextLong = numberText + " " + getDeltaText(bgReading, is_stale);
+                String numberTextLong = numberText + " " + getDeltaText(bgReading, is_stale) + " (" + niceTimeSinceBgReading(bgReading) + ")";
                 Log.d(TAG, "Returning complication text Long: " + numberTextLong);
 
                 //Loop status by @gregorybel

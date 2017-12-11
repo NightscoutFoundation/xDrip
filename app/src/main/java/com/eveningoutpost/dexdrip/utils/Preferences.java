@@ -376,6 +376,10 @@ public class Preferences extends PreferenceActivity {
         profile_insulin_sensitivity_default.setTitle(format_insulin_sensitivity(profile_insulin_sensitivity_default.getTitle().toString(), ProfileEditor.minMaxSens(ProfileEditor.loadData(false))));
     }
 
+    private static void restartPebble() {
+        xdrip.getAppContext().startService(new Intent(xdrip.getAppContext(), PebbleWatchSync.class));
+    }
+
     private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
         @Override
         public boolean onPreferenceChange(Preference preference, Object value) {
@@ -1304,12 +1308,11 @@ public class Preferences extends PreferenceActivity {
                 }
             });
 
-
+            // TODO reduce code duplication more
             pebbleTrend.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    Context context = preference.getContext();
-                    context.startService(new Intent(context, PebbleWatchSync.class));
+                    restartPebble();
                     return true;
                 }
             });
@@ -1317,8 +1320,7 @@ public class Preferences extends PreferenceActivity {
             pebbleFilteredLine.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    Context context = preference.getContext();
-                    context.startService(new Intent(context, PebbleWatchSync.class));
+                    restartPebble();
                     return true;
                 }
             });
@@ -1327,8 +1329,7 @@ public class Preferences extends PreferenceActivity {
             pebbleHighLine.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    Context context = preference.getContext();
-                    context.startService(new Intent(context, PebbleWatchSync.class));
+                    restartPebble();;
                     return true;
                 }
             });
@@ -1336,8 +1337,7 @@ public class Preferences extends PreferenceActivity {
             pebbleLowLine.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    Context context = preference.getContext();
-                    context.startService(new Intent(context, PebbleWatchSync.class));
+                    restartPebble();
                     return true;
                 }
             });
@@ -1345,32 +1345,28 @@ public class Preferences extends PreferenceActivity {
             pebbleTrendPeriod.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    Context context = preference.getContext();
-                    context.startService(new Intent(context, PebbleWatchSync.class));
+                    restartPebble();
                     return true;
                 }
             });
             pebbleDelta.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    Context context = preference.getContext();
-                    context.startService(new Intent(context, PebbleWatchSync.class));
+                    restartPebble();
                     return true;
                 }
             });
             pebbleDeltaUnits.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    Context context = preference.getContext();
-                    context.startService(new Intent(context, PebbleWatchSync.class));
+                    restartPebble();
                     return true;
                 }
             });
             pebbleShowArrows.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    Context context = preference.getContext();
-                    context.startService(new Intent(context, PebbleWatchSync.class));
+                    restartPebble();
                     return true;
                 }
             });
@@ -1378,8 +1374,7 @@ public class Preferences extends PreferenceActivity {
             pebbleTinyDots.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    Context context = preference.getContext();
-                    context.startService(new Intent(context, PebbleWatchSync.class));
+                    restartPebble();
                     return true;
                 }
             });
@@ -1387,11 +1382,28 @@ public class Preferences extends PreferenceActivity {
             pebbleVibrateNoBluetooth.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    Context context = preference.getContext();
-                    context.startService(new Intent(context, PebbleWatchSync.class));
+                    restartPebble();
                     return true;
                 }
             });
+
+            // TODO this attaches to the wrong named instance of use_pebble_health
+            findPreference("use_pebble_health").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    restartPebble();
+                    return true;
+                }
+            });
+
+            findPreference("pebble_show_bwp").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    restartPebble();
+                    return true;
+                }
+            });
+
             // Pebble Trend -- END
 
             bindWidgetUpdater();

@@ -47,6 +47,8 @@ public abstract class PebbleDisplayAbstract implements PebbleDisplayInterface {
 
     protected long last_seen_timestamp = 0;
 
+    protected static final String PEBBLE_BWP_SYMBOL = "😐";
+
     public void receiveNack(int transactionId) {
         // default no implementation
     }
@@ -175,8 +177,10 @@ public abstract class PebbleDisplayAbstract implements PebbleDisplayInterface {
     }
 
 
-    public void sendDataToPebble(PebbleDictionary data) {
-        PebbleKit.sendDataToPebble(this.context, watchfaceUUID(), data);
+    public void sendDataToPebble(final PebbleDictionary data) {
+        synchronized (data) {
+            PebbleKit.sendDataToPebble(this.context, watchfaceUUID(), data);
+        }
     }
 
 
@@ -196,6 +200,11 @@ public abstract class PebbleDisplayAbstract implements PebbleDisplayInterface {
             dictionary.addString(NAME_KEY, "Phone");
         }
 
+    }
+
+    public void removeBatteryStatusFromDictionary(PebbleDictionary dictionary) {
+        dictionary.remove(UPLOADER_BATTERY_KEY);
+        dictionary.remove(NAME_KEY);
     }
 
 

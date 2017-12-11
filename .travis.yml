@@ -1,11 +1,11 @@
 language: android
-#sudo: required
+sudo: required
 
 env:
   global:
-    - EMULATOR_API_LEVEL=21
+    - EMULATOR_API_LEVEL=19
     - ANDROID_ABI=armeabi-v7a
-    - ADB_INSTALL_TIMEOUT=15
+    - ADB_INSTALL_TIMEOUT=20
     - AVD_DEBUG='init,avd_config,nand_limits,keys,adb,adbserver,adbclient'
 
 android:
@@ -14,7 +14,7 @@ android:
     - platform-tools
     - tools
 
-    - build-tools-25.0.0
+#    - build-tools-25.0.0
     - build-tools-26.0.2
     - android-$EMULATOR_API_LEVEL
     - android-23
@@ -48,6 +48,6 @@ script:
   - adb shell settings put global animator_duration_scale 0
   - adb shell input keyevent 82
   - adb devices
-  - ./gradlew app:installDebugAndroidTest  -PdisablePreDex
-  - ./gradlew app:connectedAndroidTest -PdisablePreDex
+#  - ./gradlew app:installDebugAndroidTest  -PdisablePreDex
+  - travis_retry travis_wait ./gradlew app:connectedAndroidTest -PdisablePreDex
   - ./gradlew assembleRelease
