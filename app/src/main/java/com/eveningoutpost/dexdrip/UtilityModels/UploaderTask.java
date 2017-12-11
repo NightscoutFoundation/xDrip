@@ -8,6 +8,7 @@ import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.BloodTest;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
@@ -41,6 +42,7 @@ public class UploaderTask extends AsyncTask<String, Void, Void> {
             types.add(Calibration.class.getSimpleName());
             types.add(BloodTest.class.getSimpleName());
             types.add(Treatments.class.getSimpleName());
+            types.add(TransmitterData.class.getSimpleName());
 
             if (Pref.getBooleanDefaultFalse("wear_sync")) {
                 circuits.add(UploaderQueue.WATCH_WEARAPI);
@@ -69,8 +71,9 @@ public class UploaderTask extends AsyncTask<String, Void, Void> {
                 final List<BloodTest> bloodtests = new ArrayList<>();
                 final List<Treatments> treatmentsAdd = new ArrayList<>();
                 final List<String> treatmentsDel = new ArrayList<>();
+                final List<TransmitterData> transmittersData = new ArrayList<>();
                 final List<UploaderQueue> items = new ArrayList<>();
-
+                
                 for (String type : types) {
                     final List<UploaderQueue> bgups = UploaderQueue.getPendingbyType(type, THIS_QUEUE);
                     if (bgups != null) {
@@ -109,6 +112,13 @@ public class UploaderTask extends AsyncTask<String, Void, Void> {
                                         } else {
                                             Log.wtf(TAG, "Treatments with ID: " + up.reference_id + " appears to have been deleted");
                                         }
+                                    } else if (type.equals(TransmitterData.class.getSimpleName())) {
+                                        final TransmitterData this_transmitterData = TransmitterData.byid(up.reference_id);
+                                        if (this_transmitterData != null) {
+                                        	transmittersData.add(this_transmitterData);
+                                        } else {
+                                            Log.wtf(TAG, "TransmitterData with ID: " + up.reference_id + " appears to have been deleted");
+                                        }
                                     }
                                     break;
                                 case "delete":
@@ -132,7 +142,7 @@ public class UploaderTask extends AsyncTask<String, Void, Void> {
                 }
 
                 if ((bgReadings.size() > 0) || (calibrations.size() > 0) || (bloodtests.size() > 0)
-                        || (treatmentsAdd.size() > 0 || treatmentsDel.size() > 0)
+                        || (treatmentsAdd.size() > 0 || treatmentsDel.size() > 0) || (transmittersData.size() > 0)
                         || (UploaderQueue.getPendingbyType(Treatments.class.getSimpleName(), THIS_QUEUE, 1).size() > 0)) {
 
                     Log.d(TAG, UploaderQueue.getCircuitName(THIS_QUEUE) + " Processing: " + bgReadings.size() + " BgReadings and " + calibrations.size() + " Calibrations " + bloodtests.size() + " bloodtests " + treatmentsAdd.size() + " treatmentsAdd " + treatmentsDel.size() + " treatmentsDel");
@@ -140,7 +150,7 @@ public class UploaderTask extends AsyncTask<String, Void, Void> {
 
                     if (THIS_QUEUE == UploaderQueue.MONGO_DIRECT) {
                         final NightscoutUploader uploader = new NightscoutUploader(xdrip.getAppContext());
-                        uploadStatus = uploader.uploadMongo(bgReadings, calibrations, calibrations);
+                        uploadStatus = uploader.uploadMongo(bgReadings, calibrations, calibrations, transmittersData);
                     } else if (THIS_QUEUE == UploaderQueue.NIGHTSCOUT_RESTAPI) {
                         final NightscoutUploader uploader = new NightscoutUploader(xdrip.getAppContext());
                         uploadStatus = uploader.uploadRest(bgReadings, bloodtests, calibrations);
