@@ -186,6 +186,13 @@ public class UploaderQueue extends Model {
         return result;
     }
 
+    public static void newTransmitterDataEntry(String action, Model obj) {
+    	if(Home.getPreferencesBooleanDefaultFalse("mongo_load_transmitter_data")) {
+    		return;
+    	}
+    	newEntry(action, obj);
+    }
+    
     // TODO remove duplicated functionality, replace with generic multi-purpose method
     public static UploaderQueue newEntryForWatch(String action, Model obj) {
         UserError.Log.d(TAG, "new entry called for watch");

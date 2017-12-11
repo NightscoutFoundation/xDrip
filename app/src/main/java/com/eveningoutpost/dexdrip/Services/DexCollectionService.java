@@ -1048,7 +1048,7 @@ public class DexCollectionService extends Service {
                         retry_backoff = 0;
                         Log.v(TAG, "setSerialDataToTransmitterRawData: Creating TransmitterData at " + timestamp);
                         TransmitterData transmitterData = TransmitterData.create(buffer, len, timestamp);
-                        UploaderQueue.newEntry("create", transmitterData);
+                        UploaderQueue.newTransmitterDataEntry("create", transmitterData);
                         processNewTransmitterData(transmitterData, timestamp);
                         if (Home.get_master())
                             GcmActivity.sendBridgeBattery(Home.getPreferencesInt("bridge_battery", -1));
@@ -1062,7 +1062,7 @@ public class DexCollectionService extends Service {
                 }
             } else {
             	TransmitterData transmitterData = TransmitterData.create(buffer, len, timestamp);
-            	UploaderQueue.newEntry("create", transmitterData);
+            	UploaderQueue.newTransmitterDataEntry("create", transmitterData);
                 processNewTransmitterData(transmitterData, timestamp);
             }
         }
