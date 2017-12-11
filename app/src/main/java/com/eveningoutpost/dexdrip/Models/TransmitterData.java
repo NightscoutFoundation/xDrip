@@ -226,6 +226,13 @@ public class TransmitterData extends Model {
             return null;
         }
     }
+    
+    public static TransmitterData byid(long id) {
+        return new Select()
+                .from(TransmitterData.class)
+                .where("_ID = ?", id)
+                .executeSingle();
+    }
 
     public static void updateTransmitterBatteryFromSync(final int battery_level) {
         try {
