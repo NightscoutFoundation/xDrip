@@ -1098,8 +1098,9 @@ public class NightscoutUploader {
                             testData.put("TransmissionId",-1);
                             testData.put("TransmitterId", "TransmitterId");
                             testData.put("ReceivedSignalStrength",-1);
-                            
-                            tdCollection.insert(testData, WriteConcern.UNACKNOWLEDGED);
+                            // Use upcerts for loading the data.
+                            BasicDBObject query = new BasicDBObject("CaptureDateTime", transmitterData.timestamp).append("RawValue", transmitterData.raw_data);
+                            tdCollection.update(query, testData, true, false,  WriteConcern.UNACKNOWLEDGED);
                         }
 
                         // TODO: quick port from original code, revisit before release
