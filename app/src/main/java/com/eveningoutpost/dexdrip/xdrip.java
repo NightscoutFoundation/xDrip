@@ -8,7 +8,7 @@ import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.core.CrashlyticsCore;
-import com.bugfender.sdk.Bugfender;
+//import com.bugfender.sdk.Bugfender;
 import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Reminder;
@@ -123,7 +123,7 @@ public class xdrip extends Application {
                         String app_id = PreferenceManager.getDefaultSharedPreferences(xdrip.context).getString("bugfender_appid", "").trim();
                         if (!useBF && (app_id.length() > 10)) {
                             if (!bfInited) {
-                                Bugfender.init(xdrip.context, app_id, BuildConfig.DEBUG);
+                                //Bugfender.init(xdrip.context, app_id, BuildConfig.DEBUG);
                                 bfInited = true;
                             }
                             useBF = true;
