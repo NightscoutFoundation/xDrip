@@ -44,8 +44,15 @@ public abstract class G5BaseService extends Service {
         return bondState;
     }
 
+    private static boolean runningStringCheck(String lastStateCheck) {
+        return lastStateCheck.equals("Not Running") || lastStateCheck.contains("Stop") ? false : true;
+    }
+
     public static boolean isRunning() {
-        return lastState.equals("Not Running") || lastState.contains("Stop") ? false : true;
+        return runningStringCheck(lastState);
+    }
+    public static boolean isWatchRunning() {
+        return runningStringCheck(lastStateWatch);
     }
 
 

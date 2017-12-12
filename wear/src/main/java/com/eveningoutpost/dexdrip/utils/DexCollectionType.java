@@ -130,6 +130,14 @@ public enum DexCollectionType {
     public static boolean hasFiltered() {
         return does_have_filtered || usesFiltered.contains(getDexCollectionType());
     }
+    
+    public static boolean isLibreOOPAlgorithm(DexCollectionType collector) {
+    	if(collector == null) {
+    		collector = DexCollectionType.getDexCollectionType();
+    	}
+        return collector == DexCollectionType.LimiTTer && 
+               Home.getPreferencesBooleanDefaultFalse("external_blukon_algorithm"); 
+    }
 
     public static Class<?> getCollectorServiceClass() {
         switch (getDexCollectionType()) {
@@ -148,12 +156,36 @@ public enum DexCollectionType {
         }
     }
 
+    // using reflection to access static methods, could cache if needed maybe
+
     public static Boolean getServiceRunningState() {
+        final Boolean result = getPhoneServiceRunningState();
+        // if phone running don't bother checking wear
+        if ((result !=null) && result) return true;
+        return getWatchServiceRunningState();
+    }
+
+    public static Boolean getPhoneServiceRunningState() {
         try {
+            // TODO handle wear collection
             final Method method = getCollectorServiceClass().getMethod("isRunning");
-            return (Boolean)method.invoke(null);
+            return (Boolean) method.invoke(null);
         } catch (Exception e) {
             return null;
+        }
+    }
+
+    public static Boolean getWatchServiceRunningState() {
+        if (Home.getPreferencesBooleanDefaultFalse("wear_sync") &&
+                Home.getPreferencesBooleanDefaultFalse("enable_wearG5")) {
+            try {
+                final Method method = getCollectorServiceClass().getMethod("isWatchRunning");
+                return (Boolean) method.invoke(null);
+            } catch (Exception e) {
+                return null; // probably method not found
+            }
+        } else {
+            return false; // hopefully this is sufficient to know that the service is definitely not running
         }
     }
 
