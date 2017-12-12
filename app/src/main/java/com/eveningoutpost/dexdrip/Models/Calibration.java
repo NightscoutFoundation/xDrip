@@ -684,6 +684,18 @@ public class Calibration extends Model {
                 Log.d(TAG, "Calculated Calibration Slope: " + calibration.slope);
                 Log.d(TAG, "Calculated Calibration intercept: " + calibration.intercept);
 
+                // sanity check result
+                if (Double.isInfinite(calibration.slope)
+                        ||(Double.isNaN(calibration.slope))
+                        ||(Double.isInfinite(calibration.intercept))
+                        ||(Double.isNaN(calibration.intercept))) {
+                    calibration.sensor_confidence = 0;
+                    calibration.slope_confidence = 0;
+                    Home.toaststaticnext("Got invalid impossible slope calibration!");
+                    calibration.save(); // Save nulled record, lastValid should protect from bad calibrations
+                    newFingerStickData();
+                }
+
                 if ((calibration.slope == 0) && (calibration.intercept == 0)) {
                     calibration.sensor_confidence = 0;
                     calibration.slope_confidence = 0;
