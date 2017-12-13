@@ -2,6 +2,7 @@ package com.eveningoutpost.dexdrip.utils;
 
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.util.Log;
 
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
@@ -43,8 +44,9 @@ public class CheckBridgeBattery {
         }
 
         final int this_level = Home.getPreferencesInt("bridge_battery", -1);
+        UserError.Log.d(TAG, "checkBridgeBattery threshold:" + threshold + " this_level:" + this_level + " last_level:" + last_level);
         if ((this_level > 0) && (threshold > 0)) {
-            if ((this_level < threshold) && (this_level < last_level)) {
+            if ((this_level < threshold) && ((this_level < last_level) || (last_level == -1))) {
                 if (JoH.pratelimit("bridge-battery-warning", repeat_seconds)) {
                     notification_showing = true;
                     lowbattery = true;
@@ -63,6 +65,34 @@ public class CheckBridgeBattery {
         return lowbattery;
     }
 
+    public static boolean checkForceWearBridgeBattery() {
+
+        boolean lowbattery = false;
+
+        if (!Home.getPreferencesBooleanDefaultFalse("bridge_battery_alerts")) return false;
+        if (!Home.getPreferencesBooleanDefaultFalse("disable_wearG5_on_lowbattery")) return false;
+
+        try {
+            threshold = Integer.parseInt(Home.getPreferencesStringWithDefault("bridge_battery_alert_level", "30"));
+            if (threshold > 5)//give user 5% leeway to begin charging wear device
+                threshold = threshold - 5;
+        } catch (NumberFormatException e) {
+            UserError.Log.e(TAG, "Got error parsing alert level");
+        }
+
+        final int this_level = Home.getPreferencesInt("bridge_battery", -1);
+        UserError.Log.d(TAG, "checkForceWearBridgeBattery threshold:" + threshold + " this_level:" + this_level);
+        if ((this_level > 0) && (threshold > 0)) {
+            if (this_level < threshold) {
+                lowbattery = true;
+                if (notification_showing) {
+                    cancelNotification(NOTIFICATION_ITEM);
+                    notification_showing = false;
+                }
+            }
+        }
+        return lowbattery;
+    }
 
     public static void checkParakeetBattery() {
 

@@ -229,24 +229,25 @@ public class WatchUpdaterService extends WearableListenerService implements
         SharedPreferences.Editor prefs = PreferenceManager.getDefaultSharedPreferences(this).edit();
         Log.d(TAG, "syncPrefData enable_wearG5: " + enable_wearG5 + " force_wearG5: " + force_wearG5 + " node_wearG5:" + node_wearG5 + " dex_txid: " + dex_txid);
 
-        if (!node_wearG5.equals(mPrefs.getString("node_wearG5", ""))) {
-            change = true;
-            prefs.putString("node_wearG5", node_wearG5);
-            Log.d(TAG, "syncPrefData node_wearG5:" + node_wearG5);
-        }
-
         if (bridge_battery != mPrefs.getInt("bridge_battery", -1)) {//Used by DexCollectionService
-            change = true;
             prefs.putInt("bridge_battery", bridge_battery);
+            prefs.commit();
             Log.d(TAG, "syncPrefData commit bridge_battery: " + bridge_battery);
-            boolean lowbattery = CheckBridgeBattery.checkBridgeBattery();
-            if (lowbattery && force_wearG5 && mPrefs.getBoolean("disable_wearG5_on_lowbattery", false)) {
+            CheckBridgeBattery.checkBridgeBattery();
+            if (force_wearG5 && CheckBridgeBattery.checkForceWearBridgeBattery()) {
                 force_wearG5 = false;
+                change = true;
                 Log.d(TAG, "syncPrefData disable_wearG5_on_lowbattery=true; switch force_wearG5:" + force_wearG5);
                 String msg = getResources().getString(R.string.notify_when_wear_low_battery);
                 JoH.static_toast_long(msg);
                 sendWearLocalToast(msg, Toast.LENGTH_LONG);
             }
+        }
+
+        if (!node_wearG5.equals(mPrefs.getString("node_wearG5", ""))) {
+            change = true;
+            prefs.putString("node_wearG5", node_wearG5);
+            Log.d(TAG, "syncPrefData node_wearG5:" + node_wearG5);
         }
 
         if (/*force_wearG5 &&*/ force_wearG5 != mPrefs.getBoolean("force_wearG5", false)) {
