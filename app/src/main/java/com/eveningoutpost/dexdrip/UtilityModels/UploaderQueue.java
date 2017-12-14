@@ -186,7 +186,7 @@ public class UploaderQueue extends Model {
     }
 
     public static void newTransmitterDataEntry(String action, Model obj) {
-    	if(Home.getPreferencesBooleanDefaultFalse("mongo_load_transmitter_data")) {
+    	if(!Home.getPreferencesBooleanDefaultFalse("mongo_load_transmitter_data")) {
     		return;
     	}
     	newEntry(action, obj);
