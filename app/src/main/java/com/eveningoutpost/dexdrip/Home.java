@@ -104,6 +104,8 @@ import com.eveningoutpost.dexdrip.profileeditor.DatePickerFragment;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileAdapter;
 import com.eveningoutpost.dexdrip.stats.StatsResult;
 import com.eveningoutpost.dexdrip.ui.BaseShelf;
+import com.eveningoutpost.dexdrip.ui.MicroStatus;
+import com.eveningoutpost.dexdrip.ui.MicroStatusImpl;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.eveningoutpost.dexdrip.utils.BgToSpeech;
 import com.eveningoutpost.dexdrip.utils.DatabaseUtil;
@@ -262,6 +264,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
     @Inject
     BaseShelf homeShelf;
+    //@Inject
+    MicroStatus microStatus;
 
     private ProcessInitialDataQuality.InitialDataQuality initialDataQuality;
 
@@ -2425,6 +2429,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         builder.setTitle("Collecting Initial Readings");
         initial_status_binding = PopupInitialStatusHelperBinding.inflate(getLayoutInflater());
         initial_status_binding.setIdq(initialDataQuality);
+        if (microStatus == null) microStatus = new MicroStatusImpl();
+        initial_status_binding.setMs(microStatus);
         initial_status_binding.setPrefs(new PrefsViewImpl());
         builder.setView(initial_status_binding.getRoot());
         status_helper_dialog = builder.create();
