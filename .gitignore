@@ -23,6 +23,7 @@ app/defunct
 # Gradle files
 .gradle/
 build/
+app/release
 
 # Local configuration file (sdk path, etc)
 local.properties
