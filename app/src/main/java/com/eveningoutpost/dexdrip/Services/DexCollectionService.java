@@ -584,8 +584,8 @@ public class DexCollectionService extends Service {
 
             final BluetoothGattService gattService = mBluetoothGatt.getService(xDripDataService);
             if (gattService == null) {
-                if ((!static_use_blukon) && (!static_use_nrf)) {
-                    Log.w(TAG, "onServicesDiscovered: xdrip service " + xDripDataService + " not found");
+                if (!(static_use_blukon || static_use_nrf)) {
+                    Log.w(TAG, "onServicesDiscovered: xdrip service " + xDripDataService + " not found"); //TODO the selection of nrf is not active at the beginning,so this error will be trown one time unneeded, mey to be optimized.
                     // TODO this should be reworked to be an efficient selector
                     listAvailableServices(mBluetoothGatt);
                 }
@@ -1052,10 +1052,31 @@ public class DexCollectionService extends Service {
                         CheckBridgeBattery.checkBridgeBattery();
                     }
                 }
+            } else if (new String(buffer) != null && (new String(buffer).startsWith("IDR") || new String(buffer).startsWith("TRANS_FAILED") || new String(buffer).startsWith("HYBERNATE SUCCESS") || new String(buffer).startsWith("not ready for") || new String(buffer).startsWith("NFC_DISABLED") )) {
+                if (static_use_nrf) {
+                    Log.e(TAG, "blueReader-message: " + new String(buffer));
+                    if (new String(buffer).startsWith("not ready for") ) { //delete the trans_failed, because its normal only if the bluereader could not read the sensor.
+                        Log.e(TAG, "Found blueReader in a ugly State, send hibernate to reset!");
+                        sendBtMessage(new byte[]{0x68}); //send hard hibernate, because bluereader is in a ugly state
+                    }
+                    if (new String(buffer).startsWith("IDR")){
+                        prefs.edit().putString("blueReader_Version",new String(buffer)).apply();
+                        ByteBuffer ackMessage = ByteBuffer.allocate(3);
+                    }
+                }
             } else if (buffer.length > 10 && new String(buffer) != null && new String(buffer).startsWith("battery: ")) {
                 //bluereader intermidiate support
                 if (BgReading.last() == null || BgReading.last().timestamp + (4 * 60 * 1000) < System.currentTimeMillis()) {
                     sendBtMessage(new byte[]{0x6C});
+                }
+                //command to get Firmware
+                if(prefs.getString("blueReader_Version","empty").contains("empty")) {
+                    prefs.edit().putString("blueReader_Version","empty-started").apply(); //just only one time request the firmware, so change the emptyvalue
+                    ByteBuffer ackMessage = ByteBuffer.allocate(3);
+                    ackMessage.put(0, (byte) 0x49);
+                    ackMessage.put(1, (byte) 0x44);
+                    ackMessage.put(2, (byte) 0x4E);
+                    sendBtMessage(ackMessage); //send "IDN" for Firmwarerequest
                 }
             } else {
                 processNewTransmitterData(TransmitterData.create(buffer, len, timestamp), timestamp);
@@ -1079,10 +1100,30 @@ public class DexCollectionService extends Service {
             return;
         }
 
-
-
-        //sensor.latest_battery_level = (sensor.latest_battery_level != 0) ? Math.min(sensor.latest_battery_level, transmitterData.sensor_battery_level) : transmitterData.sensor_battery_level;
-        sensor.latest_battery_level = transmitterData.sensor_battery_level; // allow level to go up and down
+        //add momentum Battery filler for bluereader
+        if (static_use_nrf) {
+            double blueReaderDays =0;
+            prefs.edit().putInt("bridge_battery", ((transmitterData.sensor_battery_level - 3300) * 100 / (prefs.getInt("blueReader_Full_Battery", 3800)-3300))).apply();
+            sensor.latest_battery_level = ((transmitterData.sensor_battery_level - 3300) * 100 / (prefs.getInt("blueReader_Full_Battery", 3800)-3300));
+            blueReaderDays = 6.129200670865791d / (1d + Math.pow(((double)transmitterData.sensor_battery_level/3763.700630306379d),(-61.04241888028577d)));
+            blueReaderDays = ((Math.round((blueReaderDays)*10d)/10d));
+            if (transmitterData.sensor_battery_level < 3600) {
+                blueReaderDays=blueReaderDays + 0.1d;
+            }
+            prefs.edit().putString("bridge_battery_days", String.valueOf(blueReaderDays)).apply();
+            if (transmitterData.sensor_battery_level > prefs.getInt("blueReader_Full_Battery", 3800)) {
+                prefs.edit().putInt("blueReader_Full_Battery", transmitterData.sensor_battery_level).apply();
+                Log.w(TAG, "blueReader_Full_Battery set to: " + transmitterData.sensor_battery_level) ;
+            }
+            if (transmitterData.sensor_battery_level < 3300) {
+                sendBtMessage(new byte[]{0x6B}); //send powerdown to bluereader (k)
+                Log.e(TAG, "Send blueReader ower-off, due to low Battery!");
+                Home.toaststatic("Send blueReader ower-off, due to low Battery!");
+            }
+        } else {
+            //sensor.latest_battery_level = (sensor.latest_battery_level != 0) ? Math.min(sensor.latest_battery_level, transmitterData.sensor_battery_level) : transmitterData.sensor_battery_level;
+            sensor.latest_battery_level = transmitterData.sensor_battery_level; // allow level to go up and down
+        }
         sensor.save();
 
         last_transmitter_Data = transmitterData;
