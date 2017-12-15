@@ -24,6 +24,7 @@ import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.Models.GlucoseData;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.LibreBlock;
+import com.eveningoutpost.dexdrip.Models.LibreOOPAlgorithm;
 import com.eveningoutpost.dexdrip.Models.PredictionData;
 import com.eveningoutpost.dexdrip.Models.ReadingData;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
@@ -165,6 +166,8 @@ public class NFCReaderX {
     }
 
     private static synchronized void doTheScan(final Activity context, Tag tag, boolean showui) {
+    	if (d)
+            Log.d(TAG, "doTheScan called");
         synchronized (tag_lock) {
             if (!tag_discovered) {
                 if (!useNFC()) return;
@@ -222,9 +225,13 @@ public class NFCReaderX {
 
         @Override
         protected void onPostExecute(Tag tag) {
+                Log.d(TAG, "onPostExecute called");
             try {
                 if (tag == null) return;
                 if (!NFCReaderX.useNFC()) return;
+                if (Home.getPreferencesBooleanDefaultFalse("external_blukon_algorithm")) {
+                	return;
+                }
                 if (succeeded) {
                     final String tagId = bytesToHexString(tag.getId());
 
@@ -254,10 +261,134 @@ public class NFCReaderX {
         }
 
 
+        boolean readPatch(Tag tag, NfcV nfcvTag) throws InterruptedException{
+            final byte[] uid = tag.getId();
+
+            try {
+                final byte[] diag = JoH.hexStringToByteArray(Home.getPreferencesStringDefaultBlank("nfc_test_diagnostic"));
+                if ((diag != null) && (diag.length > 0)) {
+                    Log.d(TAG, "Diagnostic ->: " + HexDump.dumpHexString(diag, 0, diag.length).trim() + " len: " + diag.length);
+                    Long time = System.currentTimeMillis();
+                    byte[] replyBlock;
+                    while (true) {
+                        try {
+                            replyBlock = nfcvTag.transceive(diag);
+                            break;
+                        } catch (IOException e) {
+                            if ((System.currentTimeMillis() > time + 2000)) {
+                                Log.e(TAG, "tag diagnostic read timeout");
+                                JoH.static_toast_short("NFC diag timeout");
+                                vibrate(context, 3);
+                                return false;
+                            }
+                            Thread.sleep(100);
+                        }
+                    }
+                    Log.d(TAG, "Diagnostic <-: " + HexDump.dumpHexString(replyBlock, 0, replyBlock.length).trim() + " len: " + replyBlock.length);
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Exception in NFC Diagnostic: " + e);
+                Home.setPreferencesString("nfc_test_diagnostic", "");
+            }
+
+            final boolean multiblock = Home.getPreferencesBoolean("use_nfc_multiblock", true);
+            final boolean addressed = !Home.getPreferencesBoolean("use_nfc_any_tag", true);
+            // if multiblock mode
+            JoH.benchmark(null);
+
+            if (multiblock) {
+                final int correct_reply_size = addressed ? 28 : 25;
+                for (int i = 0; i <= 40; i = i + 3) {
+                    final byte[] cmd;
+                    if (addressed) {
+                        cmd = new byte[]{0x60, 0x23, 0, 0, 0, 0, 0, 0, 0, 0, (byte) i, 0x02};
+                        System.arraycopy(uid, 0, cmd, 2, 8);
+                    } else {
+                        cmd = new byte[]{0x02, 0x23, (byte) i, 0x02};
+                    }
+
+                    byte[] replyBlock;
+                    Long time = System.currentTimeMillis();
+                    while (true) {
+                        try {
+                            replyBlock = nfcvTag.transceive(cmd);
+                            break;
+                        } catch (IOException e) {
+                            if ((System.currentTimeMillis() > time + 2000)) {
+                                Log.e(TAG, "tag read timeout");
+                                JoH.static_toast_short("NFC read timeout");
+                                vibrate(context, 3);
+                                return false;
+                            }
+                            Thread.sleep(100);
+                        }
+                    }
+
+                    if (d)
+                        Log.d(TAG, "Received multiblock reply, offset: " + i + " sized: " + replyBlock.length);
+                    if (d)
+                        Log.d(TAG, HexDump.dumpHexString(replyBlock, 0, replyBlock.length));
+                    if (replyBlock.length != correct_reply_size) {
+                        Log.e(TAG, "Incorrect block size: " + replyBlock.length + " vs " + correct_reply_size);
+                        JoH.static_toast_short("NFC invalid data - try again");
+                        if (!addressed) {
+                            if (PersistentStore.incrementLong("nfc-address-failures") > 2) {
+                                Home.setPreferencesBoolean("use_nfc_any_tag", false);
+                                JoH.static_toast_short("Turned off any-tag feature");
+                            }
+                        }
+                        vibrate(context, 3);
+                        return false;
+                    }
+                    if (addressed) {
+                        for (int j = 0; j < 3; j++) {
+                            System.arraycopy(replyBlock, 2 + (j * 9), data, i * 8 + (j * 8), 8);
+                        }
+                    } else {
+                        System.arraycopy(replyBlock, 1, data, i * 8, replyBlock.length - 1);
+                    }
+                }
+            } else {
+                // always addressed
+                final int correct_reply_size = 10;
+                for (int i = 0; i <= 40; i++) {
+                    final byte[] cmd = new byte[]{0x60, 0x20, 0, 0, 0, 0, 0, 0, 0, 0, (byte) i, 0};
+                    System.arraycopy(uid, 0, cmd, 2, 8);
+                    byte[] oneBlock;
+                    Long time = System.currentTimeMillis();
+                    while (true) {
+                        try {
+                            oneBlock = nfcvTag.transceive(cmd);
+                            break;
+                        } catch (IOException e) {
+                            if ((System.currentTimeMillis() > time + 2000)) {
+                                Log.e(TAG, "tag read timeout");
+                                JoH.static_toast_short("NFC read timeout");
+                                vibrate(context, 3);
+                                return false;
+                            }
+                            Thread.sleep(100);
+                        }
+                    }
+                    if (d)
+                        Log.d(TAG, HexDump.dumpHexString(oneBlock, 0, oneBlock.length));
+                    if (oneBlock.length != correct_reply_size) {
+                        Log.e(TAG, "Incorrect block size: " + oneBlock.length + " vs " + correct_reply_size);
+                        JoH.static_toast_short("NFC invalid data");
+                        vibrate(context, 3);
+                        return false;
+                    }
+                    System.arraycopy(oneBlock, 2, data, i * 8, 8);
+                }
+            }
+            return true;
+        }
+        
         @Override
         protected Tag doInBackground(Tag... params) {
             if (!NFCReaderX.useNFC()) return null;
             if (read_lock.tryLock()) {
+            	Log.d(TAG, "readlock locked");
 
                 try {
                     Tag tag = params[0];
@@ -277,125 +408,17 @@ public class NFCReaderX {
                             Thread.sleep(250);
                             nfcvTag.connect();
                         }
-                        final byte[] uid = tag.getId();
-
-                        try {
-                            final byte[] diag = JoH.hexStringToByteArray(Home.getPreferencesStringDefaultBlank("nfc_test_diagnostic"));
-                            if ((diag != null) && (diag.length > 0)) {
-                                Log.d(TAG, "Diagnostic ->: " + HexDump.dumpHexString(diag, 0, diag.length).trim() + " len: " + diag.length);
-                                Long time = System.currentTimeMillis();
-                                byte[] replyBlock;
-                                while (true) {
-                                    try {
-                                        replyBlock = nfcvTag.transceive(diag);
-                                        break;
-                                    } catch (IOException e) {
-                                        if ((System.currentTimeMillis() > time + 2000)) {
-                                            Log.e(TAG, "tag diagnostic read timeout");
-                                            JoH.static_toast_short("NFC diag timeout");
-                                            vibrate(context, 3);
-                                            return null;
-                                        }
-                                        Thread.sleep(100);
-                                    }
-                                }
-                                Log.d(TAG, "Diagnostic <-: " + HexDump.dumpHexString(replyBlock, 0, replyBlock.length).trim() + " len: " + replyBlock.length);
-                            }
-                        } catch (Exception e) {
-                            Log.e(TAG, "Exception in NFC Diagnostic: " + e);
-                            Home.setPreferencesString("nfc_test_diagnostic", "");
-                        }
-
-                        final boolean multiblock = Home.getPreferencesBoolean("use_nfc_multiblock", true);
-                        final boolean addressed = !Home.getPreferencesBoolean("use_nfc_any_tag", true);
-                        // if multiblock mode
-                        JoH.benchmark(null);
-
-                        if (multiblock) {
-                            final int correct_reply_size = addressed ? 28 : 25;
-                            for (int i = 0; i <= 40; i = i + 3) {
-                                final byte[] cmd;
-                                if (addressed) {
-                                    cmd = new byte[]{0x60, 0x23, 0, 0, 0, 0, 0, 0, 0, 0, (byte) i, 0x02};
-                                    System.arraycopy(uid, 0, cmd, 2, 8);
-                                } else {
-                                    cmd = new byte[]{0x02, 0x23, (byte) i, 0x02};
-                                }
-
-                                byte[] replyBlock;
-                                Long time = System.currentTimeMillis();
-                                while (true) {
-                                    try {
-                                        replyBlock = nfcvTag.transceive(cmd);
-                                        break;
-                                    } catch (IOException e) {
-                                        if ((System.currentTimeMillis() > time + 2000)) {
-                                            Log.e(TAG, "tag read timeout");
-                                            JoH.static_toast_short("NFC read timeout");
-                                            vibrate(context, 3);
-                                            return null;
-                                        }
-                                        Thread.sleep(100);
-                                    }
-                                }
-
-                                if (d)
-                                    Log.d(TAG, "Received multiblock reply, offset: " + i + " sized: " + replyBlock.length);
-                                if (d)
-                                    Log.d(TAG, HexDump.dumpHexString(replyBlock, 0, replyBlock.length));
-                                if (replyBlock.length != correct_reply_size) {
-                                    Log.e(TAG, "Incorrect block size: " + replyBlock.length + " vs " + correct_reply_size);
-                                    JoH.static_toast_short("NFC invalid data - try again");
-                                    if (!addressed) {
-                                        if (PersistentStore.incrementLong("nfc-address-failures") > 2) {
-                                            Home.setPreferencesBoolean("use_nfc_any_tag", false);
-                                            JoH.static_toast_short("Turned off any-tag feature");
-                                        }
-                                    }
-                                    vibrate(context, 3);
-                                    return null;
-                                }
-                                if (addressed) {
-                                    for (int j = 0; j < 3; j++) {
-                                        System.arraycopy(replyBlock, 2 + (j * 9), data, i * 8 + (j * 8), 8);
-                                    }
-                                } else {
-                                    System.arraycopy(replyBlock, 1, data, i * 8, replyBlock.length - 1);
-                                }
-                            }
+                        boolean readPatchSucceeded;
+                        if (Home.getPreferencesBooleanDefaultFalse("external_blukon_algorithm")) {
+                        	readPatchSucceeded = LibreOOPAlgorithm.readOOPData(nfcvTag);
                         } else {
-                            // always addressed
-                            final int correct_reply_size = 10;
-                            for (int i = 0; i <= 40; i++) {
-                                final byte[] cmd = new byte[]{0x60, 0x20, 0, 0, 0, 0, 0, 0, 0, 0, (byte) i, 0};
-                                System.arraycopy(uid, 0, cmd, 2, 8);
-                                byte[] oneBlock;
-                                Long time = System.currentTimeMillis();
-                                while (true) {
-                                    try {
-                                        oneBlock = nfcvTag.transceive(cmd);
-                                        break;
-                                    } catch (IOException e) {
-                                        if ((System.currentTimeMillis() > time + 2000)) {
-                                            Log.e(TAG, "tag read timeout");
-                                            JoH.static_toast_short("NFC read timeout");
-                                            vibrate(context, 3);
-                                            return null;
-                                        }
-                                        Thread.sleep(100);
-                                    }
-                                }
-                                if (d)
-                                    Log.d(TAG, HexDump.dumpHexString(oneBlock, 0, oneBlock.length));
-                                if (oneBlock.length != correct_reply_size) {
-                                    Log.e(TAG, "Incorrect block size: " + oneBlock.length + " vs " + correct_reply_size);
-                                    JoH.static_toast_short("NFC invalid data");
-                                    vibrate(context, 3);
-                                    return null;
-                                }
-                                System.arraycopy(oneBlock, 2, data, i * 8, 8);
-                            }
+                        	readPatchSucceeded = readPatch(tag, nfcvTag);
                         }
+                        if(!readPatchSucceeded) {
+                        	// Not logging here, since log has happened in all places where false was returned.
+                        	return null;
+                        }
+
                         JoH.benchmark("Tag read");
                         Log.d(TAG, "GOT TAG DATA!");
                         last_read_succeeded = true;
@@ -423,6 +446,7 @@ public class NFCReaderX {
                     if (d) Log.d(TAG, "Tag data reader exiting");
                     return tag;
                 } finally {
+                	Log.d(TAG, "readlock unlocked");
                     read_lock.unlock();
                     Home.staticBlockUI(context, false);
                 }
