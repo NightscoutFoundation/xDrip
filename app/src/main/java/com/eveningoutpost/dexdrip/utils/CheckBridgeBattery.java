@@ -85,10 +85,6 @@ public class CheckBridgeBattery {
         if ((this_level > 0) && (threshold > 0)) {
             if (this_level < threshold) {
                 lowbattery = true;
-                if (notification_showing) {
-                    cancelNotification(NOTIFICATION_ITEM);
-                    notification_showing = false;
-                }
             }
         }
         return lowbattery;
