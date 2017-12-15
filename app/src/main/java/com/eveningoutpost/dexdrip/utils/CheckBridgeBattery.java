@@ -2,7 +2,6 @@ package com.eveningoutpost.dexdrip.utils;
 
 import android.app.PendingIntent;
 import android.content.Intent;
-import android.util.Log;
 
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
