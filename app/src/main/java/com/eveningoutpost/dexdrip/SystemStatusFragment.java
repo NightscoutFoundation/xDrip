@@ -263,27 +263,13 @@ public class SystemStatusFragment extends Fragment {
         } else {
             transmitter_status_view.setText("" + td.sensor_battery_level);
             GcmActivity.requestSensorBatteryUpdate(); // always ask
-            if (getBestLimitterHardwareName().equals("BlueReader")) {
-                if (td.sensor_battery_level <= 3300) {
-                    transmitter_status_view.append(" - very low");
-                } else if (td.sensor_battery_level <= 3650) {
-                    transmitter_status_view.append(" - low");
-                } else {
-                    transmitter_status_view.append(" - ok");
-                }
-                transmitter_status_view.append(" (" + ((td.sensor_battery_level - 3300) * 100 / (prefs.getInt("blueReader_Full_Battery", 3800) - 3300)) + "%)");
-                transmitter_status_view.append(" rest days approx " + prefs.getString( "bridge_battery_days", "0"));
-                //set for BlueReader Battery the other way... todo bring it at the right updateplace
-                PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext()).edit().putInt("bridge_battery", (td.sensor_battery_level - 3300) * 100 / (prefs.getInt("blueReader_Full_Battery", 3800) - 3300)).apply();
-            } else {
-                if (td.sensor_battery_level <= Dex_Constants.TRANSMITTER_BATTERY_EMPTY) {
-                    transmitter_status_view.append(" - very low");
-                } else if (td.sensor_battery_level <= Dex_Constants.TRANSMITTER_BATTERY_LOW) {
-                    transmitter_status_view.append(" - low");
-                } else {
-                    transmitter_status_view.append(" - ok");
-                }
 
+            if (td.sensor_battery_level <= Dex_Constants.TRANSMITTER_BATTERY_EMPTY) {
+                transmitter_status_view.append(" - very low");
+            } else if (td.sensor_battery_level <= Dex_Constants.TRANSMITTER_BATTERY_LOW) {
+                transmitter_status_view.append(" - low");
+            } else {
+                transmitter_status_view.append(" - ok");
             }
         }
 
@@ -429,10 +415,6 @@ public class SystemStatusFragment extends Fragment {
 
     private void setNotes() {
         try {
-
-            if(!prefs.getString("blueReader_Version","empty").startsWith("empty")) {
-                notes.append("\n- blueReader Firmware: " + prefs.getString("blueReader_Version","empty"));
-            }
             if ((mBluetoothManager == null) || ((android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) && (mBluetoothManager.getAdapter() == null))) {
                 notes.append("\n- This device does not seem to support bluetooth");
             } else {

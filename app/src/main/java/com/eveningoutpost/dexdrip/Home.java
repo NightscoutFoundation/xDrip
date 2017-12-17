@@ -2521,6 +2521,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         final boolean isLimitter = CollectionServiceStarter.isLimitter();
         //boolean isWifiWixel = CollectionServiceStarter.isWifiandBTWixel(getApplicationContext()) | CollectionServiceStarter.isWifiWixel(getApplicationContext());
         //  if (isDexbridge||isLimitter||hasBtWixel||is_follower) {
+        Log.w(TAG, "prefsbridgebat: " + prefs.getInt("bridge_battery", 4711));
         if (DexCollectionType.hasBattery()) {
             final int bridgeBattery = prefs.getInt("bridge_battery", 0);
 
@@ -2535,7 +2536,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                     if (limitterName.equals(DexCollectionService.LIMITTER_NAME)) {
                         dexbridgeBattery.setText(getString(R.string.limitter_battery) + ": " + bridgeBattery + "%");
                     } else {
-                        dexbridgeBattery.setText(limitterName + " " + getString(R.string.battery) + ": " + bridgeBattery + "% (" + prefs.getString( "bridge_battery_days", "0") + "days)");
+                        dexbridgeBattery.setText(limitterName + " " + getString(R.string.battery) + ": " + bridgeBattery + "%");// (" + prefs.getString( "bridge_battery_days", "0") + "days)");
                     }
                 } else {
                     dexbridgeBattery.setText("Bridge battery" + ": " + bridgeBattery + ((bridgeBattery < 200) ? "%" : "mV"));
