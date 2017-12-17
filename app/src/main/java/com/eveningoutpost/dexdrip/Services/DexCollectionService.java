@@ -689,7 +689,6 @@ public class DexCollectionService extends Service {
                     }
                     status("Enabled blueReader" );
                     Log.d(TAG,"blueReader initialized and Version requested");
-                    //toDo find better trigger that bluereader is in place as it is to late to get it
                     sendBtMessage(blueReader.initialize());
                 }
             }
@@ -1085,9 +1084,10 @@ public class DexCollectionService extends Service {
             return;
         }
 
+
+
         //sensor.latest_battery_level = (sensor.latest_battery_level != 0) ? Math.min(sensor.latest_battery_level, transmitterData.sensor_battery_level) : transmitterData.sensor_battery_level;
         sensor.latest_battery_level = transmitterData.sensor_battery_level; // allow level to go up and down
-
         sensor.save();
 
         last_transmitter_Data = transmitterData;

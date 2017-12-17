@@ -263,11 +263,11 @@ public class SystemStatusFragment extends Fragment {
         } else {
             transmitter_status_view.setText("" + td.sensor_battery_level);
             GcmActivity.requestSensorBatteryUpdate(); // always ask
-
             if (td.sensor_battery_level <= Dex_Constants.TRANSMITTER_BATTERY_EMPTY) {
                 transmitter_status_view.append(" - very low");
             } else if (td.sensor_battery_level <= Dex_Constants.TRANSMITTER_BATTERY_LOW) {
                 transmitter_status_view.append(" - low");
+                transmitter_status_view.append("\n(experimental interpretation)");
             } else {
                 transmitter_status_view.append(" - ok");
             }
@@ -415,6 +415,7 @@ public class SystemStatusFragment extends Fragment {
 
     private void setNotes() {
         try {
+
             if ((mBluetoothManager == null) || ((android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) && (mBluetoothManager.getAdapter() == null))) {
                 notes.append("\n- This device does not seem to support bluetooth");
             } else {

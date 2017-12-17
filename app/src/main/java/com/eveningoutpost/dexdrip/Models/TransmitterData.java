@@ -51,7 +51,6 @@ public class TransmitterData extends Model {
     public static synchronized TransmitterData create(byte[] buffer, int len, Long timestamp) {
         if (len < 6) { return null; }
         final TransmitterData transmitterData = new TransmitterData();
-        StringBuilder data_string = new StringBuilder(); //move it outside of try to access it in error
         try {
             if ((buffer[0] == 0x11 || buffer[0] == 0x15) && buffer[1] == 0x00) {
                 //this is a dexbridge packet.  Process accordingly.
@@ -72,7 +71,7 @@ public class TransmitterData extends Model {
                 Log.i(TAG, "Created transmitterData record with Raw value of " + transmitterData.raw_data + " and Filtered value of " + transmitterData.filtered_data + " at " + timestamp + " with timestamp " + transmitterData.timestamp);
             } else { //this is NOT a dexbridge packet.  Process accordingly.
                 Log.i(TAG, "create Processing a BTWixel or IPWixel packet");
-
+                StringBuilder data_string = new StringBuilder();
                 for (int i = 0; i < len; ++i) {
                     data_string.append((char) buffer[i]);
                 }
@@ -130,9 +129,9 @@ public class TransmitterData extends Model {
             transmitterData.uuid = UUID.randomUUID().toString();
             transmitterData.save();
             return transmitterData;
-        }catch(Exception e) {
+        }catch(Exception e)
+        {
             Log.e(TAG, "Got exception processing fields in protocol: " + e);
-            Log.e(TAG, "data: " + data_string.toString()); //output of additional Data to understand may the error.
         }
         return null;
     }
