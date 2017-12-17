@@ -57,7 +57,6 @@ import java.util.List;
 import java.util.Set;
 
 import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
-import static com.eveningoutpost.dexdrip.Services.DexCollectionService.getBestLimitterHardwareName;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.DexcomG5;
 
 
