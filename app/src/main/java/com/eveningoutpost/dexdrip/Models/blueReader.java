@@ -1,13 +1,9 @@
 package com.eveningoutpost.dexdrip.Models;
-
 import android.content.Context;
 import android.content.SharedPreferences;
-
 import com.eveningoutpost.dexdrip.Home;
-
 import java.nio.ByteBuffer;
 import java.util.Date;
-
 import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.xdrip;
