@@ -239,10 +239,9 @@ public class PebbleDisplayTrendOld extends PebbleDisplayAbstract {
                     this.dictionary.addString(BG_DELTA_KEY, "No Signal");
                 } else {
                     this.dictionary.addString(BG_DELTA_KEY, getBgDelta());
-
-                    if (((BgGraphBuilder.bwp_last_insulin != null) && (JoH.msSince(BgGraphBuilder.bwp_last_insulin_timestamp) < Constants.MINUTE_IN_MS * 11))
+                    if (((keyStore.getS("bwp_last_insulin") != null) && (JoH.msSince(keyStore.getL("bwp_last_insulin_timestamp")) < Constants.MINUTE_IN_MS * 11))
                             && getBooleanValue("pebble_show_bwp")) {
-                        this.dictionary.addString(BG_DELTA_KEY, PEBBLE_BWP_SYMBOL + BgGraphBuilder.bwp_last_insulin); // 😐
+                        this.dictionary.addString(BG_DELTA_KEY, PEBBLE_BWP_SYMBOL + keyStore.getS("bwp_last_insulin")); // 😐
                     }
 
                 }

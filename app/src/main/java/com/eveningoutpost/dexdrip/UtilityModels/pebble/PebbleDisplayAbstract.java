@@ -14,6 +14,8 @@ import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.ParakeetHelper;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.store.FastStore;
+import com.eveningoutpost.dexdrip.store.KeyStore;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.Preferences;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -48,6 +50,8 @@ public abstract class PebbleDisplayAbstract implements PebbleDisplayInterface {
     protected long last_seen_timestamp = 0;
 
     protected static final String PEBBLE_BWP_SYMBOL = "😐";
+
+    protected KeyStore keyStore = FastStore.getInstance();
 
     public void receiveNack(int transactionId) {
         // default no implementation
