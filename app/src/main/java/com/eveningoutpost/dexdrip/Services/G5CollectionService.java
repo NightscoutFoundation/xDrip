@@ -169,7 +169,6 @@ public class G5CollectionService extends G5BaseService {
    // private static long static_last_timestamp_watch = 0;
     private static long last_transmitter_timestamp = 0;
 
-    public static boolean getBatteryStatusNow = false;
 
     // test params
     private static final boolean ignoreLocalBondingState = false; // don't try to bond gives: GATT_ERR_UNLIKELY but no more 133s
@@ -1574,8 +1573,7 @@ public class G5CollectionService extends G5BaseService {
         return defaultTransmitter.transmitterId.length() == 6 && getStoredFirmwareBytes(defaultTransmitter.transmitterId).length >= 10;
     }
 
-    public final static String G5_FIRMWARE_MARKER = "g5-firmware-";
-    public final static String G5_BATTERY_FROM_MARKER = "g5-battery-from";
+
 
     private boolean haveCurrentBatteryStatus() {
         return defaultTransmitter.transmitterId.length() == 6 && (JoH.msSince(PersistentStore.getLong(G5_BATTERY_FROM_MARKER + defaultTransmitter.transmitterId)) < BATTERY_READ_PERIOD_MS);
@@ -1601,8 +1599,7 @@ public class G5CollectionService extends G5BaseService {
         return true;
     }
 
-    public static final String G5_BATTERY_MARKER = "g5-battery-";
-    public static final String G5_BATTERY_LEVEL_MARKER = "g5-battery-level-";
+
 
     public synchronized static boolean setStoredBatteryBytes(String transmitterId, byte[] data) {
         UserError.Log.e(TAG, "Store: BatteryRX dbg: " + JoH.bytesToHex(data));

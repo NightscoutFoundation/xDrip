@@ -60,7 +60,6 @@ import rx.Subscription;
 import rx.schedulers.Schedulers;
 
 import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.getUUIDName;
-import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.G5_BATTERY_FROM_MARKER;
 
 
 /**
@@ -102,7 +101,6 @@ public class Ob1G5CollectionService extends G5BaseService {
     private static long max_wakeup_jitter = 0;
     private static long connecting_time = 0;
 
-    public static boolean getBatteryStatusNow = false;
 
     public static boolean keep_running = true;
 
@@ -143,6 +141,7 @@ public class Ob1G5CollectionService extends G5BaseService {
     private static final Set<String> alwaysScanModels = Sets.newHashSet("SM-N910V","G Watch");
     private static final List<String> alwaysScanModelFamilies = Arrays.asList("SM-N910");
     private static final Set<String> alwaysConnectModels = Sets.newHashSet("G Watch");
+    private static final Set<String> alwaysBuggyWakeupModels = Sets.newHashSet("Jelly-Pro");
 
     // Internal process state tracking
     public enum STATE {
@@ -218,6 +217,15 @@ public class Ob1G5CollectionService extends G5BaseService {
                         initialize();
                         break;
                     case SCAN:
+                        // no connection? lets try a restart
+                        if (JoH.msSince(static_last_connected) > 10 * 60 * 1000) {
+                            if (JoH.pratelimit("ob1-collector-restart", 1200)) {
+                                new Thread(() -> {
+                                    CollectionServiceStarter.restartCollectionService(xdrip.getAppContext());
+                                }).start();
+                                break;
+                            }
+                        }
                         scan_for_device();
                         break;
                     case CONNECT_NOW:
@@ -293,7 +301,7 @@ public class Ob1G5CollectionService extends G5BaseService {
             if (rxBleClient == null) {
                 rxBleClient = RxBleClient.create(xdrip.getAppContext());
             }
-            transmitterID = Home.getPreferencesStringWithDefault("dex_txid", "NULL");
+            init_tx_id();
             // load prefs etc
             changeState(STATE.SCAN);
         } else {
@@ -301,19 +309,23 @@ public class Ob1G5CollectionService extends G5BaseService {
         }
     }
 
+    private static void init_tx_id() {
+        transmitterID = Home.getPreferencesStringWithDefault("dex_txid", "NULL");
+    }
+
     private synchronized void scan_for_device() {
         if (state == STATE.SCAN) {
             msg("Scanning");
             stopScan();
             tryLoadingSavedMAC(); // did we already find it?
-            if (always_scan || (transmitterMAC == null) || (!transmitterID.equals(transmitterIDmatchingMAC))) {
+            if (always_scan || (transmitterMAC == null) || (!transmitterID.equals(transmitterIDmatchingMAC)) || (static_last_timestamp < 1)) {
                 transmitterMAC = null; // reset if set
                 last_scan_started = JoH.tsl();
                 scanWakeLock = JoH.getWakeLock("xdrip-jam-g5-scan", (int) Constants.MINUTE_IN_MS * 6);
 
                 scanSubscription = rxBleClient.scanBleDevices(
                         new ScanSettings.Builder()
-                                .setScanMode(ScanSettings.SCAN_MODE_BALANCED)
+                                .setScanMode(static_last_timestamp < 1 ? ScanSettings.SCAN_MODE_LOW_LATENCY : ScanSettings.SCAN_MODE_BALANCED)
                                 //.setCallbackType(ScanSettings.CALLBACK_TYPE_FIRST_MATCH)
                                 .setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES)
                                 .build()//,
@@ -328,6 +340,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                         // observe on?
                         // do unsubscribe?
                         //.doOnUnsubscribe(this::clearSubscription)
+                        .subscribeOn(Schedulers.io())
                         .subscribe(this::onScanResult, this::onScanFailure);
                 UserError.Log.d(TAG, "Scanning for: " + getTransmitterBluetoothName());
             } else {
@@ -355,9 +368,10 @@ public class Ob1G5CollectionService extends G5BaseService {
 
                 bleDevice = rxBleClient.getBleDevice(transmitterMAC);
 
-                // Listen for connection state changes
+                        /// / Listen for connection state changes
                 stateSubscription = bleDevice.observeConnectionStateChanges()
                         // .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(Schedulers.io())
                         .subscribe(this::onConnectionStateChange, throwable -> {
                             UserError.Log.wtf(TAG, "Got Error from state subscription: " + throwable);
                         });
@@ -368,6 +382,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                         // .flatMap(RxBleConnection::discoverServices)
                         // .observeOn(AndroidSchedulers.mainThread())
                         // .doOnUnsubscribe(this::clearSubscription)
+                        .subscribeOn(Schedulers.io())
 
                         .subscribe(this::onConnectionReceived, this::onConnectionFailure);
 
@@ -614,11 +629,17 @@ public class Ob1G5CollectionService extends G5BaseService {
 
         always_connect = alwaysConnectModels.contains(this_model);
 
+        if (alwaysBuggyWakeupModels.contains(this_model)) {
+            UserError.Log.e(TAG,"Always buggy wakeup exact match for " + this_model);
+            JoH.buggy_samsung = true;
+        }
+
         if (alwaysScanModels.contains(this_model)) {
             UserError.Log.e(TAG, "Always scan model exact match for: " + this_model);
             always_scan = true;
             return;
         }
+
         for (String check : alwaysScanModelFamilies) {
             if (this_model.startsWith(check)) {
                 UserError.Log.e(TAG, "Always scan model fuzzy match for: " + this_model);
@@ -803,6 +824,12 @@ public class Ob1G5CollectionService extends G5BaseService {
             if (((BleScanException) throwable).getReason() == BleScanException.BLUETOOTH_DISABLED) {
                 // Attempt to turn bluetooth on
                 if (JoH.ratelimit("bluetooth_toggle_on", 30)) {
+                    UserError.Log.d(TAG, "Pause before Turn Bluetooth on");
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException e) {
+                        //
+                    }
                     UserError.Log.e(TAG, "Trying to Turn Bluetooth on");
                     JoH.setBluetoothEnabled(xdrip.getAppContext(), true);
                 }
@@ -834,6 +861,12 @@ public class Ob1G5CollectionService extends G5BaseService {
 
         if (state == STATE.CONNECT) {
             connectFailures++;
+            // TODO check bluetooth on or in connect section
+          if (JoH.ratelimit("ob1-restart-scan-on-connect-failure",10)) {
+              UserError.Log.d(TAG,"Restarting scan due to connect failure");
+              tryGattRefresh();
+              changeState(STATE.SCAN);
+          }
         }
 
     }
@@ -1163,6 +1196,9 @@ public class Ob1G5CollectionService extends G5BaseService {
 
     // data for MegaStatus
     public static List<StatusItem> megaStatus() {
+
+        init_tx_id(); // needed if we have not passed through local INIT state
+
         final List<StatusItem> l = new ArrayList<>();
 
         l.add(new StatusItem("Phone Service State", lastState, JoH.msSince(lastStateUpdated) < 300000 ? (lastState.startsWith("Got data") ? StatusItem.Highlight.GOOD : StatusItem.Highlight.NORMAL) : (isWatchRunning() ? StatusItem.Highlight.GOOD : StatusItem.Highlight.CRITICAL)));

@@ -11,6 +11,16 @@ import com.google.android.gms.wearable.DataMap;
 
 public abstract class G5BaseService extends Service {
 
+    public static final String G5_FIRMWARE_MARKER = "g5-firmware-";
+
+    public static final String G5_BATTERY_MARKER = "g5-battery-";
+    public static final String G5_BATTERY_LEVEL_MARKER = "g5-battery-level-";
+    public static final String G5_BATTERY_FROM_MARKER = "g5-battery-from";
+
+    public static final String G5_BATTERY_WEARABLE_SEND = "g5-battery-wearable-send";
+
+    public static boolean getBatteryStatusNow = false;
+
     protected static String lastState = "Not running";
     protected static String lastStateWatch = "Not running";
     protected static long static_last_timestamp = 0;
