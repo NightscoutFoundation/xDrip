@@ -483,15 +483,16 @@ public class Blukon {
                 sensorStatusString = "starting";
                 ret = true;
                 break;
-            case 0x03:
+            case 0x03:          // status for 14 days and 12 h of normal operation, abbott reader quits after 14 days
                 sensorStatusString = "ready";
                 ret = true;
                 break;
-            case 0x04:
+            case 0x04:          // status of the following 12 h, sensor delivers last BG reading constantly
                 sensorStatusString = "expired";
-                ret = true;
+                // @keencave: to use dead sensor for test
+//                ret = true;
                 break;
-            case 0x05:
+            case 0x05:          // sensor stops operation after 15d after start
                 sensorStatusString = "shutdown";
                 // @keencave: to use dead sensors for test
 //                ret = true;
