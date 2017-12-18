@@ -62,6 +62,15 @@ An Android Wear watch can also act as a G5 collector. This can be a good way to 
 
 The following watch models have reported getting a capture rate of 90%-100%
 
-Watch Model | Mode |
---- | ---
-Sony SmartWatch3 |
+Watch Model | Mode | Patched
+--- | --- | ---
+Sony SmartWatch 3 |
+Asus ZenWatch 2 | OB1 | Yes
+Asus ZenWatch 3 | OB1 | Yes
+Huawei Watch | OB1 | Yes
+LG G Watch | OB1 | Yes
+Polar M600 | OB1 | Yes
+
+Only the Sony SmartWatch 3 works without patching at the moment. Other listed models require the rom to be patched to work correctly.
+
+See this page for more details on how to patch: https://github.com/NightscoutFoundation/xDrip/wiki/Patching-Android-Wear-devices-for-use-with-the-G5
