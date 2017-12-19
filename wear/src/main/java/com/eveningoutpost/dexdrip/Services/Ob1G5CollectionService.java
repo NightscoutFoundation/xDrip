@@ -90,7 +90,7 @@ public class Ob1G5CollectionService extends G5BaseService {
     //private static String lastState = "Not running";
     //private static String lastStateWatch = "Not running";
     private static String lastScanError = null;
-    private static String static_connection_state = null;
+    private static volatile String static_connection_state = null;
     private static long static_last_connected = 0;
     //private static long static_last_timestamp = 0;
     //private static long static_last_timestamp_watch = 0;
@@ -99,7 +99,7 @@ public class Ob1G5CollectionService extends G5BaseService {
     private static long wakeup_time = 0;
     private static long wakeup_jitter = 0;
     private static long max_wakeup_jitter = 0;
-    private static long connecting_time = 0;
+    private static volatile long connecting_time = 0;
 
 
     public static boolean keep_running = true;
@@ -108,14 +108,14 @@ public class Ob1G5CollectionService extends G5BaseService {
 
     private Subscription scanSubscription;
     private Subscription connectionSubscription;
-    private Subscription stateSubscription;
+    private static volatile Subscription stateSubscription;
     private Subscription discoverSubscription;
     private RxBleDevice bleDevice;
     private RxBleConnection connection;
 
     private PowerManager.WakeLock connection_linger;
     private PowerManager.WakeLock scanWakeLock;
-    private PowerManager.WakeLock floatingWakeLock;
+    private volatile PowerManager.WakeLock floatingWakeLock;
     private PowerManager.WakeLock fullWakeLock;
 
     private boolean background_launch_waiting = false;
@@ -141,7 +141,7 @@ public class Ob1G5CollectionService extends G5BaseService {
     private static final Set<String> alwaysScanModels = Sets.newHashSet("SM-N910V","G Watch");
     private static final List<String> alwaysScanModelFamilies = Arrays.asList("SM-N910");
     private static final Set<String> alwaysConnectModels = Sets.newHashSet("G Watch");
-    private static final Set<String> alwaysBuggyWakeupModels = Sets.newHashSet("Jelly-Pro");
+    private static final Set<String> alwaysBuggyWakeupModels = Sets.newHashSet("Jelly-Pro", "SmartWatch 3");
 
     // Internal process state tracking
     public enum STATE {
