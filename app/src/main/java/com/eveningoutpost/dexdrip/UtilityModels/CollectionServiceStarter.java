@@ -195,7 +195,7 @@ public class CollectionServiceStarter {
             }
 
         } else if (isBTG5(collection_method)) {
-            Log.d("DexDrip", "Starting G5 share collector");
+            Log.d(TAG, "Starting G5 collector");
             stopBtWixelService();
             stopWifWixelThread();
             stopBtShareService();
@@ -255,7 +255,7 @@ public class CollectionServiceStarter {
         startDailyIntentService();
         Log.d(TAG, collection_method);
 
-        // Start logging to logcat
+      /*  // Start logging to logcat
         if (prefs.getBoolean("store_logs", false)) {
             String filePath = Environment.getExternalStorageDirectory() + "/xdriplogcat.txt";
             try {
@@ -265,7 +265,7 @@ public class CollectionServiceStarter {
             } catch (IOException e2) {
                 Log.e(TAG, "running logcat failed, is the device rooted?", e2);
             }
-        }
+        }*/
 
     }
 
