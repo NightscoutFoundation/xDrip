@@ -1325,8 +1325,8 @@ public class DexCollectionService extends Service {
         // blueReader
         if (blueReader.isblueReader()) {
             l.add(new StatusItem("blueReader Battery", Home.getPreferencesInt("bridge_battery", 0) + "%"));
-            l.add(new StatusItem("blueReader rest days", Home.getPreferencesStringDefaultBlank("bridge_battery_days")));
-            l.add(new StatusItem("blueReader Firmware",  Home.getPreferencesStringDefaultBlank("blueReaderFirmware")));
+            l.add(new StatusItem("blueReader rest days", PersistentStore.getString("bridge_battery_days")));
+            l.add(new StatusItem("blueReader Firmware",  PersistentStore.getString("blueReaderFirmware")));
         }
 
         return l;

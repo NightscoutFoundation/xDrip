@@ -1,11 +1,11 @@
 package com.eveningoutpost.dexdrip.Models;
-import android.content.Context;
 import android.content.SharedPreferences;
 import com.eveningoutpost.dexdrip.Home;
 import java.nio.ByteBuffer;
 import java.util.Date;
 import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.xdrip;
 
 /**
@@ -14,8 +14,7 @@ import com.eveningoutpost.dexdrip.xdrip;
 
 public class blueReader {
     private static final String TAG = "blueReader";
-    private static SharedPreferences prefs;
-    public static TransmitterData last_transmitter_Data;
+    private static int counterHibernated = 0;
 
     public static boolean isblueReader() {
         ActiveBluetoothDevice activeBluetoothDevice = ActiveBluetoothDevice.first();
@@ -43,13 +42,24 @@ public class blueReader {
             bufferstring=new String(buffer);
         }
         if (bufferstring.startsWith("not ready for") ) { //delete the trans_failed, because its normal only if the bluereader could not read the sensor.
-            Log.e(TAG, "Found blueReader in a ugly State, send hibernate to reset! If this does not help in the next 5 Minutes, then turn the bluereader manually off and on!");
+            counterHibernated++;
+            Log.e(TAG, "Found blueReader in a ugly State (" + counterHibernated + "/5), send hibernate to reset! If this does not help in the next 5 Minutes, then turn the bluereader manually off and on!");
+            if (counterHibernated > 4) {
+                Log.wtf(TAG, "Ugly state not resolveable. Please restart the BlueReader! Sending shutdown to blueReader!");
+                Home.toaststatic("BlueReader ugly state not resolveable, bluereader will be shut down. Please restart it!");
+                return new byte[]{0x6B};
+            }
             Home.toaststatic("Found blueReader in a ugly State, send hibernate to reset!");
+            counterHibernated++;
             return new byte[]{0x68}; //send hard hibernate, because blueReader is in a ugly state
         } else if (bufferstring.startsWith("IDR")){
             Log.i(TAG, bufferstring);
-            Home.setPreferencesString("blueReaderFirmware", bufferstring );
-            return null;
+            PersistentStore.setString("blueReaderFirmware", bufferstring );
+            if (BgReading.last() == null || BgReading.last().timestamp + (4 * 60 * 1000) < System.currentTimeMillis()) {
+                return new byte[]{0x6C};
+            } else {
+                return null;
+            }
         } else if (bufferstring.startsWith("WAKE")) {
             Log.d (TAG, "blueReader was set to wakeup-mode manually...");
             return null;
@@ -64,9 +74,14 @@ public class blueReader {
             return null;
         } else if (bufferstring.startsWith("HYBERNATE SUCCESS")) {
             Log.i (TAG, "blueReader notice that NFC is now really hibernated...");
-            return null;
+            if (counterHibernated > 0) {
+                Log.w (TAG,"Found hibernation after wrong read. Resend read-command...");
+                return new byte[]{0x6C};
+            } else {
+                return null;
+            }
         } else if (bufferstring.startsWith("-r 0:")) {
-            Log.i (TAG, "blueReader sends an unknown reaktion: '" + bufferstring + "'");
+            Log.d (TAG, "blueReader sends an unknown reaktion: '" + bufferstring + "'");
             return null;
         } else if (bufferstring.startsWith("TRANS_FAILED")) {
             Log.w (TAG, "Attention: check position of blueReader on the sensor, as it was not able to read!");
@@ -77,15 +92,10 @@ public class blueReader {
                 return new byte[]{0x6C};
             }
         } else {
+            counterHibernated = 0;
             processNewTransmitterData(TransmitterData.create(buffer, len, timestamp), timestamp);
         }
-        /* // turn off the automatic power off, as it looks like not to help really for the ugly mode
-        if ( Home.getPreferencesInt("bridge_battery", 100) <= 0 ) {
-            Log.e(TAG, "Send blueReader power-off, due to low Battery!");
-            Home.toaststatic("Send blueReader Power-off, due to low Battery!");
-            //return new byte[]{0x6B}; //send powerdown to bluereader (k)
-        }
-        */
+
         return null;
     }
 
@@ -100,20 +110,23 @@ public class blueReader {
             return;
         }
 
+        if(PersistentStore.getLong("blueReader_Full_Battery") <3000 )
+            PersistentStore.setLong("blueReader_Full_Battery", 4100);
+
         double blueReaderDays =0;
-        if (transmitterData.sensor_battery_level > Home.getPreferencesInt("blueReader_Full_Battery", 4000)) {
-            Home.setPreferencesInt("blueReader_Full_Battery", transmitterData.sensor_battery_level);
+        if (transmitterData.sensor_battery_level > PersistentStore.getLong("blueReader_Full_Battery")) {
+            PersistentStore.setLong("blueReader_Full_Battery", transmitterData.sensor_battery_level);
             Log.i(TAG, "blueReader_Full_Battery set to: " + transmitterData.sensor_battery_level) ;
         }
-        Home.setPreferencesInt("bridge_battery", ((transmitterData.sensor_battery_level - 3300) * 100 / ( Home.getPreferencesInt("blueReader_Full_Battery", 4000)-3300)));
-        sensor.latest_battery_level = ((transmitterData.sensor_battery_level - 3300) * 100 / (Home.getPreferencesInt("blueReader_Full_Battery", 4000)-3300));
+        Home.setPreferencesInt("bridge_battery", ((transmitterData.sensor_battery_level - 3300) * 100 / (((int) (long) PersistentStore.getLong("blueReader_Full_Battery"))-3300)));
+        sensor.latest_battery_level = ((transmitterData.sensor_battery_level - 3300) * 100 / (((int) (long) PersistentStore.getLong("blueReader_Full_Battery"))-3300));
         blueReaderDays = 6.129200670865791d / (1d + Math.pow(((double)transmitterData.sensor_battery_level/3763.700630306379d),(-61.04241888028577d)));
         if (transmitterData.sensor_battery_level < 3600) {
             blueReaderDays=blueReaderDays + 0.1d;
         }
         blueReaderDays = ((Math.round((blueReaderDays)*10d)/10d));
 
-        Home.setPreferencesString("bridge_battery_days", String.valueOf(blueReaderDays));
+        PersistentStore.setString("bridge_battery_days", String.valueOf(blueReaderDays));
         sensor.save();
 
         DexCollectionService.last_transmitter_Data = transmitterData;
