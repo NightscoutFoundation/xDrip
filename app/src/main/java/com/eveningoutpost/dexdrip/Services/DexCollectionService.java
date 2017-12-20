@@ -50,6 +50,7 @@ import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.Sensor;
+import com.eveningoutpost.dexdrip.Models.blueReader;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.Blukon;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
@@ -584,8 +585,8 @@ public class DexCollectionService extends Service {
 
             final BluetoothGattService gattService = mBluetoothGatt.getService(xDripDataService);
             if (gattService == null) {
-                if ((!static_use_blukon) && (!static_use_nrf)) {
-                    Log.w(TAG, "onServicesDiscovered: xdrip service " + xDripDataService + " not found");
+                if (!(static_use_blukon || blueReader.isblueReader())) {
+                    Log.w(TAG, "onServicesDiscovered: xdrip service " + xDripDataService + " not found"); //TODO the selection of nrf is not active at the beginning,so this error will be trown one time unneeded, mey to be optimized.
                     // TODO this should be reworked to be an efficient selector
                     listAvailableServices(mBluetoothGatt);
                 }
@@ -686,6 +687,9 @@ public class DexCollectionService extends Service {
                         JoH.releaseWakeLock(wl);
                         return;
                     }
+                    status("Enabled blueReader" );
+                    Log.d(TAG,"blueReader initialized and Version requested");
+                    sendBtMessage(blueReader.initialize());
                 }
             }
 
@@ -976,6 +980,12 @@ public class DexCollectionService extends Service {
                 Log.d(TAG, "Sending reply message from Blukon decoder");
                 sendBtMessage(reply);
             }
+        } else  if (blueReader.isblueReader()) {
+            final byte[] reply = blueReader.decodeblueReaderPacket(buffer, len);
+            if (reply != null) {
+                Log.d(TAG, "Sending reply message from blueReader decoder");
+                sendBtMessage(reply);
+            }
         } else if (XbridgePlus.isXbridgeExtensionPacket(buffer)) {
             // handle xBridge+ protocol packets
             final byte[] reply = XbridgePlus.decodeXbridgeExtensionPacket(buffer);
@@ -1052,12 +1062,7 @@ public class DexCollectionService extends Service {
                         CheckBridgeBattery.checkBridgeBattery();
                     }
                 }
-            } else if (buffer.length > 10 && new String(buffer) != null && new String(buffer).startsWith("battery: ")) {
-                //bluereader intermidiate support
-                if (BgReading.last() == null || BgReading.last().timestamp + (4 * 60 * 1000) < System.currentTimeMillis()) {
-                    sendBtMessage(new byte[]{0x6C});
-                }
-            } else {
+            }  else {
                 processNewTransmitterData(TransmitterData.create(buffer, len, timestamp), timestamp);
             }
         }
@@ -1315,6 +1320,13 @@ public class DexCollectionService extends Service {
             if (Home.get_engineering_mode() && (static_last_sent_hexdump_watch != null) && (static_last_sent_hexdump_watch.length()>0)) {
                 l.add(new StatusItem("Watch Sent Data", filterHexdump(static_last_sent_hexdump_watch)));
             }
+        }
+
+        // blueReader
+        if (blueReader.isblueReader()) {
+            l.add(new StatusItem("blueReader Battery", Home.getPreferencesInt("bridge_battery", 0) + "%"));
+            l.add(new StatusItem("blueReader rest days", PersistentStore.getString("bridge_battery_days")));
+            l.add(new StatusItem("blueReader Firmware",  PersistentStore.getString("blueReaderFirmware")));
         }
 
         return l;
