@@ -93,15 +93,19 @@ public class NFCReaderX {
         if (!useNFC()) return;
 
         mNfcAdapter = NfcAdapter.getDefaultAdapter(context);
+        try {
+            if (mNfcAdapter == null) {
 
-        if (mNfcAdapter == null) {
+                JoH.static_toast_long("Phone has no NFC reader");
+                //finish();
+                return;
 
-            JoH.static_toast_long("Phone has no NFC reader");
-            //finish();
-            return;
-
-        } else if (!mNfcAdapter.isEnabled()) {
-            JoH.static_toast_long("NFC is not enabled");
+            } else if (!mNfcAdapter.isEnabled()) {
+                JoH.static_toast_long("NFC is not enabled");
+                return;
+            }
+        } catch (NullPointerException e) {
+            JoH.static_toast_long("Phone NFC is having problems!");
             return;
         }
 
