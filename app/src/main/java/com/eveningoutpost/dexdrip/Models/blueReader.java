@@ -17,8 +17,12 @@ public class blueReader {
     private static int counterHibernated = 0;
 
     public static boolean isblueReader() {
-        ActiveBluetoothDevice activeBluetoothDevice = ActiveBluetoothDevice.first();
-        return activeBluetoothDevice.name.contentEquals("blueReader");
+        final ActiveBluetoothDevice activeBluetoothDevice = ActiveBluetoothDevice.first();
+        try {
+            return activeBluetoothDevice.name.contentEquals("blueReader");
+        } catch (NullPointerException e) {
+            return false;
+        }
     }
 
     public static boolean isblueReaderPacket(byte[] buffer) {
