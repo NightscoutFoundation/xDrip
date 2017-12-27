@@ -213,7 +213,8 @@ public class BgSendQueue extends Model {
                 }
             }
 
-            // send to wear
+            // now is done with an uploader queue instead
+          /*  // send to wear
             if ((!quick) && (prefs.getBoolean("wear_sync", false)) && !Home.get_forced_wear()) {//KS not necessary since MongoSendTask sends UploaderQueue.newEntry BG to WatchUpdaterService.sendWearUpload
                 context.startService(new Intent(context, WatchUpdaterService.class));
                 if (prefs.getBoolean("excessive_wakelocks", false)) {
@@ -221,7 +222,7 @@ public class BgSendQueue extends Model {
                             "wear-quickFix3").acquire(15000);
 
                 }
-            }
+            }*/
 
             // send to pebble
             if ((!quick) && (prefs.getBoolean("broadcast_to_pebble", false) )
@@ -250,7 +251,7 @@ public class BgSendQueue extends Model {
                 }
             }
 
-            if (JoH.ratelimit("start-sync-service",30)) {
+            if (JoH.ratelimit("start-sync-service", 30)) {
                 context.startService(new Intent(context, SyncService.class));
             }
 
@@ -258,9 +259,9 @@ public class BgSendQueue extends Model {
             if ((!quick) && (prefs.getBoolean("bg_to_speech", false))) {
                 if (dg == null) dg = BestGlucose.getDisplayGlucose();
                 if (dg != null) {
-                    BgToSpeech.speak(dg.mgdl, dg.timestamp);
+                    BgToSpeech.speak(dg.mgdl, dg.timestamp, dg.delta_name);
                 } else {
-                    BgToSpeech.speak(bgReading.calculated_value, bgReading.timestamp);
+                    BgToSpeech.speak(bgReading.calculated_value, bgReading.timestamp, bgReading.slopeName());
                 }
             }
 

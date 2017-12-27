@@ -1,6 +1,8 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.Intent;
 import android.media.AudioManager;
 import android.os.PowerManager;
 import android.speech.tts.TextToSpeech;
@@ -218,6 +220,18 @@ public class SpeechUtil {
             return manager.isMusicActive();
         } catch (NullPointerException e) {
             return false;
+        }
+    }
+
+    // redirect user to android tts data file installation activity
+    public static void installTTSData(Context context) {
+        try {
+            final Intent intent = new Intent();
+            intent.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+            UserError.Log.e(TAG, "Could not install TTS data: " + e.toString());
         }
     }
 

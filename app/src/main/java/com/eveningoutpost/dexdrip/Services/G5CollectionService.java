@@ -66,7 +66,6 @@ import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.NotificationChannels;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
-import com.eveningoutpost.dexdrip.utils.BgToSpeech;
 import com.eveningoutpost.dexdrip.utils.PowerStateReceiver;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.android.gms.wearable.DataMap;
@@ -115,7 +114,7 @@ public class G5CollectionService extends G5BaseService {
     private ForegroundServiceStarter foregroundServiceStarter;
 
     public Service service;
-    private BgToSpeech bgToSpeech;
+    //private BgToSpeech bgToSpeech;
     private static PendingIntent pendingIntent;
 
     private android.bluetooth.BluetoothManager mBluetoothManager;
@@ -201,7 +200,7 @@ public class G5CollectionService extends G5BaseService {
         listenForChangeInSettings();
 
         // TODO check this
-        bgToSpeech = BgToSpeech.setupTTS(getApplicationContext()); //keep reference to not being garbage collected
+        //bgToSpeech = BgToSpeech.setupTTS(getApplicationContext()); //keep reference to not being garbage collected
         // handler = new Handler(getApplicationContext().getMainLooper());
 
         final IntentFilter bondintent = new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED);//KS turn on

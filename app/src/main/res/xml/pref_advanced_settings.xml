@@ -287,11 +287,24 @@
                     android:switchTextOff="@string/short_off_text_for_switches"
                     android:switchTextOn="@string/short_on_text_for_switches"
                     android:title="@string/speak_readings" />
+                <SwitchPreference
+                    android:defaultValue="false"
+                    android:key="speak_alerts"
+                    android:summary="Also give some spoken alert messages"
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
+                    android:title="Speak Alerts" />
+
                 <EditTextPreference
                     android:defaultValue=""
                     android:dependency="bg_to_speech"
                     android:key="speak_readings_custom_language"
                     android:summary="@string/spoken_readings_locale" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:dependency="bg_to_speech"
+                    android:key="bg_to_speech_trend"
+                    android:summary="Speak trend arrow name" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="bg_to_speech"
