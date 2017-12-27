@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -411,9 +412,9 @@ public class AlertPlayer {
             // We start from the non ascending part...
             timeFromStartPlaying = MAX_ASCENDING;
         }
-
+        final String highlow = (alert.above ? ctx.getString(R.string.high) : ctx.getString(R.string.low)).toUpperCase();
         String title = bgValue + " " + alert.name;
-        String content = "BG LEVEL ALERT: " + bgValue + "  (@" + JoH.hourMinuteString() + ")";
+        String content = "BG " + highlow + " ALERT: " + bgValue + "  (@" + JoH.hourMinuteString() + ")";
         Intent intent = new Intent(ctx, SnoozeActivity.class);
 
         boolean localOnly = (Home.get_forced_wear() && PersistentStore.getBoolean("bg_notifications_watch"));
@@ -424,6 +425,7 @@ public class AlertPlayer {
             .setContentText(content)
             .setContentIntent(notificationIntent(ctx, intent))
             .setLocalOnly(localOnly)
+            .setPriority(Home.getPreferencesBooleanDefaultFalse("high_priority_notifications") ? Notification.PRIORITY_MAX : Notification.PRIORITY_HIGH)
             .setDeleteIntent(snoozeIntent(ctx));
 
         if (profile != ALERT_PROFILE_VIBRATE_ONLY && profile != ALERT_PROFILE_SILENT) {
@@ -470,6 +472,10 @@ public class AlertPlayer {
             if (JoH.ratelimit("pebble_vibe_start", 59)) {
                 ctx.startService(new Intent(ctx, PebbleWatchSync.class));
             }
+        }
+
+        if (Home.getPreferencesBooleanDefaultFalse("speak_alerts")) {
+            SpeechUtil.say(highlow + ", " + bgValue, 3000);
         }
     }
 
