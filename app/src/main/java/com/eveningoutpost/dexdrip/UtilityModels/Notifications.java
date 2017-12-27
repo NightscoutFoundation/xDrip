@@ -752,7 +752,7 @@ public class Notifications extends IntentService {
                 .setSmallIcon(R.drawable.ic_action_communication_invert_colors_on)
                 .setContentTitle(title)
                 .setContentText(content)
-                .setPriority(Home.getPreferencesBooleanDefaultFalse("high_priority_notifications") ? Notification.PRIORITY_HIGH : Notification.PRIORITY_DEFAULT)
+                .setPriority(Home.getPreferencesBooleanDefaultFalse("high_priority_notifications") ? Notification.PRIORITY_MAX : Notification.PRIORITY_HIGH)
                 .setContentIntent(notificationIntent(intent));
     }
 
@@ -825,7 +825,10 @@ public class Notifications extends IntentService {
         final String type = "bg_predict_alert";
         if (on) {
             if ((Home.getPreferencesLong("alerts_disabled_until", 0) < JoH.tsl()) && (Home.getPreferencesLong("low_alerts_disabled_until", 0) < JoH.tsl())) {
-                OtherAlert(context, type, msg, lowPredictAlertNotificationId, NotificationChannels.BG_PREDICTED_LOW_CHANNEL, false,  20 * 60);
+                OtherAlert(context, type, msg, lowPredictAlertNotificationId, NotificationChannels.BG_PREDICTED_LOW_CHANNEL, false, 20 * 60);
+                if (Home.getPreferencesBooleanDefaultFalse("speak_alerts")) {
+                   if (JoH.pratelimit("low-predict-speak", 1800)) SpeechUtil.say(msg, 4000);
+                }
             } else {
                 Log.ueh(TAG, "Not Low predict alerting due to snooze: " + msg);
             }
@@ -849,6 +852,11 @@ public class Notifications extends IntentService {
                 if (snooze_time < 1) snooze_time = 1;       // not less than 1 minute
                 if (snooze_time > 1440) snooze_time = 1440; // not more than 1 day
                 OtherAlert(context, type, msg, persistentHighAlertNotificationId, NotificationChannels.BG_PERSISTENT_HIGH_CHANNEL, false, snooze_time * 60);
+                if (Home.getPreferencesBooleanDefaultFalse("speak_alerts")) {
+                    if (JoH.pratelimit("persist-high-speak", 1800)) {
+                        SpeechUtil.say(msg, 4000);
+                    }
+                }
             } else {
                 Log.ueh(TAG, "Not persistent high alerting due to snooze: " + msg);
             }
