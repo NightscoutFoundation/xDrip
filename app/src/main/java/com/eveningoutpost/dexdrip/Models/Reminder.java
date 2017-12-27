@@ -32,6 +32,7 @@ public class Reminder extends Model {
     private static final String TAG = "Reminder";
     private static boolean patched = false;
     public static final String REMINDERS_ALL_DISABLED = "reminders-all-disabled";
+    public static final String REMINDERS_NIGHT_DISABLED = "reminders-at-night-disabled";
     public static final String REMINDERS_RESTART_TOMORROW = "reminders-restart-tomorrow";
     public static final String REMINDERS_ADVANCED_MODE = "reminders-advanced-mode";
     private static final String[] schema = {
@@ -282,9 +283,15 @@ public class Reminder extends Model {
         return reminders;
     }
 
+    private static boolean isNight() {
+        final int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+        return hour < 9; // midnight to 9am we say is night
+    }
+
     public static synchronized void processAnyDueReminders() {
         if (JoH.quietratelimit("reminder_due_check", 10)) {
-            if (!Home.getPreferencesBooleanDefaultFalse(REMINDERS_ALL_DISABLED)) {
+            if (!Home.getPreferencesBooleanDefaultFalse(REMINDERS_ALL_DISABLED)
+            && (!Home.getPreferencesBooleanDefaultFalse(REMINDERS_NIGHT_DISABLED) || !isNight())){
                 final Reminder due_reminder = getNextActiveReminder();
                 if (due_reminder != null) {
                     UserError.Log.d(TAG, "Found due reminder! " + due_reminder.title);
