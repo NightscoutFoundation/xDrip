@@ -1829,8 +1829,30 @@ public class Preferences extends PreferenceActivity {
                     return true;
                 }
             });
-        }
 
+            findPreference("speech_speed").setOnPreferenceChangeListener((preference, newValue) ->
+                    {
+                        prefs.edit().putInt("speech_speed", (Integer) newValue).commit();
+                        try {
+                            BgToSpeech.testSpeech();
+                        } catch (Exception e) {
+                            Log.e(TAG, "Got exception with TTS: " + e);
+                        }
+                        return true;
+                    }
+            );
+            findPreference("speech_pitch").setOnPreferenceChangeListener((preference, newValue) ->
+                    {
+                        prefs.edit().putInt("speech_pitch", (Integer) newValue).commit();
+                        try {
+                            BgToSpeech.testSpeech();
+                        } catch (Exception e) {
+                            Log.e(TAG, "Got exception with TTS: " + e);
+                        }
+                        return true;
+                    }
+            );
+        }
 
 
         // Will update the widget if any setting relevant to the widget gets changed.

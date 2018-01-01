@@ -312,6 +312,24 @@
                     android:summary="@string/speak_glucose_twice" />
                 <CheckBoxPreference
                     android:defaultValue="false"
+                    android:key="speak_twice"
+                    android:summary="Speak everything twice" />
+                <SeekBarPreference
+                    android:key="speech_speed"
+                    android:title="Speech speed"
+                    android:summary=""
+                    android:max="20"
+                    android:min="2"
+                    android:defaultValue="7" />
+                <SeekBarPreference
+                    android:key="speech_pitch"
+                    android:title="Speech pitch"
+                    android:summary=""
+                    android:max="20"
+                    android:min="4"
+                    android:defaultValue="12" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
                     android:key="bg_to_speech_shortcut"
                     android:summary="@string/short_speak_readings_shortcut"
                     android:title="@string/speak_readings_shortcut" />

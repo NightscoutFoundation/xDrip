@@ -13,7 +13,7 @@ import com.eveningoutpost.dexdrip.xdrip;
 
 import java.text.DecimalFormat;
 
-//import android.speech.tts.TextToSpeech;
+import static com.eveningoutpost.dexdrip.UtilityModels.SpeechUtil.TWICE_DELIMITER;
 
 /**
  * Created by adrian on 07/09/15.
@@ -22,9 +22,10 @@ import java.text.DecimalFormat;
  * <p>
  * Designed to speak glucose readings when enabled, call the "speak" method with the value, timestamp and optional trend name
  * <p>
- *
  */
 public class BgToSpeech {
+
+    public static final String BG_TO_SPEECH_PREF = "bg_to_speech";
 
     private static final String TAG = "BgToSpeech";
 
@@ -42,10 +43,15 @@ public class BgToSpeech {
         }
 
         // check if speech is enabled and extra check for ongoing call
-        if (!Home.getPreferencesBooleanDefaultFalse("bg_to_speech") || JoH.isOngoingCall()) {
+        if (!Home.getPreferencesBooleanDefaultFalse(BG_TO_SPEECH_PREF) || JoH.isOngoingCall()) {
             return;
         }
 
+        realSpeakNow(value, timestamp, delta_name);
+    }
+
+    // always speak the value passed
+    public static void realSpeakNow(final double value, long timestamp, String delta_name) {
         final String text_to_speak = calculateText(value, Home.getPreferencesBooleanDefaultFalse("bg_to_speech_trend") ? delta_name : null);
         UserError.Log.d(TAG, "Attempting to speak BG reading of: " + text_to_speak);
 
@@ -112,7 +118,7 @@ public class BgToSpeech {
                         // in case the text has a comma in current locale but TTS defaults to English
                         text = text.replace(",", ".");
                     }
-                    if (bg_to_speech_repeat_twice) text = text + " ... ... ... " + text;
+                    if (bg_to_speech_repeat_twice) text = text + TWICE_DELIMITER + text;
                 } catch (NullPointerException e) {
                     Log.e(TAG, "Null pointer for TTS in calculateText");
                 }
@@ -131,15 +137,22 @@ public class BgToSpeech {
         SpeechUtil.shutdown();
     }
 
+
+    // TODO grace period and 20 minute safety when testSpeech is called needs either a rework or rethink as it is ignored by SpeakNow now and the grace parameter is no longer needed
     // hopefully say a test reading
     public static void testSpeech() {
+        speakNow(1200000);
+    }
+
+    // speak the most recent reading, with 0 grace only if in time
+    public static void speakNow(long grace) {
         final BgReading bgReading = BgReading.last();
         if (bgReading != null) {
             final BestGlucose.DisplayGlucose dg = BestGlucose.getDisplayGlucose();
             if (dg != null) {
-                BgToSpeech.speak(dg.mgdl, dg.timestamp + 1200000, dg.delta_name);
+                BgToSpeech.realSpeakNow(dg.mgdl, dg.timestamp + grace, dg.delta_name);
             } else {
-                BgToSpeech.speak(bgReading.calculated_value, bgReading.timestamp + 1200000, bgReading.slopeName());
+                BgToSpeech.realSpeakNow(bgReading.calculated_value, bgReading.timestamp + grace, bgReading.slopeName());
             }
         }
     }

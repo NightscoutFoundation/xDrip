@@ -23,12 +23,14 @@ import java.util.Locale;
  * <p>
  * Uses xDrip preferences to define speech parameters, language etc and will baulk during calls and delay for music.
  * <p>
+ * <p>
  * TODO: is there a way we can delay till the end of *any* sound playing - eg notification noise? Does Android expose this in the framework?
  */
 
 public class SpeechUtil {
 
     public static final String TAG = "SpeechUtil";
+    public static final String TWICE_DELIMITER = " ... ... ... "; // creates a pause hopefully works on all locales
     private static volatile TextToSpeech tts = null; // maintained instance
 
     // delay parameter allows you to force a millis delay before playing to avoid clash with notification sounds triggered at the same time
@@ -72,12 +74,24 @@ public class SpeechUtil {
                     }
                 }
 
-                // TODO could be nicer if configurable by user
-                tts.setSpeechRate(0.6f);
-                tts.setPitch(1.2f);
+                // pull in preferences for speech but set some lower bounds to avoid bad sounding speech
+                final float speed = Math.max(0.2f, Home.getPreferencesInt("speech_speed", 10) / 10f);
+                final float pitch = Math.max(0.4f, Home.getPreferencesInt("speech_pitch", 10) / 10f);
 
-                final int result = tts.speak(text, TextToSpeech.QUEUE_ADD, null);
+                // set the rates
+                try {
+                    tts.setSpeechRate(speed);
+                    tts.setPitch(pitch);
+                } catch (Exception e) {
+                    UserError.Log.e(TAG, "Deep TTS problem setting speech rates: " + e);
+                }
+                // handle repeat everything twice feature. We could queue it twice instead of expanding the string but then each block of speech is not a single transaction
+                final boolean double_up_text_flag = (!text.contains(TWICE_DELIMITER)) && Home.getPreferencesBooleanDefaultFalse("speak_twice");
+                final String final_text_to_speak = double_up_text_flag ? (text + TWICE_DELIMITER + text) : text;
+
+                final int result = tts.speak(final_text_to_speak, TextToSpeech.QUEUE_ADD, null);
                 UserError.Log.d(TAG, "Speak result: " + result);
+
                 // speech randomly fails, usually due to the service not being bound so quick after being initialized, so we wait and retry recursively
                 if ((result != TextToSpeech.SUCCESS) && (retry < 5)) {
                     UserError.Log.d(TAG, "Failed to speak: retrying in 2s: " + retry);
