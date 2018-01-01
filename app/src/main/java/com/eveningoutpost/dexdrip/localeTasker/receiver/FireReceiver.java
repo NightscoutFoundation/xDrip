@@ -34,10 +34,13 @@ import com.eveningoutpost.dexdrip.localeTasker.Constants;
 import com.eveningoutpost.dexdrip.localeTasker.bundle.BundleScrubber;
 import com.eveningoutpost.dexdrip.localeTasker.bundle.PluginBundleManager;
 import com.eveningoutpost.dexdrip.localeTasker.ui.EditActivity;
+import com.eveningoutpost.dexdrip.utils.BgToSpeech;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.Arrays;
 import java.util.Locale;
+
+import static com.eveningoutpost.dexdrip.utils.BgToSpeech.BG_TO_SPEECH_PREF;
 
 
 /**
@@ -179,6 +182,36 @@ public final class FireReceiver extends BroadcastReceiver {
                                 }
                             }
                            break;
+
+                        case "SPEAK":
+                            if (message_array.length > 1) {
+                                switch (message_array[1].toUpperCase()) {
+                                    case "NOW":
+                                        BgToSpeech.speakNow(0);
+                                        JoH.static_toast_long("Speak Now by Tasker");
+                                        break;
+                                    case "ON":
+                                        Home.setPreferencesBoolean(BG_TO_SPEECH_PREF, true);
+                                        JoH.static_toast_long("Speech On by Tasker");
+                                        break;
+                                    case "OFF":
+                                        Home.setPreferencesBoolean(BG_TO_SPEECH_PREF, false);
+                                        JoH.static_toast_long("Speech Off by Tasker");
+                                        break;
+                                    case "ALERTON":
+                                        Home.setPreferencesBoolean("speak_alerts", true);
+                                        JoH.static_toast_long("Speech Alert On by Tasker");
+                                        break;
+                                    case "ALERTOFF":
+                                        Home.setPreferencesBoolean("speak_alerts", false);
+                                        JoH.static_toast_long("Speech Alert Off by Tasker");
+                                        break;
+                                    default:
+                                        JoH.static_toast_long("Unknown parameter to tasker speak command");
+                                }
+                            }
+                            break;
+
 
 
 //                    case "PREFS":
