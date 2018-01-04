@@ -23,6 +23,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.CalibrationSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.gson.Gson;
@@ -36,7 +37,6 @@ import java.util.List;
 import java.util.UUID;
 
 import static com.eveningoutpost.dexdrip.Models.BgReading.isDataSuitableForDoubleCalibration;
-import static com.eveningoutpost.dexdrip.UtilityModels.Constants.STALE_CALIBRATION_CUT_OFF;
 import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.newFingerStickData;
 
 
@@ -716,7 +716,7 @@ public class Calibration extends Model {
     private static SlopeParameters getSlopeParameters() {
 
         if (CollectionServiceStarter.isLimitter()) {
-            if (Home.getPreferencesBooleanDefaultFalse("use_non_fixed_li_parameters")) {
+            if (Pref.getBooleanDefaultFalse("use_non_fixed_li_parameters")) {
                 return new LiParametersNonFixed();
             } else {
                 return new LiParameters();
@@ -724,7 +724,7 @@ public class Calibration extends Model {
         }
         // open question about parameters used with LibreAlarm
 
-        if (Home.getPreferencesBooleanDefaultFalse("engineering_mode") && Home.getPreferencesBooleanDefaultFalse("old_school_calibration_mode")) {
+        if (Pref.getBooleanDefaultFalse("engineering_mode") && Pref.getBooleanDefaultFalse("old_school_calibration_mode")) {
             JoH.static_toast_long("Using old pre-2017 calibration mode!");
             return new DexOldSchoolParameters();
         }

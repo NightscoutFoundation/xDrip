@@ -40,6 +40,7 @@ import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.Services.WifiCollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.JamorhamShowcaseDrawer;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.ShotStateStore;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
@@ -117,7 +118,7 @@ public class MegaStatus extends ActivityWithMenu {
                 addAsection(G4_STATUS, "Bluetooth Collector Status");
             }
             if (dexCollectionType.equals(DexcomG5)) {
-                if (Home.getPreferencesBooleanDefaultFalse(Ob1G5CollectionService.OB1G5_PREFS)) {
+                if (Pref.getBooleanDefaultFalse(Ob1G5CollectionService.OB1G5_PREFS)) {
                     addAsection(G5_STATUS, "OB1 G5 Collector and Transmitter Status");
                 } else {
                     addAsection(G5_STATUS, "G5 Collector and Transmitter Status");
@@ -129,10 +130,10 @@ public class MegaStatus extends ActivityWithMenu {
             if (Home.get_master_or_follower()) {
                 addAsection(XDRIP_PLUS_SYNC, "xDrip+ Sync Group");
             }
-            if (Home.getPreferencesBooleanDefaultFalse("cloud_storage_mongodb_enable")
-                    || Home.getPreferencesBooleanDefaultFalse("cloud_storage_api_enable")
-                    || Home.getPreferencesBooleanDefaultFalse("share_upload")
-                    || (Home.getPreferencesBooleanDefaultFalse("wear_sync") && Home.get_engineering_mode())) {
+            if (Pref.getBooleanDefaultFalse("cloud_storage_mongodb_enable")
+                    || Pref.getBooleanDefaultFalse("cloud_storage_api_enable")
+                    || Pref.getBooleanDefaultFalse("share_upload")
+                    || (Pref.getBooleanDefaultFalse("wear_sync") && Home.get_engineering_mode())) {
                 addAsection(UPLOADERS, "Cloud Uploader Queues");
             }
 
@@ -156,7 +157,7 @@ public class MegaStatus extends ActivityWithMenu {
                 la.addRows(DexCollectionService.megaStatus());
                 break;
             case G5_STATUS:
-                if (Home.getPreferencesBooleanDefaultFalse(Ob1G5CollectionService.OB1G5_PREFS)) {
+                if (Pref.getBooleanDefaultFalse(Ob1G5CollectionService.OB1G5_PREFS)) {
                     la.addRows(Ob1G5CollectionService.megaStatus());
                 } else {
                     la.addRows(G5CollectionService.megaStatus());

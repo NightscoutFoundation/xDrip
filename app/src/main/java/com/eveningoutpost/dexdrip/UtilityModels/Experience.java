@@ -1,6 +1,5 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
-import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
@@ -26,14 +25,14 @@ public class Experience {
 
     public static boolean isNewbie() {
         if (not_newbie) return false;
-        final long installed_time = Home.getPreferencesLong(marker, -1);
+        final long installed_time = Pref.getLong(marker, -1);
         if (installed_time > 0) {
             UserError.Log.d(TAG, "First Installed " + JoH.niceTimeSince(installed_time) + " ago");
             not_newbie = true;
             return false;
         } else {
             // probably newbie
-            Home.setPreferencesLong(marker, JoH.tsl());
+            Pref.setLong(marker, JoH.tsl());
             if (gotData()) return false;
             UserError.Log.d(TAG, "Looks like a Newbie");
             return true;
@@ -51,7 +50,7 @@ public class Experience {
     }
 
     public static boolean backupAvailable() {
-        final String backup_file = Home.getPreferencesStringWithDefault("last-saved-database-zip", "");
+        final String backup_file = Pref.getString("last-saved-database-zip", "");
         if (backup_file.length() > 0) {
             if (new File(backup_file).exists()) {
                 return true;

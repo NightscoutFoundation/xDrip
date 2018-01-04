@@ -16,6 +16,7 @@ import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.JamorhamShowcaseDrawer;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.ShotStateStore;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -321,7 +322,7 @@ public class Mdns {
                             public void run() {
 
                                 // TODO: probe port 50005?
-                                final String receiver_list = Home.getPreferencesStringDefaultBlank("wifi_recievers_addresses").trim().toLowerCase();
+                                final String receiver_list = Pref.getStringDefaultBlank("wifi_recievers_addresses").trim().toLowerCase();
                                 final String new_receiver = entry.getKey().toLowerCase() + ".local" + ":50005";
 
                                 if (!receiver_list.contains(entry.getKey().toLowerCase() + ".local")) {
@@ -333,7 +334,7 @@ public class Mdns {
                                                 case DialogInterface.BUTTON_POSITIVE:
                                                     String new_receiver_list = (receiver_list.length() > 0) ? receiver_list + "," + new_receiver : new_receiver;
                                                     UserError.Log.d(TAG, "Updating receiver list to: " + new_receiver_list);
-                                                    Home.setPreferencesString("wifi_recievers_addresses", new_receiver_list);
+                                                    Pref.setString("wifi_recievers_addresses", new_receiver_list);
                                                     JoH.static_toast_long("Added receiver: " + JoH.ucFirst(entry.getKey()));
                                                     break;
                                             }
@@ -352,7 +353,7 @@ public class Mdns {
                                                 case DialogInterface.BUTTON_POSITIVE:
                                                     String new_receiver_list = receiver_list.replace(new_receiver, "").replace(",,", ",").replaceFirst(",$", "").replaceFirst("^,", "");
                                                     UserError.Log.d(TAG, "Updating receiver list to: " + new_receiver_list);
-                                                    Home.setPreferencesString("wifi_recievers_addresses", new_receiver_list);
+                                                    Pref.setString("wifi_recievers_addresses", new_receiver_list);
                                                     JoH.static_toast_long("Removed receiver: " + JoH.ucFirst(entry.getKey()));
                                                     break;
                                             }

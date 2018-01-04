@@ -28,6 +28,7 @@ import com.eveningoutpost.dexdrip.Models.PredictionData;
 import com.eveningoutpost.dexdrip.Models.ReadingData;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
 import java.io.IOException;
@@ -68,7 +69,7 @@ public class NFCReaderX {
     }
 
     public static boolean useNFC() {
-        return Home.getPreferencesBooleanDefaultFalse("use_nfc_scan") && (DexCollectionType.hasLibre());
+        return Pref.getBooleanDefaultFalse("use_nfc_scan") && (DexCollectionType.hasLibre());
     }
 
     @SuppressLint("NewApi")
@@ -237,7 +238,7 @@ public class NFCReaderX {
                     // Save raw block record (we start from block 0)
                     LibreBlock.createAndSave(tagId, data, 0);
 
-                    if(Home.getPreferencesBooleanDefaultFalse("external_blukon_algorithm")) {
+                    if(Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
                     	LibreOOPAlgorithm.SendData(data);
                     } else {
 	                    mResult = parseData(0, tagId, data);
@@ -290,7 +291,7 @@ public class NFCReaderX {
                         final byte[] uid = tag.getId();
 
                         try {
-                            final byte[] diag = JoH.hexStringToByteArray(Home.getPreferencesStringDefaultBlank("nfc_test_diagnostic"));
+                            final byte[] diag = JoH.hexStringToByteArray(Pref.getStringDefaultBlank("nfc_test_diagnostic"));
                             if ((diag != null) && (diag.length > 0)) {
                                 Log.d(TAG, "Diagnostic ->: " + HexDump.dumpHexString(diag, 0, diag.length).trim() + " len: " + diag.length);
                                 Long time = System.currentTimeMillis();
@@ -313,11 +314,11 @@ public class NFCReaderX {
                             }
                         } catch (Exception e) {
                             Log.e(TAG, "Exception in NFC Diagnostic: " + e);
-                            Home.setPreferencesString("nfc_test_diagnostic", "");
+                            Pref.setString("nfc_test_diagnostic", "");
                         }
 
-                        final boolean multiblock = Home.getPreferencesBoolean("use_nfc_multiblock", true);
-                        final boolean addressed = !Home.getPreferencesBoolean("use_nfc_any_tag", true);
+                        final boolean multiblock = Pref.getBoolean("use_nfc_multiblock", true);
+                        final boolean addressed = !Pref.getBoolean("use_nfc_any_tag", true);
                         // if multiblock mode
                         JoH.benchmark(null);
 
@@ -358,7 +359,7 @@ public class NFCReaderX {
                                     JoH.static_toast_short("NFC invalid data - try again");
                                     if (!addressed) {
                                         if (PersistentStore.incrementLong("nfc-address-failures") > 2) {
-                                            Home.setPreferencesBoolean("use_nfc_any_tag", false);
+                                            Pref.setBoolean("use_nfc_any_tag", false);
                                             JoH.static_toast_short("Turned off any-tag feature");
                                         }
                                     }
@@ -533,7 +534,7 @@ public class NFCReaderX {
 
         final long[][] patterns = {{0, 150}, {0, 150, 70, 150}, {0, 2000}, {0, 1000}, {0, 100}};
 
-        if (Home.getPreferencesBooleanDefaultFalse("nfc_scan_vibrate")) {
+        if (Pref.getBooleanDefaultFalse("nfc_scan_vibrate")) {
             final Vibrator vibrate = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
             if ((vibrate == null) || (!vibrate.hasVibrator())) return;
             vibrate.cancel();
@@ -547,7 +548,7 @@ public class NFCReaderX {
     }
 
     public static void handleHomeScreenScanPreference(Context context) {
-        handleHomeScreenScanPreference(context, useNFC() && Home.getPreferencesBooleanDefaultFalse("nfc_scan_homescreen"));
+        handleHomeScreenScanPreference(context, useNFC() && Pref.getBooleanDefaultFalse("nfc_scan_homescreen"));
     }
 
     public static void handleHomeScreenScanPreference(Context context, boolean state) {

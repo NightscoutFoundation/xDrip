@@ -28,10 +28,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.JamorhamShowcaseDrawer;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.SendFeedBack;
 import com.eveningoutpost.dexdrip.UtilityModels.ShotStateStore;
 import com.github.amlcurran.showcaseview.ShowcaseView;
@@ -191,7 +191,7 @@ public class LanguageEditor extends AppCompatActivity {
             if (Locale.getDefault().toString().startsWith("en")) {
                 android.app.AlertDialog.Builder alertDialogBuilder = new android.app.AlertDialog.Builder(this);
 
-                if (!Home.getPreferencesBoolean("force_english", false)) {
+                if (!Pref.getBoolean("force_english", false)) {
                     alertDialogBuilder.setMessage("To access translation features your phone or tablet must be set to a language other than English.\n\nTo achieve this, use the phone's system settings to change Language."); // don't extract/translate this string
                 } else {
                     alertDialogBuilder.setMessage("To access translation features your phone or tablet must be set to a language other than English.\n\nTo achieve this, disable the Force English option within xDrip+ display settings."); // don't extract/translate this string

@@ -63,6 +63,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.JamorhamShowcaseDrawer;
 import com.eveningoutpost.dexdrip.UtilityModels.NotificationChannels;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.ShotStateStore;
 import com.eveningoutpost.dexdrip.profileeditor.DatePickerFragment;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileAdapter;
@@ -194,14 +195,14 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
     }
 
     private void invertPreferenceBoolean(String pref) {
-        Home.setPreferencesBoolean(pref, !Home.getPreferencesBooleanDefaultFalse(pref));
+        Pref.setBoolean(pref, !Pref.getBooleanDefaultFalse(pref));
     }
 
     private void updateMenuCheckboxes() {
-        remindersAdvancedMenuItem.setChecked(Home.getPreferencesBooleanDefaultFalse(Reminder.REMINDERS_ADVANCED_MODE));
-        remindersDisabledMenuItem.setChecked(Home.getPreferencesBooleanDefaultFalse(Reminder.REMINDERS_ALL_DISABLED));
-        remindersRestartTomorrowMenuItem.setChecked(Home.getPreferencesBooleanDefaultFalse(Reminder.REMINDERS_RESTART_TOMORROW));
-        remindersDisabledAtNightMenuItem.setChecked(Home.getPreferencesBooleanDefaultFalse(Reminder.REMINDERS_NIGHT_DISABLED));
+        remindersAdvancedMenuItem.setChecked(Pref.getBooleanDefaultFalse(Reminder.REMINDERS_ADVANCED_MODE));
+        remindersDisabledMenuItem.setChecked(Pref.getBooleanDefaultFalse(Reminder.REMINDERS_ALL_DISABLED));
+        remindersRestartTomorrowMenuItem.setChecked(Pref.getBooleanDefaultFalse(Reminder.REMINDERS_RESTART_TOMORROW));
+        remindersDisabledAtNightMenuItem.setChecked(Pref.getBooleanDefaultFalse(Reminder.REMINDERS_NIGHT_DISABLED));
         remindersRestartTomorrowMenuItem.setEnabled(remindersDisabledMenuItem.isChecked());
     }
 

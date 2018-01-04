@@ -7,7 +7,6 @@ import android.media.AudioManager;
 import android.os.PowerManager;
 import android.speech.tts.TextToSpeech;
 
-import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -75,8 +74,8 @@ public class SpeechUtil {
                 }
 
                 // pull in preferences for speech but set some lower bounds to avoid bad sounding speech
-                final float speed = Math.max(0.2f, Home.getPreferencesInt("speech_speed", 10) / 10f);
-                final float pitch = Math.max(0.4f, Home.getPreferencesInt("speech_pitch", 10) / 10f);
+                final float speed = Math.max(0.2f, Pref.getInt("speech_speed", 10) / 10f);
+                final float pitch = Math.max(0.4f, Pref.getInt("speech_pitch", 10) / 10f);
 
                 // set the rates
                 try {
@@ -86,7 +85,7 @@ public class SpeechUtil {
                     UserError.Log.e(TAG, "Deep TTS problem setting speech rates: " + e);
                 }
                 // handle repeat everything twice feature. We could queue it twice instead of expanding the string but then each block of speech is not a single transaction
-                final boolean double_up_text_flag = (!text.contains(TWICE_DELIMITER)) && Home.getPreferencesBooleanDefaultFalse("speak_twice");
+                final boolean double_up_text_flag = (!text.contains(TWICE_DELIMITER)) && Pref.getBooleanDefaultFalse("speak_twice");
                 final String final_text_to_speak = double_up_text_flag ? (text + TWICE_DELIMITER + text) : text;
 
                 final int result = tts.speak(final_text_to_speak, TextToSpeech.QUEUE_ADD, null);
@@ -134,7 +133,7 @@ public class SpeechUtil {
         // first get the default language
         Locale speech_locale = Locale.getDefault();
         try {
-            final String tts_language = Home.getPreferencesStringDefaultBlank("speak_readings_custom_language").trim();
+            final String tts_language = Pref.getStringDefaultBlank("speak_readings_custom_language").trim();
             // did the user specify another language for speech?
             if (tts_language.length() > 1) {
                 final String[] lang_components = tts_language.split("_");

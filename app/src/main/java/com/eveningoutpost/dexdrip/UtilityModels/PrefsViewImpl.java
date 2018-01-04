@@ -2,8 +2,6 @@ package com.eveningoutpost.dexdrip.UtilityModels;
 
 import android.databinding.BaseObservable;
 
-import com.eveningoutpost.dexdrip.Home;
-
 /**
  * Created by jamorham on 05/10/2017.
  * <p>
@@ -13,11 +11,11 @@ import com.eveningoutpost.dexdrip.Home;
 public class PrefsViewImpl extends BaseObservable implements PrefsView {
 
     public boolean getbool(String name) {
-        return Home.getPreferencesBooleanDefaultFalse(name);
+        return Pref.getBooleanDefaultFalse(name);
     }
 
     public void setbool(String name, boolean value) {
-        Home.setPreferencesBoolean(name, value);
+        Pref.setBoolean(name, value);
         notifyChange();
     }
 

@@ -13,6 +13,7 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.Intents;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.PumpStatus;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
@@ -71,7 +72,7 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
 
                                 // in future this could have its own data source perhaps instead of follower
                                 if (!Home.get_follower() && DexCollectionType.getDexCollectionType() != DexCollectionType.NSEmulator && 
-                                    !Home.getPreferencesBooleanDefaultFalse("external_blukon_algorithm")) { //???DexCollectionType
+                                    !Pref.getBooleanDefaultFalse("external_blukon_algorithm")) { //???DexCollectionType
                                     Log.e(TAG, "Received NSEmulator data but we are not a follower or emulator receiver");
                                     return;
                                 }

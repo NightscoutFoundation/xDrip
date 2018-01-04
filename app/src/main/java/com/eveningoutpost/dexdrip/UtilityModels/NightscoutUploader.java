@@ -1,6 +1,5 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -160,8 +159,8 @@ public class NightscoutUploader {
         }
 
     public static void launchDownloadRest() {
-        if (Home.getPreferencesBooleanDefaultFalse("cloud_storage_api_enable")
-                && Home.getPreferencesBooleanDefaultFalse("cloud_storage_api_download_enable")) {
+        if (Pref.getBooleanDefaultFalse("cloud_storage_api_enable")
+                && Pref.getBooleanDefaultFalse("cloud_storage_api_download_enable")) {
             if (JoH.ratelimit("cloud_treatment_download", 60)) {
                 final NightscoutUploader uploader = new NightscoutUploader(xdrip.getAppContext());
                 uploader.downloadRest(500);
@@ -629,7 +628,7 @@ public class NightscoutUploader {
             }
 
             try {
-                if (Home.getPreferencesBooleanDefaultFalse("send_treatments_to_nightscout")) {
+                if (Pref.getBooleanDefaultFalse("send_treatments_to_nightscout")) {
                     postTreatments(nightscoutService, secret);
                 } else {
                     Log.d(TAG,"Skipping treatment upload due to preference disabled");
@@ -650,7 +649,7 @@ public class NightscoutUploader {
         last_exception_time = JoH.tsl();
         last_exception_count++;
         if (last_exception_count > 5) {
-            if (Home.getPreferencesBooleanDefaultFalse("warn_nightscout_failures")) {
+            if (Pref.getBooleanDefaultFalse("warn_nightscout_failures")) {
                 if (JoH.ratelimit("nightscout-error-notification", 1800)) {
                     notification_shown = true;
                     JoH.showNotification("Nightscout Failure", "REST-API upload to Nightscout has failed " + last_exception_count
@@ -925,7 +924,7 @@ public class NightscoutUploader {
         final boolean always_send_battery = true; // nightscout doesn't currently display device device status if it thinks its stale
         final List<String> batteries = new ArrayList<>();
         batteries.add("Phone");
-        if ((DexCollectionType.hasBattery() && (Home.getPreferencesBoolean("send_bridge_battery_to_nightscout", true)))
+        if ((DexCollectionType.hasBattery() && (Pref.getBoolean("send_bridge_battery_to_nightscout", true)))
                 || (Home.get_forced_wear() && DexCollectionType.getDexCollectionType().equals(DexCollectionType.DexcomG5))) {
             batteries.add("Bridge");
         }
@@ -941,11 +940,11 @@ public class NightscoutUploader {
                     battery_name = Build.MANUFACTURER + " " + Build.MODEL;
                     break;
                 case "Bridge":
-                    battery_level = Home.getPreferencesInt("bridge_battery", -1);
+                    battery_level = Pref.getInt("bridge_battery", -1);
                     battery_name = DexCollectionType.getDexCollectionType().name();
                     break;
                 case "Parakeet":
-                    battery_level = Home.getPreferencesInt("parakeet_battery", -1);
+                    battery_level = Pref.getInt("parakeet_battery", -1);
                     battery_name = "Parakeet";
                     break;
                 default:

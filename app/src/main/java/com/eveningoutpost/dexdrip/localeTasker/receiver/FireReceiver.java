@@ -16,7 +16,6 @@
 package com.eveningoutpost.dexdrip.localeTasker.receiver;
 
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -25,11 +24,11 @@ import android.os.PowerManager;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.localeTasker.Constants;
 import com.eveningoutpost.dexdrip.localeTasker.bundle.BundleScrubber;
 import com.eveningoutpost.dexdrip.localeTasker.bundle.PluginBundleManager;
@@ -151,7 +150,7 @@ public final class FireReceiver extends BroadcastReceiver {
                             final String[] volumeArray = xdrip.getAppContext().getResources().getStringArray(R.array.BgAlertProfileValues);
                             if (message_array.length > 1) {
                                 if (Arrays.asList(volumeArray).contains(message_array[1])) {
-                                    Home.setPreferencesString("bg_alert_profile", message_array[1]);
+                                    Pref.setString("bg_alert_profile", message_array[1]);
                                     JoH.static_toast_long("Volume Profile changed by Tasker to: "+message_array[1]);
                                 } else {
                                     JoH.static_toast_long("Invalid volume parameter: one of: " + Arrays.asList(volumeArray).toString());
@@ -191,19 +190,19 @@ public final class FireReceiver extends BroadcastReceiver {
                                         JoH.static_toast_long("Speak Now by Tasker");
                                         break;
                                     case "ON":
-                                        Home.setPreferencesBoolean(BG_TO_SPEECH_PREF, true);
+                                        Pref.setBoolean(BG_TO_SPEECH_PREF, true);
                                         JoH.static_toast_long("Speech On by Tasker");
                                         break;
                                     case "OFF":
-                                        Home.setPreferencesBoolean(BG_TO_SPEECH_PREF, false);
+                                        Pref.setBoolean(BG_TO_SPEECH_PREF, false);
                                         JoH.static_toast_long("Speech Off by Tasker");
                                         break;
                                     case "ALERTON":
-                                        Home.setPreferencesBoolean("speak_alerts", true);
+                                        Pref.setBoolean("speak_alerts", true);
                                         JoH.static_toast_long("Speech Alert On by Tasker");
                                         break;
                                     case "ALERTOFF":
-                                        Home.setPreferencesBoolean("speak_alerts", false);
+                                        Pref.setBoolean("speak_alerts", false);
                                         JoH.static_toast_long("Speech Alert Off by Tasker");
                                         break;
                                     default:

@@ -128,7 +128,7 @@ public class Pref {
         return false;
     }
 
-    
+
     // misc
     public static boolean removeItem(final String pref) {
         initializePrefs();
