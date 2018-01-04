@@ -31,6 +31,7 @@ import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
+import com.mongodb.WriteResult;
 import com.mongodb.DBCollection;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
@@ -1341,7 +1342,8 @@ public class NightscoutUploader {
                             testData.put("TransmitterId", "TransmitterId");
                             testData.put("ReceivedSignalStrength",-1);
                             
-                            tdCollection.insert(testData, WriteConcern.UNACKNOWLEDGED);
+                            WriteResult wr = tdCollection.insert(testData, WriteConcern.ACKNOWLEDGED);
+                            Log.e(TAG, "uploaded transmitter data with " + new Date(transmitterData.timestamp).toLocaleString()+ " wr = " + wr);
                         }
 
                         // TODO: quick port from original code, revisit before release
