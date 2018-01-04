@@ -70,7 +70,7 @@ public class DailyIntentService extends IntentService {
                 try {
                     CalibrationSendQueue.cleanQueue();
                 } catch (Exception e) {
-                    Log.e(TAG, "DailyIntentService exception on CalibrationSendQueue ", e);
+                    Log.d(TAG, "DailyIntentService exception on CalibrationSendQueue "+ e);
                 }
                 try {
                     UploaderQueue.cleanQueue();
