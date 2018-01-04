@@ -177,6 +177,11 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
         LibreBlock.createAndSave("LibreAlarm", object.data.raw_data, 0);
 
         if(Home.getPreferencesBooleanDefaultFalse("external_blukon_algorithm")) {
+        	if(object.data.raw_data == null) {
+        		Log.e(TAG, "Please update LibreAlarm to use OOP algorithm");
+        		JoH.static_toast_long("Please update LibreAlarm to use OOP algorithm");
+        		return;
+        	}
         	LibreOOPAlgorithm.SendData(object.data.raw_data);
         	return;
         }
