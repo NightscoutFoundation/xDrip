@@ -229,7 +229,9 @@ public class LanguageEditor extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
-        if (languageItemList.size() > 0) showcasemenu(SHOWCASE_LANGUAGE_INTRO);
+        if ((languageItemList.size() > 0) && (!Locale.getDefault().toString().startsWith("en"))) {
+            showcasemenu(SHOWCASE_LANGUAGE_INTRO);
+        }
     }
 
     @Override
@@ -371,7 +373,7 @@ public class LanguageEditor extends AppCompatActivity {
         builder.setPositiveButton("I ASSIGN COPYRIGHT TO THE PROJECT", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                LanguageStore.putString(CONSENT_KEY, "Agreed:"+JoH.ts());
+                LanguageStore.putString(CONSENT_KEY, "Agreed:" + JoH.ts());
                 saveData();
             }
         });
@@ -416,7 +418,6 @@ public class LanguageEditor extends AppCompatActivity {
         }
 
 
-
         final OkHttpClient client = new OkHttpClient();
         final String send_url = mContext.getString(R.string.wserviceurl) + "/joh-langdata";
 
@@ -430,8 +431,8 @@ public class LanguageEditor extends AppCompatActivity {
             final RequestBody formBody = new FormEncodingBuilder()
                     .add("locale", Locale.getDefault().toString())
                     .add("contact", email)
-                    .add("name",name)
-                    .add("consent",consent)
+                    .add("name", name)
+                    .add("consent", consent)
                     .add("data", data)
                     .build();
             new Thread(new Runnable() {
@@ -483,7 +484,7 @@ public class LanguageEditor extends AppCompatActivity {
                         Log.d(TAG, "Data to save: " + data);
                         uploadData(data);
                     }
-                } else{
+                } else {
                     getConsent();
                 }
             } else {
@@ -538,7 +539,7 @@ public class LanguageEditor extends AppCompatActivity {
         // create string name hashset of things we want to be able to translate
         final StringTokenizer tokenizer = new StringTokenizer(getString(R.string.internal_translatable_index), ",");
         final List<String> tokenizer_list = new ArrayList<>();
-        while(tokenizer.hasMoreTokens()) {
+        while (tokenizer.hasMoreTokens()) {
             tokenizer_list.add(tokenizer.nextToken());
         }
         final ImmutableSet<String> translatable_index_names = ImmutableSet.copyOf(tokenizer_list);
