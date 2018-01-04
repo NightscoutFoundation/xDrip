@@ -41,6 +41,7 @@ import java.util.List;
 /**
  * Created by Emma Black on 11/7/14.
  */
+@Deprecated
 @Table(name = "BgSendQueue", id = BaseColumns._ID)
 public class BgSendQueue extends Model {
 
@@ -66,6 +67,7 @@ public class BgSendQueue extends Model {
                     .execute();
         }
     */
+    @Deprecated
     public static List<BgSendQueue> mongoQueue() {
         return new Select()
                 .from(BgSendQueue.class)
@@ -76,6 +78,7 @@ public class BgSendQueue extends Model {
                 .execute();
     }
 
+    @Deprecated
     public static List<BgSendQueue> cleanQueue() {
         return new Delete()
                 .from(BgSendQueue.class)
@@ -102,6 +105,7 @@ public class BgSendQueue extends Model {
         handleNewBgReading(bgReading, operation_type, context, is_follower, false);
     }
 
+    // TODO extract to non depreciated class
     public static void handleNewBgReading(BgReading bgReading, String operation_type, Context context, boolean is_follower, boolean quick) {
         // TODO use JoH
         PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
