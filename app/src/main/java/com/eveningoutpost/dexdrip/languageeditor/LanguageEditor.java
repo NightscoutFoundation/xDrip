@@ -37,6 +37,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.ShotStateStore;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.Target;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
+import com.google.common.collect.ImmutableSet;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.squareup.okhttp.FormEncodingBuilder;
@@ -51,6 +52,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.StringTokenizer;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -185,7 +187,7 @@ public class LanguageEditor extends AppCompatActivity {
         forceRefresh();
 
         // handle case where we don't know about any translations for current language
-        if (languageItemList.size() == 0) {
+        if (languageItemList.size() == 0 || Locale.getDefault().toString().startsWith("en")) {
             if (Locale.getDefault().toString().startsWith("en")) {
                 android.app.AlertDialog.Builder alertDialogBuilder = new android.app.AlertDialog.Builder(this);
 
@@ -494,14 +496,13 @@ public class LanguageEditor extends AppCompatActivity {
 
     private String getJsonToSave() {
 
-        Gson gson = new GsonBuilder()
+        final Gson gson = new GsonBuilder()
                 .excludeFieldsWithoutExposeAnnotation()
                 //.registerTypeAdapter(Date.class, new DateTypeAdapter())
                 .serializeSpecialFloatingPointValues()
                 .create();
 
-        final String data = gson.toJson(user_edits.values());
-        return data;
+        return gson.toJson(user_edits.values());
     }
 
 
@@ -534,6 +535,15 @@ public class LanguageEditor extends AppCompatActivity {
     private List<LanguageItem> loadData(boolean buttons) {
         final List<LanguageItem> mylanguageItemList = new ArrayList<>();
 
+        // create string name hashset of things we want to be able to translate
+        final StringTokenizer tokenizer = new StringTokenizer(getString(R.string.internal_translatable_index), ",");
+        final List<String> tokenizer_list = new ArrayList<>();
+        while(tokenizer.hasMoreTokens()) {
+            tokenizer_list.add(tokenizer.nextToken());
+        }
+        final ImmutableSet<String> translatable_index_names = ImmutableSet.copyOf(tokenizer_list);
+        tokenizer_list.clear();
+
         final Field[] fields = R.string.class.getFields();
         for (final Field field : fields) {
             final String name = field.getName(); //name of string
@@ -542,7 +552,7 @@ public class LanguageEditor extends AppCompatActivity {
                 int id = field.getInt(R.string.class); //id of string
                 final String local_text = getResources().getString(id);
                 final String english_text = getStringFromLocale(id, Locale.ENGLISH);
-                if (!local_text.equals(english_text) && !name.startsWith("abc_") && !name.startsWith("common_") && !name.startsWith("twofortyfouram_") && !name.startsWith("zxing_")) {
+                if ((!local_text.equals(english_text) || translatable_index_names.contains(name)) && !name.startsWith("abc_") && !name.startsWith("common_") && !name.startsWith("twofortyfouram_") && !name.startsWith("zxing_")) {
                     // Log.d(TAG, "name: " + name + " / reflect id:" + id + " english:" + english_text + " / local:" + local_text);
                     final String alternate_text = LanguageStore.getString(name);
                     final boolean customized = (alternate_text.length() > 0);
