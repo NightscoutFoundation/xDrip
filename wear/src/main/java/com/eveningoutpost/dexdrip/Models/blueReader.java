@@ -1,11 +1,11 @@
 package com.eveningoutpost.dexdrip.Models;
-import android.content.SharedPreferences;
 import com.eveningoutpost.dexdrip.Home;
 import java.nio.ByteBuffer;
 import java.util.Date;
 import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.xdrip;
 
 /**
@@ -122,7 +122,7 @@ public class blueReader {
             PersistentStore.setLong("blueReader_Full_Battery", transmitterData.sensor_battery_level);
             Log.i(TAG, "blueReader_Full_Battery set to: " + transmitterData.sensor_battery_level) ;
         }
-        Home.setPreferencesInt("bridge_battery", ((transmitterData.sensor_battery_level - 3300) * 100 / (((int) (long) PersistentStore.getLong("blueReader_Full_Battery"))-3300)));
+        Pref.setInt("bridge_battery", ((transmitterData.sensor_battery_level - 3300) * 100 / (((int) (long) PersistentStore.getLong("blueReader_Full_Battery"))-3300)));
         sensor.latest_battery_level = ((transmitterData.sensor_battery_level - 3300) * 100 / (((int) (long) PersistentStore.getLong("blueReader_Full_Battery"))-3300));
         blueReaderDays = 6.129200670865791d / (1d + Math.pow(((double)transmitterData.sensor_battery_level/3763.700630306379d),(-61.04241888028577d)));
         if (transmitterData.sensor_battery_level < 3600) {
@@ -141,7 +141,7 @@ public class blueReader {
 
     public static ByteBuffer initialize() {
         Log.i(TAG, "initialize!");
-        Home.setPreferencesInt("bridge_battery", 0); //force battery to no-value before first reading
+        Pref.setInt("bridge_battery", 0); //force battery to no-value before first reading
 
         //command to get Firmware
         ByteBuffer ackMessage = ByteBuffer.allocate(3);

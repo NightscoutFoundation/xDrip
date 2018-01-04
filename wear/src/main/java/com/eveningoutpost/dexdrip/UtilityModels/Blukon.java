@@ -1,6 +1,5 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
-import android.content.Context;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -17,13 +16,11 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.LibreBlock;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
-import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
-import com.eveningoutpost.dexdrip.utils.FileUtils;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 
@@ -67,7 +64,7 @@ public class Blukon {
     private static byte[] m_full_data = new byte[344];
 
     public static String getPin() {
-        final String thepin = Home.getPreferencesStringWithDefault(BLUKON_PIN_PREF, null);
+        final String thepin = Pref.getString(BLUKON_PIN_PREF, null);
         if ((thepin != null) && (thepin.length() < 3))
             return null; // TODO enforce sane minimum pin length
         return thepin;
@@ -75,18 +72,18 @@ public class Blukon {
 
     private static void setPin(String thepin) {
         if (thepin == null) return;
-        Home.setPreferencesString(BLUKON_PIN_PREF, thepin);
+        Pref.setString(BLUKON_PIN_PREF, thepin);
     }
 
     public static void clearPin() {
-        Home.removePreferencesItem(BLUKON_PIN_PREF);
+        Pref.removeItem(BLUKON_PIN_PREF);
     }
 
     public static void initialize() {
         if (!m_communicationStarted) {
             Log.i(TAG, "initialize!");
-            Home.setPreferencesInt("bridge_battery", 0); //force battery to no-value before first reading
-            Home.setPreferencesInt("nfc_sensor_age", 0); //force sensor age to no-value before first reading
+            Pref.setInt("bridge_battery", 0); //force battery to no-value before first reading
+            Pref.setInt("nfc_sensor_age", 0); //force sensor age to no-value before first reading
             JoH.clearRatelimit(BLUKON_GETSENSORAGE_TIMER);
             m_getNowGlucoseDataCommand = false;
             m_getNowGlucoseDataIndexCommand = false;
@@ -123,7 +120,7 @@ public class Blukon {
         final String strRecCmd = CipherUtils.bytesToHex(buffer).toLowerCase();
         Log.i(TAG, "Blukon data: " + strRecCmd);
 
-        if (Home.getPreferencesBooleanDefaultFalse("external_blukon_algorithm")) {
+        if (Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
             Log.i(TAG, HexDump.dumpHexString(buffer));
         }
 
@@ -148,7 +145,7 @@ public class Blukon {
                     currentCommand = "010d0e0127";
                     Log.i(TAG, "getSensorAge");
                 } else {
-                    if (Home.getPreferencesBooleanDefaultFalse("external_blukon_algorithm")) {
+                    if (Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
                         // Send the command to getHistoricData (read all blcoks from 0 to 0x2b)
                         Log.i(TAG, "getHistoricData (1)");
                         currentCommand = "010d0f02002b";
@@ -179,7 +176,7 @@ public class Blukon {
 
             if (strRecCmd.startsWith("8b1a020011")) {
                 Log.e(TAG, "Patch read error.. please check the connectivity and re-initiate... or maybe battery is low?");
-                Home.setPreferencesInt("bridge_battery", 1);
+                Pref.setInt("bridge_battery", 1);
                 gotLowBat = true;
             }
 
@@ -256,7 +253,7 @@ public class Blukon {
 
             if (strRecCmd.equals("8bda02")) {
                 Log.e(TAG, "gotUnknownCmd2: is maybe battery low????");
-                Home.setPreferencesInt("bridge_battery", 5);
+                Pref.setInt("bridge_battery", 5);
                 gotLowBat = true;
             }
 
@@ -264,7 +261,7 @@ public class Blukon {
                 currentCommand = "010d0e0127";
                 Log.i(TAG, "getSensorAge");
             } else {
-                if (Home.getPreferencesBooleanDefaultFalse("external_blukon_algorithm")) {
+                if (Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
                     // Send the command to getHistoricData (read all blcoks from 0 to 0x2b)
                     Log.i(TAG, "getHistoricData (2)");
                     currentCommand = "010d0f02002b";
@@ -283,9 +280,9 @@ public class Blukon {
             int sensorAge = sensorAge(buffer);
 
             if ((sensorAge > 0) && (sensorAge < 200000)) {
-                Home.setPreferencesInt("nfc_sensor_age", sensorAge);//in min
+                Pref.setInt("nfc_sensor_age", sensorAge);//in min
             }
-            if (Home.getPreferencesBooleanDefaultFalse("external_blukon_algorithm")) {
+            if (Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
                 // Send the command to getHistoricData (read all blcoks from 0 to 0x2b)
                 Log.i(TAG, "getHistoricData (3)");
                 currentCommand = "010d0f02002b";
@@ -396,17 +393,17 @@ public class Blukon {
         } else if (strRecCmd.startsWith("cb020000")) {
             cmdFound = 1;
             Log.e(TAG, "is bridge battery low????!");
-            Home.setPreferencesInt("bridge_battery", 3);
+            Pref.setInt("bridge_battery", 3);
             gotLowBat = true;
         } else if (strRecCmd.startsWith("cbdb0000")) {
             cmdFound = 1;
             Log.e(TAG, "is bridge battery really low????!");
-            Home.setPreferencesInt("bridge_battery", 2);
+            Pref.setInt("bridge_battery", 2);
             gotLowBat = true;
         }
 
         if (!gotLowBat) {
-            Home.setPreferencesInt("bridge_battery", 100);
+            Pref.setInt("bridge_battery", 100);
         }
 
         CheckBridgeBattery.checkBridgeBattery();
