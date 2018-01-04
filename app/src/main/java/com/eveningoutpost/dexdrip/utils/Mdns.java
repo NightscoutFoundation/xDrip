@@ -55,6 +55,7 @@ public class Mdns {
 
     private static final HashMap<String, LookUpInfo> iplookup = new HashMap<>();
     private static boolean hunt_running = false;
+    private static int errorCounter = 0;
 
     private final AtomicInteger outstanding = new AtomicInteger();
     private long locked_until = 0;
@@ -264,6 +265,16 @@ public class Mdns {
             public void onResolveFailed(NsdServiceInfo serviceInfo, int errorCode) {
                 if (JoH.quietratelimit("mdns-error", 30))
                     UserError.Log.e(TAG, "Resolve failed " + errorCode);
+                if (errorCode == 3) {
+                    errorCounter++;
+                    if (errorCounter > 5) {
+                        errorCounter = 0;
+                        if (JoH.pratelimit("mdns-total-restart", 86400)) {
+                            UserError.Log.wtf(TAG, "Had to do a complete restart due to MDNS failures");
+                            android.os.Process.killProcess(android.os.Process.myPid());
+                        }
+                    }
+                }
                 try {
                     mNsdManager.stopServiceDiscovery(mDiscoveryListener);
                 } catch (Exception e) {
