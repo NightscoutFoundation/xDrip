@@ -19,7 +19,7 @@ public class LibreOOPAlgorithm {
     		return;
     	}
     	
-    	if(fullData.length < 0x158) {
+    	if(fullData.length < 344) {
     		Log.e(TAG, "SendData called with data size too small. " + fullData.length);
     		return;
     	}
