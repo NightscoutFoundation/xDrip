@@ -27,8 +27,8 @@
 	<string name="ok">OK</string>
 	<string name="cancel">Kansellere</string>
 	<string name="no">Nei</string>
-	<string name="pref_sensor_location_dont_ask_again"> Ikke spør meg det igjen</string>
-	<string name="title_activity_error">"Feil og Event List"</string>
+	<string name="pref_sensor_location_dont_ask_again">" Ikke spør meg det igjen"</string>
+	<string name="title_activity_error">Feil og Event List</string>
 	<string name="title_activity_main">Hovedaktivitet</string>
 	<string name="title_activity_fake_numbers">Falske Numbers</string>
 	<string name="title_activity_edit_alert">Rediger Alert</string>
@@ -101,7 +101,7 @@
 	<string name="first_configure_ip_address">Først konfigurere wifi wixel leser ip-adresser eller undulat url</string>
 	<string name="now_start_your_sensor">Nå starter sensoren eller sjekk innstillinger</string>
 	<string name="please_wait_while_sensor_warms_up">Vennligst vent mens sensoren varmer opp! (</string>
-	<string name="minutes_with_bracket"> minutter)</string>
+	<string name="minutes_with_bracket">" minutter)"</string>
 	<string name="possible_bad_calibration">Mulig dårlig kalibrering skråning, må du ha et glass vann, vaske hendene, må du rekalibrere på noen!</string>
 	<string name="please_wait_need_two_readings_first">Vennligst vent, trenger 2 opplesninger fra senderen først.</string>
 	<string name="please_enter_two_calibrations_to_get_started">Fyll inn to kalibreringer for å komme i gang!</string>
@@ -111,7 +111,7 @@
 	<string name="please_set_dex_receiver_serial_number">Vennligst angi Dex Receiver serienummer i App-innstillinger</string>
 	<string name="unfortunately_andoird_version_no_blueooth_low_energy">Dessverre din android-versjonen ikke støtter Bluetooth Low Energy</string>
 	<string name="waiting_for_packet">Venter på pakke</string>
-	<string name="persistent_high_for_greater_than">Vedvarende høy for> </string>
+	<string name="persistent_high_for_greater_than">"Vedvarende høy for> "</string>
 	<string name="space_mins">" Min"</string>
 	<string name="till">till</string>
 	<string name="low_predicted">Lav spådd</string>
