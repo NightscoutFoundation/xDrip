@@ -10,10 +10,13 @@ import android.os.PowerManager;
 import android.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Forecast;
 import com.eveningoutpost.dexdrip.Models.GlucoseData;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.LibreBlock;
+import com.eveningoutpost.dexdrip.Models.LibreOOPAlgorithm;
 import com.eveningoutpost.dexdrip.Models.ReadingData;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Intents;
@@ -169,6 +172,20 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
     }
 
     public static void processReadingDataTransferObject(ReadingData.TransferObject object) {
+    	Log.i(TAG, "Data that was recieved from librealarm is " + HexDump.dumpHexString(object.data.raw_data));
+    	// Save raw block record (we start from block 0)
+        LibreBlock.createAndSave("LibreAlarm", object.data.raw_data, 0);
+
+        if(Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
+        	if(object.data.raw_data == null) {
+        		Log.e(TAG, "Please update LibreAlarm to use OOP algorithm");
+        		JoH.static_toast_long("Please update LibreAlarm to use OOP algorithm");
+        		return;
+        	}
+        	LibreOOPAlgorithm.SendData(object.data.raw_data);
+        	return;
+        }
+    	
         // insert any recent data we can
         final List<GlucoseData> mTrend = object.data.trend;
         if (mTrend != null) {

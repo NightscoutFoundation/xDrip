@@ -14,12 +14,19 @@ public class LibreOOPAlgorithm {
 	private static final String TAG = "LibreOOPAlgorithm";
 	
     static public void SendData(byte[] fullData) {
+    	if(fullData == null) {
+    		Log.e(TAG, "SendData called with null data");
+    		return;
+    	}
+    	
+    	if(fullData.length < 344) {
+    		Log.e(TAG, "SendData called with data size too small. " + fullData.length);
+    		return;
+    	}
     	Log.i(TAG, "Sending full data to OOP Algorithm data-len = " + fullData.length);
     	
     	fullData = java.util.Arrays.copyOfRange(fullData, 0, 0x158);
     	Log.i(TAG, "Data that will be sent is " + HexDump.dumpHexString(fullData));
-    	
-    	
     	
     	Intent intent = new Intent(Intents.XDRIP_PLUS_LIBRE_DATA);
         Bundle bundle = new Bundle();
