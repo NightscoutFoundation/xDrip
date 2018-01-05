@@ -56,7 +56,6 @@ import lecho.lib.hellocharts.util.ChartUtils;
 
 @TargetApi(android.os.Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class BluetoothScan extends ListActivityWithMenu {
-    public static String menu_name = "Bluetooth Scan";
 
     private final static String TAG = BluetoothScan.class.getSimpleName();
     private static final long SCAN_PERIOD = 30000;
@@ -117,7 +116,7 @@ public class BluetoothScan extends ListActivityWithMenu {
 
     @Override
     public String getMenuName() {
-        return menu_name;
+        return getString(R.string.bluetooth_scan);
     }
 
     @Override

@@ -28,7 +28,6 @@ import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
 
 public class DoubleCalibrationActivity extends ActivityWithMenu {
     Button button;
-    public static String menu_name = "Add Double Calibration";
     private static final String TAG = "DoubleCalib";
 
     @Override
@@ -54,12 +53,12 @@ public class DoubleCalibrationActivity extends ActivityWithMenu {
 
     @Override
     public String getMenuName() {
-        return menu_name;
+        return getString(R.string.initial_calibration);
     }
 
     public void addListenerOnButton() {
 
-        button = (Button) findViewById(R.id.save_calibration_button);
+        button = findViewById(R.id.save_calibration_button);
         final Activity activity = this;
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -67,7 +66,7 @@ public class DoubleCalibrationActivity extends ActivityWithMenu {
                 try {
                     View view = activity.getCurrentFocus();
                     if (view != null) {
-                        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                        final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                     }
                 } catch (Exception e) {
@@ -92,7 +91,7 @@ public class DoubleCalibrationActivity extends ActivityWithMenu {
                                 final double multiplier = Pref.getString("units", "mgdl").equals("mgdl") ? 1 : Constants.MMOLL_TO_MGDL;
                                 if ((calValue_1 * multiplier < 40) || (calValue_1 * multiplier > 400)
                                         || (calValue_2 * multiplier < 40) || (calValue_2 * multiplier > 400)) {
-                                    JoH.static_toast_long("Calibration out of range");
+                                    JoH.static_toast_long(getString(R.string.calibration_out_of_range));
                                 } else {
                                     Calibration.initialCalibration(calValue_1, calValue_2, getApplicationContext());
 
@@ -103,13 +102,13 @@ public class DoubleCalibrationActivity extends ActivityWithMenu {
                                     finish();
                                 }
                             } catch (NumberFormatException e) {
-                                JoH.static_toast_long("Invalid calibration number!");
+                                JoH.static_toast_long(getString(R.string.invalid_calibration_number));
                             }
                         } else {
-                            value_2.setError("Calibration Can Not be blank");
+                            value_2.setError(getString(R.string.calibration_can_not_be_blank));
                         }
                     } else {
-                        value_1.setError("Calibration Can Not be blank");
+                        value_1.setError(getString(R.string.calibration_can_not_be_blank));
                     }
                 } else {
                     Log.w("DoubleCalibration", "ERROR, sensor is not active");
