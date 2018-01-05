@@ -220,7 +220,7 @@
     <string name="dexcom_transmitter_id">Dexcom Transmitter ID</string>
     <string name="run_collector_in_foreground">Run Collector in foreground</string>
     <string name="shows_a_persistent_notification">Shows a persistent notification graph, visible on lock-screen and prevents android killing the service.</string>
-    <string name="list_of_receivers">List of recievers</string>
+    <string name="list_of_receivers">List of receivers</string>
     <string name="extra_tags_for_logging">Extra tags for logging</string>
     <string name="extra_tags_dialog_message">The tags entered here will be logged into xDrip. Format is tag:level. Level can be v,d,i. For example bgreading:i,DexCollectionService:v. This tags will be logged with low priority to Error and event list.</string>
     <string name="extra_tags_dialog_title">Enter more tags to be logged</string>
@@ -839,9 +839,10 @@
     <string name="bluetooth_scan">Bluetooth Scan</string>
     <string name="level_alerts">Level Alerts</string>
     <string name="override_calibration">Override Calibration</string>
-    <string name="only_stop_your_sensor_when_you_actually_plan_to_remove_it_otherwise_leave_it_running">Only stop your sensor when you actually plan to remove it, otherwise leave it running!</string>
+    <string name="only_stop_your_sensor_when_you_actually_plan">Only stop your sensor when you actually plan to remove it, otherwise leave it running!</string>
     <string name="restart_collector">Restart Collector</string>
     <string name="forget_device">Forget Device</string>
     <string name="other_notes">Other Notes:</string>
     <string name="delete_future_data">Delete Future Data</string>
+    <string name="show_only_untranslated">Show only untranslated</string>
 </resources>
