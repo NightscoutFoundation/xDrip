@@ -1,15 +1,21 @@
 package com.eveningoutpost.dexdrip;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.graphics.Paint;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -18,13 +24,9 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
-import android.widget.SimpleCursorAdapter.ViewBinder;
-
-//#import android.widget.SimpleCursorAdapter;
-//#import android.database.Cursor;
-import android.graphics.Paint;
 
 import com.eveningoutpost.dexdrip.Models.AlertType;
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
@@ -35,6 +37,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+
+//#import android.widget.SimpleCursorAdapter;
+//#import android.database.Cursor;
 
 
 public class AlertList extends ActivityWithMenu {
@@ -249,23 +254,44 @@ public class AlertList extends ActivityWithMenu {
         listViewHigh.setAdapter(simpleAdapterHigh);
     }
 
-    public String shortPath(String path) {
-
-        if(path != null) {
-            if(path.length() == 0) {
-                return "xDrip Default";
-            }
-            Ringtone ringtone = RingtoneManager.getRingtone(mContext, Uri.parse(path));
-            if (ringtone != null) {
-                return ringtone.getTitle(mContext);
-            } else {
-                String[] segments = path.split("/");
-                if (segments.length > 1) {
-                    return segments[segments.length - 1];
+    private String shortPath(String path) {
+        try {
+            if (path != null) {
+                if (path.length() == 0) {
+                    return "xDrip Default";
+                }
+                Ringtone ringtone = RingtoneManager.getRingtone(mContext, Uri.parse(path));
+                if (ringtone != null) {
+                    return ringtone.getTitle(mContext);
+                } else {
+                    String[] segments = path.split("/");
+                    if (segments.length > 1) {
+                        return segments[segments.length - 1];
+                    }
                 }
             }
+            return "";
+        } catch (SecurityException e) {
+            // need external storage permission?
+            checkStoragePermissions("Need permission to access audio files");
+            return "";
         }
-        return "";
+    }
+
+    // TODO this can be centralized
+    private final static int MY_PERMISSIONS_REQUEST_STORAGE = 104;
+    private boolean checkStoragePermissions(String msg) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(getApplicationContext(),
+                    android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+                final Activity activity = this;
+                JoH.show_ok_dialog(activity, "Please Allow Permission", msg, () -> ActivityCompat.requestPermissions(activity,
+                        new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_STORAGE));
+                return false;
+            }
+        }
+        return true;
     }
 
     public String timeFormatString(int hour, int minute) {

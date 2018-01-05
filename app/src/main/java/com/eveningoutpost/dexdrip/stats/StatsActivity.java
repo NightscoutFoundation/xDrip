@@ -29,6 +29,7 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.JamorhamShowcaseDrawer;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.ShotStateStore;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.github.amlcurran.showcaseview.ShowcaseView;
@@ -277,12 +278,12 @@ public class StatsActivity extends ActivityWithMenu {
     }
 
     private void updateMenuChecked() {
-        menuItem.setChecked(Home.getPreferencesBoolean(SHOW_STATISTICS_FULL_SCREEN, false));
-        menuItem2.setChecked(Home.getPreferencesBoolean(SHOW_STATISTICS_PRINT_COLOR, false));
+        menuItem.setChecked(Pref.getBoolean(SHOW_STATISTICS_FULL_SCREEN, false));
+        menuItem2.setChecked(Pref.getBoolean(SHOW_STATISTICS_PRINT_COLOR, false));
     }
 
     private void evaluateColors(boolean recreate) {
-        if (Home.getPreferencesBooleanDefaultFalse(SHOW_STATISTICS_PRINT_COLOR)) {
+        if (Pref.getBooleanDefaultFalse(SHOW_STATISTICS_PRINT_COLOR)) {
             setTheme(R.style.StatisticsWhiteTheme);
         } else {
             setTheme(R.style.AppTheme);
@@ -292,19 +293,19 @@ public class StatsActivity extends ActivityWithMenu {
 
     private void fullScreenHandler(boolean recreate)
     {
-        goFullScreen(Home.getPreferencesBooleanDefaultFalse(SHOW_STATISTICS_FULL_SCREEN), decorView);
-        if ((recreate) && (!Home.getPreferencesBooleanDefaultFalse(SHOW_STATISTICS_FULL_SCREEN))) recreate();
+        goFullScreen(Pref.getBooleanDefaultFalse(SHOW_STATISTICS_FULL_SCREEN), decorView);
+        if ((recreate) && (!Pref.getBooleanDefaultFalse(SHOW_STATISTICS_FULL_SCREEN))) recreate();
     }
 
     public void toggleStatisticsFullScreenMode(MenuItem m)
     {
-        Home.togglePreferencesBoolean(SHOW_STATISTICS_FULL_SCREEN);
+        Pref.toggleBoolean(SHOW_STATISTICS_FULL_SCREEN);
         updateMenuChecked();
         fullScreenHandler(true);
     }
     public void toggleStatisticsPrintingMode(MenuItem m)
     {
-        Home.togglePreferencesBoolean(SHOW_STATISTICS_PRINT_COLOR);
+        Pref.toggleBoolean(SHOW_STATISTICS_PRINT_COLOR);
         evaluateColors(true);
         updateMenuChecked();
     }

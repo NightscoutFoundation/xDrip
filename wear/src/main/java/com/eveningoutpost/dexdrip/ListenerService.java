@@ -15,7 +15,6 @@ import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.Models.PebbleMovement;
 import com.eveningoutpost.dexdrip.Services.CustomComplicationProviderService;
 import com.eveningoutpost.dexdrip.Services.DexCollectionService;
-import com.eveningoutpost.dexdrip.Services.G5BaseService;
 import com.eveningoutpost.dexdrip.Services.G5CollectionService;//KS
 import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.*;
@@ -980,7 +979,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                     final PowerManager.WakeLock wl = JoH.getWakeLock(getApplicationContext(), "watchlistener-SYNC_DB_PATH",120000);
                     //BgReading.deleteALL();
                     //Calibration.deleteALL();
-                    long retainFrom = Home.getPreferencesBooleanDefaultFalse("extra_status_stats_24h")?last_send_previous-three_days_ms: StatsResult.getTodayTimestamp();//retain 3 days for Table Views
+                    long retainFrom = Pref.getBooleanDefaultFalse("extra_status_stats_24h")?last_send_previous-three_days_ms: StatsResult.getTodayTimestamp();//retain 3 days for Table Views
                     Log.d(TAG, "onDataChanged SYNC_DB_PATH delete BgReading and Calibration < retainFrom=" + JoH.dateTimeText(retainFrom));
                     BgReading.cleanup(retainFrom);
                     Calibration.cleanup(retainFrom);
@@ -1909,7 +1908,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         messageIntent.setAction(Intent.ACTION_SEND);
         messageIntent.putExtra("message", "ACTION_G5BG");
         DataMap treatsDataMap = null;
-        if (Home.getPreferencesBooleanDefaultFalse("show_wear_treatments")) {
+        if (Pref.getBooleanDefaultFalse("show_wear_treatments")) {
             switch (extra) {
                 case "all":
                     treatsDataMap = getTreatments(startTime);

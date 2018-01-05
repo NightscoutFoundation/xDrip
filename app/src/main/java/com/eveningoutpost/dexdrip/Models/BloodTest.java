@@ -16,6 +16,7 @@ import com.eveningoutpost.dexdrip.Services.SyncService;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
 import com.eveningoutpost.dexdrip.calibrations.CalibrationAbstract;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
@@ -174,7 +175,7 @@ public class BloodTest extends Model {
     }
 
     public static BloodTest createFromCal(double bg, double timeoffset, String source, String suggested_uuid) {
-        final String unit = Home.getPreferencesStringWithDefault("units", "mgdl");
+        final String unit = Pref.getString("units", "mgdl");
 
         if (unit.compareTo("mgdl") != 0) {
             bg = bg * Constants.MMOLL_TO_MGDL;
@@ -191,7 +192,7 @@ public class BloodTest extends Model {
 
     public static void pushBloodTestSyncToWatch(BloodTest bt, boolean is_new) {
         Log.d(TAG, "pushTreatmentSyncToWatch Add treatment to UploaderQueue.");
-        if (Home.getPreferencesBooleanDefaultFalse("wear_sync")) {
+        if (Pref.getBooleanDefaultFalse("wear_sync")) {
             if (UploaderQueue.newEntryForWatch(is_new ? "insert" : "update", bt) != null) {
                 SyncService.startSyncService(3000); // sync in 3 seconds
             }
@@ -395,7 +396,7 @@ public class BloodTest extends Model {
     }
 
     synchronized static void opportunisticCalibration() {
-        if (Home.getPreferencesBooleanDefaultFalse("bluetooth_meter_for_calibrations_auto")) {
+        if (Pref.getBooleanDefaultFalse("bluetooth_meter_for_calibrations_auto")) {
             final BloodTest bt = lastValid();
             if (bt == null) {
                 Log.d(TAG, "opportunistic: No blood tests");
@@ -523,7 +524,7 @@ public class BloodTest extends Model {
     }
 
     public static String accuracyAsString(double avg) {
-        final boolean domgdl = Home.getPreferencesStringWithDefault("units", "mgdl").equals("mgdl");
+        final boolean domgdl = Pref.getString("units", "mgdl").equals("mgdl");
         // +- symbol
         return "\u00B1" + (!domgdl ? JoH.qs(avg * Constants.MGDL_TO_MMOLL, 2) + " mmol" : JoH.qs(avg, 1) + " mgdl");
     }

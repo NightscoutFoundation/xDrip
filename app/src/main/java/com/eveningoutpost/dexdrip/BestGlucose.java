@@ -12,7 +12,7 @@ import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
-import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.ValidateRaw;
 import com.eveningoutpost.dexdrip.calibrations.CalibrationAbstract;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
@@ -170,7 +170,7 @@ public class BestGlucose {
         dg.timestamp = lastBgReading.timestamp;
 
         // if we are actively using a plugin, get the glucose calculation from there
-        if ((plugin != null) && ((pcalibration = plugin.getCalibrationData()) != null) && (Home.getPreferencesBoolean("display_glucose_from_plugin", false))) {
+        if ((plugin != null) && ((pcalibration = plugin.getCalibrationData()) != null) && (Pref.getBoolean("display_glucose_from_plugin", false))) {
             dg.plugin_name = plugin.getAlgorithmName();
             Log.d(TAG, "Using plugin: " + dg.plugin_name);
             dg.from_plugin = true;
@@ -282,8 +282,8 @@ public class BestGlucose {
     protected static boolean compensateNoise() {
         return (BgGraphBuilder.last_noise > BgGraphBuilder.NOISE_TRIGGER
                 || (BgGraphBuilder.last_noise > BgGraphBuilder.NOISE_TRIGGER_ULTRASENSITIVE
-                        && Home.getPreferencesBooleanDefaultFalse("engineering_mode")
-                        && Home.getPreferencesBooleanDefaultFalse("bg_compensate_noise_ultrasensitive")
+                        && Pref.getBooleanDefaultFalse("engineering_mode")
+                        && Pref.getBooleanDefaultFalse("bg_compensate_noise_ultrasensitive")
                 ))
                 && (BgGraphBuilder.best_bg_estimate > 0)
                 && (BgGraphBuilder.last_bg_estimate > 0)

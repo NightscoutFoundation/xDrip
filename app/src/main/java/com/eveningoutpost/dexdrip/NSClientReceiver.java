@@ -14,6 +14,7 @@ import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Intents;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -111,7 +112,7 @@ public class NSClientReceiver extends BroadcastReceiver {
 
                 // if you specify the units field as either mgdl or mmol then conversion will be done if local units don't match
 
-                if (Home.getPreferencesBooleanDefaultFalse("accept_broadcast_calibrations")) {
+                if (Pref.getBooleanDefaultFalse("accept_broadcast_calibrations")) {
 
                     final long calibration_timestamp = bundle.getLong("timestamp", -1);
                     double glucose_number = bundle.getDouble("glucose_number", -1);
@@ -126,7 +127,7 @@ public class NSClientReceiver extends BroadcastReceiver {
                             break;
                         }
 
-                        final String local_units = Home.getPreferencesStringWithDefault("units", "mgdl");
+                        final String local_units = Pref.getString("units", "mgdl");
                         if (units.equals("mgdl") && (!local_units.equals("mgdl"))) {
                             glucose_number = glucose_number * Constants.MGDL_TO_MMOLL;
                             Log.d(TAG, "Converting from mgdl to mmol: " + JoH.qs(glucose_number, 2));

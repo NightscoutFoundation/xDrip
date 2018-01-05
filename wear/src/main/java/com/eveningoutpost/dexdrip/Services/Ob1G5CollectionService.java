@@ -30,6 +30,7 @@ import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -310,7 +311,7 @@ public class Ob1G5CollectionService extends G5BaseService {
     }
 
     private static void init_tx_id() {
-        transmitterID = Home.getPreferencesStringWithDefault("dex_txid", "NULL");
+        transmitterID = Pref.getString("dex_txid", "NULL");
     }
 
     private synchronized void scan_for_device() {
@@ -477,7 +478,7 @@ public class Ob1G5CollectionService extends G5BaseService {
     // should this service be running? Used to decide when to shut down
     private static boolean shouldServiceRun() {
         if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) return false;
-        if (!Home.getPreferencesBooleanDefaultFalse(OB1G5_PREFS)) return false;
+        if (!Pref.getBooleanDefaultFalse(OB1G5_PREFS)) return false;
         if (!(DexCollectionType.getDexCollectionType() == DexCollectionType.DexcomG5)) return false;
 
         if (!android_wear) {
@@ -514,7 +515,7 @@ public class Ob1G5CollectionService extends G5BaseService {
 
     private synchronized void checkAndEnableBT() {
         try {
-            if (Home.getPreferencesBoolean("automatically_turn_bluetooth_on", true)) {
+            if (Pref.getBoolean("automatically_turn_bluetooth_on", true)) {
                 final BluetoothAdapter mBluetoothAdapter = ((BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
                 if (!mBluetoothAdapter.isEnabled()) {
                     if (JoH.ratelimit("g5-enabling-bluetooth", 30)) {
@@ -978,7 +979,7 @@ public class Ob1G5CollectionService extends G5BaseService {
     }
 
     private boolean g5BluetoothWatchdog() {
-        return Home.getPreferencesBoolean("g5_bluetooth_watchdog", true);
+        return Pref.getBoolean("g5_bluetooth_watchdog", true);
     }
 
     public static void updateLast(long timestamp) {
@@ -1235,8 +1236,8 @@ public class Ob1G5CollectionService extends G5BaseService {
 
         final String tx_id = getTransmitterID();
 
-        if (Home.getPreferencesBooleanDefaultFalse("wear_sync") &&
-                Home.getPreferencesBooleanDefaultFalse("enable_wearG5")) {
+        if (Pref.getBooleanDefaultFalse("wear_sync") &&
+                Pref.getBooleanDefaultFalse("enable_wearG5")) {
             l.add(new StatusItem("Watch Service State", lastStateWatch));
             if (static_last_timestamp_watch > 0) {
                 l.add(new StatusItem("Watch got Glucose", JoH.niceTimeSince(static_last_timestamp_watch) + " ago"));

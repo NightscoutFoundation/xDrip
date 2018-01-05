@@ -16,6 +16,7 @@ import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.UtilityModels.CalibrationSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.calibrations.CalibrationAbstract;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 
@@ -41,7 +42,7 @@ public class CalibrationGraph extends ActivityWithMenu {
     private LineChartData data;
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private final static String plugin_color = "#88CCFF00";
-    private final boolean doMgdl = Home.getPreferencesStringWithDefault("units", "mgdl").equals("mgdl");
+    private final boolean doMgdl = Pref.getString("units", "mgdl").equals("mgdl");
     private final boolean show_days_since = true; // could make this switchable if desired
     private final double start_x = 50; // raw range
     private double end_x = 300; //  raw range
@@ -190,7 +191,7 @@ public class CalibrationGraph extends ActivityWithMenu {
         List<Line> lines = new ArrayList<>();
         lines.add(line);
 
-        if (Home.getPreferencesBooleanDefaultFalse("engineering_mode")) {
+        if (Pref.getBooleanDefaultFalse("engineering_mode")) {
 
             // actual raw
             Line lineb = new Line(valuesb);
@@ -219,7 +220,7 @@ public class CalibrationGraph extends ActivityWithMenu {
     public boolean onCreateOptionsMenu(Menu menu) {
 
         //Just generate the menu in engineering mode
-        if (!Home.getPreferencesBooleanDefaultFalse("engineering_mode")) {
+        if (!Pref.getBooleanDefaultFalse("engineering_mode")) {
             return false;
         }
 

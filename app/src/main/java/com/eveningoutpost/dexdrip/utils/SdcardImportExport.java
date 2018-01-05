@@ -21,6 +21,7 @@ import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.io.File;
@@ -188,7 +189,7 @@ public class SdcardImportExport extends AppCompatActivity {
             if (succeeded) {
                 succeeded = dataToSDcopy(PREFERENCES_FILE);
             }
-            Home.setPreferencesString("saved_alerts", "");
+            Pref.setString("saved_alerts", "");
             return succeeded;
         } else {
             toast(getString(R.string.sdcard_not_writable_cannot_save));

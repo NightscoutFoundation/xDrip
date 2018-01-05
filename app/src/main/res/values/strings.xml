@@ -824,4 +824,7 @@
     <string name="use_gravity_sensor_to_rotate_items">Use Gravity Sensor to rotate items</string>
     <string name="low_bridge_battery">Low bridge battery</string>
     <string name="reminders">Reminders</string>
+    <string name="error">error</string>
+    <string name="install_text_to_speech_data_question">Install Text-To-Speech Data?</string>
+    <string name="after_installation_of_languages_you_might_have_to">(After installation of languages you might have to press \"Restart Collector\" in System Status.)</string>
 </resources>

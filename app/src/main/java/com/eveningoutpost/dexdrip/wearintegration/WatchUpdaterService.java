@@ -35,9 +35,9 @@ import com.eveningoutpost.dexdrip.UtilityModels.Blukon;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
-import com.eveningoutpost.dexdrip.utils.PowerStateReceiver;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -60,18 +60,15 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.internal.bind.DateTypeAdapter;
 
 import java.io.UnsupportedEncodingException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import static com.eveningoutpost.dexdrip.Home.get_forced_wear;
 import static com.eveningoutpost.dexdrip.Models.JoH.showNotification;
 import static com.eveningoutpost.dexdrip.Models.JoH.ts;
 import static com.eveningoutpost.dexdrip.Models.PebbleMovement.last;
-import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getDexCollectionType;
 
 public class WatchUpdaterService extends WearableListenerService implements
         GoogleApiClient.ConnectionCallbacks,
@@ -808,10 +805,10 @@ public class WatchUpdaterService extends WearableListenerService implements
                     } else if (ACTION_DISABLE_FORCE_WEAR.equals(action)) {//KS
                         int bg_wear_missed_minutes = readPrefsInt(mPrefs, "disable_wearG5_on_missedreadings_level", 30);
                         Log.d(TAG, "onStartCommand Action=ACTION_DISABLE_FORCE_WEAR");
-                        Home.setPreferencesBoolean("force_wearG5", false);
+                        Pref.setBoolean("force_wearG5", false);
                         final String msgDisableWear = getResources().getString(R.string.notify_disable_wearG5_on_missedreadings, bg_wear_missed_minutes);
                         JoH.static_toast_long(msgDisableWear);
-                        Log.e(TAG, "wearIsConnected disable force_wearG5:" + Home.getPreferencesBooleanDefaultFalse("force_wearG5") + " msg=" + msgDisableWear);
+                        Log.e(TAG, "wearIsConnected disable force_wearG5:" + Pref.getBooleanDefaultFalse("force_wearG5") + " msg=" + msgDisableWear);
                         sendWearLocalToast(msgDisableWear, Toast.LENGTH_LONG);
                     } else if (ACTION_START_COLLECTOR.equals(action)) {//KS
                         Log.d(TAG, "onStartCommand Action=" + ACTION_START_COLLECTOR + " Path=" + START_COLLECTOR_PATH);
@@ -1418,7 +1415,7 @@ public class WatchUpdaterService extends WearableListenerService implements
 
             //Extra Status Line
             dataMap.putBoolean("extra_status_line", mPrefs.getBoolean("extra_status_line", false));
-            dataMap.putBoolean("extra_status_stats_24h", Home.getPreferencesBooleanDefaultFalse("extra_status_stats_24h"));
+            dataMap.putBoolean("extra_status_stats_24h", Pref.getBooleanDefaultFalse("extra_status_stats_24h"));
             dataMap.putBoolean("status_line_calibration_long", mPrefs.getBoolean("status_line_calibration_long", false));
             dataMap.putBoolean("status_line_calibration_short", mPrefs.getBoolean("status_line_calibration_short", false));
             dataMap.putBoolean("status_line_avg", mPrefs.getBoolean("status_line_avg", false));
@@ -1435,15 +1432,15 @@ public class WatchUpdaterService extends WearableListenerService implements
 
             //Calibration plugin
             dataMap.putBoolean("extra_status_calibration_plugin", mPrefs.getBoolean("extra_status_calibration_plugin", false));
-            dataMap.putBoolean("display_glucose_from_plugin", Home.getPreferencesBooleanDefaultFalse("display_glucose_from_plugin"));
-            dataMap.putBoolean("use_pluggable_alg_as_primary", Home.getPreferencesBooleanDefaultFalse("use_pluggable_alg_as_primary"));
-            if (Home.getPreferencesBooleanDefaultFalse("engineering_mode")) {
-                dataMap.putBoolean("old_school_calibration_mode", Home.getPreferencesBooleanDefaultFalse("old_school_calibration_mode"));
+            dataMap.putBoolean("display_glucose_from_plugin", Pref.getBooleanDefaultFalse("display_glucose_from_plugin"));
+            dataMap.putBoolean("use_pluggable_alg_as_primary", Pref.getBooleanDefaultFalse("use_pluggable_alg_as_primary"));
+            if (Pref.getBooleanDefaultFalse("engineering_mode")) {
+                dataMap.putBoolean("old_school_calibration_mode", Pref.getBooleanDefaultFalse("old_school_calibration_mode"));
             }
 
-            dataMap.putBoolean("show_wear_treatments", Home.getPreferencesBooleanDefaultFalse("show_wear_treatments"));
-            dataMap.putBoolean("use_ob1_g5_collector_service", Home.getPreferencesBooleanDefaultFalse("use_ob1_g5_collector_service"));
-            dataMap.putString(Blukon.BLUKON_PIN_PREF, Home.getPreferencesStringDefaultBlank(Blukon.BLUKON_PIN_PREF));
+            dataMap.putBoolean("show_wear_treatments", Pref.getBooleanDefaultFalse("show_wear_treatments"));
+            dataMap.putBoolean("use_ob1_g5_collector_service", Pref.getBooleanDefaultFalse("use_ob1_g5_collector_service"));
+            dataMap.putString(Blukon.BLUKON_PIN_PREF, Pref.getStringDefaultBlank(Blukon.BLUKON_PIN_PREF));
         }
         //Step Counter
         dataMap.putBoolean("use_wear_health", mPrefs.getBoolean("use_pebble_health", true));
@@ -1458,10 +1455,10 @@ public class WatchUpdaterService extends WearableListenerService implements
         dataMap.putDouble("high", highMark);//inMgdl(highMark, mPrefs));//KS Fix for mmol on graph Y-axis in wear standalone mode
         dataMap.putDouble("low", lowMark);//inMgdl(lowMark, mPrefs));//KS Fix for mmol on graph Y-axis in wear standalone mode
         dataMap.putBoolean("g5_non_raw_method",  mPrefs.getBoolean("g5_non_raw_method", false));
-        dataMap.putString("extra_tags_for_logging",  Home.getPreferencesStringDefaultBlank("extra_tags_for_logging"));
-        dataMap.putBoolean("engineering_mode",  Home.getPreferencesBooleanDefaultFalse("engineering_mode"));
-        dataMap.putBoolean("bridge_battery_alerts",  Home.getPreferencesBooleanDefaultFalse("bridge_battery_alerts"));
-        dataMap.putString("bridge_battery_alert_level",  Home.getPreferencesStringWithDefault("bridge_battery_alert_level", "30"));
+        dataMap.putString("extra_tags_for_logging",  Pref.getStringDefaultBlank("extra_tags_for_logging"));
+        dataMap.putBoolean("engineering_mode",  Pref.getBooleanDefaultFalse("engineering_mode"));
+        dataMap.putBoolean("bridge_battery_alerts",  Pref.getBooleanDefaultFalse("bridge_battery_alerts"));
+        dataMap.putString("bridge_battery_alert_level",  Pref.getString("bridge_battery_alert_level", "30"));
         new SendToDataLayerThread(WEARABLE_PREF_DATA_PATH, googleApiClient).executeOnExecutor(xdrip.executor, dataMap);
     }
 

@@ -12,6 +12,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 
 import java.util.HashMap;
@@ -246,7 +247,7 @@ public class PhoneKeypadInputActivity extends Activity {
             }
         });
 
-        if (Home.getPreferencesStringWithDefault("units", "mgdl").equals("mgdl")) {
+        if (Pref.getString("units", "mgdl").equals("mgdl")) {
             units = " mg/dl";
         } else {
             units = " mmol/l";

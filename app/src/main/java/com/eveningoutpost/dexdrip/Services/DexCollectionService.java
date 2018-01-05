@@ -58,6 +58,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.HM10Attributes;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.UtilityModels.XbridgePlus;
 import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
@@ -148,10 +149,10 @@ public class DexCollectionService extends Service {
     private static String static_last_sent_hexdump_watch;
 
     // Experimental support for "Transmiter PL" from Marek Macner @FPV-UAV
-    private final boolean use_transmiter_pl_bluetooth = Home.getPreferencesBooleanDefaultFalse("use_transmiter_pl_bluetooth");
-    private final boolean use_rfduino_bluetooth = Home.getPreferencesBooleanDefaultFalse("use_rfduino_bluetooth");
-  //  private final boolean use_polling = Home.getPreferencesBooleanDefaultFalse(PREF_DEX_COLLECTION_POLLING) && DexCollectionType.hasLibre();
-    private final boolean use_polling = Home.getPreferencesBooleanDefaultFalse(PREF_DEX_COLLECTION_POLLING);
+    private final boolean use_transmiter_pl_bluetooth = Pref.getBooleanDefaultFalse("use_transmiter_pl_bluetooth");
+    private final boolean use_rfduino_bluetooth = Pref.getBooleanDefaultFalse("use_rfduino_bluetooth");
+  //  private final boolean use_polling = Home.getBooleanDefaultFalse(PREF_DEX_COLLECTION_POLLING) && DexCollectionType.hasLibre();
+    private final boolean use_polling = Pref.getBooleanDefaultFalse(PREF_DEX_COLLECTION_POLLING);
     private final UUID xDripDataService = use_transmiter_pl_bluetooth ? UUID.fromString(HM10Attributes.TRANSMITER_PL_SERVICE) : UUID.fromString(HM10Attributes.HM_10_SERVICE);
     private final UUID xDripDataCharacteristic = use_transmiter_pl_bluetooth ? UUID.fromString(HM10Attributes.TRANSMITER_PL_RX_TX) : UUID.fromString(HM10Attributes.HM_RX_TX);
     // Experimental support for rfduino from Tomasz Stachowicz
@@ -376,7 +377,7 @@ public class DexCollectionService extends Service {
         }
 
         if (!mBluetoothAdapter.isEnabled()) {
-            if (Home.getPreferencesBoolean("automatically_turn_bluetooth_on",true)) {
+            if (Pref.getBoolean("automatically_turn_bluetooth_on",true)) {
                 Log.i(TAG, "Turning bluetooth on as appears disabled");
                 status("Turning bluetooth on");
                 JoH.setBluetoothEnabled(getApplicationContext(), true);
@@ -499,7 +500,7 @@ public class DexCollectionService extends Service {
         public synchronized void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
             final PowerManager.WakeLock wl = JoH.getWakeLock("bluetooth-gatt", 60000);
             try {
-                if (Home.getPreferencesBoolean("bluetooth_excessive_wakelocks", true)) {
+                if (Pref.getBoolean("bluetooth_excessive_wakelocks", true)) {
                   /*  PowerManager powerManager = (PowerManager) mContext.getSystemService(POWER_SERVICE);
                     PowerManager.WakeLock wakeLock2 = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
                             "DexCollectionService");
@@ -510,7 +511,7 @@ public class DexCollectionService extends Service {
                 switch (newState) {
                     case BluetoothProfile.STATE_CONNECTED:
                         mConnectionState = STATE_CONNECTED;
-                        if ((servicesDiscovered == DISCOVERED.NULL) || Home.getPreferencesBoolean("always_discover_services", true)) {
+                        if ((servicesDiscovered == DISCOVERED.NULL) || Pref.getBoolean("always_discover_services", true)) {
                             Log.d(TAG, "Requesting to discover services: previous: " + servicesDiscovered);
                             servicesDiscovered = DISCOVERED.PENDING;
                         }
@@ -574,7 +575,7 @@ public class DexCollectionService extends Service {
                         bondingTries++;
                         if (bondingTries > 5) {
                             Home.toaststaticnext("Bonding failing so disabling bonding feature");
-                            Home.setPreferencesBoolean(PREF_DEX_COLLECTION_BONDING, false);
+                            Pref.setBoolean(PREF_DEX_COLLECTION_BONDING, false);
                         } else {
                             device.setPin(JoH.convertPinToBytes(DEFAULT_BT_PIN));
                             device.createBond();
@@ -787,7 +788,7 @@ public class DexCollectionService extends Service {
                 // intentionally left hanging wakelock for 5 seconds after we receive something
                 final PowerManager.WakeLock wakeLock2 = JoH.getWakeLock("DexCollectionLinger", 5000);
             } finally {
-                if (Home.getPreferencesBoolean("bluetooth_frequent_reset",false))
+                if (Pref.getBoolean("bluetooth_frequent_reset",false))
                 {
                     Log.e(TAG,"Resetting bluetooth due to constant reset option being set!");
                     JoH.restartBluetooth(getApplicationContext(),5000);
@@ -1041,9 +1042,9 @@ public class DexCollectionService extends Service {
                             txidMessage.putInt(2, TransmitterID);
                             sendBtMessage(txidMessage);
                         }
-                        Home.setPreferencesInt("bridge_battery", ByteBuffer.wrap(buffer).get(11));
+                        Pref.setInt("bridge_battery", ByteBuffer.wrap(buffer).get(11));
                         // PreferenceManager.getDefaultSharedPreferences(mContext).edit().putInt("bridge_battery", ByteBuffer.wrap(buffer).get(11)).apply();
-                        last_battery_level = Home.getPreferencesInt("bridge_battery", -1);
+                        last_battery_level = Pref.getInt("bridge_battery", -1);
                         //All is OK, so process it.
                         //first, tell the wixel it is OK to sleep.
                         Log.d(TAG, "setSerialDataToTransmitterRawData: Sending Data packet Ack, to put wixel to sleep");
@@ -1058,7 +1059,7 @@ public class DexCollectionService extends Service {
                         Log.v(TAG, "setSerialDataToTransmitterRawData: Creating TransmitterData at " + timestamp);
                         processNewTransmitterData(TransmitterData.create(buffer, len, timestamp), timestamp);
                         if (Home.get_master())
-                            GcmActivity.sendBridgeBattery(Home.getPreferencesInt("bridge_battery", -1));
+                            GcmActivity.sendBridgeBattery(Pref.getInt("bridge_battery", -1));
                         CheckBridgeBattery.checkBridgeBattery();
                     }
                 }
@@ -1230,13 +1231,13 @@ public class DexCollectionService extends Service {
             l.add(new StatusItem("Battery level", last_battery_level));
         }
 
-        if (Home.getPreferencesBooleanDefaultFalse(PREF_DEX_COLLECTION_BONDING)) {
+        if (Pref.getBooleanDefaultFalse(PREF_DEX_COLLECTION_BONDING)) {
             if (bondedState != null) {
                 l.add(new StatusItem("Bluetooth Pairing", (bondedState.length() > 0) ? "Bonded" : "Not bonded" + (bondingTries > 1 ? " (" + bondingTries + ")" : ""), (bondedState.length() > 0) ? StatusItem.Highlight.GOOD : StatusItem.Highlight.NOTICE, "long-press",
                         new Runnable() {
                             @Override
                             public void run() {
-                                Home.setPreferencesBoolean(PREF_DEX_COLLECTION_BONDING, false);
+                                Pref.setBoolean(PREF_DEX_COLLECTION_BONDING, false);
                                 if (bondedState.length() > 0) {
                                     JoH.static_toast_long("If you want to unbond use Android bluetooth system settings to Forget device");
                                     bondedState = null;
@@ -1256,7 +1257,7 @@ public class DexCollectionService extends Service {
                     new Runnable() {
                         @Override
                         public void run() {
-                            Home.setPreferencesBoolean(PREF_DEX_COLLECTION_BONDING, true);
+                            Pref.setBoolean(PREF_DEX_COLLECTION_BONDING, true);
                             JoH.static_toast_long("This probably only works on HM10/HM11 devices at the moment and takes a minute");
                             new Thread(new Runnable() {
                                 @Override
@@ -1324,7 +1325,7 @@ public class DexCollectionService extends Service {
 
         // blueReader
         if (blueReader.isblueReader()) {
-            l.add(new StatusItem("blueReader Battery", Home.getPreferencesInt("bridge_battery", 0) + "%"));
+            l.add(new StatusItem("blueReader Battery", Pref.getInt("bridge_battery", 0) + "%"));
             l.add(new StatusItem("blueReader rest days", PersistentStore.getString("bridge_battery_days")));
             l.add(new StatusItem("blueReader Firmware",  PersistentStore.getString("blueReaderFirmware")));
         }

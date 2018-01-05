@@ -2,14 +2,12 @@ package com.eveningoutpost.dexdrip.UtilityModels;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
-import android.support.v4.content.LocalBroadcastManager;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
@@ -28,13 +26,14 @@ import com.eveningoutpost.dexdrip.Models.Iob;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.PebbleMovement;
 import com.eveningoutpost.dexdrip.Models.Profile;
-import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.calibrations.CalibrationAbstract;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
+import com.eveningoutpost.dexdrip.store.FastStore;
+import com.eveningoutpost.dexdrip.store.KeyStore;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.android.gms.location.DetectedActivity;
@@ -125,8 +124,6 @@ public class BgGraphBuilder {
     public double predictive_end_time;
     public double start_time = end_time - ((60000 * 60 * 24)) / FUZZER;
 
-    public static String bwp_last_insulin;
-    public static long bwp_last_insulin_timestamp = -1;
 
     private final static double timeshift = 500000;
     private static final int NUM_VALUES = (60 / 5) * 24;
@@ -182,7 +179,7 @@ public class BgGraphBuilder {
     public static double original_value = -99999;
     public static double best_bg_estimate = -99999;
     public static double last_bg_estimate = -99999;
-
+    private KeyStore keyStore = FastStore.getInstance();
 
     public BgGraphBuilder(Context context) {
         this(context, new Date().getTime() + (60000 * 10));
@@ -290,7 +287,7 @@ public class BgGraphBuilder {
         if (thisnoise > NOISE_HIGH) return "Extreme";
         if (thisnoise > NOISE_TOO_HIGH_FOR_PREDICT) return "Very High";
         if (thisnoise > NOISE_TRIGGER) return "High";
-        if (thisnoise > NOISE_TRIGGER_ULTRASENSITIVE && Home.getPreferencesBooleanDefaultFalse("engineering_mode") && Home.getPreferencesBooleanDefaultFalse("bg_compensate_noise_ultrasensitive")) return "Some";
+        if (thisnoise > NOISE_TRIGGER_ULTRASENSITIVE && Pref.getBooleanDefaultFalse("engineering_mode") && Pref.getBooleanDefaultFalse("bg_compensate_noise_ultrasensitive")) return "Some";
         return "Low";
     }
 
@@ -493,7 +490,7 @@ public class BgGraphBuilder {
 
             if (!simple) {
                 // motion lines
-                if (Home.getPreferencesBoolean("motion_tracking_enabled", false) && Home.getPreferencesBoolean("plot_motion", false)) {
+                if (Pref.getBoolean("motion_tracking_enabled", false) && Pref.getBoolean("plot_motion", false)) {
                     lines.addAll(motionLine());
                 }
                 lines.addAll(stepsLines());
@@ -1235,8 +1232,8 @@ public class BgGraphBuilder {
                 final boolean show_noise_working_line;
                 if (last_noise > NOISE_TRIGGER ||
                         (last_noise > BgGraphBuilder.NOISE_TRIGGER_ULTRASENSITIVE
-                                && Home.getPreferencesBooleanDefaultFalse("engineering_mode")
-                                && Home.getPreferencesBooleanDefaultFalse("bg_compensate_noise_ultrasensitive")
+                                && Pref.getBooleanDefaultFalse("engineering_mode")
+                                && Pref.getBooleanDefaultFalse("bg_compensate_noise_ultrasensitive")
                         )) {
                     show_noise_working_line = true;
                 } else {
@@ -1498,11 +1495,11 @@ public class BgGraphBuilder {
                         // }
 
                         String bwp_update = "";
-                        bwp_last_insulin_timestamp = -1;
+                        keyStore.putL("bwp_last_insulin_timestamp", -1);
                         if (d)
                             Log.i(TAG, "Predictive BWP: Current prediction: " + JoH.qs(predictedbg) + " / carbs: " + JoH.qs(evaluation[0]) + " insulin: " + JoH.qs(evaluation[1]));
                         if (!BgReading.isDataStale()) {
-                            if (((low_occurs_at < 1) || Home.getPreferencesBooleanDefaultFalse("always_show_bwp")) && (Home.getPreferencesBooleanDefaultFalse("show_bwp"))) {
+                            if (((low_occurs_at < 1) || Pref.getBooleanDefaultFalse("always_show_bwp")) && (Pref.getBooleanDefaultFalse("show_bwp"))) {
                                 if (evaluation[0] > Profile.minimum_carb_recommendation) {
                                     //PointValue iv = new PointValue((float) fuzzed_timestamp, (float) (10 * bgScale));
                                     //iv.setLabel("+Carbs: " + JoH.qs(evaluation[0], 0));
@@ -1511,8 +1508,8 @@ public class BgGraphBuilder {
                                 } else if (evaluation[1] > Profile.minimum_insulin_recommendation) {
                                     //PointValue iv = new PointValue((float) fuzzed_timestamp, (float) (11 * bgScale));
                                     //iv.setLabel("+Insulin: " + JoH.qs(evaluation[1], 1));
-                                    bwp_last_insulin = JoH.qs(evaluation[1], 1) + ((low_occurs_at > 0) ? ("\u26A0") : "");
-                                    bwp_last_insulin_timestamp = JoH.tsl();
+                                    keyStore.putS("bwp_last_insulin", JoH.qs(evaluation[1], 1) + ((low_occurs_at > 0) ? ("!") : ""));
+                                    keyStore.putL("bwp_last_insulin_timestamp", JoH.tsl());
                                     bwp_update = "\u224F" + " Insulin: " + JoH.qs(evaluation[1], 1) + ((low_occurs_at > 0) ? (" " + "\u26A0") : ""); // warning symbol
                                     //annotationValues.add(iv); // needs to be different value list so we can make annotation nicer
                                 }
@@ -1790,10 +1787,10 @@ public class BgGraphBuilder {
     }
 
     public static String unitized_string_static(double value) {
-        return unitized_string(value, Home.getPreferencesStringWithDefault("units", "mgdl").equals("mgdl"));
+        return unitized_string(value, Pref.getString("units", "mgdl").equals("mgdl"));
     }
     public static String unitized_string_with_units_static(double value) {
-        final boolean domgdl = Home.getPreferencesStringWithDefault("units", "mgdl").equals("mgdl");
+        final boolean domgdl = Pref.getString("units", "mgdl").equals("mgdl");
         return unitized_string(value, domgdl)+" "+(domgdl ? "mg/dl" : "mmol/l");
     }
 

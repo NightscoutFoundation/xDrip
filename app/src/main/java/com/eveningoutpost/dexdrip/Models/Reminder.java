@@ -10,10 +10,10 @@ import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 import com.activeandroid.util.SQLiteUtils;
-import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Reminders;
 import com.eveningoutpost.dexdrip.Services.MissedReadingService;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.gson.annotations.Expose;
 
@@ -32,6 +32,7 @@ public class Reminder extends Model {
     private static final String TAG = "Reminder";
     private static boolean patched = false;
     public static final String REMINDERS_ALL_DISABLED = "reminders-all-disabled";
+    public static final String REMINDERS_NIGHT_DISABLED = "reminders-at-night-disabled";
     public static final String REMINDERS_RESTART_TOMORROW = "reminders-restart-tomorrow";
     public static final String REMINDERS_ADVANCED_MODE = "reminders-advanced-mode";
     private static final String[] schema = {
@@ -282,9 +283,15 @@ public class Reminder extends Model {
         return reminders;
     }
 
+    private static boolean isNight() {
+        final int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+        return hour < 9; // midnight to 9am we say is night
+    }
+
     public static synchronized void processAnyDueReminders() {
         if (JoH.quietratelimit("reminder_due_check", 10)) {
-            if (!Home.getPreferencesBooleanDefaultFalse(REMINDERS_ALL_DISABLED)) {
+            if (!Pref.getBooleanDefaultFalse(REMINDERS_ALL_DISABLED)
+            && (!Pref.getBooleanDefaultFalse(REMINDERS_NIGHT_DISABLED) || !isNight())){
                 final Reminder due_reminder = getNextActiveReminder();
                 if (due_reminder != null) {
                     UserError.Log.d(TAG, "Found due reminder! " + due_reminder.title);
@@ -292,13 +299,13 @@ public class Reminder extends Model {
                 }
             } else {
                 // reminders are disabled - should we re-enable them?
-                if (Home.getPreferencesBooleanDefaultFalse(REMINDERS_RESTART_TOMORROW)) {
+                if (Pref.getBooleanDefaultFalse(REMINDERS_RESTART_TOMORROW)) {
                     // temporary testing logic
                     final int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
                     if (hour == 10) {
                         if (JoH.pratelimit("restart-reminders",7200)) {
                             UserError.Log.d(TAG,"Re-enabling reminders as its morning time");
-                           Home.setPreferencesBoolean(REMINDERS_ALL_DISABLED,false);
+                           Pref.setBoolean(REMINDERS_ALL_DISABLED,false);
                         }
                     }
                 }

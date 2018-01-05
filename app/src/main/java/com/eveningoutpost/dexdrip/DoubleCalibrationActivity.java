@@ -18,10 +18,11 @@ import android.widget.EditText;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.PrefsViewImpl;
 import com.eveningoutpost.dexdrip.databinding.ActivityDoubleCalibrationBinding;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
-import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
+
 import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
 
 
@@ -88,7 +89,7 @@ public class DoubleCalibrationActivity extends ActivityWithMenu {
                                 final double calValue_1 = Double.parseDouble(string_value_1);
                                 final double calValue_2 = Double.parseDouble(string_value_2);
 
-                                final double multiplier = Home.getPreferencesStringWithDefault("units", "mgdl").equals("mgdl") ? 1 : Constants.MMOLL_TO_MGDL;
+                                final double multiplier = Pref.getString("units", "mgdl").equals("mgdl") ? 1 : Constants.MMOLL_TO_MGDL;
                                 if ((calValue_1 * multiplier < 40) || (calValue_1 * multiplier > 400)
                                         || (calValue_2 * multiplier < 40) || (calValue_2 * multiplier > 400)) {
                                     JoH.static_toast_long("Calibration out of range");

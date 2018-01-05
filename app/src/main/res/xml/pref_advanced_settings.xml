@@ -225,6 +225,63 @@
         android:key="other_category"
         android:title="@string/other_settings">
         <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+            android:icon="@drawable/ic_speak_reading_grey600_48dp"
+            android:key="xdrip_speak_readings_settings"
+            android:summary="@string/if_the_phone_has_text_to_speech"
+            android:title="@string/speak_readings">
+            <SwitchPreference
+                android:defaultValue="false"
+                android:key="bg_to_speech"
+                android:summary="@string/if_the_phone_has_text_to_speech"
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
+                android:title="@string/speak_readings" />
+            <SwitchPreference
+                android:defaultValue="false"
+                android:key="speak_alerts"
+                android:summary="Also give some spoken alert messages"
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
+                android:title="Speak Alerts" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:dependency="bg_to_speech"
+                android:key="bg_to_speech_trend"
+                android:summary="Speak trend arrow name" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:dependency="bg_to_speech"
+                android:key="bg_to_speech_repeat_twice"
+                android:summary="@string/speak_glucose_twice" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="speak_twice"
+                android:summary="Speak everything twice" />
+            <EditTextPreference
+                android:defaultValue=""
+                android:key="speak_readings_custom_language"
+                android:summary="@string/spoken_readings_locale" />
+            <SeekBarPreference
+                android:key="speech_speed"
+                android:title="Speech speed"
+                android:summary=""
+                android:max="20"
+                android:min="2"
+                android:defaultValue="7" />
+            <SeekBarPreference
+                android:key="speech_pitch"
+                android:title="Speech pitch"
+                android:summary=""
+                android:max="20"
+                android:min="4"
+                android:defaultValue="12" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="bg_to_speech_shortcut"
+                android:summary="@string/short_speak_readings_shortcut"
+                android:title="@string/speak_readings_shortcut" />
+        </PreferenceScreen>
+        <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
             android:icon="@drawable/ic_open_in_app_grey600_48dp"
             android:key="xdrip_intrer_app_settings"
             android:summary="@string/for_interacting_compatible_apps"
@@ -275,34 +332,7 @@
                     android:targetClass="com.eveningoutpost.dexdrip.ErrorsActivity"
                     android:targetPackage="@string/local_target_package" />
             </Preference>
-            <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-                android:icon="@drawable/ic_speak_reading_grey600_48dp"
-                android:key="xdrip_speak_readings_settings"
-                android:summary="@string/if_the_phone_has_text_to_speech"
-                android:title="@string/speak_readings">
-                <SwitchPreference
-                    android:defaultValue="false"
-                    android:key="bg_to_speech"
-                    android:summary="@string/if_the_phone_has_text_to_speech"
-                    android:switchTextOff="@string/short_off_text_for_switches"
-                    android:switchTextOn="@string/short_on_text_for_switches"
-                    android:title="@string/speak_readings" />
-                <EditTextPreference
-                    android:defaultValue=""
-                    android:dependency="bg_to_speech"
-                    android:key="speak_readings_custom_language"
-                    android:summary="@string/spoken_readings_locale" />
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:dependency="bg_to_speech"
-                    android:key="bg_to_speech_repeat_twice"
-                    android:summary="@string/speak_glucose_twice" />
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:key="bg_to_speech_shortcut"
-                    android:summary="@string/short_speak_readings_shortcut"
-                    android:title="@string/speak_readings_shortcut" />
-            </PreferenceScreen>
+
             <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
                 android:key="xdrip_extra_status_line"
                 android:summary="@string/options_for_extra_line"

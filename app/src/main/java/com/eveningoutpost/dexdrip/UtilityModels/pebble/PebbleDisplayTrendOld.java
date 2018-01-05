@@ -13,6 +13,7 @@ import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSparklineBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.SimpleImageEncoder;
 import com.getpebble.android.kit.PebbleKit;
 import com.getpebble.android.kit.util.PebbleDictionary;
@@ -336,8 +337,8 @@ public class PebbleDisplayTrendOld extends PebbleDisplayAbstract {
                         .showHighLine(highLine)
                         .showLowLine(lowLine)
                        // .showAxes(true)
-                        .setTinyDots(Home.getPreferencesBooleanDefaultFalse("pebble_tiny_dots"))
-                        .setShowFiltered(Home.getPreferencesBooleanDefaultFalse("pebble_filtered_line"))
+                        .setTinyDots(Pref.getBooleanDefaultFalse("pebble_tiny_dots"))
+                        .setShowFiltered(Pref.getBooleanDefaultFalse("pebble_filtered_line"))
                                 //.setSmallDots()
                         .build();
 

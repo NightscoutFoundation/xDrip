@@ -10,6 +10,7 @@ import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.NFCReaderX;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.stats.StatsResult;
 import com.eveningoutpost.dexdrip.xdrip;
 
@@ -40,7 +41,7 @@ public class Telemetry {
             if (JoH.ratelimit("capture-report", 50000)) {
                 Log.d(TAG, "SEND EVENT START");
 
-                if (Home.getPreferencesBooleanDefaultFalse("enable_crashlytics") && Home.getPreferencesBooleanDefaultFalse("enable_telemetry")) {
+                if (Pref.getBooleanDefaultFalse("enable_crashlytics") && Pref.getBooleanDefaultFalse("enable_telemetry")) {
 
                     final Sensor sensor = Sensor.currentSensor();
 
@@ -52,8 +53,8 @@ public class Telemetry {
                             final int capture_set = (capture_percentage / 10) * 10;
 
                             if (capture_set > 60) {
-                                final boolean use_transmiter_pl_bluetooth = Home.getPreferencesBooleanDefaultFalse("use_transmiter_pl_bluetooth");
-                                final boolean use_rfduino_bluetooth = Home.getPreferencesBooleanDefaultFalse("use_rfduino_bluetooth");
+                                final boolean use_transmiter_pl_bluetooth = Pref.getBooleanDefaultFalse("use_transmiter_pl_bluetooth");
+                                final boolean use_rfduino_bluetooth = Pref.getBooleanDefaultFalse("use_rfduino_bluetooth");
                                 final String subtype = (use_transmiter_pl_bluetooth ? "TR" : "") + (use_rfduino_bluetooth ? "RF" : "") + (Home.get_forced_wear() ? "W" : "") + (NFCReaderX.used_nfc_successfully ? "N" : "");
                                 final String capture_id = DexCollectionType.getDexCollectionType().toString() + subtype + " Captured " + capture_set;
 
@@ -62,7 +63,7 @@ public class Telemetry {
 
                                 if (Home.get_forced_wear()) {
                                     // anonymize watch model
-                                    final String wear_node = Home.getPreferencesStringDefaultBlank("node_wearG5");
+                                    final String wear_node = Pref.getStringDefaultBlank("node_wearG5");
                                     if (wear_node.length() > 0) {
                                         final String[] wear_array = wear_node.split(" ");
                                         for (String ii : wear_array) {

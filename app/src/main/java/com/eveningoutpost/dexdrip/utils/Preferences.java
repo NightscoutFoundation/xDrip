@@ -1,6 +1,5 @@
 package com.eveningoutpost.dexdrip.utils;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
@@ -31,10 +30,8 @@ import android.text.TextUtils;
 import android.widget.BaseAdapter;
 import android.widget.Toast;
 
-import com.eveningoutpost.dexdrip.BestGlucose;
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
-import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Profile;
 import com.eveningoutpost.dexdrip.Models.UserError.ExtraLogTags;
@@ -49,7 +46,9 @@ import com.eveningoutpost.dexdrip.Services.PlusSyncService;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Experience;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.ShotStateStore;
+import com.eveningoutpost.dexdrip.UtilityModels.SpeechUtil;
 import com.eveningoutpost.dexdrip.UtilityModels.UpdateActivity;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleUtil;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleWatchSync;
@@ -184,7 +183,7 @@ public class Preferences extends PreferenceActivity {
                 }
                 editor.apply();
                 refreshFragments();
-                ExtraLogTags.readPreference(Home.getPreferencesStringDefaultBlank("extra_tags_for_logging"));
+                ExtraLogTags.readPreference(Pref.getStringDefaultBlank("extra_tags_for_logging"));
                 Toast.makeText(getApplicationContext(), "Loaded " + Integer.toString(changes) + " preferences from QR code", Toast.LENGTH_LONG).show();
                 PlusSyncService.clearandRestartSyncService(getApplicationContext());
                 if (prefs.getString("dex_collection_method", "").equals("Follower")) {
@@ -1809,18 +1808,13 @@ public class Preferences extends PreferenceActivity {
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     if ((Boolean) newValue) {
                         prefs.edit().putBoolean("bg_to_speech", true).commit(); // early write before we exit method
-                        AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
-                        alertDialog.setTitle("Install Text-To-Speech Data?");
-                        alertDialog.setMessage("Install Text-To-Speech Data?\n(After installation of languages you might have to press \"Restart Collector\" in System Status.)");
+                        final AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
+                        alertDialog.setTitle(R.string.install_text_to_speech_data_question);
+                        alertDialog.setMessage(getString(R.string.install_text_to_speech_data_question) + "\n" + getString(R.string.after_installation_of_languages_you_might_have_to));
                         alertDialog.setCancelable(true);
-                        alertDialog.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                BgToSpeech.installTTSData(getActivity());
-                            }
-                        });
+                        alertDialog.setPositiveButton(R.string.ok, (dialog, which) -> SpeechUtil.installTTSData(getActivity()));
                         alertDialog.setNegativeButton(R.string.no, null);
-                        AlertDialog alert = alertDialog.create();
+                        final AlertDialog alert = alertDialog.create();
                         alert.show();
                         try {
                             BgToSpeech.testSpeech();
@@ -1833,8 +1827,30 @@ public class Preferences extends PreferenceActivity {
                     return true;
                 }
             });
-        }
 
+            findPreference("speech_speed").setOnPreferenceChangeListener((preference, newValue) ->
+                    {
+                        prefs.edit().putInt("speech_speed", (Integer) newValue).commit();
+                        try {
+                            BgToSpeech.testSpeech();
+                        } catch (Exception e) {
+                            Log.e(TAG, "Got exception with TTS: " + e);
+                        }
+                        return true;
+                    }
+            );
+            findPreference("speech_pitch").setOnPreferenceChangeListener((preference, newValue) ->
+                    {
+                        prefs.edit().putInt("speech_pitch", (Integer) newValue).commit();
+                        try {
+                            BgToSpeech.testSpeech();
+                        } catch (Exception e) {
+                            Log.e(TAG, "Got exception with TTS: " + e);
+                        }
+                        return true;
+                    }
+            );
+        }
 
 
         // Will update the widget if any setting relevant to the widget gets changed.
