@@ -19,7 +19,6 @@ import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 
 public class StopSensor extends ActivityWithMenu {
-    public static String menu_name = "Stop Sensor";
    public Button button;
 
     @Override
@@ -39,7 +38,7 @@ public class StopSensor extends ActivityWithMenu {
 
     @Override
     public String getMenuName() {
-        return menu_name;
+        return getString(R.string.stop_sensor);
     }
 
     public void addListenerOnButton() {

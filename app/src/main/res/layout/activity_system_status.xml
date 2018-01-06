@@ -173,7 +173,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:paddingTop="10dp"
-                android:text="Other Notes:"
+                android:text="@string/other_notes"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textSize="14sp" />
 
@@ -205,14 +205,14 @@
                         style="?android:attr/buttonStyleSmall"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Restart Collector" />
+                        android:text="@string/restart_collector" />
 
                     <Button
                         android:id="@+id/forget_device"
                         style="?android:attr/buttonStyleSmall"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Forget Device" />
+                        android:text="@string/forget_device" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -251,7 +251,7 @@
                         style="?android:attr/buttonStyleSmall"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Delete Future Data" />
+                        android:text="@string/delete_future_data" />
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>

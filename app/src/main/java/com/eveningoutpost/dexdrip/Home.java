@@ -168,7 +168,6 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     public final static String BLUETOOTH_METER_CALIBRATION = "BLUETOOTH_METER_CALIBRATION";
     public final static String ACTIVITY_SHOWCASE_INFO = "ACTIVITY_SHOWCASE_INFO";
     public final static int SENSOR_READY_ID = 4912;
-    public static String menu_name = "Home Screen";
     public static boolean activityVisible = false;
     public static boolean invalidateMenu = false;
     public static boolean blockTouches = false;
@@ -305,7 +304,6 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         }
 
         xdrip.checkForcedEnglish(Home.this);
-        menu_name = getString(R.string.home_screen);
 
         super.onCreate(savedInstanceState);
         setTheme(R.style.AppThemeToolBarLite); // for toolbar mode
@@ -1707,7 +1705,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
     @Override
     public String getMenuName() {
-        return menu_name;
+        return getString(R.string.home_screen);
     }
 
     private boolean checkEula() {
@@ -2264,7 +2262,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         if (navigationDrawerFragment == null) Log.e("Runtime", "navigationdrawerfragment is null");
 
         try {
-            navigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), menu_name, this);
+            navigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), getString(R.string.home_screen), this);
         } catch (Exception e) {
             Log.e("Runtime", "Exception with navigrationdrawerfragment: " + e.toString());
         }

@@ -75,6 +75,7 @@ public class LanguageEditor extends AppCompatActivity {
     private static Button undoBtn;
 
     private boolean show_only_customized = false;
+    private boolean show_only_untranslated = false;
     protected static String last_filter = "";
 
     private static Map<String, LanguageItem> user_edits = new HashMap<>();
@@ -286,6 +287,13 @@ public class LanguageEditor extends AppCompatActivity {
         forceRefresh();
     }
 
+    public void languageShowOnlyUntranslated(MenuItem v) {
+        v.setChecked(!v.isChecked());
+        show_only_untranslated = v.isChecked();
+        applyFilter(last_filter);
+        forceRefresh();
+    }
+
     private void applyFilter(String filter) {
         last_filter = filter;
         // create initial backup if no filter yet applied
@@ -305,12 +313,18 @@ public class LanguageEditor extends AppCompatActivity {
                     || item.english_text.toLowerCase().contains(filter)
                     || item.local_text.toLowerCase().contains(filter)
                     || item.item_name.toLowerCase().contains(filter)) {
-                if ((!show_only_customized) || (item.customized)) filteredItemList.add(item);
+                if ((!show_only_untranslated) || isUntranslated(item)) {
+                    if ((!show_only_customized) || (item.customized)) filteredItemList.add(item);
+                }
             }
         }
         languageItemList.clear();
         languageItemList.addAll(filteredItemList);
         forceRefresh();
+    }
+
+    private boolean isUntranslated(LanguageItem item) {
+        return item.english_text.equals(item.local_text);
     }
 
     private void getEmailAddress() {
