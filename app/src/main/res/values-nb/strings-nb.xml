@@ -30,7 +30,7 @@
     <string name="no">Nei</string>
     <string name="pref_sensor_location_dont_ask_again"> Ikke spør meg igjen</string>
 
-    <string name="title_activity_error">"Feil- og Handlingslist"</string>
+    <string name="title_activity_error">"Feil- og Hendelsesliste"</string>
     <string name="title_activity_main">Hovedaktivitet</string>
     <string name="title_activity_fake_numbers">Falske Nummer</string>
     <string name="title_activity_edit_alert">Rediger Alarm</string>
@@ -58,12 +58,12 @@
     <string name="pref_message_mongodb_device_status_collection">Dette er navnet på samlingen der batteriet og andre enhetsdata vil bli lagret</string>
 
     <!-- API Settings -->
-    <string name="pref_title_api">Nightscout synkronisering (REST)</string>
+    <string name="pref_title_api">Nightscout-synkronisering (REST)</string>
     <string name="pref_title_api_enabled">Aktivert</string>
-    <string name="pref_summary_api_enabled">REST API er et alternativ til direkte mongodb opplasting</string>
-    <string name="pref_title_api_url">Grunn-URL</string>
-    <string name="pref_dialog_api_url">Skriv inn grunn-URL for API</string>
-    <string name="pref_message_api_url">Dette er bare grunn-URL, opplaster vil automatisk legge til /oppføringer for POST. API_SECRET på serveren skal samsvare med yourpassphrase i denne innstillingen.</string>
+    <string name="pref_summary_api_enabled">REST API er et alternativ til direkte mongodb-opplasting</string>
+    <string name="pref_title_api_url">Base-URL</string>
+    <string name="pref_dialog_api_url">Skriv inn Base-URL for API</string>
+    <string name="pref_message_api_url">Dette er bare Base-URL, opplaster vil automatisk legge til /oppføringer for POST. API_SECRET på serveren skal samsvare med yourpassphrase i denne innstillingen.</string>
     <string name="pref_default_api_url">https://yourpassphrase@{YOUR-SITE}.azurewebsites.net/api/v1/</string>
 
     <!-- wifi Settings -->
@@ -71,8 +71,8 @@
     <string name="wifi_recievers_dialog_title">Skriv inn IP-adresser og porter mottakere (inkludert mongodb adresser hvis nødvendig)</string>
 
     <!-- Location Settings -->
-    <string name="location_not_found_title">Plassering er ikke aktivert</string>
-    <string name="location_not_found_message">For at blåtannoppdagelse skal virke med nyere enheter, må plassering være aktivert. xDrip kan ikke spore posisjonen din, og det kan deaktiveres etter at paringen er vellykket.</string>
+    <string name="location_not_found_title">Stedstjenester er ikke aktivert</string>
+    <string name="location_not_found_message">For at blåtannoppdagelse skal virke med nyere enheter, må stedstjenester være aktivert. xDrip kan ikke spore posisjonen din, og det kan deaktiveres etter at paringen er vellykket.</string>
     <string name="location_yes">Aktiver</string>
 
     <!-- broadcast settings -->
@@ -92,7 +92,7 @@
     <string name="toast_crash">Noe gikk galt :( en rapport har blitt sendt for å hjelpe til å løse problemet.</string>
 
     <string name="taskerConfigInstruction">Bare klikk på Tick-ikonet her for å bekrefte. Du bør ikke trenger å endre konfigurasjonen.</string>
-    <string name="taskerConfiguration">Tasker konfigurasjon</string>
+    <string name="taskerConfiguration">Tasker-konfigurasjon</string>
     <string name="finish_preferences_activity">finish_preferences_activity</string>
 
     <string name="add_widget">Legg til modul</string>
@@ -112,7 +112,7 @@
     <string name="action_sync_watch_db">Tilbakestill Wear DB</string>
 
     <string name="erase">Fjern</string>
-    <string name="interface_tips_from_start">Alle grensesnitt tips vil vise igjen fra begynnelsen</string>
+    <string name="interface_tips_from_start">Alle grensesnitt-tips vil vise igjen fra begynnelsen</string>
     <string name="note_button">Notatknapp</string>
     <string name="showcase_note_long">Notatknappen ber nå om taleregistrering.\n\nHold inne lenge for å legg til med tastatur eller endre inntastingsvalg</string>
     <string name="redo_button">Gjør På Ny Knapp</string>
@@ -123,7 +123,7 @@
     <string name="blood_test">Blodprøve</string>
     <string name="share">Del</string>
     <string name="title_activity_profile_editor">Rediger Behandlingprofil</string>
-    <string name="first_use_menu_to_scan">Bruk først menyen til å søke etter din BT-enheten eller endre datakilde i Innstillinger!</string>
+    <string name="first_use_menu_to_scan">Bruk først menyen til å søke etter din BT-enhet eller endre datakilde i Innstillinger!</string>
     <string name="first_configure_ip_address">Først konfigurere wifi-wixel-leserens ip-adresser eller parakeet URL</string>
     <string name="now_start_your_sensor">Starte sensoren nå, eller sjekk innstillinger</string>
     <string name="please_wait_while_sensor_warms_up">Vennligst vent mens sensoren varmer opp! (</string>
@@ -131,8 +131,8 @@
     <string name="possible_bad_calibration">Mulig dårlig kalibreriskurve, vennligst drikk et glass vann og vask hendene, og rekalibrer om noen litt!</string>
     <string name="please_wait_need_two_readings_first">Vennligst vent, trenger 2 avlesninger fra senderen først.</string>
     <string name="please_enter_two_calibrations_to_get_started">Legg inn to kalibreringer for å komme i gang!</string>
-    <string name="now_pair_with_your_dexcom_share">Par med Dexcom Share</string>
-    <string name="now_choose_start_sensor_in_settings">Velger start sensoren i innstillingene</string>
+    <string name="now_pair_with_your_dexcom_share">Parr med Dexcom Share</string>
+    <string name="now_choose_start_sensor_in_settings">Velg start sensoren i innstillingene</string>
     <string name="double_check_dex_receiver_serial_number">Dobbelsjekk Dex Receiver serienummer, skal være 10 tegn, ikke glem bokstavene</string>
     <string name="please_set_dex_receiver_serial_number">Vennligst angi Dex Receiver serienummer i App-innstillinger</string>
     <string name="unfortunately_andoird_version_no_blueooth_low_energy">Dessverre støtter ikke din android-versjonen Bluetooth Low Energy</string>
@@ -241,7 +241,7 @@
     <string name="pref_node_wearG5">Enhet som kjører innsamlingstjenesten</string>
     <string name="pref_summary_node_wearG5">Tving telefonen til å bruke denne Wear innsamlingstjenesten</string>
 
-    <string name="pref_sync_wear_logs">Synkroniser Wear Logger</string>
+    <string name="pref_sync_wear_logs">Synkroniser Wear-logger</string>
     <string name="pref_summary_sync_wear_logs">Send Wear logger til hendelseslisten</string>
     <string name="pref_wear_logs_prefix">Wear Logg Prefiks</string>
     <string name="pref_summary_wear_logs_prefix">Prefiks brukes for Wear loggoppføringer</string>
@@ -264,7 +264,7 @@
     <string name="less_common_settings">Mindre vanlige innstillinger</string>
     <string name="view_recent_errors_warnings">Vis nylige Feil / Advarsler</string>
     <string name="other_settings">Andre innstillinger</string>
-    <string name="older_gratuitous_wakelocks">Eldre umotiverte wakelocks som kan tappe batteriet ekstra, men kan være nødvendig for Nightwatch eller Android Wear</string>
+    <string name="older_gratuitous_wakelocks">Eldre unødvendige wakelocks som kan tappe batteriet ekstra, men kan være nødvendig for Nightwatch eller Android Wear</string>
     <string name="use_excessive_wakelocks">Bruk Overdreven Wakelocks</string>
     <string name="speak_readings">Snakk inn Innlesninger</string>
     <string name="extra_status_line">Ekstra Statuslinje</string>
@@ -273,7 +273,7 @@
     <string name="manage_followers">Administrer følgere</string>
     <string name="manage_existing_followers">Administrer dine eksisterende følgere og invitere nye.</string>
     <string name="glucose_calibration_and_other_alerts">Glukose, Kalibrering og andre varsler</string>
-    <string name="alert_volume_profile">Alarm Volume Profil</string>
+    <string name="alert_volume_profile">Alarmvolume Profil</string>
     <string name="smart_alerting">Smart varsling</string>
     <string name="dont_alarm_during_phone_calls">Ikke alarmer under telefonsamtaler</string>
     <string name="start_snoozed">Start Utsatt</string>
@@ -335,13 +335,13 @@
     <string name="load_all_settings_from_sdcard">Last alle innstillinger fra SDkort</string>
     <string name="delete_any_settings_on_sdcard">Slett innstillinger på SDkort</string>
     <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature">Bruk QR-koder til å overføre innstillingene ved å bruke Innstillinger-> Autokonfigureringsfunksjonen</string>
-    <string name="xdrip_plus_security_key_settings_only">Kun xDrip Plus sikkerhetsnøkkel Innstillinger</string>
-    <string name="show_general_and_collection_settings">Vis Generelle og Innsamlings innstillinger</string>
+    <string name="xdrip_plus_security_key_settings_only">Kun xDrip Plus sikkerhetsnøkkel-innstillinger</string>
+    <string name="show_general_and_collection_settings">Vis Generelle- og innsamlingsinnstillinger</string>
     <string name="copy_all_settings">Kopier alle innstillinger</string>
     <string name="sensor_is_ready_please_enter_double_calibration">Sensor er klar, skriv inn en initiell kalibrering</string>
     <string name="in_order_to_get_started_please_perform_two_finger">For å komme i gang, må du utføre to fingerstikk tester og angi verdiene her!</string>
-    <string name="enter_first_bg_value">Skriv Først BG Verdi</string>
-    <string name="enter_second_bg_value">Skriv Andre BG Verdi</string>
+    <string name="enter_first_bg_value">Tast inn første blodverdi</string>
+    <string name="enter_second_bg_value">Tast inn andre blodverdi</string>
     <string name="language_editor">Språkredigering</string>
     <string name="configure_missed_readings">Konfigurer Tapte Innlesninger</string>
     <string name="install_pebble_snooze_control_app">Installer Pebble Snooze Controller applikasjonen</string>
@@ -419,7 +419,7 @@
     <string name="display_delta_units">Vis Endringsenhet</string>
     <string name="displays_the_slope_arrows">Viser kurvepiler</string>
     <string name="display_slope_arrows">Vis kurvepiler</string>
-    <string name="vibrate_watch_to_alert_no_data">Vibrere klokken for å varsle når vi ikke får noen glukose data</string>
+    <string name="vibrate_watch_to_alert_no_data">Vibrere klokken for å varsle når vi ikke får noen glukosedata</string>
     <string name="vibrate_when_missed_signal">Vibrere når manglende signal</string>
     <string name="vibrate_watch_to_alert_no_bluetooth">Vibrer klokken for å varsle at Blåtann har koblet fra</string>
     <string name="vibrate_when_no_bluetooth">Vibrer klokken når det ikke er Blåtann</string>
@@ -521,11 +521,11 @@
     <string name="useful_for_noise_and_missed_readings">Nyttig for støy og tapte målinger</string>
     <string name="the_standard_xdrip_calculated_value">Standard xDrip-beregnede verdier</string>
     <string name="display_ideal_glucose_target_line">Vis ideell glukoselinje</string>
-    <string name="display_eight_hour_average_line">Vis 8-timers gjennomsnittslinjen</string>
-    <string name="display_twenty_four_hour_average_line">Vis 24-timers gjennomsnittslinjen</string>
-    <string name="predictive_model_inner_workings">Indre prosesser Logisk modell</string>
-    <string name="noise_model_inner_workings">Indre prosesser for Støymodell</string>
-    <string name="glucose_number_from_filtered">Glukose tall fra Filtrert</string>
+    <string name="display_eight_hour_average_line">Vis 8-timers gjennomsnittslinje</string>
+    <string name="display_twenty_four_hour_average_line">Vis 24-timers gjennomsnittslinje</string>
+    <string name="predictive_model_inner_workings">Innstillinger for Beregnet modell</string>
+    <string name="noise_model_inner_workings">Instillinger for Støymodell</string>
+    <string name="glucose_number_from_filtered">Glukosetall fra Filtrert</string>
     <string name="if_the_phone_has_text_to_speech">Hvis telefonen har tekst-til-tale evner vil den lese opp hver ny avlesning.</string>
     <string name="upload_logs">Last opp Logger</string>
     <string name="short_off_text_for_switches">AV</string>
@@ -594,7 +594,7 @@
     <string name="constantly_reset_bluetooth">Tilbakestill blåtann hele tiden</string>
     <string name="experimental_transmitter_fpv_uav">Eksperimentell støtte for \'Transmiter\' enheter fra @FPV-UAV - kun testing</string>
     <string name="transmitter_pl_support">Transmiter (PL) støtte</string>
-    <string name="experimental_rdfuino_support">Eksperimentell støtte for rfduino fra Tomasz Stachowicz</string>
+    <string name="experimental_rdfuino_support">Eksperimentell støtte for RFDUINO fra Tomasz Stachowicz</string>
     <string name="rfduino_support">RFDUINO støtte</string>
     <string name="repeatedly_restart_collection_service">Gjentatt tilbakestill innsamlingstjenesten ved misstanke om tapt data. Aktiver kun hvis data mangler.</string>
     <string name="aggressive_service_restarts">Aggressiv omstart av tjeneste</string>
@@ -607,7 +607,7 @@
     <string name="use_infrequent_calibrations">Bruk eldre kalibreringer hvis nødvendig, for eksempel hvis kalibrering ikke blir lagt inn regelmessig.</string>
     <string name="infrequent_calibrations">Ikke regelmessig kalibrering</string>
     <string name="extra_logging">Ekstra innstillinger for logging</string>
-    <string name="send_logs_to_developer">Send hendelse- og feil-logger til utviklerne automatisk</string>
+    <string name="send_logs_to_developer">Send hendelse- og feillogger til utviklerne automatisk</string>
     <string name="enable_remote_logging">Aktiver fjernlogging</string>
     <string name="set_logging_appid">Set AppID for logging</string>
     <string name="only_enable_on_trouble">Aktiver dette kun hvis du har problemer med applikasjonen</string>
@@ -620,7 +620,7 @@
     <string name="allow_daily_db_save">Tillager den daglige intensjonstjenesten å lagre databasen før den tømmer</string>
     <string name="options_for_extra_line">Alternativ for ekstra linje</string>
     <string name="todays_average_value">Dagens gjennomsnittlige verdi.</string>
-    <string name="ac1_estimation_dcct">A1c estimat i DCCT format (%)</string>
+    <string name="ac1_estimation_dcct">A1c-estimat i DCCT format (%)</string>
     <string name="a1c_dcct" translatable="false">A1c DCCT</string>
     <string name="ac1_estimation_ifcc">A1c estimat i IFCC format (mmol/mol)</string>
     <string name="a1c_ifcc" translatable="false">A1c IFCC</string>
@@ -640,20 +640,20 @@
     <string name="show_extra_status_on_widget">Vis også ekstra statuslinje i modul</string>
     <string name="show_long_calibration_data">Vis kurve og skjæringspunkt i langt format.</string>
     <string name="show_short_calibration_data">Vis kurveog skjæringspunkt i kort format.</string>
-    <string name="show_plugin_data">Vis kurve og glukose data fra aktivt tillegg</string>
-    <string name="calibration_plugin">Kalibreringstillegg</string>
+    <string name="show_plugin_data">Vis kurve og glukose data fra aktivt plugin</string>
+    <string name="calibration_plugin">Kalibreringsplugin</string>
     <string name="advanced_calibration">Avansert kalibrering</string>
     <string name="extra_calibration_options">Ekstra alternativer til kalibrering</string>
     <string name="choose_use_treament_bg">Velg om du vil kalibrere ved ny BG verdi i behandlingslisten</string>
     <string name="usw_treatment_bg">Brukt BG verdier fra behandlinger</string>
-    <string name="experimental_calibration_plugin">Ekstra eksperimentell kalibreringstillegg</string>
-    <string name="show_plugin_results_on_graph">Vis glukoseresultater fra tillegg på hovedgraf</string>
-    <string name="plugin_plot_on_graph">Tilleggsplot på graf</string>
-    <string name="use_plugin_glucose">Bruk glukose fra tillegg</string>
-    <string name="main_glucose_plugin">Hoved glukosetall for visning kommer fra tillegg!</string>
-    <string name="plugin_override_all">Tillegg overstyler ALT</string>
-    <string name="all_new_glucose_data_plugin">ALLE nye glukosedata vil bli beregnet og lagret med tillegget og ikke med standard xDrip algoritme. Dette er ikke testet og kan være unøyaktig og inneholde feil. Bruk med varsomhet.</string>
-    <string name="old_school_calibrations">Original kortere rekkevidde for tillatt kurve for xDrip klassisk kalibreringsalgoritme (pre-2017). Mer sansynlig med standardkukrver! (kun teknisk modus)</string>
+    <string name="experimental_calibration_plugin">Ekstra eksperimentell kalibreringsplugin</string>
+    <string name="show_plugin_results_on_graph">Vis glukoseresultater fra plugin på hovedgraf</string>
+    <string name="plugin_plot_on_graph">Pluginplot på graf</string>
+    <string name="use_plugin_glucose">Bruk glukose fra plugin</string>
+    <string name="main_glucose_plugin">Hoved glukosetall for visning kommer fra plugin!</string>
+    <string name="plugin_override_all">Plugin overstyler ALT</string>
+    <string name="all_new_glucose_data_plugin">ALLE nye glukosedata vil bli beregnet og lagret med plugin og ikke med standard xDrip-algoritme. Dette er ikke testet og kan være unøyaktig og inneholde feil. Bruk med varsomhet.</string>
+    <string name="old_school_calibrations">Original kortere rekkevidde for tillatt kurve for xDrip klassisk kalibreringsalgoritme (pre-2017). Mer sannsynlig med standardkukrver! (kun teknisk modus)</string>
     <string name="old_school_calibration_mode">Tradisjonell kalibreringsmodus</string>
     <string name="how_receive_data">Hvordan skal du motta data fra din Dexcom/Sender?</string>
     <string name="nfc_options">Alternativer for NFC basert scanning med telefonen</string>
@@ -664,8 +664,8 @@
     <string name="show_expiry_time">Vis sensorens utløpstid basert på 14.5 dager</string>
     <string name="show_sensor_age">Vis sensoralder på hovedskjerm</string>
     <string name="change_sensor_total_days">Endre totale dager for sensor</string>
-    <string name="nfc_scanning_xdrip_open">NFC skanning vil kun bli utført når xDrip+ er synlig</string>
-    <string name="nfc_scanning_launcher">NFC skanning vil også virke fra din hvoedskjerm</string>
+    <string name="nfc_scanning_xdrip_open">NFC-basert skanning vil kun bli utført når xDrip+ er synlig</string>
+    <string name="nfc_scanning_launcher">NFC-basert skanning vil også virke fra din hvoedskjerm</string>
     <string name="scan_when_app_closed">Skan uten å være i xDrip+</string>
     <string name="vibrate_scanning_status">Vibrer for å indikere skannestatus</string>
     <string name="beep_when_scanning_within_app">Pip når det skannes inni xDrip+</string>
@@ -675,9 +675,9 @@
     <string name="transmitter_id">ID for din Dexcom Sender, eg 12AB3</string>
     <string name="advanced_g5_settings">Avanserte G5 innstillinger for skjeldne situasjoner</string>
     <string name="g5_debug_settings">G5 feilsøkingsinstillinger</string>
-    <string name="g5_scan_constantly">Noen enheter virker bedre når det blir skannet hele tiden, andre ikke. Hvis avlesningene er stabile når denne innstillingen ikke er valgt, bør du oppleve forbedret batteribruk. Normalt er det best å beholde denne deaktivert</string>
+    <string name="g5_scan_constantly">Noen enheter virker bedre når de blir skannet hele tiden, andre ikke. Hvis avlesningene er stabile når denne innstillingen ikke er valgt, bør du oppleve forbedret batteribruk. Normalt er det best å beholde denne deaktivert</string>
     <string name="scan_for_g5_constantly">Skan kontinuerling for G5</string>
-    <string name="g5_force_ui_thread">Dette er viktig for noen Android enheter for å koble til skikkelig, men kan føre til manglende avlesninger når andre UI intense aktiviteter er i bruk.</string>
+    <string name="g5_force_ui_thread">Dette er viktig for noen Androidenheter for å koble til skikkelig, men kan føre til manglende avlesninger når andre UI intense aktiviteter er i bruk.</string>
     <string name="force_g5_ui_thread">Tving G5 til UI Tråd</string>
     <string name="authentificate_before_reading">Autentiser G5 før hver avlesning</string>
     <string name="g5_full_authentification">Dette vil forsøke en full autentisering før hvert leseforsøk. Trengs for nyere G5 fastvare versioner.</string>
@@ -685,13 +685,13 @@
     <string name="g5_remove_before_read">Dette vil fjerne G5 fra din enhets liste over parede enheter, og forsøke en full autentisering og binding for hver avlesningforsøk.</string>
     <string name="g5_experimental_mode">Eksperimentell modus som ikke bruker rådata</string>
     <string name="use_calibrated_data">Bruk kalibrert data som kilde</string>
-    <string name="data_sync">Data Synkronisering</string>
+    <string name="data_sync">Datasynkronisering</string>
     <string name="options_for_upload">Alternativ for Nightscout, MongoDb og Dexcom Share opplasting</string>
-    <string name="cloud_upload">Opplasting til Sky</string>
+    <string name="cloud_upload">Opplasting til Skyen</string>
     <string name="enable_mongo_sync">Aktiver synkronisering til Nightscout Mongo DB</string>
     <string name="mongo_db_uri">Mongo DB Uri</string>
-    <string name="skip_local_lan">For lokal server med 192.168.x.x addresses, hopp over opplasting hvis ikke koblet til lokalt nettverk.</string>
-    <string name="skip_lan_uploads">Hopp over LAN opplasting</string>
+    <string name="skip_local_lan">For lokal server med 192.168.x.x addresser, hopp over opplasting hvis ikke koblet til lokalt nettverk.</string>
+    <string name="skip_lan_uploads">Hopp over LAN-opplasting</string>
     <string name="influxdb_sync">Aktiver synkronisering til InfluxDB</string>
     <string name="influxdb_uri">InfluxDB Uri</string>
     <string name="influxdb_database_name">InfluxDB Database Navn</string>
@@ -701,7 +701,7 @@
     <string name="upload_to_dexcom_share">Last opp BG verdier som Dexcom Share</string>
     <string name="accounts_outside_usa">Deaktivert = Din konto og følger-app er fra utenfor USA</string>
     <string name="accounts_inside_usa">Aktivert = Din konto og følger-app er fra USA</string>
-    <string name="usa_based_account">USA basert Dexcom konto</string>
+    <string name="usa_based_account">USA basert Dexcom-konto</string>
     <string name="dexcom_login">Din innlogging til Dexcom\'s hjemmeside</string>
     <string name="dexcom_user">Dexcom konto</string>
     <string name="dexcom_login_password">Ditt passord for Dexcom\'s hjemmeside</string>
@@ -761,13 +761,13 @@
     <string name="follower_chime_new">Lag lyv på følger ved ny</string>
     <string name="carb_ratio">Karbohydratforhold</string>
     <string name="insulin_sensitivity">Insulinsensitivitet</string>
-    <string name="secondary_plugin_glucose_value">Sekundært glukuseverdi tillegg</string>
+    <string name="secondary_plugin_glucose_value">Sekundært glukuseverdi plugin</string>
     <string name="step_counter_1st_color">Første farge for skritteller</string>
     <string name="step_counter_2nd_color">Andre farge for skritteller</string>
-    <string name="flair_colors">Humørfarger</string>
-    <string name="use_flair_colors">Bruk humørfarger</string>
-    <string name="upper_title_bar_flair">Øvre tittellinje humør</string>
-    <string name="lower_button_bar_falir">Nedre knapperad humør</string>
+    <string name="flair_colors">Stilfarger</string>
+    <string name="use_flair_colors">Bruk stilfarger</string>
+    <string name="upper_title_bar_flair">Stil for øvre tittellinje</string>
+    <string name="lower_button_bar_falir">Stil for nedre knapperad</string>
     <string name="force_english_text">Tving engelsk språk</string>
     <string name="using_local_language">Bruker din enhets lokale språk</string>
     <string name="forcing_alternate_language">Nå brukes et alternativt språk i xDrip+</string>
