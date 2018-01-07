@@ -263,8 +263,12 @@ public final class FireReceiver extends BroadcastReceiver {
                             break;
                     }
 
+                } else {
+                    Log.e(TAG,"Message is empty!");
                 }
 
+            } else {
+                Log.e(TAG,"Bundle is invalid!");
             }
         } finally {
             JoH.releaseWakeLock(wl);
