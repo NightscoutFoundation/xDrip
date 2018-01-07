@@ -42,7 +42,7 @@ public class BestGlucose {
         private Boolean stale = null;
         private Double highMark = null;
         private Double lowMark = null;
-
+        public boolean doMgDl = true; // mgdl/mmol
         public double mgdl = -1;    // displayable mgdl figure
         public double unitized_value = -1; // in local units
         public double delta_mgdl = 0; // displayable delta mgdl figure
@@ -139,6 +139,8 @@ public class BestGlucose {
         final DisplayGlucose dg = new DisplayGlucose(); // return value
         final boolean doMgdl = (prefs.getString("units", "mgdl").equals("mgdl"));
         final boolean is_follower = Home.get_follower();
+
+        dg.doMgDl = doMgdl;
 
         List<BgReading> last_2 = BgReading.latest(2);
 

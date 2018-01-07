@@ -19,6 +19,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleUtil;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleWatchSync;
+import com.eveningoutpost.dexdrip.webservices.XdripWebService;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
@@ -75,6 +76,7 @@ public class MissedReadingService extends IntentService {
         }
         Reminder.processAnyDueReminders();
         BluetoothGlucoseMeter.immortality();
+        XdripWebService.immortality(); //
 
         bg_missed_alerts =  prefs.getBoolean("bg_missed_alerts", false);
         if (!bg_missed_alerts) {

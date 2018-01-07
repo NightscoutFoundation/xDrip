@@ -20,6 +20,9 @@ public class MicroStatusImpl extends BaseObservable implements MicroStatus {
             case "niceCollector":
                 return DexCollectionType.getBestCollectorHardwareName();
 
+            case "bestBridgeBattery":
+                return DexCollectionType.getBestBridgeBatteryPercentString();
+
             default:
                 return "Unknown id:" + id;
         }

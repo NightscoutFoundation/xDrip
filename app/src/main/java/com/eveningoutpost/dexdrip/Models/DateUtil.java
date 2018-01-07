@@ -3,6 +3,7 @@ package com.eveningoutpost.dexdrip.Models;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.TimeZone;
 
 // from package info.nightscout.client.utils;
@@ -35,18 +36,20 @@ public class DateUtil {
         f.setTimeZone(TimeZone.getTimeZone("UTC"));
         return f.parse(isoDateString);
     }
+
     private static Date fromISODateString3(String isoDateString)
             throws Exception {
         SimpleDateFormat f = new SimpleDateFormat(FORMAT_DATE_ISO3);
         f.setTimeZone(TimeZone.getTimeZone("UTC"));
         return f.parse(isoDateString);
     }
+
     private static Date fromISODateString2(String isoDateString)
             throws Exception {
         try {
             SimpleDateFormat f = new SimpleDateFormat(FORMAT_DATE_ISO2);
             f.setTimeZone(TimeZone.getTimeZone("UTC"));
-        return f.parse(isoDateString);
+            return f.parse(isoDateString);
         } catch (java.text.ParseException e) {
             return fromISODateString3(isoDateString);
         }
@@ -83,5 +86,11 @@ public class DateUtil {
 
     public static String toISOString(long date) {
         return toISOString(new Date(date), FORMAT_DATE_ISO, TimeZone.getTimeZone("UTC"));
+    }
+
+    public static String toNightscoutFormat(long date) {
+        final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.US);
+        format.setTimeZone(TimeZone.getDefault());
+        return format.format(date);
     }
 }
