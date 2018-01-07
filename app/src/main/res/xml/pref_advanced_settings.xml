@@ -319,6 +319,13 @@
                 android:switchTextOff="@string/short_off_text_for_switches"
                 android:switchTextOn="@string/short_on_text_for_switches"
                 android:title="Accept Calibrations" />
+            <SwitchPreference
+                android:defaultValue="false"
+                android:key="xdrip_webservice"
+                android:summary="Operate a local web server for interacting with Fitbit Ionic etc"
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
+                android:title="xDrip Web Service" />
         </PreferenceScreen>
         <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
             android:key="xdrip_less_common_settings"

@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.utils;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
@@ -60,6 +61,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.pebble.watchface.InstallPebbleWa
 import com.eveningoutpost.dexdrip.WidgetUpdateService;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileEditor;
+import com.eveningoutpost.dexdrip.webservices.XdripWebService;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.eveningoutpost.dexdrip.xDripWidget;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -554,6 +556,7 @@ public class Preferences extends PreferenceActivity {
 
 
 
+        @SuppressLint("ApplySharedPref")
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
@@ -814,6 +817,11 @@ public class Preferences extends PreferenceActivity {
 
             findPreference("scan_and_pair_meter").setSummary(prefs.getString("selected_bluetooth_meter_info", ""));
 
+            findPreference("xdrip_webservice").setOnPreferenceChangeListener((preference, newValue) -> {
+                preference.getEditor().putBoolean(preference.getKey(), (boolean) newValue).apply(); // write early for method below
+                XdripWebService.immortality(); // start or stop service when preference toggled
+                return true;
+            });
 
             if (enableBF != null ) enableBF.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                                                                               @Override

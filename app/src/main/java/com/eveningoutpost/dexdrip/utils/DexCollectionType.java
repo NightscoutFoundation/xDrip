@@ -208,5 +208,29 @@ public enum DexCollectionType {
         }
     }
 
+    public static int getBestBridgeBatteryPercent() {
+        if (DexCollectionType.hasBattery()) {
+            final DexCollectionType dct = getDexCollectionType();
+            // TODO this logic needs double checking for multi collector types and others
+            switch (dct) {
+                case WifiWixel:
+                    return Pref.getInt("parakeet_battery", -1);
+                default:
+                    return Pref.getInt("bridge_battery", -1);
+            }
+        } else {
+            return -2;
+        }
+    }
+
+    public static String getBestBridgeBatteryPercentString() {
+        final int battery = getBestBridgeBatteryPercent();
+        if (battery >0) {
+            return ""+battery;
+        } else {
+            return "";
+        }
+    }
+
 
 }
