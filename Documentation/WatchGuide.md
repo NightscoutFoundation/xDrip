@@ -2,6 +2,7 @@ xDrip+ Wear Setup and Troubleshooting Guide
 ======================================
 **Table of Contents**
 - [Enable xDrip+ Android Wear Integration](#enable-xdrip-android-wear-integration)
+    - [Patching Watch Firmware](#patching-watch-firmware)
     - [Collector](#collector)
         - [xDrip+ System Status](#xdrip-system-status)
     - [Initial Wear Enablement Requests Location Permission](#initial-wear-enablement-requests-location-permission)
@@ -60,6 +61,9 @@ These settings are listed in order of dependency.  Note, the Watch's **XDrip BT 
 
   Force Wear may also provide better BT connectivity over that provided by the smartphone.  As an example, some users find that the SW3 provides better BT connectivity than their Samsung Galaxy Note 4 smartphone.
 
+### Patching Watch Firmware
+
+Out of the box, only the Sony SW3 works as a collector with the G5 Transmitter. Most other smart-watches have a bug which prevents their bluetooth working correctly. This bug can be fixed and there are patches available for a number of watch models. See this page for details: https://github.com/NightscoutFoundation/xDrip/wiki/Patching-Android-Wear-devices-for-use-with-the-G5
 
 ### Collector
 

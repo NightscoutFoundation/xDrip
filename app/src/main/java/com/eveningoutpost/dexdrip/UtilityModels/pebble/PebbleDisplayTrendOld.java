@@ -13,6 +13,7 @@ import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSparklineBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.SimpleImageEncoder;
 import com.getpebble.android.kit.PebbleKit;
 import com.getpebble.android.kit.util.PebbleDictionary;
@@ -239,10 +240,9 @@ public class PebbleDisplayTrendOld extends PebbleDisplayAbstract {
                     this.dictionary.addString(BG_DELTA_KEY, "No Signal");
                 } else {
                     this.dictionary.addString(BG_DELTA_KEY, getBgDelta());
-
-                    if (((BgGraphBuilder.bwp_last_insulin != null) && (JoH.msSince(BgGraphBuilder.bwp_last_insulin_timestamp) < Constants.MINUTE_IN_MS * 11))
+                    if (((keyStore.getS("bwp_last_insulin") != null) && (JoH.msSince(keyStore.getL("bwp_last_insulin_timestamp")) < Constants.MINUTE_IN_MS * 11))
                             && getBooleanValue("pebble_show_bwp")) {
-                        this.dictionary.addString(BG_DELTA_KEY, PEBBLE_BWP_SYMBOL + BgGraphBuilder.bwp_last_insulin); // 😐
+                        this.dictionary.addString(BG_DELTA_KEY, PEBBLE_BWP_SYMBOL + keyStore.getS("bwp_last_insulin")); // 😐
                     }
 
                 }
@@ -337,8 +337,8 @@ public class PebbleDisplayTrendOld extends PebbleDisplayAbstract {
                         .showHighLine(highLine)
                         .showLowLine(lowLine)
                        // .showAxes(true)
-                        .setTinyDots(Home.getPreferencesBooleanDefaultFalse("pebble_tiny_dots"))
-                        .setShowFiltered(Home.getPreferencesBooleanDefaultFalse("pebble_filtered_line"))
+                        .setTinyDots(Pref.getBooleanDefaultFalse("pebble_tiny_dots"))
+                        .setShowFiltered(Pref.getBooleanDefaultFalse("pebble_filtered_line"))
                                 //.setSmallDots()
                         .build();
 

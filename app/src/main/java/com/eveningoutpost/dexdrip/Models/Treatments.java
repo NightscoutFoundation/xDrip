@@ -18,7 +18,7 @@ import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.SyncService;
-import com.eveningoutpost.dexdrip.UtilityModels.NightscoutUploader;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.UndoRedo;
 import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -220,7 +220,7 @@ public class Treatments extends Model {
     private static void pushTreatmentSync(Treatments treatment, boolean is_new, String suggested_uuid) {;
         if (Home.get_master_or_follower()) GcmActivity.pushTreatmentAsync(treatment);
 
-        if (!(Home.getPreferencesBoolean("cloud_storage_api_enable", false) || Home.getPreferencesBoolean("cloud_storage_mongodb_enable", false))) {
+        if (!(Pref.getBoolean("cloud_storage_api_enable", false) || Pref.getBoolean("cloud_storage_mongodb_enable", false))) {
             NSClientChat.pushTreatmentAsync(treatment);
         } else {
             Log.d(TAG, "Skipping NSClient treatment broadcast as nightscout direct sync is enabled");
@@ -236,7 +236,7 @@ public class Treatments extends Model {
 
     public static void pushTreatmentSyncToWatch(Treatments treatment, boolean is_new) {
         Log.d(TAG, "pushTreatmentSyncToWatch Add treatment to UploaderQueue.");
-        if (Home.getPreferencesBooleanDefaultFalse("wear_sync")) {
+        if (Pref.getBooleanDefaultFalse("wear_sync")) {
             if (UploaderQueue.newEntryForWatch(is_new ? "insert" : "update", treatment) != null) {
                 SyncService.startSyncService(3000); // sync in 3 seconds
             }

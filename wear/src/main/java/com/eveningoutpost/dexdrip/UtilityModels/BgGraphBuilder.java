@@ -13,7 +13,6 @@ import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -476,10 +475,10 @@ public class BgGraphBuilder {
     }
 
     public static String unitized_string_static(double value) {
-        return unitized_string(value, Home.getPreferencesStringWithDefault("units", "mgdl").equals("mgdl"));
+        return unitized_string(value, Pref.getString("units", "mgdl").equals("mgdl"));
     }
     public static String unitized_string_with_units_static(double value) {
-        final boolean domgdl = Home.getPreferencesStringWithDefault("units", "mgdl").equals("mgdl");
+        final boolean domgdl = Pref.getString("units", "mgdl").equals("mgdl");
         return unitized_string(value, domgdl)+" "+(domgdl ? "mg/dl" : "mmol/l");
     }
 

@@ -1,8 +1,6 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
-import android.app.Notification;
 import android.app.NotificationManager;
-import android.support.v4.app.ListFragment;
 import android.support.v4.app.NotificationCompat;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -119,7 +117,7 @@ public class AlertPlayer {
     }
 
     public synchronized void startAlert(Context ctx, boolean trendingToAlertEnd, AlertType newAlert, String bgValue) {
-        startAlert(ctx, trendingToAlertEnd, newAlert, bgValue, Home.getPreferencesBooleanDefaultFalse("start_snoozed")); // for start snoozed by default!
+        startAlert(ctx, trendingToAlertEnd, newAlert, bgValue, Pref.getBooleanDefaultFalse("start_snoozed")); // for start snoozed by default!
     }
 
     public synchronized  void startAlert(Context ctx, boolean trendingToAlertEnd, AlertType newAlert, String bgValue , boolean start_snoozed)  {
@@ -164,7 +162,7 @@ public class AlertPlayer {
     //  default signature for user initiated interactive snoozes only
     public synchronized void Snooze(Context ctx, int repeatTime) {
         Snooze(ctx, repeatTime, true);
-        if (Home.get_forced_wear() && Home.getPreferencesBooleanDefaultFalse("bg_notifications") ) {
+        if (Home.get_forced_wear() && Pref.getBooleanDefaultFalse("bg_notifications") ) {
             SendData(ctx, WEARABLE_SNOOZE_ALERT, ("" + repeatTime).getBytes(StandardCharsets.UTF_8));
         }
     }
@@ -399,7 +397,7 @@ public class AlertPlayer {
 
     public static boolean notSilencedDueToCall()
     {
-        return !(Home.getPreferencesBooleanDefaultFalse("no_alarms_during_calls") && (JoH.isOngoingCall()));
+        return !(Pref.getBooleanDefaultFalse("no_alarms_during_calls") && (JoH.isOngoingCall()));
     }
 
     private void Vibrate(Context ctx, AlertType alert, String bgValue, Boolean overrideSilent, int timeFromStartPlaying) {
@@ -408,7 +406,7 @@ public class AlertPlayer {
         String content = "BG LEVEL ALERT: " + bgValue + "  (@" + JoH.hourMinuteString() + ")";
         Intent intent = new Intent(ctx, SnoozeActivity.class);
 
-        boolean localOnly = (Home.get_forced_wear() && Home.getPreferencesBooleanDefaultFalse("bg_notifications"));//KS
+        boolean localOnly = (Home.get_forced_wear() && Pref.getBooleanDefaultFalse("bg_notifications"));//KS
         Log.d(TAG, "NotificationCompat.Builder localOnly=" + localOnly);
         NotificationCompat.Builder  builder = new NotificationCompat.Builder(ctx)//KS Notification
                 .setSmallIcon(R.drawable.ic_launcher)//KS ic_action_communication_invert_colors_on
@@ -445,7 +443,7 @@ public class AlertPlayer {
         String content = "BG LEVEL ALERT: " + bgValue + "  (@" + JoH.hourMinuteString() + ")";
         Intent intent = new Intent(ctx, SnoozeActivity.class);
 
-        boolean localOnly = (Home.get_forced_wear() && Home.getPreferencesBooleanDefaultFalse("bg_notifications"));//KS
+        boolean localOnly = (Home.get_forced_wear() && Pref.getBooleanDefaultFalse("bg_notifications"));//KS
         Log.d(TAG, "NotificationCompat.Builder localOnly=" + localOnly);
         NotificationCompat.Builder  builder = new NotificationCompat.Builder(ctx)//KS Notification
             .setSmallIcon(R.drawable.ic_launcher)//KS ic_action_communication_invert_colors_on
@@ -518,7 +516,7 @@ public class AlertPlayer {
         mNotifyMgr.notify(Notifications.exportAlertNotificationId, builder.build());
 
         /* //KS not used on watch
-        if (Home.getPreferencesBooleanDefaultFalse("broadcast_to_pebble") && (Home.getPreferencesBooleanDefaultFalse("pebble_vibe_alerts"))) {
+        if (Pref.getBooleanDefaultFalse("broadcast_to_pebble") && (Pref.getBooleanDefaultFalse("pebble_vibe_alerts"))) {
             if (JoH.ratelimit("pebble_vibe_start", 59)) {
                 ctx.startService(new Intent(ctx, PebbleWatchSync.class));
             }

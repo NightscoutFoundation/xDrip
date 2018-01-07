@@ -7,13 +7,15 @@ import android.os.BatteryManager;
 import android.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.BestGlucose;
-import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.ParakeetHelper;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.store.FastStore;
+import com.eveningoutpost.dexdrip.store.KeyStore;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.Preferences;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -48,6 +50,8 @@ public abstract class PebbleDisplayAbstract implements PebbleDisplayInterface {
     protected long last_seen_timestamp = 0;
 
     protected static final String PEBBLE_BWP_SYMBOL = "😐";
+
+    protected KeyStore keyStore = FastStore.getInstance();
 
     public void receiveNack(int transactionId) {
         // default no implementation
@@ -93,7 +97,7 @@ public abstract class PebbleDisplayAbstract implements PebbleDisplayInterface {
             if ((JoH.msSince(last_seen_timestamp) > 20 * Constants.MINUTE_IN_MS)) {
                 if (!JoH.isOngoingCall()) {
                     last_seen_timestamp = JoH.tsl();
-                    if (Home.getPreferencesBooleanDefaultFalse("bluetooth_watchdog")) {
+                    if (Pref.getBooleanDefaultFalse("bluetooth_watchdog")) {
                         UserError.Log.e(tag, "Triggering pebble watchdog reset!");
                         JoH.restartBluetooth(xdrip.getAppContext());
                     } else {

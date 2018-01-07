@@ -29,6 +29,7 @@ import com.eveningoutpost.dexdrip.Services.PlusSyncService;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.InstalledApps;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
 import com.eveningoutpost.dexdrip.utils.DisplayQRCode;
 import com.eveningoutpost.dexdrip.utils.SdcardImportExport;
@@ -219,7 +220,7 @@ public class GcmActivity extends FauxActivity {
 
     private static void checkCease() {
         if ((!cease_all_checked) && (!cease_all_activity)) {
-            cease_all_activity = Home.getPreferencesBooleanDefaultFalse("disable_all_sync");
+            cease_all_activity = Pref.getBooleanDefaultFalse("disable_all_sync");
             cease_all_checked = true;
         }
     }
@@ -401,9 +402,9 @@ public class GcmActivity extends FauxActivity {
     }
 
     public static void sendSnoozeToRemote() {
-        if ((Home.get_master() || Home.get_follower()) && (Home.getPreferencesBooleanDefaultFalse("send_snooze_to_remote"))
+        if ((Home.get_master() || Home.get_follower()) && (Pref.getBooleanDefaultFalse("send_snooze_to_remote"))
                 && (JoH.pratelimit("gcm-sra-maybe", 5))) {
-            if (Home.getPreferencesBooleanDefaultFalse("confirm_snooze_to_remote")) {
+            if (Pref.getBooleanDefaultFalse("confirm_snooze_to_remote")) {
                 Home.startHomeWithExtra(xdrip.getAppContext(), Home.HOME_FULL_WAKEUP, "1");
                 Home.startHomeWithExtra(xdrip.getAppContext(), Home.SNOOZE_CONFIRM_DIALOG, "");
             } else {
@@ -792,7 +793,7 @@ public class GcmActivity extends FauxActivity {
     protected void onCreate(Bundle savedInstanceState) {
         try {
             super.onCreate(savedInstanceState);
-            if (Home.getPreferencesBooleanDefaultFalse("disable_all_sync")) {
+            if (Pref.getBooleanDefaultFalse("disable_all_sync")) {
                 cease_all_activity = true;
                 Log.d(TAG, "Sync services disabled");
             }
@@ -834,7 +835,7 @@ public class GcmActivity extends FauxActivity {
     static void checkSync(final Context context) {
         if ((GcmActivity.last_ack > -1) && (GcmActivity.last_send_previous > 0)) {
             if (GcmActivity.last_send_previous > GcmActivity.last_ack) {
-                if (Home.getPreferencesLong("sync_warning_never", 0) == 0) {
+                if (Pref.getLong("sync_warning_never", 0) == 0) {
                     if (PreferencesNames.SYNC_VERSION.equals("1") && JoH.isOldVersion(context)) {
                         final double since_send = JoH.ts() - GcmActivity.last_send_previous;
                         if (since_send > 60000) {
@@ -861,7 +862,7 @@ public class GcmActivity extends FauxActivity {
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
                                                 dialog.dismiss();
-                                                Home.setPreferencesLong("sync_warning_never", (long) JoH.ts());
+                                                Pref.setLong("sync_warning_never", (long) JoH.ts());
                                             }
                                         });
                                         AlertDialog alert = builder.create();

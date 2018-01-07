@@ -6,6 +6,7 @@ import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
 import java.util.List;
 
+import static com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder.DEXCOM_PERIOD;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.STALE_CALIBRATION_CUT_OFF;
 
 /**
@@ -21,6 +22,7 @@ public class ProcessInitialDataQuality {
 
     public static InitialDataQuality getInitialDataQuality() {
         // get uncalculated data
+        JoH.clearCache();
         final List<BgReading> uncalculated = BgReading.latestUnCalculated(3);
         return getInitialDataQuality(uncalculated);
     }
@@ -35,7 +37,25 @@ public class ProcessInitialDataQuality {
 
         // if there is no data at all within calibration cut off then return negative result
         if (!((uncalculated == null) || (uncalculated.size() < 1))) {
+            // we have at least one record
             result.received_raw_data = true;
+            result.last_activity = uncalculated.get(0).timestamp;
+
+            // work out next likely time to receive a reading
+            final long OUR_PERIOD = DEXCOM_PERIOD; // eventually to come from DexCollectionType
+            result.next_activity_expected = result.last_activity + OUR_PERIOD;
+            // if time already past based on last timestamp then work out in to the future based on period
+            if (JoH.tsl() > result.next_activity_expected) {
+                result.missed_last = true;
+                final long offset = result.last_activity % OUR_PERIOD;
+                result.next_activity_expected = ((JoH.tsl() / OUR_PERIOD) * OUR_PERIOD) + offset;
+
+                // this logic could probably be improved
+                while (result.next_activity_expected < JoH.tsl()) {
+                    result.next_activity_expected += OUR_PERIOD;
+                }
+
+            }
             if (!(JoH.msSince(uncalculated.get(0).timestamp) > STALE_CALIBRATION_CUT_OFF)) {
                 // we got some data now see if it is recent enough
                 result.recent_data = true;
@@ -77,8 +97,15 @@ public class ProcessInitialDataQuality {
         public boolean received_raw_data = false;
         public boolean recent_data = false;
         public boolean pass = false;
+        public boolean missed_last = false;
         public int number_of_records_inside_window = 0;
+        public long last_activity = 0;
+        public long next_activity_expected = 0;
         public String advice = "";
+
+        public String getNextExpectedTill() {
+            return JoH.niceTimeTill(next_activity_expected);
+        }
 
     }
 

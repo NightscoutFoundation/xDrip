@@ -6,13 +6,13 @@ import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
-import com.eveningoutpost.dexdrip.Home;
 
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 
 /**
  * Created by Emma Black on 11/29/14.
@@ -104,9 +104,9 @@ public class UserNotification extends Model {
                     .orderBy("_ID desc")
                     .executeSingle();
         } else {
-            final String timestamp = Home.getPreferencesStringDefaultBlank("UserNotification:timestamp:" + type);
+            final String timestamp = Pref.getStringDefaultBlank("UserNotification:timestamp:" + type);
             if (timestamp.equals("")) return null;
-            final String message = Home.getPreferencesStringDefaultBlank("UserNotification:message:" + type);
+            final String message = Pref.getStringDefaultBlank("UserNotification:message:" + type);
             if (message.equals("")) return null;
             UserNotification userNotification = new UserNotification();
             userNotification.timestamp = Double.parseDouble(timestamp);
@@ -123,7 +123,7 @@ public class UserNotification extends Model {
                 userNotification.delete();
             }
         } else {
-            Home.setPreferencesString("UserNotification:timestamp:" + type, "");
+            Pref.setString("UserNotification:timestamp:" + type, "");
         }
     }
     
@@ -160,8 +160,8 @@ public class UserNotification extends Model {
             userNotification.bg_fall_alert = true;
         } else {
             Log.d(TAG,"Saving workaround for: "+type+" "+message);
-            Home.setPreferencesString("UserNotification:timestamp:" + type, JoH.qs(timestamp));
-            Home.setPreferencesString("UserNotification:message:" + type, message);
+            Pref.setString("UserNotification:timestamp:" + type, JoH.qs(timestamp));
+            Pref.setString("UserNotification:message:" + type, message);
            return null;
         }
         userNotification.save();

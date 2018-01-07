@@ -73,5 +73,5 @@ dependencies {
     compile 'com.google.code.gson:gson:2.4'
     compile 'io.reactivex:rxjava:1.0.0'
     compile 'com.google.guava:guava:18.0'
-    compile 'com.polidea.rxandroidble:rxandroidble:1.4.1'
+    compile 'com.polidea.rxandroidble:rxandroidble:1.4.3'
 }

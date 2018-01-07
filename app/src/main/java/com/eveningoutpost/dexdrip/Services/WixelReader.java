@@ -18,6 +18,7 @@ import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.ParakeetHelper;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.MockDataSource;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
@@ -375,7 +376,7 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
         final List<TransmitterRawData> trd_list = new LinkedList<TransmitterRawData>();
         Log.i(TAG, "Read called: " + hostName + " port: " + port);
 
-        final boolean skip_lan = Home.getPreferencesBooleanDefaultFalse("skip_lan_uploads_when_no_lan");
+        final boolean skip_lan = Pref.getBooleanDefaultFalse("skip_lan_uploads_when_no_lan");
 
         if (skip_lan && (hostName.endsWith(".local")) && !JoH.isLANConnected()) {
             Log.d(TAG, "Skipping due to no lan: " + hostName);
@@ -556,7 +557,7 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
         if ((DexCollectionType.getDexCollectionType() == DexCollectionType.Mock) && Home.get_engineering_mode()) {
             recieversIpAddresses = "fake://FAKE_DATA";
         } else {
-            recieversIpAddresses = Home.getPreferencesStringWithDefault("wifi_recievers_addresses", "");
+            recieversIpAddresses = Pref.getString("wifi_recievers_addresses", "");
         }
 
         // How many packets should we read? we look at the maximum time between last calibration and last reading time

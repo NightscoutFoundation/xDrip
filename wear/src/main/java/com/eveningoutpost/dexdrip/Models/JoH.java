@@ -894,7 +894,7 @@ public class JoH {
                 height, Bitmap.Config.ARGB_8888);
 
         final Canvas canvas = new Canvas(bitmap);
-        if (Home.getPreferencesBooleanDefaultFalse(SHOW_STATISTICS_PRINT_COLOR)) {
+        if (Pref.getBooleanDefaultFalse(SHOW_STATISTICS_PRINT_COLOR)) {
             Paint paint = new Paint();
             paint.setColor(Color.WHITE);
             paint.setStyle(Paint.Style.FILL);
@@ -913,7 +913,7 @@ public class JoH {
             final Canvas canvasf = new Canvas(bitmapf);
 
             Paint paint = new Paint();
-            if (Home.getPreferencesBooleanDefaultFalse(SHOW_STATISTICS_PRINT_COLOR)) {
+            if (Pref.getBooleanDefaultFalse(SHOW_STATISTICS_PRINT_COLOR)) {
                 paint.setColor(Color.WHITE);
                 paint.setStyle(Paint.Style.FILL);
                 canvasf.drawRect(0, 0, width, offset, paint);
@@ -1444,5 +1444,14 @@ public class JoH {
         crc.update(bytes, 0, bytes.length - 4);
         final long buffer_crc = UnsignedInts.toLong(ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).getInt(bytes.length - 4));
         return buffer_crc == crc.getValue();
+    }
+
+    public static int parseIntWithDefault(String number, int radix, int defaultVal) {
+        try {
+            return Integer.parseInt(number, radix);
+        } catch (NumberFormatException e) {
+            Log.e(TAG, "Error parsing integer number = " + number + " radix = " + radix);
+            return defaultVal;
+        }
     }
 }

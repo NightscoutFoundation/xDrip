@@ -19,6 +19,7 @@ import java.util.List;
 /**
  * Created by Emma Black on 11/7/14.
  */
+@Deprecated
 @Table(name = "CalibrationSendQueue", id = BaseColumns._ID)
 public class CalibrationSendQueue extends Model {
     private final static String TAG = CalibrationSendQueue.class.getSimpleName();
@@ -50,6 +51,7 @@ public class CalibrationSendQueue extends Model {
                 .execute();
     }
 
+    @Deprecated
     public static List<CalibrationSendQueue> cleanQueue() {
         return new Delete()
                 .from(CalibrationSendQueue.class)

@@ -39,6 +39,11 @@ import rx.schedulers.Schedulers;
 
 import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.Authentication;
 import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.Control;
+import static com.eveningoutpost.dexdrip.Services.G5BaseService.G5_BATTERY_FROM_MARKER;
+import static com.eveningoutpost.dexdrip.Services.G5BaseService.G5_BATTERY_LEVEL_MARKER;
+import static com.eveningoutpost.dexdrip.Services.G5BaseService.G5_BATTERY_MARKER;
+import static com.eveningoutpost.dexdrip.Services.G5BaseService.G5_BATTERY_WEARABLE_SEND;
+import static com.eveningoutpost.dexdrip.Services.G5BaseService.G5_FIRMWARE_MARKER;
 
 
 /**
@@ -386,6 +391,10 @@ public class Ob1G5StateMachine {
                         case BatteryInfoRxMessage:
                             if (!setStoredBatteryBytes(Ob1G5CollectionService.getTransmitterID(), bytes)) {
                                 UserError.Log.e(TAG, "Could not save out battery data!");
+                            } else {
+                                if (parent.android_wear) {
+                                    PersistentStore.setBoolean(G5_BATTERY_WEARABLE_SEND, true);
+                                }
                             }
                             disconnectNow(parent, connection);
                             throw new OperationSuccess("Received Battery Info");
@@ -498,8 +507,6 @@ public class Ob1G5StateMachine {
         return Ob1G5CollectionService.getTransmitterID().length() == 6 && getStoredFirmwareBytes(Ob1G5CollectionService.getTransmitterID()).length >= 10;
     }
 
-    public final static String G5_FIRMWARE_MARKER = "g5-firmware-";
-    public final static String G5_BATTERY_FROM_MARKER = "g5-battery-from";
 
     private static boolean haveCurrentBatteryStatus() {
         return Ob1G5CollectionService.getTransmitterID().length() == 6 && (JoH.msSince(PersistentStore.getLong(G5_BATTERY_FROM_MARKER + Ob1G5CollectionService.getTransmitterID())) < BATTERY_READ_PERIOD_MS);
@@ -525,8 +532,7 @@ public class Ob1G5StateMachine {
         return true;
     }
 
-    public static final String G5_BATTERY_MARKER = "g5-battery-";
-    public static final String G5_BATTERY_LEVEL_MARKER = "g5-battery-level-";
+
 
     public synchronized static boolean setStoredBatteryBytes(String transmitterId, byte[] data) {
         UserError.Log.e(TAG, "Store: BatteryRX dbg: " + JoH.bytesToHex(data));
@@ -549,7 +555,6 @@ public class Ob1G5StateMachine {
             }
             PersistentStore.setLong(G5_BATTERY_LEVEL_MARKER + transmitterId, batteryInfoRxMessage.voltagea);
         }
-
         return true;
     }
 

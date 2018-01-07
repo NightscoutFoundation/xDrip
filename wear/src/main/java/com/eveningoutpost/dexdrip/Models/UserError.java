@@ -3,11 +3,11 @@ package com.eveningoutpost.dexdrip.Models;
 import android.os.AsyncTask;
 import android.provider.BaseColumns;
 
-import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
@@ -292,7 +292,7 @@ public class UserError extends PlusModel {
         static Hashtable <String, Integer> extraTags;
         ExtraLogTags () {
             extraTags = new Hashtable <String, Integer>();
-            String extraLogs = Home.getPreferencesStringDefaultBlank("extra_tags_for_logging");
+            String extraLogs = Pref.getStringDefaultBlank("extra_tags_for_logging");
             readPreference(extraLogs);
         }
         

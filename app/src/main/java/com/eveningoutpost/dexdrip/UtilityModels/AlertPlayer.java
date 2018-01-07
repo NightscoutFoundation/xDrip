@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -117,7 +118,7 @@ public class AlertPlayer {
     }
 
     public synchronized void startAlert(Context ctx, boolean trendingToAlertEnd, AlertType newAlert, String bgValue) {
-        startAlert(ctx, trendingToAlertEnd, newAlert, bgValue, Home.getPreferencesBooleanDefaultFalse("start_snoozed")); // for start snoozed by default!
+        startAlert(ctx, trendingToAlertEnd, newAlert, bgValue, Pref.getBooleanDefaultFalse("start_snoozed")); // for start snoozed by default!
     }
 
     public synchronized  void startAlert(Context ctx, boolean trendingToAlertEnd, AlertType newAlert, String bgValue , boolean start_snoozed)  {
@@ -162,7 +163,7 @@ public class AlertPlayer {
     //  default signature for user initiated interactive snoozes only
     public synchronized void Snooze(Context ctx, int repeatTime) {
         Snooze(ctx, repeatTime, true);
-        if (Home.getPreferencesBooleanDefaultFalse("bg_notifications_watch") ) {
+        if (Pref.getBooleanDefaultFalse("bg_notifications_watch") ) {
             startWatchUpdaterService(ctx, WatchUpdaterService.ACTION_SNOOZE_ALERT, TAG, "repeatTime", "" + repeatTime);
         }
     }
@@ -392,7 +393,7 @@ public class AlertPlayer {
 
     public static boolean notSilencedDueToCall()
     {
-        return !(Home.getPreferencesBooleanDefaultFalse("no_alarms_during_calls") && (JoH.isOngoingCall()));
+        return !(Pref.getBooleanDefaultFalse("no_alarms_during_calls") && (JoH.isOngoingCall()));
     }
 
     private void Vibrate(Context ctx, AlertType alert, String bgValue, Boolean overrideSilent, int timeFromStartPlaying) {
@@ -411,9 +412,9 @@ public class AlertPlayer {
             // We start from the non ascending part...
             timeFromStartPlaying = MAX_ASCENDING;
         }
-
+        final String highlow = (alert.above ? ctx.getString(R.string.high) : ctx.getString(R.string.low)).toUpperCase();
         String title = bgValue + " " + alert.name;
-        String content = "BG LEVEL ALERT: " + bgValue + "  (@" + JoH.hourMinuteString() + ")";
+        String content = "BG " + highlow + " ALERT: " + bgValue + "  (@" + JoH.hourMinuteString() + ")";
         Intent intent = new Intent(ctx, SnoozeActivity.class);
 
         boolean localOnly = (Home.get_forced_wear() && PersistentStore.getBoolean("bg_notifications_watch"));
@@ -424,6 +425,7 @@ public class AlertPlayer {
             .setContentText(content)
             .setContentIntent(notificationIntent(ctx, intent))
             .setLocalOnly(localOnly)
+            .setPriority(Pref.getBooleanDefaultFalse("high_priority_notifications") ? Notification.PRIORITY_MAX : Notification.PRIORITY_HIGH)
             .setDeleteIntent(snoozeIntent(ctx));
 
         if (profile != ALERT_PROFILE_VIBRATE_ONLY && profile != ALERT_PROFILE_SILENT) {
@@ -466,10 +468,14 @@ public class AlertPlayer {
         //mNotifyMgr.cancel(Notifications.exportAlertNotificationId); // this appears to confuse android wear version 2.0.0.141773014.gms even though it shouldn't - can we survive without this?
         mNotifyMgr.notify(Notifications.exportAlertNotificationId, XdripNotificationCompat.build(builder));
 
-        if (Home.getPreferencesBooleanDefaultFalse("broadcast_to_pebble") && (Home.getPreferencesBooleanDefaultFalse("pebble_vibe_alerts"))) {
+        if (Pref.getBooleanDefaultFalse("broadcast_to_pebble") && (Pref.getBooleanDefaultFalse("pebble_vibe_alerts"))) {
             if (JoH.ratelimit("pebble_vibe_start", 59)) {
                 ctx.startService(new Intent(ctx, PebbleWatchSync.class));
             }
+        }
+
+        if (Pref.getBooleanDefaultFalse("speak_alerts")) {
+            SpeechUtil.say(highlow + ", " + bgValue, 3000);
         }
     }
 

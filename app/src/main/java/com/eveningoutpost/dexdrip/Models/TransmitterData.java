@@ -11,6 +11,7 @@ import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.google.gson.annotations.Expose;
@@ -81,9 +82,9 @@ public class TransmitterData extends Model {
                     transmitterData.sensor_battery_level = Integer.parseInt(data[1]);
                     if (data.length > 2) {
                         try {
-                            Home.setPreferencesInt("bridge_battery", Integer.parseInt(data[2]));
+                            Pref.setInt("bridge_battery", Integer.parseInt(data[2]));
                             if (Home.get_master()) {
-                                GcmActivity.sendBridgeBattery(Home.getPreferencesInt("bridge_battery", -1));
+                                GcmActivity.sendBridgeBattery(Pref.getInt("bridge_battery", -1));
                             }
                             CheckBridgeBattery.checkBridgeBattery();
                         } catch (Exception e) {
@@ -91,12 +92,12 @@ public class TransmitterData extends Model {
                         }
                         if (data.length > 3) {
                             if ((DexCollectionType.getDexCollectionType() == DexCollectionType.LimiTTer)
-                                    && (!Home.getPreferencesBooleanDefaultFalse("use_transmiter_pl_bluetooth"))) {
+                                    && (!Pref.getBooleanDefaultFalse("use_transmiter_pl_bluetooth"))) {
                                 try {
                                     // reported sensor age in minutes
                                     final Integer sensorAge = Integer.parseInt(data[3]);
                                     if ((sensorAge > 0) && (sensorAge < 200000))
-                                        Home.setPreferencesInt("nfc_sensor_age", sensorAge);
+                                        Pref.setInt("nfc_sensor_age", sensorAge);
                                 } catch (Exception e) {
                                     Log.e(TAG, "Got exception processing field 4 in classic limitter protocol: " + e);
                                 }

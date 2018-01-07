@@ -1,5 +1,9 @@
 package com.eveningoutpost.dexdrip;
 
+// TODO Pagenate for upcoming
+// TODO stop alert notification for swiped alerts
+
+
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -31,6 +35,8 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,6 +63,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.JamorhamShowcaseDrawer;
 import com.eveningoutpost.dexdrip.UtilityModels.NotificationChannels;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.ShotStateStore;
 import com.eveningoutpost.dexdrip.profileeditor.DatePickerFragment;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileAdapter;
@@ -87,6 +94,10 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
     private static final int MY_PERMISSIONS_REQUEST_STORAGE = 139;
     private static final int REQUEST_CODE_CHOOSE_FILE = 2;
     private static final int REQUEST_CODE_CHOOSE_RINGTONE = 55;
+
+    private static final long MEGA_PRIORITY = 1000000;
+
+
     private static final boolean d = true;
 
     public final List<Reminder> reminders = new ArrayList<>();
@@ -107,6 +118,12 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
     private Sensor mProximity;
     private boolean proximity = true; // default to near
     private int proximity_events = 0;
+    private int highlighted = 0;
+
+    MenuItem remindersDisabledAtNightMenuItem;
+    MenuItem remindersDisabledMenuItem;
+    MenuItem remindersAdvancedMenuItem;
+    MenuItem remindersRestartTomorrowMenuItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -157,6 +174,51 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
         processIncomingBundle(bundle);
     }
 
+    public void onRemindNightClick(MenuItem v) {
+        invertPreferenceBoolean(Reminder.REMINDERS_NIGHT_DISABLED);
+        updateMenuCheckboxes();
+    }
+
+    public void onAllDisabledClick(MenuItem v) {
+        invertPreferenceBoolean(Reminder.REMINDERS_ALL_DISABLED);
+        updateMenuCheckboxes();
+    }
+
+    public void onRestartTomorrowClick(MenuItem v) {
+        invertPreferenceBoolean(Reminder.REMINDERS_RESTART_TOMORROW);
+        updateMenuCheckboxes();
+    }
+
+    public void onRemindersAdvancedClick(MenuItem v) {
+        invertPreferenceBoolean(Reminder.REMINDERS_ADVANCED_MODE);
+        updateMenuCheckboxes();
+    }
+
+    private void invertPreferenceBoolean(String pref) {
+        Pref.setBoolean(pref, !Pref.getBooleanDefaultFalse(pref));
+    }
+
+    private void updateMenuCheckboxes() {
+        remindersAdvancedMenuItem.setChecked(Pref.getBooleanDefaultFalse(Reminder.REMINDERS_ADVANCED_MODE));
+        remindersDisabledMenuItem.setChecked(Pref.getBooleanDefaultFalse(Reminder.REMINDERS_ALL_DISABLED));
+        remindersRestartTomorrowMenuItem.setChecked(Pref.getBooleanDefaultFalse(Reminder.REMINDERS_RESTART_TOMORROW));
+        remindersDisabledAtNightMenuItem.setChecked(Pref.getBooleanDefaultFalse(Reminder.REMINDERS_NIGHT_DISABLED));
+        remindersRestartTomorrowMenuItem.setEnabled(remindersDisabledMenuItem.isChecked());
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_reminders, menu);
+        remindersDisabledAtNightMenuItem = menu.findItem(R.id.reminders_atnight);
+        remindersDisabledMenuItem = menu.findItem(R.id.reminders_disabled);
+        remindersRestartTomorrowMenuItem = menu.findItem(R.id.reminders_restart);
+        remindersAdvancedMenuItem = menu.findItem(R.id.reminders_advanced);
+
+        updateMenuCheckboxes();
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
     @Override
     protected void onResume() {
         PowerManager.WakeLock wl = JoH.getWakeLock("reminders-onresume", 15000);
@@ -167,6 +229,7 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
         }
         proximity_events = 0;
         mSensorManager.registerListener(this, mProximity, SensorManager.SENSOR_DELAY_NORMAL);
+        highlighted = 0;
         reloadList();
         // intentionally do not release wakelock
     }
@@ -336,6 +399,7 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
                     } else {
                         firstpart = "DUE " + JoH.hourMinuteString(reminder_item.next_due);
                         holder.wholeBlock.setBackgroundColor(Color.parseColor("#660066"));
+                        highlighted++;
                     }
                 }
             } else {
@@ -373,6 +437,7 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
                 last_undo_pos = position;
                 reminders.remove(position);
                 notifyItemRemoved(position);
+                cancelAlert();
                 showSnoozeFloater();
             } else {
                 // swipe right
@@ -390,6 +455,7 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
                 last_undo_pos = position;
                 reminders.remove(position);
                 notifyItemRemoved(position);
+                cancelAlert();
                 showSnoozeFloater();
             }
             JoH.runOnUiThreadDelayed(new Runnable() {
@@ -561,11 +627,19 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
     }
 
     public void reminderUpButton(View v) {
-        reminderDaysEdt.setText(Integer.toString(Integer.parseInt(reminderDaysEdt.getText().toString()) + 1));
+        try {
+            reminderDaysEdt.setText(Integer.toString(Integer.parseInt(reminderDaysEdt.getText().toString()) + 1));
+        } catch (NumberFormatException e) {
+            JoH.static_toast_short("Invalid number");
+        }
     }
 
     public void reminderDownButton(View v) {
-        reminderDaysEdt.setText(Integer.toString(Integer.parseInt(reminderDaysEdt.getText().toString()) - 1));
+        try {
+            reminderDaysEdt.setText(Integer.toString(Integer.parseInt(reminderDaysEdt.getText().toString()) - 1));
+        } catch (NumberFormatException e) {
+            JoH.static_toast_short("Invalid number");
+        }
         if (reminderDaysEdt.getText().toString().equals("0")) {
             reminderDaysEdt.setText("1");
         }
@@ -647,15 +721,19 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
                 }
             }
         });
-        Log.d(TAG, "Reinjection: scrolling to: " + i);
-        recyclerView.smoothScrollToPosition(i);
-        JoH.runOnUiThreadDelayed(new Runnable() {
-            @Override
-            public void run() {
-                // failsafe
-                correctiveScrolling(i, corrected);
-            }
-        }, 1000);
+        if (highlighted < 2) {
+            Log.d(TAG, "Reinjection: scrolling to: " + i);
+            recyclerView.smoothScrollToPosition(i);
+            JoH.runOnUiThreadDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    // failsafe
+                    correctiveScrolling(i, corrected);
+                }
+            }, 1000);
+        } else {
+            Log.d(TAG, "Not scrolling due to highlighted: " + highlighted);
+        }
     }
 
     private void correctiveScrolling(int i, AtomicBoolean marker) {
@@ -777,6 +855,10 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
         final CheckBox repeatingCheckbox = (CheckBox) dialogView.findViewById(R.id.reminderRepeatcheckBox);
         final CheckBox chimeOnlyCheckbox = (CheckBox) dialogView.findViewById(R.id.chimeonlycheckbox);
         final CheckBox alternatingCheckbox = (CheckBox) dialogView.findViewById(R.id.alternatingcheckbox);
+        final CheckBox weekendsCheckbox = (CheckBox) dialogView.findViewById(R.id.weekEndsCheckbox);
+        final CheckBox weekdaysCheckbox = (CheckBox) dialogView.findViewById(R.id.weekDaysCheckbox);
+        final CheckBox megapriorityCheckbox = (CheckBox) dialogView.findViewById(R.id.highPriorityCheckbox);
+
         final ImageButton swapButton = (ImageButton) dialogView.findViewById(R.id.reminderSwapButton);
 
 
@@ -796,6 +878,14 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
             repeatingCheckbox.setChecked(reminder.repeating);
             chimeOnlyCheckbox.setChecked(reminder.chime_only);
             alternatingCheckbox.setChecked(reminder.alternating);
+            megapriorityCheckbox.setChecked(reminder.priority > MEGA_PRIORITY);
+            if (!reminder.weekdays && !reminder.weekends) {
+                // this shouldn't be possible so we think it pre-dates the current schema so fix it
+                reminder.weekdays = true;
+                reminder.weekends = true;
+            }
+            weekdaysCheckbox.setChecked(reminder.weekdays);
+            weekendsCheckbox.setChecked(reminder.weekends);
             reminderDaysEdt.setText(Long.toString(reminder.periodInUnits()));
         }
 
@@ -874,6 +964,17 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
                     new_reminder.repeating = repeatingCheckbox.isChecked();
                     new_reminder.chime_only = chimeOnlyCheckbox.isChecked();
                     new_reminder.alternating = alternatingCheckbox.isChecked();
+
+
+                    new_reminder.weekdays = weekdaysCheckbox.isChecked();
+                    new_reminder.weekends = weekendsCheckbox.isChecked();
+
+                    if ((new_reminder.priority > MEGA_PRIORITY) && (!megapriorityCheckbox.isChecked())) {
+                        new_reminder.priority -= MEGA_PRIORITY;
+                    } else if ((new_reminder.priority < MEGA_PRIORITY) && (megapriorityCheckbox.isChecked())) {
+                        new_reminder.priority += MEGA_PRIORITY;
+                    }
+
                     new_reminder.save();
 
                     freshen(new_reminder);
@@ -921,7 +1022,17 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
     }
 
     private long getPeriod(RadioButton rbday, RadioButton rbhour, RadioButton rbweek) {
-        long period = Integer.parseInt(reminderDaysEdt.getText().toString());
+        long period;
+        try {
+            period = Integer.parseInt(reminderDaysEdt.getText().toString());
+        } catch (NumberFormatException e) {
+            period = 1; // TODO avoid this happening from the UI
+            try {
+                reminderDaysEdt.setText("" + period);
+            } catch (Exception ee) {
+                //
+            }
+        }
         if (rbday.isChecked()) {
             period = period * Constants.DAY_IN_MS;
         } else if (rbhour.isChecked()) {
@@ -975,13 +1086,25 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
                 final PendingIntent deleteIntent = PendingIntent.getActivity(xdrip.getAppContext(), NOTIFICATION_ID + 1, notificationDeleteIntent, 0);
                 final PendingIntent pendingIntent = PendingIntent.getActivity(xdrip.getAppContext(), NOTIFICATION_ID, notificationIntent, 0);
 
-                JoH.showNotification(reminder.getTitle(), "Reminder due " + JoH.hourMinuteString(reminder.next_due),
-                        pendingIntent, NOTIFICATION_ID, NotificationChannels.REMINDER_CHANNEL, true, true, deleteIntent, JoH.isOngoingCall() ? null : (reminder.sound_uri != null) ? Uri.parse(reminder.sound_uri) : Uri.parse(JoH.getResourceURI(R.raw.reminder_default_notification)), null);
+
+                JoH.showNotification(reminder.getTitle(), "Reminder due " + JoH.hourMinuteString(reminder.next_due), pendingIntent, NOTIFICATION_ID, NotificationChannels.REMINDER_CHANNEL, true, true, deleteIntent, JoH.isOngoingCall() ? null : (reminder.sound_uri != null) ? Uri.parse(reminder.sound_uri) : Uri.parse(JoH.getResourceURI(R.raw.reminder_default_notification)), null);
+
+                //    JoH.showNotification(reminder.getTitle(), "Reminder due " + JoH.hourMinuteString(reminder.next_due), pendingIntent, NOTIFICATION_ID, true, true, deleteIntent, JoH.isOngoingCall() ? null : (reminder.sound_uri != null) ? Uri.parse(reminder.sound_uri) : Uri.parse(JoH.getResourceURI(R.raw.reminder_default_notification)));
                 UserError.Log.ueh("Reminder Alert", reminder.getTitle() + " due: " + JoH.dateTimeText(reminder.next_due) + ((reminder.snoozed_till > reminder.next_due) ? " snoozed till: " + JoH.dateTimeText(reminder.snoozed_till) : ""));
                 reminder.notified();
             }
         }, 10000);
         // intentionally don't release wakelock to ensure sound plays
+    }
+
+    public static void cancelAlert() {
+        JoH.runOnUiThreadDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Log.d(TAG, "Cancelling notification");
+                JoH.cancelNotification(NOTIFICATION_ID);
+            }
+        }, 500);
     }
 
     ////
@@ -1112,7 +1235,11 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
                     }
                 });
                 if (bundle.getString(REMINDER_WAKEUP) != null) {
-                    recyclerView.smoothScrollToPosition(getPositionFromReminderId(Integer.parseInt(bundle.getString(REMINDER_WAKEUP))));
+                    try {
+                        recyclerView.smoothScrollToPosition(getPositionFromReminderId(Integer.parseInt(bundle.getString(REMINDER_WAKEUP))));
+                    } catch (IllegalArgumentException e) {
+                        Log.e(TAG, "Couldn't scroll to position");
+                    }
                     JoH.runOnUiThreadDelayed(new Runnable() {
                         @Override
                         public void run() {

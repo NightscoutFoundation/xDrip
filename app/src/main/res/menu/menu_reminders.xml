@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/reminders_atnight"
+        android:checkable="true"
+        android:orderInCategory="1"
+        android:title="Quiet at Night"
+        android:visible="true"
+        android:onClick="onRemindNightClick"
+        />
+
+    <item
+        android:id="@+id/reminders_disabled"
+        android:checkable="true"
+        android:orderInCategory="1"
+        android:title="Alerts disabled"
+        android:visible="true"
+        android:onClick="onAllDisabledClick"
+        />
+
+    <item
+        android:id="@+id/reminders_restart"
+        android:checkable="true"
+        android:orderInCategory="1"
+        android:title="Restart in the Morning"
+        android:visible="true"
+        android:onClick="onRestartTomorrowClick"
+        />
+
+    <item
+        android:id="@+id/reminders_advanced"
+        android:checkable="true"
+        android:orderInCategory="1"
+        android:title="Advanced Mode"
+        android:visible="true"
+        android:onClick="onRemindersAdvancedClick"
+        />
+
+</menu>

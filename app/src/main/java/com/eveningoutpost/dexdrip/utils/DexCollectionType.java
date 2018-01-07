@@ -1,11 +1,11 @@
 package com.eveningoutpost.dexdrip.utils;
 
-import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.Services.DexShareCollectionService;
 import com.eveningoutpost.dexdrip.Services.G5CollectionService;
 import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.Services.WifiCollectionService;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
@@ -84,11 +84,11 @@ public enum DexCollectionType {
     }
 
     public static DexCollectionType getDexCollectionType() {
-        return getType(Home.getPreferencesStringWithDefault(DEX_COLLECTION_METHOD, "BluetoothWixel"));
+        return getType(Pref.getString(DEX_COLLECTION_METHOD, "BluetoothWixel"));
     }
 
     public static void setDexCollectionType(DexCollectionType t) {
-        Home.setPreferencesString(DEX_COLLECTION_METHOD, t.internalName);
+        Pref.setString(DEX_COLLECTION_METHOD, t.internalName);
     }
 
     public static boolean hasBluetooth() {
@@ -136,13 +136,13 @@ public enum DexCollectionType {
     		collector = DexCollectionType.getDexCollectionType();
     	}
         return collector == DexCollectionType.LimiTTer && 
-               Home.getPreferencesBooleanDefaultFalse("external_blukon_algorithm"); 
+               Pref.getBooleanDefaultFalse("external_blukon_algorithm");
     }
 
     public static Class<?> getCollectorServiceClass() {
         switch (getDexCollectionType()) {
             case DexcomG5:
-                if (Home.getPreferencesBooleanDefaultFalse(Ob1G5CollectionService.OB1G5_PREFS)) {
+                if (Pref.getBooleanDefaultFalse(Ob1G5CollectionService.OB1G5_PREFS)) {
                     return Ob1G5CollectionService.class;
                 } else {
                     return G5CollectionService.class;
@@ -156,12 +156,36 @@ public enum DexCollectionType {
         }
     }
 
+    // using reflection to access static methods, could cache if needed maybe
+
     public static Boolean getServiceRunningState() {
+        final Boolean result = getPhoneServiceRunningState();
+        // if phone running don't bother checking wear
+        if ((result !=null) && result) return true;
+        return getWatchServiceRunningState();
+    }
+
+    public static Boolean getPhoneServiceRunningState() {
         try {
+            // TODO handle wear collection
             final Method method = getCollectorServiceClass().getMethod("isRunning");
-            return (Boolean)method.invoke(null);
+            return (Boolean) method.invoke(null);
         } catch (Exception e) {
             return null;
+        }
+    }
+
+    public static Boolean getWatchServiceRunningState() {
+        if (Pref.getBooleanDefaultFalse("wear_sync") &&
+                Pref.getBooleanDefaultFalse("enable_wearG5")) {
+            try {
+                final Method method = getCollectorServiceClass().getMethod("isWatchRunning");
+                return (Boolean) method.invoke(null);
+            } catch (Exception e) {
+                return null; // probably method not found
+            }
+        } else {
+            return false; // hopefully this is sufficient to know that the service is definitely not running
         }
     }
 

@@ -2,9 +2,7 @@ package com.eveningoutpost.dexdrip.Services;
 
 import android.app.IntentService;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.PowerManager;
-import android.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
@@ -15,6 +13,7 @@ import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.CalibrationSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.IncompatibleApps;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
 import com.eveningoutpost.dexdrip.utils.DatabaseUtil;
 import com.eveningoutpost.dexdrip.utils.Telemetry;
@@ -41,7 +40,7 @@ public class DailyIntentService extends IntentService {
                 Long start = JoH.tsl();
 
                 // @TecMunky -- save database before pruning - allows daily capture of database
-                if (Home.getPreferencesBooleanDefaultFalse("save_db_ondemand")) {
+                if (Pref.getBooleanDefaultFalse("save_db_ondemand")) {
                     try {
                         String export = DatabaseUtil.saveSql(getBaseContext(), "daily");
                     } catch (Exception e) {
@@ -70,7 +69,7 @@ public class DailyIntentService extends IntentService {
                 try {
                     CalibrationSendQueue.cleanQueue();
                 } catch (Exception e) {
-                    Log.e(TAG, "DailyIntentService exception on CalibrationSendQueue ", e);
+                    Log.d(TAG, "DailyIntentService exception on CalibrationSendQueue "+ e);
                 }
                 try {
                     UploaderQueue.cleanQueue();
@@ -78,7 +77,7 @@ public class DailyIntentService extends IntentService {
                     Log.e(TAG, "DailyIntentService exception on UploaderQueue ", e);
                 }
                 try {
-                    PebbleMovement.cleanup(Home.getPreferencesInt("retention_pebble_movement", 180));
+                    PebbleMovement.cleanup(Pref.getInt("retention_pebble_movement", 180));
                 } catch (Exception e) {
                     Log.e(TAG, "DailyIntentService exception on PebbleMovement ", e);
                 }
