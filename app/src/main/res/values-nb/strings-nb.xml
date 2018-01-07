@@ -827,4 +827,22 @@
 	<string name="error">feil</string>
 	<string name="install_text_to_speech_data_question">Installer tekst-til-tale data?</string>
 	<string name="after_installation_of_languages_you_might_have_to">(Etter installasjon av språk må du kanskje trykke \"Start innsamler på nytt\" i Systemstatus.)</string>
+	<string name="stop_sensor">Stopp Sensor</string>
+	<string name="initial_calibration">Initiell kalibrering</string>
+	<string name="calibration_can_not_be_blank">Kalibrering kan ikke være tom</string>
+	<string name="invalid_calibration_number">Ugyldig kalibreringsverdi!</string>
+	<string name="calibration_out_of_range">Kalibreringsverdi utenfor målområdet</string>
+	<string name="note_search">Søk i notater</string>
+	<string name="edit_note">Rediger notater</string>
+	<string name="adjust_note_text_here_there_is_no_undo">Juster notatteksten her. Dette kan ikke bli omgjort</string>
+	<string name="no_search_term_found">Fant ingen søkeverdi</string>
+	<string name="bluetooth_scan">Blåtannsøk</string>
+	<string name="level_alerts">Nivåalarm</string>
+	<string name="override_calibration">Overstyr kalibrering</string>
+	<string name="only_stop_your_sensor_when_you_actually_plan">Stopp bare sensoren hvis du faktisk skal fjerne den. I alle andre tilfeller skal den være kjørende!</string>
+	<string name="restart_collector">Start innsamler på nytt</string>
+	<string name="forget_device">Glem enhet</string>
+	<string name="other_notes">Andre notater:</string>
+	<string name="delete_future_data">Slett data i fremditen</string>
+	<string name="show_only_untranslated">Vis bare uoversatte</string>
 </resources>
