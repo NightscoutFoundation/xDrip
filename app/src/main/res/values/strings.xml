@@ -845,4 +845,10 @@
     <string name="other_notes">Other Notes:</string>
     <string name="delete_future_data">Delete Future Data</string>
     <string name="show_only_untranslated">Show only untranslated</string>
+    <string name="collecting_initial_readings">Collecting Initial Readings</string>
+    <string name="data_collector_running">Data Collector Running</string>
+    <string name="received_some_recent_data">Received Some Recent Data</string>
+    <string name="received_enough_good_data_to_calibrate">Received Enough Good Data to Calibrate</string>
+    <string name="play_sound_when_ready_for_calibration">Play sound when ready for Calibration</string>
+    <string name="receiving_data_from_collector">Receiving Data from %s Collector</string>
 </resources>

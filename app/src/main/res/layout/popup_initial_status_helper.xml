@@ -38,7 +38,7 @@
             android:checked="@{idq.collector_running}"
             android:clickable="false"
             android:enabled="true"
-            android:text="Data Collector Running" />
+            android:text="@string/data_collector_running" />
 
         <RadioButton
             android:id="@+id/received_data_indicator"
@@ -46,7 +46,7 @@
             android:layout_height="wrap_content"
             android:checked="@{idq.received_raw_data}"
             android:clickable="false"
-            android:text="@{`Receiving Data from ` + ms.gs(`niceCollector`) + ` Collector`}" />
+            android:text="@{@string/receiving_data_from_collector(ms.gs(`niceCollector`))}" />
 
         <RadioButton
             android:id="@+id/recent_data_indicator"
@@ -54,7 +54,7 @@
             android:layout_height="wrap_content"
             android:checked="@{idq.recent_data}"
             android:clickable="false"
-            android:text="Received Some Recent Data" />
+            android:text="@string/received_some_recent_data" />
 
         <RadioButton
             android:id="@+id/enough_data_indicator"
@@ -62,7 +62,7 @@
             android:layout_height="wrap_content"
             android:checked="@{idq.pass}"
             android:clickable="false"
-            android:text="Received Enough Good Data to Calibrate" />
+            android:text="@string/received_enough_good_data_to_calibrate" />
 
         <TextView
             android:id="@+id/advice_text"
@@ -90,6 +90,6 @@
             android:layout_height="wrap_content"
             android:checked="@{prefs.getbool(`play_sound_for_initial_calibration`)}"
             android:onClick="@{() -> prefs.togglebool(`play_sound_for_initial_calibration`)}"
-            android:text="Play sound when ready for Calibration" />
+            android:text="@string/play_sound_when_ready_for_calibration" />
     </LinearLayout>
 </layout>
