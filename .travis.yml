@@ -52,3 +52,7 @@ script:
 #  - ./gradlew app:installDebugAndroidTest  -PdisablePreDex
   - travis_retry travis_wait ./gradlew app:connectedAndroidTest -PdisablePreDex
   - ./gradlew assembleRelease
+
+after_failure:
+  - cat app/build/reports/tests/testDebugUnitTest/index.html
+  
