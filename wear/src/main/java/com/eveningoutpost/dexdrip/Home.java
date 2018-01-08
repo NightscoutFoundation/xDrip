@@ -124,6 +124,7 @@ public class Home extends BaseWatchFace {
         try {
             mLinearLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_statusView));
             mTime.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mTime));
+            mDate.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mTime));
             mRelativeLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_background));
             if (sgvLevel == 1) {
                 mSgv.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_highColor));
@@ -174,6 +175,7 @@ public class Home extends BaseWatchFace {
     protected void setColorLowRes() {
         try {
             mTime.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mTime));
+            mDate.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mTime));
             mRelativeLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_background));
             mSgv.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor));
             mDelta.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor));
@@ -235,6 +237,7 @@ public class Home extends BaseWatchFace {
                 mStatus.setTextColor(Color.WHITE);
 
                 mTime.setTextColor(Color.BLACK);
+                mDate.setTextColor(Color.BLACK);
                 if (chart != null) {
                     highColor = ContextCompat.getColor(getApplicationContext(), R.color.light_highColor);
                     lowColor = ContextCompat.getColor(getApplicationContext(), R.color.light_lowColor);

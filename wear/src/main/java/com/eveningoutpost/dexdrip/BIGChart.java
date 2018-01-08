@@ -47,6 +47,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 
 import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.LineChartView;
@@ -58,7 +59,7 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
     private final static String TAG = BIGChart.class.getSimpleName();
     public final static IntentFilter INTENT_FILTER;
     public static final long[] vibratePattern = {0,400,300,400,300,400};
-    public TextView mTime, mSgv, mTimestamp, mDelta;
+    public TextView mDate, mTime, mSgv, mTimestamp, mDelta;
     public RelativeLayout mRelativeLayout;
     //public LinearLayout mLinearLayout;
     public Button stepsButton;
@@ -100,6 +101,8 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
     private MessageReceiver messageReceiver;
 
     protected SharedPreferences sharedPrefs;
+    private static String oldDate = "";
+    private static SimpleDateFormat dateFormat = null;
     private String rawString = "000 | 000 | 000";
     private String batteryString = "--";
     private String sgvString = "--";
@@ -146,6 +149,7 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
             @Override
             public void onLayoutInflated(WatchViewStub stub) {
                 mTime = (TextView) stub.findViewById(R.id.watch_time);
+                mDate = (TextView) stub.findViewById(R.id.watch_date);
                 mSgv = (TextView) stub.findViewById(R.id.sgv);
                 mTimestamp = (TextView) stub.findViewById(R.id.timestamp);
                 mDelta = (TextView) stub.findViewById(R.id.delta);
@@ -305,6 +309,45 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
                 }
             }
         }
+    }
+
+    private String getWatchDate() {
+        final Date now = new Date();
+        final String currentWatchDate = mDate.getText().toString();
+        final String newDate = new SimpleDateFormat("yyyyMMdd").format(now);
+        if (!oldDate.equals(newDate) || currentWatchDate.equals("ddd mm/dd")) {
+            final Locale locale = BIGChart.this.getResources().getConfiguration().locale;
+            final SimpleDateFormat dayFormat = new SimpleDateFormat("EEE", locale);
+            if (d)
+                Log.d(TAG, "getWatchDate oldDate: " + oldDate + " now: " + now + " currentWatchDate: " + currentWatchDate);
+            if (dateFormat == null)
+                dateFormat = getShortDateInstanceWithoutYear(locale);
+            String shortDate = dateFormat.format(now);
+            if (d)
+                Log.d(TAG, "getWatchDate shortDate " + locale.getDisplayName() + ": " + shortDate + " pattern: " + dateFormat.toPattern());
+
+            String day = dayFormat.format(now);
+            if (d)
+                Log.d(TAG, "getWatchDate day: " + day + " dayFormat: " + dayFormat.toPattern());
+            oldDate = newDate;
+            return day + "\n" + shortDate;
+        }
+        else
+            return currentWatchDate;
+    }
+
+    private SimpleDateFormat getShortDateInstanceWithoutYear(Locale locale) {
+        //final SimpleDateFormat sdf = (SimpleDateFormat) DateFormat.getDateFormat(BaseWatchFace.this);//defaults to localized SHORT
+        SimpleDateFormat sdf = (SimpleDateFormat) java.text.DateFormat.getDateInstance(java.text.DateFormat.SHORT, locale);
+        if (d) Log.d(TAG, "getShortDateInstanceWithoutYear pattern " + locale.getDisplayName() + ": " + sdf.toPattern());
+        sdf.applyPattern(sdf.toPattern().replaceAll("'[^']*", ""));//remove single quotes eg: Bulgarian: d.MM.yy 'г'
+        if (d) Log.d(TAG, "getShortDateInstanceWithoutYear pattern: " + sdf.toPattern());
+        sdf.applyPattern(sdf.toPattern().replaceAll("[^\\p{Alpha}]*y+[^\\p{Alpha}]*", ""));
+        if (d) Log.d(TAG, "getShortDateInstanceWithoutYear pattern: " + sdf.toPattern());
+        if (sdf instanceof SimpleDateFormat)
+            return sdf;
+        else
+            return new SimpleDateFormat("mm/yy", locale);
     }
 
     @Override
@@ -509,6 +552,12 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
 
         if( mTimestamp != null){
             mTimestamp.setText(readingAge(true));
+        }
+        if (sharedPrefs.getBoolean("showDate", true)) {
+            mDate.setVisibility(View.VISIBLE);
+            mDate.setText(getWatchDate());
+        } else {
+            mDate.setVisibility(View.GONE);
         }
 
         boolean showStatus = sharedPrefs.getBoolean("showExternalStatus", true);
