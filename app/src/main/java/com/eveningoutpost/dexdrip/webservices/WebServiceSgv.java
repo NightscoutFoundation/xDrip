@@ -15,6 +15,9 @@ import org.json.JSONObject;
 import java.math.BigDecimal;
 import java.util.List;
 
+import static com.eveningoutpost.dexdrip.wearintegration.ExternalStatusService.getLastStatusLine;
+import static com.eveningoutpost.dexdrip.wearintegration.ExternalStatusService.getLastStatusLineTime;
+
 
 /**
  * Created by jamorham on 06/01/2018.
@@ -48,6 +51,7 @@ public class WebServiceSgv extends BaseWebService {
         try {
 
             final String collector_device = DexCollectionType.getBestCollectorHardwareName();
+            String external_status_line = getLastStatusLine();
 
             // for each reading produce a json record
             for (BgReading reading : readings) {
@@ -65,6 +69,13 @@ public class WebServiceSgv extends BaseWebService {
                 item.put("unfiltered", (long) (reading.raw_data * 1000));
                 item.put("rssi", 100);
                 item.put("type", "sgv");
+
+                // emit the external status line once if present
+                if (external_status_line.length() > 0) {
+                    item.put("aaps", external_status_line);
+                    item.put("aaps-ts", getLastStatusLineTime());
+                    external_status_line = "";
+                }
 
                 reply.put(item);
             }
