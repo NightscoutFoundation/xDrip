@@ -233,22 +233,7 @@ public class XdripWebService implements Runnable {
                 return;
             }
 
-            WebResponse response = null;
-
-            // find a module based on our query string
-            if (route.startsWith("pebble")) {
-                // support for pebble nightscout watchface emulates /pebble Nightscout endpoint
-                response = WebServicePebble.getInstance().request(route);
-            } else if (route.startsWith("tasker/")) {
-                // forward the request to tasker interface
-                response = WebServiceTasker.getInstance().request(route);
-            } else if (route.startsWith("sgv.json")) {
-                // support for nightscout style sgv.json endpoint
-                response = WebServiceSgv.getInstance().request(route);
-            } else {
-                // error not found
-                response = new WebResponse("Path not found: " + route + "\r\n", 404, "text/plain");
-            }
+            final WebResponse response = RouteFinder.handleRoute(route);
 
             // if we didn't manage to generate a response
             if (response == null) {
@@ -256,22 +241,20 @@ public class XdripWebService implements Runnable {
                 return;
             }
 
-            byte[] bytes = response.bytes;
-
             // if the response bytes are null
-            if (bytes == null) {
+            if (response.bytes == null) {
                 writeServerError(output);
                 return;
             }
             // Send out the content.
             output.println("HTTP/1.0 " + response.resultCode + " OK");
             output.println("Content-Type: " + response.mimeType);
-            output.println("Content-Length: " + bytes.length);
+            output.println("Content-Length: " + response.bytes.length);
             output.println();
-            output.write(bytes);
+            output.write(response.bytes);
             output.flush();
 
-            UserError.Log.d(TAG, "Sent response: " + bytes.length + " bytes, code: " + response.resultCode + " mimetype: " + response.mimeType);
+            UserError.Log.d(TAG, "Sent response: " + response.bytes.length + " bytes, code: " + response.resultCode + " mimetype: " + response.mimeType);
 
         } catch (SocketTimeoutException e) {
             UserError.Log.d(TAG, "Got socket timeout: " + e);
