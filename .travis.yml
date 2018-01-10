@@ -54,5 +54,5 @@ script:
   - ./gradlew assembleRelease
 
 after_failure:
-  - cat app/build/reports/tests/testDebugUnitTest/index.html
-  - cat app/build/reports/tests/testReleaseUnitTest/index.html
+  - cat app/build/reports/tests/testDebugUnitTest/*
+  - cat app/build/reports/tests/testReleaseUnitTest/*
