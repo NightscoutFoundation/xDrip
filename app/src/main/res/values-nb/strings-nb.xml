@@ -72,7 +72,7 @@
 
 	<!-- Location Settings -->
 	<string name="location_not_found_title">Stedstjenester er ikke aktivert</string>
-	<string name="location_not_found_message">For at blåtannoppdagelse skal virke med nyere enheter, må stedstjenester være aktivert. xDrip kan ikke spore posisjonen din, og det kan deaktiveres etter at paringen er vellykket.</string>
+	<string name="location_not_found_message">For at blåtannsøk skal virke med nyere enheter, må stedstjenester være aktivert. xDrip kan ikke spore posisjonen din, og det kan deaktiveres etter at paringen er vellykket.</string>
 	<string name="location_yes">Aktiver</string>
 
 	<!-- broadcast settings -->
@@ -162,7 +162,7 @@
 	<string name="send_feedback_to_developer">Send tilbakemelding til utvikleren</string>
 	<string name="home_screen">Startskjermen</string>
 	<string name="calibration_graph">Kalibreringsgraf</string>
-	<string name="glucose_units">Glukose Enheter</string>
+	<string name="glucose_units">Glukoseenheter</string>
 	<string name="mmol_or_mgdl_high_and_low">mmol/l eller mg/dl høyt og lavt</string>
 	<string name="general_settings">Generelle innstillinger</string>
 	<string name="high_value">Høy verdi</string>
@@ -181,12 +181,12 @@
 	<string name="xdrip_plus_update_settings">xDrip+ Oppdater innstillinger</string>
 	<string name="automatic_update_check">Automatisk oppdatering sjekk</string>
 	<string name="update_channel">Oppdateringskanal</string>
-	<string name="send_crash_errors_to_developer">Send kræsjfeil til utvikler</string>
-	<string name="automatic_crash_reporting">Automatisk kræsjrapportering</string>
+	<string name="send_crash_errors_to_developer">Send krasjfeil til utvikler</string>
+	<string name="automatic_crash_reporting">Automatisk krasjrapportering</string>
 	<string name="send_feedback_message">Send tilbakemelding</string>
 	<string name="copying_settings">Kopiering Innstillinger</string>
 	<string name="show_settings_qr_codes">Vis Innstillings QR-koder</string>
-	<string name="load_save_settings_to_sdcard">Last / lagre innstillinger til SDcard</string>
+	<string name="load_save_settings_to_sdcard">Last inn / lagre innstillinger på SDkort</string>
 	<string name="alarms_and_alerts">Alarmer og Varslinger</string>
 	<string name="alerts_and_notifications">Varsler og Beskjeder</string>
 	<string name="glucose_level_alerts_list">Liste av Glukosenivå Varsler</string>
@@ -581,7 +581,7 @@
 	<string name="battery_optimization_on">Ikke fortsett å spørre om batterioptimalisering. Ikke anbefalt</string>
 	<string name="battery_optimization_prompt">Batterioptimaliserings forespørsel</string>
 	<string name="advanced_bluetooth_settings">Avanserte Blåtanninstillinger</string>
-	<string name="bluetooth_settings">Blåtallinnstillinger</string>
+	<string name="bluetooth_settings">Blåtanninnstillinger</string>
 	<string name="auto_turn_on_bluetooth">Skru på blåtann automatisk hvis den er skrudd av når vi prøver å koble til en blåtannenhet</string>
 	<string name="turn_bluetooth_on">Skru på blåtann</string>
 	<string name="reset_bluetooth">Tilbakestill blåtann ved å skru den av og på hvis vi ikke får data på 20 minutter</string>
@@ -783,7 +783,7 @@
 	<string name="show_test_features">Vis ekstra og alpha test funksjoner</string>
 	<string name="show_reminder_features">Vis påminnelsesmeny og funksjoner</string>
 	<string name="enable_reminder_features">Aktiver påminnelsesfunksjon</string>
-	<string name="display_mathamatical_simulations">Vis matematisk simulering basert på profildata og karbohydrat/insuling log</string>
+	<string name="display_mathamatical_simulations">Vis matematisk simulering basert på profildata og karbohydrat/insulin log</string>
 	<string name="predictive_simulations">Forutseende simuleringer</string>
 	<string name="low_prediction_values">Lavt beregnet nivå verdier</string>
 	<string name="target_glucose_default">Standard for glukosemål</string>
