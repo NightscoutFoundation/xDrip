@@ -168,7 +168,7 @@ public class ActiveBgAlert extends Model {
     // This function is called from ClockTick, when we play
     // If we were snoozed, we update the snooze to false, and update the start time.
     // return the time in minutes from the time playing the alert has started
-    public int getUpdatePlayTime() {
+    public int getAndUpdateAlertingMinutes() {
         if(is_snoozed) {
             is_snoozed = false;
             alert_started_at = new Date().getTime();

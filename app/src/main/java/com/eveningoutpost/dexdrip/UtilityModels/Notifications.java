@@ -514,7 +514,7 @@ public class Notifications extends IntentService {
         
         AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
 
-        
+        // TODO use JoH wakeup
         Log.d("Notifications" , "ArmTimer waking at: "+ new Date(wakeTime ) +" in " +
             (wakeTime - now) /60000d + " minutes");
         if (wakeIntent != null)
