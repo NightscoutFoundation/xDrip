@@ -54,7 +54,7 @@ import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.newCl
 
 @Table(name = "BgReadings", id = BaseColumns._ID)
 public class BgReading extends Model implements ShareUploadableBg {
-    private static boolean predictBG;
+
     private final static String TAG = BgReading.class.getSimpleName();
     private final static String TAG_ALERT = TAG + " AlertBg";
     private final static String PERSISTENT_HIGH_SINCE = "persistent_high_since";
@@ -1374,7 +1374,7 @@ public class BgReading extends Model implements ShareUploadableBg {
             save();
         }
     }
-    public static double weightedAverageRaw(double timeA, double timeB, double calibrationTime, double rawA, double rawB) {
+    private static double weightedAverageRaw(double timeA, double timeB, double calibrationTime, double rawA, double rawB) {
         final double relativeSlope = (rawB -  rawA)/(timeB - timeA);
         final double relativeIntercept = rawA - (relativeSlope * timeA);
         return ((relativeSlope * calibrationTime) + relativeIntercept);

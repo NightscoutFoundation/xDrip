@@ -24,6 +24,7 @@ import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.NewDataObserver;
 import com.eveningoutpost.dexdrip.Services.SyncService;
 import com.eveningoutpost.dexdrip.ShareModels.BgUploader;
 import com.eveningoutpost.dexdrip.ShareModels.Models.ShareUploadPayload;
@@ -87,6 +88,7 @@ public class BgSendQueue extends Model {
                 .execute();
     }
 
+    @Deprecated
     private static void addToQueue(BgReading bgReading, String operation_type) {
         BgSendQueue bgSendQueue = new BgSendQueue();
         bgSendQueue.operation_type = operation_type;
@@ -107,11 +109,8 @@ public class BgSendQueue extends Model {
 
     // TODO extract to non depreciated class
     public static void handleNewBgReading(BgReading bgReading, String operation_type, Context context, boolean is_follower, boolean quick) {
-        // TODO use JoH
-        PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-        PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
-                "sendQueue");
-        wakeLock.acquire(120000);
+
+        final PowerManager.WakeLock wakeLock = JoH.getWakeLock("sendQueue", 120000);
         try {
             if (!is_follower) {
               //  addToQueue(bgReading, operation_type);
@@ -124,12 +123,12 @@ public class BgSendQueue extends Model {
 
             if (!quick) {
                 if (Home.activityVisible) {
-                    Intent updateIntent = new Intent(Intents.ACTION_NEW_BG_ESTIMATE_NO_DATA);
-                    context.sendBroadcast(updateIntent);
+                    context.sendBroadcast(new Intent(Intents.ACTION_NEW_BG_ESTIMATE_NO_DATA));
                 }
 
                 if (AppWidgetManager.getInstance(context).getAppWidgetIds(new ComponentName(context, xDripWidget.class)).length > 0) {
-                    context.startService(new Intent(context, WidgetUpdateService.class));
+                    //context.startService(new Intent(context, WidgetUpdateService.class));
+                    JoH.startService(WidgetUpdateService.class);
                 }
             }
             BestGlucose.DisplayGlucose dg = null;
@@ -212,8 +211,8 @@ public class BgSendQueue extends Model {
                 //just keep it alive for 3 more seconds to allow the watch to be updated
                 // TODO: change NightWatch to not allow the system to sleep.
                 if ((!quick) && (prefs.getBoolean("excessive_wakelocks", false))) {
-                    powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
-                            "broadcstNightWatch").acquire(3000);
+                    // dangling wakelock
+                    JoH.getWakeLock("broadcstNightWatch",3000);
                 }
             }
 
@@ -229,9 +228,13 @@ public class BgSendQueue extends Model {
             }*/
 
             // send to pebble
-            if ((!quick) && (prefs.getBoolean("broadcast_to_pebble", false) )
+            /*if ((!quick) && (prefs.getBoolean("broadcast_to_pebble", false) )
                     && (PebbleUtil.getCurrentPebbleSyncType(prefs) != 1)) {
                 context.startService(new Intent(context, PebbleWatchSync.class));
+            }*/
+
+            if (!quick) {
+                NewDataObserver.pebble();
             }
 
             if ((!is_follower) && (prefs.getBoolean("plus_follow_master", false))) {
@@ -275,6 +278,7 @@ public class BgSendQueue extends Model {
         }
     }
 
+    @Deprecated
     public void markMongoSuccess() {
         this.mongo_success = true;
         save();
