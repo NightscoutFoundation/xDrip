@@ -212,17 +212,34 @@
 
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/watch_time"
-            android:textSize="35sp"
-            android:text="12:00"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:textColor="#FFFFFF"
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAlignment="center"
-            android:layout_gravity="center_horizontal|top" />
+            android:layout_gravity="center_horizontal">
+            <TextView
+                android:id="@+id/watch_date"
+                android:textSize="14sp"
+                android:text="ddd mm/dd"
+                android:textColor="#FFFFFF"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:singleLine="false"
+                android:layout_gravity="center_horizontal|center_vertical"
+                android:gravity="bottom|start" />
+            <TextView
+                android:id="@+id/watch_time"
+                android:textSize="35sp"
+                android:text="12:00"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:textColor="#FFFFFF"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:layout_gravity="center_horizontal|top" />
+        </LinearLayout>
 
         <lecho.lib.hellocharts.view.LineChartView
             android:id="@+id/chart"
