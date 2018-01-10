@@ -1210,7 +1210,7 @@ public class Preferences extends PreferenceActivity {
 
             // Pebble Trend -- START
 
-            int currentPebbleSync = PebbleUtil.getCurrentPebbleSyncType(this.prefs);
+            int currentPebbleSync = PebbleUtil.getCurrentPebbleSyncType();
 
             if (currentPebbleSync == 1) {
                 watchCategory.removePreference(pebbleSpecialValue);
@@ -1257,7 +1257,7 @@ public class Preferences extends PreferenceActivity {
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     final Context context = preference.getContext();
 
-                    int oldPebbleType = PebbleUtil.getCurrentPebbleSyncType(AllPrefsFragment.this.prefs);
+                    int oldPebbleType = PebbleUtil.getCurrentPebbleSyncType();
                     int pebbleType = PebbleUtil.getCurrentPebbleSyncType(newValue);
 
                     // install watchface

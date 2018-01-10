@@ -50,7 +50,7 @@ public class MissedReadingService extends IntentService {
         final long stale_millis = Home.stale_data_millis();
 
         // send to pebble
-        if (prefs.getBoolean("broadcast_to_pebble", false) && (PebbleUtil.getCurrentPebbleSyncType(prefs) != 1) && !BgReading.last_within_millis(stale_millis)) {
+        if (prefs.getBoolean("broadcast_to_pebble", false) && (PebbleUtil.getCurrentPebbleSyncType() != 1) && !BgReading.last_within_millis(stale_millis)) {
             if (JoH.ratelimit("peb-miss",120)) context.startService(new Intent(context, PebbleWatchSync.class));
             // update pebble even when we don't have data to ensure missed readings show
         }

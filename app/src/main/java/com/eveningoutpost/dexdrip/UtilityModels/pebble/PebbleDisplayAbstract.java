@@ -36,6 +36,22 @@ public abstract class PebbleDisplayAbstract implements PebbleDisplayInterface {
     protected static final int BG_DELTA_KEY = 4;
     protected static final int UPLOADER_BATTERY_KEY = 5;
     protected static final int NAME_KEY = 6;
+    protected static final int TREND_BEGIN_KEY = 7;
+    protected static final int TREND_DATA_KEY = 8;
+    protected static final int TREND_END_KEY = 9;
+    protected static final int MESSAGE_KEY = 10;
+    protected static final int VIBE_KEY = 11;
+
+    protected static final int TBR_KEY = 12;
+    protected static final int IOB_KEY = 13;
+
+    protected static final int NO_BLUETOOTH_KEY = 111;
+    protected static final int COLLECT_HEALTH_KEY = 112;
+
+    protected static final int SYNC_KEY = 1000;
+    protected static final int PLATFORM_KEY = 1001;
+    protected static final int VERSION_KEY = 1002;
+
 
     protected static final int NUM_VALUES =(60/5)*24;
 

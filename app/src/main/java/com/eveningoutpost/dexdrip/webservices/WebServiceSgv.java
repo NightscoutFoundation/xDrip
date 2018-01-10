@@ -14,6 +14,10 @@ import org.json.JSONObject;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
+
+import static com.eveningoutpost.dexdrip.wearintegration.ExternalStatusService.getLastStatusLine;
+import static com.eveningoutpost.dexdrip.wearintegration.ExternalStatusService.getLastStatusLineTime;
 
 
 /**
@@ -42,12 +46,24 @@ public class WebServiceSgv extends BaseWebService {
     // process the request and produce a response object
     public WebResponse request(String query) {
 
+        int steps_result_code = 0; // result code for any steps cgi parameters, 200 = good
+
+        final Map<String, String> cgi = getQueryParameters(query);
+
+        if (cgi.containsKey("steps")) {
+            UserError.Log.d(TAG, "Received steps request: " + cgi.get("steps"));
+            // forward steps request to steps route
+            final WebResponse steps_reply_wr = RouteFinder.handleRoute("steps/set/" + cgi.get("steps"));
+            steps_result_code = steps_reply_wr.resultCode;
+        }
+
         final JSONArray reply = new JSONArray();
         final List<BgReading> readings = BgReading.latest(24);
         // populate json structures
         try {
 
             final String collector_device = DexCollectionType.getBestCollectorHardwareName();
+            String external_status_line = getLastStatusLine();
 
             // for each reading produce a json record
             for (BgReading reading : readings) {
@@ -65,6 +81,19 @@ public class WebServiceSgv extends BaseWebService {
                 item.put("unfiltered", (long) (reading.raw_data * 1000));
                 item.put("rssi", 100);
                 item.put("type", "sgv");
+
+                // emit the external status line once if present
+                if (external_status_line.length() > 0) {
+                    item.put("aaps", external_status_line);
+                    item.put("aaps-ts", getLastStatusLineTime());
+                    external_status_line = "";
+                }
+
+                // emit result code from steps if present
+                if (steps_result_code > 0) {
+                    item.put("steps_result", steps_result_code);
+                    steps_result_code = 0;
+                }
 
                 reply.put(item);
             }

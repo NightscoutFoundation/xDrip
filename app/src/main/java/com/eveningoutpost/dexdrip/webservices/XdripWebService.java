@@ -6,8 +6,12 @@ import android.util.Log;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.xdrip;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -16,13 +20,24 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.net.URLDecoder;
+
+import javax.net.ssl.SSLHandshakeException;
+import javax.net.ssl.SSLServerSocketFactory;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocket;
 
 /**
  * Created by jamorham on 06/01/2018.
  * <p>
- * Provide a webservice on localhost port 17580 respond to incoming requests either for data or
+ * Provides a webservice on localhost port 17580 respond to incoming requests either for data or
  * to push events in.
+ * <p>
+ * Also provides a https webservice on localhost port 17581 which presents the key / certificate
+ * contained in the raw resource localhost_cert.bks - More work is likely needed for a chain
+ * which passes validation but this provides some structure for that or similar services.
+ * <p>
  * <p>
  * Designed for watches which support only a http interface
  * <p>
@@ -35,11 +50,13 @@ public class XdripWebService implements Runnable {
 
     private static final String TAG = "xDripWebService";
     private static volatile XdripWebService instance = null;
+    private static volatile XdripWebService ssl_instance = null;
 
     /**
      * The port number we listen to
      */
     private final int mPort;
+    private final boolean mSSL;
 
     /**
      * True if the server is running.
@@ -54,8 +71,9 @@ public class XdripWebService implements Runnable {
     /**
      * WebServer constructor.
      */
-    private XdripWebService(int port) {
-        mPort = port;
+    private XdripWebService(int port, boolean use_ssl) {
+        this.mPort = port;
+        this.mSSL = use_ssl;
     }
 
     // start the service if needed, shut it down if not
@@ -75,6 +93,8 @@ public class XdripWebService implements Runnable {
             UserError.Log.d(TAG, "running easyStop()");
             instance.stop();
             instance = null;
+            ssl_instance.stop();
+            ssl_instance = null;
         } catch (NullPointerException e) {
             // concurrency issue
         }
@@ -84,9 +104,11 @@ public class XdripWebService implements Runnable {
     private static synchronized void easyStart() {
         if (instance == null) {
             UserError.Log.d(TAG, "easyStart() Starting new instance");
-            instance = new XdripWebService(17580);
+            instance = new XdripWebService(17580, false);
+            ssl_instance = new XdripWebService(17581, true);
         }
         instance.startIfNotRunning();
+        ssl_instance.startIfNotRunning();
     }
 
     // start thread if needed
@@ -126,10 +148,21 @@ public class XdripWebService implements Runnable {
         return mPort;
     }
 
+
     @Override
     public void run() {
         try {
-            mServerSocket = new ServerSocket(mPort, 1, InetAddress.getByName("127.0.0.1"));
+            if (mSSL) {
+                // SSL type
+                UserError.Log.d(TAG, "Attempting to initialize SSL");
+                final SSLServerSocketFactory ssocketFactory = SSLServerSocketHelper.makeSSLSocketFactory(
+                        new BufferedInputStream(xdrip.getAppContext().getResources().openRawResource(R.raw.localhost_cert)),
+                        "password".toCharArray());
+                mServerSocket = ssocketFactory.createServerSocket(mPort, 1, InetAddress.getByName("127.0.0.1"));
+            } else {
+                // Non-SSL type
+                mServerSocket = new ServerSocket(mPort, 1, InetAddress.getByName("127.0.0.1"));
+            }
             while (mIsRunning) {
                 final Socket socket = mServerSocket.accept();
                 handle(socket);
@@ -149,10 +182,33 @@ public class XdripWebService implements Runnable {
      * @throws IOException
      */
     private void handle(Socket socket) throws IOException {
-        final PowerManager.WakeLock wl = JoH.getWakeLock("webservice-handler", 10000);
+        final PowerManager.WakeLock wl = JoH.getWakeLock("webservice-handler", 20000);
         BufferedReader reader = null;
         PrintStream output = null;
         try {
+            socket.setSoTimeout((int) (Constants.SECOND_IN_MS * 10));
+            try {
+                if (socket instanceof SSLSocket) {
+                    // if ssl
+                    UserError.Log.d(TAG, "Attempting SSL handshake");
+                    final SSLSocket sslSocket = (SSLSocket) socket;
+
+                    sslSocket.startHandshake();
+                    final SSLSession sslSession = sslSocket.getSession();
+
+                    UserError.Log.d(TAG, "SSLSession :");
+                    UserError.Log.d(TAG, "\tProtocol : " + sslSession.getProtocol());
+                    UserError.Log.d(TAG, "\tCipher suite : " + sslSession.getCipherSuite());
+                }
+            } catch (SSLHandshakeException e) {
+                UserError.Log.e(TAG, "SSL ERROR: " + e.toString());
+                return;
+            } catch (Exception e) {
+                UserError.Log.e(TAG, "SSL unknown error: " + e);
+                return;
+            }
+
+
             String route = null;
 
             // Read HTTP headers and parse out the route.
@@ -177,22 +233,7 @@ public class XdripWebService implements Runnable {
                 return;
             }
 
-            WebResponse response = null;
-
-            // find a module based on our query string
-            if (route.startsWith("pebble")) {
-                // support for pebble nightscout watchface emulates /pebble Nightscout endpoint
-                response = WebServicePebble.getInstance().request(route);
-            } else if (route.startsWith("tasker/")) {
-                // forward the request to tasker interface
-                response = WebServiceTasker.getInstance().request(route);
-            } else if (route.startsWith("sgv.json")) {
-                // support for nightscout style sgv.json endpoint
-                response = WebServiceSgv.getInstance().request(route);
-            } else {
-                // error not found
-                response = new WebResponse("Path not found: " + route + "\r\n", 404, "text/plain");
-            }
+            final WebResponse response = RouteFinder.handleRoute(route);
 
             // if we didn't manage to generate a response
             if (response == null) {
@@ -200,22 +241,23 @@ public class XdripWebService implements Runnable {
                 return;
             }
 
-            byte[] bytes = response.bytes;
-
             // if the response bytes are null
-            if (bytes == null) {
+            if (response.bytes == null) {
                 writeServerError(output);
                 return;
             }
             // Send out the content.
             output.println("HTTP/1.0 " + response.resultCode + " OK");
             output.println("Content-Type: " + response.mimeType);
-            output.println("Content-Length: " + bytes.length);
+            output.println("Content-Length: " + response.bytes.length);
             output.println();
-            output.write(bytes);
+            output.write(response.bytes);
             output.flush();
 
-            UserError.Log.d(TAG, "Sent response: " + bytes.length + " bytes, code: " + response.resultCode + " mimetype: " + response.mimeType);
+            UserError.Log.d(TAG, "Sent response: " + response.bytes.length + " bytes, code: " + response.resultCode + " mimetype: " + response.mimeType);
+
+        } catch (SocketTimeoutException e) {
+            UserError.Log.d(TAG, "Got socket timeout: " + e);
 
         } finally {
             if (output != null) {

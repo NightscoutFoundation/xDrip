@@ -873,6 +873,10 @@ public class JoH {
         }
     }
 
+    public static void startService(Class c) {
+        xdrip.getAppContext().startService(new Intent(xdrip.getAppContext(), c));
+    }
+
     public static void goFullScreen(boolean fullScreen, View decorView) {
 
         if (fullScreen) {

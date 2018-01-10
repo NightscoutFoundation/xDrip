@@ -40,6 +40,7 @@ public class PebbleDisplayTrendOld extends PebbleDisplayAbstract {
 
     private final static String TAG = PebbleDisplayTrendOld.class.getSimpleName();
 
+  /*
     public static final int TREND_BEGIN_KEY = 7;
     public static final int TREND_DATA_KEY = 8;
     public static final int TREND_END_KEY = 9;
@@ -52,8 +53,8 @@ public class PebbleDisplayTrendOld extends PebbleDisplayAbstract {
     public static final int SYNC_KEY = 1000;
     public static final int PLATFORM_KEY = 1001;
     public static final int VERSION_KEY = 1002;
-
-    public static final int CHUNK_SIZE = 100;
+*/
+    private static final int CHUNK_SIZE = 100;
     public static final boolean d = false;
 
     private static byte last_collect_health_key_byte = 0x1A;

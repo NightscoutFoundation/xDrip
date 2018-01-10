@@ -2422,7 +2422,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         }
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Collecting Initial Readings");
+        builder.setTitle(R.string.collecting_initial_readings);
         initial_status_binding = PopupInitialStatusHelperBinding.inflate(getLayoutInflater());
         initial_status_binding.setIdq(initialDataQuality);
         if (microStatus == null) microStatus = new MicroStatusImpl();

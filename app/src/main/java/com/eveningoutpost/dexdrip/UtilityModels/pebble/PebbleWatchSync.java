@@ -104,7 +104,7 @@ public class PebbleWatchSync extends Service {
 
 
     public static PebbleDisplayType getCurrentBroadcastToPebbleSetting() {
-        int pebbleType = PebbleUtil.getCurrentPebbleSyncType(PreferenceManager.getDefaultSharedPreferences(context));
+        int pebbleType = PebbleUtil.getCurrentPebbleSyncType();
 
         return PebbleUtil.getPebbleDisplayType(pebbleType);
     }

@@ -473,6 +473,9 @@ public class NFCReaderX {
 
         long sensorStartTime = ourTime - sensorTime * MINUTE;
 
+        // option to use 13 bit mask
+        final boolean thirteen_bit_mask = Pref.getBooleanDefaultFalse("testing_use_thirteen_bit_mask");
+
         ArrayList<GlucoseData> historyList = new ArrayList<>();
 
 
@@ -485,7 +488,7 @@ public class NFCReaderX {
             //       getGlucose(new byte[]{data[(i * 6 + 125)], data[(i * 6 + 124)]});
 
             glucoseData.glucoseLevelRaw =
-                    getGlucoseRaw(new byte[]{data[(i * 6 + 125)], data[(i * 6 + 124)]});
+                    getGlucoseRaw(new byte[]{data[(i * 6 + 125)], data[(i * 6 + 124)]}, thirteen_bit_mask);
 
             int time = Math.max(0, Math.abs((sensorTime - 3) / 15) * 15 - index * 15);
 
@@ -507,7 +510,7 @@ public class NFCReaderX {
             //         getGlucose(new byte[]{data[(i * 6 + 29)], data[(i * 6 + 28)]});
 
             glucoseData.glucoseLevelRaw =
-                    getGlucoseRaw(new byte[]{data[(i * 6 + 29)], data[(i * 6 + 28)]});
+                    getGlucoseRaw(new byte[]{data[(i * 6 + 29)], data[(i * 6 + 28)]}, thirteen_bit_mask);
             int time = Math.max(0, sensorTime - index);
 
             glucoseData.realDate = sensorStartTime + time * MINUTE;
@@ -521,8 +524,12 @@ public class NFCReaderX {
     }
 
 
-    private static int getGlucoseRaw(byte[] bytes) {
-        return ((256 * (bytes[0] & 0xFF) + (bytes[1] & 0xFF)) & 0x0FFF);
+    private static int getGlucoseRaw(byte[] bytes, boolean thirteen) {
+        if (thirteen) {
+            return ((256 * (bytes[0] & 0xFF) + (bytes[1] & 0xFF)) & 0x1FFF);
+        } else {
+            return ((256 * (bytes[0] & 0xFF) + (bytes[1] & 0xFF)) & 0x0FFF);
+        }
     }
 
     public static void vibrate(Context context, int pattern) {

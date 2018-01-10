@@ -245,7 +245,7 @@ public class CollectionServiceStarter {
             startFollowerThread();
         }
 
-        if (prefs.getBoolean("broadcast_to_pebble", false) && (PebbleUtil.getCurrentPebbleSyncType(prefs) != 1)) {
+        if (prefs.getBoolean("broadcast_to_pebble", false) && (PebbleUtil.getCurrentPebbleSyncType() != 1)) {
             startPebbleSyncService();
         }
 

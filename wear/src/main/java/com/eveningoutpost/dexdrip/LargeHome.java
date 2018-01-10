@@ -80,6 +80,7 @@ public class LargeHome extends BaseWatchFace {
     protected void setColorDark(){
         mLinearLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mLinearLayout));
         mTime.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mTime));
+        mDate.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mTime));
         mRelativeLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_background));
         if (sgvLevel == 1) {
             mSgv.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_highColor));
@@ -152,6 +153,7 @@ public class LargeHome extends BaseWatchFace {
             }
             mStatus.setTextColor(Color.WHITE);
             mTime.setTextColor(Color.BLACK);
+            mDate.setTextColor(Color.BLACK);
         } else {
             mRelativeLayout.setBackgroundColor(Color.BLACK);
             mLinearLayout.setBackgroundColor(Color.LTGRAY);
@@ -173,6 +175,7 @@ public class LargeHome extends BaseWatchFace {
             mTimestamp.setTextColor(Color.BLACK);
             mStatus.setTextColor(Color.BLACK);
             mTime.setTextColor(Color.WHITE);
+            mDate.setTextColor(Color.WHITE);
         }
     }
 
@@ -180,6 +183,7 @@ public class LargeHome extends BaseWatchFace {
     protected void setColorLowRes() {
         mLinearLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mLinearLayout));
         mTime.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mTime));
+        mDate.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mTime));
         mRelativeLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_background));
         mSgv.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor));
         mDelta.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor));

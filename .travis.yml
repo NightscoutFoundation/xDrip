@@ -46,8 +46,13 @@ script:
   - adb shell settings put global window_animation_scale 0
   - adb shell settings put global transition_animation_scale 0
   - adb shell settings put global animator_duration_scale 0
+  - sleep 30
   - adb shell input keyevent 82
   - adb devices
 #  - ./gradlew app:installDebugAndroidTest  -PdisablePreDex
   - travis_retry travis_wait ./gradlew app:connectedAndroidTest -PdisablePreDex
   - ./gradlew assembleRelease
+
+after_failure:
+  - cat app/build/reports/tests/testDebugUnitTest/index.html
+  - cat app/build/reports/tests/testReleaseUnitTest/index.html
