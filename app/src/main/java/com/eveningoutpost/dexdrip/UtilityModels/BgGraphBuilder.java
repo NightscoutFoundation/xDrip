@@ -1275,17 +1275,17 @@ public class BgGraphBuilder {
                         if (height > highMark) height = highMark;
                         if (height < lowMark) height = lowMark;
 
-                        PointValueExtended pv = new PointValueExtended((float) (treatment.timestamp / FUZZER), (float) height);
+                        final PointValueExtended pv = new PointValueExtended((float) (treatment.timestamp / FUZZER), (float) height);
                         String mylabel = "";
                         if (treatment.insulin > 0) {
                             if (mylabel.length() > 0)
                                 mylabel = mylabel + System.getProperty("line.separator");
-                            mylabel = mylabel + (Double.toString(treatment.insulin) + "u").replace(".0u", "u");
+                            mylabel = mylabel + (JoH.qs(treatment.insulin,2) + "u").replace(".0u", "u");
                         }
                         if (treatment.carbs > 0) {
                             if (mylabel.length() > 0)
                                 mylabel = mylabel + System.getProperty("line.separator");
-                            mylabel = mylabel + (Double.toString(treatment.carbs) + "g").replace(".0g", "g");
+                            mylabel = mylabel + (JoH.qs(treatment.carbs,1) + "g").replace(".0g", "g");
                         }
                         pv.setLabel(mylabel); // standard label
                         //Log.d(TAG, "watchkeypad pv.mylabel: " + mylabel);
