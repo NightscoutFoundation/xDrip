@@ -54,5 +54,9 @@ script:
   - ./gradlew assembleRelease
 
 after_failure:
+  - adb shell screencap -p | sed 's/\r$//' > failure-screen.png
+  - curl -L -o imgur.sh https://github.com/tremby/imgur.sh/raw/master/imgur.sh
+  - chmod 700 ./imgur.sh
+  - ./imgur.sh failure-screen.png
   - cat app/build/reports/tests/testDebugUnitTest/classes/*
   - cat app/build/reports/tests/testReleaseUnitTest/classes/*
