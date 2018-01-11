@@ -3,9 +3,9 @@ sudo: required
 
 env:
   global:
-    - EMULATOR_API_LEVEL=21
+    - EMULATOR_API_LEVEL=19
     - ANDROID_ABI=armeabi-v7a
-    - ADB_INSTALL_TIMEOUT=15
+    - ADB_INSTALL_TIMEOUT=20
     - AVD_DEBUG='init,avd_config,nand_limits,keys,adb,adbserver,adbclient'
 
 android:
@@ -46,8 +46,17 @@ script:
   - adb shell settings put global window_animation_scale 0
   - adb shell settings put global transition_animation_scale 0
   - adb shell settings put global animator_duration_scale 0
+  - sleep 35
   - adb shell input keyevent 82
   - adb devices
-  - ./gradlew app:installDebugAndroidTest  -PdisablePreDex
+#  - ./gradlew app:installDebugAndroidTest  -PdisablePreDex
   - travis_retry travis_wait ./gradlew app:connectedAndroidTest -PdisablePreDex
   - ./gradlew assembleRelease
+
+after_failure:
+  - adb shell screencap -p | sed 's/\r$//' > failure-screen.png
+  - curl -L -o imgur.sh https://github.com/tremby/imgur.sh/raw/master/imgur.sh
+  - chmod 700 ./imgur.sh
+  - ./imgur.sh failure-screen.png
+  - cat app/build/reports/tests/testDebugUnitTest/classes/*
+  - cat app/build/reports/tests/testReleaseUnitTest/classes/*

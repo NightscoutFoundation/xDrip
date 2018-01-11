@@ -6,7 +6,6 @@ import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -22,7 +21,6 @@ import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
-import android.text.SpannableString;
 
 //KS import com.eveningoutpost.dexdrip.AddCalibration;
 //KS import com.eveningoutpost.dexdrip.BestGlucose;
@@ -42,7 +40,6 @@ import com.eveningoutpost.dexdrip.R;
 //KS import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.Services.MissedReadingService;
 import com.eveningoutpost.dexdrip.Services.SnoozeOnNotificationDismissService;
-import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.PowerStateReceiver;
 import com.eveningoutpost.dexdrip.xdrip;
 
@@ -128,11 +125,11 @@ public class Notifications extends IntentService {
             Log.d("Notifications", "Running Notifications Intent Service");
             final Context context = getApplicationContext();
 
-            bg_notifications = Home.getPreferencesBoolean("bg_notifications", false);
+            bg_notifications = Pref.getBoolean("bg_notifications", false);
             if (bg_notifications) {
                 //KS TODO ActivityRecognizedService.reStartActivityRecogniser(context);
 
-                /* //KS TODO if (Home.getPreferencesBoolean("motion_tracking_enabled", false)) {
+                /* //KS TODO if (Pref.getBoolean("motion_tracking_enabled", false)) {
                     ActivityRecognizedService.reStartActivityRecogniser(context);
                 }*/
 
@@ -370,7 +367,7 @@ public class Notifications extends IntentService {
             }
             // bgreadings criteria possibly needs a review
             if (CalibrationRequest.shouldRequestCalibration(bgReading) && (new Date().getTime() - bgReadings.get(2).timestamp <= (60000 * 24))) {
-                if ((!PowerStateReceiver.is_power_connected()) || (Home.getPreferencesBooleanDefaultFalse("calibration_alerts_while_charging"))) {
+                if ((!PowerStateReceiver.is_power_connected()) || (Pref.getBooleanDefaultFalse("calibration_alerts_while_charging"))) {
                     if (JoH.pratelimit("calibration-request-notification", CALIBRATION_REQUEST_MAX_FREQUENCY)) {
                         extraCalibrationRequest();
                     }
@@ -382,9 +379,9 @@ public class Notifications extends IntentService {
             if (calibrations.size() >= 1 && (Math.abs((new Date().getTime() - calibrations.get(0).timestamp)) / (1000 * 60 * 60) > 12)
                     && (CalibrationRequest.isSlopeFlatEnough(BgReading.last(true)))) {
                 Log.d("NOTIFICATIONS", "Calibration difference in hours: " + ((new Date().getTime() - calibrations.get(0).timestamp)) / (1000 * 60 * 60));
-                if ((!PowerStateReceiver.is_power_connected()) || (Home.getPreferencesBooleanDefaultFalse("calibration_alerts_while_charging"))) {
+                if ((!PowerStateReceiver.is_power_connected()) || (Pref.getBooleanDefaultFalse("calibration_alerts_while_charging"))) {
                     // TODO check slope
-                    if (JoH.pratelimit("calibration-request-notification", CALIBRATION_REQUEST_MIN_FREQUENCY) || Home.getPreferencesBooleanDefaultFalse("calibration_alerts_repeat")) {
+                    if (JoH.pratelimit("calibration-request-notification", CALIBRATION_REQUEST_MIN_FREQUENCY) || Pref.getBooleanDefaultFalse("calibration_alerts_repeat")) {
                         calibrationRequest();
                     }
                 }
@@ -604,7 +601,7 @@ public class Notifications extends IntentService {
                     .setStart(System.currentTimeMillis() - 60000 * 60 * 3)
                     .showAxes(true)
                     .setBackgroundColor(getCol(X.color_notification_chart_background))
-                    .setShowFiltered(DexCollectionType.hasFiltered() && Home.getPreferencesBooleanDefaultFalse("show_filtered_curve"))
+                    .setShowFiltered(DexCollectionType.hasFiltered() && Pref.getBooleanDefaultFalse("show_filtered_curve"))
                     .build();
             bigPictureStyle.bigPicture(notifiationBitmap)
                     .setSummaryText(deltaString)
@@ -799,7 +796,7 @@ public class Notifications extends IntentService {
     public static void lowPredictAlert(Context context, boolean on, String msg) {
         final String type = "bg_predict_alert";
         if (on) {
-            if ((Home.getPreferencesLong("alerts_disabled_until", 0) < JoH.tsl()) && (Home.getPreferencesLong("low_alerts_disabled_until", 0) < JoH.tsl())) {
+            if ((Pref.getLong("alerts_disabled_until", 0) < JoH.tsl()) && (Pref.getLong("low_alerts_disabled_until", 0) < JoH.tsl())) {
                 OtherAlert(context, type, msg, lowPredictAlertNotificationId, false,  20 * 60);
             } else {
                 Log.ueh(TAG, "Not Low predict alerting due to snooze: " + msg);
@@ -814,10 +811,10 @@ public class Notifications extends IntentService {
     public static void persistentHighAlert(Context context, boolean on, String msg) {
         final String type = "persistent_high_alert";
         if (on) {
-            if ((Home.getPreferencesLong("alerts_disabled_until", 0) < JoH.tsl()) && (Home.getPreferencesLong("high_alerts_disabled_until", 0) < JoH.tsl())) {
+            if ((Pref.getLong("alerts_disabled_until", 0) < JoH.tsl()) && (Pref.getLong("high_alerts_disabled_until", 0) < JoH.tsl())) {
                 int snooze_time = 20;
                 try {
-                    snooze_time = Integer.parseInt(Home.getPreferencesStringWithDefault("persistent_high_repeat_mins", "20"));
+                    snooze_time = Integer.parseInt(Pref.getString("persistent_high_repeat_mins", "20"));
                 } catch (NumberFormatException e) {
                     Log.e(TAG, "Invalid snooze time for persistent high");
                 }

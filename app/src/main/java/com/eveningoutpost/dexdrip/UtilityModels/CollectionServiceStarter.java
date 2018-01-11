@@ -5,7 +5,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Environment;
 import android.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.GcmActivity;
@@ -25,7 +24,6 @@ import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.eveningoutpost.dexdrip.xdrip;
 
-import java.io.IOException;
 import java.util.Calendar;
 
 /**
@@ -128,7 +126,7 @@ public class CollectionServiceStarter {
      * */
 
     public static boolean isLimitter() {
-        return Home.getPreferencesStringDefaultBlank("dex_collection_method").equals("LimiTTer");
+        return Pref.getStringDefaultBlank("dex_collection_method").equals("LimiTTer");
     }
 
     public static boolean isWifiWixel(String collection_method) {
@@ -195,7 +193,7 @@ public class CollectionServiceStarter {
             }
 
         } else if (isBTG5(collection_method)) {
-            Log.d("DexDrip", "Starting G5 share collector");
+            Log.d(TAG, "Starting G5 collector");
             stopBtWixelService();
             stopWifWixelThread();
             stopBtShareService();
@@ -247,7 +245,7 @@ public class CollectionServiceStarter {
             startFollowerThread();
         }
 
-        if (prefs.getBoolean("broadcast_to_pebble", false) && (PebbleUtil.getCurrentPebbleSyncType(prefs) != 1)) {
+        if (prefs.getBoolean("broadcast_to_pebble", false) && (PebbleUtil.getCurrentPebbleSyncType() != 1)) {
             startPebbleSyncService();
         }
 
@@ -255,7 +253,7 @@ public class CollectionServiceStarter {
         startDailyIntentService();
         Log.d(TAG, collection_method);
 
-        // Start logging to logcat
+      /*  // Start logging to logcat
         if (prefs.getBoolean("store_logs", false)) {
             String filePath = Environment.getExternalStorageDirectory() + "/xdriplogcat.txt";
             try {
@@ -265,7 +263,7 @@ public class CollectionServiceStarter {
             } catch (IOException e2) {
                 Log.e(TAG, "running logcat failed, is the device rooted?", e2);
             }
-        }
+        }*/
 
     }
 
@@ -353,7 +351,7 @@ public class CollectionServiceStarter {
         stopG5ShareService();
         Log.d(TAG, "starting G5 service");
         //if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
-       if (!Home.getPreferencesBooleanDefaultFalse(Ob1G5CollectionService.OB1G5_PREFS)) {
+       if (!Pref.getBooleanDefaultFalse(Ob1G5CollectionService.OB1G5_PREFS)) {
            G5CollectionService.keep_running = true;
            this.mContext.startService(new Intent(this.mContext, G5CollectionService.class));
        } else {

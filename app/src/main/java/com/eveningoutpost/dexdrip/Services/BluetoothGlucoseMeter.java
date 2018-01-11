@@ -40,6 +40,7 @@ import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.lang.reflect.Method;
@@ -375,7 +376,7 @@ public class BluetoothGlucoseMeter extends Service {
     }
 
     private static boolean playSounds() {
-        return Home.getPreferencesBoolean("bluetooth_meter_play_sounds", true);
+        return Pref.getBoolean("bluetooth_meter_play_sounds", true);
     }
 
     private synchronized static void forgetDevice(String address) {
@@ -560,10 +561,10 @@ public class BluetoothGlucoseMeter extends Service {
     }
 
     private synchronized void markDeviceAsSuccessful(BluetoothGatt gatt) {
-        if (!Home.getPreferencesStringDefaultBlank("selected_bluetooth_meter_address").equals(mLastConnectedDeviceAddress)) {
-            Home.setPreferencesString("selected_bluetooth_meter_address", mLastConnectedDeviceAddress);
-            Home.setPreferencesString("selected_bluetooth_meter_info", mLastManufacturer + "   " + mLastConnectedDeviceAddress);
-            Home.setPreferencesBoolean("bluetooth_meter_enabled", true); // auto-enable the setting
+        if (!Pref.getStringDefaultBlank("selected_bluetooth_meter_address").equals(mLastConnectedDeviceAddress)) {
+            Pref.setString("selected_bluetooth_meter_address", mLastConnectedDeviceAddress);
+            Pref.setString("selected_bluetooth_meter_info", mLastManufacturer + "   " + mLastConnectedDeviceAddress);
+            Pref.setBoolean("bluetooth_meter_enabled", true); // auto-enable the setting
             JoH.static_toast_long("Success with: " + mLastConnectedDeviceAddress + "  Enabling auto-start");
             if (gatt != null) sendDeviceUpdate(gatt.getDevice(), true); // force update
         }
@@ -687,8 +688,8 @@ public class BluetoothGlucoseMeter extends Service {
                         PersistentStore.setLong(timestamp_id, lastBloodTest.timestamp);
                         Log.d(TAG, "evaluateLastRecords: appears to be a new record: sequence:" + lastGlucoseRecord.sequence);
 
-                        if (Home.getPreferencesBooleanDefaultFalse("bluetooth_meter_for_calibrations")
-                                || Home.getPreferencesBooleanDefaultFalse("bluetooth_meter_for_calibrations_auto")) {
+                        if (Pref.getBooleanDefaultFalse("bluetooth_meter_for_calibrations")
+                                || Pref.getBooleanDefaultFalse("bluetooth_meter_for_calibrations_auto")) {
                             final long time_since = JoH.msSince(lastBloodTest.timestamp);
                             if (time_since >= 0) {
                                 if (time_since < (12 * Constants.HOUR_IN_MS)) {
@@ -704,7 +705,7 @@ public class BluetoothGlucoseMeter extends Service {
                                                 Home.staticRefreshBGCharts();
                                                 // requires offset in past
 
-                                                if ((Home.getPreferencesBooleanDefaultFalse("bluetooth_meter_for_calibrations_auto") && isSlopeFlatEnough())) {
+                                                if ((Pref.getBooleanDefaultFalse("bluetooth_meter_for_calibrations_auto") && isSlopeFlatEnough())) {
                                                     Log.d(TAG, "Slope flat enough for auto calibration");
                                                     if (!delay_calibration) {
                                                         Home.startHomeWithExtra(xdrip.getAppContext(),
@@ -717,7 +718,7 @@ public class BluetoothGlucoseMeter extends Service {
                                                         JoH.static_toast_long("Waiting for 15 minutes more sensor data for calibration");
                                                     }
                                                 } else {
-                                                    if (Home.getPreferencesBooleanDefaultFalse("bluetooth_meter_for_calibrations")) {
+                                                    if (Pref.getBooleanDefaultFalse("bluetooth_meter_for_calibrations")) {
                                                         // manual calibration
                                                         Home.startHomeWithExtra(xdrip.getAppContext(),
                                                                 Home.BLUETOOTH_METER_CALIBRATION,
@@ -961,7 +962,7 @@ public class BluetoothGlucoseMeter extends Service {
 
     public static void startIfNoRecentData() {
         if (JoH.quietratelimit("bluetooth-recent-check", 1800)) {
-            if (Home.getPreferencesBoolean("bluetooth_meter_enabled", false)) {
+            if (Pref.getBoolean("bluetooth_meter_enabled", false)) {
                 final List<BloodTest> btl = BloodTest.lastMatching(1, BLUETOOTH_GLUCOSE_METER_TAG + "%");
                 if ((btl == null) || (btl.size() == 0) || (JoH.msSince(btl.get(0).created_timestamp) > Constants.HOUR_IN_MS * 6)) {
                     if (JoH.pratelimit("restart_bluetooth_service", 3600 * 5)) {
@@ -974,8 +975,8 @@ public class BluetoothGlucoseMeter extends Service {
     }
 
     public static void startIfEnabled() {
-        if (Home.getPreferencesBoolean("bluetooth_meter_enabled", false)) {
-            final String meter_address = Home.getPreferencesStringDefaultBlank("selected_bluetooth_meter_address");
+        if (Pref.getBoolean("bluetooth_meter_enabled", false)) {
+            final String meter_address = Pref.getStringDefaultBlank("selected_bluetooth_meter_address");
             if (meter_address.length() > 5) {
                 if (JoH.pratelimit("bluetooth-glucose-immortality", 10)) {
                     UserError.Log.d(TAG, "Starting Service");
@@ -999,7 +1000,7 @@ public class BluetoothGlucoseMeter extends Service {
         final Intent start_intent = new Intent(xdrip.getAppContext(), BluetoothGlucoseMeter.class);
         if ((connect_address != null) && (connect_address.length() > 0)) {
             if (connect_address.equals("auto")) {
-                connect_address = Home.getPreferencesStringDefaultBlank("selected_bluetooth_meter_address");
+                connect_address = Pref.getStringDefaultBlank("selected_bluetooth_meter_address");
             }
             start_intent.putExtra("service_action", "connect");
             start_intent.putExtra("connect_address", connect_address);

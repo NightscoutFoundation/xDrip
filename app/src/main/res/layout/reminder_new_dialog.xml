@@ -160,7 +160,39 @@
             android:paddingTop="2dp"
             app:srcCompat="@drawable/ic_swap_vert_white_24dp" />
 
+
+        <CheckBox
+            android:id="@+id/weekDaysCheckbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/reminderRepeatcheckBox"
+
+
+            android:checked="true"
+            android:text="Weekdays" />
+
+        <CheckBox
+            android:id="@+id/weekEndsCheckbox"
+            android:layout_marginLeft="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/reminderRepeatcheckBox"
+            android:layout_toEndOf="@+id/weekDaysCheckbox"
+            android:checked="true"
+            android:text="Weekends" />
+
+        <CheckBox
+            android:id="@+id/highPriorityCheckbox"
+            android:layout_marginLeft="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/reminderRepeatcheckBox"
+            android:layout_toEndOf="@+id/weekEndsCheckbox"
+            android:checked="false"
+            android:text="Mega-priority" />
     </RelativeLayout>
+
+
 
 
 </LinearLayout>

@@ -19,10 +19,15 @@ bin/
 gen/
 scripts/
 app/defunct
+app/src/main/java/com/eveningoutpost/dexdrip/spike/
 
 # Gradle files
 .gradle/
 build/
+app/release
+localeapi/gradle/
+localeapi/lint.xml
+
 
 # Local configuration file (sdk path, etc)
 local.properties

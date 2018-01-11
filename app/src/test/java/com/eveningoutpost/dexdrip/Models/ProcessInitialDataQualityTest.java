@@ -21,8 +21,17 @@ import static org.hamcrest.Matchers.*;
  * Created by jamorham on 01/10/2017.
  */
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class, manifest = "../../../../../src/test/java/com/eveningoutpost/dexdrip/TestingManifest.xml")
+
+//@Config(constants = BuildConfig.class, manifest = "../../../../app/src/test/java/com/eveningoutpost/dexdrip/TestingManifest.xml") // use this config inside android studio 3
+@Config(constants = BuildConfig.class, manifest = "../../../../../src/test/java/com/eveningoutpost/dexdrip/TestingManifest.xml") // use this config for CI test hosts
+
 public class ProcessInitialDataQualityTest {
+
+    // if we have a record which is on an exact millisecond boundary and test it and it passes the test
+    // 1ms later it will fail the test resulting in the assertion sometimes incorrectly labelling as a
+    // mismatched result because the clock can tick over 1ms between the time we first tested and when we
+    // compare the results of that test. To avoid this (even on slow systems) we add in a grace period
+    private static final long COMPUTATION_GRACE_TIME = Constants.SECOND_IN_MS;
 
     private static void log(String msg) {
         System.out.println(msg);
@@ -36,7 +45,13 @@ public class ProcessInitialDataQualityTest {
     public void testGetInitialDataQuality() throws Exception {
 
         // check we can mock ActiveAndroid which depends on Android framework
-        final MockModel m = new MockModel();
+        MockModel m = null;
+        try {
+            m = new MockModel();
+        } catch (NullPointerException e) {
+            log(e.toString());
+            assertThat("Cannot create MockModel internal error - check ActiveAndroid dependency is included and manifest models and that correct @Config line is being used!", false, is(true));
+        }
         assertThat("ActiveAndroid Mock Model can be created", m != null, is(true));
         assertThat("ActiveAndroid Mock Model can be created", m.intField == 0, is(true));
 
@@ -71,11 +86,11 @@ public class ProcessInitialDataQualityTest {
                 if (i < 3) assertThat("Empty input should fail", test.pass, is(false));
                 assertThat("There should be some advice on loop " + i, test.advice.length() > 0, is(true));
 
-
-                if ((JoH.msSince(bgReadingList.get(bgReadingList.size() - 1).timestamp) > Constants.STALE_CALIBRATION_CUT_OFF) || (i < 3)) {
-                    assertThat("Stale data should fail", test.pass, is(false));
+                final long ms_since = (JoH.msSince(bgReadingList.get(bgReadingList.size() - 1).timestamp));
+                if ((ms_since > Constants.STALE_CALIBRATION_CUT_OFF + COMPUTATION_GRACE_TIME) || (i < 3)) {
+                    assertThat("Stale data should fail: i:" + i + " tm:" + ms_since, test.pass, is(false));
                 }
-                if ((JoH.msSince(bgReadingList.get(bgReadingList.size() - 1).timestamp) <= Constants.STALE_CALIBRATION_CUT_OFF) && (bgReadingList.size() >= 3)) {
+                if ((ms_since <= Constants.STALE_CALIBRATION_CUT_OFF) && (bgReadingList.size() >= 3)) {
                     assertThat("Good data should pass", test.pass, is(true));
                 }
 

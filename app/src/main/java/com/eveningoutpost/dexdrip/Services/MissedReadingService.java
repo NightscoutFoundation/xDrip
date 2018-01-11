@@ -19,6 +19,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleUtil;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleWatchSync;
+import com.eveningoutpost.dexdrip.webservices.XdripWebService;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
@@ -49,7 +50,7 @@ public class MissedReadingService extends IntentService {
         final long stale_millis = Home.stale_data_millis();
 
         // send to pebble
-        if (prefs.getBoolean("broadcast_to_pebble", false) && (PebbleUtil.getCurrentPebbleSyncType(prefs) != 1) && !BgReading.last_within_millis(stale_millis)) {
+        if (prefs.getBoolean("broadcast_to_pebble", false) && (PebbleUtil.getCurrentPebbleSyncType() != 1) && !BgReading.last_within_millis(stale_millis)) {
             if (JoH.ratelimit("peb-miss",120)) context.startService(new Intent(context, PebbleWatchSync.class));
             // update pebble even when we don't have data to ensure missed readings show
         }
@@ -75,6 +76,7 @@ public class MissedReadingService extends IntentService {
         }
         Reminder.processAnyDueReminders();
         BluetoothGlucoseMeter.immortality();
+        XdripWebService.immortality(); //
 
         bg_missed_alerts =  prefs.getBoolean("bg_missed_alerts", false);
         if (!bg_missed_alerts) {

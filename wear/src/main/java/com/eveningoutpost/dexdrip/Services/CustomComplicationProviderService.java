@@ -20,7 +20,6 @@ package com.eveningoutpost.dexdrip.Services;
 
 import android.app.PendingIntent;
 import android.content.ComponentName;
-import android.os.Bundle;
 import android.support.wearable.complications.ComplicationData;
 import android.support.wearable.complications.ComplicationManager;
 import android.support.wearable.complications.ComplicationProviderService;
@@ -35,6 +34,7 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import static com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder.unitizedDeltaString;
@@ -197,7 +197,7 @@ public class CustomComplicationProviderService extends ComplicationProviderServi
     }
 
     private static String getDeltaText(BgReading bgReading, boolean is_stale) {
-        final boolean doMgdl = Home.getPreferencesStringWithDefault("units", "mgdl").equals("mgdl");
+        final boolean doMgdl = Pref.getString("units", "mgdl").equals("mgdl");
         return (!is_stale ? (bgReading != null ? unitizedDeltaString(false, false, Home.get_follower(), doMgdl) : "null") : "");
     }
 

@@ -9,6 +9,7 @@ import android.os.BatteryManager;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import static com.eveningoutpost.dexdrip.Models.JoH.cancelNotification;
@@ -30,15 +31,15 @@ public class CheckBridgeBattery {
 
     public static void checkBridgeBattery() {
 
-        if (!Home.getPreferencesBooleanDefaultFalse("bridge_battery_alerts")) return;
+        if (!Pref.getBooleanDefaultFalse("bridge_battery_alerts")) return;
 
         try {
-            threshold = Integer.parseInt(Home.getPreferencesStringWithDefault("bridge_battery_alert_level", "30"));
+            threshold = Integer.parseInt(Pref.getString("bridge_battery_alert_level", "30"));
         } catch (NumberFormatException e) {
             UserError.Log.e(TAG, "Got error parsing alert level");
         }
 
-        final int this_level = Home.getPreferencesInt("bridge_battery", -1);
+        final int this_level = Pref.getInt("bridge_battery", -1);
         if ((this_level > 0) && (threshold > 0)) {
             if ((this_level < threshold) && (this_level < last_level)) {
                 if (JoH.pratelimit("bridge-battery-warning", repeat_seconds)) {
@@ -67,10 +68,10 @@ public class CheckBridgeBattery {
     }
 
     public static void testHarness() {
-        if (Home.getPreferencesInt(PREFS_ITEM, -1) < 1)
-            Home.setPreferencesInt(PREFS_ITEM, 60);
-        Home.setPreferencesInt(PREFS_ITEM, Home.getPreferencesInt(PREFS_ITEM, 0) - (int) (JoH.tsl() % 15));
-        UserError.Log.d(TAG, "Bridge battery: " + Home.getPreferencesInt(PREFS_ITEM, 0));
+        if (Pref.getInt(PREFS_ITEM, -1) < 1)
+            Pref.setInt(PREFS_ITEM, 60);
+        Pref.setInt(PREFS_ITEM, Pref.getInt(PREFS_ITEM, 0) - (int) (JoH.tsl() % 15));
+        UserError.Log.d(TAG, "Bridge battery: " + Pref.getInt(PREFS_ITEM, 0));
         checkBridgeBattery();
     }
 

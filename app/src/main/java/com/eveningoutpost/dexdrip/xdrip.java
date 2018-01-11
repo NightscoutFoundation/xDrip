@@ -8,7 +8,7 @@ import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.core.CrashlyticsCore;
-import com.bugfender.sdk.Bugfender;
+//import com.bugfender.sdk.Bugfender;
 import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Reminder;
@@ -17,9 +17,10 @@ import com.eveningoutpost.dexdrip.Services.BluetoothGlucoseMeter;
 import com.eveningoutpost.dexdrip.Services.PlusSyncService;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.IdempotentMigrations;
-import com.eveningoutpost.dexdrip.UtilityModels.NotificationChannels;
 import com.eveningoutpost.dexdrip.UtilityModels.PlusAsyncExecutor;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
+import com.eveningoutpost.dexdrip.webservices.XdripWebService;
 
 import java.util.Locale;
 
@@ -36,7 +37,6 @@ public class xdrip extends Application {
     private static boolean fabricInited = false;
     private static boolean bfInited = false;
     private static Locale LOCALE;
-    private static NotificationChannels notifChannels;
     public static PlusAsyncExecutor executor;
     public static boolean useBF = false;
     private static Boolean isRunningTestCache;
@@ -75,10 +75,11 @@ public class xdrip extends Application {
             AlertType.fromSettings(getApplicationContext());
             new CollectionServiceStarter(getApplicationContext()).start(getApplicationContext());
             PlusSyncService.startSyncService(context, "xdrip.java");
-            if (Home.getPreferencesBoolean("motion_tracking_enabled", false)) {
+            if (Pref.getBoolean("motion_tracking_enabled", false)) {
                 ActivityRecognizedService.startActivityRecogniser(getApplicationContext());
             }
             BluetoothGlucoseMeter.startIfEnabled();
+            XdripWebService.immortality();
 
         } else {
             Log.d(TAG, "Detected running test mode, holding back on background processes");
@@ -124,7 +125,7 @@ public class xdrip extends Application {
                         String app_id = PreferenceManager.getDefaultSharedPreferences(xdrip.context).getString("bugfender_appid", "").trim();
                         if (!useBF && (app_id.length() > 10)) {
                             if (!bfInited) {
-                                Bugfender.init(xdrip.context, app_id, BuildConfig.DEBUG);
+                                //Bugfender.init(xdrip.context, app_id, BuildConfig.DEBUG);
                                 bfInited = true;
                             }
                             useBF = true;
@@ -156,8 +157,8 @@ public class xdrip extends Application {
     public static void checkForcedEnglish(Context context) {
         //    if (Locale.getDefault() != Locale.ENGLISH) {
         //       Log.d(TAG, "Locale is non-english");
-        if (Home.getPreferencesBoolean("force_english", false)) {
-            final String forced_language = Home.getPreferencesStringWithDefault("forced_language", "en");
+        if (Pref.getBoolean("force_english", false)) {
+            final String forced_language = Pref.getString("forced_language", "en");
             final String current_language = Locale.getDefault().getLanguage();
             if (!current_language.equals(forced_language)) {
                 Log.i(TAG, "Forcing locale: " + forced_language + " was: " + current_language);

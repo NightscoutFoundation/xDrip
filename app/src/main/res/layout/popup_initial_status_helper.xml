@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:appx="http://schemas.android.com/apk/res-auto">
 
     <data>
 
@@ -8,11 +9,15 @@
             type="com.eveningoutpost.dexdrip.Models.ProcessInitialDataQuality.InitialDataQuality" />
 
         <variable
+            name="ms"
+            type="com.eveningoutpost.dexdrip.ui.MicroStatus" />
+
+        <variable
             name="prefs"
             type="com.eveningoutpost.dexdrip.UtilityModels.PrefsView" />
     </data>
 
-    <LinearLayout xmlns:tools="http://schemas.android.com/tools"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
@@ -20,6 +25,7 @@
 
         <ProgressBar
             android:id="@+id/progressBar2"
+            android:visibility="gone"
             style="?android:attr/progressBarStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
@@ -32,7 +38,7 @@
             android:checked="@{idq.collector_running}"
             android:clickable="false"
             android:enabled="true"
-            android:text="Data Collector Running" />
+            android:text="@string/data_collector_running" />
 
         <RadioButton
             android:id="@+id/received_data_indicator"
@@ -40,7 +46,7 @@
             android:layout_height="wrap_content"
             android:checked="@{idq.received_raw_data}"
             android:clickable="false"
-            android:text="Receiving Data from Collector" />
+            android:text="@{@string/receiving_data_from_collector(ms.gs(`niceCollector`))}" />
 
         <RadioButton
             android:id="@+id/recent_data_indicator"
@@ -48,7 +54,15 @@
             android:layout_height="wrap_content"
             android:checked="@{idq.recent_data}"
             android:clickable="false"
-            android:text="Received Recent Data" />
+            android:text="@string/received_some_recent_data" />
+
+        <RadioButton
+            android:id="@+id/enough_data_indicator"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="@{idq.pass}"
+            android:clickable="false"
+            android:text="@string/received_enough_good_data_to_calibrate" />
 
         <TextView
             android:id="@+id/advice_text"
@@ -59,12 +73,23 @@
             android:text="@{idq.advice}"
             android:textStyle="bold|italic" />
 
+        <TextView
+            android:id="@+id/next_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@{idq.missed_last ? @android:color/holo_red_dark : @android:color/transparent }"
+            android:clickable="false"
+            android:padding="8dp"
+            android:text="@{`Next reading expected in ` + idq.getNextExpectedTill() + (idq.missed_last ? ` (missed last reading!)` : ``)}"
+            android:textStyle="italic"
+            appx:showIfTrue="@{idq.received_raw_data}" />
+
         <CheckBox
             android:id="@+id/play_sound_for_calibration"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:checked="@{prefs.getbool(`play_sound_for_initial_calibration`)}"
             android:onClick="@{() -> prefs.togglebool(`play_sound_for_initial_calibration`)}"
-            android:text="Play sound when ready for Calibration" />
+            android:text="@string/play_sound_when_ready_for_calibration" />
     </LinearLayout>
 </layout>

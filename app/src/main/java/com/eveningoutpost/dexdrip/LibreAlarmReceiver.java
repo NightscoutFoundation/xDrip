@@ -10,13 +10,17 @@ import android.os.PowerManager;
 import android.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Forecast;
 import com.eveningoutpost.dexdrip.Models.GlucoseData;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.LibreBlock;
+import com.eveningoutpost.dexdrip.Models.LibreOOPAlgorithm;
 import com.eveningoutpost.dexdrip.Models.ReadingData;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Intents;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.google.gson.Gson;
@@ -51,7 +55,7 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
     private static long timeShiftNearest = -1;
 
     public static void clearSensorStats() {
-        Home.setPreferencesInt("nfc_sensor_age", 0); // reset for nfc sensors
+        Pref.setInt("nfc_sensor_age", 0); // reset for nfc sensors
         sensorAge = 0;
     }
 
@@ -140,7 +144,7 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
                                 final String data = bundle.getString("data");
                                 final int bridge_battery = bundle.getInt("bridge_battery");
                                 if (bridge_battery > 0) {
-                                    Home.setPreferencesInt("bridge_battery", bridge_battery);
+                                    Pref.setInt("bridge_battery", bridge_battery);
                                     CheckBridgeBattery.checkBridgeBattery();
                                 }
                                 try {
@@ -168,28 +172,42 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
     }
 
     public static void processReadingDataTransferObject(ReadingData.TransferObject object) {
+    	Log.i(TAG, "Data that was recieved from librealarm is " + HexDump.dumpHexString(object.data.raw_data));
+    	// Save raw block record (we start from block 0)
+        LibreBlock.createAndSave("LibreAlarm", object.data.raw_data, 0);
+
+        if(Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
+        	if(object.data.raw_data == null) {
+        		Log.e(TAG, "Please update LibreAlarm to use OOP algorithm");
+        		JoH.static_toast_long("Please update LibreAlarm to use OOP algorithm");
+        		return;
+        	}
+        	LibreOOPAlgorithm.SendData(object.data.raw_data);
+        	return;
+        }
+    	
         // insert any recent data we can
         final List<GlucoseData> mTrend = object.data.trend;
         if (mTrend != null) {
             Collections.sort(mTrend);
             final long thisSensorAge = mTrend.get(mTrend.size() - 1).sensorTime;
-            sensorAge = Home.getPreferencesInt("nfc_sensor_age", 0);
+            sensorAge = Pref.getInt("nfc_sensor_age", 0);
             if (thisSensorAge > sensorAge) {
                 sensorAge = thisSensorAge;
-                Home.setPreferencesInt("nfc_sensor_age", (int) sensorAge);
-                Home.setPreferencesBoolean("nfc_age_problem", false);
+                Pref.setInt("nfc_sensor_age", (int) sensorAge);
+                Pref.setBoolean("nfc_age_problem", false);
                 Log.d(TAG, "Sensor age advanced to: " + thisSensorAge);
             } else if (thisSensorAge == sensorAge) {
                 Log.wtf(TAG, "Sensor age has not advanced: " + sensorAge);
                 JoH.static_toast_long("Sensor clock has not advanced!");
-                Home.setPreferencesBoolean("nfc_age_problem", true);
+                Pref.setBoolean("nfc_age_problem", true);
                 return; // do not try to insert again
             } else {
                 Log.wtf(TAG, "Sensor age has gone backwards!!! " + sensorAge);
                 JoH.static_toast_long("Sensor age has gone backwards!!");
                 sensorAge = thisSensorAge;
-                Home.setPreferencesInt("nfc_sensor_age", (int) sensorAge);
-                Home.setPreferencesBoolean("nfc_age_problem", true);
+                Pref.setInt("nfc_sensor_age", (int) sensorAge);
+                Pref.setBoolean("nfc_age_problem", true);
             }
             if (d)
                 Log.d(TAG, "Oldest cmp: " + JoH.dateTimeText(oldest_cmp) + " Newest cmp: " + JoH.dateTimeText(newest_cmp));
