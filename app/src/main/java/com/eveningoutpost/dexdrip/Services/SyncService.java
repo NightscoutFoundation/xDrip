@@ -36,7 +36,6 @@ public class SyncService extends IntentService {
         }
     }
 
-    // TODO Refactor MongoSendTask name
     private void synctoCloudDatabases() {
         final UploaderTask task = new UploaderTask(getApplicationContext());
         task.executeOnExecutor(xdrip.executor);

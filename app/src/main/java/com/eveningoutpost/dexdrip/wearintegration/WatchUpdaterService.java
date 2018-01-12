@@ -30,7 +30,6 @@ import com.eveningoutpost.dexdrip.Services.G5CollectionService;
 import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
-import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.Blukon;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
@@ -38,6 +37,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
+import com.eveningoutpost.dexdrip.utils.PowerStateReceiver;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -1266,7 +1266,7 @@ public class WatchUpdaterService extends WearableListenerService implements
         if (bg != null) {
             forceGoogleApiConnect();
             if (wear_integration) {
-                final int battery = BgSendQueue.getBatteryLevel(getApplicationContext());
+                final int battery = PowerStateReceiver.getBatteryLevel(getApplicationContext());
                 new SendToDataLayerThread(WEARABLE_DATA_PATH, googleApiClient).executeOnExecutor(xdrip.executor, dataMap(bg, mPrefs, new BgGraphBuilder(getApplicationContext()), battery));
             }
         }
@@ -1282,7 +1282,7 @@ public class WatchUpdaterService extends WearableListenerService implements
             List<BgReading> graph_bgs = BgReading.latestForGraph(60, startTime);
             BgGraphBuilder bgGraphBuilder = new BgGraphBuilder(getApplicationContext());
             if (!graph_bgs.isEmpty()) {
-                final int battery = BgSendQueue.getBatteryLevel(getApplicationContext());
+                final int battery = PowerStateReceiver.getBatteryLevel(getApplicationContext());
                 DataMap entries = dataMap(last_bg, mPrefs, bgGraphBuilder, battery);
                 final ArrayList<DataMap> dataMaps = new ArrayList<>(graph_bgs.size());
                 for (BgReading bg : graph_bgs) {
@@ -1800,7 +1800,7 @@ public class WatchUpdaterService extends WearableListenerService implements
                 else
                     latest = BgReading.latest(count);
                 if ((last != null) && (latest != null && !latest.isEmpty())) {
-                    final int battery = BgSendQueue.getBatteryLevel(xdrip.getAppContext());
+                    final int battery = PowerStateReceiver.getBatteryLevel(xdrip.getAppContext());
                     Log.d(TAG, "sendWearBgData latest count = " + latest.size() + " battery=" + battery);
                     final DataMap entries = dataMap(last);
                     final ArrayList<DataMap> dataMaps = new ArrayList<>(latest.size());
