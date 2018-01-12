@@ -11,6 +11,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by jamorham on 01/11/2016.
  */
@@ -53,6 +56,31 @@ public class HeartRate extends Model {
         } catch (android.database.sqlite.SQLiteException e) {
             fixUpTable();
             return null;
+        }
+    }
+
+    // TODO efficient record creation?
+
+    public static List<HeartRate> latestForGraph(int number, double startTime) {
+        return latestForGraph(number, (long) startTime, Long.MAX_VALUE);
+    }
+
+    public static List<HeartRate> latestForGraph(int number, long startTime) {
+        return latestForGraph(number, startTime, Long.MAX_VALUE);
+    }
+
+    public static List<HeartRate> latestForGraph(int number, long startTime, long endTime) {
+        try {
+            return new Select()
+                    .from(HeartRate.class)
+                    .where("timestamp >= " + Math.max(startTime, 0))
+                    .where("timestamp <= " + endTime)
+                    .orderBy("timestamp asc") // warn asc!
+                    .limit(number)
+                    .execute();
+        } catch (android.database.sqlite.SQLiteException e) {
+            fixUpTable();
+            return new ArrayList<>();
         }
     }
 
