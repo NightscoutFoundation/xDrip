@@ -407,13 +407,13 @@ public class UploaderQueue extends Model {
                 }*/
         }
 
-        if (MongoSendTask.exception != null) {
-            l.add(new StatusItem("Exception", MongoSendTask.exception.toString(), StatusItem.Highlight.BAD, "long-press",
+        if (UploaderTask.exception != null) {
+            l.add(new StatusItem("Exception", UploaderTask.exception.toString(), StatusItem.Highlight.BAD, "long-press",
                     new Runnable() {
                         @Override
                         public void run() {
                             JoH.static_toast_long("Cleared error message");
-                            MongoSendTask.exception = null;
+                            UploaderTask.exception = null;
                         }
                     }));
         }
