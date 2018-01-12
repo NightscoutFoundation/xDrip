@@ -20,7 +20,7 @@ import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.BloodTest;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.PebbleMovement;
+import com.eveningoutpost.dexdrip.Models.StepCounter;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.Treatments;
@@ -68,7 +68,7 @@ import java.util.concurrent.TimeUnit;
 
 import static com.eveningoutpost.dexdrip.Models.JoH.showNotification;
 import static com.eveningoutpost.dexdrip.Models.JoH.ts;
-import static com.eveningoutpost.dexdrip.Models.PebbleMovement.last;
+import static com.eveningoutpost.dexdrip.Models.StepCounter.last;
 
 public class WatchUpdaterService extends WearableListenerService implements
         GoogleApiClient.ConnectionCallbacks,
@@ -462,7 +462,7 @@ public class WatchUpdaterService extends WearableListenerService implements
                     .serializeSpecialFloatingPointValues()
                     .create();
 
-            PebbleMovement pm = last();
+            StepCounter pm = last();
             Log.d(TAG, "syncStepSensorData add Table entries count=" + entries.size());
             for (DataMap entry : entries) {
                 if (entry != null) {
@@ -470,7 +470,7 @@ public class WatchUpdaterService extends WearableListenerService implements
                     String record = entry.getString("entry");
                     if (record != null) {
                         Log.d(TAG, "syncStepSensorData add Table record=" + record);
-                        PebbleMovement data = gson.fromJson(record, PebbleMovement.class);
+                        StepCounter data = gson.fromJson(record, StepCounter.class);
                         if (data != null) {
                             timeOfLastEntry = (long) data.timestamp + 1;
                             Log.d(TAG, "syncStepSensorData add Entry Wear=" + data.toString());

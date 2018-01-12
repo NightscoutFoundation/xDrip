@@ -7,11 +7,10 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.PowerManager;
-import android.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.Models.HeartRate;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.PebbleMovement;
+import com.eveningoutpost.dexdrip.Models.StepCounter;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
@@ -231,7 +230,7 @@ public class PebbleWatchSync extends Service {
                                 } else {
                                     if (data > 0) {
                                         if (last_movement_timestamp > 0) {
-                                            final PebbleMovement pm = PebbleMovement.createEfficientRecord(last_movement_timestamp * 1000, (int)(long) data);
+                                            final StepCounter pm = StepCounter.createEfficientRecord(last_movement_timestamp * 1000, (int)(long) data);
                                             Log.d(TAG, "Saving Movement: " + pm.toS());
                                             last_movement_timestamp = 0; // reset state
                                         } else {
