@@ -59,48 +59,50 @@ public class WebServiceSgv extends BaseWebService {
 
         final JSONArray reply = new JSONArray();
         final List<BgReading> readings = BgReading.latest(24);
-        // populate json structures
-        try {
+        if (readings != null) {
+            // populate json structures
+            try {
 
-            final String collector_device = DexCollectionType.getBestCollectorHardwareName();
-            String external_status_line = getLastStatusLine();
+                final String collector_device = DexCollectionType.getBestCollectorHardwareName();
+                String external_status_line = getLastStatusLine();
 
-            // for each reading produce a json record
-            for (BgReading reading : readings) {
-                final JSONObject item = new JSONObject();
-                item.put("_id", reading.uuid);
-                item.put("device", collector_device);
-                item.put("date", reading.timestamp);
-                item.put("dateString", DateUtil.toNightscoutFormat(reading.timestamp));
-                item.put("sysTime", DateUtil.toNightscoutFormat(reading.timestamp));
-                item.put("sgv", (int) reading.getDg_mgdl());
-                item.put("delta", new BigDecimal(reading.getDg_slope() * 5 * 60 * 1000).setScale(3, BigDecimal.ROUND_HALF_UP));
-                item.put("direction", reading.getDg_deltaName());
-                item.put("noise", reading.noiseValue());
-                item.put("filtered", (long) (reading.filtered_data * 1000));
-                item.put("unfiltered", (long) (reading.raw_data * 1000));
-                item.put("rssi", 100);
-                item.put("type", "sgv");
+                // for each reading produce a json record
+                for (BgReading reading : readings) {
+                    final JSONObject item = new JSONObject();
+                    item.put("_id", reading.uuid);
+                    item.put("device", collector_device);
+                    item.put("date", reading.timestamp);
+                    item.put("dateString", DateUtil.toNightscoutFormat(reading.timestamp));
+                    item.put("sysTime", DateUtil.toNightscoutFormat(reading.timestamp));
+                    item.put("sgv", (int) reading.getDg_mgdl());
+                    item.put("delta", new BigDecimal(reading.getDg_slope() * 5 * 60 * 1000).setScale(3, BigDecimal.ROUND_HALF_UP));
+                    item.put("direction", reading.getDg_deltaName());
+                    item.put("noise", reading.noiseValue());
+                    item.put("filtered", (long) (reading.filtered_data * 1000));
+                    item.put("unfiltered", (long) (reading.raw_data * 1000));
+                    item.put("rssi", 100);
+                    item.put("type", "sgv");
 
-                // emit the external status line once if present
-                if (external_status_line.length() > 0) {
-                    item.put("aaps", external_status_line);
-                    item.put("aaps-ts", getLastStatusLineTime());
-                    external_status_line = "";
+                    // emit the external status line once if present
+                    if (external_status_line.length() > 0) {
+                        item.put("aaps", external_status_line);
+                        item.put("aaps-ts", getLastStatusLineTime());
+                        external_status_line = "";
+                    }
+
+                    // emit result code from steps if present
+                    if (steps_result_code > 0) {
+                        item.put("steps_result", steps_result_code);
+                        steps_result_code = 0;
+                    }
+
+                    reply.put(item);
                 }
 
-                // emit result code from steps if present
-                if (steps_result_code > 0) {
-                    item.put("steps_result", steps_result_code);
-                    steps_result_code = 0;
-                }
-
-                reply.put(item);
+                Log.d(TAG, "Output: " + reply.toString());
+            } catch (JSONException e) {
+                UserError.Log.wtf(TAG, "Got json exception: " + e);
             }
-
-            Log.d(TAG, "Output: " + reply.toString());
-        } catch (JSONException e) {
-            UserError.Log.wtf(TAG, "Got json exception: " + e);
         }
         return new WebResponse(reply.toString());
     }
