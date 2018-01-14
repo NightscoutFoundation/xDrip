@@ -52,7 +52,6 @@ public class Blukon {
     }
 
     private static boolean m_getNowGlucoseDataIndexCommand = false;
-    private static boolean m_gotOneTimeUnknownCmd = false;
     private static int GET_SENSOR_AGE_DELAY = 3 * 3600;
     private static final String BLUKON_GETSENSORAGE_TIMER = "blukon-getSensorAge-timer";
     private static final String BLUKON_DECODE_SERIAL_TIMER = "blukon-decodeSerial-timer";
@@ -141,21 +140,9 @@ public class Blukon {
             if (currentCommand.startsWith("810a00")) {//ACK sent
                 //ack received
 
-                if (JoH.pratelimit(BLUKON_GETSENSORAGE_TIMER, GET_SENSOR_AGE_DELAY)) {
-                    currentCommand = "010d0e0127";
-                    Log.i(TAG, "getSensorAge");
-                } else {
-                    if (Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
-                        // Send the command to getHistoricData (read all blcoks from 0 to 0x2b)
-                        Log.i(TAG, "getHistoricData (1)");
-                        currentCommand = "010d0f02002b";
-                        m_blockNumber = 0;
-                    } else {
-                        currentCommand = "010d0e0103";
-                        m_getNowGlucoseDataIndexCommand = true;//to avoid issue when gotNowDataIndex cmd could be same as getNowGlucoseData (case block=3)
-                        Log.i(TAG, "getNowGlucoseDataIndexCommand");
-                    }
-                }
+                currentCommand = "010d0b00";
+                Log.i(TAG, "getUnknownCmd1: " + currentCommand);
+
             } else {
                 Log.i(TAG, "Got sleep ack, resetting initialstate!");
                 currentCommand = "";
