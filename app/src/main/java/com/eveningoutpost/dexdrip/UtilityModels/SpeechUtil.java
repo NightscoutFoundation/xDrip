@@ -88,7 +88,13 @@ public class SpeechUtil {
                 final boolean double_up_text_flag = (!text.contains(TWICE_DELIMITER)) && Pref.getBooleanDefaultFalse("speak_twice");
                 final String final_text_to_speak = double_up_text_flag ? (text + TWICE_DELIMITER + text) : text;
 
-                final int result = tts.speak(final_text_to_speak, TextToSpeech.QUEUE_ADD, null);
+                int result;
+                try {
+                    result = tts.speak(final_text_to_speak, TextToSpeech.QUEUE_ADD, null);
+                } catch (NullPointerException e) {
+                    result = TextToSpeech.ERROR;
+                    UserError.Log.e(TAG, "Got null pointer trying to speak! concurrency issue");
+                }
                 UserError.Log.d(TAG, "Speak result: " + result);
 
                 // speech randomly fails, usually due to the service not being bound so quick after being initialized, so we wait and retry recursively
