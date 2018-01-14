@@ -19,9 +19,10 @@ import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.BloodTest;
 import com.eveningoutpost.dexdrip.Models.Calibration;
+import com.eveningoutpost.dexdrip.Models.HeartRate;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.StepCounter;
 import com.eveningoutpost.dexdrip.Models.Sensor;
+import com.eveningoutpost.dexdrip.Models.StepCounter;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
@@ -54,8 +55,7 @@ import com.google.android.gms.wearable.PutDataMapRequest;
 import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
 import com.google.android.gms.wearable.WearableListenerService;
-
-import com.google.gson.Gson;//KS
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.internal.bind.DateTypeAdapter;
 
@@ -68,7 +68,7 @@ import java.util.concurrent.TimeUnit;
 
 import static com.eveningoutpost.dexdrip.Models.JoH.showNotification;
 import static com.eveningoutpost.dexdrip.Models.JoH.ts;
-import static com.eveningoutpost.dexdrip.Models.StepCounter.last;
+
 
 public class WatchUpdaterService extends WearableListenerService implements
         GoogleApiClient.ConnectionCallbacks,
@@ -102,6 +102,7 @@ public class WatchUpdaterService extends WearableListenerService implements
     private static final String SYNC_TREATMENTS_PATH = "/xdrip_plus_syncweartreatments";
     private static final String SYNC_LOGS_REQUESTED_PATH = "/xdrip_plus_syncwearlogsrequested";
     private static final String SYNC_STEP_SENSOR_PATH = "/xdrip_plus_syncwearstepsensor";
+    private static final String SYNC_HEART_SENSOR_PATH = "/xdrip_plus_syncwearheartsensor";
     private static final String CLEAR_LOGS_PATH = "/xdrip_plus_clearwearlogs";
     private static final String CLEAR_TREATMENTS_PATH = "/xdrip_plus_clearweartreatments";
     private static final String STATUS_COLLECTOR_PATH = "/xdrip_plus_statuscollector";
@@ -462,7 +463,7 @@ public class WatchUpdaterService extends WearableListenerService implements
                     .serializeSpecialFloatingPointValues()
                     .create();
 
-            StepCounter pm = last();
+            StepCounter pm = StepCounter.last();
             Log.d(TAG, "syncStepSensorData add Table entries count=" + entries.size());
             for (DataMap entry : entries) {
                 if (entry != null) {
@@ -484,6 +485,40 @@ public class WatchUpdaterService extends WearableListenerService implements
             sendDataReceived(DATA_ITEM_RECEIVED_PATH,"DATA_RECEIVED_LOGS count=" + entries.size(), timeOfLastEntry, bBenchmark?"BM":"STEP", -1);
         }
     }
+
+    private synchronized void syncHeartSensorData(DataMap dataMap, boolean bBenchmark) {
+        Log.d(TAG, "syncHeartSensorData");
+
+        ArrayList<DataMap> entries = dataMap.getDataMapArrayList("entries");
+        long timeOfLastEntry = 0;
+        Log.d(TAG, "syncHeartSensorData add to Table" );
+        if (entries != null) {
+
+            final Gson gson = JoH.defaultGsonInstance();
+
+            //final HeartRate pm = HeartRate.last();
+            Log.d(TAG, "syncHeartSensorData add Table entries count=" + entries.size());
+            for (DataMap entry : entries) {
+                if (entry != null) {
+                    Log.d(TAG, "syncHeartSensorData add Table entry=" + entry);
+                    String record = entry.getString("entry");
+                    if (record != null) {
+                        Log.d(TAG, "syncHeartSensorData add Table record=" + record);
+                        final HeartRate data = gson.fromJson(record, HeartRate.class);
+                        if (data != null) {
+                            timeOfLastEntry = (long) data.timestamp + 1;
+                            Log.d(TAG, "syncHeartSensorData add Entry Wear=" + data.toString() + " "+record);
+                            Log.d(TAG, "syncHeartSensorData WATCH data.metric=" + data.bpm + " timestamp=" + JoH.dateTimeText((long) data.timestamp));
+                            if (!bBenchmark)
+                                data.saveit();
+                        }
+                    }
+                }
+            }
+            sendDataReceived(DATA_ITEM_RECEIVED_PATH,"DATA_RECEIVED_LOGS count=" + entries.size(), timeOfLastEntry, bBenchmark?"BM":"HEART", -1);
+        }
+    }
+
 
     private synchronized void syncTreatmentsData(DataMap dataMap, boolean bBenchmark) {
         Log.d(TAG, "syncTreatmentsData");
@@ -1163,6 +1198,16 @@ public class WatchUpdaterService extends WearableListenerService implements
                             }
                         }
                         break;
+                    case SYNC_HEART_SENSOR_PATH:
+                        Log.d(TAG, "onMessageReceived SYNC_HEART_SENSOR_PATH");
+                        if (event.getData() != null) {
+                            dataMap = DataMap.fromByteArray(event.getData());
+                            if (dataMap != null) {
+                                Log.d(TAG, "onMessageReceived SYNC_HEART_SENSOR_PATH dataMap=" + dataMap);
+                                syncHeartSensorData(dataMap, false);
+                            }
+                        }
+                        break;
                     case SYNC_TREATMENTS_PATH:
                         Log.d(TAG, "onMessageReceived SYNC_TREATMENTS_PATH");
                         if (event.getData() != null) {
@@ -1379,6 +1424,12 @@ public class WatchUpdaterService extends WearableListenerService implements
         boolean enable_wearG5 = false;
         boolean force_wearG5 = false;
         String node_wearG5 = "";
+
+        // add booleans that default to false to this list
+        final List<String> defaultFalseBooleansToSend = new ArrayList<>();
+        defaultFalseBooleansToSend.add("use_wear_heartrate");
+        defaultFalseBooleansToSend.add("engineering_mode");
+
         wear_integration = mPrefs.getBoolean("wear_sync", false);
         if (wear_integration) {
             Log.d(TAG, "sendPrefSettings wear_sync=true");
@@ -1443,6 +1494,7 @@ public class WatchUpdaterService extends WearableListenerService implements
             dataMap.putString(Blukon.BLUKON_PIN_PREF, Pref.getStringDefaultBlank(Blukon.BLUKON_PIN_PREF));
         }
         //Step Counter
+        // note transmutes use_pebble_health -> use_wear_health
         dataMap.putBoolean("use_wear_health", mPrefs.getBoolean("use_pebble_health", true));
         is_using_bt = DexCollectionType.hasBluetooth();
 
@@ -1456,9 +1508,14 @@ public class WatchUpdaterService extends WearableListenerService implements
         dataMap.putDouble("low", lowMark);//inMgdl(lowMark, mPrefs));//KS Fix for mmol on graph Y-axis in wear standalone mode
         dataMap.putBoolean("g5_non_raw_method",  mPrefs.getBoolean("g5_non_raw_method", false));
         dataMap.putString("extra_tags_for_logging",  Pref.getStringDefaultBlank("extra_tags_for_logging"));
-        dataMap.putBoolean("engineering_mode",  Pref.getBooleanDefaultFalse("engineering_mode"));
+        //dataMap.putBoolean("engineering_mode",  Pref.getBooleanDefaultFalse("engineering_mode"));
         dataMap.putBoolean("bridge_battery_alerts",  Pref.getBooleanDefaultFalse("bridge_battery_alerts"));
         dataMap.putString("bridge_battery_alert_level",  Pref.getString("bridge_battery_alert_level", "30"));
+
+        for (String pref : defaultFalseBooleansToSend) {
+            dataMap.putBoolean(pref, Pref.getBooleanDefaultFalse(pref));
+        }
+
         new SendToDataLayerThread(WEARABLE_PREF_DATA_PATH, googleApiClient).executeOnExecutor(xdrip.executor, dataMap);
     }
 

@@ -61,8 +61,8 @@ import com.eveningoutpost.dexdrip.UtilityModels.pebble.watchface.InstallPebbleWa
 import com.eveningoutpost.dexdrip.WidgetUpdateService;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileEditor;
-import com.eveningoutpost.dexdrip.webservices.XdripWebService;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
+import com.eveningoutpost.dexdrip.webservices.XdripWebService;
 import com.eveningoutpost.dexdrip.xDripWidget;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.zxing.integration.android.IntentIntegrator;
@@ -790,15 +790,20 @@ public class Preferences extends PreferenceActivity {
             final PreferenceCategory displayCategory = (PreferenceCategory) findPreference("xdrip_plus_display_category");
 
 
-            findPreference("wear_sync").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                                                                          @Override
-                                                                          public boolean onPreferenceChange(Preference preference, Object newValue) {
-
-                                                                           WatchUpdaterService.startSelf();
-                                                                               return true;
-                                                                          }
-                                                                      }
+            // TODO build list of preferences to cause wear refresh from list
+            findPreference("wear_sync").setOnPreferenceChangeListener((preference, newValue) -> {
+                        WatchUpdaterService.startSelf();
+                        return true;
+                    }
             );
+
+            // TODO build list of preferences to cause wear refresh from list
+            findPreference("use_wear_heartrate").setOnPreferenceChangeListener((preference, newValue) -> {
+                        WatchUpdaterService.startSelf();
+                        return true;
+                    }
+            );
+
             findPreference("bluetooth_meter_enabled").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
@@ -1394,7 +1399,7 @@ public class Preferences extends PreferenceActivity {
                 }
             });
 
-            // TODO this attaches to the wrong named instance of use_pebble_health
+            // TODO this attaches to the wrong named instance of use_pebble_health - until restructured so that there is only one instance
             findPreference("use_pebble_health").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {

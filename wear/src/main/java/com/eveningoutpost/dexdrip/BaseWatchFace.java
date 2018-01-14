@@ -1,7 +1,7 @@
 package com.eveningoutpost.dexdrip;
 
 //KS import android.app.NotificationManager;
-import android.app.Activity;
+
 import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -17,11 +17,9 @@ import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
-//KS import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.wearable.view.WatchViewStub;
 import android.text.TextUtils;
-//KS import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.view.WindowInsets;
@@ -32,14 +30,14 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.google.android.gms.wearable.DataMap;
-import com.ustwo.clockwise.common.WatchMode;
-import com.ustwo.clockwise.wearable.WatchFace;
 import com.ustwo.clockwise.common.WatchFaceTime;
+import com.ustwo.clockwise.common.WatchMode;
 import com.ustwo.clockwise.common.WatchShape;
+import com.ustwo.clockwise.wearable.WatchFace;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -374,6 +372,7 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
                     mTimeStepsRcvd = dataMap.getLong("steps_timestamp", 0);
                     showSteps();
                 }
+                // TODO heart rate data should also be being presented here
             }
             bundle = intent.getBundleExtra(Home.HOME_FULL_WAKEUP);
             if (layoutSet && bundle != null) {
