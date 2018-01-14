@@ -18,6 +18,7 @@ import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.InstalledApps;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.xdrip;
 
@@ -165,7 +166,7 @@ public class DoNothingService extends Service {
     public static List<StatusItem> megaStatus() {
         final List<StatusItem> l = new ArrayList<>();
         if (GcmActivity.cease_all_activity) {
-            l.add(new StatusItem("SYNC DISABLED", Home.getPreferencesBooleanDefaultFalse("disable_all_sync") ? "By preference option" : (InstalledApps.isGooglePlayInstalled(xdrip.getAppContext()) ? "Not by preference option" : "By missing Google Play services"), StatusItem.Highlight.CRITICAL));
+            l.add(new StatusItem("SYNC DISABLED", Pref.getBooleanDefaultFalse("disable_all_sync") ? "By preference option" : (InstalledApps.isGooglePlayInstalled(xdrip.getAppContext()) ? "Not by preference option" : "By missing Google Play services"), StatusItem.Highlight.CRITICAL));
         }
         if (Home.get_master()) {
             l.add(new StatusItem("Service State", "We are the Master"));

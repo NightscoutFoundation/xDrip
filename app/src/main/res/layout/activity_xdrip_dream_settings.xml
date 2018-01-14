@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.eveningoutpost.dexdrip.UtilityModels.XDripDreamSettingsActivity">
+
+    <data>
+
+        <variable
+            name="prefs"
+            type="com.eveningoutpost.dexdrip.UtilityModels.PrefsView" />
+    </data>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+
+        <Switch
+            android:id="@+id/use_gravity_sensor_switch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="@{prefs.getbool(`daydream_use_gravity_sensor`)}"
+            android:onClick="@{() -> prefs.togglebool(`daydream_use_gravity_sensor`)}"
+            android:text="@string/use_gravity_sensor_to_rotate_items" />
+    </LinearLayout>
+
+</layout>

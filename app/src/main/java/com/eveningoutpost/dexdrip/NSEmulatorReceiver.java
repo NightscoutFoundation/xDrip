@@ -13,8 +13,11 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.Intents;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.PumpStatus;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
+
+import java.util.UUID;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -69,7 +72,7 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
 
                                 // in future this could have its own data source perhaps instead of follower
                                 if (!Home.get_follower() && DexCollectionType.getDexCollectionType() != DexCollectionType.NSEmulator && 
-                                    !Home.getPreferencesBooleanDefaultFalse("external_blukon_algorithm")) { //???DexCollectionType
+                                    !Pref.getBooleanDefaultFalse("external_blukon_algorithm")) { //???DexCollectionType
                                     Log.e(TAG, "Received NSEmulator data but we are not a follower or emulator receiver");
                                     return;
                                 }
@@ -108,8 +111,10 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
                                                         // sanity checking???
                                                         // fake up some extra data
                                                         faux_bgr.put("raw_data", json_object.getDouble("sgv"));
+                                                        faux_bgr.put("age_adjusted_raw_value", json_object.getDouble("sgv"));
                                                         faux_bgr.put("filtered_data", json_object.getDouble("sgv"));
-
+                                                        faux_bgr.put("uuid", UUID.randomUUID().toString());
+                                                         
                                                         Log.d(TAG, "Received NSEmulator SGV: " + faux_bgr);
                                                         bgReadingInsertFromJson(faux_bgr.toString(), true, true); // notify and force sensor
                                                         break;

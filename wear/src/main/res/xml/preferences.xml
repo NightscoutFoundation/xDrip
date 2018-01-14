@@ -116,6 +116,13 @@
             app:wear_iconOff="@drawable/settings_off"
             app:wear_iconOn="@drawable/settings_on" />
         <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="showDate"
+            android:title="@string/pref_show_date"
+            android:summary="@string/pref_summary_show_date"
+            app:wear_iconOff="@drawable/settings_off"
+            app:wear_iconOn="@drawable/settings_on" />
+        <CheckBoxPreference
             android:defaultValue="false"
             android:key="show_toasts"
             android:title="@string/pref_show_toasts"

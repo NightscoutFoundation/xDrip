@@ -10,23 +10,19 @@ import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.support.v7.app.AlertDialog;
 import android.text.InputFilter;
-import android.text.InputType;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -40,6 +36,7 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.Blukon;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.utils.AndroidBarcode;
 import com.eveningoutpost.dexdrip.utils.ListActivityWithMenu;
 import com.eveningoutpost.dexdrip.utils.LocationHelper;
@@ -59,7 +56,6 @@ import lecho.lib.hellocharts.util.ChartUtils;
 
 @TargetApi(android.os.Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class BluetoothScan extends ListActivityWithMenu {
-    public static String menu_name = "Bluetooth Scan";
 
     private final static String TAG = BluetoothScan.class.getSimpleName();
     private static final long SCAN_PERIOD = 30000;
@@ -90,7 +86,7 @@ public class BluetoothScan extends ListActivityWithMenu {
             return;
         }
         if (!bluetooth_manager.getAdapter().isEnabled()) {
-            if (Home.getPreferencesBoolean("automatically_turn_bluetooth_on",true)) {
+            if (Pref.getBoolean("automatically_turn_bluetooth_on",true)) {
                 JoH.setBluetoothEnabled(getApplicationContext(),true);
                 Toast.makeText(this, "Trying to turn Bluetooth on", Toast.LENGTH_LONG).show();
             } else {
@@ -120,7 +116,7 @@ public class BluetoothScan extends ListActivityWithMenu {
 
     @Override
     public String getMenuName() {
-        return menu_name;
+        return getString(R.string.bluetooth_scan);
     }
 
     @Override
@@ -495,7 +491,7 @@ public class BluetoothScan extends ListActivityWithMenu {
             viewHolder.deviceAddress.setText(device.getAddress());
             if (adverts.containsKey(device.getAddress())) {
                 try {
-                    if (Home.getPreferencesBooleanDefaultFalse("engineering_mode")) {
+                    if (Pref.getBooleanDefaultFalse("engineering_mode")) {
                         viewHolder.deviceAddress.append("   " + new String(adverts.get(device.getAddress()), "UTF-8"));
                     }
                 } catch (UnsupportedEncodingException e) {

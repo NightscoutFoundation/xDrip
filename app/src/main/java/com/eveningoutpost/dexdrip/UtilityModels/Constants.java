@@ -20,11 +20,9 @@ public class Constants {
 
     /* Configuration parameters */
 
-    public static final long STALE_CALIBRATION_CUT_OFF = Constants.MINUTE_IN_MS * 16;
+    public static final long STALE_CALIBRATION_CUT_OFF = Constants.MINUTE_IN_MS * 21;
 
     /* Notification IDs */
-
-    static final int NIGHTSCOUT_ERROR_NOTIFICATION_ID = 2001;
 
 
     public static final int WIFI_COLLECTION_SERVICE_ID = 1001;
@@ -32,4 +30,9 @@ public class Constants {
     public static final int DEX_COLLECTION_SERVICE_FAILOVER_ID = 1003;
 
     public static final int SYNC_QUEUE_RETRY_ID = 1004;
+
+    static final int NIGHTSCOUT_ERROR_NOTIFICATION_ID = 2001;
+
+    // increments from this start number
+    public static final int INCOMPATIBLE_BASE_ID = 5000;
 }

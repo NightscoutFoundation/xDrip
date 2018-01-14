@@ -61,7 +61,6 @@ public class NoteSearch extends ListActivityWithMenu {
     private static final String TAG = "NoteSearch";
     //Strings TODO: move to strings.xml (omitted during dev to avoid merge conflicts)
     private static final String LOAD_MORE = "load more";
-    public static String menu_name = "Note Search";
     private static final String SEARCHING = "searching...";
     private static final String COLLECTING = "collecting...";
     private static final String CARBS = "carbs";
@@ -75,7 +74,7 @@ public class NoteSearch extends ListActivityWithMenu {
 
     @Override
     public String getMenuName() {
-        return menu_name;
+        return getString(R.string.note_search);
     }
 
 
@@ -116,18 +115,17 @@ public class NoteSearch extends ListActivityWithMenu {
                     treatmentText.setText(sResult.note);
 
                     new AlertDialog.Builder(activity)
-                            .setTitle("Edit Note")
-                            .setMessage("Adjust note text here. There is no undo of this")
+                            .setTitle(R.string.edit_note)
+                            .setMessage(R.string.adjust_note_text_here_there_is_no_undo)
                             .setView(treatmentText)
                             .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int whichButton) {
-                                    final String noteText = treatmentText.getText().toString().trim();
-                                    sResult.note = noteText;
+                                    sResult.note = treatmentText.getText().toString().trim();
                                     resultListAdapter.notifyDataSetChanged();
                                     SQLiteUtils.execSql("update Treatments set notes = ? where uuid = ?", new String[]{sResult.note, sResult.uuid});
                                 }
                             })
-                            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            .setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int whichButton) {
                                 }
                             })
@@ -218,7 +216,7 @@ public class NoteSearch extends ListActivityWithMenu {
         final String searchTerm = searchTextField.getText().toString().trim();
 
         if ("".equals(searchTerm)) {
-            if (from_interactive) JoH.static_toast_short("No search term found");
+            if (from_interactive) JoH.static_toast_short(getString(R.string.no_search_term_found));
             return;
         }
 

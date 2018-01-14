@@ -12,12 +12,12 @@ import android.graphics.Path;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 
-import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import android.view.View;
 
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 
 import java.util.Calendar;
 import java.util.Collections;
@@ -128,7 +128,7 @@ public class PercentileView extends View {
         Paint myPaint = new Paint();
         myPaint.setStyle(Paint.Style.STROKE);
         myPaint.setAntiAlias(false);
-        if (Home.getPreferencesBooleanDefaultFalse(StatsActivity.SHOW_STATISTICS_PRINT_COLOR)) {
+        if (Pref.getBooleanDefaultFalse(StatsActivity.SHOW_STATISTICS_PRINT_COLOR)) {
             myPaint.setColor(Color.BLACK);
         } else {
             myPaint.setColor(Color.LTGRAY);
@@ -138,7 +138,7 @@ public class PercentileView extends View {
         Paint myPaintText = new Paint();
         myPaintText.setStyle(Paint.Style.STROKE);
         myPaintText.setAntiAlias(false);
-        if (Home.getPreferencesBooleanDefaultFalse(StatsActivity.SHOW_STATISTICS_PRINT_COLOR)) {
+        if (Pref.getBooleanDefaultFalse(StatsActivity.SHOW_STATISTICS_PRINT_COLOR)) {
             myPaintText.setColor(Color.BLACK);
         } else {
             myPaintText.setColor(Color.LTGRAY);

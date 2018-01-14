@@ -4,7 +4,7 @@ package com.eveningoutpost.dexdrip.ImportedLibraries.dexcom;
 // Check them out here: https://github.com/nightscout/android-uploader
 // Some of this code may have been modified for use in this project
 
-public class Constants {
+public class Dex_Constants {
 
     public final static int NULL = 0;
     public final static int ACK = 1;

@@ -4,7 +4,7 @@ import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.CRC16;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.CRCFailRuntimeException;
-import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Constants;
+import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Dex_Constants;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Utils;
 
 import java.nio.ByteBuffer;
@@ -28,7 +28,7 @@ public class PageHeader {
 
     protected int firstRecordIndex;
     protected int numOfRecords;
-    protected Constants.RECORD_TYPES recordType;
+    protected Dex_Constants.RECORD_TYPES recordType;
     protected byte revision;
     protected int pageNumber;
     protected int reserved2;
@@ -42,14 +42,14 @@ public class PageHeader {
 
         firstRecordIndex = ByteBuffer.wrap(packet).order(ByteOrder.LITTLE_ENDIAN).getInt(FIRSTRECORDINDEX_OFFSET);
         numOfRecords = ByteBuffer.wrap(packet).order(ByteOrder.LITTLE_ENDIAN).getInt(NUMRECS_OFFSET);
-        recordType = Constants.RECORD_TYPES.values()[packet[RECTYPE_OFFSET]];
+        recordType = Dex_Constants.RECORD_TYPES.values()[packet[RECTYPE_OFFSET]];
         revision = packet[REV_OFFSET];
         pageNumber = ByteBuffer.wrap(packet).order(ByteOrder.LITTLE_ENDIAN).getInt(PAGENUMBER_OFFSET);
         reserved2 = ByteBuffer.wrap(packet).order(ByteOrder.LITTLE_ENDIAN).getInt(RESERVED2_OFFSET);
         reserved3 = ByteBuffer.wrap(packet).order(ByteOrder.LITTLE_ENDIAN).getInt(RESERVED3_OFFSET);
         reserved4 = ByteBuffer.wrap(packet).order(ByteOrder.LITTLE_ENDIAN).getInt(RESERVED4_OFFSET);
-        System.arraycopy(packet,HEADER_SIZE-Constants.CRC_LEN,crc,0,Constants.CRC_LEN);
-        byte[] crc_calc = CRC16.calculate(packet,0,HEADER_SIZE - Constants.CRC_LEN);
+        System.arraycopy(packet,HEADER_SIZE- Dex_Constants.CRC_LEN,crc,0, Dex_Constants.CRC_LEN);
+        byte[] crc_calc = CRC16.calculate(packet,0,HEADER_SIZE - Dex_Constants.CRC_LEN);
         if (!Arrays.equals(this.crc, crc_calc)) {
             throw new CRCFailRuntimeException("CRC check failed: " + Utils.bytesToHex(this.crc) + " vs " + Utils.bytesToHex(crc_calc));
         }
@@ -59,7 +59,7 @@ public class PageHeader {
         return revision;
     }
 
-    public Constants.RECORD_TYPES getRecordType() {
+    public Dex_Constants.RECORD_TYPES getRecordType() {
         return recordType;
     }
 

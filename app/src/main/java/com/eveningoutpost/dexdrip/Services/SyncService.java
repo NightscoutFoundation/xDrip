@@ -4,11 +4,11 @@ import android.app.IntentService;
 import android.app.PendingIntent;
 import android.content.Intent;
 
-import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
-import com.eveningoutpost.dexdrip.UtilityModels.MongoSendTask;
+import com.eveningoutpost.dexdrip.UtilityModels.UploaderTask;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.SYNC_QUEUE_RETRY_ID;
@@ -27,18 +27,17 @@ public class SyncService extends IntentService {
     }
 
     private void attemptSend() {
-        if (Home.getPreferencesBooleanDefaultFalse("cloud_storage_api_enable")
-                || Home.getPreferencesBooleanDefaultFalse("wear_sync")
-                || Home.getPreferencesBooleanDefaultFalse("cloud_storage_mongodb_enable")
-                || Home.getPreferencesBooleanDefaultFalse("cloud_storage_influxdb_enable")) {
+        if (Pref.getBooleanDefaultFalse("cloud_storage_api_enable")
+                || Pref.getBooleanDefaultFalse("wear_sync")
+                || Pref.getBooleanDefaultFalse("cloud_storage_mongodb_enable")
+                || Pref.getBooleanDefaultFalse("cloud_storage_influxdb_enable")) {
             synctoCloudDatabases(); // attempt to sync queues
             startSyncService(6 * Constants.MINUTE_IN_MS); // set retry timer
         }
     }
 
-    // TODO Refactor MongoSendTask name
     private void synctoCloudDatabases() {
-        final MongoSendTask task = new MongoSendTask(getApplicationContext());
+        final UploaderTask task = new UploaderTask(getApplicationContext());
         task.executeOnExecutor(xdrip.executor);
     }
 

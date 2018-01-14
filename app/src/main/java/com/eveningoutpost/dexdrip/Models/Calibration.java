@@ -23,6 +23,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.CalibrationSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.gson.Gson;
@@ -35,7 +36,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import static com.eveningoutpost.dexdrip.UtilityModels.Constants.STALE_CALIBRATION_CUT_OFF;
+import static com.eveningoutpost.dexdrip.Models.BgReading.isDataSuitableForDoubleCalibration;
 import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.newFingerStickData;
 
 
@@ -268,7 +269,7 @@ public class Calibration extends Model {
         final List<BgReading> bgReadings = BgReading.latest_by_size(3);
 
         // don't allow initial calibration if data would be stale
-            if ((bgReadings == null) || (bgReadings.size() != 3 || (JoH.msSince(bgReadings.get(2).timestamp) > STALE_CALIBRATION_CUT_OFF))) {
+            if ((bgReadings == null) || (bgReadings.size() != 3) || !isDataSuitableForDoubleCalibration() ){
             UserError.Log.wtf(TAG, "Did not find 3 readings for initial calibration - aborting");
             JoH.static_toast_long("Not enough recent sensor data! - cancelling!");
             return;
@@ -683,6 +684,18 @@ public class Calibration extends Model {
                 Log.d(TAG, "Calculated Calibration Slope: " + calibration.slope);
                 Log.d(TAG, "Calculated Calibration intercept: " + calibration.intercept);
 
+                // sanity check result
+                if (Double.isInfinite(calibration.slope)
+                        ||(Double.isNaN(calibration.slope))
+                        ||(Double.isInfinite(calibration.intercept))
+                        ||(Double.isNaN(calibration.intercept))) {
+                    calibration.sensor_confidence = 0;
+                    calibration.slope_confidence = 0;
+                    Home.toaststaticnext("Got invalid impossible slope calibration!");
+                    calibration.save(); // Save nulled record, lastValid should protect from bad calibrations
+                    newFingerStickData();
+                }
+
                 if ((calibration.slope == 0) && (calibration.intercept == 0)) {
                     calibration.sensor_confidence = 0;
                     calibration.slope_confidence = 0;
@@ -703,7 +716,7 @@ public class Calibration extends Model {
     private static SlopeParameters getSlopeParameters() {
 
         if (CollectionServiceStarter.isLimitter()) {
-            if (Home.getPreferencesBooleanDefaultFalse("use_non_fixed_li_parameters")) {
+            if (Pref.getBooleanDefaultFalse("use_non_fixed_li_parameters")) {
                 return new LiParametersNonFixed();
             } else {
                 return new LiParameters();
@@ -711,7 +724,7 @@ public class Calibration extends Model {
         }
         // open question about parameters used with LibreAlarm
 
-        if (Home.getPreferencesBooleanDefaultFalse("engineering_mode") && Home.getPreferencesBooleanDefaultFalse("old_school_calibration_mode")) {
+        if (Pref.getBooleanDefaultFalse("engineering_mode") && Pref.getBooleanDefaultFalse("old_school_calibration_mode")) {
             JoH.static_toast_long("Using old pre-2017 calibration mode!");
             return new DexOldSchoolParameters();
         }
@@ -1243,6 +1256,7 @@ public class Calibration extends Model {
                 cal.invalidate();
             }
         }
+        JoH.clearCache();
         String msg = "Deleted all calibrations for sensor";
         Log.ueh(TAG, msg);
         JoH.static_toast_long(msg);

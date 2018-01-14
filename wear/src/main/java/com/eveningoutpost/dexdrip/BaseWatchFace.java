@@ -1,7 +1,7 @@
 package com.eveningoutpost.dexdrip;
 
 //KS import android.app.NotificationManager;
-import android.app.Activity;
+
 import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -17,12 +17,9 @@ import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
-//KS import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.wearable.view.WatchViewStub;
 import android.text.TextUtils;
-import android.text.format.DateFormat;
-//KS import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.view.WindowInsets;
@@ -33,19 +30,20 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.google.android.gms.wearable.DataMap;
-import com.ustwo.clockwise.common.WatchMode;
-import com.ustwo.clockwise.wearable.WatchFace;
 import com.ustwo.clockwise.common.WatchFaceTime;
+import com.ustwo.clockwise.common.WatchMode;
 import com.ustwo.clockwise.common.WatchShape;
+import com.ustwo.clockwise.wearable.WatchFace;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 
 import lecho.lib.hellocharts.view.LineChartView;
 
@@ -56,7 +54,7 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
     private final static String TAG = BaseWatchFace.class.getSimpleName();
     public final static IntentFilter INTENT_FILTER;
     public static final long[] vibratePattern = {0,400,300,400,300,400};
-    public TextView mTime, mSgv, mDirection, mTimestamp, mUploaderBattery, mUploaderXBattery, mDelta, mRaw, mStatus;
+    public TextView mDate, mTime, mSgv, mDirection, mTimestamp, mUploaderBattery, mUploaderXBattery, mDelta, mRaw, mStatus;
     public Button stepsButton;
     public Button menuButton;
     public RelativeLayout mRelativeLayout;
@@ -101,6 +99,8 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
     private MessageReceiver messageReceiver;
 
     protected SharedPreferences sharedPrefs;
+    private static String oldDate = "";
+    private static SimpleDateFormat dateFormat = null;
     private String rawString = "000 | 000 | 000";
     private String batteryString = "--";
     private String sgvString = "--";
@@ -148,6 +148,7 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
             @Override
             public void onLayoutInflated(WatchViewStub stub) {
                 mTime = (TextView) stub.findViewById(R.id.watch_time);
+                mDate = (TextView) stub.findViewById(R.id.watch_date);
                 mSgv = (TextView) stub.findViewById(R.id.sgv);
                 mDirection = (TextView) stub.findViewById(R.id.direction);
                 mTimestamp = (TextView) stub.findViewById(R.id.timestamp);
@@ -282,6 +283,44 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
         }
     }
 
+    private String getWatchDate() {
+        final Date now = new Date();
+        final String currentWatchDate = mDate.getText().toString();
+        final String newDate = new SimpleDateFormat("yyyyMMdd").format(now);
+        if (!oldDate.equals(newDate) || currentWatchDate.equals("ddd mm/dd")) {
+            final Locale locale = BaseWatchFace.this.getResources().getConfiguration().locale;
+            final SimpleDateFormat dayFormat = new SimpleDateFormat("EEE", locale);
+            if (d)
+                Log.d(TAG, "getWatchDate oldDate: " + oldDate + " now: " + now + " currentWatchDate: " + currentWatchDate);
+            if (dateFormat == null)
+                dateFormat = getShortDateInstanceWithoutYear(locale);
+            String shortDate = dateFormat.format(now);
+            if (d)
+                Log.d(TAG, "getWatchDate shortDate " + locale.getDisplayName() + ": " + shortDate + " pattern: " + dateFormat.toPattern());
+
+            String day = dayFormat.format(now);
+            if (d)
+                Log.d(TAG, "getWatchDate day: " + day + " dayFormat: " + dayFormat.toPattern());
+            oldDate = newDate;
+            return day + "\n" + shortDate;
+        }
+        else
+            return currentWatchDate;
+    }
+
+    private SimpleDateFormat getShortDateInstanceWithoutYear(Locale locale) {
+        SimpleDateFormat sdf = (SimpleDateFormat) java.text.DateFormat.getDateInstance(java.text.DateFormat.SHORT, locale);
+        if (d) Log.d(TAG, "getShortDateInstanceWithoutYear pattern " + locale.getDisplayName() + ": " + sdf.toPattern());
+        sdf.applyPattern(sdf.toPattern().replaceAll("'[^']*", ""));//remove single quotes eg: Bulgarian: d.MM.yy 'г'
+        if (d) Log.d(TAG, "getShortDateInstanceWithoutYear pattern: " + sdf.toPattern());
+        sdf.applyPattern(sdf.toPattern().replaceAll("[^\\p{Alpha}]*y+[^\\p{Alpha}]*", ""));
+        if (d) Log.d(TAG, "getShortDateInstanceWithoutYear pattern: " + sdf.toPattern());
+        if (sdf instanceof SimpleDateFormat)
+            return sdf;
+        else
+            return new SimpleDateFormat("mm/yy", locale);
+    }
+
     @Override
     protected void onTimeChanged(WatchFaceTime oldTime, WatchFaceTime newTime) {
         if (newTime.hasHourChanged(oldTime) || newTime.hasMinuteChanged(oldTime)) {
@@ -333,6 +372,7 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
                     mTimeStepsRcvd = dataMap.getLong("steps_timestamp", 0);
                     showSteps();
                 }
+                // TODO heart rate data should also be being presented here
             }
             bundle = intent.getBundleExtra(Home.HOME_FULL_WAKEUP);
             if (layoutSet && bundle != null) {
@@ -490,6 +530,13 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
         String uploaderXBatteryText = "";
         String uploaderBatteryText = "";
         String timestampText = "";
+
+        if (sharedPrefs.getBoolean("showDate", true)) {
+            mDate.setVisibility(View.VISIBLE);
+            mDate.setText(getWatchDate());
+        } else {
+            mDate.setVisibility(View.GONE);
+        }
 
         mDelta.setText(delta);
 

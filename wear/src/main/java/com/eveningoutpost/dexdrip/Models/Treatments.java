@@ -217,7 +217,7 @@ public class Treatments extends Model {
     private static void pushTreatmentSync(Treatments treatment, boolean is_new, String suggested_uuid) {
 /*        if (Home.get_master_or_follower()) GcmActivity.pushTreatmentAsync(treatment);
 
-        if (!(Home.getPreferencesBoolean("cloud_storage_api_enable", false) || Home.getPreferencesBoolean("cloud_storage_mongodb_enable", false))) {
+        if (!(Pref.getBoolean("cloud_storage_api_enable", false) || Pref.getBoolean("cloud_storage_mongodb_enable", false))) {
             NSClientChat.pushTreatmentAsync(treatment);
         } else {
             Log.d(TAG, "Skipping NSClient treatment broadcast as nightscout direct sync is enabled");

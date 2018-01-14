@@ -3,7 +3,6 @@ package com.eveningoutpost.dexdrip.UtilityModels;
 import android.content.Context;
 import android.os.AsyncTask;
 
-import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.InfluxDB.InfluxDBUploader;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.BloodTest;
@@ -23,14 +22,14 @@ import java.util.List;
  */
 
 // TODO unify treatment handling
-// TODO refactor with more appropriate name
 
-public class MongoSendTask extends AsyncTask<String, Void, Void> {
+
+public class UploaderTask extends AsyncTask<String, Void, Void> {
     public static Exception exception;
-    private static final String TAG = MongoSendTask.class.getSimpleName();
+    private static final String TAG = UploaderTask.class.getSimpleName();
     public static final String BACKFILLING_BOOSTER = "backfilling-nightscout";
 
-    public MongoSendTask(Context pContext) {
+    public UploaderTask(Context pContext) {
     }
 
     public Void doInBackground(String... urls) {
@@ -43,21 +42,21 @@ public class MongoSendTask extends AsyncTask<String, Void, Void> {
             types.add(BloodTest.class.getSimpleName());
             types.add(Treatments.class.getSimpleName());
 
-            if (Home.getPreferencesBooleanDefaultFalse("wear_sync")) {
+            if (Pref.getBooleanDefaultFalse("wear_sync")) {
                 circuits.add(UploaderQueue.WATCH_WEARAPI);
             }
 
-            if (Home.getPreferencesBooleanDefaultFalse("cloud_storage_mongodb_enable")) {
+            if (Pref.getBooleanDefaultFalse("cloud_storage_mongodb_enable")) {
                 circuits.add(UploaderQueue.MONGO_DIRECT);
             }
-            if (Home.getPreferencesBooleanDefaultFalse("cloud_storage_api_enable")) {
-                if ((Home.getPreferencesBoolean("cloud_storage_api_use_mobile", true) || (JoH.isLANConnected()))) {
+            if (Pref.getBooleanDefaultFalse("cloud_storage_api_enable")) {
+                if ((Pref.getBoolean("cloud_storage_api_use_mobile", true) || (JoH.isLANConnected()))) {
                     circuits.add(UploaderQueue.NIGHTSCOUT_RESTAPI);
                 } else {
                     Log.e(TAG, "Skipping Nightscout upload due to mobile data only");
                 }
             }
-            if (Home.getPreferencesBooleanDefaultFalse("cloud_storage_influxdb_enable")) {
+            if (Pref.getBooleanDefaultFalse("cloud_storage_influxdb_enable")) {
                 circuits.add(UploaderQueue.INFLUXDB_RESTAPI);
             }
 

@@ -36,7 +36,9 @@ import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.PowerManager;
+import android.os.Vibrator;
 import android.provider.Settings;
 //KS import android.support.v7.app.AlertDialog;
 //KS import android.support.v4.app.NotificationCompat;
@@ -90,6 +92,7 @@ import java.util.zip.Inflater;
 
 import static android.bluetooth.BluetoothDevice.PAIRING_VARIANT_PIN;
 import static android.content.Context.ALARM_SERVICE;
+import static android.content.Context.VIBRATOR_SERVICE;
 //KS import static com.eveningoutpost.dexdrip.stats.StatsActivity.SHOW_STATISTICS_PRINT_COLOR;
 
 /**
@@ -146,6 +149,7 @@ public class JoH {
     public static long msSince(long when) {
         return (tsl() - when);
     }
+
     public static long msTill(long when) {
         return (when - tsl());
     }
@@ -180,7 +184,6 @@ public class JoH {
             return null;
         }
     }
-
 
 
     public static String compressString(String source) {
@@ -562,6 +565,7 @@ public class JoH {
     public static String niceTimeTill(long t) {
         return niceTimeScalar(-msSince(t));
     }
+
     // temporary
     public static String niceTimeScalar(long t) {
         String unit = "second";
@@ -705,8 +709,9 @@ public class JoH {
                             || wifi_state == NetworkInfo.DetailedState.CAPTIVE_PORTAL_CHECK) {
                         String ssid = wifiInfo.getSSID();
                         if (ssid.equals("<unknown ssid>")) return null; // WifiSsid.NONE;
-                        if (ssid.charAt(0)=='"') ssid=ssid.substring(1);
-                        if (ssid.charAt(ssid.length()-1)=='"') ssid=ssid.substring(0,ssid.length()-1);
+                        if (ssid.charAt(0) == '"') ssid = ssid.substring(1);
+                        if (ssid.charAt(ssid.length() - 1) == '"')
+                            ssid = ssid.substring(0, ssid.length() - 1);
                         return ssid;
                     }
                 }
@@ -748,8 +753,7 @@ public class JoH {
         return mainHandler.postDelayed(theRunnable, delay);
     }
 
-    public static void removeUiThreadRunnable(Runnable theRunnable)
-    {
+    public static void removeUiThreadRunnable(Runnable theRunnable) {
         final Handler mainHandler = new Handler(xdrip.getAppContext().getMainLooper());
         mainHandler.removeCallbacks(theRunnable);
     }
@@ -890,7 +894,7 @@ public class JoH {
                 height, Bitmap.Config.ARGB_8888);
 
         final Canvas canvas = new Canvas(bitmap);
-        if (Home.getPreferencesBooleanDefaultFalse(SHOW_STATISTICS_PRINT_COLOR)) {
+        if (Pref.getBooleanDefaultFalse(SHOW_STATISTICS_PRINT_COLOR)) {
             Paint paint = new Paint();
             paint.setColor(Color.WHITE);
             paint.setStyle(Paint.Style.FILL);
@@ -909,7 +913,7 @@ public class JoH {
             final Canvas canvasf = new Canvas(bitmapf);
 
             Paint paint = new Paint();
-            if (Home.getPreferencesBooleanDefaultFalse(SHOW_STATISTICS_PRINT_COLOR)) {
+            if (Pref.getBooleanDefaultFalse(SHOW_STATISTICS_PRINT_COLOR)) {
                 paint.setColor(Color.WHITE);
                 paint.setStyle(Paint.Style.FILL);
                 canvasf.drawRect(0, 0, width, offset, paint);
@@ -1037,6 +1041,11 @@ public class JoH {
         showNotification(title, content, intent, notificationId, sound, vibrate, null, null);
     }
 
+    // ignore channel id and bigmsg
+    public static void showNotification(String title, String content, PendingIntent intent, int notificationId, String channelId, boolean sound, boolean vibrate, PendingIntent deleteIntent, Uri sound_uri, String bigmsg) {
+        showNotification(title, content, intent, notificationId, sound, vibrate, deleteIntent, sound_uri);
+    }
+
     public static void showNotification(String title, String content, PendingIntent intent, int notificationId, boolean sound, boolean vibrate, PendingIntent deleteIntent, Uri sound_uri) {
         final Notification.Builder mBuilder = notificationBuilder(title, content, intent);
         final long[] vibratePattern = {0, 1000, 300, 1000, 300, 1000};
@@ -1136,6 +1145,13 @@ public class JoH {
         return doPairingRequest(context, broadcastReceiver, intent, mBluetoothDeviceAddress, null);
     }
 
+    public static void vibrateNotice() {
+        final Vibrator vibrator = (Vibrator) xdrip.getAppContext().getSystemService(VIBRATOR_SERVICE);
+        long[] vibrationPattern = {0, 500, 50, 300};
+        final int indexInPatternToRepeat = -1;
+        vibrator.vibrate(vibrationPattern, indexInPatternToRepeat);
+    }
+
     @TargetApi(19)
     public static boolean doPairingRequest(Context context, BroadcastReceiver broadcastReceiver, Intent intent, String mBluetoothDeviceAddress, String pinHint) {
         if (BluetoothDevice.ACTION_PAIRING_REQUEST.equals(intent.getAction())) {
@@ -1160,6 +1176,7 @@ public class JoH {
 
                     } catch (Exception e) {
                         UserError.Log.e(TAG, "Could not set pairing confirmation due to exception: " + e);
+                        vibrateNotice();
                         if (JoH.ratelimit("failed pair confirmation", 200)) {
                             // BluetoothDevice.PAIRING_VARIANT_CONSENT)
                             if (type == 3) {
@@ -1180,6 +1197,110 @@ public class JoH {
             }
         }
         return true;
+    }
+
+    // Use system privileges to force ourselves in to the whitelisted battery optimization list
+    // by reflecting in to the hidden system interface for this. I don't know a better way
+    // to achieve this on android wear because it doesn't offer a user interface for it.
+    @SuppressLint("PrivateApi")
+    public static boolean forceBatteryWhitelisting() {
+        final String myself = xdrip.getAppContext().getPackageName();
+        IDeviceIdleController iDeviceIdleController;
+        Method method;
+        try {
+            method = Class.forName("android.os.ServiceManager").getMethod("getService", String.class);
+            IBinder binder = (IBinder) method.invoke(null, "deviceidle");
+            if (binder != null) {
+                iDeviceIdleController = IDeviceIdleController.Stub.asInterface(binder);
+                Log.d(TAG, "Forcing battery optimization whitelisting for: " + myself);
+                iDeviceIdleController.addPowerSaveWhitelistApp(myself);
+                Log.d(TAG, "Forced battery optimization whitelisting for: " + myself);
+            } else {
+                Log.d(TAG, "Could not gain binder when trying to force whitelisting");
+            }
+            return true;
+        } catch (Exception e) {
+            Log.d(TAG, "Got exception trying to force whitelisting: " + e);
+            return false;
+        }
+    }
+
+    // emulate the system interface ourselves
+    interface IDeviceIdleController extends android.os.IInterface {
+        void addPowerSaveWhitelistApp(String name) throws android.os.RemoteException;
+
+        abstract class Stub extends android.os.Binder implements IDeviceIdleController {
+            private static final java.lang.String DESCRIPTOR = "android.os.IDeviceIdleController";
+
+            public Stub() {
+                this.attachInterface(this, DESCRIPTOR);
+            }
+
+            static IDeviceIdleController asInterface(android.os.IBinder obj) {
+                if ((obj == null)) {
+                    return null;
+                }
+                android.os.IInterface iin = obj.queryLocalInterface(DESCRIPTOR);
+                if (((iin != null) && (iin instanceof IDeviceIdleController))) {
+                    return ((IDeviceIdleController) iin);
+                }
+                return new IDeviceIdleController.Stub.Proxy(obj);
+            }
+
+            @Override
+            public android.os.IBinder asBinder() {
+                return this;
+            }
+
+            static final int TRANSACTION_addPowerSaveWhitelistApp = android.os.IBinder.FIRST_CALL_TRANSACTION;
+
+            @Override
+            public boolean onTransact(int code, android.os.Parcel data, android.os.Parcel reply, int flags) throws android.os.RemoteException {
+                switch (code) {
+                    case INTERFACE_TRANSACTION: {
+                        reply.writeString(DESCRIPTOR);
+                        return true;
+                    }
+                    case TRANSACTION_addPowerSaveWhitelistApp: {
+                        data.enforceInterface(DESCRIPTOR);
+                        java.lang.String _arg0;
+                        _arg0 = data.readString();
+                        this.addPowerSaveWhitelistApp(_arg0);
+                        reply.writeNoException();
+                        return true;
+                    }
+                }
+                return true;
+            }
+
+            private static class Proxy implements IDeviceIdleController {
+                private android.os.IBinder mRemote;
+
+                Proxy(android.os.IBinder remote) {
+                    mRemote = remote;
+                }
+
+                @Override
+                public android.os.IBinder asBinder() {
+                    return mRemote;
+                }
+
+                @Override
+                public void addPowerSaveWhitelistApp(java.lang.String name) throws android.os.RemoteException {
+                    android.os.Parcel _data = android.os.Parcel.obtain();
+                    android.os.Parcel _reply = android.os.Parcel.obtain();
+                    try {
+                        _data.writeInterfaceToken(DESCRIPTOR);
+                        _data.writeString(name);
+                        mRemote.transact(Stub.TRANSACTION_addPowerSaveWhitelistApp, _data, _reply, 0);
+                        _reply.readException();
+                    } finally {
+                        _reply.recycle();
+                        _data.recycle();
+                    }
+                }
+            }
+        }
     }
 
 
@@ -1323,5 +1444,14 @@ public class JoH {
         crc.update(bytes, 0, bytes.length - 4);
         final long buffer_crc = UnsignedInts.toLong(ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).getInt(bytes.length - 4));
         return buffer_crc == crc.getValue();
+    }
+
+    public static int parseIntWithDefault(String number, int radix, int defaultVal) {
+        try {
+            return Integer.parseInt(number, radix);
+        } catch (NumberFormatException e) {
+            Log.e(TAG, "Error parsing integer number = " + number + " radix = " + radix);
+            return defaultVal;
+        }
     }
 }

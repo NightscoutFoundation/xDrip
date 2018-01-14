@@ -52,7 +52,7 @@ public class ReadData {
     }
 
     public EGVRecord[] getRecentEGVs() {
-        int recordType = Constants.RECORD_TYPES.EGV_DATA.ordinal();
+        int recordType = Dex_Constants.RECORD_TYPES.EGV_DATA.ordinal();
         int endPage = readDataBasePageRange(recordType);
         return readDataBasePage(recordType, endPage);
     }
@@ -62,7 +62,7 @@ public class ReadData {
             throw new IllegalArgumentException("Number of pages must be greater than 1.");
         }
         Log.d(TAG, "Reading EGV page range...");
-        int recordType = Constants.RECORD_TYPES.EGV_DATA.ordinal();
+        int recordType = Dex_Constants.RECORD_TYPES.EGV_DATA.ordinal();
         int endPage = readDataBasePageRange(recordType);
         Log.d(TAG, "Reading " + numOfRecentPages + " EGV page(s)...");
         numOfRecentPages = numOfRecentPages - 1;
@@ -85,7 +85,7 @@ public class ReadData {
 
     public MeterRecord[] getRecentMeterRecords() {
         Log.d(TAG, "Reading Meter page...");
-        int recordType = Constants.RECORD_TYPES.METER_DATA.ordinal();
+        int recordType = Dex_Constants.RECORD_TYPES.METER_DATA.ordinal();
         int endPage = readDataBasePageRange(recordType);
         return readDataBasePage(recordType, endPage);
     }
@@ -95,7 +95,7 @@ public class ReadData {
             throw new IllegalArgumentException("Number of pages must be greater than 1.");
         }
         Log.d(TAG, "Reading Sensor page range...");
-        int recordType = Constants.RECORD_TYPES.SENSOR_DATA.ordinal();
+        int recordType = Dex_Constants.RECORD_TYPES.SENSOR_DATA.ordinal();
         int endPage = readDataBasePageRange(recordType);
         Log.d(TAG, "Reading " + numOfRecentPages + " Sensor page(s)...");
         numOfRecentPages = numOfRecentPages - 1;
@@ -114,35 +114,35 @@ public class ReadData {
 
     public CalRecord[] getRecentCalRecords() {
         Log.d(TAG, "Reading Cal Records page range...");
-        int recordType = Constants.RECORD_TYPES.CAL_SET.ordinal();
+        int recordType = Dex_Constants.RECORD_TYPES.CAL_SET.ordinal();
         int endPage = readDataBasePageRange(recordType);
         Log.d(TAG, "Reading Cal Records page...");
         return readDataBasePage(recordType, endPage);
     }
     public byte[] getRecentCalRecordsTest() {
         Log.d(TAG, "Reading Cal Records page range...");
-        int recordType = Constants.RECORD_TYPES.CAL_SET.ordinal();
+        int recordType = Dex_Constants.RECORD_TYPES.CAL_SET.ordinal();
         int endPage = readDataBasePageRange(recordType);
         Log.d(TAG, "Reading Cal Records page...");
         return readDataBasePageTest(recordType, endPage);
     }
 
     public boolean ping() {
-        writeCommand(Constants.PING);
-        return read(MIN_LEN).getCommand() == Constants.ACK;
+        writeCommand(Dex_Constants.PING);
+        return read(MIN_LEN).getCommand() == Dex_Constants.ACK;
     }
 
     public int readBatteryLevel() {
         Log.d(TAG, "Reading battery level...");
-        writeCommand(Constants.READ_BATTERY_LEVEL);
+        writeCommand(Dex_Constants.READ_BATTERY_LEVEL);
         byte[] readData = read(MIN_LEN).getData();
         return ByteBuffer.wrap(readData).order(ByteOrder.LITTLE_ENDIAN).getInt();
     }
 
     public String readSerialNumber() {
         int PAGE_OFFSET = 0;
-        byte[] readData = readDataBasePage(Constants.RECORD_TYPES.MANUFACTURING_DATA.ordinal(), PAGE_OFFSET);
-        Element md = ParsePage(readData, Constants.RECORD_TYPES.MANUFACTURING_DATA.ordinal());
+        byte[] readData = readDataBasePage(Dex_Constants.RECORD_TYPES.MANUFACTURING_DATA.ordinal(), PAGE_OFFSET);
+        Element md = ParsePage(readData, Dex_Constants.RECORD_TYPES.MANUFACTURING_DATA.ordinal());
         return md.getAttribute("SerialNumber");
     }
 
@@ -152,14 +152,14 @@ public class ReadData {
 
     public long readSystemTime() {
         Log.d(TAG, "Reading system time...");
-        writeCommand(Constants.READ_SYSTEM_TIME);
+        writeCommand(Dex_Constants.READ_SYSTEM_TIME);
         byte[] readData = read(MIN_LEN).getData();
         return ByteBuffer.wrap(readData).order(ByteOrder.LITTLE_ENDIAN).getInt() & 0xffffffff;
     }
 
     public int readDisplayTimeOffset() {
         Log.d(TAG, "Reading display time offset...");
-        writeCommand(Constants.READ_DISPLAY_TIME_OFFSET);
+        writeCommand(Dex_Constants.READ_DISPLAY_TIME_OFFSET);
         byte[] readData = read(MIN_LEN).getData();
         return ByteBuffer.wrap(readData).order(ByteOrder.LITTLE_ENDIAN).getInt() & 0xffffffff;
     }
@@ -169,7 +169,7 @@ public class ReadData {
         Log.d(TAG, "adding Payload");
         payload.add((byte) recordType);
         Log.d(TAG, "Sending write command");
-        writeCommand(Constants.READ_DATABASE_PAGE_RANGE, payload);
+        writeCommand(Dex_Constants.READ_DATABASE_PAGE_RANGE, payload);
         Log.d(TAG, "About to call getdata");
         byte[] readData = read(MIN_LEN).getData();
         Log.d(TAG, "Going to return");
@@ -189,7 +189,7 @@ public class ReadData {
         payload.add(pageInt[1]);
         payload.add(pageInt[0]);
         payload.add(numOfPages);
-        writeCommand(Constants.READ_DATABASE_PAGES, payload);
+        writeCommand(Dex_Constants.READ_DATABASE_PAGES, payload);
         byte[] readData = read(2122).getData();
         return ParsePage(readData, recordType);
     }
@@ -206,7 +206,7 @@ public class ReadData {
         payload.add(pageInt[1]);
         payload.add(pageInt[0]);
         payload.add(numOfPages);
-        return writeCommandTest(Constants.READ_DATABASE_PAGES, payload);
+        return writeCommandTest(Dex_Constants.READ_DATABASE_PAGES, payload);
     }
 
     private void writeCommand(int command, ArrayList<Byte> payload) {
@@ -299,7 +299,7 @@ public class ReadData {
         int numRec = data[NUM_REC_OFFSET];
         int rec_len;
 
-        switch (Constants.RECORD_TYPES.values()[recordType]) {
+        switch (Dex_Constants.RECORD_TYPES.values()[recordType]) {
             case MANUFACTURING_DATA:
                 GenericXMLRecord xmlRecord = new GenericXMLRecord(Arrays.copyOfRange(data, HEADER_LEN, data.length - 1));
                 return (T) xmlRecord;

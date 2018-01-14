@@ -5,12 +5,15 @@ package com.eveningoutpost.dexdrip;
  */
 
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.annotation.UiThreadTest;
 import android.support.test.espresso.NoActivityResumedException;
 import android.support.test.espresso.ViewInteraction;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
+import android.view.WindowManager;
 
 import com.schibsted.spain.barista.cleardata.ClearDatabaseRule;
 import com.schibsted.spain.barista.cleardata.ClearFilesRule;
@@ -50,13 +53,20 @@ import static com.schibsted.spain.barista.BaristaScrollActions.scrollTo;
 public class HomeEspressoTest {
 
     private static boolean onetime = false;
-
+    @UiThreadTest
     @Before
     public synchronized void setUp() throws Exception {
         if (!onetime) {
             onetime = true;
             clearAllPrefs();
         }
+
+        final Activity activity = mActivityRule.getActivity();
+        activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
+                | WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
+                | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+                | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
+                | WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON);
     }
 
     @After
