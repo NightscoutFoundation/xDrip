@@ -99,6 +99,7 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
     private MessageReceiver messageReceiver;
 
     protected SharedPreferences sharedPrefs;
+    private static Locale oldLocale = null;
     private static String oldDate = "";
     private static SimpleDateFormat dateFormat = null;
     private String rawString = "000 | 000 | 000";
@@ -287,12 +288,12 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
         final Date now = new Date();
         final String currentWatchDate = mDate.getText().toString();
         final String newDate = new SimpleDateFormat("yyyyMMdd").format(now);
-        if (!oldDate.equals(newDate) || currentWatchDate.equals("ddd mm/dd")) {
-            final Locale locale = BaseWatchFace.this.getResources().getConfiguration().locale;
+        final Locale locale = BaseWatchFace.this.getResources().getConfiguration().locale;
+        if (!oldDate.equals(newDate) || currentWatchDate.equals("ddd mm/dd") || (oldLocale != locale)) {
             final SimpleDateFormat dayFormat = new SimpleDateFormat("EEE", locale);
             if (d)
                 Log.d(TAG, "getWatchDate oldDate: " + oldDate + " now: " + now + " currentWatchDate: " + currentWatchDate);
-            if (dateFormat == null)
+            if (dateFormat == null || oldLocale != locale)
                 dateFormat = getShortDateInstanceWithoutYear(locale);
             String shortDate = dateFormat.format(now);
             if (d)
@@ -302,6 +303,7 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
             if (d)
                 Log.d(TAG, "getWatchDate day: " + day + " dayFormat: " + dayFormat.toPattern());
             oldDate = newDate;
+            oldLocale = locale;
             return day + "\n" + shortDate;
         }
         else
