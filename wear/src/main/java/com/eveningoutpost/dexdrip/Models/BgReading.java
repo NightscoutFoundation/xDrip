@@ -154,6 +154,29 @@ public class BgReading extends Model implements ShareUploadableBg {
     @Column(name = "noise")
     public String noise;
 
+    @Expose
+    @Column(name = "dg_mgdl")
+    public double dg_mgdl = 0d;
+
+    @Expose
+    @Column(name = "dg_slope")
+    public double dg_slope = 0d;
+
+    @Expose
+    @Column(name = "dg_delta_name")
+    public String dg_delta_name;
+
+    public static void updateDB(){
+        String[] updates = new String[]{"ALTER TABLE BgReadings ADD COLUMN dg_mgdl REAL;", "ALTER TABLE BgReadings ADD COLUMN dg_slope REAL;", "ALTER TABLE BgReadings ADD COLUMN dg_delta_name TEXT;"};
+        for (String patch:updates) {
+            try {
+                SQLiteUtils.execSql(patch);
+            } catch (Exception e){
+            }
+        }
+
+    }
+
     public BgReading () {
         super ();
     }
