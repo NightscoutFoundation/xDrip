@@ -54,6 +54,7 @@ script:
   - adb shell input keyevent 82
   - adb devices
 #  - ./gradlew app:installDebugAndroidTest  -PdisablePreDex
+  - adb shell input tap 134 467
   - travis_retry travis_wait nice ./gradlew app:connectedAndroidTest -PdisablePreDex
   - ./gradlew assembleRelease
 
