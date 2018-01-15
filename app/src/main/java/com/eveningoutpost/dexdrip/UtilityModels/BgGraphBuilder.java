@@ -372,13 +372,14 @@ public class BgGraphBuilder {
 
             final List<HeartRate> heartRates = HeartRate.latestForGraph(2000, loaded_start, loaded_end);
 
+            final long condenseCutoffMs = Pref.getBooleanDefaultFalse("smooth_heartrate") ? (10 * Constants.MINUTE_IN_MS) : FUZZER;
             final List<HeartRate> condensedHeartRateList = new ArrayList<>();
             for (HeartRate thisHeartRateRecord : heartRates) {
                 final int condensedListSize = condensedHeartRateList.size();
                 if (condensedListSize > 0) {
                     final HeartRate tailOfList = condensedHeartRateList.get(condensedListSize - 1);
                     // if its close enough to merge then average with previous
-                    if ((thisHeartRateRecord.timestamp - tailOfList.timestamp) < FUZZER) {
+                    if ((thisHeartRateRecord.timestamp - tailOfList.timestamp) < condenseCutoffMs) {
                         tailOfList.bpm = (tailOfList.bpm += thisHeartRateRecord.bpm) / 2;
                     } else {
                         // not close enough to merge
