@@ -2132,6 +2132,14 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                         String bgrecord = entry.getString("bgs");
                         if (bgrecord != null) {
                             BgReading bgData = gson.fromJson(bgrecord, BgReading.class);
+
+                        /*    // TODO this is a hack to use display glucose but it is incomplete regarding delta
+                            if (bgData.dg_mgdl > 0) {
+                                bgData.calculated_value = bgData.dg_mgdl;
+                                bgData.calculated_value_slope = bgData.dg_slope;
+                                // TODO delta missing???
+                            }
+*/
                             BgReading exists = BgReading.getForTimestampExists(bgData.timestamp);
                             exists = exists != null ? exists : BgReading.findByUuid(bgData.uuid);
                             String calibrationUuid = entry.getString("calibrationUuid");

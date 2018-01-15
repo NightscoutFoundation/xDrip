@@ -205,6 +205,7 @@ public class BgReading extends Model implements ShareUploadableBg {
             dg_mgdl = displayGlucose.mgdl;
             dg_slope = displayGlucose.slope;
             dg_delta_name = displayGlucose.delta_name;
+            // TODO we probably should reflect the display glucose delta here as well for completeness
             this.save();
         }
     }

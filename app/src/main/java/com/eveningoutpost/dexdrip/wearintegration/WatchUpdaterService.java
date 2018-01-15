@@ -13,6 +13,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.eveningoutpost.dexdrip.BestGlucose;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Models.AlertType;
@@ -883,6 +884,7 @@ public class WatchUpdaterService extends WearableListenerService implements
                         sendData();//ensure BgReading.Last is displayed on watch
 
                     } else {
+                        // default
                         /*if (!mPrefs.getBoolean("force_wearG5", false)//handled by UploaderQueue
                                 && mPrefs.getBoolean("enable_wearG5", false)
                                 && (is_using_bt)) { //KS only send BGs if using Phone's G5 Collector Server
@@ -1389,6 +1391,7 @@ public class WatchUpdaterService extends WearableListenerService implements
     }
 
 
+    // sending to watch - beware we munge the calculated value and replace with display glucose
     private DataMap dataMap(BgReading bg, SharedPreferences sPrefs, BgGraphBuilder bgGraphBuilder, int battery) {
         Double highMark = Double.parseDouble(sPrefs.getString("highValue", "170"));
         Double lowMark = Double.parseDouble(sPrefs.getString("lowValue", "70"));
@@ -1396,14 +1399,25 @@ public class WatchUpdaterService extends WearableListenerService implements
 
         //int battery = BgSendQueue.getBatteryLevel(getApplicationContext());
 
-        dataMap.putString("sgvString", bgGraphBuilder.unitized_string(bg.calculated_value));
+        // TODO this is inefficent when we are called in a loop instead should be passed in or already stored in bgreading
+        final BestGlucose.DisplayGlucose dg = BestGlucose.getDisplayGlucose(); // current best
+
+
+        dataMap.putString("sgvString", dg != null && bg.dg_mgdl > 0 ? dg.unitized : bgGraphBuilder.unitized_string(bg.calculated_value));
+
         dataMap.putString("slopeArrow", bg.slopeArrow());
         dataMap.putDouble("timestamp", bg.timestamp); //TODO: change that to long (was like that in NW)
-        dataMap.putString("delta", bgGraphBuilder.unitizedDeltaString(true, true, true));
+
+        // This delta string only applies to the last reading even if we are processing historical data here
+        if (dg != null) {
+            dataMap.putString("delta", dg.unitized_delta);
+        } else {
+            dataMap.putString("delta", bgGraphBuilder.unitizedDeltaString(true, true, true));
+        }
         dataMap.putString("battery", "" + battery);
-        dataMap.putLong("sgvLevel", sgvLevel(bg.calculated_value, sPrefs, bgGraphBuilder));
+        dataMap.putLong("sgvLevel", sgvLevel(bg.dg_mgdl > 0 ? bg.dg_mgdl : bg.calculated_value, sPrefs, bgGraphBuilder));
         dataMap.putInt("batteryLevel", (battery >= 30) ? 1 : 0);
-        dataMap.putDouble("sgvDouble", bg.calculated_value);
+        dataMap.putDouble("sgvDouble", bg.dg_mgdl > 0 ? bg.dg_mgdl : bg.calculated_value);
         dataMap.putDouble("high", inMgdl(highMark, sPrefs));
         dataMap.putDouble("low", inMgdl(lowMark, sPrefs));
         dataMap.putInt("bridge_battery", mPrefs.getInt("bridge_battery", -1));//Used in DexCollectionService
