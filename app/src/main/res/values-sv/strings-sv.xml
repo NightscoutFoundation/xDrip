@@ -456,7 +456,7 @@
     <string name="high_alert">Högt larm</string>
     <string name="low_alert">Lågt larm</string>
     <string name="xbridge_battery">xBridgebatteri</string>
-    <string name="limitter_battery">Limiterbatteri</string>
+    <string name="limitter_battery">Librebatteri</string>
     <string name="parakeet_battery">Parakeetbatteri</string>
     <string name="after_calibration_rewrite_history">Justera senast obehandlad (raw) graf efter kalibrering för att släta ut mot den nya kalibreringen</string>
     <string name="rewrite_history">Skriv om historiken</string>
