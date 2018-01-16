@@ -185,6 +185,10 @@ public class BgReading extends Model implements ShareUploadableBg {
         return mmolConvert(calculated_value);
     }
 
+    public double display_value_mmol() {
+        return mmolConvert(dg_mgdl > 0 ? dg_mgdl : calculated_value);
+    }
+
     public double mmolConvert(double mgdl) {
         return mgdl * Constants.MGDL_TO_MMOLL;
     }
@@ -195,15 +199,18 @@ public class BgReading extends Model implements ShareUploadableBg {
         DecimalFormat df = new DecimalFormat("#");
         df.setMaximumFractionDigits(0);
 
-        if (calculated_value >= 400) {
+        // Warning this is inconsistent compared to phone version as we are applying display glucose values if available
+        double sgv_value_to_use = (dg_mgdl > 0) ? dg_mgdl : calculated_value;
+
+        if (sgv_value_to_use >= 400) {
             return "HIGH";
-        } else if (calculated_value >= 40) {
+        } else if (sgv_value_to_use >= 40) {
             if (unit.compareTo("mgdl") == 0) {
                 df.setMaximumFractionDigits(0);
-                return df.format(calculated_value);
+                return df.format(sgv_value_to_use);
             } else {
                 df.setMaximumFractionDigits(1);
-                return df.format(calculated_value_mmol());
+                return df.format(display_value_mmol());
             }
         } else {
             return "LOW";
@@ -610,6 +617,10 @@ public class BgReading extends Model implements ShareUploadableBg {
 
     public String slopeArrow() {
         return slopeToArrowSymbol(this.calculated_value_slope * 60000);
+    }
+
+    public String displaySlopeArrow() {
+        return slopeToArrowSymbol(this.dg_mgdl > 0 ? this.dg_slope * 60000 : this.calculated_value_slope * 60000);
     }
 
     public  String slopeName() {
