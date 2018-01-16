@@ -31,6 +31,7 @@ import android.widget.TextView;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Services.HeartRateService;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.google.android.gms.wearable.DataMap;
@@ -56,6 +57,7 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
     public static final long[] vibratePattern = {0,400,300,400,300,400};
     public TextView mDate, mTime, mSgv, mDirection, mTimestamp, mUploaderBattery, mUploaderXBattery, mDelta, mRaw, mStatus;
     public Button stepsButton;
+    public Button heartButton;
     public Button menuButton;
     public RelativeLayout mRelativeLayout;
     public LinearLayout mLinearLayout;
@@ -65,7 +67,9 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
     public String mExtraStatusLine = "";
     public String mStepsToast = "";
     public int mStepsCount = 0;
+    public int mHeartBPM = 0;
     public long mTimeStepsRcvd = 0;
+    public long mTimeHeartRcvd = 0;
     public long sgvLevel = 0;
     public int batteryLevel = 1;
     public int mXBatteryLevel = 1;
@@ -87,7 +91,7 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
     public ArrayList<BgWatchData> treatsDataList = new ArrayList<>();
     public ArrayList<BgWatchData> calDataList = new ArrayList<>();
     public ArrayList<BgWatchData> btDataList = new ArrayList<>();
-    private final static boolean d = true; // debug flag, could be read from preferences
+    private final static boolean d = false; // debug flag, could be read from preferences
     public PowerManager.WakeLock wakeLock;
     // related to manual layout
     public View layoutView;
@@ -159,6 +163,11 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
                 mUploaderXBattery = (TextView) stub.findViewById(R.id.uploader_xbattery);
                 mDelta = (TextView) stub.findViewById(R.id.delta);
                 stepsButton=(Button)stub.findViewById(R.id.walkButton);
+                try {
+                    heartButton=(Button)stub.findViewById(R.id.heartButton);
+                } catch (Exception e) {
+                    //
+                }
                 mStepsLinearLayout = (LinearLayout) stub.findViewById(R.id.steps_layout);
                 menuButton=(Button)stub.findViewById(R.id.menuButton);
                 mMenuLinearLayout = (LinearLayout) stub.findViewById(R.id.menu_layout);
@@ -181,6 +190,8 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
                 mRelativeLayout.measure(specW, specH);
                 mRelativeLayout.layout(0, 0, mRelativeLayout.getMeasuredWidth(),
                         mRelativeLayout.getMeasuredHeight());
+                showSteps();
+                showHeartRate();
             }
         });
         Log.d(TAG, "performViewSetup requestData");
@@ -374,7 +385,12 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
                     mTimeStepsRcvd = dataMap.getLong("steps_timestamp", 0);
                     showSteps();
                 }
-                // TODO heart rate data should also be being presented here
+
+                if (mTimeHeartRcvd < dataMap.getLong("heart_rate_timestamp", 0)) {
+                    mHeartBPM = dataMap.getInt("heart_rate", 0);
+                    mTimeHeartRcvd = dataMap.getLong("heart_rate_timestamp", 0);
+                    showHeartRate();
+                }
             }
             bundle = intent.getBundleExtra(Home.HOME_FULL_WAKEUP);
             if (layoutSet && bundle != null) {
@@ -524,6 +540,16 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
             stepsButton.setVisibility(View.GONE);
             mStepsToast = "";
             if (d) Log.d(TAG, "showSteps GONE mStepsCount = " + getResources().getString(R.string.label_show_steps, mStepsCount));
+        }
+    }
+
+    private void showHeartRate() {
+        if ((mHeartBPM > 0) && (JoH.msSince(mTimeHeartRcvd) <= HeartRateService.READING_PERIOD * 2)
+                && (sharedPrefs.getBoolean("showHeartRate", false) && (heartButton != null))) {
+            heartButton.setVisibility(View.VISIBLE);
+            heartButton.setText(String.format("%d", mHeartBPM));
+        } else {
+            if (heartButton != null) heartButton.setVisibility(View.GONE);
         }
     }
 

@@ -310,6 +310,7 @@ public class BgSendQueue extends Model {
         final long t = System.currentTimeMillis();
         final PebbleMovement pm = PebbleMovement.last();
         final boolean show_steps = prefs.getBoolean("showSteps", true);
+        final boolean show_heart_rate = prefs.getBoolean("showHeartRate", true);
         final boolean use_wear_health = prefs.getBoolean("use_wear_health", true);
         if (use_wear_health || show_steps) {
             boolean sameDay = pm != null ? ListenerService.isSameDay(t, pm.timestamp) : false;
@@ -323,6 +324,9 @@ public class BgSendQueue extends Model {
                 dataMap.putLong("steps_timestamp", pm.timestamp);
                 Log.d("BgSendQueue", "getSensorSteps isSameDay true pm.timestamp=" + JoH.dateTimeText(pm.timestamp) + " metric=" + pm.metric);
             }
+        }
+
+        if (use_wear_health && show_heart_rate) {
             final HeartRate lastHeartRateReading = HeartRate.last();
             if (lastHeartRateReading != null) {
                 dataMap.putInt("heart_rate", lastHeartRateReading.bpm);
