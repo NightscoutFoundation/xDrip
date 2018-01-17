@@ -6,7 +6,7 @@ import android.os.PowerManager;
 
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.PebbleMovement;
+import com.eveningoutpost.dexdrip.Models.StepCounter;
 import com.eveningoutpost.dexdrip.Models.RollCall;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
@@ -77,7 +77,7 @@ public class DailyIntentService extends IntentService {
                     Log.e(TAG, "DailyIntentService exception on UploaderQueue ", e);
                 }
                 try {
-                    PebbleMovement.cleanup(Pref.getInt("retention_pebble_movement", 180));
+                    StepCounter.cleanup(Pref.getInt("retention_pebble_movement", 180));
                 } catch (Exception e) {
                     Log.e(TAG, "DailyIntentService exception on PebbleMovement ", e);
                 }

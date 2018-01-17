@@ -41,7 +41,7 @@ public class PowerStateReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         final String action = intent.getAction();
-
+        if (action == null) return;
         if (action.equals(Intent.ACTION_POWER_CONNECTED)) {
             setInternalPrefsBoolean(PREFS_POWER_STATE, true);
             Log.d(TAG, "Power connected");

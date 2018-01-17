@@ -68,14 +68,9 @@ public class ExternalStatusService extends IntentService {
                     PersistentStore.setString(EXTERNAL_STATUS_STORE, statusline);
                     PersistentStore.setLong(EXTERNAL_STATUS_STORE_TIME, JoH.tsl());
 
-                    // TODO do we want to parse this data?
+                    // notify observers
+                    NewDataObserver.newExternalStatus();
 
-                    // send to wear
-                    if (Pref.getBooleanDefaultFalse("wear_sync")) {
-                        startWatchUpdaterService(this, WatchUpdaterService.ACTION_SEND_STATUS, TAG, "externalStatusString", "" + statusline);
-                    }
-
-                    NewDataObserver.pebble();
                 }
             }
         } finally {

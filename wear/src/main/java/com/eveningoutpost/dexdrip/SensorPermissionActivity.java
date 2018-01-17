@@ -16,27 +16,27 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 /**
  * Simple Activity for displaying Permission Rationale to user.
  */
-public class LocationPermissionActivity extends WearableActivity {//KS
+public class SensorPermissionActivity extends WearableActivity {//KS
 
     private static final String TAG = LocationPermissionActivity.class.getSimpleName();
-    private static final int PERMISSION_REQUEST_FINE_LOCATION = 1;
+    private static final int PERMISSION_REQUEST_SENSOR = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate ENTERING");
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_location_permission);
+        setContentView(R.layout.activity_body_permission);
         JoH.vibrateNotice();
     }
 
     public void onClickEnablePermission(View view) {
         Log.d(TAG, "onClickEnablePermission()");
 
-        // On 23+ (M+) devices, GPS permission not granted. Request permission.
+        // On 23+ (M+) devices, body sensor not granted. Request permission.
         ActivityCompat.requestPermissions(
                 this,
-                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                PERMISSION_REQUEST_FINE_LOCATION);
+                new String[]{Manifest.permission.BODY_SENSORS},
+                PERMISSION_REQUEST_SENSOR);
 
     }
 
@@ -49,7 +49,7 @@ public class LocationPermissionActivity extends WearableActivity {//KS
 
         Log.d(TAG, "onRequestPermissionsResult()");
 
-        if (requestCode == PERMISSION_REQUEST_FINE_LOCATION) {
+        if (requestCode == PERMISSION_REQUEST_SENSOR) {
             if ((grantResults.length == 1)
                     && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                 Log.i(TAG, "onRequestPermissionsResult() granted");

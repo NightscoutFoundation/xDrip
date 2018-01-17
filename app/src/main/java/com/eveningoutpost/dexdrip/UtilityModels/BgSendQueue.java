@@ -4,9 +4,7 @@ import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
@@ -26,14 +24,9 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.NewDataObserver;
 import com.eveningoutpost.dexdrip.Services.SyncService;
-import com.eveningoutpost.dexdrip.ShareModels.BgUploader;
-import com.eveningoutpost.dexdrip.ShareModels.Models.ShareUploadPayload;
-import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleUtil;
-import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleWatchSync;
 import com.eveningoutpost.dexdrip.WidgetUpdateService;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
-import com.eveningoutpost.dexdrip.utils.BgToSpeech;
-import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
+import com.eveningoutpost.dexdrip.utils.PowerStateReceiver;
 import com.eveningoutpost.dexdrip.xDripWidget;
 import com.rits.cloning.Cloner;
 
@@ -137,6 +130,7 @@ public class BgSendQueue extends Model {
                 final Bundle bundle = new Bundle();
 
                 // TODO this cannot handle out of sequence data due to displayGlucose taking most recent?!
+                // TODO can we do something with munging for quick data and getDisplayGlucose for non quick?
                 // use display glucose if enabled and available
                 if ((prefs.getBoolean("broadcast_data_use_best_glucose", false)) && ((dg = BestGlucose.getDisplayGlucose()) != null)) {
                     bundle.putDouble(Intents.EXTRA_BG_ESTIMATE, dg.mgdl);
@@ -168,12 +162,12 @@ public class BgSendQueue extends Model {
                     }
                 }
 
-                bundle.putInt(Intents.EXTRA_SENSOR_BATTERY, getBatteryLevel(context));
+                bundle.putInt(Intents.EXTRA_SENSOR_BATTERY, PowerStateReceiver.getBatteryLevel(context));
                 bundle.putLong(Intents.EXTRA_TIMESTAMP, bgReading.timestamp);
 
                 //raw value
                 double slope = 0, intercept = 0, scale = 0, filtered = 0, unfiltered = 0, raw = 0;
-                Calibration cal = Calibration.lastValid();
+                final Calibration cal = Calibration.lastValid();
                 if (cal != null) {
                     // slope/intercept/scale like uploaded to NightScout (NightScoutUploader.java)
                     if (cal.check_in) {
@@ -198,23 +192,23 @@ public class BgSendQueue extends Model {
                     }
                 }
                 bundle.putDouble(Intents.EXTRA_RAW, raw);
-                Intent intent = new Intent(Intents.ACTION_NEW_BG_ESTIMATE);
+                final Intent intent = new Intent(Intents.ACTION_NEW_BG_ESTIMATE);
                 intent.putExtras(bundle);
                 intent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
                 
-                if (prefs.getBoolean("broadcast_data_through_intents_without_permission", false)) {
+                if (Pref.getBooleanDefaultFalse("broadcast_data_through_intents_without_permission")) {
                     context.sendBroadcast(intent);
                 } else {
                     context.sendBroadcast(intent, Intents.RECEIVER_PERMISSION);
                 }
 
-                //just keep it alive for 3 more seconds to allow the watch to be updated
-                // TODO: change NightWatch to not allow the system to sleep.
-                if ((!quick) && (prefs.getBoolean("excessive_wakelocks", false))) {
+                // TODO I don't really think this is needed anymore
+                if (!quick && Pref.getBooleanDefaultFalse("excessive_wakelocks")) {
+                    // just keep it alive for 3 more seconds to allow the watch to be updated
                     // dangling wakelock
-                    JoH.getWakeLock("broadcstNightWatch",3000);
+                    JoH.getWakeLock("broadcstNightWatch", 3000);
                 }
-            }
+            } // if broadcasting
 
             // now is done with an uploader queue instead
           /*  // send to wear
@@ -234,12 +228,13 @@ public class BgSendQueue extends Model {
             }*/
 
             if (!quick) {
-                NewDataObserver.pebble();
+                NewDataObserver.newBgReading(bgReading, is_follower);
             }
 
             if ((!is_follower) && (prefs.getBoolean("plus_follow_master", false))) {
                 if (prefs.getBoolean("display_glucose_from_plugin", false))
                 {
+                    // TODO does this currently ignore noise or is noise properly calculated on the follower?
                     // munge bgReading for follower TODO will probably want extra option for this in future
                     // TODO we maybe don't need deep clone for this! Check how value will be used below
                     GcmActivity.syncBGReading(PluggableCalibration.mungeBgReading(new Cloner().deepClone(bgReading)));
@@ -249,27 +244,9 @@ public class BgSendQueue extends Model {
                 }
             }
 
-            if ((!is_follower) && (!quick) && (prefs.getBoolean("share_upload", false))) {
-                if (JoH.ratelimit("sending-to-share-upload",10)) {
-                    Log.d("ShareRest", "About to call ShareRest!!");
-                    String receiverSn = prefs.getString("share_key", "SM00000000").toUpperCase();
-                    BgUploader bgUploader = new BgUploader(context);
-                    bgUploader.upload(new ShareUploadPayload(receiverSn, bgReading));
-                }
-            }
-
+            // process the uploader queue
             if (JoH.ratelimit("start-sync-service", 30)) {
-                context.startService(new Intent(context, SyncService.class));
-            }
-
-            //Text to speech
-            if ((!quick) && (prefs.getBoolean("bg_to_speech", false))) {
-                if (dg == null) dg = BestGlucose.getDisplayGlucose();
-                if (dg != null) {
-                    BgToSpeech.speak(dg.mgdl, dg.timestamp, dg.delta_name);
-                } else {
-                    BgToSpeech.speak(bgReading.calculated_value, bgReading.timestamp, bgReading.slopeName());
-                }
+                JoH.startService(SyncService.class);
             }
 
 
@@ -284,17 +261,4 @@ public class BgSendQueue extends Model {
         save();
     }
 
-    public static int getBatteryLevel(Context context) {
-        final Intent batteryIntent = context.registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
-        try {
-            int level = batteryIntent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
-            int scale = batteryIntent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
-            if (level == -1 || scale == -1) {
-                return 50;
-            }
-            return (int) (((float) level / (float) scale) * 100.0f);
-        } catch (NullPointerException e) {
-            return 50;
-        }
-    }
 }

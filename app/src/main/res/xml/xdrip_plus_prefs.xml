@@ -205,7 +205,6 @@
                     <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
                         android:defaultValue="#3e29937b"
                         android:key="color_step_counter1"
-                        android:dependency="broadcast_to_pebble"
                         android:title="@string/step_counter_1st_color"
                         app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
                         app:colorpicker_selectNoneButtonText="@string/revert_to_default"
@@ -214,8 +213,15 @@
                     <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
                         android:defaultValue="#3c72c3c0"
                         android:key="color_step_counter2"
-                        android:dependency="broadcast_to_pebble"
                         android:title="@string/step_counter_2nd_color"
+                        app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
+                        app:colorpicker_selectNoneButtonText="@string/revert_to_default"
+                        app:colorpicker_showHex="false" />
+
+                    <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
+                        android:defaultValue="#2B212FDE"
+                        android:key="color_heart_rate1"
+                        android:title="Heart rate monitor"
                         app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
                         app:colorpicker_selectNoneButtonText="@string/revert_to_default"
                         app:colorpicker_showHex="false" />

@@ -470,7 +470,7 @@
 	<string name="high_alert">Высокая оповещения</string>
 	<string name="low_alert">низкий сигнал тревога</string>
 	<string name="xbridge_battery">Батарея xBridge</string>
-	<string name="limitter_battery">LimiTTer батареи</string>
+	<string name="limitter_battery">Libre батареи</string>
 	<string name="parakeet_battery">Батарея parakeet</string>
 	<string name="after_calibration_rewrite_history">После калибровки изменить предыдущий график, чтобы привести его к новой калибровке</string>
 	<string name="rewrite_history">История Rewrite</string>

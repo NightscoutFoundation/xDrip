@@ -15,18 +15,25 @@ import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
-//KS import com.eveningoutpost.dexdrip.GcmActivity;
-//KS import com.eveningoutpost.dexdrip.Home;
-import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.ListenerService;
 import com.eveningoutpost.dexdrip.Models.BgReading;
-//KS import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.Calibration;
+import com.eveningoutpost.dexdrip.Models.HeartRate;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.PebbleMovement;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Services.CustomComplicationProviderService;
+import com.eveningoutpost.dexdrip.stats.StatsResult;
+import com.eveningoutpost.dexdrip.xdrip;
+import com.google.android.gms.wearable.DataMap;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
+//KS import com.eveningoutpost.dexdrip.GcmActivity;
+//KS import com.eveningoutpost.dexdrip.Home;
+//KS import com.eveningoutpost.dexdrip.Models.Calibration;
 //KS following are not used on watch
 /*
 import com.eveningoutpost.dexdrip.Services.SyncService;
@@ -39,14 +46,6 @@ import com.eveningoutpost.dexdrip.utils.BgToSpeech;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.eveningoutpost.dexdrip.xDripWidget;
 */
-import com.eveningoutpost.dexdrip.Services.CustomComplicationProviderService;
-import com.eveningoutpost.dexdrip.stats.StatsResult;
-import com.eveningoutpost.dexdrip.xdrip;
-import com.google.android.gms.wearable.DataMap;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 /**
  * Created by Emma Black on 11/7/14.
@@ -311,6 +310,7 @@ public class BgSendQueue extends Model {
         final long t = System.currentTimeMillis();
         final PebbleMovement pm = PebbleMovement.last();
         final boolean show_steps = prefs.getBoolean("showSteps", true);
+        final boolean show_heart_rate = prefs.getBoolean("showHeartRate", true);
         final boolean use_wear_health = prefs.getBoolean("use_wear_health", true);
         if (use_wear_health || show_steps) {
             boolean sameDay = pm != null ? ListenerService.isSameDay(t, pm.timestamp) : false;
@@ -323,6 +323,14 @@ public class BgSendQueue extends Model {
                 dataMap.putInt("steps", pm.metric);
                 dataMap.putLong("steps_timestamp", pm.timestamp);
                 Log.d("BgSendQueue", "getSensorSteps isSameDay true pm.timestamp=" + JoH.dateTimeText(pm.timestamp) + " metric=" + pm.metric);
+            }
+        }
+
+        if (use_wear_health && show_heart_rate) {
+            final HeartRate lastHeartRateReading = HeartRate.last();
+            if (lastHeartRateReading != null) {
+                dataMap.putInt("heart_rate", lastHeartRateReading.bpm);
+                dataMap.putLong("heart_rate_timestamp", lastHeartRateReading.timestamp);
             }
         }
         return dataMap;

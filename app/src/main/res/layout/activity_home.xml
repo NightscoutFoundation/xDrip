@@ -374,6 +374,7 @@
                 android:layout_height="40dp"
                 android:drawableTop="@drawable/ic_heart_pulse_grey600_24dp"
                 android:id="@+id/bpmButton"
+                android:onClick="toggleStepsVisibility"
                 android:background="@android:color/transparent"
                 android:paddingBottom="2dp"
                 android:paddingEnd="4dp"

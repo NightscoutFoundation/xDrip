@@ -55,7 +55,8 @@ public class ColorCache {
         color_step_counter1("color_step_counter1"),
         color_step_counter2("color_step_counter2"),
         color_upper_flair_bar("color_upper_flair_bar"),
-        color_lower_flair_bar("color_lower_flair_bar");
+        color_lower_flair_bar("color_lower_flair_bar"),
+        color_heart_rate1("color_heart_rate1");
 
         String internalName;
 

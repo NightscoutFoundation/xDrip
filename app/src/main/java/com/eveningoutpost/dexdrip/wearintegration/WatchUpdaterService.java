@@ -13,15 +13,17 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.eveningoutpost.dexdrip.BestGlucose;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.BloodTest;
 import com.eveningoutpost.dexdrip.Models.Calibration;
+import com.eveningoutpost.dexdrip.Models.HeartRate;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.PebbleMovement;
 import com.eveningoutpost.dexdrip.Models.Sensor;
+import com.eveningoutpost.dexdrip.Models.StepCounter;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
@@ -30,7 +32,6 @@ import com.eveningoutpost.dexdrip.Services.G5CollectionService;
 import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
-import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.Blukon;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
@@ -38,6 +39,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
+import com.eveningoutpost.dexdrip.utils.PowerStateReceiver;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -54,8 +56,7 @@ import com.google.android.gms.wearable.PutDataMapRequest;
 import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
 import com.google.android.gms.wearable.WearableListenerService;
-
-import com.google.gson.Gson;//KS
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.internal.bind.DateTypeAdapter;
 
@@ -68,7 +69,7 @@ import java.util.concurrent.TimeUnit;
 
 import static com.eveningoutpost.dexdrip.Models.JoH.showNotification;
 import static com.eveningoutpost.dexdrip.Models.JoH.ts;
-import static com.eveningoutpost.dexdrip.Models.PebbleMovement.last;
+
 
 public class WatchUpdaterService extends WearableListenerService implements
         GoogleApiClient.ConnectionCallbacks,
@@ -102,6 +103,7 @@ public class WatchUpdaterService extends WearableListenerService implements
     private static final String SYNC_TREATMENTS_PATH = "/xdrip_plus_syncweartreatments";
     private static final String SYNC_LOGS_REQUESTED_PATH = "/xdrip_plus_syncwearlogsrequested";
     private static final String SYNC_STEP_SENSOR_PATH = "/xdrip_plus_syncwearstepsensor";
+    private static final String SYNC_HEART_SENSOR_PATH = "/xdrip_plus_syncwearheartsensor";
     private static final String CLEAR_LOGS_PATH = "/xdrip_plus_clearwearlogs";
     private static final String CLEAR_TREATMENTS_PATH = "/xdrip_plus_clearweartreatments";
     private static final String STATUS_COLLECTOR_PATH = "/xdrip_plus_statuscollector";
@@ -462,7 +464,7 @@ public class WatchUpdaterService extends WearableListenerService implements
                     .serializeSpecialFloatingPointValues()
                     .create();
 
-            PebbleMovement pm = last();
+            StepCounter pm = StepCounter.last();
             Log.d(TAG, "syncStepSensorData add Table entries count=" + entries.size());
             for (DataMap entry : entries) {
                 if (entry != null) {
@@ -470,7 +472,7 @@ public class WatchUpdaterService extends WearableListenerService implements
                     String record = entry.getString("entry");
                     if (record != null) {
                         Log.d(TAG, "syncStepSensorData add Table record=" + record);
-                        PebbleMovement data = gson.fromJson(record, PebbleMovement.class);
+                        StepCounter data = gson.fromJson(record, StepCounter.class);
                         if (data != null) {
                             timeOfLastEntry = (long) data.timestamp + 1;
                             Log.d(TAG, "syncStepSensorData add Entry Wear=" + data.toString());
@@ -484,6 +486,40 @@ public class WatchUpdaterService extends WearableListenerService implements
             sendDataReceived(DATA_ITEM_RECEIVED_PATH,"DATA_RECEIVED_LOGS count=" + entries.size(), timeOfLastEntry, bBenchmark?"BM":"STEP", -1);
         }
     }
+
+    private synchronized void syncHeartSensorData(DataMap dataMap, boolean bBenchmark) {
+        Log.d(TAG, "syncHeartSensorData");
+
+        ArrayList<DataMap> entries = dataMap.getDataMapArrayList("entries");
+        long timeOfLastEntry = 0;
+        Log.d(TAG, "syncHeartSensorData add to Table" );
+        if (entries != null) {
+
+            final Gson gson = JoH.defaultGsonInstance();
+
+            //final HeartRate pm = HeartRate.last();
+            Log.d(TAG, "syncHeartSensorData add Table entries count=" + entries.size());
+            for (DataMap entry : entries) {
+                if (entry != null) {
+                    Log.d(TAG, "syncHeartSensorData add Table entry=" + entry);
+                    String record = entry.getString("entry");
+                    if (record != null) {
+                        Log.d(TAG, "syncHeartSensorData add Table record=" + record);
+                        final HeartRate data = gson.fromJson(record, HeartRate.class);
+                        if (data != null) {
+                            timeOfLastEntry = (long) data.timestamp + 1;
+                            Log.d(TAG, "syncHeartSensorData add Entry Wear=" + data.toString() + " "+record);
+                            Log.d(TAG, "syncHeartSensorData WATCH data.metric=" + data.bpm + " timestamp=" + JoH.dateTimeText((long) data.timestamp));
+                            if (!bBenchmark)
+                                data.saveit();
+                        }
+                    }
+                }
+            }
+            sendDataReceived(DATA_ITEM_RECEIVED_PATH,"DATA_RECEIVED_LOGS count=" + entries.size(), timeOfLastEntry, bBenchmark?"BM":"HEART", -1);
+        }
+    }
+
 
     private synchronized void syncTreatmentsData(DataMap dataMap, boolean bBenchmark) {
         Log.d(TAG, "syncTreatmentsData");
@@ -848,6 +884,7 @@ public class WatchUpdaterService extends WearableListenerService implements
                         sendData();//ensure BgReading.Last is displayed on watch
 
                     } else {
+                        // default
                         /*if (!mPrefs.getBoolean("force_wearG5", false)//handled by UploaderQueue
                                 && mPrefs.getBoolean("enable_wearG5", false)
                                 && (is_using_bt)) { //KS only send BGs if using Phone's G5 Collector Server
@@ -1163,6 +1200,16 @@ public class WatchUpdaterService extends WearableListenerService implements
                             }
                         }
                         break;
+                    case SYNC_HEART_SENSOR_PATH:
+                        Log.d(TAG, "onMessageReceived SYNC_HEART_SENSOR_PATH");
+                        if (event.getData() != null) {
+                            dataMap = DataMap.fromByteArray(event.getData());
+                            if (dataMap != null) {
+                                Log.d(TAG, "onMessageReceived SYNC_HEART_SENSOR_PATH dataMap=" + dataMap);
+                                syncHeartSensorData(dataMap, false);
+                            }
+                        }
+                        break;
                     case SYNC_TREATMENTS_PATH:
                         Log.d(TAG, "onMessageReceived SYNC_TREATMENTS_PATH");
                         if (event.getData() != null) {
@@ -1266,7 +1313,7 @@ public class WatchUpdaterService extends WearableListenerService implements
         if (bg != null) {
             forceGoogleApiConnect();
             if (wear_integration) {
-                final int battery = BgSendQueue.getBatteryLevel(getApplicationContext());
+                final int battery = PowerStateReceiver.getBatteryLevel(getApplicationContext());
                 new SendToDataLayerThread(WEARABLE_DATA_PATH, googleApiClient).executeOnExecutor(xdrip.executor, dataMap(bg, mPrefs, new BgGraphBuilder(getApplicationContext()), battery));
             }
         }
@@ -1282,7 +1329,7 @@ public class WatchUpdaterService extends WearableListenerService implements
             List<BgReading> graph_bgs = BgReading.latestForGraph(60, startTime);
             BgGraphBuilder bgGraphBuilder = new BgGraphBuilder(getApplicationContext());
             if (!graph_bgs.isEmpty()) {
-                final int battery = BgSendQueue.getBatteryLevel(getApplicationContext());
+                final int battery = PowerStateReceiver.getBatteryLevel(getApplicationContext());
                 DataMap entries = dataMap(last_bg, mPrefs, bgGraphBuilder, battery);
                 final ArrayList<DataMap> dataMaps = new ArrayList<>(graph_bgs.size());
                 for (BgReading bg : graph_bgs) {
@@ -1344,6 +1391,7 @@ public class WatchUpdaterService extends WearableListenerService implements
     }
 
 
+    // sending to watch - beware we munge the calculated value and replace with display glucose
     private DataMap dataMap(BgReading bg, SharedPreferences sPrefs, BgGraphBuilder bgGraphBuilder, int battery) {
         Double highMark = Double.parseDouble(sPrefs.getString("highValue", "170"));
         Double lowMark = Double.parseDouble(sPrefs.getString("lowValue", "70"));
@@ -1351,14 +1399,25 @@ public class WatchUpdaterService extends WearableListenerService implements
 
         //int battery = BgSendQueue.getBatteryLevel(getApplicationContext());
 
-        dataMap.putString("sgvString", bgGraphBuilder.unitized_string(bg.calculated_value));
+        // TODO this is inefficent when we are called in a loop instead should be passed in or already stored in bgreading
+        final BestGlucose.DisplayGlucose dg = BestGlucose.getDisplayGlucose(); // current best
+
+
+        dataMap.putString("sgvString", dg != null && bg.dg_mgdl > 0 ? dg.unitized : bgGraphBuilder.unitized_string(bg.calculated_value));
+
         dataMap.putString("slopeArrow", bg.slopeArrow());
         dataMap.putDouble("timestamp", bg.timestamp); //TODO: change that to long (was like that in NW)
-        dataMap.putString("delta", bgGraphBuilder.unitizedDeltaString(true, true, true));
+
+        // This delta string only applies to the last reading even if we are processing historical data here
+        if (dg != null) {
+            dataMap.putString("delta", dg.unitized_delta);
+        } else {
+            dataMap.putString("delta", bgGraphBuilder.unitizedDeltaString(true, true, true));
+        }
         dataMap.putString("battery", "" + battery);
-        dataMap.putLong("sgvLevel", sgvLevel(bg.calculated_value, sPrefs, bgGraphBuilder));
+        dataMap.putLong("sgvLevel", sgvLevel(bg.dg_mgdl > 0 ? bg.dg_mgdl : bg.calculated_value, sPrefs, bgGraphBuilder));
         dataMap.putInt("batteryLevel", (battery >= 30) ? 1 : 0);
-        dataMap.putDouble("sgvDouble", bg.calculated_value);
+        dataMap.putDouble("sgvDouble", bg.dg_mgdl > 0 ? bg.dg_mgdl : bg.calculated_value);
         dataMap.putDouble("high", inMgdl(highMark, sPrefs));
         dataMap.putDouble("low", inMgdl(lowMark, sPrefs));
         dataMap.putInt("bridge_battery", mPrefs.getInt("bridge_battery", -1));//Used in DexCollectionService
@@ -1379,6 +1438,12 @@ public class WatchUpdaterService extends WearableListenerService implements
         boolean enable_wearG5 = false;
         boolean force_wearG5 = false;
         String node_wearG5 = "";
+
+        // add booleans that default to false to this list
+        final List<String> defaultFalseBooleansToSend = new ArrayList<>();
+        defaultFalseBooleansToSend.add("use_wear_heartrate");
+        defaultFalseBooleansToSend.add("engineering_mode");
+
         wear_integration = mPrefs.getBoolean("wear_sync", false);
         if (wear_integration) {
             Log.d(TAG, "sendPrefSettings wear_sync=true");
@@ -1443,6 +1508,7 @@ public class WatchUpdaterService extends WearableListenerService implements
             dataMap.putString(Blukon.BLUKON_PIN_PREF, Pref.getStringDefaultBlank(Blukon.BLUKON_PIN_PREF));
         }
         //Step Counter
+        // note transmutes use_pebble_health -> use_wear_health
         dataMap.putBoolean("use_wear_health", mPrefs.getBoolean("use_pebble_health", true));
         is_using_bt = DexCollectionType.hasBluetooth();
 
@@ -1456,9 +1522,14 @@ public class WatchUpdaterService extends WearableListenerService implements
         dataMap.putDouble("low", lowMark);//inMgdl(lowMark, mPrefs));//KS Fix for mmol on graph Y-axis in wear standalone mode
         dataMap.putBoolean("g5_non_raw_method",  mPrefs.getBoolean("g5_non_raw_method", false));
         dataMap.putString("extra_tags_for_logging",  Pref.getStringDefaultBlank("extra_tags_for_logging"));
-        dataMap.putBoolean("engineering_mode",  Pref.getBooleanDefaultFalse("engineering_mode"));
+        //dataMap.putBoolean("engineering_mode",  Pref.getBooleanDefaultFalse("engineering_mode"));
         dataMap.putBoolean("bridge_battery_alerts",  Pref.getBooleanDefaultFalse("bridge_battery_alerts"));
         dataMap.putString("bridge_battery_alert_level",  Pref.getString("bridge_battery_alert_level", "30"));
+
+        for (String pref : defaultFalseBooleansToSend) {
+            dataMap.putBoolean(pref, Pref.getBooleanDefaultFalse(pref));
+        }
+
         new SendToDataLayerThread(WEARABLE_PREF_DATA_PATH, googleApiClient).executeOnExecutor(xdrip.executor, dataMap);
     }
 
@@ -1800,7 +1871,7 @@ public class WatchUpdaterService extends WearableListenerService implements
                 else
                     latest = BgReading.latest(count);
                 if ((last != null) && (latest != null && !latest.isEmpty())) {
-                    final int battery = BgSendQueue.getBatteryLevel(xdrip.getAppContext());
+                    final int battery = PowerStateReceiver.getBatteryLevel(xdrip.getAppContext());
                     Log.d(TAG, "sendWearBgData latest count = " + latest.size() + " battery=" + battery);
                     final DataMap entries = dataMap(last);
                     final ArrayList<DataMap> dataMaps = new ArrayList<>(latest.size());

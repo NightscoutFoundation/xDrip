@@ -462,7 +462,7 @@
 	<string name="high_alert">High Alert</string>
 	<string name="low_alert">Matala Alert</string>
 	<string name="xbridge_battery">xBridge akku</string>
-	<string name="limitter_battery">LimiTTer akku</string>
+	<string name="limitter_battery">Libre akku</string>
 	<string name="parakeet_battery">Parakeet Battery</string>
 	<string name="after_calibration_rewrite_history">Kalibroinnin jälkeen, säädä alkuaineista kuvaajan tasoittaa uuden kalibroinnin</string>
 	<string name="rewrite_history">Kirjoittaa historiaa</string>

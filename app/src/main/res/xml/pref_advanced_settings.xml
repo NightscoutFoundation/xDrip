@@ -78,13 +78,7 @@
                 android:key="show_wear_treatments"
                 android:summary="@string/pref_summary_show_treatments"
                 android:title="@string/pref_show_treatments" />
-            <SwitchPreference
-                android:defaultValue="true"
-                android:key="use_pebble_health"
-                android:summary="@string/pref_summary_use_wear_health"
-                android:switchTextOff="@string/short_off_text_for_switches"
-                android:switchTextOn="@string/short_on_text_for_switches"
-                android:title="@string/pref_use_wear_health" />
+
         </PreferenceCategory>
         </PreferenceScreen>
         <PreferenceScreen android:title="@string/pebble_integration">
@@ -196,13 +190,6 @@
                 android:key="pebble_special_text"
                 android:summary="@string/message_to_display_when_bgl_hits"
                 android:title="@string/text_to_display_when_hitting_special_value" />
-            <SwitchPreference
-                android:defaultValue="true"
-                android:key="use_pebble_health"
-                android:summary="Collect and display Step counter and Heart rate when available"
-                android:switchTextOff="@string/short_off_text_for_switches"
-                android:switchTextOn="@string/short_on_text_for_switches"
-                android:title="Use Pebble Health Data" />
         </PreferenceCategory>
 
         <PreferenceCategory
@@ -219,6 +206,31 @@
             </Preference>
         </PreferenceCategory>
         </PreferenceScreen>
+
+    <PreferenceScreen
+        icon="@drawable/ic_heart_pulse_grey600_24dp"
+        android:title="Smartwatch Sensors">
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="use_pebble_health"
+            android:summary="Collect and display Step counter and Heart rate when available"
+            android:switchTextOff="@string/short_off_text_for_switches"
+            android:switchTextOn="@string/short_on_text_for_switches"
+            android:title="Use Health Data" />
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="use_wear_heartrate"
+            android:summary="Activate heart rate sensor if available"
+            android:switchTextOff="@string/short_off_text_for_switches"
+            android:switchTextOn="@string/short_on_text_for_switches"
+            android:title="Heart Rate Sensor" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="smooth_heartrate"
+            android:summary="Smooth heart rate graph"
+            android:dependency="use_wear_heartrate"
+            />
+    </PreferenceScreen>
     </PreferenceScreen>
 
     <PreferenceCategory

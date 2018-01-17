@@ -1,20 +1,12 @@
 package com.eveningoutpost.dexdrip.webservices;
 
-import android.content.Intent;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.PebbleMovement;
+import com.eveningoutpost.dexdrip.Models.StepCounter;
 import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.localeTasker.bundle.PluginBundleManager;
-import com.eveningoutpost.dexdrip.xdrip;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import static com.eveningoutpost.dexdrip.BuildConfig.APPLICATION_ID;
-import static com.eveningoutpost.dexdrip.localeTasker.bundle.PluginBundleManager.BUNDLE_EXTRA_INT_VERSION_CODE;
 
 /**
  * Created by jamorham on 06/01/2018.
@@ -55,7 +47,7 @@ public class WebServiceSteps extends BaseWebService {
                         // sets pebble movement data for steps NOW, must be current step counter reading only
                         try {
                             int data = Integer.parseInt(components.get(1));
-                            final PebbleMovement pm = PebbleMovement.createEfficientRecord(JoH.tsl(), data);
+                            final StepCounter pm = StepCounter.createEfficientRecord(JoH.tsl(), data);
                             return webOk("Updated step counter: " + data);
                         } catch (NumberFormatException e) {
                             return webError("Couldn't parse Set value: " + components.get(1));

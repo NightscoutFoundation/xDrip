@@ -7,7 +7,7 @@ import android.content.Intent;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
-import com.eveningoutpost.dexdrip.UtilityModels.MongoSendTask;
+import com.eveningoutpost.dexdrip.UtilityModels.UploaderTask;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.xdrip;
 
@@ -36,9 +36,8 @@ public class SyncService extends IntentService {
         }
     }
 
-    // TODO Refactor MongoSendTask name
     private void synctoCloudDatabases() {
-        final MongoSendTask task = new MongoSendTask(getApplicationContext());
+        final UploaderTask task = new UploaderTask(getApplicationContext());
         task.executeOnExecutor(xdrip.executor);
     }
 

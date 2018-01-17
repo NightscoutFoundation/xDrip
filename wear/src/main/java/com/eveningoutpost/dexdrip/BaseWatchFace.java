@@ -1,7 +1,7 @@
 package com.eveningoutpost.dexdrip;
 
 //KS import android.app.NotificationManager;
-import android.app.Activity;
+
 import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -17,11 +17,9 @@ import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
-//KS import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.wearable.view.WatchViewStub;
 import android.text.TextUtils;
-//KS import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.view.WindowInsets;
@@ -32,14 +30,15 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Services.HeartRateService;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.google.android.gms.wearable.DataMap;
-import com.ustwo.clockwise.common.WatchMode;
-import com.ustwo.clockwise.wearable.WatchFace;
 import com.ustwo.clockwise.common.WatchFaceTime;
+import com.ustwo.clockwise.common.WatchMode;
 import com.ustwo.clockwise.common.WatchShape;
+import com.ustwo.clockwise.wearable.WatchFace;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -58,6 +57,7 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
     public static final long[] vibratePattern = {0,400,300,400,300,400};
     public TextView mDate, mTime, mSgv, mDirection, mTimestamp, mUploaderBattery, mUploaderXBattery, mDelta, mRaw, mStatus;
     public Button stepsButton;
+    public Button heartButton;
     public Button menuButton;
     public RelativeLayout mRelativeLayout;
     public LinearLayout mLinearLayout;
@@ -67,7 +67,9 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
     public String mExtraStatusLine = "";
     public String mStepsToast = "";
     public int mStepsCount = 0;
+    public int mHeartBPM = 0;
     public long mTimeStepsRcvd = 0;
+    public long mTimeHeartRcvd = 0;
     public long sgvLevel = 0;
     public int batteryLevel = 1;
     public int mXBatteryLevel = 1;
@@ -89,7 +91,7 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
     public ArrayList<BgWatchData> treatsDataList = new ArrayList<>();
     public ArrayList<BgWatchData> calDataList = new ArrayList<>();
     public ArrayList<BgWatchData> btDataList = new ArrayList<>();
-    private final static boolean d = true; // debug flag, could be read from preferences
+    private final static boolean d = false; // debug flag, could be read from preferences
     public PowerManager.WakeLock wakeLock;
     // related to manual layout
     public View layoutView;
@@ -101,6 +103,7 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
     private MessageReceiver messageReceiver;
 
     protected SharedPreferences sharedPrefs;
+    private static Locale oldLocale = null;
     private static String oldDate = "";
     private static SimpleDateFormat dateFormat = null;
     private String rawString = "000 | 000 | 000";
@@ -160,6 +163,11 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
                 mUploaderXBattery = (TextView) stub.findViewById(R.id.uploader_xbattery);
                 mDelta = (TextView) stub.findViewById(R.id.delta);
                 stepsButton=(Button)stub.findViewById(R.id.walkButton);
+                try {
+                    heartButton=(Button)stub.findViewById(R.id.heartButton);
+                } catch (Exception e) {
+                    //
+                }
                 mStepsLinearLayout = (LinearLayout) stub.findViewById(R.id.steps_layout);
                 menuButton=(Button)stub.findViewById(R.id.menuButton);
                 mMenuLinearLayout = (LinearLayout) stub.findViewById(R.id.menu_layout);
@@ -182,6 +190,8 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
                 mRelativeLayout.measure(specW, specH);
                 mRelativeLayout.layout(0, 0, mRelativeLayout.getMeasuredWidth(),
                         mRelativeLayout.getMeasuredHeight());
+                showSteps();
+                showHeartRate();
             }
         });
         Log.d(TAG, "performViewSetup requestData");
@@ -289,12 +299,12 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
         final Date now = new Date();
         final String currentWatchDate = mDate.getText().toString();
         final String newDate = new SimpleDateFormat("yyyyMMdd").format(now);
-        if (!oldDate.equals(newDate) || currentWatchDate.equals("ddd mm/dd")) {
-            final Locale locale = BaseWatchFace.this.getResources().getConfiguration().locale;
+        final Locale locale = BaseWatchFace.this.getResources().getConfiguration().locale;
+        if (!oldDate.equals(newDate) || currentWatchDate.equals("ddd mm/dd") || (oldLocale != locale)) {
             final SimpleDateFormat dayFormat = new SimpleDateFormat("EEE", locale);
             if (d)
                 Log.d(TAG, "getWatchDate oldDate: " + oldDate + " now: " + now + " currentWatchDate: " + currentWatchDate);
-            if (dateFormat == null)
+            if (dateFormat == null || oldLocale != locale)
                 dateFormat = getShortDateInstanceWithoutYear(locale);
             String shortDate = dateFormat.format(now);
             if (d)
@@ -304,6 +314,7 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
             if (d)
                 Log.d(TAG, "getWatchDate day: " + day + " dayFormat: " + dayFormat.toPattern());
             oldDate = newDate;
+            oldLocale = locale;
             return day + "\n" + shortDate;
         }
         else
@@ -373,6 +384,12 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
                     mStepsCount = dataMap.getInt("steps", 0);
                     mTimeStepsRcvd = dataMap.getLong("steps_timestamp", 0);
                     showSteps();
+                }
+
+                if (mTimeHeartRcvd < dataMap.getLong("heart_rate_timestamp", 0)) {
+                    mHeartBPM = dataMap.getInt("heart_rate", 0);
+                    mTimeHeartRcvd = dataMap.getLong("heart_rate_timestamp", 0);
+                    showHeartRate();
                 }
             }
             bundle = intent.getBundleExtra(Home.HOME_FULL_WAKEUP);
@@ -523,6 +540,16 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
             stepsButton.setVisibility(View.GONE);
             mStepsToast = "";
             if (d) Log.d(TAG, "showSteps GONE mStepsCount = " + getResources().getString(R.string.label_show_steps, mStepsCount));
+        }
+    }
+
+    private void showHeartRate() {
+        if ((mHeartBPM > 0) && (JoH.msSince(mTimeHeartRcvd) <= HeartRateService.READING_PERIOD * 2)
+                && (sharedPrefs.getBoolean("showHeartRate", false) && (heartButton != null))) {
+            heartButton.setVisibility(View.VISIBLE);
+            heartButton.setText(String.format("%d", mHeartBPM));
+        } else {
+            if (heartButton != null) heartButton.setVisibility(View.GONE);
         }
     }
 

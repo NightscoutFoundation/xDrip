@@ -67,7 +67,7 @@ import com.eveningoutpost.dexdrip.Models.BloodTest;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.HeartRate;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.PebbleMovement;
+import com.eveningoutpost.dexdrip.Models.StepCounter;
 import com.eveningoutpost.dexdrip.Models.ProcessInitialDataQuality;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.Treatments;
@@ -2108,11 +2108,13 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     }
 
     private void updateHealthInfo(String caller) {
-        final PebbleMovement pm = PebbleMovement.last();
+
+        final StepCounter pm = StepCounter.last();
         final boolean use_pebble_health = Pref.getBoolean("use_pebble_health", true);
         if ((use_pebble_health) && (pm != null)) {
             stepsButton.setText(Integer.toString(pm.metric));
             stepsButton.setVisibility(View.VISIBLE);
+            // TODO this can be done with PrefsView binding
             stepsButton.setAlpha(Pref.getBoolean("show_pebble_movement_line", true) ? 1.0f : 0.3f);
         } else {
             stepsButton.setVisibility(View.INVISIBLE);
@@ -2122,6 +2124,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         if ((use_pebble_health) && (hr != null)) {
             bpmButton.setText(Integer.toString(hr.bpm));
             bpmButton.setVisibility(View.VISIBLE);
+            // TODO this can be done with PrefsView binding
+            bpmButton.setAlpha(Pref.getBoolean("show_pebble_movement_line", true) ? 1.0f : 0.3f);
         } else {
             bpmButton.setVisibility(View.INVISIBLE);
         }

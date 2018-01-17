@@ -22,14 +22,14 @@ import java.util.List;
  */
 
 // TODO unify treatment handling
-// TODO refactor with more appropriate name
 
-public class MongoSendTask extends AsyncTask<String, Void, Void> {
+
+public class UploaderTask extends AsyncTask<String, Void, Void> {
     public static Exception exception;
-    private static final String TAG = MongoSendTask.class.getSimpleName();
+    private static final String TAG = UploaderTask.class.getSimpleName();
     public static final String BACKFILLING_BOOSTER = "backfilling-nightscout";
 
-    public MongoSendTask(Context pContext) {
+    public UploaderTask(Context pContext) {
     }
 
     public Void doInBackground(String... urls) {
