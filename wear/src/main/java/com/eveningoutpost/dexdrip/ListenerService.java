@@ -11,6 +11,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
@@ -21,6 +23,7 @@ import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.DisplayMetrics;
 import android.widget.Toast;
 
 import com.activeandroid.query.Select;
@@ -122,6 +125,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     private static final String WEARABLE_TREATMENTS_DATA_PATH = "/xdrip_plus_watch_treatments_data";//KS
     private static final String WEARABLE_BLOODTEST_DATA_PATH = "/xdrip_plus_watch_bloodtest_data";//KS
     private static final String WEARABLE_INITPREFS_PATH = "/xdrip_plus_watch_data_initprefs";
+    private static final String WEARABLE_LOCALE_CHANGED_PATH = "/xdrip_plus_locale_changed_data";//KS
     private static final String WEARABLE_BG_DATA_PATH = "/xdrip_plus_watch_bg_data";//KS
     private static final String WEARABLE_CALIBRATION_DATA_PATH = "/xdrip_plus_watch_cal_data";//KS
     private static final String WEARABLE_SENSOR_DATA_PATH = "/xdrip_plus_watch_sensor_data";//KS
@@ -275,6 +279,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                                     sendMessagePayload(node, "WEARABLE_INITDB_PATH", WEARABLE_INITDB_PATH, null);
                                     bInitPrefs = false;
                                 }
+                                Log.d(TAG, "doInBackground path: " + path);
                                 switch (path) {
                                     case WEARABLE_INITDB_PATH:
                                     case WEARABLE_INITTREATMENTS_PATH:
@@ -282,6 +287,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                                     case WEARABLE_G5BATTERY_PAYLOAD:
                                     case WEARABLE_SNOOZE_ALERT:
                                     case WEARABLE_PREF_DATA_PATH:
+                                    case WEARABLE_LOCALE_CHANGED_PATH:
                                     case SYNC_BGS_PATH:
                                     case SYNC_LOGS_PATH:
                                     case SYNC_LOGS_REQUESTED_PATH:
@@ -888,6 +894,12 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                 Context context = xdrip.getAppContext();
                 showTreatments(context, "all");
             }*/
+            else if (key.compareTo("overrideLocale") == 0) {
+                if (prefs.getBoolean("overrideLocale", false)) {
+                    Log.d(TAG, "overrideLocale true; Request phone locale");
+                    sendData(WEARABLE_LOCALE_CHANGED_PATH, null);
+                }
+            }
             else {//if(key.compareTo("dex_txid") == 0 || key.compareTo(DexCollectionType.DEX_COLLECTION_METHOD) == 0){
                 //Restart collector for change in the following received from phone in syncPrefData():
                 //DexCollectionType.DEX_COLLECTION_METHOD - dex_collection_method, share_key or dex_txid
@@ -1118,6 +1130,10 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                     dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
                     Log.d(TAG, "onDataChanged path=" + path + " DataMap=" + dataMap);
                     syncPrefData(dataMap);
+                } else if (path.equals(WEARABLE_LOCALE_CHANGED_PATH)) {//KS
+                    dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
+                    Log.d(TAG, "onDataChanged path=" + path + " DataMap=" + dataMap);
+                    overrideLocale(dataMap);
                 } else if (path.equals(DATA_ITEM_RECEIVED_PATH)) {//KS
                     dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
                     Log.d(TAG, "onDataChanged path=" + path + " DataMap=" + dataMap);
@@ -1426,7 +1442,36 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             Log.e(TAG, "fuzzyNodeCompare NullPointerException ", e);
             return false;
         }
-}
+    }
+
+    public boolean overrideLocale(DataMap dataMap) {
+        if (mPrefs.getBoolean("overrideLocale", false)) {
+            String localeStr = dataMap.getString("locale", "");
+            String locale[] = localeStr.split("_");
+            final Locale newLocale = locale == null ? new Locale(localeStr) : locale.length > 1 ? new Locale(locale[0], locale[1]) : new Locale(locale[0]);
+            final Locale oldLocale = Locale.getDefault();
+            if (newLocale != null && !oldLocale.equals(newLocale)) {
+                try {
+                    Log.d(TAG, "overrideLocale locale from " + oldLocale + " to " + newLocale);
+                    Context context = getApplicationContext();
+                    final Resources resources = context.getResources();
+                    final DisplayMetrics metrics = resources.getDisplayMetrics();
+                    final Configuration config = resources.getConfiguration();
+                    config.locale = newLocale;
+                    resources.updateConfiguration(config, metrics);
+                    Locale.setDefault(newLocale);
+                    Log.d(TAG, "overrideLocale default locale " + Locale.getDefault() + " resource locale " + context.getResources().getConfiguration().locale);
+                    DataMap dm = new DataMap();
+                    dm.putString("locale", localeStr);
+                    sendLocalMessage("locale", dm);
+                    return true;
+                } catch (Exception e) {
+                    Log.e(TAG, "overrideLocale Exception e: " + e);
+                }
+            }
+        }
+        return false;
+    }
 
     private synchronized void syncPrefData(DataMap dataMap) {//KS
         SharedPreferences.Editor prefs = PreferenceManager.getDefaultSharedPreferences(this).edit();
@@ -1591,7 +1636,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             prefs.putBoolean("old_school_calibration_mode", dataMap.getBoolean("old_school_calibration_mode", false));
 
             prefs.putBoolean("show_wear_treatments", dataMap.getBoolean("show_wear_treatments", false));
-
+            overrideLocale(dataMap);
             prefs.commit();
 
             CheckBridgeBattery.checkBridgeBattery();

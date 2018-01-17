@@ -359,6 +359,18 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
                 if (d) Log.d(TAG, "MessageReceiver extra_status_line=" + extra_status_line);
                 mExtraStatusLine = extra_status_line;
             }
+            bundle = intent.getBundleExtra("locale");
+            if (layoutSet && bundle != null) {
+                dataMap = DataMap.fromBundle(bundle);
+                String localeStr = dataMap.getString("locale", "");
+                if (d) Log.d(TAG, "MessageReceiver locale=" + localeStr);
+                String locale[] = localeStr.split("_");
+                final Locale newLocale = locale == null ? new Locale(localeStr) : locale.length > 1 ? new Locale(locale[0], locale[1]) : new Locale(locale[0]);//eg"en", "en_AU"
+                final Locale curLocale = Locale.getDefault();
+                if (newLocale != null && !curLocale.equals(newLocale)) {
+                    Locale.setDefault(newLocale);
+                }
+            }
             bundle = intent.getBundleExtra("msg");
             if (layoutSet && bundle != null) {
                 dataMap = DataMap.fromBundle(bundle);
