@@ -634,23 +634,6 @@ public class WatchUpdaterService extends WearableListenerService implements
         }
         setSettings();
         listenForChangeInSettings();
-        IntentFilter filter = new IntentFilter(Intent.ACTION_LOCALE_CHANGED);
-        registerReceiver(localeChangeReceiver, filter);
-    }
-
-    private BroadcastReceiver localeChangeReceiver = new BroadcastReceiver() {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            sendLocale();
-        }
-    };
-
-    private void sendLocale() {
-        final Locale locale = Locale.getDefault();
-        Log.d(TAG, "ACTION_LOCALE_CHANGED Locale changed to " + locale);
-        String country = locale.getCountry();
-        sendRequestExtra(WEARABLE_LOCALE_CHANGED_PATH, "locale", locale.getLanguage()+(country!=null && !country.isEmpty() ? "_"+country : ""));
     }
 
     private void listenForChangeInSettings() {
@@ -1452,6 +1435,13 @@ public class WatchUpdaterService extends WearableListenerService implements
         //TODO: Add raw again
         //dataMap.putString("rawString", threeRaw((prefs.getString("units", "mgdl").equals("mgdl"))));
         return dataMap;
+    }
+
+    private void sendLocale() {
+        final Locale locale = Locale.getDefault();
+        Log.d(TAG, "ACTION_LOCALE_CHANGED Locale changed to " + locale);
+        String country = locale.getCountry();
+        sendRequestExtra(WEARABLE_LOCALE_CHANGED_PATH, "locale", locale.getLanguage()+(country!=null && !country.isEmpty() ? "_"+country : ""));
     }
 
     // These are the settings which get sent to Wear device
