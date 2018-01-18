@@ -2,27 +2,33 @@ package com.eveningoutpost.dexdrip.dagger;
 
 /**
  * Created by jamorham on 20/09/2017.
- * <p>
+ *
  * Injector Component singletons
  */
 
 public class Injectors {
 
-    private static MicroStatusComponent msComponent;
-    private static HomeShelfComponent hsComponent;
+    private static MicroStatusComponent microStatusComponent;
+    private static HomeShelfComponent homeShelfComponent;
+    private static WebServiceComponent webServiceComponent;
 
     public static MicroStatusComponent getMicroStatusComponent() {
-        if (msComponent == null) {
-            msComponent = DaggerMicroStatusComponent.create();
+        if (microStatusComponent == null) {
+            microStatusComponent = DaggerMicroStatusComponent.create();
         }
-        return msComponent;
+        return microStatusComponent;
     }
 
     public static HomeShelfComponent getHomeShelfComponent() {
-        if (hsComponent == null) {
-            hsComponent = DaggerHomeShelfComponent.create();
+        if (homeShelfComponent == null) {
+            homeShelfComponent = DaggerHomeShelfComponent.create();
         }
-        return hsComponent;
+        return homeShelfComponent;
     }
 
-}
+    public static WebServiceComponent getWebServiceComponent() {
+        if (webServiceComponent == null) {
+            webServiceComponent = DaggerWebServiceComponent.create();
+        }
+        return webServiceComponent;
+    }}

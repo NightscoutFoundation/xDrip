@@ -23,6 +23,16 @@ You can also access the steps endpoint by appending a query parameter
 
 When doing this look for `steps_result` number in the first record of the json reply, 200 indicates success, anything else failure to set the steps value. Steps value should be the current cummulative step counter from the device.
 
+You can also access the heart endpoint by appending a query parameter
+
+    http://127.0.0.1:17580/sgv.json?heart=123
+
+When doing this look for `heart_result` number in the first record of the json reply, 200 indicates success, anything else failure to set the heart bpm value. Heart value should be the current bpm now from the device.
+
+You can combine both like a normal query string:
+
+    http://127.0.0.1:17580/sgv.json?steps=1234&heart=123
+
 ### Tasker endpoint
 
 The `/tasker` endpoint lets you push requests to the tasker interface via http. So a watch face which can only support web based endpoints (eg FitBit) could send a snooze request as below:

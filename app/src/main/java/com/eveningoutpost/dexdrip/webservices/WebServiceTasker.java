@@ -24,16 +24,6 @@ import static com.eveningoutpost.dexdrip.localeTasker.bundle.PluginBundleManager
 public class WebServiceTasker extends BaseWebService {
 
     private static String TAG = "WebServiceTasker";
-    private static volatile WebServiceTasker instance;
-
-
-    @NonNull
-    public static WebServiceTasker getInstance() {
-        if (instance == null) {
-            instance = new WebServiceTasker();
-        }
-        return instance;
-    }
 
     // process the request and produce a response object
     public WebResponse request(String query) {
