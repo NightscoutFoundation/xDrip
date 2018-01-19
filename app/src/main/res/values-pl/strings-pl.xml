@@ -456,7 +456,7 @@
 	<string name="high_alert">Wysoki Alarm</string>
 	<string name="low_alert">Niski Alert</string>
 	<string name="xbridge_battery">Bateria XBridge</string>
-	<string name="limitter_battery">LimiTTer baterii</string>
+	<string name="limitter_battery">Bateria Libre</string>
 	<string name="parakeet_battery">Bateria Parakeet</string>
 	<string name="after_calibration_rewrite_history">Po kalibracji, dostosuj poprzedni wykres uwzględniając nową kalibracje</string>
 	<string name="rewrite_history">Przepisz Historia</string>

@@ -101,6 +101,7 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
     private MessageReceiver messageReceiver;
 
     protected SharedPreferences sharedPrefs;
+    private static Locale oldLocale = null;
     private static String oldDate = "";
     private static SimpleDateFormat dateFormat = null;
     private String rawString = "000 | 000 | 000";
@@ -315,12 +316,12 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
         final Date now = new Date();
         final String currentWatchDate = mDate.getText().toString();
         final String newDate = new SimpleDateFormat("yyyyMMdd").format(now);
-        if (!oldDate.equals(newDate) || currentWatchDate.equals("ddd mm/dd")) {
-            final Locale locale = BIGChart.this.getResources().getConfiguration().locale;
+        final Locale locale = BIGChart.this.getResources().getConfiguration().locale;
+        if (!oldDate.equals(newDate) || currentWatchDate.equals("ddd mm/dd") || (oldLocale != locale)) {
             final SimpleDateFormat dayFormat = new SimpleDateFormat("EEE", locale);
             if (d)
                 Log.d(TAG, "getWatchDate oldDate: " + oldDate + " now: " + now + " currentWatchDate: " + currentWatchDate);
-            if (dateFormat == null)
+            if (dateFormat == null || oldLocale != locale)
                 dateFormat = getShortDateInstanceWithoutYear(locale);
             String shortDate = dateFormat.format(now);
             if (d)
@@ -330,6 +331,7 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
             if (d)
                 Log.d(TAG, "getWatchDate day: " + day + " dayFormat: " + dayFormat.toPattern());
             oldDate = newDate;
+            oldLocale = locale;
             return day + "\n" + shortDate;
         }
         else
@@ -386,6 +388,18 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
             if (layoutSet && bundle != null && extra_status_line != null && !extra_status_line.isEmpty()) {
                 if (d) Log.d(TAG, "MessageReceiver extra_status_line=" + extra_status_line);
                 mExtraStatusLine = extra_status_line;
+            }
+            bundle = intent.getBundleExtra("locale");
+            if (layoutSet && bundle != null) {
+                dataMap = DataMap.fromBundle(bundle);
+                String localeStr = dataMap.getString("locale", "");
+                if (d) Log.d(TAG, "MessageReceiver locale=" + localeStr);
+                String locale[] = localeStr.split("_");
+                final Locale newLocale = locale == null ? new Locale(localeStr) : locale.length > 1 ? new Locale(locale[0], locale[1]) : new Locale(locale[0]);//eg"en", "en_AU"
+                final Locale curLocale = Locale.getDefault();
+                if (newLocale != null && !curLocale.equals(newLocale)) {
+                    Locale.setDefault(newLocale);
+                }
             }
             bundle = intent.getBundleExtra("msg");
             if (layoutSet && bundle != null) {

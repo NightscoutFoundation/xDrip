@@ -8,12 +8,15 @@ import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.dagger.Injectors;
 import com.eveningoutpost.dexdrip.ui.MicroStatus;
 import com.eveningoutpost.dexdrip.ui.MicroStatusImpl;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import javax.inject.Inject;
 
 /**
  * Created by jamorham on 06/01/2018.
@@ -28,18 +31,13 @@ import org.json.JSONObject;
 public class WebServicePebble extends BaseWebService {
 
     private static String TAG = "WebServicePebble";
-    private static volatile WebServicePebble instance;
-    private static MicroStatus microStatus; // TODO dependency inject
 
-    @NonNull
-    public static WebServicePebble getInstance() {
-        if (instance == null) {
-            instance = new WebServicePebble();
-            if (microStatus == null) {
-                microStatus = new MicroStatusImpl();
-            }
-        }
-        return instance;
+    @SuppressWarnings("WeakerAccess")
+    @Inject
+    MicroStatus microStatus;
+
+    WebServicePebble() {
+        Injectors.getMicroStatusComponent().inject(this);
     }
 
     // process the request and produce a response object

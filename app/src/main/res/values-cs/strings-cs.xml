@@ -456,7 +456,7 @@
 	<string name="high_alert">Výstraha vysoké glykémie</string>
 	<string name="low_alert">Výstraha nízké glykémie</string>
 	<string name="xbridge_battery">Baterie xBridge</string>
-	<string name="limitter_battery">Baterie LimiTTeru</string>
+	<string name="limitter_battery">Baterie Libre</string>
 	<string name="parakeet_battery">Baterie Parakeetu</string>
 	<string name="after_calibration_rewrite_history">Po kalibraci upravit graf raw dat</string>
 	<string name="rewrite_history">Přepsat historii</string>

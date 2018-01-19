@@ -18,6 +18,7 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.SensorPermissionActivity;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.android.gms.wearable.DataMap;
@@ -39,10 +40,15 @@ public class HeartRateService extends IntentService {
     public static final String TAG = "HeartRateService";
 
     private static final long TIME_WAIT_FOR_READING = Constants.SECOND_IN_MS * 30;
-    private static final long READING_PERIOD = Constants.SECOND_IN_MS * 300; // TODO review or allow configurable period
+    public static final long READING_PERIOD = Constants.SECOND_IN_MS * 300; // TODO review or allow configurable period
+    private static final long MINIMUM_READING_PERIOD = Constants.SECOND_IN_MS * 30;
+
     private static final int ELEVATED_BPM = 100;
 
+    private static final String ELEVATED_MARKER = "elevated-heart-marker";
+    private static final String LAST_READING_PERIOD = "heart-last-period";
     private static final int BATCH_LATENCY_1s = 1000000;
+    private static final int TYPE_PASSIVE_WELLNESS_SENSOR = 65538; // moto 360 sensor
     private static PendingIntent pendingIntent;
     private static long start_measuring_time = 0;
     private static long wakeup_time = 0;
@@ -51,6 +57,8 @@ public class HeartRateService extends IntentService {
 
 
     // event receiver when we get notified of a heart rate measurement
+    // elevated readings result in more frequent sensor readings, to eliminate spurious values
+    // and provide more detail during periods of exercise
     private static final SensorEventListener mHeartRateListener = new SensorEventListener() {
         @Override
         public void onSensorChanged(SensorEvent event) {
@@ -69,7 +77,24 @@ public class HeartRateService extends IntentService {
                             if (JoH.ratelimit("reschedule heart rate", 3)) {
                                 stopHeartRateMeasurement();
                                 final boolean elevated = (HeartRateBpm > ELEVATED_BPM);
-                                scheduleWakeUp(elevated ? READING_PERIOD / 2 : READING_PERIOD, "got reading - await next, elevated: " + elevated);
+                                long next_reading_period = READING_PERIOD;
+                                if (elevated) {
+                                    if (PersistentStore.getBoolean(ELEVATED_MARKER)) {
+                                        // back off 30 seconds for each high reading up to half of reading period, reset to minimum if somehow we get 0 back from store
+                                        next_reading_period = Math.max(MINIMUM_READING_PERIOD,
+                                                Math.min(PersistentStore.getLong(LAST_READING_PERIOD) + (30 * Constants.SECOND_IN_MS),
+                                                        READING_PERIOD / 2));
+                                    } else {
+                                        // last reading was not elevated but this one is, move to minimum period
+                                        next_reading_period = MINIMUM_READING_PERIOD;
+                                        PersistentStore.setBoolean(ELEVATED_MARKER, true);
+                                    }
+                                    // last reading period becomes significant now and will likely have changed at this point
+                                    PersistentStore.setLong(LAST_READING_PERIOD, next_reading_period);
+                                } else {
+                                    setElevatedMarkerFalseIfItWasTrue();
+                                }
+                                scheduleWakeUp(next_reading_period, "got reading - await next, elevated: " + elevated + " period: " + next_reading_period);
                                 if (JoH.ratelimit("heart-resync", 20)) {
                                     ListenerService.requestData(xdrip.getAppContext()); // force sync
                                 }
@@ -102,6 +127,7 @@ public class HeartRateService extends IntentService {
     public HeartRateService() {
         super("HeartRateService");
     }
+
 
     public static void scheduleWakeUp(long future, final String info) {
         if (Pref.getBoolean("use_wear_heartrate", true)) {
@@ -139,32 +165,38 @@ public class HeartRateService extends IntentService {
     public static synchronized DataMap getWearHeartSensorData(int count, long last_send_time, int min_count) {
         UserError.Log.d(TAG, "getWearHeartSensorData last_send_time:" + JoH.dateTimeText(last_send_time));
 
-        HeartRate last_log = HeartRate.last();
-        if (last_log != null) {
-            UserError.Log.d(TAG, "getWearHeartSensorData last_log.timestamp:" + JoH.dateTimeText((long) last_log.timestamp));
-        } else {
-            UserError.Log.d(TAG, "getWearHeartSensorData HeartRate.last() = null:");
-        }
+        if ((count !=0) || (JoH.ratelimit("heartrate-datamap",5))) {
+            HeartRate last_log = HeartRate.last();
+            if (last_log != null) {
+                UserError.Log.d(TAG, "getWearHeartSensorData last_log.timestamp:" + JoH.dateTimeText((long) last_log.timestamp));
+            } else {
+                UserError.Log.d(TAG, "getWearHeartSensorData HeartRate.last() = null:");
+                return null;
+            }
 
-        if (last_log != null && last_send_time <= last_log.timestamp) {//startTime
-            long last_send_success = last_send_time;
-            UserError.Log.d(TAG, "getWearHeartSensorData last_send_time < last_bg.timestamp:" + JoH.dateTimeText((long) last_log.timestamp));
-            List<HeartRate> logs = HeartRate.latestForGraph(count, last_send_time);
-            if (!logs.isEmpty() && logs.size() > min_count) {
-                DataMap entries = dataMap(last_log);
-                final ArrayList<DataMap> dataMaps = new ArrayList<>(logs.size());
-                for (HeartRate log : logs) {
-                    dataMaps.add(dataMap(log));
-                    last_send_success = (long) log.timestamp;
-                }
-                entries.putLong("time", JoH.tsl()); // MOST IMPORTANT LINE FOR TIMESTAMP
-                entries.putDataMapArrayList("entries", dataMaps);
-                UserError.Log.i(TAG, "getWearHeartSensorData SYNCED up to " + JoH.dateTimeText(last_send_success) + " count = " + logs.size());
-                return entries;
-            } else
-                UserError.Log.i(TAG, "getWearHeartSensorData SYNCED up to " + JoH.dateTimeText(last_send_success) + " count = 0");
+            if (last_log != null && last_send_time <= last_log.timestamp) {//startTime
+                long last_send_success = last_send_time;
+                UserError.Log.d(TAG, "getWearHeartSensorData last_send_time < last_bg.timestamp:" + JoH.dateTimeText((long) last_log.timestamp));
+                List<HeartRate> logs = HeartRate.latestForGraph(count, last_send_time);
+                if (!logs.isEmpty() && logs.size() > min_count) {
+                    DataMap entries = dataMap(last_log);
+                    final ArrayList<DataMap> dataMaps = new ArrayList<>(logs.size());
+                    for (HeartRate log : logs) {
+                        dataMaps.add(dataMap(log));
+                        last_send_success = (long) log.timestamp;
+                    }
+                    entries.putLong("time", JoH.tsl()); // MOST IMPORTANT LINE FOR TIMESTAMP
+                    entries.putDataMapArrayList("entries", dataMaps);
+                    UserError.Log.i(TAG, "getWearHeartSensorData SYNCED up to " + JoH.dateTimeText(last_send_success) + " count = " + logs.size());
+                    return entries;
+                } else
+                    UserError.Log.i(TAG, "getWearHeartSensorData SYNCED up to " + JoH.dateTimeText(last_send_success) + " count = 0");
+            }
+            return null;
+        } else {
+            UserError.Log.d(TAG,"Ratelimitted getWearHeartSensorData");
+            return null;
         }
-        return null;
     }
 
     // this is pretty inefficient - maybe eventually replace with protobuf
@@ -197,6 +229,7 @@ public class HeartRateService extends IntentService {
             if (JoH.msSince(start_measuring_time) > TIME_WAIT_FOR_READING) {
                 stopHeartRateMeasurement();
                 scheduleWakeUp(READING_PERIOD, "Failed to get last reading, retrying later");
+                setElevatedMarkerFalseIfItWasTrue();
             } else {
                 scheduleWakeUp(20 * Constants.SECOND_IN_MS, "Not sure what to do, trying again in a bit");
             }
@@ -216,6 +249,13 @@ public class HeartRateService extends IntentService {
                 mSensorManager = ((SensorManager) getSystemService(SENSOR_SERVICE));
             if (mSensorManager != null) {
                 android.hardware.Sensor mHeartRateSensor = mSensorManager.getDefaultSensor(android.hardware.Sensor.TYPE_HEART_RATE);
+                if ((mHeartRateSensor == null) && Build.MODEL.equals("Moto 360")) {
+                    // Moto 360 makes heart rate sensor invisible until body sensor permission is approved
+                    mHeartRateSensor = mSensorManager.getDefaultSensor(TYPE_PASSIVE_WELLNESS_SENSOR);
+                    if (mHeartRateSensor != null) {
+                        UserError.Log.d(TAG, "Using alternate wellness sensor");
+                    }
+                }
                 if (mHeartRateSensor != null) {
                     if (checkSensorPermissions()) {
                         UserError.Log.d(TAG, "Enabling sensor");
@@ -257,6 +297,14 @@ public class HeartRateService extends IntentService {
 
         return mSensorPermissionApproved;
     }
+
+    private static void setElevatedMarkerFalseIfItWasTrue() {
+        if (PersistentStore.getBoolean(ELEVATED_MARKER)) {
+            // last reading was elevated but this one isn't so clear the marker
+            PersistentStore.setBoolean(ELEVATED_MARKER, false);
+        }
+    }
+
 
 }
 

@@ -224,6 +224,12 @@
             android:switchTextOff="@string/short_off_text_for_switches"
             android:switchTextOn="@string/short_on_text_for_switches"
             android:title="Heart Rate Sensor" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="smooth_heartrate"
+            android:summary="Smooth heart rate graph"
+            android:dependency="use_wear_heartrate"
+            />
     </PreferenceScreen>
     </PreferenceScreen>
 

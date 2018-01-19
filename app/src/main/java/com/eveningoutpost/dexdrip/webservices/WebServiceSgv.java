@@ -1,11 +1,11 @@
 package com.eveningoutpost.dexdrip.webservices;
 
-import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.DateUtil;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.dagger.Injectors;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
 import org.json.JSONArray;
@@ -15,6 +15,11 @@ import org.json.JSONObject;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import dagger.Lazy;
 
 import static com.eveningoutpost.dexdrip.wearintegration.ExternalStatusService.getLastStatusLine;
 import static com.eveningoutpost.dexdrip.wearintegration.ExternalStatusService.getLastStatusLineTime;
@@ -33,28 +38,44 @@ import static com.eveningoutpost.dexdrip.wearintegration.ExternalStatusService.g
 public class WebServiceSgv extends BaseWebService {
 
     private static String TAG = "WebServiceSgv";
-    private static volatile WebServiceSgv instance;
 
-    @NonNull
-    public static WebServiceSgv getInstance() {
-        if (instance == null) {
-            instance = new WebServiceSgv();
-        }
-        return instance;
+    @SuppressWarnings("WeakerAccess")
+    @Inject
+    @Named("RouteFinder")
+    Lazy<RouteFinder> routeFinder;
+
+    WebServiceSgv() {
+        Injectors.getWebServiceComponent().inject(this);
     }
 
     // process the request and produce a response object
     public WebResponse request(String query) {
 
         int steps_result_code = 0; // result code for any steps cgi parameters, 200 = good
+        int heart_result_code = 0; // result code for any heart cgi parameters, 200 = good
+        int tasker_result_code = 0; // result code for any heart cgi parameters, 200 = good
 
         final Map<String, String> cgi = getQueryParameters(query);
 
         if (cgi.containsKey("steps")) {
             UserError.Log.d(TAG, "Received steps request: " + cgi.get("steps"));
             // forward steps request to steps route
-            final WebResponse steps_reply_wr = RouteFinder.handleRoute("steps/set/" + cgi.get("steps"));
+            final WebResponse steps_reply_wr = routeFinder.get().handleRoute("steps/set/" + cgi.get("steps"));
             steps_result_code = steps_reply_wr.resultCode;
+        }
+
+        if (cgi.containsKey("heart")) {
+            UserError.Log.d(TAG, "Received heart request: " + cgi.get("heart"));
+            // forward steps request to heart route
+            final WebResponse heart_reply_wr = routeFinder.get().handleRoute("heart/set/" + cgi.get("heart") + "/1"); // accuracy currently ignored (always 1) - TODO review
+            heart_result_code = heart_reply_wr.resultCode;
+        }
+
+        if (cgi.containsKey("tasker")) {
+            UserError.Log.d(TAG, "Received tasker request: " + cgi.get("tasker"));
+            // forward steps request to heart route
+            final WebResponse tasker_reply_wr = routeFinder.get().handleRoute("tasker/" + cgi.get("tasker")); // send single word command to tasker, eg snooze or osnooze
+            tasker_result_code = tasker_reply_wr.resultCode;
         }
 
         final JSONArray reply = new JSONArray();
@@ -94,6 +115,18 @@ public class WebServiceSgv extends BaseWebService {
                     if (steps_result_code > 0) {
                         item.put("steps_result", steps_result_code);
                         steps_result_code = 0;
+                    }
+
+                    // emit result code from heart if present
+                    if (heart_result_code > 0) {
+                        item.put("heart_result", heart_result_code);
+                        heart_result_code = 0;
+                    }
+
+                    // emit result code from tasker if present
+                    if (tasker_result_code > 0) {
+                        item.put("tasker_result", tasker_result_code);
+                        tasker_result_code = 0;
                     }
 
                     reply.put(item);

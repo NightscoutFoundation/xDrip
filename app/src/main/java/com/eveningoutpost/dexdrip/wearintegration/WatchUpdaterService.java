@@ -2,8 +2,10 @@ package com.eveningoutpost.dexdrip.wearintegration;
 
 import android.app.ActivityManager;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -13,6 +15,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.eveningoutpost.dexdrip.BestGlucose;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Models.AlertType;
@@ -63,6 +66,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -113,6 +117,7 @@ public class WatchUpdaterService extends WearableListenerService implements
     private static final String WEARABLE_TREATMENTS_DATA_PATH = "/xdrip_plus_watch_treatments_data";//KS
     private static final String WEARABLE_BLOODTEST_DATA_PATH = "/xdrip_plus_watch_bloodtest_data";//KS
     private static final String WEARABLE_INITPREFS_PATH = "/xdrip_plus_watch_data_initprefs";
+    private static final String WEARABLE_LOCALE_CHANGED_PATH = "/xdrip_plus_locale_changed_data";//KS
     private static final String WEARABLE_CALIBRATION_DATA_PATH = "/xdrip_plus_watch_cal_data";//KS
     private static final String WEARABLE_BG_DATA_PATH = "/xdrip_plus_watch_bg_data";//KS
     private static final String WEARABLE_SENSOR_DATA_PATH = "/xdrip_plus_watch_sensor_data";//KS
@@ -629,7 +634,6 @@ public class WatchUpdaterService extends WearableListenerService implements
         }
         setSettings();
         listenForChangeInSettings();
-
     }
 
     private void listenForChangeInSettings() {
@@ -883,6 +887,7 @@ public class WatchUpdaterService extends WearableListenerService implements
                         sendData();//ensure BgReading.Last is displayed on watch
 
                     } else {
+                        // default
                         /*if (!mPrefs.getBoolean("force_wearG5", false)//handled by UploaderQueue
                                 && mPrefs.getBoolean("enable_wearG5", false)
                                 && (is_using_bt)) { //KS only send BGs if using Phone's G5 Collector Server
@@ -1259,6 +1264,10 @@ public class WatchUpdaterService extends WearableListenerService implements
                         Log.d(TAG, "onMessageReceived WEARABLE_INITPREFS_PATH");
                         sendPrefSettings();
                         break;
+                    case WEARABLE_LOCALE_CHANGED_PATH:
+                        Log.d(TAG, "onMessageReceived WEARABLE_LOCALE_CHANGED_PATH");
+                        sendLocale();
+                        break;
                     case WEARABLE_PREF_DATA_PATH:
                         dataMap = DataMap.fromByteArray(event.getData());
                         if (dataMap != null) {
@@ -1389,6 +1398,7 @@ public class WatchUpdaterService extends WearableListenerService implements
     }
 
 
+    // sending to watch - beware we munge the calculated value and replace with display glucose
     private DataMap dataMap(BgReading bg, SharedPreferences sPrefs, BgGraphBuilder bgGraphBuilder, int battery) {
         Double highMark = Double.parseDouble(sPrefs.getString("highValue", "170"));
         Double lowMark = Double.parseDouble(sPrefs.getString("lowValue", "70"));
@@ -1396,14 +1406,25 @@ public class WatchUpdaterService extends WearableListenerService implements
 
         //int battery = BgSendQueue.getBatteryLevel(getApplicationContext());
 
-        dataMap.putString("sgvString", bgGraphBuilder.unitized_string(bg.calculated_value));
+        // TODO this is inefficent when we are called in a loop instead should be passed in or already stored in bgreading
+        final BestGlucose.DisplayGlucose dg = BestGlucose.getDisplayGlucose(); // current best
+
+
+        dataMap.putString("sgvString", dg != null && bg.dg_mgdl > 0 ? dg.unitized : bgGraphBuilder.unitized_string(bg.calculated_value));
+
         dataMap.putString("slopeArrow", bg.slopeArrow());
         dataMap.putDouble("timestamp", bg.timestamp); //TODO: change that to long (was like that in NW)
-        dataMap.putString("delta", bgGraphBuilder.unitizedDeltaString(true, true, true));
+
+        // This delta string only applies to the last reading even if we are processing historical data here
+        if (dg != null) {
+            dataMap.putString("delta", dg.unitized_delta);
+        } else {
+            dataMap.putString("delta", bgGraphBuilder.unitizedDeltaString(true, true, true));
+        }
         dataMap.putString("battery", "" + battery);
-        dataMap.putLong("sgvLevel", sgvLevel(bg.calculated_value, sPrefs, bgGraphBuilder));
+        dataMap.putLong("sgvLevel", sgvLevel(bg.dg_mgdl > 0 ? bg.dg_mgdl : bg.calculated_value, sPrefs, bgGraphBuilder));
         dataMap.putInt("batteryLevel", (battery >= 30) ? 1 : 0);
-        dataMap.putDouble("sgvDouble", bg.calculated_value);
+        dataMap.putDouble("sgvDouble", bg.dg_mgdl > 0 ? bg.dg_mgdl : bg.calculated_value);
         dataMap.putDouble("high", inMgdl(highMark, sPrefs));
         dataMap.putDouble("low", inMgdl(lowMark, sPrefs));
         dataMap.putInt("bridge_battery", mPrefs.getInt("bridge_battery", -1));//Used in DexCollectionService
@@ -1414,6 +1435,13 @@ public class WatchUpdaterService extends WearableListenerService implements
         //TODO: Add raw again
         //dataMap.putString("rawString", threeRaw((prefs.getString("units", "mgdl").equals("mgdl"))));
         return dataMap;
+    }
+
+    private void sendLocale() {
+        final Locale locale = Locale.getDefault();
+        Log.d(TAG, "ACTION_LOCALE_CHANGED Locale changed to " + locale);
+        String country = locale.getCountry();
+        sendRequestExtra(WEARABLE_LOCALE_CHANGED_PATH, "locale", locale.getLanguage()+(country!=null && !country.isEmpty() ? "_"+country : ""));
     }
 
     // These are the settings which get sent to Wear device
@@ -1511,6 +1539,9 @@ public class WatchUpdaterService extends WearableListenerService implements
         //dataMap.putBoolean("engineering_mode",  Pref.getBooleanDefaultFalse("engineering_mode"));
         dataMap.putBoolean("bridge_battery_alerts",  Pref.getBooleanDefaultFalse("bridge_battery_alerts"));
         dataMap.putString("bridge_battery_alert_level",  Pref.getString("bridge_battery_alert_level", "30"));
+        final Locale locale = Locale.getDefault();
+        String country = locale.getCountry();
+        dataMap.putString("locale",  locale.getLanguage()+(country!=null && !country.isEmpty() ? "_"+country : ""));
 
         for (String pref : defaultFalseBooleansToSend) {
             dataMap.putBoolean(pref, Pref.getBooleanDefaultFalse(pref));

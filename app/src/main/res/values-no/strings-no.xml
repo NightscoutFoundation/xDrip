@@ -512,7 +512,7 @@
 	<string name="low_alert">Lav Alarm</string>
 	<string name="battery">Batteri</string>
 	<string name="xbridge_battery">xBridge Batteri</string>
-	<string name="limitter_battery">LimiTTer Batteri</string>
+	<string name="limitter_battery">Libre Batteri</string>
 	<string name="parakeet_battery">Parakeet Batteri</string>
 	<string name="after_calibration_rewrite_history">Etter kalibrering, juster nylig rå-graf for å tilpasse den nye kalibreringen</string>
 	<string name="rewrite_history">Omskrive historikk</string>

@@ -124,7 +124,7 @@ public class CustomComplicationProviderService extends ComplicationProviderServi
             numberText = "null";
         } else {
             if (JoH.msSince(bgReading.timestamp) < STALE_MS) {
-                numberText = bgReading.displayValue(this) + " " + bgReading.slopeArrow();
+                numberText = bgReading.displayValue(this) + " " + bgReading.displaySlopeArrow();
             } else {
                 numberText = "old " + niceTimeSinceBgReading(bgReading);
                 is_stale = true;

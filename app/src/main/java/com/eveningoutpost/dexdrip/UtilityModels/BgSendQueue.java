@@ -234,7 +234,7 @@ public class BgSendQueue extends Model {
             if ((!is_follower) && (prefs.getBoolean("plus_follow_master", false))) {
                 if (prefs.getBoolean("display_glucose_from_plugin", false))
                 {
-                    // TODO does this currently ignore noise?
+                    // TODO does this currently ignore noise or is noise properly calculated on the follower?
                     // munge bgReading for follower TODO will probably want extra option for this in future
                     // TODO we maybe don't need deep clone for this! Check how value will be used below
                     GcmActivity.syncBGReading(PluggableCalibration.mungeBgReading(new Cloner().deepClone(bgReading)));

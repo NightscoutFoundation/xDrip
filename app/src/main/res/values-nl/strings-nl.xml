@@ -462,7 +462,7 @@
 	<string name="high_alert">High Alert</string>
 	<string name="low_alert">Low Alert</string>
 	<string name="xbridge_battery">xBridge Battery</string>
-	<string name="limitter_battery">LimiTTer Battery</string>
+	<string name="limitter_battery">Libre Battery</string>
 	<string name="parakeet_battery">Parkiet Battery</string>
 	<string name="after_calibration_rewrite_history">Na de kalibratie aan te passen recente ruwe grafiek te glad om de nieuwe kalibratie</string>
 	<string name="rewrite_history">Rewrite Geschiedenis</string>

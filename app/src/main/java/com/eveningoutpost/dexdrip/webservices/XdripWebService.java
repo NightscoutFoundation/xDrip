@@ -9,6 +9,7 @@ import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.dagger.Injectors;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.io.BufferedInputStream;
@@ -23,10 +24,14 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.URLDecoder;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
+
+import dagger.Lazy;
 
 /**
  * Created by jamorham on 06/01/2018.
@@ -52,28 +57,21 @@ public class XdripWebService implements Runnable {
     private static volatile XdripWebService instance = null;
     private static volatile XdripWebService ssl_instance = null;
 
-    /**
-     * The port number we listen to
-     */
-    private final int mPort;
-    private final boolean mSSL;
-
-    /**
-     * True if the server is running.
-     */
-    private boolean mIsRunning;
-
-    /**
-     * The {@link java.net.ServerSocket} that we listen to.
-     */
+    private final int listenPort;
+    private final boolean useSSL;
+    @Inject
+    @Named("RouteFinder")
+    Lazy<RouteFinder> routeFinder;
+    private boolean isRunning;
     private ServerSocket mServerSocket;
 
     /**
      * WebServer constructor.
      */
     private XdripWebService(int port, boolean use_ssl) {
-        this.mPort = port;
-        this.mSSL = use_ssl;
+        this.listenPort = port;
+        this.useSSL = use_ssl;
+        Injectors.getWebServiceComponent().inject(this);
     }
 
     // start the service if needed, shut it down if not
@@ -113,7 +111,7 @@ public class XdripWebService implements Runnable {
 
     // start thread if needed
     private void startIfNotRunning() {
-        if (!mIsRunning) {
+        if (!isRunning) {
             UserError.Log.d(TAG, "Not running so starting");
             start();
         } else {
@@ -125,7 +123,7 @@ public class XdripWebService implements Runnable {
      * This method starts the web server listening to the specified port.
      */
     public void start() {
-        mIsRunning = true;
+        isRunning = true;
         new Thread(this).start();
     }
 
@@ -134,7 +132,7 @@ public class XdripWebService implements Runnable {
      */
     public synchronized void stop() {
         try {
-            mIsRunning = false;
+            isRunning = false;
             if (null != mServerSocket) {
                 mServerSocket.close();
                 mServerSocket = null;
@@ -145,25 +143,25 @@ public class XdripWebService implements Runnable {
     }
 
     public int getPort() {
-        return mPort;
+        return listenPort;
     }
 
 
     @Override
     public void run() {
         try {
-            if (mSSL) {
+            if (useSSL) {
                 // SSL type
                 UserError.Log.d(TAG, "Attempting to initialize SSL");
                 final SSLServerSocketFactory ssocketFactory = SSLServerSocketHelper.makeSSLSocketFactory(
                         new BufferedInputStream(xdrip.getAppContext().getResources().openRawResource(R.raw.localhost_cert)),
                         "password".toCharArray());
-                mServerSocket = ssocketFactory.createServerSocket(mPort, 1, InetAddress.getByName("127.0.0.1"));
+                mServerSocket = ssocketFactory.createServerSocket(listenPort, 1, InetAddress.getByName("127.0.0.1"));
             } else {
                 // Non-SSL type
-                mServerSocket = new ServerSocket(mPort, 1, InetAddress.getByName("127.0.0.1"));
+                mServerSocket = new ServerSocket(listenPort, 1, InetAddress.getByName("127.0.0.1"));
             }
-            while (mIsRunning) {
+            while (isRunning) {
                 final Socket socket = mServerSocket.accept();
                 handle(socket);
                 socket.close();
@@ -233,7 +231,7 @@ public class XdripWebService implements Runnable {
                 return;
             }
 
-            final WebResponse response = RouteFinder.handleRoute(route);
+            final WebResponse response = routeFinder.get().handleRoute(route);
 
             // if we didn't manage to generate a response
             if (response == null) {
