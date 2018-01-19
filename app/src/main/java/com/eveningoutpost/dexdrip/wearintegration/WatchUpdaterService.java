@@ -2,8 +2,10 @@ package com.eveningoutpost.dexdrip.wearintegration;
 
 import android.app.ActivityManager;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -64,6 +66,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -114,6 +117,7 @@ public class WatchUpdaterService extends WearableListenerService implements
     private static final String WEARABLE_TREATMENTS_DATA_PATH = "/xdrip_plus_watch_treatments_data";//KS
     private static final String WEARABLE_BLOODTEST_DATA_PATH = "/xdrip_plus_watch_bloodtest_data";//KS
     private static final String WEARABLE_INITPREFS_PATH = "/xdrip_plus_watch_data_initprefs";
+    private static final String WEARABLE_LOCALE_CHANGED_PATH = "/xdrip_plus_locale_changed_data";//KS
     private static final String WEARABLE_CALIBRATION_DATA_PATH = "/xdrip_plus_watch_cal_data";//KS
     private static final String WEARABLE_BG_DATA_PATH = "/xdrip_plus_watch_bg_data";//KS
     private static final String WEARABLE_SENSOR_DATA_PATH = "/xdrip_plus_watch_sensor_data";//KS
@@ -630,7 +634,6 @@ public class WatchUpdaterService extends WearableListenerService implements
         }
         setSettings();
         listenForChangeInSettings();
-
     }
 
     private void listenForChangeInSettings() {
@@ -1261,6 +1264,10 @@ public class WatchUpdaterService extends WearableListenerService implements
                         Log.d(TAG, "onMessageReceived WEARABLE_INITPREFS_PATH");
                         sendPrefSettings();
                         break;
+                    case WEARABLE_LOCALE_CHANGED_PATH:
+                        Log.d(TAG, "onMessageReceived WEARABLE_LOCALE_CHANGED_PATH");
+                        sendLocale();
+                        break;
                     case WEARABLE_PREF_DATA_PATH:
                         dataMap = DataMap.fromByteArray(event.getData());
                         if (dataMap != null) {
@@ -1430,6 +1437,13 @@ public class WatchUpdaterService extends WearableListenerService implements
         return dataMap;
     }
 
+    private void sendLocale() {
+        final Locale locale = Locale.getDefault();
+        Log.d(TAG, "ACTION_LOCALE_CHANGED Locale changed to " + locale);
+        String country = locale.getCountry();
+        sendRequestExtra(WEARABLE_LOCALE_CHANGED_PATH, "locale", locale.getLanguage()+(country!=null && !country.isEmpty() ? "_"+country : ""));
+    }
+
     // These are the settings which get sent to Wear device
     private void sendPrefSettings() {//KS
         forceGoogleApiConnect();
@@ -1525,6 +1539,9 @@ public class WatchUpdaterService extends WearableListenerService implements
         //dataMap.putBoolean("engineering_mode",  Pref.getBooleanDefaultFalse("engineering_mode"));
         dataMap.putBoolean("bridge_battery_alerts",  Pref.getBooleanDefaultFalse("bridge_battery_alerts"));
         dataMap.putString("bridge_battery_alert_level",  Pref.getString("bridge_battery_alert_level", "30"));
+        final Locale locale = Locale.getDefault();
+        String country = locale.getCountry();
+        dataMap.putString("locale",  locale.getLanguage()+(country!=null && !country.isEmpty() ? "_"+country : ""));
 
         for (String pref : defaultFalseBooleansToSend) {
             dataMap.putBoolean(pref, Pref.getBooleanDefaultFalse(pref));
