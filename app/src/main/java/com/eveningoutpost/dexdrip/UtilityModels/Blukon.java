@@ -75,9 +75,10 @@ public class Blukon {
     }
 
     public static boolean isCollecting() {
-        return false; // stub
         // use internal logic to decide if we are collecting something, if we return true here
         // then we will never get reset due to missed reading service restarts
+
+        return m_communicationStarted;
     }
 
     public static void clearPin() {
