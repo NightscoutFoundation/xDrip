@@ -1,11 +1,8 @@
 package com.eveningoutpost.dexdrip.dagger;
 
-import com.eveningoutpost.dexdrip.webservices.RouteFinder;
 import com.eveningoutpost.dexdrip.webservices.WebServiceModule;
 import com.eveningoutpost.dexdrip.webservices.WebServiceSgv;
 import com.eveningoutpost.dexdrip.webservices.XdripWebService;
-
-import javax.inject.Singleton;
 
 import dagger.Component;
 
@@ -15,14 +12,15 @@ import dagger.Component;
  * Interface requires method for every concrete class it is called from
  * placing a base class in the method will not generate a compile error but will get null at runtime
  *
+ * Android studio wont tell you when interface methods are no longer needed or are missing
  */
 
-@Singleton
+@javax.inject.Singleton
 @Component(modules = {WebServiceModule.class})
 public interface WebServiceComponent {
 
     void inject(XdripWebService target);
-    void inject(RouteFinder target);
     void inject(WebServiceSgv target);
+    void inject(Singleton target);
 
 }

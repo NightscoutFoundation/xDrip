@@ -1,11 +1,11 @@
 package com.eveningoutpost.dexdrip.webservices;
 
-import com.eveningoutpost.dexdrip.dagger.Injectors;
+import android.util.Pair;
 
-import javax.inject.Inject;
-import javax.inject.Named;
+import com.eveningoutpost.dexdrip.dagger.Singleton;
 
-import dagger.Lazy;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by jamorham on 17/01/2018.
@@ -16,28 +16,25 @@ import dagger.Lazy;
 
 public class RouteFinder {
 
-    @Inject
-    @Named("WebServicePebble")
-    Lazy<BaseWebService> pebbleService;
-
-    @Inject
-    @Named("WebServiceTasker")
-    Lazy<BaseWebService> taskerService;
-
-    @Inject
-    @Named("WebServiceSgv")
-    Lazy<BaseWebService> sgvService;
-
-    @Inject
-    @Named("WebServiceSteps")
-    Lazy<BaseWebService> stepsService;
-
-    @Inject
-    @Named("WebServiceHeart")
-    Lazy<BaseWebService> heartService;
+    private final List<Pair<String, String>> routes = new ArrayList<>();
 
     RouteFinder() {
-        Injectors.getWebServiceComponent().inject(this);
+        // route url starts with , class name to process it
+
+        // support for pebble nightscout watchface emulates /pebble Nightscout endpoint
+        routes.add(new Pair<>("pebble", "WebServicePebble"));
+
+        // tasker interface
+        routes.add(new Pair<>("tasker/", "WebServiceTasker"));
+
+        // support for nightscout style sgv.json endpoint
+        routes.add(new Pair<>("sgv.json", "WebServiceSgv"));
+
+        // support for working with step counter
+        routes.add(new Pair<>("steps/", "WebServiceSteps"));
+
+        // support for working with heart monitor
+        routes.add(new Pair<>("heart/", "WebServiceHeart"));
     }
 
     // process a received route
@@ -45,22 +42,11 @@ public class RouteFinder {
 
         BaseWebService service = null;
 
-        // pick the appropriate service for the route
-        if (route.startsWith("pebble")) {
-            // support for pebble nightscout watchface emulates /pebble Nightscout endpoint
-            service = pebbleService.get();
-        } else if (route.startsWith("tasker/")) {
-            // tasker interface
-            service = taskerService.get();
-        } else if (route.startsWith("sgv.json")) {
-            // support for nightscout style sgv.json endpoint
-            service = sgvService.get();
-        } else if (route.startsWith("steps/")) {
-            // support for working with step counter
-            service = stepsService.get();
-        } else if (route.startsWith("heart/")) {
-            // support for working with step counter
-            service = heartService.get();
+        for (final Pair<String, String> routeEntry : routes) {
+            if (route.startsWith(routeEntry.first)) {
+                service = (BaseWebService) Singleton.get(routeEntry.second);
+                break;
+            }
         }
 
         if (service != null) {
@@ -73,5 +59,3 @@ public class RouteFinder {
 
     }
 }
-
-
