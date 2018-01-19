@@ -74,6 +74,12 @@ public class Blukon {
         Pref.setString(BLUKON_PIN_PREF, thepin);
     }
 
+    public static boolean isCollecting() {
+        return false; // stub
+        // use internal logic to decide if we are collecting something, if we return true here
+        // then we will never get reset due to missed reading service restarts
+    }
+
     public static void clearPin() {
         Pref.removeItem(BLUKON_PIN_PREF);
     }
