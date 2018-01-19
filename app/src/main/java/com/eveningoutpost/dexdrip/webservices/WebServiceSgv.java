@@ -53,6 +53,7 @@ public class WebServiceSgv extends BaseWebService {
 
         int steps_result_code = 0; // result code for any steps cgi parameters, 200 = good
         int heart_result_code = 0; // result code for any heart cgi parameters, 200 = good
+        int tasker_result_code = 0; // result code for any heart cgi parameters, 200 = good
 
         final Map<String, String> cgi = getQueryParameters(query);
 
@@ -67,7 +68,14 @@ public class WebServiceSgv extends BaseWebService {
             UserError.Log.d(TAG, "Received heart request: " + cgi.get("heart"));
             // forward steps request to heart route
             final WebResponse heart_reply_wr = routeFinder.get().handleRoute("heart/set/" + cgi.get("heart") + "/1"); // accuracy currently ignored (always 1) - TODO review
-            steps_result_code = heart_reply_wr.resultCode;
+            heart_result_code = heart_reply_wr.resultCode;
+        }
+
+        if (cgi.containsKey("tasker")) {
+            UserError.Log.d(TAG, "Received tasker request: " + cgi.get("tasker"));
+            // forward steps request to heart route
+            final WebResponse tasker_reply_wr = routeFinder.get().handleRoute("tasker/" + cgi.get("tasker")); // send single word command to tasker, eg snooze or osnooze
+            tasker_result_code = tasker_reply_wr.resultCode;
         }
 
         final JSONArray reply = new JSONArray();
@@ -113,6 +121,12 @@ public class WebServiceSgv extends BaseWebService {
                     if (heart_result_code > 0) {
                         item.put("heart_result", heart_result_code);
                         heart_result_code = 0;
+                    }
+
+                    // emit result code from tasker if present
+                    if (tasker_result_code > 0) {
+                        item.put("tasker_result", tasker_result_code);
+                        tasker_result_code = 0;
                     }
 
                     reply.put(item);
