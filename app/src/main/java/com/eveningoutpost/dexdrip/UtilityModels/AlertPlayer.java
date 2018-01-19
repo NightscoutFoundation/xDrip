@@ -28,6 +28,7 @@ import com.eveningoutpost.dexdrip.Services.SnoozeOnNotificationDismissService;
 import com.eveningoutpost.dexdrip.SnoozeActivity;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleWatchSync;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
+import com.eveningoutpost.dexdrip.xdrip;
 
 import java.io.IOException;
 import java.util.Date;
@@ -163,6 +164,17 @@ public class AlertPlayer {
             mediaPlayer = null;
         }
         revertCurrentVolume(ctx);
+    }
+
+    // only do something if an alert is active - only call from interactive
+    public synchronized void OpportunisticSnooze() {
+        if (JoH.ratelimit("opp-snooze-check", 3)) {
+            if (ActiveBgAlert.getOnly() != null) {
+                // there is an alert so do something
+                Snooze(xdrip.getAppContext(), -1);
+                JoH.static_toast_long("Opportunistic Snooze");
+            }
+        }
     }
 
     //  default signature for user initiated interactive snoozes only

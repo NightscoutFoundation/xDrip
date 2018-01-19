@@ -33,6 +33,16 @@ You can combine both like a normal query string:
 
     http://127.0.0.1:17580/sgv.json?steps=1234&heart=123
 
+You can also access the tasker endpoint by appending a query parameter
+
+    http://127.0.0.1:17580/sgv.json?tasker=osnooze
+
+look for `tasker_result` in the first line of the json reply to indicate success or failure.
+
+`OSNOOZE` is opportunistic snooze which you can call even when there is no alert playing
+
+`SNOOZE` is the traditional tasker snooze which will send snooze to followers and uses more cpu
+
 ### Tasker endpoint
 
 The `/tasker` endpoint lets you push requests to the tasker interface via http. So a watch face which can only support web based endpoints (eg FitBit) could send a snooze request as below:
@@ -46,6 +56,15 @@ The `/tasker` endpoint lets you push requests to the tasker interface via http. 
     http://127.0.0.1:17580/steps/set/1234
 
 This should be the current cumulative step counter on the device measuring steps. Not a historical record.
+
+
+### Heart endpoint
+
+`/heart` allows for setting the current heart rate bpm data
+
+    http://127.0.0.1:17580/heart/set/123/1
+
+This should be the current cumulative rate bpm on the device measuring. Not a historical record. The first parameter is BPM and the second is accuracy. If unsure of accuracy parameter just set to 1.
 
 ---
 
