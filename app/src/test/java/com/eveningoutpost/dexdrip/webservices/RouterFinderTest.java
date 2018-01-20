@@ -53,13 +53,13 @@ public class RouterFinderTest {
         Truth.assertWithMessage("Pebble instance null data response").that(response).isNull();
         // TODO create some record data for pebble to use, check without it also
 
+        String subroute;
 
         // sgv
-        String subroute = "sgv.json";
+        subroute = "sgv.json";
         response = routeFinder.handleRoute(subroute);
         validResponse(subroute, response);
         Truth.assertWithMessage(subroute + " instance data format").that(response.bytes[0] == '[').isTrue();
-
 
         // tasker
         subroute = "tasker/snooze";
@@ -79,6 +79,11 @@ public class RouterFinderTest {
         validResponse(subroute, response);
         Truth.assertWithMessage("Contains updated").that(new String(response.bytes).startsWith("Updated")).isTrue();
 
+        // sgv combined
+        subroute = "sgv.json?steps=1234&heart=123&tasker=osnooze";
+        response = routeFinder.handleRoute(subroute);
+        validResponse(subroute, response);
+        // TODO look for output markers
     }
 
     private void validResponse(String subroute, WebResponse response) {

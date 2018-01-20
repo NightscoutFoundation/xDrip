@@ -9,7 +9,7 @@ import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
-import com.eveningoutpost.dexdrip.dagger.Injectors;
+import com.eveningoutpost.dexdrip.dagger.Singleton;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.io.BufferedInputStream;
@@ -24,14 +24,10 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.URLDecoder;
 
-import javax.inject.Inject;
-import javax.inject.Named;
 import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
-
-import dagger.Lazy;
 
 /**
  * Created by jamorham on 06/01/2018.
@@ -59,9 +55,7 @@ public class XdripWebService implements Runnable {
 
     private final int listenPort;
     private final boolean useSSL;
-    @Inject
-    @Named("RouteFinder")
-    Lazy<RouteFinder> routeFinder;
+
     private boolean isRunning;
     private ServerSocket mServerSocket;
 
@@ -71,7 +65,6 @@ public class XdripWebService implements Runnable {
     private XdripWebService(int port, boolean use_ssl) {
         this.listenPort = port;
         this.useSSL = use_ssl;
-        Injectors.getWebServiceComponent().inject(this);
     }
 
     // start the service if needed, shut it down if not
@@ -231,7 +224,7 @@ public class XdripWebService implements Runnable {
                 return;
             }
 
-            final WebResponse response = routeFinder.get().handleRoute(route);
+            final WebResponse response = ((RouteFinder)Singleton.get("RouteFinder")).handleRoute(route);
 
             // if we didn't manage to generate a response
             if (response == null) {

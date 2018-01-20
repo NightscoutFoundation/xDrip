@@ -1,6 +1,7 @@
 package com.eveningoutpost.dexdrip.dagger;
 
 import com.eveningoutpost.dexdrip.webservices.BaseWebService;
+import com.eveningoutpost.dexdrip.webservices.RouteFinder;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -29,7 +30,9 @@ import dagger.Lazy;
 
 public class Singleton extends SingletonHotel {
 
-    private static volatile Singleton instance = null;
+    @Inject
+    @Named("RouteFinder")
+    Lazy<RouteFinder> routeFinder;
 
     @Inject
     @Named("WebServicePebble")
@@ -72,20 +75,14 @@ public class Singleton extends SingletonHotel {
         }
     }
 
-
-    // create ourself
-    private synchronized static void initSelf() {
-        if (instance == null) {
-            instance = new Singleton();
-        }
-    }
-
     // find ourself
     private static Singleton getSelf() {
-        if (instance == null) {
-            initSelf();
-        }
-        return instance;
+        return WakeOnClassInit.instance;
+    }
+
+    // create ourself
+    private static class WakeOnClassInit {
+        static final Singleton instance = new Singleton();
     }
 
 }
