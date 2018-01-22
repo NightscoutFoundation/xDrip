@@ -73,6 +73,7 @@ public abstract class G5BaseService extends Service {
         final String transmitterId = Pref.getString("dex_txid", "NULL");
         PersistentStore.setString(G5_BATTERY_MARKER + transmitterId, "");
         PersistentStore.setLong(G5_BATTERY_FROM_MARKER + transmitterId, 0);
+        PersistentStore.setLong(G5_BATTERY_LEVEL_MARKER + transmitterId, 0);
         PersistentStore.commit();
     }
 }
