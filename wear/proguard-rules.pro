@@ -99,3 +99,7 @@
 
 -dontwarn java.lang.invoke.*
 -dontwarn **$$Lambda$*
+
+-keepclassmembers class com.eveningoutpost.dexdrip.** {
+    public static boolean isRunning ();
+}

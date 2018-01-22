@@ -12,7 +12,7 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Services.SyncService;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
-import com.eveningoutpost.dexdrip.UtilityModels.MongoSendTask;
+import com.eveningoutpost.dexdrip.UtilityModels.UploaderTask;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
 import com.eveningoutpost.dexdrip.profileeditor.DatePickerFragment;
@@ -105,7 +105,7 @@ public class NightscoutBackfillActivity extends AppCompatActivity implements Nav
                 try {
                     final List<BgReading> the_readings = BgReading.latestForGraphAsc(500000, calendar.getTimeInMillis(), JoH.tsl());
                     if ((the_readings != null) && (the_readings.size() > 0)) {
-                        PersistentStore.setBoolean(MongoSendTask.BACKFILLING_BOOSTER, true);
+                        PersistentStore.setBoolean(UploaderTask.BACKFILLING_BOOSTER, true);
                         long bgcount = the_readings.size();
                         long trcount = 0;
                         for (BgReading bg : the_readings) {

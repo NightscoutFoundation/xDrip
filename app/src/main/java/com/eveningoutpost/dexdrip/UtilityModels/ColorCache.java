@@ -2,7 +2,6 @@ package com.eveningoutpost.dexdrip.UtilityModels;
 
 import android.util.Log;
 
-import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.UserError;
 
 import java.util.EnumMap;
@@ -25,9 +24,9 @@ public class ColorCache {
 
     public static int getCol(X color) {
         if (!the_cache.containsKey(color)) {
-            the_cache.put(color, Home.getPreferencesInt(color.internalName, 0xABCDEF));
+            the_cache.put(color, Pref.getInt(color.internalName, 0xABCDEF));
             if (debug)
-                UserError.Log.d(TAG, "Setting cache for color: " + color.internalName + " / " + Home.getPreferencesInt(color.internalName, 1234));
+                UserError.Log.d(TAG, "Setting cache for color: " + color.internalName + " / " + Pref.getInt(color.internalName, 1234));
         }
         return the_cache.get(color);
     }
@@ -56,7 +55,8 @@ public class ColorCache {
         color_step_counter1("color_step_counter1"),
         color_step_counter2("color_step_counter2"),
         color_upper_flair_bar("color_upper_flair_bar"),
-        color_lower_flair_bar("color_lower_flair_bar");
+        color_lower_flair_bar("color_lower_flair_bar"),
+        color_heart_rate1("color_heart_rate1");
 
         String internalName;
 

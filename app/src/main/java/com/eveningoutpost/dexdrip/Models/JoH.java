@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlarmManager;
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
@@ -38,6 +37,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.provider.Settings;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ContextThemeWrapper;
@@ -50,16 +50,20 @@ import android.view.Surface;
 import android.view.View;
 import android.widget.Toast;
 
+import com.activeandroid.ActiveAndroid;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.UtilityModels.XdripNotificationCompat;
 import com.eveningoutpost.dexdrip.utils.BestGZIPOutputStream;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.common.primitives.Bytes;
 import com.google.common.primitives.UnsignedInts;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.ByteArrayInputStream;
@@ -111,6 +115,9 @@ public class JoH {
         return qs(x, 2);
     }
 
+    // singletons to avoid repeated allocation
+    private static DecimalFormatSymbols dfs;
+    private static DecimalFormat df;
     public static String qs(double x, int digits) {
 
         if (digits == -1) {
@@ -124,12 +131,27 @@ public class JoH {
             }
         }
 
-        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
-        symbols.setDecimalSeparator('.');
-        DecimalFormat df = new DecimalFormat("#", symbols);
-        df.setMaximumFractionDigits(digits);
-        df.setMinimumIntegerDigits(1);
-        return df.format(x);
+        if (dfs == null) {
+            final DecimalFormatSymbols local_dfs = new DecimalFormatSymbols();
+            local_dfs.setDecimalSeparator('.');
+            dfs = local_dfs; // avoid race condition
+        }
+
+        final DecimalFormat this_df;
+        // use singleton if on ui thread otherwise allocate new as DecimalFormat is not thread safe
+        if (Thread.currentThread().getId() == 1) {
+            if (df == null) {
+                final DecimalFormat local_df = new DecimalFormat("#", dfs);
+                local_df.setMinimumIntegerDigits(1);
+                df = local_df; // avoid race condition
+            }
+            this_df = df;
+        } else {
+            this_df = new DecimalFormat("#", dfs);
+        }
+
+        this_df.setMaximumFractionDigits(digits);
+        return this_df.format(x);
     }
 
     public static double ts() {
@@ -138,7 +160,8 @@ public class JoH {
 
     // TODO can we optimize this with System.currentTimeMillis ?
     public static long tsl() {
-        return new Date().getTime();
+        //return new Date().getTime();
+        return System.currentTimeMillis();
     }
 
     public static long msSince(long when) {
@@ -520,6 +543,18 @@ public class JoH {
         }.getType());
     }
 
+    private static Gson gson_instance;
+    public static Gson defaultGsonInstance() {
+     if (gson_instance == null) {
+         gson_instance = new GsonBuilder()
+                 .excludeFieldsWithoutExposeAnnotation()
+                 //.registerTypeAdapter(Date.class, new DateTypeAdapter())
+                 // .serializeSpecialFloatingPointValues()
+                 .create();
+     }
+     return gson_instance;
+    }
+
     public static String hourMinuteString() {
         // Date date = new Date();
         // SimpleDateFormat sd = new SimpleDateFormat("HH:mm");
@@ -606,7 +641,34 @@ public class JoH {
 
     public static void releaseWakeLock(PowerManager.WakeLock wl) {
         if (debug_wakelocks) Log.d(TAG, "releaseWakeLock: " + wl.toString());
+        if (wl == null) return;
         if (wl.isHeld()) wl.release();
+    }
+
+    public static PowerManager.WakeLock fullWakeLock(final String name, long millis) {
+        final PowerManager pm = (PowerManager) xdrip.getAppContext().getSystemService(Context.POWER_SERVICE);
+        PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.ON_AFTER_RELEASE, name);
+        wl.acquire(millis);
+        if (debug_wakelocks) Log.d(TAG, "fullWakeLock: " + name + " " + wl.toString());
+        return wl;
+    }
+
+    public static void fullDatabaseReset() {
+        try {
+            clearCache();
+            ActiveAndroid.dispose();
+            ActiveAndroid.initialize(xdrip.getAppContext());
+        } catch (Exception e) {
+            Log.e(TAG,"Error restarting active android db");
+        }
+    }
+
+    public static void clearCache() {
+        try {
+            ActiveAndroid.clearCache();
+        } catch (Exception e) {
+            Log.e(TAG, "Error clearing active android cache: " + e);
+        }
     }
 
     public static boolean isLANConnected() {
@@ -824,6 +886,10 @@ public class JoH {
         }
     }
 
+    public static void startService(Class c) {
+        xdrip.getAppContext().startService(new Intent(xdrip.getAppContext(), c));
+    }
+
     public static void goFullScreen(boolean fullScreen, View decorView) {
 
         if (fullScreen) {
@@ -862,7 +928,7 @@ public class JoH {
                 height, Bitmap.Config.ARGB_8888);
 
         final Canvas canvas = new Canvas(bitmap);
-        if (Home.getPreferencesBooleanDefaultFalse(SHOW_STATISTICS_PRINT_COLOR)) {
+        if (Pref.getBooleanDefaultFalse(SHOW_STATISTICS_PRINT_COLOR)) {
             Paint paint = new Paint();
             paint.setColor(Color.WHITE);
             paint.setStyle(Paint.Style.FILL);
@@ -881,7 +947,7 @@ public class JoH {
             final Canvas canvasf = new Canvas(bitmapf);
 
             Paint paint = new Paint();
-            if (Home.getPreferencesBooleanDefaultFalse(SHOW_STATISTICS_PRINT_COLOR)) {
+            if (Pref.getBooleanDefaultFalse(SHOW_STATISTICS_PRINT_COLOR)) {
                 paint.setColor(Color.WHITE);
                 paint.setStyle(Paint.Style.FILL);
                 canvasf.drawRect(0, 0, width, offset, paint);
@@ -997,11 +1063,15 @@ public class JoH {
     }
 
     public static void showNotification(String title, String content, PendingIntent intent, int notificationId, boolean sound, boolean vibrate, PendingIntent deleteIntent, Uri sound_uri) {
-        showNotification(title, content, intent, notificationId, sound, vibrate, deleteIntent, sound_uri, null);
+        showNotification(title, content, intent, notificationId, null, sound, vibrate, deleteIntent, sound_uri, null);
     }
 
     public static void showNotification(String title, String content, PendingIntent intent, int notificationId, boolean sound, boolean vibrate, PendingIntent deleteIntent, Uri sound_uri, String bigmsg) {
-        final Notification.Builder mBuilder = notificationBuilder(title, content, intent);
+        showNotification(title, content, intent, notificationId, null, sound, vibrate, deleteIntent, sound_uri, bigmsg);
+    }
+
+    public static void showNotification(String title, String content, PendingIntent intent, int notificationId, String channelId, boolean sound, boolean vibrate, PendingIntent deleteIntent, Uri sound_uri, String bigmsg) {
+        final NotificationCompat.Builder mBuilder = notificationBuilder(title, content, intent, channelId);
         final long[] vibratePattern = {0, 1000, 300, 1000, 300, 1000};
         if (vibrate) mBuilder.setVibrate(vibratePattern);
         if (deleteIntent != null) mBuilder.setDeleteIntent(deleteIntent);
@@ -1012,17 +1082,17 @@ public class JoH {
         }
 
         if (bigmsg != null) {
-            mBuilder.setStyle(new Notification.BigTextStyle().bigText(bigmsg));
+            mBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(bigmsg));
         }
 
         final NotificationManager mNotifyMgr = (NotificationManager) xdrip.getAppContext().getSystemService(Context.NOTIFICATION_SERVICE);
         // if (!onetime) mNotifyMgr.cancel(notificationId);
 
-        mNotifyMgr.notify(notificationId, mBuilder.build());
+        mNotifyMgr.notify(notificationId, XdripNotificationCompat.build(mBuilder));
     }
 
-    private static Notification.Builder notificationBuilder(String title, String content, PendingIntent intent) {
-        return new Notification.Builder(xdrip.getAppContext())
+    private static NotificationCompat.Builder notificationBuilder(String title, String content, PendingIntent intent, String channelId) {
+        return new NotificationCompat.Builder(xdrip.getAppContext(), channelId)
                 .setSmallIcon(R.drawable.ic_action_communication_invert_colors_on)
                 .setContentTitle(title)
                 .setContentText(content)
@@ -1099,12 +1169,12 @@ public class JoH {
         return pinBytes;
     }
 
-    public static void doPairingRequest(Context context, BroadcastReceiver broadcastReceiver, Intent intent, String mBluetoothDeviceAddress) {
-        doPairingRequest(context, broadcastReceiver, intent, mBluetoothDeviceAddress, null);
+    public static boolean doPairingRequest(Context context, BroadcastReceiver broadcastReceiver, Intent intent, String mBluetoothDeviceAddress) {
+        return doPairingRequest(context, broadcastReceiver, intent, mBluetoothDeviceAddress, null);
     }
 
     @TargetApi(19)
-    public static void doPairingRequest(Context context, BroadcastReceiver broadcastReceiver, Intent intent, String mBluetoothDeviceAddress, String pinHint) {
+    public static boolean doPairingRequest(Context context, BroadcastReceiver broadcastReceiver, Intent intent, String mBluetoothDeviceAddress, String pinHint) {
         if (BluetoothDevice.ACTION_PAIRING_REQUEST.equals(intent.getAction())) {
             final BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
             if (device != null) {
@@ -1131,9 +1201,11 @@ public class JoH {
                             // BluetoothDevice.PAIRING_VARIANT_CONSENT)
                             if (type == 3) {
                                 JoH.static_toast_long("Please confirm the bluetooth pairing request");
+                                return false;
                             } else {
                                 JoH.static_toast_long("Failed to pair, may need to do it via Android Settings");
                                 device.createBond(); // for what it is worth
+                                return false;
                             }
                         }
                     }
@@ -1144,6 +1216,7 @@ public class JoH {
                 UserError.Log.e(TAG, "Device was null in pairing receiver");
             }
         }
+        return true;
     }
 
     public static String getLocalBluetoothName() {
@@ -1286,5 +1359,14 @@ public class JoH {
         crc.update(bytes, 0, bytes.length - 4);
         final long buffer_crc = UnsignedInts.toLong(ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).getInt(bytes.length - 4));
         return buffer_crc == crc.getValue();
+    }
+
+    public static int parseIntWithDefault(String number, int radix, int defaultVal) {
+        try {
+            return Integer.parseInt(number, radix);
+       } catch (NumberFormatException e) {
+           Log.e(TAG, "Error parsing integer number = " + number + " radix = " + radix);
+           return defaultVal;
+       }
     }
 }

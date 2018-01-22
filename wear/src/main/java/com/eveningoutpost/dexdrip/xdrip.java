@@ -5,8 +5,8 @@ import android.content.Context;
 import android.preference.PreferenceManager;
 
 import com.activeandroid.ActiveAndroid;
-
-import java.util.Locale;
+import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.Models.JoH;
 
 //import io.fabric.sdk.android.Fabric;
 
@@ -26,6 +26,8 @@ public class xdrip extends Application {
         super.onCreate();
         PreferenceManager.setDefaultValues(this, R.xml.preferences, true);
         ActiveAndroid.initialize(this);
+        BgReading.updateDB(); // migrate database format
+        JoH.forceBatteryWhitelisting();
      }
 
     public static Context getAppContext() {

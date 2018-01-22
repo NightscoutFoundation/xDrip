@@ -11,6 +11,8 @@ import android.util.Log;
 
 import android.view.View;
 
+import com.eveningoutpost.dexdrip.Models.JoH;
+
 /**
  * Simple Activity for displaying Permission Rationale to user.
  */
@@ -24,6 +26,7 @@ public class LocationPermissionActivity extends WearableActivity {//KS
         Log.d(TAG, "onCreate ENTERING");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location_permission);
+        JoH.vibrateNotice();
     }
 
     public void onClickEnablePermission(View view) {

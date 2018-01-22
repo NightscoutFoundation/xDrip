@@ -5,6 +5,10 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 
+import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.LibreBlock;
+import com.eveningoutpost.dexdrip.Models.LibreData;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.SnoozeActivity;
 import com.eveningoutpost.dexdrip.Models.AlertType;
@@ -27,6 +31,13 @@ public class IdempotentMigrations {
     public void performAll() {
         migrateBGAlerts();
         migrateToNewStyleRestUris();
+        BgReading.updateDB();
+        LibreBlock.updateDB();
+        LibreData.updateDB();
+        JoH.clearCache();
+
+        IncompatibleApps.notifyAboutIncompatibleApps();
+
     }
 
     private void migrateBGAlerts() {

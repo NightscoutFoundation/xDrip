@@ -7,13 +7,15 @@ import android.os.BatteryManager;
 import android.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.BestGlucose;
-import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.ParakeetHelper;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.store.FastStore;
+import com.eveningoutpost.dexdrip.store.KeyStore;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.Preferences;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -34,6 +36,22 @@ public abstract class PebbleDisplayAbstract implements PebbleDisplayInterface {
     protected static final int BG_DELTA_KEY = 4;
     protected static final int UPLOADER_BATTERY_KEY = 5;
     protected static final int NAME_KEY = 6;
+    protected static final int TREND_BEGIN_KEY = 7;
+    protected static final int TREND_DATA_KEY = 8;
+    protected static final int TREND_END_KEY = 9;
+    protected static final int MESSAGE_KEY = 10;
+    protected static final int VIBE_KEY = 11;
+
+    protected static final int TBR_KEY = 12;
+    protected static final int IOB_KEY = 13;
+
+    protected static final int NO_BLUETOOTH_KEY = 111;
+    protected static final int COLLECT_HEALTH_KEY = 112;
+
+    protected static final int SYNC_KEY = 1000;
+    protected static final int PLATFORM_KEY = 1001;
+    protected static final int VERSION_KEY = 1002;
+
 
     protected static final int NUM_VALUES =(60/5)*24;
 
@@ -46,6 +64,10 @@ public abstract class PebbleDisplayAbstract implements PebbleDisplayInterface {
     protected BestGlucose.DisplayGlucose dg;
 
     protected long last_seen_timestamp = 0;
+
+    protected static final String PEBBLE_BWP_SYMBOL = "😐";
+
+    protected KeyStore keyStore = FastStore.getInstance();
 
     public void receiveNack(int transactionId) {
         // default no implementation
@@ -91,7 +113,7 @@ public abstract class PebbleDisplayAbstract implements PebbleDisplayInterface {
             if ((JoH.msSince(last_seen_timestamp) > 20 * Constants.MINUTE_IN_MS)) {
                 if (!JoH.isOngoingCall()) {
                     last_seen_timestamp = JoH.tsl();
-                    if (Home.getPreferencesBooleanDefaultFalse("bluetooth_watchdog")) {
+                    if (Pref.getBooleanDefaultFalse("bluetooth_watchdog")) {
                         UserError.Log.e(tag, "Triggering pebble watchdog reset!");
                         JoH.restartBluetooth(xdrip.getAppContext());
                     } else {
@@ -175,8 +197,10 @@ public abstract class PebbleDisplayAbstract implements PebbleDisplayInterface {
     }
 
 
-    public void sendDataToPebble(PebbleDictionary data) {
-        PebbleKit.sendDataToPebble(this.context, watchfaceUUID(), data);
+    public void sendDataToPebble(final PebbleDictionary data) {
+        synchronized (data) {
+            PebbleKit.sendDataToPebble(this.context, watchfaceUUID(), data);
+        }
     }
 
 
@@ -196,6 +220,11 @@ public abstract class PebbleDisplayAbstract implements PebbleDisplayInterface {
             dictionary.addString(NAME_KEY, "Phone");
         }
 
+    }
+
+    public void removeBatteryStatusFromDictionary(PebbleDictionary dictionary) {
+        dictionary.remove(UPLOADER_BATTERY_KEY);
+        dictionary.remove(NAME_KEY);
     }
 
 

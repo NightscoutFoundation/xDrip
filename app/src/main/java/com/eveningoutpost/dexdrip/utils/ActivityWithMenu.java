@@ -45,7 +45,7 @@ public abstract class ActivityWithMenu extends AppCompatActivity implements Navi
         if (position != menu_position) {
             startActivity(intent_list.get(position));
             //do not close activity if it is the Launcher or "Home".
-            if (!getMenuName().equalsIgnoreCase(Home.menu_name)) {
+            if (!getMenuName().equalsIgnoreCase(getString(R.string.home_screen))) {
                 finish();
             }
         }

@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.PowerManager;
-import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.RemoteViews;
 
@@ -18,6 +17,7 @@ import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSparklineBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.ColorCache;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 
 import java.util.Date;
@@ -79,8 +79,8 @@ public class xDripWidget extends AppWidgetProvider {
         BgGraphBuilder bgGraphBuilder = new BgGraphBuilder(context);
         BgReading lastBgreading = BgReading.lastNoSenssor();
 
-        final boolean showLines = Home.getPreferencesBoolean("widget_range_lines", false);
-        final boolean showExstraStatus = Home.getPreferencesBoolean("extra_status_line", false) && Home.getPreferencesBoolean("widget_status_line", false);
+        final boolean showLines = Pref.getBoolean("widget_range_lines", false);
+        final boolean showExstraStatus = Pref.getBoolean("extra_status_line", false) && Pref.getBoolean("widget_status_line", false);
 
         if (lastBgreading != null) {
             double estimate = 0;
@@ -90,7 +90,7 @@ public class xDripWidget extends AppWidgetProvider {
                 int width = appWidgetManager.getAppWidgetOptions(appWidgetId).getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH);
                 views.setImageViewBitmap(R.id.widgetGraph, new BgSparklineBuilder(context)
                         .setBgGraphBuilder(bgGraphBuilder)
-                        //.setShowFiltered(Home.getPreferencesBooleanDefaultFalse("show_filtered_curve"))
+                        //.setShowFiltered(Home.getBooleanDefaultFalse("show_filtered_curve"))
                         .setBackgroundColor(ColorCache.getCol(ColorCache.X.color_widget_chart_background))
                         .setHeight(height).setWidth(width).showHighLine(showLines).showLowLine(showLines).build());
 
@@ -111,7 +111,7 @@ public class xDripWidget extends AppWidgetProvider {
 
                     }
                     // TODO functionize this check as it is in multiple places
-                    if (Home.getPreferencesBooleanDefaultFalse("display_glucose_from_plugin") && (PluggableCalibration.getCalibrationPluginFromPreferences() != null)) {
+                    if (Pref.getBooleanDefaultFalse("display_glucose_from_plugin") && (PluggableCalibration.getCalibrationPluginFromPreferences() != null)) {
                         extrastring += " " + context.getString(R.string.p_in_circle);
                     }
                 } else {

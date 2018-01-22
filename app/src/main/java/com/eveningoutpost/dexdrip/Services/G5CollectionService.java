@@ -63,12 +63,12 @@ import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
+import com.eveningoutpost.dexdrip.UtilityModels.NotificationChannels;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
-import com.eveningoutpost.dexdrip.utils.BgToSpeech;
 import com.eveningoutpost.dexdrip.utils.PowerStateReceiver;
 import com.eveningoutpost.dexdrip.xdrip;
-import com.google.android.gms.wearable.DataMap;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
@@ -114,7 +114,7 @@ public class G5CollectionService extends G5BaseService {
     private ForegroundServiceStarter foregroundServiceStarter;
 
     public Service service;
-    private BgToSpeech bgToSpeech;
+    //private BgToSpeech bgToSpeech;
     private static PendingIntent pendingIntent;
 
     private android.bluetooth.BluetoothManager mBluetoothManager;
@@ -168,7 +168,6 @@ public class G5CollectionService extends G5BaseService {
    // private static long static_last_timestamp_watch = 0;
     private static long last_transmitter_timestamp = 0;
 
-    public static boolean getBatteryStatusNow = false;
 
     // test params
     private static final boolean ignoreLocalBondingState = false; // don't try to bond gives: GATT_ERR_UNLIKELY but no more 133s
@@ -201,7 +200,7 @@ public class G5CollectionService extends G5BaseService {
         listenForChangeInSettings();
 
         // TODO check this
-        bgToSpeech = BgToSpeech.setupTTS(getApplicationContext()); //keep reference to not being garbage collected
+        //bgToSpeech = BgToSpeech.setupTTS(getApplicationContext()); //keep reference to not being garbage collected
         // handler = new Handler(getApplicationContext().getMainLooper());
 
         final IntentFilter bondintent = new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED);//KS turn on
@@ -253,21 +252,6 @@ public class G5CollectionService extends G5BaseService {
         }
     };
 
-    private String bondState(int bs) {
-        String bondState;
-        if (bs == BluetoothDevice.BOND_NONE) {
-            bondState = " Unpaired";
-        } else if (bs == BluetoothDevice.BOND_BONDING) {
-            bondState = " Pairing";
-        } else if (bs == BluetoothDevice.BOND_BONDED) {
-            bondState = " Paired";
-        } else if (bs == 0) {
-            bondState = " Startup";
-        } else {
-            bondState = " Unknown bond state: " + bs;
-        }
-        return bondState;
-    }
 
     public SharedPreferences.OnSharedPreferenceChangeListener prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
         public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
@@ -485,7 +469,11 @@ public class G5CollectionService extends G5BaseService {
             single_timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    if (mBluetoothAdapter != null) mBluetoothAdapter.enable();
+                    try {
+                        if (mBluetoothAdapter != null) mBluetoothAdapter.enable();
+                    } catch (SecurityException e) {
+                        JoH.static_toast_short("Please enable Bluetooth!");
+                    }
                 }
             }, 1000);
             single_timer.schedule(new TimerTask() {
@@ -1584,8 +1572,7 @@ public class G5CollectionService extends G5BaseService {
         return defaultTransmitter.transmitterId.length() == 6 && getStoredFirmwareBytes(defaultTransmitter.transmitterId).length >= 10;
     }
 
-    public final static String G5_FIRMWARE_MARKER = "g5-firmware-";
-    public final static String G5_BATTERY_FROM_MARKER = "g5-battery-from";
+
 
     private boolean haveCurrentBatteryStatus() {
         return defaultTransmitter.transmitterId.length() == 6 && (JoH.msSince(PersistentStore.getLong(G5_BATTERY_FROM_MARKER + defaultTransmitter.transmitterId)) < BATTERY_READ_PERIOD_MS);
@@ -1611,8 +1598,7 @@ public class G5CollectionService extends G5BaseService {
         return true;
     }
 
-    public static final String G5_BATTERY_MARKER = "g5-battery-";
-    public static final String G5_BATTERY_LEVEL_MARKER = "g5-battery-level-";
+
 
     public synchronized static boolean setStoredBatteryBytes(String transmitterId, byte[] data) {
         UserError.Log.e(TAG, "Store: BatteryRX dbg: " + JoH.bytesToHex(data));
@@ -1629,7 +1615,8 @@ public class G5CollectionService extends G5BaseService {
             if (batteryInfoRxMessage.voltagea < LOW_BATTERY_WARNING_LEVEL) {
                 if (JoH.pratelimit("g5-low-battery-warning", 40000)) {
                     final boolean loud = !PowerStateReceiver.is_power_connected();
-                    JoH.showNotification("G5 Battery Low", "G5 Transmitter battery has dropped to: " + batteryInfoRxMessage.voltagea + " it may fail soon", null, 770, loud, loud, false);
+                    JoH.showNotification("G5 Battery Low", "G5 Transmitter battery has dropped to: " + batteryInfoRxMessage.voltagea + " it may fail soon",
+                            null, 770, NotificationChannels.LOW_TRANSMITTER_BATTERY_CHANNEL, loud, loud, null, null, null);
                 }
             }
             PersistentStore.setLong(G5_BATTERY_LEVEL_MARKER + transmitterId, batteryInfoRxMessage.voltagea);
@@ -1833,15 +1820,15 @@ public class G5CollectionService extends G5BaseService {
 
     // TODO this could be cached for performance
     private boolean useG5NewMethod() {
-        return Home.getPreferencesBooleanDefaultFalse("g5_non_raw_method") && (Home.getPreferencesBooleanDefaultFalse("engineering_mode"));
+        return Pref.getBooleanDefaultFalse("g5_non_raw_method") && (Pref.getBooleanDefaultFalse("engineering_mode"));
     }
 
     private boolean engineeringMode() {
-        return Home.getPreferencesBooleanDefaultFalse("engineering_mode");
+        return Pref.getBooleanDefaultFalse("engineering_mode");
     }
 
     private boolean g5BluetoothWatchdog() {
-        return Home.getPreferencesBoolean("g5_bluetooth_watchdog", true);
+        return Pref.getBoolean("g5_bluetooth_watchdog", true);
     }
 
 
@@ -1864,9 +1851,9 @@ public class G5CollectionService extends G5BaseService {
     }
 
     // Status for Watchface
-    public static boolean isRunning() {
-        return lastState.equals("Not running") || lastState.equals("Stopped") ? false : true;
-    }
+    //public static boolean isRunning() {
+   //     return lastState.equals("Not running") || lastState.equals("Stopped") ? false : true;
+   // }
 
    /* public static void setWatchStatus(DataMap dataMap) {
         lastStateWatch = dataMap.getString("lastState", "");
@@ -1897,15 +1884,15 @@ public class G5CollectionService extends G5BaseService {
             }
         }
 
-        if (Home.getPreferencesBooleanDefaultFalse("wear_sync") &&
-                Home.getPreferencesBooleanDefaultFalse("enable_wearG5")) {
+        if (Pref.getBooleanDefaultFalse("wear_sync") &&
+                Pref.getBooleanDefaultFalse("enable_wearG5")) {
             l.add(new StatusItem("Watch Service State", lastStateWatch));
             if (static_last_timestamp_watch > 0) {
                 l.add(new StatusItem("Watch got Glucose", JoH.niceTimeSince(static_last_timestamp_watch) + " ago"));
             }
         }
 
-        final String tx_id = Home.getPreferencesStringDefaultBlank("dex_txid");
+        final String tx_id = Pref.getStringDefaultBlank("dex_txid");
 
         l.add(new StatusItem("Transmitter ID", tx_id));
 

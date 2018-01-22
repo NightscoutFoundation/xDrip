@@ -44,7 +44,7 @@
     <string name="eight" translatable="false">8</string>
     <string name="nine" translatable="false">9</string>
     <string name="star" translatable="false">*</string>
-    <string name="dot" translatable="false">\u2022</string>
+    <string name="mdot" translatable="false">.</string>
     <string name="hash" translatable="false">#</string>
     <string name="gcmtpc" translatable="false">/topics/</string>
     <string name="gcmtpcs" translatable="false">/topics/</string>

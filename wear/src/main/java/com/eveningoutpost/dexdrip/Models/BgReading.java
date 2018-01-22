@@ -24,6 +24,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 //KS import com.eveningoutpost.dexdrip.calibrations.CalibrationAbstract;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.messages.BgReadingMessage;
 import com.eveningoutpost.dexdrip.messages.BgReadingMultiMessage;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
@@ -153,12 +154,39 @@ public class BgReading extends Model implements ShareUploadableBg {
     @Column(name = "noise")
     public String noise;
 
+    @Expose
+    @Column(name = "dg_mgdl")
+    public double dg_mgdl = 0d;
+
+    @Expose
+    @Column(name = "dg_slope")
+    public double dg_slope = 0d;
+
+    @Expose
+    @Column(name = "dg_delta_name")
+    public String dg_delta_name;
+
+    public static void updateDB(){
+        String[] updates = new String[]{"ALTER TABLE BgReadings ADD COLUMN dg_mgdl REAL;", "ALTER TABLE BgReadings ADD COLUMN dg_slope REAL;", "ALTER TABLE BgReadings ADD COLUMN dg_delta_name TEXT;"};
+        for (String patch:updates) {
+            try {
+                SQLiteUtils.execSql(patch);
+            } catch (Exception e){
+            }
+        }
+
+    }
+
     public BgReading () {
         super ();
     }
 
     public double calculated_value_mmol() {
         return mmolConvert(calculated_value);
+    }
+
+    public double display_value_mmol() {
+        return mmolConvert(dg_mgdl > 0 ? dg_mgdl : calculated_value);
     }
 
     public double mmolConvert(double mgdl) {
@@ -171,15 +199,18 @@ public class BgReading extends Model implements ShareUploadableBg {
         DecimalFormat df = new DecimalFormat("#");
         df.setMaximumFractionDigits(0);
 
-        if (calculated_value >= 400) {
+        // Warning this is inconsistent compared to phone version as we are applying display glucose values if available
+        double sgv_value_to_use = (dg_mgdl > 0) ? dg_mgdl : calculated_value;
+
+        if (sgv_value_to_use >= 400) {
             return "HIGH";
-        } else if (calculated_value >= 40) {
+        } else if (sgv_value_to_use >= 40) {
             if (unit.compareTo("mgdl") == 0) {
                 df.setMaximumFractionDigits(0);
-                return df.format(calculated_value);
+                return df.format(sgv_value_to_use);
             } else {
                 df.setMaximumFractionDigits(1);
-                return df.format(calculated_value_mmol());
+                return df.format(display_value_mmol());
             }
         } else {
             return "LOW";
@@ -461,7 +492,7 @@ public class BgReading extends Model implements ShareUploadableBg {
                     final CalibrationAbstract.CalibrationData pcalibration;
                     final CalibrationAbstract plugin = getCalibrationPluginFromPreferences(); // make sure do this only once
 
-                    if ((plugin != null) && ((pcalibration = plugin.getCalibrationData()) != null) && (Home.getPreferencesBoolean("use_pluggable_alg_as_primary", false))) {
+                    if ((plugin != null) && ((pcalibration = plugin.getCalibrationData()) != null) && (Pref.getBoolean("use_pluggable_alg_as_primary", false))) {
                         Log.d(TAG, "USING CALIBRATION PLUGIN AS PRIMARY!!!");
                         bgReading.calculated_value = (pcalibration.slope * bgReading.age_adjusted_raw_value) + pcalibration.intercept;
                         bgReading.filtered_calculated_value = (pcalibration.slope * bgReading.ageAdjustedFiltered()) + calibration.intercept;
@@ -586,6 +617,10 @@ public class BgReading extends Model implements ShareUploadableBg {
 
     public String slopeArrow() {
         return slopeToArrowSymbol(this.calculated_value_slope * 60000);
+    }
+
+    public String displaySlopeArrow() {
+        return slopeToArrowSymbol(this.dg_mgdl > 0 ? this.dg_slope * 60000 : this.calculated_value_slope * 60000);
     }
 
     public  String slopeName() {
@@ -1337,7 +1372,7 @@ public class BgReading extends Model implements ShareUploadableBg {
     public static boolean checkForPersistentHigh() {
 
         // skip if not enabled
-        if (!Home.getPreferencesBooleanDefaultFalse("persistent_high_alert_enabled")) return false;
+        if (!Pref.getBooleanDefaultFalse("persistent_high_alert_enabled")) return false;
 
 
         List<BgReading> last = BgReading.latest(1);
@@ -1350,23 +1385,23 @@ public class BgReading extends Model implements ShareUploadableBg {
                 // check if exceeding high
                 if (last.get(0).calculated_value >
                         Home.convertToMgDlIfMmol(
-                                JoH.tolerantParseDouble(Home.getPreferencesStringWithDefault("highValue", "170")))) {
+                                JoH.tolerantParseDouble(Pref.getString("highValue", "170")))) {
 
                     final double this_slope = last.get(0).calculated_value_slope * 60000;
                     //Log.d(TAG, "CheckForPersistentHigh: Slope: " + JoH.qs(this_slope));
 
                     // if not falling
                     if (this_slope > 0) {
-                        final long high_since = Home.getPreferencesLong(PERSISTENT_HIGH_SINCE, 0);
+                        final long high_since = Pref.getLong(PERSISTENT_HIGH_SINCE, 0);
                         if (high_since == 0) {
                             // no previous persistent high so set start as now
-                            Home.setPreferencesLong(PERSISTENT_HIGH_SINCE, now);
+                            Pref.setLong(PERSISTENT_HIGH_SINCE, now);
                             Log.d(TAG, "Registering start of persistent high at time now");
                         } else {
                             final long high_for_mins = (now - high_since) / (1000 * 60);
                             long threshold_mins;
                             try {
-                                threshold_mins = Long.parseLong(Home.getPreferencesStringWithDefault("persistent_high_threshold_mins", "60"));
+                                threshold_mins = Long.parseLong(Pref.getString("persistent_high_threshold_mins", "60"));
                             } catch (NumberFormatException e) {
                                 threshold_mins = 60;
                                 Home.toaststaticnext("Invalid persistent high for longer than minutes setting: using 60 mins instead");
@@ -1375,7 +1410,7 @@ public class BgReading extends Model implements ShareUploadableBg {
                                 // we have been high for longer than the threshold - raise alert
 
                                 // except if alerts are disabled
-                                if (Home.getPreferencesLong("alerts_disabled_until", 0) > new Date().getTime()) {
+                                if (Pref.getLong("alerts_disabled_until", 0) > new Date().getTime()) {
                                     Log.i(TAG, "checkforPersistentHigh: Notifications are currently disabled cannot alert!!");
                                     return false;
                                 }
@@ -1389,10 +1424,10 @@ public class BgReading extends Model implements ShareUploadableBg {
                     }
                 } else {
                     // not high - cancel any existing
-                    if (Home.getPreferencesLong(PERSISTENT_HIGH_SINCE,0)!=0)
+                    if (Pref.getLong(PERSISTENT_HIGH_SINCE,0)!=0)
                     {
                         Log.i(TAG,"Cancelling previous persistent high as we are no longer high");
-                     Home.setPreferencesLong(PERSISTENT_HIGH_SINCE, 0); // clear it
+                     Pref.setLong(PERSISTENT_HIGH_SINCE, 0); // clear it
                         Notifications.persistentHighAlert(xdrip.getAppContext(), false, ""); // cancel it
                     }
                 }

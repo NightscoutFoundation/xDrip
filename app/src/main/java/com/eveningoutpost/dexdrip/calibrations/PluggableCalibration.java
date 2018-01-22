@@ -3,9 +3,9 @@ package com.eveningoutpost.dexdrip.calibrations;
 import android.preference.ListPreference;
 import android.util.Log;
 
-import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -116,7 +116,7 @@ public class PluggableCalibration {
     // get calibration plugin instance from preference setting
     public static synchronized CalibrationAbstract getCalibrationPluginFromPreferences() {
         if (current_plugin_cache == null) {
-            current_plugin_cache = getCalibrationPluginByName(Home.getPreferencesStringWithDefault("current_calibration_plugin", "None"));
+            current_plugin_cache = getCalibrationPluginByName(Pref.getString("current_calibration_plugin", "None"));
         }
         return current_plugin_cache;
     }

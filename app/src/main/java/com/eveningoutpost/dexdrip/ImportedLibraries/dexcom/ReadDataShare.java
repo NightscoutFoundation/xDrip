@@ -1,10 +1,5 @@
 package com.eveningoutpost.dexdrip.ImportedLibraries.dexcom;
 
-import android.bluetooth.BluetoothGatt;
-import android.bluetooth.BluetoothGattCharacteristic;
-import android.bluetooth.BluetoothGattService;
-import android.hardware.usb.UsbDevice;
-import android.hardware.usb.UsbDeviceConnection;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.CalRecord;
@@ -13,16 +8,12 @@ import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.GenericXMLRec
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.MeterRecord;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.PageHeader;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.SensorRecord;
-import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.driver.UsbSerialDriver;
-import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.Services.DexShareCollectionService;
 import com.eveningoutpost.dexdrip.ShareTest;
 
 import org.w3c.dom.Element;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
@@ -50,7 +41,7 @@ public class ReadDataShare {
     }
 
     public void getRecentEGVs(final Action1<EGVRecord[]> recordListener) {
-        final int recordType = Constants.RECORD_TYPES.EGV_DATA.ordinal();
+        final int recordType = Dex_Constants.RECORD_TYPES.EGV_DATA.ordinal();
         final Action1<byte[]> fullPageListener = new Action1<byte[]>() {
             @Override
             public void call(byte[] s) { ParsePage(read(0,s).getData(), recordType, recordListener); }
@@ -63,7 +54,7 @@ public class ReadDataShare {
     }
 
     public void getRecentMeterRecords(final Action1<MeterRecord[]> recordListener) {
-        final int recordType = Constants.RECORD_TYPES.METER_DATA.ordinal();
+        final int recordType = Dex_Constants.RECORD_TYPES.METER_DATA.ordinal();
         final Action1<byte[]> fullPageListener = new Action1<byte[]>() {
             @Override
             public void call(byte[] s) { ParsePage(read(0,s).getData(), recordType, recordListener); }
@@ -76,7 +67,7 @@ public class ReadDataShare {
     }
 
     public void getRecentCalRecords(final Action1<CalRecord[]> recordListener) {
-        final int recordType = Constants.RECORD_TYPES.CAL_SET.ordinal();
+        final int recordType = Dex_Constants.RECORD_TYPES.CAL_SET.ordinal();
         final Action1<byte[]> fullPageListener = new Action1<byte[]>() {
             @Override
             public void call(byte[] s) { ParsePage(read(0,s).getData(), recordType, recordListener); }
@@ -90,7 +81,7 @@ public class ReadDataShare {
 
 
     public void getRecentSensorRecords(final Action1<SensorRecord[]> recordListener) {
-        final int recordType = Constants.RECORD_TYPES.SENSOR_DATA.ordinal();
+        final int recordType = Dex_Constants.RECORD_TYPES.SENSOR_DATA.ordinal();
         final Action1<byte[]> fullPageListener = new Action1<byte[]>() {
             @Override
             public void call(byte[] s) { ParsePage(read(0,s).getData(), recordType, recordListener); }
@@ -113,9 +104,9 @@ public class ReadDataShare {
     public void ping(final Action1<Boolean> pingListener) {
         Action1<byte[]> pingReader = new Action1<byte[]>() {
             @Override
-            public void call(byte[] s) { Observable.just(read(0, s).getCommand() == Constants.ACK).subscribe(pingListener); }
+            public void call(byte[] s) { Observable.just(read(0, s).getCommand() == Dex_Constants.ACK).subscribe(pingListener); }
         };
-        writeCommand(Constants.PING, pingReader);
+        writeCommand(Dex_Constants.PING, pingReader);
     }
 
     public void readBatteryLevel(final Action1<Integer> batteryLevelListener) {
@@ -123,18 +114,18 @@ public class ReadDataShare {
             @Override //TODO: find out if this should be wrapped in read(s).getData();
             public void call(byte[] s) { Observable.just(ByteBuffer.wrap(s).order(ByteOrder.LITTLE_ENDIAN).getInt()).subscribe(batteryLevelListener); }
         };
-        writeCommand(Constants.READ_BATTERY_LEVEL, batteryLevelReader);
+        writeCommand(Dex_Constants.READ_BATTERY_LEVEL, batteryLevelReader);
     }
 
     public void readSerialNumber(final Action1<String> serialNumberListener) {
         final Action1<byte[]> manufacturingDataListener = new Action1<byte[]>() {
             @Override
             public void call(byte[] s) {
-                Element el = ParsePage(s, Constants.RECORD_TYPES.MANUFACTURING_DATA.ordinal());
+                Element el = ParsePage(s, Dex_Constants.RECORD_TYPES.MANUFACTURING_DATA.ordinal());
                 Observable.just(el.getAttribute("SerialNumber")).subscribe(serialNumberListener);
             }
         };
-        readDataBasePage(Constants.RECORD_TYPES.MANUFACTURING_DATA.ordinal(), 0, manufacturingDataListener);
+        readDataBasePage(Dex_Constants.RECORD_TYPES.MANUFACTURING_DATA.ordinal(), 0, manufacturingDataListener);
     }
 
     public void readDisplayTime(final Action1<Date> displayTimeListener) {
@@ -161,7 +152,7 @@ public class ReadDataShare {
                 Observable.just(Utils.receiverTimeToDate(ByteBuffer.wrap(read(0,s).getData()).order(ByteOrder.LITTLE_ENDIAN).getInt()).getTime()).subscribe(systemTimeListener);
             }
         };
-        writeCommand(Constants.READ_SYSTEM_TIME, systemTimeReader);
+        writeCommand(Dex_Constants.READ_SYSTEM_TIME, systemTimeReader);
     }
 
     public void readDisplayTimeOffset(final Action1<Long> displayTimeOffsetListener) {
@@ -169,7 +160,7 @@ public class ReadDataShare {
             @Override
             public void call(byte[] s) { Observable.just((long) ByteBuffer.wrap(read(0,s).getData()).order(ByteOrder.LITTLE_ENDIAN).getInt()).subscribe(displayTimeOffsetListener); }
         };
-        writeCommand(Constants.READ_DISPLAY_TIME_OFFSET, displayTimeOffsetReader);
+        writeCommand(Dex_Constants.READ_DISPLAY_TIME_OFFSET, displayTimeOffsetReader);
     }
 
     private void readDataBasePageRange(int recordType, final Action1<Integer> databasePageRangeCaller) {
@@ -181,7 +172,7 @@ public class ReadDataShare {
                 Observable.just(ByteBuffer.wrap(new ReadPacket(s).getData()).order(ByteOrder.LITTLE_ENDIAN).getInt(4)).subscribe(databasePageRangeCaller);
             }
         };
-        writeCommand(Constants.READ_DATABASE_PAGE_RANGE, payload, databasePageRangeListener);
+        writeCommand(Dex_Constants.READ_DATABASE_PAGE_RANGE, payload, databasePageRangeListener);
     }
 
     private <T> T readDataBasePage(final int recordType, int page, final Action1<byte[]> fullPageListener) {
@@ -215,7 +206,7 @@ public class ReadDataShare {
                 if (temp.length < 20) { Observable.just(accumulatedResponse).subscribe(fullPageListener).unsubscribe(); }
             }
         };
-        writeCommand(Constants.READ_DATABASE_PAGES, payload, databasePageReader);
+        writeCommand(Dex_Constants.READ_DATABASE_PAGES, payload, databasePageReader);
         return null;
     }
 
@@ -243,7 +234,7 @@ public class ReadDataShare {
         int numRec = data[NUM_REC_OFFSET];
         int rec_len;
 
-        switch (Constants.RECORD_TYPES.values()[recordType]) {
+        switch (Dex_Constants.RECORD_TYPES.values()[recordType]) {
             case MANUFACTURING_DATA:
                 GenericXMLRecord xmlRecord = new GenericXMLRecord(Arrays.copyOfRange(data, HEADER_LEN, data.length - 1));
                 if(parsedPageReceiver != null) {

@@ -27,8 +27,8 @@
 	<string name="ok">ОК</string>
 	<string name="cancel">Отмена</string>
 	<string name="no">Нет</string>
-	<string name="pref_sensor_location_dont_ask_again"> Не спрашивайте меня, более</string>
-	<string name="title_activity_error">"Ошибка и списка событий"</string>
+	<string name="pref_sensor_location_dont_ask_again">" Не спрашивайте меня, более"</string>
+	<string name="title_activity_error">Ошибка и списка событий</string>
 	<string name="title_activity_main">Основная деятельность</string>
 	<string name="title_activity_fake_numbers">Поддельные номера</string>
 	<string name="title_activity_edit_alert">Изменить оповещения</string>
@@ -104,7 +104,7 @@
 	<string name="first_configure_ip_address">Во-первых настроить Wi-Fi считыватель Wixel IP-адреса или URL Parakeet</string>
 	<string name="now_start_your_sensor">Теперь запустите ваш датчик или проверьте настройки</string>
 	<string name="please_wait_while_sensor_warms_up">Пожалуйста, подождите, пока датчик разогреется! (</string>
-	<string name="minutes_with_bracket"> минут)</string>
+	<string name="minutes_with_bracket">" минут)"</string>
 	<string name="possible_bad_calibration">Возможно, плохая кривая калибровки, пожалуйста, выпейте стакан воды, вымойте руки, а затем откалибруйте!</string>
 	<string name="please_wait_need_two_readings_first">Пожалуйста, подождите, нужно 2 показания передатчика в первую очередь.</string>
 	<string name="please_enter_two_calibrations_to_get_started">Пожалуйста, введите две калибровки для запуска!</string>
@@ -114,10 +114,10 @@
 	<string name="please_set_dex_receiver_serial_number">Пожалуйста, установите серийный номер ресивера Dexcom в настройках приложения</string>
 	<string name="unfortunately_andoird_version_no_blueooth_low_energy">К сожалению, ваш Android-версия не поддерживает Bluetooth Low Energy</string>
 	<string name="waiting_for_packet">В ожидании пакета</string>
-	<string name="persistent_high_for_greater_than">Стойкая высокая для> </string>
+	<string name="persistent_high_for_greater_than">"Стойкая высокая для> "</string>
 	<string name="space_mins">" мин"</string>
 	<string name="till">до</string>
-	<string name="low_predicted">низкий предсказывал</string>
+	<string name="low_predicted">прогнозируемый низкий</string>
 	<string name="in">в</string>
 	<string name="yes_enter_setup_mode">Да войти в режим настройки</string>
 	<string name="nokeep_parakeet_as_it_is">Не держите попугая, как это</string>
@@ -330,7 +330,7 @@
 	<string name="temporary_work_around_disable_all_sync_detail">Опция Временная работа вокруг, полностью останавливает всю синхронизацию. Может потребоваться перезагрузка после того, как снова включить. Используйте с осторожностью!</string>
 	<string name="automatic_updates_crash_reports_and_feedback">Автоматические обновления, отчеты о сбоях и обратная связь для разработчиков</string>
 	<string name="crowd_sourced_translation">Групповой перевод</string>
-	<string name="please_enter_your_question_or_comments_here">Пожалуйста, введите свой вопрос или комментарий. Если вы укажете адрес электронной почты, то сможете получить ответ. </string>
+	<string name="please_enter_your_question_or_comments_here">"Пожалуйста, введите свой вопрос или комментарий. Если вы укажете адрес электронной почты, то сможете получить ответ. "</string>
 	<string name="optional_contact_info_here_eg_email">Дополнительно контактные данные здесь, например, по электронной почте</string>
 	<string name="send_message">Отправить сообщение</string>
 	<string name="please_indicate_what_you_think_of_the_app_generally">Пожалуйста, укажите, что вы думаете о приложении в целом</string>
@@ -461,7 +461,7 @@
 	<string name="save_alert">сохранить предупреждение</string>
 	<string name="remove_alert">удалить предупреждение</string>
 	<string name="snooze_alert_before_it_fires">вздремнуть предупреждение, прежде чем он стреляет</string>
-	<string name="create_low_alert">Создать низкий сигнал тревога</string>
+	<string name="create_low_alert">Создать тревогу низкого СК</string>
 	<string name="create_high_alert">Создать оповещение высокого</string>
 	<string name="long_press_an_existing_alert_to_edit">(Длительное нажатие уведомления для редактирования)</string>
 	<string name="adding">Добавление</string>
@@ -470,7 +470,7 @@
 	<string name="high_alert">Высокая оповещения</string>
 	<string name="low_alert">низкий сигнал тревога</string>
 	<string name="xbridge_battery">Батарея xBridge</string>
-	<string name="limitter_battery">LimiTTer батареи</string>
+	<string name="limitter_battery">Libre батареи</string>
 	<string name="parakeet_battery">Батарея parakeet</string>
 	<string name="after_calibration_rewrite_history">После калибровки изменить предыдущий график, чтобы привести его к новой калибровке</string>
 	<string name="rewrite_history">История Rewrite</string>

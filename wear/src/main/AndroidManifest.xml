@@ -8,15 +8,19 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_PRIVILEGED" />
+    <uses-permission android:name="android.permission.DEVICE_POWER"
+        tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <!-- Declaration that this app is usable on phones with Bluetooth Low Energy. -->
-    <uses-feature android:name="android.hardware.bluetooth_le" android:required="true"/>
+    <uses-feature android:name="android.hardware.bluetooth_le" android:required="false"/>
     <uses-permission-sdk-23 android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
     <uses-permission-sdk-23 android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="com.google.android.gms.permission.ACTIVITY_RECOGNITION" />
     <uses-permission android:name="com.google.android.wearable.permission.BIND_COMPLICATION_PROVIDER"/>
+    <uses-permission android:name="android.permission.BODY_SENSORS" />
     <uses-permission android:name="android.permission.VIBRATE" />
 
 
@@ -39,7 +43,7 @@
             android:value="41" />
         <meta-data
             android:name="AA_MODELS"
-            android:value="com.eveningoutpost.dexdrip.Models.ActiveBgAlert,com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice,com.eveningoutpost.dexdrip.Models.AlertType,com.eveningoutpost.dexdrip.Models.BgReading,com.eveningoutpost.dexdrip.Models.Calibration,com.eveningoutpost.dexdrip.Models.CalibrationRequest,com.eveningoutpost.dexdrip.Models.PebbleMovement,com.eveningoutpost.dexdrip.Models.BloodTest,com.eveningoutpost.dexdrip.Models.Sensor,com.eveningoutpost.dexdrip.Models.TransmitterData,com.eveningoutpost.dexdrip.Models.Treatments,com.eveningoutpost.dexdrip.Models.UserError,com.eveningoutpost.dexdrip.Models.UserNotification,com.eveningoutpost.dexdrip.ShareModels.Models,com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue,com.eveningoutpost.dexdrip.UtilityModels.CalibrationSendQueue,com.eveningoutpost.dexdrip.UtilityModels.SensorSendQueue"/>
+            android:value="com.eveningoutpost.dexdrip.Models.ActiveBgAlert,com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice,com.eveningoutpost.dexdrip.Models.AlertType,com.eveningoutpost.dexdrip.Models.BgReading,com.eveningoutpost.dexdrip.Models.Calibration,com.eveningoutpost.dexdrip.Models.CalibrationRequest,com.eveningoutpost.dexdrip.Models.PebbleMovement,com.eveningoutpost.dexdrip.Models.HeartRate,com.eveningoutpost.dexdrip.Models.BloodTest,com.eveningoutpost.dexdrip.Models.Sensor,com.eveningoutpost.dexdrip.Models.TransmitterData,com.eveningoutpost.dexdrip.Models.Treatments,com.eveningoutpost.dexdrip.Models.UserError,com.eveningoutpost.dexdrip.Models.UserNotification,com.eveningoutpost.dexdrip.ShareModels.Models,com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue,com.eveningoutpost.dexdrip.UtilityModels.CalibrationSendQueue,com.eveningoutpost.dexdrip.UtilityModels.SensorSendQueue"/>
 
         <service
             android:name=".Home"
@@ -165,11 +169,12 @@
 
             <meta-data
                 android:name="android.support.wearable.complications.SUPPORTED_TYPES"
-                android:value="SHORT_TEXT" />
+                android:value="SHORT_TEXT,LONG_TEXT" />
             <meta-data
                 android:name="android.support.wearable.complications.UPDATE_PERIOD_SECONDS"
                 android:value="300" />
         </service>
+        <service android:name=".Services.HeartRateService"></service>
         <receiver android:name=".Services.ComplicationTapBroadcastReceiver" />
         <activity
             android:name=".NWPreferences"
@@ -246,6 +251,7 @@
             android:name=".Tables.TreatmentsTable"
             android:configChanges="orientation|screenSize"
             android:label="@string/bg_readings_table" />
+        <activity android:name=".SensorPermissionActivity" />
     </application>
 
 </manifest>

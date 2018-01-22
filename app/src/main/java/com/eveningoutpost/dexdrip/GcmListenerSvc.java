@@ -31,6 +31,7 @@ import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.PumpStatus;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
@@ -253,7 +254,7 @@ public class GcmListenerSvc extends FirebaseMessagingService {
                         }
                         Log.i(TAG, "Processing remote CAL " + newCalibration.bgValue + " age: " + bg_age);
 
-                        calintent.putExtra("bg_string", "" + (Home.getPreferencesStringWithDefault("units", "mgdl").equals("mgdl") ? newCalibration.bgValue : newCalibration.bgValue * Constants.MGDL_TO_MMOLL));
+                        calintent.putExtra("bg_string", "" + (Pref.getString("units", "mgdl").equals("mgdl") ? newCalibration.bgValue : newCalibration.bgValue * Constants.MGDL_TO_MMOLL));
                         calintent.putExtra("bg_age", "" + bg_age);
                         if (timediff < 3600) {
                             getApplicationContext().startActivity(calintent);
@@ -295,13 +296,13 @@ public class GcmListenerSvc extends FirebaseMessagingService {
             } else if (action.equals("bbu")) {
                 if (Home.get_follower()) {
                     Log.i(TAG, "Received bridge battery level update");
-                    Home.setPreferencesInt("bridge_battery", Integer.parseInt(payload));
+                    Pref.setInt("bridge_battery", Integer.parseInt(payload));
                     CheckBridgeBattery.checkBridgeBattery();
                 }
             } else if (action.equals("pbu")) {
                 if (Home.get_follower()) {
                     Log.i(TAG, "Received parakeet battery level update");
-                    Home.setPreferencesInt("parakeet_battery", Integer.parseInt(payload));
+                    Pref.setInt("parakeet_battery", Integer.parseInt(payload));
                     CheckBridgeBattery.checkParakeetBattery();
                 }
             } else if (action.equals("psu")) {
@@ -341,8 +342,8 @@ public class GcmListenerSvc extends FirebaseMessagingService {
                     }
                 }
             } else if (action.equals("amu")) {
-                if ((Home.getPreferencesBoolean("motion_tracking_enabled", false)) && (Home.getPreferencesBoolean("use_remote_motion", false))) {
-                    if (!Home.getPreferencesBoolean("act_as_motion_master", false)) {
+                if ((Pref.getBoolean("motion_tracking_enabled", false)) && (Pref.getBoolean("use_remote_motion", false))) {
+                    if (!Pref.getBoolean("act_as_motion_master", false)) {
                         ActivityRecognizedService.spoofActivityRecogniser(getApplicationContext(), payload);
                     } else {
                         Home.toaststaticnext("Receiving motion updates from a different master! Make only one the master!");
@@ -350,7 +351,7 @@ public class GcmListenerSvc extends FirebaseMessagingService {
                 }
             } else if (action.equals("sra")) {
                 if ((Home.get_follower() || Home.get_master())) {
-                    if (Home.getPreferencesBooleanDefaultFalse("accept_remote_snoozes")) {
+                    if (Pref.getBooleanDefaultFalse("accept_remote_snoozes")) {
                         try {
                             long snoozed_time = 0;
                             String sender_ssid = "";
@@ -361,7 +362,7 @@ public class GcmListenerSvc extends FirebaseMessagingService {
                                 snoozed_time = Long.parseLong(ii[0]);
                                 if (ii.length > 1) sender_ssid = JoH.base64decode(ii[1]);
                             }
-                            if (!Home.getPreferencesBooleanDefaultFalse("remote_snoozes_wifi_match") || JoH.getWifiFuzzyMatch(sender_ssid,JoH.getWifiSSID())) {
+                            if (!Pref.getBooleanDefaultFalse("remote_snoozes_wifi_match") || JoH.getWifiFuzzyMatch(sender_ssid,JoH.getWifiSSID())) {
                                 if (Math.abs(JoH.tsl() - snoozed_time) < 300000) {
                                     if (JoH.pratelimit("received-remote-snooze", 30)) {
                                         AlertPlayer.getPlayer().Snooze(xdrip.getAppContext(), -1, false);
@@ -390,7 +391,7 @@ public class GcmListenerSvc extends FirebaseMessagingService {
                     for (String bgr : bgs) {
                         BgReading.bgReadingInsertFromJson(bgr);
                     }
-                    if (Home.getPreferencesBooleanDefaultFalse("follower_chime") && JoH.pratelimit("bgs-notify", 1200)) {
+                    if (Pref.getBooleanDefaultFalse("follower_chime") && JoH.pratelimit("bgs-notify", 1200)) {
                         JoH.showNotification("New glucose data @" + JoH.hourMinuteString(), "Follower Chime: will alert whenever it has been more than 20 minutes since last", null, 60311, true, true, true);
                     }
                 } else {

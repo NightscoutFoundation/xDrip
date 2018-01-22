@@ -1,11 +1,13 @@
 package com.eveningoutpost.dexdrip.utils;
 
-import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.Services.DexShareCollectionService;
 import com.eveningoutpost.dexdrip.Services.G5CollectionService;
 import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
+import com.eveningoutpost.dexdrip.Services.WifiCollectionService;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 
+import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -29,6 +31,7 @@ public enum DexCollectionType {
     LibreAlarm("LibreAlarm"),
     NSEmulator("NSEmulator"),
     Disabled("Disabled"),
+    Mock("Mock"),
     Manual("Manual");
 
     String internalName;
@@ -41,6 +44,7 @@ public enum DexCollectionType {
     private static final HashSet<DexCollectionType> usesLibre = new HashSet<>();
     private static final HashSet<DexCollectionType> usesBattery = new HashSet<>();
     private static final HashSet<DexCollectionType> usesDexcomRaw = new HashSet<>();
+    private static final HashSet<DexCollectionType> usesTransmitterBattery = new HashSet<>();
 
     public static final String DEX_COLLECTION_METHOD = "dex_collection_method";
 
@@ -56,12 +60,13 @@ public enum DexCollectionType {
 
         Collections.addAll(usesBluetooth, BluetoothWixel, DexcomShare, DexbridgeWixel, LimiTTer, WifiBlueToothWixel, DexcomG5, WifiDexBridgeWixel);
         Collections.addAll(usesBtWixel, BluetoothWixel, LimiTTer, WifiBlueToothWixel);
-        Collections.addAll(usesWifi, WifiBlueToothWixel,WifiWixel,WifiDexBridgeWixel);
+        Collections.addAll(usesWifi, WifiBlueToothWixel,WifiWixel,WifiDexBridgeWixel, Mock);
         Collections.addAll(usesXbridge, DexbridgeWixel,WifiDexBridgeWixel);
-        Collections.addAll(usesFiltered, DexbridgeWixel, WifiDexBridgeWixel, DexcomG5, WifiWixel, Follower); // Bluetooth and Wifi+Bluetooth need dynamic mode
+        Collections.addAll(usesFiltered, DexbridgeWixel, WifiDexBridgeWixel, DexcomG5, WifiWixel, Follower, Mock); // Bluetooth and Wifi+Bluetooth need dynamic mode
         Collections.addAll(usesLibre, LimiTTer, LibreAlarm);
         Collections.addAll(usesBattery, BluetoothWixel, DexbridgeWixel, WifiBlueToothWixel, WifiDexBridgeWixel, Follower, LimiTTer, LibreAlarm); // parakeet separate
         Collections.addAll(usesDexcomRaw, BluetoothWixel, DexbridgeWixel, WifiBlueToothWixel, DexcomG5, WifiDexBridgeWixel);
+        Collections.addAll(usesTransmitterBattery, WifiWixel, BluetoothWixel, DexbridgeWixel, WifiBlueToothWixel, WifiDexBridgeWixel); // G4 transmitter battery
     }
 
 
@@ -79,11 +84,11 @@ public enum DexCollectionType {
     }
 
     public static DexCollectionType getDexCollectionType() {
-        return getType(Home.getPreferencesStringWithDefault(DEX_COLLECTION_METHOD, "BluetoothWixel"));
+        return getType(Pref.getString(DEX_COLLECTION_METHOD, "BluetoothWixel"));
     }
 
     public static void setDexCollectionType(DexCollectionType t) {
-        Home.setPreferencesString(DEX_COLLECTION_METHOD, t.internalName);
+        Pref.setString(DEX_COLLECTION_METHOD, t.internalName);
     }
 
     public static boolean hasBluetooth() {
@@ -114,6 +119,8 @@ public enum DexCollectionType {
 
     public static boolean usesDexCollectionService(DexCollectionType type) { return usesBtWixel.contains(type) || usesXbridge.contains(type) || type.equals(LimiTTer); }
 
+    public static boolean usesClassicTransmitterBattery() { return usesTransmitterBattery.contains(getDexCollectionType()); }
+
     public static boolean hasDexcomRaw(DexCollectionType type) {
         return usesDexcomRaw.contains(type);
     }
@@ -123,20 +130,117 @@ public enum DexCollectionType {
     public static boolean hasFiltered() {
         return does_have_filtered || usesFiltered.contains(getDexCollectionType());
     }
+    
+    public static boolean isLibreOOPAlgorithm(DexCollectionType collector) {
+    	if(collector == null) {
+    		collector = DexCollectionType.getDexCollectionType();
+    	}
+        return collector == DexCollectionType.LimiTTer && 
+               Pref.getBooleanDefaultFalse("external_blukon_algorithm");
+    }
 
     public static Class<?> getCollectorServiceClass() {
         switch (getDexCollectionType()) {
             case DexcomG5:
-                if (Home.getPreferencesBooleanDefaultFalse(Ob1G5CollectionService.OB1G5_PREFS)) {
+                if (Pref.getBooleanDefaultFalse(Ob1G5CollectionService.OB1G5_PREFS)) {
                     return Ob1G5CollectionService.class;
                 } else {
                     return G5CollectionService.class;
                 }
             case DexcomShare:
                 return DexShareCollectionService.class;
+            case WifiWixel:
+                return WifiCollectionService.class;
             default:
                 return DexCollectionService.class;
         }
     }
+
+    // using reflection to access static methods, could cache if needed maybe
+
+    public static Boolean getServiceRunningState() {
+        final Boolean result = getPhoneServiceRunningState();
+        // if phone running don't bother checking wear
+        if ((result !=null) && result) return true;
+        return getWatchServiceRunningState();
+    }
+
+    public static Boolean getPhoneServiceRunningState() {
+        try {
+            // TODO handle wear collection
+            final Method method = getCollectorServiceClass().getMethod("isRunning");
+            return (Boolean) method.invoke(null);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static boolean getPhoneServiceCollectingState() {
+        try {
+            final Method method = getCollectorServiceClass().getMethod("isCollecting");
+            return (boolean) method.invoke(null);
+        } catch (Exception e) {
+            return false; // default to not blocking a restart
+        }
+    }
+
+
+    public static Boolean getWatchServiceRunningState() {
+        if (Pref.getBooleanDefaultFalse("wear_sync") &&
+                Pref.getBooleanDefaultFalse("enable_wearG5")) {
+            try {
+                final Method method = getCollectorServiceClass().getMethod("isWatchRunning");
+                return (Boolean) method.invoke(null);
+            } catch (Exception e) {
+                return null; // probably method not found
+            }
+        } else {
+            return false; // hopefully this is sufficient to know that the service is definitely not running
+        }
+    }
+
+    public static String getBestCollectorHardwareName() {
+        final DexCollectionType dct = getDexCollectionType();
+        switch (dct) {
+            case NSEmulator:
+                return "Other App";
+            case WifiWixel:
+                return "Network G4";
+            case LimiTTer:
+                return DexCollectionService.getBestLimitterHardwareName();
+            case WifiDexBridgeWixel:
+                return "Network G4 and xBridge";
+            case WifiBlueToothWixel:
+                return "Network G4 and Classic xDrip";
+
+            default:
+                return dct.name();
+        }
+    }
+
+    public static int getBestBridgeBatteryPercent() {
+        if (DexCollectionType.hasBattery()) {
+            final DexCollectionType dct = getDexCollectionType();
+            // TODO this logic needs double checking for multi collector types and others
+            switch (dct) {
+                default:
+                    return Pref.getInt("bridge_battery", -1);
+            }
+        } else if (DexCollectionType.hasWifi()) {
+            return Pref.getInt("parakeet_battery", -3);
+        } else {
+            return -2;
+        }
+    }
+
+    public static String getBestBridgeBatteryPercentString() {
+        final int battery = getBestBridgeBatteryPercent();
+        if (battery > 0) {
+            return "" + battery;
+        } else {
+            return "";
+        }
+    }
+
 
 }

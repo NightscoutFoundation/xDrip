@@ -1,6 +1,5 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -129,7 +128,7 @@ public class NightscoutUploader {
 
             @GET("treatments")
                 // retrofit2/okhttp3 could do the if-modified-since natively using cache
-            Call<ResponseBody> downloadTreatments(@Header("api-secret") String secret, @Header("If-Modified-Since") String ifmodified);
+            Call<ResponseBody> downloadTreatments(@Header("api-secret") String secret, @Header("BROKEN-If-Modified-Since") String ifmodified);
 
             @GET("treatments.json")
             Call<ResponseBody> findTreatmentByUUID(@Header("api-secret") String secret, @Query("find[uuid]") String uuid);
@@ -160,8 +159,8 @@ public class NightscoutUploader {
         }
 
     public static void launchDownloadRest() {
-        if (Home.getPreferencesBooleanDefaultFalse("cloud_storage_api_enable")
-                && Home.getPreferencesBooleanDefaultFalse("cloud_storage_api_download_enable")) {
+        if (Pref.getBooleanDefaultFalse("cloud_storage_api_enable")
+                && Pref.getBooleanDefaultFalse("cloud_storage_api_download_enable")) {
             if (JoH.ratelimit("cloud_treatment_download", 60)) {
                 final NightscoutUploader uploader = new NightscoutUploader(xdrip.getAppContext());
                 uploader.downloadRest(500);
@@ -629,7 +628,7 @@ public class NightscoutUploader {
             }
 
             try {
-                if (Home.getPreferencesBooleanDefaultFalse("send_treatments_to_nightscout")) {
+                if (Pref.getBooleanDefaultFalse("send_treatments_to_nightscout")) {
                     postTreatments(nightscoutService, secret);
                 } else {
                     Log.d(TAG,"Skipping treatment upload due to preference disabled");
@@ -650,12 +649,13 @@ public class NightscoutUploader {
         last_exception_time = JoH.tsl();
         last_exception_count++;
         if (last_exception_count > 5) {
-            if (Home.getPreferencesBooleanDefaultFalse("warn_nightscout_failures")) {
+            if (Pref.getBooleanDefaultFalse("warn_nightscout_failures")) {
                 if (JoH.ratelimit("nightscout-error-notification", 1800)) {
                     notification_shown = true;
                     JoH.showNotification("Nightscout Failure", "REST-API upload to Nightscout has failed " + last_exception_count
                                     + " times. With message: " + last_exception + " " + ((last_success_time > 0) ? "Last succeeded: " + JoH.dateTimeText(last_success_time) : ""),
-                            MegaStatus.getStatusPendingIntent("Uploaders"), Constants.NIGHTSCOUT_ERROR_NOTIFICATION_ID, true, true, null, null, msg);
+
+                            MegaStatus.getStatusPendingIntent("Uploaders"), Constants.NIGHTSCOUT_ERROR_NOTIFICATION_ID, NotificationChannels.NIGHTSCOUT_UPLOADER_CHANNEL, true, true, null, null, msg);
                 }
             } else {
                 Log.e(TAG, "Cannot alert for nightscout failures as preference setting is disabled");
@@ -678,14 +678,20 @@ public class NightscoutUploader {
         if (record != null) {//KS
             json.put("date", record.timestamp);
             json.put("dateString", format.format(record.timestamp));
-            json.put("sgv", (int) record.calculated_value);
-            json.put("direction", record.slopeName());
+            if(prefs.getBoolean("cloud_storage_api_use_best_glucose", false)){
+                json.put("sgv", (int) record.getDg_mgdl());
+                json.put("delta", new BigDecimal(record.getDg_slope() * 5 * 60 * 1000).setScale(3, BigDecimal.ROUND_HALF_UP));
+                json.put("direction", record.getDg_deltaName());
+            } else {
+                json.put("sgv", (int) record.calculated_value);
+                json.put("delta", new BigDecimal(record.currentSlope() * 5 * 60 * 1000).setScale(3, BigDecimal.ROUND_HALF_UP)); // jamorham for automation
+                json.put("direction", record.slopeName());
+            }
             json.put("type", "sgv");
             json.put("filtered", record.ageAdjustedFiltered() * 1000);
             json.put("unfiltered", record.usedRaw() * 1000);
             json.put("rssi", 100);
             json.put("noise", record.noiseValue());
-            json.put("delta", new BigDecimal(record.currentSlope() * 5 * 60 * 1000).setScale(3, BigDecimal.ROUND_HALF_UP)); // jamorham for automation
             json.put("sysTime", format.format(record.timestamp));
             array.put(json);
         }
@@ -918,7 +924,7 @@ public class NightscoutUploader {
         final boolean always_send_battery = true; // nightscout doesn't currently display device device status if it thinks its stale
         final List<String> batteries = new ArrayList<>();
         batteries.add("Phone");
-        if ((DexCollectionType.hasBattery() && (Home.getPreferencesBoolean("send_bridge_battery_to_nightscout", true)))
+        if ((DexCollectionType.hasBattery() && (Pref.getBoolean("send_bridge_battery_to_nightscout", true)))
                 || (Home.get_forced_wear() && DexCollectionType.getDexCollectionType().equals(DexCollectionType.DexcomG5))) {
             batteries.add("Bridge");
         }
@@ -934,11 +940,11 @@ public class NightscoutUploader {
                     battery_name = Build.MANUFACTURER + " " + Build.MODEL;
                     break;
                 case "Bridge":
-                    battery_level = Home.getPreferencesInt("bridge_battery", -1);
+                    battery_level = Pref.getInt("bridge_battery", -1);
                     battery_name = DexCollectionType.getDexCollectionType().name();
                     break;
                 case "Parakeet":
-                    battery_level = Home.getPreferencesInt("parakeet_battery", -1);
+                    battery_level = Pref.getInt("parakeet_battery", -1);
                     battery_name = "Parakeet";
                     break;
                 default:

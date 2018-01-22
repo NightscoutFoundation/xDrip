@@ -63,6 +63,18 @@ public class LanguageAdapter extends RecyclerView.Adapter<LanguageAdapter.MyView
         }
     }
 
+    private void informThisRowChanged(MyViewHolder holder, TextView v) {
+        final int pos = holder.getAdapterPosition();
+        try {
+            Log.d(TAG, "informThisRowChanged: " + pos);
+            if (pos > -1) {
+                LanguageAdapter.this.notifyItemChanged(pos, new LanguageItem(languageList.get(pos).item_name, languageList.get(pos).english_text, v.getText().toString().replace(" ^ ", "\n")));
+            }
+        } catch (IllegalStateException e) {
+            Log.d(TAG,"informThisRowChanged - cannot calculate during scroll");
+        }
+    }
+
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
@@ -87,12 +99,19 @@ public class LanguageAdapter extends RecyclerView.Adapter<LanguageAdapter.MyView
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 boolean handled = false;
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    final int pos = holder.getAdapterPosition();
-                    LanguageAdapter.this.notifyItemChanged(pos, new LanguageItem(languageList.get(pos).item_name, languageList.get(pos).english_text, v.getText().toString().replace(" ^ ","\n")));
-                }
+                 informThisRowChanged(holder, v);
+                     }
                 return handled;
             }
         });
+
+        holder.local_text.setOnFocusChangeListener((v, hasFocus) -> {
+           if (hasFocus == false) {
+               informThisRowChanged(holder, (TextView)v);
+           }
+        });
+
+
 
      /*   holder.local_text.addTextChangedListener(new TextWatcher() {
             @Override
@@ -165,6 +184,10 @@ public class LanguageAdapter extends RecyclerView.Adapter<LanguageAdapter.MyView
         } else {
             holder.local_text.setTextColor(Color.parseColor("#a5d6a7"));
             holder.elementUndo.setVisibility(View.INVISIBLE);
+        }
+
+        if (languageItem.english_text.equals(languageItem.local_text)) {
+            holder.id_text.setText(holder.id_text.getText() + "             NEW");
         }
 
         if (!showcased_newline) {

@@ -1,0 +1,67 @@
+language: android
+sudo: required
+
+env:
+  global:
+    - EMULATOR_API_LEVEL=19
+    - ANDROID_ABI=armeabi-v7a
+    - ADB_INSTALL_TIMEOUT=20
+    - AVD_DEBUG='init,avd_config,nand_limits,keys,adb,adbserver,adbclient'
+
+android:
+  components:
+    - tools
+    - platform-tools
+    - tools
+
+#    - build-tools-25.0.0
+    - build-tools-26.0.2
+    - android-$EMULATOR_API_LEVEL
+    - android-23
+    - android-26
+    - extra-google-m2repository
+    - extra-android-m2repository
+    - extra-android-support
+    - extra-google-google_play_services
+#    - addon-google_apis-google-$EMULATOR_API_LEVEL
+    - sys-img-$ANDROID_ABI-google_apis-$EMULATOR_API_LEVEL
+
+  licenses:
+      - 'android-sdk-license-.+'
+      - 'google-gdk-license-.+'
+
+before_install:
+  - chmod +x gradlew
+
+before_script:
+  - android list targets
+  - echo no | android create avd --force -n test -t android-$EMULATOR_API_LEVEL --abi $ANDROID_ABI --tag google_apis
+  - export QEMU_AUDIO_DRV=none && emulator -engine classic -avd test -no-window &
+  - sleep 30
+#  - curl -L -o butler.apk https://bintray.com/linkedin/maven/download_file?file_path=com%2Flinkedin%2Ftestbutler%2Ftest-butler-app%2F1.3.1%2Ftest-butler-app-1.3.1.apk
+
+script:
+  - nice ./gradlew test -PdisablePreDex
+  - sleep 20
+  - nice ./gradlew app:assembleAndroidTest -PdisablePreDex
+  - sleep 10
+  - android-wait-for-emulator
+  - adb -e logcat -t 20
+  - adb shell settings put global window_animation_scale 0
+  - adb shell settings put global transition_animation_scale 0
+  - adb shell settings put global animator_duration_scale 0
+  - sleep 35
+  - adb shell input keyevent 82
+  - adb devices
+#  - ./gradlew app:installDebugAndroidTest  -PdisablePreDex
+  - adb shell input tap 134 467
+  - travis_retry travis_wait nice ./gradlew app:connectedAndroidTest -PdisablePreDex
+  - ./gradlew assembleRelease
+
+after_failure:
+  - adb shell screencap -p | sed 's/\r$//' > failure-screen.png
+  - curl -L -o imgur.sh https://github.com/tremby/imgur.sh/raw/master/imgur.sh
+  - chmod 700 ./imgur.sh
+  - ./imgur.sh failure-screen.png
+  - cat app/build/reports/tests/testDebugUnitTest/classes/*
+  - cat app/build/reports/tests/testReleaseUnitTest/classes/*

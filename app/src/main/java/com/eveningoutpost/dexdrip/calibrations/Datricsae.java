@@ -26,7 +26,7 @@ public class Datricsae extends CalibrationAbstract {
 
     private static final String TAG = "Datricsae";
     private static final double MINIMUM_SLOPE = 0.5;
-    private static final double MAXIMUM_SLOPE = 1.5;
+    private static final double MAXIMUM_SLOPE = 1.7;
     private static final int CALIBRATIONS_TO_USE = 8;
     private static final int OPTIMIZE_OUTLIERS_CALIBRATION_MINIMUM = 4;
     private static final int FALLBACK_TO_ORIGINAL_CALIBRATIONS_MINIMUM = 4;

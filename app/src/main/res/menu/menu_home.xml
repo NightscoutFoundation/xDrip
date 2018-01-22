@@ -9,7 +9,7 @@
         android:showAsAction="never"/>
 
     <item android:id="@+id/showreminders"
-        android:title="Reminders"
+        android:title="@string/reminders"
         android:checkable="false"
         android:orderInCategory="1"
         android:visible="false"

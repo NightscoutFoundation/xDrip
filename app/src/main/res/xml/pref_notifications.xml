@@ -76,6 +76,12 @@
                     android:summary="@string/suppress_alerts_after"
                     android:title="@string/suppress_alerts_after" />
 
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="use_notification_channels"
+                    android:summary="Use the Android 8+ notification channel feature"
+                    android:title="Notification Channels" />
+
             </PreferenceScreen>
 
 
@@ -126,6 +132,11 @@
                     android:numeric="integer"
                     android:summary="@string/calibration_minutes_reraise"
                     android:title="@string/alert_repeat_minutes" />
+                <SwitchPreference
+                    android:defaultValue="true"
+                    android:key="play_sound_for_initial_calibration"
+                    android:summary="Play sound when Initial Calibration is requested"
+                    android:title="Initial Alert" />
             </PreferenceScreen>
 
             <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"

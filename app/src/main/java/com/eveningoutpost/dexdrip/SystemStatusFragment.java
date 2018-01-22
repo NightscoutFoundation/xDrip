@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.databinding.DataBindingUtil;
 import android.graphics.Point;
 import android.os.Build;
 import android.os.Bundle;
@@ -29,7 +30,7 @@ import android.widget.TextView;
 
 import com.eveningoutpost.dexdrip.G5Model.Extensions;
 import com.eveningoutpost.dexdrip.G5Model.Transmitter;
-import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Constants;
+import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Dex_Constants;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
@@ -39,9 +40,11 @@ import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.Services.DexCollectionService;
-import com.eveningoutpost.dexdrip.Services.DexShareCollectionService;
 import com.eveningoutpost.dexdrip.Services.G5CollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.databinding.ActivitySystemStatusBinding;
+import com.eveningoutpost.dexdrip.ui.MicroStatus;
+import com.eveningoutpost.dexdrip.ui.MicroStatusImpl;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.google.android.gms.wearable.DataMap;
@@ -78,9 +81,14 @@ public class SystemStatusFragment extends Fragment {
     private static final String TAG = "SystemStatus";
     private BroadcastReceiver serviceDataReceiver;
 
+    //@Inject
+    MicroStatus microStatus;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
+        //Injectors.getMicroStatusComponent().inject(this);
         requestWearCollectorStatus();
         serviceDataReceiver = new BroadcastReceiver() {
             @Override
@@ -116,7 +124,11 @@ public class SystemStatusFragment extends Fragment {
                 }
             }
         };
-        return inflater.inflate(R.layout.activity_system_status, container, false);
+        final ActivitySystemStatusBinding binding = DataBindingUtil.inflate(
+                inflater, R.layout.activity_system_status, container, false);
+        microStatus = new MicroStatusImpl();
+        binding.setMs(microStatus);
+        return binding.getRoot();
     }
 
     private void requestWearCollectorStatus() {
@@ -154,7 +166,7 @@ public class SystemStatusFragment extends Fragment {
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        super.onActivityCreated(savedInstanceState);
         // setContentView(R.layout.activity_system_status);
         // JoH.fixActionBar(this);
         prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
@@ -213,7 +225,7 @@ public class SystemStatusFragment extends Fragment {
             mBluetoothManager = (BluetoothManager) safeGetContext().getSystemService(Context.BLUETOOTH_SERVICE);
         }
         setVersionName();
-        setCollectionMethod();
+        //setCollectionMethod();
         setCurrentDevice();
         if (Home.get_follower()) {
             setConnectionStatusFollower();
@@ -250,26 +262,13 @@ public class SystemStatusFragment extends Fragment {
         } else {
             transmitter_status_view.setText("" + td.sensor_battery_level);
             GcmActivity.requestSensorBatteryUpdate(); // always ask
-            if (prefs.getString("btDevice","").equals("blueReader")) {
-                if (td.sensor_battery_level <= Constants.BLUEREADER_TRANSMITTER_BATTERY_EMPTY) {
-                    transmitter_status_view.append(" - very low");
-                } else if (td.sensor_battery_level <= Constants.BLUEREADER_TRANSMITTER_BATTERY_LOW) {
-                    transmitter_status_view.append(" - low");
-                } else {
-                    transmitter_status_view.append(" - ok");
-                }
-                transmitter_status_view.append(" (" + ((td.sensor_battery_level - 3300) * 100 / (prefs.getInt("blueReader_Full_Battery", 3800) - 3300)) + "%)");
-                //set for BlueReader Battery the other way... todo bring it at the right updateplace
-                PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext()).edit().putInt("bridge_battery", (td.sensor_battery_level - 3300) * 100 / (prefs.getInt("blueReader_Full_Battery", 3800) - 3300)).apply();
+            if (td.sensor_battery_level <= Dex_Constants.TRANSMITTER_BATTERY_EMPTY) {
+                transmitter_status_view.append(" - very low");
+            } else if (td.sensor_battery_level <= Dex_Constants.TRANSMITTER_BATTERY_LOW) {
+                transmitter_status_view.append(" - low");
+                transmitter_status_view.append("\n(experimental interpretation)");
             } else {
-                if (td.sensor_battery_level <= Constants.TRANSMITTER_BATTERY_EMPTY) {
-                    transmitter_status_view.append(" - very low");
-                } else if (td.sensor_battery_level <= Constants.TRANSMITTER_BATTERY_LOW) {
-                    transmitter_status_view.append(" - low");
-                } else {
-                    transmitter_status_view.append(" - ok");
-                }
-
+                transmitter_status_view.append(" - ok");
             }
         }
 

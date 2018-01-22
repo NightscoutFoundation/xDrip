@@ -5,6 +5,10 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PointF;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Build;
 import android.os.Handler;
 import android.service.dreams.DreamService;
@@ -12,6 +16,7 @@ import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -19,7 +24,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.eveningoutpost.dexdrip.BestGlucose;
-import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
@@ -36,9 +41,11 @@ import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.getCol;
  * add remove visible components, change component size etc.
  */
 
-public class XDripDreamService extends DreamService {
+public class XDripDreamService extends DreamService implements SensorEventListener {
 
     private static final String TAG = "xDripDreamService";
+    // private LinearLayout frame;
+    private View inflatedLayout;
     private TextView widgetbg;
     private TextView widgetArrow;
     private TextView widgetDelta;
@@ -54,6 +61,12 @@ public class XDripDreamService extends DreamService {
     private boolean updated;
     private boolean keep_running;
 
+    private SensorManager mSensorManager;
+    private Sensor gravitySensor;
+    private float last_rotation = -1;
+    private ImageView image;
+    private boolean use_gravity;
+
     private final Runnable mRunnable = new Runnable() {
         public void run() {
             if (!keep_running) {
@@ -67,17 +80,34 @@ public class XDripDreamService extends DreamService {
 
 
     @Override
+    public void onCreate() {
+        use_gravity = Pref.getBooleanDefaultFalse("daydream_use_gravity_sensor");
+    }
+
+    @Override
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
         mainHandler = new Handler(getApplicationContext().getMainLooper());
         setInteractive(false);
         //  setFullscreen(true);
         setScreenBright(false);
+
+        if (use_gravity) {
+            mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+            gravitySensor = mSensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY);
+        }
     }
 
     @Override
     public void onDreamingStarted() {
         super.onDreamingStarted();
+
+        if (use_gravity) {
+            mSensorManager.registerListener(
+                    this,
+                    gravitySensor,
+                    SensorManager.SENSOR_DELAY_NORMAL);
+        }
 
         final DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
@@ -114,7 +144,7 @@ public class XDripDreamService extends DreamService {
         mBouncer.addView(graphimage, gl);
 
         for (int i = 0; i < 1; i++) {
-            final ImageView image = new ImageView(this);
+            image = new ImageView(this);
             image.setImageResource(R.drawable.ic_launcher);
             image.setAlpha(0.3f);
             //  image.setBackgroundColor(0xFF004000);
@@ -123,9 +153,10 @@ public class XDripDreamService extends DreamService {
 
         // final View tv = new View(this);
         final LayoutInflater inflater = LayoutInflater.from(this);
-        final View inflatedLayout = inflater.inflate(R.layout.x_drip_widget, null, false);
+        inflatedLayout = inflater.inflate(R.layout.x_drip_widget, null, false);
 
         inflatedLayout.setBackgroundColor(Color.TRANSPARENT);
+        //frame = inflatedLayout.findViewById(R.id.widgetLinear);
         widgetbg = (TextView) inflatedLayout.findViewById(R.id.widgetBg);
         widgetArrow = (TextView) inflatedLayout.findViewById(R.id.widgetArrow);
         widgetDelta = (TextView) inflatedLayout.findViewById(R.id.widgetDelta);
@@ -161,7 +192,17 @@ public class XDripDreamService extends DreamService {
     public void onDreamingStopped() {
         keep_running = false;
         super.onDreamingStopped();
+        if (use_gravity) {
+            unregister_sensor_receiver();
+        }
+    }
 
+    private void unregister_sensor_receiver() {
+        try {
+            mSensorManager.unregisterListener(this);
+        } catch (Exception e) {
+            Log.e(TAG, "Could not unregister gravity listener");
+        }
     }
 
     private long updateData() {
@@ -170,8 +211,8 @@ public class XDripDreamService extends DreamService {
         final BestGlucose.DisplayGlucose dg = BestGlucose.getDisplayGlucose();
         if (dg != null) {
             // TODO Coloring
-            widgetbg.setText(dg.spannableString(dg.unitized,true));
-            widgetArrow.setText(dg.isStale() ? "" : dg.spannableString(dg.delta_arrow,true));
+            widgetbg.setText(dg.spannableString(dg.unitized, true));
+            widgetArrow.setText(dg.isStale() ? "" : dg.spannableString(dg.delta_arrow, true));
             widgetDelta.setText(dg.spannableString(dg.unitized_delta));
             widgetReadingAge.setText(dg.minutesAgo(true));
             widgetStatusLine.setText("");
@@ -198,9 +239,70 @@ public class XDripDreamService extends DreamService {
                 .setStart(System.currentTimeMillis() - 60000 * 60 * 3)
                 .showAxes(true)
                 .setBackgroundColor(getCol(ColorCache.X.color_notification_chart_background))
-                .setShowFiltered(DexCollectionType.hasFiltered() && Home.getPreferencesBooleanDefaultFalse("show_filtered_curve"))
+                .setShowFiltered(DexCollectionType.hasFiltered() && Pref.getBooleanDefaultFalse("show_filtered_curve"))
                 .build();
         graphimage.setImageBitmap(dreamBitmap);
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        if (use_gravity) {
+            final Sensor source = event.sensor;
+            if (source.getType() == Sensor.TYPE_GRAVITY) {
+                // final float z = event.values[2];
+                final float y = event.values[1];
+                final float x = event.values[0];
+
+                // calculate angle from gravity sensor only
+                float rotation = (y * 9) - 90;
+                if (rotation < 0) {
+                    if (x > 0) {
+                        rotation = 0 - rotation;
+                    }
+                }
+
+                // normalize 0-360
+                rotation = rotation + 180;
+
+                final int window_rotation = getWindowManager().getDefaultDisplay().getRotation();
+
+                // compensate for view rotation
+                switch (window_rotation) {
+                    case Surface.ROTATION_90:
+                        rotation += 270;
+                        break;
+                    case Surface.ROTATION_180:
+                        rotation += 180;
+                        break;
+                    case Surface.ROTATION_270:
+                        rotation += 90;
+                        break;
+                }
+                // snap to nearest 90 degree
+                final float adjust_rotation = ((int) (((rotation + 225) % 360) / 90)) * 90;
+                // update rotation if something changed
+                if (adjust_rotation != last_rotation) {
+                    last_rotation = adjust_rotation;
+                    JoH.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            image.setRotation(adjust_rotation);
+                            graphimage.setRotation(adjust_rotation);
+                            inflatedLayout.setRotation(adjust_rotation);
+
+                        }
+                    });
+                }
+            }
+        } else {
+            Log.e(TAG, "Got sensor data when sensor should be disabled");
+            unregister_sensor_receiver();
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+        Log.d(TAG, "Accuracy: " + accuracy);
     }
 
     // from http://code.google.com/p/android-daydream-samples
@@ -256,8 +358,8 @@ public class XDripDreamService extends DreamService {
         @Override
         protected void onSizeChanged(int w, int h, int oldw, int oldh) {
             super.onSizeChanged(w, h, oldw, oldh);
-            mWidth = w;
-            mHeight = h;
+            mWidth = w - (w / 10);
+            mHeight = h - (h / 10);
             for (int i = 0; i < getChildCount(); i++) {
                 setupView(getChildAt(i));
             }
@@ -272,8 +374,8 @@ public class XDripDreamService extends DreamService {
             p.x = mMaxSpeed * (float) (Math.cos(a));
             p.y = mMaxSpeed * (float) (Math.sin(a));
             v.setTag(p);
-            v.setX((float) (Math.random() * (mWidth - v.getWidth())));
-            v.setY((float) (Math.random() * (mHeight - v.getHeight())));
+            v.setX((float) (Math.random() * (mWidth - Math.max(v.getWidth(), v.getHeight()))));
+            v.setY((float) (Math.random() * (mHeight - Math.max(v.getHeight(), v.getWidth()))));
         }
 
         /**
@@ -318,4 +420,6 @@ public class XDripDreamService extends DreamService {
             mMaxSpeed = s;
         }
     }
+
 }
+

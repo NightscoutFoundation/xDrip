@@ -32,6 +32,8 @@ import okio.BufferedSink;
 import okio.GzipSink;
 import okio.Okio;
 
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getBestCollectorHardwareName;
+
 public class SendFeedBack extends AppCompatActivity {
 
     private static final String TAG = "jamorham feedback";
@@ -171,7 +173,7 @@ public class SendFeedBack extends AppCompatActivity {
         try {
             final RequestBody formBody = new FormEncodingBuilder()
                     .add("contact", contact.getText().toString())
-                    .add("body", JoH.getDeviceDetails() + "\n" + JoH.getVersionDetails() + "\n===\n\n" + yourtext.getText().toString() + " \n\n===\nType: " + type_of_message + "\nLog data:\n\n" + log_data + "\n\n\nSent: " + JoH.dateTimeText(JoH.tsl()))
+                    .add("body", JoH.getDeviceDetails() + "\n" + JoH.getVersionDetails() + "\n" + getBestCollectorHardwareName() + "\n===\n\n" + yourtext.getText().toString() + " \n\n===\nType: " + type_of_message + "\nLog data:\n\n" + log_data + "\n\n\nSent: " + JoH.dateTimeText(JoH.tsl()))
                     .add("rating", String.valueOf(myrating.getRating()))
                     .add("type", type_of_message)
                     .build();

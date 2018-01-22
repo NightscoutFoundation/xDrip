@@ -10,6 +10,7 @@ import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.WindowManager;
 
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -59,8 +60,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 lats.remove(0);
                             }
                             // relay location
-                            if (Home.getPreferencesBooleanDefaultFalse("plus_follow_master")
-                                    && Home.getPreferencesBooleanDefaultFalse("plus_follow_geolocation")
+                            if (Pref.getBooleanDefaultFalse("plus_follow_master")
+                                    && Pref.getBooleanDefaultFalse("plus_follow_geolocation")
                                     && (!Home.get_follower())) {
                                 GcmActivity.sendLocation(location);
                             }
