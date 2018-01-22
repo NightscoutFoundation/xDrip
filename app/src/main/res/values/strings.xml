@@ -853,7 +853,7 @@
     <string name="receiving_data_from_collector">Receiving Data from %s Collector</string>
 
     <!-- trend arrow for speak -->
-    <string name="DoubleDown">Doube Down</string>
+    <string name="DoubleDown">Double Down</string>
     <string name="SingleDown">Single Down</string>
     <string name="FortyFiveDown">Slight Down</string>
     <string name="Flat">Flat</string>
