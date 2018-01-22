@@ -61,6 +61,7 @@ public class Blukon {
     private static long m_persistentTimeLastBg;
     private static int m_blockNumber = 0;
     private static byte[] m_full_data = new byte[344];
+    private static long m_timeLastCmdReceived = 0;
 
     public static String getPin() {
         final String thepin = Pref.getString(BLUKON_PIN_PREF, null);
@@ -75,9 +76,22 @@ public class Blukon {
     }
 
     public static boolean isCollecting() {
-        return false; // stub
         // use internal logic to decide if we are collecting something, if we return true here
         // then we will never get reset due to missed reading service restarts
+        long m_minutesDiff = 0;
+
+        m_minutesDiff = (long) ((((JoH.tsl() - m_timeLastCmdReceived) / 1000) + 30) / 60);
+        Log.i(TAG, "m_minutesDiff to last cmd=" + m_minutesDiff + ", last cmd received at: " + JoH.dateTimeText(m_timeLastCmdReceived));
+
+        if (m_communicationStarted) {
+            //we need to make sure communication did not stop a long time ago because of another issue
+            if (m_minutesDiff > 2)//min. A cmd should be received within a few ms so if after this time nothing has been received we overwrite this flag
+            {
+                m_communicationStarted = false;
+            }
+        }
+
+        return m_communicationStarted;
     }
 
     public static void clearPin() {
@@ -85,7 +99,6 @@ public class Blukon {
     }
 
     public static void initialize() {
-        if (!m_communicationStarted) {
             Log.i(TAG, "initialize!");
             Pref.setInt("bridge_battery", 0); //force battery to no-value before first reading
             Pref.setInt("nfc_sensor_age", 0); //force sensor age to no-value before first reading
@@ -97,9 +110,6 @@ public class Blukon {
             m_blockNumber = 0;
             // @keencave - initialize only once during initial to ensure no backfilling at start
             //       m_timeLastBg = 0;
-        } else {
-            Log.w(TAG, "avoid initialize during communication");
-        }
     }
 
     public static boolean isBlukonPacket(byte[] buffer) {
@@ -120,6 +130,8 @@ public class Blukon {
             Log.e(TAG, "null buffer passed to decodeBlukonPacket");
             return null;
         }
+
+        m_timeLastCmdReceived = JoH.tsl();
 
         //BluCon code by gregorybel
         final String strRecCmd = CipherUtils.bytesToHex(buffer).toLowerCase();
