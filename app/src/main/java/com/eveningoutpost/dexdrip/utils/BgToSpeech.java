@@ -14,6 +14,8 @@ import com.eveningoutpost.dexdrip.xdrip;
 import java.text.DecimalFormat;
 
 import static com.eveningoutpost.dexdrip.UtilityModels.SpeechUtil.TWICE_DELIMITER;
+import android.content.Context;
+
 
 /**
  * Created by adrian on 07/09/15.
@@ -54,35 +56,33 @@ public class BgToSpeech {
     public static void realSpeakNow(final double value, long timestamp, String delta_name) {
         final String text_to_speak = calculateText(value, Pref.getBooleanDefaultFalse("bg_to_speech_trend") ? delta_name : null);
         UserError.Log.d(TAG, "Attempting to speak BG reading of: " + text_to_speak);
-
         SpeechUtil.say(text_to_speak);
     }
 
     private static String mungeDeltaName(String delta_name) {
 
         // TODO multi-language + from R.string
-
         switch (delta_name) {
             case "DoubleDown":
-                delta_name = "Double Down";
+                delta_name = xdrip.getAppContext().getString(R.string.DoubleDown);
                 break;
             case "SingleDown":
-                delta_name = "Single Down";
+                delta_name = xdrip.getAppContext().getString(R.string.SingleDown);
                 break;
             case "FortyFiveDown":
-                delta_name = "Slight Down";
+                delta_name = xdrip.getAppContext().getString(R.string.FortyFiveDown);
                 break;
             case "Flat":
-                delta_name = "Flat";
+                delta_name = xdrip.getAppContext().getString(R.string.Flat);
                 break;
             case "FortyFiveUp":
-                delta_name = "Slight Up";
+                delta_name = xdrip.getAppContext().getString(R.string.FortyFiveUp);
                 break;
             case "SingleUp":
-                delta_name = "Single Up";
+                delta_name = xdrip.getAppContext().getString(R.string.SingleUp);
                 break;
             case "DoubleUp":
-                delta_name = "Double up";
+                delta_name = xdrip.getAppContext().getString(R.string.DoubleUp);
                 break;
             case "NOT COMPUTABLE":
                 delta_name = "";
@@ -97,6 +97,7 @@ public class BgToSpeech {
 
         final boolean doMgdl = (Pref.getString("units", "mgdl").equals("mgdl"));
         final boolean bg_to_speech_repeat_twice = (Pref.getBooleanDefaultFalse("bg_to_speech_repeat_twice"));
+        final boolean bg_to_speech_trend = (Pref.getBooleanDefaultFalse("bg_to_speech_trend"));
         String text = "";
 
         // TODO does some of this need unifying from best glucose etc?
@@ -111,14 +112,12 @@ public class BgToSpeech {
                 df.setMaximumFractionDigits(1);
                 df.setMinimumFractionDigits(1);
                 text = df.format(value * Constants.MGDL_TO_MMOLL);
-                if (delta_name != null) text += " " + mungeDeltaName(delta_name);
                 try {
                     // we check the locale but it may not actually be available if the instance isn't created yet
                     if (SpeechUtil.getLocale().getLanguage().startsWith("en")) {
                         // in case the text has a comma in current locale but TTS defaults to English
                         text = text.replace(",", ".");
                     }
-                    if (bg_to_speech_repeat_twice) text = text + TWICE_DELIMITER + text;
                 } catch (NullPointerException e) {
                     Log.e(TAG, "Null pointer for TTS in calculateText");
                 }
@@ -128,6 +127,8 @@ public class BgToSpeech {
         } else {
             text = xdrip.getAppContext().getString(R.string.error);
         }
+        if (bg_to_speech_trend && delta_name != null) text += " " + mungeDeltaName(delta_name);
+        if (bg_to_speech_repeat_twice) text = text + TWICE_DELIMITER + text;
         Log.d(TAG, "calculated text: " + text);
         return text;
     }

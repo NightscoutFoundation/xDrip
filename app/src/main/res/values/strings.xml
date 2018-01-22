@@ -851,4 +851,14 @@
     <string name="received_enough_good_data_to_calibrate">Received Enough Good Data to Calibrate</string>
     <string name="play_sound_when_ready_for_calibration">Play sound when ready for Calibration</string>
     <string name="receiving_data_from_collector">Receiving Data from %s Collector</string>
+
+    <!-- trend arrow for speak -->
+    <string name="DoubleDown">Doube Down</string>
+    <string name="SingleDown">Single Down</string>
+    <string name="FortyFiveDown">Slight Down</string>
+    <string name="Flat">Flat</string>
+    <string name="FortyFiveUp">Slight Up</string>
+    <string name="SingleUp">Single Up</string>
+    <string name="DoubleUp">Double Up</string>
+
 </resources>
