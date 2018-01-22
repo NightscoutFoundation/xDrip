@@ -14,7 +14,6 @@ import com.eveningoutpost.dexdrip.xdrip;
 import java.text.DecimalFormat;
 
 import static com.eveningoutpost.dexdrip.UtilityModels.SpeechUtil.TWICE_DELIMITER;
-import android.content.Context;
 
 
 /**
