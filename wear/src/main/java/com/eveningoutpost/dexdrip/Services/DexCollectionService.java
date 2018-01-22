@@ -288,6 +288,13 @@ public class DexCollectionService extends Service {
         Log.i(TAG, "SERVICE STOPPED");
     }
 
+    public static boolean isCollecting() {
+       if (static_use_blukon) {
+           return Blukon.isCollecting();
+       }
+        return false;
+    }
+
     public SharedPreferences.OnSharedPreferenceChangeListener prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
         public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
             if (key.compareTo("run_service_in_foreground") == 0) {
