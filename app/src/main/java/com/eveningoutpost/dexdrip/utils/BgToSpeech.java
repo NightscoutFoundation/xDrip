@@ -15,7 +15,6 @@ import java.text.DecimalFormat;
 
 import static com.eveningoutpost.dexdrip.UtilityModels.SpeechUtil.TWICE_DELIMITER;
 
-
 /**
  * Created by adrian on 07/09/15.
  * <p>
@@ -55,12 +54,13 @@ public class BgToSpeech {
     public static void realSpeakNow(final double value, long timestamp, String delta_name) {
         final String text_to_speak = calculateText(value, Pref.getBooleanDefaultFalse("bg_to_speech_trend") ? delta_name : null);
         UserError.Log.d(TAG, "Attempting to speak BG reading of: " + text_to_speak);
+
         SpeechUtil.say(text_to_speak);
     }
 
     private static String mungeDeltaName(String delta_name) {
 
-        // TODO multi-language + from R.string
+
         switch (delta_name) {
             case "DoubleDown":
                 delta_name = xdrip.getAppContext().getString(R.string.DoubleDown);
