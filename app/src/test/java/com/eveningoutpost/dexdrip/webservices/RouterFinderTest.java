@@ -3,7 +3,6 @@ package com.eveningoutpost.dexdrip.webservices;
 import com.eveningoutpost.dexdrip.BuildConfig;
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.xdrip;
-import com.google.common.truth.Truth;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -11,6 +10,8 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
+
+import static com.google.common.truth.Truth.assertWithMessage;
 
 /**
  * Created by jamorham on 17/01/2018.
@@ -41,16 +42,22 @@ public class RouterFinderTest {
 
         final RouteFinder routeFinder = new RouteFinder();
 
-        Truth.assertWithMessage("RouteFinder instance").that(routeFinder).isNotNull();
+        assertWithMessage("RouteFinder instance")
+                .that(routeFinder)
+                .isNotNull();
 
         // test routes
 
         response = routeFinder.handleRoute("bogus route");
-        Truth.assertWithMessage("bogus route not found").that(response.resultCode).isEqualTo(404);
+        assertWithMessage("bogus route not found")
+                .that(response.resultCode)
+                .isEqualTo(404);
 
         response = routeFinder.handleRoute("pebble");
 
-        Truth.assertWithMessage("Pebble instance null data response").that(response).isNull();
+        assertWithMessage("Pebble instance null data response")
+                .that(response)
+                .isNull();
         // TODO create some record data for pebble to use, check without it also
 
         String subroute;
@@ -59,25 +66,33 @@ public class RouterFinderTest {
         subroute = "sgv.json";
         response = routeFinder.handleRoute(subroute);
         validResponse(subroute, response);
-        Truth.assertWithMessage(subroute + " instance data format").that(response.bytes[0] == '[').isTrue();
+        assertWithMessage(subroute + " instance data format")
+                .that(response.bytes[0])
+                .isEqualTo('[');
 
         // tasker
         subroute = "tasker/snooze";
         response = routeFinder.handleRoute(subroute);
         validResponse(subroute, response);
-        Truth.assertWithMessage("Contains forwarded to").that(new String(response.bytes).startsWith("Forwarded to")).isTrue();
+        assertWithMessage("Contains forwarded to")
+                .that(new String(response.bytes))
+                .startsWith("Forwarded to");
 
         // heart
         subroute = "heart/set/124/1";
         response = routeFinder.handleRoute(subroute);
         validResponse(subroute, response);
-        Truth.assertWithMessage("Contains updated").that(new String(response.bytes).startsWith("Updated")).isTrue();
+        assertWithMessage("Contains updated")
+                .that(new String(response.bytes))
+                .startsWith("Updated");
 
         // steps
         subroute = "steps/set/123";
         response = routeFinder.handleRoute(subroute);
         validResponse(subroute, response);
-        Truth.assertWithMessage("Contains updated").that(new String(response.bytes).startsWith("Updated")).isTrue();
+        assertWithMessage("Contains updated")
+                .that(new String(response.bytes))
+                .startsWith("Updated");
 
         // sgv combined
         subroute = "sgv.json?steps=1234&heart=123&tasker=osnooze";
@@ -87,13 +102,18 @@ public class RouterFinderTest {
     }
 
     private void validResponse(String subroute, WebResponse response) {
-        Truth.assertWithMessage(subroute + " instance null data response").that(response).isNotNull();
+        assertWithMessage(subroute + " instance null data response")
+                .that(response)
+                .isNotNull();
+
         log("\n\n" + subroute + " Result code: " + response.resultCode);
         log(HexDump.dumpHexString(response.bytes));
 
-        Truth.assertWithMessage(subroute + " result code").that(response.resultCode == 200).isTrue();
-        Truth.assertWithMessage(subroute + " instance data length").that(response.bytes.length > 1).isTrue();
-
+        assertWithMessage(subroute + " result code")
+                .that(response.resultCode)
+                .isEqualTo(200);
+        assertWithMessage(subroute + " instance data length")
+                .that(response.bytes.length)
+                .isAtLeast(1);
     }
-
 }
