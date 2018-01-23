@@ -13,6 +13,7 @@ import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.NotificationChannels;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.utils.PowerStateReceiver;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.polidea.rxandroidble.RxBleConnection;
@@ -56,7 +57,7 @@ import static com.eveningoutpost.dexdrip.Services.G5BaseService.G5_FIRMWARE_MARK
 public class Ob1G5StateMachine {
 
     private static final String TAG = "Ob1G5StateMachine";
-    private static final int LOW_BATTERY_WARNING_LEVEL = 300; // voltage a < this value raises warnings
+    private static final int LOW_BATTERY_WARNING_LEVEL = Pref.getStringToInt("g5-battery-warning-level", 300); // voltage a < this value raises warnings;
     private static final long BATTERY_READ_PERIOD_MS = Constants.HOUR_IN_MS * 12; // how often to poll battery data (12 hours)
 
     private static final boolean getVersionDetails = true; // try to load firmware version details

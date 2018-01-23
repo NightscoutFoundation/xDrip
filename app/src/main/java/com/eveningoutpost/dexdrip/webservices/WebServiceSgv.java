@@ -5,6 +5,7 @@ import android.util.Log;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.DateUtil;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.dagger.Singleton;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
@@ -41,6 +42,7 @@ public class WebServiceSgv extends BaseWebService {
         int steps_result_code = 0; // result code for any steps cgi parameters, 200 = good
         int heart_result_code = 0; // result code for any heart cgi parameters, 200 = good
         int tasker_result_code = 0; // result code for any heart cgi parameters, 200 = good
+        int units_indicator = 1; // show the units we are using
 
         final Map<String, String> cgi = getQueryParameters(query);
 
@@ -90,6 +92,11 @@ public class WebServiceSgv extends BaseWebService {
                     item.put("unfiltered", (long) (reading.raw_data * 1000));
                     item.put("rssi", 100);
                     item.put("type", "sgv");
+
+                    if (units_indicator > 0) {
+                        item.put("units_hint", Pref.getString("units", "mgdl").equals("mgdl") ? "mgdl" : "mmol");
+                        units_indicator = 0;
+                    }
 
                     // emit the external status line once if present
                     if (external_status_line.length() > 0) {

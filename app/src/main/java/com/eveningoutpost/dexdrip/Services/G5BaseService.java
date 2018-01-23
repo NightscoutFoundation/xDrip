@@ -3,6 +3,8 @@ package com.eveningoutpost.dexdrip.Services;
 import android.app.Service;
 import android.bluetooth.BluetoothDevice;
 
+import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.google.android.gms.wearable.DataMap;
 
 /**
@@ -18,6 +20,8 @@ public abstract class G5BaseService extends Service {
     public static final String G5_BATTERY_FROM_MARKER = "g5-battery-from";
 
     public static final String G5_BATTERY_WEARABLE_SEND = "g5-battery-wearable-send";
+
+    protected static final int LOW_BATTERY_WARNING_LEVEL = Pref.getStringToInt("g5-battery-warning-level", 300);
 
     public static boolean getBatteryStatusNow = false;
 
@@ -65,5 +69,11 @@ public abstract class G5BaseService extends Service {
         return runningStringCheck(lastStateWatch);
     }
 
-
+    public static void resetTransmitterBatteryStatus() {
+        final String transmitterId = Pref.getString("dex_txid", "NULL");
+        PersistentStore.setString(G5_BATTERY_MARKER + transmitterId, "");
+        PersistentStore.setLong(G5_BATTERY_FROM_MARKER + transmitterId, 0);
+        PersistentStore.setLong(G5_BATTERY_LEVEL_MARKER + transmitterId, 0);
+        PersistentStore.commit();
+    }
 }

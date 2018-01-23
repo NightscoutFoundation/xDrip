@@ -30,9 +30,11 @@ public class BgToSpeech {
     private static final String TAG = "BgToSpeech";
 
     // no longer used compatibility signature
+    /*
     public static void speak(final double value, long timestamp) {
         speak(value, timestamp, null);
     }
+    */
 
     // speak a bg reading if its timestamp is current, include the delta name if preferences dictate
     public static void speak(final double value, long timestamp, String delta_name) {
@@ -121,6 +123,8 @@ public class BgToSpeech {
                     Log.e(TAG, "Null pointer for TTS in calculateText");
                 }
             }
+            if (delta_name != null) text += " " + mungeDeltaName(delta_name);
+            if (bg_to_speech_repeat_twice) text = text + TWICE_DELIMITER + text;
         } else if (value > 12) {
             text = xdrip.getAppContext().getString(R.string.low);
         } else {

@@ -52,7 +52,6 @@ public class Blukon {
     }
 
     private static boolean m_getNowGlucoseDataIndexCommand = false;
-    private static boolean m_gotOneTimeUnknownCmd = false;
     private static int GET_SENSOR_AGE_DELAY = 3 * 3600;
     private static final String BLUKON_GETSENSORAGE_TIMER = "blukon-getSensorAge-timer";
     private static final String BLUKON_DECODE_SERIAL_TIMER = "blukon-decodeSerial-timer";
@@ -73,6 +72,12 @@ public class Blukon {
     private static void setPin(String thepin) {
         if (thepin == null) return;
         Pref.setString(BLUKON_PIN_PREF, thepin);
+    }
+
+    public static boolean isCollecting() {
+        return false; // stub
+        // use internal logic to decide if we are collecting something, if we return true here
+        // then we will never get reset due to missed reading service restarts
     }
 
     public static void clearPin() {
@@ -141,21 +146,9 @@ public class Blukon {
             if (currentCommand.startsWith("810a00")) {//ACK sent
                 //ack received
 
-                if (JoH.pratelimit(BLUKON_GETSENSORAGE_TIMER, GET_SENSOR_AGE_DELAY)) {
-                    currentCommand = "010d0e0127";
-                    Log.i(TAG, "getSensorAge");
-                } else {
-                    if (Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
-                        // Send the command to getHistoricData (read all blcoks from 0 to 0x2b)
-                        Log.i(TAG, "getHistoricData (1)");
-                        currentCommand = "010d0f02002b";
-                        m_blockNumber = 0;
-                    } else {
-                        currentCommand = "010d0e0103";
-                        m_getNowGlucoseDataIndexCommand = true;//to avoid issue when gotNowDataIndex cmd could be same as getNowGlucoseData (case block=3)
-                        Log.i(TAG, "getNowGlucoseDataIndexCommand");
-                    }
-                }
+                currentCommand = "010d0b00";
+                Log.i(TAG, "getUnknownCmd1: " + currentCommand);
+
             } else {
                 Log.i(TAG, "Got sleep ack, resetting initialstate!");
                 currentCommand = "";
@@ -644,8 +637,10 @@ public class Blukon {
         final int curGluc;
         final long rawGlucose;
 
+        // option to use 13 bit mask
+        final boolean thirteen_bit_mask = Pref.getBooleanDefaultFalse("testing_use_thirteen_bit_mask");
         // grep 2 bytes with BG data from input bytearray, mask out 12 LSB bits and rescale for xDrip+
-        rawGlucose = ((input[3 + m_nowGlucoseOffset + 1] & 0x0F) << 8) | (input[3 + m_nowGlucoseOffset] & 0xFF);
+        rawGlucose = ((input[3 + m_nowGlucoseOffset + 1] & (thirteen_bit_mask ? 0x1F : 0x0F)) << 8) | (input[3 + m_nowGlucoseOffset] & 0xFF);
         Log.i(TAG, "rawGlucose=" + rawGlucose + ", m_nowGlucoseOffset=" + m_nowGlucoseOffset);
 
         // rescale

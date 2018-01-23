@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 
@@ -23,6 +24,8 @@ import com.google.common.primitives.Bytes;
 
 
 public class PersistentStore {
+
+    // TODO optimize init_prefs
 
     private static final String DATA_STORE_INTERNAL = "persist_internal_store";
     private static SharedPreferences prefs;
@@ -113,4 +116,9 @@ public class PersistentStore {
         if (getLong(name) > 0) setLong(name, 0);
     }
 
+    @SuppressLint("ApplySharedPref")
+    public static void commit() {
+        init_prefs();
+        prefs.edit().commit();
+    }
 }

@@ -17,6 +17,8 @@ A web server will respond to requests on address `127.0.0.1` port `17580`
 
     http://127.0.0.1:17580/sgv.json
 
+The first record will contain a hint as to the units being used, `units_hint` will be `mgdl` or `mmol` to indicate the user's preference but the values will always be sent as mgdl
+
 You can also access the steps endpoint by appending a query parameter
 
     http://127.0.0.1:17580/sgv.json?steps=1234
