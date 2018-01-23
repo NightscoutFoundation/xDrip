@@ -2,7 +2,7 @@
     android:id="@+id/xDripwidget"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="#55212121">
+    android:background="@android:color/transparent">
 
     <ImageView
         android:id="@+id/widgetGraph"

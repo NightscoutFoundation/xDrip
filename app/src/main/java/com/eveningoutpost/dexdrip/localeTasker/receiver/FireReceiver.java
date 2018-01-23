@@ -165,6 +165,11 @@ public final class FireReceiver extends BroadcastReceiver {
                             JoH.static_toast_long("SNOOZE from Tasker");
                             break;
 
+                            //opportunistic snooze that only does anything if an alert is active
+                        case "OSNOOZE":
+                            AlertPlayer.getPlayer().OpportunisticSnooze();
+                            break;
+
                         case "RESTART":
                             if (message_array.length> 1) {
                                 switch (message_array[1].toUpperCase()) {

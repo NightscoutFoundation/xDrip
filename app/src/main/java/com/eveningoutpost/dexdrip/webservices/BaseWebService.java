@@ -14,12 +14,6 @@ import java.util.StringTokenizer;
 
 public abstract class BaseWebService {
 
-    private static String TAG = "BaseWebService";
-
-    public static BaseWebService getInstance() {
-        return null; // stub
-    }
-
     public abstract WebResponse request(String query);
 
     // web error helpers

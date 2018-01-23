@@ -1,11 +1,12 @@
 package com.eveningoutpost.dexdrip.webservices;
 
-import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.DateUtil;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.dagger.Singleton;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
 import org.json.JSONArray;
@@ -33,28 +34,37 @@ import static com.eveningoutpost.dexdrip.wearintegration.ExternalStatusService.g
 public class WebServiceSgv extends BaseWebService {
 
     private static String TAG = "WebServiceSgv";
-    private static volatile WebServiceSgv instance;
 
-    @NonNull
-    public static WebServiceSgv getInstance() {
-        if (instance == null) {
-            instance = new WebServiceSgv();
-        }
-        return instance;
-    }
 
     // process the request and produce a response object
     public WebResponse request(String query) {
 
         int steps_result_code = 0; // result code for any steps cgi parameters, 200 = good
+        int heart_result_code = 0; // result code for any heart cgi parameters, 200 = good
+        int tasker_result_code = 0; // result code for any heart cgi parameters, 200 = good
+        int units_indicator = 1; // show the units we are using
 
         final Map<String, String> cgi = getQueryParameters(query);
 
         if (cgi.containsKey("steps")) {
             UserError.Log.d(TAG, "Received steps request: " + cgi.get("steps"));
             // forward steps request to steps route
-            final WebResponse steps_reply_wr = RouteFinder.handleRoute("steps/set/" + cgi.get("steps"));
+            final WebResponse steps_reply_wr = ((RouteFinder)Singleton.get("RouteFinder")).handleRoute("steps/set/" + cgi.get("steps"));
             steps_result_code = steps_reply_wr.resultCode;
+        }
+
+        if (cgi.containsKey("heart")) {
+            UserError.Log.d(TAG, "Received heart request: " + cgi.get("heart"));
+            // forward steps request to heart route
+            final WebResponse heart_reply_wr = ((RouteFinder)Singleton.get("RouteFinder")).handleRoute("heart/set/" + cgi.get("heart") + "/1"); // accuracy currently ignored (always 1) - TODO review
+            heart_result_code = heart_reply_wr.resultCode;
+        }
+
+        if (cgi.containsKey("tasker")) {
+            UserError.Log.d(TAG, "Received tasker request: " + cgi.get("tasker"));
+            // forward steps request to heart route
+            final WebResponse tasker_reply_wr = ((RouteFinder)Singleton.get("RouteFinder")).handleRoute("tasker/" + cgi.get("tasker")); // send single word command to tasker, eg snooze or osnooze
+            tasker_result_code = tasker_reply_wr.resultCode;
         }
 
         final JSONArray reply = new JSONArray();
@@ -83,6 +93,11 @@ public class WebServiceSgv extends BaseWebService {
                     item.put("rssi", 100);
                     item.put("type", "sgv");
 
+                    if (units_indicator > 0) {
+                        item.put("units_hint", Pref.getString("units", "mgdl").equals("mgdl") ? "mgdl" : "mmol");
+                        units_indicator = 0;
+                    }
+
                     // emit the external status line once if present
                     if (external_status_line.length() > 0) {
                         item.put("aaps", external_status_line);
@@ -94,6 +109,18 @@ public class WebServiceSgv extends BaseWebService {
                     if (steps_result_code > 0) {
                         item.put("steps_result", steps_result_code);
                         steps_result_code = 0;
+                    }
+
+                    // emit result code from heart if present
+                    if (heart_result_code > 0) {
+                        item.put("heart_result", heart_result_code);
+                        heart_result_code = 0;
+                    }
+
+                    // emit result code from tasker if present
+                    if (tasker_result_code > 0) {
+                        item.put("tasker_result", tasker_result_code);
+                        tasker_result_code = 0;
                     }
 
                     reply.put(item);

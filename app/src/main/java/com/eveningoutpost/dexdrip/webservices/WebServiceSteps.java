@@ -1,7 +1,5 @@
 package com.eveningoutpost.dexdrip.webservices;
 
-import android.support.annotation.NonNull;
-
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.StepCounter;
 import com.eveningoutpost.dexdrip.Models.UserError;
@@ -20,16 +18,6 @@ import java.util.List;
 public class WebServiceSteps extends BaseWebService {
 
     private static String TAG = "WebServiceSteps";
-    private static volatile WebServiceSteps instance;
-
-
-    @NonNull
-    public static WebServiceSteps getInstance() {
-        if (instance == null) {
-            instance = new WebServiceSteps();
-        }
-        return instance;
-    }
 
     // process the request and produce a response object
     public WebResponse request(String query) {

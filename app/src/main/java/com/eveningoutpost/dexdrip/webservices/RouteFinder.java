@@ -1,36 +1,61 @@
 package com.eveningoutpost.dexdrip.webservices;
 
+import android.util.Pair;
+
+import com.eveningoutpost.dexdrip.dagger.Singleton;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * Created by jamorham on 09/01/2018.
+ * Created by jamorham on 17/01/2018.
  *
  * Calls the WebService module associated with the route
  *
  */
 
-class RouteFinder {
+public class RouteFinder {
 
-    static WebResponse handleRoute(String route) {
+    private final List<Pair<String, String>> routes = new ArrayList<>();
 
-        WebResponse response;
-        // find a module based on our query string
-        if (route.startsWith("pebble")) {
-            // support for pebble nightscout watchface emulates /pebble Nightscout endpoint
-            response = WebServicePebble.getInstance().request(route);
-        } else if (route.startsWith("tasker/")) {
-            // forward the request to tasker interface
-            response = WebServiceTasker.getInstance().request(route);
-        } else if (route.startsWith("sgv.json")) {
-            // support for nightscout style sgv.json endpoint
-            response = WebServiceSgv.getInstance().request(route);
-        } else if (route.startsWith("steps/")) {
-            // support for working with step counter
-            response = WebServiceSteps.getInstance().request(route);
-        } else {
-            // error not found
-            response = new WebResponse("Path not found: " + route + "\r\n", 404, "text/plain");
-        }
+    RouteFinder() {
+        // route url starts with , class name to process it
 
-        return response;
+        // support for pebble nightscout watchface emulates /pebble Nightscout endpoint
+        routes.add(new Pair<>("pebble", "WebServicePebble"));
+
+        // tasker interface
+        routes.add(new Pair<>("tasker/", "WebServiceTasker"));
+
+        // support for nightscout style sgv.json endpoint
+        routes.add(new Pair<>("sgv.json", "WebServiceSgv"));
+
+        // support for working with step counter
+        routes.add(new Pair<>("steps/", "WebServiceSteps"));
+
+        // support for working with heart monitor
+        routes.add(new Pair<>("heart/", "WebServiceHeart"));
     }
 
+    // process a received route
+    WebResponse handleRoute(final String route) {
+
+        BaseWebService service = null;
+
+        for (final Pair<String, String> routeEntry : routes) {
+            if (route.startsWith(routeEntry.first)) {
+                service = (BaseWebService) Singleton.get(routeEntry.second);
+                break;
+            }
+        }
+
+        if (service != null) {
+            // get the response from the service for the route
+            return service.request(route);
+        } else {
+            // unknown service error reply
+            return new WebResponse("Path not found: " + route + "\r\n", 404, "text/plain");
+        }
+
+    }
 }

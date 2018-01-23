@@ -30,9 +30,11 @@ public class BgToSpeech {
     private static final String TAG = "BgToSpeech";
 
     // no longer used compatibility signature
+    /*
     public static void speak(final double value, long timestamp) {
         speak(value, timestamp, null);
     }
+    */
 
     // speak a bg reading if its timestamp is current, include the delta name if preferences dictate
     public static void speak(final double value, long timestamp, String delta_name) {
@@ -111,18 +113,18 @@ public class BgToSpeech {
                 df.setMaximumFractionDigits(1);
                 df.setMinimumFractionDigits(1);
                 text = df.format(value * Constants.MGDL_TO_MMOLL);
-                if (delta_name != null) text += " " + mungeDeltaName(delta_name);
                 try {
                     // we check the locale but it may not actually be available if the instance isn't created yet
                     if (SpeechUtil.getLocale().getLanguage().startsWith("en")) {
                         // in case the text has a comma in current locale but TTS defaults to English
                         text = text.replace(",", ".");
                     }
-                    if (bg_to_speech_repeat_twice) text = text + TWICE_DELIMITER + text;
                 } catch (NullPointerException e) {
                     Log.e(TAG, "Null pointer for TTS in calculateText");
                 }
             }
+            if (delta_name != null) text += " " + mungeDeltaName(delta_name);
+            if (bg_to_speech_repeat_twice) text = text + TWICE_DELIMITER + text;
         } else if (value > 12) {
             text = xdrip.getAppContext().getString(R.string.low);
         } else {
