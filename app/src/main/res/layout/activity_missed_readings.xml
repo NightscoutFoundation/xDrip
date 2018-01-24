@@ -27,7 +27,7 @@
                             android:id="@+id/missed_reading_enable_alert"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="enable alert"
+                            android:text="Enable Missed Reading Alert"
                             android:textSize="15sp"
                             android:layout_gravity="left"
                             android:gravity="right" />
@@ -37,7 +37,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:gravity="left"
-                            android:text="Alert if no data receieved in x minutes:"
+                            android:text="Alert if no data recieved in x minutes:"
                             android:textSize="15sp"
                             android:layout_gravity="left"
                             android:paddingRight="10dp" />
