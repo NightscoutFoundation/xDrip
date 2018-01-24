@@ -779,4 +779,10 @@
 	<string name="FortyFiveUp">leicht steigend</string>
 	<string name="SingleUp">steigend</string>
 	<string name="DoubleUp">schnell steigend</string>
+	<string name="Speak_trend_arrow_name">Sprich den Trend mit aus</string>
+	<string name="Speak_everything_twice">Sprich alles zwei mal</string>
+	<string name="Speech_speed">Sprachgeschwindigkeit</string>
+	<string name="Speech_pitch">Sprachliche Tonhöhe</string>
+	<string name="Speak_Alerts">Sprich Alarme</string>
+	<string name="Speak_Alerts_Summary">Spricht die Alarmwerte bei Über-/Unterschreitungn aus</string>
 </resources>

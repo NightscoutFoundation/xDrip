@@ -861,4 +861,10 @@
     <string name="SingleUp">Single Up</string>
     <string name="DoubleUp">Double Up</string>
 
+    <string name="Speak_trend_arrow_name">Speak trend arrow name</string>
+    <string name="Speak_everything_twice">Speak everything twice</string>
+    <string name="Speech_speed">Speech speed</string>
+    <string name="Speech_pitch">Speech pitch</string>
+    <string name="Speak_Alerts">Speak Alerts</string>
+    <string name="Speak_Alerts_Summary">Also give some spoken alert messages</string>
 </resources>
