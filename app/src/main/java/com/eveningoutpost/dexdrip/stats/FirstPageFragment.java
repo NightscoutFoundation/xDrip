@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Dex_Constants;
 import com.eveningoutpost.dexdrip.R;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 /**
@@ -133,6 +134,32 @@ public class FirstPageFragment extends Fragment {
                 TextView coefficientOfVariation = (TextView) localView.findViewById(R.id.textView_coefficient_of_variation);
                 updateText(localView, coefficientOfVariation, Math.round(1000d*stdev/mean)/10d + "%");
 
+                List<BgReadingStats> bgListByTime = DBSearchUtil.getReadings(false);
+                double NormalReadingspct = inRange*100/total;
+                double glucoseFirst = bgListByTime.get(0).calculated_value;
+                double glucoseLast = glucoseFirst;
+                double glucoseTotal =  glucoseLast;
+                double GVITotal = 0;
+                int usedRecords = 1;
+                for (int i=1; i<bgListByTime.size();i++) {
+                    BgReadingStats bgr = bgListByTime.get(i);
+                    double delta = bgr.calculated_value - glucoseLast;
+                    GVITotal += Math.sqrt(25 + Math.pow(delta, 2));
+                    usedRecords += 1;
+                    glucoseLast = bgr.calculated_value;
+                    glucoseTotal +=  glucoseLast;
+                }
+                double GVIDelta = Math.abs(glucoseLast - glucoseFirst);//Math.floor(glucose_data[0].bgValue,glucose_data[glucose_data.length-1].bgValue);
+                double GVIIdeal = Math.sqrt(Math.pow(usedRecords*5,2) + Math.pow(GVIDelta,2));
+                double GVI = (GVITotal / GVIIdeal * 100) / 100;
+                Log.d("DrawStats", "GVI=" + GVI + " GVIIdeal=" + GVIIdeal + " GVITotal=" + GVITotal + " GVIDelta=" + GVIDelta + " usedRecords=" + usedRecords);
+                double glucoseMean = Math.floor(glucoseTotal / usedRecords);
+                double tirMultiplier = NormalReadingspct / 100.0;
+                double PGS = (GVI * glucoseMean * (1-tirMultiplier) * 100) / 100;
+                Log.d("DrawStats", "NormalReadingspct=" + NormalReadingspct + " glucoseMean=" + glucoseMean + " tirMultiplier=" + tirMultiplier + " PGS=" + PGS);
+                TextView gviView = (TextView) localView.findViewById(R.id.textView_gvi);
+                DecimalFormat df = new DecimalFormat("#.00");
+                updateText(localView, gviView,  df.format(GVI) + "  PGS:  " + df.format(PGS));
 
             }
         }
