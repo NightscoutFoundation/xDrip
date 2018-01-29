@@ -10,7 +10,7 @@ class HistoricBg {
 
     public int quality;
     public int time;
-    public int bg;
+    public double bg;
 }
 
 public class OOPResults {

@@ -3,6 +3,7 @@ package com.eveningoutpost.dexdrip.Models;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.eveningoutpost.dexdrip.LibreAlarmReceiver;
 import com.eveningoutpost.dexdrip.NSEmulatorReceiver;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
@@ -10,13 +11,15 @@ import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.Services.TransmitterRawData;
 import com.eveningoutpost.dexdrip.UtilityModels.Intents;
 import com.eveningoutpost.dexdrip.UtilityModels.MockDataSource;
-
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import static com.eveningoutpost.dexdrip.Models.BgReading.bgReadingInsertFromJson;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.json.JSONException;
 
@@ -47,26 +50,48 @@ public class LibreOOPAlgorithm {
         xdrip.getAppContext().sendBroadcast(intent);
     }
     
+    
     static public void HandleData(String oopData) {
         Log.e(TAG, "HandleData called with " + oopData);
+        OOPResults oOPResults = null;
         try {
             final Gson gson = new GsonBuilder().create();
-            final OOPResults oOPResults = gson.fromJson(oopData, OOPResults.class);
-            
-            // Enter the historic data
-            for(HistoricBg historicBg : oOPResults.historicBg) {
-                if(historicBg.quality == 0) {
-                    NSEmulatorReceiver.bgReadingInsertFromData(
-                        oOPResults.timestamp + (historicBg.time - oOPResults.currentTime) * 60000, historicBg.bg, false);
-                }
-            }
-            
-            NSEmulatorReceiver.bgReadingInsertFromData(oOPResults.timestamp, oOPResults.currentBg, true);
-            
-            
-            
+            oOPResults = gson.fromJson(oopData, OOPResults.class);
         } catch (Exception  e) { //TODO: what exception should we catch here.
             Log.e(TAG, "HandleData cought exception ", e);
+            return;
         }
+        ReadingData.TransferObject libreAlarmObject = new ReadingData.TransferObject();
+        libreAlarmObject.data = new ReadingData();
+        libreAlarmObject.data.trend = new ArrayList<GlucoseData>();
+        
+        // Add the first object, that is the current time
+        GlucoseData glucoseData = new GlucoseData();
+        glucoseData.sensorTime = oOPResults.currentTime;
+        glucoseData.realDate = oOPResults.timestamp;
+        glucoseData.glucoseLevel = (int)oOPResults.currentBg;
+        glucoseData.glucoseLevelRaw = (int)oOPResults.currentBg;
+        
+        libreAlarmObject.data.trend.add(glucoseData);
+        
+        // TODO: Add here data of last 10 minutes or whatever.
+        
+        
+       // Add the historic data
+        libreAlarmObject.data.history = new ArrayList<GlucoseData>();
+        for(HistoricBg historicBg : oOPResults.historicBg) {
+            if(historicBg.quality == 0) {
+                glucoseData = new GlucoseData();
+                glucoseData.realDate = oOPResults.timestamp + (historicBg.time - oOPResults.currentTime) * 60000;
+                glucoseData.glucoseLevel = (int)historicBg.bg;
+                glucoseData.glucoseLevelRaw = (int)historicBg.bg;
+                libreAlarmObject.data.history.add(glucoseData);
+            }
+        }
+        boolean use_raw = Pref.getBooleanDefaultFalse("calibrate_external_libre_algorithm");
+        Log.e(TAG, "HandleData Created the following object " + libreAlarmObject.toString());
+        
+        LibreAlarmReceiver.CalculateFromDataTransferObject(libreAlarmObject, use_raw);
+        
     }
 }
