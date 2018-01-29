@@ -599,9 +599,11 @@
     <string name="repeatedly_restart_collection_service">Repeatedly restart the collection service at any hint of missing data. Enable only if you are getting data loss.</string>
     <string name="aggressive_service_restarts">Aggressive service restarts</string>
     <string name="predictive_readings_old">Old method - Not Recommended! Attempts to predict readings each minute based on the past few values.</string>
-    <string name="use_external_blukon_algorithm_summary">Use an out of process blukon algorithm.</string>
+    <string name="use_external_blukon_algorithm_summary">Use an out of process libre algorithm. (blukon/NFC/LibreAlarm)</string>
     <string name="display_predictive_values">Display Predictive Values</string>
     <string name="use_external_blukon_algorithm">Out of process blukon algorithm.</string>
+    <string name="calibrate_external_libre_algorithm_summary">Apply xDrip calibration methods on OOP data.</string>
+    <string name="calibrate_external_libre_algorithm_title">OOP algorithm calibration.</string>
     <string name="interpret_share_raw">If using Share, xDrip will show values when they are normally hidden on the receiver.</string>
     <string name="interpret_raw">Interpret Raw Values</string>
     <string name="use_infrequent_calibrations">If needed, use calibrations from longer ago, eg if calibrations are supplied infrequently.</string>

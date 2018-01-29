@@ -1057,11 +1057,19 @@ public class BgReading extends Model implements ShareUploadableBg {
 
             bgr.timestamp = timestamp;
             bgr.calculated_value = value;
+            
 
             // rough code for testing!
             bgr.filtered_calculated_value = value;
-            bgr.raw_data = value*1000;
-            bgr.filtered_data = value*1000;
+            bgr.raw_data = value;
+            bgr.age_adjusted_raw_value = value;
+            bgr.filtered_data = value;
+            
+            final Sensor forced_sensor = Sensor.currentSensor();
+            if (forced_sensor != null) {
+                bgr.sensor = forced_sensor;
+                bgr.sensor_uuid = forced_sensor.uuid;
+            }
 
             try {
                 if (readingNearTimeStamp(bgr.timestamp) == null) {
