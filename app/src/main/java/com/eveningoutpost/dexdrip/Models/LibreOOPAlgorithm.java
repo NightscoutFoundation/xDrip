@@ -9,6 +9,7 @@ import com.eveningoutpost.dexdrip.xdrip;
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.Services.TransmitterRawData;
+import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Intents;
 import com.eveningoutpost.dexdrip.UtilityModels.MockDataSource;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
@@ -61,16 +62,24 @@ public class LibreOOPAlgorithm {
             Log.e(TAG, "HandleData cought exception ", e);
             return;
         }
+        boolean use_raw = Pref.getBooleanDefaultFalse("calibrate_external_libre_algorithm");
         ReadingData.TransferObject libreAlarmObject = new ReadingData.TransferObject();
         libreAlarmObject.data = new ReadingData();
         libreAlarmObject.data.trend = new ArrayList<GlucoseData>();
+        
+        double factor = 1;
+        if(use_raw) {
+            // When handeling raw, data is expected to be bigger in a factor of 1000 and 
+            // is then devided by Constants.LIBRE_MULTIPLIER
+            factor = 1000 / Constants.LIBRE_MULTIPLIER;
+        }
         
         // Add the first object, that is the current time
         GlucoseData glucoseData = new GlucoseData();
         glucoseData.sensorTime = oOPResults.currentTime;
         glucoseData.realDate = oOPResults.timestamp;
-        glucoseData.glucoseLevel = (int)oOPResults.currentBg;
-        glucoseData.glucoseLevelRaw = (int)oOPResults.currentBg;
+        glucoseData.glucoseLevel = (int)(oOPResults.currentBg * factor);
+        glucoseData.glucoseLevelRaw = (int)(oOPResults.currentBg * factor);
         
         libreAlarmObject.data.trend.add(glucoseData);
         
@@ -83,14 +92,13 @@ public class LibreOOPAlgorithm {
             if(historicBg.quality == 0) {
                 glucoseData = new GlucoseData();
                 glucoseData.realDate = oOPResults.timestamp + (historicBg.time - oOPResults.currentTime) * 60000;
-                glucoseData.glucoseLevel = (int)historicBg.bg;
-                glucoseData.glucoseLevelRaw = (int)historicBg.bg;
+                glucoseData.glucoseLevel = (int)(historicBg.bg * factor);
+                glucoseData.glucoseLevelRaw = (int)(historicBg.bg * factor);
                 libreAlarmObject.data.history.add(glucoseData);
             }
         }
-        boolean use_raw = Pref.getBooleanDefaultFalse("calibrate_external_libre_algorithm");
-        Log.e(TAG, "HandleData Created the following object " + libreAlarmObject.toString());
         
+        Log.e(TAG, "HandleData Created the following object " + libreAlarmObject.toString());
         LibreAlarmReceiver.CalculateFromDataTransferObject(libreAlarmObject, use_raw);
         
     }
