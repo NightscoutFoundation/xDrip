@@ -1363,7 +1363,7 @@ public class BgGraphBuilder {
                                 Log.d(TAG, "Exception matching position: " + e);
                             }
                         } else {
-                            pv.note = "Treatment";
+                            pv.note = treatment.getBestShortText();
                         }
                         if (treatmentValues.size() > 0) { // not sure if this >1 is right really - needs a review
                             PointValue lastpv = treatmentValues.get(treatmentValues.size() - 1);
