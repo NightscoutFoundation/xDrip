@@ -300,9 +300,9 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                                             sendMessagePayload(node, "SYNC_TREATMENTS_PATH", SYNC_TREATMENTS_PATH, datamap.toByteArray());
                                         }
                                         break;
-                                    case WEARABLE_RESEND_PATH:
+                                    /*case WEARABLE_RESEND_PATH:
                                         Log.d(TAG, "doInBackground WEARABLE_RESEND_PATH");
-                                        sendMessagePayload(node, "WEARABLE_RESEND_PATH", path, payload);
+                                        sendMessagePayload(node, "WEARABLE_RESEND_PATH", path, payload);*/
                                     default://SYNC_ALL_DATA
                                         Log.d(TAG, "doInBackground SYNC_ALL_DATA");
                                         if (sync_step_counter) {
@@ -332,10 +332,14 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                                                 sendMessagePayload(node, "SYNC_LOGS_PATH", SYNC_LOGS_PATH, compressPayload);
                                             }
                                         }
-                                        //sendMessagePayload(node, "WEARABLE_RESEND_PATH", path, payload);
                                         if (PersistentStore.getBoolean(G5_BATTERY_WEARABLE_SEND)) {
                                             PersistentStore.setBoolean(G5_BATTERY_WEARABLE_SEND, false);
                                             sendPersistentStore();
+                                        }
+
+                                        if (path.equals(WEARABLE_RESEND_PATH)) {
+                                            Log.d(TAG, "doInBackground WEARABLE_RESEND_PATH");
+                                            sendMessagePayload(node, "WEARABLE_RESEND_PATH", path, payload);
                                         }
                                         break;
                                 }
@@ -978,6 +982,9 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                     }
                     messageIntent.putExtra("data", dataMap.toBundle());
                     LocalBroadcastManager.getInstance(this).sendBroadcast(messageIntent);
+                    if (!mPrefs.getBoolean("enable_wearG5", false)) {
+                        ListenerService.SendData(context, ListenerService.SYNC_ALL_DATA, null);
+                    }
                     //showTreatments(context, "all");
                 } else if (path.equals(WEARABLE_TREATMENT_PAYLOAD)) {
                     dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
