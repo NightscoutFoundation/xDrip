@@ -98,6 +98,16 @@ public class LibreOOPAlgorithm {
             }
         }
         
+        // Add the current point again. This is needed in order to have the last gaps closed.
+        // TODO: Base this on real BG values.
+        glucoseData = new GlucoseData();
+        glucoseData.realDate = oOPResults.timestamp;
+        glucoseData.glucoseLevel = (int)(oOPResults.currentBg * factor);
+        glucoseData.glucoseLevelRaw = (int)(oOPResults.currentBg * factor);
+        libreAlarmObject.data.history.add(glucoseData);
+        
+        
+  
         Log.e(TAG, "HandleData Created the following object " + libreAlarmObject.toString());
         LibreAlarmReceiver.CalculateFromDataTransferObject(libreAlarmObject, use_raw);
         
