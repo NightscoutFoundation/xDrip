@@ -125,6 +125,13 @@
                 android:key="g5_non_raw_method"
                 android:summary="@string/g5_experimental_mode"
                 android:title="@string/use_calibrated_data" />
+            <EditTextPreference
+                android:key="g5-battery-warning-level"
+                android:title="Adjust battery warning level"
+                android:defaultValue="300"
+                android:numeric="integer"
+                />
+
         </PreferenceScreen>
 
         <EditTextPreference

@@ -43,6 +43,7 @@ import com.eveningoutpost.dexdrip.ParakeetHelper;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.Services.BluetoothGlucoseMeter;
+import com.eveningoutpost.dexdrip.Services.G5BaseService;
 import com.eveningoutpost.dexdrip.Services.PlusSyncService;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
@@ -638,6 +639,14 @@ public class Preferences extends PreferenceActivity {
                     return true;
                 }
 
+            });
+
+            // this gets cached in a static final field at the moment so needs hard reset
+            findPreference("g5-battery-warning-level").setOnPreferenceChangeListener((preference, newValue) -> {
+                prefs.edit().putString("g5-battery-warning-level", (String) newValue).commit();
+                G5BaseService.resetTransmitterBatteryStatus();
+                SdcardImportExport.hardReset();
+                return true;
             });
 
             findPreference("use_ob1_g5_collector_service").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {

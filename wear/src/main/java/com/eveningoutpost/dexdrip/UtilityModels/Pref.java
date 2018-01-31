@@ -18,6 +18,8 @@ public class Pref {
     private static final String TAG = "Pref";
     private static SharedPreferences prefs;
 
+    // TODO optimize initializePrefs()
+
     // cache instance
     private static void initializePrefs() {
         if (prefs == null) {
@@ -117,6 +119,14 @@ public class Pref {
             return prefs.getInt(pref, def);
         }
         return def;
+    }
+
+    public static int getStringToInt(final String pref, final int defaultValue) {
+        try {
+            return Integer.parseInt(getString(pref, Integer.toString(defaultValue)));
+        } catch (Exception e) {
+            return defaultValue;
+        }
     }
 
     public static boolean setInt(final String pref, final int num) {

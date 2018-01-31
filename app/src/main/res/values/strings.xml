@@ -489,7 +489,7 @@
     <string name="alert_name_colon">Alert Name:</string>
     <string name="threshold_colon">Threshold:</string>
     <string name="default_snooze_colon">Default Snooze:</string>
-    <string name="re_raise_every_x_minutes_if_unaknowledged">Re-raise every \n x minutes if\n unaknowledged:</string>
+    <string name="re_raise_every_x_minutes_if_unaknowledged">Re-raise every \n x minutes if\n unacknowledged:</string>
     <string name="alert_tone_colon">Alert Tone:</string>
     <string name="choose_file">Choose file</string>
     <string name="select_time_for_alert_colon">Select time for alert:</string>

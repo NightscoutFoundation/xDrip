@@ -1,8 +1,6 @@
 package com.eveningoutpost.dexdrip.dagger;
 
 import com.eveningoutpost.dexdrip.webservices.WebServiceModule;
-import com.eveningoutpost.dexdrip.webservices.WebServiceSgv;
-import com.eveningoutpost.dexdrip.webservices.XdripWebService;
 
 import dagger.Component;
 
@@ -19,8 +17,6 @@ import dagger.Component;
 @Component(modules = {WebServiceModule.class})
 public interface WebServiceComponent {
 
-    void inject(XdripWebService target);
-    void inject(WebServiceSgv target);
     void inject(Singleton target);
 
 }

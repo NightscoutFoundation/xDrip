@@ -175,6 +175,16 @@ public enum DexCollectionType {
         }
     }
 
+    public static boolean getPhoneServiceCollectingState() {
+        try {
+            final Method method = getCollectorServiceClass().getMethod("isCollecting");
+            return (boolean) method.invoke(null);
+        } catch (Exception e) {
+            return false; // default to not blocking a restart
+        }
+    }
+
+
     public static Boolean getWatchServiceRunningState() {
         if (Pref.getBooleanDefaultFalse("wear_sync") &&
                 Pref.getBooleanDefaultFalse("enable_wearG5")) {
