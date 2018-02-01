@@ -409,7 +409,7 @@ public class Treatments extends Model {
                 Log.d(TAG, "Skipping AndroidAPS started message");
                 return false;
             }
-            if (mytreatment.eventType.equals("Temp Basal")) {
+            if ((mytreatment.eventType != null) && (mytreatment.eventType.equals("Temp Basal"))) {
                 // we don't yet parse or process these
                 Log.d(TAG, "Skipping Temp Basal msg");
                 return false;
