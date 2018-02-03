@@ -234,12 +234,12 @@ public class NFCReaderX {
                 if (!NFCReaderX.useNFC()) return;
                 if (succeeded) {
                     final String tagId = bytesToHexString(tag.getId());
-
+                    long now = JoH.tsl();
                     // Save raw block record (we start from block 0)
-                    LibreBlock.createAndSave(tagId, data, 0);
+                    LibreBlock.createAndSave(tagId, now, data, 0);
 
                     if(Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
-                    	LibreOOPAlgorithm.SendData(data);
+                    	LibreOOPAlgorithm.SendData(data, now);
                     } else {
 	                    mResult = parseData(0, tagId, data);
 	                    new Thread() {
@@ -263,7 +263,7 @@ public class NFCReaderX {
                 Home.staticBlockUI(context, false);
             }
         }
-
+        
 
         @Override
         protected Tag doInBackground(Tag... params) {
