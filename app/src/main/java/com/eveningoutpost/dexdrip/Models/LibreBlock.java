@@ -48,15 +48,15 @@ public class LibreBlock extends PlusModel {
     public byte[] blockbytes;
 
     // if you are indexing by block then just * 8 to get byte start
-    public static LibreBlock createAndSave(String reference, byte[] blocks, int byte_start) {
-        final LibreBlock lb = create(reference, blocks, byte_start);
+    public static LibreBlock createAndSave(String reference, long timestamp, byte[] blocks, int byte_start) {
+        final LibreBlock lb = create(reference, timestamp, blocks, byte_start);
         if (lb != null) {
             lb.save();
         }
         return lb;
     }
 
-    public static LibreBlock create(String reference, byte[] blocks, int byte_start) {
+    public static LibreBlock create(String reference, long timestamp, byte[] blocks, int byte_start) {
         if (reference == null || blocks == null) {
             UserError.Log.e(TAG, "Cannot save block will null data");
             return null;
@@ -66,7 +66,7 @@ public class LibreBlock extends PlusModel {
         lb.blockbytes = blocks;
         lb.byte_start = byte_start;
         lb.byte_end = byte_start + blocks.length;
-        lb.timestamp = JoH.tsl();
+        lb.timestamp = timestamp;
         return lb;
     }
 

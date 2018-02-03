@@ -27,7 +27,7 @@ import org.json.JSONException;
 public class LibreOOPAlgorithm {
     private static final String TAG = "LibreOOPAlgorithm";
     
-    static public void SendData(byte[] fullData) {
+    static public void SendData(byte[] fullData, long timestamp) {
         if(fullData == null) {
             Log.e(TAG, "SendData called with null data");
             return;
@@ -45,7 +45,7 @@ public class LibreOOPAlgorithm {
         Intent intent = new Intent(Intents.XDRIP_PLUS_LIBRE_DATA);
         Bundle bundle = new Bundle();
         bundle.putByteArray(Intents.LIBRE_DATA_BUFFER, fullData);
-        bundle.putLong(Intents.LIBRE_DATA_TIMESTAMP, JoH.tsl());
+        bundle.putLong(Intents.LIBRE_DATA_TIMESTAMP, timestamp);
         intent.putExtras(bundle);
         intent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
         xdrip.getAppContext().sendBroadcast(intent);
