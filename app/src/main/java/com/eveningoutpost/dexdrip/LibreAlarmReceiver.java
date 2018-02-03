@@ -174,7 +174,8 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
     public static void processReadingDataTransferObject(ReadingData.TransferObject object) {
     	Log.i(TAG, "Data that was recieved from librealarm is " + HexDump.dumpHexString(object.data.raw_data));
     	// Save raw block record (we start from block 0)
-        LibreBlock.createAndSave("LibreAlarm", object.data.raw_data, 0);
+    	long now = JoH.tsl();
+        LibreBlock.createAndSave("LibreAlarm", now, object.data.raw_data, 0);
 
         if(Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
         	if(object.data.raw_data == null) {
@@ -182,7 +183,7 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
         		JoH.static_toast_long("Please update LibreAlarm to use OOP algorithm");
         		return;
         	}
-        	LibreOOPAlgorithm.SendData(object.data.raw_data);
+        	LibreOOPAlgorithm.SendData(object.data.raw_data, now);
         	return;
         }
         CalculateFromDataTransferObject(object, use_raw_);
