@@ -157,6 +157,8 @@
     <string name="show_parakeet_map">Show Parakeet map</string>
     <string name="switch_parakeet_to_setup_mode">Switch Parakeet to Setup mode</string>
     <string name="view_events_log">View Events Log</string>
+    <string name="show_libre_trend">Show libre trend</string>
+    <string name="libre_15_minutes_graph">Libre 15 minutes graph</string>
     <string name="share_config_via_qr_code">Share config via QR code</string>
     <string name="check_for_updated_version">Check for updated version</string>
     <string name="send_feedback_to_developer">Send Feedback to developer</string>
