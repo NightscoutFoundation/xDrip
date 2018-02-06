@@ -472,6 +472,11 @@
             android:label="@string/title_activity_display_qrcode"
             android:noHistory="true" />
         <activity
+            android:name=".utils.LibreTrendGraph"
+            android:configChanges="orientation|screenSize"
+            android:label="@string/libre_15_minutes_graph"
+            android:noHistory="true" />
+        <activity
             android:name=".UtilityModels.SendFeedBack"
             android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_send_feed_back"
