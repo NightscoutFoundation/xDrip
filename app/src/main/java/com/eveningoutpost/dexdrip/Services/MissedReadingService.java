@@ -23,6 +23,7 @@ import com.eveningoutpost.dexdrip.webservices.XdripWebService;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getPhoneServiceCollectingState;
 
 import java.util.Date;
 
@@ -64,7 +65,7 @@ public class MissedReadingService extends IntentService {
         }
 
         if ((prefs.getBoolean("aggressive_service_restart", false) || DexCollectionType.isFlakey())) {//!Home.get_enable_wear() &&
-            if (!BgReading.last_within_millis(stale_millis) && Sensor.isActive()) {
+            if (!BgReading.last_within_millis(stale_millis) && Sensor.isActive() && (!getPhoneServiceCollectingState())) {
                 if (JoH.ratelimit("aggressive-restart", aggressive_backoff_timer)) {
                     Log.e(TAG, "Aggressively restarting collector service due to lack of reception: backoff: " + aggressive_backoff_timer);
                     if (aggressive_backoff_timer < 1200) aggressive_backoff_timer += 60;

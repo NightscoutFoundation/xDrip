@@ -404,6 +404,17 @@ public class Treatments extends Model {
         Log.d(TAG, "converting treatment from json: " + json);
         Treatments mytreatment = fromJSON(json);
         if (mytreatment != null) {
+            if ((mytreatment.carbs == 0) && (mytreatment.insulin == 0)
+                    && (mytreatment.notes != null) && (mytreatment.notes.equals("AndroidAPS started"))) {
+                Log.d(TAG, "Skipping AndroidAPS started message");
+                return false;
+            }
+            if ((mytreatment.eventType != null) && (mytreatment.eventType.equals("Temp Basal"))) {
+                // we don't yet parse or process these
+                Log.d(TAG, "Skipping Temp Basal msg");
+                return false;
+            }
+
             if (mytreatment.uuid == null) {
                 try {
                     final JSONObject jsonobj = new JSONObject(json);
@@ -906,6 +917,14 @@ public class Treatments extends Model {
         Log.d(TAG, "Finished Processing iobforgraph: main - processed:  " + Integer.toString(counter) + " Timeslot records");
         JoH.benchmark_method_end();
         return responses;
+    }
+
+    public String getBestShortText() {
+        if (!eventType.equals("<none>")) {
+            return eventType;
+        } else {
+            return "Treatment";
+        }
     }
 
     public String toJSON() {
