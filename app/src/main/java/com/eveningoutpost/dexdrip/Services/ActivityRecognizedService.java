@@ -419,7 +419,7 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
         }
     }
 
-    private void stopUpdates() {
+    private synchronized void stopUpdates() {
         try {
             if (d) Log.d(TAG, "stopUpdates called");
             ActivityRecognition.ActivityRecognitionApi.removeActivityUpdates(mApiClient, get_pending_intent());
