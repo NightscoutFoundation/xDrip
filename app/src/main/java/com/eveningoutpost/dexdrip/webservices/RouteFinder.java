@@ -30,6 +30,9 @@ public class RouteFinder {
         // support for nightscout style sgv.json endpoint
         routes.add(new Pair<>("sgv.json", "WebServiceSgv"));
 
+        // support for nightscout style barebones status.json endpoint
+        routes.add(new Pair<>("status.json", "WebServiceStatus"));
+
         // support for working with step counter
         routes.add(new Pair<>("steps/", "WebServiceSteps"));
 
