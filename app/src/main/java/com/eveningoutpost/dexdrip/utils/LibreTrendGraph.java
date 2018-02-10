@@ -1,14 +1,21 @@
 package com.eveningoutpost.dexdrip.utils;
 
-import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.os.PowerManager;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Base64;
-import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
+
+import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.Models.GlucoseData;
+import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.LibreBlock;
+import com.eveningoutpost.dexdrip.Models.ReadingData;
+import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.NFCReaderX;
+import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.xdrip;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.Line;
@@ -16,60 +23,68 @@ import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.LineChartView;
-import com.eveningoutpost.dexdrip.Models.Calibration;
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.UtilityModels.Constants;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
-import com.eveningoutpost.dexdrip.calibrations.CalibrationAbstract;
-import com.eveningoutpost.dexdrip.R;
-import com.eveningoutpost.dexdrip.xdrip;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.google.zxing.integration.android.IntentIntegrator;
-import com.squareup.okhttp.FormEncodingBuilder;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.Response;
 
-import org.json.JSONObject;
-
-import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.getCalibrationPluginFromPreferences;
-
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
+
 
 public class LibreTrendGraph extends AppCompatActivity {
 
-    private LineChartView chart;
-    private LineChartData data;
-    //private NavigationDrawerFragment mNavigationDrawerFragment;
-    private final static String plugin_color = "#88CCFF00";
-    private final boolean doMgdl = Pref.getString("units", "mgdl").equals("mgdl");
-    private final boolean show_days_since = true; // could make this switchable if desired
-    private final double start_x = 50; // raw range
-    private double end_x = 300; //  raw range
-    
     private static final String TAG = "LibreTrendGraph";
     private static LibreTrendGraph mInstance;
+    private LineChartView chart;
+    private LineChartData data;
+    private final boolean doMgdl = Pref.getString("units", "mgdl").equals("mgdl");
+    
+    public void closeNow(View view) {
+        try {
+            finish();
+        } catch (Exception e) {
+            Log.d(TAG, "Error finishing " + e.toString());
+        }
+    }
 
+    private ArrayList<Float> getLatestBg(LibreBlock libreBlock) {
+        ReadingData readingData = NFCReaderX.getTrend(libreBlock);
+        if(readingData == null) {
+            Log.e(TAG, "NFCReaderX.getTrend returned null");
+            return null;
+        }
+        ArrayList<Float> ret = new ArrayList<Float>();
+        
+        if(readingData.trend.size() == 0 || readingData.trend.get(0).glucoseLevelRaw == 0) {
+            Log.e(TAG, "libreBlock exists but no trend data exists, or first value is zero ");
+            return null;
+        }
+        List<BgReading> latestReading = BgReading.latestForGraph (1, libreBlock.timestamp - 1000, libreBlock.timestamp + 1000);
+        if(latestReading == null || latestReading.size() == 0) {
+            Log.e(TAG, "libreBlock exists but no matching bg record exists");
+            return null;
+        }
+        
+        double factor = latestReading.get(0).calculated_value / readingData.trend.get(0).glucoseLevelRaw;
+        if(factor == 0) {
+            // We don't have the calculated value, but we do have the raw value. (No calibration exists)
+            // I want to show raw data.
+            Log.w(TAG, "Bg data was not calculated, working on raw data");
+            factor = latestReading.get(0).raw_data / readingData.trend.get(0).glucoseLevelRaw;
+        }
+        
+        for (GlucoseData data : readingData.trend) {
+            ret.add(new Float(factor * data.glucoseLevelRaw));
+        }
+        
+        return ret;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mInstance = this;
         setContentView(R.layout.activity_libre_trend);
         JoH.fixActionBar(this);
-    }
-
-    @Override
-    protected void onDestroy() {
-        mInstance = null; // GC?
-        super.onDestroy();
     }
 
     @Override
@@ -77,46 +92,80 @@ public class LibreTrendGraph extends AppCompatActivity {
         super.onResume();
         setupCharts();
     }
-
+    
     public void setupCharts() {
+        
+       final TextView trendView = (TextView) findViewById(R.id.textLibreHeader);
+         
         chart = (LineChartView) findViewById(R.id.libre_chart);
         List<Line> lines = new ArrayList<Line>();
 
+        List<PointValue> lineValues = new ArrayList<PointValue>();
+        final float conversion_factor_mmol = (float) (doMgdl ? 1 : Constants.MGDL_TO_MMOLL);
 
-    List<PointValue> lineValues = new ArrayList<PointValue>();
-    final float conversion_factor = (float) (doMgdl ? 1 : Constants.MGDL_TO_MMOLL);
+        LibreBlock libreBlock= LibreBlock.getLatestForTrend();
+        if(libreBlock == null) {
+            trendView.setText("No libre data to display");
+            return;
+        }
+        String time = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(new Date((long) libreBlock.timestamp));
 
-    lineValues.add(new PointValue(200, 70));
-    lineValues.add(new PointValue(220, 85));
-    lineValues.add(new PointValue(240, 95));
-    lineValues.add(new PointValue(260, 100));
-    
+        ArrayList<Float> bg_data = getLatestBg(libreBlock);
+        if(bg_data == null) {
+            trendView.setText("Error displaying data for " + time);
+            return;
+        }
+        
+        trendView.setText("Scan from " + time);
+        float min = 1000;
+        float max = 0;
+        int i = 0;
+        for(float bg : bg_data ) {
+            if(min > bg) {
+                min = bg;
+            }
+            if(max < bg) {
+                max = bg;
+            }
+            
+            lineValues.add(new PointValue(-i, bg * conversion_factor_mmol));
+            i++;
+        }
 
-    Line calibrationLine = new Line(lineValues);
-    calibrationLine.setColor(ChartUtils.COLOR_RED);
-    calibrationLine.setHasLines(false);
-    calibrationLine.setHasPoints(true);
-    lines.add(calibrationLine);
-    
+        Line trendLine = new Line(lineValues);
+        trendLine.setColor(ChartUtils.COLOR_RED);
+        trendLine.setHasLines(false);
+        trendLine.setHasPoints(true);
+        lines.add(trendLine);
+        
+        final int MIN_GRAPH = 20;
+        if(max - min < MIN_GRAPH)
+        {
+            // On relative flat trend the graph can look very noise althouth with the right resolution it is not that way.
+            // I will add two dummy invisible points that will cause the graph to look with bigger Y range.
+            float average = (max + min) /2;
+            List<PointValue> dummyPointValues = new ArrayList<PointValue>();
+            Line dummyPointLine = new Line(dummyPointValues);
+            dummyPointValues.add(new PointValue(0, (average - MIN_GRAPH / 2) * conversion_factor_mmol));
+            dummyPointValues.add(new PointValue(0, (average + MIN_GRAPH / 2) * conversion_factor_mmol));
+            dummyPointLine.setColor(ChartUtils.COLOR_RED);
+            dummyPointLine.setHasLines(false);
+            dummyPointLine.setHasPoints(false);
+            lines.add(dummyPointLine);
+        }
+
         Axis axisX = new Axis();
         Axis axisY = new Axis().setHasLines(true);
-        axisX.setName("Raw Value");
+        axisX.setTextSize(16);
+        axisY.setTextSize(16);
+        axisX.setName("Time from last scan");
         axisY.setName("Glucose " + (doMgdl ? "mg/dl" : "mmol/l"));
-
 
         data = new LineChartData(lines);
         data.setAxisXBottom(axisX);
         data.setAxisYLeft(axisY);
         chart.setLineChartData(data);
 
-    }
-    public void closeNow(View view) {
-        try {
-            mInstance = null;
-            finish();
-        } catch (Exception e) {
-            Log.d(TAG, "Error finishing " + e.toString());
-        }
     }
 
 }

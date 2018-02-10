@@ -2,8 +2,11 @@ package com.eveningoutpost.dexdrip.Models;
 
 import android.provider.BaseColumns;
 
+import java.text.DecimalFormat;
+
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
+import com.activeandroid.query.Select;
 import com.google.gson.annotations.Expose;
 
 /**
@@ -69,7 +72,31 @@ public class LibreBlock extends PlusModel {
         lb.timestamp = timestamp;
         return lb;
     }
+    
+public static LibreBlock getLatestForTrend() {
+        
+        return new Select()
+                .from(LibreBlock.class)
+                .where("bytestart == 0")
+                .where("byteend >= 344")
+                .orderBy("timestamp desc")
+                .executeSingle();
+    }
 
+    public static LibreBlock getForTimestamp(long timestamp) {
+        
+        final double margin = (3 * 60*1000);
+        final DecimalFormat df = new DecimalFormat("#");
+        df.setMaximumFractionDigits(1);
+ 
+        return new Select()
+                .from(LibreBlock.class)
+                .where("timestamp >= " + df.format(timestamp-margin))
+                .where("timestamp <= " + df.format(timestamp + margin))
+                .executeSingle();
+    }
+    
+    
     private static final boolean d = false;
 
     public static void updateDB() {
