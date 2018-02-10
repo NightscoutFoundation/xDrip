@@ -32,7 +32,9 @@ import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -627,4 +629,20 @@ public class NFCReaderX {
             }, 1000);
         }
     }
+    
+    static public ReadingData getTrend(LibreBlock libreBlock) {
+        if(libreBlock.byte_start != 0 || libreBlock.byte_end < 344) {
+            Log.i(TAG, "libreBlock exists but does not have enough data " + libreBlock.timestamp);
+            return null;
+        }
+        ReadingData result = parseData(0, "", libreBlock.blockbytes);
+        if(result.trend.size() == 0 || result.trend.get(0).glucoseLevelRaw == 0) {
+            Log.i(TAG, "libreBlock exists but no trend data exists, or first value is zero " + libreBlock.timestamp);
+            return null;
+        }
+        
+        // TODO: verify checksum
+        return result;
+    }
+    
 }

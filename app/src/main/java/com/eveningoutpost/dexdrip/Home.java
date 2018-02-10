@@ -67,6 +67,8 @@ import com.eveningoutpost.dexdrip.Models.BloodTest;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.HeartRate;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.LibreBlock;
+import com.eveningoutpost.dexdrip.Models.StepCounter;
 import com.eveningoutpost.dexdrip.Models.ProcessInitialDataQuality;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.StepCounter;
@@ -112,6 +114,7 @@ import com.eveningoutpost.dexdrip.utils.BgToSpeech;
 import com.eveningoutpost.dexdrip.utils.DatabaseUtil;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.DisplayQRCode;
+import com.eveningoutpost.dexdrip.utils.LibreTrendGraph;
 import com.eveningoutpost.dexdrip.utils.Preferences;
 import com.eveningoutpost.dexdrip.utils.SdcardImportExport;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
@@ -1067,6 +1070,10 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
     public void viewEventLog(MenuItem x) {
         startActivity(new Intent(this, ErrorsActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK).putExtra("events", ""));
+    }
+    
+    public void ShowLibreTrend(MenuItem x) {
+        startActivity(new Intent(this, LibreTrendGraph.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK).putExtra("events", ""));
     }
 
     private boolean hideTreatmentButtonsIfAllDone() {
@@ -2956,7 +2963,6 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_home, menu);
 
-
         //wear integration
         if (!Pref.getBoolean("wear_sync", false)) {
             menu.removeItem(R.id.action_open_watch_settings);
@@ -2990,6 +2996,14 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
         menu.findItem(R.id.showreminders).setVisible(Pref.getBoolean("plus_show_reminders", true));
 
+        LibreBlock libreBlock = null;
+        if(DexCollectionType.hasLibre()) {
+            libreBlock = LibreBlock.getLatestForTrend();
+        }
+        if(libreBlock == null ) {
+            menu.findItem(R.id.libreLastMinutes).setVisible(false);
+        }
+        
         return super.onCreateOptionsMenu(menu);
     }
 
