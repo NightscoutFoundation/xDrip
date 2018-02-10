@@ -57,7 +57,14 @@ public class LibreOOPAlgorithm {
         OOPResults oOPResults = null;
         try {
             final Gson gson = new GsonBuilder().create();
-            oOPResults = gson.fromJson(oopData, OOPResults.class);
+            OOPResults []oOPResultsArray = null;
+            oOPResultsArray = gson.fromJson(oopData, OOPResults[].class);
+            if(oOPResultsArray.length > 0) {
+                oOPResults =  oOPResultsArray[0];
+            } else {
+                Log.e(TAG, "oOPResultsArray exists, but size is zero");
+                return;
+            }
         } catch (Exception  e) { //TODO: what exception should we catch here.
             Log.e(TAG, "HandleData cought exception ", e);
             return;

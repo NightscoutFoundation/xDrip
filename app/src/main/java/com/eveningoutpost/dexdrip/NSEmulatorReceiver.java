@@ -102,9 +102,7 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
                                             try {
                                                 final JSONArray json_array = new JSONArray(data);
                                                 if(json_array.length() >= 1) {
-                                                    final JSONObject json_object = json_array.getJSONObject(1);
-                                                    Log.e(TAG, "Second object is " + json_object.toString());
-                                                    LibreOOPAlgorithm.HandleData(json_object.toString());
+                                                    LibreOOPAlgorithm.HandleData(json_array.getString(1));
                                                 } else {
                                                     final JSONObject json_object = json_array.getJSONObject(0);
                                                     final String type = json_object.getString("type");
