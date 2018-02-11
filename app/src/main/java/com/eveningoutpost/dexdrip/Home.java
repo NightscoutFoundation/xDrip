@@ -1323,6 +1323,15 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         } else if (get_engineering_mode() && allWords.contentEquals("enable fake data source")) {
             Pref.setString(DexCollectionType.DEX_COLLECTION_METHOD, DexCollectionType.Mock.toString());
             JoH.static_toast_long("YOU ARE NOW USING FAKE DATA!!!");
+        } else if (allWords.contentEquals("reset heart rate sync")) {
+            PersistentStore.setLong("nightscout-rest-heartrate-synced-time",0);
+            JoH.static_toast_long("Cleared heart rate sync data");
+        } else if (allWords.contentEquals("reset step count sync")) {
+            PersistentStore.setLong("nightscout-rest-steps-synced-time",0);
+            JoH.static_toast_long("Cleared step count sync data");
+        } else if (allWords.contentEquals("reset motion count sync")) {
+            PersistentStore.setLong("nightscout-rest-motion-synced-time",0);
+            JoH.static_toast_long("Cleared motion count sync data");
         } else if (allWords.contentEquals("vehicle mode test")) {
             ActivityRecognizedService.spoofActivityRecogniser(mActivity, JoH.tsl() + "^" + 0);
             staticRefreshBGCharts();
