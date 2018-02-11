@@ -122,13 +122,13 @@ public class BgToSpeech {
                     Log.e(TAG, "Null pointer for TTS in calculateText");
                 }
             }
+            if (delta_name != null) text += " " + mungeDeltaName(delta_name);
+            if (bg_to_speech_repeat_twice) text = text + TWICE_DELIMITER + text;
         } else if (value > 12) {
             text = xdrip.getAppContext().getString(R.string.low);
         } else {
             text = xdrip.getAppContext().getString(R.string.error);
         }
-        if (delta_name != null) text += " " + mungeDeltaName(delta_name);
-        if (bg_to_speech_repeat_twice) text = text + TWICE_DELIMITER + text;
         Log.d(TAG, "calculated text: " + text);
         return text;
     }

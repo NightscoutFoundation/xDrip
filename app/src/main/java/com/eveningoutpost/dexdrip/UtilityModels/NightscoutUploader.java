@@ -19,7 +19,6 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
-import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -942,7 +941,7 @@ public class NightscoutUploader {
                     break;
                 case "Bridge":
                     battery_level = Pref.getInt("bridge_battery", -1);
-                    battery_name = DexCollectionService.getBestLimitterHardwareName();
+                    battery_name = DexCollectionType.getDexCollectionType().name();
                     break;
                 case "Parakeet":
                     battery_level = Pref.getInt("parakeet_battery", -1);
