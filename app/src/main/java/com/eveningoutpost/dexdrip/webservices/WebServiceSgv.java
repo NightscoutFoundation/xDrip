@@ -47,6 +47,19 @@ public class WebServiceSgv extends BaseWebService {
 
         final Map<String, String> cgi = getQueryParameters(query);
 
+        int count = 24;
+
+        if (cgi.containsKey("count")) {
+            try {
+                count = Integer.valueOf(cgi.get("count"));
+                count = Math.min(count, 100);
+                count = Math.max(count, 1);
+                UserError.Log.d(TAG, "SGV count request for: " + count + " entries");
+            } catch (Exception e) {
+                // meh
+            }
+        }
+
         if (cgi.containsKey("steps")) {
             UserError.Log.d(TAG, "Received steps request: " + cgi.get("steps"));
             // forward steps request to steps route
@@ -74,7 +87,7 @@ public class WebServiceSgv extends BaseWebService {
 
 
         final JSONArray reply = new JSONArray();
-        final List<BgReading> readings = BgReading.latest(24);
+        final List<BgReading> readings = BgReading.latest(count);
         if (readings != null) {
             // populate json structures
             try {
