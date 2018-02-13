@@ -472,4 +472,11 @@
 	<string name="glucose_number_from_filtered">Número de glucosa filtrado</string>
 	<string name="if_the_phone_has_text_to_speech">Si el teléfono tiene capacidades de conversión de texto a voz se leerá cada nueva lectura.</string>
 	<string name="upload_logs">Cargar los registros</string>
+	<string name="DoubleDown">caída rápida </string>
+	<string name="SingleDown">cayendo</string>
+	<string name="FortyFiveDown">ligeramente decreciente</string>
+	<string name="Flat">consistente</string>
+	<string name="FortyFiveUp">aumentando levemente</string>
+	<string name="SingleUp">ascendente</string>
+	<string name="DoubleUp">aumentando rápidamente</string>
 </resources>
