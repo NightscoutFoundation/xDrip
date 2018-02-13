@@ -125,8 +125,12 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
                 return path.isDirectory();
             }
         });
-        for (File subdirectory : subdirectories) {
-            addAllDatabases(subdirectory, databases);
+        try {
+            for (File subdirectory : subdirectories) {
+                addAllDatabases(subdirectory, databases);
+            }
+        } catch (NullPointerException e) {
+            // nothing found
         }
         return true;
     }

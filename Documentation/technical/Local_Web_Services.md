@@ -35,6 +35,8 @@ You can combine both like a normal query string:
 
     http://127.0.0.1:17580/sgv.json?steps=1234&heart=123
 
+There is another option `brief_mode=Y` which you can use to exclude some of the data fields from the results to reduce response size.
+
 You can also access the tasker endpoint by appending a query parameter
 
     http://127.0.0.1:17580/sgv.json?tasker=osnooze
@@ -44,6 +46,18 @@ look for `tasker_result` in the first line of the json reply to indicate success
 `OSNOOZE` is opportunistic snooze which you can call even when there is no alert playing
 
 `SNOOZE` is the traditional tasker snooze which will send snooze to followers and uses more cpu
+
+### status.json endpoint
+
+This implements a small subset of the data you might receive from Nightscouts status.json
+
+    http://127.0.0.1:17580/status.json
+
+Results look like:
+
+    {"thresholds":{"bgHigh":9.4,"bgLow":3.9}}
+
+High and low marks set within the app represented in the local units.
 
 ### Tasker endpoint
 

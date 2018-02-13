@@ -43,6 +43,7 @@ public class WebServiceSgv extends BaseWebService {
         int heart_result_code = 0; // result code for any heart cgi parameters, 200 = good
         int tasker_result_code = 0; // result code for any heart cgi parameters, 200 = good
         int units_indicator = 1; // show the units we are using
+        boolean brief = false; // whether to cut out portions of the data
 
         final Map<String, String> cgi = getQueryParameters(query);
 
@@ -67,6 +68,11 @@ public class WebServiceSgv extends BaseWebService {
             tasker_result_code = tasker_reply_wr.resultCode;
         }
 
+        if (cgi.containsKey("brief_mode")) {
+            brief = true;
+        }
+
+
         final JSONArray reply = new JSONArray();
         final List<BgReading> readings = BgReading.latest(24);
         if (readings != null) {
@@ -79,8 +85,10 @@ public class WebServiceSgv extends BaseWebService {
                 // for each reading produce a json record
                 for (BgReading reading : readings) {
                     final JSONObject item = new JSONObject();
-                    item.put("_id", reading.uuid);
-                    item.put("device", collector_device);
+                    if (!brief) {
+                        item.put("_id", reading.uuid);
+                        item.put("device", collector_device);
+                    }
                     item.put("date", reading.timestamp);
                     item.put("dateString", DateUtil.toNightscoutFormat(reading.timestamp));
                     item.put("sysTime", DateUtil.toNightscoutFormat(reading.timestamp));
@@ -88,11 +96,12 @@ public class WebServiceSgv extends BaseWebService {
                     item.put("delta", new BigDecimal(reading.getDg_slope() * 5 * 60 * 1000).setScale(3, BigDecimal.ROUND_HALF_UP));
                     item.put("direction", reading.getDg_deltaName());
                     item.put("noise", reading.noiseValue());
-                    item.put("filtered", (long) (reading.filtered_data * 1000));
-                    item.put("unfiltered", (long) (reading.raw_data * 1000));
-                    item.put("rssi", 100);
-                    item.put("type", "sgv");
-
+                    if (!brief) {
+                        item.put("filtered", (long) (reading.filtered_data * 1000));
+                        item.put("unfiltered", (long) (reading.raw_data * 1000));
+                        item.put("rssi", 100);
+                        item.put("type", "sgv");
+                    }
                     if (units_indicator > 0) {
                         item.put("units_hint", Pref.getString("units", "mgdl").equals("mgdl") ? "mgdl" : "mmol");
                         units_indicator = 0;
