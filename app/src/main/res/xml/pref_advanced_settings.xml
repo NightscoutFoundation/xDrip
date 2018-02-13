@@ -719,6 +719,14 @@
                     android:summary="@string/use_external_blukon_algorithm_summary"
                     android:title="@string/use_external_blukon_algorithm" />
                 
+	    <CheckBoxPreference
+                    android:enabled="false"
+                    android:defaultValue="false"
+                    android:dependency="external_blukon_algorithm"
+                    android:key="calibrate_external_libre_algorithm"
+                    android:summary="@string/calibrate_external_libre_algorithm_summary"
+                    android:title="@string/calibrate_external_libre_algorithm_title" />
+                
             </PreferenceScreen>
             <PreferenceCategory
                 android:key="community_help_category"
