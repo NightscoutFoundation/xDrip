@@ -7,6 +7,7 @@ import java.text.DecimalFormat;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.google.gson.annotations.Expose;
 
 /**
@@ -24,6 +25,7 @@ public class LibreBlock extends PlusModel {
             "ALTER TABLE LibreBlock ADD COLUMN blockbytes BLOB;",
             "ALTER TABLE LibreBlock ADD COLUMN bytestart INTEGER;",
             "ALTER TABLE LibreBlock ADD COLUMN byteend INTEGER;",
+            "ALTER TABLE LibreBlock ADD COLUMN calculatedbg REAL;",
             "CREATE INDEX index_LibreBlock_timestamp on LibreBlock(timestamp);",
             "CREATE INDEX index_LibreBlock_bytestart on LibreBlock(bytestart);",
             "CREATE INDEX index_LibreBlock_byteend on LibreBlock(byteend);"
@@ -50,6 +52,10 @@ public class LibreBlock extends PlusModel {
     @Column(name = "blockbytes")
     public byte[] blockbytes;
 
+    @Expose
+    @Column(name = "calculatedbg")
+    public double calculated_bg;
+    
     // if you are indexing by block then just * 8 to get byte start
     public static LibreBlock createAndSave(String reference, long timestamp, byte[] blocks, int byte_start) {
         final LibreBlock lb = create(reference, timestamp, blocks, byte_start);
@@ -85,7 +91,7 @@ public static LibreBlock getLatestForTrend() {
 
     public static LibreBlock getForTimestamp(long timestamp) {
         
-        final double margin = (3 * 60*1000);
+        final double margin = (3 * 1000);
         final DecimalFormat df = new DecimalFormat("#");
         df.setMaximumFractionDigits(1);
  
@@ -96,6 +102,15 @@ public static LibreBlock getLatestForTrend() {
                 .executeSingle();
     }
     
+    public static void UpdateBgVal(long timestamp, double calculated_value) {
+        LibreBlock libreBlock = getForTimestamp(timestamp);
+        if(libreBlock == null) {
+            return;
+        }
+        Log.e(TAG, "Updating bg for timestamp " + timestamp);
+        libreBlock.calculated_bg = calculated_value;
+        libreBlock.save();
+    }
     
     private static final boolean d = false;
 
