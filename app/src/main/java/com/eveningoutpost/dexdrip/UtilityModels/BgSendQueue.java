@@ -21,6 +21,7 @@ import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.LibreBlock;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.NewDataObserver;
 import com.eveningoutpost.dexdrip.Services.SyncService;
@@ -229,6 +230,7 @@ public class BgSendQueue extends Model {
 
             if (!quick) {
                 NewDataObserver.newBgReading(bgReading, is_follower);
+                LibreBlock.UpdateBgVal(bgReading.timestamp, bgReading.calculated_value);
             }
 
             if ((!is_follower) && (prefs.getBoolean("plus_follow_master", false))) {
