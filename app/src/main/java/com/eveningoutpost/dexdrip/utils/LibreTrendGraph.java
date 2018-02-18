@@ -59,17 +59,18 @@ public class LibreTrendGraph extends AppCompatActivity {
             Log.e(TAG, "libreBlock exists but no trend data exists, or first value is zero ");
             return null;
         }
-        List<BgReading> latestReading = BgReading.latestForGraph (1, libreBlock.timestamp - 1000, libreBlock.timestamp + 1000);
-        if(latestReading == null || latestReading.size() == 0) {
-            Log.e(TAG, "libreBlock exists but no matching bg record exists");
-            return null;
-        }
-        
-        double factor = latestReading.get(0).calculated_value / readingData.trend.get(0).glucoseLevelRaw;
+
+        double factor = libreBlock.calculated_bg / readingData.trend.get(0).glucoseLevelRaw;
         if(factor == 0) {
             // We don't have the calculated value, but we do have the raw value. (No calibration exists)
             // I want to show raw data.
             Log.w(TAG, "Bg data was not calculated, working on raw data");
+            List<BgReading> latestReading = BgReading.latestForGraph (1, libreBlock.timestamp - 1000, libreBlock.timestamp + 1000);
+            if(latestReading == null || latestReading.size() == 0) {
+                Log.e(TAG, "libreBlock exists but no matching bg record exists");
+                return null;
+            }
+            
             factor = latestReading.get(0).raw_data / readingData.trend.get(0).glucoseLevelRaw;
         }
         
