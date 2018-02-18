@@ -113,8 +113,6 @@ public class LibreOOPAlgorithm {
         glucoseData.glucoseLevelRaw = (int)(oOPResults.currentBg * factor);
         libreAlarmObject.data.history.add(glucoseData);
         
-        
-  
         Log.e(TAG, "HandleData Created the following object " + libreAlarmObject.toString());
         LibreAlarmReceiver.CalculateFromDataTransferObject(libreAlarmObject, use_raw);
         
