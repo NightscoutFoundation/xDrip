@@ -491,4 +491,11 @@
 	<string name="sliding_24_hour_window">Sliding Window</string>
 	<string name="split">APRI</string>
 	<string name="delete">Cancella</string>
+	<string name="DoubleDown">veloce caduta</string>
+	<string name="SingleDown">falling</string>
+	<string name="FortyFiveDown">leggermente decrescente</string>
+	<string name="Flat">coerente</string>
+	<string name="FortyFiveUp">leggermente crescente</string>
+	<string name="SingleUp">crescente</string>
+	<string name="DoubleUp">crescente veloce</string>
 </resources>

@@ -224,7 +224,8 @@ public class BluetoothScan extends ListActivityWithMenu {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if (device.getName() != null && device.getName().length() > 0) {
+                        final String deviceName = device.getName();
+                        if (deviceName != null && deviceName.length() > 0) {
                             mLeDeviceListAdapter.addDevice(device);
                             try {
                                 if (result.getScanRecord() != null)

@@ -251,15 +251,15 @@
             <SwitchPreference
                 android:defaultValue="false"
                 android:key="speak_alerts"
-                android:summary="Also give some spoken alert messages"
+                android:summary="@string/Speak_Alerts_Summary"
                 android:switchTextOff="@string/short_off_text_for_switches"
                 android:switchTextOn="@string/short_on_text_for_switches"
-                android:title="Speak Alerts" />
+                android:title="@string/Speak_Alerts" />
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:dependency="bg_to_speech"
                 android:key="bg_to_speech_trend"
-                android:summary="Speak trend arrow name" />
+                android:summary="@string/Speak_trend_arrow_name" />
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:dependency="bg_to_speech"
@@ -268,21 +268,21 @@
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:key="speak_twice"
-                android:summary="Speak everything twice" />
+                android:summary="@string/Speak_everything_twice" />
             <EditTextPreference
                 android:defaultValue=""
                 android:key="speak_readings_custom_language"
                 android:summary="@string/spoken_readings_locale" />
             <SeekBarPreference
                 android:key="speech_speed"
-                android:title="Speech speed"
+                android:title="@string/Speech_speed"
                 android:summary=""
                 android:max="20"
                 android:min="2"
                 android:defaultValue="7" />
             <SeekBarPreference
                 android:key="speech_pitch"
-                android:title="Speech pitch"
+                android:title="@string/Speech_pitch"
                 android:summary=""
                 android:max="20"
                 android:min="4"
@@ -718,6 +718,14 @@
                     android:key="external_blukon_algorithm"
                     android:summary="@string/use_external_blukon_algorithm_summary"
                     android:title="@string/use_external_blukon_algorithm" />
+                
+	    <CheckBoxPreference
+                    android:enabled="false"
+                    android:defaultValue="false"
+                    android:dependency="external_blukon_algorithm"
+                    android:key="calibrate_external_libre_algorithm"
+                    android:summary="@string/calibrate_external_libre_algorithm_summary"
+                    android:title="@string/calibrate_external_libre_algorithm_title" />
                 
             </PreferenceScreen>
             <PreferenceCategory
