@@ -47,6 +47,14 @@ public class WebServiceModule {
 
     @Provides
     @Singleton
+    @Named("WebServiceStatus")
+    BaseWebService providesWebServiceStatus() {
+        if (d) Log.d("INJECT", "creating WebServiceStatus");
+        return new WebServiceStatus();
+    }
+
+    @Provides
+    @Singleton
     @Named("WebServiceTasker")
     BaseWebService providesWebServiceTasker() {
         if (d) Log.d("INJECT", "creating WebServiceTasker");

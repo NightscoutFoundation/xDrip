@@ -14,6 +14,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
+import android.util.SparseArray;
 
 import com.eveningoutpost.dexdrip.ErrorsActivity;
 import com.eveningoutpost.dexdrip.GcmActivity;
@@ -419,7 +420,7 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
         }
     }
 
-    private void stopUpdates() {
+    private synchronized void stopUpdates() {
         try {
             if (d) Log.d(TAG, "stopUpdates called");
             ActivityRecognition.ActivityRecognitionApi.removeActivityUpdates(mApiClient, get_pending_intent());
@@ -703,6 +704,20 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
     }
 
     public static class motionData {
+
+        private static final SparseArray<String> classification = new SparseArray<>();
+
+        static {
+            classification.put(DetectedActivity.IN_VEHICLE, "in vehicle");
+            classification.put(DetectedActivity.ON_BICYCLE, "on bicycle");
+            classification.put(DetectedActivity.ON_FOOT, "on foot");
+            classification.put(DetectedActivity.RUNNING, "running");
+            classification.put(DetectedActivity.STILL, "still");
+            classification.put(DetectedActivity.TILTING, "tilting");
+            classification.put(DetectedActivity.UNKNOWN, "unknown");
+            classification.put(DetectedActivity.WALKING, "walking");
+        }
+
         @Expose
         public long timestamp;
         @Expose
@@ -711,6 +726,11 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
         public motionData(long timestamp, int activity) {
             this.timestamp = timestamp;
             this.activity = activity;
+        }
+
+        public String toPrettyType() {
+            final String value = classification.get(this.activity);
+            return value != null ? value : "unclassified " + activity;
         }
 
     }

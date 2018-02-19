@@ -62,29 +62,28 @@ public class BgToSpeech {
 
     private static String mungeDeltaName(String delta_name) {
 
-        // TODO multi-language + from R.string
 
         switch (delta_name) {
             case "DoubleDown":
-                delta_name = "Double Down";
+                delta_name = xdrip.getAppContext().getString(R.string.DoubleDown);
                 break;
             case "SingleDown":
-                delta_name = "Single Down";
+                delta_name = xdrip.getAppContext().getString(R.string.SingleDown);
                 break;
             case "FortyFiveDown":
-                delta_name = "Slight Down";
+                delta_name = xdrip.getAppContext().getString(R.string.FortyFiveDown);
                 break;
             case "Flat":
-                delta_name = "Flat";
+                delta_name = xdrip.getAppContext().getString(R.string.Flat);
                 break;
             case "FortyFiveUp":
-                delta_name = "Slight Up";
+                delta_name = xdrip.getAppContext().getString(R.string.FortyFiveUp);
                 break;
             case "SingleUp":
-                delta_name = "Single Up";
+                delta_name = xdrip.getAppContext().getString(R.string.SingleUp);
                 break;
             case "DoubleUp":
-                delta_name = "Double up";
+                delta_name = xdrip.getAppContext().getString(R.string.DoubleUp);
                 break;
             case "NOT COMPUTABLE":
                 delta_name = "";

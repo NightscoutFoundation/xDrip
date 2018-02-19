@@ -10,6 +10,7 @@ import android.os.PowerManager;
 import android.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.LibreOOPAlgorithm;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.Intents;
@@ -100,26 +101,19 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
                                         if ((data != null) && (data.length() > 0)) {
                                             try {
                                                 final JSONArray json_array = new JSONArray(data);
-                                                final JSONObject json_object = json_array.getJSONObject(0);
-                                                final String type = json_object.getString("type");
-                                                switch (type) {
-                                                    case "sgv":
-                                                        JSONObject faux_bgr = new JSONObject();
-                                                        faux_bgr.put("timestamp", json_object.getLong("date"));
-                                                        faux_bgr.put("calculated_value", json_object.getDouble("sgv"));
-                                                        faux_bgr.put("filtered_calculated_value", json_object.getDouble("sgv"));
-                                                        // sanity checking???
-                                                        // fake up some extra data
-                                                        faux_bgr.put("raw_data", json_object.getDouble("sgv"));
-                                                        faux_bgr.put("age_adjusted_raw_value", json_object.getDouble("sgv"));
-                                                        faux_bgr.put("filtered_data", json_object.getDouble("sgv"));
-                                                        faux_bgr.put("uuid", UUID.randomUUID().toString());
-                                                         
-                                                        Log.d(TAG, "Received NSEmulator SGV: " + faux_bgr);
-                                                        bgReadingInsertFromJson(faux_bgr.toString(), true, true); // notify and force sensor
-                                                        break;
-                                                    default:
-                                                        Log.e(TAG, "Unknown entries type: " + type);
+                                                if(json_array.length() >= 1) {
+                                                    LibreOOPAlgorithm.HandleData(json_array.getString(1));
+                                                } else {
+                                                    final JSONObject json_object = json_array.getJSONObject(0);
+                                                    final String type = json_object.getString("type");
+                                                    switch (type) {
+                                                        case "sgv":
+                                                            bgReadingInsertFromData(json_object.getLong("date"), json_object.getDouble("sgv"), true);
+
+                                                            break;
+                                                        default:
+                                                            Log.e(TAG, "Unknown entries type: " + type);
+                                                    }
                                                 }
 
 
@@ -194,5 +188,27 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
             }
         }.start();
     }
-
+    static public void bgReadingInsertFromData(long timestamp, double sgv, boolean do_notification) {
+        Log.e(TAG, "bgReadingInsertFromData called timestamp = " + timestamp+ " bg = " + sgv + " time =" +  JoH.dateTimeText(timestamp));
+        JSONObject faux_bgr = new JSONObject();
+        try {
+        faux_bgr.put("timestamp", timestamp);
+        faux_bgr.put("calculated_value", sgv);
+        faux_bgr.put("filtered_calculated_value", sgv);
+        // sanity checking???
+        // fake up some extra data
+        faux_bgr.put("raw_data", sgv);
+        faux_bgr.put("age_adjusted_raw_value", sgv);
+        faux_bgr.put("filtered_data", sgv);
+        
+            faux_bgr.put("uuid", UUID.randomUUID().toString());
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            Log.e(TAG, "Got JSON exception: " + e);
+            return;
+        }
+         
+        Log.d(TAG, "Received NSEmulator SGV: " + faux_bgr);
+        bgReadingInsertFromJson(faux_bgr.toString(), do_notification, true); // notify and force sensor
+    }
 }
