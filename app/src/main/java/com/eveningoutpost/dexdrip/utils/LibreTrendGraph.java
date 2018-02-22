@@ -107,6 +107,7 @@ public class LibreTrendGraph extends AppCompatActivity {
         LibreBlock libreBlock= LibreBlock.getLatestForTrend();
         if(libreBlock == null) {
             trendView.setText("No libre data to display");
+            setupEmptyCharts();
             return;
         }
         String time = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(new Date((long) libreBlock.timestamp));
@@ -114,6 +115,7 @@ public class LibreTrendGraph extends AppCompatActivity {
         ArrayList<Float> bg_data = getLatestBg(libreBlock);
         if(bg_data == null) {
             trendView.setText("Error displaying data for " + time);
+            setupEmptyCharts();
             return;
         }
         
@@ -168,7 +170,15 @@ public class LibreTrendGraph extends AppCompatActivity {
         chart.setLineChartData(data);
 
     }
+    
+    // In a case of an error when there is no data to show in the graph hellocharts shows a default graph.
+    // This can be supper confusing for users, so I'm drawing an empty graph just in case.
+    void setupEmptyCharts() {
+        chart = (LineChartView) findViewById(R.id.libre_chart);
+        List<Line> lines = new ArrayList<Line>();
+        data = new LineChartData(lines);
+        chart.setLineChartData(data);
+    }
 
 }
-
 
