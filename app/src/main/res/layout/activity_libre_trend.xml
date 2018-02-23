@@ -15,9 +15,6 @@
         android:layout_centerHorizontal="true"
         android:orientation="vertical">
 
-        <!--  android:text="@string/use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature" -->
-        
-        
         <TextView
             android:id="@+id/textLibreHeader"
             android:layout_width="wrap_content"
