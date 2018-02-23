@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.util.Date;
 
 import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
+import static com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer.getAlertPlayerStreamType;
 
 // A helper class to create the mediaplayer on the UI thread.
 // This is needed in order for the callbackst to work.
@@ -42,7 +43,7 @@ class MediaPlayerCreaterHelper {
     private final static String TAG = AlertPlayer.class.getSimpleName();
 
     private final Object creationThreadLock = new Object();
-    boolean mplayerCreated_ = false;
+    private volatile boolean mplayerCreated_ = false;
     private volatile MediaPlayer mediaPlayer_ = null;
     
     synchronized MediaPlayer createMediaPlayer(Context ctx) {
@@ -84,7 +85,11 @@ class MediaPlayerCreaterHelper {
         }catch (InterruptedException e){
              Log.e(TAG, "Cought exception", e);
         }
-
+        try {
+            mediaPlayer_.setAudioStreamType(getAlertPlayerStreamType());
+        } catch (Exception e) {
+            UserError.Log.e(TAG, "Set mediaplayer stream type: " + e);
+        }
         return mediaPlayer_;
     }
     
@@ -98,7 +103,7 @@ public class AlertPlayer {
     private volatile static AlertPlayer alertPlayerInstance;
 
     private final static String TAG = AlertPlayer.class.getSimpleName();
-    private MediaPlayer mediaPlayer;
+    private volatile MediaPlayer mediaPlayer;
     int volumeBeforeAlert = -1;
     int volumeForThisAlert = -1;
 
@@ -171,8 +176,11 @@ public class AlertPlayer {
         if (JoH.ratelimit("opp-snooze-check", 3)) {
             if (ActiveBgAlert.getOnly() != null) {
                 // there is an alert so do something
+                UserError.Log.ueh(TAG, "Opportunistic snooze attempted to snooze alert");
                 Snooze(xdrip.getAppContext(), -1);
-                JoH.static_toast_long("Opportunistic Snooze");
+                if (JoH.ratelimit("opportunistic-snooze-toast", 300)) {
+                    JoH.static_toast_long("Opportunistic Snooze");
+                }
             }
         }
     }
@@ -221,7 +229,15 @@ public class AlertPlayer {
         activeBgAlert.snooze(repeatTime);
     }
 
- // Check the state and alrarm if needed
+    public static int getAlertPlayerStreamType() {
+       // return AudioManager.STREAM_ALARM;
+        // FUTURE this could be from preference setting or follow override silent boolean
+        // FUTURE audio attributes can be supported in later android versions
+        return AudioManager.STREAM_MUSIC;
+    }
+
+
+    // Check the state and alrarm if needed
     public void ClockTick(Context ctx, boolean trendingToAlertEnd, String bgValue)
     {
         if (trendingToAlertEnd) {
@@ -313,16 +329,18 @@ public class AlertPlayer {
         } catch (IOException e) {
             Log.e(TAG, "Caught exception preparing meidaPlayer", e);
             return;
+        } catch (NullPointerException e) {
+            Log.e(TAG,"Possible deep error in mediaPlayer", e);
         }
 
         if (mediaPlayer != null) {
             AudioManager manager = (AudioManager) ctx.getSystemService(Context.AUDIO_SERVICE);
-            int maxVolume = manager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-            volumeBeforeAlert = manager.getStreamVolume(AudioManager.STREAM_MUSIC);
+            int maxVolume = manager.getStreamMaxVolume(getAlertPlayerStreamType());
+            volumeBeforeAlert = manager.getStreamVolume(getAlertPlayerStreamType());
             volumeForThisAlert = (int) (maxVolume * VolumeFrac);
 
             Log.i(TAG, "before playing volumeBeforeAlert " + volumeBeforeAlert + " volumeForThisAlert " + volumeForThisAlert);
-            manager.setStreamVolume(AudioManager.STREAM_MUSIC, volumeForThisAlert, 0);
+            manager.setStreamVolume(getAlertPlayerStreamType(), volumeForThisAlert, 0);
             try {
                 mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                     @Override
@@ -347,12 +365,12 @@ public class AlertPlayer {
     
     private void revertCurrentVolume(final Context ctx) {
         AudioManager manager = (AudioManager) ctx.getSystemService(Context.AUDIO_SERVICE);
-        int currentVolume = manager.getStreamVolume(AudioManager.STREAM_MUSIC);
+        int currentVolume = manager.getStreamVolume(getAlertPlayerStreamType());
         Log.i(TAG, "revertCurrentVolume volumeBeforeAlert " + volumeBeforeAlert + " volumeForThisAlert " + volumeForThisAlert
                 + " currentVolume " + currentVolume);
         if (volumeForThisAlert == currentVolume && (volumeBeforeAlert != -1) && (volumeForThisAlert != -1)) {
             // If the user has changed the volume, don't change it again.
-            manager.setStreamVolume(AudioManager.STREAM_MUSIC, volumeBeforeAlert, 0);
+            manager.setStreamVolume(getAlertPlayerStreamType(), volumeBeforeAlert, 0);
         }
         volumeBeforeAlert = -1;
         volumeForThisAlert = - 1;
