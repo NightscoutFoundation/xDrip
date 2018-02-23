@@ -24,7 +24,7 @@ import java.util.Vector;
  */
 public class DBSearchUtil {
 
-    public static final String CUTOFF = "39";
+    public static final String CUTOFF = "38";
 
 
     public static int noReadingsAboveRange(Context context) {
