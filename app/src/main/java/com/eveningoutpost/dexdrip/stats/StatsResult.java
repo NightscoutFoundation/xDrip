@@ -7,6 +7,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 
 import com.activeandroid.Cache;
+import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 
 import java.text.DecimalFormat;
@@ -22,12 +24,15 @@ public class StatsResult {
     private double total_carbs = -1;
     private double total_insulin = -1;
     private double stdev = -1;
+    private double GVI = -1;
+    private double PGS = -1;
     private int total_steps = -1;
     private final double avg;
     private final boolean mgdl;
     private final long from;
     private final long to;
     private long possibleCaptures;
+    private static final String TAG = "jamorham StatsResult";
 
 
     public StatsResult(SharedPreferences settings, boolean sliding24Hours) {
@@ -123,6 +128,44 @@ public class StatsResult {
         }
     }
 
+    //Refer to https://www.healthline.com/diabetesmine/a-new-view-of-glycemic-variability-how-long-is-your-line
+    //From Nightscout glucosedistribution.js
+    public void calc_GVI() {
+        if (GVI < 0 || PGS < 0) {
+            if(getTotalReadings() > 0){
+                int totalReadings = getTotalReadings();
+                double NormalReadingspct = getIn()*100/getTotalReadings();
+                Cursor cursor= Cache.openDatabase().rawQuery("select calculated_value from bgreadings where timestamp >= " + from + " AND timestamp <= " + to + " AND calculated_value > " + DBSearchUtil.CUTOFF + " AND snyced == 0", null);
+                cursor.moveToFirst();
+                double glucoseFirst = cursor.getDouble(0);
+                double glucoseLast = glucoseFirst;
+                double GVITotal = 0;
+                double glucoseTotal =  glucoseLast;
+                int usedRecords = 1;
+                while(cursor.moveToNext()) {
+                    double delta = cursor.getDouble(0) - glucoseLast;
+                    GVITotal += Math.sqrt(25 + Math.pow(delta, 2));
+                    usedRecords += 1;
+                    glucoseLast = cursor.getDouble(0);
+                    glucoseTotal +=  glucoseLast;
+                }
+                double GVIDelta = Math.abs(glucoseLast - glucoseFirst);//Math.floor(glucose_data[0].bgValue,glucose_data[glucose_data.length-1].bgValue);
+                double GVIIdeal = Math.sqrt(Math.pow(usedRecords*5,2) + Math.pow(GVIDelta,2));
+                GVI = (GVITotal / GVIIdeal * 100) / 100;
+                UserError.Log.d(TAG, "from=" + from + " " + JoH.dateTimeText(from) + " to=" + to + " " + JoH.dateTimeText(to) + " Below=" + getBelow() + " " + getLowPercentage() + " in=" + getIn() + " " + getInPercentage() + " Above=" + getAbove() + " " + getHighPercentage() + " TotalReadings=" + getTotalReadings());
+                UserError.Log.d(TAG, "GVI=" + GVI + " GVIIdeal=" + GVIIdeal + " GVITotal=" + GVITotal + " GVIDelta=" + GVIDelta + " usedRecords=" + usedRecords);
+                double glucoseMean = Math.floor(glucoseTotal / usedRecords);
+                double tirMultiplier = NormalReadingspct / 100.0;
+                PGS = (GVI * glucoseMean * (1-tirMultiplier) * 100) / 100;
+                UserError.Log.d(TAG, "NormalReadingspct=" + NormalReadingspct + " glucoseMean=" + glucoseMean + " tirMultiplier=" + tirMultiplier + " PGS=" + PGS);
+                cursor.close();
+            } else {
+                GVI = 0;
+                PGS = 0;
+            }
+        }
+    }
+
     public double getRatio() {
         return getTotal_carbs() / getTotal_insulin();
     }
@@ -196,6 +239,13 @@ public class StatsResult {
         if(getTotalReadings()==0) return "sd:?";
         if(mgdl) return "sd:" + (Math.round(stdev * 10) / 10d);
         return "sd:" + (new DecimalFormat("#.0")).format((Math.round(stdev * Constants.MGDL_TO_MMOLL * 100) / 100d));
+    }
+
+    public String getGVI(){
+        calc_GVI();
+        if(getTotalReadings()==0) return "gvi:?";
+        DecimalFormat df = new DecimalFormat("#.00");
+        return "gvi:" + df.format(GVI) + " pgs:" + df.format(PGS);
     }
 
     public int getCapturePercentage() {

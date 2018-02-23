@@ -804,6 +804,7 @@ public class WatchUpdaterService extends WearableListenerService implements
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         final PowerManager.WakeLock wl = JoH.getWakeLock("watchupdate-onstart",60000);
+        wear_integration = mPrefs.getBoolean("wear_sync", false);
 
         String action = null;
         if (intent != null) {
@@ -912,6 +913,7 @@ public class WatchUpdaterService extends WearableListenerService implements
         if (!wear_integration)    // only wear sync starts this service, pebble features are not used?
         {
             Log.i(TAG,"Stopping service");
+            startBtService();
             stopSelf();
             JoH.releaseWakeLock(wl);
             return START_NOT_STICKY;

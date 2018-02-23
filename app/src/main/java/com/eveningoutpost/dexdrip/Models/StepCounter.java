@@ -38,8 +38,12 @@ public class StepCounter extends Model {
 
     // patches and saves
     public Long saveit() {
-        fixUpTable();
-        return save();
+        try {
+            fixUpTable();
+            return save();
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public String toS() {
