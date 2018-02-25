@@ -57,10 +57,14 @@ public class LibreOOPAlgorithm {
         OOPResults oOPResults = null;
         try {
             final Gson gson = new GsonBuilder().create();
-            OOPResults []oOPResultsArray = null;
-            oOPResultsArray = gson.fromJson(oopData, OOPResults[].class);
-            if(oOPResultsArray.length > 0) {
-                oOPResults =  oOPResultsArray[0];
+            OOPResultsContainer oOPResultsContainer = gson.fromJson(oopData, OOPResultsContainer.class);
+            
+            if(oOPResultsContainer.Message != null) {
+                Log.e(TAG, "recieved a message from oop algorithm:" + oOPResultsContainer.Message);
+            }
+            
+            if(oOPResultsContainer.oOPResultsArray.length > 0) {
+                oOPResults =  oOPResultsContainer.oOPResultsArray[0];
             } else {
                 Log.e(TAG, "oOPResultsArray exists, but size is zero");
                 return;
