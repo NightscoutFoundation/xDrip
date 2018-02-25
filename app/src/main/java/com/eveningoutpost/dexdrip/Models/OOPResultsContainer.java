@@ -13,7 +13,7 @@ class HistoricBg {
     public double bg;
 }
 
-public class OOPResults {
+class OOPResults {
     double currentBg;
     int currentTime;
     int currenTrend;
@@ -25,4 +25,21 @@ public class OOPResults {
         Gson gson = new GsonBuilder().create();
         return gson.toJson(this);
     }
+}
+
+public class OOPResultsContainer {
+    OOPResultsContainer() {
+        oOPResultsArray = new OOPResults[0];
+        version = 1;
+    }
+
+    String toGson() {
+        Gson gson = new GsonBuilder().create();
+        return gson.toJson(this);
+    }
+
+    int version;
+    String Message; 
+
+    OOPResults[] oOPResultsArray;
 }

@@ -813,36 +813,6 @@ public class BgReading extends Model implements ShareUploadableBg {
         }
     }
 
-    public static List<BgReading> latest_till(long till, int number) {
-        return latest_till(till, number, Home.get_follower());
-    }
-
-    public static List<BgReading> latest_till(long till, int number, boolean is_follower) {
-        if (is_follower) {
-            // exclude sensor information when working as a follower
-            return new Select()
-                    .from(BgReading.class)
-                    .where("calculated_value != 0")
-                    .where("raw_data != 0") // TODO XXX
-                    .orderBy("timestamp desc")
-                    .limit(number)
-                    .execute();
-        } else {
-            Sensor sensor = Sensor.currentSensor();
-            if (sensor == null) {
-                return null;
-            }
-            return new Select()
-                    .from(BgReading.class)
-                    .where("Sensor = ? ", sensor.getId())
-                    .where("calculated_value != 0")
-                    .where("raw_data != 0")
-                    .orderBy("timestamp desc")
-                    .limit(number)
-                    .execute();
-        }
-    }
-
     public static boolean isDataStale() {
         final BgReading last = lastNoSenssor();
         if (last == null) return true;
