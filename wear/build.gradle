@@ -59,19 +59,19 @@ allprojects {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    provided 'com.google.android.wearable:wearable:2.0.1'
-    compile 'com.google.android.support:wearable:2.0.1'
-    compile 'com.android.support:appcompat-v7:23.1.1'
-    // compile 'com.google.android.support:wearable:1.4.0'
-    compile 'com.google.android.gms:play-services-wearable:9.4.0'
-    compile 'com.squareup.wire:wire-runtime:2.2.0'
-    //compile 'com.ustwo.android:clockwise-wearable:1.0.2'
-    //compile files('libs/hellocharts-library-1.5.5.jar')
-    compile(name: 'ustwo-clockwise-debug', ext: 'aar')
-    compile 'me.denley.wearpreferenceactivity:wearpreferenceactivity:0.5.0'
-    compile 'com.google.code.gson:gson:2.4'
-    compile 'io.reactivex:rxjava:1.0.0'
-    compile 'com.google.guava:guava:18.0'
-    compile 'com.polidea.rxandroidble:rxandroidble:1.4.3'
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    compileOnly 'com.google.android.wearable:wearable:2.0.1'
+    implementation 'com.google.android.support:wearable:2.0.1'
+    implementation 'com.android.support:appcompat-v7:23.1.1'
+    // implementation 'com.google.android.support:wearable:1.4.0'
+    implementation 'com.google.android.gms:play-services-wearable:9.4.0'
+    implementation 'com.squareup.wire:wire-runtime:2.2.0'
+    //implementation 'com.ustwo.android:clockwise-wearable:1.0.2'
+    //implementation files('libs/hellocharts-library-1.5.5.jar')
+    implementation(name: 'ustwo-clockwise-debug', ext: 'aar')
+    implementation 'me.denley.wearpreferenceactivity:wearpreferenceactivity:0.5.0'
+    implementation 'com.google.code.gson:gson:2.4'
+    implementation 'io.reactivex:rxjava:1.0.0'
+    implementation 'com.google.guava:guava:18.0'
+    implementation 'com.polidea.rxandroidble:rxandroidble:1.4.3'
 }
