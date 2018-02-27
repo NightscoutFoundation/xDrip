@@ -232,7 +232,7 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
                     if (use_raw) {
                         createBGfromGD(gd, false); // not quick for recent
                     } else {
-                        BgReading.bgReadingInsertFromInt(gd.glucoseLevel, gd.realDate, false);
+                        BgReading.bgReadingInsertFromInt(gd.glucoseLevel, gd.realDate, true);
                     }
                 }
             } else {
