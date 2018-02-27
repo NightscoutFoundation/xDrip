@@ -47,6 +47,12 @@ def generateVersionNumberString = { ->
     return stringBuilder.toString()
 }
 
+def generateRandomUUID = { ->
+    StringBuilder stringBuilder = new StringBuilder();
+    stringBuilder.append('"' + UUID.randomUUID().toString() + '"')
+    return stringBuilder.toString()
+}
+
 def generateVersionName = { ->
 
     StringBuilder stringBuilder = new StringBuilder()
@@ -116,6 +122,7 @@ android {
         versionCode 1603091400
         versionName generateVersionName()
         buildConfigField "int", "buildVersion", generateVersionNumberString()
+        buildConfigField "String", "buildUUID", generateRandomUUID()
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
