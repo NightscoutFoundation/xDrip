@@ -869,4 +869,8 @@
     <string name="Speech_pitch">Speech pitch</string>
     <string name="Speak_Alerts">Speak Alerts</string>
     <string name="Speak_Alerts_Summary">Also give some spoken alert messages</string>
+    <string name="yes">Yes</string>
+    <string name="xdrip_compatible_features">xDrip+ %s Features</string>
+    <string name="garmin">Garmin</string>
+    <string name="enable_local_web_server_feature">Enable local web server feature for Garmin watchface?</string>
 </resources>
