@@ -644,7 +644,13 @@ public class JoH {
     public static void releaseWakeLock(PowerManager.WakeLock wl) {
         if (debug_wakelocks) Log.d(TAG, "releaseWakeLock: " + wl.toString());
         if (wl == null) return;
-        if (wl.isHeld()) wl.release();
+        if (wl.isHeld()) {
+            try {
+                wl.release();
+            } catch (Exception e) {
+                Log.e(TAG, "Error releasing wakelock: " + e);
+            }
+        }
     }
 
     public static PowerManager.WakeLock fullWakeLock(final String name, long millis) {
