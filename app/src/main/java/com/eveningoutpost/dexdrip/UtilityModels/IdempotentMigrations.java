@@ -37,6 +37,7 @@ public class IdempotentMigrations {
         JoH.clearCache();
 
         IncompatibleApps.notifyAboutIncompatibleApps();
+        CompatibleApps.notifyAboutCompatibleApps();
 
     }
 
