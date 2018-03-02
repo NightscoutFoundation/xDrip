@@ -346,11 +346,12 @@ public class Blukon {
         } else if (currentCommand.startsWith("010d0e01") /*getNowGlucoseData*/ && m_getNowGlucoseDataCommand == true && strRecCmd.startsWith("8bde")) {
             Log.d(TAG, "Before Saving data: + currentCommand = " + currentCommand);
             String blockId = currentCommand.substring("010d0e01".length());
+            long now = JoH.tsl();
             if(!blockId.isEmpty()) {
                 int blockNum = JoH.parseIntWithDefault(blockId, 16, -1);
                 if(blockNum != -1) {
                     Log.d(TAG, "Saving data: + blockid = " + blockNum);
-                    LibreBlock.createAndSave("blukon", buffer, blockNum * 8);
+                    LibreBlock.createAndSave("blukon", now , buffer, blockNum * 8);
                 }
             }
 
@@ -360,9 +361,9 @@ public class Blukon {
             Log.i(TAG, "********got getNowGlucoseData=" + currentGlucose);
 
             if (!m_getOlderReading) {
-                processNewTransmitterData(TransmitterData.create(currentGlucose, currentGlucose, 0 /*battery level force to 0 as unknown*/, JoH.tsl()));
+                processNewTransmitterData(TransmitterData.create(currentGlucose, currentGlucose, 0 /*battery level force to 0 as unknown*/, now));
 
-                m_timeLastBg = JoH.tsl();
+                m_timeLastBg = now;
 
                 PersistentStore.setLong("blukon-time-of-last-reading", m_timeLastBg);
                 Log.i(TAG, "time of current reading: " + JoH.dateTimeText(m_timeLastBg));
@@ -374,7 +375,7 @@ public class Blukon {
                 m_getNowGlucoseDataCommand = false;
             } else {
                 Log.i(TAG, "bf: processNewTransmitterData with delayed timestamp of " + m_minutesBack + " min");
-                processNewTransmitterData(TransmitterData.create(currentGlucose, currentGlucose, 0 /*battery level force to 0 as unknown*/, JoH.tsl() - (m_minutesBack * 60 * 1000)));
+                processNewTransmitterData(TransmitterData.create(currentGlucose, currentGlucose, 0 /*battery level force to 0 as unknown*/, now - (m_minutesBack * 60 * 1000)));
                 // @keencave - count down for next backfilling entry
                 m_minutesBack -= 5;
                 if (m_minutesBack < 5) {
@@ -453,17 +454,18 @@ public class Blukon {
         m_blockNumber += len / 8;
 
         if (m_blockNumber >= 43) {
+            long now = JoH.tsl();
             currentCommand = "010c0e00";
             Log.i(TAG, "Send sleep cmd");
             m_communicationStarted = false;
 
             Log.i(TAG, "Full data that was received is " + HexDump.dumpHexString(m_full_data));
-            LibreBlock.createAndSave("blukon", m_full_data, 0);
+            LibreBlock.createAndSave("blukon", now, m_full_data, 0);
             
             Intent intent = new Intent(Intents.XDRIP_PLUS_LIBRE_DATA);
             Bundle bundle = new Bundle();
             bundle.putByteArray(Intents.LIBRE_DATA_BUFFER, m_full_data);
-            bundle.putLong(Intents.LIBRE_DATA_TIMESTAMP, JoH.tsl());
+            bundle.putLong(Intents.LIBRE_DATA_TIMESTAMP, now);
             intent.putExtras(bundle);
             intent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
             xdrip.getAppContext().sendBroadcast(intent);
