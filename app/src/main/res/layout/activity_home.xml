@@ -1,477 +1,499 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
     <data>
-        <variable name="vs" type="com.eveningoutpost.dexdrip.ui.BaseShelf"/>
-        <import type="android.view.View"/>
+
+        <variable
+            name="vs"
+            type="com.eveningoutpost.dexdrip.ui.BaseShelf" />
+
+        <import type="android.view.View" />
     </data>
 
     <android.support.v4.widget.DrawerLayout
 
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/drawer_layout"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.eveningoutpost.dexdrip.Home">
+        android:id="@+id/drawer_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.eveningoutpost.dexdrip.Home">
 
-    <!-- As the main content view, the view below consumes the entire
-         space available using match_parent in both dimensions. -->
-
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:background="#212121"
-        android:orientation="vertical"
-        android:padding="0dp">
-
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/my_toolbar"
-            app:theme="@style/Toolbar"
-
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:minHeight="?attr/actionBarSize" />
-
-        <RelativeLayout
-            android:id="@+id/home_layout_holder"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginTop="-5dp"
-            android:layout_weight="0.80"
-            android:paddingLeft="0dp"
-            android:paddingRight="0dp"
-            android:paddingTop="0dp">
-
-
-            <lecho.lib.hellocharts.view.LineChartView
-                android:id="@+id/chart"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentStart="false"
-                android:layout_marginTop="45dp"
-                android:padding="0dp" />
-
-            <TextView
-                android:id="@+id/notices"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentTop="true"
-                android:background="@android:color/transparent"
-                android:gravity="left|top"
-                android:paddingEnd="10dp"
-                android:paddingStart="10dp"
-                android:text="Alerts"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="#C30909" />
-
-
-            <TextView
-                android:id="@+id/currentBgValueRealTime"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:background="@android:color/transparent"
-                android:gravity="right"
-                android:paddingEnd="20dp"
-                android:paddingTop="0dp"
-                android:textSize="50sp"
-                android:text=""
-                android:layout_marginTop="-10dp"
-                android:layout_marginBottom="1dp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:id="@+id/extraStatusLine"
-                android:paddingEnd="10dp"
-                android:paddingStart="10dp"
-                android:gravity="left|top"
-                android:text="Extra status line"
-                android:background="@android:color/transparent"
-                android:layout_below="@+id/notices"
-                android:shadowColor="#ff212121"
-                android:shadowDx="0"
-                android:shadowDy="0"
-                android:shadowRadius="14"
-                android:layout_alignParentStart="true" />
-
-            <TextView
-                android:id="@+id/textBridgeBattery"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
-                android:inputType="none"
-                android:text="Battery Status"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textSize="12sp"
-                android:textStyle="normal"
-                android:layout_below="@+id/extraStatusLine"
-                android:layout_alignParentStart="true"
-                android:layout_marginLeft="10dp" />
-
-            <TextView
-                android:id="@+id/lowpredict"
-                android:layout_below="@+id/textBridgeBattery"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_marginRight="5dp"
-                android:layout_marginTop="-2dp"
-                android:background="@android:color/transparent"
-                android:gravity="left|top"
-                android:paddingStart="35dp"
-                android:paddingEnd="30dp"
-                android:text="Low prediction"
-                android:shadowColor="#ff212121"
-                android:shadowDx="0"
-                android:shadowDy="0"
-                android:shadowRadius="14"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textStyle="bold"
-                android:textColor="#C30909" />
-
-            <ImageButton
-                android:id="@+id/btnTreatment"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="6dp"
-                android:background="@android:color/transparent"
-                android:contentDescription="@string/speaktreatment"
-                android:gravity="right"
-                android:src="@drawable/ic_eyedropper_variant_grey600_24dp"
-                android:layout_below="@+id/currentBgValueRealTime"
-                android:layout_alignEnd="@+id/currentBgValueRealTime"
-                android:nestedScrollingEnabled="false"
-                android:paddingTop="2dp"
-                android:paddingRight="4dp"
-                android:paddingBottom="1dp"
-                android:layout_marginBottom="1dp"
-                android:layout_marginTop="1dp"
-                android:paddingLeft="2dp" />
-
-            <ImageButton
-                android:id="@+id/btnNote"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
-                android:contentDescription="Add note"
-                android:gravity="right"
-                android:onClick="showNoteTextInputDialog"
-                android:src="@drawable/ic_note_plus_grey600_24dp"
-                android:paddingRight="6dp"
-                android:layout_marginRight="0dp"
-                android:paddingLeft="2dp"
-                android:layout_below="@+id/btnTreatment"
-                android:layout_alignEnd="@+id/lowpredict"
-                android:layout_marginTop="4dp"
-                android:paddingTop="2dp"
-                android:paddingBottom="2dp" />
-
-
-            <ImageButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/btnUndo"
-                android:src="@drawable/ic_undo_variant_grey600_24dp"
-                android:background="@android:color/transparent"
-                android:contentDescription="Undo last"
-                android:onClick="undoButtonClick"
-
-                android:paddingLeft="1dp"
-                android:paddingRight="3dp"
-                android:paddingTop="2dp"
-                android:paddingBottom="3dp"
-                android:layout_below="@+id/btnNote"
-                android:layout_alignStart="@+id/btnNote"
-                android:layout_marginTop="8dp" />
-
-
-            <ImageButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/btnRedo"
-                android:src="@drawable/ic_redo_variant_grey600_24dp"
-                android:background="@android:color/transparent"
-                android:contentDescription="Redo last"
-                android:onClick="redoButtonClick"
-                android:paddingLeft="1dp"
-                android:paddingRight="3dp"
-                android:paddingTop="1dp"
-                android:paddingBottom="1dp"
-                android:layout_below="@+id/btnUndo"
-                android:layout_alignStart="@+id/btnUndo"
-                android:layout_marginTop="8dp" />
-
-
-            <TextView
-                android:id="@+id/treatmentTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignTop="@+id/btnTreatment"
-                android:layout_marginTop="6dp"
-                android:layout_toStartOf="@+id/btnTreatment"
-                android:background="@android:color/transparent"
-                android:gravity="right"
-                android:shadowColor="@android:color/black"
-
-                android:shadowDx="1"
-                android:shadowDy="1"
-                android:shadowRadius="0"
-                android:text="Treatment voice data appears here"
-                android:textAlignment="gravity"
-                android:textColor="@android:color/holo_green_light"
-                android:textSize="14dp" />
-
-            <ImageButton
-                android:id="@+id/approveTreatment"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_below="@+id/btnTreatment"
-                android:layout_marginStart="29dp"
-                android:contentDescription="Confirm Treatment"
-                android:src="@android:drawable/ic_input_add" />
-
-            <ImageButton
-                android:id="@+id/cancelTreatment"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignTop="@+id/approveTreatment"
-                android:layout_toEndOf="@+id/approveTreatment"
-                android:src="@android:drawable/ic_delete" />
-
-            <ImageButton
-                android:id="@+id/bloodTestButton"
-                android:layout_width="wrap_content"
-
-                android:layout_height="wrap_content"
-                android:layout_alignBottom="@+id/cancelTreatment"
-                android:layout_marginStart="29dp"
-                android:layout_toEndOf="@+id/cancelTreatment"
-                android:src="@drawable/ic_touch_app_white_48dp" />
-
-            <TextView
-                android:id="@+id/textBloodGlucose"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignBottom="@+id/bloodTestButton"
-                android:layout_marginBottom="12dp"
-                android:layout_toEndOf="@+id/bloodTestButton"
-                android:background="@android:color/transparent"
-                android:text="102 mg/dl"
-                android:textColor="@android:color/holo_green_light"
-                android:textSize="22sp"
-                android:textStyle="bold" />
-
-            <ImageButton
-                android:id="@+id/buttonCarbs"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignStart="@+id/bloodTestButton"
-                android:layout_below="@+id/bloodTestButton"
-                android:src="@drawable/ic_local_dining_white_48dp" />
-
-            <TextView
-                android:id="@+id/textCarbohydrate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignBottom="@+id/buttonCarbs"
-                android:layout_marginBottom="12dp"
-                android:layout_toEndOf="@+id/buttonCarbs"
-                android:background="@android:color/transparent"
-                android:text="65 grams"
-                android:textColor="@android:color/holo_green_light"
-                android:textSize="22dp"
-                android:textStyle="bold" />
-
-            <ImageButton
-                android:id="@+id/buttonInsulin"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignStart="@+id/buttonCarbs"
-                android:layout_below="@+id/buttonCarbs"
-                android:src="@drawable/ic_colorize_white_48dp" />
-
-            <TextView
-                android:id="@+id/textInsulinUnits"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignBottom="@+id/buttonInsulin"
-                android:layout_marginBottom="12dp"
-                android:layout_toEndOf="@+id/buttonInsulin"
-                android:background="@android:color/transparent"
-                android:text="14 units"
-                android:textColor="@android:color/holo_green_light"
-                android:textSize="22dp"
-                android:textStyle="bold" />
-
-            <ImageButton
-                android:id="@+id/timeButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignStart="@+id/approveTreatment"
-                android:layout_below="@+id/bloodTestButton"
-                android:src="@drawable/ic_av_timer_white_36dp" />
-
-            <TextView
-                android:id="@+id/textTimeButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignBottom="@+id/timeButton"
-                android:layout_marginBottom="12dp"
-                android:layout_toEndOf="@+id/timeButton"
-                android:background="@android:color/transparent"
-                android:text="00:00"
-                android:textColor="@android:color/holo_green_light"
-                android:textSize="22dp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/parakeetbattery"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
-                android:inputType="none"
-                android:text="Battery Status"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textSize="12sp"
-                android:textStyle="normal"
-                android:layout_marginLeft="10dp"
-                android:layout_below="@+id/extraStatusLine"
-                android:layout_toEndOf="@+id/textBridgeBattery" />
-
-            <TextView
-                android:id="@+id/libstatus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
-                android:inputType="none"
-                android:text="Sensor Age"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textSize="12sp"
-                android:textStyle="normal"
-                android:layout_marginLeft="10dp"
-                android:layout_below="@+id/extraStatusLine"
-                android:layout_toEndOf="@+id/parakeetbattery" />
-
-            <ImageButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/vehicleModeButton"
-                android:layout_below="@+id/btnRedo"
-                android:src="@drawable/ic_car_grey600_24dp"
-                android:layout_alignParentEnd="true"
-                android:background="@android:color/transparent"
-                android:layout_marginTop="8dp"
-                android:layout_marginRight="8dp"
-                android:paddingRight="4dp"
-                android:paddingBottom="2dp" />
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:drawableTop="@drawable/ic_heart_pulse_grey600_24dp"
-                android:id="@+id/bpmButton"
-                android:onClick="toggleStepsVisibility"
-                android:background="@android:color/transparent"
-                android:paddingBottom="2dp"
-                android:paddingEnd="4dp"
-                android:layout_marginRight="8dp"
-                android:text="123"
-                android:textSize="10sp"
-                android:gravity="center_horizontal|center_vertical"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:layout_below="@+id/vehicleModeButton"
-                android:layout_alignStart="@+id/vehicleModeButton" />
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:onClick="toggleStepsVisibility"
-                android:drawableTop="@drawable/ic_walk_grey600_24dp"
-                android:id="@+id/walkButton"
-                android:paddingBottom="0dp"
-                android:paddingEnd="0dp"
-                android:paddingTop="0dp"
-                android:paddingStart="0dp"
-                android:layout_marginRight="0dp"
-                android:layout_marginLeft="-10dp"
-                android:layout_marginTop="0dp"
-                android:background="@android:color/transparent"
-                android:text="99999"
-                android:textSize="10sp"
-                android:gravity="center_horizontal|center_vertical"
-                android:layout_below="@+id/bpmButton"
-                android:layout_alignStart="@+id/vehicleModeButton" />
-
-
-
-
-        </RelativeLayout>
+        <!-- As the main content view, the view below consumes the entire
+             space available using match_parent in both dimensions. -->
 
         <LinearLayout
-            android:visibility='@{safeUnbox(vs.included[`time_buttons`]) ? View.VISIBLE : View.GONE}'
-            android:id="@+id/time_buttons"
-            android:gravity="center_horizontal"
-            android:layout_gravity="center_horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:background="#212121"
+            android:orientation="vertical"
+            android:padding="0dp">
 
-            <Button
-                android:onClick="timeButtonClick"
-                android:id="@+id/hourbutton24"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="24 Hour" />
-            <Button
-                android:onClick="timeButtonClick"
-                android:id="@+id/hourbutton12"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="12 Hour" />
-            <Button
-                android:onClick="timeButtonClick"
-                android:id="@+id/hourbutton6"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="6 Hour" />
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/my_toolbar"
+                android:layout_width="match_parent"
 
-            <Button
-                android:onClick="timeButtonClick"
-                android:id="@+id/hourbutton3"
+                android:layout_height="wrap_content"
+                android:minHeight="?attr/actionBarSize"
+                app:theme="@style/Toolbar" />
+
+            <RelativeLayout
+                android:id="@+id/home_layout_holder"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="-5dp"
+                android:layout_weight="0.80"
+                android:paddingLeft="0dp"
+                android:paddingRight="0dp"
+                android:paddingTop="0dp">
+
+
+                <lecho.lib.hellocharts.view.LineChartView
+                    android:id="@+id/chart"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentStart="false"
+                    android:layout_marginTop="45dp"
+                    android:padding="0dp" />
+
+                <TextView
+                    android:id="@+id/notices"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentTop="true"
+                    android:background="@android:color/transparent"
+                    android:gravity="left|top"
+                    android:paddingEnd="10dp"
+                    android:paddingStart="10dp"
+                    android:text="Alerts"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="#C30909" />
+
+
+                <TextView
+                    android:id="@+id/currentBgValueRealTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginBottom="1dp"
+                    android:layout_marginTop="-10dp"
+                    android:background="@android:color/transparent"
+                    android:gravity="right"
+                    android:paddingEnd="20dp"
+                    android:paddingTop="0dp"
+                    android:text=""
+                    android:textSize="50sp" />
+
+                <TextView
+                    android:id="@+id/extraStatusLine"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_below="@+id/notices"
+                    android:background="@android:color/transparent"
+                    android:gravity="left|top"
+                    android:paddingEnd="10dp"
+                    android:paddingStart="10dp"
+                    android:shadowColor="#ff212121"
+                    android:shadowDx="0"
+                    android:shadowDy="0"
+                    android:shadowRadius="14"
+                    android:text="Extra status line"
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
+
+                <TextView
+                    android:id="@+id/textBridgeBattery"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_below="@+id/extraStatusLine"
+                    android:layout_marginLeft="10dp"
+                    android:background="@android:color/transparent"
+                    android:inputType="none"
+                    android:text="Battery Status"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textSize="12sp"
+                    android:textStyle="normal" />
+
+                <TextView
+                    android:id="@+id/lowpredict"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_below="@+id/textBridgeBattery"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginTop="-2dp"
+                    android:background="@android:color/transparent"
+                    android:gravity="left|top"
+                    android:paddingEnd="30dp"
+                    android:paddingStart="35dp"
+                    android:shadowColor="#ff212121"
+                    android:shadowDx="0"
+                    android:shadowDy="0"
+                    android:shadowRadius="14"
+                    android:text="Low prediction"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="#C30909"
+                    android:textStyle="bold" />
+
+                <ImageButton
+                    android:id="@+id/btnTreatment"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignEnd="@+id/currentBgValueRealTime"
+                    android:layout_below="@+id/currentBgValueRealTime"
+                    android:layout_marginBottom="1dp"
+                    android:layout_marginRight="6dp"
+                    android:layout_marginTop="1dp"
+                    android:background="@android:color/transparent"
+                    android:contentDescription="@string/speaktreatment"
+                    android:gravity="right"
+                    android:nestedScrollingEnabled="false"
+                    android:paddingBottom="1dp"
+                    android:paddingLeft="2dp"
+                    android:paddingRight="4dp"
+                    android:paddingTop="2dp"
+                    android:src="@drawable/ic_eyedropper_variant_grey600_24dp" />
+
+                <ImageButton
+                    android:id="@+id/btnNote"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignEnd="@+id/lowpredict"
+                    android:layout_below="@+id/btnTreatment"
+                    android:layout_marginRight="0dp"
+                    android:layout_marginTop="4dp"
+                    android:background="@android:color/transparent"
+                    android:contentDescription="Add note"
+                    android:gravity="right"
+                    android:onClick="showNoteTextInputDialog"
+                    android:paddingBottom="2dp"
+                    android:paddingLeft="2dp"
+                    android:paddingRight="6dp"
+                    android:paddingTop="2dp"
+                    android:src="@drawable/ic_note_plus_grey600_24dp" />
+
+
+                <ImageButton
+                    android:id="@+id/btnUndo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignStart="@+id/btnNote"
+                    android:layout_below="@+id/btnNote"
+                    android:layout_marginTop="8dp"
+                    android:background="@android:color/transparent"
+
+                    android:contentDescription="Undo last"
+                    android:onClick="undoButtonClick"
+                    android:paddingBottom="3dp"
+                    android:paddingLeft="1dp"
+                    android:paddingRight="3dp"
+                    android:paddingTop="2dp"
+                    android:src="@drawable/ic_undo_variant_grey600_24dp" />
+
+
+                <ImageButton
+                    android:id="@+id/btnRedo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignStart="@+id/btnUndo"
+                    android:layout_below="@+id/btnUndo"
+                    android:layout_marginTop="8dp"
+                    android:background="@android:color/transparent"
+                    android:contentDescription="Redo last"
+                    android:onClick="redoButtonClick"
+                    android:paddingBottom="1dp"
+                    android:paddingLeft="1dp"
+                    android:paddingRight="3dp"
+                    android:paddingTop="1dp"
+                    android:src="@drawable/ic_redo_variant_grey600_24dp" />
+
+
+                <TextView
+                    android:id="@+id/treatmentTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@+id/btnTreatment"
+                    android:layout_marginTop="6dp"
+                    android:layout_toStartOf="@+id/btnTreatment"
+                    android:background="@android:color/transparent"
+                    android:gravity="right"
+                    android:shadowColor="@android:color/black"
+
+                    android:shadowDx="1"
+                    android:shadowDy="1"
+                    android:shadowRadius="0"
+                    android:text="Treatment voice data appears here"
+                    android:textAlignment="gravity"
+                    android:textColor="@android:color/holo_green_light"
+                    android:textSize="14dp" />
+
+                <ImageButton
+                    android:id="@+id/approveTreatment"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_below="@+id/btnTreatment"
+                    android:layout_marginStart="29dp"
+                    android:contentDescription="Confirm Treatment"
+                    android:src="@android:drawable/ic_input_add" />
+
+                <ImageButton
+                    android:id="@+id/cancelTreatment"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@+id/approveTreatment"
+                    android:layout_toEndOf="@+id/approveTreatment"
+                    android:src="@android:drawable/ic_delete" />
+
+                <ImageButton
+                    android:id="@+id/bloodTestButton"
+                    android:layout_width="wrap_content"
+
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/cancelTreatment"
+                    android:layout_marginStart="29dp"
+                    android:layout_toEndOf="@+id/cancelTreatment"
+                    android:src="@drawable/ic_touch_app_white_48dp" />
+
+                <TextView
+                    android:id="@+id/textBloodGlucose"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/bloodTestButton"
+                    android:layout_marginBottom="12dp"
+                    android:layout_toEndOf="@+id/bloodTestButton"
+                    android:background="@android:color/transparent"
+                    android:text="102 mg/dl"
+                    android:textColor="@android:color/holo_green_light"
+                    android:textSize="22sp"
+                    android:textStyle="bold" />
+
+                <ImageButton
+                    android:id="@+id/buttonCarbs"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignStart="@+id/bloodTestButton"
+                    android:layout_below="@+id/bloodTestButton"
+                    android:src="@drawable/ic_local_dining_white_48dp" />
+
+                <TextView
+                    android:id="@+id/textCarbohydrate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/buttonCarbs"
+                    android:layout_marginBottom="12dp"
+                    android:layout_toEndOf="@+id/buttonCarbs"
+                    android:background="@android:color/transparent"
+                    android:text="65 grams"
+                    android:textColor="@android:color/holo_green_light"
+                    android:textSize="22dp"
+                    android:textStyle="bold" />
+
+                <ImageButton
+                    android:id="@+id/buttonInsulin"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignStart="@+id/buttonCarbs"
+                    android:layout_below="@+id/buttonCarbs"
+                    android:src="@drawable/ic_colorize_white_48dp" />
+
+                <TextView
+                    android:id="@+id/textInsulinUnits"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/buttonInsulin"
+                    android:layout_marginBottom="12dp"
+                    android:layout_toEndOf="@+id/buttonInsulin"
+                    android:background="@android:color/transparent"
+                    android:text="14 units"
+                    android:textColor="@android:color/holo_green_light"
+                    android:textSize="22dp"
+                    android:textStyle="bold" />
+
+                <ImageButton
+                    android:id="@+id/timeButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignStart="@+id/approveTreatment"
+                    android:layout_below="@+id/bloodTestButton"
+                    android:src="@drawable/ic_av_timer_white_36dp" />
+
+                <TextView
+                    android:id="@+id/textTimeButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/timeButton"
+                    android:layout_marginBottom="12dp"
+                    android:layout_toEndOf="@+id/timeButton"
+                    android:background="@android:color/transparent"
+                    android:text="00:00"
+                    android:textColor="@android:color/holo_green_light"
+                    android:textSize="22dp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/parakeetbattery"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/extraStatusLine"
+                    android:layout_marginLeft="10dp"
+                    android:layout_toEndOf="@+id/textBridgeBattery"
+                    android:background="@android:color/transparent"
+                    android:inputType="none"
+                    android:text="Battery Status"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textSize="12sp"
+                    android:textStyle="normal" />
+
+                <TextView
+                    android:id="@+id/libstatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/extraStatusLine"
+                    android:layout_marginLeft="10dp"
+                    android:layout_toEndOf="@+id/parakeetbattery"
+                    android:background="@android:color/transparent"
+                    android:inputType="none"
+                    android:text="Sensor Age"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textSize="12sp"
+                    android:textStyle="normal" />
+
+                <ImageButton
+                    android:id="@+id/vehicleModeButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_below="@+id/btnRedo"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@android:color/transparent"
+                    android:paddingBottom="2dp"
+                    android:paddingRight="4dp"
+                    android:src="@drawable/ic_car_grey600_24dp" />
+
+                <Button
+                    android:id="@+id/bpmButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:layout_alignStart="@+id/vehicleModeButton"
+                    android:layout_below="@+id/vehicleModeButton"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@android:color/transparent"
+                    android:drawableTop="@drawable/ic_heart_pulse_grey600_24dp"
+                    android:gravity="center_horizontal|center_vertical"
+                    android:onClick="toggleStepsVisibility"
+                    android:paddingBottom="2dp"
+                    android:paddingEnd="4dp"
+                    android:text="123"
+                    android:textSize="10sp" />
+
+                <Button
+                    android:id="@+id/walkButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:layout_alignStart="@+id/vehicleModeButton"
+                    android:layout_below="@+id/bpmButton"
+                    android:layout_marginLeft="-10dp"
+                    android:layout_marginRight="0dp"
+                    android:layout_marginTop="0dp"
+                    android:background="@android:color/transparent"
+                    android:drawableTop="@drawable/ic_walk_grey600_24dp"
+                    android:gravity="center_horizontal|center_vertical"
+                    android:onClick="toggleStepsVisibility"
+                    android:paddingBottom="0dp"
+                    android:paddingEnd="0dp"
+                    android:paddingStart="0dp"
+                    android:paddingTop="0dp"
+                    android:text="99999"
+                    android:textSize="10sp" />
+
+
+            </RelativeLayout>
+
+            <LinearLayout
+                android:id="@+id/sourcewizard"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="3 Hour" />
+                android:layout_gravity="center_horizontal"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal"
+                android:visibility="@{safeUnbox(vs.included[`source_wizard`]) ? View.VISIBLE: View.GONE}">
+
+                <Button
+                    android:id="@+id/sourceWizardButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:onClick="sourceWizardButtonClick"
+                    android:text="@string/start_source_setup_wizard" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/time_buttons"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal"
+                android:visibility="@{safeUnbox(vs.included[`time_buttons`]) ? View.VISIBLE: View.GONE}">
+
+                <Button
+                    android:id="@+id/hourbutton24"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="timeButtonClick"
+                    android:text="@{@string/hour_format(24)}" />
+
+                <Button
+                    android:id="@+id/hourbutton12"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="timeButtonClick"
+                    android:text="@{@string/hour_format(12)}" />
+
+                <Button
+                    android:id="@+id/hourbutton6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="timeButtonClick"
+                    android:text="@{@string/hour_format(6)}" />
+
+                <Button
+                    android:id="@+id/hourbutton3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="timeButtonClick"
+                    android:text="@{@string/hour_format(3)}" />
+
+            </LinearLayout>
+
+            <lecho.lib.hellocharts.view.PreviewLineChartView
+                android:id="@+id/chart_preview"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentStart="true"
+                android:layout_weight=".20"
+                android:visibility="@{safeUnbox(vs.included[`chart_preview`]) ? View.VISIBLE: View.GONE}" />
 
         </LinearLayout>
 
-        <lecho.lib.hellocharts.view.PreviewLineChartView
-            android:visibility="@{safeUnbox(vs.included[`chart_preview`]) ? View.VISIBLE : View.GONE}"
-            android:id="@+id/chart_preview"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentStart="true"
-            android:layout_weight=".20">
-        </lecho.lib.hellocharts.view.PreviewLineChartView>
 
-    </LinearLayout>
-
-
-
-    <fragment
-        android:id="@+id/navigation_drawer"
-        android:name="com.eveningoutpost.dexdrip.NavigationDrawerFragment"
-        class="com.eveningoutpost.dexdrip.NavigationDrawerFragment"
-        android:layout_width="@dimen/navigation_drawer_width"
-        android:layout_marginTop="?attr/actionBarSize"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"
-        tools:layout="@layout/fragment_navigation_drawer" />
-</android.support.v4.widget.DrawerLayout>
+        <fragment
+            android:id="@+id/navigation_drawer"
+            android:name="com.eveningoutpost.dexdrip.NavigationDrawerFragment"
+            class="com.eveningoutpost.dexdrip.NavigationDrawerFragment"
+            android:layout_width="@dimen/navigation_drawer_width"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:layout_marginTop="?attr/actionBarSize"
+            tools:layout="@layout/fragment_navigation_drawer" />
+    </android.support.v4.widget.DrawerLayout>
 
 </layout>

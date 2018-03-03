@@ -875,4 +875,15 @@
     <string name="xdrip_compatible_features">xDrip+ %s Features</string>
     <string name="garmin">Garmin</string>
     <string name="enable_local_web_server_feature">Enable local web server feature for Garmin watchface?</string>
+    <string name="set_data_source_to">Set data source to: %s ?</string>
+    <string name="are_you_sure">Are you sure?</string>
+    <string name="g4_share_receiver">G4 Share Receiver</string>
+    <string name="bluetooth_wixel">Bluetooth Wixel</string>
+    <string name="parakeet_wifi">Parakeet / Wifi</string>
+    <string name="other">Other</string>
+    <string name="which_software_is_the_wixel_running">Which software is the Wixel running?</string>
+    <string name="start_source_setup_wizard">Start Source Setup Wizard</string>
+    <string name="hour_format">%s Hour</string>
+    <string name="enter_your_transmitter_id_exactly">Enter your transmitter ID exactly as it is printed</string>
+    <string name="which_type_of_device">Which type of device?</string>
 </resources>

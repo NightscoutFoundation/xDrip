@@ -235,6 +235,8 @@ dependencies {
     implementation 'com.google.zxing:core:3.1.0'
     implementation 'net.tribe7.seeds:seeds-functional:16.0.1'
     implementation 'net.tribe7.seeds:seeds-primitives:16.0.1'
+    implementation 'me.tatarka.bindingcollectionadapter2:bindingcollectionadapter:2.2.0'
+    implementation 'me.tatarka.bindingcollectionadapter2:bindingcollectionadapter-recyclerview:2.2.0'
     implementation 'org.slf4j:slf4j-api:1.7.7'
     implementation 'org.apache.commons:commons-math3:3.6'
     implementation('com.crashlytics.sdk.android:crashlytics:2.6.6@aar') {

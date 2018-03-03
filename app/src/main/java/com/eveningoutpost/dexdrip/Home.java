@@ -68,7 +68,6 @@ import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.HeartRate;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.LibreBlock;
-import com.eveningoutpost.dexdrip.Models.StepCounter;
 import com.eveningoutpost.dexdrip.Models.ProcessInitialDataQuality;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.StepCounter;
@@ -93,6 +92,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.PrefsViewImpl;
 import com.eveningoutpost.dexdrip.UtilityModels.PumpStatus;
 import com.eveningoutpost.dexdrip.UtilityModels.SendFeedBack;
 import com.eveningoutpost.dexdrip.UtilityModels.ShotStateStore;
+import com.eveningoutpost.dexdrip.UtilityModels.SourceWizard;
 import com.eveningoutpost.dexdrip.UtilityModels.UndoRedo;
 import com.eveningoutpost.dexdrip.UtilityModels.UpdateActivity;
 import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
@@ -2097,6 +2097,10 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         staticRefreshBGCharts();
     }
 
+    public void sourceWizardButtonClick(View v) {
+        SourceWizard.start(this);
+    }
+
     // set the chart viewport to whatever the button push represents
     public void timeButtonClick(View v) {
         switch (v.getId()) {
@@ -2367,7 +2371,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                     if (!Experience.gotData() && JoH.ratelimit("start-sensor_prompt", 20)) {
                         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
                         final Context context = this;
-                        builder.setTitle("Start Sensor?");
+                        builder.setTitle(getString(R.string.start_sensor) + "?");
                         builder.setMessage("Data Source is set to: " + DexCollectionType.getDexCollectionType().toString() + "\n\nDo you want to change settings or start sensor?");
                         builder.setNegativeButton("Change settings", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
@@ -2375,7 +2379,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                                 startActivity(new Intent(context, Preferences.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                             }
                         });
-                        builder.setPositiveButton("Start sensor", new DialogInterface.OnClickListener() {
+                        builder.setPositiveButton(R.string.start_sensor, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
@@ -3190,7 +3194,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
         dialogBuilder.setTitle(R.string.treatment_note);
         //dialogBuilder.setMessage("Enter text below");
-        dialogBuilder.setPositiveButton("Done", new DialogInterface.OnClickListener() {
+        dialogBuilder.setPositiveButton(R.string.done, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 String treatment_text = edt.getText().toString().trim();
                 Log.d(TAG, "Got treatment note: " + treatment_text);

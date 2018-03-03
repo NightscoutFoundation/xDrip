@@ -23,7 +23,7 @@ public class Constants {
     public static final long STALE_CALIBRATION_CUT_OFF = Constants.MINUTE_IN_MS * 21;
 
     /* Notification IDs */
-
+    public static final int FINAL_VISIBILITY_ID = 785877617;
 
     public static final int WIFI_COLLECTION_SERVICE_ID = 1001;
     public static final int DEX_COLLECTION_SERVICE_RETRY_ID = 1002;
