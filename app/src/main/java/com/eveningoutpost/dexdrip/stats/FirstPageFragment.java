@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
@@ -139,85 +140,17 @@ public class FirstPageFragment extends Fragment {
                 //calculate BGI / PGS
                 // https://github.com/nightscout/cgm-remote-monitor/blob/master/lib/report_plugins/glucosedistribution.js#L150
                 List<BgReadingStats> bgListByTime = DBSearchUtil.getReadings(false);
-
-
-                // data cleaning pass 1 - add interpolated missing points
-                List<BgReadingStats> glucose_data = new ArrayList<>(bgListByTime.size());
-                for (int i=0; i<bgListByTime.size()-2; i++) {
-
-                    BgReadingStats entry = bgListByTime.get(i);
-                    BgReadingStats nextEntry = bgListByTime.get(i + 1);
-
-                    long timeDelta = nextEntry.timestamp - entry.timestamp;
-
-                    if (timeDelta < 9 * 60 * 1000 ||  timeDelta > 25 * 60 * 1000) {
-                        glucose_data.add(entry);
-                        continue;
-                    }
-                    int missingRecords = (int) (Math.floor(timeDelta / (5 * 60 * 990)) -1);
-                    long timePatch = (long) Math.floor(timeDelta / (missingRecords + 1));
-                    double bgDelta = (nextEntry.calculated_value - entry.calculated_value) / (missingRecords + 1);
-                    glucose_data.add(entry);
-
-                    for (int j = 1; j <= missingRecords; j++) {
-                        BgReadingStats newEntry = new BgReadingStats();
-                        newEntry.calculated_value = entry.calculated_value + bgDelta * j;
-                        newEntry.timestamp = (entry.timestamp + j * timePatch);
-                        glucose_data.add(newEntry);
-                    }
-                }
-
-                // data cleaning pass 2 - replace single jumpy measures with interpolated values
-                List<BgReadingStats> glucose_data2 = new ArrayList<>(glucose_data.size());
-                BgReadingStats prevEntry = null;
-                if(glucose_data.size() > 0) {
-                    glucose_data2.add(glucose_data.get(0));
-                    prevEntry = glucose_data.get(0);
-                }
-
-                for (int i = 1; i < glucose_data.size()-2; i++) {
-                    BgReadingStats entry = glucose_data.get(i);
-                    BgReadingStats nextEntry = glucose_data.get(i+1);
-                    long timeDelta = nextEntry.timestamp - entry.timestamp;
-                    long timeDelta2 = entry.timestamp - prevEntry.timestamp;
-                    long maxGap = (5 * 60 * 1000) + 20000;
-                    if (timeDelta > maxGap || timeDelta2 > maxGap ) {
-                        glucose_data2.add(entry);
-                        prevEntry = entry;
-                        continue;
-                    }
-                    double delta1 = entry.calculated_value - prevEntry.calculated_value;
-                    double delta2 = nextEntry.calculated_value - entry.calculated_value;
-                    if (delta1 <= 8 && delta2 <= 8) {
-                        glucose_data2.add(entry);
-                        prevEntry = entry;
-                        continue;
-                    }
-
-                    if ((delta1 > 0 && delta2 <0) || (delta1 < 0 && delta2 > 0)) {
-                        double d = (nextEntry.calculated_value - prevEntry.calculated_value) / 2;
-                        BgReadingStats newEntry = new BgReadingStats();
-                        newEntry.calculated_value = prevEntry.calculated_value + d;
-                        newEntry.timestamp = entry.timestamp;
-
-                        glucose_data2.add(newEntry);
-                        prevEntry = newEntry;
-                        continue;
-
-                    }
-                    glucose_data2.add(entry);
-                    prevEntry = entry;
-                }
-                glucose_data = glucose_data2;
+                bgListByTime = pass1DataCleaning(bgListByTime);
+                bgListByTime = pass2DataCleaning(bgListByTime);
 
                 double normalReadingspct= inRange*100/total; //TODO calculate from cleaned data?
-                double glucoseFirst = glucose_data.get(0).calculated_value;
+                double glucoseFirst = bgListByTime.get(0).calculated_value;
                 double glucoseLast = glucoseFirst;
                 double glucoseTotal =  glucoseLast;
                 double gviTotal = 0;
                 int usedRecords = 1;
-                for (int i=1; i<glucose_data.size();i++) {
-                    BgReadingStats bgr = glucose_data.get(i);
+                for (int i=1; i<bgListByTime.size();i++) {
+                    BgReadingStats bgr = bgListByTime.get(i);
                     double delta = bgr.calculated_value - glucoseLast;
                     gviTotal += Math.sqrt(25 + Math.pow(delta, 2));
                     usedRecords += 1;
@@ -278,6 +211,82 @@ public class FirstPageFragment extends Fragment {
 
         }
 
+    }
+
+    @NonNull
+    private List<BgReadingStats> pass1DataCleaning(List<BgReadingStats> bgListByTime) {
+        // data cleaning pass 1 - add interpolated missing points
+        List<BgReadingStats> glucose_data = new ArrayList<>(bgListByTime.size());
+        for (int i=0; i<bgListByTime.size()-2; i++) {
+
+            BgReadingStats entry = bgListByTime.get(i);
+            BgReadingStats nextEntry = bgListByTime.get(i + 1);
+
+            long timeDelta = nextEntry.timestamp - entry.timestamp;
+
+            if (timeDelta < 9 * 60 * 1000 ||  timeDelta > 25 * 60 * 1000) {
+                glucose_data.add(entry);
+                continue;
+            }
+            int missingRecords = (int) (Math.floor(timeDelta / (5 * 60 * 990)) -1);
+            long timePatch = (long) Math.floor(timeDelta / (missingRecords + 1));
+            double bgDelta = (nextEntry.calculated_value - entry.calculated_value) / (missingRecords + 1);
+            glucose_data.add(entry);
+
+            for (int j = 1; j <= missingRecords; j++) {
+                BgReadingStats newEntry = new BgReadingStats();
+                newEntry.calculated_value = entry.calculated_value + bgDelta * j;
+                newEntry.timestamp = (entry.timestamp + j * timePatch);
+                glucose_data.add(newEntry);
+            }
+        }
+        return glucose_data;
+    }
+
+    @NonNull
+    private List<BgReadingStats> pass2DataCleaning(List<BgReadingStats> glucose_data) {
+        // data cleaning pass 2 - replace single jumpy measures with interpolated values
+        List<BgReadingStats> glucose_data2 = new ArrayList<>(glucose_data.size());
+        BgReadingStats prevEntry = null;
+        if(glucose_data.size() > 0) {
+            glucose_data2.add(glucose_data.get(0));
+            prevEntry = glucose_data.get(0);
+        }
+
+        for (int i = 1; i < glucose_data.size()-2; i++) {
+            BgReadingStats entry = glucose_data.get(i);
+            BgReadingStats nextEntry = glucose_data.get(i+1);
+            long timeDelta = nextEntry.timestamp - entry.timestamp;
+            long timeDelta2 = entry.timestamp - prevEntry.timestamp;
+            long maxGap = (5 * 60 * 1000) + 20000;
+            if (timeDelta > maxGap || timeDelta2 > maxGap ) {
+                glucose_data2.add(entry);
+                prevEntry = entry;
+                continue;
+            }
+            double delta1 = entry.calculated_value - prevEntry.calculated_value;
+            double delta2 = nextEntry.calculated_value - entry.calculated_value;
+            if (delta1 <= 8 && delta2 <= 8) {
+                glucose_data2.add(entry);
+                prevEntry = entry;
+                continue;
+            }
+
+            if ((delta1 > 0 && delta2 <0) || (delta1 < 0 && delta2 > 0)) {
+                double d = (nextEntry.calculated_value - prevEntry.calculated_value) / 2;
+                BgReadingStats newEntry = new BgReadingStats();
+                newEntry.calculated_value = prevEntry.calculated_value + d;
+                newEntry.timestamp = entry.timestamp;
+
+                glucose_data2.add(newEntry);
+                prevEntry = newEntry;
+                continue;
+
+            }
+            glucose_data2.add(entry);
+            prevEntry = entry;
+        }
+        return glucose_data2;
     }
 
 }
