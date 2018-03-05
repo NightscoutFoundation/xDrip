@@ -139,7 +139,8 @@ public class FirstPageFragment extends Fragment {
 
                 //calculate BGI / PGS
                 // https://github.com/nightscout/cgm-remote-monitor/blob/master/lib/report_plugins/glucosedistribution.js#L150
-                List<BgReadingStats> bgListByTime = DBSearchUtil.getReadings(false);
+                List<BgReadingStats> bgListByTime = DBSearchUtil.getFilteredReadingsWithFallback(false);
+
                 bgListByTime = pass1DataCleaning(bgListByTime);
                 bgListByTime = pass2DataCleaning(bgListByTime);
 
