@@ -22,6 +22,8 @@ import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.LibreBlock;
+import com.eveningoutpost.dexdrip.Models.Noise;
+import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.NewDataObserver;
 import com.eveningoutpost.dexdrip.Services.SyncService;
@@ -125,6 +127,8 @@ public class BgSendQueue extends Model {
                     JoH.startService(WidgetUpdateService.class);
                 }
             }
+
+            // TODO extract to separate class/method and put in to new data observer
             BestGlucose.DisplayGlucose dg = null;
             if (prefs.getBoolean("broadcast_data_through_intents", false)) {
                 Log.i("SENSOR QUEUE:", "Broadcast data");
@@ -133,33 +137,50 @@ public class BgSendQueue extends Model {
                 // TODO this cannot handle out of sequence data due to displayGlucose taking most recent?!
                 // TODO can we do something with munging for quick data and getDisplayGlucose for non quick?
                 // use display glucose if enabled and available
-                if ((prefs.getBoolean("broadcast_data_use_best_glucose", false)) && ((dg = BestGlucose.getDisplayGlucose()) != null)) {
-                    bundle.putDouble(Intents.EXTRA_BG_ESTIMATE, dg.mgdl);
-                    bundle.putDouble(Intents.EXTRA_BG_SLOPE, dg.slope);
 
+                final int noiseBlockLevel = Noise.getNoiseBlockLevel();
+                bundle.putInt(Intents.EXTRA_NOISE_BLOCK_LEVEL, noiseBlockLevel);
+
+                if ((prefs.getBoolean("broadcast_data_use_best_glucose", false)) && ((dg = BestGlucose.getDisplayGlucose()) != null)) {
                     bundle.putDouble(Intents.EXTRA_NOISE, dg.noise);
                     bundle.putInt(Intents.EXTRA_NOISE_WARNING, dg.warning);
 
-                    // hide slope possibly needs to be handled properly
-                    if (bgReading.hide_slope) {
-                        bundle.putString(Intents.EXTRA_BG_SLOPE_NAME, "9"); // not sure if this is right has been this way for a long time
+                    if (dg.noise <= noiseBlockLevel) {
+                        bundle.putDouble(Intents.EXTRA_BG_ESTIMATE, dg.mgdl);
+                        bundle.putDouble(Intents.EXTRA_BG_SLOPE, dg.slope);
+
+                        // hide slope possibly needs to be handled properly
+                        if (bgReading.hide_slope) {
+                            bundle.putString(Intents.EXTRA_BG_SLOPE_NAME, "9"); // not sure if this is right has been this way for a long time
+                        } else {
+                            bundle.putString(Intents.EXTRA_BG_SLOPE_NAME, dg.delta_name);
+                        }
                     } else {
-                        bundle.putString(Intents.EXTRA_BG_SLOPE_NAME, dg.delta_name);
+                        final String msg = "Not locally broadcasting due to noise block level of: " + noiseBlockLevel + " and noise of; " + JoH.roundDouble(dg.noise, 1);
+                        UserError.Log.e("LocalBroadcast", msg);
+                        JoH.static_toast_long(msg);
                     }
                 } else {
-                    // standard xdrip-classic data set
-                    bundle.putDouble(Intents.EXTRA_BG_ESTIMATE, bgReading.calculated_value);
 
                     // better to use the display glucose version above
                     bundle.putDouble(Intents.EXTRA_NOISE, BgGraphBuilder.last_noise);
+                    if (BgGraphBuilder.last_noise <= noiseBlockLevel) {
+                        // standard xdrip-classic data set
+                        bundle.putDouble(Intents.EXTRA_BG_ESTIMATE, bgReading.calculated_value);
 
-                    //TODO: change back to bgReading.calculated_value_slope if it will also get calculated for Share data
-                    // bundle.putDouble(Intents.EXTRA_BG_SLOPE, bgReading.calculated_value_slope);
-                    bundle.putDouble(Intents.EXTRA_BG_SLOPE, BgReading.currentSlope());
-                    if (bgReading.hide_slope) {
-                        bundle.putString(Intents.EXTRA_BG_SLOPE_NAME, "9"); // not sure if this is right but has been this way for a long time
+
+                        //TODO: change back to bgReading.calculated_value_slope if it will also get calculated for Share data
+                        // bundle.putDouble(Intents.EXTRA_BG_SLOPE, bgReading.calculated_value_slope);
+                        bundle.putDouble(Intents.EXTRA_BG_SLOPE, BgReading.currentSlope());
+                        if (bgReading.hide_slope) {
+                            bundle.putString(Intents.EXTRA_BG_SLOPE_NAME, "9"); // not sure if this is right but has been this way for a long time
+                        } else {
+                            bundle.putString(Intents.EXTRA_BG_SLOPE_NAME, bgReading.slopeName());
+                        }
                     } else {
-                        bundle.putString(Intents.EXTRA_BG_SLOPE_NAME, bgReading.slopeName());
+                        final String msg = "Not locally broadcasting due to noise block level of: " + noiseBlockLevel + " and noise of; " + JoH.roundDouble(BgGraphBuilder.last_noise, 1);
+                        UserError.Log.e("LocalBroadcast", msg);
+                        JoH.static_toast_long(msg);
                     }
                 }
 
@@ -196,7 +217,7 @@ public class BgSendQueue extends Model {
                 final Intent intent = new Intent(Intents.ACTION_NEW_BG_ESTIMATE);
                 intent.putExtras(bundle);
                 intent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
-                
+
                 if (Pref.getBooleanDefaultFalse("broadcast_data_through_intents_without_permission")) {
                     context.sendBroadcast(intent);
                 } else {
@@ -230,7 +251,7 @@ public class BgSendQueue extends Model {
 
             if (!quick) {
                 NewDataObserver.newBgReading(bgReading, is_follower);
-                LibreBlock.UpdateBgVal(bgReading.timestamp, bgReading.calculated_value);
+                LibreBlock.UpdateBgVal(bgReading.timestamp, bgReading.calculated_value); // TODO move this to NewDataObserver
             }
 
             if ((!is_follower) && (prefs.getBoolean("plus_follow_master", false))) {

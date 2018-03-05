@@ -311,6 +311,15 @@
                 android:key="broadcast_data_use_best_glucose"
                 android:summary="@string/use_plugins_for_brodcast"
                 android:title="@string/send_display_glucose" />
+            <ListPreference
+                android:defaultValue="200"
+                android:dependency="broadcast_data_through_intents"
+                android:entries="@array/NoiseLevelBlock"
+                android:entryValues="@array/NoiseLevelBlockValues"
+                android:key="noise_block_level"
+                android:shouldDisableView="true"
+                android:summary="@string/level_at_which_noisy_data_should_not_be_broadcast"
+                android:title="@string/noise_blocking" />
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:dependency="broadcast_data_through_intents"

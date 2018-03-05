@@ -886,4 +886,8 @@
     <string name="hour_format">%s Hour</string>
     <string name="enter_your_transmitter_id_exactly">Enter your transmitter ID exactly as it is printed</string>
     <string name="which_type_of_device">Which type of device?</string>
+    <string name="enable_local_broadcast">Enable local broadcast?</string>
+    <string name="androidaps">AndroidAPS</string>
+    <string name="noise_blocking">Noise Blocking</string>
+    <string name="level_at_which_noisy_data_should_not_be_broadcast">Level at which noisy data should not be broadcast as it could confuse receiving apps</string>
 </resources>
