@@ -199,14 +199,20 @@ public class BgReading extends Model implements ShareUploadableBg {
         return mmolConvert(calculated_value);
     }
 
-    public void injectDisplayGlucose(BestGlucose.DisplayGlucose displayGlucose){
+    public void injectDisplayGlucose(BestGlucose.DisplayGlucose displayGlucose) {
         //displayGlucose can be null. E.g. when out of order values come in
-        if (displayGlucose != null){
-            dg_mgdl = displayGlucose.mgdl;
-            dg_slope = displayGlucose.slope;
-            dg_delta_name = displayGlucose.delta_name;
-            // TODO we probably should reflect the display glucose delta here as well for completeness
-            this.save();
+        if (displayGlucose != null) {
+            if (Math.abs(displayGlucose.timestamp - timestamp) < Constants.MINUTE_IN_MS * 10) {
+                dg_mgdl = displayGlucose.mgdl;
+                dg_slope = displayGlucose.slope;
+                dg_delta_name = displayGlucose.delta_name;
+                // TODO we probably should reflect the display glucose delta here as well for completeness
+                this.save();
+            } else {
+                if (JoH.ratelimit("cannotinjectdg", 30)) {
+                    UserError.Log.e(TAG, "Cannot inject display glucose value as time difference too great: " + JoH.dateTimeText(displayGlucose.timestamp) + " vs " + JoH.dateTimeText(timestamp));
+                }
+            }
         }
     }
 
@@ -422,6 +428,7 @@ public class BgReading extends Model implements ShareUploadableBg {
     }
 
     public static BgReading create(double raw_data, double filtered_data, Context context, Long timestamp, boolean quick) {
+        if (context == null) context = xdrip.getAppContext();
         final BgReading bgReading = new BgReading();
         Sensor sensor = Sensor.currentSensor();
         if (sensor == null) {
@@ -484,6 +491,11 @@ public class BgReading extends Model implements ShareUploadableBg {
 
                 if ((bgReading.raw_data != 0) && (bgReading.raw_data * 2 == bgReading.filtered_data)) {
                     Log.wtf(TAG, "Filtered data is exactly double raw - this is completely wrong - dead transmitter? - blocking glucose calculation");
+                    bgReading.calculated_value = 0;
+                    bgReading.filtered_calculated_value = 0;
+                    bgReading.hide_slope = true;
+                } else if (!SensorSanity.isRawValueSane(bgReading.raw_data)) {
+                    Log.wtf(TAG, "Raw data fails sanity check! " + bgReading.raw_data);
                     bgReading.calculated_value = 0;
                     bgReading.filtered_calculated_value = 0;
                     bgReading.hide_slope = true;
