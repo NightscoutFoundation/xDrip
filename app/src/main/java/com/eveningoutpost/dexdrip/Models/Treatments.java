@@ -207,6 +207,7 @@ public class Treatments extends Model {
         Treatment.enteredBy = XDRIP_TAG;
         Treatment.eventType = "Sensor Start";
         Treatment.created_at = DateUtil.toISOString(timestamp);
+        Treatment.timestamp = timestamp;
         Treatment.uuid = UUID.randomUUID().toString();
         Treatment.save();
         pushTreatmentSync(Treatment);
