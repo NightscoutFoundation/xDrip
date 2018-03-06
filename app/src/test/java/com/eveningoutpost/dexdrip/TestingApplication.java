@@ -18,4 +18,13 @@ public class TestingApplication extends Application {
         super.onCreate();
         ActiveAndroid.initialize(this);
     }
+
+    @Override
+    public void onTerminate() {
+        try {
+            ActiveAndroid.getDatabase().close();
+        } catch (Exception e) {
+            System.out.println("Exception stopping database: " + e);
+        }
+    }
 }
