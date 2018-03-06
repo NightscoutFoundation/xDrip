@@ -1,10 +1,8 @@
 package com.eveningoutpost.dexdrip.Services;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.PowerManager;
-import android.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
@@ -56,36 +54,34 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
     private static final HashMap<String, String> hostStatus = new HashMap<>();
     private static final HashMap<String, Long> hostStatusTime = new HashMap<>();
 
-    private final Context mContext;
-    private PowerManager.WakeLock wakeLock;
+
+   // final private PowerManager.WakeLock wakeLock;
 
     private final static long DEXCOM_PERIOD = 300000;
 
-    private static int lockCounter = 0;
+    //private static int lockCounter = 0;
 
     // This variables are for fake function only
     static int i = 0;
     static int added = 5;
 
     WixelReader(Context ctx) {
-        mContext = ctx.getApplicationContext();
-        PowerManager pm = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
-        wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "WifiReader");
+        //PowerManager pm = (PowerManager) xdrip.getAppContext().getSystemService(Context.POWER_SERVICE);
+        //wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "WifiReader");
         Log.d(TAG, "WixelReader init");
     }
 
-    private void getwakelock() {
-        wakeLock.acquire();
+    /*private void getwakelock() {
+        wakeLock.acquire(120000);
         lockCounter++;
         Log.d(TAG, "wakelock acquired " + lockCounter);
         if (lockCounter > 5) Home.toaststaticnext("Wixel Reader WakeLock bug " + lockCounter);
-    }
+    }*/
 
-    public static boolean IsConfigured(Context ctx) {
+    public static boolean IsConfigured() {
         if ((DexCollectionType.getDexCollectionType() == DexCollectionType.Mock) && (Home.get_engineering_mode()))
             return true;
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
-        String recieversIpAddresses = prefs.getString("wifi_recievers_addresses", "");
+        final String recieversIpAddresses = Pref.getString("wifi_recievers_addresses", "");
         return !recieversIpAddresses.equals("");
     }
 
@@ -167,7 +163,7 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
             return null;
 
         }
-        if (port < 10 || port > 65536) {
+        if (port < 10 || port > 65535) {
             System.out.println("Invalid port " + hosts[1]);
             Log.e(TAG, "Invalid hostAndIp " + hostAndIp);
             statusLog(hosts[0], JoH.hourMinuteString() + " Invalid Host/Port: " + hostAndIp);
@@ -213,7 +209,7 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
             return null;
         }
 
-        MongoWrapper mt = new MongoWrapper(dbury, collection, "CaptureDateTime", "MachineNameNotUsed");
+        final MongoWrapper mt = new MongoWrapper(dbury, collection, "CaptureDateTime", "MachineNameNotUsed");
         List<TransmitterRawData> rd = mt.ReadFromMongo(numberOfRecords);
         if (rd != null) {
             long newest_timestamp = 0;
@@ -510,13 +506,13 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
     }
 
     public Void doInBackground(String... urls) {
+        final PowerManager.WakeLock wl = JoH.getWakeLock("WifiReader", 120000);
         try {
-            getwakelock();
+            //getwakelock();
             readData();
         } finally {
-            wakeLock.release();
-            lockCounter--;
-            Log.d(TAG, "wakelock released " + lockCounter);
+            JoH.releaseWakeLock(wl);
+           // Log.d(TAG, "wakelock released " + lockCounter);
         }
         return null;
     }
@@ -550,7 +546,7 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
 
         String recieversIpAddresses;
 
-        if (!WixelReader.IsConfigured(mContext)) {
+        if (!WixelReader.IsConfigured()) {
             return;
         }
 
@@ -599,7 +595,7 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
 
 
                 if (LastReading.UploaderBatteryLife > 0) {
-                    PreferenceManager.getDefaultSharedPreferences(mContext).edit().putInt("parakeet_battery", LastReading.UploaderBatteryLife).apply();
+                    Pref.setInt("parakeet_battery", LastReading.UploaderBatteryLife);
                     CheckBridgeBattery.checkParakeetBattery();
                     if (Home.get_master()) {
                         GcmActivity.sendParakeetBattery(LastReading.UploaderBatteryLife);
@@ -617,7 +613,7 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
         if (transmitterData != null) {
             final Sensor sensor = Sensor.currentSensor();
             if (sensor != null) {
-                BgReading bgReading = BgReading.create(transmitterData.raw_data, filtered_data, mContext, CaptureTime);
+                BgReading bgReading = BgReading.create(transmitterData.raw_data, filtered_data, null, CaptureTime);
 
                 //sensor.latest_battery_level = (sensor.latest_battery_level!=0)?Math.min(sensor.latest_battery_level, transmitterData.sensor_battery_level):transmitterData.sensor_battery_level;
                 sensor.latest_battery_level = transmitterData.sensor_battery_level; // don't lock it only going downwards
