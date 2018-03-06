@@ -63,6 +63,11 @@ public class DexCollectionHelper {
 
             case BluetoothWixel:
                 bluetoothScanIfNeeded();
+                break;
+
+            case DexcomShare:
+                bluetoothScanIfNeeded();
+                break;
 
 
                 // TODO G4 Share Receiver
