@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -8,6 +9,7 @@ import android.databinding.ObservableList;
 import android.view.View;
 
 import com.eveningoutpost.dexdrip.BR;
+import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.databinding.DialogTreeSelectorBinding;
 import com.eveningoutpost.dexdrip.utils.DexCollectionHelper;
@@ -26,9 +28,10 @@ import me.tatarka.bindingcollectionadapter2.ItemBinding;
  */
 
 public class SourceWizard {
+    @SuppressLint("StaticFieldLeak")
+    private static volatile SourceWizard sw;
     private AlertDialog dialog;
     private Activity activity;
-
     // Create the dialog decision tree
     private Tree<Item> root = new Tree<>(new Item("Choose Data Source", "Which system do you use?"));
 
@@ -63,11 +66,10 @@ public class SourceWizard {
         this.activity = activity;
     }
 
-    public static void start(Activity activity) {
-        final SourceWizard sw = new SourceWizard(activity);
-        sw.getTreeDialog(null);
+    public synchronized static void start(Activity activity) {
+        if (sw == null) sw = new SourceWizard(activity);
+        if (!sw.showing()) sw.getTreeDialog(null);
     }
-
 
     private static Tree<Item> findByName(Tree<Item> node, final String name) {
 
@@ -87,6 +89,10 @@ public class SourceWizard {
 
     private static String gs(int id) {
         return xdrip.getAppContext().getString(id);
+    }
+
+    private boolean showing() {
+        return (dialog != null) && dialog.isShowing();
     }
 
     // display the dialog for the selected branch of the tree
@@ -117,6 +123,7 @@ public class SourceWizard {
                     DexCollectionType.setDexCollectionType(item.getCollectionType());
                     dismissDialog();
                     DexCollectionHelper.assistance(activity, item.getCollectionType());
+                    sw = null; // work here is done
                 }
             });
             builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
@@ -125,11 +132,16 @@ public class SourceWizard {
                     getTreeDialog(fbranch.getParent());
                 }
             });
+
         }
 
         dismissDialog();
         dialog = builder.create();
-        dialog.show();
+        try {
+            dialog.show();
+        } catch (Exception e) {
+            UserError.Log.e("SourceWizard", "Exception when trying to show source wizard: " + e);
+        }
     }
 
     private synchronized void dismissDialog() {
