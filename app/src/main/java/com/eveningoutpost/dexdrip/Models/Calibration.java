@@ -279,6 +279,14 @@ public class Calibration extends Model {
 
         BgReading bgReading1 = bgReadings.get(0);
         BgReading bgReading2 = bgReadings.get(1);
+
+        if (!SensorSanity.isRawValueSane(bgReading1.raw_data) || (!SensorSanity.isRawValueSane(bgReading2.raw_data))) {
+            final String msg = "Sensor raw data is outside sane range! Cannot calibrate: " + bgReading1.raw_data + " " + bgReading2.raw_data;
+            UserError.Log.wtf(TAG, msg);
+            JoH.static_toast_long(msg);
+            return;
+        }
+
         BgReading highBgReading;
         BgReading lowBgReading;
         double higher_bg = Math.max(bg1, bg2);
