@@ -140,7 +140,7 @@ public class BgSendQueue extends Model {
 
                 final int noiseBlockLevel = Noise.getNoiseBlockLevel();
                 bundle.putInt(Intents.EXTRA_NOISE_BLOCK_LEVEL, noiseBlockLevel);
-
+                bundle.putString(Intents.EXTRA_NS_NOISE_LEVEL, bgReading.noise);
                 if ((prefs.getBoolean("broadcast_data_use_best_glucose", false)) && ((dg = BestGlucose.getDisplayGlucose()) != null)) {
                     bundle.putDouble(Intents.EXTRA_NOISE, dg.noise);
                     bundle.putInt(Intents.EXTRA_NOISE_WARNING, dg.warning);
