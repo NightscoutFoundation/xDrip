@@ -33,6 +33,7 @@ import android.provider.Settings;
 import android.speech.RecognizerIntent;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
@@ -81,6 +82,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.CompatibleApps;
+import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Experience;
 import com.eveningoutpost.dexdrip.UtilityModels.Intents;
 import com.eveningoutpost.dexdrip.UtilityModels.JamorhamShowcaseDrawer;
@@ -112,6 +114,7 @@ import com.eveningoutpost.dexdrip.ui.MicroStatusImpl;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.eveningoutpost.dexdrip.utils.BgToSpeech;
 import com.eveningoutpost.dexdrip.utils.DatabaseUtil;
+import com.eveningoutpost.dexdrip.utils.DexCollectionHelper;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.DisplayQRCode;
 import com.eveningoutpost.dexdrip.utils.LibreTrendGraph;
@@ -210,6 +213,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     private TextView textTime;
     private static final int REQ_CODE_SPEECH_INPUT = 1994;
     private static final int REQ_CODE_SPEECH_NOTE_INPUT = 1995;
+    private static final int REQ_CODE_BATTERY_OPTIMIZATION = 1996;
     private static final int SHOWCASE_UNDO = 4;
     private static final int SHOWCASE_REDO = 5;
     private static final int SHOWCASE_NOTE_LONG = 6;
@@ -263,6 +267,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     private AlertDialog helper_dialog;
     private AlertDialog status_helper_dialog;
     private PopupInitialStatusHelperBinding initial_status_binding;
+    private boolean is_newbie;
 
     @Inject
     BaseShelf homeShelf;
@@ -277,6 +282,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
     private static String statusIOB = "";
     private static String statusBWP = "";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -314,6 +320,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
 
         Injectors.getHomeShelfComponent().inject(this);
+        if (!Experience.gotData()) homeShelf.set("source_wizard", true);
 
         set_is_follower();
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
@@ -364,39 +371,12 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         if (BgGraphBuilder.isXLargeTablet(getApplicationContext())) {
             this.notificationText.setTextSize(40);
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            final String packageName = getPackageName();
-            //Log.d(TAG, "Maybe ignoring battery optimization");
-            final PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-            if (!pm.isIgnoringBatteryOptimizations(packageName) &&
-                    !Pref.getBooleanDefaultFalse("requested_ignore_battery_optimizations_new") && !xdrip.isRunningTest()) {
-                Log.d(TAG, "Requesting ignore battery optimization");
 
-                if (((dialog == null) || (!dialog.isShowing()))
-                        && (PersistentStore.incrementLong("asked_battery_optimization") < 40)) {
-                    JoH.show_ok_dialog(this, "Please Allow Permission", "xDrip+ needs whitelisting for proper performance", new Runnable() {
+        is_newbie = Experience.isNewbie();
 
-                        @Override
-                        public void run() {
-                            try {
-                                final Intent intent = new Intent();
-
-                                // ignoring battery optimizations required for constant connection
-                                // to peripheral device - eg CGM transmitter.
-                                intent.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
-                                intent.setData(Uri.parse("package:" + packageName));
-                                startActivity(intent);
-
-                            } catch (ActivityNotFoundException e) {
-                                final String msg = "Device does not appear to support battery optimization whitelisting!";
-                                JoH.static_toast_short(msg);
-                                UserError.Log.wtf(TAG, msg);
-                            }
-                        }
-                    });
-                } else {
-                    JoH.static_toast_long("This app needs battery optimization whitelisting or it will not work well. Please reset app preferences");
-                }
+        if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) && checkedeula) {
+            if (Experience.installedForAtLeast(5 * Constants.MINUTE_IN_MS)) {
+            checkBatteryOptimization();
             }
         }
 
@@ -589,19 +569,19 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         PlusSyncService.startSyncService(getApplicationContext(), "HomeOnCreate");
         ParakeetHelper.notifyOnNextCheckin(false);
 
-        if ((checkedeula) && (!getString(R.string.app_name).equals("xDrip+"))) {
+        if (checkedeula && (!getString(R.string.app_name).equals("xDrip+"))) {
             showcasemenu(SHOWCASE_VARIANT);
         }
 
 
-        if ((checkedeula) && Experience.isNewbie()) {
+        if (checkedeula && is_newbie && ((dialog == null) || !dialog.isShowing())) {
             if (!SdcardImportExport.handleBackup(this)) {
                 if (!Pref.getString("units", "mgdl").equals("mmol")) {
                     Log.d(TAG, "Newbie mmol prompt");
                     if (Experience.defaultUnitsAreMmol()) {
                         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                        builder.setTitle("Glucose units mmol/L or mg/dL");
-                        builder.setMessage("Is your typical blood glucose value:\n\n5.5 (mmol/L)\nor\n100 (mg/dL)\n\nPlease select below");
+                        builder.setTitle(R.string.glucose_units_mmol_or_mgdl);
+                        builder.setMessage(R.string.is_your_typical_glucose_value);
 
                         builder.setNegativeButton("5.5", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
@@ -609,23 +589,66 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                                 Pref.setString("units", "mmol");
                                 Preferences.handleUnitsChange(null, "mmol", null);
                                 Home.staticRefreshBGCharts();
-                                toast("Settings updated to mmol/L");
+                                toast(getString(R.string.settings_updated_to_mmol));
                             }
                         });
 
                         builder.setPositiveButton("100", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                Home.staticRefreshBGCharts();
                                 dialog.dismiss();
                             }
                         });
 
-                        builder.create().show();
+                          dialog = builder.create();
+                          dialog.show();
                     }
                 }
             }
         }
 
+    }
+
+    private boolean checkBatteryOptimization() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            final String packageName = getPackageName();
+            //Log.d(TAG, "Maybe ignoring battery optimization");
+            final PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+            if (!pm.isIgnoringBatteryOptimizations(packageName) &&
+                    !Pref.getBooleanDefaultFalse("requested_ignore_battery_optimizations_new") && !xdrip.isRunningTest()) {
+                Log.d(TAG, "Requesting ignore battery optimization");
+
+                if (((dialog == null) || (!dialog.isShowing()))
+                        && (PersistentStore.incrementLong("asked_battery_optimization") < 40)) {
+                    JoH.show_ok_dialog(this, "Please Allow Permission", "xDrip+ needs whitelisting for proper performance", new Runnable() {
+
+                        @RequiresApi(api = Build.VERSION_CODES.M)
+                        @Override
+                        public void run() {
+                            try {
+                                final Intent intent = new Intent();
+
+                                // ignoring battery optimizations required for constant connection
+                                // to peripheral device - eg CGM transmitter.
+                                intent.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+                                intent.setData(Uri.parse("package:" + packageName));
+                                startActivityForResult(intent, REQ_CODE_BATTERY_OPTIMIZATION);
+
+                            } catch (ActivityNotFoundException e) {
+                                final String msg = "Device does not appear to support battery optimization whitelisting!";
+                                JoH.static_toast_short(msg);
+                                UserError.Log.wtf(TAG, msg);
+                            }
+                        }
+                    });
+                } else {
+                    JoH.static_toast_long("This app needs battery optimization whitelisting or it will not work well. Please reset app preferences");
+                }
+                return false;
+            }
+        }
+    return true;
     }
 
     ////
@@ -1641,24 +1664,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         super.onActivityResult(requestCode, resultCode, data);
 
         switch (requestCode) {
-            case REQ_CODE_SPEECH_INPUT: {
-
-  /*              Intent intent = data; // DEEEBUGGGG
-                if (intent != null)
-                {
-                    final Bundle bundle = intent.getExtras();
-
-
-                    if ((bundle != null) && (true)) {
-                        for (String key : bundle.keySet()) {
-                            Object value = bundle.get(key);
-                            if (value != null) {
-                                Log.d(TAG+" xdebug", String.format("%s %s (%s)", key,
-                                        value.toString(), value.getClass().getName()));
-                            }
-                        }
-                    }
-                }*/
+            case REQ_CODE_SPEECH_INPUT:
 
                 if (resultCode == RESULT_OK && null != data) {
                     ArrayList<String> result = data
@@ -1670,10 +1676,9 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 }
                 recognitionRunning = false;
                 break;
-            }
 
-            case REQ_CODE_SPEECH_NOTE_INPUT: {
 
+            case REQ_CODE_SPEECH_NOTE_INPUT:
                 if (resultCode == RESULT_OK && null != data) {
                     ArrayList<String> result = data
                             .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
@@ -1695,14 +1700,18 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 }
                 recognitionRunning = false;
                 break;
-            }
-            case NFCReaderX.REQ_CODE_NFC_TAG_FOUND: {
+
+            case NFCReaderX.REQ_CODE_NFC_TAG_FOUND:
                 if (NFCReaderX.useNFC()) {
                     NFCReaderX nfcReader = new NFCReaderX();
+                    //noinspection AccessStaticViaInstance
                     nfcReader.tagFound(this, data);
                 }
-            }
+            break;
 
+            case REQ_CODE_BATTERY_OPTIMIZATION:
+                staticRefreshBGCharts();
+            break;
         }
     }
 
@@ -2221,6 +2230,20 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         }
         if (collector.equals(DexCollectionType.Disabled)) {
             notificationText.append("\n DATA SOURCE DISABLED");
+            if (!Experience.gotData()) {
+                final Activity activity = this;
+                JoH.runOnUiThreadDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if ((dialog == null || !dialog.isShowing())) {
+                            if (JoH.ratelimit("start_source_wizard", 30)) {
+                                SourceWizard.start(activity);
+                            }
+                        }
+                    }
+                }, 500);
+
+            }
         } else if (collector.equals(DexCollectionType.Mock)) {
             notificationText.append("\n USING FAKE DATA SOURCE !!!");
         }
@@ -2317,7 +2340,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
 
     private void updateCurrentBgInfoForWifiWixel(DexCollectionType collector, TextView notificationText) {
-        if (!WixelReader.IsConfigured(getApplicationContext())) {
+        if (!WixelReader.IsConfigured()) {
             notificationText.setText(R.string.first_configure_ip_address);
             return;
         }
@@ -2368,7 +2391,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                     dialog = builder.create();
                     dialog.show();
                 } else {
-                    if (!Experience.gotData() && JoH.ratelimit("start-sensor_prompt", 20)) {
+                    if (!Experience.gotData() && !DexCollectionHelper.isDialogShowing() && JoH.ratelimit("start-sensor_prompt", 20)) {
                         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
                         final Context context = this;
                         builder.setTitle(getString(R.string.start_sensor) + "?");
@@ -2440,30 +2463,32 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     }
 
     private synchronized void showInitialStatusHelper() {
-        initialDataQuality = ProcessInitialDataQuality.getInitialDataQuality(); // update
-        if ((helper_dialog != null) && (helper_dialog.isShowing())) helper_dialog.dismiss();
-        if ((status_helper_dialog != null) && (status_helper_dialog.isShowing())) {
-            if (initial_status_binding != null)
-                initial_status_binding.setIdq(initialDataQuality); // update data
-            return;
-        }
+        if (checkBatteryOptimization()) {
+            initialDataQuality = ProcessInitialDataQuality.getInitialDataQuality(); // update
+            if ((helper_dialog != null) && (helper_dialog.isShowing())) helper_dialog.dismiss();
+            if ((status_helper_dialog != null) && (status_helper_dialog.isShowing())) {
+                if (initial_status_binding != null)
+                    initial_status_binding.setIdq(initialDataQuality); // update data
+                return;
+            }
 
-        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(R.string.collecting_initial_readings);
-        initial_status_binding = PopupInitialStatusHelperBinding.inflate(getLayoutInflater());
-        initial_status_binding.setIdq(initialDataQuality);
-        if (microStatus == null) microStatus = new MicroStatusImpl();
-        initial_status_binding.setMs(microStatus);
-        initial_status_binding.setPrefs(new PrefsViewImpl());
-        builder.setView(initial_status_binding.getRoot());
-        status_helper_dialog = builder.create();
-        status_helper_dialog.setCanceledOnTouchOutside(true);
-        try {
-            status_helper_dialog.show();
-        } catch (Exception e) {
-            UserError.Log.e(TAG, "Could not display calibration prompt helper: " + e);
+            final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(R.string.collecting_initial_readings);
+            initial_status_binding = PopupInitialStatusHelperBinding.inflate(getLayoutInflater());
+            initial_status_binding.setIdq(initialDataQuality);
+            if (microStatus == null) microStatus = new MicroStatusImpl();
+            initial_status_binding.setMs(microStatus);
+            initial_status_binding.setPrefs(new PrefsViewImpl());
+            builder.setView(initial_status_binding.getRoot());
+            status_helper_dialog = builder.create();
+            status_helper_dialog.setCanceledOnTouchOutside(true);
+            try {
+                status_helper_dialog.show();
+            } catch (Exception e) {
+                UserError.Log.e(TAG, "Could not display calibration prompt helper: " + e);
+            }
+            keepScreenOn();
         }
-        keepScreenOn();
     }
 
 
@@ -2998,7 +3023,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         boolean got_data = Experience.gotData();
         menu.findItem(R.id.crowdtranslate).setVisible(got_data);
 
-        menu.findItem(R.id.showreminders).setVisible(Pref.getBoolean("plus_show_reminders", true));
+        menu.findItem(R.id.showreminders).setVisible(Pref.getBoolean("plus_show_reminders", true) && !is_newbie);
 
         LibreBlock libreBlock = null;
         if(DexCollectionType.hasLibre()) {

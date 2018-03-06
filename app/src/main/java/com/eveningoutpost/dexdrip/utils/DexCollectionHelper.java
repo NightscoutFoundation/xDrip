@@ -3,13 +3,19 @@ package com.eveningoutpost.dexdrip.utils;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.text.InputType;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.eveningoutpost.dexdrip.BluetoothScan;
+import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
+import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.xdrip;
 
 /**
  * Created by jamorham on 02/03/2018.
@@ -17,34 +23,69 @@ import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 
 public class DexCollectionHelper {
 
+    private static final String TAG = DexCollectionHelper.class.getSimpleName();
+    private static AlertDialog dialog;
 
     public static void assistance(Activity activity, DexCollectionType type) {
 
         switch (type) {
 
             case DexcomG5:
+                textSettingDialog(activity,
+                        "dex_txid", activity.getString(R.string.dexcom_transmitter_id),
+                        activity.getString(R.string.enter_your_transmitter_id_exactly),
+                        InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD,
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                Home.staticRefreshBGCharts();
+                            }
+                        });
+                break;
+
             case DexbridgeWixel:
                 textSettingDialog(activity,
                         "dex_txid", activity.getString(R.string.dexcom_transmitter_id),
                         activity.getString(R.string.enter_your_transmitter_id_exactly),
-                        InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+                        InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD,
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                bluetoothScanIfNeeded();
+                            }
+                        });
                 break;
 
-            // TODO G4 Share Receiver
 
-            // TODO Parakeet / Wifi ??
+            case LimiTTer:
+                bluetoothScanIfNeeded();
+                break;
 
-            // TODO Bluetooth devices without active device -> bluetooth scan
+            case BluetoothWixel:
+                bluetoothScanIfNeeded();
 
-            // TODO Helper apps not installed? Prompt for installation
+
+                // TODO G4 Share Receiver
+
+                // TODO Parakeet / Wifi ??
+
+                // TODO Bluetooth devices without active device -> bluetooth scan
+
+                // TODO Helper apps not installed? Prompt for installation
 
         }
 
 
     }
 
+    public static void bluetoothScanIfNeeded() {
+        if (ActiveBluetoothDevice.first() == null) {
+            xdrip.getAppContext().startActivity(new Intent(xdrip.getAppContext(), BluetoothScan.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+        }
+    }
+
     // TODO this can move to its own utility class
-    public static void textSettingDialog(Activity activity, String setting, String title, String message, int input_type) {
+    public static void textSettingDialog(Activity activity, String setting, String title, String message, int input_type, final Runnable postRun) {
         final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity);
 
         final View dialogView = activity.getLayoutInflater().inflate(R.layout.dialog_text_entry, null);
@@ -65,16 +106,31 @@ public class DexCollectionHelper {
             public void onClick(DialogInterface dialog, int whichButton) {
                 final String text = edt.getText().toString().trim();
                 Pref.setString(setting, text);
+                if (postRun != null) postRun.run();
             }
         });
         dialogBuilder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-
+                if (postRun != null) postRun.run();
             }
         });
 
-        dialogBuilder.create().show();
+        try {
+            if (isDialogShowing()) dialog.dismiss();
+        } catch (Exception e) {
+            //
+        }
+
+        dialog = dialogBuilder.create();
+        try {
+            dialog.show();
+        } catch (Exception e) {
+            UserError.Log.e(TAG, "Could not show dialog: " + e);
+        }
     }
 
+    public static boolean isDialogShowing() {
+        return (dialog != null) && dialog.isShowing();
+    }
 
 }

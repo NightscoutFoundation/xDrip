@@ -890,4 +890,8 @@
     <string name="androidaps">AndroidAPS</string>
     <string name="noise_blocking">Noise Blocking</string>
     <string name="level_at_which_noisy_data_should_not_be_broadcast">Level at which noisy data should not be broadcast as it could confuse receiving apps</string>
+    <string name="low_parakeet_battery">Low Parakeet battery</string>
+    <string name="glucose_units_mmol_or_mgdl">Glucose units mmol/L or mg/dL</string>
+    <string name="is_your_typical_glucose_value">Is your typical blood glucose value:  5.5 (mmol/L) or 100 (mg/dL)  Please select below</string>
+    <string name="settings_updated_to_mmol">Settings updated to mmol/L</string>
 </resources>
