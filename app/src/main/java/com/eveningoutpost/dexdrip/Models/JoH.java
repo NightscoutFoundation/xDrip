@@ -838,7 +838,11 @@ public class JoH {
             builder.setMessage(message);
             builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
+                    try {
+                        dialog.dismiss();
+                    } catch (Exception e) {
+                        //
+                    }
                     if (runnable != null) {
                         runOnUiThreadDelayed(runnable, 10);
                     }

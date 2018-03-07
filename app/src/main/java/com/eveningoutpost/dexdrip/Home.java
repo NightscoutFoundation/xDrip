@@ -111,6 +111,7 @@ import com.eveningoutpost.dexdrip.stats.StatsResult;
 import com.eveningoutpost.dexdrip.ui.BaseShelf;
 import com.eveningoutpost.dexdrip.ui.MicroStatus;
 import com.eveningoutpost.dexdrip.ui.MicroStatusImpl;
+import com.eveningoutpost.dexdrip.ui.NumberGraphic;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.eveningoutpost.dexdrip.utils.BgToSpeech;
 import com.eveningoutpost.dexdrip.utils.DatabaseUtil;
@@ -986,6 +987,15 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 showcasemenu(SHOWCASE_MOTION_DETECTION);
             } else if (bundle.getString("choice-intent") != null) {
                 CompatibleApps.showChoiceDialog(this, bundle.getParcelable("choice-intentx"));
+            } else if (bundle.getString("numberIconTest") != null) {
+
+                JoH.show_ok_dialog(this, "Prepare to test!", "After you click OK, look for a number icon in the notification area.\nIf you see 123 then the test has succeeded.\n\nOn some phones this test will crash the phone.\n\nAfter 30 seconds we will shut off the notification. If your phone does not recover after this then hold the power button to reboot it.", new Runnable() {
+                    @Override
+                    public void run() {
+                        JoH.static_toast_long("Running test with number: 123");
+                        NumberGraphic.testNotification("123");
+                    }
+                });
             } else if (bundle.getString(Home.BLOOD_TEST_ACTION) != null) {
                 Log.d(TAG, "BLOOD_TEST_ACTION");
                 final AlertDialog.Builder builder = new AlertDialog.Builder(this);

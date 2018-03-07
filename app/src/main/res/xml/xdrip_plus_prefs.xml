@@ -226,7 +226,7 @@
                         app:colorpicker_selectNoneButtonText="@string/revert_to_default"
                         app:colorpicker_showHex="false" />
 
-                    </PreferenceCategory>
+                </PreferenceCategory>
                 <PreferenceCategory
                     android:key="xdrip_plus_display_colorset9_android5plus"
                     android:title="@string/flair_colors">
@@ -236,7 +236,7 @@
                         android:key="use_flair_colors"
                         android:switchTextOff="@string/short_off_text_for_switches"
                         android:switchTextOn="@string/short_on_text_for_switches"
-                        android:title="@string/use_flair_colors"/>
+                        android:title="@string/use_flair_colors" />
                     <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
                         android:defaultValue="#00000000"
                         android:key="color_upper_flair_bar"
@@ -255,6 +255,7 @@
 
                 </PreferenceCategory>
             </PreferenceScreen>
+
 
             <SwitchPreference
                 android:defaultValue="false"
@@ -281,8 +282,8 @@
                 android:title="\u26A0 Smooth sensor noise" />
             <SwitchPreference
                 android:defaultValue="false"
-                android:key="bg_compensate_noise_ultrasensitive"
                 android:dependency="bg_compensate_noise"
+                android:key="bg_compensate_noise_ultrasensitive"
                 android:summary="@string/try_to_work_around_noisy_readings_ultrasensitive"
                 android:switchTextOff="@string/short_off_text_for_switches"
                 android:switchTextOn="@string/short_on_text_for_switches"
@@ -383,6 +384,38 @@
                 android:key="plus_show_reminders"
                 android:summary="@string/show_reminder_features"
                 android:title="@string/enable_reminder_features" />
+            <PreferenceScreen
+                android:key="xdrip_plus_number_icon"
+                android:title="Number Icon in Notification Area">
+                <Preference
+                    android:key="do_number_icon_test"
+                    android:summary="Number icons crash some phones! Tap to run the test before enabling the feature!"
+                    android:title="Run Number Icon Test">
+                    <intent
+                        android:action="android.intent.action.MAIN"
+                        android:targetClass="com.eveningoutpost.dexdrip.Home"
+                        android:targetPackage="@string/local_target_package">
+                        <extra
+                            android:name="numberIconTest"
+                            android:value="numberIconTest" />
+                    </intent>
+                </Preference>
+                <SwitchPreference
+                    android:defaultValue="false"
+                    android:key="number_icon_tested"
+                    android:summary="When you have confirmed your device can display a number icon"
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
+                    android:title="Number Icon tested" />
+                <SwitchPreference
+                    android:defaultValue="false"
+                    android:dependency="number_icon_tested"
+                    android:key="use_number_icon"
+                    android:summary="Shows the current glucose number as an icon for the notification bar and lock screen"
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
+                    android:title="Show Number Icon" />
+            </PreferenceScreen>
 
         </PreferenceCategory>
     </PreferenceScreen>
@@ -463,28 +496,28 @@
 
                 <EditTextPreference
                     android:defaultValue="100"
+                    android:inputType="numberDecimal"
                     android:key="plus_target_range"
                     android:summary=""
-                    android:inputType="numberDecimal"
                     android:title="@string/target_glucose_default" />
                 <EditTextPreference
                     android:defaultValue="3.0"
+                    android:inputType="numberDecimal"
                     android:key="xplus_insulin_dia"
                     android:summary=""
-                    android:inputType="numberDecimal"
                     android:title="@string/insulin_duration_hours" />
 
                 <EditTextPreference
                     android:defaultValue="2"
+                    android:inputType="numberDecimal"
                     android:key="xplus_liver_sensitivity"
                     android:summary=""
-                    android:inputType="numberDecimal"
                     android:title="@string/default_liver_sensitivity_ratio" />
                 <EditTextPreference
                     android:defaultValue="0.8"
+                    android:inputType="numberDecimal"
                     android:key="xplus_liver_maximpact"
                     android:summary=""
-                    android:inputType="numberDecimal"
                     android:title="@string/default_liver_maximum_impact" />
             </PreferenceCategory>
         </PreferenceScreen>
@@ -506,8 +539,8 @@
 
             <CheckBoxPreference
                 android:defaultValue="true"
-                android:key="use_custom_sync_key"
                 android:enabled="false"
+                android:key="use_custom_sync_key"
                 android:summary="@string/key_is_used_instead_of_google_account"
                 android:title="@string/sync_using_custom_security_key" />
             <EditTextPreference
@@ -655,8 +688,8 @@
             android:title="@string/automatic_crash_reporting" />
         <CheckBoxPreference
             android:defaultValue="true"
-            android:key="enable_telemetry"
             android:dependency="enable_crashlytics"
+            android:key="enable_telemetry"
             android:summary="@string/send_data_to_developers"
             android:title="@string/enable_telemetry" />
         <Preference
