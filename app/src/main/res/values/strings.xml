@@ -603,7 +603,7 @@
     <string name="predictive_readings_old">Old method - Not Recommended! Attempts to predict readings each minute based on the past few values.</string>
     <string name="use_external_blukon_algorithm_summary">Use an out of process libre algorithm. (blukon/NFC/LibreAlarm)</string>
     <string name="display_predictive_values">Display Predictive Values</string>
-    <string name="use_external_blukon_algorithm">Out of process blukon algorithm.</string>
+    <string name="use_external_blukon_algorithm">Out of process libre algorithm.</string>
     <string name="calibrate_external_libre_algorithm_summary">Apply xDrip calibration methods on OOP data.</string>
     <string name="calibrate_external_libre_algorithm_title">OOP algorithm calibration.</string>
     <string name="interpret_share_raw">If using Share, xDrip will show values when they are normally hidden on the receiver.</string>
@@ -825,6 +825,7 @@
     <string name="try_to_work_around_noisy_readings_ultrasensitive">Start to work around noisy readings even on very low noise levels (engineering mode ony)</string>
     <string name="sidiary_date_title">Export starting from when?</string>
     <string name="blukon">Blucon</string>
+    <string name="tomato">Tomato</string>
     <string name="use_gravity_sensor_to_rotate_items">Use Gravity Sensor to rotate items</string>
     <string name="low_bridge_battery">Low bridge battery</string>
     <string name="reminders">Reminders</string>

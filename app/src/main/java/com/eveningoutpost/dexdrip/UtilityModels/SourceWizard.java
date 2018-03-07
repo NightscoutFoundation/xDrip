@@ -51,7 +51,7 @@ public class SourceWizard {
 
         Tree<Item> libre = root.addChild(new Item("Libre", "What type of Libre bridge device do you use?", R.drawable.libre_icon_image));
         {
-            libre.addChild(new Item("Bluetooth Bridge device: Blucon, LimiTTer, Bluereader etc", DexCollectionType.LimiTTer, R.drawable.bluereader_icon));
+            libre.addChild(new Item("Bluetooth Bridge device: Blucon, LimiTTer, Bluereader, Tomato etc", DexCollectionType.LimiTTer, R.drawable.bluereader_icon));
             libre.addChild(new Item("LibreAlarm App: using Sony Smartwatch", DexCollectionType.LibreAlarm, R.drawable.ic_watch_grey600_48dp));
 
         }

@@ -51,6 +51,7 @@ import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.blueReader;
+import com.eveningoutpost.dexdrip.Models.Tomato;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.Blukon;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
@@ -134,6 +135,7 @@ public class DexCollectionService extends Service {
     private static boolean static_use_rfduino_bluetooth = false;
     private static boolean static_use_polling = false;
     private static boolean static_use_blukon = false;
+    private static boolean static_use_tomato = false;
     private static boolean static_use_nrf = false;
     private static String static_last_hexdump;
     private static String static_last_sent_hexdump;
@@ -293,6 +295,9 @@ public class DexCollectionService extends Service {
        if (static_use_blukon) {
            return Blukon.isCollecting();
        }
+       if (static_use_tomato) {
+           //?????return Blukon.isCollecting();
+       }
         return false;
     }
 
@@ -337,7 +342,7 @@ public class DexCollectionService extends Service {
     public synchronized void setFailoverTimer() {
         if (shouldServiceRun()) {
             final long retry_in = use_polling ? whenToPollNext() : (Constants.MINUTE_IN_MS * 6);
-            Log.d(TAG, "setFailoverTimer: Fallover Restarting in: " + (retry_in / (Constants.MINUTE_IN_MS)) + " minutes");
+            //Log.d(TAG, "setFailoverTimer: Fallover Restarting in: " + (retry_in / (Constants.MINUTE_IN_MS)) + " minutes");
             serviceFailoverIntent = PendingIntent.getService(this, Constants.DEX_COLLECTION_SERVICE_FAILOVER_ID, new Intent(this, this.getClass()), 0);
             failover_time = JoH.wakeUpIntent(this, retry_in, serviceFailoverIntent);
             retry_time = 0; // only one alarm will run
@@ -594,7 +599,7 @@ public class DexCollectionService extends Service {
 
             final BluetoothGattService gattService = mBluetoothGatt.getService(xDripDataService);
             if (gattService == null) {
-                if (!(static_use_blukon || blueReader.isblueReader())) {
+                if (!(static_use_blukon || blueReader.isblueReader() || Tomato.isTomato())) {
                     Log.w(TAG, "onServicesDiscovered: xdrip service " + xDripDataService + " not found"); //TODO the selection of nrf is not active at the beginning,so this error will be trown one time unneeded, mey to be optimized.
                     // TODO this should be reworked to be an efficient selector
                     listAvailableServices(mBluetoothGatt);
@@ -696,9 +701,15 @@ public class DexCollectionService extends Service {
                         JoH.releaseWakeLock(wl);
                         return;
                     }
-                    status("Enabled blueReader" );
-                    Log.d(TAG,"blueReader initialized and Version requested");
-                    sendBtMessage(blueReader.initialize());
+                    if(blueReader.isblueReader()) {
+                        status("Enabled blueReader" );
+                        Log.d(TAG,"blueReader initialized and Version requested");
+                        sendBtMessage(blueReader.initialize());
+                    } else if(Tomato.isTomato()) {
+                        status("Enabled tomato" );
+                        Log.d(TAG,"tomato initialized and data requested");
+                        sendBtMessage(Tomato.initialize());
+                    }
                 }
             }
 
@@ -733,7 +744,7 @@ public class DexCollectionService extends Service {
                 Blukon.initialize();
 
             }
-
+            
             // TODO is this duplicated in some situations?
             try {
                 final BluetoothGattDescriptor descriptor = mCharacteristic.getDescriptor(CCCD);
@@ -783,11 +794,11 @@ public class DexCollectionService extends Service {
             final PowerManager.WakeLock wakeLock1 = JoH.getWakeLock("DexCollectionService", 60000);
             try {
                 final byte[] data = characteristic.getValue();
-                final String hexdump = HexDump.dumpHexString(data);
-                if (!hexdump.contains("0x00000000 00      ")) {
-                    static_last_hexdump = hexdump;
-                }
-                Log.i(TAG, "onCharacteristicChanged entered " + hexdump);
+                //final String hexdump = HexDump.dumpHexString(data);
+                //if (!hexdump.contains("0x00000000 00      ")) {
+                //    static_last_hexdump = hexdump;
+                //}
+                //Log.i(TAG, "onCharacteristicChanged entered2222 " + hexdump);
                 if (data != null && data.length > 0) {
                     setSerialDataToTransmitterRawData(data, data.length);
                 }
@@ -981,6 +992,7 @@ public class DexCollectionService extends Service {
 
     public synchronized void setSerialDataToTransmitterRawData(byte[] buffer, int len) {
         long timestamp = new Date().getTime();
+        Tomato.isTomato();
         last_time_seen = JoH.ts();
         watchdog_count = 0;
         if (static_use_blukon && Blukon.checkBlukonPacket(buffer)) {
@@ -993,6 +1005,12 @@ public class DexCollectionService extends Service {
             final byte[] reply = blueReader.decodeblueReaderPacket(buffer, len);
             if (reply != null) {
                 Log.d(TAG, "Sending reply message from blueReader decoder");
+                sendBtMessage(reply);
+            }
+        } else  if (Tomato.isTomato()) {
+            final byte[] reply = Tomato.decodeTomatoPacket(buffer, len);
+            if (reply != null) {
+                Log.d(TAG, "Sending reply message from tomato decoder");
                 sendBtMessage(reply);
             }
         } else if (XbridgePlus.isXbridgeExtensionPacket(buffer)) {
@@ -1189,9 +1207,12 @@ public class DexCollectionService extends Service {
 
     public static final String LIMITTER_NAME = "LimiTTer";
     public static String getBestLimitterHardwareName() {
-        if (static_use_nrf) {
+        if (static_use_nrf && blueReader.isblueReader()) {
             return "BlueReader";
-        } else if (static_use_blukon) {
+        } else if (static_use_nrf && Tomato.isTomato()) {
+            return "Tomato";
+        }
+        else if (static_use_blukon) {
             return xdrip.getAppContext().getString(R.string.blukon);
         } else if (static_use_transmiter_pl_bluetooth) {
             return "Transmiter PL";
@@ -1225,11 +1246,14 @@ public class DexCollectionService extends Service {
             l.add(new StatusItem("Hardware", xdrip.getAppContext().getString(R.string.blukon)));
         }
 
-        if (static_use_nrf) {
+        if (static_use_nrf && blueReader.isblueReader()) {
             l.add(new StatusItem("Hardware", "BlueReader"));
         }
 
-
+        if (static_use_nrf && Tomato.isTomato()) {
+            l.add(new StatusItem("Hardware", "Tomato"));
+        }
+        
         // TODO add LimiTTer info
 
         if (last_transmitter_Data != null) {
@@ -1336,6 +1360,11 @@ public class DexCollectionService extends Service {
             l.add(new StatusItem("blueReader Battery", Pref.getInt("bridge_battery", 0) + "%"));
             l.add(new StatusItem("blueReader rest days", PersistentStore.getString("bridge_battery_days")));
             l.add(new StatusItem("blueReader Firmware",  PersistentStore.getString("blueReaderFirmware")));
+        }
+        
+        if (Tomato.isTomato()) {
+            //???? add here more 
+            l.add(new StatusItem("tomato Firmware",  PersistentStore.getString("TomatoFirmware")));
         }
 
         return l;
