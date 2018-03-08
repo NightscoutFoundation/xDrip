@@ -212,7 +212,24 @@ public class NFCReaderX {
             doTheScan(context, tag, true);
         }
     }
-
+    
+    public static void HandleGoodReading(String tagId, byte[] data1) {
+        if(Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
+            long now = JoH.tsl();
+            // Save raw block record (we start from block 0)
+            LibreBlock.createAndSave(tagId, now, data1, 0);
+            LibreOOPAlgorithm.SendData(data1, now);
+        } else {
+            mResult = parseData(0, tagId, data1);
+            new Thread() {
+                @Override
+                public void run() {
+                    LibreAlarmReceiver.processReadingDataTransferObject(new ReadingData.TransferObject(1, mResult));
+                    Home.staticRefreshBGCharts();
+                }
+            }.start();
+        }
+    }
 
     private static class NfcVReaderTask extends AsyncTask<Tag, Void, Tag> {
 
@@ -236,22 +253,7 @@ public class NFCReaderX {
                 if (!NFCReaderX.useNFC()) return;
                 if (succeeded) {
                     final String tagId = bytesToHexString(tag.getId());
-                    long now = JoH.tsl();
-                    // Save raw block record (we start from block 0)
-                    LibreBlock.createAndSave(tagId, now, data, 0);
-
-                    if(Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
-                    	LibreOOPAlgorithm.SendData(data, now);
-                    } else {
-	                    mResult = parseData(0, tagId, data);
-	                    new Thread() {
-	                        @Override
-	                        public void run() {
-	                            LibreAlarmReceiver.processReadingDataTransferObject(new ReadingData.TransferObject(1, mResult));
-	                            Home.staticRefreshBGCharts();
-	                        }
-	                    }.start();
-                    }
+                    HandleGoodReading(tagId, data);
                 } else {
                     Log.d(TAG, "Scan did not succeed so ignoring buffer");
                 }
