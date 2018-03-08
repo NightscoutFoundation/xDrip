@@ -54,8 +54,14 @@ public class NumberGraphic {
                 mBuilder.setVibrate(vibratePattern);
 
                 int mNotificationId = Constants.NUMBER_TEXT_TEST_ID;
-                NotificationManager mNotifyMgr = (NotificationManager) xdrip.getAppContext().getSystemService(NOTIFICATION_SERVICE);
+                final NotificationManager mNotifyMgr = (NotificationManager) xdrip.getAppContext().getSystemService(NOTIFICATION_SERVICE);
                 mNotifyMgr.notify(mNotificationId, mBuilder.build());
+                JoH.runOnUiThreadDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mNotifyMgr.notify(mNotificationId, mBuilder.build());
+                    }
+                }, 1000);
             } else {
                 JoH.static_toast_long("Not supported below Android 6");
             }
