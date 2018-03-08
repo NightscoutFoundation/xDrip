@@ -1345,6 +1345,14 @@ public class JoH {
         return map;
     }
 
+    public static void threadSleep(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            //
+        }
+    }
+
     public static ByteBuffer bArrayAsBuffer(byte[] bytes) {
         final ByteBuffer bb = ByteBuffer.allocate(bytes.length);
         bb.put(bytes);
