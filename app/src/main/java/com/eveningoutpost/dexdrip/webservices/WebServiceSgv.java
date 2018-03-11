@@ -101,14 +101,16 @@ public class WebServiceSgv extends BaseWebService {
                     if (!brief) {
                         item.put("_id", reading.uuid);
                         item.put("device", collector_device);
+                        item.put("dateString", DateUtil.toNightscoutFormat(reading.timestamp));
+                        item.put("sysTime", DateUtil.toNightscoutFormat(reading.timestamp));
                     }
+
                     item.put("date", reading.timestamp);
-                    item.put("dateString", DateUtil.toNightscoutFormat(reading.timestamp));
-                    item.put("sysTime", DateUtil.toNightscoutFormat(reading.timestamp));
                     item.put("sgv", (int) reading.getDg_mgdl());
                     item.put("delta", new BigDecimal(reading.getDg_slope() * 5 * 60 * 1000).setScale(3, BigDecimal.ROUND_HALF_UP));
                     item.put("direction", reading.getDg_deltaName());
                     item.put("noise", reading.noiseValue());
+
                     if (!brief) {
                         item.put("filtered", (long) (reading.filtered_data * 1000));
                         item.put("unfiltered", (long) (reading.raw_data * 1000));
