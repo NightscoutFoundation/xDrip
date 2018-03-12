@@ -1,4 +1,3 @@
-
 package com.eveningoutpost.dexdrip.Services;
 
 import android.annotation.TargetApi;
@@ -13,6 +12,7 @@ import android.os.PowerManager;
 import android.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
@@ -24,7 +24,6 @@ import com.eveningoutpost.dexdrip.utils.Mdns;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -33,14 +32,55 @@ import java.util.List;
 @TargetApi(Build.VERSION_CODES.KITKAT)
 public class WifiCollectionService extends Service {
     private final static String TAG = WifiCollectionService.class.getSimpleName();
-    private SharedPreferences prefs;
-    //private BgToSpeech bgToSpeech;
-    public WifiCollectionService dexCollectionService;
-
-    private ForegroundServiceStarter foregroundServiceStarter;
-    //private Context mContext;
-
+    private static final long TOLERABLE_JITTER = 10000;
+    private static final String WIFI_COLLECTION_WAKEUP = "WifiCollectionWakeupTime";
     private static String lastState = "Not Running";
+    private static long requested_wake_time = 0;
+    private static long max_wakeup_jitter = 0;
+    public WifiCollectionService dexCollectionService;
+    private SharedPreferences prefs;
+    private ForegroundServiceStarter foregroundServiceStarter;
+
+    public SharedPreferences.OnSharedPreferenceChangeListener prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+        public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+            if (key.compareTo("run_service_in_foreground") == 0) {
+                Log.d("FOREGROUND", "run_service_in_foreground changed!");
+                if (prefs.getBoolean("run_service_in_foreground", false)) {
+                    foregroundServiceStarter = new ForegroundServiceStarter(getApplicationContext(), dexCollectionService);
+                    foregroundServiceStarter.start();
+                    Log.d(TAG, "Moving to foreground");
+                } else {
+                    dexCollectionService.stopForeground(true);
+                    Log.d(TAG, "Removing from foreground");
+                }
+            }
+        }
+    };
+
+    // For DexCollectionType probe
+    public static boolean isRunning() {
+        return !(lastState.equals("Not Running") || lastState.startsWith("Stopping", 0));
+    }
+
+    // data for MegaStatus
+    public static List<StatusItem> megaStatus(Context context) {
+        final List<StatusItem> l = new ArrayList<>();
+        l.add(new StatusItem("IP Collector Service", lastState));
+        l.add(new StatusItem("Next poll", JoH.niceTimeTill(PersistentStore.getLong(WIFI_COLLECTION_WAKEUP))));
+        if (max_wakeup_jitter > 2000) {
+            l.add(new StatusItem("Wakeup jitter", JoH.niceTimeScalar(max_wakeup_jitter), max_wakeup_jitter > TOLERABLE_JITTER ? StatusItem.Highlight.BAD : StatusItem.Highlight.NORMAL));
+        }
+        if (JoH.buggy_samsung) {
+            l.add(new StatusItem("Buggy Samsung", "Using workaround", max_wakeup_jitter < TOLERABLE_JITTER ? StatusItem.Highlight.GOOD : StatusItem.Highlight.BAD));
+        }
+        l.addAll(WixelReader.megaStatus());
+        final int bridgeBattery = Pref.getInt("parakeet_battery", 0);
+        if (bridgeBattery > 0) {
+            l.add(new StatusItem("Parakeet Battery", bridgeBattery + "%", bridgeBattery < 50 ? bridgeBattery < 40 ? StatusItem.Highlight.BAD : StatusItem.Highlight.NOTICE : StatusItem.Highlight.GOOD));
+        }
+        l.addAll(Mdns.megaStatus(context));
+        return l;
+    }
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -64,11 +104,19 @@ public class WifiCollectionService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         final PowerManager.WakeLock wl = JoH.getWakeLock("xdrip-wificolsvc-onStart", 60000);
 
-      /*  if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            stopSelf();
-            if (wl.isHeld()) wl.release();
-            return START_NOT_STICKY;
-        }*/
+        if (requested_wake_time > 0) {
+            final long wakeup_jitter = JoH.msSince(requested_wake_time);
+            if (wakeup_jitter > 2000) {
+                Log.d(TAG, "Wake up jitter: " + JoH.niceTimeScalar(wakeup_jitter));
+            }
+            if ((wakeup_jitter > TOLERABLE_JITTER) && (!JoH.buggy_samsung) && (JoH.isSamsung())) {
+                UserError.Log.wtf(TAG, "Enabled Buggy Samsung workaround due to jitter of: " + JoH.niceTimeScalar(wakeup_jitter));
+                JoH.setBuggySamsungEnabled();
+                max_wakeup_jitter = 0;
+            } else {
+                max_wakeup_jitter = Math.max(max_wakeup_jitter, wakeup_jitter);
+            }
+        }
 
         if (DexCollectionType.hasWifi()) {
             runWixelReader();
@@ -100,31 +148,12 @@ public class WifiCollectionService extends Service {
         }
     }
 
-    public SharedPreferences.OnSharedPreferenceChangeListener prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
-        public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-            if (key.compareTo("run_service_in_foreground") == 0) {
-                Log.d("FOREGROUND", "run_service_in_foreground changed!");
-                if (prefs.getBoolean("run_service_in_foreground", false)) {
-                    foregroundServiceStarter = new ForegroundServiceStarter(getApplicationContext(), dexCollectionService);
-                    foregroundServiceStarter.start();
-                    Log.d(TAG, "Moving to foreground");
-                } else {
-                    dexCollectionService.stopForeground(true);
-                    Log.d(TAG, "Removing from foreground");
-                }
-            }
-        }
-    };
-
-    private static final String WIFI_COLLECTION_WAKEUP = "WifiCollectionWakeupTime";
-
     public void setFailoverTimer() {
         if (DexCollectionType.hasWifi()) {
             final long retry_in = WixelReader.timeForNextRead();
             Log.d(TAG, "setFailoverTimer: Fallover Restarting in: " + (retry_in / (60 * 1000)) + " minutes");
-            final Calendar calendar = Calendar.getInstance();
-            PersistentStore.setLong(WIFI_COLLECTION_WAKEUP, calendar.getTimeInMillis() + retry_in);
-            JoH.wakeUpIntent(this, retry_in, PendingIntent.getService(this, Constants.WIFI_COLLECTION_SERVICE_ID, new Intent(this, this.getClass()), 0));
+            requested_wake_time = JoH.wakeUpIntent(this, retry_in, PendingIntent.getService(this, Constants.WIFI_COLLECTION_SERVICE_ID, new Intent(this, this.getClass()), 0));
+            PersistentStore.setLong(WIFI_COLLECTION_WAKEUP, requested_wake_time);
         } else {
             stopSelf();
         }
@@ -137,27 +166,8 @@ public class WifiCollectionService extends Service {
     private void runWixelReader() {
         // Theoretically can create more than one task. Should not be a problem since android runs them
         // on the same thread.
-        WixelReader task = new WixelReader(getApplicationContext());
+        final WixelReader task = new WixelReader(getApplicationContext());
         // Assume here that task will execute, otheirwise we leak a wake lock...
         task.executeOnExecutor(xdrip.executor);
-    }
-
-    // For DexCollectionType probe
-    public static boolean isRunning() {
-        return lastState.equals("Not Running") || lastState.startsWith("Stopping", 0) ? false : true;
-    }
-
-    // data for MegaStatus
-    public static List<StatusItem> megaStatus(Context context) {
-        final List<StatusItem> l = new ArrayList<>();
-        l.add(new StatusItem("IP Collector Service", lastState));
-        l.add(new StatusItem("Next poll", JoH.niceTimeTill(PersistentStore.getLong(WIFI_COLLECTION_WAKEUP))));
-        l.addAll(WixelReader.megaStatus());
-        final int bridgeBattery = Pref.getInt("parakeet_battery", 0);
-        if (bridgeBattery > 0) {
-            l.add(new StatusItem("Parakeet Battery", bridgeBattery + "%", bridgeBattery < 50 ? bridgeBattery < 40 ? StatusItem.Highlight.BAD : StatusItem.Highlight.NOTICE : StatusItem.Highlight.GOOD));
-        }
-        l.addAll(Mdns.megaStatus(context));
-        return l;
     }
 }
