@@ -5,7 +5,9 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 
 /**
@@ -46,7 +48,8 @@ public class Tomato {
         long now = JoH.tsl();
         if(now - s_lastReceiveTimestamp > 10*1000) {
             // We did not receive data in 10 seconds, moving to init state again
-            Log.e(TAG, "Recieved a buffer after " + (now - s_lastReceiveTimestamp) +  " seconds, starting again");
+            Log.e(TAG, "Recieved a buffer after " + (now - s_lastReceiveTimestamp) / 1000 +  " seconds, starting again. "+
+            "already acumulated " + s_acumulatedSize + " bytes.");
             s_state = TOMATO_STATES.REQUEST_DATA_SENT;
         }
         
@@ -83,7 +86,7 @@ public class Tomato {
             }
             
             // 18 is the expected header size
-            if(buffer.length >= 18 && buffer[0] == 0x28) {
+            if(buffer.length >= TOMATO_HEADER_LENGTH && buffer[0] == 0x28) {
                 // We are starting to receive data, need to start accumulating
                 
                 // &0xff is needed to convert to hex.
@@ -129,19 +132,29 @@ public class Tomato {
             return;
         }
 
-        if(s_acumulatedSize >= 344 + TOMATO_HEADER_LENGTH + 1) {
-            Log.e(TAG, "We have the data that we want");
-            byte[] data = Arrays.copyOfRange(s_full_data, TOMATO_HEADER_LENGTH, TOMATO_HEADER_LENGTH+344);
-            Log.e(TAG, "We have all the data that we need" + HexDump.dumpHexString(data));
-            s_recviedEnoughData = true;
-            
-            NFCReaderX.HandleGoodReading("tomato", data);
+        if(s_acumulatedSize < 344 + TOMATO_HEADER_LENGTH + 1) {
+            return;   
+        }
+        byte[] data = Arrays.copyOfRange(s_full_data, TOMATO_HEADER_LENGTH, TOMATO_HEADER_LENGTH+344);
+        s_recviedEnoughData = true;
+        
+        boolean checksum_ok = JoH.LibreCrc(data);
+        Log.e(TAG, "We have all the data that we need checksum_ok = " + checksum_ok + HexDump.dumpHexString(data));
+        
+        if(!checksum_ok) {
+            return;
         }
         
-        /*
+        PersistentStore.setString("Tomatobattery", Integer.toString(s_full_data[13]));
+        PersistentStore.setString("TomatoHArdware",HexDump.toHexString(s_full_data,14,2));
+        PersistentStore.setString("TomatoFirmware",HexDump.toHexString(s_full_data,16,2));
+
+        NFCReaderX.HandleGoodReading("tomato", data);
         
-        This is the correct code that should run. Unfortunately, we don't get all the data, so we need
-        to make a compromise, and use the code above.
+    }
+
+    // This is the function that we should have once we are able to read all data realiably.
+    static void AreWeDoneMax() {
         
         if(s_acumulatedSize == s_full_data.length) {
             Log.e(TAG, "We have a full packet");
@@ -157,26 +170,11 @@ public class Tomato {
             Log.e(TAG, "We have all the data, but it is not enough... s_full_data.length = " + s_full_data.length );
             return;
         }
-        
-        // ????? get more data now that we have all that we need
-        
-        // ????? call NFCReaderX.onPostExecute() ??????
-        
-        
-        
-        byte[] data = Arrays.copyOfRange(s_full_data, TOMATO_HEADER_LENGTH, TOMATO_HEADER_LENGTH+344);
-        Log.e(TAG, "We have all the data that we need" + HexDump.dumpHexString(data));
-        long now = JoH.tsl();
-        // Save raw block record (we start from block 0)
-        LibreBlock.createAndSave("tomato", now, data, 0);
-
-        if(Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
-            LibreOOPAlgorithm.SendData(data, now);
-        }
-        */
+        Log.e(TAG, "We have a full packet");
         
     }
-    
+
+
     static void InitBuffer(int expectedSize) {
         s_full_data = new byte[expectedSize];
         s_acumulatedSize = 0;
