@@ -6,6 +6,7 @@ import android.animation.ObjectAnimator;
 import android.databinding.BindingAdapter;
 import android.support.annotation.NonNull;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
@@ -31,6 +32,12 @@ public class BindingAdapterUtils {
     public static void setImageViewResource(ImageView imageView, int resource) {
         if (resource != 0) imageView.setImageResource(resource);
     }
+
+    @BindingAdapter(value = {"button_indicate"})
+    public static void buttonIndicate(Button button, boolean set) {
+        button.setAlpha(set ? 0.5f : 1.0f);
+    }
+
 
     @BindingAdapter(value = {"animatedVisibility"})
     public static synchronized void setVisibility(@NonNull final View view,
