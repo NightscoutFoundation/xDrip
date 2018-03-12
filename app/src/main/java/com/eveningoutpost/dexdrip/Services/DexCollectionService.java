@@ -338,7 +338,7 @@ public class DexCollectionService extends Service {
     public synchronized void setFailoverTimer() {
         if (shouldServiceRun()) {
             final long retry_in = use_polling ? whenToPollNext() : (Constants.MINUTE_IN_MS * 6);
-            //Log.d(TAG, "setFailoverTimer: Fallover Restarting in: " + (retry_in / (Constants.MINUTE_IN_MS)) + " minutes");
+            Log.d(TAG, "setFailoverTimer: Fallover Restarting in: " + (retry_in / (Constants.MINUTE_IN_MS)) + " minutes");
             serviceFailoverIntent = PendingIntent.getService(this, Constants.DEX_COLLECTION_SERVICE_FAILOVER_ID, new Intent(this, this.getClass()), 0);
             failover_time = JoH.wakeUpIntent(this, retry_in, serviceFailoverIntent);
             retry_time = 0; // only one alarm will run
@@ -793,11 +793,11 @@ public class DexCollectionService extends Service {
             final PowerManager.WakeLock wakeLock1 = JoH.getWakeLock("DexCollectionService", 60000);
             try {
                 final byte[] data = characteristic.getValue();
-                //final String hexdump = HexDump.dumpHexString(data);
-                //if (!hexdump.contains("0x00000000 00      ")) {
-                //    static_last_hexdump = hexdump;
-                //}
-                //Log.i(TAG, "onCharacteristicChanged entered " + hexdump);
+                final String hexdump = HexDump.dumpHexString(data);
+                if (!hexdump.contains("0x00000000 00      ")) {
+                    static_last_hexdump = hexdump;
+                }
+                Log.i(TAG, "onCharacteristicChanged entered " + hexdump);
                 if (data != null && data.length > 0) {
                     setSerialDataToTransmitterRawData(data, data.length);
                 }
@@ -1362,7 +1362,8 @@ public class DexCollectionService extends Service {
         }
         
         if (Tomato.isTomato()) {
-            //???? add here more 
+            l.add(new StatusItem("tomato battery",  PersistentStore.getString("Tomatobattery")));
+            l.add(new StatusItem("tomato Hardware",  PersistentStore.getString("TomatoHArdware")));
             l.add(new StatusItem("tomato Firmware",  PersistentStore.getString("TomatoFirmware")));
         }
 
