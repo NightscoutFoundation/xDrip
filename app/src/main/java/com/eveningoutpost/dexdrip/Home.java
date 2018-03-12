@@ -113,6 +113,7 @@ import com.eveningoutpost.dexdrip.ui.BaseShelf;
 import com.eveningoutpost.dexdrip.ui.MicroStatus;
 import com.eveningoutpost.dexdrip.ui.MicroStatusImpl;
 import com.eveningoutpost.dexdrip.ui.NumberGraphic;
+import com.eveningoutpost.dexdrip.ui.UiPing;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.eveningoutpost.dexdrip.utils.BgToSpeech;
 import com.eveningoutpost.dexdrip.utils.DatabaseUtil;
@@ -177,6 +178,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     public final static String BLUETOOTH_METER_CALIBRATION = "BLUETOOTH_METER_CALIBRATION";
     public final static String ACTIVITY_SHOWCASE_INFO = "ACTIVITY_SHOWCASE_INFO";
     public final static int SENSOR_READY_ID = 4912;
+    private final UiPing ui = new UiPing();
     public static boolean activityVisible = false;
     public static boolean invalidateMenu = false;
     public static boolean blockTouches = false;
@@ -269,6 +271,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     private AlertDialog helper_dialog;
     private AlertDialog status_helper_dialog;
     private PopupInitialStatusHelperBinding initial_status_binding;
+    private ActivityHomeBinding binding;
     private boolean is_newbie;
 
     @Inject
@@ -329,8 +332,10 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
         final boolean checkedeula = checkEula();
 
-        final ActivityHomeBinding binding = ActivityHomeBinding.inflate(getLayoutInflater());
+        binding = ActivityHomeBinding.inflate(getLayoutInflater());
         binding.setVs(homeShelf);
+        binding.setHome(this);
+        binding.setUi(ui);
         setContentView(binding.getRoot());
 
         Toolbar mToolbar = (Toolbar) findViewById(R.id.my_toolbar);
@@ -1995,10 +2000,21 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             chart.setCurrentViewport(holdViewport);
             previewChart.setCurrentViewport(holdViewport);
         } else {
-            previewChart.setVisibility(homeShelf.get("chart_preview") ? View.VISIBLE : View.GONE);
-            if (homeShelf.get("chart_preview") && !homeShelf.get("time_buttons"))
+            if (homeShelf.get("time_buttons")) {
+                final long which_hour = PersistentStore.getLong("home-locked-hours");
+                if (which_hour > 0) {
+                    hours = which_hour;
+                    setHoursViewPort();
+                } else {
+                    hours = DEFAULT_CHART_HOURS;
+                }
+
+            } else {
                 hours = DEFAULT_CHART_HOURS;
+            }
+            previewChart.setVisibility(homeShelf.get("chart_preview") ? View.VISIBLE : View.GONE);
         }
+
 
         if (insulinset || glucoseset || carbsset || timeset) {
             if (chart != null) {
@@ -2127,23 +2143,23 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         SourceWizard.start(this);
     }
 
-    // set the chart viewport to whatever the button push represents
-    public void timeButtonClick(View v) {
-        switch (v.getId()) {
-            case R.id.hourbutton3:
-                hours = 3;
-                break;
-            case R.id.hourbutton6:
-                hours = 6;
-                break;
-            case R.id.hourbutton12:
-                hours = 12;
-                break;
-            case R.id.hourbutton24:
-                hours = 24;
-                break;
-        }
+    private long whichTimeLocked() {
+        return PersistentStore.getLong("home-locked-hours");
+    }
 
+    private void setHourLocked(float value) {
+        PersistentStore.setLong("home-locked-hours", (long) value);
+    }
+
+    public boolean isHourLocked(long hour) {
+        return (whichTimeLocked() == hour);
+    }
+
+    public boolean isHourLocked(long hour, int ping) {
+        return isHourLocked(hour);
+    }
+
+    private void setHoursViewPort() {
         final Viewport moveViewPort = new Viewport(chart.getMaximumViewport());
         float hour_width = moveViewPort.width() / 24;
         holdViewport.left = moveViewPort.right - hour_width * hours;
@@ -2152,9 +2168,49 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         holdViewport.bottom = moveViewPort.bottom;
         chart.setCurrentViewport(holdViewport);
         previewChart.setCurrentViewport(holdViewport);
-
-
     }
+
+    // set the chart viewport to whatever the button push represents
+    public void timeButtonClick(View v) {
+      hours = getButtonHours(v);
+      setHoursViewPort();
+    }
+    private long getButtonHours(View v) {
+        long this_button_hours = 3;
+        switch (v.getId()) {
+            case R.id.hourbutton3:
+                this_button_hours = 3;
+                break;
+            case R.id.hourbutton6:
+                this_button_hours = 6;
+                break;
+            case R.id.hourbutton12:
+                this_button_hours = 12;
+                break;
+            case R.id.hourbutton24:
+                this_button_hours = 24;
+                break;
+        }
+        return this_button_hours;
+    }
+
+    // set the chart viewport to whatever the button push represents
+    public boolean timeButtonLongClick(View v) {
+        final long this_button_hours = getButtonHours(v);
+        if (isHourLocked(this_button_hours)) {
+            // unlock
+            setHourLocked(0);
+            hours = DEFAULT_CHART_HOURS;
+        } else {
+            hours = this_button_hours;
+            setHourLocked(hours);
+            setHoursViewPort();
+        }
+
+        ui.bump();
+        return false;
+    }
+
 
     private void updateHealthInfo(String caller) {
 

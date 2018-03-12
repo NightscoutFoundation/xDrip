@@ -9,6 +9,14 @@
             name="vs"
             type="com.eveningoutpost.dexdrip.ui.BaseShelf" />
 
+        <variable
+            name="home"
+            type="com.eveningoutpost.dexdrip.Home" />
+
+        <variable
+            name="ui"
+            type="com.eveningoutpost.dexdrip.ui.UiPing" />
+
         <import type="android.view.View" />
     </data>
 
@@ -447,29 +455,41 @@
                     android:id="@+id/hourbutton24"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:longClickable="true"
                     android:onClick="timeButtonClick"
-                    android:text="@{@string/hour_format(24)}" />
+                    android:onLongClick="@{home::timeButtonLongClick}"
+                    android:text="@{@string/hour_format(24)}"
+                    app:button_indicate="@{home.isHourLocked(24, ui.ping)}" />
 
                 <Button
                     android:id="@+id/hourbutton12"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:longClickable="true"
                     android:onClick="timeButtonClick"
-                    android:text="@{@string/hour_format(12)}" />
+                    android:onLongClick="@{home::timeButtonLongClick}"
+                    android:text="@{@string/hour_format(12)}"
+                    app:button_indicate="@{home.isHourLocked(12, ui.ping)}" />
 
                 <Button
                     android:id="@+id/hourbutton6"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:longClickable="true"
                     android:onClick="timeButtonClick"
-                    android:text="@{@string/hour_format(6)}" />
+                    android:onLongClick="@{home::timeButtonLongClick}"
+                    android:text="@{@string/hour_format(6)}"
+                    app:button_indicate="@{home.isHourLocked(6, ui.ping)}" />
 
                 <Button
                     android:id="@+id/hourbutton3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:longClickable="true"
                     android:onClick="timeButtonClick"
-                    android:text="@{@string/hour_format(3)}" />
+                    android:onLongClick="@{home::timeButtonLongClick}"
+                    android:text="@{@string/hour_format(3)}"
+                    app:button_indicate="@{home.isHourLocked(3, ui.ping)}" />
 
             </LinearLayout>
 
