@@ -212,9 +212,10 @@ public class DexCollectionService extends Service {
             final long requested_wake_time = Math.min(retry_time, failover_time);
             final long wakeup_jitter = JoH.msSince(requested_wake_time);
             Log.d(TAG, "Wake up jitter: " + JoH.niceTimeScalar(wakeup_jitter));
-            if ((wakeup_jitter > TOLERABLE_JITTER) && (!JoH.buggy_samsung) && (Build.MANUFACTURER.toLowerCase().contains("samsung"))) {
+            JoH.persistentBuggySamsungCheck();
+            if ((wakeup_jitter > TOLERABLE_JITTER) && (!JoH.buggy_samsung) && (JoH.isSamsung())) {
                 UserError.Log.wtf(TAG, "Enabled Buggy Samsung workaround due to jitter of: " + JoH.niceTimeScalar(wakeup_jitter));
-                JoH.buggy_samsung = true;
+                JoH.setBuggySamsungEnabled();
                 max_wakeup_jitter = 0;
             } else {
                 max_wakeup_jitter = Math.max(max_wakeup_jitter, wakeup_jitter);
