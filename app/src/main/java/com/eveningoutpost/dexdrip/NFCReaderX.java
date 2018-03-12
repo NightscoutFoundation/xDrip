@@ -478,7 +478,8 @@ public class NFCReaderX {
         long sensorStartTime = ourTime - sensorTime * MINUTE;
 
         // option to use 13 bit mask
-        final boolean thirteen_bit_mask = Pref.getBooleanDefaultFalse("testing_use_thirteen_bit_mask");
+        //final boolean thirteen_bit_mask = Pref.getBooleanDefaultFalse("testing_use_thirteen_bit_mask");
+        final boolean thirteen_bit_mask = true;
 
         ArrayList<GlucoseData> historyList = new ArrayList<>();
 

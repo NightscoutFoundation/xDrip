@@ -563,12 +563,6 @@
                     android:key="bypass_calibration_quality_check"
                     android:summary="Allow initial calibration even if we don't have good enough data. Beware could result in inaccurate calibration!"
                     android:title="Bypass quality check" />
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:dependency="engineering_mode"
-                    android:key="testing_use_thirteen_bit_mask"
-                    android:summary="Testing setting for Libre"
-                    android:title="Use 13 bit ADC mask" />
 
 
             </PreferenceScreen>
