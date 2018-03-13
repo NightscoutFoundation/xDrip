@@ -47,6 +47,13 @@ def generateVersionNumberString = { ->
     return stringBuilder.toString()
 }
 
+def generateTimestamp = { ->
+    StringBuilder stringBuilder = new StringBuilder()
+    stringBuilder.append((new Date()).getTime())
+    stringBuilder.append("L");
+    return stringBuilder.toString()
+}
+
 def generateRandomUUID = { ->
     StringBuilder stringBuilder = new StringBuilder();
     stringBuilder.append('"' + UUID.randomUUID().toString() + '"')
@@ -123,6 +130,7 @@ android {
         versionName generateVersionName()
         buildConfigField "int", "buildVersion", generateVersionNumberString()
         buildConfigField "String", "buildUUID", generateRandomUUID()
+        buildConfigField "long", "buildTimestamp", generateTimestamp()
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
