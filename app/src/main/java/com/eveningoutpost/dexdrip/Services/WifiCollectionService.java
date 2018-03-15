@@ -26,6 +26,7 @@ import com.eveningoutpost.dexdrip.xdrip;
 import java.util.ArrayList;
 import java.util.List;
 
+
 /**
  * Created by tzachi dar on 10/14/15.
  */
@@ -105,6 +106,7 @@ public class WifiCollectionService extends Service {
         final PowerManager.WakeLock wl = JoH.getWakeLock("xdrip-wificolsvc-onStart", 60000);
 
         if (requested_wake_time > 0) {
+            JoH.persistentBuggySamsungCheck();
             final long wakeup_jitter = JoH.msSince(requested_wake_time);
             if (wakeup_jitter > 2000) {
                 Log.d(TAG, "Wake up jitter: " + JoH.niceTimeScalar(wakeup_jitter));
