@@ -516,7 +516,9 @@ public class BgReading extends Model implements ShareUploadableBg {
                 }
             }
 
-            updateCalculatedValue(bgReading);
+            if (SensorSanity.isRawValueSane(bgReading.raw_data)) {
+                updateCalculatedValueToWithinMinMax(bgReading);
+            }
 
             // LimiTTer can send 12 to indicate problem with NFC reading.
             if ((!calibration.check_in) && (raw_data == 12) && (filtered_data == 12)) {
@@ -547,7 +549,7 @@ public class BgReading extends Model implements ShareUploadableBg {
         return bgReading;
     }
 
-    static void updateCalculatedValue(BgReading bgReading) {
+    static void updateCalculatedValueToWithinMinMax(BgReading bgReading) {
         // TODO should this really be <10 other values also special??
         if (bgReading.calculated_value < 10) {
             bgReading.calculated_value = 38;
