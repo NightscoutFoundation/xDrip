@@ -28,7 +28,6 @@ public class WebServiceStatus extends BaseWebService {
             final JSONObject settings = new JSONObject();
             final boolean using_mgdl = Pref.getString("units", "mgdl").equals("mgdl");
             settings.put("units", using_mgdl ? "mg/dl" : "mmol");
-            reply.put("settings", settings);
 
             // thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}
             double highMark = tolerantParseDouble(Pref.getString("highValue", "170"));
@@ -38,7 +37,9 @@ public class WebServiceStatus extends BaseWebService {
             thresholds.put("bgHigh", highMark);
             thresholds.put("bgLow", lowMark);
 
-            reply.put("thresholds", thresholds);
+            settings.put("thresholds", thresholds);
+
+            reply.put("settings", settings);
 
             Log.d(TAG, "Output: " + reply.toString());
         } catch (JSONException e) {
