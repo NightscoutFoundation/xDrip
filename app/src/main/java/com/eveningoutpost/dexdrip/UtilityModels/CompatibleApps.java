@@ -14,6 +14,7 @@ import com.eveningoutpost.dexdrip.BuildConfig;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.webservices.XdripWebService;
 import com.eveningoutpost.dexdrip.xdrip;
 
@@ -40,7 +41,49 @@ public class CompatibleApps extends BroadcastReceiver {
                     id = notify(gs(R.string.garmin), gs(R.string.enable_local_web_server_feature), id, Feature.ENABLE_GARMIN_FEATURES);
                 }
             }
+        } else {
+            package_name = "com.fitbit.FitbitMobile";
+            if (InstalledApps.checkPackageExists(context, package_name)) {
+                if (!Pref.getBooleanDefaultFalse("xdrip_webservice")) {
+                    if (JoH.pratelimit(package_name + NOTIFY_MARKER, RENOTIFY_TIME)) {
+                        id = notify(gs(R.string.fitbit), gs(R.string.enable_local_web_server_feature_fitbit), id, Feature.ENABLE_FITBIT_FEATURES);
+                    }
+                }
+            }
         }
+
+        package_name = "info.nightscout.androidaps";
+        if (InstalledApps.checkPackageExists(context, package_name)) {
+            if (!Pref.getBooleanDefaultFalse("broadcast_data_through_intents")) {
+                if (JoH.pratelimit(package_name + NOTIFY_MARKER, RENOTIFY_TIME)) {
+                    id = notify(gs(R.string.androidaps), gs(R.string.enable_local_broadcast), id, Feature.ENABLE_ANDROIDAPS_FEATURE1);
+                }
+            }
+        }
+
+        package_name = "com.pimpimmobile.librealarm";
+        if (InstalledApps.checkPackageExists(context, package_name)) {
+            if (DexCollectionType.getDexCollectionType() != DexCollectionType.LibreAlarm) {
+                if (JoH.pratelimit(package_name + NOTIFY_MARKER, RENOTIFY_TIME)) {
+                    id = notify(gs(R.string.librealarm), gs(R.string.use_librealarm), id, Feature.ENABLE_LIBRE_ALARM);
+                }
+            }
+        }
+
+        if (!Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
+            final String[] oop_package_names = {"info.nightscout.deeplearning", "com.hg4.oopalgorithm.oopalgorithm", "org.andesite.lucky8"};
+            for (String package_name_o : oop_package_names) {
+                if (InstalledApps.checkPackageExists(context, package_name_o)) {
+                    if (JoH.pratelimit(package_name_o + NOTIFY_MARKER, RENOTIFY_TIME)) {
+                        final String short_package = package_name_o.substring(package_name_o.lastIndexOf(".") + 1).toUpperCase();
+                        id = notify(gs(R.string.external_calibration_app),
+                                short_package + " " + gs(R.string.use_app_for_calibration),
+                                id, Feature.ENABLE_OOP);
+                    }
+                }
+            }
+        }
+
 
         // TODO add more here
 
@@ -134,6 +177,10 @@ public class CompatibleApps extends BroadcastReceiver {
 
     }
 
+    private static void cancelSourceNotification(Intent intent) {
+        JoH.cancelNotification(intent.getIntExtra("id", 555));
+    }
+
     // handle incoming button pushes
     @Override
     public void onReceive(Context context, final Intent intent) {
@@ -158,18 +205,35 @@ public class CompatibleApps extends BroadcastReceiver {
                         homeIntent.putExtra("choice-intentx", intent);
                         context.startActivity(homeIntent);
                         break;
+
                     case CANCEL:
-                        JoH.cancelNotification(intent.getIntExtra("id", 555));
+                        cancelSourceNotification(intent);
                         break;
 
-
                     case ENABLE_GARMIN_FEATURES:
+                    case ENABLE_FITBIT_FEATURES:
                         Pref.setBoolean("xdrip_webservice", true);
                         XdripWebService.immortality();
-                        JoH.cancelNotification(intent.getIntExtra("id", 555));
+                        cancelSourceNotification(intent);
                         JoH.static_toast_long("xDrip Web Service Enabled!");
                         break;
 
+                    case ENABLE_ANDROIDAPS_FEATURE1:
+                        Pref.setBoolean("broadcast_data_through_intents", true);
+                        cancelSourceNotification(intent);
+                        JoH.static_toast_long("Local Broadcast Enabled!");
+                        break;
+
+                    case ENABLE_LIBRE_ALARM:
+                        DexCollectionType.setDexCollectionType(DexCollectionType.LibreAlarm);
+                        cancelSourceNotification(intent);
+                        break;
+
+                    case ENABLE_OOP:
+                        Pref.setBoolean("external_blukon_algorithm", true);
+                        JoH.static_toast_long("Enabled External Calibration App!");
+                        cancelSourceNotification(intent);
+                        break;
 
                     default:
                         JoH.static_toast_long("Unhandled action: " + feature);
@@ -187,6 +251,10 @@ public class CompatibleApps extends BroadcastReceiver {
         CHOICE,
         CANCEL,
         ENABLE_GARMIN_FEATURES,
+        ENABLE_ANDROIDAPS_FEATURE1,
+        ENABLE_FITBIT_FEATURES,
+        ENABLE_LIBRE_ALARM,
+        ENABLE_OOP,
         FEATURE_X
     }
 

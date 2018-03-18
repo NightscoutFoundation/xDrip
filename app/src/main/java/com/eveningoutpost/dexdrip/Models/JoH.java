@@ -451,7 +451,7 @@ public class JoH {
         } else {
             rate_time = rateLimits.get(name);
         }
-        if ((rate_time > 0) && (time_now - rate_time) < (seconds * 1000)) {
+        if ((rate_time > 0) && (time_now - rate_time) < (seconds * 1000L)) {
             Log.d(TAG, name + " rate limited: " + seconds + " seconds");
             return false;
         }
@@ -464,7 +464,7 @@ public class JoH {
     // return true if below rate limit
     public static synchronized boolean ratelimit(String name, int seconds) {
         // check if over limit
-        if ((rateLimits.containsKey(name)) && (JoH.tsl() - rateLimits.get(name) < (seconds * 1000))) {
+        if ((rateLimits.containsKey(name)) && (JoH.tsl() - rateLimits.get(name) < (seconds * 1000L))) {
             Log.d(TAG, name + " rate limited: " + seconds + " seconds");
             return false;
         }
@@ -657,7 +657,7 @@ public class JoH {
 
     public static PowerManager.WakeLock getWakeLock(final String name, int millis) {
         final PowerManager pm = (PowerManager) xdrip.getAppContext().getSystemService(Context.POWER_SERVICE);
-        PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, name);
+        final PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, name);
         wl.acquire(millis);
         if (debug_wakelocks) Log.d(TAG, "getWakeLock: " + name + " " + wl.toString());
         return wl;
@@ -1387,6 +1387,8 @@ public class JoH {
         crc.update(bytes);
         return crc.getValue();
     }
+
+
 
     public static byte[] bchecksum(byte[] bytes) {
         final long c = checksum(bytes);

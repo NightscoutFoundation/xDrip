@@ -29,6 +29,7 @@ public class Constants {
     public static final int DEX_COLLECTION_SERVICE_FAILOVER_ID = 1003;
     public static final int SYNC_QUEUE_RETRY_ID = 1004;
     public static final int NUMBER_TEXT_TEST_ID = 1005;
+    public static final int MISSED_READING_SERVICE_ID = 1006;
 
     static final int NIGHTSCOUT_ERROR_NOTIFICATION_ID = 2001;
 
