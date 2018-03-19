@@ -1104,8 +1104,6 @@ public class DexCollectionService extends Service {
                 servicesDiscovered = DISCOVERED.NULL;
                 return false;
             }
-            //mCharacteristicSend.setValue(value);
-            //return mBluetoothGatt.writeCharacteristic(mCharacteristicSend);
             return writeChar(mCharacteristicSend, value);
         }
 
@@ -1117,22 +1115,18 @@ public class DexCollectionService extends Service {
         }
 
         if (mCharacteristicSend != null && mCharacteristicSend != mCharacteristic) {
-            // mCharacteristicSend.setValue(value);
-            //  return mBluetoothGatt.writeCharacteristic(mCharacteristicSend);
             return writeChar(mCharacteristicSend, value);
-
         }
 
-        // mCharacteristic.setValue(value);
-        // return mBluetoothGatt.writeCharacteristic(mCharacteristic);
         return writeChar(mCharacteristic, value);
     }
 
     private boolean writeChar(final BluetoothGattCharacteristic localmCharacteristic, final byte[] value) {
         localmCharacteristic.setValue(value);
-        boolean result = mBluetoothGatt != null && mBluetoothGatt.writeCharacteristic(localmCharacteristic);
+        final boolean result = mBluetoothGatt != null && mBluetoothGatt.writeCharacteristic(localmCharacteristic);
         if (!result) {
             UserError.Log.d(TAG, "Error writing characteristic: " + localmCharacteristic.getUuid() + " " + JoH.bytesToHex(value));
+            JoH.getWakeLock("dexcol-resend-linger", 1000); // dangling wakelock to ensure awake for resend
             JoH.runOnUiThreadDelayed(new Runnable() {
                 @Override
                 public void run() {
