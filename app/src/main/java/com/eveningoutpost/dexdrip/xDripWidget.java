@@ -13,6 +13,7 @@ import android.widget.RemoteViews;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSparklineBuilder;
@@ -143,8 +144,13 @@ public class xDripWidget extends AppWidgetProvider {
 
                     views.setInt(R.id.widgetBg, "setPaintFlags", 0);
                 }
-                views.setTextViewText(R.id.widgetBg, stringEstimate);
-                views.setTextViewText(R.id.widgetArrow, slope_arrow);
+                if (Sensor.isActive()) {
+                    views.setTextViewText(R.id.widgetBg, stringEstimate);
+                    views.setTextViewText(R.id.widgetArrow, slope_arrow);
+                } else {
+                    views.setTextViewText(R.id.widgetBg, "");
+                    views.setTextViewText(R.id.widgetArrow, "");
+                }
 
                 // is it really necessary to read this data once here and again in unitizedDeltaString?
                 // couldn't we just use the unitizedDeltaString to detect the error condition?
