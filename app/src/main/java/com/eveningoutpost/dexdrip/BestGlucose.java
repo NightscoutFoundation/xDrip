@@ -10,10 +10,10 @@ import android.util.Log;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.SensorSanity;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
-import com.eveningoutpost.dexdrip.UtilityModels.ValidateRaw;
 import com.eveningoutpost.dexdrip.calibrations.CalibrationAbstract;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
@@ -263,7 +263,7 @@ public class BestGlucose {
 
         // fail safe for excessive raw data values - this may want
         // to be moved one day
-        if (!ValidateRaw.isRawAcceptable(lastBgReading.raw_data)) {
+        if (!SensorSanity.isRawValueSane(lastBgReading.raw_data)) {
             dg.delta_arrow = "!";
             dg.unitized = ">!?";
             dg.mgdl = 0;

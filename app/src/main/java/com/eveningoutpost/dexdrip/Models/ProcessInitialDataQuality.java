@@ -3,6 +3,7 @@ package com.eveningoutpost.dexdrip.Models;
 import android.databinding.BaseObservable;
 
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
+import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.List;
 
@@ -31,7 +32,7 @@ public class ProcessInitialDataQuality {
     // List must be supplied with newest data first and without duplicates
     public static InitialDataQuality getInitialDataQuality(final List<BgReading> uncalculated) {
         final InitialDataQuality result = new InitialDataQuality();
-
+        String alert = "";
         final Boolean service_running = DexCollectionType.getServiceRunningState();
         if (service_running != null) result.collector_running = service_running;
 
@@ -68,27 +69,38 @@ public class ProcessInitialDataQuality {
                             adjusted = true;
                             break;
                         }
+                        if (!SensorSanity.isRawValueSane(uncalculated.get(i).raw_data)) {
+                            uncalculated.remove(i);
+                            adjusted = true;
+                            alert = "  "+"Raw Sensor data is outside valid range! Sensor problem!";
+                            break;
+                        }
+
                     }
                 }
                 result.number_of_records_inside_window = uncalculated.size();
                 // do we have enough good data?
                 if (uncalculated.size() >= 3) {
                     if (JoH.msSince(uncalculated.get(2).timestamp) > STALE_CALIBRATION_CUT_OFF) {
-                        result.advice = "Oldest of last 3 readings is more than " + JoH.niceTimeScalar(STALE_CALIBRATION_CUT_OFF) + " ago";
+                        result.advice = "Oldest of last 3 readings is more than " + JoH.niceTimeScalar(STALE_CALIBRATION_CUT_OFF) + " ago" + alert;
                     } else {
-                        result.advice = "Readings look suitable for calibration";
+                        result.advice = "Readings look suitable for calibration" + alert;
                         result.pass = true;
                     }
                 } else {
-                    result.advice = "Need 3 recent readings, got only " + uncalculated.size() + " so far";
+                    result.advice = "Need 3 recent readings, got only " + uncalculated.size() + " so far" + alert;
                 }
             } else {
-                result.advice = "No data received in last " + JoH.niceTimeScalar(STALE_CALIBRATION_CUT_OFF);
+                result.advice = "No data received in last " + JoH.niceTimeScalar(STALE_CALIBRATION_CUT_OFF) + alert;
             }
         } else {
-            result.advice = "No data received yet";
+            result.advice = "No data received yet" + alert;
         }
         return result;
+    }
+
+    private static String gs(int id) {
+        return xdrip.getAppContext().getString(id);
     }
 
 

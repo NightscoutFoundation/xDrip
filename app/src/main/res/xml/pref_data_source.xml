@@ -6,7 +6,7 @@
         android:title="@string/data_source_settings">
 
         <ListPreference
-            android:defaultValue="BluetoothWixel"
+            android:defaultValue="Disabled"
             android:entries="@array/DexCollectionMethods"
             android:entryValues="@array/DexCollectionMethodValues"
             android:key="dex_collection_method"

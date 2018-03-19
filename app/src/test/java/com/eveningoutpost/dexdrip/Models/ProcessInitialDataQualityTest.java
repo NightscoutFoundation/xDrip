@@ -25,6 +25,8 @@ import static org.hamcrest.Matchers.*;
 //@Config(constants = BuildConfig.class, manifest = "../../../../app/src/test/java/com/eveningoutpost/dexdrip/TestingManifest.xml") // use this config inside android studio 3
 @Config(constants = BuildConfig.class, manifest = "../../../../../src/test/java/com/eveningoutpost/dexdrip/TestingManifest.xml") // use this config for CI test hosts
 
+// TODO this doesn't test whether SensorSanity exclusions are properly processed
+
 public class ProcessInitialDataQualityTest {
 
     // if we have a record which is on an exact millisecond boundary and test it and it passes the test

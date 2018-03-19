@@ -76,6 +76,36 @@ public class DBSearchUtil {
         }
     }
 
+    public static List<BgReadingStats> getFilteredReadingsWithFallback(boolean ordered) {
+        try {
+            Bounds bounds = new Bounds().invoke();
+
+            String orderBy = ordered ? "calculated_value desc" : null;
+
+            SQLiteDatabase db = Cache.openDatabase();
+            Cursor cur = db.query("bgreadings", new String[]{"timestamp", "calculated_value", "filtered_calculated_value"}, "timestamp >= ? AND timestamp <=  ? AND calculated_value > ? AND snyced == 0", new String[]{"" + bounds.start, "" + bounds.stop, CUTOFF}, null, null, orderBy);
+            List<BgReadingStats> readings = new Vector<BgReadingStats>();
+            BgReadingStats reading;
+            if (cur.moveToFirst()) {
+                do {
+                    reading = new BgReadingStats();
+                    reading.timestamp = (Long.parseLong(cur.getString(0)));
+
+                    reading.calculated_value = (Double.parseDouble(cur.getString(2)));
+                    if(reading.calculated_value == 0)
+                        reading.calculated_value = (Double.parseDouble(cur.getString(1)));
+
+                    readings.add(reading);
+                } while (cur.moveToNext());
+            }
+            return readings;
+
+        } catch (Exception e) {
+            JoH.static_toast_long(e.getMessage());
+            return null;
+        }
+    }
+
 
     public static int noReadingsInRange(Context context) {
         Bounds bounds = new Bounds().invoke();

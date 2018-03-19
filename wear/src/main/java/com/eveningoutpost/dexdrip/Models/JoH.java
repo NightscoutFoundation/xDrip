@@ -333,6 +333,27 @@ public class JoH {
         return input.substring(0, 1).toUpperCase() + input.substring(1).toLowerCase();
     }
 
+    public static boolean isSamsung() {
+        return Build.MANUFACTURER.toLowerCase().contains("samsung");
+    }
+
+    private static final String BUGGY_SAMSUNG_ENABLED = "buggy-samsung-enabled";
+    public static void persistentBuggySamsungCheck() {
+        if (!buggy_samsung) {
+            if (JoH.isSamsung() && PersistentStore.getLong(BUGGY_SAMSUNG_ENABLED) > 4) {
+                buggy_samsung = true;
+                UserError.Log.d(TAG,"Enabling buggy samsung mode due to historical pattern");
+            }
+        }
+    }
+
+    public static void setBuggySamsungEnabled() {
+        if (!buggy_samsung) {
+            JoH.buggy_samsung = true;
+            PersistentStore.incrementLong(BUGGY_SAMSUNG_ENABLED);
+        }
+    }
+
     public static class DecimalKeyListener extends DigitsKeyListener {
         private final char[] acceptedCharacters =
                 new char[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',

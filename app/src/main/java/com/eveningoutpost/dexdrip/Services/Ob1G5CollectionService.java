@@ -623,7 +623,7 @@ public class Ob1G5CollectionService extends G5BaseService {
         final String this_model = Build.MODEL;
         UserError.Log.d(TAG, "Checking model: " + this_model);
 
-        if ((isSamsung() && PersistentStore.getLong(BUGGY_SAMSUNG_ENABLED) > 4)) {
+        if ((JoH.isSamsung() && PersistentStore.getLong(BUGGY_SAMSUNG_ENABLED) > 4)) {
             UserError.Log.d(TAG, "Enabling buggy samsung due to persistent metric");
             JoH.buggy_samsung = true;
         }
@@ -676,10 +676,6 @@ public class Ob1G5CollectionService extends G5BaseService {
         if (d) RxBleClient.setLogLevel(RxBleLog.DEBUG);
     }
 
-    private static boolean isSamsung() {
-        return Build.MANUFACTURER.toLowerCase().contains("samsung");
-    }
-
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         xdrip.checkAppContext(getApplicationContext());
@@ -694,7 +690,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                 } else {
                     if (wakeup_jitter > 1000) {
                         UserError.Log.d(TAG, "Wake up, time jitter: " + JoH.niceTimeScalar(wakeup_jitter));
-                        if ((wakeup_jitter > TOLERABLE_JITTER) && (!JoH.buggy_samsung) && isSamsung()) {
+                        if ((wakeup_jitter > TOLERABLE_JITTER) && (!JoH.buggy_samsung) && JoH.isSamsung()) {
                             UserError.Log.wtf(TAG, "Enabled Buggy Samsung workaround due to jitter of: " + JoH.niceTimeScalar(wakeup_jitter));
                             JoH.buggy_samsung = true;
                             PersistentStore.incrementLong(BUGGY_SAMSUNG_ENABLED);

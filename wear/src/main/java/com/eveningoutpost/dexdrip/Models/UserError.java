@@ -25,6 +25,7 @@ import java.util.List;
 public class UserError extends PlusModel {
 
     private final static String TAG = UserError.class.getSimpleName();
+    private static boolean patched = false;
 
     private static final String schema[] = {
             "CREATE TABLE UserErrors (_id INTEGER PRIMARY KEY AUTOINCREMENT, message TEXT, severity INTEGER, shortError TEXT, timestamp REAL)",
@@ -96,7 +97,7 @@ public class UserError extends PlusModel {
     }
 
     public static void cleanup(long timestamp) {
-        fixUpTable(schema);
+        patched = fixUpTable(schema, patched);
         List<UserError> userErrors = new Select()
                 .from(UserError.class)
                 .where("timestamp < ?", timestamp)
