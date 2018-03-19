@@ -12,9 +12,9 @@ import lombok.Data;
 @Data
 public class BridgeResponse {
 
-    public final LinkedList<ByteBuffer> send;
-    String error_message;
-    long delay;
+    private final LinkedList<ByteBuffer> send;
+    private String error_message;
+    private long delay;
 
     public BridgeResponse() {
         send = new LinkedList<>();
@@ -22,6 +22,10 @@ public class BridgeResponse {
 
     public boolean hasError() {
         return error_message != null;
+    }
+
+    public void add(ByteBuffer buffer) {
+        send.add(buffer);
     }
 
     public boolean shouldDelay() {

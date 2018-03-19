@@ -1204,7 +1204,7 @@ public class DexCollectionService extends Service {
     }
 
     private void sendReply(BridgeResponse reply) {
-        for (ByteBuffer byteBuffer : reply.send) {
+        for (ByteBuffer byteBuffer : reply.getSend()) {
             Log.d(TAG, "Sending reply message");
             sendBtMessage(byteBuffer);
         }

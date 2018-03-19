@@ -67,18 +67,18 @@ public class Tomato {
                 ByteBuffer allowNewSensor = ByteBuffer.allocate(2);
                 allowNewSensor.put(0, (byte) 0xD3);
                 allowNewSensor.put(1, (byte) 0x01);
-                reply.send.add(allowNewSensor);
+                reply.add(allowNewSensor);
                 
                 // For debug, make it send data every minute (did not work...)
                 ByteBuffer newFreqMessage = ByteBuffer.allocate(2);
                 newFreqMessage.put(0, (byte) 0xD1);
                 newFreqMessage.put(1, (byte) 0x01);
-                reply.send.add(newFreqMessage);
+                reply.add(newFreqMessage);
                 
                 //command to start reading
                 ByteBuffer ackMessage = ByteBuffer.allocate(1);
                 ackMessage.put(0, (byte) 0xF0);
-                reply.send.add(ackMessage);
+                reply.add(ackMessage);
                 return reply;
             }
             
