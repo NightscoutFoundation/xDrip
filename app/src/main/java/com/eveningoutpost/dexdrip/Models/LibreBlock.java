@@ -2,13 +2,14 @@ package com.eveningoutpost.dexdrip.Models;
 
 import android.provider.BaseColumns;
 
-import java.text.DecimalFormat;
-
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.google.gson.annotations.Expose;
+
+import java.text.DecimalFormat;
 
 /**
  * Created by jamorham on 19/10/2017.
@@ -78,13 +79,20 @@ public class LibreBlock extends PlusModel {
         lb.timestamp = timestamp;
         return lb;
     }
-    
-public static LibreBlock getLatestForTrend() {
-        
+
+    public static LibreBlock getLatestForTrend() {
+        return getLatestForTrend(JoH.tsl(), JoH.tsl() - Constants.DAY_IN_MS);
+    }
+
+
+    public static LibreBlock getLatestForTrend(long start_time, long end_time) {
+
         return new Select()
                 .from(LibreBlock.class)
                 .where("bytestart == 0")
                 .where("byteend >= 344")
+                .where("timestamp >= ?", start_time)
+                .where("timestamp <= ?", end_time)
                 .orderBy("timestamp desc")
                 .executeSingle();
     }
