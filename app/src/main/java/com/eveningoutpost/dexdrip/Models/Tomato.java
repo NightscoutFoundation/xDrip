@@ -1,14 +1,15 @@
 package com.eveningoutpost.dexdrip.Models;
+
+import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.NFCReaderX;
+import com.eveningoutpost.dexdrip.UtilityModels.BridgeResponse;
+import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
-import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
-import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
-import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 
 /**
  * Created by Tzachi Dar on 7.3.2018.
@@ -17,33 +18,34 @@ import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 public class Tomato {
     private static final String TAG = "DexCollectionService";//?????"Tomato";
 
-    private static enum TOMATO_STATES {
+    private static final String CHECKSUM_FAILED = "checksum failed";
+
+    private enum TOMATO_STATES {
         REQUEST_DATA_SENT,
         RECIEVING_DATA
     }
-    final static int TOMATO_HEADER_LENGTH = 18;
+    private final static int TOMATO_HEADER_LENGTH = 18;
 
     
-    static TOMATO_STATES s_state;
+    static volatile TOMATO_STATES s_state;
     
-    static long s_lastReceiveTimestamp;
-    private static byte[] s_full_data = null;
-    private static int s_acumulatedSize = 0;
-    private static boolean s_recviedEnoughData;
-    
-    
-    
+    private static volatile long s_lastReceiveTimestamp;
+    private static volatile byte[] s_full_data = null;
+    private static volatile int s_acumulatedSize = 0;
+    private static volatile boolean s_recviedEnoughData;
+
+
     public static boolean isTomato() {
         final ActiveBluetoothDevice activeBluetoothDevice = ActiveBluetoothDevice.first();
-        if(activeBluetoothDevice == null || activeBluetoothDevice.name == null) {
+        if (activeBluetoothDevice == null || activeBluetoothDevice.name == null) {
             return false;
         }
-        
+
         return activeBluetoothDevice.name.contentEquals("miaomiao");
     }
 
-    public static ArrayList<ByteBuffer> decodeTomatoPacket(byte[] buffer, int len) {
-        ArrayList<ByteBuffer> retArray = new ArrayList<ByteBuffer>();
+    public static BridgeResponse decodeTomatoPacket(byte[] buffer, int len) {
+        final BridgeResponse reply = new BridgeResponse();
         // Check time, probably need to start on sending
         long now = JoH.tsl();
         if(now - s_lastReceiveTimestamp > 10*1000) {
@@ -56,7 +58,7 @@ public class Tomato {
         s_lastReceiveTimestamp = now;
         if (buffer == null) {
             Log.e(TAG, "null buffer passed to decodeTomatoPacket");
-            return retArray;
+            return reply;
         } 
         if (s_state == TOMATO_STATES.REQUEST_DATA_SENT) {
             if(buffer.length == 1 && buffer[0] == 0x32) {
@@ -65,24 +67,25 @@ public class Tomato {
                 ByteBuffer allowNewSensor = ByteBuffer.allocate(2);
                 allowNewSensor.put(0, (byte) 0xD3);
                 allowNewSensor.put(1, (byte) 0x01);
-                retArray.add(allowNewSensor);
+                reply.send.add(allowNewSensor);
                 
                 // For debug, make it send data every minute (did not work...)
                 ByteBuffer newFreqMessage = ByteBuffer.allocate(2);
                 newFreqMessage.put(0, (byte) 0xD1);
                 newFreqMessage.put(1, (byte) 0x01);
-                retArray.add(newFreqMessage);
+                reply.send.add(newFreqMessage);
                 
                 //command to start reading
                 ByteBuffer ackMessage = ByteBuffer.allocate(1);
                 ackMessage.put(0, (byte) 0xF0);
-                retArray.add(ackMessage);
-                return retArray;
+                reply.send.add(ackMessage);
+                return reply;
             }
             
             if(buffer.length == 1 && buffer[0] == 0x34) {
                 Log.e(TAG, "No sensor has been found");
-                return retArray;
+                reply.setError_message("No sensor found");
+              return reply;
             }
             
             // 18 is the expected header size
@@ -95,22 +98,38 @@ public class Tomato {
                 InitBuffer(expectedSize);
                 addData(buffer);
                 s_state = TOMATO_STATES.RECIEVING_DATA;
-                return retArray;
+                return reply;
                 
+            } else {
+                Log.d(TAG,"Unknown initial packet makeup received");
+                return reply;
             }
         }
         
         if (s_state == TOMATO_STATES.RECIEVING_DATA) {
             //Log.e(TAG, "received more data s_acumulatedSize = " + s_acumulatedSize + " current buffer size " + buffer.length);
-            addData(buffer);
-            
+            try {
+                addData(buffer);
+            } catch (RuntimeException e) {
+                // if the checksum failed lets ask for the data set again but not more than once per minute
+                if (e.getMessage().equals(CHECKSUM_FAILED)) {
+                   if (JoH.ratelimit("tomato-full-retry",60)
+                           || JoH.ratelimit("tomato-full-retry2",60)) {
+                       reply.getSend().clear();
+                       reply.getSend().addAll(Tomato.resetTomatoState());
+                       reply.setDelay(8000);
+                       reply.setError_message("Checksum failed - retrying");
+                       Log.d(TAG,"Asking for retry of data");
+                   }
+                } else throw e;
+            }
 
-            return retArray;
+            return reply;
         }
         
-        Log.wtf(TAG, "Very strange, In an unexpeted state " + s_state);
+        Log.wtf(TAG, "Very strange, In an unexpected state " + s_state);
         
-        return retArray;
+        return reply;
     }
     
     static void addData(byte[] buffer) {
@@ -139,15 +158,15 @@ public class Tomato {
         s_recviedEnoughData = true;
         
         boolean checksum_ok = JoH.LibreCrc(data);
-        Log.e(TAG, "We have all the data that we need checksum_ok = " + checksum_ok + HexDump.dumpHexString(data));
+        Log.e(TAG, "We have all the data that we need " + s_acumulatedSize + " checksum_ok = " + checksum_ok + HexDump.dumpHexString(data));
         
         if(!checksum_ok) {
-            return;
+            throw new RuntimeException(CHECKSUM_FAILED);
         }
         
         PersistentStore.setString("Tomatobattery", Integer.toString(s_full_data[13]));
-        PersistentStore.setString("TomatoHArdware",HexDump.toHexString(s_full_data,14,2));
-        PersistentStore.setString("TomatoFirmware",HexDump.toHexString(s_full_data,16,2));
+        PersistentStore.setString("TomatoHArdware",HexDump.toHexString(s_full_data,16,2));
+        PersistentStore.setString("TomatoFirmware",HexDump.toHexString(s_full_data,14,2));
 
         NFCReaderX.HandleGoodReading("tomato", data);
         
@@ -181,21 +200,25 @@ public class Tomato {
         s_recviedEnoughData = false;
 
     }
-    
+
     public static ArrayList<ByteBuffer> initialize() {
         Log.i(TAG, "initialize!");
         Pref.setInt("bridge_battery", 0); //force battery to no-value before first reading
-        ArrayList<ByteBuffer> ret = new ArrayList<ByteBuffer>();
+        return resetTomatoState();
+    }
+
+    private static ArrayList<ByteBuffer> resetTomatoState() {
+        ArrayList<ByteBuffer> ret = new ArrayList<>();
 
         s_state = TOMATO_STATES.REQUEST_DATA_SENT;
-        
+
         // For debug, make it send data every minute (ERROR - We fail to send this message... needs more work,
         // not sure it works at all)
         ByteBuffer newFreqMessage = ByteBuffer.allocate(2);
         newFreqMessage.put(0, (byte) 0xDD);
         newFreqMessage.put(1, (byte) 0x01);
         ret.add(newFreqMessage);
-        
+
         //command to start reading
         ByteBuffer ackMessage = ByteBuffer.allocate(1);
         ackMessage.put(0, (byte) 0xF0);
