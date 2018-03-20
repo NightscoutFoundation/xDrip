@@ -29,6 +29,12 @@ public abstract class BaseShelf implements ViewShelf {
         return included.get(id);
     }
 
+    // live read an item
+    public boolean getDefaultFalse(String id) {
+        final Boolean result = included.get(id);
+        return result == null ? false : result;
+    }
+
     // live set an item
     public void set(String id, boolean value) {
         included.put(id, value);
