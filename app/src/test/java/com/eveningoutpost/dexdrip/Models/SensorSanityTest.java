@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip.Models;
 
-import com.eveningoutpost.dexdrip.RobolectricTest;
+import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
 import org.junit.Before;
@@ -11,7 +11,7 @@ import static com.google.common.truth.Truth.assertWithMessage;
 /**
  * Created by jamorham on 17/02/2018.
  */
-public class SensorSanityTest extends RobolectricTest {
+public class SensorSanityTest extends RobolectricTestWithConfig {
 
 
     @Before

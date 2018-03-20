@@ -1,7 +1,7 @@
 package com.eveningoutpost.dexdrip.Models;
 
 import com.eveningoutpost.dexdrip.MockModel;
-import com.eveningoutpost.dexdrip.RobolectricTest;
+import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 
 import org.junit.Before;
@@ -19,7 +19,7 @@ import static org.junit.Assert.assertThat;
  */
 
 // TODO this doesn't test whether SensorSanity exclusions are properly processed
-public class ProcessInitialDataQualityTest extends RobolectricTest {
+public class ProcessInitialDataQualityTest extends RobolectricTestWithConfig {
 
     // if we have a record which is on an exact millisecond boundary and test it and it passes the test
     // 1ms later it will fail the test resulting in the assertion sometimes incorrectly labelling as a

@@ -23,5 +23,5 @@ import org.robolectric.annotation.Config;
 
 // use this config for CI test hosts
 @Config(constants = BuildConfig.class, manifest = "../../../../../src/test/java/com/eveningoutpost/dexdrip/TestingManifest.xml")
-public abstract class RobolectricTest {
+public abstract class RobolectricTestWithConfig {
 }

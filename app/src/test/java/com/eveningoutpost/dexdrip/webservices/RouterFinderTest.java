@@ -1,7 +1,7 @@
 package com.eveningoutpost.dexdrip.webservices;
 
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
-import com.eveningoutpost.dexdrip.RobolectricTest;
+import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import org.junit.Before;
@@ -13,7 +13,7 @@ import static com.google.common.truth.Truth.assertWithMessage;
 /**
  * Created by jamorham on 17/01/2018.
  */
-public class RouterFinderTest extends RobolectricTest {
+public class RouterFinderTest extends RobolectricTestWithConfig {
 
     private static void log(String msg) {
         System.out.println(msg);
