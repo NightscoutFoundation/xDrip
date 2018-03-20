@@ -325,7 +325,12 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
 
         Injectors.getHomeShelfComponent().inject(this);
-        if (!Experience.gotData()) homeShelf.set("source_wizard", true);
+
+        if (!Experience.gotData()) {
+            homeShelf.set("source_wizard", true);
+            homeShelf.set("source_wizard_auto", true);
+        }
+
 
         set_is_follower();
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
@@ -1914,6 +1919,12 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
         NightscoutUploader.launchDownloadRest();
 
+        if (homeShelf.getDefaultFalse("source_wizard_auto")) {
+            if (Experience.gotData()) {
+                homeShelf.set("source_wizard", false);
+                homeShelf.set("source_wizard_auto", false);
+            }
+        }
 
     }
 
