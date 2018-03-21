@@ -1242,7 +1242,9 @@ public class BgReading extends Model implements ShareUploadableBg {
             calculated_value_slope = 0;
             save();
         } else {
-            Log.w(TAG, "NO BG? COULDNT FIND SLOPE!");
+            if (JoH.ratelimit("no-bg-couldnt-find-slope", 15)) {
+                Log.w(TAG, "NO BG? COULDNT FIND SLOPE!");
+            }
         }
     }
 
