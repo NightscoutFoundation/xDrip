@@ -144,7 +144,7 @@ public class xDripWidget extends AppWidgetProvider {
 
                     views.setInt(R.id.widgetBg, "setPaintFlags", 0);
                 }
-                if (Sensor.isActive()) {
+                if (Sensor.isActive() || Home.get_follower()) {
                     views.setTextViewText(R.id.widgetBg, stringEstimate);
                     views.setTextViewText(R.id.widgetArrow, slope_arrow);
                 } else {
