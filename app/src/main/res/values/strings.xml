@@ -892,7 +892,7 @@
     <string name="enable_local_broadcast">Enable local broadcast?</string>
     <string name="androidaps">AndroidAPS</string>
     <string name="librealarm">LibreAlarm</string>
-    <string name="use_librealarm">Use LibreAlarm as data source?</string>
+    <string name="use_librealarm">Use LibreAlarm app as data source?</string>
     <string name="noise_blocking">Noise Blocking</string>
     <string name="level_at_which_noisy_data_should_not_be_broadcast">Level at which noisy data should not be broadcast as it could confuse receiving apps</string>
     <string name="low_parakeet_battery">Low Parakeet battery</string>
