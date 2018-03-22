@@ -1,11 +1,9 @@
 package com.eveningoutpost.dexdrip.Models;
 
+import com.eveningoutpost.dexdrip.RobolectricTestNoConfig;
 import com.google.common.truth.Truth;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,10 +16,7 @@ import java.util.List;
  * <p>
  * Created by Asbjorn Aarrestad on 7th January 2018.
  */
-
-@RunWith(RobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
-public class ForecastTest {
+public class ForecastTest extends RobolectricTestNoConfig {
 
     @Test
     public void polyTrendLine_SimpleForecast() {
