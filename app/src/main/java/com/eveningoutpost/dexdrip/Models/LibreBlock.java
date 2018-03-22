@@ -67,10 +67,16 @@ public class LibreBlock extends PlusModel {
     }
 
     public static LibreBlock create(String reference, long timestamp, byte[] blocks, int byte_start) {
-        if (reference == null || blocks == null) {
-            UserError.Log.e(TAG, "Cannot save block will null data");
+        UserError.Log.e(TAG,"Backtrack: "+JoH.backTrace());
+        if (reference == null) {
+            UserError.Log.e(TAG, "Cannot save block with null reference");
             return null;
         }
+        if (blocks == null) {
+            UserError.Log.e(TAG, "Cannot save block with null data");
+            return null;
+        }
+
         final LibreBlock lb = new LibreBlock();
         lb.reference = reference;
         lb.blockbytes = blocks;
