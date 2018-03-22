@@ -1,33 +1,25 @@
 package com.eveningoutpost.dexdrip.Models;
 
-import com.eveningoutpost.dexdrip.BuildConfig;
 import com.eveningoutpost.dexdrip.MockModel;
+import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 
 /**
  * Created by jamorham on 01/10/2017.
  */
-@RunWith(RobolectricTestRunner.class)
-
-//@Config(constants = BuildConfig.class, manifest = "../../../../app/src/test/java/com/eveningoutpost/dexdrip/TestingManifest.xml") // use this config inside android studio 3
-@Config(constants = BuildConfig.class, manifest = "../../../../../src/test/java/com/eveningoutpost/dexdrip/TestingManifest.xml") // use this config for CI test hosts
 
 // TODO this doesn't test whether SensorSanity exclusions are properly processed
-
-public class ProcessInitialDataQualityTest {
+public class ProcessInitialDataQualityTest extends RobolectricTestWithConfig {
 
     // if we have a record which is on an exact millisecond boundary and test it and it passes the test
     // 1ms later it will fail the test resulting in the assertion sometimes incorrectly labelling as a
