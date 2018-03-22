@@ -213,7 +213,14 @@ public class NFCReaderX {
         }
     }
     
-    public static void HandleGoodReading(String tagId, byte[] data1) {
+    // returns true if checksum passed.
+    public static boolean HandleGoodReading(String tagId, byte[] data1) {
+        
+        boolean checksum_ok = JoH.LibreCrc(data1);
+        if(checksum_ok == false) {
+            return false;
+        }
+        
         if(Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
             long now = JoH.tsl();
             // Save raw block record (we start from block 0)
@@ -229,6 +236,7 @@ public class NFCReaderX {
                 }
             }.start();
         }
+        return true; // Checksum tests have passed.
     }
 
     private static class NfcVReaderTask extends AsyncTask<Tag, Void, Tag> {
@@ -253,7 +261,10 @@ public class NFCReaderX {
                 if (!NFCReaderX.useNFC()) return;
                 if (succeeded) {
                     final String tagId = bytesToHexString(tag.getId());
-                    HandleGoodReading(tagId, data);
+                    boolean checksum_ok = HandleGoodReading(tagId, data);
+                    if(checksum_ok == false) {
+                        Log.e(TAG, "Read data but checksum is wrong");
+                    }
                 } else {
                     Log.d(TAG, "Scan did not succeed so ignoring buffer");
                 }
