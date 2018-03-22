@@ -16,6 +16,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.PowerManager;
 import android.os.Vibrator;
 import android.view.View;
 
@@ -24,7 +25,6 @@ import com.eveningoutpost.dexdrip.Models.GlucoseData;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.LibreBlock;
 import com.eveningoutpost.dexdrip.Models.LibreOOPAlgorithm;
-import com.eveningoutpost.dexdrip.Models.PredictionData;
 import com.eveningoutpost.dexdrip.Models.ReadingData;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
@@ -32,13 +32,13 @@ import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 // From LibreAlarm et al
+
+// TODO have we always checked checksum on this data? what about LibreAlarm path?
 
 public class NFCReaderX {
 
@@ -48,7 +48,6 @@ public class NFCReaderX {
     public static boolean used_nfc_successfully = false;
     private static final int MINUTE = 60000;
     private static NfcAdapter mNfcAdapter;
-    private static ReadingData mResult = new ReadingData(PredictionData.Result.ERROR_NO_NFC);
     private static boolean foreground_enabled = false;
     private static boolean tag_discovered = false;
     private static long last_tag_discovered = -1;
@@ -212,27 +211,32 @@ public class NFCReaderX {
             doTheScan(context, tag, true);
         }
     }
-    
+
     // returns true if checksum passed.
     public static boolean HandleGoodReading(String tagId, byte[] data1) {
-        
-        boolean checksum_ok = JoH.LibreCrc(data1);
-        if(checksum_ok == false) {
+
+        final boolean checksum_ok = JoH.LibreCrc(data1);
+        if (!checksum_ok) {
             return false;
         }
-        
-        if(Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
+
+        if (Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
             long now = JoH.tsl();
             // Save raw block record (we start from block 0)
             LibreBlock.createAndSave(tagId, now, data1, 0);
             LibreOOPAlgorithm.SendData(data1, now);
         } else {
-            mResult = parseData(0, tagId, data1);
+            final ReadingData mResult = parseData(0, tagId, data1);
             new Thread() {
                 @Override
                 public void run() {
-                    LibreAlarmReceiver.processReadingDataTransferObject(new ReadingData.TransferObject(1, mResult));
-                    Home.staticRefreshBGCharts();
+                    final PowerManager.WakeLock wl = JoH.getWakeLock("processTransferObject", 60000);
+                    try {
+                        LibreAlarmReceiver.processReadingDataTransferObject(new ReadingData.TransferObject(1, mResult));
+                        Home.staticRefreshBGCharts();
+                    } finally {
+                        JoH.releaseWakeLock(wl);
+                    }
                 }
             }.start();
         }
@@ -536,7 +540,9 @@ public class NFCReaderX {
         }
 
 
-        return new ReadingData(null, trendList, historyList);
+        final ReadingData readingData = new ReadingData(null, trendList, historyList);
+        readingData.raw_data = data;
+        return readingData;
     }
 
 
