@@ -157,18 +157,16 @@ public class Tomato {
         byte[] data = Arrays.copyOfRange(s_full_data, TOMATO_HEADER_LENGTH, TOMATO_HEADER_LENGTH+344);
         s_recviedEnoughData = true;
         
-        boolean checksum_ok = JoH.LibreCrc(data);
+        boolean checksum_ok = NFCReaderX.HandleGoodReading("tomato", data);
         Log.e(TAG, "We have all the data that we need " + s_acumulatedSize + " checksum_ok = " + checksum_ok + HexDump.dumpHexString(data));
-        
+
         if(!checksum_ok) {
             throw new RuntimeException(CHECKSUM_FAILED);
         }
-        
         PersistentStore.setString("Tomatobattery", Integer.toString(s_full_data[13]));
         PersistentStore.setString("TomatoHArdware",HexDump.toHexString(s_full_data,16,2));
         PersistentStore.setString("TomatoFirmware",HexDump.toHexString(s_full_data,14,2));
 
-        NFCReaderX.HandleGoodReading("tomato", data);
         
     }
 
