@@ -36,6 +36,7 @@ import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.store.FastStore;
 import com.eveningoutpost.dexdrip.store.KeyStore;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
+import com.eveningoutpost.dexdrip.utils.LibreTrendGraph;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.android.gms.location.DetectedActivity;
 import com.rits.cloning.Cloner;
@@ -259,18 +260,6 @@ public class BgGraphBuilder {
             return 1;
     }
 
-    private static Object cloneObject(Object obj) {
-        try {
-            Object clone = obj.getClass().newInstance();
-            for (Field field : obj.getClass().getDeclaredFields()) {
-                field.setAccessible(true);
-                field.set(clone, field.get(obj));
-            }
-            return clone;
-        } catch (Exception e) {
-            return null;
-        }
-    }
 
     static public boolean isXLargeTablet(Context context) {
         return (context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_XLARGE;
@@ -584,6 +573,12 @@ public class BgGraphBuilder {
             lines.add(treatments[7]); // poly predict
 
 
+            if (prefs.getBoolean("show_libre_trend_line", false)) {
+                if (DexCollectionType.hasLibre()) {
+                    lines.add(LibreTrendLine());
+                }
+            }
+
             lines.add(minShowLine());
             lines.add(maxShowLine());
             lines.add(highLine());
@@ -689,7 +684,7 @@ public class BgGraphBuilder {
                     if (thispoint.getX() == endmarker) {
                         thesepoints.add(thispoint);
                     }
-                    Line line = (Line) cloneObject(macroline); // aieeee
+                    Line line = (Line) JoH.cloneObject(macroline); // aieeee
                     line.setValues(thesepoints);
                     linearray.add(line);
                     thesepoints = new ArrayList<PointValue>();
@@ -1719,6 +1714,19 @@ public class BgGraphBuilder {
         minShowLine.setHasLines(false);
         return minShowLine;
     }
+
+    public Line LibreTrendLine() {
+        final List<PointValue> libreTrendValues =  LibreTrendGraph.getTrendDataPoints(doMgdl, (long)(start_time * FUZZER), (long)(end_time * FUZZER));
+        final Line line = new Line(libreTrendValues);
+        line.setHasPoints(true);
+        line.setHasLines(false);
+        line.setCubic(false);
+        line.setStrokeWidth(2);
+        line.setPointRadius(1);
+        line.setColor(Color.argb(240,25,206,244)); // temporary pending preference
+        return line;
+    }
+
 
     /////////AXIS RELATED//////////////
     public Axis yAxis() {

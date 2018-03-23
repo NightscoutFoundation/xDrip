@@ -340,6 +340,11 @@
                 android:title="@string/show_graph_total_average" />
             <CheckBoxPreference
                 android:defaultValue="false"
+                android:key="show_libre_trend_line"
+                android:summary=""
+                android:title="@string/show_libre_trend" />
+            <CheckBoxPreference
+                android:defaultValue="false"
                 android:key="show_momentum_working_line"
                 android:summary="@string/predictive_model_inner_workings"
                 android:title="@string/show_momentum_working_curve" />
