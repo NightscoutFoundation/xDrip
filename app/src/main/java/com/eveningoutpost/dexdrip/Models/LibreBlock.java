@@ -87,7 +87,7 @@ public class LibreBlock extends PlusModel {
     }
 
     public static LibreBlock getLatestForTrend() {
-        return getLatestForTrend(JoH.tsl(), JoH.tsl() - Constants.DAY_IN_MS);
+        return getLatestForTrend(JoH.tsl() - Constants.DAY_IN_MS, JoH.tsl() );
     }
 
 
