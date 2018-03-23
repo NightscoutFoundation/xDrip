@@ -2,7 +2,9 @@ package com.eveningoutpost.dexdrip.webservices;
 
 import android.util.Log;
 
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 
 import org.json.JSONException;
@@ -32,6 +34,13 @@ public class WebServiceStatus extends BaseWebService {
             // thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}
             double highMark = tolerantParseDouble(Pref.getString("highValue", "170"));
             double lowMark = tolerantParseDouble(Pref.getString("lowValue", "70"));
+
+            if (!using_mgdl) {
+                // if we're using mmol then the marks will be in mmol but should be expressed in mgdl
+                // to be in line with how Nightscout presents data
+                highMark = JoH.roundDouble(highMark * Constants.MMOLL_TO_MGDL, 0);
+                lowMark = JoH.roundDouble(lowMark * Constants.MMOLL_TO_MGDL, 0);
+            }
 
             final JSONObject thresholds = new JSONObject();
             thresholds.put("bgHigh", highMark);
