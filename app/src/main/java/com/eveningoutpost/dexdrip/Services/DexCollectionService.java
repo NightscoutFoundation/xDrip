@@ -67,6 +67,7 @@ import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.android.gms.wearable.DataMap;
+import com.rits.cloning.Cloner;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -154,6 +155,8 @@ public class DexCollectionService extends Service {
     private SharedPreferences prefs;
     private BluetoothAdapter mBluetoothAdapter;
     private String mDeviceAddress;
+    private volatile long delay_offset = 0;
+    private final Cloner cloner = new Cloner();
     private final BroadcastReceiver mPairingRequestRecevier = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -814,6 +817,11 @@ public class DexCollectionService extends Service {
             //if (Home.get_master()) GcmActivity.sendBridgeBattery(prefs.getInt("bridge_battery",-1));
         }
 
+        cloner.dontClone(
+                android.bluetooth.BluetoothDevice.class,
+                android.bluetooth.BluetoothGattService.class
+        );
+
         final IntentFilter pairingRequestFilter = new IntentFilter(BluetoothDevice.ACTION_PAIRING_REQUEST);
         pairingRequestFilter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY - 1);
         registerReceiver(mPairingRequestRecevier, pairingRequestFilter);
@@ -1121,27 +1129,37 @@ public class DexCollectionService extends Service {
         return writeChar(mCharacteristic, value);
     }
 
-    private boolean writeChar(final BluetoothGattCharacteristic localmCharacteristic, final byte[] value) {
+    private synchronized boolean writeChar(final BluetoothGattCharacteristic localmCharacteristic, final byte[] value) {
         localmCharacteristic.setValue(value);
         final boolean result = mBluetoothGatt != null && mBluetoothGatt.writeCharacteristic(localmCharacteristic);
         if (!result) {
             UserError.Log.d(TAG, "Error writing characteristic: " + localmCharacteristic.getUuid() + " " + JoH.bytesToHex(value));
+
+            final BluetoothGattCharacteristic resendCharacteristic =  cloner.shallowClone(localmCharacteristic);
+
+            if (JoH.quietratelimit("dexcol-resend-offset", 2)) {
+                delay_offset = 0;
+            } else {
+                delay_offset += 100;
+                if (d) UserError.Log.e(TAG, "Delay offset now: " + delay_offset);
+            }
+
             JoH.getWakeLock("dexcol-resend-linger", 1000); // dangling wakelock to ensure awake for resend
             JoH.runOnUiThreadDelayed(new Runnable() {
                 @Override
                 public void run() {
                     try {
-                        boolean result = mBluetoothGatt != null && mBluetoothGatt.writeCharacteristic(localmCharacteristic);
+                        boolean result = mBluetoothGatt != null && mBluetoothGatt.writeCharacteristic(resendCharacteristic);
                         if (!result) {
-                            UserError.Log.e(TAG, "Error writing characteristic: (2nd try) " + localmCharacteristic.getUuid() + " " + JoH.bytesToHex(value));
+                            UserError.Log.e(TAG, "Error writing characteristic: (2nd try) " + resendCharacteristic.getUuid() + " " + JoH.bytesToHex(value));
                         } else {
-                            UserError.Log.d(TAG, "Succeeded writing characteristic: (2nd try) " + localmCharacteristic.getUuid() + " " + JoH.bytesToHex(value));
+                            UserError.Log.d(TAG, "Succeeded writing characteristic: (2nd try) " + resendCharacteristic.getUuid() + " " + JoH.bytesToHex(value));
                         }
                     } catch (Exception e) {
-                        UserError.Log.wtf(TAG, "Exception during 2nd try write: " + e + " " + localmCharacteristic.getUuid() + " " + JoH.bytesToHex(value));
+                        UserError.Log.wtf(TAG, "Exception during 2nd try write: " + e + " " + resendCharacteristic.getUuid() + " " + JoH.bytesToHex(value));
                     }
                 }
-            }, 500);
+            }, 500 + delay_offset);
         }
         return result;
     }
