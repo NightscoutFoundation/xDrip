@@ -113,7 +113,14 @@
         android:visible="true"
         android:showAsAction="never"/>
 
-
+    <item android:id="@+id/libreLastMinutes"
+        android:title="@string/show_libre_trend"
+        android:checkable="false"
+        android:orderInCategory="1"
+        android:onClick="ShowLibreTrend"
+        android:visible="true"
+        android:showAsAction="never"/>
+    
     <item android:id="@+id/synctreatments"
         android:title="Sync Treatments"
         android:checkable="false"

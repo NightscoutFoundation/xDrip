@@ -60,7 +60,8 @@
 
         <provider
             android:name="com.activeandroid.content.ContentProvider"
-            android:authorities="com.example"
+            android:authorities="${applicationId}"
+            android:enabled="true"
             android:exported="false" />
 
         <activity
@@ -426,6 +427,12 @@
                 <action android:name="com.twofortyfouram.locale.intent.action.FIRE_SETTING" />
             </intent-filter>
         </receiver>
+        <receiver android:name=".UtilityModels.CompatibleApps">
+            <intent-filter android:priority="100">
+                <action android:name="android.intent.action.PACKAGE_ADDED" />
+                <data android:scheme="package" />
+            </intent-filter>
+        </receiver>
 
         <service
             android:name=".TaskService"
@@ -463,6 +470,11 @@
             android:name=".utils.DisplayQRCode"
             android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_display_qrcode"
+            android:noHistory="true" />
+        <activity
+            android:name=".utils.LibreTrendGraph"
+            android:configChanges="orientation|screenSize"
+            android:label="@string/libre_15_minutes_graph"
             android:noHistory="true" />
         <activity
             android:name=".UtilityModels.SendFeedBack"

@@ -92,19 +92,17 @@ public class LocationHelper {
         }
     }
 
-/*    private static void toast(final Activity activity,final String msg) {
-        try {
-            activity.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(activity.getApplicationContext(), msg, Toast.LENGTH_LONG).show();
-                }
-            });
-            android.util.Log.d(TAG, "Toast msg: " + msg);
-        } catch (Exception e) {
-            android.util.Log.e(TAG, "Couldn't display toast: " + msg);
+    // TODO probably can use application context here
+    public static boolean isLocationPermissionOk(Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(context,
+                    android.Manifest.permission.ACCESS_COARSE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED) {
+                return false;
+            }
         }
-    }*/
+        return true;
+    }
 
     public static Boolean locationPermission(ActivityWithMenu act) {
         return ActivityCompat.checkSelfPermission(act, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;

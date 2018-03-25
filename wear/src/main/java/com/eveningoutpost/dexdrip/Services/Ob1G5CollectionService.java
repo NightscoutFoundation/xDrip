@@ -851,7 +851,11 @@ public class Ob1G5CollectionService extends G5BaseService {
 
         if (state == STATE.DISCOVER) {
             // possible encryption failure
-           reset_bond(false);
+            if (Pref.getBoolean("ob1_g5_allow_resetbond", true)) {
+                reset_bond(false);
+            } else {
+                UserError.Log.e(TAG, "Would have tried to unpair but preference setting prevents it.");
+            }
         }
 
         if (state == STATE.CONNECT_NOW) {

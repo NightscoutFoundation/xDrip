@@ -90,7 +90,7 @@ public class NightscoutUploader {
         private static final int SOCKET_TIMEOUT = 60000;
         private static final int CONNECTION_TIMEOUT = 30000;
         private static final boolean d = false;
-        private static final boolean USE_GZIP = true;
+        private static final boolean USE_GZIP = true; // conditional inside interceptor
 
         public static long last_success_time = -1;
         public static long last_exception_time = -1;
@@ -212,6 +212,7 @@ public class NightscoutUploader {
                     final JSONObject tr = new JSONObject(response);
                     if (d) Log.d(TAG, url + " " + tr.toString());
                     PersistentStore.setString(store_marker, tr.toString());
+                    checkGzipSupport(r);
                 } else {
                     PersistentStore.setString(store_marker, "error");
                     Log.d(TAG, "Failure to get status data from: " + url + " " + ((r != null) ? r.message() : ""));
@@ -528,6 +529,7 @@ public class NightscoutUploader {
                                 }
                             }
                             PersistentStore.setString(LAST_MODIFIED_KEY, last_modified_string);
+                            checkGzipSupport(r);
                         } else {
                             Log.d(TAG, "Failed to get treatments from: " + baseURI);
                         }
@@ -642,7 +644,7 @@ public class NightscoutUploader {
                 final RequestBody body = RequestBody.create(MediaType.parse("application/json"), array.toString());
                 final Response<ResponseBody> r = nightscoutService.upload(secret, body).execute();
                 if (!r.isSuccess()) throw new UploaderException(r.message(), r.code());
-
+                checkGzipSupport(r);
                 try {
                     postDeviceStatus(nightscoutService, secret);
                 } catch (Exception e) {
@@ -673,7 +675,9 @@ public class NightscoutUploader {
                     postStepsCount(nightscoutService, secret);
                     postMotionTracking(nightscoutService, secret);
                 } catch (Exception e) {
-                    Log.e(TAG, "Exception uploading REST API heartrate: " + e.getMessage());
+                  if (JoH.ratelimit("heartrate-upload-exception", 3600)) {
+                      Log.e(TAG, "Exception uploading REST API heartrate: " + e.getMessage());
+                  }
                 }
             }
         }
@@ -906,6 +910,7 @@ public class NightscoutUploader {
                                 up.completed(THIS_QUEUE); // approve all types for this queue
                             }
                         }
+                        checkGzipSupport(r);
                     }
                 } else {
                     Log.wtf(TAG, "Cannot upload treatments without api secret being set");
@@ -935,6 +940,7 @@ public class NightscoutUploader {
                                     break;
                                 }
                             }
+                            checkGzipSupport(r);
                         }
                     } else {
                         Log.wtf(TAG, "Cannot upload treatments without api secret being set");
@@ -986,11 +992,14 @@ public class NightscoutUploader {
 
                 if (!r.isSuccess()) {
                     activityErrorCount++;
-                    UserError.Log.e(TAG, "Unable to upload heart-rate data to Nightscout - check nightscout version");
+                   if (JoH.ratelimit("heartrate-unable-upload",3600)) {
+                       UserError.Log.e(TAG, "Unable to upload heart-rate data to Nightscout - check nightscout version");
+                   }
                     throw new UploaderException(r.message(), r.code());
                 } else {
                     PersistentStore.setLong(STORE_COUNTER, highest_timestamp);
-                    UserError.Log.e(TAG, "Updating heartrate synced record count (success) " + JoH.dateTimeText(highest_timestamp) + " Processed: " + readings.size() + " records");
+                    UserError.Log.d(TAG, "Updating heartrate synced record count (success) " + JoH.dateTimeText(highest_timestamp) + " Processed: " + readings.size() + " records");
+                    checkGzipSupport(r);
                 }
             }
         } else {
@@ -1037,6 +1046,7 @@ public class NightscoutUploader {
                 } else {
                     PersistentStore.setLong(STORE_COUNTER, highest_timestamp);
                     UserError.Log.e(TAG, "Updating steps synced record count (success) " + JoH.dateTimeText(highest_timestamp) + " Processed: " + readings.size() + " records");
+                    checkGzipSupport(r);
                 }
             }
         } else {
@@ -1086,6 +1096,7 @@ public class NightscoutUploader {
                 } else {
                     PersistentStore.setLong(STORE_COUNTER, highest_timestamp);
                     UserError.Log.e(TAG, "Updating motion synced record count (success) " + JoH.dateTimeText(highest_timestamp) + " Processed: " + readings.size() + " records");
+                    checkGzipSupport(r);
                 }
             }
         } else {
@@ -1093,7 +1104,43 @@ public class NightscoutUploader {
         }
     }
 
+    // attempt to determine if a server supports gzip encoding based on response
+    private void checkGzipSupport(Response r) {
+        try {
+            boolean hasGzip = false;
 
+            // look for a header, doesn't normally seem to be present though
+            if (!hasGzip) {
+                try {
+                    hasGzip = r.headers().get("Accept-Encoding").contains("gzip");
+                } catch (Exception e) {
+                    //
+                }
+            }
+
+            // see if we can guess based on server name
+            if (!hasGzip) {
+                try {
+                    final String poweredby = r.headers().get("X-Powered-By");
+                    hasGzip = poweredby.contains("Express") || poweredby.contains("ASP.NET");
+                } catch (Exception e) {
+                    //
+                }
+            }
+            // TODO this currently never unsets
+            if (hasGzip) {
+                try {
+                    setSupportsGzip(r.raw().request().uri().getHost() + r.raw().request().uri().getPort(), true);
+                } catch (IOException e) {
+                    // unprocessable
+                    UserError.Log.d(TAG, "check gzip: E1 :" + e);
+                }
+            }
+        } catch (Exception e) {
+            // unprocessable
+            UserError.Log.d(TAG, "check gzip: E2 :" + e);
+        }
+    }
 
 
     private static final String LAST_NIGHTSCOUT_BATTERY_LEVEL = "last-nightscout-battery-level";
@@ -1168,9 +1215,11 @@ public class NightscoutUploader {
                 if (!r.isSuccess()) throw new UploaderException(r.message(), r.code());
                 // } else {
                 //     UserError.Log.d(TAG, "Battery level is same as previous - not uploading: " + battery_level);
+                checkGzipSupport(r);
             }
         }
     }
+
 
         private boolean doMongoUpload(SharedPreferences prefs, List<BgReading> glucoseDataSets,
                                       List<Calibration> meterRecords,  List<Calibration> calRecords) {
@@ -1343,14 +1392,35 @@ public class NightscoutUploader {
         } else return 50;
     }
 
+    private static boolean isLANhost(String host) {
+        return host != null && (host.startsWith("192.168.") || host.startsWith("10.") || host.startsWith("172.16."));
+    }
+
+    private static final String END_SUPPORTS_GZIP_MARKER = "ns-end-supports-gzip-";
+
+    private static boolean supportsGzip(String id) {
+        return PersistentStore.getBoolean(END_SUPPORTS_GZIP_MARKER + id);
+    }
+
+    private static void setSupportsGzip(String id, boolean value) {
+        if (supportsGzip(id) != value) {
+            UserError.Log.e(TAG, "Setting GZIP support: " + id + " " + value);
+            PersistentStore.setBoolean(END_SUPPORTS_GZIP_MARKER + id, value);
+        }
+    }
+
     static class GzipRequestInterceptor implements Interceptor {
-        @Override public com.squareup.okhttp.Response intercept(Chain chain) throws IOException {
-            Request originalRequest = chain.request();
-            if (originalRequest.body() == null || originalRequest.header("Content-Encoding") != null) {
+        @Override
+        public com.squareup.okhttp.Response intercept(Chain chain) throws IOException {
+            final Request originalRequest = chain.request();
+
+            if (originalRequest.body() == null
+                    || originalRequest.header("Content-Encoding") != null
+                    || !supportsGzip(originalRequest.uri().getHost() + originalRequest.uri().getPort())) {
                 return chain.proceed(originalRequest);
             }
 
-            Request compressedRequest = originalRequest.newBuilder()
+            final Request compressedRequest = originalRequest.newBuilder()
                     .header("Content-Encoding", "gzip")
                     .method(originalRequest.method(), gzip(originalRequest.body()))
                     .build();

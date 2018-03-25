@@ -151,25 +151,28 @@ public class PebbleDisplayTrendOld extends PebbleDisplayAbstract {
 
     private void evaluateDataFromPebble(PebbleDictionary data) {
 
-        if (data.size() > 0) {
-            pebble_sync_value = data.getUnsignedIntegerAsLong(SYNC_KEY);
-            pebble_platform = data.getUnsignedIntegerAsLong(PLATFORM_KEY);
-            pebble_app_version = data.getString(VERSION_KEY);
-            Log.d(TAG, "receiveData: pebble_sync_value=" + pebble_sync_value + ", pebble_platform=" + pebble_platform + ", pebble_app_version=" + pebble_app_version);
+        try {
+            if (data.size() > 0) {
+                pebble_sync_value = data.getUnsignedIntegerAsLong(SYNC_KEY);
+                pebble_platform = data.getUnsignedIntegerAsLong(PLATFORM_KEY);
+                pebble_app_version = data.getString(VERSION_KEY);
+                Log.d(TAG, "receiveData: pebble_sync_value=" + pebble_sync_value + ", pebble_platform=" + pebble_platform + ", pebble_app_version=" + pebble_app_version);
 
-            switch ((int)pebble_platform) {
-                case 0:
-                    if (PebbleUtil.pebbleDisplayType != PebbleDisplayType.TrendClassic) {
-                        PebbleUtil.pebbleDisplayType = PebbleDisplayType.TrendClassic;
-                        //JoH.static_toast_short("Switching to Pebble Classic Trend");
-                        Log.d(TAG,"Changing to Classic Trend due to platform id");
-                    }
-                    break;
+                switch ((int) pebble_platform) {
+                    case 0:
+                        if (PebbleUtil.pebbleDisplayType != PebbleDisplayType.TrendClassic) {
+                            PebbleUtil.pebbleDisplayType = PebbleDisplayType.TrendClassic;
+                            //JoH.static_toast_short("Switching to Pebble Classic Trend");
+                            Log.d(TAG, "Changing to Classic Trend due to platform id");
+                        }
+                        break;
+                }
 
+            } else {
+                Log.d(TAG, "receiveData: pebble_app_version not known");
             }
-
-        } else {
-            Log.d(TAG, "receiveData: pebble_app_version not known");
+        } catch (NullPointerException e) {
+            Log.e(TAG, "Got exception trying to parse data from pebble: " + e);
         }
     }
 

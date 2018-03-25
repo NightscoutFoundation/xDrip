@@ -1117,6 +1117,12 @@ public class Preferences extends PreferenceActivity {
                     } catch (Exception e) { //
                     }
                 }
+                if (Build.VERSION.SDK_INT < 23) {
+                    try {
+                        ((PreferenceGroup)findPreference("xdrip_plus_display_category")).removePreference(findPreference("xdrip_plus_number_icon"));
+                    } catch (Exception e) { //
+                    }
+                }
 
                // if (!Experience.gotData()) {
                //     try {

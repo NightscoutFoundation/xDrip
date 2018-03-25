@@ -27,7 +27,7 @@ import org.json.JSONException;
 public class LibreOOPAlgorithm {
     private static final String TAG = "LibreOOPAlgorithm";
     
-    static public void SendData(byte[] fullData) {
+    static public void SendData(byte[] fullData, long timestamp) {
         if(fullData == null) {
             Log.e(TAG, "SendData called with null data");
             return;
@@ -45,7 +45,7 @@ public class LibreOOPAlgorithm {
         Intent intent = new Intent(Intents.XDRIP_PLUS_LIBRE_DATA);
         Bundle bundle = new Bundle();
         bundle.putByteArray(Intents.LIBRE_DATA_BUFFER, fullData);
-        bundle.putLong(Intents.LIBRE_DATA_TIMESTAMP, JoH.tsl());
+        bundle.putLong(Intents.LIBRE_DATA_TIMESTAMP, timestamp);
         intent.putExtras(bundle);
         intent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
         xdrip.getAppContext().sendBroadcast(intent);
@@ -57,10 +57,14 @@ public class LibreOOPAlgorithm {
         OOPResults oOPResults = null;
         try {
             final Gson gson = new GsonBuilder().create();
-            OOPResults []oOPResultsArray = null;
-            oOPResultsArray = gson.fromJson(oopData, OOPResults[].class);
-            if(oOPResultsArray.length > 0) {
-                oOPResults =  oOPResultsArray[0];
+            OOPResultsContainer oOPResultsContainer = gson.fromJson(oopData, OOPResultsContainer.class);
+            
+            if(oOPResultsContainer.Message != null) {
+                Log.e(TAG, "recieved a message from oop algorithm:" + oOPResultsContainer.Message);
+            }
+            
+            if(oOPResultsContainer.oOPResultsArray.length > 0) {
+                oOPResults =  oOPResultsContainer.oOPResultsArray[0];
             } else {
                 Log.e(TAG, "oOPResultsArray exists, but size is zero");
                 return;
@@ -113,8 +117,6 @@ public class LibreOOPAlgorithm {
         glucoseData.glucoseLevelRaw = (int)(oOPResults.currentBg * factor);
         libreAlarmObject.data.history.add(glucoseData);
         
-        
-  
         Log.e(TAG, "HandleData Created the following object " + libreAlarmObject.toString());
         LibreAlarmReceiver.CalculateFromDataTransferObject(libreAlarmObject, use_raw);
         

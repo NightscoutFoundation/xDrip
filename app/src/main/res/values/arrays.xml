@@ -149,4 +149,19 @@
         <item>Default xDrip+ reminder sound</item>
     </string-array>
 
+<!--    TODO abstract noise values to single source -->
+    <string-array name="NoiseLevelBlock">
+        <item>Send even Extremely noisy signals</item>
+        <item>Only block noise level Extreme</item>
+        <item>Block Very High noise and worse</item>
+        <item>Block High noise and worse</item>
+    </string-array>
+    <string-array name="NoiseLevelBlockValues">
+        <item>100000</item>
+        <item>200</item>
+        <item>60</item>
+        <item>10</item>
+    </string-array>
+
+
 </resources>
