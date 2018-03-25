@@ -21,11 +21,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.eveningoutpost.dexdrip.BestGlucose;
-import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
@@ -83,7 +81,7 @@ public class XDripDreamService extends DreamService implements SensorEventListen
 
     @Override
     public void onCreate() {
-        use_gravity = Home.getPreferencesBooleanDefaultFalse("daydream_use_gravity_sensor");
+        use_gravity = Pref.getBooleanDefaultFalse("daydream_use_gravity_sensor");
     }
 
     @Override
@@ -241,7 +239,7 @@ public class XDripDreamService extends DreamService implements SensorEventListen
                 .setStart(System.currentTimeMillis() - 60000 * 60 * 3)
                 .showAxes(true)
                 .setBackgroundColor(getCol(ColorCache.X.color_notification_chart_background))
-                .setShowFiltered(DexCollectionType.hasFiltered() && Home.getPreferencesBooleanDefaultFalse("show_filtered_curve"))
+                .setShowFiltered(DexCollectionType.hasFiltered() && Pref.getBooleanDefaultFalse("show_filtered_curve"))
                 .build();
         graphimage.setImageBitmap(dreamBitmap);
     }

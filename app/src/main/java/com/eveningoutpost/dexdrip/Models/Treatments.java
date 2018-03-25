@@ -18,7 +18,7 @@ import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.SyncService;
-import com.eveningoutpost.dexdrip.UtilityModels.NightscoutUploader;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.UndoRedo;
 import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -207,6 +207,7 @@ public class Treatments extends Model {
         Treatment.enteredBy = XDRIP_TAG;
         Treatment.eventType = "Sensor Start";
         Treatment.created_at = DateUtil.toISOString(timestamp);
+        Treatment.timestamp = timestamp;
         Treatment.uuid = UUID.randomUUID().toString();
         Treatment.save();
         pushTreatmentSync(Treatment);
@@ -220,7 +221,7 @@ public class Treatments extends Model {
     private static void pushTreatmentSync(Treatments treatment, boolean is_new, String suggested_uuid) {;
         if (Home.get_master_or_follower()) GcmActivity.pushTreatmentAsync(treatment);
 
-        if (!(Home.getPreferencesBoolean("cloud_storage_api_enable", false) || Home.getPreferencesBoolean("cloud_storage_mongodb_enable", false))) {
+        if (!(Pref.getBoolean("cloud_storage_api_enable", false) || Pref.getBoolean("cloud_storage_mongodb_enable", false))) {
             NSClientChat.pushTreatmentAsync(treatment);
         } else {
             Log.d(TAG, "Skipping NSClient treatment broadcast as nightscout direct sync is enabled");
@@ -236,7 +237,7 @@ public class Treatments extends Model {
 
     public static void pushTreatmentSyncToWatch(Treatments treatment, boolean is_new) {
         Log.d(TAG, "pushTreatmentSyncToWatch Add treatment to UploaderQueue.");
-        if (Home.getPreferencesBooleanDefaultFalse("wear_sync")) {
+        if (Pref.getBooleanDefaultFalse("wear_sync")) {
             if (UploaderQueue.newEntryForWatch(is_new ? "insert" : "update", treatment) != null) {
                 SyncService.startSyncService(3000); // sync in 3 seconds
             }
@@ -404,6 +405,17 @@ public class Treatments extends Model {
         Log.d(TAG, "converting treatment from json: " + json);
         Treatments mytreatment = fromJSON(json);
         if (mytreatment != null) {
+            if ((mytreatment.carbs == 0) && (mytreatment.insulin == 0)
+                    && (mytreatment.notes != null) && (mytreatment.notes.equals("AndroidAPS started"))) {
+                Log.d(TAG, "Skipping AndroidAPS started message");
+                return false;
+            }
+            if ((mytreatment.eventType != null) && (mytreatment.eventType.equals("Temp Basal"))) {
+                // we don't yet parse or process these
+                Log.d(TAG, "Skipping Temp Basal msg");
+                return false;
+            }
+
             if (mytreatment.uuid == null) {
                 try {
                     final JSONObject jsonobj = new JSONObject(json);
@@ -906,6 +918,14 @@ public class Treatments extends Model {
         Log.d(TAG, "Finished Processing iobforgraph: main - processed:  " + Integer.toString(counter) + " Timeslot records");
         JoH.benchmark_method_end();
         return responses;
+    }
+
+    public String getBestShortText() {
+        if (!eventType.equals("<none>")) {
+            return eventType;
+        } else {
+            return "Treatment";
+        }
     }
 
     public String toJSON() {

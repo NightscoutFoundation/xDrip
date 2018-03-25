@@ -7,17 +7,15 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.PowerManager;
-import android.preference.PreferenceManager;
-import android.widget.Toast;
 
-import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.HeartRate;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.PebbleMovement;
+import com.eveningoutpost.dexdrip.Models.StepCounter;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.getpebble.android.kit.PebbleKit;
 import com.getpebble.android.kit.util.PebbleDictionary;
@@ -105,7 +103,7 @@ public class PebbleWatchSync extends Service {
 
 
     public static PebbleDisplayType getCurrentBroadcastToPebbleSetting() {
-        int pebbleType = PebbleUtil.getCurrentPebbleSyncType(PreferenceManager.getDefaultSharedPreferences(context));
+        int pebbleType = PebbleUtil.getCurrentPebbleSyncType();
 
         return PebbleUtil.getPebbleDisplayType(pebbleType);
     }
@@ -115,7 +113,7 @@ public class PebbleWatchSync extends Service {
             try {
                 final BluetoothManager bluetooth_manager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
                 if (!bluetooth_manager.getAdapter().isEnabled()) {
-                    if (Home.getPreferencesBoolean("automatically_turn_bluetooth_on", true)) {
+                    if (Pref.getBoolean("automatically_turn_bluetooth_on", true)) {
                         JoH.setBluetoothEnabled(getApplicationContext(), true);
                         //Toast.makeText(this, "Trying to turn Bluetooth on", Toast.LENGTH_LONG).show();
                         //} else {
@@ -196,7 +194,7 @@ public class PebbleWatchSync extends Service {
             public void receiveData(Context context, UUID logUuid, Long timestamp,
                                     Long tag, Long data) {
                 Log.d(TAG, "receiveLogData: uuid:" + logUuid + " started: " + JoH.dateTimeText(timestamp * 1000) + " tag:" + tag + " data: " + data);
-                if (Home.getPreferencesBoolean("use_pebble_health", true)) {
+                if (Pref.getBoolean("use_pebble_health", true)) {
                     if ((tag != null) && (data != null)) {
                         final int s = ((int) (long) tag) & 0xfffffff7; // alternator
 
@@ -232,7 +230,7 @@ public class PebbleWatchSync extends Service {
                                 } else {
                                     if (data > 0) {
                                         if (last_movement_timestamp > 0) {
-                                            final PebbleMovement pm = PebbleMovement.createEfficientRecord(last_movement_timestamp * 1000, (int)(long) data);
+                                            final StepCounter pm = StepCounter.createEfficientRecord(last_movement_timestamp * 1000, (int)(long) data);
                                             Log.d(TAG, "Saving Movement: " + pm.toS());
                                             last_movement_timestamp = 0; // reset state
                                         } else {

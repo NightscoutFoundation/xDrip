@@ -30,6 +30,7 @@ import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -60,12 +61,14 @@ import rx.Subscription;
 import rx.schedulers.Schedulers;
 
 import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.getUUIDName;
-import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.G5_BATTERY_FROM_MARKER;
 
 
 /**
  * OB1 G5 collector
  * Created by jamorham on 16/09/2017.
+ *
+ * App version is master, best to avoid editing wear version directly
+ *
  */
 
 
@@ -88,7 +91,7 @@ public class Ob1G5CollectionService extends G5BaseService {
     //private static String lastState = "Not running";
     //private static String lastStateWatch = "Not running";
     private static String lastScanError = null;
-    private static String static_connection_state = null;
+    private static volatile String static_connection_state = null;
     private static long static_last_connected = 0;
     //private static long static_last_timestamp = 0;
     //private static long static_last_timestamp_watch = 0;
@@ -97,9 +100,8 @@ public class Ob1G5CollectionService extends G5BaseService {
     private static long wakeup_time = 0;
     private static long wakeup_jitter = 0;
     private static long max_wakeup_jitter = 0;
-    private static long connecting_time = 0;
+    private static volatile long connecting_time = 0;
 
-    public static boolean getBatteryStatusNow = false;
 
     public static boolean keep_running = true;
 
@@ -107,14 +109,14 @@ public class Ob1G5CollectionService extends G5BaseService {
 
     private Subscription scanSubscription;
     private Subscription connectionSubscription;
-    private Subscription stateSubscription;
+    private static volatile Subscription stateSubscription;
     private Subscription discoverSubscription;
     private RxBleDevice bleDevice;
     private RxBleConnection connection;
 
     private PowerManager.WakeLock connection_linger;
     private PowerManager.WakeLock scanWakeLock;
-    private PowerManager.WakeLock floatingWakeLock;
+    private volatile PowerManager.WakeLock floatingWakeLock;
     private PowerManager.WakeLock fullWakeLock;
 
     private boolean background_launch_waiting = false;
@@ -140,6 +142,7 @@ public class Ob1G5CollectionService extends G5BaseService {
     private static final Set<String> alwaysScanModels = Sets.newHashSet("SM-N910V","G Watch");
     private static final List<String> alwaysScanModelFamilies = Arrays.asList("SM-N910");
     private static final Set<String> alwaysConnectModels = Sets.newHashSet("G Watch");
+    private static final Set<String> alwaysBuggyWakeupModels = Sets.newHashSet("Jelly-Pro", "SmartWatch 3");
 
     // Internal process state tracking
     public enum STATE {
@@ -215,6 +218,15 @@ public class Ob1G5CollectionService extends G5BaseService {
                         initialize();
                         break;
                     case SCAN:
+                        // no connection? lets try a restart
+                        if (JoH.msSince(static_last_connected) > 10 * 60 * 1000) {
+                            if (JoH.pratelimit("ob1-collector-restart", 1200)) {
+                                new Thread(() -> {
+                                    CollectionServiceStarter.restartCollectionService(xdrip.getAppContext());
+                                }).start();
+                                break;
+                            }
+                        }
                         scan_for_device();
                         break;
                     case CONNECT_NOW:
@@ -290,7 +302,7 @@ public class Ob1G5CollectionService extends G5BaseService {
             if (rxBleClient == null) {
                 rxBleClient = RxBleClient.create(xdrip.getAppContext());
             }
-            transmitterID = Home.getPreferencesStringWithDefault("dex_txid", "NULL");
+            init_tx_id();
             // load prefs etc
             changeState(STATE.SCAN);
         } else {
@@ -298,19 +310,23 @@ public class Ob1G5CollectionService extends G5BaseService {
         }
     }
 
+    private static void init_tx_id() {
+        transmitterID = Pref.getString("dex_txid", "NULL");
+    }
+
     private synchronized void scan_for_device() {
         if (state == STATE.SCAN) {
             msg("Scanning");
             stopScan();
             tryLoadingSavedMAC(); // did we already find it?
-            if (always_scan || (transmitterMAC == null) || (!transmitterID.equals(transmitterIDmatchingMAC))) {
+            if (always_scan || (transmitterMAC == null) || (!transmitterID.equals(transmitterIDmatchingMAC)) || (static_last_timestamp < 1)) {
                 transmitterMAC = null; // reset if set
                 last_scan_started = JoH.tsl();
                 scanWakeLock = JoH.getWakeLock("xdrip-jam-g5-scan", (int) Constants.MINUTE_IN_MS * 6);
 
                 scanSubscription = rxBleClient.scanBleDevices(
                         new ScanSettings.Builder()
-                                .setScanMode(ScanSettings.SCAN_MODE_BALANCED)
+                                .setScanMode(static_last_timestamp < 1 ? ScanSettings.SCAN_MODE_LOW_LATENCY : ScanSettings.SCAN_MODE_BALANCED)
                                 //.setCallbackType(ScanSettings.CALLBACK_TYPE_FIRST_MATCH)
                                 .setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES)
                                 .build()//,
@@ -325,6 +341,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                         // observe on?
                         // do unsubscribe?
                         //.doOnUnsubscribe(this::clearSubscription)
+                        .subscribeOn(Schedulers.io())
                         .subscribe(this::onScanResult, this::onScanFailure);
                 UserError.Log.d(TAG, "Scanning for: " + getTransmitterBluetoothName());
             } else {
@@ -352,9 +369,10 @@ public class Ob1G5CollectionService extends G5BaseService {
 
                 bleDevice = rxBleClient.getBleDevice(transmitterMAC);
 
-                // Listen for connection state changes
+                        /// / Listen for connection state changes
                 stateSubscription = bleDevice.observeConnectionStateChanges()
                         // .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(Schedulers.io())
                         .subscribe(this::onConnectionStateChange, throwable -> {
                             UserError.Log.wtf(TAG, "Got Error from state subscription: " + throwable);
                         });
@@ -365,6 +383,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                         // .flatMap(RxBleConnection::discoverServices)
                         // .observeOn(AndroidSchedulers.mainThread())
                         // .doOnUnsubscribe(this::clearSubscription)
+                        .subscribeOn(Schedulers.io())
 
                         .subscribe(this::onConnectionReceived, this::onConnectionFailure);
 
@@ -459,7 +478,7 @@ public class Ob1G5CollectionService extends G5BaseService {
     // should this service be running? Used to decide when to shut down
     private static boolean shouldServiceRun() {
         if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) return false;
-        if (!Home.getPreferencesBooleanDefaultFalse(OB1G5_PREFS)) return false;
+        if (!Pref.getBooleanDefaultFalse(OB1G5_PREFS)) return false;
         if (!(DexCollectionType.getDexCollectionType() == DexCollectionType.DexcomG5)) return false;
 
         if (!android_wear) {
@@ -496,7 +515,7 @@ public class Ob1G5CollectionService extends G5BaseService {
 
     private synchronized void checkAndEnableBT() {
         try {
-            if (Home.getPreferencesBoolean("automatically_turn_bluetooth_on", true)) {
+            if (Pref.getBoolean("automatically_turn_bluetooth_on", true)) {
                 final BluetoothAdapter mBluetoothAdapter = ((BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
                 if (!mBluetoothAdapter.isEnabled()) {
                     if (JoH.ratelimit("g5-enabling-bluetooth", 30)) {
@@ -611,11 +630,17 @@ public class Ob1G5CollectionService extends G5BaseService {
 
         always_connect = alwaysConnectModels.contains(this_model);
 
+        if (alwaysBuggyWakeupModels.contains(this_model)) {
+            UserError.Log.e(TAG,"Always buggy wakeup exact match for " + this_model);
+            JoH.buggy_samsung = true;
+        }
+
         if (alwaysScanModels.contains(this_model)) {
             UserError.Log.e(TAG, "Always scan model exact match for: " + this_model);
             always_scan = true;
             return;
         }
+
         for (String check : alwaysScanModelFamilies) {
             if (this_model.startsWith(check)) {
                 UserError.Log.e(TAG, "Always scan model fuzzy match for: " + this_model);
@@ -800,6 +825,12 @@ public class Ob1G5CollectionService extends G5BaseService {
             if (((BleScanException) throwable).getReason() == BleScanException.BLUETOOTH_DISABLED) {
                 // Attempt to turn bluetooth on
                 if (JoH.ratelimit("bluetooth_toggle_on", 30)) {
+                    UserError.Log.d(TAG, "Pause before Turn Bluetooth on");
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException e) {
+                        //
+                    }
                     UserError.Log.e(TAG, "Trying to Turn Bluetooth on");
                     JoH.setBluetoothEnabled(xdrip.getAppContext(), true);
                 }
@@ -820,7 +851,11 @@ public class Ob1G5CollectionService extends G5BaseService {
 
         if (state == STATE.DISCOVER) {
             // possible encryption failure
-           reset_bond(false);
+            if (Pref.getBoolean("ob1_g5_allow_resetbond", true)) {
+                reset_bond(false);
+            } else {
+                UserError.Log.e(TAG, "Would have tried to unpair but preference setting prevents it.");
+            }
         }
 
         if (state == STATE.CONNECT_NOW) {
@@ -831,6 +866,12 @@ public class Ob1G5CollectionService extends G5BaseService {
 
         if (state == STATE.CONNECT) {
             connectFailures++;
+            // TODO check bluetooth on or in connect section
+          if (JoH.ratelimit("ob1-restart-scan-on-connect-failure",10)) {
+              UserError.Log.d(TAG,"Restarting scan due to connect failure");
+              tryGattRefresh();
+              changeState(STATE.SCAN);
+          }
         }
 
     }
@@ -942,7 +983,7 @@ public class Ob1G5CollectionService extends G5BaseService {
     }
 
     private boolean g5BluetoothWatchdog() {
-        return Home.getPreferencesBoolean("g5_bluetooth_watchdog", true);
+        return Pref.getBoolean("g5_bluetooth_watchdog", true);
     }
 
     public static void updateLast(long timestamp) {
@@ -1118,8 +1159,10 @@ public class Ob1G5CollectionService extends G5BaseService {
                 fullWakeLock = JoH.fullWakeLock("pairing-screen-wake", 30 * Constants.SECOND_IN_MS);
                 if (!android_wear) Home.startHomeWithExtra(context, Home.HOME_FULL_WAKEUP, "1");
                 if (!JoH.doPairingRequest(context, this, intent, bleDevice.getBluetoothDevice().getAddress())) {
-                    unregisterPairingReceiver();
-                    UserError.Log.e(TAG, "Pairing failed so removing pairing automation"); // todo use flag
+                    if (!android_wear) {
+                        unregisterPairingReceiver();
+                        UserError.Log.e(TAG, "Pairing failed so removing pairing automation"); // todo use flag
+                    }
                 }
             } else {
                 UserError.Log.e(TAG, "Received pairing request but device was null !!!");
@@ -1158,9 +1201,12 @@ public class Ob1G5CollectionService extends G5BaseService {
 
     // data for MegaStatus
     public static List<StatusItem> megaStatus() {
+
+        init_tx_id(); // needed if we have not passed through local INIT state
+
         final List<StatusItem> l = new ArrayList<>();
 
-        l.add(new StatusItem("Phone Service State", lastState, JoH.msSince(lastStateUpdated) < 300000 ? (lastState.startsWith("Got data") ? StatusItem.Highlight.GOOD : StatusItem.Highlight.NORMAL) : StatusItem.Highlight.CRITICAL));
+        l.add(new StatusItem("Phone Service State", lastState, JoH.msSince(lastStateUpdated) < 300000 ? (lastState.startsWith("Got data") ? StatusItem.Highlight.GOOD : StatusItem.Highlight.NORMAL) : (isWatchRunning() ? StatusItem.Highlight.GOOD : StatusItem.Highlight.CRITICAL)));
         if (last_scan_started > 0) {
             final long scanning_time = JoH.msSince(last_scan_started);
             l.add(new StatusItem("Time scanning", JoH.niceTimeScalar(scanning_time), scanning_time > Constants.MINUTE_IN_MS * 5 ? (scanning_time > Constants.MINUTE_IN_MS * 10 ? StatusItem.Highlight.BAD : StatusItem.Highlight.NOTICE) : StatusItem.Highlight.NORMAL));
@@ -1194,8 +1240,8 @@ public class Ob1G5CollectionService extends G5BaseService {
 
         final String tx_id = getTransmitterID();
 
-        if (Home.getPreferencesBooleanDefaultFalse("wear_sync") &&
-                Home.getPreferencesBooleanDefaultFalse("enable_wearG5")) {
+        if (Pref.getBooleanDefaultFalse("wear_sync") &&
+                Pref.getBooleanDefaultFalse("enable_wearG5")) {
             l.add(new StatusItem("Watch Service State", lastStateWatch));
             if (static_last_timestamp_watch > 0) {
                 l.add(new StatusItem("Watch got Glucose", JoH.niceTimeSince(static_last_timestamp_watch) + " ago"));
@@ -1246,8 +1292,8 @@ public class Ob1G5CollectionService extends G5BaseService {
                     l.add(new StatusItem("Transmitter Status", battery_status, StatusItem.Highlight.BAD));
             }
             l.add(new StatusItem("Transmitter Days", bt.runtime + ((last_transmitter_timestamp > 0) ? " / " + JoH.qs((double) last_transmitter_timestamp / 86400, 1) : "")));
-            l.add(new StatusItem("Voltage A", bt.voltagea, bt.voltagea < 300 ? StatusItem.Highlight.BAD : StatusItem.Highlight.NORMAL));
-            l.add(new StatusItem("Voltage B", bt.voltageb, bt.voltageb < 290 ? StatusItem.Highlight.BAD : StatusItem.Highlight.NORMAL));
+            l.add(new StatusItem("Voltage A", bt.voltagea, bt.voltagea < LOW_BATTERY_WARNING_LEVEL ? StatusItem.Highlight.BAD : StatusItem.Highlight.NORMAL));
+            l.add(new StatusItem("Voltage B", bt.voltageb, bt.voltageb < (LOW_BATTERY_WARNING_LEVEL - 10) ? StatusItem.Highlight.BAD : StatusItem.Highlight.NORMAL));
             l.add(new StatusItem("Resistance", bt.resist, bt.resist > 1400 ? StatusItem.Highlight.BAD : (bt.resist > 1000 ? StatusItem.Highlight.NOTICE : (bt.resist > 750 ? StatusItem.Highlight.NORMAL : StatusItem.Highlight.GOOD))));
             l.add(new StatusItem("Temperature", bt.temperature + " \u2103"));
         }

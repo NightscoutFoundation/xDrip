@@ -8,7 +8,6 @@ import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Delete;
 import com.activeandroid.query.Select;
 import com.activeandroid.util.SQLiteUtils;
-import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
@@ -22,10 +21,10 @@ import java.util.List;
 
 
 @Table(name = "PebbleMovement", id = BaseColumns._ID)
-public class PebbleMovement extends Model {
+public class StepCounter extends Model {
 
     private static boolean patched = false;
-    private final static String TAG = "PebbleMovement";
+    private final static String TAG = "StepCounter";
     private final static boolean d = false;
 
     @Expose
@@ -39,8 +38,12 @@ public class PebbleMovement extends Model {
 
     // patches and saves
     public Long saveit() {
-        fixUpTable();
-        return save();
+        try {
+            fixUpTable();
+            return save();
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public String toS() {
@@ -53,11 +56,11 @@ public class PebbleMovement extends Model {
 
     // static methods
 
-    public static PebbleMovement createEfficientRecord(long timestamp_ms, int data)
+    public static StepCounter createEfficientRecord(long timestamp_ms, int data)
     {
-        PebbleMovement pm = last();
+        StepCounter pm = last();
         if ((pm == null) || (data < pm.metric) || ((timestamp_ms - pm.timestamp) > (1000 * 30 * 5))) {
-            pm = new PebbleMovement();
+            pm = new StepCounter();
             pm.timestamp = timestamp_ms;
             if (d) UserError.Log.d(TAG,"Creating new record for timestamp: "+JoH.dateTimeText(timestamp_ms));
         } else {
@@ -70,10 +73,10 @@ public class PebbleMovement extends Model {
         return pm;
     }
 
-    public static PebbleMovement last() {
+    public static StepCounter last() {
         try {
             return new Select()
-                    .from(PebbleMovement.class)
+                    .from(StepCounter.class)
                     .orderBy("timestamp desc")
                     .executeSingle();
         } catch (android.database.sqlite.SQLiteException e) {
@@ -82,18 +85,18 @@ public class PebbleMovement extends Model {
         }
     }
 
-    public static List<PebbleMovement> latestForGraph(int number, double startTime) {
+    public static List<StepCounter> latestForGraph(int number, double startTime) {
         return latestForGraph(number, (long) startTime, Long.MAX_VALUE);
     }
 
-    public static List<PebbleMovement> latestForGraph(int number, long startTime) {
+    public static List<StepCounter> latestForGraph(int number, long startTime) {
         return latestForGraph(number, startTime, Long.MAX_VALUE);
     }
 
-    public static List<PebbleMovement> latestForGraph(int number, long startTime, long endTime) {
+    public static List<StepCounter> latestForGraph(int number, long startTime, long endTime) {
         try {
             return new Select()
-                    .from(PebbleMovement.class)
+                    .from(StepCounter.class)
                     .where("timestamp >= " + Math.max(startTime, 0))
                     .where("timestamp <= " + endTime)
                     .orderBy("timestamp asc") // warn asc!
@@ -106,10 +109,10 @@ public class PebbleMovement extends Model {
     }
 
     // expects pre-sorted in asc order?
-    public static List<PebbleMovement> deltaListFromMovementList(List<PebbleMovement> mList) {
+    public static List<StepCounter> deltaListFromMovementList(List<StepCounter> mList) {
         int last_metric = -1;
         int temp_metric = -1;
-        for (PebbleMovement pm : mList) {
+        for (StepCounter pm : mList) {
             // first item in list
             if (last_metric == -1) {
                 last_metric = pm.metric;
@@ -128,9 +131,9 @@ public class PebbleMovement extends Model {
         return mList;
     }
 
-    public static List<PebbleMovement> cleanup(int retention_days) {
+    public static List<StepCounter> cleanup(int retention_days) {
         return new Delete()
-                .from(PebbleMovement.class)
+                .from(StepCounter.class)
                 .where("timestamp < ?", JoH.tsl() - (retention_days * 86400000L))
                 .execute();
     }

@@ -16,25 +16,29 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.PowerManager;
 import android.os.Vibrator;
-import android.util.Log;
 import android.view.View;
 
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.Models.GlucoseData;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.PredictionData;
+import com.eveningoutpost.dexdrip.Models.LibreBlock;
+import com.eveningoutpost.dexdrip.Models.LibreOOPAlgorithm;
 import com.eveningoutpost.dexdrip.Models.ReadingData;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 // From LibreAlarm et al
+
+// TODO have we always checked checksum on this data? what about LibreAlarm path?
 
 public class NFCReaderX {
 
@@ -44,7 +48,6 @@ public class NFCReaderX {
     public static boolean used_nfc_successfully = false;
     private static final int MINUTE = 60000;
     private static NfcAdapter mNfcAdapter;
-    private static ReadingData mResult = new ReadingData(PredictionData.Result.ERROR_NO_NFC);
     private static boolean foreground_enabled = false;
     private static boolean tag_discovered = false;
     private static long last_tag_discovered = -1;
@@ -67,7 +70,7 @@ public class NFCReaderX {
     }
 
     public static boolean useNFC() {
-        return Home.getPreferencesBooleanDefaultFalse("use_nfc_scan") && (DexCollectionType.hasLibre());
+        return Pref.getBooleanDefaultFalse("use_nfc_scan") && (DexCollectionType.hasLibre());
     }
 
     @SuppressLint("NewApi")
@@ -92,15 +95,19 @@ public class NFCReaderX {
         if (!useNFC()) return;
 
         mNfcAdapter = NfcAdapter.getDefaultAdapter(context);
+        try {
+            if (mNfcAdapter == null) {
 
-        if (mNfcAdapter == null) {
+                JoH.static_toast_long("Phone has no NFC reader");
+                //finish();
+                return;
 
-            JoH.static_toast_long("Phone has no NFC reader");
-            //finish();
-            return;
-
-        } else if (!mNfcAdapter.isEnabled()) {
-            JoH.static_toast_long("NFC is not enabled");
+            } else if (!mNfcAdapter.isEnabled()) {
+                JoH.static_toast_long("NFC is not enabled");
+                return;
+            }
+        } catch (NullPointerException e) {
+            JoH.static_toast_long("Phone NFC is having problems!");
             return;
         }
 
@@ -205,6 +212,36 @@ public class NFCReaderX {
         }
     }
 
+    // returns true if checksum passed.
+    public static boolean HandleGoodReading(String tagId, byte[] data1) {
+
+        final boolean checksum_ok = JoH.LibreCrc(data1);
+        if (!checksum_ok) {
+            return false;
+        }
+
+        if (Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
+            long now = JoH.tsl();
+            // Save raw block record (we start from block 0)
+            LibreBlock.createAndSave(tagId, now, data1, 0);
+            LibreOOPAlgorithm.SendData(data1, now);
+        } else {
+            final ReadingData mResult = parseData(0, tagId, data1);
+            new Thread() {
+                @Override
+                public void run() {
+                    final PowerManager.WakeLock wl = JoH.getWakeLock("processTransferObject", 60000);
+                    try {
+                        LibreAlarmReceiver.processReadingDataTransferObject(new ReadingData.TransferObject(1, mResult));
+                        Home.staticRefreshBGCharts();
+                    } finally {
+                        JoH.releaseWakeLock(wl);
+                    }
+                }
+            }.start();
+        }
+        return true; // Checksum tests have passed.
+    }
 
     private static class NfcVReaderTask extends AsyncTask<Tag, Void, Tag> {
 
@@ -222,20 +259,16 @@ public class NFCReaderX {
 
         @Override
         protected void onPostExecute(Tag tag) {
+        	Log.d(TAG, "onPostExecute called");
             try {
                 if (tag == null) return;
                 if (!NFCReaderX.useNFC()) return;
                 if (succeeded) {
                     final String tagId = bytesToHexString(tag.getId());
-
-                    mResult = parseData(0, tagId, data);
-                    new Thread() {
-                        @Override
-                        public void run() {
-                            LibreAlarmReceiver.processReadingDataTransferObject(new ReadingData.TransferObject(1, mResult));
-                            Home.staticRefreshBGCharts();
-                        }
-                    }.start();
+                    boolean checksum_ok = HandleGoodReading(tagId, data);
+                    if(checksum_ok == false) {
+                        Log.e(TAG, "Read data but checksum is wrong");
+                    }
                 } else {
                     Log.d(TAG, "Scan did not succeed so ignoring buffer");
                 }
@@ -249,7 +282,7 @@ public class NFCReaderX {
                 Home.staticBlockUI(context, false);
             }
         }
-
+        
 
         @Override
         protected Tag doInBackground(Tag... params) {
@@ -277,7 +310,7 @@ public class NFCReaderX {
                         final byte[] uid = tag.getId();
 
                         try {
-                            final byte[] diag = JoH.hexStringToByteArray(Home.getPreferencesStringDefaultBlank("nfc_test_diagnostic"));
+                            final byte[] diag = JoH.hexStringToByteArray(Pref.getStringDefaultBlank("nfc_test_diagnostic"));
                             if ((diag != null) && (diag.length > 0)) {
                                 Log.d(TAG, "Diagnostic ->: " + HexDump.dumpHexString(diag, 0, diag.length).trim() + " len: " + diag.length);
                                 Long time = System.currentTimeMillis();
@@ -300,17 +333,17 @@ public class NFCReaderX {
                             }
                         } catch (Exception e) {
                             Log.e(TAG, "Exception in NFC Diagnostic: " + e);
-                            Home.setPreferencesString("nfc_test_diagnostic", "");
+                            Pref.setString("nfc_test_diagnostic", "");
                         }
 
-                        final boolean multiblock = Home.getPreferencesBoolean("use_nfc_multiblock", true);
-                        final boolean addressed = !Home.getPreferencesBoolean("use_nfc_any_tag", true);
+                        final boolean multiblock = Pref.getBoolean("use_nfc_multiblock", true);
+                        final boolean addressed = !Pref.getBoolean("use_nfc_any_tag", true);
                         // if multiblock mode
                         JoH.benchmark(null);
 
                         if (multiblock) {
                             final int correct_reply_size = addressed ? 28 : 25;
-                            for (int i = 0; i <= 40; i = i + 3) {
+                            for (int i = 0; i <= 43; i = i + 3) {
                                 final byte[] cmd;
                                 if (addressed) {
                                     cmd = new byte[]{0x60, 0x23, 0, 0, 0, 0, 0, 0, 0, 0, (byte) i, 0x02};
@@ -345,7 +378,7 @@ public class NFCReaderX {
                                     JoH.static_toast_short("NFC invalid data - try again");
                                     if (!addressed) {
                                         if (PersistentStore.incrementLong("nfc-address-failures") > 2) {
-                                            Home.setPreferencesBoolean("use_nfc_any_tag", false);
+                                            Pref.setBoolean("use_nfc_any_tag", false);
                                             JoH.static_toast_short("Turned off any-tag feature");
                                         }
                                     }
@@ -363,7 +396,7 @@ public class NFCReaderX {
                         } else {
                             // always addressed
                             final int correct_reply_size = 10;
-                            for (int i = 0; i <= 40; i++) {
+                            for (int i = 0; i < 43; i++) {
                                 final byte[] cmd = new byte[]{0x60, 0x20, 0, 0, 0, 0, 0, 0, 0, 0, (byte) i, 0};
                                 System.arraycopy(uid, 0, cmd, 2, 8);
                                 byte[] oneBlock;
@@ -459,6 +492,10 @@ public class NFCReaderX {
 
         long sensorStartTime = ourTime - sensorTime * MINUTE;
 
+        // option to use 13 bit mask
+        //final boolean thirteen_bit_mask = Pref.getBooleanDefaultFalse("testing_use_thirteen_bit_mask");
+        final boolean thirteen_bit_mask = true;
+
         ArrayList<GlucoseData> historyList = new ArrayList<>();
 
 
@@ -471,7 +508,7 @@ public class NFCReaderX {
             //       getGlucose(new byte[]{data[(i * 6 + 125)], data[(i * 6 + 124)]});
 
             glucoseData.glucoseLevelRaw =
-                    getGlucoseRaw(new byte[]{data[(i * 6 + 125)], data[(i * 6 + 124)]});
+                    getGlucoseRaw(new byte[]{data[(i * 6 + 125)], data[(i * 6 + 124)]}, thirteen_bit_mask);
 
             int time = Math.max(0, Math.abs((sensorTime - 3) / 15) * 15 - index * 15);
 
@@ -493,7 +530,7 @@ public class NFCReaderX {
             //         getGlucose(new byte[]{data[(i * 6 + 29)], data[(i * 6 + 28)]});
 
             glucoseData.glucoseLevelRaw =
-                    getGlucoseRaw(new byte[]{data[(i * 6 + 29)], data[(i * 6 + 28)]});
+                    getGlucoseRaw(new byte[]{data[(i * 6 + 29)], data[(i * 6 + 28)]}, thirteen_bit_mask);
             int time = Math.max(0, sensorTime - index);
 
             glucoseData.realDate = sensorStartTime + time * MINUTE;
@@ -503,12 +540,18 @@ public class NFCReaderX {
         }
 
 
-        return new ReadingData(null, trendList, historyList);
+        final ReadingData readingData = new ReadingData(null, trendList, historyList);
+        readingData.raw_data = data;
+        return readingData;
     }
 
 
-    private static int getGlucoseRaw(byte[] bytes) {
-        return ((256 * (bytes[0] & 0xFF) + (bytes[1] & 0xFF)) & 0x0FFF);
+    private static int getGlucoseRaw(byte[] bytes, boolean thirteen) {
+        if (thirteen) {
+            return ((256 * (bytes[0] & 0xFF) + (bytes[1] & 0xFF)) & 0x1FFF);
+        } else {
+            return ((256 * (bytes[0] & 0xFF) + (bytes[1] & 0xFF)) & 0x0FFF);
+        }
     }
 
     public static void vibrate(Context context, int pattern) {
@@ -520,7 +563,7 @@ public class NFCReaderX {
 
         final long[][] patterns = {{0, 150}, {0, 150, 70, 150}, {0, 2000}, {0, 1000}, {0, 100}};
 
-        if (Home.getPreferencesBooleanDefaultFalse("nfc_scan_vibrate")) {
+        if (Pref.getBooleanDefaultFalse("nfc_scan_vibrate")) {
             final Vibrator vibrate = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
             if ((vibrate == null) || (!vibrate.hasVibrator())) return;
             vibrate.cancel();
@@ -534,7 +577,7 @@ public class NFCReaderX {
     }
 
     public static void handleHomeScreenScanPreference(Context context) {
-        handleHomeScreenScanPreference(context, useNFC() && Home.getPreferencesBooleanDefaultFalse("nfc_scan_homescreen"));
+        handleHomeScreenScanPreference(context, useNFC() && Pref.getBooleanDefaultFalse("nfc_scan_homescreen"));
     }
 
     public static void handleHomeScreenScanPreference(Context context, boolean state) {
@@ -606,4 +649,20 @@ public class NFCReaderX {
             }, 1000);
         }
     }
+    
+    static public ReadingData getTrend(LibreBlock libreBlock) {
+        if(libreBlock.byte_start != 0 || libreBlock.byte_end < 344) {
+            Log.i(TAG, "libreBlock exists but does not have enough data " + libreBlock.timestamp);
+            return null;
+        }
+        ReadingData result = parseData(0, "", libreBlock.blockbytes);
+        if(result.trend.size() == 0 || result.trend.get(0).glucoseLevelRaw == 0) {
+            Log.i(TAG, "libreBlock exists but no trend data exists, or first value is zero " + libreBlock.timestamp);
+            return null;
+        }
+        
+        // TODO: verify checksum
+        return result;
+    }
+    
 }

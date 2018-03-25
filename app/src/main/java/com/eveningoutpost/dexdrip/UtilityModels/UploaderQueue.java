@@ -12,7 +12,6 @@ import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Delete;
 import com.activeandroid.query.Select;
 import com.activeandroid.util.SQLiteUtils;
-import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.BloodTest;
 import com.eveningoutpost.dexdrip.Models.Calibration;
@@ -146,10 +145,10 @@ public class UploaderQueue extends Model {
         UserError.Log.d(TAG, "new entry called");
         final UploaderQueue result = new UploaderQueue();
         result.bitfield_wanted = DEFAULT_UPLOAD_CIRCUITS
-                | (Home.getPreferencesBooleanDefaultFalse("cloud_storage_mongodb_enable") ? MONGO_DIRECT : 0)
-                | (Home.getPreferencesBooleanDefaultFalse("cloud_storage_api_enable") ? NIGHTSCOUT_RESTAPI : 0)
-                | (Home.getPreferencesBooleanDefaultFalse("cloud_storage_influxdb_enable") ? INFLUXDB_RESTAPI : 0)
-                | (Home.getPreferencesBooleanDefaultFalse("wear_sync") ? WATCH_WEARAPI : 0);
+                | (Pref.getBooleanDefaultFalse("cloud_storage_mongodb_enable") ? MONGO_DIRECT : 0)
+                | (Pref.getBooleanDefaultFalse("cloud_storage_api_enable") ? NIGHTSCOUT_RESTAPI : 0)
+                | (Pref.getBooleanDefaultFalse("cloud_storage_influxdb_enable") ? INFLUXDB_RESTAPI : 0)
+                | (Pref.getBooleanDefaultFalse("wear_sync") ? WATCH_WEARAPI : 0);
         if (result.bitfield_wanted == 0) return null; // no queue required
         result.timestamp = JoH.tsl();
         result.reference_id = obj.getId();
@@ -188,7 +187,7 @@ public class UploaderQueue extends Model {
         UserError.Log.d(TAG, "new entry called for watch");
         final UploaderQueue result = new UploaderQueue();
         result.bitfield_wanted = DEFAULT_UPLOAD_CIRCUITS
-                | (Home.getPreferencesBooleanDefaultFalse("wear_sync") ? WATCH_WEARAPI : 0);
+                | (Pref.getBooleanDefaultFalse("wear_sync") ? WATCH_WEARAPI : 0);
         if (result.bitfield_wanted == 0) return null; // no queue required
         result.timestamp = JoH.tsl();
         result.reference_id = obj.getId();
@@ -408,13 +407,13 @@ public class UploaderQueue extends Model {
                 }*/
         }
 
-        if (MongoSendTask.exception != null) {
-            l.add(new StatusItem("Exception", MongoSendTask.exception.toString(), StatusItem.Highlight.BAD, "long-press",
+        if (UploaderTask.exception != null) {
+            l.add(new StatusItem("Exception", UploaderTask.exception.toString(), StatusItem.Highlight.BAD, "long-press",
                     new Runnable() {
                         @Override
                         public void run() {
                             JoH.static_toast_long("Cleared error message");
-                            MongoSendTask.exception = null;
+                            UploaderTask.exception = null;
                         }
                     }));
         }
@@ -434,7 +433,7 @@ public class UploaderQueue extends Model {
 
 
         // enumerate status items for nightscout rest-api
-        if (Home.getPreferencesBooleanDefaultFalse("cloud_storage_api_enable")) {
+        if (Pref.getBooleanDefaultFalse("cloud_storage_api_enable")) {
             try {
 
                 /*if (NightscoutUploader.last_success_time > 0) {
@@ -445,7 +444,7 @@ public class UploaderQueue extends Model {
                     // Rebuild url cache
                     processedBaseURIs = new ArrayList<>();
                     processedBaseURInames = new ArrayList<>();
-                    final String baseURLSettings = Home.getPreferencesStringDefaultBlank("cloud_storage_api_base");
+                    final String baseURLSettings = Pref.getStringDefaultBlank("cloud_storage_api_base");
                     final ArrayList<String> baseURIs = new ArrayList<>();
 
                     for (String baseURLSetting : baseURLSettings.split(" ")) {

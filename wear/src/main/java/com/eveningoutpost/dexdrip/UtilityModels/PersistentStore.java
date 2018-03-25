@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 
@@ -32,6 +33,8 @@ public class PersistentStore {
     public static void init_prefs() {
         if (prefs == null) prefs = xdrip.getAppContext()
                 .getSharedPreferences(DATA_STORE_INTERNAL, Context.MODE_PRIVATE);
+
+
     }
 
     public static String getString(String name) {
@@ -96,4 +99,9 @@ public class PersistentStore {
         if (getLong(name)>0) setLong(name,0);
     }
 
+    @SuppressLint("ApplySharedPref")
+    public static void commit() {
+        init_prefs();
+        prefs.edit().commit();
+    }
 }

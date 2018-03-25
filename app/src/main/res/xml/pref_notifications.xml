@@ -76,6 +76,12 @@
                     android:summary="@string/suppress_alerts_after"
                     android:title="@string/suppress_alerts_after" />
 
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="use_notification_channels"
+                    android:summary="Use the Android 8+ notification channel feature"
+                    android:title="Notification Channels" />
+
             </PreferenceScreen>
 
 

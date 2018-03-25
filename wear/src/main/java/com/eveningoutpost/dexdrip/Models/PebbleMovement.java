@@ -20,7 +20,7 @@ import java.util.List;
  * Created by jamorham on 01/11/2016.
  */
 
-
+// TODO change classname to match phone
 @Table(name = "PebbleMovement", id = BaseColumns._ID)
 public class PebbleMovement extends Model {
 

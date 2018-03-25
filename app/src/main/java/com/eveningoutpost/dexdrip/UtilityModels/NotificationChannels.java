@@ -1,27 +1,33 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
 import android.annotation.TargetApi;
+import android.app.Notification;
 import android.app.NotificationChannel;
+import android.app.NotificationChannelGroup;
 import android.app.NotificationManager;
 import android.content.Context;
-import android.content.ContextWrapper;
-import android.os.Build;
-import android.support.v4.app.NotificationCompatSideChannelService;
-import android.util.Log;
+import android.media.AudioAttributes;
+import android.support.v4.app.NotificationCompat;
 
-import java.util.ArrayList;
+import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.xdrip;
+
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 /**
  * Created by jwoglom on 10/15/2017.
- *
+ * <p>
  * Contains setup for creation of notification channels, and constants for
  * channelId values used when creating notifications.
+ * <p>
+ * modified for dynamic channels by jamorham
  */
 
-public class NotificationChannels extends ContextWrapper {
+public class NotificationChannels {
     public static final String TAG = NotificationChannels.class.getSimpleName();
-    private NotificationManager notifManager;
+    private static HashMap<String, String> map;
 
     public static final String LOW_BRIDGE_BATTERY_CHANNEL = "lowBridgeBattery";
     public static final String LOW_TRANSMITTER_BATTERY_CHANNEL = "lowTransmitterBattery";
@@ -34,76 +40,163 @@ public class NotificationChannels extends ContextWrapper {
     public static final String BG_PREDICTED_LOW_CHANNEL = "bgPredictedLowChannel";
     public static final String BG_PERSISTENT_HIGH_CHANNEL = "bgPersistentHighChannel";
     public static final String CALIBRATION_CHANNEL = "calibrationChannel";
-    public static final String ONGOING_CHANNEL = "ongoingChannel";
+    //public static final String ONGOING_CHANNEL = "ongoingChannel";
 
-
-    @TargetApi(Build.VERSION_CODES.O)
-    public NotificationChannels(Context ctx) {
-        super(ctx);
-
-        if (Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.O) {
-            Log.d(TAG, "Notification channels not available on this sdk version. ("+Build.VERSION.SDK_INT+")");
-            return;
-        }
-
-        List<NotificationChannel> notifChannels = new ArrayList<>();
-        notifChannels.add(new NotificationChannel(
-                LOW_BRIDGE_BATTERY_CHANNEL,
-                "Low bridge battery",
-                NotificationManager.IMPORTANCE_DEFAULT));
-        notifChannels.add(new NotificationChannel(
-                LOW_TRANSMITTER_BATTERY_CHANNEL,
-                "Low transmitter battery",
-                NotificationManager.IMPORTANCE_DEFAULT));
-        notifChannels.add(new NotificationChannel(
-                NIGHTSCOUT_UPLOADER_CHANNEL,
-                "Nightscout Uploader",
-                NotificationManager.IMPORTANCE_DEFAULT));
-        notifChannels.add(new NotificationChannel(
-                PARAKEET_STATUS_CHANNEL,
-                "Parakeet Status",
-                NotificationManager.IMPORTANCE_DEFAULT));
-        notifChannels.add(new NotificationChannel(
-                REMINDER_CHANNEL,
-                "Reminders",
-                NotificationManager.IMPORTANCE_DEFAULT));
-        notifChannels.add(new NotificationChannel(
-                BG_ALERT_CHANNEL,
-                "Blood Glucose Alert",
-                NotificationManager.IMPORTANCE_DEFAULT));
-        notifChannels.add(new NotificationChannel(
-                BG_MISSED_ALERT_CHANNEL,
-                "BG Missed Readings",
-                NotificationManager.IMPORTANCE_DEFAULT));
-        notifChannels.add(new NotificationChannel(
-                BG_RISE_DROP_CHANNEL,
-                "BG Rise/Drop",
-                NotificationManager.IMPORTANCE_DEFAULT));
-        notifChannels.add(new NotificationChannel(
-                BG_PREDICTED_LOW_CHANNEL,
-                "BG Predicted Low",
-                NotificationManager.IMPORTANCE_DEFAULT));
-        notifChannels.add(new NotificationChannel(
-                BG_PERSISTENT_HIGH_CHANNEL,
-                "BG Persistent High",
-                NotificationManager.IMPORTANCE_DEFAULT));
-        notifChannels.add(new NotificationChannel(
-                CALIBRATION_CHANNEL,
-                "Calibration",
-                NotificationManager.IMPORTANCE_DEFAULT));
-        notifChannels.add(new NotificationChannel(
-                ONGOING_CHANNEL,
-                "Ongoing",
-                NotificationManager.IMPORTANCE_DEFAULT));
-
-        getNotifManager().createNotificationChannels(notifChannels);
-        Log.d(TAG, "Notification channels created.");
+    // get a localized string for each channel / group name
+    public static String getString(String id) {
+        if (map == null) initialize_name_map();
+        if (!map.containsKey(id)) return id;
+        return map.get(id);
     }
 
-    private NotificationManager getNotifManager() {
-        if (notifManager == null) {
-            notifManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+    // create string lookup map singleton
+    private static synchronized void initialize_name_map() {
+        if (map != null) return;
+        map = new HashMap<>();
+        map.put(LOW_BRIDGE_BATTERY_CHANNEL, xdrip.getAppContext().getString(R.string.low_bridge_battery));
+        map.put(LOW_TRANSMITTER_BATTERY_CHANNEL, xdrip.getAppContext().getString(R.string.transmitter_battery));
+        map.put(NIGHTSCOUT_UPLOADER_CHANNEL, "Nightscout");
+        map.put(PARAKEET_STATUS_CHANNEL, xdrip.getAppContext().getString(R.string.parakeet_related_alerts));
+        map.put(REMINDER_CHANNEL, xdrip.getAppContext().getString(R.string.reminders));
+        map.put(BG_ALERT_CHANNEL, xdrip.getAppContext().getString(R.string.glucose_alerts_settings));
+        map.put(BG_MISSED_ALERT_CHANNEL, xdrip.getAppContext().getString(R.string.missed_reading_alert));
+        map.put(BG_RISE_DROP_CHANNEL, xdrip.getAppContext().getString(R.string.bg_rising_fast));
+        map.put(BG_PREDICTED_LOW_CHANNEL, xdrip.getAppContext().getString(R.string.low_predicted));
+        map.put(BG_PERSISTENT_HIGH_CHANNEL, xdrip.getAppContext().getString(R.string.persistent_high_alert));
+        map.put(CALIBRATION_CHANNEL, xdrip.getAppContext().getString(R.string.calibration_alerts));
+    }
+
+
+    private static NotificationManager getNotifManager() {
+        return (NotificationManager) xdrip.getAppContext().getSystemService(Context.NOTIFICATION_SERVICE);
+    }
+
+    @TargetApi(26)
+    private static int myhashcode(NotificationChannel x) {
+
+        int result = x.getId() != null ? x.getId().hashCode() : 0;
+        //result = 31 * result + (getName() != null ? getName().hashCode() : 0);
+        //result = 31 * result + (getDescription() != null ? getDescription().hashCode() : 0);
+        //result = 31 * result + getImportance();
+        //result = 31 * result + (mBypassDnd ? 1 : 0);
+        //result = 31 * result + getLockscreenVisibility();
+        result = 31 * result + (x.getSound() != null ? x.getSound().hashCode() : 0);
+        //result = 31 * result + (x.mLights ? 1 : 0);
+        result = 31 * result + x.getLightColor();
+        result = 31 * result + Arrays.hashCode(x.getVibrationPattern());
+        //result = 31 * result + getUserLockedFields();
+        //result = 31 * result + (mVibrationEnabled ? 1 : 0);
+        //result = 31 * result + (mShowBadge ? 1 : 0);
+        //result = 31 * result + (isDeleted() ? 1 : 0);
+        //result = 31 * result + (getGroup() != null ? getGroup().hashCode() : 0);
+        //result = 31 * result + (getAudioAttributes() != null ? getAudioAttributes().hashCode() : 0);
+        //result = 31 * result + (isBlockableSystem() ? 1 : 0);
+        return result;
+
+    }
+
+    @TargetApi(26)
+    private static String my_text_hash(NotificationChannel x) {
+        String res = "";
+        if (x.getSound() != null) res += "\uD83C\uDFB5"; // 🎵
+        if (x.shouldVibrate()) res += "\uD83D\uDCF3"; // 📳
+        if (x.shouldShowLights()) res += "\uD83D\uDCA1"; // 💡
+        res = (res.equals("")) ? res : "  " + res;
+
+        int counter = 1;
+        while (counter < 10 && isSoundDifferent(x.getId() + res + ((counter > 1) ? counter : ""), x)) {
+            counter++;
         }
-        return notifManager;
+        if (counter != 1) res += "" + counter;
+        return res;
+
+    }
+
+    @TargetApi(26)
+    public static boolean isSoundDifferent(String id, NotificationChannel x) {
+        if (x.getSound() == null) return false; // this does not have a sound
+        final NotificationChannel c = getNotifManager().getNotificationChannel(id);
+        if (c == null) return false; // no channel with this id
+        if (c.getSound() == null)
+            return false; // this maybe will only happen if user disables sound so lets not create a new one in that case
+
+        final String original_sound = PersistentStore.getString("original-channel-sound-" + id);
+        if (original_sound.equals("")) {
+            PersistentStore.setString("original-channel-sound-" + id, x.getSound().toString());
+            return false; // no existing record so save the original and do nothing else
+        }
+        if (original_sound.equals(x.getSound().toString()))
+            return false; // its the same sound still
+        return true; // the sound has changed vs the original
+    }
+
+    @TargetApi(26)
+    public static void cleanAllNotificationChannels() {
+        // TODO this isn't right yet
+        List<NotificationChannel> channels = getNotifManager().getNotificationChannels();
+        for (NotificationChannel channel : channels) {
+            getNotifManager().deleteNotificationChannel(channel.getId());
+
+
+        }
+        List<NotificationChannelGroup> groups = getNotifManager().getNotificationChannelGroups();
+        for (NotificationChannelGroup group : groups) {
+            getNotifManager().deleteNotificationChannel(group.getId());
+        }
+
+    }
+
+    @TargetApi(26)
+    public static NotificationChannel getChan(NotificationCompat.Builder wip) {
+
+        final Notification temp = wip.build();
+        if (temp.getChannelId() == null) return null;
+
+        // create generic audio attributes
+        final AudioAttributes generic_audio = new AudioAttributes.Builder()
+                .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                .setContentType(AudioAttributes.CONTENT_TYPE_UNKNOWN)
+                .build();
+
+        // create notification channel for hashing purposes from the existing notification builder
+        NotificationChannel template = new NotificationChannel(
+                temp.getChannelId(),
+                getString(temp.getChannelId()),
+                NotificationManager.IMPORTANCE_DEFAULT);
+
+
+        // mirror the notification parameters in the channel
+        template.setGroup(temp.getChannelId());
+        template.setVibrationPattern(wip.mNotification.vibrate);
+        template.setSound(wip.mNotification.sound, generic_audio);
+        template.setLightColor(wip.mNotification.ledARGB);
+        if ((wip.mNotification.ledOnMS != 0) && (wip.mNotification.ledOffMS != 0))
+            template.enableLights(true); // weird how this doesn't work like vibration pattern
+        template.setDescription(temp.getChannelId() + " " + wip.hashCode());
+
+        // get a nice string to identify the hash
+        final String mhash = my_text_hash(template);
+
+        // create another notification channel using the hash because id is immutable
+        final NotificationChannel channel = new NotificationChannel(
+                template.getId() + mhash,
+                getString(temp.getChannelId()) + mhash,
+                NotificationManager.IMPORTANCE_DEFAULT);
+
+        // mirror the settings from the previous channel
+        channel.setSound(template.getSound(), generic_audio);
+        channel.setGroup(template.getGroup());
+        channel.setDescription(template.getDescription());
+        channel.setVibrationPattern(template.getVibrationPattern());
+        template.setLightColor(wip.mNotification.ledARGB);
+        if ((wip.mNotification.ledOnMS != 0) && (wip.mNotification.ledOffMS != 0))
+            template.enableLights(true); // weird how this doesn't work like vibration pattern
+        template.setDescription(temp.getChannelId() + " " + wip.hashCode());
+
+        // create a group to hold this channel if one doesn't exist or update text
+        getNotifManager().createNotificationChannelGroup(new NotificationChannelGroup(channel.getGroup(), getString(channel.getGroup())));
+        // create this channel if it doesn't exist or update text
+        getNotifManager().createNotificationChannel(channel);
+        return channel;
     }
 }

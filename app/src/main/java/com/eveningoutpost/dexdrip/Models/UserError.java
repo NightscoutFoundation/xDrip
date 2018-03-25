@@ -7,9 +7,8 @@ import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
-import com.bugfender.sdk.Bugfender;
-import com.eveningoutpost.dexdrip.Home;
-import com.eveningoutpost.dexdrip.xdrip;
+//import com.bugfender.sdk.Bugfender;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.google.gson.annotations.Expose;
 
 import java.util.Date;
@@ -60,7 +59,7 @@ public class UserError extends Model {
         this.message = message;
         this.timestamp = new Date().getTime();
         this.save();
-        if (xdrip.useBF) {
+       /* if (xdrip.useBF) {
             switch (severity) {
                 case 2:
                 case 3:
@@ -74,7 +73,7 @@ public class UserError extends Model {
                     Bugfender.d(shortError, message);
                     break;
             }
-        }
+        }*/
     }
 
     public UserError(String shortError, String message) {
@@ -267,7 +266,7 @@ public class UserError extends Model {
         static Hashtable <String, Integer> extraTags;
         ExtraLogTags () {
             extraTags = new Hashtable <String, Integer>();
-            String extraLogs = Home.getPreferencesStringDefaultBlank("extra_tags_for_logging");
+            String extraLogs = Pref.getStringDefaultBlank("extra_tags_for_logging");
             readPreference(extraLogs);
         }
         

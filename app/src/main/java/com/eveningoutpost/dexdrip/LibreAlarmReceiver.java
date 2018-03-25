@@ -10,13 +10,17 @@ import android.os.PowerManager;
 import android.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Forecast;
 import com.eveningoutpost.dexdrip.Models.GlucoseData;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.LibreBlock;
+import com.eveningoutpost.dexdrip.Models.LibreOOPAlgorithm;
 import com.eveningoutpost.dexdrip.Models.ReadingData;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Intents;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.google.gson.Gson;
@@ -38,8 +42,8 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
 
     private static final String TAG = "jamorham librereceiver";
     private static final boolean debug = false;
-    private static final boolean d = false;
-    private static final boolean use_raw = true;
+    private static final boolean d = true;
+    private static final boolean use_raw_ = true;
     private static final double segmentation_timeslice = Constants.MINUTE_IN_MS * 4.5;
     private static SharedPreferences prefs;
     private static long oldest = -1;
@@ -51,7 +55,7 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
     private static long timeShiftNearest = -1;
 
     public static void clearSensorStats() {
-        Home.setPreferencesInt("nfc_sensor_age", 0); // reset for nfc sensors
+        Pref.setInt("nfc_sensor_age", 0); // reset for nfc sensors
         sensorAge = 0;
     }
 
@@ -140,7 +144,7 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
                                 final String data = bundle.getString("data");
                                 final int bridge_battery = bundle.getInt("bridge_battery");
                                 if (bridge_battery > 0) {
-                                    Home.setPreferencesInt("bridge_battery", bridge_battery);
+                                    Pref.setInt("bridge_battery", bridge_battery);
                                     CheckBridgeBattery.checkBridgeBattery();
                                 }
                                 try {
@@ -168,28 +172,47 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
     }
 
     public static void processReadingDataTransferObject(ReadingData.TransferObject object) {
+    	Log.i(TAG, "Data that was recieved from librealarm is " + HexDump.dumpHexString(object.data.raw_data));
+    	// Save raw block record (we start from block 0)
+    	long now = JoH.tsl();
+        LibreBlock.createAndSave("LibreAlarm", now, object.data.raw_data, 0);
+
+        if(Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
+        	if(object.data.raw_data == null) {
+        		Log.e(TAG, "Please update LibreAlarm to use OOP algorithm");
+        		JoH.static_toast_long("Please update LibreAlarm to use OOP algorithm");
+        		return;
+        	}
+        	LibreOOPAlgorithm.SendData(object.data.raw_data, now);
+        	return;
+        }
+        CalculateFromDataTransferObject(object, use_raw_);
+    }
+        
+    public static void CalculateFromDataTransferObject(ReadingData.TransferObject object, boolean use_raw) {
+    	
         // insert any recent data we can
         final List<GlucoseData> mTrend = object.data.trend;
         if (mTrend != null) {
             Collections.sort(mTrend);
             final long thisSensorAge = mTrend.get(mTrend.size() - 1).sensorTime;
-            sensorAge = Home.getPreferencesInt("nfc_sensor_age", 0);
+            sensorAge = Pref.getInt("nfc_sensor_age", 0);
             if (thisSensorAge > sensorAge) {
                 sensorAge = thisSensorAge;
-                Home.setPreferencesInt("nfc_sensor_age", (int) sensorAge);
-                Home.setPreferencesBoolean("nfc_age_problem", false);
+                Pref.setInt("nfc_sensor_age", (int) sensorAge);
+                Pref.setBoolean("nfc_age_problem", false);
                 Log.d(TAG, "Sensor age advanced to: " + thisSensorAge);
             } else if (thisSensorAge == sensorAge) {
                 Log.wtf(TAG, "Sensor age has not advanced: " + sensorAge);
                 JoH.static_toast_long("Sensor clock has not advanced!");
-                Home.setPreferencesBoolean("nfc_age_problem", true);
+                Pref.setBoolean("nfc_age_problem", true);
                 return; // do not try to insert again
             } else {
                 Log.wtf(TAG, "Sensor age has gone backwards!!! " + sensorAge);
                 JoH.static_toast_long("Sensor age has gone backwards!!");
                 sensorAge = thisSensorAge;
-                Home.setPreferencesInt("nfc_sensor_age", (int) sensorAge);
-                Home.setPreferencesBoolean("nfc_age_problem", true);
+                Pref.setInt("nfc_sensor_age", (int) sensorAge);
+                Pref.setBoolean("nfc_age_problem", true);
             }
             if (d)
                 Log.d(TAG, "Oldest cmp: " + JoH.dateTimeText(oldest_cmp) + " Newest cmp: " + JoH.dateTimeText(newest_cmp));
@@ -210,7 +233,7 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
                     if (use_raw) {
                         createBGfromGD(gd, false); // not quick for recent
                     } else {
-                        BgReading.bgReadingInsertFromInt(gd.glucoseLevel, gd.realDate, false);
+                        BgReading.bgReadingInsertFromInt(gd.glucoseLevel, gd.realDate, true);
                     }
                 }
             } else {
@@ -226,7 +249,7 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
                 final List<Double> polyyList = new ArrayList<Double>();
                 for (GlucoseData gd : mHistory) {
                     if (d)
-                        Log.d(TAG, "history : " + JoH.dateTimeText(gd.realDate) + " " + gd.glucose(true));
+                        Log.d(TAG, "history : " + JoH.dateTimeText(gd.realDate) + " " + gd.glucose(false));
                     polyxList.add((double) gd.realDate);
                     if (use_raw) {
                         polyyList.add((double) gd.glucoseLevelRaw);

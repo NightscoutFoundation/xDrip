@@ -10,10 +10,10 @@ import android.util.Log;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.SensorSanity;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
-import com.eveningoutpost.dexdrip.UtilityModels.Constants;
-import com.eveningoutpost.dexdrip.UtilityModels.ValidateRaw;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.calibrations.CalibrationAbstract;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
@@ -42,7 +42,7 @@ public class BestGlucose {
         private Boolean stale = null;
         private Double highMark = null;
         private Double lowMark = null;
-
+        public boolean doMgDl = true; // mgdl/mmol
         public double mgdl = -1;    // displayable mgdl figure
         public double unitized_value = -1; // in local units
         public double delta_mgdl = 0; // displayable delta mgdl figure
@@ -140,6 +140,8 @@ public class BestGlucose {
         final boolean doMgdl = (prefs.getString("units", "mgdl").equals("mgdl"));
         final boolean is_follower = Home.get_follower();
 
+        dg.doMgDl = doMgdl;
+
         List<BgReading> last_2 = BgReading.latest(2);
 
         final BgReading lastBgReading = BgReading.last(is_follower);
@@ -170,7 +172,7 @@ public class BestGlucose {
         dg.timestamp = lastBgReading.timestamp;
 
         // if we are actively using a plugin, get the glucose calculation from there
-        if ((plugin != null) && ((pcalibration = plugin.getCalibrationData()) != null) && (Home.getPreferencesBoolean("display_glucose_from_plugin", false))) {
+        if ((plugin != null) && ((pcalibration = plugin.getCalibrationData()) != null) && (Pref.getBoolean("display_glucose_from_plugin", false))) {
             dg.plugin_name = plugin.getAlgorithmName();
             Log.d(TAG, "Using plugin: " + dg.plugin_name);
             dg.from_plugin = true;
@@ -261,7 +263,7 @@ public class BestGlucose {
 
         // fail safe for excessive raw data values - this may want
         // to be moved one day
-        if (!ValidateRaw.isRawAcceptable(lastBgReading.raw_data)) {
+        if (!SensorSanity.isRawValueSane(lastBgReading.raw_data)) {
             dg.delta_arrow = "!";
             dg.unitized = ">!?";
             dg.mgdl = 0;
@@ -282,8 +284,8 @@ public class BestGlucose {
     protected static boolean compensateNoise() {
         return (BgGraphBuilder.last_noise > BgGraphBuilder.NOISE_TRIGGER
                 || (BgGraphBuilder.last_noise > BgGraphBuilder.NOISE_TRIGGER_ULTRASENSITIVE
-                        && Home.getPreferencesBooleanDefaultFalse("engineering_mode")
-                        && Home.getPreferencesBooleanDefaultFalse("bg_compensate_noise_ultrasensitive")
+                        && Pref.getBooleanDefaultFalse("engineering_mode")
+                        && Pref.getBooleanDefaultFalse("bg_compensate_noise_ultrasensitive")
                 ))
                 && (BgGraphBuilder.best_bg_estimate > 0)
                 && (BgGraphBuilder.last_bg_estimate > 0)

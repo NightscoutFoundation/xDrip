@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent" tools:context=".Home" tools:deviceIds="wear_square"
     android:background="@color/black"
@@ -156,6 +157,7 @@
             android:padding="1dp">
 
             <LinearLayout
+
                 android:orientation="horizontal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -212,17 +214,51 @@
 
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/watch_time"
-            android:textSize="35sp"
-            android:text="12:00"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:textColor="#FFFFFF"
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAlignment="center"
-            android:layout_gravity="center_horizontal|top" />
+            android:layout_gravity="center_horizontal">
+            <TextView
+                android:id="@+id/watch_date"
+                android:textSize="14sp"
+                android:text="ddd mm/dd"
+                android:textColor="#FFFFFF"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:singleLine="false"
+                android:paddingEnd="5dp"
+                android:layout_gravity="center_horizontal|center_vertical"
+                android:gravity="bottom|start" />
+            <TextView
+                android:id="@+id/watch_time"
+                android:textSize="35sp"
+                android:text="12:00"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:textColor="#FFFFFF"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:layout_gravity="center_horizontal|top" />
+
+            <Button
+                android:id="@+id/heartButton"
+                android:layout_width="20dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginStart="10dp"
+
+                android:background="@android:color/transparent"
+                android:drawableTop="@drawable/heart_pulse_white_18dp"
+                android:gravity="end"
+                android:text="123"
+                android:textAlignment="viewEnd"
+                android:textAllCaps="false"
+                android:textSize="10sp" />
+
+        </LinearLayout>
 
         <lecho.lib.hellocharts.view.LineChartView
             android:id="@+id/chart"
@@ -233,5 +269,5 @@
             android:gravity="center_horizontal" />
 
     </LinearLayout>
-
+    
 </RelativeLayout>

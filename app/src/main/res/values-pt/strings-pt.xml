@@ -470,7 +470,7 @@
 	<string name="high_alert">Alerta Hiper</string>
 	<string name="low_alert">Alerta Hipo</string>
 	<string name="xbridge_battery">Bateria xBridge</string>
-	<string name="limitter_battery">Bateria LimiTTer</string>
+	<string name="limitter_battery">Bateria Libre</string>
 	<string name="parakeet_battery">Bateria Parakeet</string>
 	<string name="after_calibration_rewrite_history">Após a calibração, ajuste recente gráfico cru para suave para a nova calibração</string>
 	<string name="rewrite_history">Re-escrever História</string>

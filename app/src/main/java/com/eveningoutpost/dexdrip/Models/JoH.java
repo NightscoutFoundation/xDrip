@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlarmManager;
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
@@ -56,12 +55,15 @@ import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.UtilityModels.XdripNotificationCompat;
 import com.eveningoutpost.dexdrip.utils.BestGZIPOutputStream;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.common.primitives.Bytes;
 import com.google.common.primitives.UnsignedInts;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.ByteArrayInputStream;
@@ -71,6 +73,8 @@ import java.io.FileOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.URLEncoder;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -113,6 +117,9 @@ public class JoH {
         return qs(x, 2);
     }
 
+    // singletons to avoid repeated allocation
+    private static DecimalFormatSymbols dfs;
+    private static DecimalFormat df;
     public static String qs(double x, int digits) {
 
         if (digits == -1) {
@@ -126,12 +133,27 @@ public class JoH {
             }
         }
 
-        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
-        symbols.setDecimalSeparator('.');
-        DecimalFormat df = new DecimalFormat("#", symbols);
-        df.setMaximumFractionDigits(digits);
-        df.setMinimumIntegerDigits(1);
-        return df.format(x);
+        if (dfs == null) {
+            final DecimalFormatSymbols local_dfs = new DecimalFormatSymbols();
+            local_dfs.setDecimalSeparator('.');
+            dfs = local_dfs; // avoid race condition
+        }
+
+        final DecimalFormat this_df;
+        // use singleton if on ui thread otherwise allocate new as DecimalFormat is not thread safe
+        if (Thread.currentThread().getId() == 1) {
+            if (df == null) {
+                final DecimalFormat local_df = new DecimalFormat("#", dfs);
+                local_df.setMinimumIntegerDigits(1);
+                df = local_df; // avoid race condition
+            }
+            this_df = df;
+        } else {
+            this_df = new DecimalFormat("#", dfs);
+        }
+
+        this_df.setMaximumFractionDigits(digits);
+        return this_df.format(x);
     }
 
     public static double ts() {
@@ -140,7 +162,8 @@ public class JoH {
 
     // TODO can we optimize this with System.currentTimeMillis ?
     public static long tsl() {
-        return new Date().getTime();
+        //return new Date().getTime();
+        return System.currentTimeMillis();
     }
 
     public static long msSince(long when) {
@@ -316,6 +339,28 @@ public class JoH {
         return input.substring(0, 1).toUpperCase() + input.substring(1).toLowerCase();
     }
 
+    public static boolean isSamsung() {
+        return Build.MANUFACTURER.toLowerCase().contains("samsung");
+    }
+
+    private static final String BUGGY_SAMSUNG_ENABLED = "buggy-samsung-enabled";
+    public static void persistentBuggySamsungCheck() {
+        if (!buggy_samsung) {
+           if (JoH.isSamsung() && PersistentStore.getLong(BUGGY_SAMSUNG_ENABLED) > 4) {
+               buggy_samsung = true;
+               UserError.Log.d(TAG,"Enabling buggy samsung mode due to historical pattern");
+           }
+        }
+    }
+
+    public static void setBuggySamsungEnabled() {
+        if (!buggy_samsung) {
+            JoH.buggy_samsung = true;
+            PersistentStore.incrementLong(BUGGY_SAMSUNG_ENABLED);
+        }
+    }
+
+
     public static class DecimalKeyListener extends DigitsKeyListener {
         private final char[] acceptedCharacters =
                 new char[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
@@ -406,7 +451,7 @@ public class JoH {
         } else {
             rate_time = rateLimits.get(name);
         }
-        if ((rate_time > 0) && (time_now - rate_time) < (seconds * 1000)) {
+        if ((rate_time > 0) && (time_now - rate_time) < (seconds * 1000L)) {
             Log.d(TAG, name + " rate limited: " + seconds + " seconds");
             return false;
         }
@@ -419,7 +464,7 @@ public class JoH {
     // return true if below rate limit
     public static synchronized boolean ratelimit(String name, int seconds) {
         // check if over limit
-        if ((rateLimits.containsKey(name)) && (JoH.tsl() - rateLimits.get(name) < (seconds * 1000))) {
+        if ((rateLimits.containsKey(name)) && (JoH.tsl() - rateLimits.get(name) < (seconds * 1000L))) {
             Log.d(TAG, name + " rate limited: " + seconds + " seconds");
             return false;
         }
@@ -522,6 +567,18 @@ public class JoH {
         }.getType());
     }
 
+    private static Gson gson_instance;
+    public static Gson defaultGsonInstance() {
+     if (gson_instance == null) {
+         gson_instance = new GsonBuilder()
+                 .excludeFieldsWithoutExposeAnnotation()
+                 //.registerTypeAdapter(Date.class, new DateTypeAdapter())
+                 // .serializeSpecialFloatingPointValues()
+                 .create();
+     }
+     return gson_instance;
+    }
+
     public static String hourMinuteString() {
         // Date date = new Date();
         // SimpleDateFormat sd = new SimpleDateFormat("HH:mm");
@@ -600,7 +657,7 @@ public class JoH {
 
     public static PowerManager.WakeLock getWakeLock(final String name, int millis) {
         final PowerManager pm = (PowerManager) xdrip.getAppContext().getSystemService(Context.POWER_SERVICE);
-        PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, name);
+        final PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, name);
         wl.acquire(millis);
         if (debug_wakelocks) Log.d(TAG, "getWakeLock: " + name + " " + wl.toString());
         return wl;
@@ -609,7 +666,13 @@ public class JoH {
     public static void releaseWakeLock(PowerManager.WakeLock wl) {
         if (debug_wakelocks) Log.d(TAG, "releaseWakeLock: " + wl.toString());
         if (wl == null) return;
-        if (wl.isHeld()) wl.release();
+        if (wl.isHeld()) {
+            try {
+                wl.release();
+            } catch (Exception e) {
+                Log.e(TAG, "Error releasing wakelock: " + e);
+            }
+        }
     }
 
     public static PowerManager.WakeLock fullWakeLock(final String name, long millis) {
@@ -620,6 +683,15 @@ public class JoH {
         return wl;
     }
 
+    public static void fullDatabaseReset() {
+        try {
+            clearCache();
+            ActiveAndroid.dispose();
+            ActiveAndroid.initialize(xdrip.getAppContext());
+        } catch (Exception e) {
+            Log.e(TAG,"Error restarting active android db");
+        }
+    }
 
     public static void clearCache() {
         try {
@@ -788,7 +860,11 @@ public class JoH {
             builder.setMessage(message);
             builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
+                    try {
+                        dialog.dismiss();
+                    } catch (Exception e) {
+                        //
+                    }
                     if (runnable != null) {
                         runOnUiThreadDelayed(runnable, 10);
                     }
@@ -844,6 +920,10 @@ public class JoH {
         }
     }
 
+    public static void startService(Class c) {
+        xdrip.getAppContext().startService(new Intent(xdrip.getAppContext(), c));
+    }
+
     public static void goFullScreen(boolean fullScreen, View decorView) {
 
         if (fullScreen) {
@@ -882,7 +962,7 @@ public class JoH {
                 height, Bitmap.Config.ARGB_8888);
 
         final Canvas canvas = new Canvas(bitmap);
-        if (Home.getPreferencesBooleanDefaultFalse(SHOW_STATISTICS_PRINT_COLOR)) {
+        if (Pref.getBooleanDefaultFalse(SHOW_STATISTICS_PRINT_COLOR)) {
             Paint paint = new Paint();
             paint.setColor(Color.WHITE);
             paint.setStyle(Paint.Style.FILL);
@@ -901,7 +981,7 @@ public class JoH {
             final Canvas canvasf = new Canvas(bitmapf);
 
             Paint paint = new Paint();
-            if (Home.getPreferencesBooleanDefaultFalse(SHOW_STATISTICS_PRINT_COLOR)) {
+            if (Pref.getBooleanDefaultFalse(SHOW_STATISTICS_PRINT_COLOR)) {
                 paint.setColor(Color.WHITE);
                 paint.setStyle(Paint.Style.FILL);
                 canvasf.drawRect(0, 0, width, offset, paint);
@@ -1042,7 +1122,7 @@ public class JoH {
         final NotificationManager mNotifyMgr = (NotificationManager) xdrip.getAppContext().getSystemService(Context.NOTIFICATION_SERVICE);
         // if (!onetime) mNotifyMgr.cancel(notificationId);
 
-        mNotifyMgr.notify(notificationId, mBuilder.build());
+        mNotifyMgr.notify(notificationId, XdripNotificationCompat.build(mBuilder));
     }
 
     private static NotificationCompat.Builder notificationBuilder(String title, String content, PendingIntent intent, String channelId) {
@@ -1287,6 +1367,14 @@ public class JoH {
         return map;
     }
 
+    public static void threadSleep(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            //
+        }
+    }
+
     public static ByteBuffer bArrayAsBuffer(byte[] bytes) {
         final ByteBuffer bb = ByteBuffer.allocate(bytes.length);
         bb.put(bytes);
@@ -1299,6 +1387,8 @@ public class JoH {
         crc.update(bytes);
         return crc.getValue();
     }
+
+
 
     public static byte[] bchecksum(byte[] bytes) {
         final long c = checksum(bytes);
@@ -1313,5 +1403,85 @@ public class JoH {
         crc.update(bytes, 0, bytes.length - 4);
         final long buffer_crc = UnsignedInts.toLong(ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).getInt(bytes.length - 4));
         return buffer_crc == crc.getValue();
+    }
+
+    public static int parseIntWithDefault(String number, int radix, int defaultVal) {
+        try {
+            return Integer.parseInt(number, radix);
+       } catch (NumberFormatException e) {
+           Log.e(TAG, "Error parsing integer number = " + number + " radix = " + radix);
+           return defaultVal;
+       }
+    }
+
+    public static double roundDouble(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException("Invalid decimal places");
+        BigDecimal bd = new BigDecimal(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
+    }
+    
+    
+    private final static long[] crc16table = {
+            0, 4489, 8978, 12955, 17956, 22445, 25910, 29887, 35912,
+            40385, 44890, 48851, 51820, 56293, 59774, 63735, 4225, 264,
+            13203, 8730, 22181, 18220, 30135, 25662, 40137, 36160, 49115,
+            44626, 56045, 52068, 63999, 59510, 8450, 12427, 528, 5017,
+            26406, 30383, 17460, 21949, 44362, 48323, 36440, 40913, 60270,
+            64231, 51324, 55797, 12675, 8202, 4753, 792, 30631, 26158,
+            21685, 17724, 48587, 44098, 40665, 36688, 64495, 60006, 55549,
+            51572, 16900, 21389, 24854, 28831, 1056, 5545, 10034, 14011,
+            52812, 57285, 60766, 64727, 34920, 39393, 43898, 47859, 21125,
+            17164, 29079, 24606, 5281, 1320, 14259, 9786, 57037, 53060,
+            64991, 60502, 39145, 35168, 48123, 43634, 25350, 29327, 16404,
+            20893, 9506, 13483, 1584, 6073, 61262, 65223, 52316, 56789,
+            43370, 47331, 35448, 39921, 29575, 25102, 20629, 16668, 13731,
+            9258, 5809, 1848, 65487, 60998, 56541, 52564, 47595, 43106,
+            39673, 35696, 33800, 38273, 42778, 46739, 49708, 54181, 57662,
+            61623, 2112, 6601, 11090, 15067, 20068, 24557, 28022, 31999,
+            38025, 34048, 47003, 42514, 53933, 49956, 61887, 57398, 6337,
+            2376, 15315, 10842, 24293, 20332, 32247, 27774, 42250, 46211,
+            34328, 38801, 58158, 62119, 49212, 53685, 10562, 14539, 2640,
+            7129, 28518, 32495, 19572, 24061, 46475, 41986, 38553, 34576,
+            62383, 57894, 53437, 49460, 14787, 10314, 6865, 2904, 32743,
+            28270, 23797, 19836, 50700, 55173, 58654, 62615, 32808, 37281,
+            41786, 45747, 19012, 23501, 26966, 30943, 3168, 7657, 12146,
+            16123, 54925, 50948, 62879, 58390, 37033, 33056, 46011, 41522,
+            23237, 19276, 31191, 26718, 7393, 3432, 16371, 11898, 59150,
+            63111, 50204, 54677, 41258, 45219, 33336, 37809, 27462, 31439,
+            18516, 23005, 11618, 15595, 3696, 8185, 63375, 58886, 54429,
+            50452, 45483, 40994, 37561, 33584, 31687, 27214, 22741, 18780,
+            15843, 11370, 7921, 3960 };
+
+    // first two bytes = crc16 included in data
+    static long computeCRC16(byte[] data, int start, int size){
+        long crc = 0xffff;
+        for (int i = start + 2; i < start + size; i++) {
+            crc = ((crc >> 8) ^ crc16table[(int)(crc ^   (data[i] & 0xFF) ) & 0xff]);
+        }
+        
+        long reverseCrc = 0;
+        for (int i=0; i <16; i++) {
+            reverseCrc = (reverseCrc << 1) | (crc & 1);
+            crc >>= 1;
+        }
+        return reverseCrc;
+    }
+
+    static boolean CheckCRC16(byte[] data, int start, int size) {
+        long crc = computeCRC16(data, start, size);
+        return crc == ((data[start+1]& 0xFF) * 256 + (data[start] & 0xff)); 
+    }
+    
+    public static boolean LibreCrc(byte[] data) {
+        if(data.length < 344) {
+            Log.e(TAG, "Must have at least 344 bytes for libre data");
+            return false;
+        }
+        boolean cheksum_ok = CheckCRC16(data, 0 ,24);
+        cheksum_ok &= CheckCRC16(data, 24 ,296);
+        cheksum_ok &= CheckCRC16(data, 320 ,24);
+        return cheksum_ok;
+        
     }
 }

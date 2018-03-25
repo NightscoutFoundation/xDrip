@@ -3,6 +3,8 @@ package com.eveningoutpost.dexdrip.Services;
 import android.app.Service;
 import android.bluetooth.BluetoothDevice;
 
+import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.google.android.gms.wearable.DataMap;
 
 /**
@@ -10,6 +12,18 @@ import com.google.android.gms.wearable.DataMap;
  */
 
 public abstract class G5BaseService extends Service {
+
+    public static final String G5_FIRMWARE_MARKER = "g5-firmware-";
+
+    public static final String G5_BATTERY_MARKER = "g5-battery-";
+    public static final String G5_BATTERY_LEVEL_MARKER = "g5-battery-level-";
+    public static final String G5_BATTERY_FROM_MARKER = "g5-battery-from";
+
+    public static final String G5_BATTERY_WEARABLE_SEND = "g5-battery-wearable-send";
+
+    protected static final int LOW_BATTERY_WARNING_LEVEL = Pref.getStringToInt("g5-battery-warning-level", 300);
+
+    public static boolean getBatteryStatusNow = false;
 
     protected static String lastState = "Not running";
     protected static String lastStateWatch = "Not running";
@@ -44,9 +58,22 @@ public abstract class G5BaseService extends Service {
         return bondState;
     }
 
-    public static boolean isRunning() {
-        return lastState.equals("Not Running") || lastState.contains("Stop") ? false : true;
+    private static boolean runningStringCheck(String lastStateCheck) {
+        return lastStateCheck.equals("Not Running") || lastStateCheck.contains("Stop") ? false : true;
     }
 
+    public static boolean isRunning() {
+        return runningStringCheck(lastState);
+    }
+    public static boolean isWatchRunning() {
+        return runningStringCheck(lastStateWatch);
+    }
 
+    public static void resetTransmitterBatteryStatus() {
+        final String transmitterId = Pref.getString("dex_txid", "NULL");
+        PersistentStore.setString(G5_BATTERY_MARKER + transmitterId, "");
+        PersistentStore.setLong(G5_BATTERY_FROM_MARKER + transmitterId, 0);
+        PersistentStore.setLong(G5_BATTERY_LEVEL_MARKER + transmitterId, 0);
+        PersistentStore.commit();
+    }
 }

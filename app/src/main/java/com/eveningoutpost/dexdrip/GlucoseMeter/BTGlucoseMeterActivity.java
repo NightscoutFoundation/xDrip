@@ -25,11 +25,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.BluetoothGlucoseMeter;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.utils.ListActivityWithMenu;
 import com.eveningoutpost.dexdrip.utils.LocationHelper;
 
@@ -130,8 +130,8 @@ public class BTGlucoseMeterActivity extends ListActivityWithMenu {
                         builder.setPositiveButton("Disconnect", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
-                                if (Home.getPreferencesStringDefaultBlank("selected_bluetooth_meter_address").equals(device.address)) {
-                                    Home.setPreferencesString("selected_bluetooth_meter_address", "");
+                                if (Pref.getStringDefaultBlank("selected_bluetooth_meter_address").equals(device.address)) {
+                                    Pref.setString("selected_bluetooth_meter_address", "");
                                     mLeDeviceListAdapter.changed();
                                     JoH.static_toast_long("Disconnected!");
                                     BluetoothGlucoseMeter.start_service(null);
@@ -189,7 +189,7 @@ public class BTGlucoseMeterActivity extends ListActivityWithMenu {
 
     private void check_and_enable_bluetooth() {
         if (!bluetooth_manager.getAdapter().isEnabled()) {
-            if (Home.getPreferencesBoolean("automatically_turn_bluetooth_on", true)) {
+            if (Pref.getBoolean("automatically_turn_bluetooth_on", true)) {
                 JoH.setBluetoothEnabled(getApplicationContext(), true);
                 Toast.makeText(this, "Trying to turn Bluetooth on", Toast.LENGTH_LONG).show();
             } else {
@@ -361,7 +361,7 @@ public class BTGlucoseMeterActivity extends ListActivityWithMenu {
             MyBluetoothDevice device = mLeDevices.get(i);
             final String deviceName = device.name;
 
-            if (Home.getPreferencesStringWithDefault("selected_bluetooth_meter_address", "").equals(device.address)) {
+            if (Pref.getString("selected_bluetooth_meter_address", "").equals(device.address)) {
                 viewHolder.deviceName.setTextColor(Color.parseColor("#ff99dd00"));
             } else {
                 viewHolder.deviceName.setTextColor(Color.WHITE);

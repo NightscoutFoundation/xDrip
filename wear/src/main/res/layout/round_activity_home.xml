@@ -217,19 +217,53 @@
 
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/watch_time"
-            android:textSize="30sp"
-            android:text="12:00"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:textColor="#FFFFFF"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAlignment="center"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="-2dp"
-            android:layout_marginBottom="-3dp" />
+        <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:layout_gravity="center_horizontal">
+
+            <TextView
+                android:id="@+id/watch_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal|center_vertical"
+                android:gravity="bottom|start"
+                android:paddingEnd="5dp"
+                android:singleLine="false"
+                android:text="ddd mm/dd"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/watch_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="-3dp"
+                android:layout_marginTop="-2dp"
+                android:text="12:00"
+                android:textAlignment="center"
+                android:textColor="#FFFFFF"
+                android:textSize="30sp" />
+
+            <Button
+                android:id="@+id/heartButton"
+                android:layout_width="20dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginStart="10dp"
+                android:background="@android:color/transparent"
+                android:drawableTop="@drawable/heart_pulse_white_18dp"
+                android:gravity="end"
+                android:text="123"
+                android:textAlignment="viewEnd"
+                android:textAllCaps="false"
+                android:textSize="10sp" />
+        </LinearLayout>
 
         <lecho.lib.hellocharts.view.LineChartView
             android:id="@+id/chart"

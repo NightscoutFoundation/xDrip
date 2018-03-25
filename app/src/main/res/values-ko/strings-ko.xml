@@ -456,7 +456,7 @@
 	<string name="high_alert">고혈당 알림</string>
 	<string name="low_alert">저혈당 알림</string>
 	<string name="xbridge_battery">xBridge 배터리</string>
-	<string name="limitter_battery">LimiTTer 배터리</string>
+	<string name="limitter_battery">Libre 배터리</string>
 	<string name="parakeet_battery">Parakeet 배터리</string>
 	<string name="after_calibration_rewrite_history">보정 후 새로운 보정이 적절하게 맞춰지기 위해서 원래 그래프를 조정합니다.</string>
 	<string name="rewrite_history">과거 혈당 다시 쓰기</string>

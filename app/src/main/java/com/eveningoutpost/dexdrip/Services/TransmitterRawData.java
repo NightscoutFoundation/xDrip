@@ -1,5 +1,8 @@
 package com.eveningoutpost.dexdrip.Services;
 import java.util.Date;
+
+import com.eveningoutpost.dexdrip.Models.JoH;
+import com.google.gson.annotations.Expose;
 import com.mongodb.BasicDBObject;
 /**
  * Created by John Costik on 6/7/14.
@@ -7,22 +10,36 @@ import com.mongodb.BasicDBObject;
 public class TransmitterRawData {
 
 
+    @Expose
     private long _id;
 
+    @Expose
     public String Id;
+    @Expose
     public int TransmissionId;
+    @Expose
     public String TransmitterId;
+    @Expose
     public int RawValue;
+    @Expose
     public int FilteredValue;
+    @Expose
     public int BatteryLife;
+    @Expose
     public int ReceivedSignalStrength;
+    @Expose
     public long CaptureDateTime;
+    @Expose
     public int Uploaded;
+    @Expose
     public int UploadAttempts;
+    @Expose
     public int UploaderBatteryLife;
     // When sending set this value to the relative time...
     // The time between the capture and now...
+    @Expose
     public long RelativeTime;
+    @Expose
     public String GeoLocation;
 
     public int getTransmissionId() {
@@ -117,8 +134,10 @@ public class TransmitterRawData {
         return RelativeTime;
     }
 
-    public TransmitterRawData(){
 
+    @Override
+    public String toString() {
+      return JoH.defaultGsonInstance().toJson(this);
     }
 /*
     public TransmitterRawData(String id, String raw, String filter, String battery, String rssi, int uploaderBattery){

@@ -23,7 +23,9 @@ import com.eveningoutpost.dexdrip.UtilityModels.CalibrationSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
+import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -35,7 +37,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import static com.eveningoutpost.dexdrip.UtilityModels.Constants.STALE_CALIBRATION_CUT_OFF;
+import static com.eveningoutpost.dexdrip.Models.BgReading.isDataSuitableForDoubleCalibration;
 import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.newFingerStickData;
 
 
@@ -268,7 +270,7 @@ public class Calibration extends Model {
         final List<BgReading> bgReadings = BgReading.latest_by_size(3);
 
         // don't allow initial calibration if data would be stale
-            if ((bgReadings == null) || (bgReadings.size() != 3 || (JoH.msSince(bgReadings.get(2).timestamp) > STALE_CALIBRATION_CUT_OFF))) {
+            if ((bgReadings == null) || (bgReadings.size() != 3) || !isDataSuitableForDoubleCalibration() ){
             UserError.Log.wtf(TAG, "Did not find 3 readings for initial calibration - aborting");
             JoH.static_toast_long("Not enough recent sensor data! - cancelling!");
             return;
@@ -277,6 +279,14 @@ public class Calibration extends Model {
 
         BgReading bgReading1 = bgReadings.get(0);
         BgReading bgReading2 = bgReadings.get(1);
+
+        if (!SensorSanity.isRawValueSane(bgReading1.raw_data) || (!SensorSanity.isRawValueSane(bgReading2.raw_data))) {
+            final String msg = "Sensor raw data is outside sane range! Cannot calibrate: " + bgReading1.raw_data + " " + bgReading2.raw_data;
+            UserError.Log.wtf(TAG, msg);
+            JoH.static_toast_long(msg);
+            return;
+        }
+
         BgReading highBgReading;
         BgReading lowBgReading;
         double higher_bg = Math.max(bg1, bg2);
@@ -517,53 +527,59 @@ public class Calibration extends Model {
                 bgReading = BgReading.getForPreciseTimestamp(new Date().getTime() - ((timeoffset - estimatedInterstitialLagSeconds) * 1000 ), (15 * 60 * 1000));
             }
             if (bgReading != null) {
-                calibration.sensor = sensor;
-                calibration.bg = bg;
-                calibration.check_in = false;
-                calibration.timestamp = new Date().getTime() - (timeoffset * 1000); //  potential historical bg readings
-                calibration.raw_value = bgReading.raw_data;
-                calibration.adjusted_raw_value = bgReading.age_adjusted_raw_value;
-                calibration.sensor_uuid = sensor.uuid;
-                calibration.slope_confidence = Math.min(Math.max(((4 - Math.abs((bgReading.calculated_value_slope) * 60000)) / 4), 0), 1);
+                if (SensorSanity.isRawValueSane(bgReading.raw_data, DexCollectionType.getDexCollectionType())) {
+                    calibration.sensor = sensor;
+                    calibration.bg = bg;
+                    calibration.check_in = false;
+                    calibration.timestamp = new Date().getTime() - (timeoffset * 1000); //  potential historical bg readings
+                    calibration.raw_value = bgReading.raw_data;
+                    calibration.adjusted_raw_value = bgReading.age_adjusted_raw_value;
+                    calibration.sensor_uuid = sensor.uuid;
+                    calibration.slope_confidence = Math.min(Math.max(((4 - Math.abs((bgReading.calculated_value_slope) * 60000)) / 4), 0), 1);
 
-                double estimated_raw_bg = BgReading.estimated_raw_bg(new Date().getTime());
-                calibration.raw_timestamp = bgReading.timestamp;
-                if (Math.abs(estimated_raw_bg - bgReading.age_adjusted_raw_value) > 20) {
-                    calibration.estimate_raw_at_time_of_calibration = bgReading.age_adjusted_raw_value;
-                } else {
-                    calibration.estimate_raw_at_time_of_calibration = estimated_raw_bg;
-                }
-                calibration.distance_from_estimate = Math.abs(calibration.bg - bgReading.calculated_value);
-                if (!note_only) {
-                    calibration.sensor_confidence = Math.max(((-0.0018 * bg * bg) + (0.6657 * bg) + 36.7505) / 100, 0);
-                } else {
-                    calibration.sensor_confidence = 0; // exclude from calibrations but show on graph
-                    calibration.slope_confidence = note_only_marker; // this is a bit ugly
-                    calibration.slope = 0;
-                    calibration.intercept = 0;
-                }
-                calibration.sensor_age_at_time_of_estimation = calibration.timestamp - sensor.started_at;
-                calibration.uuid = UUID.randomUUID().toString();
-                calibration.save();
+                    double estimated_raw_bg = BgReading.estimated_raw_bg(new Date().getTime());
+                    calibration.raw_timestamp = bgReading.timestamp;
+                    if (Math.abs(estimated_raw_bg - bgReading.age_adjusted_raw_value) > 20) {
+                        calibration.estimate_raw_at_time_of_calibration = bgReading.age_adjusted_raw_value;
+                    } else {
+                        calibration.estimate_raw_at_time_of_calibration = estimated_raw_bg;
+                    }
+                    calibration.distance_from_estimate = Math.abs(calibration.bg - bgReading.calculated_value);
+                    if (!note_only) {
+                        calibration.sensor_confidence = Math.max(((-0.0018 * bg * bg) + (0.6657 * bg) + 36.7505) / 100, 0);
+                    } else {
+                        calibration.sensor_confidence = 0; // exclude from calibrations but show on graph
+                        calibration.slope_confidence = note_only_marker; // this is a bit ugly
+                        calibration.slope = 0;
+                        calibration.intercept = 0;
+                    }
+                    calibration.sensor_age_at_time_of_estimation = calibration.timestamp - sensor.started_at;
+                    calibration.uuid = UUID.randomUUID().toString();
+                    calibration.save();
 
-                if (!note_only) {
-                    bgReading.calibration = calibration;
-                    bgReading.calibration_flag = true;
-                    bgReading.save();
-                }
+                    if (!note_only) {
+                        bgReading.calibration = calibration;
+                        bgReading.calibration_flag = true;
+                        bgReading.save();
+                    }
 
-                if ((!is_follower) && (!note_only)) {
-                    BgSendQueue.handleNewBgReading(bgReading, "update", context);
-                    // TODO probably should add a more fine grained prefs option in future
-                    calculate_w_l_s(prefs.getBoolean("infrequent_calibration", false));
-                    CalibrationSendQueue.addToQueue(calibration, context);
-                    BgReading.pushBgReadingSyncToWatch(bgReading, false);
-                    adjustRecentBgReadings(adjustPast ? 30 : 2);
-                    context.startService(new Intent(context, Notifications.class));
-                    Calibration.requestCalibrationIfRangeTooNarrow();
-                    newFingerStickData();
+                    if ((!is_follower) && (!note_only)) {
+                        BgSendQueue.handleNewBgReading(bgReading, "update", context);
+                        // TODO probably should add a more fine grained prefs option in future
+                        calculate_w_l_s(prefs.getBoolean("infrequent_calibration", false));
+                        CalibrationSendQueue.addToQueue(calibration, context);
+                        BgReading.pushBgReadingSyncToWatch(bgReading, false);
+                        adjustRecentBgReadings(adjustPast ? 30 : 2);
+                        context.startService(new Intent(context, Notifications.class));
+                        Calibration.requestCalibrationIfRangeTooNarrow();
+                        newFingerStickData();
+                    } else {
+                        Log.d(TAG, "Follower mode or note so not processing calibration deeply");
+                    }
                 } else {
-                    Log.d(TAG, "Follower mode or note so not processing calibration deeply");
+                    final String msg = "Sensor data fails sanity test - Cannot Calibrate! raw:" + bgReading.raw_data;
+                    UserError.Log.e(TAG, msg);
+                    JoH.static_toast_long(msg);
                 }
             } else {
                 // we couldn't get a reading close enough to the calibration timestamp
@@ -683,6 +699,18 @@ public class Calibration extends Model {
                 Log.d(TAG, "Calculated Calibration Slope: " + calibration.slope);
                 Log.d(TAG, "Calculated Calibration intercept: " + calibration.intercept);
 
+                // sanity check result
+                if (Double.isInfinite(calibration.slope)
+                        ||(Double.isNaN(calibration.slope))
+                        ||(Double.isInfinite(calibration.intercept))
+                        ||(Double.isNaN(calibration.intercept))) {
+                    calibration.sensor_confidence = 0;
+                    calibration.slope_confidence = 0;
+                    Home.toaststaticnext("Got invalid impossible slope calibration!");
+                    calibration.save(); // Save nulled record, lastValid should protect from bad calibrations
+                    newFingerStickData();
+                }
+
                 if ((calibration.slope == 0) && (calibration.intercept == 0)) {
                     calibration.sensor_confidence = 0;
                     calibration.slope_confidence = 0;
@@ -703,7 +731,7 @@ public class Calibration extends Model {
     private static SlopeParameters getSlopeParameters() {
 
         if (CollectionServiceStarter.isLimitter()) {
-            if (Home.getPreferencesBooleanDefaultFalse("use_non_fixed_li_parameters")) {
+            if (Pref.getBooleanDefaultFalse("use_non_fixed_li_parameters")) {
                 return new LiParametersNonFixed();
             } else {
                 return new LiParameters();
@@ -711,7 +739,7 @@ public class Calibration extends Model {
         }
         // open question about parameters used with LibreAlarm
 
-        if (Home.getPreferencesBooleanDefaultFalse("engineering_mode") && Home.getPreferencesBooleanDefaultFalse("old_school_calibration_mode")) {
+        if (Pref.getBooleanDefaultFalse("engineering_mode") && Pref.getBooleanDefaultFalse("old_school_calibration_mode")) {
             JoH.static_toast_long("Using old pre-2017 calibration mode!");
             return new DexOldSchoolParameters();
         }
@@ -830,7 +858,7 @@ public class Calibration extends Model {
                         bgReading.filtered_calculated_value = newYvalue;
                     }
                     bgReading.calculated_value = newYvalue;
-                    BgReading.updateCalculatedValue(bgReading);
+                    BgReading.updateCalculatedValueToWithinMinMax(bgReading);
                     bgReading.save();
                     BgReading.pushBgReadingSyncToWatch(bgReading, false);
                 }
@@ -1243,6 +1271,7 @@ public class Calibration extends Model {
                 cal.invalidate();
             }
         }
+        JoH.clearCache();
         String msg = "Deleted all calibrations for sensor";
         Log.ueh(TAG, msg);
         JoH.static_toast_long(msg);

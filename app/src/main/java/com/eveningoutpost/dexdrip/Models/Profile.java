@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileEditor;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileItem;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -137,20 +138,20 @@ public class Profile {
     }
 
     public static void validateTargetRange() {
-        final double default_target_glucose = tolerantParseDouble(Home.getPreferencesStringWithDefault("plus_target_range", Double.toString(5.5 / scale_factor)));
-        if (default_target_glucose > tolerantParseDouble(Home.getPreferencesStringWithDefault("highValue", Double.toString(5.5 / scale_factor)))) {
-            Home.setPreferencesString("plus_target_range", JoH.qs(default_target_glucose * Constants.MGDL_TO_MMOLL, 1));
+        final double default_target_glucose = tolerantParseDouble(Pref.getString("plus_target_range", Double.toString(5.5 / scale_factor)));
+        if (default_target_glucose > tolerantParseDouble(Pref.getString("highValue", Double.toString(5.5 / scale_factor)))) {
+            Pref.setString("plus_target_range", JoH.qs(default_target_glucose * Constants.MGDL_TO_MMOLL, 1));
             UserError.Log.i(TAG, "Converted initial value of target glucose to mmol");
         }
     }
 
     static double getTargetRangeInMmol(double when) {
-        // return tolerantParseDouble(Home.getPreferencesStringWithDefault("plus_target_range",Double.toString(5.5 / scale_factor)));
+        // return tolerantParseDouble(Home.getString("plus_target_range",Double.toString(5.5 / scale_factor)));
         return getTargetRangeInUnits(when) / scale_factor;
     }
 
     public static double getTargetRangeInUnits(double when) {
-        return tolerantParseDouble(Home.getPreferencesStringWithDefault("plus_target_range", Double.toString(5.5 / scale_factor)));
+        return tolerantParseDouble(Pref.getString("plus_target_range", Double.toString(5.5 / scale_factor)));
         //return getTargetRangeInMmol(when) * scale_factor; // TODO deal with rounding errors here? (3 decimal places?)
     }
 

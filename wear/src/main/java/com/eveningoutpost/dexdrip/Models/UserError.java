@@ -3,11 +3,11 @@ package com.eveningoutpost.dexdrip.Models;
 import android.os.AsyncTask;
 import android.provider.BaseColumns;
 
-import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
@@ -25,6 +25,7 @@ import java.util.List;
 public class UserError extends PlusModel {
 
     private final static String TAG = UserError.class.getSimpleName();
+    private static boolean patched = false;
 
     private static final String schema[] = {
             "CREATE TABLE UserErrors (_id INTEGER PRIMARY KEY AUTOINCREMENT, message TEXT, severity INTEGER, shortError TEXT, timestamp REAL)",
@@ -96,7 +97,7 @@ public class UserError extends PlusModel {
     }
 
     public static void cleanup(long timestamp) {
-        fixUpTable(schema);
+        patched = fixUpTable(schema, patched);
         List<UserError> userErrors = new Select()
                 .from(UserError.class)
                 .where("timestamp < ?", timestamp)
@@ -292,7 +293,7 @@ public class UserError extends PlusModel {
         static Hashtable <String, Integer> extraTags;
         ExtraLogTags () {
             extraTags = new Hashtable <String, Integer>();
-            String extraLogs = Home.getPreferencesStringDefaultBlank("extra_tags_for_logging");
+            String extraLogs = Pref.getStringDefaultBlank("extra_tags_for_logging");
             readPreference(extraLogs);
         }
         

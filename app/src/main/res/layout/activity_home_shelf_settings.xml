@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+        <variable name="vs" type="com.eveningoutpost.dexdrip.ui.BaseShelf"/>
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+
+        <Switch
+            android:id="@+id/pswitch0"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="@{safeUnbox(vs.included[`source_wizard`])}"
+            android:onClick="@{() -> vs.ptoggle(`source_wizard`)}"
+            android:text="Source Wizard Button" />
+        <Switch
+            android:id="@+id/pswitch1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="@{safeUnbox(vs.included[`time_buttons`])}"
+            android:onClick="@{() -> vs.ptoggle(`time_buttons`)}"
+            android:text="Show Time Buttons" />
+        <Switch
+            android:id="@+id/pswitch2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="@{safeUnbox(vs.included[`chart_preview`])}"
+            android:onClick="@{() -> vs.ptoggle(`chart_preview`)}"
+            android:text="Show Chart Preview" />
+    </LinearLayout>
+
+</layout>

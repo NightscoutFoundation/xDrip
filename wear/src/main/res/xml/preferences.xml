@@ -116,6 +116,20 @@
             app:wear_iconOff="@drawable/settings_off"
             app:wear_iconOn="@drawable/settings_on" />
         <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="showDate"
+            android:title="@string/pref_show_date"
+            android:summary="@string/pref_summary_show_date"
+            app:wear_iconOff="@drawable/settings_off"
+            app:wear_iconOn="@drawable/settings_on" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="overrideLocale"
+            android:title="@string/pref_override_locale"
+            android:summary="@string/pref_summary_override_locale"
+            app:wear_iconOff="@drawable/settings_off"
+            app:wear_iconOn="@drawable/settings_on" />
+        <CheckBoxPreference
             android:defaultValue="false"
             android:key="show_toasts"
             android:title="@string/pref_show_toasts"
@@ -137,6 +151,13 @@
             android:entries="@array/step_delay_time"
             android:entryValues="@array/step_delay_time_values"
             android:defaultValue="10" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="showHeartRate"
+            android:title="Heart Rate"
+            android:summary="Show last BPM"
+            app:wear_iconOff="@drawable/settings_off"
+            app:wear_iconOn="@drawable/settings_on" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="showExternalStatus"

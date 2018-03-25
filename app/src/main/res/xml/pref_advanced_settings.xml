@@ -78,13 +78,7 @@
                 android:key="show_wear_treatments"
                 android:summary="@string/pref_summary_show_treatments"
                 android:title="@string/pref_show_treatments" />
-            <SwitchPreference
-                android:defaultValue="true"
-                android:key="use_pebble_health"
-                android:summary="@string/pref_summary_use_wear_health"
-                android:switchTextOff="@string/short_off_text_for_switches"
-                android:switchTextOn="@string/short_on_text_for_switches"
-                android:title="@string/pref_use_wear_health" />
+
         </PreferenceCategory>
         </PreferenceScreen>
         <PreferenceScreen android:title="@string/pebble_integration">
@@ -179,6 +173,11 @@
                 android:key="pebble_vibrate_no_bluetooth"
                 android:summary="@string/vibrate_watch_to_alert_no_bluetooth"
                 android:title="@string/vibrate_when_no_bluetooth" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="pebble_show_bwp"
+                android:summary="Show Bolus Wizard Preview Insulin value on watch when appropriate"
+                android:title="Display BWP Insulin" />
             <EditTextPreference
                 android:defaultValue="99"
                 android:dependency="broadcast_to_pebble"
@@ -191,13 +190,6 @@
                 android:key="pebble_special_text"
                 android:summary="@string/message_to_display_when_bgl_hits"
                 android:title="@string/text_to_display_when_hitting_special_value" />
-            <SwitchPreference
-                android:defaultValue="true"
-                android:key="use_pebble_health"
-                android:summary="Collect and display Step counter and Heart rate when available"
-                android:switchTextOff="@string/short_off_text_for_switches"
-                android:switchTextOn="@string/short_on_text_for_switches"
-                android:title="Use Pebble Health Data" />
         </PreferenceCategory>
 
         <PreferenceCategory
@@ -214,11 +206,93 @@
             </Preference>
         </PreferenceCategory>
         </PreferenceScreen>
+
+    <PreferenceScreen
+        icon="@drawable/ic_heart_pulse_grey600_24dp"
+        android:title="Smartwatch Sensors">
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="use_pebble_health"
+            android:summary="Collect and display Step counter and Heart rate when available"
+            android:switchTextOff="@string/short_off_text_for_switches"
+            android:switchTextOn="@string/short_on_text_for_switches"
+            android:title="Use Health Data" />
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="use_wear_heartrate"
+            android:summary="Activate heart rate sensor if available"
+            android:switchTextOff="@string/short_off_text_for_switches"
+            android:switchTextOn="@string/short_on_text_for_switches"
+            android:title="Heart Rate Sensor" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="smooth_heartrate"
+            android:summary="Smooth heart rate graph"
+            android:dependency="use_wear_heartrate"
+            />
+    </PreferenceScreen>
     </PreferenceScreen>
 
     <PreferenceCategory
         android:key="other_category"
         android:title="@string/other_settings">
+        <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+            android:icon="@drawable/ic_speak_reading_grey600_48dp"
+            android:key="xdrip_speak_readings_settings"
+            android:summary="@string/if_the_phone_has_text_to_speech"
+            android:title="@string/speak_readings">
+            <SwitchPreference
+                android:defaultValue="false"
+                android:key="bg_to_speech"
+                android:summary="@string/if_the_phone_has_text_to_speech"
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
+                android:title="@string/speak_readings" />
+            <SwitchPreference
+                android:defaultValue="false"
+                android:key="speak_alerts"
+                android:summary="@string/Speak_Alerts_Summary"
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
+                android:title="@string/Speak_Alerts" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:dependency="bg_to_speech"
+                android:key="bg_to_speech_trend"
+                android:summary="@string/Speak_trend_arrow_name" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:dependency="bg_to_speech"
+                android:key="bg_to_speech_repeat_twice"
+                android:summary="@string/speak_glucose_twice" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="speak_twice"
+                android:summary="@string/Speak_everything_twice" />
+            <EditTextPreference
+                android:defaultValue=""
+                android:key="speak_readings_custom_language"
+                android:summary="@string/spoken_readings_locale" />
+            <SeekBarPreference
+                android:key="speech_speed"
+                android:title="@string/Speech_speed"
+                android:summary=""
+                android:max="20"
+                android:min="2"
+                android:defaultValue="7" />
+            <SeekBarPreference
+                android:key="speech_pitch"
+                android:title="@string/Speech_pitch"
+                android:summary=""
+                android:max="20"
+                android:min="4"
+                android:defaultValue="12" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="bg_to_speech_shortcut"
+                android:summary="@string/short_speak_readings_shortcut"
+                android:title="@string/speak_readings_shortcut" />
+        </PreferenceScreen>
         <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
             android:icon="@drawable/ic_open_in_app_grey600_48dp"
             android:key="xdrip_intrer_app_settings"
@@ -237,6 +311,15 @@
                 android:key="broadcast_data_use_best_glucose"
                 android:summary="@string/use_plugins_for_brodcast"
                 android:title="@string/send_display_glucose" />
+            <ListPreference
+                android:defaultValue="200"
+                android:dependency="broadcast_data_through_intents"
+                android:entries="@array/NoiseLevelBlock"
+                android:entryValues="@array/NoiseLevelBlockValues"
+                android:key="noise_block_level"
+                android:shouldDisableView="true"
+                android:summary="@string/level_at_which_noisy_data_should_not_be_broadcast"
+                android:title="@string/noise_blocking" />
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:dependency="broadcast_data_through_intents"
@@ -257,6 +340,13 @@
                 android:switchTextOff="@string/short_off_text_for_switches"
                 android:switchTextOn="@string/short_on_text_for_switches"
                 android:title="Accept Calibrations" />
+            <SwitchPreference
+                android:defaultValue="false"
+                android:key="xdrip_webservice"
+                android:summary="Operate a local web server for interacting with Fitbit Ionic etc"
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
+                android:title="xDrip Web Service" />
         </PreferenceScreen>
         <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
             android:key="xdrip_less_common_settings"
@@ -270,34 +360,7 @@
                     android:targetClass="com.eveningoutpost.dexdrip.ErrorsActivity"
                     android:targetPackage="@string/local_target_package" />
             </Preference>
-            <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-                android:icon="@drawable/ic_speak_reading_grey600_48dp"
-                android:key="xdrip_speak_readings_settings"
-                android:summary="@string/if_the_phone_has_text_to_speech"
-                android:title="@string/speak_readings">
-                <SwitchPreference
-                    android:defaultValue="false"
-                    android:key="bg_to_speech"
-                    android:summary="@string/if_the_phone_has_text_to_speech"
-                    android:switchTextOff="@string/short_off_text_for_switches"
-                    android:switchTextOn="@string/short_on_text_for_switches"
-                    android:title="@string/speak_readings" />
-                <EditTextPreference
-                    android:defaultValue=""
-                    android:dependency="bg_to_speech"
-                    android:key="speak_readings_custom_language"
-                    android:summary="@string/spoken_readings_locale" />
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:dependency="bg_to_speech"
-                    android:key="bg_to_speech_repeat_twice"
-                    android:summary="@string/speak_glucose_twice" />
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:key="bg_to_speech_shortcut"
-                    android:summary="@string/short_speak_readings_shortcut"
-                    android:title="@string/speak_readings_shortcut" />
-            </PreferenceScreen>
+
             <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
                 android:key="xdrip_extra_status_line"
                 android:summary="@string/options_for_extra_line"
@@ -495,6 +558,12 @@
                     android:key="use_non_fixed_li_parameters"
                     android:summary="Enable to allow variable slopes with Libre collection methods"
                     android:title="Non-fixed Libre slopes" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="bypass_calibration_quality_check"
+                    android:summary="Allow initial calibration even if we don't have good enough data. Beware could result in inaccurate calibration!"
+                    android:title="Bypass quality check" />
+
 
             </PreferenceScreen>
 
@@ -652,6 +721,14 @@
                     android:key="external_blukon_algorithm"
                     android:summary="@string/use_external_blukon_algorithm_summary"
                     android:title="@string/use_external_blukon_algorithm" />
+                
+	    <CheckBoxPreference
+                    android:enabled="false"
+                    android:defaultValue="false"
+                    android:dependency="external_blukon_algorithm"
+                    android:key="calibrate_external_libre_algorithm"
+                    android:summary="@string/calibrate_external_libre_algorithm_summary"
+                    android:title="@string/calibrate_external_libre_algorithm_title" />
                 
             </PreferenceScreen>
             <PreferenceCategory

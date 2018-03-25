@@ -22,8 +22,7 @@ import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
 
 
 public class CalibrationOverride extends ActivityWithMenu {
-        Button button;
-    public static final String menu_name = "Override Calibration";
+    Button button;
     private static final String TAG = "OverrideCalib";
 
     @Override
@@ -40,7 +39,7 @@ public class CalibrationOverride extends ActivityWithMenu {
 
     @Override
     public String getMenuName() {
-        return menu_name;
+        return getString(R.string.override_calibration);
     }
 
     public void addListenerOnButton() {

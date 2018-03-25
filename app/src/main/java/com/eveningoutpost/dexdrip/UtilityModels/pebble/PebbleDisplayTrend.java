@@ -34,6 +34,7 @@ public class PebbleDisplayTrend extends PebbleDisplayAbstract {
 
     private final static String TAG = PebbleDisplayTrend.class.getSimpleName();
 
+   /*
     public static final int ICON_KEY = 0;
     public static final int BG_KEY = 1;
     public static final int RECORD_TIME_KEY = 2;
@@ -49,6 +50,7 @@ public class PebbleDisplayTrend extends PebbleDisplayAbstract {
     public static final int SYNC_KEY = 1000;
     public static final int PLATFORM_KEY = 1001;
     public static final int VERSION_KEY = 1002;
+    */
 
     public static final int CHUNK_SIZE = 100;
 

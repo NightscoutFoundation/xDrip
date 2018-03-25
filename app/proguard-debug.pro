@@ -26,4 +26,4 @@
 -keep class sun.misc.** { *; }
 -dontwarn sun.misc.**
 
--dontnote
+-dontnote **

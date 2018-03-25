@@ -602,7 +602,7 @@ public class AlertType extends Model {
                 .create();
         String output =  gson.toJson(alerts);
         Log.e(TAG, "Created the string " + output);
-        prefs.edit().putString("saved_alerts", output).commit();
+        prefs.edit().putString("saved_alerts", output).commit(); // always leave this as commit
 
         return true;
 

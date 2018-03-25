@@ -74,6 +74,7 @@
     <string name="location_permission_not_approved">&lt;br&gt;&lt;br&gt;&lt;br&gt;WatchFace requires Location permission. Click on this WatchFace or visit Settings &gt; Permissions to approve.</string>
     <string name="title_activity_location_permission">Location Permission Activity</string>
     <string name="location_permission_text">WatchFace requires Location access.</string>
+    <string name="sensor_permission_text">WatchFace requires Sensor access.</string>
     <string name="app_name_permissions">.xdripwear</string>
     <string name="notify_title">Location Permission</string>
     <string name="notify_text">xDrip requires Location access permission</string>
@@ -106,6 +107,10 @@
     <string name="pref_summary_show_toasts">Show Steps and Extra Status toast popup messages</string>
     <string name="pref_use_24HourFormat">24 HR Format</string>
     <string name="pref_summary_use_24HourFormat">Format time using 24 Hour Format</string>
+    <string name="pref_show_date">Show Date</string>
+    <string name="pref_summary_show_date">Show Date</string>
+    <string name="pref_override_locale">Override Locale</string>
+    <string name="pref_summary_override_locale">Override watch with phone locale</string>
     <string name="pref_show_steps">Show Steps</string>
     <string name="pref_summary_show_steps">Show Step Counter</string>
     <string name="pref_show_external_status">Show Status</string>
@@ -197,4 +202,5 @@
     <string name="notify_table_size">Table %1$s contains %2$d entries.</string>
     <string name="blukon">Blucon</string>
     <string name="ok">OK</string>
+    <string name="enable_permission">Enable Permission</string>
 </resources>

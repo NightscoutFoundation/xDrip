@@ -468,7 +468,7 @@
 	<string name="high_alert">Allarme Valore ALTO</string>
 	<string name="low_alert">Allarme Valore BASSO</string>
 	<string name="xbridge_battery">Batteria xBridge</string>
-	<string name="limitter_battery">Batteria LimiTTer</string>
+	<string name="limitter_battery">Batteria Libre</string>
 	<string name="parakeet_battery">Batteria Parakeet</string>
 	<string name="after_calibration_rewrite_history">Dopo aver calibrato, regola il grafico dei dati grezzi recenti in modo da regolarlo con la nuovo valore.</string>
 	<string name="rewrite_history">Riscrivi Storico</string>
@@ -491,4 +491,11 @@
 	<string name="sliding_24_hour_window">Sliding Window</string>
 	<string name="split">APRI</string>
 	<string name="delete">Cancella</string>
+	<string name="DoubleDown">veloce caduta</string>
+	<string name="SingleDown">falling</string>
+	<string name="FortyFiveDown">leggermente decrescente</string>
+	<string name="Flat">coerente</string>
+	<string name="FortyFiveUp">leggermente crescente</string>
+	<string name="SingleUp">crescente</string>
+	<string name="DoubleUp">crescente veloce</string>
 </resources>
