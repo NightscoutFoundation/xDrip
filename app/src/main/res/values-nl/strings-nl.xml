@@ -7,8 +7,8 @@
 	<string name="menu_stop">Stop</string>
 	<string name="menu_refresh">Verversen</string>
 	<string name="menu_export_database">Export databank</string>
-	<string name="menu_export_csv_sidiary">Exporteer CSV (dochteronderneming-formaat)</string>
-	<string name="menu_import_db">Importeer-database</string>
+	<string name="menu_export_csv_sidiary">Exporteer CSV (SiDiary format)</string>
+	<string name="menu_import_db">Importeer database</string>
 	<string name="error_bluetooth_not_supported">Fout: Bluetooth niet ondersteund door dit apparaat</string>
 	<string name="unknown_device">Niet-herkend apparaat</string>
 	<string name="connecting_to_device">Verbinding maken met apparaat</string>
