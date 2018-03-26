@@ -72,7 +72,7 @@ public class Tomato {
                 // For debug, make it send data every minute (did not work...)
                 ByteBuffer newFreqMessage = ByteBuffer.allocate(2);
                 newFreqMessage.put(0, (byte) 0xD1);
-                newFreqMessage.put(1, (byte) 0x01);
+                newFreqMessage.put(1, (byte) 0x05);
                 reply.add(newFreqMessage);
                 
                 //command to start reading
@@ -213,8 +213,8 @@ public class Tomato {
         // For debug, make it send data every minute (ERROR - We fail to send this message... needs more work,
         // not sure it works at all)
         ByteBuffer newFreqMessage = ByteBuffer.allocate(2);
-        newFreqMessage.put(0, (byte) 0xDD);
-        newFreqMessage.put(1, (byte) 0x01);
+        newFreqMessage.put(0, (byte) 0xD1);
+        newFreqMessage.put(1, (byte) 0x05);
         ret.add(newFreqMessage);
 
         //command to start reading
