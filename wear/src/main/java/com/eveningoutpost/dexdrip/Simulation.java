@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Objects;
 
 import static com.eveningoutpost.dexdrip.ListenerService.SendData;
 
@@ -76,12 +77,7 @@ public class Simulation extends Activity {
     public static void static_toast(final Context context, final String msg, final int length) {
         try {
             Activity activity = (Activity) context;
-            activity.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(context, msg, length).show();
-                }
-            });
+            activity.runOnUiThread(() -> Toast.makeText(context, msg, length).show());
             Log.d(TAG, "Toast msg: " + msg);
         } catch (Exception e) {
             Log.e(TAG, "Couldn't display toast: " + msg + " e: " + e.toString());
@@ -94,54 +90,51 @@ public class Simulation extends Activity {
         setContentView(R.layout.activity_simulation);
         final WatchViewStub stub = (WatchViewStub) findViewById(R.id.watch_view_stub);
         final Intent intent = this.getIntent();
-        stub.setOnLayoutInflatedListener(new WatchViewStub.OnLayoutInflatedListener() {
-            @Override
-            public void onLayoutInflated(WatchViewStub stub) {
-                mTextView = (TextView) stub.findViewById(R.id.text);
-                mBloodText = (TextView) stub.findViewById(R.id.textBloodGlucose);
-                mCarbsText = (TextView) stub.findViewById(R.id.textCarbohydrate);
-                mInsulinText = (TextView) stub.findViewById(R.id.textInsulinUnits);
-                mTimeText = (TextView) findViewById(R.id.textTimeButton);
-                btnBloodGlucose = (ImageButton) findViewById(R.id.bloodTestButton);
-                btnCarbohydrates = (ImageButton) findViewById(R.id.buttonCarbs);
-                btnInsulinDose = (ImageButton) findViewById(R.id.buttonInsulin);
-                btnCancel = (ImageButton) findViewById(R.id.cancelTreatment);
-                btnApprove = (ImageButton) findViewById(R.id.approveTreatment);
-                btnTime = (ImageButton) findViewById(R.id.timeButton);
+        stub.setOnLayoutInflatedListener(stub1 -> {
+            mTextView = (TextView) stub1.findViewById(R.id.text);
+            mBloodText = (TextView) stub1.findViewById(R.id.textBloodGlucose);
+            mCarbsText = (TextView) stub1.findViewById(R.id.textCarbohydrate);
+            mInsulinText = (TextView) stub1.findViewById(R.id.textInsulinUnits);
+            mTimeText = (TextView) findViewById(R.id.textTimeButton);
+            btnBloodGlucose = (ImageButton) findViewById(R.id.bloodTestButton);
+            btnCarbohydrates = (ImageButton) findViewById(R.id.buttonCarbs);
+            btnInsulinDose = (ImageButton) findViewById(R.id.buttonInsulin);
+            btnCancel = (ImageButton) findViewById(R.id.cancelTreatment);
+            btnApprove = (ImageButton) findViewById(R.id.approveTreatment);
+            btnTime = (ImageButton) findViewById(R.id.timeButton);
 
-                mTextView.setText("");
-                mBloodText.setVisibility(View.INVISIBLE);
-                mCarbsText.setVisibility(View.INVISIBLE);
-                mInsulinText.setVisibility(View.INVISIBLE);
-                mTimeText.setVisibility(View.INVISIBLE);
+            mTextView.setText("");
+            mBloodText.setVisibility(View.INVISIBLE);
+            mCarbsText.setVisibility(View.INVISIBLE);
+            mInsulinText.setVisibility(View.INVISIBLE);
+            mTimeText.setVisibility(View.INVISIBLE);
 
-                btnBloodGlucose.setVisibility(View.INVISIBLE);
-                btnCarbohydrates.setVisibility(View.INVISIBLE);
-                btnInsulinDose.setVisibility(View.INVISIBLE);
-                btnCancel.setVisibility(View.INVISIBLE);
-                btnApprove.setVisibility(View.INVISIBLE);
-                btnTime.setVisibility(View.INVISIBLE);
-                inflated = true;
+            btnBloodGlucose.setVisibility(View.INVISIBLE);
+            btnCarbohydrates.setVisibility(View.INVISIBLE);
+            btnInsulinDose.setVisibility(View.INVISIBLE);
+            btnCancel.setVisibility(View.INVISIBLE);
+            btnApprove.setVisibility(View.INVISIBLE);
+            btnTime.setVisibility(View.INVISIBLE);
+            inflated = true;
 
-                final boolean debug = false;
+            final boolean debug = false;
 
-                if (intent != null) {
+            if (intent != null) {
 
-                    // debug section
+                // debug section
 
-                    final Bundle bundle = intent.getExtras();
+                final Bundle bundle = intent.getExtras();
 
-                    if ((bundle != null) && (debug)) {
-                        for (String key : bundle.keySet()) {
-                            Object value = bundle.get(key);
-                            if (value != null) {
-                                Log.d(TAG, String.format("%s %s (%s)", key,
-                                        value.toString(), value.getClass().getName()));
-                            }
+                if ((bundle != null) && (debug)) {
+                    for (String key : bundle.keySet()) {
+                        Object value = bundle.get(key);
+                        if (value != null) {
+                            Log.d(TAG, String.format("%s %s (%s)", key,
+                                    value.toString(), value.getClass().getName()));
                         }
                     }
-                    processIncomingIntent(intent);
                 }
+                processIncomingIntent(intent);
             }
         });
 
@@ -382,14 +375,14 @@ public class Simulation extends Activity {
     }
     private void handleWordPair() {
         boolean preserve = false;
-        if ((thisnumber == -1) || (thisword == "")) return;
+        if ((thisnumber == -1) || (Objects.equals(thisword, ""))) return;
 
         Log.d(TAG, "GOT WORD PAIR: " + thisnumber + " = " + thisword);
 
         switch (thisword) {
 
             case "watchkeypad":
-                if ((watchkeypadset == false) && (thisnumber > 0)) {
+                if ((!watchkeypadset) && (thisnumber > 0)) {
                     watchkeypad = true;
                     watchkeypadset = true;
                     Log.d(TAG, "Treatment entered on watchkeypad: " + Double.toString(thisnumber));
@@ -400,7 +393,7 @@ public class Simulation extends Activity {
 
             case "rapid":
             case "units":
-                if ((insulinset == false) && (thisnumber > 0)) {
+                if ((!insulinset) && (thisnumber > 0)) {
                     thisinsulinnumber = thisnumber;
                     Log.d(TAG, "Rapid dose: " + Double.toString(thisnumber));
                     insulinset = true;
@@ -411,7 +404,7 @@ public class Simulation extends Activity {
                 break;
 
             case "carbs":
-                if ((carbsset == false) && (thisnumber > 0)) {
+                if ((!carbsset) && (thisnumber > 0)) {
                     thiscarbsnumber = thisnumber;
                     carbsset = true;
                     Log.d(TAG, "Carbs eaten: " + Double.toString(thisnumber));
@@ -421,7 +414,7 @@ public class Simulation extends Activity {
                 break;
 
             case "blood":
-                if ((glucoseset == false) && (thisnumber > 0)) {
+                if ((!glucoseset) && (thisnumber > 0)) {
                     thisglucosenumber = thisnumber;
                     Log.d(TAG, "Blood test: " + Double.toString(thisnumber));
                     glucoseset = true;
@@ -432,7 +425,7 @@ public class Simulation extends Activity {
 
             case "time":
                 Log.d(TAG, "processing time keyword");
-                if ((timeset == false) && (thisnumber >= 0)) {
+                if ((!timeset) && (thisnumber >= 0)) {
 
                     final NumberFormat nf = NumberFormat.getNumberInstance(Locale.US);
                     final DecimalFormat df = (DecimalFormat) nf;
@@ -512,18 +505,17 @@ public class Simulation extends Activity {
         thisword = "";
         thistimetext = "";
         String[] wordsArray = allWords.split(" ");
-        for (int i = 0; i < wordsArray.length; i++) {
+        for (String aWordsArray : wordsArray) {
             // per word in input stream
             try {
-                double thisdouble = Double.parseDouble(wordsArray[i]);
-                thisnumber = thisdouble; // if no exception
+                thisnumber = Double.parseDouble(aWordsArray); // if no exception
                 handleWordPair();
             } catch (NumberFormatException nfe) {
                 // detection of number or not
-                Log.d(TAG, "createTreatment NumberFormatException wordsArray[i]=" + wordsArray[i]);
+                Log.d(TAG, "createTreatment NumberFormatException wordsArray[i]=" + aWordsArray);
                 //String result = classifyWord(wordsArray[i]);
                 //if (result != null)
-                thisword = wordsArray[i];//result;
+                thisword = aWordsArray;//result;
                 handleWordPair();
             }
         }

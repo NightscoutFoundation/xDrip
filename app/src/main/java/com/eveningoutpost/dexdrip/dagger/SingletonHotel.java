@@ -61,7 +61,7 @@ abstract class SingletonHotel {
         try {
             singleton = singleton.toLowerCase();
             for (Field field : fields) {
-                if (field.getName().toLowerCase().equals(singleton)) {
+                if (field.getName().equalsIgnoreCase(singleton)) {
                     return field.get(this);
                 }
             }
