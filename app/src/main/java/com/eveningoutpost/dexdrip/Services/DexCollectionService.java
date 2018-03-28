@@ -191,6 +191,27 @@ public class DexCollectionService extends Service {
             }
         }
     };
+
+    private synchronized void handleConnectedStateChange() {
+        mConnectionState = STATE_CONNECTED;
+        if ((servicesDiscovered == DISCOVERED.NULL) || Pref.getBoolean("always_discover_services", true)) {
+            Log.d(TAG, "Requesting to discover services: previous: " + servicesDiscovered);
+            servicesDiscovered = DISCOVERED.PENDING;
+        }
+        ActiveBluetoothDevice.connected();
+
+        if (JoH.ratelimit("attempt-connection", 30)) {
+            checkConnection(); // refresh status info
+        }
+        if (servicesDiscovered != DISCOVERED.COMPLETE) {
+            Log.d(TAG, "Calling discoverServices");
+            mBluetoothGatt.discoverServices();
+        } else {
+            Log.d(TAG, "Services already discovered");
+            checkImmediateSend();
+        }
+    }
+
     private final BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {
         @Override
         public synchronized void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
@@ -206,23 +227,8 @@ public class DexCollectionService extends Service {
                 }
                 switch (newState) {
                     case BluetoothProfile.STATE_CONNECTED:
-                        mConnectionState = STATE_CONNECTED;
-                        if ((servicesDiscovered == DISCOVERED.NULL) || Pref.getBoolean("always_discover_services", true)) {
-                            Log.d(TAG, "Requesting to discover services: previous: " + servicesDiscovered);
-                            servicesDiscovered = DISCOVERED.PENDING;
-                        }
-                        ActiveBluetoothDevice.connected();
                         Log.i(TAG, "onConnectionStateChange: Connected to GATT server.");
-                        if (JoH.ratelimit("attempt-connection", 30)) {
-                            checkConnection(); // refresh status info
-                        }
-                        if (servicesDiscovered != DISCOVERED.COMPLETE) {
-                            Log.d(TAG, "Calling discoverServices");
-                            mBluetoothGatt.discoverServices();
-                        } else {
-                            Log.d(TAG, "Services already discovered");
-                            checkImmediateSend();
-                        }
+                        handleConnectedStateChange();
                         break;
                     case BluetoothProfile.STATE_DISCONNECTED:
                         Log.i(TAG, "onConnectionStateChange: State disconnected.");
@@ -865,6 +871,7 @@ public class DexCollectionService extends Service {
         return START_STICKY;
     }
 
+
     @Override
     public void onDestroy() {
         status("Shutdown");
@@ -965,6 +972,7 @@ public class DexCollectionService extends Service {
         }
 
         if (!mBluetoothAdapter.isEnabled()) {
+            mConnectionState = STATE_DISCONNECTED; // can't be connected if BT is disabled
             if (Pref.getBoolean("automatically_turn_bluetooth_on", true)) {
                 Log.i(TAG, "Turning bluetooth on as appears disabled");
                 status("Turning bluetooth on");
@@ -978,7 +986,10 @@ public class DexCollectionService extends Service {
             //mConnectionState = STATE_DISCONNECTED;
             for (BluetoothDevice bluetoothDevice : bluetoothManager.getConnectedDevices(BluetoothProfile.GATT)) {
                 if (bluetoothDevice.getAddress().compareTo(device.getAddress()) == 0) {
-                    mConnectionState = STATE_CONNECTED;
+                    if (mConnectionState != STATE_CONNECTED) {
+                        UserError.Log.d(TAG, "Detected state change by checking connected devices");
+                        handleConnectedStateChange();
+                    }
                     break;
                 }
             }
