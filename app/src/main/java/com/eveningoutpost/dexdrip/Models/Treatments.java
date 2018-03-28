@@ -640,8 +640,6 @@ public class Treatments extends Model {
 
         Log.d(TAG, "Carb delay ms: " + carb_delay_ms_stepped);
 
-        Map<String, Boolean> carbsEaten = new HashMap<>();
-
         // linear array populated as needed and layered by each treatment etc
         SortedMap<Double, Iob> timeslices = new TreeMap<>();
 

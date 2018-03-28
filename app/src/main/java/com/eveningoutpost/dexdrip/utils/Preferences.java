@@ -322,10 +322,7 @@ public class Preferences extends PreferenceActivity {
 
     @Override
     protected boolean isValidFragment(String fragmentName) {
-        if (AllPrefsFragment.class.getName().equals(fragmentName)) {
-            return true;
-        }
-        return false;
+        return AllPrefsFragment.class.getName().equals(fragmentName);
     }
 
     @Override
@@ -415,35 +412,31 @@ public class Preferences extends PreferenceActivity {
         }
         return true;
     };
-    private static Preference.OnPreferenceChangeListener sBindNumericPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
-        @Override
-        public boolean onPreferenceChange(Preference preference, Object value) {
-            String stringValue = value.toString();
-            if (isNumeric(stringValue)) {
-                preference.setSummary(stringValue);
-                return true;
-            }
-            return false;
-        }
-    };
-    private static Preference.OnPreferenceChangeListener sBindPreferenceTitleAppendToValueListenerUpdateChannel = new Preference.OnPreferenceChangeListener() {
-        @Override
-        public boolean onPreferenceChange(Preference preference, Object value) {
 
-            boolean do_update = false;
-            // detect not first run
-            if (preference.getTitle().toString().contains("(")) {
-                do_update = true;
-            }
-
-            preference.setTitle(preference.getTitle().toString().replaceAll("  \\([a-z0-9A-Z]+\\)$", "") + "  (" + value.toString() + ")");
-            if (do_update) {
-                preference.getEditor().putString(preference.getKey(), value.toString()).apply(); // update prefs now
-                UpdateActivity.last_check_time = -1;
-                UpdateActivity.checkForAnUpdate(preference.getContext());
-            }
+    private static Preference.OnPreferenceChangeListener sBindNumericPreferenceSummaryToValueListener = (preference, value) -> {
+        String stringValue = value.toString();
+        if (isNumeric(stringValue)) {
+            preference.setSummary(stringValue);
             return true;
         }
+        return false;
+    };
+
+    private static Preference.OnPreferenceChangeListener sBindPreferenceTitleAppendToValueListenerUpdateChannel = (preference, value) -> {
+
+        boolean do_update = false;
+        // detect not first run
+        if (preference.getTitle().toString().contains("(")) {
+            do_update = true;
+        }
+
+        preference.setTitle(preference.getTitle().toString().replaceAll("  \\([a-z0-9A-Z]+\\)$", "") + "  (" + value.toString() + ")");
+        if (do_update) {
+            preference.getEditor().putString(preference.getKey(), value.toString()).apply(); // update prefs now
+            UpdateActivity.last_check_time = -1;
+            UpdateActivity.checkForAnUpdate(preference.getContext());
+        }
+        return true;
     };
 
     private static String format_carb_ratio(String oldValue, String newValue) {
@@ -1650,13 +1643,10 @@ public class Preferences extends PreferenceActivity {
 
         private void refresh_extra_items() {
             try {
-                if (this.prefs == null) return;
-                if (!this.prefs.getBoolean("plus_extra_features", false)) {
-                    // getPreferenceScreen().removePreference(findPreference("plus_follow_master"));
-
-                } else {
-                    // getPreferenceScreen().addPreference(findPreference("plus_follow_master"));
+                if (this.prefs == null) {
+                    return;
                 }
+                this.prefs.getBoolean("plus_extra_features", false);
             } catch (Exception e) {
                 Log.e(TAG, "Got exception in refresh extra: " + e.toString());
             }
@@ -1708,7 +1698,6 @@ public class Preferences extends PreferenceActivity {
                     }
             );
         }
-
 
         // Will update the widget if any setting relevant to the widget gets changed.
         private static class WidgetListener implements Preference.OnPreferenceChangeListener {
@@ -1779,8 +1768,6 @@ public class Preferences extends PreferenceActivity {
             if (profile_insulin_sensitivity_default != null) {
                 Log.d(TAG, "refreshing profile insulin sensitivity default display");
                 profile_insulin_sensitivity_default.setTitle(format_insulin_sensitivity(profile_insulin_sensitivity_default.getTitle().toString(), ProfileEditor.minMaxSens(ProfileEditor.loadData(false))));
-
-//                            do_format_insulin_sensitivity(profile_insulin_sensitivity_default, AllPrefsFragment.this.prefs, false, null);
             }
             Profile.reloadPreferences(preferences);
 
