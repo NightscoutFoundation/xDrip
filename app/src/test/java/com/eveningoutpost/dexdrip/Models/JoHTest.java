@@ -13,7 +13,6 @@ import static com.google.common.truth.Truth.assertWithMessage;
 
 public class JoHTest extends RobolectricTestWithConfig {
 
-
     @Before
     public void setUp() throws Exception {
     }
