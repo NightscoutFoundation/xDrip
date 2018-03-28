@@ -252,7 +252,6 @@ public class G5CollectionService extends G5BaseService {
         }
     };
 
-
     public SharedPreferences.OnSharedPreferenceChangeListener prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
         public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
             if(key.compareTo("run_service_in_foreground") == 0) {
@@ -272,8 +271,6 @@ public class G5CollectionService extends G5BaseService {
                 Log.i(TAG, "G5 Setting Change");
                 cycleScan(0);
             }
-
-
         }
     };
 
@@ -281,7 +278,6 @@ public class G5CollectionService extends G5BaseService {
         prefs.registerOnSharedPreferenceChangeListener(prefListener);
         // TODO do we need an unregister!?
     }
-
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -453,7 +449,6 @@ public class G5CollectionService extends G5BaseService {
         }
     }
 
-
     @Override
     public IBinder onBind(Intent intent) {
         throw new UnsupportedOperationException("Not yet implemented");
@@ -518,16 +513,10 @@ public class G5CollectionService extends G5BaseService {
 
                     if (enforceMainThread()){
                         Handler iHandler = new Handler(Looper.getMainLooper());
-                        iHandler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                stopLogic();
-                            }
-                        });
+                        iHandler.post(() -> stopLogic());
                     } else {
-                        stopLogic();;
+                        stopLogic();
                     }
-
 
                 } catch (NullPointerException e) {
                     //Known bug in Samsung API 21 stack
@@ -580,13 +569,7 @@ public class G5CollectionService extends G5BaseService {
                                 try {
                                     if (enforceMainThread()) {
                                         Handler iHandler = new Handler(Looper.getMainLooper());
-                                        iHandler.post(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                scanLogic();
-                                            }
-                                        });
-
+                                        iHandler.post(() -> scanLogic());
                                     } else {
                                         scanLogic();
                                     }
@@ -626,7 +609,6 @@ public class G5CollectionService extends G5BaseService {
             } catch (IllegalStateException | NullPointerException is) {
                 setupBluetooth();
             }
-
 
             scanCycleCount++;
 
@@ -690,12 +672,7 @@ public class G5CollectionService extends G5BaseService {
             } else {
                 if (enforceMainThread()){
                     Handler iHandler = new Handler(Looper.getMainLooper());
-                    iHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            startLogic();
-                        }
-                    });
+                    iHandler.post(() -> startLogic());
                 } else {
                     startLogic();
                 }
@@ -799,19 +776,16 @@ public class G5CollectionService extends G5BaseService {
     //@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     private void setupLeScanCallback() {
         if (mLeScanCallback == null) {
-            mLeScanCallback = new BluetoothAdapter.LeScanCallback() {
-                @Override
-                public void onLeScan(BluetoothDevice device, int rssi, byte[] scanRecord) {
-                    // Check if the device has a name, the Dexcom transmitter always should. Match it with the transmitter id that was entered.
-                    // We get the last 2 characters to connect to the correct transmitter if there is more than 1 active or in the room.
-                    // If they match, connect to the device.
-                    if (device.getName() != null) {
-                        String transmitterIdLastTwo = Extensions.lastTwoCharactersOfString(defaultTransmitter.transmitterId);
-                        String deviceNameLastTwo = Extensions.lastTwoCharactersOfString(device.getName());
+            mLeScanCallback = (device, rssi, scanRecord) -> {
+                // Check if the device has a name, the Dexcom transmitter always should. Match it with the transmitter id that was entered.
+                // We get the last 2 characters to connect to the correct transmitter if there is more than 1 active or in the room.
+                // If they match, connect to the device.
+                if (device.getName() != null) {
+                    String transmitterIdLastTwo = Extensions.lastTwoCharactersOfString(defaultTransmitter.transmitterId);
+                    String deviceNameLastTwo = Extensions.lastTwoCharactersOfString(device.getName());
 
-                        if (transmitterIdLastTwo.toUpperCase().equals(deviceNameLastTwo.toUpperCase())) {
-                            connectToDevice(device);
-                        }
+                    if (transmitterIdLastTwo.toUpperCase().equals(deviceNameLastTwo.toUpperCase())) {
+                        connectToDevice(device);
                     }
                 }
             };
@@ -938,12 +912,7 @@ public class G5CollectionService extends G5BaseService {
             final BluetoothDevice mDevice = device;
             if (enforceMainThread()) {
                 Handler iHandler = new Handler(Looper.getMainLooper());
-                iHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        connectGatt(mDevice);
-                    }
-                });
+                iHandler.post(() -> connectGatt(mDevice));
             } else {
                 connectGatt(mDevice);
             }
@@ -977,7 +946,6 @@ public class G5CollectionService extends G5BaseService {
            gatt.disconnect();
            Log.d(TAG, "doDisconnectMessage() finished");
     }
-
 
     private synchronized void doVersionRequestMessage(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
         Log.d(TAG, "doVersionRequestMessage() start");
@@ -1020,23 +988,14 @@ public class G5CollectionService extends G5BaseService {
         public void onConnectionStateChange(final BluetoothGatt gatt, final int status, final int newState) {
             if (enforceMainThread()) {
                 Handler iHandler = new Handler(Looper.getMainLooper());
-                iHandler.post(new Runnable() {
-                                  @Override
-                                  public void run() {
-                                      processOnStateChange(gatt, status, newState);
-                                  }
-                              }
-                );
+                iHandler.post(() -> processOnStateChange(gatt, status, newState));
             } else {
                 processOnStateChange(gatt, status, newState);
             }
         }
 
-
         private synchronized void processOnStateChange(final BluetoothGatt gatt, final int status, final int newState) {
             switch (newState) {
-
-
                 case BluetoothProfile.STATE_CONNECTED:
                     Log.e(TAG, "STATE_CONNECTED");
                     isConnected = true;
@@ -1047,16 +1006,10 @@ public class G5CollectionService extends G5BaseService {
                             Log.d(TAG, "We are not on the main thread so this section is still needed!!");
                         }
                         Handler iHandler = new Handler(Looper.getMainLooper());
-                        iHandler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                discoverServices();
-                            }
-                        });
+                        iHandler.post(() -> discoverServices());
                     } else {
                         discoverServices();
                     }
-
 
                     stopScan();
                     scan_interval_timer.cancel();
@@ -1126,23 +1079,16 @@ public class G5CollectionService extends G5BaseService {
                     }
                     break;
 
-
                 default:
                     Log.e(TAG, "STATE_OTHER: " + newState);
             }
         }
 
-
         @Override
         public synchronized void onServicesDiscovered(final BluetoothGatt gatt, final int status) {
             if (enforceMainThread()) {
                 Handler iHandler = new Handler(Looper.getMainLooper());
-                iHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        processOnServicesDiscovered(gatt, status);
-                    }
-                });
+                iHandler.post(() -> processOnServicesDiscovered(gatt, status));
             } else {
                 processOnServicesDiscovered(gatt, status);
             }
@@ -1188,12 +1134,7 @@ public class G5CollectionService extends G5BaseService {
             Log.e(TAG, "OnDescriptor WRITE started: status: " + getStatusName(status));
             if (enforceMainThread()) {
                 Handler iHandler = new Handler(Looper.getMainLooper());
-                iHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        processonDescrptorWrite(gatt, descriptor, status);
-                    }
-                });
+                iHandler.post(() -> processonDescrptorWrite(gatt, descriptor, status));
             } else {
                 processonDescrptorWrite(gatt, descriptor, status);
             }
@@ -1228,17 +1169,10 @@ public class G5CollectionService extends G5BaseService {
 
             if (enforceMainThread()) {
                 Handler iHandler = new Handler(Looper.getMainLooper());
-                iHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        processOnCharacteristicWrite(gatt, characteristic, status);
-                    }
-                });
+                iHandler.post(() -> processOnCharacteristicWrite(gatt, characteristic, status));
             } else {
                 processOnCharacteristicWrite(gatt, characteristic, status);
             }
-
-
         }
 
         private synchronized void processOnCharacteristicWrite(final BluetoothGatt gatt, final BluetoothGattCharacteristic characteristic, final int status) {
@@ -1288,12 +1222,7 @@ public class G5CollectionService extends G5BaseService {
             Log.e(TAG, "OnCharacteristic READ started: " + getUUIDName(characteristic.getUuid()) + " status: " + status);
             if (enforceMainThread()) {
                 Handler iHandler = new Handler(Looper.getMainLooper());
-                iHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        processOnCharacteristicRead(gatt, characteristic, status);
-                    }
-                });
+                iHandler.post(() -> processOnCharacteristicRead(gatt, characteristic, status));
             } else {
                 processOnCharacteristicRead(gatt, characteristic, status);
             }
@@ -1447,7 +1376,6 @@ public class G5CollectionService extends G5BaseService {
                                 }
                             }
 
-
                             Log.e(TAG,"ondemandbond delay finished");
                         }
 
@@ -1455,7 +1383,6 @@ public class G5CollectionService extends G5BaseService {
                         sendAuthRequestTxMessage(gatt, characteristic);
                         break;
                 }
-
             }
 
             if (status == 133) {
@@ -1464,32 +1391,23 @@ public class G5CollectionService extends G5BaseService {
             Log.e(TAG, "OnCharacteristic READ finished: status: " + getStatusName(status));
         }
 
-
-
         @Override
         // Characteristic notification
         public void onCharacteristicChanged(final BluetoothGatt gatt, final BluetoothGattCharacteristic characteristic) {
             Log.e(TAG, "OnCharacteristic CHANGED started: " + getUUIDName(characteristic.getUuid()));
             if (enforceMainThread()) {
                 Handler iHandler = new Handler(Looper.getMainLooper());
-                iHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        processRxCharacteristic(gatt, characteristic);
-                    }
-                });
+                iHandler.post(() -> processRxCharacteristic(gatt, characteristic));
             } else {
                 processRxCharacteristic(gatt, characteristic);
             }
         }
-
 
         private synchronized void processRxCharacteristic(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
 
             Log.i(TAG, "onCharacteristicChanged On Main Thread? " + isOnMainThread());
             Log.e(TAG, "CharBytes-nfy" + Arrays.toString(characteristic.getValue()));
             Log.i(TAG, "CharHex-nfy" + Extensions.bytesToHex(characteristic.getValue()));
-
 
             byte[] buffer = characteristic.getValue();
             byte firstByte = buffer[0];
@@ -1572,8 +1490,6 @@ public class G5CollectionService extends G5BaseService {
         return defaultTransmitter.transmitterId.length() == 6 && getStoredFirmwareBytes(defaultTransmitter.transmitterId).length >= 10;
     }
 
-
-
     private boolean haveCurrentBatteryStatus() {
         return defaultTransmitter.transmitterId.length() == 6 && (JoH.msSince(PersistentStore.getLong(G5_BATTERY_FROM_MARKER + defaultTransmitter.transmitterId)) < BATTERY_READ_PERIOD_MS);
     }
@@ -1597,8 +1513,6 @@ public class G5CollectionService extends G5BaseService {
         }
         return true;
     }
-
-
 
     public synchronized static boolean setStoredBatteryBytes(String transmitterId, byte[] data) {
         UserError.Log.e(TAG, "Store: BatteryRX dbg: " + JoH.bytesToHex(data));
@@ -1656,7 +1570,6 @@ public class G5CollectionService extends G5BaseService {
         }
     }
 
-
     private synchronized void sendAuthRequestTxMessage(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
         Log.e(TAG, "Sending new AuthRequestTxMessage to " + getUUIDName(characteristic.getUuid()) + " ...");
         authRequest = new AuthRequestTxMessage(getTokenSize());
@@ -1709,7 +1622,6 @@ public class G5CollectionService extends G5BaseService {
         Log.d(TAG,"Dex timestamp "+ JoH.dateTimeText(transmitterData.timestamp));//KS
 
         static_last_timestamp =  transmitterData.timestamp;
-
     }
 
     @SuppressLint("GetInstance")
@@ -1919,21 +1831,11 @@ public class G5CollectionService extends G5BaseService {
         long last_battery_query = PersistentStore.getLong(G5_BATTERY_FROM_MARKER + tx_id);
         if (getBatteryStatusNow) {
             l.add(new StatusItem("Battery Status Request Queued", "Will attempt to read battery status on next sensor reading", StatusItem.Highlight.NOTICE, "long-press",
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            getBatteryStatusNow = false;
-                        }
-                    }));
+                    () -> getBatteryStatusNow = false));
         }
         if ((bt != null) && (last_battery_query > 0)) {
             l.add(new StatusItem("Battery Last queried", JoH.niceTimeSince(last_battery_query) + " " + "ago", StatusItem.Highlight.NORMAL, "long-press",
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            getBatteryStatusNow = true;
-                        }
-                    }));
+                    () -> getBatteryStatusNow = true));
             l.add(new StatusItem("Transmitter Status", TransmitterStatus.getBatteryLevel(vr.status).toString()));
             l.add(new StatusItem("Transmitter Days", bt.runtime + ((last_transmitter_timestamp > 0) ? " / " + JoH.qs((double) last_transmitter_timestamp / 86400, 1) : "")));
             l.add(new StatusItem("Voltage A", bt.voltagea, bt.voltagea < LOW_BATTERY_WARNING_LEVEL ? StatusItem.Highlight.BAD : StatusItem.Highlight.NORMAL));
@@ -1941,7 +1843,6 @@ public class G5CollectionService extends G5BaseService {
             l.add(new StatusItem("Resistance", bt.resist, bt.resist > 1400 ? StatusItem.Highlight.BAD : (bt.resist > 1000 ? StatusItem.Highlight.NOTICE : (bt.resist > 750 ? StatusItem.Highlight.NORMAL : StatusItem.Highlight.GOOD))));
             l.add(new StatusItem("Temperature", bt.temperature + " \u2103"));
         }
-
 
         return l;
     }

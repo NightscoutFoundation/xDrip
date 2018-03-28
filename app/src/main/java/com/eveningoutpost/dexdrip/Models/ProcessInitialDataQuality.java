@@ -57,7 +57,7 @@ public class ProcessInitialDataQuality {
                 }
 
             }
-            if (!(JoH.msSince(uncalculated.get(0).timestamp) > STALE_CALIBRATION_CUT_OFF)) {
+            if (JoH.msSince(uncalculated.get(0).timestamp) <= STALE_CALIBRATION_CUT_OFF) {
                 // we got some data now see if it is recent enough
                 result.recent_data = true;
                 boolean adjusted = true; // run one time

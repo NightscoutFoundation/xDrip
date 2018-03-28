@@ -136,7 +136,6 @@ public class AlertType extends Model {
                 "ALTER TABLE AlertType ADD COLUMN time_until_threshold_crossed REAL;"
         };
 
-
         for (String patch : patchup) {
             try {
                 SQLiteUtils.execSql(patch);
@@ -147,8 +146,6 @@ public class AlertType extends Model {
         }
         patched = true;
     }
-
-
 
     public static AlertType get_alert(String uuid) {
 
@@ -226,11 +223,9 @@ public class AlertType extends Model {
             }
         }
 
-
         // If no low alert found or low alerts disabled, check higher alert.
         if(prefs.getLong("high_alerts_disabled_until", 0) > new Date().getTime()){
             Log.i("NOTIFICATIONS", "get_highest_active_alert_helper: High alerts are currently disabled!! Skipping high alerts");
-            ;
         } else {
             List<AlertType> HighAlerts  = new Select()
                     .from(AlertType.class)
@@ -252,10 +247,7 @@ public class AlertType extends Model {
 
     // returns true, if one allert is up and the second is down
     public static boolean OpositeDirection(AlertType a1, AlertType a2) {
-        if (a1.above != a2.above) {
-            return true;
-        }
-        return false;
+        return a1.above != a2.above;
     }
 
     // Checks if a1 is more important than a2. returns the higher one
@@ -412,22 +404,19 @@ public class AlertType extends Model {
         } else {
             order = "threshold desc";
         }
-        List<AlertType> alerts  = new Select()
+
+        return new Select()
             .from(AlertType.class)
             .where("above = ?", above)
             .orderBy(order)
             .execute();
-
-        return alerts;
     }
 
     public static List<AlertType> getAllActive() {
-        List<AlertType> alerts  = new Select()
+        return new Select()
                 .from(AlertType.class)
                 .where("active = ?", true)
                 .execute();
-
-        return alerts;
     }
 
     public static boolean activeLowAlertExists() {
@@ -451,7 +440,6 @@ public class AlertType extends Model {
         }
     }
 
-
     public static void testAll(Context context) {
         remove_all();
         add_alert(null, "high alert 1", true, 180, true, 10, null, 0, 0, true, 20, true, true);
@@ -462,7 +450,6 @@ public class AlertType extends Model {
         Log.d(TAG, "a1 = " + a1.toString());
         AlertType a2 = get_highest_active_alert(context, 210);
         Log.d(TAG, "a2 = " + a2.toString());
-
 
         AlertType a3 = get_alert(a1.uuid);
         Log.d(TAG, "a1 == a3 ? need to see true " + (a1==a3) + a1 + " " + a3);
@@ -484,9 +471,7 @@ public class AlertType extends Model {
 
         // Make sure we do not influance on real data...
         remove_all();
-
     }
-
 
     private boolean in_time_frame() {
         return s_in_time_frame(all_day, start_time_minutes, end_time_minutes);
@@ -502,15 +487,9 @@ public class AlertType extends Model {
         int time_now = toTime(rightNow.get(Calendar.HOUR_OF_DAY), rightNow.get(Calendar.MINUTE));
         Log.d(TAG, "time_now is " + time_now + " minutes" + " start_time " + s_start_time_minutes + " end_time " + s_end_time_minutes);
         if(s_start_time_minutes < s_end_time_minutes) {
-            if (time_now >= s_start_time_minutes && time_now <= s_end_time_minutes) {
-                return true;
-            }
-        } else {
-            if (time_now >= s_start_time_minutes || time_now <= s_end_time_minutes) {
-                return true;
-            }
+            return time_now >= s_start_time_minutes && time_now <= s_end_time_minutes;
         }
-        return false;
+        return time_now >= s_start_time_minutes || time_now <= s_end_time_minutes;
     }
 
     private boolean beyond_threshold(double bg) {
@@ -544,11 +523,7 @@ public class AlertType extends Model {
 
     public boolean should_alarm(double bg) {
 //        Log.e(TAG, "should_alarm called active =  " + active );
-        if(in_time_frame() && active && (beyond_threshold(bg) || trending_to_threshold(bg))) {
-            return true;
-        } else {
-            return false;
-        }
+        return in_time_frame() && active && (beyond_threshold(bg) || trending_to_threshold(bg));
     }
 
     public static void testAlert(
@@ -587,8 +562,6 @@ public class AlertType extends Model {
     // seconds. so if the user has set 23:59 we will consider this as 24:00
     // This will be done at the code that reads the time from the ui.
 
-
-
     // return the minutes part of the time
     public static int time2Minutes(int minutes) {
         return (minutes - 60*time2Hours(minutes)) ;
@@ -621,9 +594,7 @@ public class AlertType extends Model {
         prefs.edit().putString("saved_alerts", output).commit();
 
         return true;
-
     }
-
 
     // Read all alerts from preference key and write them to db.
     public static boolean fromSettings(Context context) {

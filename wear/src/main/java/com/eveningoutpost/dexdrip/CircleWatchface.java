@@ -32,16 +32,14 @@ import android.widget.TextView;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.google.android.gms.wearable.DataMap;
-import com.ustwo.clockwise.wearable.WatchFace;
 import com.ustwo.clockwise.common.WatchFaceTime;
+import com.ustwo.clockwise.wearable.WatchFace;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.TreeSet;
 
 
 public class CircleWatchface extends WatchFace implements SharedPreferences.OnSharedPreferenceChangeListener {
@@ -163,7 +161,6 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
         drawTime(canvas);
         drawOtherStuff(canvas);
         myLayout.draw(canvas);
-
     }
 
     @Override
@@ -198,11 +195,10 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
     }
 
     private boolean linearLayout(LinearLayout layout,int x, int y) {
-        if (x >=layout.getLeft() && x <= layout.getRight()&&
-                y >= layout.getTop() && y <= layout.getBottom()) {
-            return true;
-        }
-        return false;
+        return x >= layout.getLeft()
+                && x <= layout.getRight()
+                && y >= layout.getTop()
+                && y <= layout.getBottom();
     }
 
     private boolean showSteps() {
@@ -394,7 +390,6 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
                 break;
         }
 
-
         if (isAnimated()) {
             //Animation matrix:
             int[] rainbow = {Color.RED, Color.YELLOW, Color.GREEN, Color.BLUE
@@ -409,7 +404,6 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
             circlePaint.setShader(null);
         }
 
-
         circlePaint.setStyle(Paint.Style.STROKE);
         circlePaint.setStrokeWidth(CIRCLE_WIDTH);
         circlePaint.setAntiAlias(true);
@@ -419,8 +413,6 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
         removePaint.setStrokeWidth(CIRCLE_WIDTH);
         removePaint.setAntiAlias(true);
         removePaint.setColor(getBackgroundColor());
-
-        ;
 
         rect = new RectF(PADDING, PADDING, (float) (displaySize.x - PADDING), (float) (displaySize.y - PADDING));
         rectDelete = new RectF(PADDING - CIRCLE_WIDTH / 2, PADDING - CIRCLE_WIDTH / 2, (float) (displaySize.x - PADDING + CIRCLE_WIDTH / 2), (float) (displaySize.y - PADDING + CIRCLE_WIDTH / 2));
@@ -434,7 +426,6 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
         prepareDrawTime();
         invalidate();
     }
-
 
     private boolean areOverlapping(float aBegin, float aEnd, float bBegin, float bEnd) {
         return
@@ -460,7 +451,6 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
 
         }
     }
-
 
     // defining color for dark and bright
     public int getLowColor() {
@@ -554,7 +544,6 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
         this.batteryLevel = batteryLevel;
     }
 
-
     private synchronized double getDatetime() {
         return datetime;
     }
@@ -603,7 +592,6 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
         this.delta = delta;
     }
 
-
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         prepareDrawTime();
@@ -645,7 +633,6 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
 
         animator.start();
     }
-
 
     public class MessageReceiver extends BroadcastReceiver {
         @Override
@@ -810,7 +797,6 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
             return ((bg / 100) * 135);
         }
     }
-
 
     public void addReadingSoft(Canvas canvas, BgWatchData entry) {
 

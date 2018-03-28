@@ -1,35 +1,28 @@
 package com.eveningoutpost.dexdrip.Models;
 
-import android.app.AlarmManager;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
 
-import com.activeandroid.util.SQLiteUtils;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
+import com.activeandroid.util.SQLiteUtils;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
-import com.eveningoutpost.dexdrip.Services.MissedReadingService;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.Expose;
+import com.google.gson.internal.bind.DateTypeAdapter;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.annotations.Expose;
-import com.google.gson.internal.bind.DateTypeAdapter;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 
 /**
  * Created by Emma Black on 1/14/15.
@@ -215,7 +208,6 @@ public class AlertType extends Model {
         // If no low alert found or low alerts disabled, check higher alert.
         if(prefs.getLong("high_alerts_disabled_until", 0) > new Date().getTime()){
             Log.i("NOTIFICATIONS", "get_highest_active_alert_helper: High alerts are currently disabled!! Skipping high alerts");
-            ;
         } else {
             List<AlertType> HighAlerts  = new Select()
                     .from(AlertType.class)
@@ -237,10 +229,7 @@ public class AlertType extends Model {
 
     // returns true, if one allert is up and the second is down
     public static boolean OpositeDirection(AlertType a1, AlertType a2) {
-        if (a1.above != a2.above) {
-            return true;
-        }
-        return false;
+        return a1.above != a2.above;
     }
 
     // Checks if a1 is more important than a2. returns the higher one
@@ -390,12 +379,10 @@ public class AlertType extends Model {
     }
 
     public static List<AlertType> getAllActive() {
-        List<AlertType> alerts  = new Select()
+        return new Select()
                 .from(AlertType.class)
                 .where("active = ?", true)
                 .execute();
-
-        return alerts;
     }
 
     public static List<AlertType> getAll(boolean above) {
@@ -405,13 +392,12 @@ public class AlertType extends Model {
         } else {
             order = "threshold desc";
         }
-        List<AlertType> alerts  = new Select()
+
+        return new Select()
             .from(AlertType.class)
             .where("above = ?", above)
             .orderBy(order)
             .execute();
-
-        return alerts;
     }
 
     public static boolean activeLowAlertExists() {
@@ -486,15 +472,9 @@ public class AlertType extends Model {
         int time_now = toTime(rightNow.get(Calendar.HOUR_OF_DAY), rightNow.get(Calendar.MINUTE));
         Log.d(TAG, "time_now is " + time_now + " minutes" + " start_time " + s_start_time_minutes + " end_time " + s_end_time_minutes);
         if(s_start_time_minutes < s_end_time_minutes) {
-            if (time_now >= s_start_time_minutes && time_now <= s_end_time_minutes) {
-                return true;
-            }
-        } else {
-            if (time_now >= s_start_time_minutes || time_now <= s_end_time_minutes) {
-                return true;
-            }
+            return time_now >= s_start_time_minutes && time_now <= s_end_time_minutes;
         }
-        return false;
+        return time_now >= s_start_time_minutes || time_now <= s_end_time_minutes;
     }
 
     private boolean beyond_threshold(double bg) {
@@ -528,11 +508,7 @@ public class AlertType extends Model {
 
     public boolean should_alarm(double bg) {
 //        Log.e(TAG, "should_alarm called active =  " + active );
-        if(in_time_frame() && active && (beyond_threshold(bg) || trending_to_threshold(bg))) {
-            return true;
-        } else {
-            return false;
-        }
+        return in_time_frame() && active && (beyond_threshold(bg) || trending_to_threshold(bg));
     }
 
     public static void testAlert(
@@ -649,7 +625,5 @@ public class AlertType extends Model {
         // Delete the string, so next time we will not load the data
         prefs.edit().putString("saved_alerts", "").apply();
         return true;
-
     }
-    
 }
