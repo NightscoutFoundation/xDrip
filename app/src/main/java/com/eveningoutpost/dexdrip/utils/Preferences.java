@@ -110,7 +110,6 @@ public class Preferences extends PreferenceActivity {
                 this.preferenceFragment).commit();
     }
 
-
     public interface OnServiceTaskCompleted {
         void onTaskCompleted(byte[] result);
     }
@@ -136,7 +135,6 @@ public class Preferences extends PreferenceActivity {
             }
         }
     }
-
 
     private void toast(final String msg) {
         try {
