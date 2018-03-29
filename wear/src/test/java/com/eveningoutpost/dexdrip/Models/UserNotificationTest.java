@@ -29,7 +29,6 @@ public class UserNotificationTest extends RobolectricTestWithConfig {
     }
 
     // ===== Test creation of all types of user notifications ======================================
-
     @Test
     public void createBgAlertNotification() {
         // :: Setup
@@ -187,7 +186,6 @@ public class UserNotificationTest extends RobolectricTestWithConfig {
     }
 
     // ===== Tests for last**** alerts =============================================================
-
     @Test
     public void lastBgAlert() {
         // :: Setup
@@ -245,7 +243,6 @@ public class UserNotificationTest extends RobolectricTestWithConfig {
     }
 
     // ===== Get Notification By Type ==============================================================
-
     @Test
     public void getExistingLegacyNotification() {
         // :: Setup
@@ -291,7 +288,6 @@ public class UserNotificationTest extends RobolectricTestWithConfig {
     }
 
     // ===== Delete Notification By Type ===========================================================
-
     @Test
     public void deleteExistingLegacyAlert() {
         // :: Setup
@@ -339,7 +335,6 @@ public class UserNotificationTest extends RobolectricTestWithConfig {
     }
 
     // ===== SnoozeAlert ===========================================================================
-
     @Test
     public void snoozeLegacyAlert() {
         // :: Setup
