@@ -348,8 +348,6 @@ public class Simulation extends Activity {
     }
 
     private void promptSpeechInput() {
-
-
         if (recognitionRunning) return;
         recognitionRunning = true;
 
@@ -368,8 +366,8 @@ public class Simulation extends Activity {
                     "Speech recognition is not supported",
                     Toast.LENGTH_LONG).show();
         }
-
     }
+
     private void handleWordPair() {
         if ((thisnumber == -1) || "".equals(thisword)) {
             return;
