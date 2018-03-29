@@ -12,6 +12,9 @@ import static com.google.common.truth.Truth.assertThat;
 /**
  * Tests for {@link UserNotification}
  *
+ * Found a "feature" shown in {@link #snoozeNewAlert()} where only legacy alerts can be snoozed
+ * using this method.
+ *
  * @author Asbjørn Aarrestad, asbjorn@aarrestad.com - 2018.03
  */
 public class UserNotificationTest extends RobolectricTestWithConfig {
