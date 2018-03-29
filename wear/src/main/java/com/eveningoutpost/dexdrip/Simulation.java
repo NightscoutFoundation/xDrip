@@ -141,8 +141,6 @@ public class Simulation extends Activity {
         Log.i(TAG, "triggered");
         final Bundle bundle = intent.getExtras();
         if (bundle == null) promptSpeechInput();
-
-
     }
 
     @Override
@@ -163,15 +161,13 @@ public class Simulation extends Activity {
 
     private void processIncomingIntentWhenReady(final Intent intent) {
         Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            public void run() {
-                if (inflated) {
-                    processIncomingIntent(intent);
-                } else {
-                    stackcounter++;
-                    Log.d(TAG, "Waiting for inflation count:" + stackcounter);
-                    if (stackcounter < 30) processIncomingIntentWhenReady(intent);
-                }
+        handler.postDelayed(() -> {
+            if (inflated) {
+                processIncomingIntent(intent);
+            } else {
+                stackcounter++;
+                Log.d(TAG, "Waiting for inflation count:" + stackcounter);
+                if (stackcounter < 30) processIncomingIntentWhenReady(intent);
             }
         }, 100);
     }
@@ -345,8 +341,9 @@ public class Simulation extends Activity {
         if (watchkeypad) {
             JoH.static_toast(xdrip.getAppContext(), "Treatment cancelled", Toast.LENGTH_SHORT);
         }
-        else
+        else {
             SendData(this, WEARABLE_CANCEL_TREATMENT, null);
+        }
         finish();
     }
 
@@ -374,13 +371,13 @@ public class Simulation extends Activity {
 
     }
     private void handleWordPair() {
-        boolean preserve = false;
-        if ((thisnumber == -1) || (Objects.equals(thisword, ""))) return;
+        if ((thisnumber == -1) || "".equals(thisword)) {
+            return;
+        }
 
         Log.d(TAG, "GOT WORD PAIR: " + thisnumber + " = " + thisword);
 
         switch (thisword) {
-
             case "watchkeypad":
                 if ((!watchkeypadset) && (thisnumber > 0)) {
                     watchkeypad = true;
@@ -399,7 +396,6 @@ public class Simulation extends Activity {
                     insulinset = true;
                 } else {
                     Log.d(TAG, "Rapid dose already set");
-                    preserve = true;
                 }
                 break;
 
@@ -505,17 +501,17 @@ public class Simulation extends Activity {
         thisword = "";
         thistimetext = "";
         String[] wordsArray = allWords.split(" ");
-        for (String aWordsArray : wordsArray) {
+        for (String word : wordsArray) {
             // per word in input stream
             try {
-                thisnumber = Double.parseDouble(aWordsArray); // if no exception
+                thisnumber = Double.parseDouble(word); // if no exception
                 handleWordPair();
             } catch (NumberFormatException nfe) {
                 // detection of number or not
-                Log.d(TAG, "createTreatment NumberFormatException wordsArray[i]=" + aWordsArray);
+                Log.d(TAG, "createTreatment NumberFormatException wordsArray[i]=" + word);
                 //String result = classifyWord(wordsArray[i]);
                 //if (result != null)
-                thisword = aWordsArray;//result;
+                thisword = word;//result;
                 handleWordPair();
             }
         }
