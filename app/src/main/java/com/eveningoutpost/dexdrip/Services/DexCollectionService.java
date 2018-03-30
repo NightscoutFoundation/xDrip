@@ -204,8 +204,12 @@ public class DexCollectionService extends Service {
             checkConnection(); // refresh status info
         }
         if (servicesDiscovered != DISCOVERED.COMPLETE) {
-            Log.d(TAG, "Calling discoverServices");
-            mBluetoothGatt.discoverServices();
+            if (mBluetoothGatt != null) {
+                Log.d(TAG, "Calling discoverServices");
+                mBluetoothGatt.discoverServices();
+            } else {
+                UserError.Log.d(TAG, "Wanted to discover services but gatt was null!");
+            }
         } else {
             Log.d(TAG, "Services already discovered");
             checkImmediateSend();
@@ -1202,7 +1206,7 @@ public class DexCollectionService extends Service {
         }
         Log.i(TAG, "connect: Trying to create a new connection.");
         setRetryTimer();
-        mBluetoothGatt = device.connectGatt(getApplicationContext(), false, mGattCallback);
+        mBluetoothGatt = device.connectGatt(getApplicationContext(), true, mGattCallback);
         mConnectionState = STATE_CONNECTING;
         last_connect_request = JoH.tsl();
         return true;

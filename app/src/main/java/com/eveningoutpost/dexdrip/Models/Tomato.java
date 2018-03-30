@@ -101,7 +101,9 @@ public class Tomato {
                 return reply;
                 
             } else {
-                Log.d(TAG,"Unknown initial packet makeup received");
+                if (JoH.quietratelimit("unknown-initial-packet", 1)) {
+                    Log.d(TAG, "Unknown initial packet makeup received");
+                }
                 return reply;
             }
         }
