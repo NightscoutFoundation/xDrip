@@ -1041,14 +1041,14 @@ public class BgReading extends Model implements ShareUploadableBg {
 
             bgr.timestamp = timestamp;
             bgr.calculated_value = value;
-            
+
 
             // rough code for testing!
             bgr.filtered_calculated_value = value;
             bgr.raw_data = value;
             bgr.age_adjusted_raw_value = value;
             bgr.filtered_data = value;
-            
+
             final Sensor forced_sensor = Sensor.currentSensor();
             if (forced_sensor != null) {
                 bgr.sensor = forced_sensor;
@@ -1233,7 +1233,8 @@ public class BgReading extends Model implements ShareUploadableBg {
     public void find_slope() {
         List<BgReading> last_2 = BgReading.latest(2);
 
-        assert last_2.get(0)==this : "Invariant condition not fulfilled: calculating slope and current reading wasn't saved before";
+        assert last_2.get(0).uuid.equals(this.uuid)
+                : "Invariant condition not fulfilled: calculating slope and current reading wasn't saved before";
 
         if ((last_2 != null) && (last_2.size() == 2)) {
             calculated_value_slope = calculateSlope(this, last_2.get(1));
@@ -1606,7 +1607,7 @@ public class BgReading extends Model implements ShareUploadableBg {
             UserNotification.DeleteNotificationByType("bg_unclear_readings_alert");
             return false;
         }
-        
+
         Boolean bg_unclear_readings_alerts = prefs.getBoolean("bg_unclear_readings_alerts", false);
         if (!bg_unclear_readings_alerts || (!DexCollectionType.hasFiltered())) {
             Log.d(TAG_ALERT, "getUnclearReading returned false since feature is disabled");
@@ -1622,14 +1623,14 @@ public class BgReading extends Model implements ShareUploadableBg {
             Notifications.bgUnclearAlert(context);
             return true;
         }
-        
+
         UserNotification.DeleteNotificationByType("bg_unclear_readings_alert");
-        
+
         if (UnclearTime > 0 ) {
             Log.d(TAG_ALERT, "We are in an clear state, but not for too long. Alerts are disabled");
             return true;
         }
-        
+
         return false;
     }
     /*

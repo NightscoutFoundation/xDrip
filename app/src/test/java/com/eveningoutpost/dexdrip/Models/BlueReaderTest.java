@@ -24,7 +24,7 @@ import static com.google.common.truth.Truth.assertWithMessage;
 
 /**
  * Tests for {@link blueReader}. Verifying commands and bg readings.
- *
+ * <p>
  * Got great input from @SandraK82 on how the BlueReader works.
  *
  * @author Asbjørn Aarrestad, asbjorn@aarrestad.com - 2018.04
@@ -387,7 +387,11 @@ public class BlueReaderTest extends RobolectricTestWithConfig {
         // Setup
         String message = "150000 4300";
         Sensor mockSensor = createMockSensor();
-        createCalibration(mockSensor);
+
+        addMockBgReading(150, 15, mockSensor);
+        addMockBgReading(150, 10, mockSensor);
+        addMockBgReading(150, 5, mockSensor);
+        Calibration.initialCalibration(150, 150, RuntimeEnvironment.application.getApplicationContext());
 
         // Act
         byte[] bytes = blueReader.decodeblueReaderPacket(message.getBytes(), message.length());
@@ -416,7 +420,10 @@ public class BlueReaderTest extends RobolectricTestWithConfig {
         // Setup
         String message = "150000 3900";
         Sensor mockSensor = createMockSensor();
-        createCalibration(mockSensor);
+        addMockBgReading(150, 15, mockSensor);
+        addMockBgReading(150, 10, mockSensor);
+        addMockBgReading(150, 5, mockSensor);
+        Calibration.initialCalibration(150, 150, RuntimeEnvironment.application.getApplicationContext());
 
         // Act
         byte[] bytes = blueReader.decodeblueReaderPacket(message.getBytes(), message.length());
@@ -445,7 +452,10 @@ public class BlueReaderTest extends RobolectricTestWithConfig {
         // Setup
         String message = "150000 3300";
         Sensor mockSensor = createMockSensor();
-        createCalibration(mockSensor);
+        addMockBgReading(150, 15, mockSensor);
+        addMockBgReading(150, 10, mockSensor);
+        addMockBgReading(150, 5, mockSensor);
+        Calibration.initialCalibration(150, 150, RuntimeEnvironment.application.getApplicationContext());
 
         // Act
         byte[] bytes = blueReader.decodeblueReaderPacket(message.getBytes(), message.length());
@@ -476,7 +486,10 @@ public class BlueReaderTest extends RobolectricTestWithConfig {
     public void processNewTransmitterData_NormalBg_BatteryLifeTest() {
         // Setup
         Sensor mockSensor = createMockSensor();
-        createCalibration(mockSensor);
+        addMockBgReading(150, 15, mockSensor);
+        addMockBgReading(150, 10, mockSensor);
+        addMockBgReading(150, 5, mockSensor);
+        Calibration.initialCalibration(150, 150, RuntimeEnvironment.application.getApplicationContext());
 
         int bgLevelBase = 150000;
 
@@ -510,7 +523,7 @@ public class BlueReaderTest extends RobolectricTestWithConfig {
                     .isEqualTo(compare);
 
             // Battery Percentage check
-            int batteryPercentage = ((batteryLevel - minBatteryLevel)  * 100 / batteryRange);
+            int batteryPercentage = ((batteryLevel - minBatteryLevel) * 100 / batteryRange);
             assertWithMessage("batteryLevel: " + batteryLevel)
                     .that(Sensor.currentSensor().latest_battery_level)
                     .isEqualTo(batteryPercentage);
@@ -518,23 +531,6 @@ public class BlueReaderTest extends RobolectricTestWithConfig {
     }
 
     // ===== Internal Helpers ======================================================================
-    private void createCalibration(Sensor mockSensor) {
-        Calibration mockCalibration = new Calibration();
-        mockCalibration.sensor = mockSensor;
-        mockCalibration.uuid = UUID.randomUUID().toString();
-        mockCalibration.adjusted_raw_value = 150;
-        mockCalibration.bg = 150;
-        mockCalibration.check_in = true;
-        mockCalibration.slope = 1;
-        mockCalibration.first_slope = 1;
-        mockCalibration.first_decay = 1;
-        mockCalibration.first_scale = 1;
-        mockCalibration.first_intercept = 1;
-        mockCalibration.slope_confidence = 1;
-        mockCalibration.sensor_confidence = 1;
-        mockCalibration.timestamp = System.currentTimeMillis();
-        mockCalibration.save();
-    }
 
     private String getLogs() {
         return new String(_out.toByteArray());
