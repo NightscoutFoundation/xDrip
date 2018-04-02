@@ -218,7 +218,7 @@ public class Treatments extends Model {
         pushTreatmentSync(treatment, true, null); // new entry by default
     }
 
-    private static void pushTreatmentSync(Treatments treatment, boolean is_new, String suggested_uuid) {;
+    private static void pushTreatmentSync(Treatments treatment, boolean is_new, String suggested_uuid) {
         if (Home.get_master_or_follower()) GcmActivity.pushTreatmentAsync(treatment);
 
         if (!(Pref.getBoolean("cloud_storage_api_enable", false) || Pref.getBoolean("cloud_storage_mongodb_enable", false))) {
@@ -640,10 +640,8 @@ public class Treatments extends Model {
 
         Log.d(TAG, "Carb delay ms: " + carb_delay_ms_stepped);
 
-        Map<String, Boolean> carbsEaten = new HashMap<String, Boolean>();
-
         // linear array populated as needed and layered by each treatment etc
-        SortedMap<Double, Iob> timeslices = new TreeMap<Double, Iob>();
+        SortedMap<Double, Iob> timeslices = new TreeMap<>();
 
         Iob calcreply;
 
@@ -771,7 +769,7 @@ public class Treatments extends Model {
         Log.d(TAG, "Processing iobforgraph: main  ");
         // get all treatments from 24 hours earlier than our current time
         List<Treatments> theTreatments = latestForGraph(2000, startTime - 86400000);
-        Map<String, Boolean> carbsEaten = new HashMap<String, Boolean>();
+        Map<String, Boolean> carbsEaten = new HashMap<>();
         // this could be much more optimized with linear array instead of loops
 
         final double dontLookThisFar = 10 * 60 * 60 * 1000; // 10 hours max look
@@ -785,7 +783,7 @@ public class Treatments extends Model {
 
         Map ioblookup = new HashMap<Double, Double>(); // store for iob total vs time
 
-        List<Iob> responses = new ArrayList<Iob>();
+        List<Iob> responses = new ArrayList<>();
         Iob calcreply;
 
         double mytime = startTime;
@@ -954,6 +952,3 @@ public class Treatments extends Model {
         return gson.toJson(this);
     }
 }
-
-
-

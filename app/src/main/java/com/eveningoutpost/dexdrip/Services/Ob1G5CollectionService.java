@@ -479,18 +479,18 @@ public class Ob1G5CollectionService extends G5BaseService {
     private static boolean shouldServiceRun() {
         if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) return false;
         if (!Pref.getBooleanDefaultFalse(OB1G5_PREFS)) return false;
-        if (!(DexCollectionType.getDexCollectionType() == DexCollectionType.DexcomG5)) return false;
+        if (DexCollectionType.getDexCollectionType() != DexCollectionType.DexcomG5) return false;
 
         if (!android_wear) {
             if (Home.get_forced_wear()) {
-                if (JoH.quietratelimit("forced-wear-notice", 3))
+                if (JoH.quietratelimit("forced-wear-notice", 3)) {
                     UserError.Log.d(TAG, "Not running due to forced wear");
+                }
                 return false;
             }
         } else {
             // android wear code
-            if (!PersistentStore.getBoolean(CollectionServiceStarter.pref_run_wear_collector))
-                return false;
+            return PersistentStore.getBoolean(CollectionServiceStarter.pref_run_wear_collector);
         }
         return true;
     }
@@ -1136,7 +1136,6 @@ public class Ob1G5CollectionService extends G5BaseService {
         }
     }
 
-
     private final BroadcastReceiver mPairingRequestRecevier = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -1267,21 +1266,11 @@ public class Ob1G5CollectionService extends G5BaseService {
         long last_battery_query = PersistentStore.getLong(G5_BATTERY_FROM_MARKER + tx_id);
         if (getBatteryStatusNow) {
             l.add(new StatusItem("Battery Status Request Queued", "Will attempt to read battery status on next sensor reading", StatusItem.Highlight.NOTICE, "long-press",
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            getBatteryStatusNow = false;
-                        }
-                    }));
+                    () -> getBatteryStatusNow = false));
         }
         if ((bt != null) && (last_battery_query > 0)) {
             l.add(new StatusItem("Battery Last queried", JoH.niceTimeSince(last_battery_query) + " " + "ago", StatusItem.Highlight.NORMAL, "long-press",
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            getBatteryStatusNow = true;
-                        }
-                    }));
+                    () -> getBatteryStatusNow = true));
             if (vr != null) {
                 final String battery_status = TransmitterStatus.getBatteryLevel(vr.status).toString();
                 if (!battery_status.equals("OK"))

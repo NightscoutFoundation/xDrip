@@ -3,7 +3,6 @@ package com.eveningoutpost.dexdrip;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -30,13 +29,11 @@ import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -87,24 +84,14 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
         alertDialog.setTitle("Import Instructions");
         alertDialog.setView(view);
         alertDialog.setCancelable(false);
-        alertDialog.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                generateDBGui();
-            }
-        });
+        alertDialog.setPositiveButton(R.string.ok, (dialog, which) -> generateDBGui());
         AlertDialog alert = alertDialog.create();
         alert.show();
     }
 
     private void sortDatabasesAlphabetically() {
-        Collections.sort(databases, new Comparator<File>() {
-            @Override
-            public int compare(File lhs, File rhs) {
-                //descending sort
-                return rhs.getName().compareTo(lhs.getName());
-            }
-        });
+        //descending sort
+        Collections.sort(databases, (lhs, rhs) -> rhs.getName().compareTo(lhs.getName()));
     }
 
     private boolean findAllDatabases() {
@@ -119,12 +106,7 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
         addAllDatabases(file, databases);
 
         // add from level below (Andriod usually unzips to a subdirectory)
-        File[] subdirectories = file.listFiles(new FileFilter() {
-            @Override
-            public boolean accept(File path) {
-                return path.isDirectory();
-            }
-        });
+        File[] subdirectories = file.listFiles(path -> path.isDirectory());
         try {
             for (File subdirectory : subdirectories) {
                 addAllDatabases(subdirectory, databases);
@@ -153,12 +135,9 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
     }
 
     private void addAllDatabases(File file, ArrayList<File> databases) {
-        File[] files = file.listFiles(new FileFilter() {
-            @Override
-            public boolean accept(File pathname) {
-                return pathname.getPath().endsWith(".sqlite") || pathname.getPath().endsWith(".zip");
-            }
-        });
+        File[] files = file.listFiles(pathname ->
+                pathname.getPath().endsWith(".sqlite")
+                        || pathname.getPath().endsWith(".zip"));
         if ((databases != null) && (files != null)) {
             Collections.addAll(databases, files);
         }
@@ -168,15 +147,9 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
     protected void onListItemClick(ListView l, View v, final int position, long id) {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                importDB(position);
-            }
-        });
-        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                //do nothing
-            }
+        builder.setPositiveButton(R.string.ok, (dialog, id12) -> importDB(position));
+        builder.setNegativeButton(R.string.cancel, (dialog, id1) -> {
+            //do nothing
         });
         builder.setTitle("Confirm Import");
         builder.setMessage("Do you really want to import '" + databases.get(position).getName() + "'?\n This may negatively affect the data integrity of your system!");
@@ -243,11 +216,7 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
         startWatchUpdaterService(this, WatchUpdaterService.ACTION_RESET_DB, TAG);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                returnToHome();
-            }
-        });
+        builder.setPositiveButton(R.string.ok, (dialog, id) -> returnToHome());
         builder.setTitle("Import Result");
         builder.setMessage(result);
         AlertDialog dialog = builder.create();
@@ -335,12 +304,7 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
                 statusDialog.dismiss();
                 return "Database cannot be opened... aborting.";
             }
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    statusDialog.setMessage("Step 2: exporting current DB");
-                }
-            });
+            mHandler.post(() -> statusDialog.setMessage("Step 2: exporting current DB"));
 
             String export = DatabaseUtil.saveSql(xdrip.getAppContext(), "b4import");
 
@@ -350,16 +314,11 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
                 return "Exporting database not successfull... aborting.";
             }
 
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    statusDialog.setMessage("Step 3: importing DB");
-                }
-            });
+            mHandler.post(() -> statusDialog.setMessage("Step 3: importing DB"));
 
             String result = DatabaseUtil.loadSql(xdrip.getAppContext(), dbFile.getAbsolutePath());
             if (delete_file != null) delete_file.delete();
-            statusDialog.dismiss();;
+            statusDialog.dismiss();
             return result;
         }
 
