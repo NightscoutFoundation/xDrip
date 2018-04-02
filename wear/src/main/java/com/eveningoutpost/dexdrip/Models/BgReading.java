@@ -1189,7 +1189,10 @@ public class BgReading extends Model implements ShareUploadableBg {
     public void find_slope() {
         List<BgReading> last_2 = BgReading.latest(2);
 
-        assert last_2.get(0)==this : "Invariant condition not fulfilled: calculating slope and current reading wasn't saved before";
+        // FYI: By default, assertions are disabled at runtime. Add "-ea" to commandline to enable.
+        // https://docs.oracle.com/javase/7/docs/technotes/guides/language/assert.html
+        assert last_2.get(0).uuid.equals(this.uuid)
+                : "Invariant condition not fulfilled: calculating slope and current reading wasn't saved before";
 
         if ((last_2 != null) && (last_2.size() == 2)) {
             calculated_value_slope = calculateSlope(this, last_2.get(1));
