@@ -9,9 +9,9 @@ import org.robolectric.annotation.Config;
 /**
  * Abstract test config class to handle the different config for Android studio and CI builds.
  * Used for tests requiring MockModel framework to be active.
- *
+ * <p>
  * To work for local tests build, uncomment the first @Config line and comment the second.
- *
+ * <p>
  * If you commit this file with the wrong config active, the build will not pass CI.
  *
  * @author jamorham on 01/10/2017
