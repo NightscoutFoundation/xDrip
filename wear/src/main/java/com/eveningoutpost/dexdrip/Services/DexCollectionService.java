@@ -1188,7 +1188,7 @@ public class DexCollectionService extends Service {
 
     public static final String LIMITTER_NAME = "LimiTTer";
     public static String getBestLimitterHardwareName() {
-        if (static_use_nrf) {
+        if (blueReader.isblueReader()) {
             return "BlueReader";
         } else if (static_use_blukon) {
             return xdrip.getAppContext().getString(R.string.blukon);
