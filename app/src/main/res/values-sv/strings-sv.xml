@@ -44,7 +44,7 @@
     <string name="pref_title_mongodb_uri">URI</string>
     <string name="pref_dialog_mongodb_uri">URI till MongoDB"</string>
     <string name="pref_message_mongodb_uri">Ersätt exempeldatan i {} med riktiga värden</string>
-    <string name="pref_default_mongodb_uri">mongodb: // {användare}: {lösenord} @ {värd} .mongolab.com: {11111} / {databas}</string>
+    <string name="pref_default_mongodb_uri">mongodb://{användare}:{lösenord}@{värd}.mongolab.com:{11111}/{databas}</string>
     <string name="pref_title_mongodb_collection">Samlingsnamn</string>
     <string name="pref_dialog_mongodb_collection">Ange samlingsnamn</string>
     <string name="pref_message_mongodb_collection">Detta är namnet på den samling där CGM-data lagras</string>
@@ -57,8 +57,8 @@
     <string name="pref_title_api_url">Rotadress</string>
     <string name="pref_dialog_api_url">Ange rotadressen för APIet</string>
     <string name="pref_message_api_url">Detta bara roten/början av adressen, uppladdaren kommer automatiskt att sammanfoga den med /värden for POST-anropet.  API_SECRET på din server bör vara det samms som din lösenordsfras i denna inställning.</string>
-    <string name="pref_default_api_url">https: // lösenordsfras @ {DIN-SAJT} .azurewebsites.net / api / V1 /</string>
-    <string name="wifi_recievers_dialog_message">Kommaseparerad lista av IP-adresser och port (till exempel 37.142.132.220:50005,37.142.132.220:50010,mongodb://user:pass@ds053958.mongolab.com:53958/db/collection)</string>
+    <string name="pref_default_api_url">https://lösenordsfras@{DIN-SAJT}.azurewebsites.net/api/v1/</string>
+    <string name="wifi_recievers_dialog_message">Kommaseparerad lista av IP-adresser och portar (till exempel 37.142.132.220:50005,37.142.132.220:50010,mongodb://user:pass@ds053958.mongolab.com:53958/db/collection)</string>
     <string name="wifi_recievers_dialog_title">Ange IP-adresser och portar för mottagare (inklusive mongodb-adresser om det behövs)</string>
     <string name="location_not_found_title">Plats är inte aktiverad</string>
     <string name="location_not_found_message">För att Bluetooth ska fungera med nyare enheter, måste platsdata vara aktiverat. xDrip sparar inte den plats och det kan stängas av efter att enheten har kopplats.</string>
