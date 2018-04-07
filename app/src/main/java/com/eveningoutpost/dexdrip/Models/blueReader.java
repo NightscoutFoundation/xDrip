@@ -30,10 +30,10 @@ public class blueReader {
     private static int counterHibernated = 0;
     private static String tempVers="";
 
-    private final static byte[] shutdown = new byte[]{0x6B};
-    private final static byte[] requestValue = new byte[]{0x6C};
-    private final static byte[] goHybernate = new byte[]{0x68};
-    private final static byte[] restart = new byte[]{0x79};
+    private final static byte[] shutdown = new byte[]{0x6B};        // Char 'k'
+    private final static byte[] requestValue = new byte[]{0x6C};    // Char 'l'
+    private final static byte[] goHybernate = new byte[]{0x68};     // Char 'h'
+    private final static byte[] restart = new byte[]{0x79};         // Char 'y'
 
 
     public static boolean isblueReader() {
