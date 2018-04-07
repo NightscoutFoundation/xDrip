@@ -593,7 +593,7 @@
                     android:summary="@string/close_gatt"
                     android:title="@string/close_gatt_on_ble_disconnect" />
                 <CheckBoxPreference
-                    android:defaultValue="true"
+                    android:defaultValue="false"
                     android:key="bluetooth_excessive_wakelocks"
                     android:summary="@string/older_bluetooth_wakelocks"
                     android:title="@string/bluetooth_wakelocks" />
@@ -623,6 +623,11 @@
                     android:key="always_discover_services"
                     android:summary="Probe Bluetooth services on every connect"
                     android:title="Always discover services" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="blukon_unbonding"
+                    android:summary="Only suitable for phones which support automatic pairing"
+                    android:title="Allow blucon unbonding" />
             </PreferenceScreen>
             <CheckBoxPreference
                 android:defaultValue="true"

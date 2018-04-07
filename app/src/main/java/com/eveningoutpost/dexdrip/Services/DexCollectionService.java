@@ -116,7 +116,7 @@ public class DexCollectionService extends Service {
     private static long poll_backoff = 0;
     private static long retry_backoff = 0;
     private static long last_connect_request = 0;
-    private static long descriptor_time = 0;
+    private static volatile long descriptor_time = 0;
     private static int watchdog_count = 0;
     private static long max_wakeup_jitter = 0;
     private static volatile DISCOVERED servicesDiscovered = DISCOVERED.NULL;
@@ -134,7 +134,7 @@ public class DexCollectionService extends Service {
     private static long failover_time_watch = 0;
     private static String static_last_hexdump_watch;
     private static String static_last_sent_hexdump_watch;
-    public final UUID CCCD = UUID.fromString(HM10Attributes.CLIENT_CHARACTERISTIC_CONFIG);
+    private static final UUID CCCD = UUID.fromString(HM10Attributes.CLIENT_CHARACTERISTIC_CONFIG);
     public final UUID nrfDataService = UUID.fromString(HM10Attributes.NRF_UART_SERVICE);
     public final UUID nrfDataRXCharacteristic = UUID.fromString(HM10Attributes.NRF_UART_TX);
     public final UUID nrfDataTXCharacteristic = UUID.fromString(HM10Attributes.NRF_UART_RX);
@@ -167,9 +167,9 @@ public class DexCollectionService extends Service {
     private ForegroundServiceStarter foregroundServiceStarter;
     private volatile int mConnectionState = BluetoothProfile.STATE_DISCONNECTING;
     private BluetoothDevice device;
-    private BluetoothGattCharacteristic mCharacteristic;
+    private static volatile BluetoothGattCharacteristic mCharacteristic;
     // Experimental support for rfduino from Tomasz Stachowicz
-    private BluetoothGattCharacteristic mCharacteristicSend;
+    private static volatile BluetoothGattCharacteristic mCharacteristicSend;
     private byte[] lastdata = null;
     public SharedPreferences.OnSharedPreferenceChangeListener prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
         public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
@@ -248,6 +248,8 @@ public class DexCollectionService extends Service {
                                 mBluetoothGatt = null;
                                 mCharacteristic = null;
                                 servicesDiscovered = DISCOVERED.NULL;
+                            } else {
+                                Log.d(TAG, "mBluetoothGatt is null so not closing");
                             }
                             lastdata = null;
                         }
@@ -352,15 +354,8 @@ public class DexCollectionService extends Service {
             }
 
             final BluetoothGattService nrfGattService = mBluetoothGatt.getService(nrfDataService);
-            /* if (nrfGattService == null) {
-                Log.w(TAG, "onServicesDiscovered: service " + nrfGattService + " not found");
-                listAvailableServices(mBluetoothGatt);
-                JoH.releaseWakeLock(wl);
-                Log.d(TAG,"onServicesDiscovered: returning due to null nrf service");
-                return;
-            }
-            else*/
 
+            // NRF code
             if (nrfGattService != null) {
                 final BluetoothGattCharacteristic nrfGattCharacteristic = nrfGattService.getCharacteristic(nrfDataRXCharacteristic);
                 if (nrfGattCharacteristic == null) {
@@ -375,10 +370,10 @@ public class DexCollectionService extends Service {
                     if ((charaProp | BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
                         // TODO isn't this condition always true, shouldn't it be & instead of | ?
                         mBluetoothGatt.setCharacteristicNotification(nrfGattCharacteristic, true);
-
                         try {
                             final BluetoothGattDescriptor bdescriptor = nrfGattCharacteristic.getDescriptor(UUID.fromString(HM10Attributes.CLIENT_CHARACTERISTIC_CONFIG));
                             Log.i(TAG, "Bluetooth Notification Descriptor found: " + bdescriptor.getUuid());
+                            descriptor_time = JoH.tsl();
                             bdescriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
                             mBluetoothGatt.writeDescriptor(bdescriptor);
                         } catch (Exception e) {
@@ -409,24 +404,43 @@ public class DexCollectionService extends Service {
             }
 
             // TODO make these detection sections a generic method where only one can match
+
+            // BLUKON
             final BluetoothGattService blukonService = mBluetoothGatt.getService(blukonDataService);
             if (blukonService != null) {
                 Log.i(TAG, "Found " + getString(R.string.blukon) + " device");
                 mCharacteristic = blukonService.getCharacteristic(UUID.fromString(HM10Attributes.BLUKON_UART_RX));
                 if (mCharacteristic == null) {
                     Log.w(TAG, "onServicesDiscovered: blukon characteristic " + mCharacteristic + " not found");
+                    // WHAT TO DO HERE?
                     JoH.releaseWakeLock(wl);
                     return;
                 }
+
+                try {
+                    final int charaProp = mCharacteristic.getProperties();
+                    if ((charaProp & BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
+                        UserError.Log.d(TAG, "Setting notification on characteristic: " + mCharacteristic.getUuid() + " charaprop: " + charaProp);
+                        final boolean result = mBluetoothGatt.setCharacteristicNotification(mCharacteristic, true);
+                        if (!result)
+                            UserError.Log.d(TAG, "Failed setting notification on blukon characteristic! " + mCharacteristic.getUuid());
+                    } else {
+                        Log.e(TAG, "Blukon characteristic doesn't seem to allow notify - this is very unusual");
+                    }
+                } catch (Exception e) {
+                    Log.e(TAG, " Exception during notification preparation " + e);
+                }
+
+                // TODO move this to a function for generic use
                 try {
                     final BluetoothGattDescriptor bdescriptor = mCharacteristic.getDescriptor(UUID.fromString(HM10Attributes.CLIENT_CHARACTERISTIC_CONFIG));
                     Log.i(TAG, "Bluetooth Notification Descriptor found: " + bdescriptor.getUuid());
+                    descriptor_time = JoH.tsl();
                     bdescriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
                     mBluetoothGatt.writeDescriptor(bdescriptor);
                 } catch (Exception e) {
-                    Log.e(TAG, "Error setting notification value descriptor: " + e);
+                    Log.e(TAG, "Error creating notification value descriptor: " + e);
                 }
-                mBluetoothGatt.setCharacteristicNotification(mCharacteristic, true);
 
                 mCharacteristicSend = blukonService.getCharacteristic(UUID.fromString(HM10Attributes.BLUKON_UART_TX));
                 if (mCharacteristicSend == null) {
@@ -441,20 +455,56 @@ public class DexCollectionService extends Service {
             }
 
             // TODO is this duplicated in some situations?
-            try {
-                final BluetoothGattDescriptor descriptor = mCharacteristic.getDescriptor(CCCD);
-                if (descriptor != null) {
-                    descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-                    mBluetoothGatt.writeDescriptor(descriptor);
+
+            Inevitable.task("dex-descrpiptor-retry", 2000, () -> {
+                try {
+                    UserError.Log.d(TAG, "Writing descriptor inside discover services");
+                    final BluetoothGattDescriptor descriptor = mCharacteristic.getDescriptor(CCCD);
+                    if (descriptor != null) {
+                        descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                        descriptor_time = JoH.tsl();
+                        if (!mBluetoothGatt.writeDescriptor(descriptor)) {
+                            Log.d(TAG, "Failed to write descriptor!");
+                            if (static_use_blukon && Pref.getBooleanDefaultFalse("blukon_unbonding")) {
+                                Log.d(TAG, "Attempting to unbond");
+                                JoH.unBond(mDeviceAddress);
+                            }
+                        } else {
+                            Inevitable.task("dex_check_descriptor_write", 2000, new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (descriptor_time != 0) {
+                                        Log.e(TAG, "Descriptor write did not callback! since: " + JoH.dateTimeText(descriptor_time));
+                                        descriptor_time = 0;
+                                        // TODO retry counter before unbond?
+                                        if (static_use_blukon && Pref.getBooleanDefaultFalse("blukon_unbonding")) {
+                                            Log.d(TAG, "Attempting to unbond");
+                                            JoH.unBond(mDeviceAddress);
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    }
+                } catch (NullPointerException e) {
+                    Log.e(TAG, "Got null pointer trying to set CCCD descriptor");
                 }
-            } catch (NullPointerException e) {
-                Log.e(TAG, "Got null pointer trying to set CCCD descriptor");
+            });
+
+
+            final int charaProp = mCharacteristic.getProperties();
+            if ((charaProp & BluetoothGattCharacteristic.PROPERTY_READ) > 0) {
+                JoH.runOnUiThreadDelayed(() -> {
+                    try {
+                        Log.d(TAG, "Reading characteristic: " + mCharacteristic.getUuid().toString());
+                        mBluetoothGatt.readCharacteristic(mCharacteristic);
+                    } catch (NullPointerException e) {
+                        Log.e(TAG, "Got null pointer trying to readCharacteristic");
+                    }
+                }, 300);
+
             }
-            try {
-                mBluetoothGatt.readCharacteristic(mCharacteristic);
-            } catch (NullPointerException e) {
-                Log.e(TAG, "Got null pointer trying to readCharacteristic");
-            }
+
             Log.d(TAG, "Services discovered end");
             servicesDiscovered = DISCOVERED.COMPLETE;
             // waitFor(300);
@@ -484,7 +534,7 @@ public class DexCollectionService extends Service {
         }
 
         @Override
-        public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
+        public void onCharacteristicChanged(BluetoothGatt gatt, final BluetoothGattCharacteristic characteristic) {
 
             final PowerManager.WakeLock wakeLock1 = JoH.getWakeLock("DexCollectionService", 60000);
             try {
@@ -519,12 +569,16 @@ public class DexCollectionService extends Service {
         }
 
         @Override
-        public void onDescriptorWrite(BluetoothGatt gatt, BluetoothGattDescriptor descriptor,
+        public void onDescriptorWrite(BluetoothGatt gatt, final BluetoothGattDescriptor descriptor,
                                       int status) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 Log.d(TAG, "onDescriptorWrite: Wrote GATT Descriptor successfully.");
             } else {
                 Log.d(TAG, "onDescriptorWrite: Error writing GATT Descriptor: " + status);
+                if (static_use_blukon && Pref.getBooleanDefaultFalse("blukon_unbonding")) {
+                       Log.e(TAG, "Attempting blukon reset pairing: " + mDeviceAddress);
+                       JoH.unBond(mDeviceAddress);
+                }
             }
             descriptor_time = 0;
         }
@@ -836,6 +890,9 @@ public class DexCollectionService extends Service {
         pairingRequestFilter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY - 1);
         registerReceiver(mPairingRequestRecevier, pairingRequestFilter);
         Log.i(TAG, "onCreate: STARTING SERVICE: pin code: " + DEFAULT_BT_PIN);
+
+        Blukon.unBondIfBlukonAtInit();
+
     }
 
     @Override
@@ -1206,7 +1263,7 @@ public class DexCollectionService extends Service {
         }
         Log.i(TAG, "connect: Trying to create a new connection.");
         setRetryTimer();
-        mBluetoothGatt = device.connectGatt(getApplicationContext(), true, mGattCallback);
+        mBluetoothGatt = device.connectGatt(getApplicationContext(), false, mGattCallback);
         mConnectionState = STATE_CONNECTING;
         last_connect_request = JoH.tsl();
         return true;

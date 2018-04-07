@@ -9,20 +9,21 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
 
-
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
+import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.LibreBlock;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
+import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
 import com.eveningoutpost.dexdrip.xdrip;
-import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 
 /**
  * Created by gregorybel / jamorham on 02/09/2017.
@@ -51,11 +52,13 @@ public class Blukon {
         INITIAL
     }
 
+    private static final boolean testWithDeadSensor = false; // never in production
+
     private static boolean m_getNowGlucoseDataIndexCommand = false;
-    private static int GET_SENSOR_AGE_DELAY = 3 * 3600;
+    private static final int GET_SENSOR_AGE_DELAY = 3 * 3600;
     private static final String BLUKON_GETSENSORAGE_TIMER = "blukon-getSensorAge-timer";
     private static final String BLUKON_DECODE_SERIAL_TIMER = "blukon-decodeSerial-timer";
-    private static int GET_DECODE_SERIAL_DELAY = 12 * 3600;
+    private static final int GET_DECODE_SERIAL_DELAY = 12 * 3600;
     private static boolean m_getNowGlucoseDataCommand = false;// to be sure we wait for a GlucoseData Block and not using another block
     private static long m_timeLastBg = 0;
     private static long m_persistentTimeLastBg;
@@ -121,8 +124,32 @@ public class Blukon {
         return isBlukonPacket(buffer) && getPin() != null; // TODO can't be unset yet and isn't proper subtype test yet
     }
 
+    public static boolean expectingBlukonDevice() {
+        try {
+            final ActiveBluetoothDevice btDevice = ActiveBluetoothDevice.first();
+            if (btDevice.name.startsWith("BLU")) return true;
+        } catch (Exception e) {
+            //
+        }
+        return false;
+    }
+
+    public static void unBondIfBlukonAtInit() {
+        try {
+            if (Blukon.expectingBlukonDevice() && Pref.getBooleanDefaultFalse("blukon_unbonding")) {
+                final ActiveBluetoothDevice btDevice = ActiveBluetoothDevice.first();
+                if (btDevice != null) {
+                    UserError.Log.d(TAG, "Unbonding blukon at initialization");
+                    JoH.unBond(btDevice.address);
+                }
+            }
+        } catch (Exception e) {
+            UserError.Log.e(TAG, "Got exception trying to unbond blukon at init");
+        }
+    }
+
     // .*(dexdrip|gatt|Blukon).
-    public static byte[] decodeBlukonPacket(byte[] buffer) {
+    public synchronized static byte[] decodeBlukonPacket(byte[] buffer) {
         int cmdFound = 0;
         Boolean gotLowBat = false;
 
@@ -205,7 +232,9 @@ public class Blukon {
             Log.i(TAG, "wakeup received");
 
             //must be first cmd to be sent otherwise get NACK!
-            currentCommand = "010d0900";
+           if (JoH.ratelimit("blukon-request_patch_info",1)) {
+               currentCommand = "010d0900";
+           }
             Log.i(TAG, "getPatchInfo");
 
         } else if (currentCommand.startsWith("010d0900") /*getPatchInfo*/ && strRecCmd.startsWith("8bd9")) {
@@ -510,6 +539,8 @@ public class Blukon {
         }
 
         Log.i(TAG, "Sensor status is: " + sensorStatusString);
+
+        if (testWithDeadSensor) return true;
 
         if (!ret) {
             Home.toaststaticnext("Can't use this sensor as it is " + sensorStatusString);
