@@ -2,10 +2,8 @@ package com.eveningoutpost.dexdrip.wearintegration;
 
 import android.app.ActivityManager;
 import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -37,6 +35,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.Blukon;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
@@ -641,10 +640,14 @@ public class WatchUpdaterService extends WearableListenerService implements
             public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
                 Log.d(TAG, "onSharedPreferenceChanged enter key=" + key);
                 pebble_integration = mPrefs.getBoolean("pebble_sync", false);
-                if(key.compareTo("bridge_battery") != 0 && key.compareTo("nfc_sensor_age") != 0 &&
-                    key.compareTo("bg_notifications_watch") != 0 && key.compareTo("persistent_high_alert_enabled_watch") != 0){
-                    sendPrefSettings();
-                    processConnect();
+                if (key.compareTo("bridge_battery") != 0 && key.compareTo("nfc_sensor_age") != 0 &&
+                        key.compareTo("bg_notifications_watch") != 0 && key.compareTo("persistent_high_alert_enabled_watch") != 0) {
+
+                    Inevitable.task("wear-update-settings", 2000, () -> {
+                        sendPrefSettings();
+                        processConnect();
+                    });
+
                 }
             }
         };
@@ -804,6 +807,7 @@ public class WatchUpdaterService extends WearableListenerService implements
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         final PowerManager.WakeLock wl = JoH.getWakeLock("watchupdate-onstart",60000);
+        wear_integration = mPrefs.getBoolean("wear_sync", false);
 
         String action = null;
         if (intent != null) {
@@ -912,6 +916,7 @@ public class WatchUpdaterService extends WearableListenerService implements
         if (!wear_integration)    // only wear sync starts this service, pebble features are not used?
         {
             Log.i(TAG,"Stopping service");
+            startBtService();
             stopSelf();
             JoH.releaseWakeLock(wl);
             return START_NOT_STICKY;

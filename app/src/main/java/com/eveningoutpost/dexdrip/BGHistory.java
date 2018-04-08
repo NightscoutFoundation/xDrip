@@ -188,6 +188,8 @@ public class BGHistory extends ActivityWithMenu {
             sb.append(statsResult.getLowPercentage());
             sb.append(' ');
             sb.append(statsResult.getStdevUnitised());
+            sb.append(' ');
+            sb.append(statsResult.getGVI());
             DecimalFormat df = new DecimalFormat(getResources().getString(R.string.format_decimal_treatments));
             if (Pref.getBoolean("status_line_insulin", true)) {
                 sb.append('\n');

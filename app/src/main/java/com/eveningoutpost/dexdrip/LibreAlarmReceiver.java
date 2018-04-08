@@ -42,8 +42,8 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
 
     private static final String TAG = "jamorham librereceiver";
     private static final boolean debug = false;
-    private static final boolean d = false;
-    private static final boolean use_raw = true;
+    private static final boolean d = true;
+    private static final boolean use_raw_ = true;
     private static final double segmentation_timeslice = Constants.MINUTE_IN_MS * 4.5;
     private static SharedPreferences prefs;
     private static long oldest = -1;
@@ -174,7 +174,8 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
     public static void processReadingDataTransferObject(ReadingData.TransferObject object) {
     	Log.i(TAG, "Data that was recieved from librealarm is " + HexDump.dumpHexString(object.data.raw_data));
     	// Save raw block record (we start from block 0)
-        LibreBlock.createAndSave("LibreAlarm", object.data.raw_data, 0);
+    	long now = JoH.tsl();
+        LibreBlock.createAndSave("LibreAlarm", now, object.data.raw_data, 0);
 
         if(Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
         	if(object.data.raw_data == null) {
@@ -182,9 +183,13 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
         		JoH.static_toast_long("Please update LibreAlarm to use OOP algorithm");
         		return;
         	}
-        	LibreOOPAlgorithm.SendData(object.data.raw_data);
+        	LibreOOPAlgorithm.SendData(object.data.raw_data, now);
         	return;
         }
+        CalculateFromDataTransferObject(object, use_raw_);
+    }
+        
+    public static void CalculateFromDataTransferObject(ReadingData.TransferObject object, boolean use_raw) {
     	
         // insert any recent data we can
         final List<GlucoseData> mTrend = object.data.trend;
@@ -228,7 +233,7 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
                     if (use_raw) {
                         createBGfromGD(gd, false); // not quick for recent
                     } else {
-                        BgReading.bgReadingInsertFromInt(gd.glucoseLevel, gd.realDate, false);
+                        BgReading.bgReadingInsertFromInt(gd.glucoseLevel, gd.realDate, true);
                     }
                 }
             } else {
@@ -244,7 +249,7 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
                 final List<Double> polyyList = new ArrayList<Double>();
                 for (GlucoseData gd : mHistory) {
                     if (d)
-                        Log.d(TAG, "history : " + JoH.dateTimeText(gd.realDate) + " " + gd.glucose(true));
+                        Log.d(TAG, "history : " + JoH.dateTimeText(gd.realDate) + " " + gd.glucose(false));
                     polyxList.add((double) gd.realDate);
                     if (use_raw) {
                         polyyList.add((double) gd.glucoseLevelRaw);

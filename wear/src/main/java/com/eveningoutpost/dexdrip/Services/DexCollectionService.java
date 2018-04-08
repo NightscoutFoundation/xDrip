@@ -288,6 +288,7 @@ public class DexCollectionService extends Service {
         Log.i(TAG, "SERVICE STOPPED");
     }
 
+    // remember needs proguard exclusion due to access by reflection
     public static boolean isCollecting() {
        if (static_use_blukon) {
            return Blukon.isCollecting();

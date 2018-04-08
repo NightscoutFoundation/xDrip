@@ -311,6 +311,15 @@
                 android:key="broadcast_data_use_best_glucose"
                 android:summary="@string/use_plugins_for_brodcast"
                 android:title="@string/send_display_glucose" />
+            <ListPreference
+                android:defaultValue="200"
+                android:dependency="broadcast_data_through_intents"
+                android:entries="@array/NoiseLevelBlock"
+                android:entryValues="@array/NoiseLevelBlockValues"
+                android:key="noise_block_level"
+                android:shouldDisableView="true"
+                android:summary="@string/level_at_which_noisy_data_should_not_be_broadcast"
+                android:title="@string/noise_blocking" />
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:dependency="broadcast_data_through_intents"
@@ -554,12 +563,6 @@
                     android:key="bypass_calibration_quality_check"
                     android:summary="Allow initial calibration even if we don't have good enough data. Beware could result in inaccurate calibration!"
                     android:title="Bypass quality check" />
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:dependency="engineering_mode"
-                    android:key="testing_use_thirteen_bit_mask"
-                    android:summary="Testing setting for Libre"
-                    android:title="Use 13 bit ADC mask" />
 
 
             </PreferenceScreen>
@@ -751,6 +754,14 @@
                     android:key="external_blukon_algorithm"
                     android:summary="@string/use_external_blukon_algorithm_summary"
                     android:title="@string/use_external_blukon_algorithm" />
+                
+	    <CheckBoxPreference
+                    android:enabled="false"
+                    android:defaultValue="false"
+                    android:dependency="external_blukon_algorithm"
+                    android:key="calibrate_external_libre_algorithm"
+                    android:summary="@string/calibrate_external_libre_algorithm_summary"
+                    android:title="@string/calibrate_external_libre_algorithm_title" />
                 
             </PreferenceScreen>
             <PreferenceCategory

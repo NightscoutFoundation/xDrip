@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip;
 
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
 import android.content.res.Configuration;
@@ -8,12 +9,12 @@ import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.core.CrashlyticsCore;
-//import com.bugfender.sdk.Bugfender;
 import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Reminder;
 import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.Services.BluetoothGlucoseMeter;
+import com.eveningoutpost.dexdrip.Services.MissedReadingService;
 import com.eveningoutpost.dexdrip.Services.PlusSyncService;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.IdempotentMigrations;
@@ -26,6 +27,8 @@ import java.util.Locale;
 
 import io.fabric.sdk.android.Fabric;
 
+//import com.bugfender.sdk.Bugfender;
+
 /**
  * Created by Emma Black on 3/21/15.
  */
@@ -33,6 +36,7 @@ import io.fabric.sdk.android.Fabric;
 public class xdrip extends Application {
 
     private static final String TAG = "xdrip.java";
+    @SuppressLint("StaticFieldLeak")
     private static Context context;
     private static boolean fabricInited = false;
     private static boolean bfInited = false;
@@ -57,6 +61,7 @@ public class xdrip extends Application {
         executor = new PlusAsyncExecutor();
         PreferenceManager.setDefaultValues(this, R.xml.pref_general, true);
         PreferenceManager.setDefaultValues(this, R.xml.pref_data_sync, true);
+        PreferenceManager.setDefaultValues(this, R.xml.pref_advanced_settings, true);
         PreferenceManager.setDefaultValues(this, R.xml.pref_notifications, true);
         PreferenceManager.setDefaultValues(this, R.xml.pref_data_source, true);
         PreferenceManager.setDefaultValues(this, R.xml.xdrip_plus_defaults, true);
@@ -70,7 +75,7 @@ public class xdrip extends Application {
 
 
         if (!isRunningTest()) {
-
+            MissedReadingService.delayedLaunch();
             NFCReaderX.handleHomeScreenScanPreference(getApplicationContext());
             AlertType.fromSettings(getApplicationContext());
             new CollectionServiceStarter(getApplicationContext()).start(getApplicationContext());

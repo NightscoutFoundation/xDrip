@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Icon;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -19,6 +20,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.PowerManager;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
@@ -42,6 +44,7 @@ import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.Services.MissedReadingService;
 import com.eveningoutpost.dexdrip.Services.SnoozeOnNotificationDismissService;
+import com.eveningoutpost.dexdrip.ui.NumberGraphic;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.PowerStateReceiver;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -578,10 +581,13 @@ public class Notifications extends IntentService {
                 );
 
         //final NotificationCompat.Builder b = new NotificationCompat.Builder(mContext, NotificationChannels.ONGOING_CHANNEL);
-        final NotificationCompat.Builder b = new NotificationCompat.Builder(mContext); // temporary fix until ONGOING CHANNEL is silent by default on android 8+
-        //b.setOngoing(true);
-        b.setVisibility(Pref.getBooleanDefaultFalse("public_notifications") ? Notification.VISIBILITY_PUBLIC : Notification.VISIBILITY_PRIVATE);
-        b.setCategory(NotificationCompat.CATEGORY_STATUS);
+        //final NotificationCompat.Builder b = new NotificationCompat.Builder(mContext); // temporary fix until ONGOING CHANNEL is silent by default on android 8+
+        final Notification.Builder b = new Notification.Builder(mContext); // temporary fix until ONGOING CHANNEL is silent by default on android 8+
+        //b.setOngoing(true); // TODO CHECK THIS!!
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            b.setVisibility(Pref.getBooleanDefaultFalse("public_notifications") ? Notification.VISIBILITY_PUBLIC : Notification.VISIBILITY_PRIVATE);
+            b.setCategory(NotificationCompat.CATEGORY_STATUS);
+        }
         if (Pref.getBooleanDefaultFalse("high_priority_notifications")) {
             b.setPriority(Notification.PRIORITY_HIGH);
         }
@@ -593,6 +599,20 @@ public class Notifications extends IntentService {
                 .setContentText("xDrip Data collection service is running.")
                 .setSmallIcon(R.drawable.ic_action_communication_invert_colors_on)
                 .setUsesChronometer(false);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            // in case the graphic crashes the system-ui we wont do it immediately after reboot so the
+            // user has a chance to disable the feature
+            if (SystemClock.uptimeMillis() > Constants.MINUTE_IN_MS * 15) {
+                if (NumberGraphic.numberIconEnabled()) {
+                    if ((dg != null) && (!dg.isStale())) {
+                        final Bitmap icon_bitmap = NumberGraphic.getBitmap(dg.unitized);
+                        if (icon_bitmap != null) b.setSmallIcon(Icon.createWithBitmap(icon_bitmap));
+                    }
+                }
+            }
+        }
+
         if (lastReading != null) {
 
             b.setWhen(lastReading.timestamp);
@@ -608,7 +628,7 @@ public class Notifications extends IntentService {
                     .setBackgroundColor(getCol(X.color_notification_chart_background))
                     .build();
             b.setLargeIcon(iconBitmap);
-            NotificationCompat.BigPictureStyle bigPictureStyle = new NotificationCompat.BigPictureStyle();
+            Notification.BigPictureStyle bigPictureStyle = new Notification.BigPictureStyle();
             notifiationBitmap = new BgSparklineBuilder(mContext)
                     .setBgGraphBuilder(bgGraphBuilder)
                     .showHighLine()
@@ -622,9 +642,12 @@ public class Notifications extends IntentService {
                     .setSummaryText(deltaString)
                     .setBigContentTitle(titleString);
             b.setStyle(bigPictureStyle);
+
         }
         b.setContentIntent(resultPendingIntent);
-        b.setLocalOnly(true);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
+            b.setLocalOnly(true);
+        }
         return b.build();
     }
 

@@ -1,7 +1,6 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
 import android.app.NotificationManager;
-import android.support.v4.app.NotificationCompat;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -13,23 +12,28 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
+import android.support.v4.app.NotificationCompat;
 
-//KS import com.eveningoutpost.dexdrip.EditAlertActivity;
-//KS import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
 import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.SnoozeOnNotificationDismissService;
 import com.eveningoutpost.dexdrip.SnoozeActivity;
-//KS import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleWatchSync;
-import static com.eveningoutpost.dexdrip.ListenerService.SendData;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+
+import static com.eveningoutpost.dexdrip.ListenerService.SendData;
+import static com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer.getAlertPlayerStreamType;
+
+//KS import com.eveningoutpost.dexdrip.EditAlertActivity;
+//KS import com.eveningoutpost.dexdrip.GcmActivity;
+//KS import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleWatchSync;
 
 // A helper class to create the mediaplayer on the UI thread.
 // This is needed in order for the callbackst to work.
@@ -39,7 +43,7 @@ class MediaPlayerCreaterHelper {
 
     final Object lock1_ = new Object();
     boolean mplayerCreated_ = false;
-    MediaPlayer mediaPlayer_ = null;
+    volatile MediaPlayer mediaPlayer_ = null;
     
     MediaPlayer createMediaPlayer(Context ctx) {
         if (isUiThread()) {
@@ -78,6 +82,11 @@ class MediaPlayerCreaterHelper {
              Log.e(TAG, "Cought exception", e);
         }
 
+        try {
+            mediaPlayer_.setAudioStreamType(getAlertPlayerStreamType());
+        } catch (Exception e) {
+            UserError.Log.e(TAG, "Set mediaplayer stream type: " + e);
+        }
         return mediaPlayer_;
     }
     
@@ -86,12 +95,13 @@ class MediaPlayerCreaterHelper {
     }
 }
 
+
 public class AlertPlayer {
 
-    static AlertPlayer singletone;
+    private static volatile AlertPlayer singletone;
 
     private final static String TAG = AlertPlayer.class.getSimpleName();
-    private MediaPlayer mediaPlayer;
+    private volatile MediaPlayer mediaPlayer;
     int volumeBeforeAlert = -1;
     int volumeForThisAlert = -1;
 
@@ -105,13 +115,18 @@ public class AlertPlayer {
     final static int  MAX_ASCENDING = 5;
     private static final String WEARABLE_SNOOZE_ALERT = "/xdrip_plus_snooze_payload";
 
+    private static synchronized void createPlayer() {
+        if (singletone == null) {
+            singletone = new AlertPlayer();
+        }
+    }
 
     public static AlertPlayer getPlayer() {
-        if(singletone == null) {
-            Log.i(TAG,"getPlayer: Creating a new AlertPlayer");
-            singletone = new AlertPlayer();
+        if (singletone == null) {
+            Log.i(TAG, "getPlayer: Creating a new AlertPlayer");
+            createPlayer();
         } else {
-            Log.i(TAG,"getPlayer: Using existing AlertPlayer");
+            Log.i(TAG, "getPlayer: Using existing AlertPlayer");
         }
         return singletone;
     }
@@ -203,7 +218,12 @@ public class AlertPlayer {
         activeBgAlert.snooze(repeatTime);
     }
 
- // Check the state and alrarm if needed
+    public static int getAlertPlayerStreamType() {
+        return AudioManager.STREAM_ALARM;
+    }
+
+
+    // Check the state and alrarm if needed
     public void ClockTick(Context ctx, boolean trendingToAlertEnd, String bgValue)
     {
         if (trendingToAlertEnd) {

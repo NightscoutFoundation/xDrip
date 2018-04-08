@@ -55,11 +55,11 @@ public class Mdns {
     }
 
     private static final HashMap<String, LookUpInfo> iplookup = new HashMap<>();
-    private static boolean hunt_running = false;
+    private static volatile boolean hunt_running = false;
     private static int errorCounter = 0;
 
     private final AtomicInteger outstanding = new AtomicInteger();
-    private long locked_until = 0;
+    private volatile long locked_until = 0;
     private NsdManager mNsdManager;
     private static NsdManager.DiscoveryListener mDiscoveryListener;
     private NsdManager.ResolveListener mResolveListener;
@@ -179,6 +179,8 @@ public class Mdns {
 
         } catch (InterruptedException e) {
             UserError.Log.e(TAG, "Interrupted waiting to resolver lock!");
+        } catch (IllegalArgumentException e) {
+            UserError.Log.e(TAG, "got illegal argument exception in singleResolveService: ", e);
         }
     }
 

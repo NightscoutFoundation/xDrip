@@ -14,6 +14,13 @@
 
 
         <Switch
+            android:id="@+id/pswitch0"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="@{safeUnbox(vs.included[`source_wizard`])}"
+            android:onClick="@{() -> vs.ptoggle(`source_wizard`)}"
+            android:text="Source Wizard Button" />
+        <Switch
             android:id="@+id/pswitch1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
