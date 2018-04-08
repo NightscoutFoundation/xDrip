@@ -15,6 +15,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.regex.*;
 
 import static com.eveningoutpost.dexdrip.utils.FileUtils.getExternalDir;
 import static com.eveningoutpost.dexdrip.utils.FileUtils.makeSureDirectoryExists;
@@ -28,7 +29,7 @@ public class blueReader {
     private static final String TAG = "blueReader";
     private static final String BatLog="/BatteryLog.csv";
     private static int counterHibernated = 0;
-    private static String tempVers="";
+    private static Matcher tempVers;
 
     private final static byte[] shutdown = new byte[]{0x6B};        // Char 'k'
     private final static byte[] requestValue = new byte[]{0x6C};    // Char 'l'
@@ -84,9 +85,9 @@ public class blueReader {
         } else if (bufferstring.startsWith("IDR")){
             Log.i(TAG, bufferstring);
             PersistentStore.setString("blueReaderFirmware", bufferstring );
-            tempVers=bufferstring;
-            tempVers.matches("(?i).*\\|blue(.*)-.*");
-            PersistentStore.setDouble("blueReaderFirmwareValue",Double.parseDouble(tempVers));
+            tempVers=Pattern.compile(".*\\|blue(.*)-.*").matcher(bufferstring);
+            tempVers.find();
+            PersistentStore.setDouble("blueReaderFirmwareValue",Double.parseDouble(tempVers.group(1)));
             Log.i(TAG, "bluereader-Firmware-Version: " + tempVers);
             if (BgReading.last() == null || BgReading.last().timestamp + (4 * 60 * 1000) < System.currentTimeMillis()) {
                 return requestValue;
@@ -118,7 +119,12 @@ public class blueReader {
             return null;
         } else if (bufferstring.startsWith("TRANS_FAILED")) {
             Log.w (TAG, "Attention: check position of blueReader on the sensor, as it was not able to read!");
-            Home.toaststatic(xdrip.getAppContext().getString(R.string.bluereader_position));
+                try {
+                    Home.toaststatic(xdrip.getAppContext().getString(R.string.bluereader_position));
+                } catch (Exception e) {
+                    Log.i (TAG, "TRANS_FAILED in test found");
+                }
+
             return null;
         } else if (bufferstring.startsWith("battery: ")) {
             if (BgReading.last() == null || BgReading.last().timestamp + (4 * 60 * 1000) < System.currentTimeMillis()) {

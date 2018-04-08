@@ -172,7 +172,7 @@ public class BlueReaderTest extends RobolectricTestWithConfig {
 
         // :: Verify
         assertThat(reply).isNull();
-        assertThat(getLogs()).contains("D/blueReader: blueReader sends an unknown reaktion: '-r 0:ASDF'");
+        assertThat(getLogs()).contains("D/blueReader: blueReader sends an unknown reaction: '-r 0:ASDF'");
     }
 
     @Test
@@ -305,6 +305,7 @@ public class BlueReaderTest extends RobolectricTestWithConfig {
     public void decodeBlueReaderPacket_notReadyFor_threeTime() {
         // :: Setup
         byte[] buffer = "not ready for".getBytes();
+        Pref.setBoolean("blueReader_suppressuglystatemsg", true);  // set to prevent notification as Context is not established
 
         // :: Act
         byte[] reply1 = blueReader.decodeblueReaderPacket(buffer, -1);
@@ -324,7 +325,7 @@ public class BlueReaderTest extends RobolectricTestWithConfig {
         assertThat(log).contains("E/blueReader: Found blueReader in a ugly State (2/3), send hibernate to reset! If this does not help in the next 5 Minutes, then turn the bluereader manually off and on!");
         assertThat(log).contains("E/blueReader: Found blueReader in a ugly State (3/3), send hibernate to reset! If this does not help in the next 5 Minutes, then turn the bluereader manually off and on!");
 
-        assertThat(log).contains("A/Ugly state not resolveable. Bluereader will be shut down! Please restart it!");
+        assertThat(log).contains("A/blueReader: Ugly state not resolveable. Bluereader will be shut down! Please restart it!");
     }
 
     // ===== Initialize Tests ======================================================================
@@ -335,7 +336,7 @@ public class BlueReaderTest extends RobolectricTestWithConfig {
         ByteBuffer ackMessage = blueReader.initialize();
 
         // :: Verify
-        assertThat(getLogs()).contains("I/blueReader: initialize!");
+        assertThat(getLogs()).contains("I/blueReader: initialize blueReader!");
         assertThat(Pref.getInt("bridge_battery", -1)).isEqualTo(0);
 
         assertThat(new String(ackMessage.array())).isEqualTo("IDN");
