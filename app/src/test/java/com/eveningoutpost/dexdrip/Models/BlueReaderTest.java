@@ -224,7 +224,7 @@ public class BlueReaderTest extends RobolectricTestWithConfig {
     @Test
     public void decodeBlueReaderPacket_IDR_noBgReading() {
         // :: Setup
-        String inputString = "IDR0blue131-a1";
+        String inputString = "IDR0|blue131-a1";
 
         // :: Act
         byte[] reply = blueReader.decodeblueReaderPacket(inputString.getBytes(), -1);
@@ -238,7 +238,7 @@ public class BlueReaderTest extends RobolectricTestWithConfig {
     @Test
     public void decodeBlueReaderPacket_IDR_OldBgReading() {
         // :: Setup
-        String inputString = "IDR0blue131-a1";
+        String inputString = "IDR0|blue131-a1";
 
         // Add mock bg readings
         Sensor mockSensor = createMockSensor();
@@ -293,7 +293,7 @@ public class BlueReaderTest extends RobolectricTestWithConfig {
         // :: Verify
         assertThat(reply).isNotNull();
         assertThat(new String(reply)).isEqualTo("h");
-        assertThat(getLogs()).contains("E/blueReader: Found blueReader in a ugly State (1/5), send hibernate to reset! If this does not help in the next 5 Minutes, then turn the bluereader manually off and on!");
+        assertThat(getLogs()).contains("E/blueReader: Found blueReader in a ugly State (1/3), send hibernate to reset! If this does not help in the next 5 Minutes, then turn the bluereader manually off and on!");
     }
 
     /**
@@ -302,7 +302,7 @@ public class BlueReaderTest extends RobolectricTestWithConfig {
      * test.
      */
     @Test
-    public void decodeBlueReaderPacket_notReadyFor_fiveTime() {
+    public void decodeBlueReaderPacket_notReadyFor_threeTime() {
         // :: Setup
         byte[] buffer = "not ready for".getBytes();
 
@@ -320,11 +320,11 @@ public class BlueReaderTest extends RobolectricTestWithConfig {
         assertThat(new String(reply3)).isEqualTo("k");
 
         String log = getLogs();
-        assertThat(log).contains("E/blueReader: Found blueReader in a ugly State (1/5), send hibernate to reset! If this does not help in the next 5 Minutes, then turn the bluereader manually off and on!");
-        assertThat(log).contains("E/blueReader: Found blueReader in a ugly State (3/5), send hibernate to reset! If this does not help in the next 5 Minutes, then turn the bluereader manually off and on!");
-        assertThat(log).contains("E/blueReader: Found blueReader in a ugly State (5/5), send hibernate to reset! If this does not help in the next 5 Minutes, then turn the bluereader manually off and on!");
+        assertThat(log).contains("E/blueReader: Found blueReader in a ugly State (1/3), send hibernate to reset! If this does not help in the next 5 Minutes, then turn the bluereader manually off and on!");
+        assertThat(log).contains("E/blueReader: Found blueReader in a ugly State (2/3), send hibernate to reset! If this does not help in the next 5 Minutes, then turn the bluereader manually off and on!");
+        assertThat(log).contains("E/blueReader: Found blueReader in a ugly State (3/3), send hibernate to reset! If this does not help in the next 5 Minutes, then turn the bluereader manually off and on!");
 
-        assertThat(log).contains("A/blueReader: Ugly state not resolveable. Please restart the BlueReader! Sending shutdown to blueReader!");
+        assertThat(log).contains("A/Ugly state not resolveable. Bluereader will be shut down! Please restart it!");
     }
 
     // ===== Initialize Tests ======================================================================
