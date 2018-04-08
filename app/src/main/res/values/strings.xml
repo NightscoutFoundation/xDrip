@@ -874,7 +874,7 @@
     <string name="Speak_Alerts_Summary">Also give some spoken alert messages</string>
     <string name="advanced_bluereader_settings_summary">Advanced blueReader Settings</string>
     <string name="advanced_bluereader_settings">blueReader Settings</string>
-    <string name="bluereader_restdays_onhome_sum">Shows the estimated rest Days for blueReader on home screen</string>
+    <string name="bluereader_restdays_onhome_sum">Shows the estimated rest Days for blueReader on home screen after the battery must be reload</string>
     <string name="bluereader_restdays_onhome">Rest days on Home Screen</string>
     <string name="bluereader_turnoff_sum">Switch the blueReader off, if the battery is less then selected value</string>
     <string name="bluereader_turnoff">Safety switch off</string>

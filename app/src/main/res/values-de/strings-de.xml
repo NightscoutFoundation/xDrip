@@ -787,7 +787,7 @@
 	<string name="Speak_Alerts_Summary">Spricht die Alarmwerte bei Über-/Unterschreitungn aus</string>
 	<string name="advanced_bluereader_settings_summary">Erweiterte blueReader Einstellungen</string>
 	<string name="advanced_bluereader_settings">blueReader Einstellungen</string>
-	<string name="bluereader_restdays_onhome_sum">Zeigt die kalkulierte Restlaufzeit in Tagen auf dem Übersichtsbildschirm an</string>
+	<string name="bluereader_restdays_onhome_sum">Zeigt die kalkulierte Restbatterielaufzeit in Tagen auf dem Übersichtsbildschirm an</string>
 	<string name="bluereader_restdays_onhome">Restlaufzeit auf Home-Bildschirm</string>
 	<string name="bluereader_turnoff_sum">Schalte den blueReader aus, wenn die Batterie unter den eingestellten Wert sinkt</string>
 	<string name="bluereader_turnoff">Sicherheitsauschaltung</string>
