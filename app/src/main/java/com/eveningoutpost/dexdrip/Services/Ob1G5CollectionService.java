@@ -78,11 +78,11 @@ public class Ob1G5CollectionService extends G5BaseService {
     public static final String OB1G5_PREFS = "use_ob1_g5_collector_service";
     private static final String OB1G5_MACSTORE = "G5-mac-for-txid-";
     private static final String BUGGY_SAMSUNG_ENABLED = "buggy-samsung-enabled";
-    private static STATE state = STATE.INIT;
-    private static STATE last_automata_state = STATE.CLOSED;
+    private static volatile STATE state = STATE.INIT;
+    private static volatile STATE last_automata_state = STATE.CLOSED;
 
     private static RxBleClient rxBleClient;
-    private static PendingIntent pendingIntent;
+    private static volatile PendingIntent pendingIntent;
 
     private static String transmitterID;
     private static String transmitterMAC;
@@ -154,6 +154,7 @@ public class Ob1G5CollectionService extends G5BaseService {
         CHECK_AUTH("Checking Auth"),
         PREBOND("Bond Prepare"),
         BOND("Bonding"),
+        RESET("Reseting"),
         GET_DATA("Getting Data"),
         CLOSE("Sleeping"),
         CLOSED("Deep Sleeping");
@@ -261,9 +262,17 @@ public class Ob1G5CollectionService extends G5BaseService {
                         //create_bond();
                         UserError.Log.d(TAG, "State bond currently does nothing");
                         break;
+                    case RESET:
+                        UserError.Log.d(TAG, "Entering hard reset state");
+                        Ob1G5StateMachine.doReset(this, connection);
+                        break;
                     case GET_DATA:
-                        final PowerManager.WakeLock linger_wl_get_data = JoH.getWakeLock("jam-g5-get-linger", 6000);
-                        if (!Ob1G5StateMachine.doGetData(this, connection)) resetState();
+                        if (hardResetTransmitterNow) {
+                         send_reset_command();
+                        } else {
+                            final PowerManager.WakeLock linger_wl_get_data = JoH.getWakeLock("jam-g5-get-linger", 6000);
+                            if (!Ob1G5StateMachine.doGetData(this, connection)) resetState();
+                        }
                         break;
                     case CLOSE:
                         prepareToWakeup();
@@ -447,6 +456,17 @@ public class Ob1G5CollectionService extends G5BaseService {
             instantCreateBond();
         } catch (Exception e) {
             UserError.Log.wtf(TAG, "Got exception in do_create_bond() " + e);
+        }
+    }
+
+    private synchronized void send_reset_command() {
+        hardResetTransmitterNow = false;
+        getBatteryStatusNow = true;
+        if (JoH.ratelimit("reset-command", 1200)) {
+            UserError.Log.e(TAG, "Issuing reset command!");
+            changeState(STATE.RESET);
+        } else {
+            UserError.Log.e(TAG, "Reset command blocked by 20 minute timer");
         }
     }
 

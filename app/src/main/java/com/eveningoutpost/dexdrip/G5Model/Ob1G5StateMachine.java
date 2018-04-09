@@ -311,6 +311,25 @@ public class Ob1G5StateMachine {
         return true;
     }
 
+    public static boolean doReset(Ob1G5CollectionService parent, RxBleConnection connection) {
+        if (connection == null) return false;
+        parent.msg("Hard Resetting Transmitter");
+        connection.writeCharacteristic(Control, new ResetTxMessage().byteSequence)
+                .subscribe(characteristicValue -> {
+                    if (d)
+                        UserError.Log.d(TAG, "Wrote ResetTxMessage request!!");
+                    parent.msg("Hard Reset Sent");
+                }, throwable -> {
+                    parent.msg("Hard Reset Failed");
+                    UserError.Log.e(TAG, "Failed to write SensorTxMessage: " + throwable);
+                    if (throwable instanceof BleGattCharacteristicException) {
+                        final int status = ((BleGattCharacteristicException) throwable).getStatus();
+                        UserError.Log.e(TAG, "Got status message: " + BluetoothServices.getStatusName(status));
+                    }
+                });
+        return true;
+    }
+
     // Get Data
     public static boolean doGetData(Ob1G5CollectionService parent, RxBleConnection connection) {
         if (connection == null) return false;
