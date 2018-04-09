@@ -31,10 +31,10 @@ public class blueReader {
     private static int counterHibernated = 0;
     private static Matcher tempVers;
 
-    private final static byte[] shutdown = new byte[]{0x6B};        // Char 'k'
-    private final static byte[] requestValue = new byte[]{0x6C};    // Char 'l'
-    private final static byte[] goHybernate = new byte[]{0x68};     // Char 'h'
-    private final static byte[] restart = new byte[]{0x79};         // Char 'y'
+    private static final byte[] shutdown = new byte[]{0x6B};        // Char 'k'
+    private static final byte[] requestValue = new byte[]{0x6C};    // Char 'l'
+    private static final byte[] goHybernate = new byte[]{0x68};     // Char 'h'
+    private static final byte[] restart = new byte[]{0x79};         // Char 'y'
 
 
     public static boolean isblueReader() {
@@ -137,7 +137,11 @@ public class blueReader {
             if (Pref.getBooleanDefaultFalse("blueReader_turn_off")) {
                 if (Pref.getInt("blueReader_turn_off_value",5) > Pref.getInt("bridge_battery",100)) {
                     Log.w (TAG, "blueReader will be turn off, as the battery is lower then " + Pref.getInt("blueReader_turn_off_value",5) +"%");
-                    Home.toaststatic(xdrip.getAppContext().getString(R.string.bluereaderoff) + Pref.getInt("blueReader_turn_off_value",5) +"%");
+                    try {
+                        Home.toaststatic(xdrip.getAppContext().getString(R.string.bluereaderoff) + Pref.getInt("blueReader_turn_off_value",5) +"%");
+                    } catch (Exception e) {
+                        Log.i (TAG, "Shutdown in test found");
+                    }
                     return shutdown;
                 }
             }

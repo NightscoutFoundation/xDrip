@@ -225,6 +225,7 @@ public class BlueReaderTest extends RobolectricTestWithConfig {
     public void decodeBlueReaderPacket_IDR_noBgReading() {
         // :: Setup
         String inputString = "IDR0|blue131-a1";
+        Double resultVersion = 131d;
 
         // :: Act
         byte[] reply = blueReader.decodeblueReaderPacket(inputString.getBytes(), -1);
@@ -233,6 +234,7 @@ public class BlueReaderTest extends RobolectricTestWithConfig {
         assertThat(reply).isNotNull();
         assertThat(new String(reply)).isEqualTo("l");
         assertThat(PersistentStore.getString("blueReaderFirmware")).isEqualTo(inputString);
+        assertThat(PersistentStore.getDouble("blueReaderFirmwareValue") == resultVersion ) ;
     }
 
     @Test
@@ -338,6 +340,7 @@ public class BlueReaderTest extends RobolectricTestWithConfig {
         // :: Verify
         assertThat(getLogs()).contains("I/blueReader: initialize blueReader!");
         assertThat(Pref.getInt("bridge_battery", -1)).isEqualTo(0);
+        assertThat(PersistentStore.getDouble("blueReaderFirmwareValue") == 0d ) ;
 
         assertThat(new String(ackMessage.array())).isEqualTo("IDN");
     }
@@ -451,6 +454,7 @@ public class BlueReaderTest extends RobolectricTestWithConfig {
     @Test
     public void processNewTransmitterData_NormalBg_LowBattery() {
         // Setup
+        Pref.setBoolean("blueReader_turn_off", false);
         String message = "150000 3300";
         Sensor mockSensor = createMockSensor();
         addMockBgReading(150, 15, mockSensor);
@@ -478,6 +482,26 @@ public class BlueReaderTest extends RobolectricTestWithConfig {
         BgReading lastBgReading = BgReading.last();
         assertThat(lastBgReading.raw_data).isEqualTo(150.0d);
         assertThat(lastBgReading.filtered_data).isEqualTo(150.0d);
+    }
+
+    @Test
+    public void processNewTransmitterData_NormalBg_LowBatteryShutdown() {
+        // Setup
+        Pref.setBoolean("blueReader_turn_off", true);
+        String message = "150000 3300";
+        Sensor mockSensor = createMockSensor();
+        addMockBgReading(150, 15, mockSensor);
+        addMockBgReading(150, 10, mockSensor);
+        addMockBgReading(150, 5, mockSensor);
+        Calibration.initialCalibration(150, 150, RuntimeEnvironment.application.getApplicationContext());
+
+        // Act
+        byte[] reply = blueReader.decodeblueReaderPacket(message.getBytes(), message.length());
+
+        // Verify
+        assertThat(new String(reply)).isEqualTo("k");
+        assertThat(getLogs()).contains("Shutdown in test found");
+
     }
 
     /**
