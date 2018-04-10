@@ -72,7 +72,6 @@ import com.rits.cloning.Cloner;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -94,7 +93,9 @@ public class DexCollectionService extends Service {
     private static final String PREF_DEX_COLLECTION_BONDING = "pref_dex_collection_bonding";
     private static final String PREF_DEX_COLLECTION_POLLING = "pref_dex_collection_polling";
     private static final long POLLING_PERIOD = (Constants.MINUTE_IN_MS * 5) - Constants.SECOND_IN_MS;
-    private static final long RETRY_PERIOD = DEXCOM_PERIOD - (Constants.SECOND_IN_MS * 35);
+    // TODO different pre-connect timeout windows for different hardware
+    //private static final long RETRY_PERIOD = DEXCOM_PERIOD - (Constants.SECOND_IN_MS * 35);
+    private static final long RETRY_PERIOD = DEXCOM_PERIOD - (Constants.SECOND_IN_MS * 95);
     private static final long TOLERABLE_JITTER = 10000;
     private static long last_time_seen = 0;
     public static String lastState = "Not running";
@@ -166,7 +167,7 @@ public class DexCollectionService extends Service {
     };
     private ForegroundServiceStarter foregroundServiceStarter;
     private volatile int mConnectionState = BluetoothProfile.STATE_DISCONNECTING;
-    private BluetoothDevice device;
+    private volatile BluetoothDevice device;
     private static volatile BluetoothGattCharacteristic mCharacteristic;
     // Experimental support for rfduino from Tomasz Stachowicz
     private static volatile BluetoothGattCharacteristic mCharacteristicSend;
@@ -229,10 +230,18 @@ public class DexCollectionService extends Service {
                     final PowerManager.WakeLock wakeLock2 = JoH.getWakeLock("DexCollectionExcessive", 45000);
 
                 }
+                UserError.Log.d(TAG, "onState change status = " + status); // temporary debug
+                // TODO are implementations really bad enough that we need to check that gatt.getDevice() matches the
+                // requested device also?
+
                 switch (newState) {
                     case BluetoothProfile.STATE_CONNECTED:
-                        Log.i(TAG, "onConnectionStateChange: Connected to GATT server.");
-                        handleConnectedStateChange();
+                        if (status == 0) {
+                            Log.i(TAG, "onConnectionStateChange: Connected to GATT server. ");
+                            handleConnectedStateChange();
+                        } else {
+                            Log.i(TAG, "Not accepting CONNECTED change as status code is: " + status);
+                        }
                         break;
                     case BluetoothProfile.STATE_DISCONNECTED:
                         Log.i(TAG, "onConnectionStateChange: State disconnected.");
@@ -901,7 +910,10 @@ public class DexCollectionService extends Service {
         if (retry_time > 0 && failover_time > 0) {
             final long requested_wake_time = Math.min(retry_time, failover_time);
             final long wakeup_jitter = JoH.msSince(requested_wake_time);
-            Log.d(TAG, "Wake up jitter: " + JoH.niceTimeScalar(wakeup_jitter));
+            final String jitter_string = JoH.niceTimeScalar(wakeup_jitter);
+            if (!jitter_string.startsWith("0 ")) {
+                Log.d(TAG, "Wake up jitter: " + jitter_string);
+            }
             JoH.persistentBuggySamsungCheck();
             if ((wakeup_jitter > TOLERABLE_JITTER) && (!JoH.buggy_samsung) && (JoH.isSamsung())) {
                 UserError.Log.wtf(TAG, "Enabled Buggy Samsung workaround due to jitter of: " + JoH.niceTimeScalar(wakeup_jitter));
@@ -1044,9 +1056,10 @@ public class DexCollectionService extends Service {
         }
 
         if (device != null) {
-            //mConnectionState = STATE_DISCONNECTED;
+            boolean found = false;
             for (BluetoothDevice bluetoothDevice : bluetoothManager.getConnectedDevices(BluetoothProfile.GATT)) {
-                if (bluetoothDevice.getAddress().compareTo(device.getAddress()) == 0) {
+                if (bluetoothDevice.getAddress().equals(device.getAddress())) {
+                    found = true;
                     if (mConnectionState != STATE_CONNECTED) {
                         UserError.Log.d(TAG, "Detected state change by checking connected devices");
                         handleConnectedStateChange();
@@ -1054,6 +1067,16 @@ public class DexCollectionService extends Service {
                     break;
                 }
             }
+            if (!found) {
+                if (mConnectionState == STATE_CONNECTED) {
+                    UserError.Log.d(TAG, "Marking disconnected as not in list of connected devices");
+                    mConnectionState = STATE_DISCONNECTED; // not in connected list so should be disconnected we think
+                }
+
+            }
+        } else {
+            UserError.Log.d(TAG, "Device is null");
+            mConnectionState = STATE_DISCONNECTED; // can't be connected if we don't know the device
         }
 
         Log.i(TAG, "checkConnection: Connection state: " + getStateStr(mConnectionState));
@@ -1255,7 +1278,15 @@ public class DexCollectionService extends Service {
             }
             mBluetoothGatt = null;
         }
-        device = mBluetoothAdapter.getRemoteDevice(address);
+     /*   if (device != null) {
+            if (!device.getAddress().equals(address)) {
+                UserError.Log.e(TAG, "Device address changed from: " + device.getAddress() + " to " + address);
+                device = null;
+            }
+        }*/
+        //if (device == null) {
+            device = mBluetoothAdapter.getRemoteDevice(address);
+       // }
         if (device == null) {
             Log.w(TAG, "Device not found.  Unable to connect.");
             setRetryTimer();
@@ -1309,12 +1340,14 @@ public class DexCollectionService extends Service {
             if (reply != null) {
                 Log.d(TAG, "Sending reply message from Blukon decoder");
                 sendBtMessage(reply);
+                gotValidPacket();
             }
         } else if (blueReader.isblueReader()) {
             final byte[] reply = blueReader.decodeblueReaderPacket(buffer, len);
             if (reply != null) {
                 Log.d(TAG, "Sending reply message from blueReader decoder");
                 sendBtMessage(reply);
+                gotValidPacket();
             }
         } else if (Tomato.isTomato()) {
             final BridgeResponse reply = Tomato.decodeTomatoPacket(buffer, len);
@@ -1327,6 +1360,7 @@ public class DexCollectionService extends Service {
                 JoH.static_toast_long(reply.getError_message());
                 error(reply.getError_message());
             }
+            gotValidPacket();
 
         } else if (XbridgePlus.isXbridgeExtensionPacket(buffer)) {
             // handle xBridge+ protocol packets
@@ -1334,6 +1368,7 @@ public class DexCollectionService extends Service {
             if (reply != null) {
                 Log.d(TAG, "Sending reply message from xBridge decoder");
                 sendBtMessage(reply);
+                gotValidPacket();
             }
         } else {
             long timestamp = new Date().getTime();
@@ -1345,8 +1380,6 @@ public class DexCollectionService extends Service {
                 int DexSrc;
                 int TransmitterID;
                 String TxId;
-                Calendar c = Calendar.getInstance();
-                long secondsNow = c.getTimeInMillis();
                 ByteBuffer tmpBuffer = ByteBuffer.allocate(len);
                 tmpBuffer.order(ByteOrder.LITTLE_ENDIAN);
                 tmpBuffer.put(buffer, 0, len);
@@ -1394,9 +1427,8 @@ public class DexCollectionService extends Service {
                         ackMessage.put(1, (byte) 0xF0);
                         sendBtMessage(ackMessage);
                         //duplicates are already filtered in TransmitterData.create - so no need to filter here
-                        lastPacketTime = secondsNow;
                         poll_backoff = 0;
-                        retry_backoff = 0;
+                        gotValidPacket();
                         Log.v(TAG, "setSerialDataToTransmitterRawData: Creating TransmitterData at " + timestamp);
                         processNewTransmitterData(TransmitterData.create(buffer, len, timestamp), timestamp);
                         if (Home.get_master())
@@ -1408,6 +1440,11 @@ public class DexCollectionService extends Service {
                 processNewTransmitterData(TransmitterData.create(buffer, len, timestamp), timestamp);
             }
         }
+    }
+
+    private void gotValidPacket() {
+        retry_backoff = 0;
+        lastPacketTime = JoH.tsl();
     }
 
     private synchronized void processNewTransmitterData(TransmitterData transmitterData, long timestamp) {
