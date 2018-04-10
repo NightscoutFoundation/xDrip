@@ -18,17 +18,14 @@ import org.robolectric.annotation.Config;
  * @author Asbjørn Aarrestad, asbjorn@aarrestad.com - 2018.03
  */
 @RunWith(RobolectricTestRunner.class)
-
-
-// use this config inside android studio 3
-//@Config(constants = BuildConfig.class, manifest = "../../../../app/src/test/java/com/eveningoutpost/dexdrip/TestingManifest.xml")
-
-// use this config for CI test hosts
-@Config(constants = BuildConfig.class, manifest = "../../../../../src/test/java/com/eveningoutpost/dexdrip/TestingManifest.xml")
+@Config(constants = BuildConfig.class,
+        packageName = "com.eveningoutpost.dexdrip",
+        application = TestingApplication.class
+)
 public abstract class RobolectricTestWithConfig {
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         xdrip.checkAppContext(RuntimeEnvironment.application);
     }
 }
