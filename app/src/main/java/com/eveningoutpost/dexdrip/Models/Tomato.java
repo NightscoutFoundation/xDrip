@@ -48,7 +48,7 @@ public class Tomato {
         final BridgeResponse reply = new BridgeResponse();
         // Check time, probably need to start on sending
         long now = JoH.tsl();
-        if(now - s_lastReceiveTimestamp > 10*1000) {
+        if(now - s_lastReceiveTimestamp > 3*1000) {
             // We did not receive data in 10 seconds, moving to init state again
             Log.e(TAG, "Recieved a buffer after " + (now - s_lastReceiveTimestamp) / 1000 +  " seconds, starting again. "+
             "already acumulated " + s_acumulatedSize + " bytes.");
@@ -102,7 +102,7 @@ public class Tomato {
                 
             } else {
                 if (JoH.quietratelimit("unknown-initial-packet", 1)) {
-                    Log.d(TAG, "Unknown initial packet makeup received");
+                    Log.d(TAG,"Unknown initial packet makeup received" + HexDump.dumpHexString(buffer));
                 }
                 return reply;
             }
@@ -159,7 +159,8 @@ public class Tomato {
         byte[] data = Arrays.copyOfRange(s_full_data, TOMATO_HEADER_LENGTH, TOMATO_HEADER_LENGTH+344);
         s_recviedEnoughData = true;
         
-        boolean checksum_ok = NFCReaderX.HandleGoodReading("tomato", data);
+        long now = JoH.tsl();
+        boolean checksum_ok = NFCReaderX.HandleGoodReading("tomato", data, now);
         Log.e(TAG, "We have all the data that we need " + s_acumulatedSize + " checksum_ok = " + checksum_ok + HexDump.dumpHexString(data));
 
         if(!checksum_ok) {
@@ -212,12 +213,6 @@ public class Tomato {
 
         s_state = TOMATO_STATES.REQUEST_DATA_SENT;
 
-        // For debug, make it send data every minute (ERROR - We fail to send this message... needs more work,
-        // not sure it works at all)
-        ByteBuffer newFreqMessage = ByteBuffer.allocate(2);
-        newFreqMessage.put(0, (byte) 0xD1);
-        newFreqMessage.put(1, (byte) 0x05);
-        ret.add(newFreqMessage);
 
         //command to start reading
         ByteBuffer ackMessage = ByteBuffer.allocate(1);
