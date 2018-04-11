@@ -7,28 +7,22 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 /**
- * Abstract test config class to handle the different config for Android studio and CI builds.
- * Used for tests requiring MockModel framework to be active.
- * <p>
- * To work for local tests build, uncomment the first @Config line and comment the second.
- * <p>
- * If you commit this file with the wrong config active, the build will not pass CI.
+ * Abstract config and setup for tests.
+ *
+ * Starts ActiveAndroid and initiates xdrip with appContext.
  *
  * @author jamorham on 01/10/2017
  * @author Asbjørn Aarrestad, asbjorn@aarrestad.com - 2018.03
  */
 @RunWith(RobolectricTestRunner.class)
-
-
-// use this config inside android studio 3
-//@Config(constants = BuildConfig.class, manifest = "../../../../app/src/test/java/com/eveningoutpost/dexdrip/TestingManifest.xml")
-
-// use this config for CI test hosts
-@Config(constants = BuildConfig.class, manifest = "../../../../../src/test/java/com/eveningoutpost/dexdrip/TestingManifest.xml")
+@Config(constants = BuildConfig.class,
+        packageName = "com.eveningoutpost.dexdrip",
+        application = TestingApplication.class
+)
 public abstract class RobolectricTestWithConfig {
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         xdrip.checkAppContext(RuntimeEnvironment.application);
     }
 }
