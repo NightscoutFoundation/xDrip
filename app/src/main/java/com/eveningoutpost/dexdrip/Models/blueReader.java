@@ -119,12 +119,7 @@ public class blueReader {
             return null;
         } else if (bufferstring.startsWith("TRANS_FAILED")) {
             Log.w (TAG, "Attention: check position of blueReader on the sensor, as it was not able to read!");
-                try {
-                    Home.toaststatic(xdrip.getAppContext().getString(R.string.bluereader_position));
-                } catch (Exception e) {
-                    Log.i (TAG, "TRANS_FAILED in test found");
-                }
-
+            Home.toaststatic(xdrip.getAppContext().getString(R.string.bluereader_position));
             return null;
         } else if (bufferstring.startsWith("battery: ")) {
             if (BgReading.last() == null || BgReading.last().timestamp + (4 * 60 * 1000) < System.currentTimeMillis()) {
@@ -137,11 +132,7 @@ public class blueReader {
             if (Pref.getBooleanDefaultFalse("blueReader_turn_off")) {
                 if (Pref.getInt("blueReader_turn_off_value",5) > Pref.getInt("bridge_battery",100)) {
                     Log.w (TAG, "blueReader will be turn off, as the battery is lower then " + Pref.getInt("blueReader_turn_off_value",5) +"%");
-                    try {
-                        Home.toaststatic(xdrip.getAppContext().getString(R.string.bluereaderoff) + Pref.getInt("blueReader_turn_off_value",5) +"%");
-                    } catch (Exception e) {
-                        Log.i (TAG, "Shutdown in test found");
-                    }
+                    Home.toaststatic(xdrip.getAppContext().getString(R.string.bluereaderoff) + Pref.getInt("blueReader_turn_off_value",5) +"%");
                     return shutdown;
                 }
             }
