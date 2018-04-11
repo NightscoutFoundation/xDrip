@@ -240,7 +240,7 @@ public class BlueReaderTest extends RobolectricTestWithConfig {
         assertThat(reply).isNotNull();
         assertThat(new String(reply)).isEqualTo("l");
         assertThat(PersistentStore.getString("blueReaderFirmware")).isEqualTo(inputString);
-        assertThat(PersistentStore.getDouble("blueReaderFirmwareValue") == resultVersion ) ;
+        assertThat(PersistentStore.getDouble("blueReaderFirmwareValue")).isWithin(0.01d).of(resultVersion) ;
     }
 
     @Test
@@ -346,8 +346,7 @@ public class BlueReaderTest extends RobolectricTestWithConfig {
         // :: Verify
         assertThat(getLogs()).contains("I/blueReader: initialize blueReader!");
         assertThat(Pref.getInt("bridge_battery", -1)).isEqualTo(0);
-        assertThat(PersistentStore.getDouble("blueReaderFirmwareValue") == 0d ) ;
-
+        assertThat(PersistentStore.getDouble("blueReaderFirmwareValue")).isWithin(0.0d).of(0d);
         assertThat(new String(ackMessage.array())).isEqualTo("IDN");
     }
 
