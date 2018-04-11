@@ -1,9 +1,7 @@
 package com.eveningoutpost.dexdrip.Models;
 
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
-import com.eveningoutpost.dexdrip.xdrip;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.robolectric.RuntimeEnvironment;
 
@@ -18,11 +16,6 @@ import static com.google.common.truth.Truth.assertThat;
  * @author asbjorn aarrestad - asbjorn@aarrestad.com 2018.03.
  */
 public class CalibrationTest extends RobolectricTestWithConfig {
-
-    @Before
-    public void setUp() throws Exception {
-        xdrip.checkAppContext(RuntimeEnvironment.application);
-    }
 
     @Test
     public void initialCalibration_raisingBg_OK() {

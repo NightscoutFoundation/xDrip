@@ -86,6 +86,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.zip.CRC32;
 import java.util.zip.Checksum;
 import java.util.zip.Deflater;
@@ -644,6 +645,11 @@ public class JoH {
     public static String niceTimeScalarRedux(long t) {
         return niceTimeScalar(t).replaceFirst("^1 ", "");
     }
+
+    public static String niceTimeScalarShort(long t) {
+        return niceTimeScalar(t).replaceFirst("([A-z]).*$", "$1");
+    }
+
 
     public static double tolerantParseDouble(String str) throws NumberFormatException {
         return Double.parseDouble(str.replace(",", "."));
@@ -1355,6 +1361,39 @@ public class JoH {
             }
         }.start();
     }
+
+
+    public static synchronized void unBond(String transmitterMAC) {
+
+        UserError.Log.d(TAG, "unBond() start");
+        if (transmitterMAC == null) return;
+        try {
+            final BluetoothAdapter mBluetoothAdapter = ((BluetoothManager) xdrip.getAppContext().getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
+
+            final Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+            if (pairedDevices.size() > 0) {
+                for (BluetoothDevice device : pairedDevices) {
+                    if (device.getAddress() != null) {
+                        if (device.getAddress().equals(transmitterMAC)) {
+                            try {
+                                UserError.Log.e(TAG, "removingBond: " + transmitterMAC);
+                                Method m = device.getClass().getMethod("removeBond", (Class[]) null);
+                                m.invoke(device, (Object[]) null);
+
+                            } catch (Exception e) {
+                                UserError.Log.e(TAG, e.getMessage(), e);
+                            }
+                        }
+
+                    }
+                }
+            }
+        } catch (Exception e) {
+            UserError.Log.e(TAG, "Exception during unbond! " + transmitterMAC, e);
+        }
+        UserError.Log.d(TAG, "unBond() finished");
+    }
+
 
     public static Map<String, String> bundleToMap(Bundle bundle) {
         final HashMap<String, String> map = new HashMap<>();

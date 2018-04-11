@@ -2,7 +2,6 @@ package com.eveningoutpost.dexdrip.Models;
 
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import static com.google.common.truth.Truth.assertWithMessage;
@@ -13,12 +12,8 @@ import static com.google.common.truth.Truth.assertWithMessage;
 
 public class JoHTest extends RobolectricTestWithConfig {
 
-    @Before
-    public void setUp() throws Exception {
-    }
-
     @Test
-    public void crc16test1() throws Exception {
+    public void crc16test1() {
 
         final byte[] testa = new byte[]{0x00, 0x00, 0x00};
 

@@ -1,6 +1,7 @@
 package com.eveningoutpost.dexdrip.Models;
 
 import com.activeandroid.query.Delete;
+import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
 import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
@@ -62,6 +63,11 @@ public class BlueReaderTest extends RobolectricTestWithConfig {
         new Delete().from(Calibration.class).execute();
 
         PersistentStore.setLong("blueReader_Full_Battery", 0);
+    }
+
+    @Test
+    public void tt() {
+        assertThat(xdrip.getAppContext().getString(R.string.battery)).isEqualTo("Battery");
     }
 
     // ===== Command-tests =============================================================================

@@ -76,6 +76,7 @@ import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.Services.DexCollectionService;
+import com.eveningoutpost.dexdrip.Services.G5BaseService;
 import com.eveningoutpost.dexdrip.Services.PlusSyncService;
 import com.eveningoutpost.dexdrip.Services.WixelReader;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
@@ -1113,7 +1114,11 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     }
 
     public void viewEventLog(MenuItem x) {
-        startActivity(new Intent(this, ErrorsActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK).putExtra("events", ""));
+        if (get_engineering_mode()) {
+            startActivity(new Intent(this, ErrorsActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK).putExtra("events", ""));
+        } else {
+            startActivity(new Intent(this, ErrorsActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK).putExtra("events", ""));
+        }
     }
     
     public void ShowLibreTrend(MenuItem x) {
@@ -1377,6 +1382,9 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         } else if (get_engineering_mode() && allWords.contentEquals("enable fake data source")) {
             Pref.setString(DexCollectionType.DEX_COLLECTION_METHOD, DexCollectionType.Mock.toString());
             JoH.static_toast_long("YOU ARE NOW USING FAKE DATA!!!");
+        } else if (get_engineering_mode() && allWords.contentEquals("hard reset transmitter")) {
+            G5BaseService.hardResetTransmitterNow = true;
+            JoH.static_toast_long("Will attempt to reset transmitter on next poll!! Can take 15 minutes to process");
         } else if (allWords.contentEquals("reset heart rate sync")) {
             PersistentStore.setLong("nightscout-rest-heartrate-synced-time",0);
             JoH.static_toast_long("Cleared heart rate sync data");
