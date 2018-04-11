@@ -506,7 +506,6 @@ public class BlueReaderTest extends RobolectricTestWithConfig {
 
         // Verify
         assertThat(new String(reply)).isEqualTo("k");
-        assertThat(getLogs()).contains("Shutdown in test found");
 
     }
 
