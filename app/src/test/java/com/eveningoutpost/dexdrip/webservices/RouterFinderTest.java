@@ -2,11 +2,8 @@ package com.eveningoutpost.dexdrip.webservices;
 
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
-import com.eveningoutpost.dexdrip.xdrip;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.robolectric.RuntimeEnvironment;
 
 import static com.google.common.truth.Truth.assertWithMessage;
 
@@ -19,14 +16,9 @@ public class RouterFinderTest extends RobolectricTestWithConfig {
         System.out.println(msg);
     }
 
-    @Before
-    public void setUp() throws Exception {
-        xdrip.checkAppContext(RuntimeEnvironment.application);
-    }
-
 
     @Test
-    public void test_RouteFinder() throws Exception {
+    public void test_RouteFinder() {
 
         WebResponse response;
 

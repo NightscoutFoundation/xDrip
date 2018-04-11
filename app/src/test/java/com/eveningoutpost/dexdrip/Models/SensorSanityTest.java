@@ -3,7 +3,6 @@ package com.eveningoutpost.dexdrip.Models;
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import static com.google.common.truth.Truth.assertWithMessage;
@@ -13,13 +12,8 @@ import static com.google.common.truth.Truth.assertWithMessage;
  */
 public class SensorSanityTest extends RobolectricTestWithConfig {
 
-
-    @Before
-    public void setUp() throws Exception {
-    }
-
     @Test
-    public void sanity_raw_test_1() throws Exception {
+    public void sanity_raw_test_1() {
 
         assertWithMessage("Unrestricted passes").that(SensorSanity.isRawValueSane(1, DexCollectionType.Disabled)).isTrue();
 
@@ -35,7 +29,7 @@ public class SensorSanityTest extends RobolectricTestWithConfig {
     }
 
     @Test
-    public void sanity_raw_test_2() throws Exception {
+    public void sanity_raw_test_2() {
 
         assertWithMessage("Unrestricted passes").that(SensorSanity.isRawValueSane(10000, DexCollectionType.Disabled)).isTrue();
 
