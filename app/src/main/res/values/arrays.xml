@@ -9,6 +9,8 @@
         <item>G4 Share Receiver</item>
         <item>G5 Transmitter</item>
         <item>Libre Bluetooth</item>
+        <item>Libre Bluetooth + wifi</item>
+        <item>Libre wifi</item>
         <item>xDrip+ Sync Follower</item>
         <item>LibreAlarm</item>
         <item>640G / EverSense</item>
@@ -24,6 +26,8 @@
         <item>DexcomShare</item>
         <item>DexcomG5</item>
         <item>LimiTTer</item>
+        <item>LimiTTerWifi</item>
+        <item>LibreWifi</item>
         <item>Follower</item>
         <item>LibreAlarm</item>
         <item>NSEmulator</item>
