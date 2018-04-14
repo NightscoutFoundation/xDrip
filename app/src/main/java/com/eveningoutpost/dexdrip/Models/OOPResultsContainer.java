@@ -16,7 +16,7 @@ class HistoricBg {
 class OOPResults {
     double currentBg;
     int currentTime;
-    int currenTrend;
+    int currentTrend;
     HistoricBg [] historicBg;
     long timestamp;
     String serialNumber;
