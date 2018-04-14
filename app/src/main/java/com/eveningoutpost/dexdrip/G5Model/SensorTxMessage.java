@@ -13,7 +13,6 @@ import java.nio.ByteOrder;
 public class SensorTxMessage extends TransmitterMessage {
     byte opcode = 0x2e;
     byte[] crc = CRC.calculate(opcode);
-    private final static String TAG = G5CollectionService.TAG; // meh
 
 
     public SensorTxMessage() {

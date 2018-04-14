@@ -930,6 +930,16 @@ public class JoH {
         xdrip.getAppContext().startService(new Intent(xdrip.getAppContext(), c));
     }
 
+    public static void startActivity(Class c) {
+        xdrip.getAppContext().startActivity(getStartActivityIntent(c));
+    }
+
+
+    public static Intent getStartActivityIntent(Class c) {
+        return new Intent(xdrip.getAppContext(), c).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    }
+
+
     public static void goFullScreen(boolean fullScreen, View decorView) {
 
         if (fullScreen) {

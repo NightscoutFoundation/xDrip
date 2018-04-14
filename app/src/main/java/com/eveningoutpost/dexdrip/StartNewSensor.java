@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.Treatments;
@@ -186,6 +187,10 @@ public class StartNewSensor extends ActivityWithMenu {
         Treatments.SensorStart((DexCollectionType.hasLibre() ? startTime + (3600000) : startTime));
 
         CollectionServiceStarter.newStart(getApplicationContext());
+
+        Ob1G5StateMachine.startSensor();
+
+
         Intent intent;
         if (prefs.getBoolean("store_sensor_location", false) && Experience.gotData()) {
             intent = new Intent(getApplicationContext(), NewSensorLocation.class);

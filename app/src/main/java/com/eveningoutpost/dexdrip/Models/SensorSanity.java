@@ -29,8 +29,10 @@ public class SensorSanity {
         // checks for each type of data source
 
         if (DexCollectionType.hasDexcomRaw(type)) {
-            if (raw_value < DEXCOM_MIN_RAW) state = false;
-            else if (raw_value > DEXCOM_MAX_RAW) state = false;
+            if (raw_value != BgReading.SPECIAL_G5_PLACEHOLDER) {
+                if (raw_value < DEXCOM_MIN_RAW) state = false;
+                else if (raw_value > DEXCOM_MAX_RAW) state = false;
+            }
 
         } else if (DexCollectionType.hasLibre(type)) {
             if (raw_value < LIBRE_MIN_RAW) state = false;

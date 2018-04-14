@@ -13,7 +13,6 @@ import java.nio.ByteBuffer;
 public class ResetTxMessage extends TransmitterMessage {
     byte opcode = 0x42;
     private byte[] crc = CRC.calculate(opcode);
-    private final static String TAG = G5CollectionService.TAG; // meh
 
 
     public ResetTxMessage() {

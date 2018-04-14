@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
@@ -54,6 +55,8 @@ public class StopSensor extends ActivityWithMenu {
                 JoH.clearCache();
                 LibreAlarmReceiver.clearSensorStats();
                 PluggableCalibration.invalidateAllCaches();
+
+                Ob1G5StateMachine.stopSensor();
 
                 //If Sensor is stopped for G5, we need to prevent further BLE scanning.
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());

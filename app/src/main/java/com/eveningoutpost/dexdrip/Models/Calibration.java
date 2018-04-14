@@ -13,6 +13,7 @@ import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
+import com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine;
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.CalRecord;
@@ -340,6 +341,10 @@ public class Calibration extends Model {
         lowBgReading.find_new_raw_curve();
 
         JoH.clearCache();
+
+        Ob1G5StateMachine.addCalibration((int) bg1, JoH.tsl() - Constants.MINUTE_IN_MS);
+        Ob1G5StateMachine.addCalibration((int) bg2, JoH.tsl());
+
         final List<Calibration> calibrations = new ArrayList<Calibration>();
         calibrations.add(lowerCalibration);
         calibrations.add(higherCalibration);
@@ -831,18 +836,22 @@ public class Calibration extends Model {
                 final Calibration latestCalibration = Calibration.lastValid();
                 int i = 0;
                 for (BgReading bgReading : bgReadings) {
-                    final double oldYValue = bgReading.calculated_value;
-                    final double newYvalue = (bgReading.age_adjusted_raw_value * latestCalibration.slope) + latestCalibration.intercept;
-                    final double new_calculated_value = ((newYvalue * (denom - i)) + (oldYValue * (i))) / denom;
-                    // if filtered == raw then rewrite them both because this would not happen if filtered data was from real source
-                    if (bgReading.filtered_calculated_value == bgReading.calculated_value) {
-                        bgReading.filtered_calculated_value = new_calculated_value;
-                    }
-                    bgReading.calculated_value = new_calculated_value;
+                    if (bgReading.calibration != null) {
+                        final double oldYValue = bgReading.calculated_value;
+                        final double newYvalue = (bgReading.age_adjusted_raw_value * latestCalibration.slope) + latestCalibration.intercept;
+                        final double new_calculated_value = ((newYvalue * (denom - i)) + (oldYValue * (i))) / denom;
+                        // if filtered == raw then rewrite them both because this would not happen if filtered data was from real source
+                        if (bgReading.filtered_calculated_value == bgReading.calculated_value) {
+                            bgReading.filtered_calculated_value = new_calculated_value;
+                        }
+                        bgReading.calculated_value = new_calculated_value;
 
-                    bgReading.save();
-                    BgReading.pushBgReadingSyncToWatch(bgReading, false);
-                    i += 1;
+                        bgReading.save();
+                        BgReading.pushBgReadingSyncToWatch(bgReading, false);
+                        i += 1;
+                    } else {
+                        Log.d(TAG, "History Rewrite: Ignoring BgReading without calibration from: " + JoH.dateTimeText(bgReading.timestamp));
+                    }
                 }
             } catch (NullPointerException e) {
                 Log.wtf(TAG, "Null pointer in AdjustRecentReadings >=3: " + e);
