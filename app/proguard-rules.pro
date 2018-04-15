@@ -75,6 +75,9 @@
 -keep class rx.schedulers.Schedulers {
     public static ** test();
 }
+
+-keep class com.google.devtools.build.android.desugar.runtime.ThrowableExtension
+
 -keepclassmembers class rx.internal.util.unsafe.*ArrayQueue*Field* {
     long producerIndex;
     long consumerIndex;
@@ -104,6 +107,7 @@
 
 -dontnote rx.internal.util.PlatformDependent
 -dontnote rx.**
+-dontnote **rx.Observable.**
 -dontnote com.squareup.**
 
 -dontwarn java.lang.invoke.*
