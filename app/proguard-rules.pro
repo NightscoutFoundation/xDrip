@@ -76,8 +76,6 @@
     public static ** test();
 }
 
--keep class com.google.devtools.build.android.desugar.runtime.ThrowableExtension
-
 -keepclassmembers class rx.internal.util.unsafe.*ArrayQueue*Field* {
     long producerIndex;
     long consumerIndex;
@@ -112,3 +110,5 @@
 
 -dontwarn java.lang.invoke.*
 -dontwarn **$$Lambda$*
+
+-dontwarn com.google.devtools.build.android.desugar.runtime.**
