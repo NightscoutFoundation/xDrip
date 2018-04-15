@@ -1211,7 +1211,7 @@ public class Ob1G5CollectionService extends G5BaseService {
 
     public void processCalibrationState(CalibrationState state) {
         lastSensorStatus = state.getText();
-        final boolean needs_calibration = state.readyForCalibration();
+        final boolean needs_calibration = state.needsCalibration();
         final boolean was_needing_calibration = PersistentStore.getBoolean(NEEDING_CALIBRATION);
         if (needs_calibration && !was_needing_calibration) {
             final Class c;

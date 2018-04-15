@@ -51,7 +51,11 @@ public enum CalibrationState {
 
     public boolean readyForCalibration() {
         return this == Ok
-                || this == NeedsCalibration
+                || needsCalibration();
+    }
+
+    public boolean needsCalibration() {
+        return this == NeedsCalibration
                 || this == NeedsFirstCalibration
                 || this == NeedsSecondCalibration
                 || this == NeedsDifferentCalibration;
