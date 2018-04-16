@@ -74,7 +74,7 @@ public class SessionStartRxMessage extends TransmitterMessage {
             case 0x03:
                 return "Invalid";
             default:
-                return "";
+                return "Unknown code: " + info;
         }
     }
 }

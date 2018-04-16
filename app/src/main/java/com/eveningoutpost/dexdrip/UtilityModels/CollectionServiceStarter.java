@@ -279,6 +279,10 @@ public class CollectionServiceStarter {
         this.mContext = context;
     }
 
+    public static void restartCollectionService() {
+        restartCollectionService(xdrip.getAppContext());
+    }
+
     public static void restartCollectionService(Context context) {
         if (context == null) context = xdrip.getAppContext();
         CollectionServiceStarter collectionServiceStarter = new CollectionServiceStarter(context);

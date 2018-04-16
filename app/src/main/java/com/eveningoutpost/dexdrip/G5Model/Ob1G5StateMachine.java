@@ -442,6 +442,7 @@ public class Ob1G5StateMachine {
                                 final String msg = "Session Start Failed " + session_start.message();
                                 parent.msg(msg);
                                 UserError.Log.e(TAG, msg);
+                                JoH.showNotification("G5 Start Failed", msg, null, Constants.G5_START_REJECT, true, true, false);
                             }
                             enqueueUniqueCommand(new GlucoseTxMessage(), "Re-read glucose");
 
@@ -581,15 +582,42 @@ public class Ob1G5StateMachine {
         if (tm != null) {
             final Class searchClass = tm.getClass();
             synchronized (commandQueue) {
-                for (Ob1Work item : commandQueue) {
-                    if (item.msg.getClass() == searchClass) {
-                        UserError.Log.d(TAG, "Not adding duplicate: " + searchClass.getSimpleName());
-                        return;
-                    }
+                if (searchQueue(searchClass)) {
+                    UserError.Log.d(TAG, "Not adding duplicate: " + searchClass.getSimpleName());
+                    return;
                 }
                 commandQueue.add(new Ob1Work(tm, msg));
             }
         }
+    }
+
+    private static boolean queueContains(TransmitterMessage tm) {
+        final Class searchClass = tm.getClass();
+        return queueContains(searchClass);
+    }
+
+    private static boolean queueContains(Class searchClass) {
+        synchronized (commandQueue) {
+            return searchQueue(searchClass);
+        }
+    }
+
+    // note not synchronized here
+    private static boolean searchQueue(Class searchClass) {
+        for (Ob1Work item : commandQueue) {
+            if (item.msg.getClass() == searchClass) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean pendingStop() {
+        return queueContains(SessionStopTxMessage.class);
+    }
+
+    public static boolean pendingStart() {
+        return queueContains(SessionStartTxMessage.class);
     }
 
     public static int queueSize() {
@@ -724,7 +752,13 @@ public class Ob1G5StateMachine {
             UserError.Log.d(TAG, "Got usable glucose data from G5!!");
             lastGlucoseBgReading = BgReading.bgReadingInsertFromG5(glucose.glucose, JoH.tsl());
             parent.lastUsableGlucosePacketTime = lastGlucosePacket;
-        } // TODO else
+        } else {
+            if (glucose.calibrationState().sensorFailed()) {
+                if (JoH.pratelimit("G5 Sensor Failed", 3600 * 3)) {
+                    JoH.showNotification("G5 SENSOR FAILED", "Sensor reporting failed", null, Constants.G5_SENSOR_ERROR, true, true, false);
+                }
+            }
+        }
     }
 
 

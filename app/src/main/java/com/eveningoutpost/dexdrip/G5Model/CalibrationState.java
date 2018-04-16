@@ -61,6 +61,14 @@ public enum CalibrationState {
                 || this == NeedsDifferentCalibration;
     }
 
+    public boolean sensorStarted() {
+        return readyForCalibration() || this == WarmingUp;
+    }
+
+    public boolean sensorFailed() {
+        return this == SensorFailed;
+    }
+
     public String getText() {
         return text;
     }

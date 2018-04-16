@@ -64,6 +64,8 @@ import rx.Subscription;
 import rx.schedulers.Schedulers;
 
 import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.getUUIDName;
+import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.pendingStart;
+import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.pendingStop;
 import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.STATE.CLOSE;
 import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.STATE.CLOSED;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.G5_CALIBRATION_REQUEST;
@@ -1240,6 +1242,11 @@ public class Ob1G5CollectionService extends G5BaseService {
             return usingNativeMode();
         }
         return false;
+    }
+
+    public static boolean isG5SensorStarted() {
+        if (lastSensorState == null) return false;
+        return lastSensorState.sensorStarted() && usingNativeMode() && !pendingStop() && !pendingStart();
     }
 
     // are we using the G5 Transmitter to evaluate readings
