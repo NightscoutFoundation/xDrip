@@ -36,6 +36,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
+import android.os.SystemClock;
 import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AlertDialog;
@@ -161,10 +162,16 @@ public class JoH {
         return new Date().getTime();
     }
 
-    // TODO can we optimize this with System.currentTimeMillis ?
     public static long tsl() {
-        //return new Date().getTime();
         return System.currentTimeMillis();
+    }
+
+    public static long uptime() {
+        return SystemClock.uptimeMillis();
+    }
+
+    public static boolean upForAtLeastMins(int mins) {
+        return uptime() > Constants.MINUTE_IN_MS * mins;
     }
 
     public static long msSince(long when) {
