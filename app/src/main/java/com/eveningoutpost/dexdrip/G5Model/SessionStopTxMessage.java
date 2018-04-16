@@ -7,9 +7,14 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 public class SessionStopTxMessage extends TransmitterMessage {
 
     final byte opcode = 0x28;
+    final int length = 7;
+    {
+        postExecuteGuardTime = 1000;
+    }
 
     SessionStopTxMessage(int stopTime) {
-        init(opcode, 7);
+
+        init(opcode, length);
         data.putInt(stopTime);
         appendCRC();
     }

@@ -437,17 +437,24 @@ public class Ob1G5StateMachine {
                             final SessionStartRxMessage session_start = (SessionStartRxMessage) data_packet.msg;
                             if (session_start.isOkay()) {
                                 // TODO persist this
-                                parent.msg("Session Started Successfully: " + JoH.dateTimeText(session_start.getSessionStart()));
-                                enqueueUniqueCommand(new GlucoseTxMessage(), "Re-read glucose");
+                                parent.msg("Session Started Successfully: " + JoH.dateTimeText(session_start.getSessionStart()) + " " + JoH.dateTimeText(session_start.getRequestedStart()) + " " + JoH.dateTimeText(session_start.getTransmitterTime()));
+                            } else {
+                                final String msg = "Session Start Failed " + session_start.message();
+                                parent.msg(msg);
+                                UserError.Log.e(TAG, msg);
                             }
+                            enqueueUniqueCommand(new GlucoseTxMessage(), "Re-read glucose");
+
                             break;
 
                         case SessionStopRxMessage:
                             final SessionStopRxMessage session_stop = (SessionStopRxMessage) data_packet.msg;
                             if (session_stop.isOkay()) {
                                 // TODO persist this
-                                parent.msg("Session Stopped Successfully: " + JoH.dateTimeText(session_stop.getSessionStart()));
+                                parent.msg("Session Stopped Successfully: " + JoH.dateTimeText(session_stop.getSessionStart()) + " " + JoH.dateTimeText(session_stop.getSessionStop()));
                                 enqueueUniqueCommand(new GlucoseTxMessage(), "Re-read glucose");
+                            } else {
+                                UserError.Log.e(TAG, "Session Stop Error!");
                             }
                             break;
 
@@ -514,7 +521,11 @@ public class Ob1G5StateMachine {
     }
 
     private static void inevitableDisconnect(Ob1G5CollectionService parent, RxBleConnection connection) {
-        Inevitable.task("Ob1G5 disconnect", 500, () -> disconnectNow(parent, connection));
+        inevitableDisconnect(parent, connection, 0);
+    }
+
+    private static void inevitableDisconnect(Ob1G5CollectionService parent, RxBleConnection connection, long guardTime) {
+        Inevitable.task("Ob1G5 disconnect", 500 + guardTime, () -> disconnectNow(parent, connection));
     }
 
     private static void disconnectNow(Ob1G5CollectionService parent, RxBleConnection connection) {
@@ -592,17 +603,21 @@ public class Ob1G5StateMachine {
         }
     }
 
-    // this probably should be improved
     private static boolean acceptCommands() {
-        return DexCollectionType.hasDexcomRaw();
+        return DexCollectionType.hasDexcomRaw() && Pref.getBooleanDefaultFalse("ob1_g5_use_transmitter_alg");
     }
 
-    // take a when parameter??
-    public static void startSensor() {
+    // actual limit is something like 20-30 mins but due to propagation delays its too risky to adjust
+    private static final long MAX_START_TIME_REWIND = Constants.MINUTE_IN_MS * 5;
+
+    public static void startSensor(long when) {
+        if (msSince(when) > MAX_START_TIME_REWIND) {
+            when = JoH.tsl() - MAX_START_TIME_REWIND;
+            UserError.Log.e(TAG, "Cannot rewind sensor start time beyond: " + JoH.dateTimeText(when));
+        }
         if (acceptCommands()) {
-            // ignore if ob1 g5 not in use? or just cache anyway?
-            enqueueCommand(new SessionStartTxMessage(
-                            DexTimeKeeper.getDexTime(getTransmitterID(), JoH.tsl())),
+            enqueueCommand(new SessionStartTxMessage(when,
+                            DexTimeKeeper.getDexTime(getTransmitterID(), when)),
                     "Start Sensor");
         }
     }
@@ -610,7 +625,6 @@ public class Ob1G5StateMachine {
 
     public static void stopSensor() {
         if (acceptCommands()) {
-            // ignore if ob1 g5 not in use? or just cache anyway?
             enqueueCommand(
                     new SessionStopTxMessage(
                             DexTimeKeeper.getDexTime(getTransmitterID(), JoH.tsl())),
@@ -665,13 +679,18 @@ public class Ob1G5StateMachine {
                                 .timeout(2, TimeUnit.SECONDS)
                                 .subscribe(value -> {
                                     UserError.Log.d(TAG, "Wrote Queue Message: " + unit.text);
-                                    inevitableDisconnect(parent, connection);
+                                    final long guardTime = unit.msg.guardTime();
+                                    inevitableDisconnect(parent, connection, guardTime);
+                                    if (guardTime > 0) {
+                                        UserError.Log.d(TAG, "Sleeping post execute: " + unit.text + " " + guardTime + "ms");
+                                        JoH.threadSleep(guardTime);
+                                    }
                                     throw new OperationSuccess("Completed: " + unit.text);
 
                                 }, throwable -> {
                                     if (!(throwable instanceof OperationSuccess)) {
                                         unit.retry++;
-                                        UserError.Log.d(TAG,"Re-adding: "+unit.text);
+                                        UserError.Log.d(TAG, "Re-adding: " + unit.text);
                                         synchronized (commandQueue) {
                                             commandQueue.push(unit);
                                         }

@@ -8,8 +8,9 @@ import java.nio.ByteOrder;
 public class SessionStartRxMessage extends TransmitterMessage {
     public static final byte opcode = 0x27;
     final byte length = 17;
+
     private byte status = (byte) 0xFF;
-    private byte received = (byte) 0xFF;
+    private byte info = (byte) 0xFF;
     final String transmitterId;
     int sessionStartTime = 0;
     int requestedStartTime = 0;
@@ -24,11 +25,10 @@ public class SessionStartRxMessage extends TransmitterMessage {
             if ((data.get() == opcode) && checkCRC(packet)) {
                 valid = true;
                 status = data.get();
-                received = data.get();
+                info = data.get();
                 requestedStartTime = data.getInt();
                 sessionStartTime = data.getInt();
                 transitterTime = data.getInt();
-
             }
         }
     }
@@ -38,7 +38,7 @@ public class SessionStartRxMessage extends TransmitterMessage {
     }
 
     boolean isOkay() {
-        return isValid() && status == 0x00;
+        return isValid() && status == 0x00 && info == 0x01 && sessionStartTime != INVALID_TIME;
     }
 
     long getSessionStart() {
@@ -48,4 +48,34 @@ public class SessionStartRxMessage extends TransmitterMessage {
             return 0;
         }
     }
+
+    long getRequestedStart() {
+        if (isOkay() && requestedStartTime > 0) {
+            return DexTimeKeeper.fromDexTime(transmitterId, requestedStartTime);
+        } else {
+            return 0;
+        }
+    }
+
+    long getTransmitterTime() {
+        if (isOkay() && transitterTime > 0) {
+            return DexTimeKeeper.fromDexTime(transmitterId, transitterTime);
+        } else {
+            return 0;
+        }
+    }
+
+    String message() {
+        switch (info) {
+            case 0x01:
+                return "OK";
+            case 0x02:
+                return "Already started";
+            case 0x03:
+                return "Invalid";
+            default:
+                return "";
+        }
+    }
 }
+

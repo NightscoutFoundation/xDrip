@@ -188,7 +188,7 @@ public class StartNewSensor extends ActivityWithMenu {
 
         CollectionServiceStarter.newStart(getApplicationContext());
 
-        Ob1G5StateMachine.startSensor();
+        Ob1G5StateMachine.startSensor(startTime);
 
 
         Intent intent;

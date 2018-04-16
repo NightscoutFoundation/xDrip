@@ -204,11 +204,7 @@ public class Ob1G5CollectionService extends G5BaseService {
         final PowerManager.WakeLock wl = JoH.getWakeLock("jam-g5-background", timeout + 1000);
         background_launch_waiting = true;
         new Thread(() -> {
-            try {
-                Thread.sleep(timeout);
-            } catch (InterruptedException e) {
-                //
-            }
+            JoH.threadSleep(timeout);
             background_launch_waiting = false;
             JoH.releaseWakeLock(wl);
             automata();
@@ -1213,21 +1209,23 @@ public class Ob1G5CollectionService extends G5BaseService {
         lastSensorStatus = state.getText();
         final boolean needs_calibration = state.needsCalibration();
         final boolean was_needing_calibration = PersistentStore.getBoolean(NEEDING_CALIBRATION);
-        if (needs_calibration && !was_needing_calibration) {
-            final Class c;
-            switch (state) {
-                case NeedsFirstCalibration:
-                    c = DoubleCalibrationActivity.class;
-                    break;
-                default:
-                    c = AddCalibration.class;
-                    break;
-            }
+        if (!android_wear) {
+            if (needs_calibration && !was_needing_calibration) {
+                final Class c;
+                switch (state) {
+                    case NeedsFirstCalibration:
+                        c = DoubleCalibrationActivity.class;
+                        break;
+                    default:
+                        c = AddCalibration.class;
+                        break;
+                }
 
-            final PendingIntent pi = PendingIntent.getActivity(xdrip.getAppContext(), G5_CALIBRATION_REQUEST, JoH.getStartActivityIntent(c), PendingIntent.FLAG_UPDATE_CURRENT);
-            JoH.showNotification(state.getText(), "G5 Calibration Required", pi, G5_CALIBRATION_REQUEST, state == CalibrationState.NeedsFirstCalibration, true, false);
-        } else if (!needs_calibration && was_needing_calibration) {
-            JoH.cancelNotification(G5_CALIBRATION_REQUEST);
+                final PendingIntent pi = PendingIntent.getActivity(xdrip.getAppContext(), G5_CALIBRATION_REQUEST, JoH.getStartActivityIntent(c), PendingIntent.FLAG_UPDATE_CURRENT);
+                JoH.showNotification(state.getText(), "G5 Calibration Required", pi, G5_CALIBRATION_REQUEST, state == CalibrationState.NeedsFirstCalibration, true, false);
+            } else if (!needs_calibration && was_needing_calibration) {
+                JoH.cancelNotification(G5_CALIBRATION_REQUEST);
+            }
         }
         if (needs_calibration != was_needing_calibration) {
             PersistentStore.setBoolean(NEEDING_CALIBRATION, needs_calibration);

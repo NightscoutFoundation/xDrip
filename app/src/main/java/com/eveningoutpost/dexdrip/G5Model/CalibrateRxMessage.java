@@ -47,7 +47,7 @@ public class CalibrateRxMessage extends TransmitterMessage {
             case (byte) 0x0D:
                 return "Duplicate";
             case (byte) 0x0E:
-                return "Unhappy Calibration";
+                return "Not ready to calibrate";
             case (byte) 0xFF:
                 return "Unable to decode";
             default:

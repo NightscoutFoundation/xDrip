@@ -48,4 +48,11 @@ public class SessionStopRxMessage extends TransmitterMessage {
             return 0;
         }
     }
+    long getSessionStop() {
+        if (isOkay() && sessionStopTime > 0) {
+            return DexTimeKeeper.fromDexTime(transmitterId, sessionStopTime);
+        } else {
+            return 0;
+        }
+    }
 }

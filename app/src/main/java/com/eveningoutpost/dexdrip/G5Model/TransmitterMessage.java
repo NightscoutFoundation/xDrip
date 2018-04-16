@@ -10,7 +10,10 @@ import java.nio.ByteOrder;
  * Created by joeginley on 3/16/16.
  */
 public abstract class TransmitterMessage {
-    protected final static String TAG = G5CollectionService.TAG; // meh
+    protected static final String TAG = G5CollectionService.TAG; // meh
+    protected static final int INVALID_TIME = 0xFFFFFFFF;
+    protected long postExecuteGuardTime = 50;
+
     public byte[] byteSequence = null;
     public ByteBuffer data = null;
 
@@ -52,5 +55,9 @@ public abstract class TransmitterMessage {
     byte[] getByteSequence() {
         byteSequence = data.array();
         return byteSequence;
+    }
+
+    long guardTime() {
+        return postExecuteGuardTime;
     }
 }

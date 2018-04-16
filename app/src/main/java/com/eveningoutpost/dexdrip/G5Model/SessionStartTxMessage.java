@@ -16,12 +16,12 @@ public class SessionStartTxMessage extends TransmitterMessage {
         this((int) (JoH.tsl() / 1000), dexTime);
     }
 
-    public SessionStartTxMessage(int startTime, int dexTime) {
+    public SessionStartTxMessage(long startTime, int dexTime) {
         data = ByteBuffer.allocate(11);
         data.order(ByteOrder.LITTLE_ENDIAN);
         data.put(opcode);
         data.putInt(dexTime);
-        data.putInt(startTime);
+        data.putInt((int)(startTime/1000));
         appendCRC();
         UserError.Log.d(TAG, "SessionStartTxMessage dbg: " + JoH.bytesToHex(byteSequence));
     }
