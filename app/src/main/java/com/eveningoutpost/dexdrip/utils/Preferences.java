@@ -302,8 +302,7 @@ public class Preferences extends PreferenceActivity {
     }
 
     @Override
-    protected void onResume()
-    {
+    protected void onResume() {
         super.onResume();
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(ActivityRecognizedService.prefListener);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && DexCollectionType.hasBluetooth()) {
@@ -312,8 +311,7 @@ public class Preferences extends PreferenceActivity {
     }
 
     @Override
-    protected void onPause()
-    {
+    protected void onPause() {
         super.onPause();
         PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(ActivityRecognizedService.prefListener);
         pFragment = null;
@@ -350,8 +348,7 @@ public class Preferences extends PreferenceActivity {
     }
 
     @Override
-    public void onNewIntent(Intent intent)
-    {
+    public void onNewIntent(Intent intent) {
         setIntent(intent);
         if (!processExtraData()) {
             super.onNewIntent(intent);
@@ -556,7 +553,6 @@ public class Preferences extends PreferenceActivity {
         }
 
 
-
         @SuppressLint("ApplySharedPref")
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -622,7 +618,7 @@ public class Preferences extends PreferenceActivity {
                                                             @Override
                                                             public boolean onPreferenceChange(Preference preference, Object newValue) {
                                                                 prefs.edit().putString("forced_language", (String) newValue).commit();
-                                                                update_force_english_title((String)newValue);
+                                                                update_force_english_title((String) newValue);
                                                                 if (prefs.getBoolean("force_english", false)) {
                                                                     SdcardImportExport.hardReset();
                                                                 }
@@ -722,7 +718,7 @@ public class Preferences extends PreferenceActivity {
             final Preference nfcSettings = findPreference("xdrip_plus_nfc_settings");
             //DexCollectionType collectionType = DexCollectionType.getType(findPreference("dex_collection_method").)
 
-            final ListPreference currentCalibrationPlugin = (ListPreference)findPreference("current_calibration_plugin");
+            final ListPreference currentCalibrationPlugin = (ListPreference) findPreference("current_calibration_plugin");
 
 
             final Preference shareKey = findPreference("share_key");
@@ -749,7 +745,7 @@ public class Preferences extends PreferenceActivity {
 
             final Preference scanShare = findPreference("scan_share2_barcode");
             final EditTextPreference transmitterId = (EditTextPreference) findPreference("dex_txid");
-           // final Preference closeGatt = findPreference("close_gatt_on_ble_disconnect");
+            // final Preference closeGatt = findPreference("close_gatt_on_ble_disconnect");
 
             final Preference pebbleSync2 = findPreference("broadcast_to_pebble_type");
             final Preference pebbleSync1 = findPreference("broadcast_to_pebble");
@@ -837,16 +833,18 @@ public class Preferences extends PreferenceActivity {
                 return true;
             });
 
-            if (enableBF != null ) enableBF.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                                                                              @Override
-                                                                              public boolean onPreferenceChange(Preference preference, Object newValue) {
-                                                                                  preference.getEditor().putBoolean(preference.getKey(),(boolean)newValue).apply();
-                                                                                  xdrip.initBF();
-                                                                                  return true;
-                                                                              }
-                                                                          }
+            if (enableBF != null) {
+                enableBF.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                                                           @Override
+                                                           public boolean onPreferenceChange(Preference preference, Object newValue) {
+                                                               preference.getEditor().putBoolean(preference.getKey(), (boolean) newValue).apply();
+                                                               xdrip.initBF();
+                                                               return true;
+                                                           }
+                                                       }
 
-            );
+                );
+            }
 
             disableAlertsStaleDataMinutes.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
@@ -868,16 +866,13 @@ public class Preferences extends PreferenceActivity {
             showShowcase.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    if ((boolean)newValue)
-                    {
+                    if ((boolean) newValue) {
                         ShotStateStore.resetAllShots();
-                        JoH.static_toast(preference.getContext(),getString(R.string.interface_tips_from_start),Toast.LENGTH_LONG);
+                        JoH.static_toast(preference.getContext(), getString(R.string.interface_tips_from_start), Toast.LENGTH_LONG);
                     }
                     return true;
                 }
             });
-
-
 
 
             units_pref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
@@ -1013,7 +1008,7 @@ public class Preferences extends PreferenceActivity {
                             builder.setPositiveButton("I AM SURE", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
                                     dialog.dismiss();
-                                    ((SwitchPreference)preference).setChecked(true);
+                                    ((SwitchPreference) preference).setChecked(true);
                                     preference.getEditor().putBoolean("use_nfc_scan", true).apply();
                                     NFCReaderX.handleHomeScreenScanPreference(xdrip.getAppContext(), (boolean) newValue && prefs.getBoolean("nfc_scan_homescreen", false));
                                 }
@@ -1036,7 +1031,7 @@ public class Preferences extends PreferenceActivity {
                 Log.d(TAG, "Nullpointer looking for nfc_scan");
             }
 
-            final boolean engineering_mode = this.prefs.getBoolean("engineering_mode",false);
+            final boolean engineering_mode = this.prefs.getBoolean("engineering_mode", false);
 
             if (!engineering_mode) {
                 try {
@@ -1056,30 +1051,31 @@ public class Preferences extends PreferenceActivity {
             }
 
             //if (engineering_mode) {
-                // populate the list
-                PluggableCalibration.setListPreferenceData(currentCalibrationPlugin);
+            // populate the list
+            PluggableCalibration.setListPreferenceData(currentCalibrationPlugin);
 
-                currentCalibrationPlugin.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                    @Override
-                    public boolean onPreferenceChange(Preference preference, Object newValue) {
-                        PluggableCalibration.invalidateCache(); // current
-                        PluggableCalibration.invalidateCache(newValue.toString()); // next
-                        PluggableCalibration.invalidatePluginCache(); // reset the object cache
-                        return true;
-                    }
-                });
+            currentCalibrationPlugin.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    PluggableCalibration.invalidateCache(); // current
+                    PluggableCalibration.invalidateCache(newValue.toString()); // next
+                    PluggableCalibration.invalidatePluginCache(); // reset the object cache
+                    return true;
+                }
+            });
             //}
 
             if (!DexCollectionType.hasLibre(collectionType)) {
                 collectionCategory.removePreference(nfcSettings);
             } else {
                 // has libre
-                if (!engineering_mode)
+                if (!engineering_mode) {
                     try {
                         nfcScreen.removePreference(findPreference("nfc_test_diagnostic"));
                     } catch (NullPointerException e) {
                         //
                     }
+                }
                 set_nfc_expiry_change_listeners();
                 update_nfc_expiry_preferences(null);
             }
@@ -1119,17 +1115,17 @@ public class Preferences extends PreferenceActivity {
                 }
                 if (Build.VERSION.SDK_INT < 23) {
                     try {
-                        ((PreferenceGroup)findPreference("xdrip_plus_display_category")).removePreference(findPreference("xdrip_plus_number_icon"));
+                        ((PreferenceGroup) findPreference("xdrip_plus_display_category")).removePreference(findPreference("xdrip_plus_number_icon"));
                     } catch (Exception e) { //
                     }
                 }
 
-               // if (!Experience.gotData()) {
-               //     try {
-               //     collectionCategory.removePreference(runInForeground);
-               //     } catch (Exception e) { //
-               //     }
-               // }
+                // if (!Experience.gotData()) {
+                //     try {
+                //     collectionCategory.removePreference(runInForeground);
+                //     } catch (Exception e) { //
+                //     }
+                // }
 
 
                 final PreferenceScreen g5_settings_screen = (PreferenceScreen) findPreference("xdrip_plus_g5_extra_settings");
@@ -1151,11 +1147,11 @@ public class Preferences extends PreferenceActivity {
                         // collectionCategory.removePreference(transmitterId);
 
                         collectionCategory.removePreference(g5_settings_screen);
-                       // collectionCategory.removePreference(scanConstantly);
-                       // collectionCategory.removePreference(g5nonraw);
-                       // collectionCategory.removePreference(reAuth);
-                       // collectionCategory.removePreference(reBond);
-                       // collectionCategory.removePreference(runOnMain);
+                        // collectionCategory.removePreference(scanConstantly);
+                        // collectionCategory.removePreference(g5nonraw);
+                        // collectionCategory.removePreference(reAuth);
+                        // collectionCategory.removePreference(reBond);
+                        // collectionCategory.removePreference(runOnMain);
                     } catch (NullPointerException e) {
                         Log.wtf(TAG, "Null pointer removing G5 prefs ", e);
                     }
@@ -1163,7 +1159,9 @@ public class Preferences extends PreferenceActivity {
 
                 if (!engineering_mode) {
                     try {
-                        if (!Experience.gotData()) getPreferenceScreen().removePreference(motionScreen);
+                        if (!Experience.gotData()) {
+                            getPreferenceScreen().removePreference(motionScreen);
+                        }
                         calibrationSettingsScreen.removePreference(old_school_calibration_mode);
                     } catch (NullPointerException e) {
                         Log.wtf(TAG, "Nullpointer with engineering mode s ", e);
@@ -1284,7 +1282,7 @@ public class Preferences extends PreferenceActivity {
                     installPebbleWatchface(pebbleType, preference);
 
                     // start/stop service
-                    enablePebble(pebbleType, getBooleanPreferenceViaContextWithoutException(context,"broadcast_to_pebble",false), context);
+                    enablePebble(pebbleType, getBooleanPreferenceViaContextWithoutException(context, "broadcast_to_pebble", false), context);
 
                     // configuration options
                     if (oldPebbleType != pebbleType) {
@@ -1356,7 +1354,7 @@ public class Preferences extends PreferenceActivity {
             pebbleHighLine.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    restartPebble();;
+                    restartPebble();
                     return true;
                 }
             });
@@ -1438,7 +1436,7 @@ public class Preferences extends PreferenceActivity {
             extraTagsForLogs.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    ExtraLogTags.readPreference((String)newValue);
+                    ExtraLogTags.readPreference((String) newValue);
                     return true;
                 }
             });
@@ -1467,7 +1465,7 @@ public class Preferences extends PreferenceActivity {
             });
 
             // when changing collection method
-                    collectionMethod.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            collectionMethod.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
 
@@ -1491,12 +1489,13 @@ public class Preferences extends PreferenceActivity {
                     if (DexCollectionType.hasLibre(collectionType)) {
                         collectionCategory.addPreference(nfcSettings);
                         NFCReaderX.handleHomeScreenScanPreference(xdrip.getAppContext(), prefs.getBoolean("nfc_scan_homescreen", false) && prefs.getBoolean("use_nfc_scan", false));
-                        if (!engineering_mode)
+                        if (!engineering_mode) {
                             try {
                                 nfcScreen.removePreference(findPreference("nfc_test_diagnostic"));
                             } catch (NullPointerException e) {
                                 //
                             }
+                        }
                     } else {
                         collectionCategory.removePreference(nfcSettings);
                         NFCReaderX.handleHomeScreenScanPreference(xdrip.getAppContext(), false); // always disable
@@ -1540,7 +1539,7 @@ public class Preferences extends PreferenceActivity {
                         //TODO Bridge battery display support
                     } else {
                         collectionCategory.addPreference(transmitterId);
-                     //   collectionCategory.addPreference(closeGatt);
+                        //   collectionCategory.addPreference(closeGatt);
                     }
 
                     if (collectionType == DexCollectionType.DexcomG5) {
@@ -1578,12 +1577,11 @@ public class Preferences extends PreferenceActivity {
                         CollectionServiceStarter.restartCollectionService(preference.getContext(), (String) newValue);
                         if (newValue.equals("Follower")) {
                             // reset battery whenever changing collector type
-                            AllPrefsFragment.this.prefs.edit().putInt("bridge_battery",0).apply();
-                            AllPrefsFragment.this.prefs.edit().putInt("parakeet_battery",0).apply();
-                            if (AllPrefsFragment.this.prefs.getBoolean("plus_follow_master",false))
-                            {
+                            AllPrefsFragment.this.prefs.edit().putInt("bridge_battery", 0).apply();
+                            AllPrefsFragment.this.prefs.edit().putInt("parakeet_battery", 0).apply();
+                            if (AllPrefsFragment.this.prefs.getBoolean("plus_follow_master", false)) {
                                 AllPrefsFragment.this.prefs.edit().putBoolean("plus_follow_master", false).apply();
-                                JoH.static_toast(preference.getContext(),"Turning off xDrip+ Sync Master for Followers!",Toast.LENGTH_LONG);
+                                JoH.static_toast(preference.getContext(), "Turning off xDrip+ Sync Master for Followers!", Toast.LENGTH_LONG);
                             }
                             GcmActivity.requestBGsync();
                         }
@@ -1594,7 +1592,6 @@ public class Preferences extends PreferenceActivity {
                 }
             });
         }
-
 
 
         // all this boiler plate for a dynamic interface seems excessive and boring, I would love to know a helper library to simplify this
@@ -1620,13 +1617,14 @@ public class Preferences extends PreferenceActivity {
 
         private void update_nfc_expiry_preferences(Boolean show_age) {
             try {
-                ;
                 final PreferenceScreen nfcScreen = (PreferenceScreen) findPreference("xdrip_plus_nfc_settings");
                 final String nfc_expiry_days_string = AllPrefsFragment.this.prefs.getString("nfc_expiry_days", "14.5");
 
                 final CheckBoxPreference nfc_show_age = (CheckBoxPreference) findPreference("nfc_show_age");
                 nfc_show_age.setSummaryOff("Show the sensor expiry time based on " + nfc_expiry_days_string + " days");
-                if (show_age == null) show_age = nfc_show_age.isChecked();
+                if (show_age == null) {
+                    show_age = nfc_show_age.isChecked();
+                }
                 if (show_age) {
                     nfcScreen.removePreference(nfc_expiry_days);
                 } else {
@@ -1691,28 +1689,28 @@ public class Preferences extends PreferenceActivity {
 
             final Context context = preference.getContext();
 
-            if (pebbleType == 1)
+            if (pebbleType == 1) {
                 return;
+            }
 
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
             builder.setTitle("Pebble Install");
 
-            switch (pebbleType)
-                {
-                    case 2:
-                        builder.setMessage("Install Standard Pebble Watchface?");
-                        break;
-                    case 3:
-                        builder.setMessage("Install Pebble Trend Watchface?");
-                        break;
-                    case 4:
-                        builder.setMessage("Install Pebble Classic Trend Watchface?");
-                        break;
-                    case 5:
-                        builder.setMessage("Install Pebble Clay Trend Watchface?");
-                        break;
-                }
+            switch (pebbleType) {
+                case 2:
+                    builder.setMessage("Install Standard Pebble Watchface?");
+                    break;
+                case 3:
+                    builder.setMessage("Install Pebble Trend Watchface?");
+                    break;
+                case 4:
+                    builder.setMessage("Install Pebble Classic Trend Watchface?");
+                    break;
+                case 5:
+                    builder.setMessage("Install Pebble Clay Trend Watchface?");
+                    break;
+            }
 
 
             builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
@@ -1755,9 +1753,11 @@ public class Preferences extends PreferenceActivity {
                             });
                             AlertDialog alert = builder.create();
                             alert.show();
-                        }},3000);
-                // outer
-                }});
+                        }
+                    }, 3000);
+                    // outer
+                }
+            });
 
             builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
                 @Override
@@ -1773,12 +1773,12 @@ public class Preferences extends PreferenceActivity {
         private static int pebbleType = 1;
 
         private void enablePebble(int newValueInt, boolean enabled, Context context) {
-            Log.d(TAG,"enablePebble called with: "+newValueInt+" "+enabled);
+            Log.d(TAG, "enablePebble called with: " + newValueInt + " " + enabled);
             if (pebbleType == 1) {
                 if (enabled && (newValueInt != 1)) {
                     context.stopService(new Intent(context, PebbleWatchSync.class));
                     context.startService(new Intent(context, PebbleWatchSync.class));
-                    Log.d(TAG,"Starting pebble service type: "+newValueInt);
+                    Log.d(TAG, "Starting pebble service type: " + newValueInt);
                 }
             } else {
                 if (!enabled || (newValueInt == 1)) {
@@ -1818,7 +1818,9 @@ public class Preferences extends PreferenceActivity {
 
         private void refresh_extra_items() {
             try {
-                if (this.prefs == null) return;
+                if (this.prefs == null) {
+                    return;
+                }
                 if (!this.prefs.getBoolean("plus_extra_features", false)) {
                     // getPreferenceScreen().removePreference(findPreference("plus_follow_master"));
 
@@ -1897,7 +1899,7 @@ public class Preferences extends PreferenceActivity {
     public static void handleUnitsChange(Preference preference, Object newValue, AllPrefsFragment allPrefsFragment) {
         try {
             SharedPreferences preferences;
-            if (preference!= null) {
+            if (preference != null) {
                 preferences = preference.getSharedPreferences();
             } else {
                 preferences = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
@@ -1931,18 +1933,20 @@ public class Preferences extends PreferenceActivity {
                     ProfileEditor.convertData(Constants.MGDL_TO_MMOLL);
                     preferences.edit().putString("highValue", JoH.qs(highVal * Constants.MGDL_TO_MMOLL, 1)).apply();
                     preferences.edit().putString("profile_insulin_sensitivity_default", JoH.qs(default_insulin_sensitivity * Constants.MGDL_TO_MMOLL, 2)).apply();
-                    preferences.edit().putString("plus_target_range", JoH.qs(default_target_glucose * Constants.MGDL_TO_MMOLL,1)).apply();
+                    preferences.edit().putString("plus_target_range", JoH.qs(default_target_glucose * Constants.MGDL_TO_MMOLL, 1)).apply();
                     Profile.invalidateProfile();
                 }
                 if (lowVal > 35) {
                     ProfileEditor.convertData(Constants.MGDL_TO_MMOLL);
                     preferences.edit().putString("lowValue", JoH.qs(lowVal * Constants.MGDL_TO_MMOLL, 1)).apply();
                     preferences.edit().putString("profile_insulin_sensitivity_default", JoH.qs(default_insulin_sensitivity * Constants.MGDL_TO_MMOLL, 2)).apply();
-                    preferences.edit().putString("plus_target_range", JoH.qs(default_target_glucose * Constants.MGDL_TO_MMOLL,1)).apply();
+                    preferences.edit().putString("plus_target_range", JoH.qs(default_target_glucose * Constants.MGDL_TO_MMOLL, 1)).apply();
                     Profile.invalidateProfile();
                 }
             }
-            if (preference != null) preference.setSummary(newValue.toString());
+            if (preference != null) {
+                preference.setSummary(newValue.toString());
+            }
             if (allPrefsFragment != null) {
                 allPrefsFragment.setSummary("highValue");
                 allPrefsFragment.setSummary("lowValue");

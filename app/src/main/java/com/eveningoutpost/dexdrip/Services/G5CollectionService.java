@@ -106,7 +106,7 @@ public class G5CollectionService extends G5BaseService {
     private static boolean service_running = false;
     private static boolean scan_scheduled = false;
 
-    private static byte lastOnReadCode = (byte)0xff;
+    private static byte lastOnReadCode = (byte) 0xff;
     private static int successes = 0;
     private static int failures = 0;
     private boolean force_always_authenticate = false;
@@ -162,10 +162,10 @@ public class G5CollectionService extends G5BaseService {
 
     //private static final int LOW_BATTERY_WARNING_LEVEL = 300; // voltage a < this value raises warnings
 
-   // private static String lastState = "Not running";
-  //  private static String lastStateWatch = "Not running";
-   // private static long static_last_timestamp = 0;
-   // private static long static_last_timestamp_watch = 0;
+    // private static String lastState = "Not running";
+    //  private static String lastStateWatch = "Not running";
+    // private static long static_last_timestamp = 0;
+    // private static long static_last_timestamp_watch = 0;
     private static long last_transmitter_timestamp = 0;
 
 
@@ -191,7 +191,7 @@ public class G5CollectionService extends G5BaseService {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             initScanCallback();
         }
-        advertiseTimeMS.add((long)0);
+        advertiseTimeMS.add((long) 0);
         service = this;
         foregroundServiceStarter = new ForegroundServiceStarter(getApplicationContext(), service);
         foregroundServiceStarter.start();
@@ -255,7 +255,7 @@ public class G5CollectionService extends G5BaseService {
 
     public SharedPreferences.OnSharedPreferenceChangeListener prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
         public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-            if(key.compareTo("run_service_in_foreground") == 0) {
+            if (key.compareTo("run_service_in_foreground") == 0) {
                 Log.d("FOREGROUND", "run_service_in_foreground changed!");
                 if (prefs.getBoolean("run_service_in_foreground", false)) {
                     foregroundServiceStarter = new ForegroundServiceStarter(getApplicationContext(), service);
@@ -267,7 +267,7 @@ public class G5CollectionService extends G5BaseService {
                 }
             }
 
-            if(key.compareTo("run_ble_scan_constantly") == 0 || key.compareTo("always_unbond_G5") == 0
+            if (key.compareTo("run_ble_scan_constantly") == 0 || key.compareTo("always_unbond_G5") == 0
                     || key.compareTo("always_get_new_keys") == 0 || key.compareTo("run_G5_ble_tasks_on_uithread") == 0) {
                 Log.i(TAG, "G5 Setting Change");
                 cycleScan(0);
@@ -291,15 +291,15 @@ public class G5CollectionService extends G5BaseService {
             if ((!service_running) && (keep_running)) {
                 service_running = true;
 
-                Log.d(TAG, "onG5StartCommand wakeup: "+JoH.dateTimeText(JoH.tsl()));
+                Log.d(TAG, "onG5StartCommand wakeup: " + JoH.dateTimeText(JoH.tsl()));
                 Log.e(TAG, "settingsToString: " + settingsToString());
 
-                lastState = "Started: "+JoH.hourMinuteString();
+                lastState = "Started: " + JoH.hourMinuteString();
 
                 //Log.d(TAG, "SDK: " + Build.VERSION.SDK_INT);
                 //stopScan();
                 if (!shouldServiceRun()) {
-                    Log.e(TAG,"Shutting down as no longer using G5 data source");
+                    Log.e(TAG, "Shutting down as no longer using G5 data source");
                     service_running = false;
                     keep_running = false;
                     stopSelf();
@@ -328,12 +328,12 @@ public class G5CollectionService extends G5BaseService {
                         Log.d(TAG, "No Active Sensor");
                     }
 
-                    service_running=false;
+                    service_running = false;
 
                     return START_STICKY;
                 }
             } else {
-                Log.e(TAG,"G5 service already active!");
+                Log.e(TAG, "G5 service already active!");
                 keepAlive();
                 return START_NOT_STICKY;
             }
@@ -365,18 +365,22 @@ public class G5CollectionService extends G5BaseService {
 
                     if (transmitterIdLastTwo.equals(deviceNameLastTwo)) {
                         isBondedOrBonding = true;
-                        isBonded=true;
+                        isBonded = true;
                         static_is_bonded = true;
-                        if (!previousBondedState) Log.e(TAG,"Device is now detected as bonded!");
-                    // TODO should we break here for performance?
+                        if (!previousBondedState) {
+                            Log.e(TAG, "Device is now detected as bonded!");
+                        }
+                        // TODO should we break here for performance?
                     } else {
                         isIntialScan = true;
                     }
                 }
             }
         }
-        if (previousBondedState && !isBonded) Log.e(TAG,"Device is no longer detected as bonded!");
-        Log.d(TAG, "getTransmitterDetails() result: Bonded? " + isBondedOrBonding.toString()+(isBonded ? " localed bonded" : " not locally bonded"));
+        if (previousBondedState && !isBonded) {
+            Log.e(TAG, "Device is no longer detected as bonded!");
+        }
+        Log.d(TAG, "getTransmitterDetails() result: Bonded? " + isBondedOrBonding.toString() + (isBonded ? " localed bonded" : " not locally bonded"));
     }
 
     private static boolean shouldServiceRun() {
@@ -418,7 +422,7 @@ public class G5CollectionService extends G5BaseService {
         }
 //        BgToSpeech.tearDownTTS();
         Log.i(TAG, "SERVICE STOPPED");
-        lastState="Stopped";
+        lastState = "Stopped";
     }
 
     public synchronized void keepAlive() {
@@ -426,28 +430,32 @@ public class G5CollectionService extends G5BaseService {
     }
 
     public synchronized void keepAlive(int wake_in_ms) {
-        Log.d(TAG,"keepAlive keep_running=" + keep_running);
-        if (!keep_running) return;
+        Log.d(TAG, "keepAlive keep_running=" + keep_running);
+        if (!keep_running) {
+            return;
+        }
         if (JoH.ratelimit("G5-keepalive", 5)) {
             long wakeTime;
-            if (wake_in_ms==0) {
+            if (wake_in_ms == 0) {
                 wakeTime = getNextAdvertiseTime() - 60 * 1000;
             } else {
                 wakeTime = Calendar.getInstance().getTimeInMillis() + wake_in_ms;
             }
             //Log.e(TAG, "Delay Time: " + minuteDelay);
-            Log.e(TAG, "Scheduling Wake Time: in " +  JoH.qs((wakeTime-JoH.tsl())/1000,0)+ " secs "+ JoH.dateTimeText(wakeTime));
+            Log.e(TAG, "Scheduling Wake Time: in " + JoH.qs((wakeTime - JoH.tsl()) / 1000, 0) + " secs " + JoH.dateTimeText(wakeTime));
             AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
-            if (pendingIntent != null)
+            if (pendingIntent != null) {
                 alarm.cancel(pendingIntent);
+            }
             pendingIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), 0);
             // TODO use wakeIntent feature
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 alarm.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 alarm.setExact(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
-            } else
+            } else {
                 alarm.set(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
+            }
         } else {
             Log.e(TAG, "Ignoring keepalive call due to ratelimit");
         }
@@ -470,7 +478,9 @@ public class G5CollectionService extends G5BaseService {
                 @Override
                 public void run() {
                     try {
-                        if (mBluetoothAdapter != null) mBluetoothAdapter.enable();
+                        if (mBluetoothAdapter != null) {
+                            mBluetoothAdapter.enable();
+                        }
                     } catch (SecurityException e) {
                         JoH.static_toast_short("Please enable Bluetooth!");
                     }
@@ -499,12 +509,12 @@ public class G5CollectionService extends G5BaseService {
             if (alwaysUnbond()) {
                 forgetDevice();
             }
-            JoH.ratelimit("G5-timeout",0);//re-init to ensure onStartCommand always executes cycleScan
+            JoH.ratelimit("G5-timeout", 0);//re-init to ensure onStartCommand always executes cycleScan
             cycleScan(0);
         }
     }
 
-    public synchronized void stopScan(){
+    public synchronized void stopScan() {
         if (!isScanning) {
             Log.d(TAG, "alreadyStoppedScanning");
             return;
@@ -516,7 +526,7 @@ public class G5CollectionService extends G5BaseService {
 
                 try {
 
-                    if (enforceMainThread()){
+                    if (enforceMainThread()) {
                         Handler iHandler = new Handler(Looper.getMainLooper());
                         iHandler.post(new Runnable() {
                             @Override
@@ -525,13 +535,13 @@ public class G5CollectionService extends G5BaseService {
                             }
                         });
                     } else {
-                        stopLogic();;
+                        stopLogic();
                     }
 
 
                 } catch (NullPointerException e) {
                     //Known bug in Samsung API 21 stack
-                    Log.e(TAG,"stopscan() Caught the NullPointerException");
+                    Log.e(TAG, "stopscan() Caught the NullPointerException");
                 }
             }
         }
@@ -553,17 +563,17 @@ public class G5CollectionService extends G5BaseService {
 
     public synchronized void cycleScan(int delay) {
 
-        Log.d(TAG,"cycleScan keep_running=" + keep_running);
+        Log.d(TAG, "cycleScan keep_running=" + keep_running);
         if (!keep_running) {
-            Log.e(TAG," OnDestroy failed to stop service. Shutting down now to prevent service from being initiated onScanResult().");
+            Log.e(TAG, " OnDestroy failed to stop service. Shutting down now to prevent service from being initiated onScanResult().");
             stopSelf();
             return;
         }
-        if (JoH.ratelimit("G5-timeout",60) || !scan_scheduled) {
-            if (JoH.ratelimit("g5-scan-log",60)) {
+        if (JoH.ratelimit("G5-timeout", 60) || !scan_scheduled) {
+            if (JoH.ratelimit("g5-scan-log", 60)) {
                 Log.d(TAG, "cycleScan running");
             }
-            scan_scheduled=true;
+            scan_scheduled = true;
             //Log.e(TAG, "Scheduling cycle scan, delay: " + delay);
             final Timer single_timer = new Timer();
             single_timer.schedule(new TimerTask() {
@@ -593,32 +603,34 @@ public class G5CollectionService extends G5BaseService {
                                 } catch
                                         (NullPointerException e) {
                                     //Known bug in Samsung API 21 stack
-                                    Log.e(TAG,"Caught the NullPointerException in cyclescan");
+                                    Log.e(TAG, "Caught the NullPointerException in cyclescan");
                                 } finally {
-                                    scan_scheduled=false;
+                                    scan_scheduled = false;
                                 }
                             }
                         }
                     }
-                    scan_scheduled=false;
+                    scan_scheduled = false;
                 }
             }, delay);
         } else {
-            Log.e(TAG,"jamorham blocked excessive scan schedule");
+            Log.e(TAG, "jamorham blocked excessive scan schedule");
         }
     }
 
     private synchronized void scanLogic() {
-        Log.d(TAG,"scanLogic keep_running=" + keep_running);
-        if (!keep_running) return;
+        Log.d(TAG, "scanLogic keep_running=" + keep_running);
+        if (!keep_running) {
+            return;
+        }
         if (JoH.ratelimit("G5-scanlogic", 1)) {//KS test change 2 -> 1 to support restart collector after n min missed readings
             try {
                 mLEScanner.stopScan(mScanCallback);
                 isScanning = false;
                 if (!isConnected) {
                     mLEScanner.startScan(filters, settings, mScanCallback);
-                    lastState="Scanning";
-                    if (JoH.ratelimit("g5-scan-log",60)) {
+                    lastState = "Scanning";
+                    if (JoH.ratelimit("g5-scan-log", 60)) {
                         Log.w(TAG, "scan cycle start");
                     }
                 }
@@ -672,13 +684,17 @@ public class G5CollectionService extends G5BaseService {
         if (isScanning) {
             Log.d(TAG, "alreadyScanning");
             scan_interval_timer.cancel();
-            Log.d(TAG,"startScan keep_running=" + keep_running);
-            if (!keep_running) return;
+            Log.d(TAG, "startScan keep_running=" + keep_running);
+            if (!keep_running) {
+                return;
+            }
             return;
         }
 
-        Log.d(TAG,"startScan keep_running=" + keep_running);
-        if (!keep_running) return;
+        Log.d(TAG, "startScan keep_running=" + keep_running);
+        if (!keep_running) {
+            return;
+        }
 
         getTransmitterDetails();
         if (mBluetoothAdapter == null || !mBluetoothAdapter.isEnabled()) {
@@ -688,7 +704,7 @@ public class G5CollectionService extends G5BaseService {
                 setupLeScanCallback();
                 mBluetoothAdapter.startLeScan(new UUID[]{BluetoothServices.Advertisement}, mLeScanCallback);
             } else {
-                if (enforceMainThread()){
+                if (enforceMainThread()) {
                     Handler iHandler = new Handler(Looper.getMainLooper());
                     iHandler.post(new Runnable() {
                         @Override
@@ -715,7 +731,7 @@ public class G5CollectionService extends G5BaseService {
     }
 
     private synchronized void cycleBT(boolean t) {
-        Log.e(TAG, "cycleBT special: count:" + disconnected133 + " / "+ disconnected59);
+        Log.e(TAG, "cycleBT special: count:" + disconnected133 + " / " + disconnected59);
         if ((disconnected133 < 2) && (disconnected59 < 2)) {
             cycleBT();
         } else {
@@ -769,7 +785,7 @@ public class G5CollectionService extends G5BaseService {
     }
 
     private synchronized void forgetDevice() {
-        Log.d(TAG,"forgetDevice() start");
+        Log.d(TAG, "forgetDevice() start");
         final Transmitter defaultTransmitter = new Transmitter(prefs.getString("dex_txid", "ABCDEF")); // should be cached?
         mBluetoothAdapter = mBluetoothManager.getAdapter();
         final Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
@@ -782,17 +798,19 @@ public class G5CollectionService extends G5BaseService {
                     //Log.e(TAG, "removeBond: "+transmitterIdLastTwo+" vs "+deviceNameLastTwo);
                     if (transmitterIdLastTwo.equals(deviceNameLastTwo)) {
                         try {
-                            Log.e(TAG, "removingBond: "+transmitterIdLastTwo+" vs "+deviceNameLastTwo);
+                            Log.e(TAG, "removingBond: " + transmitterIdLastTwo + " vs " + deviceNameLastTwo);
                             Method m = device.getClass().getMethod("removeBond", (Class[]) null);
                             m.invoke(device, (Object[]) null);
                             getTransmitterDetails();
-                        } catch (Exception e) { Log.e(TAG, e.getMessage(), e); }
+                        } catch (Exception e) {
+                            Log.e(TAG, e.getMessage(), e);
+                        }
                     }
 
                 }
             }
         }
-        Log.d(TAG,"forgetDevice() finished");
+        Log.d(TAG, "forgetDevice() finished");
     }
 
     // API 18 - 20
@@ -821,7 +839,7 @@ public class G5CollectionService extends G5BaseService {
     private ScanCallback mScanCallback;
 
     //@TargetApi(21)
-    private void initScanCallback(){
+    private void initScanCallback() {
         mScanCallback = new ScanCallback() {
             @Override
             public void onScanResult(int callbackType, ScanResult result) {
@@ -835,9 +853,11 @@ public class G5CollectionService extends G5BaseService {
                     String deviceNameLastTwo = Extensions.lastTwoCharactersOfString(btDevice.getName());
 
                     if (transmitterIdLastTwo.equals(deviceNameLastTwo)) {
-                        if (advertiseTimeMS.size() > 0)
-                            if ((new Date().getTime() - advertiseTimeMS.get(advertiseTimeMS.size()-1)) > 2.5*60*1000)
+                        if (advertiseTimeMS.size() > 0) {
+                            if ((new Date().getTime() - advertiseTimeMS.get(advertiseTimeMS.size() - 1)) > 2.5 * 60 * 1000) {
                                 advertiseTimeMS.clear();
+                            }
+                        }
                         advertiseTimeMS.add(new Date().getTime());
                         isIntialScan = false;
                         //device = btDevice;
@@ -857,7 +877,7 @@ public class G5CollectionService extends G5BaseService {
                 if (errorCode == 1) {
                     UserError.Log.e(TAG, "Already Scanning: " + isScanning);
                     //isScanning = true;
-                } else if (errorCode == 2){
+                } else if (errorCode == 2) {
                     cycleBT();
                 }
             }
@@ -882,7 +902,7 @@ public class G5CollectionService extends G5BaseService {
     }
 
     public synchronized void authenticate() {
-        Log.e(TAG,"authenticate() start");
+        Log.e(TAG, "authenticate() start");
         try {
             mGatt.setCharacteristicNotification(authCharacteristic, true);
             if (!mGatt.readCharacteristic(authCharacteristic)) {
@@ -909,10 +929,10 @@ public class G5CollectionService extends G5BaseService {
                     SensorTxMessage sensorTx = new SensorTxMessage();
                     controlCharacteristic.setValue(sensorTx.byteSequence);
                 }
-                Log.d(TAG,"getSensorData(): writing desccrptor");
+                Log.d(TAG, "getSensorData(): writing desccrptor");
                 mGatt.writeDescriptor(descriptor);
             } else {
-                Log.e(TAG,"getSensorData() mGatt was null");
+                Log.e(TAG, "getSensorData() mGatt was null");
             }
         } catch (NullPointerException e) {
             Log.e(TAG, "Got null pointer in getSensorData() " + e);
@@ -956,7 +976,7 @@ public class G5CollectionService extends G5BaseService {
     private synchronized void connectGatt(BluetoothDevice mDevice) {
         Log.i(TAG, "mGatt Null, connecting...");
         Log.i(TAG, "connectToDevice On Main Thread? " + isOnMainThread());
-        lastState="Found, Connecting";
+        lastState = "Found, Connecting";
         if (delayOn133Errors && max133RetryCounter > 1) {
             // should we only be looking at disconnected 133 here?
             Log.e(TAG, "Adding a delay before connecting to 133 count of: " + max133RetryCounter);
@@ -969,13 +989,13 @@ public class G5CollectionService extends G5BaseService {
 
     // Sends the disconnect tx message to our bt device.
     private synchronized void doDisconnectMessage(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
-           Log.d(TAG, "doDisconnectMessage() start");
-           gatt.setCharacteristicNotification(controlCharacteristic, false);
-           final DisconnectTxMessage disconnectTx = new DisconnectTxMessage();
-           characteristic.setValue(disconnectTx.byteSequence);
-           gatt.writeCharacteristic(characteristic);
-           gatt.disconnect();
-           Log.d(TAG, "doDisconnectMessage() finished");
+        Log.d(TAG, "doDisconnectMessage() start");
+        gatt.setCharacteristicNotification(controlCharacteristic, false);
+        final DisconnectTxMessage disconnectTx = new DisconnectTxMessage();
+        characteristic.setValue(disconnectTx.byteSequence);
+        gatt.writeCharacteristic(characteristic);
+        gatt.disconnect();
+        Log.d(TAG, "doDisconnectMessage() finished");
     }
 
 
@@ -1091,8 +1111,9 @@ public class G5CollectionService extends G5BaseService {
                     if (status == 0 && !encountered133) {// || status == 59) {
                         Log.i(TAG, "clean disconnect");
                         max133RetryCounter = 0;
-                        if (scanConstantly())
+                        if (scanConstantly()) {
                             cycleScan(15000);
+                        }
                     } else if (status == 133 || max133RetryCounter >= max133Retries) {
                         Log.e(TAG, "max133RetryCounter? " + max133RetryCounter);
                         Log.e(TAG, "Encountered 133: " + encountered133);
@@ -1102,10 +1123,11 @@ public class G5CollectionService extends G5BaseService {
                     } else if (encountered133) {
                         Log.e(TAG, "max133RetryCounter? " + max133RetryCounter);
                         Log.e(TAG, "Encountered 133: " + encountered133);
-                        if (scanConstantly())
+                        if (scanConstantly()) {
                             startScan();
-                        else
+                        } else {
                             cycleScan(0);
+                        }
                         max133RetryCounter++;
                     } else if (status == 129) {
                         Log.d(TAG, "Forgetting device due to status: " + status);
@@ -1117,10 +1139,11 @@ public class G5CollectionService extends G5BaseService {
                         if (disconnected59 > 2) {
                             cycleBT(true);
                         } else {
-                            if (scanConstantly())
+                            if (scanConstantly()) {
                                 startScan();
-                            else
+                            } else {
                                 cycleScan(0);
+                            }
                             max133RetryCounter = 0;
                         }
                     }
@@ -1272,8 +1295,8 @@ public class G5CollectionService extends G5BaseService {
                         Log.e(TAG, "Auth ow: got NULL opcode!");
                     }
                 } else {
-                    Log.i(TAG, "ow unexpected? characteristic: "+ getUUIDName(characteristic.getUuid()));
-                  //  Log.i(TAG, "ow status? " + status);
+                    Log.i(TAG, "ow unexpected? characteristic: " + getUUIDName(characteristic.getUuid()));
+                    //  Log.i(TAG, "ow status? " + status);
                 }
             }
 
@@ -1299,9 +1322,8 @@ public class G5CollectionService extends G5BaseService {
             }
         }
 
-        private synchronized void performBondWrite(BluetoothGattCharacteristic characteristic)
-        {
-            Log.d(TAG,"performBondWrite() started");
+        private synchronized void performBondWrite(BluetoothGattCharacteristic characteristic) {
+            Log.d(TAG, "performBondWrite() started");
             final BondRequestTxMessage bondRequest = new BondRequestTxMessage();
             characteristic.setValue(bondRequest.byteSequence);
             if (mGatt != null) {
@@ -1316,12 +1338,11 @@ public class G5CollectionService extends G5BaseService {
             }
             isBondedOrBonding = true;
             device.createBond();
-            Log.d(TAG,"performBondWrite() finished");
+            Log.d(TAG, "performBondWrite() finished");
         }
 
-        private synchronized void processOnCharacteristicRead (BluetoothGatt gatt,
-                                                  final BluetoothGattCharacteristic characteristic, final int status)
-        {
+        private synchronized void processOnCharacteristicRead(BluetoothGatt gatt,
+                                                              final BluetoothGattCharacteristic characteristic, final int status) {
             Log.e(TAG, "processOnCRead: Status value: " + getStatusName(status) + (isOnMainThread() ? " on main thread" : " not on main thread"));
 
             if (status == BluetoothGatt.GATT_SUCCESS) {
@@ -1337,7 +1358,7 @@ public class G5CollectionService extends G5BaseService {
 
                 byte code = buffer[0];
                 //Transmitter defaultTransmitter = new Transmitter(prefs.getString("dex_txid", "ABCDEF"));
-                Log.e(TAG,"processOncRead: code:"+code);
+                Log.e(TAG, "processOncRead: code:" + code);
                 mBluetoothAdapter = mBluetoothManager.getAdapter();
                 lastOnReadCode = code;
                 switch (code) {
@@ -1349,17 +1370,19 @@ public class G5CollectionService extends G5BaseService {
                             Log.e(TAG, "Special bonding test case!");
 
                             if (tryPreBondWithDelay) {
-                                Log.e(TAG,"Trying prebonding with delay!");
+                                Log.e(TAG, "Trying prebonding with delay!");
                                 isBondedOrBonding = true;
                                 device.createBond();
                                 waitFor(1600);
-                                Log.e(TAG,"Prebond delay finished");
+                                Log.e(TAG, "Prebond delay finished");
                             }
 
                             getTransmitterDetails(); // try to refresh on the off-chance
                         }
 
-                        if (ignoreLocalBondingState) Log.e(TAG,"Ignoring local bonding state!!");
+                        if (ignoreLocalBondingState) {
+                            Log.e(TAG, "Ignoring local bonding state!!");
+                        }
 
 
                         if (authStatus.authenticated == 1 && authStatus.bonded == 1 && (isBondedOrBonding || ignoreLocalBondingState)) {
@@ -1371,7 +1394,7 @@ public class G5CollectionService extends G5BaseService {
                             Log.i(TAG, "Let's Bond! " + (isBondedOrBonding ? "locally bonded" : "not locally bonded"));
 
                             if (useKeepAlive) {
-                                Log.e(TAG,"Trying keepalive..");
+                                Log.e(TAG, "Trying keepalive..");
                                 final KeepAliveTxMessage keepAliveRequest = new KeepAliveTxMessage(25);
                                 characteristic.setValue(keepAliveRequest.byteSequence);
                                 if (mGatt != null) {
@@ -1380,7 +1403,7 @@ public class G5CollectionService extends G5BaseService {
                                     Log.e(TAG, "mGatt was null when trying to write keepAliveRequest");
                                 }
                             } else {
-                             performBondWrite(characteristic);
+                                performBondWrite(characteristic);
                             }
                         } else {
                             Log.i(TAG, "Transmitter NOT already authenticated");
@@ -1427,7 +1450,7 @@ public class G5CollectionService extends G5BaseService {
                         }
 
                         if ((code == 7) && (tryOnDemandBondWithDelay)) {
-                            Log.e(TAG,"Trying ondemand bond with delay!");
+                            Log.e(TAG, "Trying ondemand bond with delay!");
                             isBondedOrBonding = true;
                             waitingBondConfirmation = 1; // waiting
                             device.createBond();
@@ -1448,7 +1471,7 @@ public class G5CollectionService extends G5BaseService {
                             }
 
 
-                            Log.e(TAG,"ondemandbond delay finished");
+                            Log.e(TAG, "ondemandbond delay finished");
                         }
 
                         Log.i(TAG, "Read code: " + code + " - Transmitter NOT already authenticated?");
@@ -1463,7 +1486,6 @@ public class G5CollectionService extends G5BaseService {
             }
             Log.e(TAG, "OnCharacteristic READ finished: status: " + getStatusName(status));
         }
-
 
 
         @Override
@@ -1496,7 +1518,7 @@ public class G5CollectionService extends G5BaseService {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && gatt != null) {
                 gatt.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH);
             }
-            Log.d(TAG, "Received opcode reply: " + JoH.bytesToHex(new byte[] { firstByte }));
+            Log.d(TAG, "Received opcode reply: " + JoH.bytesToHex(new byte[]{firstByte}));
             if (firstByte == 0x2f) {
                 SensorRxMessage sensorRx = new SensorRxMessage(characteristic.getValue());
 
@@ -1519,8 +1541,8 @@ public class G5CollectionService extends G5BaseService {
                 disconnected59 = 0;
                 lastState = "Got data OK: " + JoH.hourMinuteString();
                 successes++;
-                failures=0;
-                Log.e(TAG, "SUCCESS!! unfiltered: " + sensorRx.unfiltered + " timestamp: " + sensorRx.timestamp + " " + JoH.qs((double)sensorRx.timestamp / 86400, 1) + " days");
+                failures = 0;
+                Log.e(TAG, "SUCCESS!! unfiltered: " + sensorRx.unfiltered + " timestamp: " + sensorRx.timestamp + " " + JoH.qs((double) sensorRx.timestamp / 86400, 1) + " days");
                 if (sensorRx.unfiltered == 0) {
                     lastState = "Transmitter sent raw sensor value of 0 !! This isn't good. " + JoH.hourMinuteString();
                 }
@@ -1546,7 +1568,7 @@ public class G5CollectionService extends G5BaseService {
                 GlucoseRxMessage glucoseRx = new GlucoseRxMessage(characteristic.getValue());
                 Log.e(TAG, "SUCCESS!! glucose unfiltered: " + glucoseRx.unfiltered);
                 successes++;
-                failures=0;
+                failures = 0;
                 doDisconnectMessage(gatt, characteristic);
                 processNewTransmitterData(glucoseRx.unfiltered, glucoseRx.filtered, 216, new Date().getTime());
             } else if (firstByte == VersionRequestRxMessage.opcode) {
@@ -1573,13 +1595,14 @@ public class G5CollectionService extends G5BaseService {
     }
 
 
-
     private boolean haveCurrentBatteryStatus() {
         return defaultTransmitter.transmitterId.length() == 6 && (JoH.msSince(PersistentStore.getLong(G5_BATTERY_FROM_MARKER + defaultTransmitter.transmitterId)) < BATTERY_READ_PERIOD_MS);
     }
 
     private static byte[] getStoredFirmwareBytes(String transmitterId) {
-        if (transmitterId.length() != 6) return new byte[0];
+        if (transmitterId.length() != 6) {
+            return new byte[0];
+        }
         return PersistentStore.getBytes("g5-firmware-" + transmitterId);
     }
 
@@ -1589,9 +1612,15 @@ public class G5CollectionService extends G5BaseService {
     }
 
     public static boolean setStoredFirmwareBytes(String transmitterId, byte[] data, boolean from_bluetooth) {
-        if (from_bluetooth) UserError.Log.e(TAG, "Store: VersionRX dbg: " + JoH.bytesToHex(data));
-        if (transmitterId.length() != 6) return false;
-        if (data.length < 10) return false;
+        if (from_bluetooth) {
+            UserError.Log.e(TAG, "Store: VersionRX dbg: " + JoH.bytesToHex(data));
+        }
+        if (transmitterId.length() != 6) {
+            return false;
+        }
+        if (data.length < 10) {
+            return false;
+        }
         if (JoH.ratelimit("store-firmware-bytes", 60)) {
             PersistentStore.setBytes("g5-firmware-" + transmitterId, data);
         }
@@ -1599,13 +1628,16 @@ public class G5CollectionService extends G5BaseService {
     }
 
 
-
     public synchronized static boolean setStoredBatteryBytes(String transmitterId, byte[] data) {
         UserError.Log.e(TAG, "Store: BatteryRX dbg: " + JoH.bytesToHex(data));
-        if (transmitterId.length() != 6) return false;
-        if (data.length < 10) return false;
+        if (transmitterId.length() != 6) {
+            return false;
+        }
+        if (data.length < 10) {
+            return false;
+        }
         final BatteryInfoRxMessage batteryInfoRxMessage = new BatteryInfoRxMessage(data);
-        Log.wtf(TAG, "Saving battery data: " +batteryInfoRxMessage.toString());
+        Log.wtf(TAG, "Saving battery data: " + batteryInfoRxMessage.toString());
         PersistentStore.setBytes(G5_BATTERY_MARKER + transmitterId, data);
         PersistentStore.setLong(G5_BATTERY_FROM_MARKER + transmitterId, JoH.tsl());
 
@@ -1673,15 +1705,15 @@ public class G5CollectionService extends G5BaseService {
         @Override
         public void onReceive(Context context, Intent intent) {
             if ((device != null) && (device.getAddress() != null)) {
-                Log.e(TAG,"Processing mPairingRequestReceiver");
+                Log.e(TAG, "Processing mPairingRequestReceiver");
                 JoH.doPairingRequest(context, this, intent, device.getAddress());
             } else {
-                Log.e(TAG,"Received pairing request but device was null");
+                Log.e(TAG, "Received pairing request but device was null");
             }
         }
     };
 
-    private synchronized void processNewTransmitterData(int raw_data , int filtered_data,int sensor_battery_level, long captureTime) {
+    private synchronized void processNewTransmitterData(int raw_data, int filtered_data, int sensor_battery_level, long captureTime) {
 
         final TransmitterData transmitterData = TransmitterData.create(raw_data, filtered_data, sensor_battery_level, captureTime);
         if (transmitterData == null) {
@@ -1699,16 +1731,16 @@ public class G5CollectionService extends G5BaseService {
         //TODO : LOG if unfiltered or filtered values are zero
 
         Sensor.updateBatteryLevel(sensor, transmitterData.sensor_battery_level);
-        Log.i(TAG,"timestamp create: "+ Long.toString(transmitterData.timestamp));
+        Log.i(TAG, "timestamp create: " + Long.toString(transmitterData.timestamp));
 
         BgReading.create(transmitterData.raw_data, transmitterData.filtered_data, this, transmitterData.timestamp);
 
-        Log.d(TAG,"Dex raw_data "+ Double.toString(transmitterData.raw_data));//KS
-        Log.d(TAG,"Dex filtered_data "+ Double.toString(transmitterData.filtered_data));//KS
-        Log.d(TAG,"Dex sensor_battery_level "+ Double.toString(transmitterData.sensor_battery_level));//KS
-        Log.d(TAG,"Dex timestamp "+ JoH.dateTimeText(transmitterData.timestamp));//KS
+        Log.d(TAG, "Dex raw_data " + Double.toString(transmitterData.raw_data));//KS
+        Log.d(TAG, "Dex filtered_data " + Double.toString(transmitterData.filtered_data));//KS
+        Log.d(TAG, "Dex sensor_battery_level " + Double.toString(transmitterData.sensor_battery_level));//KS
+        Log.d(TAG, "Dex timestamp " + JoH.dateTimeText(transmitterData.timestamp));//KS
 
-        static_last_timestamp =  transmitterData.timestamp;
+        static_last_timestamp = transmitterData.timestamp;
 
     }
 
@@ -1720,8 +1752,9 @@ public class G5CollectionService extends G5BaseService {
         }
 
         byte[] key = cryptKey();
-        if (key == null)
+        if (key == null) {
             return null;
+        }
 
         byte[] doubleData;
         ByteBuffer bb = ByteBuffer.allocate(16);
@@ -1749,7 +1782,9 @@ public class G5CollectionService extends G5BaseService {
     }
 
     private byte[] cryptKey() {
-        if (defaultTransmitter.transmitterId.length() != 6) Log.e(TAG,"cryptKey: Wrong transmitter id length!: "+defaultTransmitter.transmitterId.length());
+        if (defaultTransmitter.transmitterId.length() != 6) {
+            Log.e(TAG, "cryptKey: Wrong transmitter id length!: " + defaultTransmitter.transmitterId.length());
+        }
         try {
             return ("00" + defaultTransmitter.transmitterId + "00" + defaultTransmitter.transmitterId).getBytes("UTF-8");
         } catch (UnsupportedEncodingException e) {
@@ -1764,11 +1799,11 @@ public class G5CollectionService extends G5BaseService {
 
     private long getNextAdvertiseTime() {
         long millisecondsSinceTx = getMillisecondsSinceTxLastSeen();
-        long timeToExpected  = (300*1000 - (millisecondsSinceTx%(300*1000)));
-        long expectedTxTime = new Date().getTime() + timeToExpected - 3*1000;
-        Log.e(TAG, "millisecondsSinceTxAd: " + millisecondsSinceTx );
+        long timeToExpected = (300 * 1000 - (millisecondsSinceTx % (300 * 1000)));
+        long expectedTxTime = new Date().getTime() + timeToExpected - 3 * 1000;
+        Log.e(TAG, "millisecondsSinceTxAd: " + millisecondsSinceTx);
         Log.e(TAG, "advertiseTimeMS.get(0): " + advertiseTimeMS.get(0) + " " + JoH.dateTimeText(advertiseTimeMS.get(0)));
-        Log.e(TAG, "timeInMillisecondsOfLastSuccessfulSensorRead: " + " " + timeInMillisecondsOfLastSuccessfulSensorRead + JoH.dateTimeText(timeInMillisecondsOfLastSuccessfulSensorRead) );
+        Log.e(TAG, "timeInMillisecondsOfLastSuccessfulSensorRead: " + " " + timeInMillisecondsOfLastSuccessfulSensorRead + JoH.dateTimeText(timeInMillisecondsOfLastSuccessfulSensorRead));
         //Log.e(TAG, "timeToExpected: " + timeToExpected );
         //Log.e(TAG, "expectedTxTime: " + expectedTxTime );
 
@@ -1833,7 +1868,7 @@ public class G5CollectionService extends G5BaseService {
 
 
     private int getTokenSize() {
-            return 8; // d
+        return 8; // d
     }
 
     private String settingsToString() {
@@ -1852,8 +1887,8 @@ public class G5CollectionService extends G5BaseService {
 
     // Status for Watchface
     //public static boolean isRunning() {
-   //     return lastState.equals("Not running") || lastState.equals("Stopped") ? false : true;
-   // }
+    //     return lastState.equals("Not running") || lastState.equals("Stopped") ? false : true;
+    // }
 
    /* public static void setWatchStatus(DataMap dataMap) {
         lastStateWatch = dataMap.getString("lastState", "");
@@ -1876,8 +1911,9 @@ public class G5CollectionService extends G5BaseService {
             l.add(new StatusItem("Phone got Glucose", JoH.niceTimeSince(static_last_timestamp) + " ago"));
         } else {
             if (static_device_address != null) {
-                if (Home.get_engineering_mode())
+                if (Home.get_engineering_mode()) {
                     l.add(new StatusItem("Bluetooth Device", static_device_address));
+                }
                 l.add(new StatusItem("Bonded", static_is_bonded ? "Yes" : "No", static_is_bonded ? StatusItem.Highlight.GOOD : StatusItem.Highlight.NOTICE));
             } else {
                 l.add(new StatusItem("Bluetooth Device", "Not yet found"));
@@ -1907,8 +1943,9 @@ public class G5CollectionService extends G5BaseService {
                     l.add(new StatusItem("Bluetooth Version", vr.bluetooth_firmware_version_string));
                     l.add(new StatusItem("Other Version", vr.other_firmware_version));
                     l.add(new StatusItem("Hardware Version", vr.hardwarev));
-                    if (vr.asic != 61440)
+                    if (vr.asic != 61440) {
                         l.add(new StatusItem("ASIC", vr.asic, StatusItem.Highlight.NOTICE)); // TODO color code
+                    }
                 }
             }
         } catch (NullPointerException e) {
@@ -1950,6 +1987,7 @@ public class G5CollectionService extends G5BaseService {
     public static String getLastState() {
         return lastState;
     }
+
     public static long getLastStateTimestamp() {
         return static_last_timestamp;
     }

@@ -100,7 +100,9 @@ public class Treatments extends Model {
         // TODO sanity check values
         Log.d(TAG, "Creating treatment: Insulin: " + Double.toString(insulin) + " / Carbs: " + Double.toString(carbs) + (suggested_uuid != null && !suggested_uuid.isEmpty() ? " uuid: " + suggested_uuid : ""));
 
-        if ((carbs == 0) && (insulin == 0)) return null;
+        if ((carbs == 0) && (insulin == 0)) {
+            return null;
+        }
 
         if (timestamp == 0) {
             timestamp = new Date().getTime();
@@ -169,14 +171,18 @@ public class Treatments extends Model {
             treatment.uuid = suggested_uuid != null ? suggested_uuid : UUID.randomUUID().toString();
 
         } else {
-            if (treatment.notes == null) treatment.notes = "";
+            if (treatment.notes == null) {
+                treatment.notes = "";
+            }
             Log.d(TAG, "Found existing treatment for note: " + treatment.uuid + ((suggested_uuid != null) ? " vs suggested: " + suggested_uuid : "") + " distance:" + Long.toString(timestamp - treatment.timestamp) + " " + treatment.notes);
             if (treatment.notes.contains(note)) {
                 Log.d(TAG, "Suggested note update already present - skipping");
                 return null;
             }
             // append existing note or treatment
-            if (treatment.notes.length() > 0) treatment.notes += " \u2192 ";
+            if (treatment.notes.length() > 0) {
+                treatment.notes += " \u2192 ";
+            }
             treatment.notes += note;
             Log.d(TAG, "Final notes: " + treatment.notes);
         }
@@ -193,7 +199,9 @@ public class Treatments extends Model {
         treatment.save();
 
         pushTreatmentSync(treatment, is_new, suggested_uuid);
-        if (is_new) UndoRedo.addUndoTreatment(treatment.uuid);
+        if (is_new) {
+            UndoRedo.addUndoTreatment(treatment.uuid);
+        }
 
         return treatment;
     }
@@ -218,8 +226,10 @@ public class Treatments extends Model {
         pushTreatmentSync(treatment, true, null); // new entry by default
     }
 
-    private static void pushTreatmentSync(Treatments treatment, boolean is_new, String suggested_uuid) {;
-        if (Home.get_master_or_follower()) GcmActivity.pushTreatmentAsync(treatment);
+    private static void pushTreatmentSync(Treatments treatment, boolean is_new, String suggested_uuid) {
+        if (Home.get_master_or_follower()) {
+            GcmActivity.pushTreatmentAsync(treatment);
+        }
 
         if (!(Pref.getBoolean("cloud_storage_api_enable", false) || Pref.getBoolean("cloud_storage_mongodb_enable", false))) {
             NSClientChat.pushTreatmentAsync(treatment);
@@ -246,7 +256,9 @@ public class Treatments extends Model {
 
     // This shouldn't be needed but it seems it is
     private static void fixUpTable() {
-        if (patched) return;
+        if (patched) {
+            return;
+        }
         String[] patchup = {
                 "CREATE TABLE Treatments (_id INTEGER PRIMARY KEY AUTOINCREMENT);",
                 "ALTER TABLE Treatments ADD COLUMN timestamp INTEGER;",
@@ -293,7 +305,9 @@ public class Treatments extends Model {
     }
 
     public static Treatments byuuid(String uuid) {
-        if (uuid == null) return null;
+        if (uuid == null) {
+            return null;
+        }
         return new Select()
                 .from(Treatments.class)
                 .where("uuid = ?", uuid)
@@ -352,9 +366,8 @@ public class Treatments extends Model {
         }
     }
 
-    public static void delete_by_uuid(String uuid)
-    {
-        delete_by_uuid(uuid,false);
+    public static void delete_by_uuid(String uuid) {
+        delete_by_uuid(uuid, false);
     }
 
     public static void delete_by_uuid(String uuid, boolean from_interactive) {
@@ -381,7 +394,7 @@ public class Treatments extends Model {
                 //GoogleDriveInterface gdrive = new GoogleDriveInterface();
                 //gdrive.deleteTreatmentAtRemote(thistreat.uuid);
             }
-            UploaderQueue.newEntry("delete",thistreat);
+            UploaderQueue.newEntry("delete", thistreat);
             thistreat.delete();
         }
         return null;
@@ -419,24 +432,26 @@ public class Treatments extends Model {
             if (mytreatment.uuid == null) {
                 try {
                     final JSONObject jsonobj = new JSONObject(json);
-                    if (jsonobj.has("_id")) mytreatment.uuid = jsonobj.getString("_id");
+                    if (jsonobj.has("_id")) {
+                        mytreatment.uuid = jsonobj.getString("_id");
+                    }
                 } catch (JSONException e) {
                     //
                 }
-                if (mytreatment.uuid == null) mytreatment.uuid = UUID.randomUUID().toString();
+                if (mytreatment.uuid == null) {
+                    mytreatment.uuid = UUID.randomUUID().toString();
+                }
             }
             Treatments dupe_treatment = byTimestamp(mytreatment.timestamp);
             if (dupe_treatment != null) {
                 Log.i(TAG, "Duplicate treatment for: " + mytreatment.timestamp);
 
-                if ((dupe_treatment.uuid !=null) && (mytreatment.uuid !=null) && (dupe_treatment.uuid.equals(mytreatment.uuid)) && (mytreatment.notes != null))
-                {
-                    if ((dupe_treatment.notes == null) || (dupe_treatment.notes.length() < mytreatment.notes.length()))
-                    {
+                if ((dupe_treatment.uuid != null) && (mytreatment.uuid != null) && (dupe_treatment.uuid.equals(mytreatment.uuid)) && (mytreatment.notes != null)) {
+                    if ((dupe_treatment.notes == null) || (dupe_treatment.notes.length() < mytreatment.notes.length())) {
                         dupe_treatment.notes = mytreatment.notes;
                         fixUpTable();
                         dupe_treatment.save();
-                        Log.d(TAG,"Saved updated treatement notes");
+                        Log.d(TAG, "Saved updated treatement notes");
                         // should not end up needing to append notes and be from_interactive via undo as these
                         // would be mutually exclusive operations so we don't need to handle that here.
                         Home.staticRefreshBGCharts();
@@ -571,7 +586,9 @@ public class Treatments extends Model {
             }
 
         }
-        if (iobContrib < 0) iobContrib = 0;
+        if (iobContrib < 0) {
+            iobContrib = 0;
+        }
         response.iob = iobContrib;
         // response.activity = activityContrib;
         return response;
@@ -624,7 +641,9 @@ public class Treatments extends Model {
         // get all treatments from 24 hours earlier than our current time
         final double dontLookThisFar = 10 * 60 * 60 * 1000; // 10 hours max look
         List<Treatments> theTreatments = latestForGraph(2000, startTime - dontLookThisFar);
-        if (theTreatments.size() == 0) return null;
+        if (theTreatments.size() == 0) {
+            return null;
+        }
 
 
         int counter = 0; // iteration counter
@@ -719,7 +738,9 @@ public class Treatments extends Model {
 
                     if (newdelayedCarbs > 0) {
                         final double maximpact = stomachDiff * Profile.maxLiverImpactRatio(cob_time);
-                        if (newdelayedCarbs > maximpact) newdelayedCarbs = maximpact;
+                        if (newdelayedCarbs > maximpact) {
+                            newdelayedCarbs = maximpact;
+                        }
                         cob_remain += newdelayedCarbs; // add back on liverfactor adjustment
                     }
 
@@ -781,7 +802,9 @@ public class Treatments extends Model {
         final double step_minutes = 10;
         final double stepms = step_minutes * 60 * 1000; // 600s = 10 mins
 
-        if (theTreatments.size() == 0) return null;
+        if (theTreatments.size() == 0) {
+            return null;
+        }
 
         Map ioblookup = new HashMap<Double, Double>(); // store for iob total vs time
 
@@ -812,7 +835,9 @@ public class Treatments extends Model {
             ioblookup.put(mytime, totalIOB);
             if (ioblookup.containsKey(lastmytime)) {
                 double iobdiff = (double) ioblookup.get(lastmytime) - totalIOB;
-                if (iobdiff < 0) iobdiff = 0;
+                if (iobdiff < 0) {
+                    iobdiff = 0;
+                }
                 if ((iobdiff != 0) || (totalActivity != 0)) {
                     Log.d(TAG, "New IOB diffi @: " + JoH.qs(mytime) + " = " + JoH.qs(iobdiff) + " old activity: " + JoH.qs(totalActivity));
                 }
@@ -875,10 +900,14 @@ public class Treatments extends Model {
                 stomachCarbs = stomachCarbs - stomachDiff;
                 if (newdelayedCarbs > 0) {
                     double maximpact = stomachDiff * Profile.maxLiverImpactRatio(mytime);
-                    if (newdelayedCarbs > maximpact) newdelayedCarbs = maximpact;
+                    if (newdelayedCarbs > maximpact) {
+                        newdelayedCarbs = maximpact;
+                    }
                     stomachCarbs = stomachCarbs + newdelayedCarbs; // add back on liverfactor ones
                 }
-                if (stomachCarbs < 0) stomachCarbs = 0;
+                if (stomachCarbs < 0) {
+                    stomachCarbs = 0;
+                }
             }
 
             if ((totalIOB > Profile.minimum_shown_iob) || (totalCOB > Profile.minimum_shown_cob) || (stomachCarbs > Profile.minimum_shown_cob)) {

@@ -26,6 +26,7 @@ class Location {
         this.location = location;
         this.location_id = location_id;
     }
+
     public String location;
     public int location_id;
 }
@@ -47,11 +48,11 @@ public class NewSensorLocation extends ActivityWithMenu {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_sensor_location);
-        button = (Button)findViewById(R.id.saveSensorLocation);
-        buttonCancel = (Button)findViewById(R.id.saveSensorLocationCancel);
+        button = (Button) findViewById(R.id.saveSensorLocation);
+        buttonCancel = (Button) findViewById(R.id.saveSensorLocationCancel);
         sensor_location_other = (EditText) findViewById(R.id.edit_sensor_location);
         sensor_location_other.setEnabled(false);
-        DontAskAgain = (CheckBox)findViewById(R.id.sensorLocationDontAskAgain);
+        DontAskAgain = (CheckBox) findViewById(R.id.sensorLocationDontAskAgain);
         radioGroup = (RadioGroup) findViewById(R.id.myRadioGroup);
         addListenerOnButton();
 
@@ -65,7 +66,7 @@ public class NewSensorLocation extends ActivityWithMenu {
         locations.add(new Location("Buttocks", 5));
         locations.add(new Location("Other", OTHER_ID));
 
-        for(Location location : locations) {
+        for (Location location : locations) {
             AddButton(location.location, location.location_id);
         }
         radioGroup.check(PRIVATE_ID);
@@ -99,10 +100,10 @@ public class NewSensorLocation extends ActivityWithMenu {
                 String location = new String();
 
                 if (selectedId == OTHER_ID) {
-                    location = sensor_location_other.getText().toString();;
+                    location = sensor_location_other.getText().toString();
                 } else {
-                    for(Location it : locations) {
-                        if(selectedId == it.location_id) {
+                    for (Location it : locations) {
+                        if (selectedId == it.location_id) {
                             location = it.location;
                             break;
                         }
@@ -141,7 +142,7 @@ public class NewSensorLocation extends ActivityWithMenu {
 
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if(checkedId == OTHER_ID) {
+                if (checkedId == OTHER_ID) {
                     sensor_location_other.setEnabled(true);
                     sensor_location_other.requestFocus();
                 } else {
