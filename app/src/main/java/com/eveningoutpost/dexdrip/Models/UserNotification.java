@@ -6,13 +6,13 @@ import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
-import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 
 /**
  * Created by Emma Black on 11/29/14.
@@ -142,27 +142,36 @@ public class UserNotification extends Model {
         UserNotification userNotification = new UserNotification();
         userNotification.timestamp = timestamp;
         userNotification.message = message;
-        if (type == "bg_alert") {
-            userNotification.bg_alert = true;
-        } else if (type == "calibration_alert") {
-            userNotification.calibration_alert = true;
-        } else if (type == "double_calibration_alert") {
-            userNotification.double_calibration_alert = true;
-        } else if (type == "extra_calibration_alert") {
-            userNotification.extra_calibration_alert = true;
-        } else if (type == "bg_unclear_readings_alert") {
-            userNotification.bg_unclear_readings_alert = true;
-        } else if (type == "bg_missed_alerts") {
-            userNotification.bg_missed_alerts = true;
-        } else if (type == "bg_rise_alert") {
-            userNotification.bg_rise_alert = true;
-        } else if (type == "bg_fall_alert") {
-            userNotification.bg_fall_alert = true;
-        } else {
-            Log.d(TAG,"Saving workaround for: "+type+" "+message);
-            Pref.setString("UserNotification:timestamp:" + type, JoH.qs(timestamp));
-            Pref.setString("UserNotification:message:" + type, message);
-           return null;
+        switch (type) {
+            case "bg_alert":
+                userNotification.bg_alert = true;
+                break;
+            case "calibration_alert":
+                userNotification.calibration_alert = true;
+                break;
+            case "double_calibration_alert":
+                userNotification.double_calibration_alert = true;
+                break;
+            case "extra_calibration_alert":
+                userNotification.extra_calibration_alert = true;
+                break;
+            case "bg_unclear_readings_alert":
+                userNotification.bg_unclear_readings_alert = true;
+                break;
+            case "bg_missed_alerts":
+                userNotification.bg_missed_alerts = true;
+                break;
+            case "bg_rise_alert":
+                userNotification.bg_rise_alert = true;
+                break;
+            case "bg_fall_alert":
+                userNotification.bg_fall_alert = true;
+                break;
+            default:
+                Log.d(TAG, "Saving workaround for: " + type + " " + message);
+                Pref.setString("UserNotification:timestamp:" + type, JoH.qs(timestamp));
+                Pref.setString("UserNotification:message:" + type, message);
+                return null;
         }
         userNotification.save();
         return userNotification;

@@ -33,6 +33,7 @@ public class Inevitable {
                 UserError.Log.d(TAG, "Extending time for: " + id + " to " + JoH.dateTimeText(task.when));
         } else {
             // otherwise create new task
+            if (runnable == null) return; // extension only if already exists
             tasks.put(id, new Task(id, idle_for, runnable));
 
             if (d)

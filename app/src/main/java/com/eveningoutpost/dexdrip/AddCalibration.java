@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
@@ -180,7 +181,7 @@ public class AddCalibration extends AppCompatActivity implements NavigationDrawe
                                 if (calibration != null) {
                                     UndoRedo.addUndoCalibration(calibration.uuid);
                                     //startWatchUpdaterService(v.getContext(), WatchUpdaterService.ACTION_SYNC_CALIBRATION, TAG);
-
+                                    Ob1G5StateMachine.addCalibration((int)calibration.bg, calibration.timestamp);
                                 } else {
                                     Log.e(TAG, "Calibration creation resulted in null");
                                     JoH.static_toast_long("Could not create calibration!");

@@ -8,6 +8,9 @@ env:
     - ADB_INSTALL_TIMEOUT=20
     - AVD_DEBUG='init,avd_config,nand_limits,keys,adb,adbserver,adbclient'
 
+jdk:
+  - oraclejdk8
+
 android:
   components:
     - tools
@@ -15,7 +18,8 @@ android:
     - tools
 
 #    - build-tools-25.0.0
-    - build-tools-26.0.2
+#    - build-tools-26.0.2
+    - build-tools-27.0.3
     - android-$EMULATOR_API_LEVEL
     - android-23
     - android-26

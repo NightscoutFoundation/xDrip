@@ -14,7 +14,6 @@ public class AuthChallengeTxMessage extends TransmitterMessage {
     byte opcode = 0x4;
     byte[] challengeHash;
 
-    private final static String TAG = G5CollectionService.TAG; // meh
     public AuthChallengeTxMessage(byte[] challenge) {
         challengeHash = challenge;
 
