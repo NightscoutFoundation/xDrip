@@ -420,7 +420,7 @@ public class BluetoothScan extends ListActivityWithMenu {
                 }
                 returnToHome();
             } else if (device.getName().toLowerCase().contains("miaomiao")) {
-                if (!CollectionServiceStarter.isLimitter()) {
+                if (!(CollectionServiceStarter.isLimitter() || CollectionServiceStarter.isWifiandBTLibre())) {
                     prefs.edit().putString("dex_collection_method", "LimiTTer").apply();
                 }
                 returnToHome();
