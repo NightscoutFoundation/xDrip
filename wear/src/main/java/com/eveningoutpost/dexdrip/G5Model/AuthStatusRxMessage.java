@@ -14,7 +14,6 @@ public class AuthStatusRxMessage extends TransmitterMessage {
     public static final int opcode = 0x5;
     public int authenticated;
     public int bonded;
-    private final static String TAG = G5CollectionService.TAG; // meh
 
     public AuthStatusRxMessage(byte[] packet) {
         if (packet.length >= 3) {
