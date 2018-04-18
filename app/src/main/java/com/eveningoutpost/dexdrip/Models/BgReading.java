@@ -991,6 +991,7 @@ public class BgReading extends Model implements ShareUploadableBg {
 
     public static final double SPECIAL_G5_PLACEHOLDER = -0.1597;
 
+    // TODO remember to sync this with wear code base
     public static synchronized BgReading bgReadingInsertFromG5(double calculated_value, long timestamp) {
 
         final Sensor sensor = Sensor.currentSensor();

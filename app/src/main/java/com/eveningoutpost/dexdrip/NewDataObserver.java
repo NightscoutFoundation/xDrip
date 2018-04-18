@@ -2,6 +2,7 @@ package com.eveningoutpost.dexdrip;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.LibreBlock;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.ShareModels.BgUploader;
 import com.eveningoutpost.dexdrip.ShareModels.Models.ShareUploadPayload;
@@ -34,6 +35,7 @@ public class NewDataObserver {
         sendToWear();
         uploadToShare(bgReading, is_follower);
         textToSpeech(bgReading, null);
+        LibreBlock.UpdateBgVal(bgReading.timestamp, bgReading.calculated_value);
 
     }
 
