@@ -40,6 +40,10 @@ public class PowerStateReceiver extends BroadcastReceiver {
         return getInternalPrefsBoolean(PREFS_POWER_STATE);
     }
 
+    public static int getBatteryLevel() {
+        return getBatteryLevel(xdrip.getAppContext());
+    }
+
     @SuppressWarnings("ConstantConditions")
     public static int getBatteryLevel(Context context) {
         final Intent batteryIntent = context.registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
