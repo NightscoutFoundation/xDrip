@@ -26,6 +26,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleWatchSync;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.eveningoutpost.dexdrip.webservices.XdripWebService;
+import com.eveningoutpost.dexdrip.xdrip;
 
 import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getPhoneServiceCollectingState;
@@ -35,21 +36,19 @@ public class MissedReadingService extends IntentService {
     private final static String TAG = MissedReadingService.class.getSimpleName();
     private static volatile PendingIntent serviceIntent = null;
     private static int aggressive_backoff_timer = 120;
+
     public MissedReadingService() {
         super("MissedReadingService");
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        //final SharedPreferences prefs;
         final boolean bg_missed_alerts;
-      //  final Context context;
-
 
         final PowerManager.WakeLock wl = JoH.getWakeLock("missed-reading-service", 60000);
         try {
-            final Context context = getApplicationContext();
-           // prefs = PreferenceManager.getDefaultSharedPreferences(context);
+
+            final boolean sensorActive = Sensor.isActive();
 
             Log.d(TAG, "MissedReadingService onHandleIntent"); // test debug log
 
@@ -64,25 +63,20 @@ public class MissedReadingService extends IntentService {
                 // update pebble even when we don't have data to ensure missed readings show
             }
 
-            if ((Home.get_forced_wear()) && Pref.getBoolean("disable_wearG5_on_missedreadings", false)) {
-                int bg_wear_missed_minutes = Pref.getStringToInt("disable_wearG5_on_missedreadings_level", 30);
-                if (BgReading.getTimeSinceLastReading() >= (bg_wear_missed_minutes * 1000 * 60)) {
-                    Log.d(TAG, "Request WatchUpdaterService to disable force_wearG5 when wear is connected");
-                    startWatchUpdaterService(context, WatchUpdaterService.ACTION_DISABLE_FORCE_WEAR, TAG);
-                }
-            }
 
             if ((Pref.getBoolean("aggressive_service_restart", false) || DexCollectionType.isFlakey())) {//!Home.get_enable_wear() &&
-                if (!BgReading.last_within_millis(stale_millis) && Sensor.isActive() && (!getPhoneServiceCollectingState())) {
+                if (!BgReading.last_within_millis(stale_millis) && sensorActive && (!getPhoneServiceCollectingState())) {
                     if (JoH.ratelimit("aggressive-restart", aggressive_backoff_timer)) {
                         Log.e(TAG, "Aggressively restarting collector service due to lack of reception: backoff: " + aggressive_backoff_timer);
                         if (aggressive_backoff_timer < 1200) aggressive_backoff_timer += 60;
-                        CollectionServiceStarter.restartCollectionService(context);
+                        CollectionServiceStarter.restartCollectionService();
                     } else {
                         aggressive_backoff_timer = 120; // reset
                     }
                 }
             }
+
+
             Reminder.processAnyDueReminders();
             BluetoothGlucoseMeter.immortality();
             XdripWebService.immortality(); //
@@ -93,9 +87,23 @@ public class MissedReadingService extends IntentService {
                 // we should not do anything in this case. if the ui, changes will be called again
                 return;
             }
-            if (!Sensor.isActive()) {
+            if (!sensorActive) {
                 // sensor not running we should return
                 return;
+            }
+
+            if (!JoH.upForAtLeastMins(15)) {
+                Log.d(TAG, "Uptime less than 15 minutes so not processing for missed reading");
+                return;
+            }
+
+
+            if ((Home.get_forced_wear()) && Pref.getBoolean("disable_wearG5_on_missedreadings", false)) {
+                int bg_wear_missed_minutes = Pref.getStringToInt("disable_wearG5_on_missedreadings_level", 30);
+                if (BgReading.getTimeSinceLastReading() >= (bg_wear_missed_minutes * 1000 * 60)) {
+                    Log.d(TAG, "Request WatchUpdaterService to disable force_wearG5 when wear is connected");
+                    startWatchUpdaterService(xdrip.getAppContext(), WatchUpdaterService.ACTION_DISABLE_FORCE_WEAR, TAG);
+                }
             }
 
             final int bg_missed_minutes = Pref.getStringToInt("bg_missed_minutes", 30);
@@ -105,8 +113,8 @@ public class MissedReadingService extends IntentService {
                     Pref.getLong("alerts_disabled_until", 0) <= now &&
                     (BgReading.getTimeSinceLastReading() < (Constants.HOUR_IN_MS * 6)) &&
                     inTimeFrame()) {
-                Notifications.bgMissedAlert(context);
-                checkBackAfterSnoozeTime(context, now);
+                Notifications.bgMissedAlert(xdrip.getAppContext());
+                checkBackAfterSnoozeTime(xdrip.getAppContext(), now);
             } else {
 
                 long disabletime = Pref.getLong("alerts_disabled_until", 0) - now;
@@ -121,7 +129,7 @@ public class MissedReadingService extends IntentService {
     }
 
     private boolean inTimeFrame() {
-        
+
         int startMinutes = Pref.getInt("missed_readings_start", 0);
         int endMinutes = Pref.getInt("missed_readings_end", 0);
         boolean allDay = Pref.getBoolean("missed_readings_all_day", true);
@@ -130,18 +138,18 @@ public class MissedReadingService extends IntentService {
     }
 
     private void checkBackAfterSnoozeTime(Context context, long now) {
-    	// This is not 100% acurate, need to take in account also the time of when this alert was snoozed.
+        // This is not 100% acurate, need to take in account also the time of when this alert was snoozed.
         UserNotification userNotification = UserNotification.GetNotificationByType("bg_missed_alerts");
-        if(userNotification == null) {
+        if (userNotification == null) {
             // No active alert exists, should not happen, we have just created it.
-        	Log.wtf(TAG, "No active alert exists.");
+            Log.wtf(TAG, "No active alert exists.");
             setAlarm(getOtherAlertReraiseSec(context, "bg_missed_alerts") * 1000, false);
         } else {
             // we have an alert that should be re-raised on userNotification.timestamp
-        	long alarmIn = (long)userNotification.timestamp - now;
-        	if(alarmIn < 0) {
-        		alarmIn = 0;
-        	}
+            long alarmIn = (long) userNotification.timestamp - now;
+            if (alarmIn < 0) {
+                alarmIn = 0;
+            }
             setAlarm(alarmIn, true);
         }
     }
@@ -149,17 +157,17 @@ public class MissedReadingService extends IntentService {
     private void checkBackAfterMissedTime(long alarmIn) {
         setAlarm(alarmIn, false);
     }
-    
+
     // alarmIn is relative time ms
     public void setAlarm(long alarmIn, boolean force) {
-        if(!force && (alarmIn < 5 * 60 * 1000)) {
+        if (!force && (alarmIn < 5 * 60 * 1000)) {
             // No need to check more than once every 5 minutes
             alarmIn = 5 * 60 * 1000;
         }
 
         alarmIn = Math.max(alarmIn, 5000); // don't try to set less than 5 seconds in the future
 
-    	Log.d(TAG, "Setting timer to  " + alarmIn / 60000 + " minutes from now" );
+        Log.d(TAG, "Setting timer to  " + alarmIn / 60000 + " minutes from now");
 
         initializeServiceIntent();
         JoH.wakeUpIntent(this, alarmIn, serviceIntent);
@@ -177,15 +185,15 @@ public class MissedReadingService extends IntentService {
     }
 
     static public long getOtherAlertReraiseSec(Context context, String alertName) {
-        boolean enableAlertsReraise = Pref.getBoolean(alertName + "_enable_alerts_reraise" , false);
-        if(enableAlertsReraise) {
+        boolean enableAlertsReraise = Pref.getBoolean(alertName + "_enable_alerts_reraise", false);
+        if (enableAlertsReraise) {
             return Pref.getStringToInt(alertName + "_reraise_sec", 60);
         } else {
             return 60 * getOtherAlertSnoozeMinutes(PreferenceManager.getDefaultSharedPreferences(context), alertName);
         }
 
     }
-    
+
     static public long getOtherAlertSnoozeMinutes(SharedPreferences prefs, String alertName) {
         int defaultSnooze = Pref.getStringToInt("other_alerts_snooze", 20);
         return Pref.getStringToInt(alertName + "_snooze", defaultSnooze);
