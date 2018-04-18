@@ -32,16 +32,14 @@ import android.widget.TextView;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.google.android.gms.wearable.DataMap;
-import com.ustwo.clockwise.wearable.WatchFace;
 import com.ustwo.clockwise.common.WatchFaceTime;
+import com.ustwo.clockwise.wearable.WatchFace;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.TreeSet;
 
 
 public class CircleWatchface extends WatchFace implements SharedPreferences.OnSharedPreferenceChangeListener {
@@ -134,7 +132,9 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
 
             Context context = xdrip.getAppContext();
             if (Home.get_forced_wear()) {
-                if (d) Log.d(TAG, "performViewSetup FORCE WEAR init BGs for graph");
+                if (d) {
+                    Log.d(TAG, "performViewSetup FORCE WEAR init BGs for graph");
+                }
                 BgSendQueue.resendData(context);
             }
             Log.d(TAG, "performViewSetup requestData");
@@ -167,7 +167,7 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
     }
 
     @Override
-    protected WatchFaceStyle getWatchFaceStyle(){
+    protected WatchFaceStyle getWatchFaceStyle() {
         //return new WatchFaceStyle.Builder(this).setAcceptsTapEvents(true).build();
         return new WatchFaceStyle.Builder(this)
                 .setAcceptsTapEvents(true)
@@ -197,8 +197,8 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
         }
     }
 
-    private boolean linearLayout(LinearLayout layout,int x, int y) {
-        if (x >=layout.getLeft() && x <= layout.getRight()&&
+    private boolean linearLayout(LinearLayout layout, int x, int y) {
+        if (x >= layout.getLeft() && x <= layout.getRight() &&
                 y >= layout.getTop() && y <= layout.getBottom()) {
             return true;
         }
@@ -216,30 +216,34 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
             if (!previous.equals(current)) {
                 changed = true;
                 stepsButton.setText(current);
-                if (d) Log.d(TAG, "showSteps changed mStepsCount previous=" + previous + " current=" + current);
+                if (d) {
+                    Log.d(TAG, "showSteps changed mStepsCount previous=" + previous + " current=" + current);
+                }
             }
 
             if (mStepsCount > 0) {
                 DecimalFormat df = new DecimalFormat("#.##");
                 Double km = (((double) mStepsCount) / 2000.0d) * 1.6d;
                 Double mi = (((double) mStepsCount) / 2000.0d) * 1.0d;
-                if (d) Log.d(TAG, "showSteps Sensor mStepsCount=" + mStepsCount + " km=" + km + " mi=" + mi + " rcvd=" + JoH.dateTimeText(mTimeStepsRcvd));
+                if (d) {
+                    Log.d(TAG, "showSteps Sensor mStepsCount=" + mStepsCount + " km=" + km + " mi=" + mi + " rcvd=" + JoH.dateTimeText(mTimeStepsRcvd));
+                }
                 mStepsToast = getResources().getString(R.string.label_show_steps, mStepsCount) +
                         (km > 0.0 ? "\n" + getResources().getString(R.string.label_show_steps_km, df.format(km)) : "0") +
                         (mi > 0.0 ? "\n" + getResources().getString(R.string.label_show_steps_mi, df.format(mi)) : "0") +
                         "\n" + getResources().getString(R.string.label_show_steps_rcvdtime, JoH.dateTimeText(mTimeStepsRcvd));
-            }
-            else {
+            } else {
                 mStepsToast = getResources().getString(R.string.label_show_steps, mStepsCount) +
                         ("\n" + getResources().getString(R.string.label_show_steps_km, "0")) +
                         ("\n" + getResources().getString(R.string.label_show_steps_mi, "0")) +
                         "\n" + getResources().getString(R.string.label_show_steps_rcvdtime, JoH.dateTimeText(mTimeStepsRcvd));
             }
-        }
-        else {
+        } else {
             stepsButton.setVisibility(View.GONE);
             mStepsToast = "";
-            if (d) Log.d(TAG, "showSteps GONE mStepsCount = " + getResources().getString(R.string.label_show_steps, mStepsCount));
+            if (d) {
+                Log.d(TAG, "showSteps GONE mStepsCount = " + getResources().getString(R.string.label_show_steps, mStepsCount));
+            }
         }
         return changed;
     }
@@ -253,9 +257,9 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
         TextView textView = null;
 
         mDirectionDelta = (LinearLayout) myLayout.findViewById(R.id.directiondelta_layout);
-        menuButton=(Button)myLayout.findViewById(R.id.menuButton);
+        menuButton = (Button) myLayout.findViewById(R.id.menuButton);
         mMenuLinearLayout = (LinearLayout) myLayout.findViewById(R.id.menu_layout);
-        stepsButton=(Button)myLayout.findViewById(R.id.walkButton);
+        stepsButton = (Button) myLayout.findViewById(R.id.walkButton);
         mStepsLinearLayout = (LinearLayout) myLayout.findViewById(R.id.steps_layout);
         showSteps();
 
@@ -271,7 +275,7 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
         }
 
         textView = (TextView) myLayout.findViewById(R.id.rawString);
-        if (sharedPrefs.getBoolean("showRaw", false)||
+        if (sharedPrefs.getBoolean("showRaw", false) ||
                 (sharedPrefs.getBoolean("showRawNoise", true) && getSgvString().equals("???"))
                 ) {
             textView.setVisibility(View.VISIBLE);
@@ -420,8 +424,6 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
         removePaint.setAntiAlias(true);
         removePaint.setColor(getBackgroundColor());
 
-        ;
-
         rect = new RectF(PADDING, PADDING, (float) (displaySize.x - PADDING), (float) (displaySize.y - PADDING));
         rectDelete = new RectF(PADDING - CIRCLE_WIDTH / 2, PADDING - CIRCLE_WIDTH / 2, (float) (displaySize.x - PADDING + CIRCLE_WIDTH / 2), (float) (displaySize.y - PADDING + CIRCLE_WIDTH / 2));
         overlapping = ALWAYS_HIGHLIGT_SMALL || areOverlapping(angleSMALL, angleSMALL + SMALL_HAND_WIDTH + NEAR, angleBig, angleBig + BIG_HAND_WIDTH + NEAR);
@@ -451,8 +453,8 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
             PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "TimeChangedWakelock");
             wakeLock.acquire(30000);
             /*Preparing the layout just on every minute tick:
-            *  - hopefully better battery life
-            *  - drawback: might update the minutes since last reading up to one minute late*/
+             *  - hopefully better battery life
+             *  - drawback: might update the minutes since last reading up to one minute late*/
             prepareLayout();
             prepareDrawTime();
             invalidate();  //redraw the time
@@ -510,7 +512,9 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
     public void drawOtherStuff(Canvas canvas) {
         Log.d(TAG, "CircleWatchface start onDrawOtherStuff. bgDataList.size(): " + bgDataList.size());
 
-        if (isAnimated()) return; // too many repaints when animated
+        if (isAnimated()) {
+            return; // too many repaints when animated
+        }
         if (sharedPrefs.getBoolean("showRingHistory", false)) {
             //Perfect low and High indicators
             if (bgDataList.size() > 0) {
@@ -728,8 +732,7 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
                 //Log.d(TAG, "addToWatchSet add " + " entry.sgv=" + bgdata.sgv + " entry.timestamp" + bgdata.timestamp);
                 bgDataList.add(bgdata);
             }
-        }
-        else {
+        } else {
             bgDataList.add(bgdata);
         }
     }

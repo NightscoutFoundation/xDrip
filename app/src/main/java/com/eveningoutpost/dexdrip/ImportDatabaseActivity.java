@@ -81,8 +81,8 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
     }
 
     private void showWarningAndInstructions() {
-        LayoutInflater inflater= LayoutInflater.from(this);
-        View view=inflater.inflate(R.layout.import_db_warning, null);
+        LayoutInflater inflater = LayoutInflater.from(this);
+        View view = inflater.inflate(R.layout.import_db_warning, null);
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
         alertDialog.setTitle("Import Instructions");
         alertDialog.setView(view);
@@ -286,8 +286,9 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
                         final FileInputStream fileInputStream = new FileInputStream(dbFile.getAbsolutePath());
                         final ZipInputStream zip_stream = new ZipInputStream(new BufferedInputStream(fileInputStream));
                         ZipEntry zipEntry = zip_stream.getNextEntry();
-                        if ((zipEntry != null) && zipEntry.isDirectory())
+                        if ((zipEntry != null) && zipEntry.isDirectory()) {
                             zipEntry = zip_stream.getNextEntry();
+                        }
                         if (zipEntry != null) {
                             String filename = zipEntry.getName();
                             if (filename.endsWith(".sqlite")) {
@@ -314,8 +315,8 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
                             return msg;
                         }
 
-                            zip_stream.close();
-                            fileInputStream.close();
+                        zip_stream.close();
+                        fileInputStream.close();
 
                     } catch (IOException e) {
                         String msg = "Could not open file";
@@ -331,7 +332,7 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
                     statusDialog.dismiss();
                     return "Wrong Database version.\n(" + version + " instead of " + getDBVersion() + ")";
                 }
-            } catch (SQLiteException e){
+            } catch (SQLiteException e) {
                 statusDialog.dismiss();
                 return "Database cannot be opened... aborting.";
             }
@@ -358,8 +359,10 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
             });
 
             String result = DatabaseUtil.loadSql(xdrip.getAppContext(), dbFile.getAbsolutePath());
-            if (delete_file != null) delete_file.delete();
-            statusDialog.dismiss();;
+            if (delete_file != null) {
+                delete_file.delete();
+            }
+            statusDialog.dismiss();
             return result;
         }
 
