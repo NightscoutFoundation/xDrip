@@ -1237,16 +1237,29 @@ public class Ob1G5CollectionService extends G5BaseService {
     }
 
     public static boolean isG5WarmingUp() {
-        if (lastSensorState == null) return false;
-        if (lastSensorState == CalibrationState.WarmingUp) {
-            return usingNativeMode();
-        }
-        return false;
+        return lastSensorState != null
+                && lastSensorState == CalibrationState.WarmingUp
+                && usingNativeMode();
     }
 
     public static boolean isG5SensorStarted() {
-        if (lastSensorState == null) return false;
-        return lastSensorState.sensorStarted() && usingNativeMode() && !pendingStop() && !pendingStart();
+        return lastSensorState != null
+                && lastSensorState.sensorStarted()
+                && usingNativeMode()
+                && !pendingStop()
+                && !pendingStart();
+    }
+
+    public static boolean isG5WantingInitialCalibration() {
+        return lastSensorStatus != null
+                && lastSensorState == CalibrationState.NeedsFirstCalibration
+                && usingNativeMode();
+    }
+
+    public static boolean isG5WantingCalibration() {
+        return lastSensorStatus != null
+                && lastSensorState.needsCalibration()
+                && usingNativeMode();
     }
 
     // are we using the G5 Transmitter to evaluate readings

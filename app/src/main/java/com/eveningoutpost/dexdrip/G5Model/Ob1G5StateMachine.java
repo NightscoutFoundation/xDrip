@@ -481,6 +481,7 @@ public class Ob1G5StateMachine {
                             final CalibrateRxMessage calibrate = (CalibrateRxMessage) data_packet.msg;
                             if (calibrate.accepted()) {
                                 parent.msg("Calibration accepted");
+                                UserError.Log.ueh(TAG, "Calibration accepted by G5 transmitter");
                             } else {
                                 final String msg = "Calibration rejected: " + calibrate.message();
                                 UserError.Log.wtf(TAG, msg);

@@ -73,6 +73,8 @@ public class SessionStartRxMessage extends TransmitterMessage {
                 return "Already started";
             case 0x03:
                 return "Invalid";
+            case 0x04:
+                return "Clock not synchronized"; // probably
             default:
                 return "Unknown code: " + info;
         }

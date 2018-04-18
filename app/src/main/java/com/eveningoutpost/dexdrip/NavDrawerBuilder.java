@@ -11,6 +11,7 @@ import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.Treatments;
+import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.Tables.BgReadingTable;
 import com.eveningoutpost.dexdrip.Tables.CalibrationDataTable;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
@@ -72,7 +73,8 @@ public class NavDrawerBuilder {
                             // TODO tighten this time limit
                             if (bGreadings_in_last_30_mins.size() >= 2) {
                                 long time_now = JoH.tsl();
-                                if (time_now - last_two_calibrations.get(0).timestamp < (1000 * 60 * 60)) { //Put steps in place to discourage over calibration
+                                if ((time_now - last_two_calibrations.get(0).timestamp < (1000 * 60 * 60))
+                                && !Ob1G5CollectionService.isG5WantingCalibration()) { //Put steps in place to discourage over calibration
                                     this.nav_drawer_options.add(context.getString(R.string.override_calibration));
                                     this.nav_drawer_intents.add(new Intent(context, CalibrationOverride.class));
                                 } else {
@@ -84,7 +86,7 @@ public class NavDrawerBuilder {
                                 this.nav_drawer_intents.add(new Intent(context, Home.class));
                             }
                         } else {
-                            if (BgReading.isDataSuitableForDoubleCalibration()) {
+                            if (BgReading.isDataSuitableForDoubleCalibration() || Ob1G5CollectionService.isG5WantingInitialCalibration()) {
                                 this.nav_drawer_options.add(context.getString(R.string.initial_calibration));
                                 this.nav_drawer_intents.add(new Intent(context, DoubleCalibrationActivity.class));
                             }

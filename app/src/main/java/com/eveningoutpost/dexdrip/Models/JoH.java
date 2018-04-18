@@ -430,6 +430,21 @@ public class JoH {
         }
     }
 
+    public static void dumpBundle(Bundle bundle, String tag) {
+        if (bundle != null) {
+            for (String key : bundle.keySet()) {
+                Object value = bundle.get(key);
+                if (value != null) {
+                    UserError.Log.d(tag, String.format("%s %s (%s)", key,
+                            value.toString(), value.getClass().getName()));
+                }
+            }
+        } else {
+            UserError.Log.d(tag, "Bundle is empty");
+        }
+    }
+
+
     // compare stored byte array hashes
     public static synchronized boolean differentBytes(String name, byte[] bytes) {
         final String id = "differentBytes-" + name;
