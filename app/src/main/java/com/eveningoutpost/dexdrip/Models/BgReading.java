@@ -3,6 +3,7 @@ package com.eveningoutpost.dexdrip.Models;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
 
@@ -380,11 +381,11 @@ public class BgReading extends Model implements ShareUploadableBg {
         return null;
     }
 
-    public static BgReading getForPreciseTimestamp(double timestamp, double precision) {
+    public static BgReading getForPreciseTimestamp(long timestamp, double precision) {
         return getForPreciseTimestamp(timestamp, precision, true);
     }
 
-    static BgReading getForPreciseTimestamp(double timestamp, double precision, boolean lock_to_sensor) {
+    static BgReading getForPreciseTimestamp(long timestamp, double precision, boolean lock_to_sensor) {
         final Sensor sensor = Sensor.currentSensor();
         if ((sensor != null) || !lock_to_sensor) {
             final BgReading bgReading = new Select()
@@ -986,6 +987,52 @@ public class BgReading extends Model implements ShareUploadableBg {
         } else {
             bgr.calibration = calibration;
         }
+    }
+
+    public static final double SPECIAL_G5_PLACEHOLDER = -0.1597;
+
+    // TODO remember to sync this with wear code base
+    public static synchronized BgReading bgReadingInsertFromG5(double calculated_value, long timestamp) {
+
+        final Sensor sensor = Sensor.currentSensor();
+        if (sensor == null) {
+            Log.w(TAG, "No sensor, ignoring this bg reading");
+            return null;
+        }
+        // TODO slope!!
+        final BgReading existing = getForPreciseTimestamp(timestamp, Constants.MINUTE_IN_MS);
+        if (existing == null) {
+            final BgReading bgr = new BgReading();
+            bgr.sensor = sensor;
+            bgr.sensor_uuid = sensor.uuid;
+            bgr.time_since_sensor_started = JoH.msSince(sensor.started_at); // is there a helper for this?
+            bgr.timestamp = timestamp;
+            bgr.uuid = UUID.randomUUID().toString();
+            bgr.calculated_value = calculated_value;
+            bgr.raw_data = SPECIAL_G5_PLACEHOLDER; // placeholder
+            bgr.save();
+            if (JoH.ratelimit("sync wakelock", 15)) {
+                final PowerManager.WakeLock linger = JoH.getWakeLock("G5 Insert", 4000);
+            }
+            new Thread(() -> {
+                JoH.threadSleep(3000);
+                notifyAndSync(bgr);
+            }).start();
+            return bgr;
+        } else {
+            return existing;
+        }
+    }
+
+    public static void notifyAndSync(final BgReading bgr) {
+        final boolean recent = bgr.isCurrent();
+        if (recent) {
+            xdrip.getAppContext().startService(new Intent(xdrip.getAppContext(), Notifications.class)); // alerts et al
+            // probably not wanted for G5 internal values?
+            //bgr.injectNoise(true); // Add noise parameter for nightscout
+            //bgr.injectDisplayGlucose(BestGlucose.getDisplayGlucose()); // Add display glucose for nightscout
+        }
+        BgSendQueue.handleNewBgReading(bgr, "create", xdrip.getAppContext(), Home.get_follower(), !recent); // pebble and widget and follower
     }
 
     public static void bgReadingInsertFromJson(String json, boolean do_notification) {
@@ -1771,6 +1818,10 @@ public class BgReading extends Model implements ShareUploadableBg {
             return raw_data;
         }
         return age_adjusted_raw_value;
+    }
+
+    public boolean isCurrent() {
+        return JoH.msSince(timestamp) < Constants.MINUTE_IN_MS * 2;
     }
 
     public double ageAdjustedFiltered(){

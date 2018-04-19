@@ -100,8 +100,16 @@
                 android:summary="Complete re-write, should work on Android 4.4 and more"
                 android:title="Try the new OB1 G5 Collector" />
             <CheckBoxPreference
+                android:defaultValue="false"
+                android:dependency="use_ob1_g5_collector_service"
+                android:key="ob1_g5_use_transmitter_alg"
+                android:summary="Use the G5 transmitter's internal algorithm to calculate glucose values when possible. (Experimental!)"
+                android:title="G5 Internal Algorithm"
+                />
+            <CheckBoxPreference
                 android:defaultValue="true"
                 android:key="ob1_g5_allow_resetbond"
+                android:dependency="use_ob1_g5_collector_service"
                 android:summary="OB1 collector can unbond if it thinks the encryption has failed. If you get problems with it unpairing then disable this option. If you then totally lose connection, make sure this is enabled."
                 android:title="Allow OB1 unbonding"
                 />

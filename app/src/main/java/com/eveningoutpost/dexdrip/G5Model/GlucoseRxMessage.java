@@ -10,8 +10,9 @@ import java.nio.ByteOrder;
 /**
  * Created by jamorham on 25/11/2016.
  *
- * Alternate mechanism for reading data cribbed from LoopKit
- * totally experimental and untested
+ * Alternate mechanism for reading data using the transmitter's internal algorithm.
+ *
+ * initial packet structure cribbed from Loopkit
  */
 
 public class GlucoseRxMessage extends TransmitterMessage {
@@ -28,14 +29,14 @@ public class GlucoseRxMessage extends TransmitterMessage {
     public boolean glucoseIsDisplayOnly; // : Bool
     public int glucose; // : UInt16
     public int state; //: UInt8
-    public int trend; // : Int8
-
+    public int trend; // : Int8 127 = invalid
 
     public GlucoseRxMessage(byte[] packet) {
-        UserError.Log.e(TAG, "GlucoseRX dbg: " + JoH.bytesToHex(packet));
+        UserError.Log.d(TAG, "GlucoseRX dbg: " + JoH.bytesToHex(packet));
         if (packet.length >= 14) {
-            // TODO check CRC??
-            if (packet[0] == opcode) {
+            data = ByteBuffer.wrap(packet).order(ByteOrder.LITTLE_ENDIAN);
+            if ((data.get() == opcode) && checkCRC(packet)) {
+
                 data = ByteBuffer.wrap(packet).order(ByteOrder.LITTLE_ENDIAN);
 
                 status_raw = data.get(1);
@@ -58,11 +59,25 @@ public class GlucoseRxMessage extends TransmitterMessage {
                     unfiltered = glucose;
                 }
 
-                UserError.Log.e(TAG, "GlucoseRX: seq" + sequence + " ts:" + timestamp + " sg:" + glucose + " do:" + glucoseIsDisplayOnly + " ss:" + status + " sr:" + status_raw + " st:" + state + " tr:" + trend);
+                UserError.Log.d(TAG, "GlucoseRX: seq:" + sequence + " ts:" + timestamp + " sg:" + glucose + " do:" + glucoseIsDisplayOnly + " ss:" + status + " sr:" + status_raw + " st:" + CalibrationState.parse(state) + " tr:" + trend);
 
             }
         } else {
-            UserError.Log.e(TAG, "GlucoseRxMessage packet length received wrong: " + packet.length);
+            UserError.Log.d(TAG, "GlucoseRxMessage packet length received wrong: " + packet.length);
         }
+
     }
+
+    CalibrationState calibrationState() {
+        return CalibrationState.parse(state);
+    }
+
+    boolean usable() {
+        return calibrationState().usableGlucose();
+    }
+
+    boolean OkToCalibrate() {
+        return calibrationState().readyForCalibration();
+    }
+
 }
