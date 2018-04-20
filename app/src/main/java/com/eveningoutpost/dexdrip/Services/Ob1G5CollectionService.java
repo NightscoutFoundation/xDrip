@@ -64,6 +64,8 @@ import rx.Subscription;
 import rx.schedulers.Schedulers;
 
 import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.getUUIDName;
+import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.pendingStart;
+import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.pendingStop;
 import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.STATE.CLOSE;
 import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.STATE.CLOSED;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.G5_CALIBRATION_REQUEST;
@@ -98,6 +100,7 @@ public class Ob1G5CollectionService extends G5BaseService {
     //private static String lastStateWatch = "Not running";
     private static String lastScanError = null;
     public static String lastSensorStatus = null;
+    public static CalibrationState lastSensorState = null;
     public static volatile long lastUsableGlucosePacketTime = 0;
     private static volatile String static_connection_state = null;
     private static long static_last_connected = 0;
@@ -1207,6 +1210,7 @@ public class Ob1G5CollectionService extends G5BaseService {
 
     public void processCalibrationState(CalibrationState state) {
         lastSensorStatus = state.getText();
+        lastSensorState = state;
         final boolean needs_calibration = state.needsCalibration();
         final boolean was_needing_calibration = PersistentStore.getBoolean(NEEDING_CALIBRATION);
         if (!android_wear) {
@@ -1230,6 +1234,38 @@ public class Ob1G5CollectionService extends G5BaseService {
         if (needs_calibration != was_needing_calibration) {
             PersistentStore.setBoolean(NEEDING_CALIBRATION, needs_calibration);
         }
+    }
+
+    public static boolean isG5WarmingUp() {
+        return lastSensorState != null
+                && lastSensorState == CalibrationState.WarmingUp
+                && usingNativeMode();
+    }
+
+    public static boolean isG5SensorStarted() {
+        return lastSensorState != null
+                && lastSensorState.sensorStarted()
+                && usingNativeMode()
+                && !pendingStop()
+                && !pendingStart();
+    }
+
+    public static boolean isG5WantingInitialCalibration() {
+        return lastSensorStatus != null
+                && lastSensorState == CalibrationState.NeedsFirstCalibration
+                && usingNativeMode();
+    }
+
+    public static boolean isG5WantingCalibration() {
+        return lastSensorStatus != null
+                && lastSensorState.needsCalibration()
+                && usingNativeMode();
+    }
+
+    // are we using the G5 Transmitter to evaluate readings
+    public static boolean usingNativeMode() {
+        return Pref.getBooleanDefaultFalse("ob1_g5_use_transmitter_alg")
+                && Pref.getBooleanDefaultFalse(OB1G5_PREFS);
     }
 
     public static void msg(String msg) {

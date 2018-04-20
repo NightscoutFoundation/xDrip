@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.utils;
 
+import com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine;
 import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.Services.DexShareCollectionService;
 import com.eveningoutpost.dexdrip.Services.G5CollectionService;
@@ -212,6 +213,11 @@ public enum DexCollectionType {
                 return "Network G4 and xBridge";
             case WifiBlueToothWixel:
                 return "Network G4 and Classic xDrip";
+            case DexcomG5:
+                if (Ob1G5CollectionService.usingNativeMode()) {
+                    return "G5 Native";
+                }
+                return dct.name();
 
             default:
                 return dct.name();

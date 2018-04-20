@@ -77,6 +77,7 @@ import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.Services.G5BaseService;
+import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.Services.PlusSyncService;
 import com.eveningoutpost.dexdrip.Services.WixelReader;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
@@ -2458,7 +2459,16 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         if (alreadyDisplayedBgInfoCommon) return; // with bluetooth and wifi, skip second time
         alreadyDisplayedBgInfoCommon = true;
 
-        final boolean isSensorActive = Sensor.isActive();
+        boolean isSensorActive = Sensor.isActive();
+
+        // automagically start an xDrip sensor session if G5 transmitter already has active sensor
+        if (!isSensorActive && Ob1G5CollectionService.isG5SensorStarted()) {
+            JoH.static_toast_long("Auto starting sensor!");
+            Sensor.create(JoH.tsl() - HOUR_IN_MS * 3);
+            isSensorActive = Sensor.isActive();
+        }
+
+
         if (!isSensorActive) {
             notificationText.setText(R.string.now_start_your_sensor);
 
@@ -2521,34 +2531,40 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         	// And even once we will have, there is probably no need to force a calibration at start of sensor use.
         	return;
         }
-        if (BgReading.latest(3).size() > 2) {
-            // TODO potential to calibrate off stale data here
-            final List<Calibration> calibrations = Calibration.latestValid(2);
-            if (calibrations.size() > 1) {
-                if (calibrations.get(0).possible_bad != null && calibrations.get(0).possible_bad == true && calibrations.get(1).possible_bad != null && calibrations.get(1).possible_bad != true) {
-                    notificationText.setText(R.string.possible_bad_calibration);
-                }
-                displayCurrentInfo();
-                if (screen_forced_on)  dontKeepScreenOn();
-            } else {
-                notificationText.setText(R.string.please_enter_two_calibrations_to_get_started);
-                showUncalibratedSlope();
-                Log.d(TAG, "Asking for calibration A: Uncalculated BG readings: " + BgReading.latest(2).size() + " / Calibrations size: " + calibrations.size());
-                promptForCalibration();
-                dontKeepScreenOn();
-            }
+
+        if (Ob1G5CollectionService.isG5WarmingUp()) {
+            notificationText.setText("G5 Transmitter is still Warming Up, please wait");
+            showUncalibratedSlope();
         } else {
-            if (!BgReading.isDataSuitableForDoubleCalibration()) {
-                notificationText.setText(R.string.please_wait_need_two_readings_first);
-                showInitialStatusHelper();
-            } else {
-                List<Calibration> calibrations = Calibration.latest(2);
-                if (calibrations.size() < 2) {
+            if (BgReading.latest(3).size() > 2) {
+                // TODO potential to calibrate off stale data here
+                final List<Calibration> calibrations = Calibration.latestValid(2);
+                if (calibrations.size() > 1) {
+                    if (calibrations.get(0).possible_bad != null && calibrations.get(0).possible_bad == true && calibrations.get(1).possible_bad != null && calibrations.get(1).possible_bad != true) {
+                        notificationText.setText(R.string.possible_bad_calibration);
+                    }
+                    displayCurrentInfo();
+                    if (screen_forced_on) dontKeepScreenOn();
+                } else {
                     notificationText.setText(R.string.please_enter_two_calibrations_to_get_started);
                     showUncalibratedSlope();
-                    Log.d(TAG, "Asking for calibration B: Uncalculated BG readings: " + BgReading.latestUnCalculated(2).size() + " / Calibrations size: " + calibrations.size());
+                    Log.d(TAG, "Asking for calibration A: Uncalculated BG readings: " + BgReading.latest(2).size() + " / Calibrations size: " + calibrations.size());
                     promptForCalibration();
                     dontKeepScreenOn();
+                }
+            } else {
+                if (!BgReading.isDataSuitableForDoubleCalibration()) {
+                    notificationText.setText(R.string.please_wait_need_two_readings_first);
+                    showInitialStatusHelper();
+                } else {
+                    List<Calibration> calibrations = Calibration.latest(2);
+                    if (calibrations.size() < 2) {
+                        notificationText.setText(R.string.please_enter_two_calibrations_to_get_started);
+                        showUncalibratedSlope();
+                        Log.d(TAG, "Asking for calibration B: Uncalculated BG readings: " + BgReading.latestUnCalculated(2).size() + " / Calibrations size: " + calibrations.size());
+                        promptForCalibration();
+                        dontKeepScreenOn();
+                    }
                 }
             }
         }

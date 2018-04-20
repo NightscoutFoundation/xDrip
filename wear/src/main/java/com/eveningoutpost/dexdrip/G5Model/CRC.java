@@ -1,5 +1,7 @@
 package com.eveningoutpost.dexdrip.G5Model;
 
+import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.CRC16;
+
 /**
  * Created by jcostik1 on 3/24/16.
  */
@@ -14,6 +16,10 @@ public class CRC {
         crcShort ^= ((crcShort & 0xFF) << 5) & 0xffff;
         crcShort &= 0xffff;
         return new byte[] {(byte) (crcShort & 0xff), (byte) ((crcShort >> 8) & 0xff)};
+    }
+
+    public static byte[] calculate(byte[] bytes, int start, int end) {
+        return CRC16.calculate(bytes, 0, end);
     }
 
 }
