@@ -158,6 +158,10 @@ public class BgSendQueue extends Model {
         }
     }
 
+    public static void sendToPhone(Context context) {
+        // This is just a stub - only used on Android Wear
+    }
+
     @Deprecated
     public void markMongoSuccess() {
         this.mongo_success = true;
