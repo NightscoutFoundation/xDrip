@@ -28,6 +28,9 @@ public class BroadcastGlucose {
             final Bundle bundle = new Bundle();
 
             bundle.putString(Intents.XDRIP_DATA_SOURCE_DESCRIPTION, DexCollectionType.getBestCollectorHardwareName());
+            if (bgReading.source_info != null) {
+                bundle.putString(Intents.XDRIP_DATA_SOURCE_INFO, bgReading.source_info);
+            }
 
             // TODO this cannot handle out of sequence data due to displayGlucose taking most recent?!
             // TODO can we do something with munging for quick data and getDisplayGlucose for non quick?
