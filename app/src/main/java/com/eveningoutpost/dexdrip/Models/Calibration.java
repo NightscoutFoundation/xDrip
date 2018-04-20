@@ -19,6 +19,7 @@ import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.CalRecord;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.CalSubrecord;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.CalibrationSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
@@ -366,7 +367,9 @@ public class Calibration extends Model {
             CalibrationSendQueue.addToQueue(calibration, context);
         }
         JoH.clearCache();
-        adjustRecentBgReadings(5);
+        if (!Ob1G5CollectionService.usingNativeMode()) {
+            adjustRecentBgReadings(5);
+        }
         CalibrationRequest.createOffset(lowerCalibration.bg, 35);
         context.startService(new Intent(context, Notifications.class));
     }
@@ -574,7 +577,9 @@ public class Calibration extends Model {
                         calculate_w_l_s(prefs.getBoolean("infrequent_calibration", false));
                         CalibrationSendQueue.addToQueue(calibration, context);
                         BgReading.pushBgReadingSyncToWatch(bgReading, false);
-                        adjustRecentBgReadings(adjustPast ? 30 : 2);
+                        if (!Ob1G5CollectionService.usingNativeMode()) {
+                            adjustRecentBgReadings(adjustPast ? 30 : 2);
+                        }
                         context.startService(new Intent(context, Notifications.class));
                         Calibration.requestCalibrationIfRangeTooNarrow();
                         newFingerStickData();
@@ -809,10 +814,6 @@ public class Calibration extends Model {
         return Math.max((((((slope_confidence + sensor_confidence) * (time_percentage))) / 2) * 100), 1);
     }
 
-    // this method no longer used
-    public static void adjustRecentBgReadings() {// This just adjust the last 30 bg readings transition from one calibration point to the next
-        adjustRecentBgReadings(30);
-    }
 
     public static void adjustRecentBgReadings(int adjustCount) {
         //TODO: add some handling around calibration overrides as they come out looking a bit funky
