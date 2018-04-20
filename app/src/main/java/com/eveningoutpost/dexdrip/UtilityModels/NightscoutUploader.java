@@ -33,12 +33,6 @@ import com.mongodb.DBCollection;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import com.mongodb.WriteConcern;
-import com.squareup.okhttp.Interceptor;
-import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.ResponseBody;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -59,20 +53,26 @@ import java.util.TimeZone;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import okhttp3.Interceptor;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import okio.BufferedSink;
 import okio.GzipSink;
 import okio.Okio;
-import retrofit.Call;
-import retrofit.Response;
-import retrofit.Retrofit;
-import retrofit.http.Body;
-import retrofit.http.DELETE;
-import retrofit.http.GET;
-import retrofit.http.Header;
-import retrofit.http.POST;
-import retrofit.http.PUT;
-import retrofit.http.Path;
-import retrofit.http.Query;
+import retrofit2.Call;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.http.Body;
+import retrofit2.http.DELETE;
+import retrofit2.http.GET;
+import retrofit2.http.Header;
+import retrofit2.http.POST;
+import retrofit2.http.PUT;
+import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 import static com.eveningoutpost.dexdrip.Models.Treatments.pushTreatmentSyncToWatch;
 
@@ -162,11 +162,13 @@ public class NightscoutUploader {
         public NightscoutUploader(Context context) {
             mContext = context;
             prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
-            client = new OkHttpClient();
-            if (USE_GZIP) client.interceptors().add(new GzipRequestInterceptor());
-            client.setConnectTimeout(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS);
-            client.setWriteTimeout(SOCKET_TIMEOUT, TimeUnit.MILLISECONDS);
-            client.setReadTimeout(SOCKET_TIMEOUT, TimeUnit.MILLISECONDS);
+            final OkHttpClient.Builder okHttp3Builder = new OkHttpClient.Builder();
+
+            if (USE_GZIP) okHttp3Builder.addInterceptor(new GzipRequestInterceptor());
+            okHttp3Builder.connectTimeout(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS);
+            okHttp3Builder.writeTimeout(SOCKET_TIMEOUT, TimeUnit.MILLISECONDS);
+            okHttp3Builder.readTimeout(SOCKET_TIMEOUT, TimeUnit.MILLISECONDS);
+            client = okHttp3Builder.build();
             enableRESTUpload = prefs.getBoolean("cloud_storage_api_enable", false);
             enableMongoUpload = prefs.getBoolean("cloud_storage_mongodb_enable", false);
         }
@@ -205,7 +207,7 @@ public class NightscoutUploader {
             try {
                 final Response<ResponseBody> r;
                 r = nightscoutService.getStatus(hashedSecret).execute();
-                if ((r != null) && (r.isSuccess())) {
+                if ((r != null) && (r.isSuccessful())) {
                     final String response = r.body().string();
                     if (d) Log.d(TAG, "Status Response: " + response);
                     // TODO do we need to parse json here or should we just store string?
@@ -355,7 +357,7 @@ public class NightscoutUploader {
                             continue; // skip further processing of this url
                         }
 
-                        if ((r != null) && (r.isSuccess())) {
+                        if ((r != null) && (r.isSuccessful())) {
 
                             last_modified_string = r.raw().header("Last-Modified", JoH.getRFC822String(request_start));
                             final String this_etag = r.raw().header("Etag", "");
@@ -611,7 +613,7 @@ public class NightscoutUploader {
         private void doLegacyRESTUploadTo(NightscoutService nightscoutService, List<BgReading> glucoseDataSets) throws Exception {
             for (BgReading record : glucoseDataSets) {
                 Response<ResponseBody> r = nightscoutService.upload(populateLegacyAPIEntry(record)).execute();
-                if (!r.isSuccess()) throw new UploaderException(r.message(), r.code());
+                if (!r.isSuccessful()) throw new UploaderException(r.message(), r.code());
 
             }
             try {
@@ -643,7 +645,7 @@ public class NightscoutUploader {
             if (array.length() > 0) {//KS
                 final RequestBody body = RequestBody.create(MediaType.parse("application/json"), array.toString());
                 final Response<ResponseBody> r = nightscoutService.upload(secret, body).execute();
-                if (!r.isSuccess()) throw new UploaderException(r.message(), r.code());
+                if (!r.isSuccessful()) throw new UploaderException(r.message(), r.code());
                 checkGzipSupport(r);
                 try {
                     postDeviceStatus(nightscoutService, secret);
@@ -858,7 +860,7 @@ public class NightscoutUploader {
                                 lookup = nightscoutService.findTreatmentByUUID(apiSecret, up.reference_uuid).execute();
                             }
                             // throw an exception if we failed lookup
-                            if ((this_id == null) && (lookup != null) && !lookup.isSuccess()) {
+                            if ((this_id == null) && (lookup != null) && !lookup.isSuccessful()) {
                                 throw new UploaderException(lookup.message(), lookup.code());
                             } else {
                                 // parse the result
@@ -875,7 +877,7 @@ public class NightscoutUploader {
                                 // is the id valid now?
                                 if ((this_id != null) && (this_id.length() == 24)) {
                                     final Response<ResponseBody> r = nightscoutService.deleteTreatment(apiSecret, this_id).execute();
-                                    if (!r.isSuccess()) {
+                                    if (!r.isSuccessful()) {
                                         throw new UploaderException(r.message(), r.code());
                                     } else {
                                         up.completed(THIS_QUEUE);
@@ -901,7 +903,7 @@ public class NightscoutUploader {
                 final Response<ResponseBody> r;
                 if (apiSecret != null) {
                     r = nightscoutService.uploadTreatments(apiSecret, body).execute();
-                    if (!r.isSuccess()) {
+                    if (!r.isSuccessful()) {
                         throw new UploaderException(r.message(), r.code());
                     } else {
                         Log.d(TAG, "Success for RESTAPI treatment insert upload");
@@ -926,7 +928,7 @@ public class NightscoutUploader {
                     final Response<ResponseBody> r;
                     if (apiSecret != null) {
                         r = nightscoutService.upsertTreatments(apiSecret, body).execute();
-                        if (!r.isSuccess()) {
+                        if (!r.isSuccessful()) {
                             throw new UploaderException(r.message(), r.code());
                         } else {
                             Log.d(TAG, "Success for RESTAPI treatment upsert upload: " + match_uuid);
@@ -990,7 +992,7 @@ public class NightscoutUploader {
 
                 r = nightscoutService.uploadActivity(apiSecret, body).execute();
 
-                if (!r.isSuccess()) {
+                if (!r.isSuccessful()) {
                     activityErrorCount++;
                    if (JoH.ratelimit("heartrate-unable-upload",3600)) {
                        UserError.Log.e(TAG, "Unable to upload heart-rate data to Nightscout - check nightscout version");
@@ -1039,7 +1041,7 @@ public class NightscoutUploader {
 
                 r = nightscoutService.uploadActivity(apiSecret, body).execute();
 
-                if (!r.isSuccess()) {
+                if (!r.isSuccessful()) {
                     activityErrorCount++;
                     UserError.Log.e(TAG, "Unable to upload steps data to Nightscout - check nightscout version");
                     throw new UploaderException(r.message(), r.code());
@@ -1089,7 +1091,7 @@ public class NightscoutUploader {
 
                 r = nightscoutService.uploadActivity(apiSecret, body).execute();
 
-                if (!r.isSuccess()) {
+                if (!r.isSuccessful()) {
                     activityErrorCount++;
                     UserError.Log.e(TAG, "Unable to upload motion data to Nightscout - check nightscout version");
                     throw new UploaderException(r.message(), r.code());
@@ -1130,8 +1132,8 @@ public class NightscoutUploader {
             // TODO this currently never unsets
             if (hasGzip) {
                 try {
-                    setSupportsGzip(r.raw().request().uri().getHost() + r.raw().request().uri().getPort(), true);
-                } catch (IOException e) {
+                    setSupportsGzip(r.raw().request().url().uri().getHost() + r.raw().request().url().uri().getPort(), true);
+                } catch (Exception e) {
                     // unprocessable
                     UserError.Log.d(TAG, "check gzip: E1 :" + e);
                 }
@@ -1212,7 +1214,7 @@ public class NightscoutUploader {
                     r = nightscoutService.uploadDeviceStatus(apiSecret, body).execute();
                 } else
                     r = nightscoutService.uploadDeviceStatus(body).execute();
-                if (!r.isSuccess()) throw new UploaderException(r.message(), r.code());
+                if (!r.isSuccessful()) throw new UploaderException(r.message(), r.code());
                 // } else {
                 //     UserError.Log.d(TAG, "Battery level is same as previous - not uploading: " + battery_level);
                 checkGzipSupport(r);
@@ -1411,12 +1413,11 @@ public class NightscoutUploader {
 
     static class GzipRequestInterceptor implements Interceptor {
         @Override
-        public com.squareup.okhttp.Response intercept(Chain chain) throws IOException {
+        public okhttp3.Response intercept(Chain chain) throws IOException {
             final Request originalRequest = chain.request();
-
             if (originalRequest.body() == null
                     || originalRequest.header("Content-Encoding") != null
-                    || !supportsGzip(originalRequest.uri().getHost() + originalRequest.uri().getPort())) {
+                    || !supportsGzip(originalRequest.url().uri().getHost() + originalRequest.url().uri().getPort())) {
                 return chain.proceed(originalRequest);
             }
 
