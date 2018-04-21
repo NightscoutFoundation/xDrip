@@ -1,9 +1,9 @@
 package com.eveningoutpost.dexdrip.Tables;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.app.ListActivity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
@@ -15,8 +15,10 @@ import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.NavigationDrawerFragment;
 import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 
 import java.util.ArrayList;
@@ -91,11 +93,11 @@ public class BgReadingTable extends ListActivity implements NavigationDrawerFrag
             return view;
         }
 
-        public void bindView(View view, final Context context, final BgReading bgReading) {
+        void bindView(View view, final Context context, final BgReading bgReading) {
             final BgReadingCursorAdapterViewHolder tag = (BgReadingCursorAdapterViewHolder) view.getTag();
-            tag.raw_data_id.setText(Double.toString(bgReading.calculated_value));
-            tag.raw_data_value.setText(Double.toString(bgReading.age_adjusted_raw_value));
-            tag.raw_data_slope.setText(Double.toString(bgReading.raw_data));
+            tag.raw_data_id.setText(BgGraphBuilder.unitized_string_with_units_static(bgReading.calculated_value) + "  " + JoH.qs(bgReading.calculated_value, 1));
+            tag.raw_data_value.setText("Aged raw: " + JoH.qs(bgReading.age_adjusted_raw_value, 2));
+            tag.raw_data_slope.setText(bgReading.isBackfilled() ? "Backfilled" : "Raw: " + JoH.qs(bgReading.raw_data, 2));
             tag.raw_data_timestamp.setText(new Date(bgReading.timestamp).toString());
 
             if (bgReading.ignoreForStats) {

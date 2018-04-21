@@ -1041,6 +1041,10 @@ public class BgReading extends Model implements ShareUploadableBg {
         }
     }
 
+    public boolean isBackfilled() {
+        return raw_data == SPECIAL_G5_PLACEHOLDER;
+    }
+
     public static final double SPECIAL_G5_PLACEHOLDER = -0.1597;
 
     // TODO remember to sync this with wear code base
