@@ -60,6 +60,7 @@ public class BgGraphBuilder {
 	private static final String TAG = BgGraphBuilder.class.getSimpleName();
     public static final int FUZZER = (1000 * 30 * 5);
     public final static double NOISE_TRIGGER = 10;
+    public final static double NOISE_TRIGGER_ULTRASENSITIVE = 1;
     public final static double NOISE_TOO_HIGH_FOR_PREDICT = 60;
     public final static double NOISE_HIGH = 200;
     public final static double NOISE_FORGIVE = 100;
@@ -96,6 +97,8 @@ public class BgGraphBuilder {
     public Viewport viewport;
     public final static long DEXCOM_PERIOD = 300000;//KS from app / BgGraphBuilder.java
     public static double last_noise = -99999;
+    public static double best_bg_estimate = -99999;
+    public static double last_bg_estimate = -99999;
 
 
     public BgGraphBuilder(Context context){
@@ -680,5 +683,9 @@ public class BgGraphBuilder {
         public void onValueDeselected() {
             // do nothing
         }
+    }
+
+    public static void refreshNoiseIfOlderThan(long timestamp) {
+        // stub method for wear compatibility - update when noise calculations supported
     }
 }

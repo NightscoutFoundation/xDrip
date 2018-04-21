@@ -34,6 +34,8 @@ public class Constants {
     public static final int G5_CALIBRATION_REJECT = 1008;
     public static final int G5_START_REJECT = 1009;
     public static final int G5_SENSOR_ERROR = 1010;
+    public static final int G5_SENSOR_FAILED = 1011;
+    public static final int G5_SENSOR_STARTED = 1012;
 
     static final int NIGHTSCOUT_ERROR_NOTIFICATION_ID = 2001;
 

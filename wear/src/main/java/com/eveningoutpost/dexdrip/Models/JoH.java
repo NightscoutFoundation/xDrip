@@ -20,6 +20,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 //KS import android.graphics.Canvas;
 //KS import android.graphics.Color;
@@ -53,6 +54,7 @@ import android.view.Surface;
 import android.view.View;
 import android.widget.Toast;
 
+import com.activeandroid.ActiveAndroid;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
@@ -1152,6 +1154,12 @@ public class JoH {
         }
     }
 
+    public static boolean areWeRunningOnAndroidWear() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH
+                && (xdrip.getAppContext().getResources().getConfiguration().uiMode
+                & Configuration.UI_MODE_TYPE_MASK) == Configuration.UI_MODE_TYPE_WATCH;
+    }
+
     public static boolean isAirplaneModeEnabled(Context context) {
         return Settings.Global.getInt(context.getContentResolver(), Settings.Global.AIRPLANE_MODE_ON, 0) != 0;
     }
@@ -1524,6 +1532,14 @@ public class JoH {
         } catch (NumberFormatException e) {
             Log.e(TAG, "Error parsing integer number = " + number + " radix = " + radix);
             return defaultVal;
+        }
+    }
+
+    public static void clearCache() {
+        try {
+            ActiveAndroid.clearCache();
+        } catch (Exception e) {
+            Log.e(TAG, "Error clearing active android cache: " + e);
         }
     }
 }
