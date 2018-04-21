@@ -890,7 +890,9 @@
     <string name="enter_your_transmitter_id_exactly">Enter your transmitter ID exactly as it is printed</string>
     <string name="which_type_of_device">Which type of device?</string>
     <string name="enable_local_broadcast">Enable local broadcast?</string>
+    <string name="enable_wear_os_sync">Enable Sync to Android Wear OS?</string>
     <string name="androidaps">AndroidAPS</string>
+    <string name="androidwear">Android Wear OS</string>
     <string name="librealarm">LibreAlarm</string>
     <string name="use_librealarm">Use LibreAlarm app as data source?</string>
     <string name="noise_blocking">Noise Blocking</string>
