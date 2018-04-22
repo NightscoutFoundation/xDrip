@@ -95,7 +95,9 @@ public class BgReadingTable extends ListActivity implements NavigationDrawerFrag
 
         void bindView(View view, final Context context, final BgReading bgReading) {
             final BgReadingCursorAdapterViewHolder tag = (BgReadingCursorAdapterViewHolder) view.getTag();
-            tag.raw_data_id.setText(BgGraphBuilder.unitized_string_with_units_static(bgReading.calculated_value) + "  " + JoH.qs(bgReading.calculated_value, 1));
+            tag.raw_data_id.setText(BgGraphBuilder.unitized_string_with_units_static(bgReading.calculated_value)
+                    + "  " + JoH.qs(bgReading.calculated_value, 1)
+                    + " " + (!bgReading.isBackfilled() ? bgReading.slopeArrow() : ""));
             tag.raw_data_value.setText("Aged raw: " + JoH.qs(bgReading.age_adjusted_raw_value, 2));
             tag.raw_data_slope.setText(bgReading.isBackfilled() ? "Backfilled" : "Raw: " + JoH.qs(bgReading.raw_data, 2));
             tag.raw_data_timestamp.setText(new Date(bgReading.timestamp).toString());
