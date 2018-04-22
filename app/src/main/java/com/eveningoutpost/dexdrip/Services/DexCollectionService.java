@@ -425,11 +425,19 @@ public class DexCollectionService extends Service {
                         sendBtMessage(blueReader.initialize());
                     } else if (Tomato.isTomato()) {
                         status("Enabled tomato");
-                        Log.d(TAG, "tomato initialized and data requested");
-                        ArrayList<ByteBuffer> buffers = Tomato.initialize();
-                        for (ByteBuffer buffer : buffers) {
-                            sendBtMessage(buffer);
-                        }
+                        Log.d(TAG,"Queueing Tomato initialization..");
+                        Inevitable.task("initialize-tomato", 4000, new Runnable() {
+                            @Override
+                            public void run() {
+                                final List<ByteBuffer> buffers = Tomato.initialize();
+                                for (ByteBuffer buffer : buffers) {
+                                    sendBtMessage(buffer);
+                                    JoH.threadSleep(150);
+                                }
+                                Log.d(TAG, "tomato initialized and data requested");
+                            }
+                        });
+
                         servicesDiscovered = DISCOVERED.NULL; // reset this state
                     }
                 }
@@ -1230,6 +1238,7 @@ public class DexCollectionService extends Service {
     }
 
     private synchronized boolean sendBtMessage(final ByteBuffer message) {
+        // TODO affirm send happened
         //check mBluetoothGatt is available
         Log.i(TAG, "sendBtMessage: entered");
         if (mBluetoothGatt == null) {
