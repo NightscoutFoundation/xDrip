@@ -4,6 +4,7 @@ package com.eveningoutpost.dexdrip.G5Model;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -56,7 +57,8 @@ public class BackFillStream extends TransmitterMessage {
             final byte trend = data.get();
 
 
-            if (type == 0x06 || type == 0x07) {
+            if (type == 0x06 || type == 0x07
+                    || ((type == 0x0e) || Pref.getBooleanDefaultFalse("ob1_g5_use_insufficiently_calibrated"))) {
                 if (dexTime != 0) {
                     backsies.add(new Backsie(glucose, trend, dexTime));
                 }
@@ -64,7 +66,7 @@ public class BackFillStream extends TransmitterMessage {
                 if (type == 0x00) {
                     //
                 } else {
-                    UserError.Log.wtf(TAG, "Encountered backfill data we don't recognise: " + type);
+                    UserError.Log.wtf(TAG, "Encountered backfill data we don't recognise: " + type + " " + JoH.bytesToHex(data.array()));
                 }
             }
         }
