@@ -38,6 +38,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.UtilityModels.WearSyncBooleans;
 import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.PowerStateReceiver;
@@ -1459,12 +1460,7 @@ public class WatchUpdaterService extends WearableListenerService implements
         String node_wearG5 = "";
 
         // add booleans that default to false to this list
-        final List<String> defaultFalseBooleansToSend = new ArrayList<>();
-        defaultFalseBooleansToSend.add("use_wear_heartrate");
-        defaultFalseBooleansToSend.add("engineering_mode");
-        defaultFalseBooleansToSend.add("ob1_g5_use_transmitter_alg");
-        defaultFalseBooleansToSend.add("ob1_g5_use_insufficiently_calibrated");
-        defaultFalseBooleansToSend.add("ob1_g5_allow_resetbond");
+        final List<String> defaultFalseBooleansToSend = WearSyncBooleans.getBooleansToSync();
 
         wear_integration = mPrefs.getBoolean("wear_sync", false);
         if (wear_integration) {

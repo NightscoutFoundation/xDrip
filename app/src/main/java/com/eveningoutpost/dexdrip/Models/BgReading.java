@@ -192,8 +192,10 @@ public class BgReading extends Model implements ShareUploadableBg {
 
         // needs different handling on wear
         if (JoH.areWeRunningOnAndroidWear()) {
+            BgSendQueue.emptyQueue();
             SqliteRejigger.rejigSchema("BgReadings", "uuid TEXT UNIQUE ON CONFLICT FAIL", "uuid TEXT UNIQUE ON CONFLICT REPLACE");
             SqliteRejigger.rejigSchema("BgReadings", "uuid TEXT UNIQUE ON CONFLICT IGNORE", "uuid TEXT UNIQUE ON CONFLICT REPLACE");
+            SqliteRejigger.rejigSchema("BgSendQueue", "BgReadings_temp", "BgReadings");
         }
 
     }

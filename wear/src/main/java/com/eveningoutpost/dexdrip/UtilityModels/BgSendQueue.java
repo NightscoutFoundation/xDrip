@@ -14,6 +14,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
+import com.activeandroid.query.Delete;
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.ListenerService;
 import com.eveningoutpost.dexdrip.Models.BgReading;
@@ -75,6 +76,18 @@ public class BgSendQueue extends Model {
                     .execute();
         }
     */
+
+    @Deprecated
+    public static void emptyQueue() {
+        try {
+            new Delete()
+                    .from(BgSendQueue.class)
+                    .execute();
+        } catch (Exception e) {
+            // failed
+        }
+    }
+
     public static List<BgSendQueue> mongoQueue() {
         return new Select()
                 .from(BgSendQueue.class)

@@ -16,7 +16,6 @@ import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.LibreBlock;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.NewDataObserver;
 import com.eveningoutpost.dexdrip.Services.SyncService;
@@ -56,6 +55,17 @@ public class BgSendQueue extends Model {
                     .execute();
         }
     */
+    @Deprecated
+    public static void emptyQueue() {
+        try {
+            new Delete()
+                    .from(BgSendQueue.class)
+                    .execute();
+        } catch (Exception e) {
+            // failed
+        }
+    }
+
     @Deprecated
     public static List<BgSendQueue> mongoQueue() {
         return new Select()

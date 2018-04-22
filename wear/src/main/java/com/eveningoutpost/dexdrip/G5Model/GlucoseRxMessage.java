@@ -59,7 +59,7 @@ public class GlucoseRxMessage extends TransmitterMessage {
                     unfiltered = glucose;
                 }
 
-                UserError.Log.d(TAG, "GlucoseRX: seq:" + sequence + " ts:" + timestamp + " sg:" + glucose + " do:" + glucoseIsDisplayOnly + " ss:" + status + " sr:" + status_raw + " st:" + CalibrationState.parse(state) + " tr:" + trend);
+                UserError.Log.d(TAG, "GlucoseRX: seq:" + sequence + " ts:" + timestamp + " sg:" + glucose + " do:" + glucoseIsDisplayOnly + " ss:" + status + " sr:" + status_raw + " st:" + CalibrationState.parse(state) + " tr:" + getTrend());
 
             }
         } else {
@@ -76,8 +76,17 @@ public class GlucoseRxMessage extends TransmitterMessage {
         return calibrationState().usableGlucose();
     }
 
+    boolean insufficient() {
+        return calibrationState().insufficientCalibration();
+    }
+
     boolean OkToCalibrate() {
         return calibrationState().readyForCalibration();
     }
+
+    public Double getTrend() {
+        return trend != 127 ? ((double) trend) / 10d : Double.NaN;
+    }
+
 
 }

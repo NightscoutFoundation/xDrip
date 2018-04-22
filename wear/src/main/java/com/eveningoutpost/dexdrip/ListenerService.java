@@ -53,6 +53,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.UtilityModels.WearSyncBooleans;
 import com.eveningoutpost.dexdrip.stats.StatsResult;
 import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
@@ -1574,9 +1575,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
 
 
             // just add to this list to sync booleans with the same name
-            final List<String> defaultFalseBooleansToReceive = new ArrayList<>();
-            defaultFalseBooleansToReceive.add("engineering_mode");
-            defaultFalseBooleansToReceive.add("use_wear_heartrate");
+            final List<String> defaultFalseBooleansToReceive = WearSyncBooleans.getBooleansToSync();
 
             for (String preference_name : defaultFalseBooleansToReceive) {
                 prefs.putBoolean(preference_name, dataMap.getBoolean(preference_name, false));
@@ -2194,8 +2193,12 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                             exists = exists != null ? exists : BgReading.findByUuid(bgData.uuid);
                             String calibrationUuid = entry.getString("calibrationUuid");
                             if (exists != null) {
-                                Log.d(TAG, "syncBGData BG already exists for uuid=" + bgData.uuid + " timestamp=" + bgData.timestamp + " timeString=" +  JoH.dateTimeText(bgData.timestamp));
-                                Log.d(TAG, "syncBGData exists timeString=" +  JoH.dateTimeText(exists.timestamp) + "  exists.calibration.uuid=" + exists.calibration.uuid + " exists=" + exists.toS());
+                                Log.d(TAG, "syncBGData BG already exists for uuid=" + bgData.uuid + " timestamp=" + bgData.timestamp + " timeString=" + JoH.dateTimeText(bgData.timestamp));
+                                try {
+                                    Log.d(TAG, "syncBGData exists timeString=" + JoH.dateTimeText(exists.timestamp) + "  exists.calibration.uuid=" + exists.calibration.uuid + " exists=" + exists.toS());
+                                } catch (NullPointerException e) {
+                                    Log.d(TAG, "" + e); // usually when calibration.uuid is null because data is from g5 native
+                                }
 
                                 exists.filtered_calculated_value = bgData.filtered_calculated_value;
                                 exists.calculated_value = bgData.calculated_value;

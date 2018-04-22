@@ -461,6 +461,7 @@ public class Ob1G5StateMachine {
                                 // TODO persist this
                                 parent.msg("Session Stopped Successfully: " + JoH.dateTimeText(session_stop.getSessionStart()) + " " + JoH.dateTimeText(session_stop.getSessionStop()));
                                 enqueueUniqueCommand(new GlucoseTxMessage(), "Re-read glucose");
+                                enqueueUniqueCommand(new TransmitterTimeTxMessage(),"Query time after stop");
                             } else {
                                 UserError.Log.e(TAG, "Session Stop Error!");
                             }
@@ -478,6 +479,11 @@ public class Ob1G5StateMachine {
                             if (JoH.ratelimit("ob1-g5-also-read-raw", 20)) {
                                 enqueueUniqueCommand(new SensorTxMessage(), "Also read raw");
                             }
+
+                            if (JoH.pratelimit("g5-tx-time-since",7200)) {
+                                enqueueUniqueCommand(new TransmitterTimeTxMessage(),"Periodic Query Time");
+                            }
+
                             backFillIfNeeded(parent, connection);
                             processGlucoseRxMessage(parent, glucose);
                             parent.updateLast(JoH.tsl());
@@ -505,6 +511,11 @@ public class Ob1G5StateMachine {
                             } else {
                                 UserError.Log.wtf(TAG, "Backfill request corrupted!");
                             }
+                            break;
+
+                        case TransmitterTimeRxMessage:
+                            final TransmitterTimeRxMessage txtime = (TransmitterTimeRxMessage) data_packet.msg;
+                            UserError.Log.e(TAG, "Session start time reports: " + JoH.dateTimeText(txtime.getRealSessionStartTime()));
                             break;
 
                         default:
@@ -1071,6 +1082,7 @@ public class Ob1G5StateMachine {
         GlucoseRxMessage,
         CalibrateRxMessage,
         BackFillRxMessage,
+        TransmitterTimeRxMessage,
 
     }
 
@@ -1109,6 +1121,8 @@ public class Ob1G5StateMachine {
                 return new PacketShop(PACKET.CalibrateRxMessage, new CalibrateRxMessage(packet));
             case BackFillRxMessage.opcode:
                 return new PacketShop(PACKET.BackFillRxMessage, new BackFillRxMessage(packet));
+            case TransmitterTimeRxMessage.opcode:
+                return new PacketShop(PACKET.TransmitterTimeRxMessage, new TransmitterTimeRxMessage(packet));
         }
         return new PacketShop(PACKET.UNKNOWN, null);
     }
