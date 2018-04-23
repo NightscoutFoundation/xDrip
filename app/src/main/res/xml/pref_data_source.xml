@@ -109,6 +109,13 @@
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:dependency="ob1_g5_use_transmitter_alg"
+                android:key="ob1_g5_restart_sensor"
+                android:summary="Automatically restart a sensor when it stops"
+                android:title="Restart Sensor"
+                />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:dependency="ob1_g5_use_transmitter_alg"
                 android:key="ob1_g5_use_insufficiently_calibrated"
                 android:summary="Keep using data even if there are not enough good calibrations (Experimental!)"
                 android:title="Go on without calibrations"

@@ -14,6 +14,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.BestGlucose;
+import com.eveningoutpost.dexdrip.G5Model.CalibrationState;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Models.AlertType;
@@ -32,6 +33,7 @@ import com.eveningoutpost.dexdrip.Services.G5CollectionService;
 import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
+import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.Blukon;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
@@ -102,6 +104,7 @@ public class WatchUpdaterService extends WearableListenerService implements
     private static final String SYNC_DB_PATH = "/xdrip_plus_syncweardb";//KS
     private static final String RESET_DB_PATH = "/xdrip_plus_resetweardb";//KS
     private static final String SYNC_BGS_PATH = "/xdrip_plus_syncwearbgs";//KS
+    private static final String SYNC_BGS_PRECALCULATED_PATH = "/xdrip_plus_syncwearbgs2";
     private static final String SYNC_LOGS_PATH = "/xdrip_plus_syncwearlogs";
     private static final String SYNC_TREATMENTS_PATH = "/xdrip_plus_syncweartreatments";
     private static final String SYNC_LOGS_REQUESTED_PATH = "/xdrip_plus_syncwearlogsrequested";
@@ -328,6 +331,55 @@ public class WatchUpdaterService extends WearableListenerService implements
             Log.d(TAG, "processConnect wear_integration=false - startBtService");
             startBtService();
         }
+    }
+
+    private synchronized void syncBgReadingsData(DataMap dataMap) {
+        Log.d(TAG, "sync-precalculated-bg-readings-Data");
+
+        final int calibration_state = dataMap.getInt("native_calibration_state", 0);
+        Ob1G5CollectionService.processCalibrationState(CalibrationState.parse(calibration_state));
+
+        final ArrayList<DataMap> entries = dataMap.getDataMapArrayList("entries");
+        final Gson gson = new GsonBuilder()
+                .excludeFieldsWithoutExposeAnnotation()
+                .registerTypeAdapter(Date.class, new DateTypeAdapter())
+                .serializeSpecialFloatingPointValues()
+                .create();
+
+        final int count = entries.size();
+
+        Log.d(TAG, "syncTransmitterData add BgReading Table entries count=" + count);
+        int idx = 0;
+        long timeOfLastBG = 0;
+        for (DataMap entry : entries) {
+            if (entry != null) {
+                idx++;
+                final String bgrecord = entry.getString("bgs");
+                if (bgrecord != null) {
+
+                    final BgReading bgData = gson.fromJson(bgrecord, BgReading.class);
+
+                    final BgReading uuidexists = BgReading.findByUuid(bgData.uuid);
+                    if (uuidexists == null) {
+
+                        final BgReading exists = BgReading.getForTimestamp(bgData.timestamp);
+                        if (exists == null) {
+                            Log.d(TAG, "Saving new synced pre-calculated bg-reading: " + JoH.dateTimeText(bgData.timestamp) + " last entry: " + (idx == count) + " " + BgGraphBuilder.unitized_string_static(bgData.calculated_value));
+                            bgData.save();
+                            BgSendQueue.handleNewBgReading(bgData, "create", xdrip.getAppContext(), Home.get_follower(), idx != count);
+                        } else {
+                            Log.d(TAG, "BgReading for timestamp already exists: " + JoH.dateTimeText(bgData.timestamp));
+                        }
+                    } else {
+                        Log.d(TAG, "BgReading with uuid: " + bgData.uuid + " already exists: " + JoH.dateTimeText(bgData.timestamp));
+                    }
+
+                    timeOfLastBG = Math.max(bgData.timestamp + 1, timeOfLastBG);
+                }
+            }
+        }
+        sendDataReceived(DATA_ITEM_RECEIVED_PATH,"DATA_RECEIVED_BGS count=" + entries.size(), timeOfLastBG, "BG", -1);
+
     }
 
     private synchronized void syncTransmitterData(DataMap dataMap, boolean bBenchmark) {//KS
@@ -1181,6 +1233,15 @@ public class WatchUpdaterService extends WearableListenerService implements
                             }
                         }
                         break;
+                    case SYNC_BGS_PRECALCULATED_PATH:
+                        Log.d(TAG, "onMessageReceived " + SYNC_BGS_PRECALCULATED_PATH);
+                        decomprBytes = decompressBytes(event.getPath(), event.getData(), false);
+                        dataMap = DataMap.fromByteArray(decomprBytes);
+                        if (dataMap != null) {
+                            syncBgReadingsData(dataMap);
+                        }
+                        break;
+
                     case SYNC_LOGS_PATH:
                         Log.d(TAG, "onMessageReceived SYNC_LOGS_PATH");
                         if (event.getData() != null) {
@@ -1927,8 +1988,11 @@ public class WatchUpdaterService extends WearableListenerService implements
         //if (bg.calibration_flag == true) {
         //    bg.calibration_uuid = bg.calibration.uuid;
         //}
-        dataMap.putString("calibrationUuid", bg.calibration.uuid);
-
+        try {
+            dataMap.putString("calibrationUuid", bg.calibration.uuid);
+        } catch (NullPointerException e) {
+            Log.d(TAG,"Calibration uuid is not set in dataMap(BgReading)");
+        }
         String json = bg.toS();
         Log.d(TAG, "dataMap BG GSON: " + json);
         dataMap.putString("bgs", json);

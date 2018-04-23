@@ -876,8 +876,10 @@ public class Ob1G5StateMachine {
             lastGlucoseBgReading.calculateAgeAdjustedRawValue();
             lastGlucoseBgReading.save();
         } else {
-            final BgReading bgreading = BgReading.create(transmitterData.raw_data, transmitterData.filtered_data, xdrip.getAppContext(), transmitterData.timestamp);
-            UserError.Log.d(TAG, "BgReading created: " + bgreading.uuid + " " + JoH.dateTimeText(bgreading.timestamp));
+            if (!Ob1G5CollectionService.usingNativeMode() || Ob1G5CollectionService.fallbackToXdripAlgorithm()) {
+                final BgReading bgreading = BgReading.create(transmitterData.raw_data, transmitterData.filtered_data, xdrip.getAppContext(), transmitterData.timestamp);
+                UserError.Log.d(TAG, "BgReading created: " + bgreading.uuid + " " + JoH.dateTimeText(bgreading.timestamp));
+            }
         }
 
         //   UserError.Log.d(TAG, "Dex raw_data " + Double.toString(transmitterData.raw_data));//KS

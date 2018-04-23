@@ -19,6 +19,7 @@ public class WearSyncBooleans {
         booleansToSync.add("ob1_g5_use_insufficiently_calibrated");
         booleansToSync.add("ob1_g5_allow_resetbond");
         booleansToSync.add("ob1_g5_fallback_to_xdrip");
+        booleansToSync.add("ob1_g5_restart_sensor");
     }
 
 
