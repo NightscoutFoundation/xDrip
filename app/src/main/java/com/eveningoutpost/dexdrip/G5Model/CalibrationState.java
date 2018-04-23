@@ -6,6 +6,8 @@ import android.util.SparseArray;
 
 import com.eveningoutpost.dexdrip.Models.UserError;
 
+import lombok.Getter;
+
 import static com.eveningoutpost.dexdrip.Services.G5CollectionService.TAG;
 
 public enum CalibrationState {
@@ -27,7 +29,9 @@ public enum CalibrationState {
     Ended(0x0f, "Ended"),
     Errors(0x12, "Errors");
 
+    @Getter
     byte value;
+    @Getter
     String text;
 
 
@@ -81,10 +85,6 @@ public enum CalibrationState {
 
     public boolean sensorFailed() {
         return this == SensorFailed || this == SensorFailed2;
-    }
-
-    public String getText() {
-        return text;
     }
 
 }
