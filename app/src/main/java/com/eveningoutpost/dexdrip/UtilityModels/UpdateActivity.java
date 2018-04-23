@@ -59,7 +59,7 @@ public class UpdateActivity extends AppCompatActivity {
     private static final String last_update_check_time = "last_update_check_time";
     private static final String TAG = "jamorham update";
     private static OkHttpClient httpClient = null;
-    public static double last_check_time = 0;
+    public static long last_check_time = 0;
     private static SharedPreferences prefs;
     private static int versionnumber = 0;
     private static int newversion = 0;
@@ -79,12 +79,12 @@ public class UpdateActivity extends AppCompatActivity {
 
     public static void checkForAnUpdate(final Context context) {
         if (prefs == null) prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        if (!prefs.getBoolean(autoUpdatePrefsName, true)) return;
+        if ((last_check_time != -1) && (!prefs.getBoolean(autoUpdatePrefsName, true))) return;
         if (last_check_time == 0)
-            last_check_time = (double) prefs.getLong(last_update_check_time, 0);
-        if (((JoH.ts() - last_check_time) > 86300000) || (debug)) {
-            last_check_time = JoH.ts();
-            prefs.edit().putLong(last_update_check_time, (long) last_check_time).apply();
+            last_check_time = prefs.getLong(last_update_check_time, 0);
+        if (((JoH.tsl() - last_check_time) > 86300000) || (debug)) {
+            last_check_time = JoH.tsl();
+            prefs.edit().putLong(last_update_check_time, last_check_time).apply();
 
             String channel = prefs.getString("update_channel", "beta");
             Log.i(TAG, "Checking for a software update, channel: " + channel);
