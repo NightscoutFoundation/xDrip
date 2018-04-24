@@ -49,6 +49,12 @@
                 android:key="disable_wearG5_on_missedreadings_level"
                 android:summary=""
                 android:title="@string/pref_disable_wearG5_on_missedreadings_level" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:dependency="force_wearG5"
+                android:key="only_ever_use_wear_collector"
+                android:summary="If you plan to only use a Wear collector and never your phone."
+                android:title="Only use Wear" />
             <EditTextPreference
                 android:defaultValue=""
                 android:dependency="force_wearG5"

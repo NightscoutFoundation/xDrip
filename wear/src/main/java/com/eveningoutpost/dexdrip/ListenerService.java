@@ -148,6 +148,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     public static final String WEARABLE_G5BATTERY_PAYLOAD = "/xdrip_plus_battery_payload";
     public final static String ACTION_BLUETOOTH_COLLECTION_SERVICE_UPDATE
             = "com.eveningoutpost.dexdrip.BLUETOOTH_COLLECTION_SERVICE_UPDATE";
+    private static final String WEARABLE_G5_QUEUE_PATH = "/xdrip_plus_watch_g5_queue";
 
     // Phone
     private static final String CAPABILITY_PHONE_APP = "phone_app_sync_bgs";
@@ -992,22 +993,29 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     @Override
     public void onDataChanged(DataEventBuffer dataEvents) {
 
-        DataMap dataMap;
-        mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());//KS
+
+
+        final Context context = getApplicationContext();
+        if (mPrefs == null) {
+            mPrefs = PreferenceManager.getDefaultSharedPreferences(context);//KS
+        }
         String msg;
-        Context context = getApplicationContext();
+        DataMap dataMap = null;
 
         for (DataEvent event : dataEvents) {
 
             if (event.getType() == DataEvent.TYPE_CHANGED) {
 
-
-                String path = event.getDataItem().getUri().getPath();
+                try {
+                    dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
+                } catch (Exception e) {
+                    //
+                }
+                final String path = event.getDataItem().getUri().getPath();
+                Log.d(TAG, "onDataChanged path=" + path + " DataMap=" + dataMap);
                 if (path.equals(OPEN_SETTINGS)) {
                     //TODO: OpenSettings
-                    Intent intent = new Intent(this, NWPreferences.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(intent);
+                    JoH.startActivity(NWPreferences.class);
 
                 } else if (path.equals(NEW_STATUS_PATH)) {
                     dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
@@ -1192,6 +1200,9 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                     dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
                     Log.d(TAG, "onDataChanged path=" + path + " DataMap=" + dataMap);
                     syncPrefData(dataMap);
+                } else if (path.equals(WEARABLE_G5_QUEUE_PATH)) {
+                    // TODO clean up other duplication in conditionals above
+                    receiveG5QueueData(dataMap);
                 } else if (path.equals(WEARABLE_LOCALE_CHANGED_PATH)) {//KS
                     dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
                     Log.d(TAG, "onDataChanged path=" + path + " DataMap=" + dataMap);
@@ -1542,6 +1553,11 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             }
         }
         return false;
+    }
+
+    private static void receiveG5QueueData(DataMap dataMap) {
+        final String queueData = dataMap.getString("queueData");
+        Ob1G5StateMachine.injectQueueJson(queueData);
     }
 
     private synchronized void syncPrefData(DataMap dataMap) {//KS

@@ -264,7 +264,7 @@ public class Calibration extends Model {
             bg1 = bg1 * Constants.MMOLL_TO_MGDL;
             bg2 = bg2 * Constants.MMOLL_TO_MGDL;
         }
-        clear_all_existing_calibrations();
+
         JoH.clearCache();
         final Calibration higherCalibration = new Calibration();
         final Calibration lowerCalibration = new Calibration();
@@ -288,6 +288,8 @@ public class Calibration extends Model {
             JoH.static_toast_long(msg);
             return;
         }
+
+        clear_all_existing_calibrations();
 
         BgReading highBgReading;
         BgReading lowBgReading;

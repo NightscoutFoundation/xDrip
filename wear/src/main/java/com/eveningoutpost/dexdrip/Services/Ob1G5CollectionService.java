@@ -1215,6 +1215,12 @@ public class Ob1G5CollectionService extends G5BaseService {
     private static final String IS_FAILED = "G5_IS_FAILED";
 
     public static void processCalibrationState(CalibrationState state) {
+
+        if (state == CalibrationState.Unknown) {
+            UserError.Log.d(TAG, "Not processing push of unknown state as this is the unset state");
+            return;
+        }
+
         lastSensorStatus = state.getText();
         lastSensorState = state;
         final boolean needs_calibration = state.needsCalibration();
@@ -1452,5 +1458,10 @@ public class Ob1G5CollectionService extends G5BaseService {
         }
 
         return l;
+    }
+
+    public static void resetSomeInternalState() {
+        UserError.Log.d(TAG, "Resetting internal state by request");
+        transmitterMAC = null;
     }
 }

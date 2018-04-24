@@ -65,6 +65,7 @@ import com.eveningoutpost.dexdrip.xdrip;
 import com.google.common.primitives.Bytes;
 import com.google.common.primitives.UnsignedInts;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.ByteArrayInputStream;
@@ -561,6 +562,18 @@ public class JoH {
     public static HashMap<String, Object> JsonStringtoMap(String json) {
         return new Gson().fromJson(json, new TypeToken<HashMap<String, Object>>() {
         }.getType());
+    }
+
+    private static Gson gson_instance;
+    public static Gson defaultGsonInstance() {
+        if (gson_instance == null) {
+            gson_instance = new GsonBuilder()
+                    .excludeFieldsWithoutExposeAnnotation()
+                    //.registerTypeAdapter(Date.class, new DateTypeAdapter())
+                    // .serializeSpecialFloatingPointValues()
+                    .create();
+        }
+        return gson_instance;
     }
 
     public static String hourMinuteString() {

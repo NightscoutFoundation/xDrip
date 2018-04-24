@@ -18,16 +18,20 @@ import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.PowerStateReceiver;
+import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.eveningoutpost.dexdrip.xdrip;
+import com.google.gson.reflect.TypeToken;
 import com.polidea.rxandroidble.RxBleConnection;
 import com.polidea.rxandroidble.exceptions.BleCannotSetCharacteristicNotificationException;
 import com.polidea.rxandroidble.exceptions.BleDisconnectedException;
 import com.polidea.rxandroidble.exceptions.BleGattCharacteristicException;
 
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Type;
 import java.nio.ByteBuffer;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -96,7 +100,7 @@ public class Ob1G5StateMachine {
             UserError.Log.d(TAG, "Setting speak slowly to true"); // WARN should be reactive or on named devices
         }
 
-        final AuthRequestTxMessage authRequest = new AuthRequestTxMessage(getTokenSize());
+        final AuthRequestTxMessage authRequest = new AuthRequestTxMessage(getTokenSize(), JoH.areWeRunningOnAndroidWear() && !Pref.getBooleanDefaultFalse("only_ever_use_wear_collector"));
         UserError.Log.i(TAG, "AuthRequestTX: " + JoH.bytesToHex(authRequest.byteSequence));
 
         connection.setupNotification(Authentication)
@@ -618,9 +622,17 @@ public class Ob1G5StateMachine {
 
     private static void enqueueCommand(TransmitterMessage tm, String msg) {
         if (tm != null) {
+            final Ob1Work item = new Ob1Work(tm, msg);
             synchronized (commandQueue) {
-                commandQueue.add(new Ob1Work(tm, msg));
+                commandQueue.add(item);
             }
+            streamCheck(item);
+        }
+    }
+
+    private static void streamCheck(Ob1Work item) {
+        if (item.streamable()) {
+        Inevitable.task("check wear stream", 5000, WatchUpdaterService::checkOb1Queue);
         }
     }
 
@@ -632,7 +644,9 @@ public class Ob1G5StateMachine {
                     UserError.Log.d(TAG, "Not adding duplicate: " + searchClass.getSimpleName());
                     return;
                 }
-                commandQueue.add(new Ob1Work(tm, msg));
+                final Ob1Work item = new Ob1Work(tm, msg);
+                commandQueue.add(item);
+                streamCheck(item);
             }
         }
     }
@@ -656,6 +670,32 @@ public class Ob1G5StateMachine {
             }
         }
         return false;
+    }
+
+    public static String extractQueueJson() {
+        synchronized (commandQueue) {
+            final List<Ob1Work> queue = new ArrayList<>(commandQueue.size());
+            for (Ob1Work item : commandQueue) {
+                if (item.streamable()) queue.add(item);
+            }
+            if (queue.size() > 0) {
+                return JoH.defaultGsonInstance().toJson(queue);
+            } else {
+                return null;
+            }
+        }
+    }
+
+    public static void injectQueueJson(String json) {
+        if (json == null) return;
+        final Type queueType = new TypeToken<ArrayList<Ob1Work>>() {
+        }.getType();
+        final List<Ob1Work> queue = JoH.defaultGsonInstance().fromJson(json, queueType);
+        synchronized (commandQueue) {
+            commandQueue.clear();
+            commandQueue.addAll(queue);
+        }
+        UserError.Log.d(TAG, "Replaced queue with stream: " + json);
     }
 
     public static boolean pendingStop() {
@@ -984,7 +1024,17 @@ public class Ob1G5StateMachine {
         }
     }
 
+    private static void updateStreamedTillTimeForBackfill() {
+        // interact with ListenerService
+        if (JoH.areWeRunningOnAndroidWear()) {
+            final String pref_last_send_previous = "last_send_previous";
+            final long last_send_previous = PersistentStore.getLong(pref_last_send_previous);
+            PersistentStore.setLong(pref_last_send_previous, Math.min(last_send_previous, JoH.tsl() - MAX_BACKFILL_PERIOD_MS));
+        }
+    }
+
     private static void processBacksies(List<BackFillStream.Backsie> backsies) {
+        boolean changed = false;
         for (BackFillStream.Backsie backsie : backsies) {
             final long time = DexTimeKeeper.fromDexTime(getTransmitterID(), backsie.getDextime());
 
@@ -997,9 +1047,13 @@ public class Ob1G5StateMachine {
                     if (bgr != null) bgr.appendSourceInfo("Backfill");
                     lastGlucoseBgReading = bgr;
                     UserError.Log.d(TAG, "Adding backfilled reading: " + JoH.dateTimeText(time) + " " + BgGraphBuilder.unitized_string_static(backsie.getGlucose()));
+                    changed = true;
                 }
                 UserError.Log.d(TAG, "Backsie: " + JoH.dateTimeText(time) + " " + BgGraphBuilder.unitized_string_static(backsie.getGlucose()));
             }
+        }
+        if (changed) {
+            updateStreamedTillTimeForBackfill();
         }
     }
 
@@ -1085,6 +1139,7 @@ public class Ob1G5StateMachine {
         CalibrateRxMessage,
         BackFillRxMessage,
         TransmitterTimeRxMessage,
+        InvalidRxMessage,
 
     }
 
@@ -1125,6 +1180,8 @@ public class Ob1G5StateMachine {
                 return new PacketShop(PACKET.BackFillRxMessage, new BackFillRxMessage(packet));
             case TransmitterTimeRxMessage.opcode:
                 return new PacketShop(PACKET.TransmitterTimeRxMessage, new TransmitterTimeRxMessage(packet));
+            case InvalidRxMessage.opcode:
+                return new PacketShop(PACKET.InvalidRxMessage, new InvalidRxMessage(packet));
         }
         return new PacketShop(PACKET.UNKNOWN, null);
     }

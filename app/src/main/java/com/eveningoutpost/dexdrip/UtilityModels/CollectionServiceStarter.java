@@ -419,6 +419,7 @@ public class CollectionServiceStarter {
         this.mContext.stopService(new Intent(this.mContext, G5CollectionService.class));
         Ob1G5CollectionService.keep_running = false; // ensure zombie stays down
         this.mContext.stopService(new Intent(this.mContext, Ob1G5CollectionService.class));
+        Ob1G5CollectionService.resetSomeInternalState();
     }
 
 }

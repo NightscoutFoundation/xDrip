@@ -46,7 +46,6 @@ public class BackFillStream extends TransmitterMessage {
         final List<Backsie> backsies = new LinkedList<>();
 
         int extent = data.position();
-        System.out.println("Extent: " + extent);
         data.rewind();
         final int length = data.getInt();
         // TODO check length
