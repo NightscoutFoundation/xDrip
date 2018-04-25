@@ -28,6 +28,7 @@ import com.eveningoutpost.dexdrip.G5Model.TransmitterStatus;
 import com.eveningoutpost.dexdrip.G5Model.VersionRequestRxMessage;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
@@ -69,6 +70,9 @@ import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.pendingStop;
 import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.STATE.CLOSE;
 import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.STATE.CLOSED;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.G5_CALIBRATION_REQUEST;
+import static com.eveningoutpost.dexdrip.UtilityModels.Constants.G5_SENSOR_FAILED;
+import static com.eveningoutpost.dexdrip.UtilityModels.Constants.G5_SENSOR_RESTARTED;
+import static com.eveningoutpost.dexdrip.UtilityModels.Constants.G5_SENSOR_STARTED;
 
 
 /**
@@ -1207,13 +1211,30 @@ public class Ob1G5CollectionService extends G5BaseService {
     }
 
     private static final String NEEDING_CALIBRATION = "G5_NEEDING_CALIBRATION";
+    private static final String IS_STARTED = "G5_IS_STARTED";
+    private static final String IS_FAILED = "G5_IS_FAILED";
 
-    public void processCalibrationState(CalibrationState state) {
+    public static void processCalibrationState(CalibrationState state) {
+
+        if (state == CalibrationState.Unknown) {
+            UserError.Log.d(TAG, "Not processing push of unknown state as this is the unset state");
+            return;
+        }
+
         lastSensorStatus = state.getText();
         lastSensorState = state;
         final boolean needs_calibration = state.needsCalibration();
         final boolean was_needing_calibration = PersistentStore.getBoolean(NEEDING_CALIBRATION);
+
+        final boolean is_started = state.sensorStarted();
+        final boolean was_started = PersistentStore.getBoolean(IS_STARTED);
+
+        final boolean is_failed = state.sensorFailed();
+        final boolean was_failed = PersistentStore.getBoolean(IS_FAILED);
+
+        // TODO what notifications can we do on wear?
         if (!android_wear) {
+
             if (needs_calibration && !was_needing_calibration) {
                 final Class c;
                 switch (state) {
@@ -1230,9 +1251,40 @@ public class Ob1G5CollectionService extends G5BaseService {
             } else if (!needs_calibration && was_needing_calibration) {
                 JoH.cancelNotification(G5_CALIBRATION_REQUEST);
             }
-        }
-        if (needs_calibration != was_needing_calibration) {
-            PersistentStore.setBoolean(NEEDING_CALIBRATION, needs_calibration);
+
+        } // phone only at mo
+
+            if (!is_started && was_started) {
+                if (Pref.getBooleanDefaultFalse("ob1_g5_restart_sensor") && (Sensor.isActive())) {
+                    Ob1G5StateMachine.startSensor(JoH.tsl());
+                    final PendingIntent pi = PendingIntent.getActivity(xdrip.getAppContext(), G5_SENSOR_RESTARTED, JoH.getStartActivityIntent(Home.class), PendingIntent.FLAG_UPDATE_CURRENT);
+                    JoH.showNotification("Auto Start", "G5 Sensor Requesting Restart", pi, G5_SENSOR_RESTARTED, true, true, false);
+                }
+                final PendingIntent pi = PendingIntent.getActivity(xdrip.getAppContext(), G5_SENSOR_STARTED, JoH.getStartActivityIntent(Home.class), PendingIntent.FLAG_UPDATE_CURRENT);
+                JoH.showNotification(state.getText(), "G5 Sensor Stopped", pi, G5_SENSOR_STARTED, true, true, false);
+
+            } else if (is_started && !was_started) {
+                JoH.cancelNotification(G5_SENSOR_STARTED);
+            }
+
+            if (is_failed && !was_failed) {
+                final PendingIntent pi = PendingIntent.getActivity(xdrip.getAppContext(), G5_SENSOR_FAILED, JoH.getStartActivityIntent(Home.class), PendingIntent.FLAG_UPDATE_CURRENT);
+                JoH.showNotification(state.getText(), "G5 Sensor FAILED", pi, G5_SENSOR_FAILED, true, true, false);
+            }
+
+
+
+        updateG5State(needs_calibration, was_needing_calibration, NEEDING_CALIBRATION);
+        updateG5State(is_started, was_started, IS_STARTED);
+        updateG5State(is_failed, was_failed, IS_FAILED);
+    }
+
+   // private static void handleStateTransition(boolean state_now, )
+
+
+    private static void updateG5State(boolean now, boolean previous, String reference) {
+        if (now != previous) {
+            PersistentStore.setBoolean(reference, now);
         }
     }
 
@@ -1266,6 +1318,10 @@ public class Ob1G5CollectionService extends G5BaseService {
     public static boolean usingNativeMode() {
         return Pref.getBooleanDefaultFalse("ob1_g5_use_transmitter_alg")
                 && Pref.getBooleanDefaultFalse(OB1G5_PREFS);
+    }
+
+    public static boolean fallbackToXdripAlgorithm() {
+        return Pref.getBooleanDefaultFalse("ob1_g5_fallback_to_xdrip");
     }
 
     public static void msg(String msg) {
@@ -1402,5 +1458,10 @@ public class Ob1G5CollectionService extends G5BaseService {
         }
 
         return l;
+    }
+
+    public static void resetSomeInternalState() {
+        UserError.Log.d(TAG, "Resetting internal state by request");
+        transmitterMAC = null;
     }
 }

@@ -204,4 +204,6 @@
     <string name="ok">OK</string>
     <string name="enable_permission">Enable Permission</string>
     <string name="tomato">Tomato</string>
+    <string name="space_minutes_ago">" Minutes ago"</string>
+    <string name="space_minute_ago">" Minute ago"</string>
 </resources>

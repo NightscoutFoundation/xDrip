@@ -1,20 +1,20 @@
-
 package com.eveningoutpost.dexdrip.UtilityModels;
 
-import android.content.Context;
 import android.os.PowerManager;
 import android.support.annotation.NonNull;
 
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
-import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static java.lang.Thread.NORM_PRIORITY;
 
 /**
  * xDrip plus AsyncExecutor
@@ -30,10 +30,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class PlusAsyncExecutor implements Executor {
 
     private static final String TAG = "jamorham exec";
-    private static final HashMap<String, Queue<Runnable>> taskQueues = new HashMap<String, Queue<Runnable>>();
-    private static final HashMap<String, Runnable> currentTask = new HashMap<String, Runnable>();
+    private static final ConcurrentHashMap<String, Queue<Runnable>> taskQueues = new ConcurrentHashMap<>();
+    private static final HashMap<String, Runnable> currentTask = new HashMap<>();
 
-    private static AtomicInteger wlocks = new AtomicInteger(0);
+    private static final AtomicInteger wlocks = new AtomicInteger(0);
 
     public synchronized void execute(@NonNull final Runnable r) {
 
@@ -42,8 +42,8 @@ public class PlusAsyncExecutor implements Executor {
         // Create the queue if it doesn't exist yet
         if (!taskQueues.containsKey(queueId)) {
             Log.d(TAG, "New task queue for: " + queueId);
-            taskQueues.put(queueId, new ArrayDeque<Runnable>());
-            currentTask.put(queueId, null);
+            taskQueues.put(queueId, new ArrayDeque<>());
+            currentTask.remove(queueId);
         }
 
         final int qsize = taskQueues.get(queueId).size();
@@ -58,25 +58,28 @@ public class PlusAsyncExecutor implements Executor {
             // enqueue this current runnable to the respective queue
             taskQueues.get(queueId).offer(new Runnable() {
                 public void run() {
-                    final PowerManager pm = (PowerManager) xdrip.getAppContext().getSystemService(Context.POWER_SERVICE);
-                    final PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, queueId);
+                    //final PowerManager pm = (PowerManager) xdrip.getAppContext().getSystemService(Context.POWER_SERVICE);
+                    //final PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, queueId);
+                    final PowerManager.WakeLock wl = JoH.getWakeLock(queueId, 3600000);
                     try {
-                        wl.acquire(3600000); // failsafe value = 60 mins
+                        //wl.acquire(3600000); // failsafe value = 60 mins
                         final int locksnow = wlocks.incrementAndGet();
-                        if (locksnow > 1) Log.d(TAG, "Acquire Wakelocks total: " + locksnow);
+                        if (locksnow > 1)
+                            Log.d(TAG, queueId + " Acquire Wakelocks total: " + locksnow);
                         r.run();
                     } finally {
                         // each task will try to call the next when done
                         next(queueId);
-                        if (wl.isHeld()) wl.release(); // will stack wakelocks
+                        JoH.releaseWakeLock(wl); // will stack wakelocks
                         final int locksnow = wlocks.decrementAndGet();
-                        if (locksnow != 0) Log.d(TAG, "Release Wakelocks total: " + locksnow);
+                        if (locksnow != 0)
+                            Log.d(TAG, queueId + " Release Wakelocks total: " + locksnow);
                     }
                 }
             });
 
         } else {
-            Log.e(TAG,"Queue so backlogged we are not extending! "+queueId);
+            Log.e(TAG, "Queue so backlogged we are not extending! " + queueId);
         }
 
         // if we are not busy then run the queue
@@ -95,10 +98,12 @@ public class PlusAsyncExecutor implements Executor {
     // create a single thread for each queue
     private synchronized void next(String queueId) {
         currentTask.put(queueId, taskQueues.get(queueId).poll());
-        Runnable task = currentTask.get(queueId);
+        final Runnable task = currentTask.get(queueId);
         if (task != null) {
             Log.d(TAG, " New thread: " + queueId);
-            (new Thread(task)).start();
+            final Thread t = (new Thread(task));
+            t.setPriority(NORM_PRIORITY - 1);
+            t.start();
         } else {
             Log.d(TAG, "Queue empty: " + queueId);
         }

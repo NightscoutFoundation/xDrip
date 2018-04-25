@@ -448,7 +448,7 @@ public class Preferences extends PreferenceActivity {
             preference.setTitle(preference.getTitle().toString().replaceAll("  \\([a-z0-9A-Z]+\\)$", "") + "  (" + value.toString() + ")");
             if (do_update) {
                 preference.getEditor().putString(preference.getKey(), value.toString()).apply(); // update prefs now
-                UpdateActivity.last_check_time = -1;
+                UpdateActivity.last_check_time = -2;
                 UpdateActivity.checkForAnUpdate(preference.getContext());
             }
             return true;

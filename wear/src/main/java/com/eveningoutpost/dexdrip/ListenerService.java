@@ -27,6 +27,8 @@ import android.util.DisplayMetrics;
 import android.widget.Toast;
 
 import com.activeandroid.query.Select;
+import com.eveningoutpost.dexdrip.G5Model.CalibrationState;
+import com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Models.BgReading;
@@ -53,6 +55,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.UtilityModels.WearSyncBooleans;
 import com.eveningoutpost.dexdrip.stats.StatsResult;
 import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
@@ -109,6 +112,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     private static final String SYNC_DB_PATH = "/xdrip_plus_syncweardb";//KS
     private static final String RESET_DB_PATH = "/xdrip_plus_resetweardb";//KS
     private static final String SYNC_BGS_PATH = "/xdrip_plus_syncwearbgs";//KS
+    private static final String SYNC_BGS_PRECALCULATED_PATH = "/xdrip_plus_syncwearbgs2";
     private static final String SYNC_LOGS_PATH = "/xdrip_plus_syncwearlogs";
     private static final String SYNC_TREATMENTS_PATH = "/xdrip_plus_syncweartreatments";
     private static final String SYNC_LOGS_REQUESTED_PATH = "/xdrip_plus_syncwearlogsrequested";
@@ -144,6 +148,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     public static final String WEARABLE_G5BATTERY_PAYLOAD = "/xdrip_plus_battery_payload";
     public final static String ACTION_BLUETOOTH_COLLECTION_SERVICE_UPDATE
             = "com.eveningoutpost.dexdrip.BLUETOOTH_COLLECTION_SERVICE_UPDATE";
+    private static final String WEARABLE_G5_QUEUE_PATH = "/xdrip_plus_watch_g5_queue";
 
     // Phone
     private static final String CAPABILITY_PHONE_APP = "phone_app_sync_bgs";
@@ -320,9 +325,18 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                                             sendMessagePayload(node, "SYNC_TREATMENTS_PATH", SYNC_TREATMENTS_PATH, datamap.toByteArray());
                                         }
                                         if (enable_wearG5) {//KS
-                                            datamap = getWearTransmitterData(send_bg_count, last_send_previous, 0);//KS 36 data for last 3 hours; 288 for 1 day
-                                            if (datamap != null) {
-                                                sendMessagePayload(node, "SYNC_BGS_PATH", SYNC_BGS_PATH, datamap.toByteArray());
+                                            if (Ob1G5CollectionService.usingNativeMode()) {
+                                                datamap = getWearBgReadingData(send_bg_count, last_send_previous, 0);//KS 36 data for last 3 hours; 288 for 1 day
+                                                if (datamap != null) {
+                                                    sendMessagePayload(node, "SYNC_BGS_PRECALCULATED_PATH", SYNC_BGS_PRECALCULATED_PATH, datamap.toByteArray());
+                                                }
+                                                // TODO also send calibration state
+                                            } else {
+
+                                                datamap = getWearTransmitterData(send_bg_count, last_send_previous, 0);//KS 36 data for last 3 hours; 288 for 1 day
+                                                if (datamap != null) {
+                                                    sendMessagePayload(node, "SYNC_BGS_PATH", SYNC_BGS_PATH, datamap.toByteArray());
+                                                }
                                             }
                                         }
                                         if (sync_wear_logs) {
@@ -549,6 +563,42 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         }
     }
 
+    private synchronized DataMap getWearBgReadingData(int count, long last_send_time, int min_count) {
+        forceGoogleApiConnect();
+
+        Log.d(TAG, "getWearBgReadingData last_send_time:" + JoH.dateTimeText(last_send_time));
+
+        BgReading last_bg = BgReading.last();
+        if (last_bg != null) {
+            Log.d(TAG, "getWearBgReadingData last_bg.timestamp:" + JoH.dateTimeText(last_bg.timestamp));
+        }
+
+        if (last_bg != null && last_send_time <= last_bg.timestamp) {//startTime
+            long last_send_success = last_send_time;
+            Log.d(TAG, "getWearBgData last_send_time < last_bg.timestamp:" + JoH.dateTimeText(last_bg.timestamp));
+            final List<BgReading> graph_bgs = BgReading.latestForGraphAsc(count, last_send_time);
+            if (!graph_bgs.isEmpty() && graph_bgs.size() > min_count) {
+                //Log.d(TAG, "getWearBgData count = " + graph_bgs.size());
+                final DataMap entries = dataMap(last_bg);
+                final ArrayList<DataMap> dataMaps = new ArrayList<>(graph_bgs.size());
+                for (BgReading bg : graph_bgs) {
+                    dataMaps.add(dataMap(bg));
+                    last_send_success = bg.timestamp;
+                    //Log.d(TAG, "getWearBgData bg getId:" + bg.getId() + " raw_data:" + bg.raw_data + " filtered_data:" + bg.filtered_data + " timestamp:" + bg.timestamp + " uuid:" + bg.uuid);
+                }
+                entries.putLong("time", new Date().getTime()); // MOST IMPORTANT LINE FOR TIMESTAMP
+                final CalibrationState lastState = Ob1G5CollectionService.lastSensorState;
+                entries.putInt("native_calibration_state", lastState != null ? lastState.getValue() : 0);
+                entries.putDataMapArrayList("entries", dataMaps);
+                Log.i(TAG, "getWearBgReadingData SYNCED BGs up to " + JoH.dateTimeText(last_send_success) + " count = " + graph_bgs.size());
+                return entries;
+            } else
+                Log.i(TAG, "getWearBgReading SYNCED BGs up to " + JoH.dateTimeText(last_send_success) + " count = 0");
+        }
+        return null;
+    }
+
+
     private synchronized DataMap getWearTransmitterData(int count, long last_send_time, int min_count) {//KS
         forceGoogleApiConnect();
 
@@ -765,6 +815,14 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         return dataMap;
     }
 
+    private DataMap dataMap(BgReading bg) {
+        DataMap dataMap = new DataMap();
+        String json = bg.toS();
+        Log.d(TAG, "dataMap BG GSON: " + json);
+        dataMap.putString("bgs", json);
+        return dataMap;
+    }
+
     private void requestData() {
         sendData(WEARABLE_RESEND_PATH, null);
     }
@@ -935,22 +993,29 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     @Override
     public void onDataChanged(DataEventBuffer dataEvents) {
 
-        DataMap dataMap;
-        mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());//KS
+
+
+        final Context context = getApplicationContext();
+        if (mPrefs == null) {
+            mPrefs = PreferenceManager.getDefaultSharedPreferences(context);//KS
+        }
         String msg;
-        Context context = getApplicationContext();
+        DataMap dataMap = null;
 
         for (DataEvent event : dataEvents) {
 
             if (event.getType() == DataEvent.TYPE_CHANGED) {
 
-
-                String path = event.getDataItem().getUri().getPath();
+                try {
+                    dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
+                } catch (Exception e) {
+                    //
+                }
+                final String path = event.getDataItem().getUri().getPath();
+                Log.d(TAG, "onDataChanged path=" + path + " DataMap=" + dataMap);
                 if (path.equals(OPEN_SETTINGS)) {
                     //TODO: OpenSettings
-                    Intent intent = new Intent(this, NWPreferences.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(intent);
+                    JoH.startActivity(NWPreferences.class);
 
                 } else if (path.equals(NEW_STATUS_PATH)) {
                     dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
@@ -1135,6 +1200,9 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                     dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
                     Log.d(TAG, "onDataChanged path=" + path + " DataMap=" + dataMap);
                     syncPrefData(dataMap);
+                } else if (path.equals(WEARABLE_G5_QUEUE_PATH)) {
+                    // TODO clean up other duplication in conditionals above
+                    receiveG5QueueData(dataMap);
                 } else if (path.equals(WEARABLE_LOCALE_CHANGED_PATH)) {//KS
                     dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
                     Log.d(TAG, "onDataChanged path=" + path + " DataMap=" + dataMap);
@@ -1161,6 +1229,15 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                                     Log.d(TAG, "DATA_ITEM_RECEIVED_PATH received! Duplicate confirmation! Ignore timeOfLastEntry=" + JoH.dateTimeText(timeOfLastEntry));
                                 }
                                 if (mPrefs.getBoolean("enable_wearG5", false)) {
+
+                                   if (Ob1G5CollectionService.usingNativeMode()) {
+                                       dataMap = getWearBgReadingData(send_bg_count, last_send_previous, (send_bg_count / 3));
+                                       if (dataMap != null) {
+                                           Log.i(TAG, "DATA_ITEM_RECEIVED_PATH received! New Request to sync BGs from " + JoH.dateTimeText(last_send_previous));
+                                           sendData(SYNC_BGS_PATH, dataMap.toByteArray());
+                                       }
+                                   }
+
                                     dataMap = getWearTransmitterData(send_bg_count, last_send_previous, (send_bg_count / 3));
                                     if (dataMap != null) {
                                         Log.i(TAG, "DATA_ITEM_RECEIVED_PATH received! New Request to sync BGs from " + JoH.dateTimeText(last_send_previous));
@@ -1478,6 +1555,11 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         return false;
     }
 
+    private static void receiveG5QueueData(DataMap dataMap) {
+        final String queueData = dataMap.getString("queueData");
+        Ob1G5StateMachine.injectQueueJson(queueData);
+    }
+
     private synchronized void syncPrefData(DataMap dataMap) {//KS
         SharedPreferences.Editor prefs = PreferenceManager.getDefaultSharedPreferences(this).edit();
         final PowerManager.WakeLock wl = JoH.getWakeLock(getApplicationContext(), "watchlistener-SYNC_PREF_DATA",120000);
@@ -1574,9 +1656,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
 
 
             // just add to this list to sync booleans with the same name
-            final List<String> defaultFalseBooleansToReceive = new ArrayList<>();
-            defaultFalseBooleansToReceive.add("engineering_mode");
-            defaultFalseBooleansToReceive.add("use_wear_heartrate");
+            final List<String> defaultFalseBooleansToReceive = WearSyncBooleans.getBooleansToSync();
 
             for (String preference_name : defaultFalseBooleansToReceive) {
                 prefs.putBoolean(preference_name, dataMap.getBoolean(preference_name, false));
@@ -2194,8 +2274,12 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                             exists = exists != null ? exists : BgReading.findByUuid(bgData.uuid);
                             String calibrationUuid = entry.getString("calibrationUuid");
                             if (exists != null) {
-                                Log.d(TAG, "syncBGData BG already exists for uuid=" + bgData.uuid + " timestamp=" + bgData.timestamp + " timeString=" +  JoH.dateTimeText(bgData.timestamp));
-                                Log.d(TAG, "syncBGData exists timeString=" +  JoH.dateTimeText(exists.timestamp) + "  exists.calibration.uuid=" + exists.calibration.uuid + " exists=" + exists.toS());
+                                Log.d(TAG, "syncBGData BG already exists for uuid=" + bgData.uuid + " timestamp=" + bgData.timestamp + " timeString=" + JoH.dateTimeText(bgData.timestamp));
+                                try {
+                                    Log.d(TAG, "syncBGData exists timeString=" + JoH.dateTimeText(exists.timestamp) + "  exists.calibration.uuid=" + exists.calibration.uuid + " exists=" + exists.toS());
+                                } catch (NullPointerException e) {
+                                    Log.d(TAG, "" + e); // usually when calibration.uuid is null because data is from g5 native
+                                }
 
                                 exists.filtered_calculated_value = bgData.filtered_calculated_value;
                                 exists.calculated_value = bgData.calculated_value;

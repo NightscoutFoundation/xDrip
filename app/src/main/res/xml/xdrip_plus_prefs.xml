@@ -354,6 +354,9 @@
                 android:summary="@string/noise_model_inner_workings"
                 android:title="@string/show_noise_workings" />
             <CheckBoxPreference
+                android:key="illustrate_backfilled_data"
+                android:summary="Indicate backfilled data on chart" />
+            <CheckBoxPreference
                 android:defaultValue="false"
                 android:key="bg_from_filtered"
                 android:summary="@string/delayed_but_more_stable"

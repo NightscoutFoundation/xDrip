@@ -1407,6 +1407,10 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         } else if (allWords.contentEquals("delete all glucose data")) {
             deleteAllBG(null);
             LibreAlarmReceiver.clearSensorStats();
+        } else if (allWords.equals("delete random glucose data")) {
+            BgReading.deleteRandomData();
+            JoH.static_toast_long("Deleting random glucose data");
+            staticRefreshBGCharts();
         } else if (allWords.contentEquals("delete selected glucose meter") || allWords.contentEquals("delete selected glucose metre")) {
             Pref.setString("selected_bluetooth_meter_address", "");
         } else if (allWords.contentEquals("delete all finger stick data") || (allWords.contentEquals("delete all fingerstick data"))) {

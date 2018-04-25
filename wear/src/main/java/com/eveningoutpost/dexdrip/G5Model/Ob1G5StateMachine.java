@@ -18,16 +18,20 @@ import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.PowerStateReceiver;
+import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.eveningoutpost.dexdrip.xdrip;
+import com.google.gson.reflect.TypeToken;
 import com.polidea.rxandroidble.RxBleConnection;
 import com.polidea.rxandroidble.exceptions.BleCannotSetCharacteristicNotificationException;
 import com.polidea.rxandroidble.exceptions.BleDisconnectedException;
 import com.polidea.rxandroidble.exceptions.BleGattCharacteristicException;
 
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Type;
 import java.nio.ByteBuffer;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -53,6 +57,7 @@ import static com.eveningoutpost.dexdrip.Services.G5BaseService.G5_BATTERY_MARKE
 import static com.eveningoutpost.dexdrip.Services.G5BaseService.G5_BATTERY_WEARABLE_SEND;
 import static com.eveningoutpost.dexdrip.Services.G5BaseService.G5_FIRMWARE_MARKER;
 import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.getTransmitterID;
+import static com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder.DEXCOM_PERIOD;
 
 
 /**
@@ -68,6 +73,8 @@ public class Ob1G5StateMachine {
     private static final int LOW_BATTERY_WARNING_LEVEL = Pref.getStringToInt("g5-battery-warning-level", 300); // voltage a < this value raises warnings;
     private static final long BATTERY_READ_PERIOD_MS = Constants.HOUR_IN_MS * 12; // how often to poll battery data (12 hours)
     private static final long MAX_BACKFILL_PERIOD_MS = Constants.HOUR_IN_MS * 3; // how far back to request backfill data
+    private static final int BACKFILL_CHECK_SMALL = 3;
+    private static final int BACKFILL_CHECK_LARGE = (int) (MAX_BACKFILL_PERIOD_MS / DEXCOM_PERIOD);
 
     private static final boolean getVersionDetails = true; // try to load firmware version details
     private static final boolean getBatteryDetails = true; // try to load battery info details
@@ -75,6 +82,7 @@ public class Ob1G5StateMachine {
     private static final LinkedBlockingDeque<Ob1Work> commandQueue = new LinkedBlockingDeque<>();
 
     private static boolean speakSlowly = false; // slow down bluetooth comms for android wear etc
+    private static int nextBackFillCheckSize = BACKFILL_CHECK_SMALL;
 
     private static final boolean d = false;
 
@@ -92,7 +100,7 @@ public class Ob1G5StateMachine {
             UserError.Log.d(TAG, "Setting speak slowly to true"); // WARN should be reactive or on named devices
         }
 
-        final AuthRequestTxMessage authRequest = new AuthRequestTxMessage(getTokenSize());
+        final AuthRequestTxMessage authRequest = new AuthRequestTxMessage(getTokenSize(), JoH.areWeRunningOnAndroidWear() && !Pref.getBooleanDefaultFalse("only_ever_use_wear_collector"));
         UserError.Log.i(TAG, "AuthRequestTX: " + JoH.bytesToHex(authRequest.byteSequence));
 
         connection.setupNotification(Authentication)
@@ -421,6 +429,7 @@ public class Ob1G5StateMachine {
                             if (!setStoredFirmwareBytes(getTransmitterID(), bytes, true)) {
                                 UserError.Log.e(TAG, "Could not save out firmware version!");
                             }
+                            nextBackFillCheckSize = BACKFILL_CHECK_LARGE;
                             break;
 
                         case BatteryInfoRxMessage:
@@ -431,6 +440,7 @@ public class Ob1G5StateMachine {
                                     PersistentStore.setBoolean(G5_BATTERY_WEARABLE_SEND, true);
                                 }
                             }
+                            nextBackFillCheckSize = BACKFILL_CHECK_LARGE;
                             break;
 
                         case SessionStartRxMessage:
@@ -443,6 +453,7 @@ public class Ob1G5StateMachine {
                                 parent.msg(msg);
                                 UserError.Log.e(TAG, msg);
                                 JoH.showNotification("G5 Start Failed", msg, null, Constants.G5_START_REJECT, true, true, false);
+                                UserError.Log.e(TAG, "Session Start failed info: " + JoH.dateTimeText(session_start.getSessionStart()) + " " + JoH.dateTimeText(session_start.getRequestedStart()) + " " + JoH.dateTimeText(session_start.getTransmitterTime()));
                             }
                             enqueueUniqueCommand(new GlucoseTxMessage(), "Re-read glucose");
 
@@ -454,6 +465,7 @@ public class Ob1G5StateMachine {
                                 // TODO persist this
                                 parent.msg("Session Stopped Successfully: " + JoH.dateTimeText(session_stop.getSessionStart()) + " " + JoH.dateTimeText(session_stop.getSessionStop()));
                                 enqueueUniqueCommand(new GlucoseTxMessage(), "Re-read glucose");
+                                enqueueUniqueCommand(new TransmitterTimeTxMessage(),"Query time after stop");
                             } else {
                                 UserError.Log.e(TAG, "Session Stop Error!");
                             }
@@ -471,6 +483,11 @@ public class Ob1G5StateMachine {
                             if (JoH.ratelimit("ob1-g5-also-read-raw", 20)) {
                                 enqueueUniqueCommand(new SensorTxMessage(), "Also read raw");
                             }
+
+                            if (JoH.pratelimit("g5-tx-time-since",7200)) {
+                                enqueueUniqueCommand(new TransmitterTimeTxMessage(),"Periodic Query Time");
+                            }
+
                             backFillIfNeeded(parent, connection);
                             processGlucoseRxMessage(parent, glucose);
                             parent.updateLast(JoH.tsl());
@@ -498,6 +515,11 @@ public class Ob1G5StateMachine {
                             } else {
                                 UserError.Log.wtf(TAG, "Backfill request corrupted!");
                             }
+                            break;
+
+                        case TransmitterTimeRxMessage:
+                            final TransmitterTimeRxMessage txtime = (TransmitterTimeRxMessage) data_packet.msg;
+                            UserError.Log.e(TAG, "Session start time reports: " + JoH.dateTimeText(txtime.getRealSessionStartTime()));
                             break;
 
                         default:
@@ -559,23 +581,58 @@ public class Ob1G5StateMachine {
     }
 
     private static void backFillIfNeeded(Ob1G5CollectionService parent, RxBleConnection connection) {
-        final BgReading last = BgReading.last();
-        if ((last != null) && (msSince(last.timestamp) > Constants.MINUTE_IN_MS * 7) && (msSince(last.timestamp) < MAX_BACKFILL_PERIOD_MS)) {
+        final int check_readings = nextBackFillCheckSize;
+        UserError.Log.d(TAG, "Checking " + check_readings + " for backfill requirement");
+        final List<BgReading> lastReadings = BgReading.latest_by_size(check_readings);
+        boolean ask_for_backfill = false;
+        long earliest_timestamp = JoH.tsl() - MAX_BACKFILL_PERIOD_MS;
+        long latest_timestamp = JoH.tsl();
+        if ((lastReadings == null) || (lastReadings.size() != check_readings)) {
+            ask_for_backfill = true;
+        } else {
+            for (int i = 0; i < lastReadings.size(); i++) {
+                final BgReading reading = lastReadings.get(i);
+                if ((reading == null) || (msSince(reading.timestamp) > ((DEXCOM_PERIOD * i) + Constants.MINUTE_IN_MS * 7))) {
+                    ask_for_backfill = true;
+                    if ((reading != null) && (msSince(reading.timestamp) <= MAX_BACKFILL_PERIOD_MS)) {
+                        earliest_timestamp = reading.timestamp;
+                    }
+                    UserError.Log.d(TAG, "Flagging backfill tripped by reading: " + i + " at time: " + JoH.dateTimeText(reading.timestamp) + " creating backfill window: " + JoH.dateTimeText(earliest_timestamp));
+                    break;
+                } else {
+                    // good record
+                    latest_timestamp = reading.timestamp;
+                }
+            }
+        }
+
+        if (ask_for_backfill) {
+            nextBackFillCheckSize = BACKFILL_CHECK_LARGE;
             monitorBackFill(parent, connection);
-            final long startTime = last.timestamp - (Constants.MINUTE_IN_MS * 5);
-            final long endTime = JoH.tsl() + (Constants.MINUTE_IN_MS * 5);
+            final long startTime = earliest_timestamp - (Constants.MINUTE_IN_MS * 5);
+            final long endTime = latest_timestamp + (Constants.MINUTE_IN_MS * 5);
             UserError.Log.d(TAG, "Requesting backfill between: " + JoH.dateTimeText(startTime) + " " + JoH.dateTimeText(endTime));
             enqueueUniqueCommand(
                     BackFillTxMessage.get(getTransmitterID(), startTime, endTime),
                     "Get backfill since: " + JoH.hourMinuteString(startTime));
+        } else {
+            nextBackFillCheckSize = BACKFILL_CHECK_SMALL;
         }
     }
 
     private static void enqueueCommand(TransmitterMessage tm, String msg) {
         if (tm != null) {
+            final Ob1Work item = new Ob1Work(tm, msg);
             synchronized (commandQueue) {
-                commandQueue.add(new Ob1Work(tm, msg));
+                commandQueue.add(item);
             }
+            streamCheck(item);
+        }
+    }
+
+    private static void streamCheck(Ob1Work item) {
+        if (item.streamable()) {
+        Inevitable.task("check wear stream", 5000, WatchUpdaterService::checkOb1Queue);
         }
     }
 
@@ -587,7 +644,9 @@ public class Ob1G5StateMachine {
                     UserError.Log.d(TAG, "Not adding duplicate: " + searchClass.getSimpleName());
                     return;
                 }
-                commandQueue.add(new Ob1Work(tm, msg));
+                final Ob1Work item = new Ob1Work(tm, msg);
+                commandQueue.add(item);
+                streamCheck(item);
             }
         }
     }
@@ -611,6 +670,32 @@ public class Ob1G5StateMachine {
             }
         }
         return false;
+    }
+
+    public static String extractQueueJson() {
+        synchronized (commandQueue) {
+            final List<Ob1Work> queue = new ArrayList<>(commandQueue.size());
+            for (Ob1Work item : commandQueue) {
+                if (item.streamable()) queue.add(item);
+            }
+            if (queue.size() > 0) {
+                return JoH.defaultGsonInstance().toJson(queue);
+            } else {
+                return null;
+            }
+        }
+    }
+
+    public static void injectQueueJson(String json) {
+        if (json == null) return;
+        final Type queueType = new TypeToken<ArrayList<Ob1Work>>() {
+        }.getType();
+        final List<Ob1Work> queue = JoH.defaultGsonInstance().fromJson(json, queueType);
+        synchronized (commandQueue) {
+            commandQueue.clear();
+            commandQueue.addAll(queue);
+        }
+        UserError.Log.d(TAG, "Replaced queue with stream: " + json);
     }
 
     public static boolean pendingStop() {
@@ -749,11 +834,25 @@ public class Ob1G5StateMachine {
         if (glucose == null) return;
         lastGlucosePacket = JoH.tsl();
         DexTimeKeeper.updateAge(getTransmitterID(), glucose.timestamp);
-        if (glucose.usable()) {
+        if (glucose.usable() || (glucose.insufficient() && Pref.getBooleanDefaultFalse("ob1_g5_use_insufficiently_calibrated"))) {
             UserError.Log.d(TAG, "Got usable glucose data from G5!!");
-            lastGlucoseBgReading = BgReading.bgReadingInsertFromG5(glucose.glucose, JoH.tsl());
+            final BgReading bgReading = BgReading.bgReadingInsertFromG5(glucose.glucose, JoH.tsl());
+            if (bgReading != null) {
+                try {
+                    bgReading.calculated_value_slope = glucose.getTrend() / Constants.MINUTE_IN_MS; // note this is different to the typical calculated slope, (normally delta)
+                } catch (Exception e) {
+                    // not a good number
+                }
+                if (glucose.insufficient()) {
+                    bgReading.appendSourceInfo("Insufficient");
+                }
+            } else {
+                UserError.Log.wtf(TAG, "New BgReading was null in processGlucoseRxMessage!");
+            }
+            lastGlucoseBgReading = bgReading;
             parent.lastUsableGlucosePacketTime = lastGlucosePacket;
         } else {
+            // TODO this is duplicated in processCalibrationState()
             if (glucose.calibrationState().sensorFailed()) {
                 if (JoH.pratelimit("G5 Sensor Failed", 3600 * 3)) {
                     JoH.showNotification("G5 SENSOR FAILED", "Sensor reporting failed", null, Constants.G5_SENSOR_ERROR, true, true, false);
@@ -817,8 +916,10 @@ public class Ob1G5StateMachine {
             lastGlucoseBgReading.calculateAgeAdjustedRawValue();
             lastGlucoseBgReading.save();
         } else {
-            final BgReading bgreading = BgReading.create(transmitterData.raw_data, transmitterData.filtered_data, xdrip.getAppContext(), transmitterData.timestamp);
-            UserError.Log.d(TAG, "BgReading created: " + bgreading.uuid + " " + JoH.dateTimeText(bgreading.timestamp));
+            if (!Ob1G5CollectionService.usingNativeMode() || Ob1G5CollectionService.fallbackToXdripAlgorithm()) {
+                final BgReading bgreading = BgReading.create(transmitterData.raw_data, transmitterData.filtered_data, xdrip.getAppContext(), transmitterData.timestamp);
+                UserError.Log.d(TAG, "BgReading created: " + bgreading.uuid + " " + JoH.dateTimeText(bgreading.timestamp));
+            }
         }
 
         //   UserError.Log.d(TAG, "Dex raw_data " + Double.toString(transmitterData.raw_data));//KS
@@ -923,7 +1024,17 @@ public class Ob1G5StateMachine {
         }
     }
 
+    private static void updateStreamedTillTimeForBackfill() {
+        // interact with ListenerService
+        if (JoH.areWeRunningOnAndroidWear()) {
+            final String pref_last_send_previous = "last_send_previous";
+            final long last_send_previous = PersistentStore.getLong(pref_last_send_previous);
+            PersistentStore.setLong(pref_last_send_previous, Math.min(last_send_previous, JoH.tsl() - MAX_BACKFILL_PERIOD_MS));
+        }
+    }
+
     private static void processBacksies(List<BackFillStream.Backsie> backsies) {
+        boolean changed = false;
         for (BackFillStream.Backsie backsie : backsies) {
             final long time = DexTimeKeeper.fromDexTime(getTransmitterID(), backsie.getDextime());
 
@@ -932,11 +1043,17 @@ public class Ob1G5StateMachine {
                 UserError.Log.wtf(TAG, "Backfill timestamp unrealistic: " + JoH.dateTimeText(time) + " (ignored)");
             } else {
                 if (BgReading.getForPreciseTimestamp(time, Constants.MINUTE_IN_MS * 4) == null) {
-                    lastGlucoseBgReading = BgReading.bgReadingInsertFromG5(backsie.getGlucose(), time);
+                    final BgReading bgr = BgReading.bgReadingInsertFromG5(backsie.getGlucose(), time);
+                    if (bgr != null) bgr.appendSourceInfo("Backfill");
+                    lastGlucoseBgReading = bgr;
                     UserError.Log.d(TAG, "Adding backfilled reading: " + JoH.dateTimeText(time) + " " + BgGraphBuilder.unitized_string_static(backsie.getGlucose()));
+                    changed = true;
                 }
                 UserError.Log.d(TAG, "Backsie: " + JoH.dateTimeText(time) + " " + BgGraphBuilder.unitized_string_static(backsie.getGlucose()));
             }
+        }
+        if (changed) {
+            updateStreamedTillTimeForBackfill();
         }
     }
 
@@ -1021,6 +1138,8 @@ public class Ob1G5StateMachine {
         GlucoseRxMessage,
         CalibrateRxMessage,
         BackFillRxMessage,
+        TransmitterTimeRxMessage,
+        InvalidRxMessage,
 
     }
 
@@ -1059,6 +1178,10 @@ public class Ob1G5StateMachine {
                 return new PacketShop(PACKET.CalibrateRxMessage, new CalibrateRxMessage(packet));
             case BackFillRxMessage.opcode:
                 return new PacketShop(PACKET.BackFillRxMessage, new BackFillRxMessage(packet));
+            case TransmitterTimeRxMessage.opcode:
+                return new PacketShop(PACKET.TransmitterTimeRxMessage, new TransmitterTimeRxMessage(packet));
+            case InvalidRxMessage.opcode:
+                return new PacketShop(PACKET.InvalidRxMessage, new InvalidRxMessage(packet));
         }
         return new PacketShop(PACKET.UNKNOWN, null);
     }

@@ -4,6 +4,12 @@ package com.eveningoutpost.dexdrip.G5Model;
 
 import android.util.SparseArray;
 
+import com.eveningoutpost.dexdrip.Models.UserError;
+
+import lombok.Getter;
+
+import static com.eveningoutpost.dexdrip.Services.G5CollectionService.TAG;
+
 public enum CalibrationState {
 
     // TODO i18n
@@ -17,10 +23,17 @@ public enum CalibrationState {
     NeedsCalibration(0x07, "Needs Calibration"),
     NeedsDifferentCalibration(0x0a, "Needs More Calibration"),
     SensorFailed(0x0b, "Sensor Failed"),
+    SensorFailed2(0x0c, "Sensor Failed 2"),
+    UnusualCalibration(0x0d, "Unusual Calibration"),
+    InsufficientCalibration(0x0e, "Insufficient Calibration"),
+    Ended(0x0f, "Ended"),
     Errors(0x12, "Errors");
 
+    @Getter
     byte value;
+    @Getter
     String text;
+
 
     private static final SparseArray<CalibrationState> lookup = new SparseArray<>();
 
@@ -37,6 +50,7 @@ public enum CalibrationState {
 
     public static CalibrationState parse(byte state) {
         final CalibrationState result = lookup.get(state);
+        if (result == null) UserError.Log.e(TAG, "Unknown calibration state: " + state);
         return result != null ? result : Unknown;
     }
 
@@ -47,6 +61,10 @@ public enum CalibrationState {
     public boolean usableGlucose() {
         return this == Ok
                 || this == NeedsCalibration;
+    }
+
+    public boolean insufficientCalibration() {
+        return this == InsufficientCalibration;
     }
 
     public boolean readyForCalibration() {
@@ -66,11 +84,7 @@ public enum CalibrationState {
     }
 
     public boolean sensorFailed() {
-        return this == SensorFailed;
-    }
-
-    public String getText() {
-        return text;
+        return this == SensorFailed || this == SensorFailed2;
     }
 
 }

@@ -391,6 +391,9 @@ public class Home extends BaseWatchFace {
     public static boolean get_master() {
         return false;
     }
+
+    public static void staticRefreshBGCharts() {
+    }
 }
 
 
