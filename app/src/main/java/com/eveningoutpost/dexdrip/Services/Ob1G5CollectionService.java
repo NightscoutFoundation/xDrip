@@ -69,6 +69,7 @@ import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.pendingStart;
 import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.pendingStop;
 import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.STATE.CLOSE;
 import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.STATE.CLOSED;
+import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.STATE.INIT;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.G5_CALIBRATION_REQUEST;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.G5_SENSOR_FAILED;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.G5_SENSOR_RESTARTED;
@@ -90,7 +91,7 @@ public class Ob1G5CollectionService extends G5BaseService {
     public static final String OB1G5_PREFS = "use_ob1_g5_collector_service";
     private static final String OB1G5_MACSTORE = "G5-mac-for-txid-";
     private static final String BUGGY_SAMSUNG_ENABLED = "buggy-samsung-enabled";
-    private static volatile STATE state = STATE.INIT;
+    private static volatile STATE state = INIT;
     private static volatile STATE last_automata_state = CLOSED;
 
     private static RxBleClient rxBleClient;
@@ -302,7 +303,7 @@ public class Ob1G5CollectionService extends G5BaseService {
 
     private void resetState() {
         UserError.Log.e(TAG, "Resetting sequence state to INIT");
-        changeState(STATE.INIT);
+        changeState(INIT);
     }
 
     public STATE getState() {
@@ -320,7 +321,7 @@ public class Ob1G5CollectionService extends G5BaseService {
     }
 
     private synchronized void initialize() {
-        if (state == STATE.INIT) {
+        if (state == INIT) {
             msg("Initializing");
             static_connection_state = null;
             if (rxBleClient == null) {
@@ -432,7 +433,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                 discoverSubscription = connection.discoverServices(10, TimeUnit.SECONDS).subscribe(this::onServicesDiscovered, this::onDiscoverFailed);
             } else {
                 UserError.Log.e(TAG, "No connection when in DISCOVER state - reset");
-                state = STATE.INIT;
+                state = INIT;
                 background_automata();
             }
         } else {
@@ -783,7 +784,7 @@ public class Ob1G5CollectionService extends G5BaseService {
             UserError.Log.e(TAG, "Got exception unregistering pairing receiver: " + e);
         }
 
-        state = STATE.INIT; // Should be STATE.END ?
+        state = INIT; // Should be STATE.END ?
         msg("Service Stopped");
         super.onDestroy();
     }
@@ -1288,6 +1289,11 @@ public class Ob1G5CollectionService extends G5BaseService {
         }
     }
 
+    public static boolean isG5ActiveButUnknownState() {
+        return (lastSensorState == null || lastSensorState == CalibrationState.Unknown)
+                && usingNativeMode();
+    }
+
     public static boolean isG5WarmingUp() {
         return lastSensorState != null
                 && lastSensorState == CalibrationState.WarmingUp
@@ -1300,6 +1306,10 @@ public class Ob1G5CollectionService extends G5BaseService {
                 && usingNativeMode()
                 && !pendingStop()
                 && !pendingStart();
+    }
+
+    public static boolean isPendingStart() {
+        return pendingStart() && usingNativeMode();
     }
 
     public static boolean isG5WantingInitialCalibration() {
@@ -1318,6 +1328,11 @@ public class Ob1G5CollectionService extends G5BaseService {
     public static boolean usingNativeMode() {
         return Pref.getBooleanDefaultFalse("ob1_g5_use_transmitter_alg")
                 && Pref.getBooleanDefaultFalse(OB1G5_PREFS);
+    }
+
+    public static boolean isProvidingNativeGlucoseData() {
+        // TODO check age of data?
+        return usingNativeMode() && lastSensorState != null && lastSensorState.usableGlucose();
     }
 
     public static boolean fallbackToXdripAlgorithm() {
@@ -1463,5 +1478,6 @@ public class Ob1G5CollectionService extends G5BaseService {
     public static void resetSomeInternalState() {
         UserError.Log.d(TAG, "Resetting internal state by request");
         transmitterMAC = null;
+        state = INIT;
     }
 }

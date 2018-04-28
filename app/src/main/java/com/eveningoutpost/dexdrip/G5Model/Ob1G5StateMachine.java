@@ -57,6 +57,7 @@ import static com.eveningoutpost.dexdrip.Services.G5BaseService.G5_BATTERY_MARKE
 import static com.eveningoutpost.dexdrip.Services.G5BaseService.G5_BATTERY_WEARABLE_SEND;
 import static com.eveningoutpost.dexdrip.Services.G5BaseService.G5_FIRMWARE_MARKER;
 import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.getTransmitterID;
+import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.lastUsableGlucosePacketTime;
 import static com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder.DEXCOM_PERIOD;
 
 
@@ -87,6 +88,7 @@ public class Ob1G5StateMachine {
     private static final boolean d = false;
 
     private static volatile long lastGlucosePacket = 0;
+    private static volatile long lastUsableGlucosePacket = 0;
     private static volatile BgReading lastGlucoseBgReading;
 
     // Auth Check + Request
@@ -488,7 +490,10 @@ public class Ob1G5StateMachine {
                                 enqueueUniqueCommand(new TransmitterTimeTxMessage(),"Periodic Query Time");
                             }
 
-                            backFillIfNeeded(parent, connection);
+                            // TODO check firmware version
+                            if (glucose.calibrationState().readyForBackfill()) {
+                                backFillIfNeeded(parent, connection);
+                            }
                             processGlucoseRxMessage(parent, glucose);
                             parent.updateLast(JoH.tsl());
                             parent.clearErrors();
@@ -534,9 +539,13 @@ public class Ob1G5StateMachine {
                     if (!(throwable instanceof OperationSuccess)) {
                         if (throwable instanceof BleDisconnectedException) {
                             UserError.Log.d(TAG, "Disconnected when waiting to receive indication: " + throwable);
+                            parent.changeState(Ob1G5CollectionService.STATE.CLOSE);
                         } else {
                             UserError.Log.e(TAG, "Error receiving indication: " + throwable);
+                            throwable.printStackTrace();
+                            disconnectNow(parent, connection);
                         }
+
                     }
                 });
 
@@ -771,7 +780,7 @@ public class Ob1G5StateMachine {
 
             enqueueCommand(new CalibrateTxMessage(
                             glucose, DexTimeKeeper.getDexTime(getTransmitterID(), timestamp)),
-                    "Calibrate " + glucose + " mgdl");
+                    "Calibrate " + BgGraphBuilder.unitized_string_with_units_static_short(glucose));
         }
     }
 
@@ -850,7 +859,8 @@ public class Ob1G5StateMachine {
                 UserError.Log.wtf(TAG, "New BgReading was null in processGlucoseRxMessage!");
             }
             lastGlucoseBgReading = bgReading;
-            parent.lastUsableGlucosePacketTime = lastGlucosePacket;
+            lastUsableGlucosePacket = lastGlucosePacket;
+            parent.lastUsableGlucosePacketTime = lastUsableGlucosePacket;
         } else {
             // TODO this is duplicated in processCalibrationState()
             if (glucose.calibrationState().sensorFailed()) {
@@ -895,7 +905,7 @@ public class Ob1G5StateMachine {
             UserError.Log.d(TAG, "Created transmitter data " + transmitterData.uuid + " " + JoH.dateTimeText(transmitterData.timestamp));
             // TODO timeInMillisecondsOfLastSuccessfulSensorRead = captureTime;
         }
-        Sensor sensor = Sensor.currentSensor();
+        final Sensor sensor = Sensor.currentSensor();
         if (sensor == null) {
             UserError.Log.e(TAG, "setSerialDataToTransmitterRawData: No Active Sensor, Data only stored in Transmitter Data");
             return;
@@ -907,7 +917,7 @@ public class Ob1G5StateMachine {
         if (d)
             UserError.Log.i(TAG, "timestamp create: " + Long.toString(transmitterData.timestamp));
 
-        if ((lastGlucoseBgReading != null) && (msSince(lastGlucosePacket) < Constants.SECOND_IN_MS * 30)) {
+        if ((lastGlucoseBgReading != null) && (msSince(lastUsableGlucosePacket) < Constants.SECOND_IN_MS * 30)) {
             UserError.Log.d(TAG, "Updating BgReading provided by transmitter");
             // use sensor data to update previous record instead of trying to calculate with it
             lastGlucoseBgReading.raw_data = transmitterData.raw_data / 1000;
@@ -916,7 +926,7 @@ public class Ob1G5StateMachine {
             lastGlucoseBgReading.calculateAgeAdjustedRawValue();
             lastGlucoseBgReading.save();
         } else {
-            if (!Ob1G5CollectionService.usingNativeMode() || Ob1G5CollectionService.fallbackToXdripAlgorithm()) {
+            if (!Ob1G5CollectionService.usingNativeMode() || Ob1G5CollectionService.fallbackToXdripAlgorithm() || BgReading.latest(3).size() < 3) {
                 final BgReading bgreading = BgReading.create(transmitterData.raw_data, transmitterData.filtered_data, xdrip.getAppContext(), transmitterData.timestamp);
                 UserError.Log.d(TAG, "BgReading created: " + bgreading.uuid + " " + JoH.dateTimeText(bgreading.timestamp));
             }
