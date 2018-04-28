@@ -1,0 +1,91 @@
+package com.eveningoutpost.dexdrip.UtilityModels;
+
+// jamorham
+
+import android.app.Activity;
+
+import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.Models.BloodTest;
+import com.eveningoutpost.dexdrip.Models.Calibration;
+import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.Sensor;
+import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
+import com.eveningoutpost.dexdrip.Services.G5BaseService;
+import com.eveningoutpost.dexdrip.utils.DexCollectionType;
+import com.eveningoutpost.dexdrip.utils.SdcardImportExport;
+
+import static com.eveningoutpost.dexdrip.Home.get_engineering_mode;
+import static com.eveningoutpost.dexdrip.Home.staticRefreshBGCharts;
+
+public class VoiceCommands {
+
+
+    public static void processVoiceCommand(String allWords, Activity mActivity) {
+        if (allWords.contentEquals("delete last calibration")
+                || allWords.contentEquals("clear last calibration")) {
+            Calibration.clearLastCalibration();
+        } else if (allWords.contentEquals("force google reboot")) {
+            SdcardImportExport.forceGMSreset();
+        } else if (allWords.contentEquals("enable engineering mode")) {
+            Pref.setBoolean("engineering_mode", true);
+            JoH.static_toast_long("Engineering mode enabled - be careful");
+
+
+        } else if (get_engineering_mode() && allWords.contentEquals("enable fake data source")) {
+            Pref.setString(DexCollectionType.DEX_COLLECTION_METHOD, DexCollectionType.Mock.toString());
+            JoH.static_toast_long("YOU ARE NOW USING FAKE DATA!!!");
+        } else if (get_engineering_mode() && allWords.equals("break fake data source")) {
+            JoH.static_toast_long("Breaking fake data source");
+            MockDataSource.breakRaw();
+        } else if (get_engineering_mode() && allWords.equals("repair fake data source")) {
+            JoH.static_toast_long("Repairing fake data source");
+            MockDataSource.fixRaw();
+
+        } else if (get_engineering_mode() && allWords.contentEquals("hard reset transmitter")) {
+            G5BaseService.hardResetTransmitterNow = true;
+            JoH.static_toast_long("Will attempt to reset transmitter on next poll!! Can take 15 minutes to process");
+        } else if (allWords.contentEquals("reset heart rate sync")) {
+            PersistentStore.setLong("nightscout-rest-heartrate-synced-time",0);
+            JoH.static_toast_long("Cleared heart rate sync data");
+        } else if (allWords.contentEquals("reset step count sync")) {
+            PersistentStore.setLong("nightscout-rest-steps-synced-time",0);
+            JoH.static_toast_long("Cleared step count sync data");
+        } else if (allWords.contentEquals("reset motion count sync")) {
+            PersistentStore.setLong("nightscout-rest-motion-synced-time",0);
+            JoH.static_toast_long("Cleared motion count sync data");
+        } else if (allWords.contentEquals("vehicle mode test")) {
+            ActivityRecognizedService.spoofActivityRecogniser(mActivity, JoH.tsl() + "^" + 0);
+            staticRefreshBGCharts();
+        } else if (allWords.contentEquals("vehicle mode quit")) {
+            ActivityRecognizedService.spoofActivityRecogniser(mActivity, JoH.tsl() + "^" + 3);
+            staticRefreshBGCharts();
+        } else if (allWords.contentEquals("vehicle mode walk")) {
+            ActivityRecognizedService.spoofActivityRecogniser(mActivity, JoH.tsl() + "^" + 2);
+            staticRefreshBGCharts();
+        } else if (allWords.equals("delete random glucose data")) {
+            BgReading.deleteRandomData();
+            JoH.static_toast_long("Deleting random glucose data");
+            staticRefreshBGCharts();
+        } else if (allWords.contentEquals("delete selected glucose meter") || allWords.contentEquals("delete selected glucose metre")) {
+            Pref.setString("selected_bluetooth_meter_address", "");
+        } else if (allWords.contentEquals("delete all finger stick data") || (allWords.contentEquals("delete all fingerstick data"))) {
+            BloodTest.cleanup(-100000);
+        } else if (allWords.contentEquals("delete all persistent store")) {
+            SdcardImportExport.deletePersistentStore();
+        } else if (allWords.contentEquals("delete uploader queue")) {
+            UploaderQueue.emptyQueue();
+        } else if (allWords.contentEquals("clear battery warning")) {
+            try {
+                final Sensor sensor = Sensor.currentSensor();
+                if (sensor != null) {
+                    sensor.latest_battery_level = 0;
+                    sensor.save();
+                }
+            } catch (Exception e) {
+                // do nothing
+            }
+        }
+    }
+
+
+}
