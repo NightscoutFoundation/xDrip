@@ -18,6 +18,8 @@ public class MockDataSource {
 
     private static final String TAG = "MockDataSource";
 
+    private static final String PREF_BROKEN_RAW = "MockDataSource-broken-raw";
+
     public static String getFakeWifiData() {
 
         long time = JoH.tsl();
@@ -26,6 +28,10 @@ public class MockDataSource {
         double mod_filtered = ((time - 500000) / divisor_scale) % Math.PI;
         double raw_value = (Math.sin(mod_raw) * 100000) + 50000;
         double filtered_value = (Math.sin(mod_filtered) * 100000) + 50000;
+
+        if (Pref.getBooleanDefaultFalse(PREF_BROKEN_RAW)) {
+            raw_value = Math.sin(mod_raw);
+        }
 
         final JSONObject json = new JSONObject();
         try {
@@ -42,6 +48,14 @@ public class MockDataSource {
             UserError.Log.e(TAG, "Got weird Json exception: ", e);
         }
         return json.toString();
+    }
+
+    public static void breakRaw() {
+        Pref.setBoolean(PREF_BROKEN_RAW, true);
+    }
+
+    public static void fixRaw() {
+        Pref.setBoolean(PREF_BROKEN_RAW, false);
     }
 }
 
