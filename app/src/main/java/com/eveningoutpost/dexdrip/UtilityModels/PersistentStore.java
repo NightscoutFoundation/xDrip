@@ -31,6 +31,10 @@ public class PersistentStore {
     private static SharedPreferences prefs;
     private static final boolean d = false; // debug flag
 
+    static {
+        init_prefs();
+    }
+
     private static void init_prefs() {
         if (prefs == null) prefs = xdrip.getAppContext()
                 .getSharedPreferences(DATA_STORE_INTERNAL, Context.MODE_PRIVATE);
@@ -99,6 +103,11 @@ public class PersistentStore {
     public static boolean getBoolean(String name) {
         init_prefs();
         return prefs.getBoolean(name, false);
+    }
+
+    public static boolean getBoolean(String name, boolean value) {
+        init_prefs();
+        return prefs.getBoolean(name, value);
     }
 
     public static void setBoolean(String name, boolean value) {

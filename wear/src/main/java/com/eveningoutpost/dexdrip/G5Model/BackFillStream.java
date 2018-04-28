@@ -14,6 +14,8 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import static com.eveningoutpost.dexdrip.G5Model.DexTimeKeeper.fromDexTimeCached;
+
 public class BackFillStream extends TransmitterMessage {
 
     private int last_sequence = 0;
@@ -55,21 +57,38 @@ public class BackFillStream extends TransmitterMessage {
             final byte type = data.get();
             final byte trend = data.get();
 
+            final CalibrationState state = CalibrationState.parse(type);
 
-            if (type == 0x06 || type == 0x07
-                    || ((type == 0x0e) || Pref.getBooleanDefaultFalse("ob1_g5_use_insufficiently_calibrated"))) {
-                if (dexTime != 0) {
-                    backsies.add(new Backsie(glucose, trend, dexTime));
-                }
-            } else {
-                if (type == 0x00) {
-                    //
-                } else {
-                    UserError.Log.wtf(TAG, "Encountered backfill data we don't recognise: " + type + " " + JoH.bytesToHex(data.array()));
-                }
+            switch (state) {
+                case Ok:
+                case NeedsCalibration:
+                    if (dexTime != 0) {
+                        backsies.add(new Backsie(glucose, trend, dexTime));
+                    }
+                    break;
+
+                case InsufficientCalibration:
+                    if (Pref.getBooleanDefaultFalse("ob1_g5_use_insufficiently_calibrated")) {
+                        if (dexTime != 0) {
+                            backsies.add(new Backsie(glucose, trend, dexTime));
+                        }
+                    }
+                    break;
+
+                case NeedsFirstCalibration:
+                case NeedsSecondCalibration:
+                case Unknown:
+                    break;
+
+                default:
+                    UserError.Log.wtf(TAG, "Encountered backfill data we don't recognise: " + type + " " + glucose + " " + trend + " " + " " + JoH.dateTimeText(fromDexTimeCached(dexTime)));
+                    break;
+
             }
         }
         return backsies;
+
+
     }
 
     public void enumerate(int size) {
