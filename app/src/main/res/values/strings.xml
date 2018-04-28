@@ -163,6 +163,7 @@
     <string name="check_for_updated_version">Check for updated version</string>
     <string name="send_feedback_to_developer">Send Feedback to developer</string>
     <string name="home_screen">Home Screen</string>
+    <string name="event_logs">Event Logs</string>
     <string name="calibration_graph">Calibration Graph</string>
     <string name="glucose_units">Glucose Units</string>
     <string name="mmol_or_mgdl_high_and_low">mmol/l or mg/dl high and low</string>
