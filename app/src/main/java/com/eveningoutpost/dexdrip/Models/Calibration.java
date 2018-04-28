@@ -274,7 +274,14 @@ public class Calibration extends Model {
         // don't allow initial calibration if data would be stale
             if ((bgReadings == null) || (bgReadings.size() != 3) || !isDataSuitableForDoubleCalibration() ){
             UserError.Log.wtf(TAG, "Did not find 3 readings for initial calibration - aborting");
-            JoH.static_toast_long("Not enough recent sensor data! - cancelling!");
+
+            if (Ob1G5CollectionService.usingNativeMode()) {
+                JoH.static_toast_long("Sending Blood Tests to G5 Native");
+                BloodTest.create(JoH.tsl() - Constants.MINUTE_IN_MS, bg1, "Initial Calibration");
+                BloodTest.create(JoH.tsl(), bg2, "Initial Calibration");
+            } else {
+                JoH.static_toast_long("Not enough recent sensor data! - cancelling!");
+            }
             return;
         }
 
@@ -537,7 +544,7 @@ public class Calibration extends Model {
                 bgReading = BgReading.getForPreciseTimestamp(new Date().getTime() - ((timeoffset - estimatedInterstitialLagSeconds) * 1000 ), (15 * 60 * 1000));
             }
             if (bgReading != null) {
-                if (SensorSanity.isRawValueSane(bgReading.raw_data, DexCollectionType.getDexCollectionType())) {
+                if (SensorSanity.isRawValueSane(bgReading.raw_data, DexCollectionType.getDexCollectionType(), true)) {
                     calibration.sensor = sensor;
                     calibration.bg = bg;
                     calibration.check_in = false;
@@ -565,6 +572,12 @@ public class Calibration extends Model {
                     }
                     calibration.sensor_age_at_time_of_estimation = calibration.timestamp - sensor.started_at;
                     calibration.uuid = UUID.randomUUID().toString();
+
+                    if (!SensorSanity.isRawValueSane(calibration.estimate_raw_at_time_of_calibration, true)) {
+                        JoH.static_toast_long("Estimated raw value out of range - cannot calibrate");
+                        return null;
+                    }
+
                     calibration.save();
 
                     if (!note_only) {
