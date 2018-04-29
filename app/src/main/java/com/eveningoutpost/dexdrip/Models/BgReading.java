@@ -67,6 +67,10 @@ public class BgReading extends Model implements ShareUploadableBg {
     //TODO: Have these as adjustable settings!!
     public final static double BESTOFFSET = (60000 * 0); // Assume readings are about x minutes off from actual!
 
+    public static final int BG_READING_ERROR_VALUE = 38; // error marker
+    public static final int BG_READING_MINIMUM_VALUE = 39;
+    public static final int BG_READING_MAXIMUM_VALUE = 400;
+
     @Column(name = "sensor", index = true)
     public Sensor sensor;
 
@@ -471,7 +475,7 @@ public class BgReading extends Model implements ShareUploadableBg {
     public static BgReading create(double raw_data, double filtered_data, Context context, Long timestamp, boolean quick) {
         if (context == null) context = xdrip.getAppContext();
         final BgReading bgReading = new BgReading();
-        Sensor sensor = Sensor.currentSensor();
+        final Sensor sensor = Sensor.currentSensor();
         if (sensor == null) {
             Log.i("BG GSON: ", bgReading.toS());
             return bgReading;
@@ -555,11 +559,9 @@ public class BgReading extends Model implements ShareUploadableBg {
                         bgReading.calculated_value = ((calibration.slope * bgReading.age_adjusted_raw_value) + calibration.intercept);
                         bgReading.filtered_calculated_value = ((calibration.slope * bgReading.ageAdjustedFiltered()) + calibration.intercept);
                     }
-                }
-            }
 
-            if (SensorSanity.isRawValueSane(bgReading.raw_data)) {
-                updateCalculatedValueToWithinMinMax(bgReading);
+                    updateCalculatedValueToWithinMinMax(bgReading);
+                }
             }
 
             // LimiTTer can send 12 to indicate problem with NFC reading.
@@ -594,10 +596,10 @@ public class BgReading extends Model implements ShareUploadableBg {
     static void updateCalculatedValueToWithinMinMax(BgReading bgReading) {
         // TODO should this really be <10 other values also special??
         if (bgReading.calculated_value < 10) {
-            bgReading.calculated_value = 38;
+            bgReading.calculated_value = BG_READING_ERROR_VALUE;
             bgReading.hide_slope = true;
         } else {
-            bgReading.calculated_value = Math.min(400, Math.max(39, bgReading.calculated_value));
+            bgReading.calculated_value = Math.min(BG_READING_MAXIMUM_VALUE, Math.max(BG_READING_MINIMUM_VALUE, bgReading.calculated_value));
         }
         Log.i(TAG, "NEW VALUE CALCULATED AT: " + bgReading.calculated_value);
     }
@@ -824,7 +826,8 @@ public class BgReading extends Model implements ShareUploadableBg {
     }
 
     public static List<BgReading> latest_by_size(int number) {
-        Sensor sensor = Sensor.currentSensor();
+        final Sensor sensor = Sensor.currentSensor();
+        if (sensor == null) return null;
         return new Select()
                 .from(BgReading.class)
                 .where("Sensor = ? ", sensor.getId())
@@ -971,7 +974,11 @@ public class BgReading extends Model implements ShareUploadableBg {
     public static boolean isDataSuitableForDoubleCalibration() {
         final List<BgReading> uncalculated = BgReading.latestUnCalculated(3);
         if (uncalculated.size() < 3) return false;
-        return ProcessInitialDataQuality.getInitialDataQuality(uncalculated).pass || Pref.getBooleanDefaultFalse("bypass_calibration_quality_check");
+        final ProcessInitialDataQuality.InitialDataQuality idq = ProcessInitialDataQuality.getInitialDataQuality(uncalculated);
+        if (!idq.pass) {
+            UserError.Log.d(TAG, "Data quality failure for double calibration: " + idq.advice);
+        }
+        return idq.pass || Pref.getBooleanDefaultFalse("bypass_calibration_quality_check");
     }
 
 
