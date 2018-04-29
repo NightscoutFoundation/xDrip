@@ -30,7 +30,7 @@ public class MockDataSource {
         double filtered_value = (Math.sin(mod_filtered) * 100000) + 50000;
 
         if (Pref.getBooleanDefaultFalse(PREF_BROKEN_RAW)) {
-            raw_value = Math.sin(mod_raw);
+            raw_value = Math.sin(mod_raw) * 1000;
         }
 
         final JSONObject json = new JSONObject();
