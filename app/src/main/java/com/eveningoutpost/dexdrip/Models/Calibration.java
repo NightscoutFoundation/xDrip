@@ -277,7 +277,7 @@ public class Calibration extends Model {
 
             if (Ob1G5CollectionService.usingNativeMode()) {
                 JoH.static_toast_long("Sending Blood Tests to G5 Native");
-                BloodTest.create(JoH.tsl() - Constants.MINUTE_IN_MS, bg1, "Initial Calibration");
+                BloodTest.create(JoH.tsl() - (Constants.SECOND_IN_MS * 30), bg1, "Initial Calibration");
                 BloodTest.create(JoH.tsl(), bg2, "Initial Calibration");
             } else {
                 JoH.static_toast_long("Not enough recent sensor data! - cancelling!");
@@ -352,7 +352,7 @@ public class Calibration extends Model {
 
         JoH.clearCache();
 
-        Ob1G5StateMachine.addCalibration((int) bg1, JoH.tsl() - Constants.MINUTE_IN_MS);
+        Ob1G5StateMachine.addCalibration((int) bg1, JoH.tsl() - (Constants.SECOND_IN_MS * 30));
         Ob1G5StateMachine.addCalibration((int) bg2, JoH.tsl());
 
         final List<Calibration> calibrations = new ArrayList<Calibration>();
