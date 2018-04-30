@@ -57,7 +57,6 @@ import static com.eveningoutpost.dexdrip.Services.G5BaseService.G5_BATTERY_MARKE
 import static com.eveningoutpost.dexdrip.Services.G5BaseService.G5_BATTERY_WEARABLE_SEND;
 import static com.eveningoutpost.dexdrip.Services.G5BaseService.G5_FIRMWARE_MARKER;
 import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.getTransmitterID;
-import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.lastUsableGlucosePacketTime;
 import static com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder.DEXCOM_PERIOD;
 
 
@@ -71,6 +70,7 @@ import static com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder.DEXCOM_PER
 public class Ob1G5StateMachine {
 
     private static final String TAG = "Ob1G5StateMachine";
+    private static final String PREF_SAVED_QUEUE = "Ob1-saved-queue";
     private static final int LOW_BATTERY_WARNING_LEVEL = Pref.getStringToInt("g5-battery-warning-level", 300); // voltage a < this value raises warnings;
     private static final long BATTERY_READ_PERIOD_MS = Constants.HOUR_IN_MS * 12; // how often to poll battery data (12 hours)
     private static final long MAX_BACKFILL_PERIOD_MS = Constants.HOUR_IN_MS * 3; // how far back to request backfill data
@@ -90,6 +90,7 @@ public class Ob1G5StateMachine {
     private static volatile long lastGlucosePacket = 0;
     private static volatile long lastUsableGlucosePacket = 0;
     private static volatile BgReading lastGlucoseBgReading;
+    private static volatile boolean backup_loaded = false;
 
     // Auth Check + Request
     public static boolean doCheckAuth(Ob1G5CollectionService parent, RxBleConnection connection) {
@@ -411,13 +412,18 @@ public class Ob1G5StateMachine {
                                                 UserError.Log.e(TAG, "Failed to write VersionRequestTxMessage: " + throwable);
                                             });
                                 } else if ((getBatteryDetails) && (parent.getBatteryStatusNow || !haveCurrentBatteryStatus())) {
-                                    connection.writeCharacteristic(Control, new BatteryInfoTxMessage().byteSequence)
+
+
+                                    enqueueUniqueCommand(new BatteryInfoTxMessage(), "Query battery");
+                                    parent.getBatteryStatusNow = false;
+
+                                  /*  connection.writeCharacteristic(Control, new BatteryInfoTxMessage().byteSequence)
                                             .subscribe(batteryValue -> {
                                                 UserError.Log.d(TAG, "Wrote battery info request");
                                                 parent.getBatteryStatusNow = false;
                                             }, throwable -> {
                                                 UserError.Log.e(TAG, "Failed to write BatteryInfoRequestTxMessage: " + throwable);
-                                            });
+                                            });*/
                                 }
                             } finally {
                                 processSensorRxMessage((SensorRxMessage) data_packet.msg);
@@ -491,7 +497,7 @@ public class Ob1G5StateMachine {
                             }
 
                             // TODO check firmware version
-                            if (glucose.calibrationState().readyForBackfill()) {
+                            if (glucose.calibrationState().readyForBackfill() && !parent.getBatteryStatusNow) {
                                 backFillIfNeeded(parent, connection);
                             }
                             processGlucoseRxMessage(parent, glucose);
@@ -636,6 +642,7 @@ public class Ob1G5StateMachine {
                 commandQueue.add(item);
             }
             streamCheck(item);
+            backupCheck(item);
         }
     }
 
@@ -645,18 +652,26 @@ public class Ob1G5StateMachine {
         }
     }
 
+    private static void backupCheck(Ob1Work item) {
+        if (item.streamable()) {
+          saveQueue();
+        }
+    }
+
     private static void enqueueUniqueCommand(TransmitterMessage tm, String msg) {
         if (tm != null) {
             final Class searchClass = tm.getClass();
+            Ob1Work item;
             synchronized (commandQueue) {
                 if (searchQueue(searchClass)) {
                     UserError.Log.d(TAG, "Not adding duplicate: " + searchClass.getSimpleName());
                     return;
                 }
-                final Ob1Work item = new Ob1Work(tm, msg);
+                item = new Ob1Work(tm, msg);
                 commandQueue.add(item);
                 streamCheck(item);
             }
+            backupCheck(item);
         }
     }
 
@@ -681,6 +696,29 @@ public class Ob1G5StateMachine {
         return false;
     }
 
+    public static void restoreQueue() {
+        if (!backup_loaded) {
+            loadQueue();
+        }
+    }
+
+    private synchronized static void loadQueue() {
+        if (commandQueue.size() == 0) {
+            injectQueueJson(PersistentStore.getString(PREF_SAVED_QUEUE));
+            UserError.Log.d(TAG, "Loaded queue stream backup.");
+        }
+        backup_loaded = true;
+    }
+
+
+    private static void saveQueue() {
+        final String queue_json = extractQueueJson();
+        if (!(queue_json == null ? "" : queue_json).equals(PersistentStore.getString(PREF_SAVED_QUEUE))) {
+            PersistentStore.setString(PREF_SAVED_QUEUE, queue_json);
+            UserError.Log.d(TAG, "Saved queue stream backup: " + queue_json);
+        }
+    }
+
     public static String extractQueueJson() {
         synchronized (commandQueue) {
             final List<Ob1Work> queue = new ArrayList<>(commandQueue.size());
@@ -695,8 +733,10 @@ public class Ob1G5StateMachine {
         }
     }
 
+    // used in backup restore and wear
+    @SuppressWarnings("WeakerAccess")
     public static void injectQueueJson(String json) {
-        if (json == null) return;
+        if (json == null || json.length() == 0) return;
         final Type queueType = new TypeToken<ArrayList<Ob1Work>>() {
         }.getType();
         final List<Ob1Work> queue = JoH.defaultGsonInstance().fromJson(json, queueType);
@@ -793,10 +833,12 @@ public class Ob1G5StateMachine {
     }
 
     private static void processQueueCommand(Ob1G5CollectionService parent, RxBleConnection connection) {
+        boolean changed = false;
         synchronized (commandQueue) {
             if (!commandQueue.isEmpty()) {
                 final Ob1Work unit = commandQueue.poll();
                 if (unit != null) {
+                    changed = true;
                     if (unit.retry < 5 && JoH.msSince(unit.timestamp) < Constants.HOUR_IN_MS * 8) {
                         connection.writeCharacteristic(Control, unit.msg.byteSequence)
                                 .timeout(2, TimeUnit.SECONDS)
@@ -837,6 +879,7 @@ public class Ob1G5StateMachine {
                 UserError.Log.d(TAG, "Command Queue is Empty");
             }
         }
+        if (changed) saveQueue();
     }
 
     private static void processGlucoseRxMessage(Ob1G5CollectionService parent, GlucoseRxMessage glucose) {
