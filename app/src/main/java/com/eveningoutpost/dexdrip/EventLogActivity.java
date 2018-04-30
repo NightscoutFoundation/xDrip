@@ -220,11 +220,6 @@ public class EventLogActivity extends AppCompatActivity {
             }
         });
 
-        searchView.setOnCloseListener(() -> {
-            searchView.clearFocus(); // doesn't work???
-            return true;
-        });
-
         return true;
     }
 
@@ -326,7 +321,7 @@ public class EventLogActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     streamed_items.addAll(0, newItems);
-                    refresh();
+                    refreshNewItems(newItems.size());
                     if (isAtTop()) {
                         // If unmoved or already at top then scroll to new values
                         JoH.runOnUiThreadDelayed(() -> scrollToTop(true), 300);
@@ -346,6 +341,13 @@ public class EventLogActivity extends AppCompatActivity {
         // refresh the display always applying the current filter
         void refresh() {
             JoH.runOnUiThread(() -> filter(getCurrentFilter()));
+        }
+
+        // refresh the display always applying the current filter
+        void refreshNewItems(final int count) {
+            if (count > 0) {
+                JoH.runOnUiThread(() -> insertFilteredNewItems(getCurrentFilter(), count));
+            }
         }
 
         // filter has changed on text input, refresh display
@@ -391,6 +393,28 @@ public class EventLogActivity extends AppCompatActivity {
             }
             adapterChain.notifyDataSetChanged();
         }
+
+        // apply filter just to some new items and update accordingly
+        private void insertFilteredNewItems(final String filter, int count) {
+            currentFilter = filter.or(getCurrentFilter()).toLowerCase().trim();
+            int c = 0;
+            int added = 0;
+            for (UserError item : items) {
+                if (filterMatch(item)) {
+                    visible.add(0, item);
+                    added++;
+                }
+                c++;
+                if (c >= count) break;
+            }
+            adapterChain.notifyItemRangeChanged(0, added);
+            // avoid duplicate titles
+            if (visible.size() > 1) {
+                adapterChain.notifyItemChanged(added);
+            }
+
+        }
+
 
         // check if current filter is the out-of-the-box default
         public boolean isDefaultFilters() {
