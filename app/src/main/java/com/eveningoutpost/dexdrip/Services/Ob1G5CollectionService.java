@@ -1263,7 +1263,7 @@ public class Ob1G5CollectionService extends G5BaseService {
 
             if (!is_started && was_started) {
                 if (Pref.getBooleanDefaultFalse("ob1_g5_restart_sensor") && (Sensor.isActive())) {
-                    Ob1G5StateMachine.startSensor(JoH.tsl());
+                    Ob1G5StateMachine.restartSensor();
                     final PendingIntent pi = PendingIntent.getActivity(xdrip.getAppContext(), G5_SENSOR_RESTARTED, JoH.getStartActivityIntent(Home.class), PendingIntent.FLAG_UPDATE_CURRENT);
                     JoH.showNotification("Auto Start", "G5 Sensor Requesting Restart", pi, G5_SENSOR_RESTARTED, true, true, false);
                 }
@@ -1483,5 +1483,11 @@ public class Ob1G5CollectionService extends G5BaseService {
         UserError.Log.d(TAG, "Resetting internal state by request");
         transmitterMAC = null;
         state = INIT;
+    }
+
+    // remember needs proguard exclusion due to access by reflection
+    public static boolean isCollecting() {
+        // TODO report true if wear is active?
+        return JoH.msSince(static_last_timestamp) < Constants.MINUTE_IN_MS * 6;
     }
 }

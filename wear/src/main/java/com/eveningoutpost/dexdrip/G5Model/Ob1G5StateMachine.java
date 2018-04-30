@@ -56,8 +56,12 @@ import static com.eveningoutpost.dexdrip.Services.G5BaseService.G5_BATTERY_LEVEL
 import static com.eveningoutpost.dexdrip.Services.G5BaseService.G5_BATTERY_MARKER;
 import static com.eveningoutpost.dexdrip.Services.G5BaseService.G5_BATTERY_WEARABLE_SEND;
 import static com.eveningoutpost.dexdrip.Services.G5BaseService.G5_FIRMWARE_MARKER;
+import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.android_wear;
 import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.getTransmitterID;
 import static com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder.DEXCOM_PERIOD;
+import static com.eveningoutpost.dexdrip.UtilityModels.Constants.HOUR_IN_MS;
+import static com.eveningoutpost.dexdrip.UtilityModels.Constants.MINUTE_IN_MS;
+import static com.eveningoutpost.dexdrip.UtilityModels.Constants.SECOND_IN_MS;
 
 
 /**
@@ -71,9 +75,12 @@ public class Ob1G5StateMachine {
 
     private static final String TAG = "Ob1G5StateMachine";
     private static final String PREF_SAVED_QUEUE = "Ob1-saved-queue";
+
+    public static final String PREF_QUEUE_DRAINED = "OB1-QUEUE-DRAINED";
+
     private static final int LOW_BATTERY_WARNING_LEVEL = Pref.getStringToInt("g5-battery-warning-level", 300); // voltage a < this value raises warnings;
-    private static final long BATTERY_READ_PERIOD_MS = Constants.HOUR_IN_MS * 12; // how often to poll battery data (12 hours)
-    private static final long MAX_BACKFILL_PERIOD_MS = Constants.HOUR_IN_MS * 3; // how far back to request backfill data
+    private static final long BATTERY_READ_PERIOD_MS = HOUR_IN_MS * 12; // how often to poll battery data (12 hours)
+    private static final long MAX_BACKFILL_PERIOD_MS = HOUR_IN_MS * 3; // how far back to request backfill data
     private static final int BACKFILL_CHECK_SMALL = 3;
     private static final int BACKFILL_CHECK_LARGE = (int) (MAX_BACKFILL_PERIOD_MS / DEXCOM_PERIOD);
 
@@ -473,7 +480,7 @@ public class Ob1G5StateMachine {
                                 // TODO persist this
                                 parent.msg("Session Stopped Successfully: " + JoH.dateTimeText(session_stop.getSessionStart()) + " " + JoH.dateTimeText(session_stop.getSessionStop()));
                                 enqueueUniqueCommand(new GlucoseTxMessage(), "Re-read glucose");
-                                enqueueUniqueCommand(new TransmitterTimeTxMessage(),"Query time after stop");
+                                enqueueUniqueCommand(new TransmitterTimeTxMessage(), "Query time after stop");
                             } else {
                                 UserError.Log.e(TAG, "Session Stop Error!");
                             }
@@ -492,8 +499,8 @@ public class Ob1G5StateMachine {
                                 enqueueUniqueCommand(new SensorTxMessage(), "Also read raw");
                             }
 
-                            if (JoH.pratelimit("g5-tx-time-since",7200)) {
-                                enqueueUniqueCommand(new TransmitterTimeTxMessage(),"Periodic Query Time");
+                            if (JoH.pratelimit("g5-tx-time-since", 7200)) {
+                                enqueueUniqueCommand(new TransmitterTimeTxMessage(), "Periodic Query Time");
                             }
 
                             // TODO check firmware version
@@ -648,13 +655,13 @@ public class Ob1G5StateMachine {
 
     private static void streamCheck(Ob1Work item) {
         if (item.streamable()) {
-        Inevitable.task("check wear stream", 5000, WatchUpdaterService::checkOb1Queue);
+            Inevitable.task("check wear stream", 5000, WatchUpdaterService::checkOb1Queue);
         }
     }
 
     private static void backupCheck(Ob1Work item) {
         if (item.streamable()) {
-          saveQueue();
+            saveQueue();
         }
     }
 
@@ -725,11 +732,7 @@ public class Ob1G5StateMachine {
             for (Ob1Work item : commandQueue) {
                 if (item.streamable()) queue.add(item);
             }
-            if (queue.size() > 0) {
-                return JoH.defaultGsonInstance().toJson(queue);
-            } else {
-                return null;
-            }
+            return JoH.defaultGsonInstance().toJson(queue);
         }
     }
 
@@ -757,6 +760,18 @@ public class Ob1G5StateMachine {
 
     public static int queueSize() {
         return commandQueue.size();
+    }
+
+    public static void emptyQueue() {
+        synchronized (commandQueue) {
+            if (commandQueue.size() > 0) {
+                UserError.Log.d(TAG, "Queue drained on wear, clearing: " + commandQueue.size() + " commands");
+                commandQueue.clear();
+                Inevitable.task("Save cleared G5 queue", 1000, Ob1G5StateMachine::saveQueue);
+            } else {
+                if (d) UserError.Log.d(TAG, "Local command queue is already empty");
+            }
+        }
     }
 
     public static String getFirstQueueItemName() {
@@ -795,6 +810,20 @@ public class Ob1G5StateMachine {
         }
     }
 
+
+    public static void restartSensor() {
+        if (acceptCommands()) {
+            enqueueUniqueCommand(
+                    new SessionStopTxMessage(
+                            DexTimeKeeper.getDexTime(getTransmitterID(), JoH.tsl() - HOUR_IN_MS * 2 - MINUTE_IN_MS * 10)),
+                    "Auto Stop Sensor");
+            final long when = JoH.tsl() - HOUR_IN_MS * 2 - MINUTE_IN_MS * 10 + SECOND_IN_MS;
+            enqueueUniqueCommand(new SessionStartTxMessage(when,
+                            DexTimeKeeper.getDexTime(getTransmitterID(), when)),
+                    "Auto Start Sensor");
+        }
+    }
+
     public static void addCalibration(int glucose, long timestamp) {
         if (acceptCommands()) {
             long since = msSince(timestamp);
@@ -804,7 +833,7 @@ public class Ob1G5StateMachine {
                 UserError.Log.wtf(TAG, msg);
                 return;
             }
-            if (since > Constants.HOUR_IN_MS) {
+            if (since > HOUR_IN_MS) {
                 final String msg = "Cannot send calibration older than 1 hour to transmitter: " + glucose + " @ " + JoH.dateTimeText(timestamp);
                 JoH.static_toast_long(msg);
                 UserError.Log.wtf(TAG, msg);
@@ -839,7 +868,7 @@ public class Ob1G5StateMachine {
                 final Ob1Work unit = commandQueue.poll();
                 if (unit != null) {
                     changed = true;
-                    if (unit.retry < 5 && JoH.msSince(unit.timestamp) < Constants.HOUR_IN_MS * 8) {
+                    if (unit.retry < 5 && JoH.msSince(unit.timestamp) < HOUR_IN_MS * 8) {
                         connection.writeCharacteristic(Control, unit.msg.byteSequence)
                                 .timeout(2, TimeUnit.SECONDS)
                                 .subscribe(value -> {
@@ -873,6 +902,12 @@ public class Ob1G5StateMachine {
                                 });
                     } else {
                         UserError.Log.e(TAG, "Ejected command from queue due to being too old: " + unit.text + " " + JoH.dateTimeText(unit.timestamp));
+                    }
+                }
+                if (commandQueue.isEmpty()) {
+                    if (d) UserError.Log.d(TAG, "Command Queue Drained");
+                    if (android_wear) {
+                        PersistentStore.setBoolean(PREF_QUEUE_DRAINED, true);
                     }
                 }
             } else {
@@ -1092,7 +1127,7 @@ public class Ob1G5StateMachine {
             final long time = DexTimeKeeper.fromDexTime(getTransmitterID(), backsie.getDextime());
 
             final long since = JoH.msSince(time);
-            if ((since > Constants.HOUR_IN_MS * 6) || (since < 0)) {
+            if ((since > HOUR_IN_MS * 6) || (since < 0)) {
                 UserError.Log.wtf(TAG, "Backfill timestamp unrealistic: " + JoH.dateTimeText(time) + " (ignored)");
             } else {
                 if (BgReading.getForPreciseTimestamp(time, Constants.MINUTE_IN_MS * 4) == null) {

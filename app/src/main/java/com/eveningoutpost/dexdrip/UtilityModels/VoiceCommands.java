@@ -4,6 +4,7 @@ package com.eveningoutpost.dexdrip.UtilityModels;
 
 import android.app.Activity;
 
+import com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.BloodTest;
 import com.eveningoutpost.dexdrip.Models.Calibration;
@@ -85,6 +86,18 @@ public class VoiceCommands {
                 // do nothing
             }
         }
+
+        switch (allWords) {
+            case "restart g5 session":
+                Ob1G5StateMachine.restartSensor();
+                JoH.static_toast_long("Attempting to restart sensor session");
+                break;
+            case "stop g5 session":
+                Ob1G5StateMachine.stopSensor();
+                JoH.static_toast_long("Attempting to stop sensor session");
+                break;
+        }
+
     }
 
 

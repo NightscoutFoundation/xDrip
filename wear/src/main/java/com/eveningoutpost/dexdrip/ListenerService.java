@@ -89,6 +89,7 @@ import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
+import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.PREF_QUEUE_DRAINED;
 import static com.eveningoutpost.dexdrip.Models.JoH.ts;
 import static com.eveningoutpost.dexdrip.Services.G5CollectionService.G5_BATTERY_FROM_MARKER;
 import static com.eveningoutpost.dexdrip.Services.G5CollectionService.G5_BATTERY_MARKER;
@@ -328,9 +329,12 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                                             if (Ob1G5CollectionService.usingNativeMode()) {
                                                 datamap = getWearBgReadingData(send_bg_count, last_send_previous, 0);//KS 36 data for last 3 hours; 288 for 1 day
                                                 if (datamap != null) {
+                                                    final boolean queue_drained = PersistentStore.getBoolean(PREF_QUEUE_DRAINED);
+                                                    if (queue_drained) PersistentStore.setBoolean(PREF_QUEUE_DRAINED, false);
+                                                    datamap.putBoolean(PREF_QUEUE_DRAINED, queue_drained);
+
                                                     sendMessagePayload(node, "SYNC_BGS_PRECALCULATED_PATH", SYNC_BGS_PRECALCULATED_PATH, datamap.toByteArray());
                                                 }
-                                                // TODO also send calibration state
                                             } else {
 
                                                 datamap = getWearTransmitterData(send_bg_count, last_send_previous, 0);//KS 36 data for last 3 hours; 288 for 1 day
