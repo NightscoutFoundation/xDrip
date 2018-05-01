@@ -1878,9 +1878,15 @@ public class BgGraphBuilder {
     public static String unitized_string_static(double value) {
         return unitized_string(value, Pref.getString("units", "mgdl").equals("mgdl"));
     }
+
     public static String unitized_string_with_units_static(double value) {
         final boolean domgdl = Pref.getString("units", "mgdl").equals("mgdl");
         return unitized_string(value, domgdl)+" "+(domgdl ? "mg/dl" : "mmol/l");
+    }
+
+    public static String unitized_string_with_units_static_short(double value) {
+        final boolean domgdl = Pref.getString("units", "mgdl").equals("mgdl");
+        return unitized_string(value, domgdl)+" "+(domgdl ? "mgdl" : "mmol");
     }
 
     public static String unitized_string(double value, boolean doMgdl) {

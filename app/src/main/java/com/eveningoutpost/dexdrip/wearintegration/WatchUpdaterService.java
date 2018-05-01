@@ -73,6 +73,7 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.PREF_QUEUE_DRAINED;
 import static com.eveningoutpost.dexdrip.Models.JoH.showNotification;
 import static com.eveningoutpost.dexdrip.Models.JoH.ts;
 
@@ -225,9 +226,11 @@ public class WatchUpdaterService extends WearableListenerService implements
     public static void checkOb1Queue() {
         boolean enable_wearG5 = Pref.getBoolean("enable_wearG5", false);
         if (enable_wearG5) {
-            final String ob1QueueJson = Ob1G5StateMachine.extractQueueJson();
-            if (ob1QueueJson != null) {
-                xdrip.getAppContext().startService(new Intent(xdrip.getAppContext(), WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_SEND_G5_QUEUE).putExtra("queueData", ob1QueueJson));
+            if (Ob1G5CollectionService.usingNativeMode()) {
+                final String ob1QueueJson = Ob1G5StateMachine.extractQueueJson();
+                if (ob1QueueJson != null) {
+                    xdrip.getAppContext().startService(new Intent(xdrip.getAppContext(), WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_SEND_G5_QUEUE).putExtra("queueData", ob1QueueJson));
+                }
             }
         }
     }
@@ -351,6 +354,11 @@ public class WatchUpdaterService extends WearableListenerService implements
 
         final int calibration_state = dataMap.getInt("native_calibration_state", 0);
         Ob1G5CollectionService.processCalibrationState(CalibrationState.parse(calibration_state));
+
+        final boolean queue_drained = dataMap.getBoolean(PREF_QUEUE_DRAINED);
+        if (queue_drained) {
+            Ob1G5StateMachine.emptyQueue();
+        }
 
 
         final ArrayList<DataMap> entries = dataMap.getDataMapArrayList("entries");

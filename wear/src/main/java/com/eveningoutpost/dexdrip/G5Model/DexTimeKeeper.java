@@ -15,6 +15,8 @@ public class DexTimeKeeper {
     private static final long OLDEST_ALLOWED = 1512245359123L;
     private static final long DEX_TRANSMITTER_LIFE_SECONDS = 86400 * 120;
 
+    private static String lastTransmitterId = null;
+
     // update the activation time stored for a transmitter
     public static void updateAge(String transmitterId, int dexTimeStamp) {
 
@@ -55,8 +57,12 @@ public class DexTimeKeeper {
             UserError.Log.e(TAG, "Invalid timestamp comparison for transmitter id: " + transmitterId);
             return -4;
         }
-
+        lastTransmitterId = transmitterId;
         return (int) (ms_since / 1000);
+    }
+
+    public static long fromDexTimeCached(int dexTimeStamp) {
+        return fromDexTime(lastTransmitterId, dexTimeStamp);
     }
 
 
@@ -65,6 +71,7 @@ public class DexTimeKeeper {
             UserError.Log.e(TAG, "Invalid dex transmitter in fromDexTime: " + transmitterId);
             return -3;
         }
+        lastTransmitterId = transmitterId;
         final long transmitter_start_timestamp = PersistentStore.getLong(DEX_XMIT_START + transmitterId);
         if (transmitter_start_timestamp > 0) {
             return transmitter_start_timestamp + (dexTimeStamp * 1000);

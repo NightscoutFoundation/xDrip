@@ -33,6 +33,7 @@ import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
@@ -69,10 +70,12 @@ import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.pendingStart;
 import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.pendingStop;
 import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.STATE.CLOSE;
 import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.STATE.CLOSED;
+import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.STATE.INIT;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.G5_CALIBRATION_REQUEST;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.G5_SENSOR_FAILED;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.G5_SENSOR_RESTARTED;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.G5_SENSOR_STARTED;
+import static com.eveningoutpost.dexdrip.UtilityModels.Constants.SECOND_IN_MS;
 
 
 /**
@@ -90,7 +93,7 @@ public class Ob1G5CollectionService extends G5BaseService {
     public static final String OB1G5_PREFS = "use_ob1_g5_collector_service";
     private static final String OB1G5_MACSTORE = "G5-mac-for-txid-";
     private static final String BUGGY_SAMSUNG_ENABLED = "buggy-samsung-enabled";
-    private static volatile STATE state = STATE.INIT;
+    private static volatile STATE state = INIT;
     private static volatile STATE last_automata_state = CLOSED;
 
     private static RxBleClient rxBleClient;
@@ -302,7 +305,7 @@ public class Ob1G5CollectionService extends G5BaseService {
 
     private void resetState() {
         UserError.Log.e(TAG, "Resetting sequence state to INIT");
-        changeState(STATE.INIT);
+        changeState(INIT);
     }
 
     public STATE getState() {
@@ -320,7 +323,7 @@ public class Ob1G5CollectionService extends G5BaseService {
     }
 
     private synchronized void initialize() {
-        if (state == STATE.INIT) {
+        if (state == INIT) {
             msg("Initializing");
             static_connection_state = null;
             if (rxBleClient == null) {
@@ -432,7 +435,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                 discoverSubscription = connection.discoverServices(10, TimeUnit.SECONDS).subscribe(this::onServicesDiscovered, this::onDiscoverFailed);
             } else {
                 UserError.Log.e(TAG, "No connection when in DISCOVER state - reset");
-                state = STATE.INIT;
+                state = INIT;
                 background_automata();
             }
         } else {
@@ -750,6 +753,7 @@ public class Ob1G5CollectionService extends G5BaseService {
 
             checkAndEnableBT();
 
+            Ob1G5StateMachine.restoreQueue();
             automata(); // sequence logic
 
             UserError.Log.d(TAG, "Releasing service start");
@@ -783,7 +787,7 @@ public class Ob1G5CollectionService extends G5BaseService {
             UserError.Log.e(TAG, "Got exception unregistering pairing receiver: " + e);
         }
 
-        state = STATE.INIT; // Should be STATE.END ?
+        state = INIT; // Should be STATE.END ?
         msg("Service Stopped");
         super.onDestroy();
     }
@@ -1246,8 +1250,11 @@ public class Ob1G5CollectionService extends G5BaseService {
                         break;
                 }
 
-                final PendingIntent pi = PendingIntent.getActivity(xdrip.getAppContext(), G5_CALIBRATION_REQUEST, JoH.getStartActivityIntent(c), PendingIntent.FLAG_UPDATE_CURRENT);
-                JoH.showNotification(state.getText(), "G5 Calibration Required", pi, G5_CALIBRATION_REQUEST, state == CalibrationState.NeedsFirstCalibration, true, false);
+                Inevitable.task("ask initial calibration", SECOND_IN_MS * 30, () -> {
+                    final PendingIntent pi = PendingIntent.getActivity(xdrip.getAppContext(), G5_CALIBRATION_REQUEST, JoH.getStartActivityIntent(c), PendingIntent.FLAG_UPDATE_CURRENT);
+                    JoH.showNotification(state.getText(), "G5 Calibration Required", pi, G5_CALIBRATION_REQUEST, state == CalibrationState.NeedsFirstCalibration, true, false);
+
+                });
             } else if (!needs_calibration && was_needing_calibration) {
                 JoH.cancelNotification(G5_CALIBRATION_REQUEST);
             }
@@ -1256,7 +1263,7 @@ public class Ob1G5CollectionService extends G5BaseService {
 
             if (!is_started && was_started) {
                 if (Pref.getBooleanDefaultFalse("ob1_g5_restart_sensor") && (Sensor.isActive())) {
-                    Ob1G5StateMachine.startSensor(JoH.tsl());
+                    Ob1G5StateMachine.restartSensor();
                     final PendingIntent pi = PendingIntent.getActivity(xdrip.getAppContext(), G5_SENSOR_RESTARTED, JoH.getStartActivityIntent(Home.class), PendingIntent.FLAG_UPDATE_CURRENT);
                     JoH.showNotification("Auto Start", "G5 Sensor Requesting Restart", pi, G5_SENSOR_RESTARTED, true, true, false);
                 }
@@ -1279,13 +1286,16 @@ public class Ob1G5CollectionService extends G5BaseService {
         updateG5State(is_failed, was_failed, IS_FAILED);
     }
 
-   // private static void handleStateTransition(boolean state_now, )
-
 
     private static void updateG5State(boolean now, boolean previous, String reference) {
         if (now != previous) {
             PersistentStore.setBoolean(reference, now);
         }
+    }
+
+    public static boolean isG5ActiveButUnknownState() {
+        return (lastSensorState == null || lastSensorState == CalibrationState.Unknown)
+                && usingNativeMode();
     }
 
     public static boolean isG5WarmingUp() {
@@ -1300,6 +1310,10 @@ public class Ob1G5CollectionService extends G5BaseService {
                 && usingNativeMode()
                 && !pendingStop()
                 && !pendingStart();
+    }
+
+    public static boolean isPendingStart() {
+        return pendingStart() && usingNativeMode();
     }
 
     public static boolean isG5WantingInitialCalibration() {
@@ -1318,6 +1332,11 @@ public class Ob1G5CollectionService extends G5BaseService {
     public static boolean usingNativeMode() {
         return Pref.getBooleanDefaultFalse("ob1_g5_use_transmitter_alg")
                 && Pref.getBooleanDefaultFalse(OB1G5_PREFS);
+    }
+
+    public static boolean isProvidingNativeGlucoseData() {
+        // TODO check age of data?
+        return usingNativeMode() && lastSensorState != null && lastSensorState.usableGlucose();
     }
 
     public static boolean fallbackToXdripAlgorithm() {
@@ -1463,5 +1482,12 @@ public class Ob1G5CollectionService extends G5BaseService {
     public static void resetSomeInternalState() {
         UserError.Log.d(TAG, "Resetting internal state by request");
         transmitterMAC = null;
+        state = INIT;
+    }
+
+    // remember needs proguard exclusion due to access by reflection
+    public static boolean isCollecting() {
+        // TODO report true if wear is active?
+        return JoH.msSince(static_last_timestamp) < Constants.MINUTE_IN_MS * 6;
     }
 }

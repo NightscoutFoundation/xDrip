@@ -430,6 +430,7 @@
         <receiver android:name=".UtilityModels.CompatibleApps">
             <intent-filter android:priority="100">
                 <action android:name="android.intent.action.PACKAGE_ADDED" />
+
                 <data android:scheme="package" />
             </intent-filter>
         </receiver>
@@ -453,6 +454,7 @@
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
+
             <meta-data
                 android:name="android.service.dream"
                 android:resource="@xml/xdrip_dream" />
@@ -566,12 +568,12 @@
             android:name=".Reminders"
             android:configChanges="orientation|screenSize"
             android:launchMode="singleTask"
-            android:windowSoftInputMode="adjustPan"></activity>
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".NightscoutBackfillActivity"
             android:configChanges="orientation|screenSize"
             android:launchMode="singleTask"
-            android:windowSoftInputMode="adjustPan"></activity>
+            android:windowSoftInputMode="adjustPan" />
 
         <uses-library
             android:name="com.sec.android.app.multiwindow"
@@ -593,7 +595,11 @@
             android:name="com.sec.android.multiwindow.MINIMUM_SIZE_H"
             android:value="598.0dip" />
 
-        <activity android:name=".UtilityModels.XDripDreamSettingsActivity"></activity>
+        <activity android:name=".UtilityModels.XDripDreamSettingsActivity" />
+        <activity
+            android:name=".EventLogActivity"
+            android:configChanges="orientation|screenSize"
+            android:label="@string/title_activity_error" />
     </application>
 
 </manifest>

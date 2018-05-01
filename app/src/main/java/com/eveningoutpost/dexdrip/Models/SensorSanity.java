@@ -19,17 +19,25 @@ public class SensorSanity {
     private static final String TAG = "SensorSanity";
 
     public static boolean isRawValueSane(double raw_value) {
-        return isRawValueSane(raw_value, DexCollectionType.getDexCollectionType());
+        return isRawValueSane(raw_value, DexCollectionType.getDexCollectionType(), false);
+    }
+
+    public static boolean isRawValueSane(double raw_value, boolean hard) {
+        return isRawValueSane(raw_value, DexCollectionType.getDexCollectionType(), hard);
     }
 
     public static boolean isRawValueSane(double raw_value, DexCollectionType type) {
+        return isRawValueSane(raw_value, type, false);
+
+    }
+    public static boolean isRawValueSane(double raw_value, DexCollectionType type, boolean hard_check) {
         // passes by default!
         boolean state = true;
 
         // checks for each type of data source
 
         if (DexCollectionType.hasDexcomRaw(type)) {
-            if (raw_value != BgReading.SPECIAL_G5_PLACEHOLDER) {
+            if ((raw_value != BgReading.SPECIAL_G5_PLACEHOLDER) || hard_check) {
                 if (raw_value < DEXCOM_MIN_RAW) state = false;
                 else if (raw_value > DEXCOM_MAX_RAW) state = false;
             }

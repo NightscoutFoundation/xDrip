@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 
@@ -26,6 +27,17 @@ public class BindingAdapterUtils {
     @BindingAdapter(value = {"showIfTrue"}, requireAll = true)
     public static void setShowIfTrue(@NonNull View view, boolean isVisible) {
         view.setVisibility(isVisible ? View.VISIBLE : View.GONE);
+    }
+
+    @BindingAdapter(value = {"showIfTrueInRecycler"}, requireAll = true)
+    public static void setShowIfTrueInRecycler(@NonNull View view, boolean isVisible) {
+        view.setVisibility(isVisible ? View.VISIBLE : View.GONE);
+        view.getLayoutParams().height = isVisible ? LinearLayout.LayoutParams.WRAP_CONTENT : 0;
+    }
+
+    @BindingAdapter(value = {"invisibleIfFalse"}, requireAll = true)
+    public static void setInvisibleIfFalse(@NonNull View view, boolean isVisible) {
+        view.setVisibility(isVisible ? View.VISIBLE : View.INVISIBLE);
     }
 
     @BindingAdapter(value = {"src"})

@@ -484,6 +484,11 @@ public class BgGraphBuilder {
         final boolean domgdl = Pref.getString("units", "mgdl").equals("mgdl");
         return unitized_string(value, domgdl)+" "+(domgdl ? "mg/dl" : "mmol/l");
     }
+    public static String unitized_string_with_units_static_short(double value) {
+        final boolean domgdl = Pref.getString("units", "mgdl").equals("mgdl");
+        return unitized_string(value, domgdl)+" "+(domgdl ? "mgdl" : "mmol");
+    }
+
 
     public static String unitized_string(double value, boolean doMgdl) {
         DecimalFormat df = new DecimalFormat("#");
