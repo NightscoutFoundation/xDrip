@@ -89,12 +89,21 @@ public class VoiceCommands {
 
         switch (allWords) {
             case "restart g5 session":
-                Ob1G5StateMachine.restartSensor();
+                Ob1G5StateMachine.restartSensorWithTimeTravel();
                 JoH.static_toast_long("Attempting to restart sensor session");
                 break;
             case "stop g5 session":
                 Ob1G5StateMachine.stopSensor();
                 JoH.static_toast_long("Attempting to stop sensor session");
+                break;
+            case "start g5 session":
+                Ob1G5StateMachine.startSensor(JoH.tsl());
+                JoH.static_toast_long("Attempting to start sensor session");
+                break;
+
+            case "clear last update check time":
+                UpdateActivity.clearLastCheckTime();
+                JoH.static_toast_long(allWords);
                 break;
         }
 

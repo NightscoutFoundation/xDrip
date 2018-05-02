@@ -492,4 +492,8 @@ public class UpdateActivity extends AppCompatActivity {
 
         }
     }
+
+    public static void clearLastCheckTime() {
+        Pref.setLong(last_update_check_time,0L);
+    }
 }
