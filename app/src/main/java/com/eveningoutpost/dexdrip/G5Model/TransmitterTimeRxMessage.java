@@ -40,4 +40,8 @@ public class TransmitterTimeRxMessage extends TransmitterMessage {
         return getRealSessionStartTime(JoH.tsl());
     }
 
+    public long getSessionDuration() {
+        return JoH.msSince(getRealSessionStartTime());
+    }
+
 }
