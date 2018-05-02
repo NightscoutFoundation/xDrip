@@ -328,13 +328,16 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                                         if (enable_wearG5) {//KS
                                             if (Ob1G5CollectionService.usingNativeMode()) {
                                                 datamap = getWearBgReadingData(send_bg_count, last_send_previous, 0);//KS 36 data for last 3 hours; 288 for 1 day
-                                                if (datamap != null) {
-                                                    final boolean queue_drained = PersistentStore.getBoolean(PREF_QUEUE_DRAINED);
-                                                    if (queue_drained) PersistentStore.setBoolean(PREF_QUEUE_DRAINED, false);
-                                                    datamap.putBoolean(PREF_QUEUE_DRAINED, queue_drained);
-
-                                                    sendMessagePayload(node, "SYNC_BGS_PRECALCULATED_PATH", SYNC_BGS_PRECALCULATED_PATH, datamap.toByteArray());
+                                                if (datamap == null) {
+                                                    datamap = new DataMap(); // no readings but we need to update status in native mode
                                                 }
+                                                final boolean queue_drained = PersistentStore.getBoolean(PREF_QUEUE_DRAINED);
+                                                if (queue_drained) PersistentStore.setBoolean(PREF_QUEUE_DRAINED, false); // TODO only set this when we get ack
+                                                datamap.putBoolean(PREF_QUEUE_DRAINED, queue_drained);
+                                                datamap.putString("dextime", Ob1G5StateMachine.extractDexTime());
+                                                final CalibrationState lastState = Ob1G5CollectionService.lastSensorState;
+                                                datamap.putInt("native_calibration_state", lastState != null ? lastState.getValue() : 0);
+                                                sendMessagePayload(node, "SYNC_BGS_PRECALCULATED_PATH", SYNC_BGS_PRECALCULATED_PATH, datamap.toByteArray());
                                             } else {
 
                                                 datamap = getWearTransmitterData(send_bg_count, last_send_previous, 0);//KS 36 data for last 3 hours; 288 for 1 day
@@ -591,8 +594,6 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                     //Log.d(TAG, "getWearBgData bg getId:" + bg.getId() + " raw_data:" + bg.raw_data + " filtered_data:" + bg.filtered_data + " timestamp:" + bg.timestamp + " uuid:" + bg.uuid);
                 }
                 entries.putLong("time", new Date().getTime()); // MOST IMPORTANT LINE FOR TIMESTAMP
-                final CalibrationState lastState = Ob1G5CollectionService.lastSensorState;
-                entries.putInt("native_calibration_state", lastState != null ? lastState.getValue() : 0);
                 entries.putDataMapArrayList("entries", dataMaps);
                 Log.i(TAG, "getWearBgReadingData SYNCED BGs up to " + JoH.dateTimeText(last_send_success) + " count = " + graph_bgs.size());
                 return entries;
@@ -778,7 +779,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         if (!node_wearG5.equals(dataMap.getString("node_wearG5", ""))) {
             Log.d(TAG, "sendPrefSettings save to SharedPreferences - node_wearG5:" + dataMap.getString("node_wearG5", ""));
             prefs.putString("node_wearG5", dataMap.getString("node_wearG5", ""));
-            prefs.commit();
+            prefs.apply();
         }
     }
 
@@ -1726,7 +1727,11 @@ public class ListenerService extends WearableListenerService implements GoogleAp
 
             prefs.putBoolean("show_wear_treatments", dataMap.getBoolean("show_wear_treatments", false));
             overrideLocale(dataMap);
-            prefs.commit();
+
+
+            Ob1G5StateMachine.injectDexTime(dataMap.getString("dex-timekeeping"));
+
+            prefs.apply();
 
             CheckBridgeBattery.checkBridgeBattery();
 

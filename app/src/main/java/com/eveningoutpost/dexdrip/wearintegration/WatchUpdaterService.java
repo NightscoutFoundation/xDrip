@@ -253,7 +253,7 @@ public class WatchUpdaterService extends WearableListenerService implements
 
         if (bridge_battery != mPrefs.getInt("bridge_battery", -1)) {//Used by DexCollectionService
             prefs.putInt("bridge_battery", bridge_battery);
-            prefs.commit();
+            prefs.apply();
             Log.d(TAG, "syncPrefData commit bridge_battery: " + bridge_battery);
             CheckBridgeBattery.checkBridgeBattery();
             if (force_wearG5 && CheckBridgeBattery.checkForceWearBridgeBattery()) {
@@ -309,7 +309,7 @@ public class WatchUpdaterService extends WearableListenerService implements
         }
 
         if (change) {
-            prefs.commit();
+            prefs.apply();
         }
         else if (!dex_txid.equals(mPrefs.getString("dex_txid", "default"))) {
             sendPrefSettings();
@@ -354,6 +354,7 @@ public class WatchUpdaterService extends WearableListenerService implements
 
         final int calibration_state = dataMap.getInt("native_calibration_state", 0);
         Ob1G5CollectionService.processCalibrationState(CalibrationState.parse(calibration_state));
+        Ob1G5StateMachine.injectDexTime(dataMap.getString("dextime", null));
 
         final boolean queue_drained = dataMap.getBoolean(PREF_QUEUE_DRAINED);
         if (queue_drained) {
@@ -362,61 +363,63 @@ public class WatchUpdaterService extends WearableListenerService implements
 
 
         final ArrayList<DataMap> entries = dataMap.getDataMapArrayList("entries");
-        final Gson gson = new GsonBuilder()
-                .excludeFieldsWithoutExposeAnnotation()
-                .registerTypeAdapter(Date.class, new DateTypeAdapter())
-                .serializeSpecialFloatingPointValues()
-                .create();
+        if (entries != null) {
+            final Gson gson = new GsonBuilder()
+                    .excludeFieldsWithoutExposeAnnotation()
+                    .registerTypeAdapter(Date.class, new DateTypeAdapter())
+                    .serializeSpecialFloatingPointValues()
+                    .create();
 
 
-        final int count = entries.size();
+            final int count = entries.size();
 
-        if (count > 0) {
+            if (count > 0) {
 
-            final Sensor current_sensor = Sensor.currentSensor();
-            if (current_sensor == null) {
-                UserError.Log.e(TAG, "Cannot sync wear BG readings because sensor is marked stopped on phone");
-                return;
-            }
+                final Sensor current_sensor = Sensor.currentSensor();
+                if (current_sensor == null) {
+                    UserError.Log.e(TAG, "Cannot sync wear BG readings because sensor is marked stopped on phone");
+                    return;
+                }
 
-            Log.d(TAG, "syncTransmitterData add BgReading Table entries count=" + count);
-            int idx = 0;
-            long timeOfLastBG = 0;
-            for (DataMap entry : entries) {
-                if (entry != null) {
-                    idx++;
-                    final String bgrecord = entry.getString("bgs");
-                    if (bgrecord != null) {
+                Log.d(TAG, "syncTransmitterData add BgReading Table entries count=" + count);
+                int idx = 0;
+                long timeOfLastBG = 0;
+                for (DataMap entry : entries) {
+                    if (entry != null) {
+                        idx++;
+                        final String bgrecord = entry.getString("bgs");
+                        if (bgrecord != null) {
 
-                        final BgReading bgData = gson.fromJson(bgrecord, BgReading.class);
+                            final BgReading bgData = gson.fromJson(bgrecord, BgReading.class);
 
-                        final BgReading uuidexists = BgReading.findByUuid(bgData.uuid);
-                        if (uuidexists == null) {
+                            final BgReading uuidexists = BgReading.findByUuid(bgData.uuid);
+                            if (uuidexists == null) {
 
-                            final BgReading exists = BgReading.getForTimestamp(bgData.timestamp);
-                            if (exists == null) {
-                                Log.d(TAG, "Saving new synced pre-calculated bg-reading: " + JoH.dateTimeText(bgData.timestamp) + " last entry: " + (idx == count) + " " + BgGraphBuilder.unitized_string_static(bgData.calculated_value));
-                                bgData.sensor = current_sensor;
-                                bgData.save();
-                                BgSendQueue.handleNewBgReading(bgData, "create", xdrip.getAppContext(), Home.get_follower(), idx != count);
+                                final BgReading exists = BgReading.getForTimestamp(bgData.timestamp);
+                                if (exists == null) {
+                                    Log.d(TAG, "Saving new synced pre-calculated bg-reading: " + JoH.dateTimeText(bgData.timestamp) + " last entry: " + (idx == count) + " " + BgGraphBuilder.unitized_string_static(bgData.calculated_value));
+                                    bgData.sensor = current_sensor;
+                                    bgData.save();
+                                    BgSendQueue.handleNewBgReading(bgData, "create", xdrip.getAppContext(), Home.get_follower(), idx != count);
+                                } else {
+                                    Log.d(TAG, "BgReading for timestamp already exists: " + JoH.dateTimeText(bgData.timestamp));
+                                }
                             } else {
-                                Log.d(TAG, "BgReading for timestamp already exists: " + JoH.dateTimeText(bgData.timestamp));
+                                Log.d(TAG, "BgReading with uuid: " + bgData.uuid + " already exists: " + JoH.dateTimeText(bgData.timestamp));
                             }
-                        } else {
-                            Log.d(TAG, "BgReading with uuid: " + bgData.uuid + " already exists: " + JoH.dateTimeText(bgData.timestamp));
-                        }
 
-                        timeOfLastBG = Math.max(bgData.timestamp + 1, timeOfLastBG);
+                            timeOfLastBG = Math.max(bgData.timestamp + 1, timeOfLastBG);
+                        }
                     }
                 }
+                sendDataReceived(DATA_ITEM_RECEIVED_PATH, "DATA_RECEIVED_BGS count=" + entries.size(), timeOfLastBG, "BG", -1);
+
+            } else {
+                UserError.Log.e(TAG, "Not acknowledging wear BG readings as count was 0");
             }
-            sendDataReceived(DATA_ITEM_RECEIVED_PATH,"DATA_RECEIVED_BGS count=" + entries.size(), timeOfLastBG, "BG", -1);
         } else {
-            UserError.Log.e(TAG, "Not acknowledging wear BG readings as count was 0");
+            UserError.Log.d(TAG, "Null entries list - should only happen with native status update only");
         }
-
-
-
     }
 
     private synchronized void syncTransmitterData(DataMap dataMap, boolean bBenchmark) {//KS
@@ -728,10 +731,12 @@ public class WatchUpdaterService extends WearableListenerService implements
     private void listenForChangeInSettings() {
         mPreferencesListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
             public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-                Log.d(TAG, "onSharedPreferenceChanged enter key=" + key);
+
                 pebble_integration = mPrefs.getBoolean("pebble_sync", false);
                 if (key.compareTo("bridge_battery") != 0 && key.compareTo("nfc_sensor_age") != 0 &&
                         key.compareTo("bg_notifications_watch") != 0 && key.compareTo("persistent_high_alert_enabled_watch") != 0) {
+
+                    Log.d(TAG, "Triggering Wear Settings Update due to key=" + key);
 
                     Inevitable.task("wear-update-settings", 2000, () -> {
                         sendPrefSettings();
@@ -1117,7 +1122,7 @@ public class WatchUpdaterService extends WearableListenerService implements
                             else if (node_wearG5.equals("")) {
                                 isConnectedToWearable = true;
                                 prefs.putString("node_wearG5", wearNode);
-                                prefs.commit();
+                                prefs.apply();
                                 break;
                             }
 
@@ -1634,6 +1639,12 @@ public class WatchUpdaterService extends WearableListenerService implements
             dataMap.putBoolean("show_wear_treatments", Pref.getBooleanDefaultFalse("show_wear_treatments"));
             dataMap.putBoolean("use_ob1_g5_collector_service", Pref.getBooleanDefaultFalse("use_ob1_g5_collector_service"));
             dataMap.putString(Blukon.BLUKON_PIN_PREF, Pref.getStringDefaultBlank(Blukon.BLUKON_PIN_PREF));
+
+            final String dex_time_keeper = Ob1G5StateMachine.extractDexTime();
+            if (dex_time_keeper != null) {
+                dataMap.putString("dex-timekeeping", dex_time_keeper);
+            }
+
         }
         //Step Counter
         // note transmutes use_pebble_health -> use_wear_health

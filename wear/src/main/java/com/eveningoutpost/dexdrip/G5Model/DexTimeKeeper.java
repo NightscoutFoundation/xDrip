@@ -86,4 +86,34 @@ public class DexTimeKeeper {
         final int valid_time = getDexTime(transmitterId, JoH.tsl());
         return (valid_time >= 0) && (valid_time < DEX_TRANSMITTER_LIFE_SECONDS);
     }
+
+
+    public static String extractForStream(String transmitterId) {
+        if (transmitterId == null || transmitterId.length() == 0) return null;
+        final long result = PersistentStore.getLong(DEX_XMIT_START + transmitterId);
+        if (result == 0) return null;
+        return transmitterId + "^" + result;
+    }
+
+    public static void injectFromStream(String stream) {
+        if (stream == null) return;
+        final String[] components = stream.split("\\^");
+        try {
+            if (components.length == 2) {
+                final long time_stamp = Long.parseLong(components[1]);
+                if (time_stamp > OLDEST_ALLOWED) {
+                    PersistentStore.setLong(DEX_XMIT_START + components[0], time_stamp);
+                    UserError.Log.uel(TAG, "Updating time keeper: " + components[0] + " " + JoH.dateTimeText(time_stamp));
+                } else {
+                    UserError.Log.wtf(TAG, "Dex Timestamp doesn't meet criteria: " + time_stamp);
+                }
+            } else {
+                UserError.Log.e(TAG, "Invalid injectFromStream length: " + stream);
+            }
+        } catch (NumberFormatException e) {
+            UserError.Log.e(TAG, "Invalid injectFromStream: " + stream + " " + e);
+        }
+    }
+
+
 }
