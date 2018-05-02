@@ -87,6 +87,10 @@ public enum CalibrationState {
         return this == SensorFailed || this == SensorFailed2;
     }
 
+    public boolean ended() {
+        return this == Ended;
+    }
+
     public boolean readyForBackfill() {
         return this != WarmingUp && this != Stopped && this != Unknown && this != NeedsFirstCalibration && this != NeedsSecondCalibration;
     }
