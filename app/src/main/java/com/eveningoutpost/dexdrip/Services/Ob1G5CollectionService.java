@@ -1347,6 +1347,10 @@ public class Ob1G5CollectionService extends G5BaseService {
                 && Pref.getBooleanDefaultFalse(OB1G5_PREFS);
     }
 
+    public static boolean onlyUsingNativeMode() {
+        return usingNativeMode() && !fallbackToXdripAlgorithm();
+    }
+
     public static boolean isProvidingNativeGlucoseData() {
         // TODO check age of data?
         return usingNativeMode() && lastSensorState != null && lastSensorState.usableGlucose();

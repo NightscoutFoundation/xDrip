@@ -263,10 +263,16 @@ public class Ob1G5StateMachine {
         return true;
     }
 
+    private static final int SPEAK_SLOWLY_DELAY = 300;
+
+    private static int speakSlowlyDelay() {
+        return speakSlowly ? SPEAK_SLOWLY_DELAY : 0;
+    }
+
     private static void speakSlowly() {
         if (speakSlowly) {
             UserError.Log.d(TAG, "Speaking slowly");
-            threadSleep(300);
+            threadSleep(SPEAK_SLOWLY_DELAY);
         }
     }
 
@@ -581,11 +587,11 @@ public class Ob1G5StateMachine {
     }
 
     private static void inevitableDisconnect(Ob1G5CollectionService parent, RxBleConnection connection) {
-        inevitableDisconnect(parent, connection, 0);
+        inevitableDisconnect(parent, connection, speakSlowlyDelay());
     }
 
     private static void inevitableDisconnect(Ob1G5CollectionService parent, RxBleConnection connection, long guardTime) {
-        Inevitable.task("Ob1G5 disconnect", 500 + guardTime, () -> disconnectNow(parent, connection));
+        Inevitable.task("Ob1G5 disconnect", 500 + guardTime + speakSlowlyDelay(), () -> disconnectNow(parent, connection));
     }
 
     private static void disconnectNow(Ob1G5CollectionService parent, RxBleConnection connection) {

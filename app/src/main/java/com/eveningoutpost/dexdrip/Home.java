@@ -2493,10 +2493,10 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 notificationText.setText("G5 Transmitter is still Warming Up, please wait");
                 showUncalibratedSlope();
             } else {
-                if (BgReading.latest(3).size() > 2) {
+                if ((BgReading.latest(3).size() > 2) || (Ob1G5CollectionService.onlyUsingNativeMode() && BgReading.latest(1).size() > 0)) {
                     // TODO potential to calibrate off stale data here
                     final List<Calibration> calibrations = Calibration.latestValid(2);
-                    if ((calibrations.size() > 1) || (Ob1G5CollectionService.usingNativeMode() && !Ob1G5CollectionService.fallbackToXdripAlgorithm())) {
+                    if ((calibrations.size() > 1) || Ob1G5CollectionService.onlyUsingNativeMode()) {
                         if (calibrations.size() > 1) {
                             if (calibrations.get(0).possible_bad != null && calibrations.get(0).possible_bad == true && calibrations.get(1).possible_bad != null && calibrations.get(1).possible_bad != true) {
                                 notificationText.setText(R.string.possible_bad_calibration);
@@ -2576,6 +2576,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         if ((status_helper_dialog != null) && (status_helper_dialog.isShowing()))
             status_helper_dialog.dismiss();
         if ((helper_dialog != null) && (helper_dialog.isShowing())) return;
+        if (btnApprove.getVisibility() == View.VISIBLE) return;
         if (JoH.ratelimit("calibrate-sensor_prompt", 10)) {
             final AlertDialog.Builder builder = new AlertDialog.Builder(this);
             final Context context = this;
