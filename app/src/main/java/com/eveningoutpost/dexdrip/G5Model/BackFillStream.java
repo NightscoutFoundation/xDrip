@@ -62,16 +62,21 @@ public class BackFillStream extends TransmitterMessage {
             switch (state) {
                 case Ok:
                 case NeedsCalibration:
-                    if (dexTime != 0) {
-                        backsies.add(new Backsie(glucose, trend, dexTime));
+                    insertBackfillItem(backsies, dexTime, glucose, trend);
+                    break;
+
+                case WarmingUp:
+                    break;
+
+                case Errors:
+                    if (Pref.getBooleanDefaultFalse("ob1_g5_use_errored_data")) {
+                        insertBackfillItem(backsies, dexTime, glucose, trend);
                     }
                     break;
 
                 case InsufficientCalibration:
                     if (Pref.getBooleanDefaultFalse("ob1_g5_use_insufficiently_calibrated")) {
-                        if (dexTime != 0) {
-                            backsies.add(new Backsie(glucose, trend, dexTime));
-                        }
+                        insertBackfillItem(backsies, dexTime, glucose, trend);
                     }
                     break;
 
@@ -89,6 +94,12 @@ public class BackFillStream extends TransmitterMessage {
         return backsies;
 
 
+    }
+
+    private void insertBackfillItem(List<Backsie> backsies, int dexTime, int glucose, byte trend) {
+        if (dexTime != 0) {
+            backsies.add(new Backsie(glucose, trend, dexTime));
+        }
     }
 
     public void enumerate(int size) {
