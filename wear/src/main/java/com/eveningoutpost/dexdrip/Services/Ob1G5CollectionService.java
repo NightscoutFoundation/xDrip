@@ -66,6 +66,7 @@ import rx.Subscription;
 import rx.schedulers.Schedulers;
 
 import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.getUUIDName;
+import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.pendingCalibration;
 import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.pendingStart;
 import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.pendingStop;
 import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.STATE.CLOSE;
@@ -598,6 +599,9 @@ public class Ob1G5CollectionService extends G5BaseService {
 
 
     public static String getTransmitterID() {
+        if (transmitterID == null) {
+            init_tx_id();
+        }
         return transmitterID;
     }
 
@@ -836,10 +840,12 @@ public class Ob1G5CollectionService extends G5BaseService {
             transmitterMAC = bleScanResult.getBleDevice().getMacAddress();
             transmitterIDmatchingMAC = transmitterID;
             PersistentStore.setString(OB1G5_MACSTORE + transmitterID, transmitterMAC);
-            if (always_scan) {
-                changeState(STATE.CONNECT_NOW);
-            } else {
-                changeState(STATE.CONNECT);
+            if (JoH.ratelimit("ob1-g5-scan-to-connect-transition", 3)) {
+                if (always_scan) {
+                    changeState(STATE.CONNECT_NOW);
+                } else {
+                    changeState(STATE.CONNECT);
+                }
             }
         } else {
             String this_mac = bleScanResult.getBleDevice().getMacAddress();
@@ -1236,49 +1242,52 @@ public class Ob1G5CollectionService extends G5BaseService {
         final boolean is_failed = state.sensorFailed();
         final boolean was_failed = PersistentStore.getBoolean(IS_FAILED);
 
-        // TODO what notifications can we do on wear?
-        if (!android_wear) {
 
-            if (needs_calibration && !was_needing_calibration) {
-                final Class c;
-                switch (state) {
-                    case NeedsFirstCalibration:
-                        c = DoubleCalibrationActivity.class;
-                        break;
-                    default:
-                        c = AddCalibration.class;
-                        break;
+        if (needs_calibration && !was_needing_calibration) {
+            final Class c;
+            switch (state) {
+                case NeedsFirstCalibration:
+                    c = DoubleCalibrationActivity.class;
+                    break;
+                default:
+                    c = AddCalibration.class;
+                    break;
+            }
+
+            Inevitable.task("ask initial calibration", SECOND_IN_MS * 30, () -> {
+                final PendingIntent pi = PendingIntent.getActivity(xdrip.getAppContext(), G5_CALIBRATION_REQUEST, JoH.getStartActivityIntent(c), PendingIntent.FLAG_UPDATE_CURRENT);
+                // pending intent not used on wear
+                JoH.showNotification(state.getText(), "G5 Calibration Required", android_wear ? null : pi, G5_CALIBRATION_REQUEST, state == CalibrationState.NeedsFirstCalibration, true, false);
+
+            });
+        } else if (!needs_calibration && was_needing_calibration) {
+            JoH.cancelNotification(G5_CALIBRATION_REQUEST);
+        }
+
+
+        if (!is_started && was_started) {
+            if (Pref.getBooleanDefaultFalse("ob1_g5_restart_sensor") && (Sensor.isActive())) {
+                if (state.ended()) {
+                    UserError.Log.uel(TAG,"Requesting time-travel restart");
+                    Ob1G5StateMachine.restartSensorWithTimeTravel();
+                } else {
+                    UserError.Log.uel(TAG,"Attempting to auto-start sensor");
+                    Ob1G5StateMachine.startSensor(JoH.tsl());
                 }
-
-                Inevitable.task("ask initial calibration", SECOND_IN_MS * 30, () -> {
-                    final PendingIntent pi = PendingIntent.getActivity(xdrip.getAppContext(), G5_CALIBRATION_REQUEST, JoH.getStartActivityIntent(c), PendingIntent.FLAG_UPDATE_CURRENT);
-                    JoH.showNotification(state.getText(), "G5 Calibration Required", pi, G5_CALIBRATION_REQUEST, state == CalibrationState.NeedsFirstCalibration, true, false);
-
-                });
-            } else if (!needs_calibration && was_needing_calibration) {
-                JoH.cancelNotification(G5_CALIBRATION_REQUEST);
+                final PendingIntent pi = PendingIntent.getActivity(xdrip.getAppContext(), G5_SENSOR_RESTARTED, JoH.getStartActivityIntent(Home.class), PendingIntent.FLAG_UPDATE_CURRENT);
+                JoH.showNotification("Auto Start", "G5 Sensor Requesting Restart", pi, G5_SENSOR_RESTARTED, true, true, false);
             }
+            final PendingIntent pi = PendingIntent.getActivity(xdrip.getAppContext(), G5_SENSOR_STARTED, JoH.getStartActivityIntent(Home.class), PendingIntent.FLAG_UPDATE_CURRENT);
+            JoH.showNotification(state.getText(), "G5 Sensor Stopped", pi, G5_SENSOR_STARTED, true, true, false);
 
-        } // phone only at mo
+        } else if (is_started && !was_started) {
+            JoH.cancelNotification(G5_SENSOR_STARTED);
+        }
 
-            if (!is_started && was_started) {
-                if (Pref.getBooleanDefaultFalse("ob1_g5_restart_sensor") && (Sensor.isActive())) {
-                    Ob1G5StateMachine.restartSensor();
-                    final PendingIntent pi = PendingIntent.getActivity(xdrip.getAppContext(), G5_SENSOR_RESTARTED, JoH.getStartActivityIntent(Home.class), PendingIntent.FLAG_UPDATE_CURRENT);
-                    JoH.showNotification("Auto Start", "G5 Sensor Requesting Restart", pi, G5_SENSOR_RESTARTED, true, true, false);
-                }
-                final PendingIntent pi = PendingIntent.getActivity(xdrip.getAppContext(), G5_SENSOR_STARTED, JoH.getStartActivityIntent(Home.class), PendingIntent.FLAG_UPDATE_CURRENT);
-                JoH.showNotification(state.getText(), "G5 Sensor Stopped", pi, G5_SENSOR_STARTED, true, true, false);
-
-            } else if (is_started && !was_started) {
-                JoH.cancelNotification(G5_SENSOR_STARTED);
-            }
-
-            if (is_failed && !was_failed) {
-                final PendingIntent pi = PendingIntent.getActivity(xdrip.getAppContext(), G5_SENSOR_FAILED, JoH.getStartActivityIntent(Home.class), PendingIntent.FLAG_UPDATE_CURRENT);
-                JoH.showNotification(state.getText(), "G5 Sensor FAILED", pi, G5_SENSOR_FAILED, true, true, false);
-            }
-
+        if (is_failed && !was_failed) {
+            final PendingIntent pi = PendingIntent.getActivity(xdrip.getAppContext(), G5_SENSOR_FAILED, JoH.getStartActivityIntent(Home.class), PendingIntent.FLAG_UPDATE_CURRENT);
+            JoH.showNotification(state.getText(), "G5 Sensor FAILED", pi, G5_SENSOR_FAILED, true, true, false);
+        }
 
 
         updateG5State(needs_calibration, was_needing_calibration, NEEDING_CALIBRATION);
@@ -1314,6 +1323,10 @@ public class Ob1G5CollectionService extends G5BaseService {
 
     public static boolean isPendingStart() {
         return pendingStart() && usingNativeMode();
+    }
+
+    public static boolean isPendingCalibration() {
+        return pendingCalibration() && usingNativeMode();
     }
 
     public static boolean isG5WantingInitialCalibration() {
