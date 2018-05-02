@@ -2483,6 +2483,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         	return;
         }
 
+        // TODO this logic needed a rework even a year ago, now its a lot more confused with the additional complexity of native mode
         if (Ob1G5CollectionService.isG5ActiveButUnknownState() && Calibration.latestValid(2).size() < 2) {
             notificationText.setText("G5 State isn't currently known. Next connection will update this");
             showUncalibratedSlope();
@@ -2495,9 +2496,11 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 if (BgReading.latest(3).size() > 2) {
                     // TODO potential to calibrate off stale data here
                     final List<Calibration> calibrations = Calibration.latestValid(2);
-                    if (calibrations.size() > 1) {
-                        if (calibrations.get(0).possible_bad != null && calibrations.get(0).possible_bad == true && calibrations.get(1).possible_bad != null && calibrations.get(1).possible_bad != true) {
-                            notificationText.setText(R.string.possible_bad_calibration);
+                    if ((calibrations.size() > 1) || (Ob1G5CollectionService.usingNativeMode() && !Ob1G5CollectionService.fallbackToXdripAlgorithm())) {
+                        if (calibrations.size() > 1) {
+                            if (calibrations.get(0).possible_bad != null && calibrations.get(0).possible_bad == true && calibrations.get(1).possible_bad != null && calibrations.get(1).possible_bad != true) {
+                                notificationText.setText(R.string.possible_bad_calibration);
+                            }
                         }
                         displayCurrentInfo();
                         if (screen_forced_on) dontKeepScreenOn();
@@ -2526,7 +2529,11 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                             notificationText.setText(R.string.please_enter_two_calibrations_to_get_started);
                             showUncalibratedSlope();
                             Log.d(TAG, "Asking for calibration B: Uncalculated BG readings: " + BgReading.latestUnCalculated(2).size() + " / Calibrations size: " + calibrations.size());
-                            promptForCalibration();
+                            if (!Ob1G5CollectionService.isPendingCalibration()) {
+                                promptForCalibration();
+                            } else {
+                                notificationText.setText("Waiting for Transmitter to receive calibration");
+                            }
                             dontKeepScreenOn();
                         }
                     }

@@ -103,7 +103,7 @@ public class DexTimeKeeper {
                 final long time_stamp = Long.parseLong(components[1]);
                 if (time_stamp > OLDEST_ALLOWED) {
                     PersistentStore.setLong(DEX_XMIT_START + components[0], time_stamp);
-                    UserError.Log.uel(TAG, "Updating time keeper: " + components[0] + " " + JoH.dateTimeText(time_stamp));
+                    UserError.Log.d(TAG, "Updating time keeper: " + components[0] + " " + JoH.dateTimeText(time_stamp));
                 } else {
                     UserError.Log.wtf(TAG, "Dex Timestamp doesn't meet criteria: " + time_stamp);
                 }

@@ -32,16 +32,29 @@ public class TransmitterTimeRxMessage extends TransmitterMessage {
         }
     }
 
+    public boolean sessionInProgress() {
+        return sessionStartTime != -1 && currentTime != sessionStartTime;
+    }
+
     public long getRealSessionStartTime(long now) {
         return now - ((currentTime - sessionStartTime) * 1000);
     }
 
     public long getRealSessionStartTime() {
-        return getRealSessionStartTime(JoH.tsl());
+
+        if (sessionInProgress()) {
+            return getRealSessionStartTime(JoH.tsl());
+        } else {
+            return -1;
+        }
     }
 
     public long getSessionDuration() {
-        return JoH.msSince(getRealSessionStartTime());
+        if (sessionInProgress()) {
+            return JoH.msSince(getRealSessionStartTime());
+        } else {
+            return -1;
+        }
     }
 
 }

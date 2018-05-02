@@ -466,9 +466,9 @@ public class Ob1G5StateMachine {
                             } else {
                                 final String msg = "Session Start Failed " + session_start.message();
                                 parent.msg(msg);
-                                UserError.Log.e(TAG, msg);
+                                UserError.Log.ueh(TAG, msg);
                                 JoH.showNotification("G5 Start Failed", msg, null, Constants.G5_START_REJECT, true, true, false);
-                                UserError.Log.e(TAG, "Session Start failed info: " + JoH.dateTimeText(session_start.getSessionStart()) + " " + JoH.dateTimeText(session_start.getRequestedStart()) + " " + JoH.dateTimeText(session_start.getTransmitterTime()));
+                                UserError.Log.ueh(TAG, "Session Start failed info: " + JoH.dateTimeText(session_start.getSessionStart()) + " " + JoH.dateTimeText(session_start.getRequestedStart()) + " " + JoH.dateTimeText(session_start.getTransmitterTime()));
                             }
                             enqueueUniqueCommand(new GlucoseTxMessage(), "Re-read glucose");
 
@@ -537,7 +537,21 @@ public class Ob1G5StateMachine {
 
                         case TransmitterTimeRxMessage:
                             final TransmitterTimeRxMessage txtime = (TransmitterTimeRxMessage) data_packet.msg;
-                            UserError.Log.e(TAG, "Session start time reports: " + JoH.dateTimeText(txtime.getRealSessionStartTime()));
+                            DexTimeKeeper.updateAge(getTransmitterID(), txtime.getCurrentTime());
+                            if (txtime.sessionInProgress()) {
+                                UserError.Log.e(TAG, "Session start time reports: "
+                                        + JoH.dateTimeText(txtime.getRealSessionStartTime()) + " Duration: "
+                                        + JoH.niceTimeScalar(txtime.getSessionDuration()));
+                            } else {
+                                UserError.Log.e(TAG,"Session start time reports: No session in progress");
+                            }
+                           /* if (Pref.getBooleanDefaultFalse("ob1_g5_preemptive_restart")) {
+                                if (txtime.getSessionDuration() > Constants.DAY_IN_MS * 6
+                                        && txtime.getSessionDuration() < Constants.MONTH_IN_MS) {
+                                    UserError.Log.uel(TAG, "Requesting preemptive session restart");
+                                    restartSensorWithTimeTravel();
+                                }
+                            }*/
                             break;
 
                         default:
@@ -750,12 +764,26 @@ public class Ob1G5StateMachine {
         UserError.Log.d(TAG, "Replaced queue with stream: " + json);
     }
 
+    public static String extractDexTime() {
+        return DexTimeKeeper.extractForStream(getTransmitterID());
+    }
+
+    @SuppressWarnings("unused")
+    public static void injectDexTime(String stream) {
+        DexTimeKeeper.injectFromStream(stream);
+    }
+
+
     public static boolean pendingStop() {
         return queueContains(SessionStopTxMessage.class);
     }
 
     public static boolean pendingStart() {
         return queueContains(SessionStartTxMessage.class);
+    }
+
+    public static boolean pendingCalibration() {
+        return queueContains(CalibrateTxMessage.class);
     }
 
     public static int queueSize() {
@@ -789,14 +817,22 @@ public class Ob1G5StateMachine {
     private static final long MAX_START_TIME_REWIND = Constants.MINUTE_IN_MS * 5;
 
     public static void startSensor(long when) {
+        if (acceptCommands()) {
         if (msSince(when) > MAX_START_TIME_REWIND) {
             when = JoH.tsl() - MAX_START_TIME_REWIND;
             UserError.Log.e(TAG, "Cannot rewind sensor start time beyond: " + JoH.dateTimeText(when));
         }
-        if (acceptCommands()) {
-            enqueueCommand(new SessionStartTxMessage(when,
+            enqueueUniqueCommand(new SessionStartTxMessage(when,
                             DexTimeKeeper.getDexTime(getTransmitterID(), when)),
                     "Start Sensor");
+        }
+    }
+
+    private static void reprocessTxMessage(TransmitterMessage tm) {
+        // rewrite session start messages in case our clock was wrong
+        if (tm instanceof SessionStartTxMessage) {
+            final SessionStartTxMessage ssm = (SessionStartTxMessage)tm;
+            tm.byteSequence = new SessionStartTxMessage(ssm.getStartTime(), DexTimeKeeper.getDexTime(getTransmitterID(), ssm.getStartTime())).byteSequence;
         }
     }
 
@@ -811,7 +847,7 @@ public class Ob1G5StateMachine {
     }
 
 
-    public static void restartSensor() {
+    public static void restartSensorWithTimeTravel() {
         if (acceptCommands()) {
             enqueueUniqueCommand(
                     new SessionStopTxMessage(
@@ -868,6 +904,7 @@ public class Ob1G5StateMachine {
                 final Ob1Work unit = commandQueue.poll();
                 if (unit != null) {
                     changed = true;
+                    reprocessTxMessage(unit.msg);
                     if (unit.retry < 5 && JoH.msSince(unit.timestamp) < HOUR_IN_MS * 8) {
                         connection.writeCharacteristic(Control, unit.msg.byteSequence)
                                 .timeout(2, TimeUnit.SECONDS)
