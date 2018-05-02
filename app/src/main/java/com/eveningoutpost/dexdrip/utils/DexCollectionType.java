@@ -176,7 +176,7 @@ public enum DexCollectionType {
         }
     }
 
-    public static boolean getPhoneServiceCollectingState() {
+    public static boolean getLocalServiceCollectingState() {
         try {
             final Method method = getCollectorServiceClass().getMethod("isCollecting");
             return (boolean) method.invoke(null);
