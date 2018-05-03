@@ -1889,8 +1889,19 @@ public class BgGraphBuilder {
         return unitized_string(value, domgdl)+" "+(domgdl ? "mgdl" : "mmol");
     }
 
+    public static String unitized_string_static_no_interpretation_short(double value) {
+        final boolean domgdl = Pref.getString("units", "mgdl").equals("mgdl");
+        final DecimalFormat df = new DecimalFormat("#");
+        if (domgdl) {
+            df.setMaximumFractionDigits(0);
+        } else {
+            df.setMaximumFractionDigits(1);
+        }
+        return df.format(unitized(value, domgdl)) + " " + (domgdl ? "mgdl" : "mmol");
+    }
+
     public static String unitized_string(double value, boolean doMgdl) {
-        DecimalFormat df = new DecimalFormat("#");
+        final DecimalFormat df = new DecimalFormat("#");
         if (value >= 400) {
             return "HIGH";
         } else if (value >= 40) {

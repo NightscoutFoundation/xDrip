@@ -254,6 +254,22 @@
                 android:switchTextOff="@string/short_off_text_for_switches"
                 android:switchTextOn="@string/short_on_text_for_switches"
                 android:title="@string/speak_readings" />
+            <SeekBarPreference
+                android:key="speak_readings_change_threshold"
+                android:dependency="bg_to_speech"
+                android:title="When changes by"
+                android:summary=""
+                android:max="300"
+                android:min="0"
+                android:defaultValue="0" />
+            <SeekBarPreference
+                android:key="speak_readings_change_time"
+                android:dependency="bg_to_speech"
+                android:title="Or per number of minutes"
+                android:summary=""
+                android:max="300"
+                android:min="0"
+                android:defaultValue="0" />
             <SwitchPreference
                 android:defaultValue="false"
                 android:key="speak_alerts"

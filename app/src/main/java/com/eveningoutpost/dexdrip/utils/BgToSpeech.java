@@ -7,6 +7,7 @@ import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.SpeechUtil;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -23,18 +24,21 @@ import static com.eveningoutpost.dexdrip.UtilityModels.SpeechUtil.TWICE_DELIMITE
  * Designed to speak glucose readings when enabled, call the "speak" method with the value, timestamp and optional trend name
  * <p>
  */
-public class BgToSpeech {
+public class BgToSpeech implements NamedSliderProcessor {
 
     public static final String BG_TO_SPEECH_PREF = "bg_to_speech";
+    private static final double MAX_THRESHOLD_MINUTES = (8 * 60) + 1;
+    private static final double MAX_THRESHOLD_MGDL = 100;
 
     private static final String TAG = "BgToSpeech";
 
-    // no longer used compatibility signature
-    /*
-    public static void speak(final double value, long timestamp) {
-        speak(value, timestamp, null);
+    private static int getMinutesSliderValue(int position) {
+        return (int) LogSlider.calc(0, 300, 4, MAX_THRESHOLD_MINUTES, position);
     }
-    */
+
+    private static int getThresholdSliderValue(int position) {
+        return (int) LogSlider.calc(0, 300, 4, MAX_THRESHOLD_MGDL, position);
+    }
 
     // speak a bg reading if its timestamp is current, include the delta name if preferences dictate
     public static void speak(final double value, long timestamp, String delta_name) {
@@ -49,7 +53,54 @@ public class BgToSpeech {
             return;
         }
 
+        // check constraints
+        final long change_time = getMinutesSliderValue(Pref.getInt("speak_readings_change_time", 0)) * Constants.MINUTE_IN_MS;
+
+        boolean conditions_met = false;
+
+        if (lastSpokenSince() < change_time) {
+            UserError.Log.d(TAG, "Not speaking due to change time threshold: " + JoH.niceTimeScalar(change_time) + " vs " + JoH.niceTimeScalar(lastSpokenSince()));
+
+        } else {
+            UserError.Log.d(TAG, "Speaking due to change time threshold: " + JoH.niceTimeScalar(change_time) + " vs " + JoH.niceTimeScalar(lastSpokenSince()));
+            conditions_met = true;
+        }
+
+        if (!conditions_met) {
+            if (!thresholdExceeded(value)) {
+                UserError.Log.d(TAG, "Not speaking due to change delta threshold: " + value);
+                return;
+            }
+        }
+
+
+        updateLastSpokenSince();
         realSpeakNow(value, timestamp, delta_name);
+
+    }
+
+    private static final String LAST_SPOKEN_TIME = "last-spoken-reading-time";
+
+    private static long lastSpokenSince() {
+        return JoH.msSince(PersistentStore.getLong(LAST_SPOKEN_TIME));
+    }
+
+    private static void updateLastSpokenSince() {
+        PersistentStore.setLong(LAST_SPOKEN_TIME, JoH.tsl());
+    }
+
+    private static final String LAST_SPOKEN_VALUE = "last-spoken-value";
+
+    private static boolean thresholdExceeded(double value) {
+        final long change_delta = getThresholdSliderValue(Pref.getInt("speak_readings_change_threshold", 0));
+        final double abs_delta = Math.abs(value - PersistentStore.getDouble(LAST_SPOKEN_VALUE));
+        if (abs_delta > change_delta) {
+            UserError.Log.uel(TAG, "Threshold EXCEEDED: Current change delta: " + abs_delta + " vs " + change_delta + " @ " + value);
+            PersistentStore.setDouble(LAST_SPOKEN_VALUE, value);
+            return true;
+        }
+        UserError.Log.d(TAG, "Threshold not exceeded: Current change delta: " + abs_delta + " vs " + change_delta + " @ " + value);
+        return false;
     }
 
     // always speak the value passed
@@ -158,4 +209,14 @@ public class BgToSpeech {
         }
     }
 
+    @Override
+    public int interpolate(String name, int position) {
+        switch (name) {
+            case "time":
+                return getMinutesSliderValue(position);
+            case "threshold":
+                return getThresholdSliderValue(position);
+        }
+        throw new RuntimeException("name not matched in interpolate");
+    }
 }

@@ -45,6 +45,7 @@ import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.Services.BluetoothGlucoseMeter;
 import com.eveningoutpost.dexdrip.Services.G5BaseService;
 import com.eveningoutpost.dexdrip.Services.PlusSyncService;
+import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Experience;
@@ -455,6 +456,26 @@ public class Preferences extends PreferenceActivity {
         }
     };
 
+    private static Preference.OnPreferenceChangeListener sBindPreferenceTitleAppendToIntegerValueListener = new Preference.OnPreferenceChangeListener() {
+        @Override
+        public boolean onPreferenceChange(Preference preference, Object value) {
+
+            boolean do_update = false;
+            // detect not first run
+            if (preference.getTitle().toString().contains("(")) {
+                do_update = true;
+            }
+
+            preference.setTitle(preference.getTitle().toString().replaceAll("  \\([a-z0-9A-Z]+\\)$", "") + "  (" + value.toString() + ")");
+            if (do_update) {
+                preference.getEditor().putInt(preference.getKey(), (int)value).apply(); // update prefs now
+            }
+            return true;
+        }
+    };
+
+
+
     private static String format_carb_ratio(String oldValue, String newValue) {
         return oldValue.replaceAll(" \\(.*\\)$", "") + "  (" + newValue + "g per Unit)";
     }
@@ -514,6 +535,52 @@ public class Preferences extends PreferenceActivity {
             Log.e(TAG, "Got exception binding preference title: " + e.toString());
         }
     }
+
+    private static void bindPreferenceTitleAppendToIntegerValue(Preference preference) {
+        try {
+            preference.setOnPreferenceChangeListener(sBindPreferenceTitleAppendToIntegerValueListener);
+            sBindPreferenceTitleAppendToIntegerValueListener.onPreferenceChange(preference,
+                    PreferenceManager
+                            .getDefaultSharedPreferences(preference.getContext())
+                            .getInt(preference.getKey(), 0));
+        } catch (Exception e) {
+            Log.e(TAG, "Got exception binding preference title: " + e.toString());
+        }
+    }
+
+    private static void bindPreferenceTitleAppendToIntegerValueFromLogSlider(Preference preference, NamedSliderProcessor ref, String name, boolean unitize) {
+
+        final Preference.OnPreferenceChangeListener listener = new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object value) {
+
+                boolean do_update = false;
+                // detect not first run
+                if (preference.getTitle().toString().contains("(")) {
+                    do_update = true;
+                }
+                final int result = ref.interpolate(name, (int)value);
+
+                preference.setTitle(preference.getTitle().toString().replaceAll("  \\([a-z0-9A-Z \\.]+\\)$", "") + "  (" + (unitize ? BgGraphBuilder.unitized_string_static_no_interpretation_short(result) : result) + ")");
+                if (do_update) {
+                    preference.getEditor().putInt(preference.getKey(), (int) value).apply(); // update prefs now
+                }
+                return true;
+            }
+        };
+
+        try {
+            preference.setOnPreferenceChangeListener(listener);
+            listener.onPreferenceChange(preference,
+                    PreferenceManager
+                            .getDefaultSharedPreferences(preference.getContext())
+                            .getInt(preference.getKey(), 0));
+        } catch (Exception e) {
+            Log.e(TAG, "Got exception binding preference title: " + e.toString());
+        }
+    }
+
+
 
 
     private static void bindPreferenceSummaryToValueAndEnsureNumeric(Preference preference) {
@@ -1217,7 +1284,10 @@ public class Preferences extends PreferenceActivity {
 
             bindPreferenceSummaryToValue(collectionMethod);
             bindPreferenceSummaryToValue(shareKey);
-//            bindPreferenceSummaryToValue(wifiRecievers);
+
+            final NamedSliderProcessor processor = new BgToSpeech();
+            bindPreferenceTitleAppendToIntegerValueFromLogSlider(findPreference("speak_readings_change_time"), processor, "time", false);
+            bindPreferenceTitleAppendToIntegerValueFromLogSlider(findPreference("speak_readings_change_threshold"), processor, "threshold", true);
 
             wifiRecievers.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
