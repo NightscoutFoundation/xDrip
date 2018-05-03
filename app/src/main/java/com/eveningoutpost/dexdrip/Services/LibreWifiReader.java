@@ -161,7 +161,7 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
         System.out.println("Reading from " + hosts[0] + " " + port);
         final List<LibreWifiData> ret;
         try {
-            ret = Read(hosts[0], port, numberOfRecords);
+            ret = ReadV2(hosts[0], port, numberOfRecords);
         } catch (Exception e) {
             // We had some error, need to move on...
             System.out.println("read from host failed cought expation" + hostAndIp);
@@ -261,7 +261,127 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
 
     }
 
-    public static List<LibreWifiData> Read(String hostName, int port, int numberOfRecords) {
+    public static List<LibreWifiData> ReadV2(String hostName, int port, int numberOfRecords) {
+        
+        final List<LibreWifiData> trd_list = new LinkedList<LibreWifiData>();
+        Log.i(TAG, "Read called: " + hostName + " port: " + port);
+        
+        final boolean skip_lan = Pref.getBooleanDefaultFalse("skip_lan_uploads_when_no_lan");
+
+        if (skip_lan && (hostName.endsWith(".local")) && !JoH.isLANConnected()) {
+            Log.d(TAG, "Skipping due to no lan: " + hostName);
+            statusLog(hostName, "Skipping, no LAN");
+            return trd_list; // blank
+        }
+
+        final long time_start = JoH.tsl();
+        String currentAddress = "null";
+        long newest_timestamp = 0;
+
+        try {
+
+
+            // An example of using gson.
+            final ComunicationHeaderV2 ch = new ComunicationHeaderV2(numberOfRecords);
+            //ch.version = 2;
+            //ch.numberOfRecords = numberOfRecords;
+            // String flat = gson.toJson(ch);
+            //ComunicationHeader ch2 = gson.fromJson(flat, ComunicationHeader.class);
+            //System.out.println("Results code" + flat + ch2.version);
+
+            // Real client code
+            final InetSocketAddress ServerAddress = new InetSocketAddress(Mdns.genericResolver(hostName), port);
+            currentAddress = ServerAddress.getAddress().getHostAddress();
+            if (skip_lan && currentAddress.startsWith("192.168.") && !JoH.isLANConnected()) {
+                Log.d(TAG, "Skipping due to no lan: " + hostName);
+                statusLog(hostName, "Skipping, no LAN");
+                return trd_list; // blank
+            }
+
+            final Socket MySocket = new Socket();
+            MySocket.connect(ServerAddress, 10000);
+
+            //System.out.println("After the new socket \n");
+            MySocket.setSoTimeout(3000);
+
+            //System.out.println("client connected... " );
+
+            final PrintWriter out = new PrintWriter(MySocket.getOutputStream(), true);
+            final BufferedReader in = new BufferedReader(new InputStreamReader(MySocket.getInputStream()));
+
+            out.println(ch.toJson());
+
+            String full_data = "";
+            while (true) {
+                String data = in.readLine();
+                if (data == null) {
+                    Log.d(TAG, "recieved null exiting");
+                    break;
+                }
+                if (data.equals("")) {
+                    Log.d(TAG, "recieved \"\" exiting");
+                    break;
+                }
+
+                Log.e(TAG,  "data size " +data.length() + " data = "+ data);
+                full_data += data; 
+            }
+            
+            MySocket.close();
+            
+            final LibreWifiHeader libre_Wifi_header = gson.fromJson(full_data, LibreWifiHeader.class);
+            Log.e(TAG, "LibreWifiHeader = " + libre_Wifi_header);
+            
+            for (LibreWifiData libre_wifi_data : libre_Wifi_header.libre_wifi_data) {
+                libre_wifi_data.CaptureDateTime = System.currentTimeMillis() - libre_wifi_data.RelativeTime;
+                //MapsActivity.newMapLocation(trd.GeoLocation, trd.CaptureDateTime);
+
+                if (newest_timestamp < libre_wifi_data.CaptureDateTime) {
+                    statusLog(hostName, JoH.hourMinuteString() + " OK data from:", libre_wifi_data.CaptureDateTime);
+                    newest_timestamp = libre_wifi_data.CaptureDateTime;
+                }
+
+                trd_list.add(0, libre_wifi_data);
+                //  System.out.println( trd.toTableString());
+                if (trd_list.size() == numberOfRecords) {
+                    // We have the data we want, let's get out
+                    break;
+                }
+            }
+            return trd_list;
+        } catch (SocketTimeoutException s) {
+            Log.e(TAG, "Socket timed out! " + hostName + " : " + currentAddress + " : " + s.toString() + " after: " + JoH.msSince(time_start));
+            statusLog(hostName, JoH.hourMinuteString() + " " + s.toString());
+        } catch (IOException e) {
+            Log.e(TAG, "caught IOException! " + hostName + " : " + currentAddress + " : " + " : " + e.toString());
+            statusLog(hostName, JoH.hourMinuteString() + " " + e.toString());
+        } catch (IllegalArgumentException e) {
+            Log.e(TAG, "Argument error on: " + hostName + " " + e.toString());
+        } catch (NullPointerException e) {
+            Log.e(TAG, "Got null pointer exception " + hostName + " " + e.toString());
+        }
+        
+        return trd_list;
+    }
+
+    
+    
+    public static List<LibreWifiData> ReadV1(String hostName, int port, int numberOfRecords) {
+        
+        // See how it looks
+        LibreWifiHeader libre_wifi_header = new LibreWifiHeader();
+        libre_wifi_header.debug_message = "aa";
+        libre_wifi_header.last_reading = 5;
+        libre_wifi_header.reply_version = 2;
+        libre_wifi_header.device_type = "yyyyy";
+        libre_wifi_header.libre_wifi_data = new LibreWifiData[2];
+        libre_wifi_header.libre_wifi_data[0] = new LibreWifiData();
+        libre_wifi_header.libre_wifi_data[1] = new LibreWifiData();
+        libre_wifi_header.libre_wifi_data[0].CaptureDateTime = 5l;
+        libre_wifi_header.libre_wifi_data[0].DebugInfo = "dd";
+        Log.e(TAG, "xxx " + gson.toJson(libre_wifi_header));
+
+
         final List<LibreWifiData> trd_list = new LinkedList<LibreWifiData>();
         Log.i(TAG, "Read called: " + hostName + " port: " + port);
 
