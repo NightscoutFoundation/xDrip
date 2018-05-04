@@ -156,6 +156,7 @@ dependencies {
     implementation 'me.denley.wearpreferenceactivity:wearpreferenceactivity:0.5.0'
     implementation 'com.google.code.gson:gson:2.4'
     implementation 'io.reactivex:rxjava:1.0.0'
+    implementation 'com.activeandroid:thread-safe-active-android:3.1.1'
     implementation 'com.google.guava:guava:18.0'
     implementation 'com.polidea.rxandroidble:rxandroidble:1.4.3'
     implementation 'org.apache.commons:commons-math3:3.6'
