@@ -598,14 +598,9 @@
         <activity android:name=".UtilityModels.XDripDreamSettingsActivity" />
 
         <service
-            android:name=".Services.AmazFitService"
+            android:name=".wearintegration.Amazfitservice"
             android:enabled="true"
-            android:exported="false" />
-
-        <receiver
-            android:name=".Services.BootReceiver"
-            android:enabled="true"
-            android:exported="true"></receiver>
+            android:exported="true"></service>
     </application>
 
 </manifest>
