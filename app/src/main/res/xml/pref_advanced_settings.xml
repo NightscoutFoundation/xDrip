@@ -1,10 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
         android:icon="@drawable/ic_watch_grey600_48dp"
         android:key="smart_watch_options"
         android:summary="@string/pebble_and_android_wear_options"
         android:title="@string/smart_watch_features">
+        <PreferenceScreen
+            icon="@drawable/ic_heart_pulse_grey600_24dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:title="@string/amazfit_sync_service">
+            <SwitchPreference
+                android:defaultValue="false"
+                android:disableDependentsState="false"
+                android:key="pref_amazfit_enable_key"
+                android:summary="@string/pref_amazfit_enable_summary"
+                android:title="@string/pref_amazfit_tile" />
+            <SwitchPreference
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:defaultValue="false"
+                android:dependency="pref_amazfit_enable_key"
+                android:key="pref_amazfit_alarm_enable_key"
+                android:summary="@string/pref_amazfit_alarm_enable_summary"
+                android:title="@string/pref_amazfit_alarm_tile" />
+        </PreferenceScreen>
         <PreferenceScreen
             android:title="@string/android_wear_integration">
         <PreferenceCategory
