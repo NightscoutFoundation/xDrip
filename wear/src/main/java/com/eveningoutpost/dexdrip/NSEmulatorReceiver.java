@@ -36,7 +36,7 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
 
     private static final String TAG = "jamorham nsemulator";
     private static final boolean debug = false;
-    private static final boolean d = true;
+    private static final boolean d = false;
     private static SharedPreferences prefs;
     private static final Object lock = new Object();
 

@@ -7,6 +7,9 @@ import android.preference.PreferenceManager;
 import com.activeandroid.ActiveAndroid;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.LibreBlock;
+import com.eveningoutpost.dexdrip.Models.LibreData;
+import com.eveningoutpost.dexdrip.UtilityModels.PlusAsyncExecutor;
 
 //import io.fabric.sdk.android.Fabric;
 
@@ -18,6 +21,7 @@ public class xdrip extends Application {
 
     private static final String TAG = "xdrip.java";
     private static Context context;
+    public static PlusAsyncExecutor executor;
     private static boolean fabricInited = false;
 
     @Override
@@ -26,8 +30,9 @@ public class xdrip extends Application {
         super.onCreate();
         PreferenceManager.setDefaultValues(this, R.xml.preferences, true);
         ActiveAndroid.initialize(this);
-        BgReading.updateDB(); // migrate database format
+        updateMigrations();
         JoH.forceBatteryWhitelisting();
+        executor = new PlusAsyncExecutor();
      }
 
     public static Context getAppContext() {
@@ -42,4 +47,11 @@ public class xdrip extends Application {
             return true;
         }
     }
+
+    private static void updateMigrations() {
+        BgReading.updateDB();
+        LibreBlock.updateDB();
+        LibreData.updateDB();
+    }
+
 }

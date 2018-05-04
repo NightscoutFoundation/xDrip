@@ -326,7 +326,11 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                                             sendMessagePayload(node, "SYNC_TREATMENTS_PATH", SYNC_TREATMENTS_PATH, datamap.toByteArray());
                                         }
                                         if (enable_wearG5) {//KS
-                                            if (Ob1G5CollectionService.usingNativeMode()) {
+                                            if (!Ob1G5CollectionService.usingNativeMode()) {
+                                                datamap = getWearTransmitterData(send_bg_count, last_send_previous, 0);//KS 36 data for last 3 hours; 288 for 1 day
+                                            }
+                                                // fallback to using precalculated if our collection method doesn't appear to provide transmitter data or we know it doesn't
+                                            if (datamap == null) {
                                                 datamap = getWearBgReadingData(send_bg_count, last_send_previous, 0);//KS 36 data for last 3 hours; 288 for 1 day
                                                 if (datamap == null) {
                                                     datamap = new DataMap(); // no readings but we need to update status in native mode
@@ -339,11 +343,8 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                                                 datamap.putInt("native_calibration_state", lastState != null ? lastState.getValue() : 0);
                                                 sendMessagePayload(node, "SYNC_BGS_PRECALCULATED_PATH", SYNC_BGS_PRECALCULATED_PATH, datamap.toByteArray());
                                             } else {
-
-                                                datamap = getWearTransmitterData(send_bg_count, last_send_previous, 0);//KS 36 data for last 3 hours; 288 for 1 day
-                                                if (datamap != null) {
-                                                    sendMessagePayload(node, "SYNC_BGS_PATH", SYNC_BGS_PATH, datamap.toByteArray());
-                                                }
+                                                Log.d(TAG,"Sending transmitter data: "+datamap.size());
+                                                sendMessagePayload(node, "SYNC_BGS_PATH", SYNC_BGS_PATH, datamap.toByteArray());
                                             }
                                         }
                                         if (sync_wear_logs) {
@@ -1234,19 +1235,19 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                                     Log.d(TAG, "DATA_ITEM_RECEIVED_PATH received! Duplicate confirmation! Ignore timeOfLastEntry=" + JoH.dateTimeText(timeOfLastEntry));
                                 }
                                 if (mPrefs.getBoolean("enable_wearG5", false)) {
-
-                                   if (Ob1G5CollectionService.usingNativeMode()) {
-                                       dataMap = getWearBgReadingData(send_bg_count, last_send_previous, (send_bg_count / 3));
-                                       if (dataMap != null) {
-                                           Log.i(TAG, "DATA_ITEM_RECEIVED_PATH received! New Request to sync BGs from " + JoH.dateTimeText(last_send_previous));
-                                           sendData(SYNC_BGS_PATH, dataMap.toByteArray());
-                                       }
-                                   }
-
-                                    dataMap = getWearTransmitterData(send_bg_count, last_send_previous, (send_bg_count / 3));
+                                    if (!Ob1G5CollectionService.usingNativeMode()) {
+                                        dataMap = getWearTransmitterData(send_bg_count, last_send_previous, (send_bg_count / 3));
+                                    }
                                     if (dataMap != null) {
                                         Log.i(TAG, "DATA_ITEM_RECEIVED_PATH received! New Request to sync BGs from " + JoH.dateTimeText(last_send_previous));
                                         sendData(SYNC_BGS_PATH, dataMap.toByteArray());
+                                    }
+                                    if (dataMap == null) {
+                                        dataMap = getWearBgReadingData(send_bg_count, last_send_previous, (send_bg_count / 3));
+                                        if (dataMap != null) {
+                                            Log.i(TAG, "DATA_ITEM_RECEIVED_PATH received! New Request to sync BGs from " + JoH.dateTimeText(last_send_previous));
+                                            sendData(SYNC_BGS_PRECALCULATED_PATH, dataMap.toByteArray());
+                                        }
                                     }
                                 }
                                 break;

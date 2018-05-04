@@ -39,6 +39,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.Blukon;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
+import com.eveningoutpost.dexdrip.UtilityModels.LowPriorityThread;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.WearSyncBooleans;
@@ -1284,7 +1285,11 @@ public class WatchUpdaterService extends WearableListenerService implements
                         decomprBytes = decompressBytes(event.getPath(), event.getData(), false);
                         dataMap = DataMap.fromByteArray(decomprBytes);
                         if (dataMap != null) {
-                            syncBgReadingsData(dataMap);
+                            final DataMap fdataMap = dataMap;
+                            new LowPriorityThread(() -> {
+                                syncBgReadingsData(fdataMap);
+                                Home.staticRefreshBGCharts();
+                            }, "inbound-precalculated-bg").start();
                         }
                         break;
 

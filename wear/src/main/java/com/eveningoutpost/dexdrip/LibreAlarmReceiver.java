@@ -206,7 +206,7 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
                 Log.wtf(TAG, "Sensor age has not advanced: " + sensorAge);
                 JoH.static_toast_long("Sensor clock has not advanced!");
                 Pref.setBoolean("nfc_age_problem", true);
-               // return; // do not try to insert again
+                return; // do not try to insert again
             } else {
                 Log.wtf(TAG, "Sensor age has gone backwards!!! " + sensorAge);
                 JoH.static_toast_long("Sensor age has gone backwards!!");

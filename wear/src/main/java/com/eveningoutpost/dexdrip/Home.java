@@ -280,6 +280,10 @@ public class Home extends BaseWatchFace {
         LocalBroadcastManager.getInstance(xdrip.getAppContext()).sendBroadcast(messageIntent);
     }
 
+    public static void staticBlockUI(Context context, boolean state) {
+        // stub placeholder
+    }
+
     public static void toaststatic(final String msg) {
         nexttoast = msg;
         //KS staticRefreshBGCharts();
