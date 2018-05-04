@@ -7,12 +7,9 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 /**
- * Abstract test config class to handle the different config for Android studio and CI builds.
- * Used for tests requiring MockModel framework to be active.
+ * Abstract config and setup for tests.
  *
- * To work for local tests build, uncomment the first @Config line and comment the second.
- *
- * If you commit this file with the wrong config active, the build will not pass CI.
+ * Starts ActiveAndroid and initiates xdrip with appContext.
  *
  * @author jamorham on 01/10/2017
  * @author Asbjørn Aarrestad, asbjorn@aarrestad.com - 2018.03
