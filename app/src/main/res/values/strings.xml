@@ -88,6 +88,17 @@
     <string name="pref_pebble_display_high_line">Display High Line</string>
     <string name="pref_pebble_display_low_line">Display Low Line</string>
 
+    <!-- Amazfit Settings -->
+    <string name="amazfit_sync_service">AmazFit Sync Service</string>
+
+    <string name="pref_amazfit_enable_summary">Enable Amazfit Data support</string>
+    <string name="pref_amazfit_enable">Enable</string>
+    <string name="pref_amazfit_tile">Amazfit Service</string>
+    <string name="pref_amazfit_alarm_enable_summary">Sends Alarms to Smartwatch and mutes Phone</string>
+    <string name="pref_amazfit_alarm_enable">Enable</string>
+    <string name="pref_amazfit_alarm_tile">Watch Alarm</string>
+
+
 
     <string name="toast_crash">Something went wrong :( a report has been sent to help fix the issue.</string>
 
@@ -901,4 +912,10 @@
     <string name="settings_updated_to_mmol">Settings updated to mmol/L</string>
     <string name="external_calibration_app">External Calibration App</string>
     <string name="use_app_for_calibration">use app for calibration?</string>
-</resources>
+
+
+
+    <string name="channel_name">Foreground Service</string>
+
+
+    </resources>
