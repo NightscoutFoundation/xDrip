@@ -2,7 +2,6 @@ package com.eveningoutpost.dexdrip;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.LibreBlock;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.ShareModels.BgUploader;
 import com.eveningoutpost.dexdrip.ShareModels.Models.ShareUploadPayload;
@@ -10,7 +9,6 @@ import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleUtil;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleWatchSync;
 import com.eveningoutpost.dexdrip.utils.BgToSpeech;
-import com.eveningoutpost.dexdrip.wearintegration.Amazfitservice;
 import com.eveningoutpost.dexdrip.wearintegration.ExternalStatusService;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 
@@ -36,7 +34,6 @@ public class NewDataObserver {
         sendToWear();
         uploadToShare(bgReading, is_follower);
         textToSpeech(bgReading, null);
-        LibreBlock.UpdateBgVal(bgReading.timestamp, bgReading.calculated_value);
 
     }
 
@@ -60,12 +57,6 @@ public class NewDataObserver {
     private static void sendToPebble() {
         if (Pref.getBooleanDefaultFalse("broadcast_to_pebble") && (PebbleUtil.getCurrentPebbleSyncType() != 1)) {
             JoH.startService(PebbleWatchSync.class);
-        }
-    }
-    // send data to Amazfit if enabled
-    private static void sendToAmazfit() {
-        if (Pref.getBooleanDefaultFalse("enableAmazfit")){
-            JoH.startService(Amazfitservice.class);
         }
     }
 
