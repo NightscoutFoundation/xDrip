@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.wearintegration;
 
+import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import android.app.Service;
 import android.content.Context;
@@ -26,7 +27,7 @@ import android.os.Handler;
 
 
 /**
- * Created by edoardotassinari on 07/04/18.
+ * Created by klaus3d3.
  */
 
 public class Amazfitservice extends Service {
@@ -57,8 +58,7 @@ public class Amazfitservice extends Service {
 
 
         });
-        UserError.Log.e("Amazfitservice", "Connecting Service ");
-        transporter.connectTransportService();
+
     }
 
 
@@ -81,14 +81,24 @@ public class Amazfitservice extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
 
 
-
-
         if (!transporter.isTransportServiceConnected()){
-            UserError.Log.e("Amazfitservice", "Service not connected ");
-            UserError.Log.e("Amazfitservice", "trying to connect ");
+            UserError.Log.e("Amazfitservice", "Service not connected - trying to reconnect ");
             transporter.connectTransportService();
-        }
-        transporter.send("com.eveningoutpost.dexdrip.wearintegration", getDataBundle());
+            try {
+                wait(1000);
+            } catch (Exception e) {}
+            }
+
+
+            if (!transporter.isTransportServiceConnected()) {
+                UserError.Log.e("Amazfitservice", "Service is not connectable ");
+                ;
+            }else{
+            UserError.Log.e("Amazfitservice", "Service is connected ");
+
+            transporter.send("Xdrip_synced_SGV_data", getDataBundle());
+            UserError.Log.e("Amazfitservice", "Send Data to watch " );
+            }
         return START_STICKY;
 
     }
@@ -96,12 +106,14 @@ public class Amazfitservice extends Service {
 
     public DataBundle getDataBundle() {
         BestGlucose.DisplayGlucose dg = BestGlucose.getDisplayGlucose();
-        UserError.Log.e("Amazfitservice", "putting data together ");
+        //UserError.Log.e("Amazfitservice", "putting data together ");
 
-        dataBundle.putString("date", String.valueOf(dg.timestamp));
-        dataBundle.putString("sgv", String.valueOf(dg.unitized_value));
-        dataBundle.putString("delta", String.valueOf(dg.unitized_delta));
-        dataBundle.putString("direction", String.valueOf(dg.delta_name));
+        dataBundle.putLong("date", dg.timestamp);
+        dataBundle.putString("sgv", String.valueOf(dg.unitized)+" "+ dg.delta_arrow);
+        dataBundle.putString("delta", String.valueOf(dg.spannableString(dg.unitized_delta)));
+        dataBundle.putBoolean("ishigh", dg.isHigh());
+        dataBundle.putBoolean("islow", dg.isLow());
+
         return dataBundle;
     }
 

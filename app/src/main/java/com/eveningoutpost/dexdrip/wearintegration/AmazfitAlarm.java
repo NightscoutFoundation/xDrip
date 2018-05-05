@@ -1,4 +1,5 @@
 package com.eveningoutpost.dexdrip.wearintegration;
 
-public class AmazfitAlarm {
+public class AmazfitAlarm extends Amazfitservice {
+    //todo
 }
