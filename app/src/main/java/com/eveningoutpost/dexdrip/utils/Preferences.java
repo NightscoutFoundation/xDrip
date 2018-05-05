@@ -63,7 +63,9 @@ import com.eveningoutpost.dexdrip.WidgetUpdateService;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileEditor;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
+import com.eveningoutpost.dexdrip.wearintegration.Amazfitservice;
 import com.eveningoutpost.dexdrip.webservices.XdripWebService;
+
 import com.eveningoutpost.dexdrip.xDripWidget;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.zxing.integration.android.IntentIntegrator;
@@ -754,6 +756,11 @@ public class Preferences extends PreferenceActivity {
             final Preference pebbleSync2 = findPreference("broadcast_to_pebble_type");
             final Preference pebbleSync1 = findPreference("broadcast_to_pebble");
 
+
+
+
+
+
             // Pebble Trend - START
             final Preference watchIntegration = findPreference("watch_integration");
             final PreferenceCategory watchCategory = (PreferenceCategory) findPreference("pebble_integration");
@@ -799,6 +806,30 @@ public class Preferences extends PreferenceActivity {
             final PreferenceCategory displayCategory = (PreferenceCategory) findPreference("xdrip_plus_display_category");
 
 
+            final Preference enableAmazfit = findPreference("pref_amazfit_enable_key");
+
+
+            enableAmazfit.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+               @Override
+               public boolean onPreferenceChange(Preference preference, Object newValue) {
+                  final Context context = preference.getContext();
+                  Boolean enabled = (boolean) newValue;
+                   if (enabled==true) {
+                       context.startService(new Intent(context, Amazfitservice.class));
+
+                   }else {
+                       context.stopService(new Intent(context, Amazfitservice.class));
+                   }
+
+                return true;
+                }
+            });
+
+
+
+
+
+
             // TODO build list of preferences to cause wear refresh from list
             findPreference("wear_sync").setOnPreferenceChangeListener((preference, newValue) -> {
                         WatchUpdaterService.startSelf();
@@ -836,6 +867,7 @@ public class Preferences extends PreferenceActivity {
                 XdripWebService.immortality(); // start or stop service when preference toggled
                 return true;
             });
+
 
             if (enableBF != null ) enableBF.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                                                                               @Override
@@ -1114,6 +1146,12 @@ public class Preferences extends PreferenceActivity {
                 if (Build.VERSION.SDK_INT < 21) {
                     try {
                         colorScreen.removePreference(flairCategory);
+                    } catch (Exception e) { //
+                    }
+                }
+                if (Build.VERSION.SDK_INT < 23) {
+                    try {
+                        ((PreferenceGroup)findPreference("xdrip_plus_display_category")).removePreference(findPreference("xdrip_plus_number_icon"));
                     } catch (Exception e) { //
                     }
                 }
@@ -1764,8 +1802,10 @@ public class Preferences extends PreferenceActivity {
             alert.show();
         }
 
-        private static int pebbleType = 1;
 
+
+
+        private static int pebbleType = 1;
         private void enablePebble(int newValueInt, boolean enabled, Context context) {
             Log.d(TAG,"enablePebble called with: "+newValueInt+" "+enabled);
             if (pebbleType == 1) {
@@ -1809,6 +1849,7 @@ public class Preferences extends PreferenceActivity {
                 }
             });
         }
+
 
         private void refresh_extra_items() {
             try {
