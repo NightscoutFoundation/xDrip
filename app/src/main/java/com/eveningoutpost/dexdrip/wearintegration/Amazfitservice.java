@@ -113,6 +113,12 @@ public class Amazfitservice extends Service {
         dataBundle.putString("delta", String.valueOf(dg.spannableString(dg.unitized_delta)));
         dataBundle.putBoolean("ishigh", dg.isHigh());
         dataBundle.putBoolean("islow", dg.isLow());
+        dataBundle.putBoolean("isstale", dg.isStale());
+        dataBundle.putBoolean("fromplugin", dg.from_plugin);
+        dataBundle.putString("extra_string", dg.extra_string);
+        dataBundle.putString("plugin_name", dg.plugin_name);
+        dataBundle.putInt("warning", dg.warning);
+
 
         return dataBundle;
     }
