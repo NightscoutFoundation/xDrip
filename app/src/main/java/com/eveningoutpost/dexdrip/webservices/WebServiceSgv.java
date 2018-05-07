@@ -52,7 +52,7 @@ public class WebServiceSgv extends BaseWebService {
         if (cgi.containsKey("count")) {
             try {
                 count = Integer.valueOf(cgi.get("count"));
-                count = Math.min(count, 100);
+                count = Math.min(count, 1000);
                 count = Math.max(count, 1);
                 UserError.Log.d(TAG, "SGV count request for: " + count + " entries");
             } catch (Exception e) {
