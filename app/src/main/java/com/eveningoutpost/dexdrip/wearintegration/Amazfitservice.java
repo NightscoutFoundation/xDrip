@@ -1,10 +1,13 @@
 package com.eveningoutpost.dexdrip.wearintegration;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import com.eveningoutpost.dexdrip.Models.HeartRate;
+import com.eveningoutpost.dexdrip.Models.StepCounter;
 
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -35,6 +38,8 @@ public class Amazfitservice extends Service {
     private Transporter transporter;
     private Context context;
     DataBundle dataBundle = new DataBundle();
+    private HeartRate heartrate;
+    private StepCounter stepcounter;
 
     @Override
     public void onCreate() {
@@ -54,6 +59,12 @@ public class Amazfitservice extends Service {
         transporter.addDataListener(new Transporter.DataListener() {
             @Override
             public void onDataReceived(TransportDataItem item) {
+                if (item.getAction().equals("Amazfit_Healthdata")) {
+                    DataBundle databundle = item.getData();
+                    final StepCounter pm = StepCounter.createEfficientRecord(JoH.tsl(), databundle.getInt("steps"));
+                    HeartRate.create(JoH.tsl(),databundle.getInt("heart_rate"), databundle.getInt("heart_acuracy"));
+
+                }else  UserError.Log.e("Amazfitservice", item.getAction());
             }
 
 
