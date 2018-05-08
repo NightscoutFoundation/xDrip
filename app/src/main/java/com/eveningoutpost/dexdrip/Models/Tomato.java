@@ -49,7 +49,7 @@ public class Tomato {
         // Check time, probably need to start on sending
         long now = JoH.tsl();
         if(now - s_lastReceiveTimestamp > 3*1000) {
-            // We did not receive data in 10 seconds, moving to init state again
+            // We did not receive data in 3 seconds, moving to init state again
             Log.e(TAG, "Recieved a buffer after " + (now - s_lastReceiveTimestamp) / 1000 +  " seconds, starting again. "+
             "already acumulated " + s_acumulatedSize + " bytes.");
             s_state = TOMATO_STATES.REQUEST_DATA_SENT;
@@ -212,7 +212,12 @@ public class Tomato {
         ArrayList<ByteBuffer> ret = new ArrayList<>();
 
         s_state = TOMATO_STATES.REQUEST_DATA_SENT;
-
+        
+        // Make tomato send data every 5 minutes
+        ByteBuffer newFreqMessage = ByteBuffer.allocate(2);    
+        newFreqMessage.put(0, (byte) 0xD1);    
+        newFreqMessage.put(1, (byte) 0x05);    
+        ret.add(newFreqMessage);
 
         //command to start reading
         ByteBuffer ackMessage = ByteBuffer.allocate(1);
