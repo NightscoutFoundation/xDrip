@@ -424,6 +424,13 @@
                     android:switchTextOn="@string/short_on_text_for_switches"
                     android:title="Show Number Icon" />
             </PreferenceScreen>
+            <SwitchPreference
+                android:defaultValue="false"
+                android:key="show_home_on_boot"
+                android:summary="Bring up xDrip screen automatically after device boots"
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
+                android:title="Show xDrip on Boot" />
 
         </PreferenceCategory>
     </PreferenceScreen>
