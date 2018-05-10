@@ -28,7 +28,14 @@ public class DexTimeKeeper {
             UserError.Log.e(TAG, "Invalid dex timestamp in updateAge: " + dexTimeStamp);
             return;
         }
-        final long activation_time = JoH.tsl() - (dexTimeStamp * 1000);
+
+        final long activation_time = JoH.tsl() - ((long) dexTimeStamp * 1000);
+
+        if (activation_time > JoH.tsl()) {
+            UserError.Log.wtf(TAG, "Transmitter activation time is in the future. Not possible to update: " + dexTimeStamp);
+            return;
+        }
+
         UserError.Log.d(TAG, "Activation time updated to: " + JoH.dateTimeText(activation_time));
         PersistentStore.setLong(DEX_XMIT_START + transmitterId, activation_time);
 
@@ -54,7 +61,7 @@ public class DexTimeKeeper {
 
         final long ms_since = timestamp - transmitter_start_timestamp;
         if (ms_since < 0) {
-            UserError.Log.e(TAG, "Invalid timestamp comparison for transmitter id: " + transmitterId);
+            UserError.Log.e(TAG, "Invalid timestamp comparison for transmitter id: " + transmitterId + " since: " + ms_since + "  requested ts: " + JoH.dateTimeText(timestamp) + " with tx start: " + JoH.dateTimeText(transmitter_start_timestamp));
             return -4;
         }
         lastTransmitterId = transmitterId;
