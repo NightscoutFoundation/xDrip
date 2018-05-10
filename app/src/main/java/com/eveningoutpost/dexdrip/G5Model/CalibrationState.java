@@ -5,6 +5,7 @@ package com.eveningoutpost.dexdrip.G5Model;
 import android.util.SparseArray;
 
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.google.common.collect.ImmutableSet;
 
 import lombok.Getter;
 
@@ -17,10 +18,13 @@ public enum CalibrationState {
     Unknown(0x00, "Unknown"),
     Stopped(0x01, "Stopped"),
     WarmingUp(0x02, "Warming Up"),
+    ExcessNoise(0x03, "Excess Noise"),
     NeedsFirstCalibration(0x04, "Needs Initial Calibration"),
     NeedsSecondCalibration(0x05, "Needs Second Calibration"),
     Ok(0x06, "OK"),
     NeedsCalibration(0x07, "Needs Calibration"),
+    CalibrationConfused1(0x08, "Confused Calibration 1"),
+    CalibrationConfused2(0x09, "Confused Calibration 2"),
     NeedsDifferentCalibration(0x0a, "Needs More Calibration"),
     SensorFailed(0x0b, "Sensor Failed"),
     SensorFailed2(0x0c, "Sensor Failed 2"),
@@ -36,6 +40,7 @@ public enum CalibrationState {
 
 
     private static final SparseArray<CalibrationState> lookup = new SparseArray<>();
+    private static final ImmutableSet<CalibrationState> stopped = ImmutableSet.of(Stopped, Ended, SensorFailed, SensorFailed2);
 
     CalibrationState(int value, String text) {
         this.value = (byte) value;
@@ -80,7 +85,7 @@ public enum CalibrationState {
     }
 
     public boolean sensorStarted() {
-        return readyForCalibration() || this == WarmingUp || this == Errors;
+        return !stopped.contains(this);
     }
 
     public boolean sensorFailed() {
@@ -91,7 +96,7 @@ public enum CalibrationState {
         return this == Ended;
     }
 
-    public boolean warmingup() {
+    public boolean warmingUp() {
         return this == WarmingUp;
     }
 
@@ -109,7 +114,7 @@ public enum CalibrationState {
                 }
             case WarmingUp:
                 if (DexSessionKeeper.isStarted()) {
-                    return getText() + "\n" + DexSessionKeeper.prettyTime();
+                    return getText() + "\n" + DexSessionKeeper.prettyTime() + " left";
                 } else {
                     return getText();
                 }

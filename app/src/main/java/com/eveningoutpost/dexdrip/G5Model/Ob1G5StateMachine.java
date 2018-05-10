@@ -51,6 +51,7 @@ import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.Authenticatio
 import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.Control;
 import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.ProbablyBackfill;
 import static com.eveningoutpost.dexdrip.Models.JoH.msSince;
+import static com.eveningoutpost.dexdrip.Models.JoH.pratelimit;
 import static com.eveningoutpost.dexdrip.Services.G5BaseService.G5_BATTERY_FROM_MARKER;
 import static com.eveningoutpost.dexdrip.Services.G5BaseService.G5_BATTERY_LEVEL_MARKER;
 import static com.eveningoutpost.dexdrip.Services.G5BaseService.G5_BATTERY_MARKER;
@@ -470,11 +471,17 @@ public class Ob1G5StateMachine {
                                 // TODO persist this
                                 parent.msg("Session Started Successfully: " + JoH.dateTimeText(session_start.getSessionStart()) + " " + JoH.dateTimeText(session_start.getRequestedStart()) + " " + JoH.dateTimeText(session_start.getTransmitterTime()));
                             } else {
-                                final String msg = "Session Start Failed " + session_start.message();
+                                final String msg = "Session Start Failed: " + session_start.message();
                                 parent.msg(msg);
                                 UserError.Log.ueh(TAG, msg);
                                 JoH.showNotification("G5 Start Failed", msg, null, Constants.G5_START_REJECT, true, true, false);
                                 UserError.Log.ueh(TAG, "Session Start failed info: " + JoH.dateTimeText(session_start.getSessionStart()) + " " + JoH.dateTimeText(session_start.getRequestedStart()) + " " + JoH.dateTimeText(session_start.getTransmitterTime()));
+                                if (Pref.getBooleanDefaultFalse("ob1_g5_restart_sensor") && (Sensor.isActive())) {
+                                    if (pratelimit("secondary-g5-start", 1800)) {
+                                        UserError.Log.ueh(TAG, "Trying to Start sensor again");
+                                        startSensor(JoH.tsl());
+                                    }
+                                }
                             }
                             enqueueUniqueCommand(new GlucoseTxMessage(), "Re-read glucose");
 
@@ -505,8 +512,11 @@ public class Ob1G5StateMachine {
                                 enqueueUniqueCommand(new SensorTxMessage(), "Also read raw");
                             }
 
-                            if (JoH.pratelimit("g5-tx-time-since", 7200)) {
-                                enqueueUniqueCommand(new TransmitterTimeTxMessage(), "Periodic Query Time");
+                            if (JoH.pratelimit("g5-tx-time-since", 7200)
+                                    || glucose.calibrationState().warmingUp()) {
+                                if (JoH.ratelimit("g5-tx-time-governer", 30)) {
+                                    enqueueUniqueCommand(new TransmitterTimeTxMessage(), "Periodic Query Time");
+                                }
                             }
 
                             // TODO check firmware version
@@ -548,8 +558,10 @@ public class Ob1G5StateMachine {
                                 UserError.Log.e(TAG, "Session start time reports: "
                                         + JoH.dateTimeText(txtime.getRealSessionStartTime()) + " Duration: "
                                         + JoH.niceTimeScalar(txtime.getSessionDuration()));
+                                DexSessionKeeper.setStart(txtime.getRealSessionStartTime());
                             } else {
-                                UserError.Log.e(TAG,"Session start time reports: No session in progress");
+                                UserError.Log.e(TAG, "Session start time reports: No session in progress");
+                                DexSessionKeeper.clearStart();
                             }
                            /* if (Pref.getBooleanDefaultFalse("ob1_g5_preemptive_restart")) {
                                 if (txtime.getSessionDuration() > Constants.DAY_IN_MS * 6
@@ -854,14 +866,18 @@ public class Ob1G5StateMachine {
 
 
     public static void restartSensorWithTimeTravel() {
+        restartSensorWithTimeTravel(JoH.tsl() - HOUR_IN_MS * 2 - MINUTE_IN_MS * 10);
+    }
+
+    public static void restartSensorWithTimeTravel(long when) {
         if (acceptCommands()) {
             enqueueUniqueCommand(
                     new SessionStopTxMessage(
-                            DexTimeKeeper.getDexTime(getTransmitterID(), JoH.tsl() - HOUR_IN_MS * 2 - MINUTE_IN_MS * 10)),
-                    "Auto Stop Sensor");
-            final long when = JoH.tsl() - HOUR_IN_MS * 2 - MINUTE_IN_MS * 10 + SECOND_IN_MS;
-            enqueueUniqueCommand(new SessionStartTxMessage(when,
                             DexTimeKeeper.getDexTime(getTransmitterID(), when)),
+                    "Auto Stop Sensor");
+            final long when_started = when + SECOND_IN_MS;
+            enqueueUniqueCommand(new SessionStartTxMessage(when,
+                            DexTimeKeeper.getDexTime(getTransmitterID(), when_started)),
                     "Auto Start Sensor");
         }
     }

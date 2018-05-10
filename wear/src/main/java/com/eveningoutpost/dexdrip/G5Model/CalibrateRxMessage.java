@@ -38,6 +38,8 @@ public class CalibrateRxMessage extends TransmitterMessage {
 
             case (byte) 0x00:
                 return "OK";
+            case (byte) 0x01:
+                return "Code 1";
             case (byte) 0x06:
                 return "Second calibration needed";
             case (byte) 0x08:

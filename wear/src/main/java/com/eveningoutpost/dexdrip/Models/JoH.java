@@ -627,6 +627,29 @@ public class JoH {
         return qs((double) t, 0) + " " + unit;
     }
 
+    public static String niceTimeScalar(double t, int digits) {
+        String unit = "second";
+        t = t / 1000;
+        if (t > 59) {
+            unit = "minute";
+            t = t / 60;
+            if (t > 59) {
+                unit = "hour";
+                t = t / 60;
+                if (t > 24) {
+                    unit = "day";
+                    t = t / 24;
+                    if (t > 28) {
+                        unit = "week";
+                        t = t / 7;
+                    }
+                }
+            }
+        }
+        if (t != 1) unit = unit + "s";
+        return qs( t, digits) + " " + unit;
+    }
+
     public static String niceTimeScalarNatural(long t) {
         if (t > 3000000) t = t + 10000; // round up by 10 seconds if nearly an hour
         if ((t > Constants.DAY_IN_MS) && (t < Constants.WEEK_IN_MS * 2)) {
