@@ -15,6 +15,8 @@ public class SessionStartTxMessage extends TransmitterMessage {
     final byte opcode = 0x26;
     @Getter
     private final long startTime;
+    @Getter
+    private final int dexTime;
 
     public SessionStartTxMessage(int dexTime) {
         this((int) (JoH.tsl() / 1000), dexTime);
@@ -22,6 +24,7 @@ public class SessionStartTxMessage extends TransmitterMessage {
 
     public SessionStartTxMessage(long startTime, int dexTime) {
         this.startTime = startTime;
+        this.dexTime = dexTime;
         data = ByteBuffer.allocate(11);
         data.order(ByteOrder.LITTLE_ENDIAN);
         data.put(opcode);
