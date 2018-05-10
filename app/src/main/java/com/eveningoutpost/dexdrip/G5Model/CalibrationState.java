@@ -91,7 +91,31 @@ public enum CalibrationState {
         return this == Ended;
     }
 
+    public boolean warmingup() {
+        return this == WarmingUp;
+    }
+
     public boolean readyForBackfill() {
         return this != WarmingUp && this != Stopped && this != Unknown && this != NeedsFirstCalibration && this != NeedsSecondCalibration;
+    }
+
+    public String getExtendedText() {
+        switch (this) {
+            case Ok:
+                if (DexSessionKeeper.isStarted()) {
+                    return getText() + " " + DexSessionKeeper.prettyTime();
+                } else {
+                    return getText() + " time?";
+                }
+            case WarmingUp:
+                if (DexSessionKeeper.isStarted()) {
+                    return getText() + "\n" + DexSessionKeeper.prettyTime();
+                } else {
+                    return getText();
+                }
+
+            default:
+                return getText();
+        }
     }
 }

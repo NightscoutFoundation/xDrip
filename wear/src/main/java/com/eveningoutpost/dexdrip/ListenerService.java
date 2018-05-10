@@ -137,7 +137,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     private static final String WEARABLE_PREF_DATA_PATH = "/xdrip_plus_watch_pref_data";//KS
     private static final String WEARABLE_ACTIVEBTDEVICE_DATA_PATH = "/xdrip_plus_watch_activebtdevice_data";//KS
     private static final String WEARABLE_ALERTTYPE_DATA_PATH = "/xdrip_plus_watch_alerttype_data";//KS
-    private static final String WEARABLE_SNOOZE_ALERT = "/xdrip_plus_snooze_payload";
+    public static final String WEARABLE_SNOOZE_ALERT = "/xdrip_plus_snooze_payload";
     private static final String DATA_ITEM_RECEIVED_PATH = "/xdrip_plus_data-item-received";//KS
     private static final String ACTION_RESEND = "com.dexdrip.stephenblack.nightwatch.RESEND_DATA";
     private static final String ACTION_SENDDATA = "com.dexdrip.stephenblack.nightwatch.SEND_DATA";
@@ -230,7 +230,6 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             try {
                 // force reconnection if it is not present
                 forceGoogleApiConnect();
-
                 DataMap datamap;
                 SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());//KS
                 boolean enable_wearG5 = sharedPrefs.getBoolean("enable_wearG5", false); //KS

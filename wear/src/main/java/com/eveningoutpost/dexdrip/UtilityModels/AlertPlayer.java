@@ -15,6 +15,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.ListenerService;
 import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
 import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Models.JoH;
@@ -102,8 +103,8 @@ public class AlertPlayer {
 
     private final static String TAG = AlertPlayer.class.getSimpleName();
     private volatile MediaPlayer mediaPlayer;
-    int volumeBeforeAlert = -1;
-    int volumeForThisAlert = -1;
+    private int volumeBeforeAlert = -1;
+    private int volumeForThisAlert = -1;
 
     final static int ALERT_PROFILE_HIGH = 1;
     final static int ALERT_PROFILE_ASCENDING = 2;
@@ -113,7 +114,6 @@ public class AlertPlayer {
 
     final static int  MAX_VIBRATING = 2;
     final static int  MAX_ASCENDING = 5;
-    private static final String WEARABLE_SNOOZE_ALERT = "/xdrip_plus_snooze_payload";
 
     private static synchronized void createPlayer() {
         if (singletone == null) {
@@ -177,9 +177,9 @@ public class AlertPlayer {
     //  default signature for user initiated interactive snoozes only
     public synchronized void Snooze(Context ctx, int repeatTime) {
         Snooze(ctx, repeatTime, true);
-        if (Home.get_forced_wear() && Pref.getBooleanDefaultFalse("bg_notifications") ) {
-            SendData(ctx, WEARABLE_SNOOZE_ALERT, ("" + repeatTime).getBytes(StandardCharsets.UTF_8));
-        }
+        //   if (Home.get_forced_wear() && Pref.getBooleanDefaultFalse("bg_notifications") ) {
+        SendData(ctx, ListenerService.WEARABLE_SNOOZE_ALERT, ("" + repeatTime).getBytes(StandardCharsets.UTF_8));
+        //   }
     }
 
     public synchronized void Snooze(Context ctx, int repeatTime, boolean from_interactive) {

@@ -81,7 +81,7 @@ public class DexTimeKeeper {
         lastTransmitterId = transmitterId;
         final long transmitter_start_timestamp = PersistentStore.getLong(DEX_XMIT_START + transmitterId);
         if (transmitter_start_timestamp > 0) {
-            return transmitter_start_timestamp + (dexTimeStamp * 1000);
+            return transmitter_start_timestamp + ((long) dexTimeStamp * 1000);
         } else {
             return -1;
         }

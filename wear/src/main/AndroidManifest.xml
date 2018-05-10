@@ -11,6 +11,9 @@
 
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_PRIVILEGED" />
+    <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS_FULL" />
+    <uses-permission android:name="android.permission.INSTALL_PACKAGES" />
+    <uses-permission android:name="android.permission.MANAGE_DEVICE_ADMINS"/>
     <uses-permission android:name="android.permission.DEVICE_POWER"
         tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
@@ -221,6 +224,18 @@
             android:label="Keypad Treatment">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".QuickSnooze"
+            android:icon="@drawable/ic_icon"
+            android:launchMode="singleTask"
+            android:label="@string/snooze_alert">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
