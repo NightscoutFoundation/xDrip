@@ -14,6 +14,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.BestGlucose;
+import com.eveningoutpost.dexdrip.BuildConfig;
 import com.eveningoutpost.dexdrip.G5Model.CalibrationState;
 import com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine;
 import com.eveningoutpost.dexdrip.Home;
@@ -1672,6 +1673,8 @@ public class WatchUpdaterService extends WearableListenerService implements
         final Locale locale = Locale.getDefault();
         String country = locale.getCountry();
         dataMap.putString("locale",  locale.getLanguage()+(country!=null && !country.isEmpty() ? "_"+country : ""));
+
+        dataMap.putString("build-version-name", BuildConfig.VERSION_NAME);
 
         for (String pref : defaultFalseBooleansToSend) {
             dataMap.putBoolean(pref, Pref.getBooleanDefaultFalse(pref));

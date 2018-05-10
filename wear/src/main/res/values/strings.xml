@@ -206,4 +206,6 @@
     <string name="tomato">Tomato</string>
     <string name="space_minutes_ago">" Minutes ago"</string>
     <string name="space_minute_ago">" Minute ago"</string>
+    <string name="snooze_alert">Snooze Alert</string>
+    <string name="sending_snooze">Sending Snooze</string>
 </resources>
