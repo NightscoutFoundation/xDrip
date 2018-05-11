@@ -904,6 +904,12 @@ public class Preferences extends PreferenceActivity {
                 return true;
             });
 
+            findPreference("xdrip_webservice_open").setOnPreferenceChangeListener((preference, newValue) -> {
+                preference.getEditor().putBoolean(preference.getKey(), (boolean) newValue).apply(); // write early for method below
+                XdripWebService.settingsChanged(); // refresh
+                return true;
+            });
+
             if (enableBF != null ) enableBF.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                                                                               @Override
                                                                               public boolean onPreferenceChange(Preference preference, Object newValue) {
