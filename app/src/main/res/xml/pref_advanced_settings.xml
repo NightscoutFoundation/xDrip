@@ -369,6 +369,12 @@
                 android:switchTextOff="@string/short_off_text_for_switches"
                 android:switchTextOn="@string/short_on_text_for_switches"
                 android:title="xDrip Web Service" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:dependency="xdrip_webservice"
+                android:key="xdrip_webservice_open"
+                android:summary="Accept connections from any network instead of just internally within this device. There are security implications to enabling this!"
+                android:title="Open Web Service" />
         </PreferenceScreen>
         <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
             android:key="xdrip_less_common_settings"
