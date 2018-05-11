@@ -98,13 +98,13 @@
                 android:defaultValue="false"
                 android:key="use_ob1_g5_collector_service"
                 android:summary="Complete re-write, should work on Android 4.4 and more"
-                android:title="Try the new OB1 G5 Collector" />
+                android:title="Try the new OB1 Collector" />
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:dependency="use_ob1_g5_collector_service"
                 android:key="ob1_g5_use_transmitter_alg"
-                android:summary="Use the G5 transmitter's internal algorithm to calculate glucose values when possible. (Experimental!)"
-                android:title="G5 Native Algorithm"
+                android:summary="Use the transmitter's internal algorithm to calculate glucose values when possible. (Experimental!)"
+                android:title="Native Algorithm"
                 />
             <CheckBoxPreference
                 android:defaultValue="false"
@@ -126,6 +126,12 @@
                 android:key="ob1_g5_fallback_to_xdrip"
                 android:summary="Revert to xDrip algorithm if G5 doesn't provide glucose data (Potentially risky!)"
                 android:title="Fallback to xDrip"
+                />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="using_g6"
+                android:summary="I am using a G6 Sensor"
+                android:title="G6 Support"
                 />
             <CheckBoxPreference
                 android:defaultValue="true"
