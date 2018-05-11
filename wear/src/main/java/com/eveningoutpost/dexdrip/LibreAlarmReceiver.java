@@ -193,7 +193,7 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
     	
         // insert any recent data we can
         final List<GlucoseData> mTrend = object.data.trend;
-        if (mTrend != null) {
+        if (mTrend != null && mTrend.size() > 0) {
             Collections.sort(mTrend);
             final long thisSensorAge = mTrend.get(mTrend.size() - 1).sensorTime;
             sensorAge = Pref.getInt("nfc_sensor_age", 0);
@@ -265,25 +265,28 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
                 //ConstrainedSplineInterpolator splineInterp = new ConstrainedSplineInterpolator();
                 final SplineInterpolator splineInterp = new SplineInterpolator();
 
-                try {
-                    PolynomialSplineFunction polySplineF = splineInterp.interpolate(
-                            Forecast.PolyTrendLine.toPrimitiveFromList(polyxList),
-                            Forecast.PolyTrendLine.toPrimitiveFromList(polyyList));
-
-                    final long startTime = mHistory.get(0).realDate;
-                    final long endTime = mHistory.get(mHistory.size() - 1).realDate;
-
-                    for (long ptime = startTime; ptime <= endTime; ptime += 300000) {
-                        if (d)
-                            Log.d(TAG, "Spline: " + JoH.dateTimeText((long) ptime) + " value: " + (int) polySplineF.value(ptime));
-                        if (use_raw) {
-                            createBGfromGD(new GlucoseData((int) polySplineF.value(ptime), ptime), true);
-                        } else {
-                            BgReading.bgReadingInsertFromInt((int) polySplineF.value(ptime), ptime, false);
+                if(polyxList.size() >= 3) {
+                    // The need to have at least 3 points is a demand from the interpolate function.
+                    try {
+                        PolynomialSplineFunction polySplineF = splineInterp.interpolate(
+                                Forecast.PolyTrendLine.toPrimitiveFromList(polyxList),
+                                Forecast.PolyTrendLine.toPrimitiveFromList(polyyList));
+    
+                        final long startTime = mHistory.get(0).realDate;
+                        final long endTime = mHistory.get(mHistory.size() - 1).realDate;
+    
+                        for (long ptime = startTime; ptime <= endTime; ptime += 300000) {
+                            if (d)
+                                Log.d(TAG, "Spline: " + JoH.dateTimeText((long) ptime) + " value: " + (int) polySplineF.value(ptime));
+                            if (use_raw) {
+                                createBGfromGD(new GlucoseData((int) polySplineF.value(ptime), ptime), true);
+                            } else {
+                                BgReading.bgReadingInsertFromInt((int) polySplineF.value(ptime), ptime, false);
+                            }
                         }
+                    } catch (org.apache.commons.math3.exception.NonMonotonicSequenceException e) {
+                        Log.e(TAG, "NonMonotonicSequenceException: " + e);
                     }
-                } catch (org.apache.commons.math3.exception.NonMonotonicSequenceException e) {
-                    Log.e(TAG, "NonMonotonicSequenceException: " + e);
                 }
 
             } else {

@@ -2251,9 +2251,12 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         // port this lot to DexCollectionType to avoid multiple lookups of the same preference
         boolean isDexbridgeWixel = CollectionServiceStarter.isDexBridgeOrWifiandDexBridge();
         boolean isWifiBluetoothWixel = CollectionServiceStarter.isWifiandBTWixel(getApplicationContext());
+        boolean isWifiandBTLibre = CollectionServiceStarter.isWifiandBTLibre(getApplicationContext());
+
         isBTShare = CollectionServiceStarter.isBTShare(getApplicationContext());
         isG5Share = CollectionServiceStarter.isBTG5(getApplicationContext());
         boolean isWifiWixel = CollectionServiceStarter.isWifiWixel(getApplicationContext());
+        boolean isWifiLibre = CollectionServiceStarter.isWifiLibre(getApplicationContext());
         alreadyDisplayedBgInfoCommon = false; // reset flag
         if (isBTShare) {
             updateCurrentBgInfoForBtShare(notificationText);
@@ -2261,10 +2264,10 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         if (isG5Share) {
             updateCurrentBgInfoCommon(collector, notificationText);
         }
-        if (isBTWixel || isDexbridgeWixel || isWifiBluetoothWixel) {
+        if (isBTWixel || isDexbridgeWixel || isWifiBluetoothWixel || isWifiandBTLibre) {
             updateCurrentBgInfoForBtBasedWixel(collector, notificationText);
         }
-        if (isWifiWixel || isWifiBluetoothWixel || collector.equals(DexCollectionType.Mock)) {
+        if (isWifiWixel || isWifiBluetoothWixel || isWifiandBTLibre || isWifiLibre || collector.equals(DexCollectionType.Mock)) {
             updateCurrentBgInfoForWifiWixel(collector, notificationText);
         } else if (is_follower || collector.equals(DexCollectionType.NSEmulator) ||DexCollectionType.isLibreOOPAlgorithm(collector)) {
             displayCurrentInfo();
@@ -2480,6 +2483,9 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         if(DexCollectionType.isLibreOOPAlgorithm(collector)) {
         	// Rest of this function deals with initial calibration. Since we currently don't have a way to calibrate,
         	// And even once we will have, there is probably no need to force a calibration at start of sensor use.
+            displayCurrentInfo();
+            // JamorHam, should I put here something like:
+            // ?? if (screen_forced_on)  dontKeepScreenOn();
         	return;
         }
 
@@ -2669,6 +2675,12 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                     final String limitterName = DexCollectionService.getBestLimitterHardwareName();
                     if (limitterName.equals(DexCollectionService.LIMITTER_NAME)) {
                         dexbridgeBattery.setText(getString(R.string.limitter_battery) + ": " + bridgeBattery + "%");
+                    } else if (limitterName.equals("BlueReader")){
+                        if (Pref.getBooleanDefaultFalse("blueReader_restdays_on_home")) {
+                            dexbridgeBattery.setText(limitterName + " " + getString(R.string.battery) + ": " + bridgeBattery + "% (" + PersistentStore.getString("bridge_battery_days") + " " + getString(R.string.days) + ")");
+                        } else {
+                            dexbridgeBattery.setText(limitterName + " " + getString(R.string.battery) + ": " + bridgeBattery + "%");
+                        }
                     } else {
                         dexbridgeBattery.setText(limitterName + " " + getString(R.string.battery) + ": " + bridgeBattery + "%");
                     }

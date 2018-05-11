@@ -657,6 +657,39 @@
                     android:summary="Only suitable for phones which support automatic pairing"
                     android:title="Allow blucon unbonding" />
             </PreferenceScreen>
+        <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+            android:key="xdrip_blueReader_advanced_settings"
+            android:summary="@string/advanced_bluereader_settings_summary"
+            android:title="@string/advanced_bluereader_settings">
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="blueReader_restdays_on_home"
+                android:summary="@string/bluereader_restdays_onhome_sum"
+                android:title="@string/bluereader_restdays_onhome" />
+            <SwitchPreference
+                android:defaultValue="false"
+                android:key="blueReader_turn_off"
+                android:summary="@string/bluereader_turnoff_sum"
+                android:title="@string/bluereader_turnoff" />
+            <SeekBarPreference
+                android:key="blueReader_turn_off_value"
+                android:dependency="blueReader_turn_off"
+                android:title="@string/blueReader_turnoffvalue"
+                android:summary="@string/blueReader_turnoffvalue_sum"
+                android:max="20"
+                android:min="1"
+                android:defaultValue="5" />
+            <SwitchPreference
+                android:defaultValue="false"
+                android:key="blueReader_suppressuglystatemsg"
+                android:summary="Suppress the ugly state message if Problem appears"
+                android:title="supress ugly state message" />
+            <SwitchPreference
+                android:defaultValue="false"
+                android:key="blueReader_writebatterylog"
+                android:summary="write the Battery-Information for additional analytic in a file. Please only use this, if you will be asked by a developer!"
+                android:title="Batterylog" />
+        </PreferenceScreen>
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:key="aggressive_service_restart"

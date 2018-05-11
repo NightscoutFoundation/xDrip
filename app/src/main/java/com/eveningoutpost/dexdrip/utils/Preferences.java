@@ -43,6 +43,7 @@ import com.eveningoutpost.dexdrip.ParakeetHelper;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.Services.BluetoothGlucoseMeter;
+import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.Services.G5BaseService;
 import com.eveningoutpost.dexdrip.Services.PlusSyncService;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
@@ -787,6 +788,7 @@ public class Preferences extends PreferenceActivity {
             final Preference interpretRaw = findPreference("interpret_raw");
             final Preference bfappid = findPreference("bugfender_appid");
             final Preference nfcSettings = findPreference("xdrip_plus_nfc_settings");
+            final Preference bluereadersettings = findPreference("xdrip_blueReader_advanced_settings");
             //DexCollectionType collectionType = DexCollectionType.getType(findPreference("dex_collection_method").)
 
             final ListPreference currentCalibrationPlugin = (ListPreference)findPreference("current_calibration_plugin");
@@ -1155,6 +1157,21 @@ public class Preferences extends PreferenceActivity {
                     }
                 set_nfc_expiry_change_listeners();
                 update_nfc_expiry_preferences(null);
+            }
+
+            if (!DexCollectionService.getBestLimitterHardwareName().equals("BlueReader")) {
+                collectionCategory.removePreference(bluereadersettings);
+            } else {
+                findPreference("blueReader_turn_off_value").setTitle(getString(R.string.blueReader_turnoffvalue) + " (" + prefs.getInt("blueReader_turn_off_value", 5) + ")");
+
+                findPreference("blueReader_turn_off_value").setOnPreferenceChangeListener((preference, newValue) ->
+                        {
+                            prefs.edit().putInt("blueReader_turn_off_value", (Integer) newValue).commit();
+                            preference.setTitle(getString(R.string.blueReader_turnoffvalue) + " (" + newValue + ")");
+                            return true;
+                        }
+                );
+
             }
 
             try {
