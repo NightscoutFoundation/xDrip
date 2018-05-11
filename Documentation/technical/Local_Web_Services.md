@@ -91,6 +91,29 @@ In its current implementation I wouldn't expect this to be that useful.
 
 ---
 
+### Open option
+
+The service has an `Open Web Service` option. If this is enabled then connections can be made through any network interface instead of being restricted to the loopback on-device network only. Typically enabling this option exposes the wifi / lan / bluetooth pan connection of the device although it is possible that it could be exposed via cellular as well if the carrier supports public ip addressing.
+
+Be very careful enabling this option as there are powerful features accessible, for example the tasker interface. It is best used in conjunction with the Authentication option described below.
+
+---
+
+### Authentication
+
+If the `xDrip Web Service Secret` is set to anything other than an empty string (the default) then requests coming in via the open non-loopback networks will have to supply a http header `api-secret` which contains the SHA1 hash of the same secret password or their connection will be rejected. Rejection information is stored in the Event Log and returned via the http response. The result code 403 (forbidden) is set when a connection is rejected.
+
+Additionally, if a client supplies the `api-secret` header, then even if the xDrip secret is not set then the request will be rejected. This feature is so that client devices can be assured they are connecting to the correct xDrip instance (by using different secrets). This could be important significant when looping for example.
+
+Authentication is not required on the loopback local network interface (127.0.0.1)
+
+    api-secret: 915858afa2278f25527f192038108346164b47f2
+
+Above shows http header for password `Abc`
+
+
+---
+
 #### Implementation
 
 Code relating to this feature is in the `webservices` package folder

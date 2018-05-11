@@ -373,10 +373,10 @@
                 android:defaultValue="false"
                 android:dependency="xdrip_webservice"
                 android:key="xdrip_webservice_open"
-                android:summary="Accept connections from any network instead of just internally within this device. There are security implications to enabling this!"
+                android:summary="Accept connections from any network instead of just internally within this device. There are security implications to enabling this! Shared Secret will be required if set."
                 android:title="Open Web Service" />
             <EditTextPreference
-                android:defaultValue="ABC123"
+                android:defaultValue=""
                 android:dependency="xdrip_webservice"
                 android:key="xdrip_webservice_secret"
                 android:summary="Shared Secret for open web service (should match your Nightcout API secret)"

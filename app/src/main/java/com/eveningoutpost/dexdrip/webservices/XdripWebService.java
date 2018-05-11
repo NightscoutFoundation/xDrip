@@ -10,7 +10,10 @@ import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.dagger.Singleton;
+import com.eveningoutpost.dexdrip.utils.TriState;
 import com.eveningoutpost.dexdrip.xdrip;
+import com.google.common.base.Charsets;
+import com.google.common.hash.Hashing;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -28,10 +31,6 @@ import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
-
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.io.UnsupportedEncodingException;
 
 
 /**
@@ -212,32 +211,36 @@ public class XdripWebService implements Runnable {
                 return;
             }
 
+            // get the set password if any
+            final String secret = Pref.getStringDefaultBlank("xdrip_webservice_secret");
+            final String hashedSecret = secret.isEmpty() ? null : Hashing.sha1().hashBytes(secret.getBytes(Charsets.UTF_8)).toString();
+
+            final boolean authNeeded = hashedSecret != null && !socket.getInetAddress().isLoopbackAddress();
+            final TriState secretCheckResult = new TriState();
 
             String route = null;
 
             // Read HTTP headers and parse out the route.
             reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             String line;
-            boolean authFailed = false;
 
-            while (!TextUtils.isEmpty(line = reader.readLine())) {
-                if (line.startsWith(("api-secret"))) {
-                    String secret = Pref.getStringDefaultBlank("xdrip_webservice_secret");
-                    if (!secret.equals("")) {
-                        secret = sha1Hash(secret);
-                        String requestSecret[] = line.split(": ");
-                        if (requestSecret.length < 2) continue;
-                        if (!secret.equals(requestSecret[1].toUpperCase())) authFailed = true;
-                        UserError.Log.e(TAG, "secret failed: " + authFailed);
-                    }
-                }
+            int lineCount = 0;
+            while (!TextUtils.isEmpty(line = reader.readLine()) && lineCount < 50) {
+
                 if (line.startsWith("GET /")) {
                     int start = line.indexOf('/') + 1;
                     int end = line.indexOf(' ', start);
                     route = URLDecoder.decode(line.substring(start, end), "UTF-8");
                     UserError.Log.d(TAG, "Received request for: " + route);
-                    //break;
+                    //if (hashedSecret == null) break; // we can't optimize as we always need to look for api-secret even if server doesn't use it
+
+                } else if (line.startsWith(("api-secret"))) {
+                    final String requestSecret[] = line.split(": ");
+                    if (requestSecret.length < 2) continue;
+                    secretCheckResult.set(hashedSecret != null && hashedSecret.equalsIgnoreCase(requestSecret[1]));
+                    break; // last and only header checked and will appear after GET request
                 }
+                lineCount++;
             }
 
             // Output stream that we send the response to
@@ -249,12 +252,22 @@ public class XdripWebService implements Runnable {
                 return;
             }
 
-            if (authFailed) {
-                UserError.Log.d(TAG, "Authenticating web API request failed ");
-                return;
-            }
+            final WebResponse response;
 
-            final WebResponse response = ((RouteFinder)Singleton.get("RouteFinder")).handleRoute(route);
+            if (secretCheckResult.isFalse() || (authNeeded && !secretCheckResult.isTrue())) {
+                final String failureMessage = "Authentication failed - check api-secret\n"
+                                + "\n" + (authNeeded ? "secret is required " : "secret is not required")
+                                + "\n" + secretCheckResult.trinary("no secret supplied", "supplied secret matches", "supplied secret doesn't match")
+                                + "\n" + "Your address: " + socket.getInetAddress().toString()
+                                + "\n\n";
+                if (JoH.ratelimit("web-auth-failure", 10)) {
+                    UserError.Log.e(TAG, failureMessage);
+                }
+                response = new WebResponse(failureMessage, 403, "text/plain");
+                JoH.threadSleep(1000);
+            } else {
+                response = ((RouteFinder) Singleton.get("RouteFinder")).handleRoute(route);
+            }
 
             // if we didn't manage to generate a response
             if (response == null) {
@@ -279,6 +292,8 @@ public class XdripWebService implements Runnable {
 
         } catch (SocketTimeoutException e) {
             UserError.Log.d(TAG, "Got socket timeout: " + e);
+        } catch (NullPointerException e) {
+            UserError.Log.wtf(TAG, "Got null pointer exception: " + e);
 
         } finally {
             if (output != null) {
@@ -291,46 +306,6 @@ public class XdripWebService implements Runnable {
         }
     }
 
-    /**
-     *  Fash, simple SHA1
-     *
-     *  @param toHash String to be hashed.
-     */
-
-    private String sha1Hash( String toHash )
-    {
-        String hash = null;
-        try
-        {
-            MessageDigest digest = MessageDigest.getInstance( "SHA-1" );
-            byte[] bytes = toHash.getBytes("UTF-8");
-            digest.update(bytes, 0, bytes.length);
-            bytes = digest.digest();
-            hash = bytesToHex( bytes );
-        }
-        catch( NoSuchAlgorithmException e )
-        {
-            UserError.Log.d(TAG, "Web service secret encoding failure. SHA1 not supported: " + e);
-        }
-        catch( UnsupportedEncodingException e )
-        {
-            UserError.Log.d(TAG, "Web service secret encoding failure. UTF-8 not supported: " + e);
-        }
-        return hash;
-    }
-
-    final private static char[] hexArray = "0123456789ABCDEF".toCharArray();
-    public static String bytesToHex( byte[] bytes )
-    {
-        char[] hexChars = new char[ bytes.length * 2 ];
-        for( int j = 0; j < bytes.length; j++ )
-        {
-            int v = bytes[ j ] & 0xFF;
-            hexChars[ j * 2 ] = hexArray[ v >>> 4 ];
-            hexChars[ j * 2 + 1 ] = hexArray[ v & 0x0F ];
-        }
-        return new String( hexChars );
-    }
 
     /**
      * Writes a server error response (HTTP/1.0 500) to the given output stream.
