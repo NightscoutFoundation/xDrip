@@ -221,9 +221,7 @@ public class XdripWebService implements Runnable {
             boolean authFailed = false;
 
             while (!TextUtils.isEmpty(line = reader.readLine())) {
-                UserError.Log.e(TAG,"REQUEST LINE: " + line);
                 if (line.startsWith(("api-secret"))) {
-                    UserError.Log.e(TAG,"api-secret: " + line);
                     String secret = Pref.getStringDefaultBlank("xdrip_webservice_secret");
                     if (!secret.equals("")) {
                         secret = sha1Hash(secret);
@@ -293,8 +291,10 @@ public class XdripWebService implements Runnable {
         }
     }
 
-    /*
+    /**
+     *  Fash, simple SHA1
      *
+     *  @param toHash String to be hashed.
      */
 
     private String sha1Hash( String toHash )
@@ -319,7 +319,6 @@ public class XdripWebService implements Runnable {
         return hash;
     }
 
-    // http://stackoverflow.com/questions/9655181/convert-from-byte-array-to-hex-string-in-java
     final private static char[] hexArray = "0123456789ABCDEF".toCharArray();
     public static String bytesToHex( byte[] bytes )
     {
