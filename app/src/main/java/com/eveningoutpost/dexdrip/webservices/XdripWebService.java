@@ -29,6 +29,11 @@ import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.io.UnsupportedEncodingException;
+
+
 /**
  * Created by jamorham on 06/01/2018.
  * <p>
@@ -213,13 +218,25 @@ public class XdripWebService implements Runnable {
             // Read HTTP headers and parse out the route.
             reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             String line;
+            boolean authFailed = false;
+
             while (!TextUtils.isEmpty(line = reader.readLine())) {
+                if (line.startsWith(("api-secret"))) {
+                    String secret = Pref.getStringDefaultBlank("xdrip_webservice_secret");
+                    if (!secret.equals("")) {
+                        secret = sha1Hash(secret);
+                        String requestSecret[] = line.split(": ");
+                        if (requestSecret.length < 2) continue;
+                        if (!secret.equals(requestSecret[1].toUpperCase())) authFailed = true;
+                        UserError.Log.e(TAG, "secret failed: " + authFailed);
+                    }
+                }
                 if (line.startsWith("GET /")) {
                     int start = line.indexOf('/') + 1;
                     int end = line.indexOf(' ', start);
                     route = URLDecoder.decode(line.substring(start, end), "UTF-8");
                     UserError.Log.d(TAG, "Received request for: " + route);
-                    break;
+                    //break;
                 }
             }
 
@@ -229,6 +246,11 @@ public class XdripWebService implements Runnable {
             // Prepare the content to send.
             if (null == route) {
                 writeServerError(output);
+                return;
+            }
+
+            if (authFailed) {
+                UserError.Log.d(TAG, "Authenticating web API request failed ");
                 return;
             }
 
@@ -267,6 +289,47 @@ public class XdripWebService implements Runnable {
             }
             JoH.releaseWakeLock(wl);
         }
+    }
+
+    /**
+     *  Fash, simple SHA1
+     *
+     *  @param toHash String to be hashed.
+     */
+
+    private String sha1Hash( String toHash )
+    {
+        String hash = null;
+        try
+        {
+            MessageDigest digest = MessageDigest.getInstance( "SHA-1" );
+            byte[] bytes = toHash.getBytes("UTF-8");
+            digest.update(bytes, 0, bytes.length);
+            bytes = digest.digest();
+            hash = bytesToHex( bytes );
+        }
+        catch( NoSuchAlgorithmException e )
+        {
+            UserError.Log.d(TAG, "Web service secret encoding failure. SHA1 not supported: " + e);
+        }
+        catch( UnsupportedEncodingException e )
+        {
+            UserError.Log.d(TAG, "Web service secret encoding failure. UTF-8 not supported: " + e);
+        }
+        return hash;
+    }
+
+    final private static char[] hexArray = "0123456789ABCDEF".toCharArray();
+    public static String bytesToHex( byte[] bytes )
+    {
+        char[] hexChars = new char[ bytes.length * 2 ];
+        for( int j = 0; j < bytes.length; j++ )
+        {
+            int v = bytes[ j ] & 0xFF;
+            hexChars[ j * 2 ] = hexArray[ v >>> 4 ];
+            hexChars[ j * 2 + 1 ] = hexArray[ v & 0x0F ];
+        }
+        return new String( hexChars );
     }
 
     /**
