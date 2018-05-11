@@ -214,7 +214,7 @@ public class NFCReaderX {
     }
 
     // returns true if checksum passed.
-    public static boolean HandleGoodReading(String tagId, byte[] data1) {
+    public static boolean HandleGoodReading(String tagId, byte[] data1, final long CaptureDateTime ) {
 
         final boolean checksum_ok = LibreCrc.verify(data1);
         if (!checksum_ok) {
@@ -222,18 +222,17 @@ public class NFCReaderX {
         }
 
         if (Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
-            long now = JoH.tsl();
             // Save raw block record (we start from block 0)
-            LibreBlock.createAndSave(tagId, now, data1, 0);
-            LibreOOPAlgorithm.SendData(data1, now);
+            LibreBlock.createAndSave(tagId, CaptureDateTime, data1, 0);
+            LibreOOPAlgorithm.SendData(data1, CaptureDateTime);
         } else {
-            final ReadingData mResult = parseData(0, tagId, data1);
+            final ReadingData mResult = parseData(0, tagId, data1, CaptureDateTime);
             new Thread() {
                 @Override
                 public void run() {
                     final PowerManager.WakeLock wl = JoH.getWakeLock("processTransferObject", 60000);
                     try {
-                        LibreAlarmReceiver.processReadingDataTransferObject(new ReadingData.TransferObject(1, mResult));
+                        LibreAlarmReceiver.processReadingDataTransferObject(new ReadingData.TransferObject(1, mResult), CaptureDateTime );
                         Home.staticRefreshBGCharts();
                     } finally {
                         JoH.releaseWakeLock(wl);
@@ -266,7 +265,8 @@ public class NFCReaderX {
                 if (!NFCReaderX.useNFC()) return;
                 if (succeeded) {
                     final String tagId = bytesToHexString(tag.getId());
-                    boolean checksum_ok = HandleGoodReading(tagId, data);
+                    long now = JoH.tsl();
+                    boolean checksum_ok = HandleGoodReading(tagId, data, now);
                     if(checksum_ok == false) {
                         Log.e(TAG, "Read data but checksum is wrong");
                     }
@@ -482,8 +482,7 @@ public class NFCReaderX {
         return builder.toString();
     }
 
-    public static ReadingData parseData(int attempt, String tagId, byte[] data) {
-        long ourTime = System.currentTimeMillis();
+    public static ReadingData parseData(int attempt, String tagId, byte[] data, Long CaptureDateTime) {
 
         int indexTrend = data[26] & 0xFF;
 
@@ -491,7 +490,7 @@ public class NFCReaderX {
 
         final int sensorTime = 256 * (data[317] & 0xFF) + (data[316] & 0xFF);
 
-        long sensorStartTime = ourTime - sensorTime * MINUTE;
+        long sensorStartTime = CaptureDateTime - sensorTime * MINUTE;
 
         // option to use 13 bit mask
         //final boolean thirteen_bit_mask = Pref.getBooleanDefaultFalse("testing_use_thirteen_bit_mask");
@@ -656,7 +655,7 @@ public class NFCReaderX {
             Log.i(TAG, "libreBlock exists but does not have enough data " + libreBlock.timestamp);
             return null;
         }
-        ReadingData result = parseData(0, "", libreBlock.blockbytes);
+        ReadingData result = parseData(0, "", libreBlock.blockbytes, JoH.tsl());
         if(result.trend.size() == 0 || result.trend.get(0).glucoseLevelRaw == 0) {
             Log.i(TAG, "libreBlock exists but no trend data exists, or first value is zero " + libreBlock.timestamp);
             return null;
