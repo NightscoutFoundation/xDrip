@@ -375,6 +375,12 @@
                 android:key="xdrip_webservice_open"
                 android:summary="Accept connections from any network instead of just internally within this device. There are security implications to enabling this!"
                 android:title="Open Web Service" />
+            <EditTextPreference
+                android:defaultValue="ABC123"
+                android:dependency="xdrip_webservice"
+                android:key="xdrip_webservice_secret"
+                android:summary="Shared Secret for open web service (should match your Nightcout API secret)"
+                android:title="xDrip Web Service Secret" />
         </PreferenceScreen>
         <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
             android:key="xdrip_less_common_settings"
