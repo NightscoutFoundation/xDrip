@@ -2675,6 +2675,12 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                     final String limitterName = DexCollectionService.getBestLimitterHardwareName();
                     if (limitterName.equals(DexCollectionService.LIMITTER_NAME)) {
                         dexbridgeBattery.setText(getString(R.string.limitter_battery) + ": " + bridgeBattery + "%");
+                    } else if (limitterName.equals("BlueReader")){
+                        if (Pref.getBooleanDefaultFalse("blueReader_restdays_on_home")) {
+                            dexbridgeBattery.setText(limitterName + " " + getString(R.string.battery) + ": " + bridgeBattery + "% (" + PersistentStore.getString("bridge_battery_days") + " " + getString(R.string.days) + ")");
+                        } else {
+                            dexbridgeBattery.setText(limitterName + " " + getString(R.string.battery) + ": " + bridgeBattery + "%");
+                        }
                     } else {
                         dexbridgeBattery.setText(limitterName + " " + getString(R.string.battery) + ": " + bridgeBattery + "%");
                     }
