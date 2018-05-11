@@ -112,9 +112,9 @@ public class BgSendQueue extends Model {
         try {
 
             // Add to upload queue
-            if (!is_follower) {
+            //if (!is_follower) {
                 UploaderQueue.newEntry(operation_type, bgReading);
-            }
+            //}
 
             // all this other UI stuff probably shouldn't be here but in lieu of a better method we keep with it..
             if (!quick) {

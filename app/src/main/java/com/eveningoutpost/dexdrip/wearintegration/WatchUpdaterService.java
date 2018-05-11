@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.wearintegration;
 
+import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -79,7 +80,7 @@ import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.PREF_QUEUE_DR
 import static com.eveningoutpost.dexdrip.Models.JoH.showNotification;
 import static com.eveningoutpost.dexdrip.Models.JoH.ts;
 
-
+@SuppressLint("LogNotTimber")
 public class WatchUpdaterService extends WearableListenerService implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
@@ -2010,6 +2011,7 @@ public class WatchUpdaterService extends WearableListenerService implements
         return sendWearBgData(count, startTime, null);
     }
 
+
     private static boolean sendWearBgData(Integer count, long startTime, List<BgReading> list) {
         try {
             if (googleApiClient != null && !googleApiClient.isConnected() && !googleApiClient.isConnecting()) {
@@ -2034,10 +2036,23 @@ public class WatchUpdaterService extends WearableListenerService implements
                     final Sensor sensor = Sensor.currentSensor();
                     if ((sensor != null) && (sensor.uuid != null)) {
                         for (BgReading bg : latest) {
+                            // if we have no sensor data, typically follower then add one in to pass tests.
+                            if (bg != null && bg.sensor_uuid == null) {
+                                bg.sensor_uuid = sensor.uuid;
+                            }
                             if ((bg != null) && (bg.sensor_uuid != null) && (bg.sensor_uuid.equals(sensor.uuid) && (bg.calibration_uuid != null))) {
                                 dataMaps.add(dataMap(bg));
+                            } else {
+                                if (bg.sensor_uuid == null) {
+                                    Log.d(TAG,"sendWearBgData: sensor uuid is null on record to send");
+                                }
+                                if (bg.calibration_uuid == null) {
+                                    Log.d(TAG,"sendWearBgData: calibration uuid is null on record to send");
+                                }
                             }
                         }
+                    } else {
+                        Log.d(TAG,"sendWearBgData Not queueing data due to sensor: "+(sensor != null ? sensor.uuid : "null sensor object"));
                     }
                     entries.putLong("time", new Date().getTime()); // MOST IMPORTANT LINE FOR TIMESTAMP
                     entries.putInt("battery", battery);
