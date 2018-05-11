@@ -149,10 +149,10 @@ public class XdripWebService implements Runnable {
                 final SSLServerSocketFactory ssocketFactory = SSLServerSocketHelper.makeSSLSocketFactory(
                         new BufferedInputStream(xdrip.getAppContext().getResources().openRawResource(R.raw.localhost_cert)),
                         "password".toCharArray());
-                mServerSocket = ssocketFactory.createServerSocket(listenPort, 1, InetAddress.getByName("127.0.0.1"));
+                mServerSocket = ssocketFactory.createServerSocket(listenPort, 1);
             } else {
                 // Non-SSL type
-                mServerSocket = new ServerSocket(listenPort, 1, InetAddress.getByName("127.0.0.1"));
+                mServerSocket = new ServerSocket(listenPort, 1);
             }
             while (isRunning) {
                 final Socket socket = mServerSocket.accept();
