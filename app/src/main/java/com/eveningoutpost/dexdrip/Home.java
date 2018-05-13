@@ -2259,7 +2259,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         boolean isWifiLibre = CollectionServiceStarter.isWifiLibre(getApplicationContext());
         alreadyDisplayedBgInfoCommon = false; // reset flag
         if (isBTShare) {
-            updateCurrentBgInfoForBtShare(notificationText);
+            updateCurrentBgInfoForBtShare(notificationText); 
         }
         if (isG5Share) {
             updateCurrentBgInfoCommon(collector, notificationText);
@@ -2268,8 +2268,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             updateCurrentBgInfoForBtBasedWixel(collector, notificationText);
         }
         if (isWifiWixel || isWifiBluetoothWixel || isWifiandBTLibre || isWifiLibre || collector.equals(DexCollectionType.Mock)) {
-            updateCurrentBgInfoForWifiWixel(collector, notificationText);
-        } else if (is_follower || collector.equals(DexCollectionType.NSEmulator) ||DexCollectionType.isLibreOOPAlgorithm(collector)) {
+            updateCurrentBgInfoForWifiWixel(collector, notificationText); 
+        } else if (is_follower || collector.equals(DexCollectionType.NSEmulator)){
             displayCurrentInfo();
             getApplicationContext().startService(new Intent(getApplicationContext(), Notifications.class));
         } else if (!alreadyDisplayedBgInfoCommon && DexCollectionType.getDexCollectionType() == DexCollectionType.LibreAlarm) {
