@@ -70,13 +70,13 @@ public class CollectionServiceStarter {
         return isWifiandDexBridge() || isDexbridgeWixel(xdrip.getAppContext());
     }
 
-    public static boolean isBTWixel(Context context) {
+    public static boolean isBTWixelOrLimiTTer(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String collection_method = prefs.getString("dex_collection_method", "BluetoothWixel");
-        return isBTWixel(collection_method);
+        return isBTWixelOrLimiTTer(collection_method);
     }
 
-    public static boolean isBTWixel(String collection_method) {
+    public static boolean isBTWixelOrLimiTTer(String collection_method) {
         return collection_method.equals("BluetoothWixel")
                 || collection_method.equals("LimiTTer");
     }
@@ -176,7 +176,7 @@ public class CollectionServiceStarter {
         xdrip.checkAppContext(context);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.mContext);
 
-        if (isBTWixel(collection_method) || isDexbridgeWixel(collection_method)) {
+        if (isBTWixelOrLimiTTer(collection_method) || isDexbridgeWixel(collection_method)) {
             Log.d("DexDrip", "Starting bt wixel collector");
             stopWifWixelThread();
             stopBtShareService();
