@@ -919,4 +919,8 @@
     <string name="settings_updated_to_mmol">Settings updated to mmol/L</string>
     <string name="external_calibration_app">External Calibration App</string>
     <string name="use_app_for_calibration">use app for calibration?</string>
+    <string name="code_accepted">Code accepted</string>
+    <string name="invalid_or_unsupported_code">Invalid or unsupported code!</string>
+    <string name="g6_sensor_code">G6 Sensor Code</string>
+    <string name="please_enter_printed_calibration_code">Please enter the printed calibration code number, 4 digits, eg: 5678</string>
 </resources>
