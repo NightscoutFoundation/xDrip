@@ -31,9 +31,11 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.SendFeedBack;
 import com.eveningoutpost.dexdrip.databinding.ActivityEventLogBinding;
 import com.eveningoutpost.dexdrip.utils.ExtensionMethods;
+import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +46,8 @@ import lombok.experimental.ExtensionMethod;
 import me.tatarka.bindingcollectionadapter2.BindingRecyclerViewAdapter;
 import me.tatarka.bindingcollectionadapter2.ItemBinding;
 import me.tatarka.bindingcollectionadapter2.collections.MergeObservableList;
+
+import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
 
 /*
  * New style event log viewer
@@ -102,6 +106,17 @@ public class EventLogActivity extends AppCompatActivity {
         refreshData();
 
         getOlderData();
+
+    }
+
+    // check if should stream wear logs
+    private boolean shouldStreamWearLogs() {
+        return Pref.getBooleanDefaultFalse("wear_sync") && Pref.getBooleanDefaultFalse("sync_wear_logs");
+    }
+
+    // ask for wear updated logs
+    private void getWearData() {
+        startWatchUpdaterService(this, WatchUpdaterService.ACTION_SYNC_LOGS, TAG);
     }
 
     // load in bulk of remaining data
@@ -147,6 +162,9 @@ public class EventLogActivity extends AppCompatActivity {
         new Thread(() -> {
             int c;
             int turbo = 0;
+
+            final boolean streamWearLogs = shouldStreamWearLogs();
+
             while (runRefresh) {
                 if (D) UserError.Log.d(TAG, "refreshing data " + highest_id);
                 if (refreshData()) {
@@ -157,6 +175,9 @@ public class EventLogActivity extends AppCompatActivity {
                     JoH.threadSleep(100);
                     turbo--;
                 } else {
+                    if (streamWearLogs && JoH.quietratelimit("stream-wear-logs", 2)) {
+                        getWearData();
+                    }
                     // long sleep
                     c = 0;
                     while (c < 2 && runRefresh) {
