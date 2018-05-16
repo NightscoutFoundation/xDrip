@@ -306,7 +306,7 @@
                         android:summary="@string/notify_when_predicted_high_time_reaches_threshold"
                         android:title="@string/raise_alarm_on_forecast_high" />
                     <EditTextPreference
-                        android:defaultValue="40"
+                        android:defaultValue="20"
                         android:dependency="predict_highs_alarm"
                         android:digits="0123456789"
                         android:inputType="number"

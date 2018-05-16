@@ -755,7 +755,7 @@ public class Notifications extends IntentService {
         final double high_occurs_at = BgGraphBuilder.getCurrentHighOccursAt();
 
         if ((high_occurs_at > 0) && (BgGraphBuilder.last_noise < BgGraphBuilder.NOISE_TOO_HIGH_FOR_PREDICT)) {
-            final double high_predicted_alarm_minutes = Double.parseDouble(prefs.getString("high_predict_alarm_level", "40"));
+            final double high_predicted_alarm_minutes = Double.parseDouble(prefs.getString("high_predict_alarm_level", "20"));
             final double now = JoH.ts();
             final double predicted_high_in_mins = (high_occurs_at - now) / 60000;
             android.util.Log.d(TAG, "evaluateHighPredictionAlarm: mins: " + predicted_high_in_mins);

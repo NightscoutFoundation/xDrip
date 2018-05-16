@@ -2357,7 +2357,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         }
 
         if (BgGraphBuilder.high_occurs_at > 0 && !((BgGraphBuilder.low_occurs_at > 0))) {
-            final double high_predicted_alarm_minutes = Double.parseDouble(Pref.getString("high_predict_alarm_level", "50"));
+            final double high_predicted_alarm_minutes = Double.parseDouble(Pref.getString("high_predict_alarm_level", "20"));
             final double now = JoH.ts();
             final double predicted_high_in_mins = (BgGraphBuilder.high_occurs_at - now) / 60000;
 

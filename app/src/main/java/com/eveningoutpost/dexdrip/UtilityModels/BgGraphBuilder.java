@@ -138,7 +138,7 @@ public class BgGraphBuilder {
     private static final ReentrantLock readings_lock = new ReentrantLock();
 
     private final List<Treatments> treatments;
-    private final static boolean d = true; // debug flag, could be read from preferences
+    private final static boolean d = false; // debug flag, could be read from preferences
 
     public Context context;
     public SharedPreferences prefs;
