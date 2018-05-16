@@ -103,7 +103,7 @@ Be very careful enabling this option as there are powerful features accessible, 
 
 If the `xDrip Web Service Secret` is set to anything other than an empty string (the default) then requests coming in via the open non-loopback networks will have to supply a http header `api-secret` which contains the SHA1 hash of the same secret password or their connection will be rejected. Rejection information is stored in the Event Log and returned via the http response. The result code 403 (forbidden) is set when a connection is rejected.
 
-Additionally, if a client supplies the `api-secret` header, then even if the xDrip secret is not set then the request will be rejected. This feature is so that client devices can be assured they are connecting to the correct xDrip instance (by using different secrets). This could be important significant when looping for example.
+Additionally, if a client supplies the `api-secret` header, then even if the xDrip secret is not set then the request will be rejected. This feature is so that client devices can be assured they are connecting to the correct xDrip instance (by using different secrets). This could be significant when looping for example.
 
 Authentication is not required on the loopback local network interface (127.0.0.1)
 
