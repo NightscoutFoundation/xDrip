@@ -614,7 +614,16 @@ public class Notifications extends IntentService {
                     }
                 }
 
-                if (NumberGraphic.largeNumberIconEnabled()) {
+                if (NumberGraphic.largeWithArrowEnabled()) {
+                    if ((dg != null) && (!dg.isStale())) {
+                        final Bitmap icon_bitmap = NumberGraphic.getLargeWithArrowBitmap(dg.unitized, dg.delta_arrow);
+                        //if (icon_bitmap != null) b.setSmallIcon(Icon.createWithBitmap(icon_bitmap));
+                        if (icon_bitmap != null) {
+                            b.setLargeIcon(Icon.createWithBitmap(icon_bitmap));
+                            setLargeIcon = true;
+                        }
+                    }
+                } else if (NumberGraphic.largeNumberIconEnabled()) {
                     if ((dg != null) && (!dg.isStale())) {
                         final Bitmap icon_bitmap = NumberGraphic.getLargeIconBitmap(dg.unitized);
                         //if (icon_bitmap != null) b.setSmallIcon(Icon.createWithBitmap(icon_bitmap));
