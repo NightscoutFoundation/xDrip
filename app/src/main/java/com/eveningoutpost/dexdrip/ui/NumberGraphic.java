@@ -36,7 +36,7 @@ public class NumberGraphic {
 
                 final Notification.Builder mBuilder = new Notification.Builder(xdrip.getAppContext());
 
-                mBuilder.setSmallIcon(Icon.createWithBitmap(getBitmap(text)));
+                mBuilder.setSmallIcon(Icon.createWithBitmap(getSmallIconBitmap(text)));
 
                 mBuilder.setContentTitle("Test Number Graphic");
                 mBuilder.setContentText("Check the number is visible");
@@ -72,7 +72,19 @@ public class NumberGraphic {
         return Pref.getBooleanDefaultFalse("use_number_icon") && (Pref.getBooleanDefaultFalse("number_icon_tested"));
     }
 
-    public static Bitmap getBitmap(final String text) {
+    public static boolean largeNumberIconEnabled() {
+        return Pref.getBooleanDefaultFalse("use_number_icon_large") && (Pref.getBooleanDefaultFalse("number_icon_tested"));
+    }
+
+    public static Bitmap getSmallIconBitmap(final String text) {
+        return getBitmap(text, Color.WHITE);
+    }
+
+    public static Bitmap getLargeIconBitmap(final String text) {
+        return getBitmap(text, Color.BLACK);
+    }
+
+    public static Bitmap getBitmap(final String text, int fillColor) {
         {
             if ((text == null) || (text.length() > 4)) return null;
             try {
@@ -87,7 +99,7 @@ public class NumberGraphic {
                 final Paint paint = new Paint();
 
                 paint.setStyle(Paint.Style.FILL);
-                paint.setColor(Color.WHITE);
+                paint.setColor(fillColor);
                 paint.setAntiAlias(true);
                 //paint.setTypeface(Typeface.MONOSPACE);
                 paint.setTypeface(Typeface.SANS_SERIF); // TODO BEST?
