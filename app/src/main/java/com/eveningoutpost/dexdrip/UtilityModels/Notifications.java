@@ -560,6 +560,12 @@ public class Notifications extends IntentService {
                 .build();
     }*/
 
+    private boolean useOngoingChannel() {
+        return (Pref.getBooleanDefaultFalse("use_notification_channels") &&
+                Pref.getBooleanDefaultFalse("ongoing_notification_channel") &&
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.O);
+    }
+
     @TargetApi(Build.VERSION_CODES.O)
     public synchronized Notification createOngoingNotification(BgGraphBuilder bgGraphBuilder, Context context) {
         mContext = context;
@@ -583,13 +589,11 @@ public class Notifications extends IntentService {
         //final NotificationCompat.Builder b = new NotificationCompat.Builder(mContext, NotificationChannels.ONGOING_CHANNEL);
         //final NotificationCompat.Builder b = new NotificationCompat.Builder(mContext); // temporary fix until ONGOING CHANNEL is silent by default on android 8+
         //final Notification.Builder b = new Notification.Builder(mContext); // temporary fix until ONGOING CHANNEL is silent by default on android 8+
-
         final Notification.Builder b;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (useOngoingChannel()) {
             b = new Notification.Builder(mContext, NotificationChannels.ONGOING_CHANNEL);
             b.setSound(null);
             b.setOngoing(true);
-            b.setOnlyAlertOnce(true);
         } else {
             b = new Notification.Builder(mContext);
         }
@@ -681,7 +685,8 @@ public class Notifications extends IntentService {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
             b.setLocalOnly(true);
         }
-        return XdripNotificationCompat.build(b);
+        // strips channel ID if disabled
+        return XdripNotification.build(b);
     }
 
     private synchronized void bgOngoingNotification(final BgGraphBuilder bgGraphBuilder) {
