@@ -116,6 +116,13 @@
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:dependency="ob1_g5_use_transmitter_alg"
+                android:key="ob1_g5_preemptive_restart"
+                android:summary="Preemptively restart a sensor before the session ends on day 6 to avoid the warm-up time"
+                android:title="Preemptive restarts"
+                />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:dependency="ob1_g5_use_transmitter_alg"
                 android:key="ob1_g5_use_insufficiently_calibrated"
                 android:summary="Keep using data even if there are not enough good calibrations (Experimental!)"
                 android:title="Go on without calibrations"

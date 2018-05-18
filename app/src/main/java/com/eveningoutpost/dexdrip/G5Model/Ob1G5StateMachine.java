@@ -563,13 +563,13 @@ public class Ob1G5StateMachine {
                                 UserError.Log.e(TAG, "Session start time reports: No session in progress");
                                 DexSessionKeeper.clearStart();
                             }
-                           /* if (Pref.getBooleanDefaultFalse("ob1_g5_preemptive_restart")) {
+                            if (Pref.getBooleanDefaultFalse("ob1_g5_preemptive_restart")) {
                                 if (txtime.getSessionDuration() > Constants.DAY_IN_MS * 6
                                         && txtime.getSessionDuration() < Constants.MONTH_IN_MS) {
                                     UserError.Log.uel(TAG, "Requesting preemptive session restart");
                                     restartSensorWithTimeTravel();
                                 }
-                            }*/
+                            }
                             break;
 
                         default:
