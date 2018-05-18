@@ -292,7 +292,7 @@ public class DexCollectionService extends Service {
                 }
                 lastdata = null;
             } else {
-                UserError.Log.d(TAG,"Not closing gatt on bluetooth disconnect");
+                UserError.Log.d(TAG, "Not closing gatt on bluetooth disconnect");
             }
             Log.i(TAG, "onConnectionStateChange: Disconnected from GATT server.");
             setRetryTimer();
@@ -425,7 +425,7 @@ public class DexCollectionService extends Service {
                         sendBtMessage(blueReader.initialize());
                     } else if (Tomato.isTomato()) {
                         status("Enabled tomato");
-                        Log.d(TAG,"Queueing Tomato initialization..");
+                        Log.d(TAG, "Queueing Tomato initialization..");
                         Inevitable.task("initialize-tomato", 4000, new Runnable() {
                             @Override
                             public void run() {
@@ -542,16 +542,17 @@ public class DexCollectionService extends Service {
 
 
             final int charaProp = mCharacteristic.getProperties();
-            if ((charaProp & BluetoothGattCharacteristic.PROPERTY_READ) > 0) {
-                JoH.runOnUiThreadDelayed(() -> {
-                    try {
-                        Log.d(TAG, "Reading characteristic: " + mCharacteristic.getUuid().toString());
-                        mBluetoothGatt.readCharacteristic(mCharacteristic);
-                    } catch (NullPointerException e) {
-                        Log.e(TAG, "Got null pointer trying to readCharacteristic");
-                    }
-                }, 300);
-
+            if (!static_use_blukon) {
+                if ((charaProp & BluetoothGattCharacteristic.PROPERTY_READ) > 0) {
+                    JoH.runOnUiThreadDelayed(() -> {
+                        try {
+                            Log.d(TAG, "Reading characteristic: " + mCharacteristic.getUuid().toString());
+                            mBluetoothGatt.readCharacteristic(mCharacteristic);
+                        } catch (NullPointerException e) {
+                            Log.e(TAG, "Got null pointer trying to readCharacteristic");
+                        }
+                    }, 300);
+                }
             }
 
             Log.d(TAG, "Services discovered end");
@@ -641,7 +642,7 @@ public class DexCollectionService extends Service {
                     }
 
                 } else {
-                   unBondBlucon();
+                    unBondBlucon();
                 }
             }
             descriptor_time = 0;
@@ -1154,7 +1155,7 @@ public class DexCollectionService extends Service {
             }
         } else if (mConnectionState == STATE_CONNECTING) {
             mStaticState = mConnectionState;
-            if (JoH.msSince(last_connect_request) > (trust_auto_connect ? Constants.SECOND_IN_MS * 300 : Constants.SECOND_IN_MS * 30)) {
+            if (JoH.msSince(last_connect_request) > (trust_auto_connect ? Constants.SECOND_IN_MS * 3600 : Constants.SECOND_IN_MS * 30)) {
                 Log.i(TAG, "Connecting for too long, shutting down");
                 retry_backoff = 0;
                 close();
@@ -1162,6 +1163,7 @@ public class DexCollectionService extends Service {
         } else if (mConnectionState == STATE_CONNECTED) { //WOOO, we are good to go, nothing to do here!
             status("Last Connected");
             Log.i(TAG, "checkConnection: Looks like we are already connected, ready to receive");
+            retry_backoff = 0;
             mStaticState = mConnectionState;
             if (use_polling && (JoH.msSince(lastPacketTime) >= POLLING_PERIOD)) {
                 pollForData();
@@ -1323,18 +1325,13 @@ public class DexCollectionService extends Service {
             setRetryTimer();
             return false;
         }
-        if (mBluetoothGatt != null) {
-            Log.i(TAG, "connect: mBluetoothGatt isnt null, Closing.");
-            try {
-                if (JoH.ratelimit("refresh-gatt", 60)) {
-                    Log.d(TAG, "Refresh result close: " + JoH.refreshDeviceCache(TAG, mBluetoothGatt));
-                }
-                mBluetoothGatt.close();
-            } catch (NullPointerException e) {
-                Log.wtf(TAG, "Concurrency related null pointer in connect");
-            }
-            mBluetoothGatt = null;
-        }
+
+        // close and re-open the connection if preference set or device has changed
+        final boolean should_close = Pref.getBooleanDefaultFalse("close_gatt_on_ble_disconnect")
+                || (device == null || !address.equalsIgnoreCase(device.getAddress()));
+
+        closeCycle(should_close);
+
      /*   if (device != null) {
             if (!device.getAddress().equals(address)) {
                 UserError.Log.e(TAG, "Device address changed from: " + device.getAddress() + " to " + address);
@@ -1349,13 +1346,40 @@ public class DexCollectionService extends Service {
             setRetryTimer();
             return false;
         }
-        Log.i(TAG, "connect: Trying to create a new connection.");
+
         setRetryTimer();
-        mBluetoothGatt = device.connectGatt(getApplicationContext(), trust_auto_connect, mGattCallback);
+        if (mBluetoothGatt == null) {
+            Log.i(TAG, "connect: Trying to create a new connection.");
+            mBluetoothGatt = device.connectGatt(getApplicationContext(), trust_auto_connect, mGattCallback);
+        } else {
+            Log.i(TAG, "connect: Trying to re-use connection.");
+            mBluetoothGatt.connect();
+        }
         mConnectionState = STATE_CONNECTING;
         last_connect_request = JoH.tsl();
         return true;
     }
+
+    private void closeCycle(boolean should_close) {
+        if (mBluetoothGatt != null) {
+            try {
+                if (JoH.ratelimit("refresh-gatt", 60)) {
+                    Log.d(TAG, "Refresh result close: " + JoH.refreshDeviceCache(TAG, mBluetoothGatt));
+                }
+                if (should_close) {
+                    Log.i(TAG, "connect: mBluetoothGatt isn't null, Closing.");
+                    mBluetoothGatt.close();
+                } else {
+                    Log.i(TAG, "preserving existing connection");
+                }
+            } catch (NullPointerException e) {
+                Log.wtf(TAG, "Concurrency related null pointer in connect");
+            } finally {
+                if (should_close) mBluetoothGatt = null;
+            }
+        }
+    }
+
 
     public synchronized void close() {
         Log.i(TAG, "close: Closing Connection - setting state DISCONNECTED");
