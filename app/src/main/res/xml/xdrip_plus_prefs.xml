@@ -422,7 +422,23 @@
                     android:summary="Shows the current glucose number as an icon for the notification bar and lock screen"
                     android:switchTextOff="@string/short_off_text_for_switches"
                     android:switchTextOn="@string/short_on_text_for_switches"
-                    android:title="Show Number Icon" />
+                    android:title="Show Small Number Icon" />
+                <SwitchPreference
+                    android:defaultValue="false"
+                    android:dependency="number_icon_tested"
+                    android:key="use_number_icon_large"
+                    android:summary="Shows a larger icon in the notification area only visible when opened"
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
+                    android:title="Use Large Number Icon" />
+                <SwitchPreference
+                    android:defaultValue="false"
+                    android:dependency="use_number_icon_large"
+                    android:key="number_icon_large_arrow"
+                    android:summary="Shows the trend arrow in the large icon"
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
+                    android:title="Show Arrow in Large Icon" />
             </PreferenceScreen>
             <SwitchPreference
                 android:defaultValue="false"
