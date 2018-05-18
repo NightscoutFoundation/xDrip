@@ -36,7 +36,7 @@ public class NumberGraphic {
 
                 final Notification.Builder mBuilder = new Notification.Builder(xdrip.getAppContext());
 
-                mBuilder.setSmallIcon(Icon.createWithBitmap(getBitmap(text)));
+                mBuilder.setSmallIcon(Icon.createWithBitmap(getSmallIconBitmap(text)));
 
                 mBuilder.setContentTitle("Test Number Graphic");
                 mBuilder.setContentText("Check the number is visible");
@@ -72,7 +72,27 @@ public class NumberGraphic {
         return Pref.getBooleanDefaultFalse("use_number_icon") && (Pref.getBooleanDefaultFalse("number_icon_tested"));
     }
 
-    public static Bitmap getBitmap(final String text) {
+    public static boolean largeNumberIconEnabled() {
+        return Pref.getBooleanDefaultFalse("use_number_icon_large") && (Pref.getBooleanDefaultFalse("number_icon_tested"));
+    }
+
+    public static boolean largeWithArrowEnabled() {
+        return largeNumberIconEnabled() && Pref.getBooleanDefaultFalse("number_icon_large_arrow");
+    }
+
+    public static Bitmap getSmallIconBitmap(final String text) {
+        return getBitmap(text, Color.WHITE, null);
+    }
+
+    public static Bitmap getLargeIconBitmap(final String text) {
+        return getBitmap(text, Color.BLACK, null);
+    }
+
+    public static Bitmap getLargeWithArrowBitmap(final String text, final String arrow) {
+        return getBitmap(text, Color.BLACK, arrow);
+    }
+
+    public static Bitmap getBitmap(final String text, int fillColor, final String arrow) {
         {
             if ((text == null) || (text.length() > 4)) return null;
             try {
@@ -87,25 +107,27 @@ public class NumberGraphic {
                 final Paint paint = new Paint();
 
                 paint.setStyle(Paint.Style.FILL);
-                paint.setColor(Color.WHITE);
+                paint.setColor(fillColor);
                 paint.setAntiAlias(true);
                 //paint.setTypeface(Typeface.MONOSPACE);
                 paint.setTypeface(Typeface.SANS_SERIF); // TODO BEST?
                 paint.setTextAlign(Paint.Align.LEFT);
-                paint.setTextSize(17);
+                float paintTs = (arrow == null ? 17 : 17 - arrow.length());
+                paint.setTextSize(paintTs);
                 final Rect bounds = new Rect();
 
+                String fullText = text + (arrow != null ? arrow : "");
 
-                paint.getTextBounds(text, 0, text.length(), bounds);
-                float textsize = (16 * width) / bounds.width();
+                paint.getTextBounds(fullText, 0, fullText.length(), bounds);
+                float textsize = ((paintTs-1) * width) / bounds.width();
                 paint.setTextSize(textsize);
-                paint.getTextBounds(text, 0, text.length(), bounds);
+                paint.getTextBounds(fullText, 0, fullText.length(), bounds);
 
                 // cannot be Config.ALPHA_8 as it doesn't work on Samsung
                 final Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
                 final Canvas c = new Canvas(bitmap);
 
-                c.drawText(text, 0, (height / 2) + (bounds.height() / 2), paint);
+                c.drawText(fullText, 0, (height / 2) + (bounds.height() / 2), paint);
                 return bitmap;
             } catch (Exception e) {
                 if (JoH.ratelimit("icon-failure", 60)) {
