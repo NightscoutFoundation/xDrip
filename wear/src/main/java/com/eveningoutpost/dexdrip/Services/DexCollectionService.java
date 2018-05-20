@@ -1328,7 +1328,8 @@ public class DexCollectionService extends Service {
 
         // close and re-open the connection if preference set or device has changed
         final boolean should_close = Pref.getBooleanDefaultFalse("close_gatt_on_ble_disconnect")
-                || (device == null || !address.equalsIgnoreCase(device.getAddress()));
+                || (device == null || !address.equalsIgnoreCase(device.getAddress())
+                || ((JoH.msSince(last_connect_request) > (Constants.MINUTE_IN_MS * 15) && (JoH.pratelimit("dex-collect-full-close", 600)))));
 
         closeCycle(should_close);
 
