@@ -22,6 +22,12 @@ public class G6CalibrationParameters {
 
         switch (code) {
 
+            // special null code
+            case "0000":
+                paramA = 1;
+                paramB = 0;
+                break;
+
             case "5915":
                 paramA = 3100;
                 paramB = 3600;
@@ -106,6 +112,10 @@ public class G6CalibrationParameters {
 
     public boolean isValid() {
         return paramA > 0;
+    }
+
+    public boolean isNullCode() {
+        return isValid() && paramB == 0;
     }
 
     public static boolean checkCode(String code) {

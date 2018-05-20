@@ -29,7 +29,7 @@ public class SessionStartTxMessage extends TransmitterMessage {
     public SessionStartTxMessage(long startTime, int dexTime, String code) {
         this.startTime = startTime;
         this.dexTime = dexTime;
-        data = ByteBuffer.allocate(code == null ? 11 : 15);
+        data = ByteBuffer.allocate(code == null || new G6CalibrationParameters(code).isNullCode() ? 11 : 15);
         data.order(ByteOrder.LITTLE_ENDIAN);
         data.put(opcode);
         data.putInt(dexTime);
@@ -37,11 +37,13 @@ public class SessionStartTxMessage extends TransmitterMessage {
 
         if (code != null) {
             final G6CalibrationParameters params = new G6CalibrationParameters(code);
-            if (params.isValid()) {
+            if (params.isValid() && !params.isNullCode()) {
                 data.putShort((short) params.getParamA());
                 data.putShort((short) params.getParamB());
             } else {
-                throw new IllegalArgumentException("Invalid G6 code in SessionStartTxMessage");
+                if (!params.isValid()) {
+                    throw new IllegalArgumentException("Invalid G6 code in SessionStartTxMessage");
+                }
             }
         }
         appendCRC();
