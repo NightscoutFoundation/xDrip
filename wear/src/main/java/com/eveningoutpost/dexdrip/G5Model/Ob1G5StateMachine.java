@@ -244,8 +244,10 @@ public class Ob1G5StateMachine {
                         } else {
                             UserError.Log.e(TAG, "authentication notification  throwable: (" + parent.getState() + ") " + throwable + " " + JoH.dateTimeText(JoH.tsl()));
                             parent.incrementErrors();
-                            if (throwable instanceof BleCannotSetCharacteristicNotificationException) {
+                            if (throwable instanceof BleCannotSetCharacteristicNotificationException
+                                    || throwable instanceof BleGattCharacteristicException) {
                                 parent.tryGattRefresh();
+                                parent.changeState(Ob1G5CollectionService.STATE.SCAN);
                             }
                         }
                         if ((throwable instanceof BleDisconnectedException) || (throwable instanceof TimeoutException)) {
