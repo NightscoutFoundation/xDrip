@@ -52,7 +52,7 @@ public class Blukon {
         INITIAL
     }
 
-    private static final boolean testWithDeadSensor = true; // never in production
+    private static final boolean testWithDeadSensor = false; // never in production
 
     private static boolean m_getNowGlucoseDataIndexCommand = false;
     private static final int GET_SENSOR_AGE_DELAY = 3 * 3600;
