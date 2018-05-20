@@ -918,7 +918,7 @@ public class DexCollectionService extends Service {
             l.add(new StatusItem("Tomato Battery", PersistentStore.getString("Tomatobattery")));
             l.add(new StatusItem("Tomato Hardware", PersistentStore.getString("TomatoHArdware")));
             l.add(new StatusItem("Tomato Firmware", PersistentStore.getString("TomatoFirmware")));
-            l.add(new StatusItem("Libre SN", PersistentStore.getString("TomatoSensor")));
+            l.add(new StatusItem("Libre SN", PersistentStore.getString("LibreSN")));
             
         }
 

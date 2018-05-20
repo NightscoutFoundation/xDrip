@@ -253,7 +253,7 @@ public class Blukon {
             */
 
             if (JoH.pratelimit(BLUKON_DECODE_SERIAL_TIMER, GET_DECODE_SERIAL_DELAY)) {
-                decodeSerialNumber("blukon-serial-number",buffer);
+                decodeSerialNumber(buffer);
             }
 
             if (isSensorReady(buffer[17])) {
@@ -549,7 +549,7 @@ public class Blukon {
         return ret;
     }
     // This function assumes that the UID is starting at place 3, and is 8 bytes long
-    public static void decodeSerialNumber(String storeageName, byte[] input) {
+    public static void decodeSerialNumber(byte[] input) {
 
         byte[] uuid = new byte[]{0, 0, 0, 0, 0, 0, 0, 0};
         String lookupTable[] =
@@ -582,7 +582,7 @@ public class Blukon {
         }
         Log.e(TAG, "decodeSerialNumber=" + v);
 
-        PersistentStore.setString(storeageName, v);
+        PersistentStore.setString("LibreSN", v);
     }
 
 

@@ -172,7 +172,7 @@ public class Tomato {
         // Important note, the actual serial number is 8 bytes long and starts at addresses 0. Since the existing
         // code is looking for them starting at place 3, we copy extra 3 bytes.
         byte[] serialBuffer = Arrays.copyOfRange(s_full_data, 2, 13);
-        Blukon.decodeSerialNumber("TomatoSensor" ,serialBuffer);
+        Blukon.decodeSerialNumber(serialBuffer);
         PersistentStore.setString("Tomatobattery", Integer.toString(s_full_data[13]));
         PersistentStore.setString("TomatoHArdware",HexDump.toHexString(s_full_data,16,2));
         PersistentStore.setString("TomatoFirmware",HexDump.toHexString(s_full_data,14,2));

@@ -38,7 +38,7 @@ public class LibreOOPAlgorithm {
         Bundle bundle = new Bundle();
         bundle.putByteArray(Intents.LIBRE_DATA_BUFFER, fullData);
         bundle.putLong(Intents.LIBRE_DATA_TIMESTAMP, timestamp);
-        bundle.putString(Intents.LIBRE_SN, PersistentStore.getString("TomatoSensor"));
+        bundle.putString(Intents.LIBRE_SN, PersistentStore.getString("LibreSN"));
         
         intent.putExtras(bundle);
         intent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
