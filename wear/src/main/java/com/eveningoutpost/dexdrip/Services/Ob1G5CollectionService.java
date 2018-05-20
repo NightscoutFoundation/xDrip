@@ -929,6 +929,8 @@ public class Ob1G5CollectionService extends G5BaseService {
                         }, throwable -> {
                             UserError.Log.d(TAG, "Refresh exception: " + throwable);
                         });
+            } catch (NullPointerException e) {
+                UserError.Log.d(TAG, "Probably harmless gatt refresh exception: " + e);
             } catch (Exception e) {
                 UserError.Log.d(TAG, "Got exception trying gatt refresh: " + e);
             }
