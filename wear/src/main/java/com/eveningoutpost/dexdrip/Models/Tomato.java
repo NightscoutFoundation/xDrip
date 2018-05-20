@@ -3,6 +3,7 @@ package com.eveningoutpost.dexdrip.Models;
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.NFCReaderX;
+import com.eveningoutpost.dexdrip.UtilityModels.Blukon;
 import com.eveningoutpost.dexdrip.UtilityModels.BridgeResponse;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
@@ -166,6 +167,12 @@ public class Tomato {
         if(!checksum_ok) {
             throw new RuntimeException(CHECKSUM_FAILED);
         }
+        
+        
+        // Important note, the actual serial number is 8 bytes long and starts at addresses 0. Since the existing
+        // code is looking for them starting at place 3, we copy extra 3 bytes.
+        byte[] serialBuffer = Arrays.copyOfRange(s_full_data, 2, 13);
+        Blukon.decodeSerialNumber(serialBuffer);
         PersistentStore.setString("Tomatobattery", Integer.toString(s_full_data[13]));
         PersistentStore.setString("TomatoHArdware",HexDump.toHexString(s_full_data,16,2));
         PersistentStore.setString("TomatoFirmware",HexDump.toHexString(s_full_data,14,2));
