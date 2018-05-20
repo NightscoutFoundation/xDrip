@@ -211,6 +211,7 @@ public class BgReading extends Model implements ShareUploadableBg {
 
     public double getDg_slope(){
         if(dg_mgdl != 0) return dg_slope;
+        if(calculated_value_slope !=0) return calculated_value_slope;
         return currentSlope();
     }
 
