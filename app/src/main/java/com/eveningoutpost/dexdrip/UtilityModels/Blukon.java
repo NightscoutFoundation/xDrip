@@ -548,8 +548,8 @@ public class Blukon {
 
         return ret;
     }
-
-    private static void decodeSerialNumber(byte[] input) {
+    // This function assumes that the UID is starting at place 3, and is 8 bytes long
+    public static void decodeSerialNumber(byte[] input) {
 
         byte[] uuid = new byte[]{0, 0, 0, 0, 0, 0, 0, 0};
         String lookupTable[] =
@@ -582,7 +582,7 @@ public class Blukon {
         }
         Log.e(TAG, "decodeSerialNumber=" + v);
 
-        PersistentStore.setString("blukon-serial-number", v);
+        PersistentStore.setString("LibreSN", v);
     }
 
 
