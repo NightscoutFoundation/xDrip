@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.Treatments;
@@ -23,6 +24,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.Experience;
 import com.eveningoutpost.dexdrip.profileeditor.DatePickerFragment;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileAdapter;
 import com.eveningoutpost.dexdrip.profileeditor.TimePickerFragment;
+import com.eveningoutpost.dexdrip.ui.dialog.G6CalibrationCodeDialog;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.LocationHelper;
@@ -160,6 +162,14 @@ public class StartNewSensor extends ActivityWithMenu {
     }
 
     private void realStartSensor() {
+        if (Ob1G5StateMachine.usingG6()) {
+            G6CalibrationCodeDialog.ask(this, this::realRealStartSensor);
+        } else {
+            realRealStartSensor();
+        }
+    }
+
+    private void realRealStartSensor() {
         long startTime = ucalendar.getTime().getTime();
         Log.d(TAG, "Starting sensor time: " + JoH.dateTimeText(ucalendar.getTime().getTime()));
 
@@ -186,6 +196,10 @@ public class StartNewSensor extends ActivityWithMenu {
         Treatments.SensorStart((DexCollectionType.hasLibre() ? startTime + (3600000) : startTime));
 
         CollectionServiceStarter.newStart(getApplicationContext());
+
+        Ob1G5StateMachine.startSensor(startTime);
+
+
         Intent intent;
         if (prefs.getBoolean("store_sensor_location", false) && Experience.gotData()) {
             intent = new Intent(getApplicationContext(), NewSensorLocation.class);

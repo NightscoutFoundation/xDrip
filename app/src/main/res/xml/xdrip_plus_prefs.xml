@@ -354,6 +354,9 @@
                 android:summary="@string/noise_model_inner_workings"
                 android:title="@string/show_noise_workings" />
             <CheckBoxPreference
+                android:key="illustrate_backfilled_data"
+                android:summary="Indicate backfilled data on chart" />
+            <CheckBoxPreference
                 android:defaultValue="false"
                 android:key="bg_from_filtered"
                 android:summary="@string/delayed_but_more_stable"
@@ -419,8 +422,31 @@
                     android:summary="Shows the current glucose number as an icon for the notification bar and lock screen"
                     android:switchTextOff="@string/short_off_text_for_switches"
                     android:switchTextOn="@string/short_on_text_for_switches"
-                    android:title="Show Number Icon" />
+                    android:title="Show Small Number Icon" />
+                <SwitchPreference
+                    android:defaultValue="false"
+                    android:dependency="number_icon_tested"
+                    android:key="use_number_icon_large"
+                    android:summary="Shows a larger icon in the notification area only visible when opened"
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
+                    android:title="Use Large Number Icon" />
+                <SwitchPreference
+                    android:defaultValue="false"
+                    android:dependency="use_number_icon_large"
+                    android:key="number_icon_large_arrow"
+                    android:summary="Shows the trend arrow in the large icon"
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
+                    android:title="Show Arrow in Large Icon" />
             </PreferenceScreen>
+            <SwitchPreference
+                android:defaultValue="false"
+                android:key="show_home_on_boot"
+                android:summary="Bring up xDrip screen automatically after device boots"
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
+                android:title="Show xDrip on Boot" />
 
         </PreferenceCategory>
     </PreferenceScreen>

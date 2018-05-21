@@ -6,6 +6,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.PowerManager;
@@ -74,7 +75,12 @@ public class WifiCollectionService extends Service {
         if (JoH.buggy_samsung) {
             l.add(new StatusItem("Buggy Samsung", "Using workaround", max_wakeup_jitter < TOLERABLE_JITTER ? StatusItem.Highlight.GOOD : StatusItem.Highlight.BAD));
         }
-        l.addAll(WixelReader.megaStatus());
+        if(DexCollectionType.hasLibre()) {
+            l.addAll(LibreWifiReader.megaStatus());
+        } else {
+            l.addAll(WixelReader.megaStatus());
+        }
+        
         final int bridgeBattery = Pref.getInt("parakeet_battery", 0);
         if (bridgeBattery > 0) {
             l.add(new StatusItem("Parakeet Battery", bridgeBattery + "%", bridgeBattery < 50 ? bridgeBattery < 40 ? StatusItem.Highlight.BAD : StatusItem.Highlight.NOTICE : StatusItem.Highlight.GOOD));
@@ -152,7 +158,12 @@ public class WifiCollectionService extends Service {
 
     public void setFailoverTimer() {
         if (DexCollectionType.hasWifi()) {
-            final long retry_in = WixelReader.timeForNextRead();
+            long retry_in;
+            if(DexCollectionType.hasLibre()) {
+                retry_in = LibreWifiReader.timeForNextRead();
+            } else {
+                retry_in = WixelReader.timeForNextRead();
+            }
             Log.d(TAG, "setFailoverTimer: Fallover Restarting in: " + (retry_in / (60 * 1000)) + " minutes");
             requested_wake_time = JoH.wakeUpIntent(this, retry_in, PendingIntent.getService(this, Constants.WIFI_COLLECTION_SERVICE_ID, new Intent(this, this.getClass()), 0));
             PersistentStore.setLong(WIFI_COLLECTION_WAKEUP, requested_wake_time);
@@ -168,8 +179,12 @@ public class WifiCollectionService extends Service {
     private void runWixelReader() {
         // Theoretically can create more than one task. Should not be a problem since android runs them
         // on the same thread.
-        final WixelReader task = new WixelReader(getApplicationContext());
-        // Assume here that task will execute, otheirwise we leak a wake lock...
+        AsyncTask<String, Void, Void> task;
+        if(DexCollectionType.hasLibre()) {
+            task = new LibreWifiReader(getApplicationContext());
+        } else {
+            task = new WixelReader(getApplicationContext());
+        }
         task.executeOnExecutor(xdrip.executor);
     }
 }

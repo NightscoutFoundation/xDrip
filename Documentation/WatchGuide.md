@@ -413,3 +413,22 @@ Enter the following cmd to generate a logcat log, where -s arg is your watch dev
 D:\Android\sdk\platform-tools>adb devices
 D:\Android\sdk\platform-tools>adb -s 14502D1AF252D74 logcat > wear.log
 ```
+
+
+### Help my NFC patched Sony SmartWatch 3 doesn't work with xDrip as a collector
+
+The problem typically is the version of Google Play Services on the watch. You need at least 9.x installed.
+
+On the watch check the version with `Settings` -> `About` -> `Versions`
+
+If your google play services version is less than 9, then you should install version 9.
+
+This is available from unofficial sources which you can find by googling, for example:
+
+https://www.apkmirror.com/apk/google-inc/google-play-services-android-wear/google-play-services-android-wear-9-8-41-release/google-play-services-9-8-41-534-130237018-android-apk-download/
+
+To install, connect your watch via usb and make sure adb debugging is enabled. You should be familiar with this process from how you originally installed the custom NFC firmware.
+
+use the command:
+
+`adb install -r downloaded-filename.apk`

@@ -76,6 +76,7 @@ import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.Services.DexCollectionService;
+import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.Services.PlusSyncService;
 import com.eveningoutpost.dexdrip.Services.WixelReader;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
@@ -98,7 +99,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.ShotStateStore;
 import com.eveningoutpost.dexdrip.UtilityModels.SourceWizard;
 import com.eveningoutpost.dexdrip.UtilityModels.UndoRedo;
 import com.eveningoutpost.dexdrip.UtilityModels.UpdateActivity;
-import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
+import com.eveningoutpost.dexdrip.UtilityModels.VoiceCommands;
 import com.eveningoutpost.dexdrip.calibrations.CalibrationAbstract;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.dagger.Injectors;
@@ -1113,7 +1114,11 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     }
 
     public void viewEventLog(MenuItem x) {
-        startActivity(new Intent(this, ErrorsActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK).putExtra("events", ""));
+        if (get_engineering_mode()) {
+            startActivity(new Intent(this, EventLogActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK).putExtra("events", ""));
+        } else {
+            startActivity(new Intent(this, ErrorsActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK).putExtra("events", ""));
+        }
     }
     
     public void ShowLibreTrend(MenuItem x) {
@@ -1366,56 +1371,11 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 || (allWords.contentEquals("delete all treatment"))) {
             Treatments.delete_all(true);
             updateCurrentBgInfo("delete all treatment");
-        } else if (allWords.contentEquals("delete last calibration")
-                || allWords.contentEquals("clear last calibration")) {
-            Calibration.clearLastCalibration();
-        } else if (allWords.contentEquals("force google reboot")) {
-            SdcardImportExport.forceGMSreset();
-        } else if (allWords.contentEquals("enable engineering mode")) {
-            Pref.setBoolean("engineering_mode", true);
-            JoH.static_toast(getApplicationContext(), "Engineering mode enabled - be careful", Toast.LENGTH_LONG);
-        } else if (get_engineering_mode() && allWords.contentEquals("enable fake data source")) {
-            Pref.setString(DexCollectionType.DEX_COLLECTION_METHOD, DexCollectionType.Mock.toString());
-            JoH.static_toast_long("YOU ARE NOW USING FAKE DATA!!!");
-        } else if (allWords.contentEquals("reset heart rate sync")) {
-            PersistentStore.setLong("nightscout-rest-heartrate-synced-time",0);
-            JoH.static_toast_long("Cleared heart rate sync data");
-        } else if (allWords.contentEquals("reset step count sync")) {
-            PersistentStore.setLong("nightscout-rest-steps-synced-time",0);
-            JoH.static_toast_long("Cleared step count sync data");
-        } else if (allWords.contentEquals("reset motion count sync")) {
-            PersistentStore.setLong("nightscout-rest-motion-synced-time",0);
-            JoH.static_toast_long("Cleared motion count sync data");
-        } else if (allWords.contentEquals("vehicle mode test")) {
-            ActivityRecognizedService.spoofActivityRecogniser(mActivity, JoH.tsl() + "^" + 0);
-            staticRefreshBGCharts();
-        } else if (allWords.contentEquals("vehicle mode quit")) {
-            ActivityRecognizedService.spoofActivityRecogniser(mActivity, JoH.tsl() + "^" + 3);
-            staticRefreshBGCharts();
-        } else if (allWords.contentEquals("vehicle mode walk")) {
-            ActivityRecognizedService.spoofActivityRecogniser(mActivity, JoH.tsl() + "^" + 2);
-            staticRefreshBGCharts();
         } else if (allWords.contentEquals("delete all glucose data")) {
             deleteAllBG(null);
             LibreAlarmReceiver.clearSensorStats();
-        } else if (allWords.contentEquals("delete selected glucose meter") || allWords.contentEquals("delete selected glucose metre")) {
-            Pref.setString("selected_bluetooth_meter_address", "");
-        } else if (allWords.contentEquals("delete all finger stick data") || (allWords.contentEquals("delete all fingerstick data"))) {
-            BloodTest.cleanup(-100000);
-        } else if (allWords.contentEquals("delete all persistent store")) {
-            SdcardImportExport.deletePersistentStore();
-        } else if (allWords.contentEquals("delete uploader queue")) {
-            UploaderQueue.emptyQueue();
-        } else if (allWords.contentEquals("clear battery warning")) {
-            try {
-                final Sensor sensor = Sensor.currentSensor();
-                if (sensor != null) {
-                    sensor.latest_battery_level = 0;
-                    sensor.save();
-                }
-            } catch (Exception e) {
-                // do nothing
-            }
+        } else {
+            VoiceCommands.processVoiceCommand(allWords, this);
         }
 
         // reset parameters for new speech
@@ -2287,26 +2247,29 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
         final DexCollectionType collector = DexCollectionType.getDexCollectionType();
         // TODO unify code using DexCollectionType methods
-        boolean isBTWixel = CollectionServiceStarter.isBTWixel(getApplicationContext());
+        boolean isBTWixelOrLimiTTer = CollectionServiceStarter.isBTWixelOrLimiTTer(getApplicationContext());
         // port this lot to DexCollectionType to avoid multiple lookups of the same preference
         boolean isDexbridgeWixel = CollectionServiceStarter.isDexBridgeOrWifiandDexBridge();
         boolean isWifiBluetoothWixel = CollectionServiceStarter.isWifiandBTWixel(getApplicationContext());
+        boolean isWifiandBTLibre = CollectionServiceStarter.isWifiandBTLibre(getApplicationContext());
+
         isBTShare = CollectionServiceStarter.isBTShare(getApplicationContext());
         isG5Share = CollectionServiceStarter.isBTG5(getApplicationContext());
         boolean isWifiWixel = CollectionServiceStarter.isWifiWixel(getApplicationContext());
+        boolean isWifiLibre = CollectionServiceStarter.isWifiLibre(getApplicationContext());
         alreadyDisplayedBgInfoCommon = false; // reset flag
         if (isBTShare) {
-            updateCurrentBgInfoForBtShare(notificationText);
+            updateCurrentBgInfoForBtShare(notificationText); 
         }
         if (isG5Share) {
             updateCurrentBgInfoCommon(collector, notificationText);
         }
-        if (isBTWixel || isDexbridgeWixel || isWifiBluetoothWixel) {
+        if (isBTWixelOrLimiTTer || isDexbridgeWixel || isWifiBluetoothWixel || isWifiandBTLibre) {
             updateCurrentBgInfoForBtBasedWixel(collector, notificationText);
         }
-        if (isWifiWixel || isWifiBluetoothWixel || collector.equals(DexCollectionType.Mock)) {
-            updateCurrentBgInfoForWifiWixel(collector, notificationText);
-        } else if (is_follower || collector.equals(DexCollectionType.NSEmulator) ||DexCollectionType.isLibreOOPAlgorithm(collector)) {
+        if (isWifiWixel || isWifiBluetoothWixel || isWifiandBTLibre || isWifiLibre || collector.equals(DexCollectionType.Mock)) {
+            updateCurrentBgInfoForWifiWixel(collector, notificationText); 
+        } else if (is_follower || collector.equals(DexCollectionType.NSEmulator)){
             displayCurrentInfo();
             getApplicationContext().startService(new Intent(getApplicationContext(), Notifications.class));
         } else if (!alreadyDisplayedBgInfoCommon && DexCollectionType.getDexCollectionType() == DexCollectionType.LibreAlarm) {
@@ -2450,7 +2413,16 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         if (alreadyDisplayedBgInfoCommon) return; // with bluetooth and wifi, skip second time
         alreadyDisplayedBgInfoCommon = true;
 
-        final boolean isSensorActive = Sensor.isActive();
+        boolean isSensorActive = Sensor.isActive();
+
+        // automagically start an xDrip sensor session if G5 transmitter already has active sensor
+        if (!isSensorActive && Ob1G5CollectionService.isG5SensorStarted()) {
+            JoH.static_toast_long("Auto starting sensor!");
+            Sensor.create(JoH.tsl() - HOUR_IN_MS * 3);
+            isSensorActive = Sensor.isActive();
+        }
+
+
         if (!isSensorActive) {
             notificationText.setText(R.string.now_start_your_sensor);
 
@@ -2511,36 +2483,66 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         if(DexCollectionType.isLibreOOPAlgorithm(collector)) {
         	// Rest of this function deals with initial calibration. Since we currently don't have a way to calibrate,
         	// And even once we will have, there is probably no need to force a calibration at start of sensor use.
+            displayCurrentInfo();
+            // JamorHam, should I put here something like:
+            // ?? if (screen_forced_on)  dontKeepScreenOn();
         	return;
         }
-        if (BgReading.latest(3).size() > 2) {
-            // TODO potential to calibrate off stale data here
-            final List<Calibration> calibrations = Calibration.latestValid(2);
-            if (calibrations.size() > 1) {
-                if (calibrations.get(0).possible_bad != null && calibrations.get(0).possible_bad == true && calibrations.get(1).possible_bad != null && calibrations.get(1).possible_bad != true) {
-                    notificationText.setText(R.string.possible_bad_calibration);
-                }
-                displayCurrentInfo();
-                if (screen_forced_on)  dontKeepScreenOn();
-            } else {
-                notificationText.setText(R.string.please_enter_two_calibrations_to_get_started);
-                showUncalibratedSlope();
-                Log.d(TAG, "Asking for calibration A: Uncalculated BG readings: " + BgReading.latest(2).size() + " / Calibrations size: " + calibrations.size());
-                promptForCalibration();
-                dontKeepScreenOn();
-            }
+
+        // TODO this logic needed a rework even a year ago, now its a lot more confused with the additional complexity of native mode
+        if (Ob1G5CollectionService.isG5ActiveButUnknownState() && Calibration.latestValid(2).size() < 2) {
+            notificationText.setText("G5 State isn't currently known. Next connection will update this");
+            showUncalibratedSlope();
         } else {
-            if (!BgReading.isDataSuitableForDoubleCalibration()) {
-                notificationText.setText(R.string.please_wait_need_two_readings_first);
-                showInitialStatusHelper();
+
+            if (Ob1G5CollectionService.isG5WarmingUp() || (Ob1G5CollectionService.isPendingStart())) {
+                notificationText.setText("G5 Transmitter is still Warming Up, please wait");
+                showUncalibratedSlope();
             } else {
-                List<Calibration> calibrations = Calibration.latest(2);
-                if (calibrations.size() < 2) {
-                    notificationText.setText(R.string.please_enter_two_calibrations_to_get_started);
-                    showUncalibratedSlope();
-                    Log.d(TAG, "Asking for calibration B: Uncalculated BG readings: " + BgReading.latestUnCalculated(2).size() + " / Calibrations size: " + calibrations.size());
-                    promptForCalibration();
-                    dontKeepScreenOn();
+                if ((BgReading.latest(3).size() > 2) || (Ob1G5CollectionService.onlyUsingNativeMode() && BgReading.latest(1).size() > 0)) {
+                    // TODO potential to calibrate off stale data here
+                    final List<Calibration> calibrations = Calibration.latestValid(2);
+                    if ((calibrations.size() > 1) || Ob1G5CollectionService.onlyUsingNativeMode()) {
+                        if (calibrations.size() > 1) {
+                            if (calibrations.get(0).possible_bad != null && calibrations.get(0).possible_bad == true && calibrations.get(1).possible_bad != null && calibrations.get(1).possible_bad != true) {
+                                notificationText.setText(R.string.possible_bad_calibration);
+                            }
+                        }
+                        displayCurrentInfo();
+                        if (screen_forced_on) dontKeepScreenOn();
+                    } else {
+                        if (BgReading.isDataSuitableForDoubleCalibration()) {
+                            notificationText.setText(R.string.please_enter_two_calibrations_to_get_started);
+                            showUncalibratedSlope();
+                            Log.d(TAG, "Asking for calibration A: Uncalculated BG readings: " + BgReading.latest(2).size() + " / Calibrations size: " + calibrations.size());
+                            promptForCalibration();
+                            dontKeepScreenOn();
+                        } else {
+                            notificationText.setText("Unusual calibration state - waiting for more data");
+                            if (Ob1G5CollectionService.isProvidingNativeGlucoseData()) {
+                                displayCurrentInfo();
+                                if (screen_forced_on) dontKeepScreenOn();
+                            }
+                        }
+                    }
+                } else {
+                    if (!BgReading.isDataSuitableForDoubleCalibration() && (!Ob1G5CollectionService.usingNativeMode() || Ob1G5CollectionService.fallbackToXdripAlgorithm())) {
+                        notificationText.setText(R.string.please_wait_need_two_readings_first);
+                        showInitialStatusHelper();
+                    } else {
+                        List<Calibration> calibrations = Calibration.latest(2);
+                        if (calibrations.size() < 2) {
+                            notificationText.setText(R.string.please_enter_two_calibrations_to_get_started);
+                            showUncalibratedSlope();
+                            Log.d(TAG, "Asking for calibration B: Uncalculated BG readings: " + BgReading.latestUnCalculated(2).size() + " / Calibrations size: " + calibrations.size());
+                            if (!Ob1G5CollectionService.isPendingCalibration()) {
+                                promptForCalibration();
+                            } else {
+                                notificationText.setText("Waiting for Transmitter to receive calibration");
+                            }
+                            dontKeepScreenOn();
+                        }
+                    }
                 }
             }
         }
@@ -2580,6 +2582,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         if ((status_helper_dialog != null) && (status_helper_dialog.isShowing()))
             status_helper_dialog.dismiss();
         if ((helper_dialog != null) && (helper_dialog.isShowing())) return;
+        if (btnApprove.getVisibility() == View.VISIBLE) return;
         if (JoH.ratelimit("calibrate-sensor_prompt", 10)) {
             final AlertDialog.Builder builder = new AlertDialog.Builder(this);
             final Context context = this;
@@ -2672,6 +2675,12 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                     final String limitterName = DexCollectionService.getBestLimitterHardwareName();
                     if (limitterName.equals(DexCollectionService.LIMITTER_NAME)) {
                         dexbridgeBattery.setText(getString(R.string.limitter_battery) + ": " + bridgeBattery + "%");
+                    } else if (limitterName.equals("BlueReader")){
+                        if (Pref.getBooleanDefaultFalse("blueReader_restdays_on_home")) {
+                            dexbridgeBattery.setText(limitterName + " " + getString(R.string.battery) + ": " + bridgeBattery + "% (" + PersistentStore.getString("bridge_battery_days") + " " + getString(R.string.days) + ")");
+                        } else {
+                            dexbridgeBattery.setText(limitterName + " " + getString(R.string.battery) + ": " + bridgeBattery + "%");
+                        }
                     } else {
                         dexbridgeBattery.setText(limitterName + " " + getString(R.string.battery) + ": " + bridgeBattery + "%");
                     }

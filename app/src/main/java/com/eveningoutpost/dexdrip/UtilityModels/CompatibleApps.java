@@ -52,6 +52,15 @@ public class CompatibleApps extends BroadcastReceiver {
             }
         }
 
+        package_name = "com.google.android.wearable.app";
+        if (InstalledApps.checkPackageExists(context, package_name)) {
+            if (!Pref.getBooleanDefaultFalse("wear_sync")) {
+                if (JoH.pratelimit(package_name + NOTIFY_MARKER, RENOTIFY_TIME)) {
+                    id = notify(gs(R.string.androidwear), gs(R.string.enable_wear_os_sync), id, Feature.ENABLE_WEAR_OS_SYNC);
+                }
+            }
+        }
+
         package_name = "info.nightscout.androidaps";
         if (InstalledApps.checkPackageExists(context, package_name)) {
             if (!Pref.getBooleanDefaultFalse("broadcast_data_through_intents")) {
@@ -84,6 +93,7 @@ public class CompatibleApps extends BroadcastReceiver {
             }
         }
 
+        // TODO add pebble
 
         // TODO add more here
 
@@ -212,16 +222,12 @@ public class CompatibleApps extends BroadcastReceiver {
 
                     case ENABLE_GARMIN_FEATURES:
                     case ENABLE_FITBIT_FEATURES:
-                        Pref.setBoolean("xdrip_webservice", true);
+                        enableBoolean("xdrip_webservice", "xDrip Web Service Enabled!", intent);
                         XdripWebService.immortality();
-                        cancelSourceNotification(intent);
-                        JoH.static_toast_long("xDrip Web Service Enabled!");
                         break;
 
                     case ENABLE_ANDROIDAPS_FEATURE1:
-                        Pref.setBoolean("broadcast_data_through_intents", true);
-                        cancelSourceNotification(intent);
-                        JoH.static_toast_long("Local Broadcast Enabled!");
+                        enableBoolean("broadcast_data_through_intents", "Local Broadcast Enabled!", intent);
                         break;
 
                     case ENABLE_LIBRE_ALARM:
@@ -230,9 +236,11 @@ public class CompatibleApps extends BroadcastReceiver {
                         break;
 
                     case ENABLE_OOP:
-                        Pref.setBoolean("external_blukon_algorithm", true);
-                        JoH.static_toast_long("Enabled External Calibration App!");
-                        cancelSourceNotification(intent);
+                        enableBoolean("external_blukon_algorithm", "Enabled External Calibration App!", intent);
+                        break;
+
+                    case ENABLE_WEAR_OS_SYNC:
+                        enableBoolean("wear_sync", "Enabled Wear OS Sync!", intent);
                         break;
 
                     default:
@@ -246,6 +254,12 @@ public class CompatibleApps extends BroadcastReceiver {
         }
     }
 
+    private void enableBoolean(String id, String msg, Intent intent) {
+        Pref.setBoolean(id, true);
+        JoH.static_toast_long(msg);
+        cancelSourceNotification(intent);
+    }
+
     private enum Feature {
         UNKNOWN,
         CHOICE,
@@ -255,6 +269,7 @@ public class CompatibleApps extends BroadcastReceiver {
         ENABLE_FITBIT_FEATURES,
         ENABLE_LIBRE_ALARM,
         ENABLE_OOP,
+        ENABLE_WEAR_OS_SYNC,
         FEATURE_X
     }
 

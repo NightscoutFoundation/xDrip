@@ -27,33 +27,51 @@
                             android:id="@+id/missed_reading_enable_alert"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="enable alert"
+                            android:text="Enable Missed Reading Alert"
                             android:textSize="15sp"
+                            android:padding="5dp"
                             android:layout_gravity="left"
-                            android:gravity="right" />
+                            android:layout_marginLeft="10dp"
+                            android:gravity="left" />
                         
                         <TextView
                             android:id="@+id/missed_reading_text_alert_time"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:gravity="left"
-                            android:text="Alert if no data receieved in x minutes:"
+                            android:text="Alert if no data received in:"
                             android:textSize="15sp"
                             android:layout_gravity="left"
-                            android:paddingRight="10dp" />
-                        
-                        <EditText
-                            android:layout_width="101dp"
+                            android:paddingLeft="15dp"
+                            android:paddingRight="10dp"
+                            android:paddingTop="10dp" />
+
+                        <LinearLayout
+                            android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
-                            android:inputType="number"
-                            android:ems="10"
-                            android:id="@+id/missed_reading_bg_minutes"
-                            android:autoText="false"
-                            android:text=""
-                            android:singleLine="true"
-                            android:textAlignment="center"
-                            android:textSize="15sp"
-                            android:layout_alignParentStart="true" />
+                            android:paddingTop="0dp"
+                            android:paddingLeft="15dp">
+
+                            <EditText
+                                android:id="@+id/missed_reading_bg_minutes"
+                                android:layout_width="101dp"
+                                android:layout_height="wrap_content"
+                                android:autoText="false"
+                                android:ems="10"
+                                android:inputType="number"
+                                android:singleLine="true"
+                                android:text=""
+                                android:textAlignment="center"
+                                android:textSize="15sp" />
+
+                            <TextView
+                                android:id="@+id/missed_reading_bg_minutes_label"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="bottom"
+                                android:paddingBottom="5dp"
+                                android:text="minutes" />
+                        </LinearLayout>
                         
                         <TextView
                             android:id="@+id/missed_reading_text_select_time"
@@ -63,68 +81,21 @@
                             android:text="Select time for alert:"
                             android:textSize="15sp"
                             android:layout_gravity="left"
-                            android:paddingRight="10dp" />
+                            android:paddingLeft="15dp"
+                            android:paddingRight="10dp"
+                            android:paddingTop="10dp"
+                            android:paddingBottom="5dp"/>
                         
                         <CheckBox
                             android:id="@+id/missed_reading_all_day"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="all day"
+                            android:text="All Day"
                             android:textSize="15sp"
-                            android:layout_gravity="center"
-                            android:gravity="right" />
-                        
-                        <TextView
-                            android:id="@+id/missed_reading_bg_snooze_text"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="left"
-                            android:text="Number of minutes before raising the same alert after snooze"
-                            android:textSize="15sp"
+                            android:padding="5dp"
                             android:layout_gravity="left"
-                            android:paddingRight="10dp" />
-
-                        <EditText
-                            android:layout_width="101dp"
-                            android:layout_height="wrap_content"
-                            android:inputType="number"
-                            android:ems="10"
-                            android:id="@+id/missed_reading_bg_snooze"
-                            android:autoText="false"
-                            android:text=""
-                            android:singleLine="true"
-                            android:textAlignment="center"
-                            android:textSize="15sp"
-                            android:layout_alignParentStart="true" />
-                        <CheckBox
-                            android:id="@+id/missed_reading_enable_alerts_reraise"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Reraise alerts before snooze time"
-                            android:textSize="15sp"
-                            android:layout_gravity="center"
-                            android:gravity="right" />
-                        <TextView
-                            android:id="@+id/missed_reading_reraise_sec_text"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="left"
-                            android:text="Alert Reraise time (in SECONDS)"
-                            android:textSize="15sp"
-                            android:layout_gravity="left"
-                            android:paddingRight="10dp" />
-                        <EditText
-                            android:layout_width="101dp"
-                            android:layout_height="wrap_content"
-                            android:inputType="number"
-                            android:ems="10"
-                            android:id="@+id/missed_reading_reraise_sec"
-                            android:autoText="false"
-                            android:text=""
-                            android:singleLine="true"
-                            android:textAlignment="center"
-                            android:textSize="15sp"
-                            android:layout_alignParentStart="true" />
+                            android:layout_marginLeft="10dp"
+                            android:gravity="left"  />
 
                     </LinearLayout>
 
@@ -188,7 +159,107 @@
                             android:id="@+id/missed_reading_instructions_end"/>
 
                     </LinearLayout>
-                
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="20dp">
+                        <TextView
+                            android:id="@+id/missed_reading_bg_snooze_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="left"
+                            android:text="Wait before raising the same alert after snooze:"
+                            android:textSize="15sp"
+                            android:layout_gravity="left"
+                            android:paddingRight="10dp"
+                            android:paddingLeft="15dp" />
+
+                        <LinearLayout
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingTop="0dp"
+                            android:paddingLeft="15dp">
+
+                            <EditText
+                                android:id="@+id/missed_reading_bg_snooze"
+                                android:layout_width="101dp"
+                                android:layout_height="wrap_content"
+                                android:inputType="number"
+                                android:ems="10"
+                                android:autoText="false"
+                                android:text=""
+                                android:singleLine="true"
+                                android:textAlignment="center"
+                                android:textSize="15sp"
+                                android:layout_alignParentStart="true" />
+
+                            <TextView
+                                android:id="@+id/missed_reading_bg_snooze_label"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="bottom"
+                                android:paddingBottom="5dp"
+                                android:text="minutes" />
+                        </LinearLayout>
+
+                        <CheckBox
+                            android:id="@+id/missed_reading_enable_alerts_reraise"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Reraise alerts before snooze time"
+                            android:textSize="15sp"
+                            android:padding="5dp"
+                            android:layout_gravity="left"
+                            android:layout_marginLeft="10dp"
+                            android:gravity="left" />
+
+
+
+                        <TextView
+                            android:id="@+id/missed_reading_reraise_sec_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="left"
+                            android:text="Alert Reraise time:"
+                            android:textSize="15sp"
+                            android:layout_gravity="left"
+                            android:paddingLeft="15dp"
+                            android:paddingRight="10dp"
+                            android:paddingTop="10dp" />
+
+                        <LinearLayout
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingTop="0dp"
+                            android:paddingLeft="15dp">
+
+                            <EditText
+                                android:id="@+id/missed_reading_reraise_sec"
+                                android:layout_width="101dp"
+                                android:layout_height="wrap_content"
+                                android:inputType="number"
+                                android:ems="10"
+                                android:autoText="false"
+                                android:text=""
+                                android:singleLine="true"
+                                android:textAlignment="center"
+                                android:textSize="15sp"
+                                android:layout_alignParentStart="true" />
+
+                            <TextView
+                                android:id="@+id/missed_Reading_reraise_sec_label"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="bottom"
+                                android:paddingBottom="5dp"
+                                android:text="seconds" />
+                        </LinearLayout>
+
+
+                    </LinearLayout>
+
             </LinearLayout>
         </ScrollView>
 

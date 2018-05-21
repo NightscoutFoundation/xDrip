@@ -30,6 +30,13 @@ public class Constants {
     public static final int SYNC_QUEUE_RETRY_ID = 1004;
     public static final int NUMBER_TEXT_TEST_ID = 1005;
     public static final int MISSED_READING_SERVICE_ID = 1006;
+    public static final int G5_CALIBRATION_REQUEST = 1007;
+    public static final int G5_CALIBRATION_REJECT = 1008;
+    public static final int G5_START_REJECT = 1009;
+    public static final int G5_SENSOR_ERROR = 1010;
+    public static final int G5_SENSOR_FAILED = 1011;
+    public static final int G5_SENSOR_STARTED = 1012;
+    public static final int G5_SENSOR_RESTARTED = 1013;
 
     static final int NIGHTSCOUT_ERROR_NOTIFICATION_ID = 2001;
 

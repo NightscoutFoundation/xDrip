@@ -98,10 +98,52 @@
                 android:defaultValue="false"
                 android:key="use_ob1_g5_collector_service"
                 android:summary="Complete re-write, should work on Android 4.4 and more"
-                android:title="Try the new OB1 G5 Collector" />
+                android:title="Try the new OB1 Collector" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:dependency="use_ob1_g5_collector_service"
+                android:key="ob1_g5_use_transmitter_alg"
+                android:summary="Use the transmitter's internal algorithm to calculate glucose values when possible. (Experimental!)"
+                android:title="Native Algorithm"
+                />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:dependency="ob1_g5_use_transmitter_alg"
+                android:key="ob1_g5_restart_sensor"
+                android:summary="Automatically restart a sensor when it stops"
+                android:title="Restart Sensor"
+                />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:dependency="ob1_g5_use_transmitter_alg"
+                android:key="ob1_g5_preemptive_restart"
+                android:summary="Preemptively restart a sensor before the session ends on day 6 to avoid the warm-up time"
+                android:title="Preemptive restarts"
+                />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:dependency="ob1_g5_use_transmitter_alg"
+                android:key="ob1_g5_use_insufficiently_calibrated"
+                android:summary="Keep using data even if there are not enough good calibrations (Experimental!)"
+                android:title="Go on without calibrations"
+                />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:dependency="ob1_g5_use_transmitter_alg"
+                android:key="ob1_g5_fallback_to_xdrip"
+                android:summary="Revert to xDrip algorithm if G5 doesn't provide glucose data (Potentially risky!)"
+                android:title="Fallback to xDrip"
+                />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="using_g6"
+                android:summary="I am using a G6 Sensor"
+                android:title="G6 Support"
+                />
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:key="ob1_g5_allow_resetbond"
+                android:dependency="use_ob1_g5_collector_service"
                 android:summary="OB1 collector can unbond if it thinks the encryption has failed. If you get problems with it unpairing then disable this option. If you then totally lose connection, make sure this is enabled."
                 android:title="Allow OB1 unbonding"
                 />
@@ -125,12 +167,6 @@
                 android:key="always_unbond_G5"
                 android:summary="@string/g5_remove_before_read"
                 android:title="@string/unbond_g5_before_read" />
-            <CheckBoxPreference
-                android:defaultValue="false"
-                android:dependency="engineering_mode"
-                android:key="g5_non_raw_method"
-                android:summary="@string/g5_experimental_mode"
-                android:title="@string/use_calibrated_data" />
             <EditTextPreference
                 android:key="g5-battery-warning-level"
                 android:title="Adjust battery warning level"

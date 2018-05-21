@@ -4,7 +4,6 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -244,7 +243,7 @@ public class SdcardImportExport extends AppCompatActivity {
                 return true;
             }
         } catch (Exception e) {
-            Log.e(TAG, "Error making directory: " + path.toString());
+            Log.e(TAG, "Error making directory: " + path);
             return false;
         }
         return false;
@@ -260,23 +259,16 @@ public class SdcardImportExport extends AppCompatActivity {
             builder.setTitle("Backup detected");
             builder.setMessage("It looks like you maybe have a settings backup, shall we try to restore it?");
 
-            builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                }
-            });
+            builder.setNegativeButton("No", (dialog, which) -> dialog.dismiss());
 
-            builder.setPositiveButton("Restore Settings", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    if (checkPermissions(activity, true, TRIGGER_RESTORE_PERMISSIONS_REQUEST_STORAGE)) {
-                        // one entry do it!
-                        restoreSettingsNow(activity);
-                    } else {
-                        handleBackup(activity); // try try again
-                    }
-                    dialog.dismiss();
+            builder.setPositiveButton("Restore Settings", (dialog, which) -> {
+                if (checkPermissions(activity, true, TRIGGER_RESTORE_PERMISSIONS_REQUEST_STORAGE)) {
+                    // one entry do it!
+                    restoreSettingsNow(activity);
+                } else {
+                    handleBackup(activity); // try try again
                 }
+                dialog.dismiss();
             });
 
             builder.create().show();
