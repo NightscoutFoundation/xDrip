@@ -115,6 +115,7 @@ import com.eveningoutpost.dexdrip.ui.MicroStatus;
 import com.eveningoutpost.dexdrip.ui.MicroStatusImpl;
 import com.eveningoutpost.dexdrip.ui.NumberGraphic;
 import com.eveningoutpost.dexdrip.ui.UiPing;
+import com.eveningoutpost.dexdrip.ui.dialog.HeyFamUpdateOptInDialog;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.eveningoutpost.dexdrip.utils.BgToSpeech;
 import com.eveningoutpost.dexdrip.utils.DatabaseUtil;
@@ -1885,6 +1886,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 homeShelf.set("source_wizard_auto", false);
             }
         }
+
+        HeyFamUpdateOptInDialog.heyFam(this); // remind about updates
 
     }
 

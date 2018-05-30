@@ -923,4 +923,9 @@
     <string name="invalid_or_unsupported_code">Invalid or unsupported code!</string>
     <string name="g6_sensor_code">G6 Sensor Code</string>
     <string name="please_enter_printed_calibration_code">Please enter the printed calibration code number, 4 digits, eg: 5678</string>
+    <string name="enable_update_checks">Enable update checks?</string>
+    <string name="you_can_easily_roll_back_dialog_msg">With xDrip you can easily roll back to previous versions just by re-running the APK installer for the old version in your Downloads folder if you don\'t like the new version.\n\nWould you like to enable update checks?</string>
+    <string name="hey_fam">Hey Fam...</string>
+    <string name="you_have_update_checks_off">You have update checks switched off!\n\nWe try to fix bugs and add new features to xDrip+ over time.\n\nEvery 60 days this reminder will appear to ask you to turn update checking on.</string>
+    <string name="update_checking_enabled">Update checking enabled!</string>
 </resources>
