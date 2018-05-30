@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+import com.eveningoutpost.dexdrip.BuildConfig;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
@@ -43,6 +44,10 @@ public class Experience {
     public static boolean installedForAtLeast(long millis) {
         final long installed_time = Pref.getLong(MARKER, -1);
         return installed_time > 0 && (JoH.msSince(installed_time) > millis);
+    }
+
+    public static boolean ageOfThisBuildAtLeast(long millis) {
+        return JoH.msSince(BuildConfig.buildTimestamp) > millis;
     }
 
     public static boolean gotData() {
