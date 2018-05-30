@@ -1177,9 +1177,7 @@ public class Preferences extends PreferenceActivity {
             try {
 
                 try {
-                    if ((collectionType != DexCollectionType.WifiWixel)
-                            && (collectionType != DexCollectionType.WifiBlueToothWixel)
-                            && (collectionType != DexCollectionType.WifiDexBridgeWixel)) {
+                    if (!DexCollectionType.hasWifi()) {
                         final String receiversIpAddresses = this.prefs.getString("wifi_recievers_addresses", "").trim();
                         // only hide if non wifi wixel mode and value not previously set to cope with
                         // dynamic mode changes. jamorham
@@ -1612,9 +1610,7 @@ public class Preferences extends PreferenceActivity {
                     }*/
 
                     // jamorham always show wifi receivers option if populated as we may switch modes dynamically
-                    if (collectionType != DexCollectionType.WifiWixel
-                            && collectionType != DexCollectionType.WifiBlueToothWixel
-                            && collectionType != DexCollectionType.WifiDexBridgeWixel) {
+                    if (!DexCollectionType.hasWifi()) {
                         String receiversIpAddresses;
                         receiversIpAddresses = AllPrefsFragment.this.prefs.getString("wifi_recievers_addresses", "");
                         if (receiversIpAddresses == null || receiversIpAddresses.trim().equals("")) {
