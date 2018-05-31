@@ -3545,7 +3545,16 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                     new AsyncTask<Void, Void, String>() {
                         @Override
                         protected String doInBackground(Void... params) {
-                            return DatabaseUtil.saveCSV(getBaseContext(), date.getTimeInMillis());
+                            int permissionCheck = ContextCompat.checkSelfPermission(Home.this,
+                                    Manifest.permission.READ_EXTERNAL_STORAGE);
+                            if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+                                ActivityCompat.requestPermissions(Home.this,
+                                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                                        0);
+                                return null;
+                            } else {
+                                return DatabaseUtil.saveCSV(getBaseContext(), date.getTimeInMillis());
+                            }
                         }
 
                         @Override
