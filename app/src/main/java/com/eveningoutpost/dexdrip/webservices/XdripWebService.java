@@ -10,7 +10,10 @@ import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.dagger.Singleton;
+import com.eveningoutpost.dexdrip.utils.TriState;
 import com.eveningoutpost.dexdrip.xdrip;
+import com.google.common.base.Charsets;
+import com.google.common.hash.Hashing;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -28,6 +31,7 @@ import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
+
 
 /**
  * Created by jamorham on 06/01/2018.
@@ -76,6 +80,12 @@ public class XdripWebService implements Runnable {
                 easyStop();
             }
         }
+    }
+
+    // cause a restart if enabled to refresh configuration settings
+    public static void settingsChanged() {
+        easyStop();
+        immortality();
     }
 
     // robustly shut down and erase the instance
@@ -143,16 +153,18 @@ public class XdripWebService implements Runnable {
     @Override
     public void run() {
         try {
+            final boolean open_service = Pref.getBooleanDefaultFalse("xdrip_webservice_open");
             if (useSSL) {
                 // SSL type
                 UserError.Log.d(TAG, "Attempting to initialize SSL");
                 final SSLServerSocketFactory ssocketFactory = SSLServerSocketHelper.makeSSLSocketFactory(
                         new BufferedInputStream(xdrip.getAppContext().getResources().openRawResource(R.raw.localhost_cert)),
                         "password".toCharArray());
-                mServerSocket = ssocketFactory.createServerSocket(listenPort, 1, InetAddress.getByName("127.0.0.1"));
+                mServerSocket = ssocketFactory.createServerSocket(listenPort, 1, open_service ? null : InetAddress.getByName("127.0.0.1"));
+
             } else {
                 // Non-SSL type
-                mServerSocket = new ServerSocket(listenPort, 1, InetAddress.getByName("127.0.0.1"));
+                mServerSocket = new ServerSocket(listenPort, 1, open_service ? null : InetAddress.getByName("127.0.0.1"));
             }
             while (isRunning) {
                 final Socket socket = mServerSocket.accept();
@@ -199,20 +211,36 @@ public class XdripWebService implements Runnable {
                 return;
             }
 
+            // get the set password if any
+            final String secret = Pref.getStringDefaultBlank("xdrip_webservice_secret");
+            final String hashedSecret = secret.isEmpty() ? null : Hashing.sha1().hashBytes(secret.getBytes(Charsets.UTF_8)).toString();
+
+            final boolean authNeeded = hashedSecret != null && !socket.getInetAddress().isLoopbackAddress();
+            final TriState secretCheckResult = new TriState();
 
             String route = null;
 
             // Read HTTP headers and parse out the route.
             reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             String line;
-            while (!TextUtils.isEmpty(line = reader.readLine())) {
+
+            int lineCount = 0;
+            while (!TextUtils.isEmpty(line = reader.readLine()) && lineCount < 50) {
+
                 if (line.startsWith("GET /")) {
                     int start = line.indexOf('/') + 1;
                     int end = line.indexOf(' ', start);
                     route = URLDecoder.decode(line.substring(start, end), "UTF-8");
                     UserError.Log.d(TAG, "Received request for: " + route);
-                    break;
+                    //if (hashedSecret == null) break; // we can't optimize as we always need to look for api-secret even if server doesn't use it
+
+                } else if (line.startsWith(("api-secret"))) {
+                    final String requestSecret[] = line.split(": ");
+                    if (requestSecret.length < 2) continue;
+                    secretCheckResult.set(hashedSecret != null && hashedSecret.equalsIgnoreCase(requestSecret[1]));
+                    break; // last and only header checked and will appear after GET request
                 }
+                lineCount++;
             }
 
             // Output stream that we send the response to
@@ -224,7 +252,22 @@ public class XdripWebService implements Runnable {
                 return;
             }
 
-            final WebResponse response = ((RouteFinder)Singleton.get("RouteFinder")).handleRoute(route);
+            final WebResponse response;
+
+            if (secretCheckResult.isFalse() || (authNeeded && !secretCheckResult.isTrue())) {
+                final String failureMessage = "Authentication failed - check api-secret\n"
+                                + "\n" + (authNeeded ? "secret is required " : "secret is not required")
+                                + "\n" + secretCheckResult.trinary("no secret supplied", "supplied secret matches", "supplied secret doesn't match")
+                                + "\n" + "Your address: " + socket.getInetAddress().toString()
+                                + "\n\n";
+                if (JoH.ratelimit("web-auth-failure", 10)) {
+                    UserError.Log.e(TAG, failureMessage);
+                }
+                response = new WebResponse(failureMessage, 403, "text/plain");
+                JoH.threadSleep(1000);
+            } else {
+                response = ((RouteFinder) Singleton.get("RouteFinder")).handleRoute(route);
+            }
 
             // if we didn't manage to generate a response
             if (response == null) {
@@ -249,6 +292,8 @@ public class XdripWebService implements Runnable {
 
         } catch (SocketTimeoutException e) {
             UserError.Log.d(TAG, "Got socket timeout: " + e);
+        } catch (NullPointerException e) {
+            UserError.Log.wtf(TAG, "Got null pointer exception: " + e);
 
         } finally {
             if (output != null) {
@@ -260,6 +305,7 @@ public class XdripWebService implements Runnable {
             JoH.releaseWakeLock(wl);
         }
     }
+
 
     /**
      * Writes a server error response (HTTP/1.0 500) to the given output stream.

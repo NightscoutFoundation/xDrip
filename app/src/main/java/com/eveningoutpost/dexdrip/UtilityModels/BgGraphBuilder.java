@@ -25,8 +25,8 @@ import com.eveningoutpost.dexdrip.Models.Forecast.TrendLine;
 import com.eveningoutpost.dexdrip.Models.HeartRate;
 import com.eveningoutpost.dexdrip.Models.Iob;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.StepCounter;
 import com.eveningoutpost.dexdrip.Models.Profile;
+import com.eveningoutpost.dexdrip.Models.StepCounter;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.R;
@@ -41,7 +41,6 @@ import com.eveningoutpost.dexdrip.xdrip;
 import com.google.android.gms.location.DetectedActivity;
 import com.rits.cloning.Cloner;
 
-import java.lang.reflect.Field;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
@@ -160,7 +159,8 @@ public class BgGraphBuilder {
     private final List<BgReading> bgReadings;
     private final List<Calibration> calibrations;
     private final List<BloodTest> bloodtests;
-    private final List<PointValue> inRangeValues = new ArrayList<PointValue>();
+    private final List<PointValue> inRangeValues = new ArrayList<>();
+    private final List<PointValue> backfillValues = new ArrayList<>();
     private final List<PointValue> highValues = new ArrayList<PointValue>();
     private final List<PointValue> lowValues = new ArrayList<PointValue>();
     private final List<PointValue> pluginValues = new ArrayList<PointValue>();
@@ -596,6 +596,7 @@ public class BgGraphBuilder {
             }
             lines.add(rawInterpretedLine());
 
+            lines.add(backFillValuesLine());
             lines.add(inRangeValuesLine());
             lines.add(lowValuesLine());
             lines.add(highValuesLine());
@@ -657,6 +658,15 @@ public class BgGraphBuilder {
         return inRangeValuesLine;
     }
 
+    private Line backFillValuesLine() {
+        final Line line = new Line(backfillValues);
+        line.setColor(Color.parseColor("#55338833"));
+        line.setHasLines(false);
+        line.setPointRadius(pointSize + 3);
+        line.setHasPoints(true);
+        return line;
+    }
+    
     public void debugPrintPoints(List<PointValue> mypoints) {
         for (PointValue thispoint : mypoints) {
             UserError.Log.i(TAG, "Debug Points: " + thispoint.toString());
@@ -922,6 +932,7 @@ public class BgGraphBuilder {
             highValues.clear();
             lowValues.clear();
             inRangeValues.clear();
+            backfillValues.clear();
             calibrationValues.clear();
             bloodTestValues.clear();
             pluginValues.clear();
@@ -1032,6 +1043,7 @@ public class BgGraphBuilder {
             final boolean predict_lows = prefs.getBoolean("predict_lows", true);
             final boolean show_plugin = prefs.getBoolean("plugin_plot_on_graph", false);
             final boolean glucose_from_plugin = prefs.getBoolean("display_glucose_from_plugin", false);
+            final boolean illustrate_backfilled_data = prefs.getBoolean("illustrate_backfilled_data", false);
 
             if ((Home.get_follower()) && (bgReadings.size() < 3)) {
                 GcmActivity.requestBGsync();
@@ -1098,6 +1110,10 @@ public class BgGraphBuilder {
                     lowValues.add(new PointValue((float) (bgReading.timestamp / FUZZER), (float) unitized(bgReading.calculated_value)));
                 } else if (bgReading.calculated_value > 13) {
                     lowValues.add(new PointValue((float) (bgReading.timestamp / FUZZER), (float) unitized(40)));
+                }
+
+                if (illustrate_backfilled_data && bgReading.calculated_value > 13 && bgReading.calculated_value < 400 && bgReading.isBackfilled()) {
+                    backfillValues.add(bgReadingToPoint(bgReading));
                 }
 
                 avg2counter++;
@@ -1608,6 +1624,10 @@ public class BgGraphBuilder {
         }
     }
 
+    private PointValue bgReadingToPoint(BgReading bgReading) {
+        return new PointValue((float) (bgReading.timestamp / FUZZER), (float) unitized(bgReading.calculated_value));
+    }
+
     public Line avg1Line() {
         List<PointValue> myLineValues = new ArrayList<PointValue>();
         myLineValues.add(new PointValue((float) avg1startfuzzed, (float) unitized(avg1value)));
@@ -1858,13 +1878,30 @@ public class BgGraphBuilder {
     public static String unitized_string_static(double value) {
         return unitized_string(value, Pref.getString("units", "mgdl").equals("mgdl"));
     }
+
     public static String unitized_string_with_units_static(double value) {
         final boolean domgdl = Pref.getString("units", "mgdl").equals("mgdl");
         return unitized_string(value, domgdl)+" "+(domgdl ? "mg/dl" : "mmol/l");
     }
 
+    public static String unitized_string_with_units_static_short(double value) {
+        final boolean domgdl = Pref.getString("units", "mgdl").equals("mgdl");
+        return unitized_string(value, domgdl)+" "+(domgdl ? "mgdl" : "mmol");
+    }
+
+    public static String unitized_string_static_no_interpretation_short(double value) {
+        final boolean domgdl = Pref.getString("units", "mgdl").equals("mgdl");
+        final DecimalFormat df = new DecimalFormat("#");
+        if (domgdl) {
+            df.setMaximumFractionDigits(0);
+        } else {
+            df.setMaximumFractionDigits(1);
+        }
+        return df.format(unitized(value, domgdl)) + " " + (domgdl ? "mgdl" : "mmol");
+    }
+
     public static String unitized_string(double value, boolean doMgdl) {
-        DecimalFormat df = new DecimalFormat("#");
+        final DecimalFormat df = new DecimalFormat("#");
         if (value >= 400) {
             return "HIGH";
         } else if (value >= 40) {

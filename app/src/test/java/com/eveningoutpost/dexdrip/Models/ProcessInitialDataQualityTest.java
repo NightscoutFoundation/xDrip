@@ -1,10 +1,8 @@
 package com.eveningoutpost.dexdrip.Models;
 
-import com.eveningoutpost.dexdrip.MockModel;
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -31,24 +29,8 @@ public class ProcessInitialDataQualityTest extends RobolectricTestWithConfig {
         System.out.println(msg);
     }
 
-    @Before
-    public void setUp() throws Exception {
-    }
-
     @Test
-    public void testGetInitialDataQuality() throws Exception {
-
-        // check we can mock ActiveAndroid which depends on Android framework
-        MockModel m = null;
-        try {
-            m = new MockModel();
-        } catch (NullPointerException e) {
-            log(e.toString());
-            assertThat("Cannot create MockModel internal error - check ActiveAndroid dependency is included and manifest models and that correct @Config line is being used!", false, is(true));
-        }
-        assertThat("ActiveAndroid Mock Model can be created", m != null, is(true));
-        assertThat("ActiveAndroid Mock Model can be created", m.intField == 0, is(true));
-
+    public void testGetInitialDataQuality() {
         // result object store
         ProcessInitialDataQuality.InitialDataQuality test;
 

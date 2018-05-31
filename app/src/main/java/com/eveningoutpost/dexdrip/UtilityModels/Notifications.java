@@ -600,14 +600,37 @@ public class Notifications extends IntentService {
                 .setSmallIcon(R.drawable.ic_action_communication_invert_colors_on)
                 .setUsesChronometer(false);
 
+        boolean setLargeIcon = false;
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             // in case the graphic crashes the system-ui we wont do it immediately after reboot so the
             // user has a chance to disable the feature
             if (SystemClock.uptimeMillis() > Constants.MINUTE_IN_MS * 15) {
                 if (NumberGraphic.numberIconEnabled()) {
                     if ((dg != null) && (!dg.isStale())) {
-                        final Bitmap icon_bitmap = NumberGraphic.getBitmap(dg.unitized);
+                        final Bitmap icon_bitmap = NumberGraphic.getSmallIconBitmap(dg.unitized);
                         if (icon_bitmap != null) b.setSmallIcon(Icon.createWithBitmap(icon_bitmap));
+
+                    }
+                }
+
+                if (NumberGraphic.largeWithArrowEnabled()) {
+                    if ((dg != null) && (!dg.isStale())) {
+                        final Bitmap icon_bitmap = NumberGraphic.getLargeWithArrowBitmap(dg.unitized, dg.delta_arrow);
+                        //if (icon_bitmap != null) b.setSmallIcon(Icon.createWithBitmap(icon_bitmap));
+                        if (icon_bitmap != null) {
+                            b.setLargeIcon(Icon.createWithBitmap(icon_bitmap));
+                            setLargeIcon = true;
+                        }
+                    }
+                } else if (NumberGraphic.largeNumberIconEnabled()) {
+                    if ((dg != null) && (!dg.isStale())) {
+                        final Bitmap icon_bitmap = NumberGraphic.getLargeIconBitmap(dg.unitized);
+                        //if (icon_bitmap != null) b.setSmallIcon(Icon.createWithBitmap(icon_bitmap));
+                        if (icon_bitmap != null) {
+                            b.setLargeIcon(Icon.createWithBitmap(icon_bitmap));
+                            setLargeIcon = true;
+                        }
                     }
                 }
             }
@@ -627,7 +650,7 @@ public class Notifications extends IntentService {
                     .setBgGraphBuilder(bgGraphBuilder)
                     .setBackgroundColor(getCol(X.color_notification_chart_background))
                     .build();
-            b.setLargeIcon(iconBitmap);
+            if (!setLargeIcon) b.setLargeIcon(iconBitmap);
             Notification.BigPictureStyle bigPictureStyle = new Notification.BigPictureStyle();
             notifiationBitmap = new BgSparklineBuilder(mContext)
                     .setBgGraphBuilder(bgGraphBuilder)

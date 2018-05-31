@@ -33,6 +33,7 @@ import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -108,14 +109,14 @@ public class CustomComplicationProviderService extends ComplicationProviderServi
                         this, thisProvider, complicationId);
 
         String numberText = "";
-        BgReading bgReading = BgReading.last(false);
+        BgReading bgReading = BgReading.last(true);
         if ((bgReading == null) || (JoH.msSince(bgReading.timestamp) >= FRESH_MS)) {
             try {
                 ActiveAndroid.clearCache(); // we may be in another process!
             } catch (Exception e) {
                 Log.d(TAG, "Couldn't clear cache: " + e);
             }
-            bgReading = BgReading.last(false);
+            bgReading = BgReading.last(true);
         }
 
         boolean is_stale = false;
@@ -210,11 +211,17 @@ public class CustomComplicationProviderService extends ComplicationProviderServi
     }
 
     public static void refresh() {
-        if (JoH.ratelimit("complication-refresh", 5)) {
-            final ComponentName componentName = new ComponentName(xdrip.getAppContext(), "com.eveningoutpost.dexdrip.Services.CustomComplicationProviderService");
-            final ProviderUpdateRequester providerUpdateRequester = new ProviderUpdateRequester(xdrip.getAppContext(), componentName);
-            providerUpdateRequester.requestUpdateAll();
-        }
+        Inevitable.task("refresh-complication", 500, new Runnable() {
+            @Override
+            public void run() {
+                if (JoH.ratelimit("complication-refresh", 5)) {
+                    Log.d(TAG, "Complication refresh() executing");
+                    final ComponentName componentName = new ComponentName(xdrip.getAppContext(), "com.eveningoutpost.dexdrip.Services.CustomComplicationProviderService");
+                    final ProviderUpdateRequester providerUpdateRequester = new ProviderUpdateRequester(xdrip.getAppContext(), componentName);
+                    providerUpdateRequester.requestUpdateAll();
+                }
+            }
+        });
         Log.d(TAG, "Complication refresh() called");
     }
 }

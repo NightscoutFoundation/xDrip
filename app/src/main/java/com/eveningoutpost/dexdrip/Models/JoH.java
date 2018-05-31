@@ -19,6 +19,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -36,6 +37,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
+import android.os.SystemClock;
 import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AlertDialog;
@@ -86,6 +88,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.zip.CRC32;
 import java.util.zip.Checksum;
 import java.util.zip.Deflater;
@@ -160,10 +163,16 @@ public class JoH {
         return new Date().getTime();
     }
 
-    // TODO can we optimize this with System.currentTimeMillis ?
     public static long tsl() {
-        //return new Date().getTime();
         return System.currentTimeMillis();
+    }
+
+    public static long uptime() {
+        return SystemClock.uptimeMillis();
+    }
+
+    public static boolean upForAtLeastMins(int mins) {
+        return uptime() > Constants.MINUTE_IN_MS * mins;
     }
 
     public static long msSince(long when) {
@@ -422,6 +431,21 @@ public class JoH {
         }
     }
 
+    public static void dumpBundle(Bundle bundle, String tag) {
+        if (bundle != null) {
+            for (String key : bundle.keySet()) {
+                Object value = bundle.get(key);
+                if (value != null) {
+                    UserError.Log.d(tag, String.format("%s %s (%s)", key,
+                            value.toString(), value.getClass().getName()));
+                }
+            }
+        } else {
+            UserError.Log.d(tag, "Bundle is empty");
+        }
+    }
+
+
     // compare stored byte array hashes
     public static synchronized boolean differentBytes(String name, byte[] bytes) {
         final String id = "differentBytes-" + name;
@@ -630,6 +654,30 @@ public class JoH {
         return qs((double) t, 0) + " " + unit;
     }
 
+    public static String niceTimeScalar(double t, int digits) {
+        String unit = "second";
+        t = t / 1000;
+        if (t > 59) {
+            unit = "minute";
+            t = t / 60;
+            if (t > 59) {
+                unit = "hour";
+                t = t / 60;
+                if (t > 24) {
+                    unit = "day";
+                    t = t / 24;
+                    if (t > 28) {
+                        unit = "week";
+                        t = t / 7;
+                    }
+                }
+            }
+        }
+        if (t != 1) unit = unit + "s";
+        return qs( t, digits) + " " + unit;
+    }
+
+
     public static String niceTimeScalarNatural(long t) {
         if (t > 3000000) t = t + 10000; // round up by 10 seconds if nearly an hour
         if ((t > Constants.DAY_IN_MS) && (t < Constants.WEEK_IN_MS * 2)) {
@@ -644,6 +692,11 @@ public class JoH {
     public static String niceTimeScalarRedux(long t) {
         return niceTimeScalar(t).replaceFirst("^1 ", "");
     }
+
+    public static String niceTimeScalarShort(long t) {
+        return niceTimeScalar(t).replaceFirst("([A-z]).*$", "$1");
+    }
+
 
     public static double tolerantParseDouble(String str) throws NumberFormatException {
         return Double.parseDouble(str.replace(",", "."));
@@ -924,6 +977,16 @@ public class JoH {
         xdrip.getAppContext().startService(new Intent(xdrip.getAppContext(), c));
     }
 
+    public static void startActivity(Class c) {
+        xdrip.getAppContext().startActivity(getStartActivityIntent(c));
+    }
+
+
+    public static Intent getStartActivityIntent(Class c) {
+        return new Intent(xdrip.getAppContext(), c).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    }
+
+
     public static void goFullScreen(boolean fullScreen, View decorView) {
 
         if (fullScreen) {
@@ -1181,6 +1244,12 @@ public class JoH {
         }
     }
 
+    public static boolean areWeRunningOnAndroidWear() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH
+                && (xdrip.getAppContext().getResources().getConfiguration().uiMode
+                & Configuration.UI_MODE_TYPE_MASK) == Configuration.UI_MODE_TYPE_WATCH;
+    }
+
     public static boolean isAirplaneModeEnabled(Context context) {
         return Settings.Global.getInt(context.getContentResolver(), Settings.Global.AIRPLANE_MODE_ON, 0) != 0;
     }
@@ -1356,6 +1425,39 @@ public class JoH {
         }.start();
     }
 
+
+    public static synchronized void unBond(String transmitterMAC) {
+
+        UserError.Log.d(TAG, "unBond() start");
+        if (transmitterMAC == null) return;
+        try {
+            final BluetoothAdapter mBluetoothAdapter = ((BluetoothManager) xdrip.getAppContext().getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
+
+            final Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+            if (pairedDevices.size() > 0) {
+                for (BluetoothDevice device : pairedDevices) {
+                    if (device.getAddress() != null) {
+                        if (device.getAddress().equals(transmitterMAC)) {
+                            try {
+                                UserError.Log.e(TAG, "removingBond: " + transmitterMAC);
+                                Method m = device.getClass().getMethod("removeBond", (Class[]) null);
+                                m.invoke(device, (Object[]) null);
+
+                            } catch (Exception e) {
+                                UserError.Log.e(TAG, e.getMessage(), e);
+                            }
+                        }
+
+                    }
+                }
+            }
+        } catch (Exception e) {
+            UserError.Log.e(TAG, "Exception during unbond! " + transmitterMAC, e);
+        }
+        UserError.Log.d(TAG, "unBond() finished");
+    }
+
+
     public static Map<String, String> bundleToMap(Bundle bundle) {
         final HashMap<String, String> map = new HashMap<>();
         for (String key : bundle.keySet()) {
@@ -1421,67 +1523,5 @@ public class JoH {
         return bd.doubleValue();
     }
     
-    
-    private final static long[] crc16table = {
-            0, 4489, 8978, 12955, 17956, 22445, 25910, 29887, 35912,
-            40385, 44890, 48851, 51820, 56293, 59774, 63735, 4225, 264,
-            13203, 8730, 22181, 18220, 30135, 25662, 40137, 36160, 49115,
-            44626, 56045, 52068, 63999, 59510, 8450, 12427, 528, 5017,
-            26406, 30383, 17460, 21949, 44362, 48323, 36440, 40913, 60270,
-            64231, 51324, 55797, 12675, 8202, 4753, 792, 30631, 26158,
-            21685, 17724, 48587, 44098, 40665, 36688, 64495, 60006, 55549,
-            51572, 16900, 21389, 24854, 28831, 1056, 5545, 10034, 14011,
-            52812, 57285, 60766, 64727, 34920, 39393, 43898, 47859, 21125,
-            17164, 29079, 24606, 5281, 1320, 14259, 9786, 57037, 53060,
-            64991, 60502, 39145, 35168, 48123, 43634, 25350, 29327, 16404,
-            20893, 9506, 13483, 1584, 6073, 61262, 65223, 52316, 56789,
-            43370, 47331, 35448, 39921, 29575, 25102, 20629, 16668, 13731,
-            9258, 5809, 1848, 65487, 60998, 56541, 52564, 47595, 43106,
-            39673, 35696, 33800, 38273, 42778, 46739, 49708, 54181, 57662,
-            61623, 2112, 6601, 11090, 15067, 20068, 24557, 28022, 31999,
-            38025, 34048, 47003, 42514, 53933, 49956, 61887, 57398, 6337,
-            2376, 15315, 10842, 24293, 20332, 32247, 27774, 42250, 46211,
-            34328, 38801, 58158, 62119, 49212, 53685, 10562, 14539, 2640,
-            7129, 28518, 32495, 19572, 24061, 46475, 41986, 38553, 34576,
-            62383, 57894, 53437, 49460, 14787, 10314, 6865, 2904, 32743,
-            28270, 23797, 19836, 50700, 55173, 58654, 62615, 32808, 37281,
-            41786, 45747, 19012, 23501, 26966, 30943, 3168, 7657, 12146,
-            16123, 54925, 50948, 62879, 58390, 37033, 33056, 46011, 41522,
-            23237, 19276, 31191, 26718, 7393, 3432, 16371, 11898, 59150,
-            63111, 50204, 54677, 41258, 45219, 33336, 37809, 27462, 31439,
-            18516, 23005, 11618, 15595, 3696, 8185, 63375, 58886, 54429,
-            50452, 45483, 40994, 37561, 33584, 31687, 27214, 22741, 18780,
-            15843, 11370, 7921, 3960 };
 
-    // first two bytes = crc16 included in data
-    static long computeCRC16(byte[] data, int start, int size){
-        long crc = 0xffff;
-        for (int i = start + 2; i < start + size; i++) {
-            crc = ((crc >> 8) ^ crc16table[(int)(crc ^   (data[i] & 0xFF) ) & 0xff]);
-        }
-        
-        long reverseCrc = 0;
-        for (int i=0; i <16; i++) {
-            reverseCrc = (reverseCrc << 1) | (crc & 1);
-            crc >>= 1;
-        }
-        return reverseCrc;
-    }
-
-    static boolean CheckCRC16(byte[] data, int start, int size) {
-        long crc = computeCRC16(data, start, size);
-        return crc == ((data[start+1]& 0xFF) * 256 + (data[start] & 0xff)); 
-    }
-    
-    public static boolean LibreCrc(byte[] data) {
-        if(data.length < 344) {
-            Log.e(TAG, "Must have at least 344 bytes for libre data");
-            return false;
-        }
-        boolean cheksum_ok = CheckCRC16(data, 0 ,24);
-        cheksum_ok &= CheckCRC16(data, 24 ,296);
-        cheksum_ok &= CheckCRC16(data, 320 ,24);
-        return cheksum_ok;
-        
-    }
 }

@@ -30,12 +30,18 @@ public class XbridgePlus {
 
     private static final byte SUB_REQUEST = 0x00;
 
+    private static final byte REQUEST_DATA = 0x00;
+    private static final byte LIBRE_STATUS = 0x01;
     private static final byte REQUESTED_LAST15_PART1 = 0x02;
     private static final byte REQUESTED_LAST15_PART2 = 0x03;
+    private static final byte REQUESTED_LAST8H_PART1 = 0x04;
+    private static final byte REQUESTED_LAST8H_PART2 = 0x05;
+    private static final byte REQUESTED_LAST8H_PART3 = 0x06;
+    private static final byte REQUESTED_LAST8H_PART4 = 0x07;
 
 
     public static byte[] sendDataRequestPacket() {
-        return new byte[]{0x0c, CMD_XBRIDGE_PLUS, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+        return new byte[]{0x0c, CMD_XBRIDGE_PLUS, SUB_REQUEST, REQUEST_DATA, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
     }
 
     public static byte[] sendLast15ARequestPacket() {

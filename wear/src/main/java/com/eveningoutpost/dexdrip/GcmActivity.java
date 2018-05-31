@@ -12,4 +12,8 @@ public class GcmActivity {
 
      }
 
+     public static void requestSensorCalibrationsUpdate() {
+
+     }
+
 }

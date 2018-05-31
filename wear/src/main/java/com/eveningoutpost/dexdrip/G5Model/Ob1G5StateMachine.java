@@ -10,23 +10,32 @@ import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
+import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.NotificationChannels;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.PowerStateReceiver;
+import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.eveningoutpost.dexdrip.xdrip;
+import com.google.gson.reflect.TypeToken;
 import com.polidea.rxandroidble.RxBleConnection;
 import com.polidea.rxandroidble.exceptions.BleCannotSetCharacteristicNotificationException;
 import com.polidea.rxandroidble.exceptions.BleDisconnectedException;
 import com.polidea.rxandroidble.exceptions.BleGattCharacteristicException;
 
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Type;
 import java.nio.ByteBuffer;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
+import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -40,11 +49,20 @@ import rx.schedulers.Schedulers;
 
 import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.Authentication;
 import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.Control;
+import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.ProbablyBackfill;
+import static com.eveningoutpost.dexdrip.Models.JoH.msSince;
+import static com.eveningoutpost.dexdrip.Models.JoH.pratelimit;
 import static com.eveningoutpost.dexdrip.Services.G5BaseService.G5_BATTERY_FROM_MARKER;
 import static com.eveningoutpost.dexdrip.Services.G5BaseService.G5_BATTERY_LEVEL_MARKER;
 import static com.eveningoutpost.dexdrip.Services.G5BaseService.G5_BATTERY_MARKER;
 import static com.eveningoutpost.dexdrip.Services.G5BaseService.G5_BATTERY_WEARABLE_SEND;
 import static com.eveningoutpost.dexdrip.Services.G5BaseService.G5_FIRMWARE_MARKER;
+import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.android_wear;
+import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.getTransmitterID;
+import static com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder.DEXCOM_PERIOD;
+import static com.eveningoutpost.dexdrip.UtilityModels.Constants.HOUR_IN_MS;
+import static com.eveningoutpost.dexdrip.UtilityModels.Constants.MINUTE_IN_MS;
+import static com.eveningoutpost.dexdrip.UtilityModels.Constants.SECOND_IN_MS;
 
 
 /**
@@ -57,15 +75,30 @@ import static com.eveningoutpost.dexdrip.Services.G5BaseService.G5_FIRMWARE_MARK
 public class Ob1G5StateMachine {
 
     private static final String TAG = "Ob1G5StateMachine";
+    private static final String PREF_SAVED_QUEUE = "Ob1-saved-queue";
+
+    public static final String PREF_QUEUE_DRAINED = "OB1-QUEUE-DRAINED";
+
     private static final int LOW_BATTERY_WARNING_LEVEL = Pref.getStringToInt("g5-battery-warning-level", 300); // voltage a < this value raises warnings;
-    private static final long BATTERY_READ_PERIOD_MS = Constants.HOUR_IN_MS * 12; // how often to poll battery data (12 hours)
+    private static final long BATTERY_READ_PERIOD_MS = HOUR_IN_MS * 12; // how often to poll battery data (12 hours)
+    private static final long MAX_BACKFILL_PERIOD_MS = HOUR_IN_MS * 3; // how far back to request backfill data
+    private static final int BACKFILL_CHECK_SMALL = 3;
+    private static final int BACKFILL_CHECK_LARGE = (int) (MAX_BACKFILL_PERIOD_MS / DEXCOM_PERIOD);
 
     private static final boolean getVersionDetails = true; // try to load firmware version details
     private static final boolean getBatteryDetails = true; // try to load battery info details
 
+    private static final LinkedBlockingDeque<Ob1Work> commandQueue = new LinkedBlockingDeque<>();
+
     private static boolean speakSlowly = false; // slow down bluetooth comms for android wear etc
+    private static int nextBackFillCheckSize = BACKFILL_CHECK_SMALL;
 
     private static final boolean d = false;
+
+    private static volatile long lastGlucosePacket = 0;
+    private static volatile long lastUsableGlucosePacket = 0;
+    private static volatile BgReading lastGlucoseBgReading;
+    private static volatile boolean backup_loaded = false;
 
     // Auth Check + Request
     public static boolean doCheckAuth(Ob1G5CollectionService parent, RxBleConnection connection) {
@@ -78,7 +111,7 @@ public class Ob1G5StateMachine {
             UserError.Log.d(TAG, "Setting speak slowly to true"); // WARN should be reactive or on named devices
         }
 
-        final AuthRequestTxMessage authRequest = new AuthRequestTxMessage(getTokenSize());
+        final AuthRequestTxMessage authRequest = new AuthRequestTxMessage(getTokenSize(), JoH.areWeRunningOnAndroidWear() && !Pref.getBooleanDefaultFalse("only_ever_use_wear_collector"));
         UserError.Log.i(TAG, "AuthRequestTX: " + JoH.bytesToHex(authRequest.byteSequence));
 
         connection.setupNotification(Authentication)
@@ -198,7 +231,9 @@ public class Ob1G5StateMachine {
 
                 }, throwable -> {
                     if (!(throwable instanceof OperationSuccess)) {
-                        if ((parent.getState() == Ob1G5CollectionService.STATE.CLOSED) && (throwable instanceof BleDisconnectedException)) {
+                        if (((parent.getState() == Ob1G5CollectionService.STATE.CLOSED)
+                                || (parent.getState() == Ob1G5CollectionService.STATE.CLOSE))
+                                && (throwable instanceof BleDisconnectedException)) {
                             UserError.Log.d(TAG, "normal authentication notification throwable: (" + parent.getState() + ") " + throwable + " " + JoH.dateTimeText(JoH.tsl()));
                             parent.connectionStateChange("Closed OK");
                         } else if ((parent.getState() == Ob1G5CollectionService.STATE.BOND) && (throwable instanceof TimeoutException)) {
@@ -209,8 +244,10 @@ public class Ob1G5StateMachine {
                         } else {
                             UserError.Log.e(TAG, "authentication notification  throwable: (" + parent.getState() + ") " + throwable + " " + JoH.dateTimeText(JoH.tsl()));
                             parent.incrementErrors();
-                            if (throwable instanceof BleCannotSetCharacteristicNotificationException) {
+                            if (throwable instanceof BleCannotSetCharacteristicNotificationException
+                                    || throwable instanceof BleGattCharacteristicException) {
                                 parent.tryGattRefresh();
+                                parent.changeState(Ob1G5CollectionService.STATE.SCAN);
                             }
                         }
                         if ((throwable instanceof BleDisconnectedException) || (throwable instanceof TimeoutException)) {
@@ -229,10 +266,16 @@ public class Ob1G5StateMachine {
         return true;
     }
 
+    private static final int SPEAK_SLOWLY_DELAY = 300;
+
+    private static int speakSlowlyDelay() {
+        return speakSlowly ? SPEAK_SLOWLY_DELAY : 0;
+    }
+
     private static void speakSlowly() {
         if (speakSlowly) {
             UserError.Log.d(TAG, "Speaking slowly");
-            threadSleep(300);
+            threadSleep(SPEAK_SLOWLY_DELAY);
         }
     }
 
@@ -311,11 +354,36 @@ public class Ob1G5StateMachine {
         return true;
     }
 
+    public static boolean doReset(Ob1G5CollectionService parent, RxBleConnection connection) {
+        if (connection == null) return false;
+        parent.msg("Hard Resetting Transmitter");
+        connection.writeCharacteristic(Control, new ResetTxMessage().byteSequence)
+                .subscribe(characteristicValue -> {
+                    if (d)
+                        UserError.Log.d(TAG, "Wrote ResetTxMessage request!!");
+                    parent.msg("Hard Reset Sent");
+                }, throwable -> {
+                    parent.msg("Hard Reset maybe Failed");
+                    UserError.Log.e(TAG, "Failed to write ResetTxMessage: " + throwable);
+                    if (throwable instanceof BleGattCharacteristicException) {
+                        final int status = ((BleGattCharacteristicException) throwable).getStatus();
+                        UserError.Log.e(TAG, "Got status message: " + BluetoothServices.getStatusName(status));
+                    }
+                });
+        return true;
+    }
+
     // Get Data
     public static boolean doGetData(Ob1G5CollectionService parent, RxBleConnection connection) {
         if (connection == null) return false;
+        // TODO switch modes depending on conditions as to whether we are using internal
+        final boolean use_g5_internal_alg = Pref.getBooleanDefaultFalse("ob1_g5_use_transmitter_alg");
+        UserError.Log.d(TAG, use_g5_internal_alg ? "Requesting Glucose Data" : "Requesting Sensor Data");
 
-        UserError.Log.d(TAG, "Requesting Sensor Data");
+        if (!use_g5_internal_alg) {
+            parent.lastSensorStatus = null; // not applicable
+            parent.lastUsableGlucosePacketTime = 0;
+        }
 
         connection.setupIndication(Control)
 
@@ -323,7 +391,8 @@ public class Ob1G5StateMachine {
 
                     if (d) UserError.Log.d(TAG, "Notifications enabled");
                     speakSlowly();
-                    connection.writeCharacteristic(Control, new SensorTxMessage().byteSequence)
+
+                    connection.writeCharacteristic(Control, use_g5_internal_alg ? new GlucoseTxMessage().byteSequence : new SensorTxMessage().byteSequence)
                             .subscribe(
                                     characteristicValue -> {
                                         if (d)
@@ -359,18 +428,18 @@ public class Ob1G5StateMachine {
                                                 UserError.Log.e(TAG, "Failed to write VersionRequestTxMessage: " + throwable);
                                             });
                                 } else if ((getBatteryDetails) && (parent.getBatteryStatusNow || !haveCurrentBatteryStatus())) {
-                                    connection.writeCharacteristic(Control, new BatteryInfoTxMessage().byteSequence)
+
+
+                                    enqueueUniqueCommand(new BatteryInfoTxMessage(), "Query battery");
+                                    parent.getBatteryStatusNow = false;
+
+                                  /*  connection.writeCharacteristic(Control, new BatteryInfoTxMessage().byteSequence)
                                             .subscribe(batteryValue -> {
                                                 UserError.Log.d(TAG, "Wrote battery info request");
                                                 parent.getBatteryStatusNow = false;
                                             }, throwable -> {
                                                 UserError.Log.e(TAG, "Failed to write BatteryInfoRequestTxMessage: " + throwable);
-                                            });
-
-                                } else {
-                                    disconnectNow(parent, connection);
-                                    throw new OperationSuccess("Got Data!");
-
+                                            });*/
                                 }
                             } finally {
                                 processSensorRxMessage((SensorRxMessage) data_packet.msg);
@@ -378,45 +447,165 @@ public class Ob1G5StateMachine {
                                 parent.updateLast(JoH.tsl());
                                 parent.clearErrors();
                             }
-
-
                             break;
 
                         case VersionRequestRxMessage:
-                            if (!setStoredFirmwareBytes(Ob1G5CollectionService.getTransmitterID(), bytes, true)) {
+                            if (!setStoredFirmwareBytes(getTransmitterID(), bytes, true)) {
                                 UserError.Log.e(TAG, "Could not save out firmware version!");
                             }
-                            disconnectNow(parent, connection);
-                            throw new OperationSuccess("Received Version Info");
-                            //break;
+                            nextBackFillCheckSize = BACKFILL_CHECK_LARGE;
+                            break;
+
                         case BatteryInfoRxMessage:
-                            if (!setStoredBatteryBytes(Ob1G5CollectionService.getTransmitterID(), bytes)) {
+                            if (!setStoredBatteryBytes(getTransmitterID(), bytes)) {
                                 UserError.Log.e(TAG, "Could not save out battery data!");
                             } else {
                                 if (parent.android_wear) {
                                     PersistentStore.setBoolean(G5_BATTERY_WEARABLE_SEND, true);
                                 }
                             }
-                            disconnectNow(parent, connection);
-                            throw new OperationSuccess("Received Battery Info");
-                            //break;
+                            nextBackFillCheckSize = BACKFILL_CHECK_LARGE;
+                            break;
+
+                        case SessionStartRxMessage:
+                            final SessionStartRxMessage session_start = (SessionStartRxMessage) data_packet.msg;
+                            if (session_start.isOkay()) {
+                                // TODO persist this
+                                parent.msg("Session Started Successfully: " + JoH.dateTimeText(session_start.getSessionStart()) + " " + JoH.dateTimeText(session_start.getRequestedStart()) + " " + JoH.dateTimeText(session_start.getTransmitterTime()));
+                            } else {
+                                final String msg = "Session Start Failed: " + session_start.message();
+                                parent.msg(msg);
+                                UserError.Log.ueh(TAG, msg);
+                                JoH.showNotification("G5 Start Failed", msg, null, Constants.G5_START_REJECT, true, true, false);
+                                UserError.Log.ueh(TAG, "Session Start failed info: " + JoH.dateTimeText(session_start.getSessionStart()) + " " + JoH.dateTimeText(session_start.getRequestedStart()) + " " + JoH.dateTimeText(session_start.getTransmitterTime()));
+                                if (Pref.getBooleanDefaultFalse("ob1_g5_restart_sensor") && (Sensor.isActive())) {
+                                    if (pratelimit("secondary-g5-start", 1800)) {
+                                        UserError.Log.ueh(TAG, "Trying to Start sensor again");
+                                        startSensor(JoH.tsl());
+                                    }
+                                }
+                            }
+                            enqueueUniqueCommand(new GlucoseTxMessage(), "Re-read glucose");
+
+                            break;
+
+                        case SessionStopRxMessage:
+                            final SessionStopRxMessage session_stop = (SessionStopRxMessage) data_packet.msg;
+                            if (session_stop.isOkay()) {
+                                // TODO persist this
+                                parent.msg("Session Stopped Successfully: " + JoH.dateTimeText(session_stop.getSessionStart()) + " " + JoH.dateTimeText(session_stop.getSessionStop()));
+                                enqueueUniqueCommand(new GlucoseTxMessage(), "Re-read glucose");
+                                enqueueUniqueCommand(new TransmitterTimeTxMessage(), "Query time after stop");
+                            } else {
+                                UserError.Log.e(TAG, "Session Stop Error!");
+                            }
+                            break;
+
+                        case GlucoseRxMessage:
+                            final GlucoseRxMessage glucose = (GlucoseRxMessage) data_packet.msg;
+                            parent.processCalibrationState(glucose.calibrationState());
+
+                            if (glucose.usable()) {
+                                parent.msg("Got G5 glucose");
+                            } else {
+                                parent.msg("Got data from G5");
+                            }
+                            if (JoH.ratelimit("ob1-g5-also-read-raw", 20)) {
+                                enqueueUniqueCommand(new SensorTxMessage(), "Also read raw");
+                            }
+
+                            if (JoH.pratelimit("g5-tx-time-since", 7200)
+                                    || glucose.calibrationState().warmingUp()) {
+                                if (JoH.ratelimit("g5-tx-time-governer", 30)) {
+                                    enqueueUniqueCommand(new TransmitterTimeTxMessage(), "Periodic Query Time");
+                                }
+                            }
+
+                            // TODO check firmware version
+                            if (glucose.calibrationState().readyForBackfill() && !parent.getBatteryStatusNow) {
+                                backFillIfNeeded(parent, connection);
+                            }
+                            processGlucoseRxMessage(parent, glucose);
+                            parent.updateLast(JoH.tsl());
+                            parent.clearErrors();
+                            break;
+
+                        case CalibrateRxMessage:
+                            final CalibrateRxMessage calibrate = (CalibrateRxMessage) data_packet.msg;
+                            if (calibrate.accepted()) {
+                                parent.msg("Calibration accepted");
+                                UserError.Log.ueh(TAG, "Calibration accepted by G5 transmitter");
+                            } else {
+                                final String msg = "Calibration rejected: " + calibrate.message();
+                                UserError.Log.wtf(TAG, msg);
+                                parent.msg(msg);
+                                JoH.showNotification("Calibration rejected", msg, null, Constants.G5_CALIBRATION_REJECT, true, true, false);
+                            }
+                            enqueueUniqueCommand(new GlucoseTxMessage(), "Re-read glucose");
+                            break;
+
+                        case BackFillRxMessage:
+                            final BackFillRxMessage backfill = (BackFillRxMessage) data_packet.msg;
+                            if (backfill.valid()) {
+                                UserError.Log.d(TAG, "Backfill request confirmed");
+                            } else {
+                                UserError.Log.wtf(TAG, "Backfill request corrupted!");
+                            }
+                            break;
+
+                        case TransmitterTimeRxMessage:
+                            final TransmitterTimeRxMessage txtime = (TransmitterTimeRxMessage) data_packet.msg;
+                            DexTimeKeeper.updateAge(getTransmitterID(), txtime.getCurrentTime());
+                            if (txtime.sessionInProgress()) {
+                                UserError.Log.e(TAG, "Session start time reports: "
+                                        + JoH.dateTimeText(txtime.getRealSessionStartTime()) + " Duration: "
+                                        + JoH.niceTimeScalar(txtime.getSessionDuration()));
+                                DexSessionKeeper.setStart(txtime.getRealSessionStartTime());
+                            } else {
+                                UserError.Log.e(TAG, "Session start time reports: No session in progress");
+                                DexSessionKeeper.clearStart();
+                            }
+                            if (Pref.getBooleanDefaultFalse("ob1_g5_preemptive_restart")) {
+                                if (txtime.getSessionDuration() > Constants.DAY_IN_MS * 6
+                                        && txtime.getSessionDuration() < Constants.MONTH_IN_MS) {
+                                    UserError.Log.uel(TAG, "Requesting preemptive session restart");
+                                    restartSensorWithTimeTravel();
+                                }
+                            }
+                            break;
 
                         default:
-                            UserError.Log.e(TAG, "Got unknown packet instead of sensor rx: " + JoH.bytesToHex(bytes));
+                            UserError.Log.e(TAG, "Got unknown packet rx: " + JoH.bytesToHex(bytes));
                             break;
                     }
+                    if (!queued(parent, connection)) {
+                        inevitableDisconnect(parent, connection);
+                    }
+
                 }, throwable -> {
                     if (!(throwable instanceof OperationSuccess)) {
                         if (throwable instanceof BleDisconnectedException) {
                             UserError.Log.d(TAG, "Disconnected when waiting to receive indication: " + throwable);
+                            parent.changeState(Ob1G5CollectionService.STATE.CLOSE);
                         } else {
                             UserError.Log.e(TAG, "Error receiving indication: " + throwable);
+                            throwable.printStackTrace();
+                            disconnectNow(parent, connection);
                         }
+
                     }
                 });
 
 
         return true;
+    }
+
+    private static void inevitableDisconnect(Ob1G5CollectionService parent, RxBleConnection connection) {
+        inevitableDisconnect(parent, connection, speakSlowlyDelay());
+    }
+
+    private static void inevitableDisconnect(Ob1G5CollectionService parent, RxBleConnection connection, long guardTime) {
+        Inevitable.task("Ob1G5 disconnect", 500 + guardTime + speakSlowlyDelay(), () -> disconnectNow(parent, connection));
     }
 
     private static void disconnectNow(Ob1G5CollectionService parent, RxBleConnection connection) {
@@ -447,6 +636,407 @@ public class Ob1G5StateMachine {
         UserError.Log.d(TAG, "Disconnect NOW exit: " + JoH.dateTimeText(JoH.tsl()));
     }
 
+    private static void backFillIfNeeded(Ob1G5CollectionService parent, RxBleConnection connection) {
+        final int check_readings = nextBackFillCheckSize;
+        UserError.Log.d(TAG, "Checking " + check_readings + " for backfill requirement");
+        final List<BgReading> lastReadings = BgReading.latest_by_size(check_readings);
+        boolean ask_for_backfill = false;
+        long earliest_timestamp = JoH.tsl() - MAX_BACKFILL_PERIOD_MS;
+        long latest_timestamp = JoH.tsl();
+        if ((lastReadings == null) || (lastReadings.size() != check_readings)) {
+            ask_for_backfill = true;
+        } else {
+            for (int i = 0; i < lastReadings.size(); i++) {
+                final BgReading reading = lastReadings.get(i);
+                if ((reading == null) || (msSince(reading.timestamp) > ((DEXCOM_PERIOD * i) + Constants.MINUTE_IN_MS * 7))) {
+                    ask_for_backfill = true;
+                    if ((reading != null) && (msSince(reading.timestamp) <= MAX_BACKFILL_PERIOD_MS)) {
+                        earliest_timestamp = reading.timestamp;
+                    }
+                    UserError.Log.d(TAG, "Flagging backfill tripped by reading: " + i + " at time: " + JoH.dateTimeText(reading.timestamp) + " creating backfill window: " + JoH.dateTimeText(earliest_timestamp));
+                    break;
+                } else {
+                    // good record
+                    latest_timestamp = reading.timestamp;
+                }
+            }
+        }
+
+        if (ask_for_backfill) {
+            nextBackFillCheckSize = BACKFILL_CHECK_LARGE;
+            monitorBackFill(parent, connection);
+            final long startTime = earliest_timestamp - (Constants.MINUTE_IN_MS * 5);
+            final long endTime = latest_timestamp + (Constants.MINUTE_IN_MS * 5);
+            UserError.Log.d(TAG, "Requesting backfill between: " + JoH.dateTimeText(startTime) + " " + JoH.dateTimeText(endTime));
+            enqueueUniqueCommand(
+                    BackFillTxMessage.get(getTransmitterID(), startTime, endTime),
+                    "Get backfill since: " + JoH.hourMinuteString(startTime));
+        } else {
+            nextBackFillCheckSize = BACKFILL_CHECK_SMALL;
+        }
+    }
+
+    private static void enqueueCommand(TransmitterMessage tm, String msg) {
+        if (tm != null) {
+            final Ob1Work item = new Ob1Work(tm, msg);
+            synchronized (commandQueue) {
+                commandQueue.add(item);
+            }
+            streamCheck(item);
+            backupCheck(item);
+        }
+    }
+
+    private static void streamCheck(Ob1Work item) {
+        if (item.streamable()) {
+            Inevitable.task("check wear stream", 5000, WatchUpdaterService::checkOb1Queue);
+        }
+    }
+
+    private static void backupCheck(Ob1Work item) {
+        if (item.streamable()) {
+            saveQueue();
+        }
+    }
+
+    private static void enqueueUniqueCommand(TransmitterMessage tm, String msg) {
+        if (tm != null) {
+            final Class searchClass = tm.getClass();
+            Ob1Work item;
+            synchronized (commandQueue) {
+                if (searchQueue(searchClass)) {
+                    UserError.Log.d(TAG, "Not adding duplicate: " + searchClass.getSimpleName());
+                    return;
+                }
+                item = new Ob1Work(tm, msg);
+                commandQueue.add(item);
+                streamCheck(item);
+            }
+            backupCheck(item);
+        }
+    }
+
+    private static boolean queueContains(TransmitterMessage tm) {
+        final Class searchClass = tm.getClass();
+        return queueContains(searchClass);
+    }
+
+    private static boolean queueContains(Class searchClass) {
+        synchronized (commandQueue) {
+            return searchQueue(searchClass);
+        }
+    }
+
+    // note not synchronized here
+    private static boolean searchQueue(Class searchClass) {
+        for (Ob1Work item : commandQueue) {
+            if (item.msg.getClass() == searchClass) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static void restoreQueue() {
+        if (!backup_loaded) {
+            loadQueue();
+        }
+    }
+
+    private synchronized static void loadQueue() {
+        if (commandQueue.size() == 0) {
+            injectQueueJson(PersistentStore.getString(PREF_SAVED_QUEUE));
+            UserError.Log.d(TAG, "Loaded queue stream backup.");
+        }
+        backup_loaded = true;
+    }
+
+
+    private static void saveQueue() {
+        final String queue_json = extractQueueJson();
+        if (!(queue_json == null ? "" : queue_json).equals(PersistentStore.getString(PREF_SAVED_QUEUE))) {
+            PersistentStore.setString(PREF_SAVED_QUEUE, queue_json);
+            UserError.Log.d(TAG, "Saved queue stream backup: " + queue_json);
+        }
+    }
+
+    public static String extractQueueJson() {
+        synchronized (commandQueue) {
+            final List<Ob1Work> queue = new ArrayList<>(commandQueue.size());
+            for (Ob1Work item : commandQueue) {
+                if (item.streamable()) queue.add(item);
+            }
+            return JoH.defaultGsonInstance().toJson(queue);
+        }
+    }
+
+    // used in backup restore and wear
+    @SuppressWarnings("WeakerAccess")
+    public static void injectQueueJson(String json) {
+        if (json == null || json.length() == 0) return;
+        final Type queueType = new TypeToken<ArrayList<Ob1Work>>() {
+        }.getType();
+        final List<Ob1Work> queue = JoH.defaultGsonInstance().fromJson(json, queueType);
+        synchronized (commandQueue) {
+            commandQueue.clear();
+            commandQueue.addAll(queue);
+        }
+        UserError.Log.d(TAG, "Replaced queue with stream: " + json);
+    }
+
+    public static String extractDexTime() {
+        return DexTimeKeeper.extractForStream(getTransmitterID());
+    }
+
+    @SuppressWarnings("unused")
+    public static void injectDexTime(String stream) {
+        DexTimeKeeper.injectFromStream(stream);
+    }
+
+
+    public static boolean pendingStop() {
+        return queueContains(SessionStopTxMessage.class);
+    }
+
+    public static boolean pendingStart() {
+        return queueContains(SessionStartTxMessage.class);
+    }
+
+    public static boolean pendingCalibration() {
+        return queueContains(CalibrateTxMessage.class);
+    }
+
+    public static int queueSize() {
+        return commandQueue.size();
+    }
+
+    public static void emptyQueue() {
+        synchronized (commandQueue) {
+            if (commandQueue.size() > 0) {
+                UserError.Log.d(TAG, "Queue drained on wear, clearing: " + commandQueue.size() + " commands");
+                commandQueue.clear();
+                Inevitable.task("Save cleared G5 queue", 1000, Ob1G5StateMachine::saveQueue);
+            } else {
+                if (d) UserError.Log.d(TAG, "Local command queue is already empty");
+            }
+        }
+    }
+
+    public static String getFirstQueueItemName() {
+        synchronized (commandQueue) {
+            final Ob1Work item = commandQueue.peek();
+            return item != null ? item.text : "";
+        }
+    }
+
+    private static boolean acceptCommands() {
+        return DexCollectionType.hasDexcomRaw() && Pref.getBooleanDefaultFalse("ob1_g5_use_transmitter_alg");
+    }
+
+    // actual limit is something like 20-30 mins but due to propagation delays its too risky to adjust
+    private static final long MAX_START_TIME_REWIND = Constants.MINUTE_IN_MS * 5;
+
+    public static void startSensor(long when) {
+        if (acceptCommands()) {
+            if (msSince(when) > MAX_START_TIME_REWIND) {
+                when = JoH.tsl() - MAX_START_TIME_REWIND;
+                UserError.Log.e(TAG, "Cannot rewind sensor start time beyond: " + JoH.dateTimeText(when));
+            }
+            if (usingG6()) {
+                final String code = G6CalibrationParameters.getCurrentSensorCode();
+                if (code == null) {
+                    UserError.Log.wtf(TAG, "Cannot start G6 sensor as calibration code not set!");
+                } else {
+                    UserError.Log.ueh(TAG, "Starting G6 sensor using calibration code: " + code);
+                    enqueueUniqueCommand(new SessionStartTxMessage(when,
+                                    DexTimeKeeper.getDexTime(getTransmitterID(), when), code),
+                            "Start G6 Sensor");
+                }
+
+            } else {
+                UserError.Log.ueh(TAG, "Starting G5 sensor");
+                enqueueUniqueCommand(new SessionStartTxMessage(when,
+                                DexTimeKeeper.getDexTime(getTransmitterID(), when)),
+                        "Start G5 Sensor");
+            }
+        }
+    }
+
+    private static void reprocessTxMessage(TransmitterMessage tm) {
+        // rewrite session start messages in case our clock was wrong
+        if (tm instanceof SessionStartTxMessage) {
+            final SessionStartTxMessage ssm = (SessionStartTxMessage) tm;
+            if (usingG6()) {
+                final String code = G6CalibrationParameters.getCurrentSensorCode();
+                if (code == null) {
+                    UserError.Log.wtf(TAG, "Cannot reprocess start G6 sensor as calibration code not set!");
+                } else {
+                    // g6
+                    tm.byteSequence = new SessionStartTxMessage(ssm.getStartTime(), DexTimeKeeper.getDexTime(getTransmitterID(), ssm.getStartTime()), code).byteSequence;
+                }
+            } else {
+                // g5
+                tm.byteSequence = new SessionStartTxMessage(ssm.getStartTime(), DexTimeKeeper.getDexTime(getTransmitterID(), ssm.getStartTime())).byteSequence;
+            }
+            UserError.Log.d(TAG, "New session start: " + ssm.getDexTime() + " for time: " + JoH.dateTimeText(ssm.getStartTime()));
+        }
+    }
+
+
+    public static void stopSensor() {
+        if (acceptCommands()) {
+            enqueueCommand(
+                    new SessionStopTxMessage(
+                            DexTimeKeeper.getDexTime(getTransmitterID(), JoH.tsl())),
+                    "Stop Sensor");
+        }
+    }
+
+
+    public static void restartSensorWithTimeTravel() {
+        restartSensorWithTimeTravel(JoH.tsl() - HOUR_IN_MS * 2 - MINUTE_IN_MS * 10);
+    }
+
+    public static void restartSensorWithTimeTravel(long when) {
+        if (acceptCommands()) {
+            enqueueUniqueCommand(
+                    new SessionStopTxMessage(
+                            DexTimeKeeper.getDexTime(getTransmitterID(), when)),
+                    "Auto Stop Sensor");
+            final long when_started = when + SECOND_IN_MS;
+            enqueueUniqueCommand(new SessionStartTxMessage(when,
+                            DexTimeKeeper.getDexTime(getTransmitterID(), when_started)),
+                    "Auto Start Sensor");
+        }
+    }
+
+    public static void addCalibration(int glucose, long timestamp) {
+        if (acceptCommands()) {
+            long since = msSince(timestamp);
+            if (since < 0) {
+                final String msg = "Cannot send calibration in future to transmitter: " + glucose + " @ " + JoH.dateTimeText(timestamp);
+                JoH.static_toast_long(msg);
+                UserError.Log.wtf(TAG, msg);
+                return;
+            }
+            if (since > HOUR_IN_MS) {
+                final String msg = "Cannot send calibration older than 1 hour to transmitter: " + glucose + " @ " + JoH.dateTimeText(timestamp);
+                JoH.static_toast_long(msg);
+                UserError.Log.wtf(TAG, msg);
+                return;
+            }
+            if ((glucose < 40 || glucose > 400)) {
+                final String msg = "Calibration glucose value out of range: " + glucose;
+                JoH.static_toast_long(msg);
+                UserError.Log.wtf(TAG, msg);
+                return;
+            }
+
+
+            enqueueCommand(new CalibrateTxMessage(
+                            glucose, DexTimeKeeper.getDexTime(getTransmitterID(), timestamp)),
+                    "Calibrate " + BgGraphBuilder.unitized_string_with_units_static_short(glucose));
+        }
+    }
+
+    private static boolean queued(Ob1G5CollectionService parent, RxBleConnection connection) {
+        if (!commandQueue.isEmpty()) {
+            processQueueCommand(parent, connection);
+            return true;
+        }
+        return false;
+    }
+
+    private static void processQueueCommand(Ob1G5CollectionService parent, RxBleConnection connection) {
+        boolean changed = false;
+        synchronized (commandQueue) {
+            if (!commandQueue.isEmpty()) {
+                final Ob1Work unit = commandQueue.poll();
+                if (unit != null) {
+                    changed = true;
+                    reprocessTxMessage(unit.msg);
+                    if (unit.retry < 5 && JoH.msSince(unit.timestamp) < HOUR_IN_MS * 8) {
+                        connection.writeCharacteristic(Control, unit.msg.byteSequence)
+                                .timeout(2, TimeUnit.SECONDS)
+                                .subscribe(value -> {
+                                    UserError.Log.d(TAG, "Wrote Queue Message: " + unit.text);
+                                    final long guardTime = unit.msg.guardTime();
+                                    inevitableDisconnect(parent, connection, guardTime);
+                                    if (guardTime > 0) {
+                                        UserError.Log.d(TAG, "Sleeping post execute: " + unit.text + " " + guardTime + "ms");
+                                        JoH.threadSleep(guardTime);
+                                    }
+                                    throw new OperationSuccess("Completed: " + unit.text);
+
+                                }, throwable -> {
+                                    if (!(throwable instanceof OperationSuccess)) {
+                                        unit.retry++;
+                                        UserError.Log.d(TAG, "Re-adding: " + unit.text);
+                                        synchronized (commandQueue) {
+                                            commandQueue.push(unit);
+                                        }
+                                        UserError.Log.d(TAG, "Failure: " + unit.text + " " + JoH.dateTimeText(JoH.tsl()));
+                                        if (throwable instanceof BleDisconnectedException) {
+                                            UserError.Log.d(TAG, "Disconnected: " + unit.text + " " + throwable);
+                                            parent.changeState(Ob1G5CollectionService.STATE.CLOSE);
+                                        } else {
+                                            UserError.Log.e(TAG, "Failed to write: " + unit.text + " " + throwable);
+                                        }
+                                        parent.changeState(Ob1G5CollectionService.STATE.CLOSE);
+                                    } else {
+                                        queued(parent, connection); // turtles all the way down
+                                    }
+                                });
+                    } else {
+                        UserError.Log.e(TAG, "Ejected command from queue due to being too old: " + unit.text + " " + JoH.dateTimeText(unit.timestamp));
+                    }
+                }
+                if (commandQueue.isEmpty()) {
+                    if (d) UserError.Log.d(TAG, "Command Queue Drained");
+                    if (android_wear) {
+                        PersistentStore.setBoolean(PREF_QUEUE_DRAINED, true);
+                    }
+                }
+            } else {
+                UserError.Log.d(TAG, "Command Queue is Empty");
+            }
+        }
+        if (changed) saveQueue();
+    }
+
+    private static void processGlucoseRxMessage(Ob1G5CollectionService parent, GlucoseRxMessage glucose) {
+        if (glucose == null) return;
+        lastGlucosePacket = JoH.tsl();
+        DexTimeKeeper.updateAge(getTransmitterID(), glucose.timestamp);
+        if (glucose.usable() || (glucose.insufficient() && Pref.getBooleanDefaultFalse("ob1_g5_use_insufficiently_calibrated"))) {
+            UserError.Log.d(TAG, "Got usable glucose data from G5!!");
+            final BgReading bgReading = BgReading.bgReadingInsertFromG5(glucose.glucose, JoH.tsl());
+            if (bgReading != null) {
+                try {
+                    bgReading.calculated_value_slope = glucose.getTrend() / Constants.MINUTE_IN_MS; // note this is different to the typical calculated slope, (normally delta)
+                } catch (Exception e) {
+                    // not a good number
+                }
+                if (glucose.insufficient()) {
+                    bgReading.appendSourceInfo("Insufficient");
+                }
+            } else {
+                UserError.Log.wtf(TAG, "New BgReading was null in processGlucoseRxMessage!");
+            }
+            lastGlucoseBgReading = bgReading;
+            lastUsableGlucosePacket = lastGlucosePacket;
+            parent.lastUsableGlucosePacketTime = lastUsableGlucosePacket;
+        } else {
+            // TODO this is duplicated in processCalibrationState()
+            if (glucose.calibrationState().sensorFailed()) {
+                if (JoH.pratelimit("G5 Sensor Failed", 3600 * 3)) {
+                    JoH.showNotification("G5 SENSOR FAILED", "Sensor reporting failed", null, Constants.G5_SENSOR_ERROR, true, true, false);
+                }
+            }
+        }
+    }
+
+
     private static void processSensorRxMessage(SensorRxMessage sensorRx) {
         if (sensorRx == null) return;
 
@@ -461,6 +1051,7 @@ public class Ob1G5StateMachine {
         }
 
         UserError.Log.d(TAG, "SUCCESS!! unfiltered: " + sensorRx.unfiltered + " timestamp: " + sensorRx.timestamp + " " + JoH.qs((double) sensorRx.timestamp / 86400, 1) + " days");
+        DexTimeKeeper.updateAge(getTransmitterID(), sensorRx.timestamp);
         if (sensorRx.unfiltered == 0) {
             UserError.Log.e(TAG, "Transmitter sent raw sensor value of 0 !! This isn't good. " + JoH.hourMinuteString());
         } else {
@@ -479,7 +1070,7 @@ public class Ob1G5StateMachine {
             UserError.Log.d(TAG, "Created transmitter data " + transmitterData.uuid + " " + JoH.dateTimeText(transmitterData.timestamp));
             // TODO timeInMillisecondsOfLastSuccessfulSensorRead = captureTime;
         }
-        Sensor sensor = Sensor.currentSensor();
+        final Sensor sensor = Sensor.currentSensor();
         if (sensor == null) {
             UserError.Log.e(TAG, "setSerialDataToTransmitterRawData: No Active Sensor, Data only stored in Transmitter Data");
             return;
@@ -491,26 +1082,38 @@ public class Ob1G5StateMachine {
         if (d)
             UserError.Log.i(TAG, "timestamp create: " + Long.toString(transmitterData.timestamp));
 
-        BgReading bgreading = BgReading.create(transmitterData.raw_data, transmitterData.filtered_data, xdrip.getAppContext(), transmitterData.timestamp);
+        if ((lastGlucoseBgReading != null) && (msSince(lastUsableGlucosePacket) < Constants.SECOND_IN_MS * 30)) {
+            UserError.Log.d(TAG, "Updating BgReading provided by transmitter");
+            // use sensor data to update previous record instead of trying to calculate with it
+            lastGlucoseBgReading.raw_data = transmitterData.raw_data / 1000;
+            lastGlucoseBgReading.filtered_data = transmitterData.filtered_data / 1000;
+            // TODO calculate filtered calculated value from internal alg??
+            lastGlucoseBgReading.calculateAgeAdjustedRawValue();
+            lastGlucoseBgReading.save();
+        } else {
+            if (!Ob1G5CollectionService.usingNativeMode() || Ob1G5CollectionService.fallbackToXdripAlgorithm() || BgReading.latest(3).size() < 3) {
+                final BgReading bgreading = BgReading.create(transmitterData.raw_data, transmitterData.filtered_data, xdrip.getAppContext(), transmitterData.timestamp);
+                UserError.Log.d(TAG, "BgReading created: " + bgreading.uuid + " " + JoH.dateTimeText(bgreading.timestamp));
+            }
+        }
 
-        UserError.Log.d(TAG, "Dex raw_data " + Double.toString(transmitterData.raw_data));//KS
-        UserError.Log.d(TAG, "Dex filtered_data " + Double.toString(transmitterData.filtered_data));//KS
-        UserError.Log.d(TAG, "Dex sensor_battery_level " + Double.toString(transmitterData.sensor_battery_level));//KS
-        UserError.Log.d(TAG, "Dex timestamp " + JoH.dateTimeText(transmitterData.timestamp));//KS
+        //   UserError.Log.d(TAG, "Dex raw_data " + Double.toString(transmitterData.raw_data));//KS
+        //   UserError.Log.d(TAG, "Dex filtered_data " + Double.toString(transmitterData.filtered_data));//KS
+        //   UserError.Log.d(TAG, "Dex sensor_battery_level " + Double.toString(transmitterData.sensor_battery_level));//KS
+        //   UserError.Log.d(TAG, "Dex timestamp " + JoH.dateTimeText(transmitterData.timestamp));//KS
 
-        UserError.Log.d(TAG, "BgReading created: " + bgreading.uuid + " " + JoH.dateTimeText(bgreading.timestamp));
 
         // TODO static_last_timestamp =  transmitterData.timestamp;
 
     }
 
     private static boolean haveFirmwareDetails() {
-        return Ob1G5CollectionService.getTransmitterID().length() == 6 && getStoredFirmwareBytes(Ob1G5CollectionService.getTransmitterID()).length >= 10;
+        return getTransmitterID().length() == 6 && getStoredFirmwareBytes(getTransmitterID()).length >= 10;
     }
 
 
     private static boolean haveCurrentBatteryStatus() {
-        return Ob1G5CollectionService.getTransmitterID().length() == 6 && (JoH.msSince(PersistentStore.getLong(G5_BATTERY_FROM_MARKER + Ob1G5CollectionService.getTransmitterID())) < BATTERY_READ_PERIOD_MS);
+        return getTransmitterID().length() == 6 && (msSince(PersistentStore.getLong(G5_BATTERY_FROM_MARKER + getTransmitterID())) < BATTERY_READ_PERIOD_MS);
     }
 
     private static byte[] getStoredFirmwareBytes(String transmitterId) {
@@ -532,7 +1135,6 @@ public class Ob1G5StateMachine {
         }
         return true;
     }
-
 
 
     public synchronized static boolean setStoredBatteryBytes(String transmitterId, byte[] data) {
@@ -597,6 +1199,59 @@ public class Ob1G5StateMachine {
         }
     }
 
+    private static void updateStreamedTillTimeForBackfill() {
+        // interact with ListenerService
+        if (JoH.areWeRunningOnAndroidWear()) {
+            final String pref_last_send_previous = "last_send_previous";
+            final long last_send_previous = PersistentStore.getLong(pref_last_send_previous);
+            PersistentStore.setLong(pref_last_send_previous, Math.min(last_send_previous, JoH.tsl() - MAX_BACKFILL_PERIOD_MS));
+        }
+    }
+
+    private static void processBacksies(List<BackFillStream.Backsie> backsies) {
+        boolean changed = false;
+        for (BackFillStream.Backsie backsie : backsies) {
+            final long time = DexTimeKeeper.fromDexTime(getTransmitterID(), backsie.getDextime());
+
+            final long since = JoH.msSince(time);
+            if ((since > HOUR_IN_MS * 6) || (since < 0)) {
+                UserError.Log.wtf(TAG, "Backfill timestamp unrealistic: " + JoH.dateTimeText(time) + " (ignored)");
+            } else {
+                if (BgReading.getForPreciseTimestamp(time, Constants.MINUTE_IN_MS * 4) == null) {
+                    final BgReading bgr = BgReading.bgReadingInsertFromG5(backsie.getGlucose(), time);
+                    if (bgr != null) bgr.appendSourceInfo("Backfill");
+                    lastGlucoseBgReading = bgr;
+                    UserError.Log.d(TAG, "Adding backfilled reading: " + JoH.dateTimeText(time) + " " + BgGraphBuilder.unitized_string_static(backsie.getGlucose()));
+                    changed = true;
+                }
+                UserError.Log.d(TAG, "Backsie: " + JoH.dateTimeText(time) + " " + BgGraphBuilder.unitized_string_static(backsie.getGlucose()));
+            }
+        }
+        if (changed) {
+            updateStreamedTillTimeForBackfill();
+        }
+    }
+
+    private static void monitorBackFill(Ob1G5CollectionService parent, RxBleConnection connection) {
+        if (d) UserError.Log.d(TAG, "monitor backfill enter");
+
+        final BackFillStream backfill = new BackFillStream();
+
+        connection.setupNotification(ProbablyBackfill)
+                .timeout(15, TimeUnit.SECONDS) // WARN
+                .observeOn(Schedulers.newThread())
+                .flatMap(notificationObservable -> notificationObservable)
+                .subscribe(bytes -> {
+                            UserError.Log.d(TAG, "Received backfill notification bytes: " + JoH.bytesToHex(bytes));
+                            backfill.push(bytes);
+                            inevitableDisconnect(parent, connection);
+                            Inevitable.task("Process G5 backfill", 3000, () -> processBacksies(backfill.decode()));
+                        }, throwable -> {
+                            UserError.Log.d(TAG, "backfill throwable: " + throwable);
+                        }
+                );
+        if (d) UserError.Log.d(TAG, "monitor backfill exit");
+    }
 
     private static synchronized byte[] calculateHash(byte[] data) {
         if (data.length != 8) {
@@ -633,7 +1288,7 @@ public class Ob1G5StateMachine {
     }
 
     private static byte[] cryptKey() {
-        final String transmitterId = Ob1G5CollectionService.getTransmitterID();
+        final String transmitterId = getTransmitterID();
         if (transmitterId.length() != 6)
             UserError.Log.e(TAG, "cryptKey: Wrong transmitter id length!: " + transmitterId.length());
         try {
@@ -652,7 +1307,14 @@ public class Ob1G5StateMachine {
         AuthStatusRxMessage,
         SensorRxMessage,
         VersionRequestRxMessage,
-        BatteryInfoRxMessage
+        BatteryInfoRxMessage,
+        SessionStartRxMessage,
+        SessionStopRxMessage,
+        GlucoseRxMessage,
+        CalibrateRxMessage,
+        BackFillRxMessage,
+        TransmitterTimeRxMessage,
+        InvalidRxMessage,
 
     }
 
@@ -681,12 +1343,30 @@ public class Ob1G5StateMachine {
                 return new PacketShop(PACKET.VersionRequestRxMessage, new VersionRequestRxMessage(packet));
             case BatteryInfoRxMessage.opcode:
                 return new PacketShop(PACKET.BatteryInfoRxMessage, new BatteryInfoRxMessage(packet));
+            case SessionStartRxMessage.opcode:
+                return new PacketShop(PACKET.SessionStartRxMessage, new SessionStartRxMessage(packet, getTransmitterID()));
+            case SessionStopRxMessage.opcode:
+                return new PacketShop(PACKET.SessionStopRxMessage, new SessionStopRxMessage(packet, getTransmitterID()));
+            case GlucoseRxMessage.opcode:
+                return new PacketShop(PACKET.GlucoseRxMessage, new GlucoseRxMessage(packet));
+            case CalibrateRxMessage.opcode:
+                return new PacketShop(PACKET.CalibrateRxMessage, new CalibrateRxMessage(packet));
+            case BackFillRxMessage.opcode:
+                return new PacketShop(PACKET.BackFillRxMessage, new BackFillRxMessage(packet));
+            case TransmitterTimeRxMessage.opcode:
+                return new PacketShop(PACKET.TransmitterTimeRxMessage, new TransmitterTimeRxMessage(packet));
+            case InvalidRxMessage.opcode:
+                return new PacketShop(PACKET.InvalidRxMessage, new InvalidRxMessage(packet));
         }
         return new PacketShop(PACKET.UNKNOWN, null);
     }
 
     private static int getTokenSize() {
         return 8;
+    }
+
+    public static boolean usingG6() {
+        return Pref.getBooleanDefaultFalse("using_g6");
     }
 
     private static class OperationSuccess extends RuntimeException {

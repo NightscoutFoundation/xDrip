@@ -23,7 +23,9 @@
 -keep class junit.** { *; }
 -dontwarn junit.**
 
+-dontwarn com.google.devtools.build.android.desugar.runtime.**
+
 -keep class sun.misc.** { *; }
 -dontwarn sun.misc.**
-
+-dontnote **rx.Observable.**
 -dontnote **

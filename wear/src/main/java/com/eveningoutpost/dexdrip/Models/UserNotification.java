@@ -14,7 +14,7 @@ import java.util.Date;
 import java.util.List;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 
 /**
  * Created by Emma Black on 11/29/14.
@@ -140,9 +140,9 @@ public class UserNotification extends Model {
                     .orderBy("_ID desc")
                     .executeSingle();
         } else {
-            final String timestamp = Pref.getStringDefaultBlank("UserNotification:timestamp:" + type);
+            final String timestamp = PersistentStore.getString("UserNotification:timestamp:" + type);
             if (timestamp.equals("")) return null;
-            final String message = Pref.getStringDefaultBlank("UserNotification:message:" + type);
+            final String message = PersistentStore.getString("UserNotification:message:" + type);
             if (message.equals("")) return null;
             UserNotification userNotification = new UserNotification();
             userNotification.timestamp = Double.parseDouble(timestamp);
@@ -160,7 +160,7 @@ public class UserNotification extends Model {
                 userNotification.delete();
             }
         } else {
-            Pref.setString("UserNotification:timestamp:" + type, "");
+            PersistentStore.setString("UserNotification:timestamp:" + type, "");
         }
     }
     
@@ -179,27 +179,36 @@ public class UserNotification extends Model {
         UserNotification userNotification = new UserNotification();
         userNotification.timestamp = timestamp;
         userNotification.message = message;
-        if (type == "bg_alert") {
-            userNotification.bg_alert = true;
-        } else if (type == "calibration_alert") {
-            userNotification.calibration_alert = true;
-        } else if (type == "double_calibration_alert") {
-            userNotification.double_calibration_alert = true;
-        } else if (type == "extra_calibration_alert") {
-            userNotification.extra_calibration_alert = true;
-        } else if (type == "bg_unclear_readings_alert") {
-            userNotification.bg_unclear_readings_alert = true;
-        } else if (type == "bg_missed_alerts") {
-            userNotification.bg_missed_alerts = true;
-        } else if (type == "bg_rise_alert") {
-            userNotification.bg_rise_alert = true;
-        } else if (type == "bg_fall_alert") {
-            userNotification.bg_fall_alert = true;
-        } else {
-            Log.d(TAG,"Saving workaround for: "+type+" "+message);
-            Pref.setString("UserNotification:timestamp:" + type, JoH.qs(timestamp));
-            Pref.setString("UserNotification:message:" + type, message);
-           return null;
+        switch (type) {
+            case "bg_alert":
+                userNotification.bg_alert = true;
+                break;
+            case "calibration_alert":
+                userNotification.calibration_alert = true;
+                break;
+            case "double_calibration_alert":
+                userNotification.double_calibration_alert = true;
+                break;
+            case "extra_calibration_alert":
+                userNotification.extra_calibration_alert = true;
+                break;
+            case "bg_unclear_readings_alert":
+                userNotification.bg_unclear_readings_alert = true;
+                break;
+            case "bg_missed_alerts":
+                userNotification.bg_missed_alerts = true;
+                break;
+            case "bg_rise_alert":
+                userNotification.bg_rise_alert = true;
+                break;
+            case "bg_fall_alert":
+                userNotification.bg_fall_alert = true;
+                break;
+            default:
+                Log.d(TAG, "Saving workaround for: " + type + " " + message);
+                PersistentStore.setString("UserNotification:timestamp:" + type, JoH.qs(timestamp));
+                PersistentStore.setString("UserNotification:message:" + type, message);
+                return null;
         }
         userNotification.save();
         return userNotification;

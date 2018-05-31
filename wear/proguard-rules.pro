@@ -58,6 +58,7 @@
 -keep class android.support.v7.widget.SearchView { *; }
 -keep class com.ustwo.clockwise.** { *; }
 
+-keep class com.google.devtools.build.android.desugar.runtime.ThrowableExtension
 
 -dontwarn java.util.concurrent.**
 
@@ -99,7 +100,9 @@
 
 -dontwarn java.lang.invoke.*
 -dontwarn **$$Lambda$*
+-dontnote **rx.Observable.**
 
 -keepclassmembers class com.eveningoutpost.dexdrip.** {
-    public static boolean isRunning ();
+   public static boolean isRunning();
+   public static boolean isCollecting();
 }
