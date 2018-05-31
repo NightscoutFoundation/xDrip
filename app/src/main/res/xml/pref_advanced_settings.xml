@@ -348,6 +348,11 @@
                 android:key="broadcast_data_through_intents_without_permission"
                 android:summary="@string/send_broadcasts_old_permission_model"
                 android:title="@string/compatible_broadcast" />
+            <EditTextPreference
+                android:dependency="broadcast_data_through_intents"
+                android:key="local_broadcast_specific_package_destination"
+                android:title="Identify receiver"
+                android:summary="Only send to named package"/>
             <SwitchPreference
                 android:defaultValue="true"
                 android:key="accept_nsclient_treatments"
@@ -622,7 +627,7 @@
                     android:summary="@string/reset_bluetooth_g5"
                     android:title="@string/g5_bluetooth_watchdog" />
                 <CheckBoxPreference
-                    android:defaultValue="true"
+                    android:defaultValue="false"
                     android:key="close_gatt_on_ble_disconnect"
                     android:summary="@string/close_gatt"
                     android:title="@string/close_gatt_on_ble_disconnect" />
@@ -760,6 +765,13 @@
                 android:key="save_db_ondemand"
                 android:summary="@string/allow_daily_db_save"
                 android:title="@string/daily_save_db" />
+            <EditTextPreference
+                android:key="retention_days_bg_reading"
+                android:title="Glucose Retention"
+                android:summary="Erase data older than this many days. 0 = don't erase anything"
+                android:max="366"
+                android:numeric="integer"
+                android:defaultValue="0" />
             <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
                 android:key="xdrip_other_misc_extra_screen"
                 android:summary=""
