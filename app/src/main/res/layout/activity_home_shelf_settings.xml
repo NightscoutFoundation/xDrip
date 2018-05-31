@@ -3,8 +3,10 @@
 
     <data>
         <variable name="vs" type="com.eveningoutpost.dexdrip.ui.BaseShelf"/>
-
+        <variable name="home" type="com.eveningoutpost.dexdrip.Home" />
     </data>
+
+
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -34,6 +36,14 @@
             android:checked="@{safeUnbox(vs.included[`chart_preview`])}"
             android:onClick="@{() -> vs.ptoggle(`chart_preview`)}"
             android:text="Show Chart Preview" />
+        <Switch
+            android:id="@+id/pswitch3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="@{safeUnbox(vs.included[`graphic_trend_arrow`])}"
+            android:onClick="@{() -> vs.ptoggle(`graphic_trend_arrow`)}"
+            android:onCheckedChanged="@{() -> home.staticRefreshBGCharts()}"
+            android:text="Show Graphical Trend Arrow" />
     </LinearLayout>
 
 </layout>
