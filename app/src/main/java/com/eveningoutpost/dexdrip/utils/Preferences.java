@@ -475,6 +475,24 @@ public class Preferences extends PreferenceActivity {
         }
     };
 
+    private static Preference.OnPreferenceChangeListener sBindPreferenceTitleAppendToStringValueListener = new Preference.OnPreferenceChangeListener() {
+        @Override
+        public boolean onPreferenceChange(Preference preference, Object value) {
+
+            boolean do_update = false;
+            // detect not first run
+            if (preference.getTitle().toString().contains("(")) {
+                do_update = true;
+            }
+
+            preference.setTitle(preference.getTitle().toString().replaceAll("  \\([a-z0-9A-Z]+\\)$", "") + "  (" + value.toString() + ")");
+            if (do_update) {
+                preference.getEditor().putString(preference.getKey(), (String)value).apply(); // update prefs now
+            }
+            return true;
+        }
+    };
+
 
 
     private static String format_carb_ratio(String oldValue, String newValue) {
@@ -536,6 +554,19 @@ public class Preferences extends PreferenceActivity {
             Log.e(TAG, "Got exception binding preference title: " + e.toString());
         }
     }
+
+    private static void bindPreferenceTitleAppendToStringValue(Preference preference) {
+        try {
+            preference.setOnPreferenceChangeListener(sBindPreferenceTitleAppendToStringValueListener);
+            sBindPreferenceTitleAppendToStringValueListener.onPreferenceChange(preference,
+                    PreferenceManager
+                            .getDefaultSharedPreferences(preference.getContext())
+                            .getString(preference.getKey(), ""));
+        } catch (Exception e) {
+            Log.e(TAG, "Got exception binding preference title: " + e.toString());
+        }
+    }
+
 
     private static void bindPreferenceTitleAppendToIntegerValue(Preference preference) {
         try {
@@ -1318,6 +1349,8 @@ public class Preferences extends PreferenceActivity {
                     return true;
                 }
             });
+
+            bindPreferenceTitleAppendToStringValue(findPreference("retention_days_bg_reading"));
 
             // Pebble Trend -- START
 
