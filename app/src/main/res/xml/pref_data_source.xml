@@ -95,10 +95,10 @@
             android:title="@string/g5_debug_settings">
 
             <CheckBoxPreference
-                android:defaultValue="false"
+                android:defaultValue="true"
                 android:key="use_ob1_g5_collector_service"
-                android:summary="Complete re-write, should work on Android 4.4 and more"
-                android:title="Try the new OB1 Collector" />
+                android:summary="Complete re-write, should work on Android 4.4, supports native mode and more"
+                android:title="Use the new OB1 Collector" />
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:dependency="use_ob1_g5_collector_service"
@@ -136,6 +136,7 @@
                 />
             <CheckBoxPreference
                 android:defaultValue="false"
+                android:dependency="use_ob1_g5_collector_service"
                 android:key="using_g6"
                 android:summary="I am using a G6 Sensor"
                 android:title="G6 Support"

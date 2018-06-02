@@ -55,6 +55,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -116,6 +117,8 @@ import com.eveningoutpost.dexdrip.ui.MicroStatusImpl;
 import com.eveningoutpost.dexdrip.ui.NumberGraphic;
 import com.eveningoutpost.dexdrip.ui.UiPing;
 import com.eveningoutpost.dexdrip.ui.dialog.HeyFamUpdateOptInDialog;
+import com.eveningoutpost.dexdrip.ui.graphic.ITrendArrow;
+import com.eveningoutpost.dexdrip.ui.graphic.JamTrendArrowImpl;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.eveningoutpost.dexdrip.utils.BgToSpeech;
 import com.eveningoutpost.dexdrip.utils.DatabaseUtil;
@@ -281,6 +284,9 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     //@Inject
     MicroStatus microStatus;
 
+
+    private ITrendArrow itr;
+
     private ProcessInitialDataQuality.InitialDataQuality initialDataQuality;
 
     private static final boolean oneshot = true;
@@ -348,6 +354,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         Toolbar mToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(mToolbar);
 
+        final Home home = this;
         mToolbar.setLongClickable(true);
         mToolbar.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -357,6 +364,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 final Dialog dialog = new Dialog(v.getContext());
                 dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 binding.setVs(homeShelf);
+                binding.setHome(home);
                 dialog.setContentView(binding.getRoot());
                 dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 dialog.show();
@@ -390,7 +398,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
         if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) && checkedeula) {
             if (Experience.installedForAtLeast(5 * Constants.MINUTE_IN_MS)) {
-            checkBatteryOptimization();
+                checkBatteryOptimization();
             }
         }
 
@@ -615,8 +623,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                             }
                         });
 
-                          dialog = builder.create();
-                          dialog.show();
+                        dialog = builder.create();
+                        dialog.show();
                     }
                 }
             }
@@ -662,7 +670,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 return false;
             }
         }
-    return true;
+        return true;
     }
 
     ////
@@ -1121,7 +1129,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             startActivity(new Intent(this, ErrorsActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK).putExtra("events", ""));
         }
     }
-    
+
     public void ShowLibreTrend(MenuItem x) {
         startActivity(new Intent(this, LibreTrendGraph.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK).putExtra("events", ""));
     }
@@ -1689,11 +1697,11 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                     //noinspection AccessStaticViaInstance
                     nfcReader.tagFound(this, data);
                 }
-            break;
+                break;
 
             case REQ_CODE_BATTERY_OPTIMIZATION:
                 staticRefreshBGCharts();
-            break;
+                break;
         }
     }
 
@@ -1741,6 +1749,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     public static void staticRefreshBGCharts() {
         staticRefreshBGCharts(false);
     }
+
     public static void staticRefreshBGChartsOnIdle() {
         Inevitable.task("refresh-home-charts", 1000, () -> staticRefreshBGCharts(false));
     }
@@ -1786,7 +1795,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             this.extraStatusLineText.setTextSize(40);
         } else if (BgGraphBuilder.isLargeTablet(getApplicationContext())) {
             this.currentBgValueText.setTextSize(70);
-            this.notificationText.setTextSize(34); // 35 too big 33 works 
+            this.notificationText.setTextSize(34); // 35 too big 33 works
             this.extraStatusLineText.setTextSize(35);
         }
 
@@ -1906,7 +1915,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
         //Transmitter Battery Level
         final Sensor sensor = Sensor.currentSensor();
-        
+
         //????????? what about tomato here ?????
         if (sensor != null && sensor.latest_battery_level != 0 && !DexCollectionService.getBestLimitterHardwareName().equalsIgnoreCase("BlueReader") && sensor.latest_battery_level <= Dex_Constants.TRANSMITTER_BATTERY_LOW && !Pref.getBoolean("disable_battery_warning", false)) {
             Drawable background = new Drawable() {
@@ -2146,9 +2155,10 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
     // set the chart viewport to whatever the button push represents
     public void timeButtonClick(View v) {
-      hours = getButtonHours(v);
-      setHoursViewPort();
+        hours = getButtonHours(v);
+        setHoursViewPort();
     }
+
     private long getButtonHours(View v) {
         long this_button_hours = 3;
         switch (v.getId()) {
@@ -2223,6 +2233,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             if (chart != null) chart.setZoomType(ZoomType.HORIZONTAL);
         }
         setupCharts();
+        initializeGraphicTrendArrow();
         final TextView notificationText = (TextView) findViewById(R.id.notices);
         final TextView lowPredictText = (TextView) findViewById(R.id.lowpredict);
         if (BgGraphBuilder.isXLargeTablet(getApplicationContext())) {
@@ -2262,7 +2273,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         boolean isWifiLibre = CollectionServiceStarter.isWifiLibre(getApplicationContext());
         alreadyDisplayedBgInfoCommon = false; // reset flag
         if (isBTShare) {
-            updateCurrentBgInfoForBtShare(notificationText); 
+            updateCurrentBgInfoForBtShare(notificationText);
         }
         if (isG5Share) {
             updateCurrentBgInfoCommon(collector, notificationText);
@@ -2271,8 +2282,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             updateCurrentBgInfoForBtBasedWixel(collector, notificationText);
         }
         if (isWifiWixel || isWifiBluetoothWixel || isWifiandBTLibre || isWifiLibre || collector.equals(DexCollectionType.Mock)) {
-            updateCurrentBgInfoForWifiWixel(collector, notificationText); 
-        } else if (is_follower || collector.equals(DexCollectionType.NSEmulator)){
+            updateCurrentBgInfoForWifiWixel(collector, notificationText);
+        } else if (is_follower || collector.equals(DexCollectionType.NSEmulator)) {
             displayCurrentInfo();
             getApplicationContext().startService(new Intent(getApplicationContext(), Notifications.class));
         } else if (!alreadyDisplayedBgInfoCommon && DexCollectionType.getDexCollectionType() == DexCollectionType.LibreAlarm) {
@@ -2483,13 +2494,13 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             showUncalibratedSlope();
             return;
         }
-        if(DexCollectionType.isLibreOOPAlgorithm(collector)) {
-        	// Rest of this function deals with initial calibration. Since we currently don't have a way to calibrate,
-        	// And even once we will have, there is probably no need to force a calibration at start of sensor use.
+        if (DexCollectionType.isLibreOOPAlgorithm(collector)) {
+            // Rest of this function deals with initial calibration. Since we currently don't have a way to calibrate,
+            // And even once we will have, there is probably no need to force a calibration at start of sensor use.
             displayCurrentInfo();
             // JamorHam, should I put here something like:
             // ?? if (screen_forced_on)  dontKeepScreenOn();
-        	return;
+            return;
         }
 
         // TODO this logic needed a rework even a year ago, now its a lot more confused with the additional complexity of native mode
@@ -2659,7 +2670,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     private void displayCurrentInfo() {
         DecimalFormat df = new DecimalFormat("#");
         df.setMaximumFractionDigits(0);
-        
+
         final boolean isDexbridge = CollectionServiceStarter.isDexBridgeOrWifiandDexBridge();
         // final boolean hasBtWixel = DexCollectionType.hasBtWixel();
         final boolean isLimitter = CollectionServiceStarter.isLimitter();
@@ -2678,7 +2689,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                     final String limitterName = DexCollectionService.getBestLimitterHardwareName();
                     if (limitterName.equals(DexCollectionService.LIMITTER_NAME)) {
                         dexbridgeBattery.setText(getString(R.string.limitter_battery) + ": " + bridgeBattery + "%");
-                    } else if (limitterName.equals("BlueReader")){
+                    } else if (limitterName.equals("BlueReader")) {
                         if (Pref.getBooleanDefaultFalse("blueReader_restdays_on_home")) {
                             dexbridgeBattery.setText(limitterName + " " + getString(R.string.battery) + ": " + bridgeBattery + "% (" + PersistentStore.getString("bridge_battery_days") + " " + getString(R.string.days) + ")");
                         } else {
@@ -2953,6 +2964,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         //String slope_arrow = lastBgReading.slopeArrow();
         String slope_arrow = dg.delta_arrow;
         String extrastring = "";
+        boolean hide_slope = false;
         // when stale
         if ((new Date().getTime()) - stale_data_millis() - lastBgReading.timestamp > 0) {
             notificationText.setText(R.string.signal_missed);
@@ -2965,6 +2977,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             currentBgValueText.setText(bgGraphBuilder.unitized_string(estimate));
             currentBgValueText.setPaintFlags(currentBgValueText.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             dexbridgeBattery.setPaintFlags(dexbridgeBattery.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            hide_slope = true;
         } else {
             // not stale
             if (notificationText.getText().length() == 0) {
@@ -3005,12 +3018,12 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 if ((lastBgReading.hide_slope) || (bg_from_filtered)) {
                     slope_arrow = "";
                 }
-                currentBgValueText.setText(stringEstimate + " " + slope_arrow);
+                currentBgValueText.setText(stringEstimate + (itr == null ? " " + slope_arrow : ""));
             } else {
                 // old depreciated prediction
                 estimate = BgReading.activePrediction();
                 String stringEstimate = bgGraphBuilder.unitized_string(estimate);
-                currentBgValueText.setText(stringEstimate + " " + BgReading.activeSlopeArrow());
+                currentBgValueText.setText(stringEstimate + (itr == null ? " " + BgReading.activeSlopeArrow() : ""));
             }
             if (extrastring.length() > 0)
                 currentBgValueText.setText(extrastring + currentBgValueText.getText());
@@ -3029,6 +3042,10 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         if (small_screen) {
             if (currentBgValueText.getText().length() > 4)
                 currentBgValueText.setTextSize(25);
+        }
+
+        if (itr != null) {
+            itr.update((lastBgReading.hide_slope || hide_slope) ? null : dg.slope * 60000);
         }
 
         // do we actually need to do this query here if we again do it in unitizedDeltaString
@@ -3122,13 +3139,13 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         menu.findItem(R.id.showreminders).setVisible(Pref.getBoolean("plus_show_reminders", true) && !is_newbie);
 
         LibreBlock libreBlock = null;
-        if(DexCollectionType.hasLibre()) {
+        if (DexCollectionType.hasLibre()) {
             libreBlock = LibreBlock.getLatestForTrend();
         }
-        if(libreBlock == null ) {
+        if (libreBlock == null) {
             menu.findItem(R.id.libreLastMinutes).setVisible(false);
         }
-        
+
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -3217,13 +3234,13 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 //showcaseblocked = true;
                 myShowcase = new ShowcaseView.Builder(this)
 
-                           /* .setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    showcaseblocked=false;
-                                    myShowcase.hide();
-                                }
-                            })*/
+                        /* .setOnClickListener(new View.OnClickListener() {
+                             @Override
+                             public void onClick(View v) {
+                                 showcaseblocked=false;
+                                 myShowcase.hide();
+                             }
+                         })*/
                         .setTarget(target)
                         .setStyle(R.style.CustomShowcaseTheme2)
                         .setContentTitle(title)
@@ -3569,6 +3586,19 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         return super.onOptionsItemSelected(item);
     }
 
+
+    public void initializeGraphicTrendArrow() {
+        if (homeShelf.get("graphic_trend_arrow")) {
+            if (itr == null) {
+                itr = new JamTrendArrowImpl((ImageView) findViewById(R.id.trendArrow));
+            }
+        } else {
+            if (itr != null) {
+                itr.update(null);
+                itr = null;
+            }
+        }
+    }
 
     public static double convertToMgDlIfMmol(double value) {
         if (!Pref.getString("units", "mgdl").equals("mgdl")) {
