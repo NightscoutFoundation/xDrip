@@ -1142,6 +1142,16 @@ public class Preferences extends PreferenceActivity {
                 Log.d(TAG, "Nullpointer looking for nfc_scan");
             }
 
+            try {
+                findPreference("external_blukon_algorithm").setOnPreferenceChangeListener((preference, newValue) -> {
+                    boolean isEnabled = ((Boolean) newValue).booleanValue();
+                    findPreference("retrieve_blukon_history").setEnabled(!isEnabled);
+                    return true;
+                });
+            } catch (NullPointerException e) {
+                //
+            }
+
             final boolean engineering_mode = this.prefs.getBoolean("engineering_mode",false);
 
             if (!engineering_mode) {

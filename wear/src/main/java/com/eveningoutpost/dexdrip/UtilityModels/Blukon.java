@@ -5,16 +5,20 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
 
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.LibreAlarmReceiver;
+import com.eveningoutpost.dexdrip.NFCReaderX;
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.LibreBlock;
+import com.eveningoutpost.dexdrip.Models.ReadingData;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.UserError;
@@ -152,6 +156,7 @@ public class Blukon {
     public synchronized static byte[] decodeBlukonPacket(byte[] buffer) {
         int cmdFound = 0;
         Boolean gotLowBat = false;
+        Boolean getHistoricReadings = false;
 
         if (buffer == null) {
             Log.e(TAG, "null buffer passed to decodeBlukonPacket");
@@ -159,6 +164,16 @@ public class Blukon {
         }
 
         m_timeLastCmdReceived = JoH.tsl();
+
+        // calculate time delta to last valid BG reading
+        m_persistentTimeLastBg = PersistentStore.getLong("blukon-time-of-last-reading");
+        m_minutesDiffToLastReading = (int) ((((JoH.tsl() - m_persistentTimeLastBg) / 1000) + 30) / 60);
+        Log.i(TAG, "m_minutesDiffToLastReading=" + m_minutesDiffToLastReading + ", last reading: " + JoH.dateTimeText(m_persistentTimeLastBg));
+
+        // Get history if the last reading is more than 15 minutes old
+        if (Pref.getBooleanDefaultFalse("retrieve_blukon_history") && (m_persistentTimeLastBg > 0) && (m_minutesDiffToLastReading > 15)) {
+            getHistoricReadings = true;
+        }
 
         //BluCon code by gregorybel
         final String strRecCmd = CipherUtils.bytesToHex(buffer).toLowerCase();
@@ -295,7 +310,7 @@ public class Blukon {
                 currentCommand = "010d0e0127";
                 Log.i(TAG, "getSensorAge");
             } else {
-                if (Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
+                if (Pref.getBooleanDefaultFalse("external_blukon_algorithm") || getHistoricReadings) {
                     // Send the command to getHistoricData (read all blcoks from 0 to 0x2b)
                     Log.i(TAG, "getHistoricData (2)");
                     currentCommand = "010d0f02002b";
@@ -313,15 +328,18 @@ public class Blukon {
 
             int sensorAge = sensorAge(buffer);
 
-            if ((sensorAge > 0) && (sensorAge < 200000)) {
-                Pref.setInt("nfc_sensor_age", sensorAge);//in min
-            }
-            if (Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
+            if (Pref.getBooleanDefaultFalse("external_blukon_algorithm") || getHistoricReadings) {
                 // Send the command to getHistoricData (read all blcoks from 0 to 0x2b)
                 Log.i(TAG, "getHistoricData (3)");
                 currentCommand = "010d0f02002b";
                 m_blockNumber = 0;
             } else {
+                /* LibreAlarmReceiver.CalculateFromDataTransferObject, called when processing historical data,
+                 * expects the sensor age not to be updated yet, so only update the sensor age when not retrieving history.
+                 */
+                if ((sensorAge > 0) && (sensorAge < 200000)) {
+                    Pref.setInt("nfc_sensor_age", sensorAge);//in min
+                }
                 currentCommand = "010d0e0103";
                 m_getNowGlucoseDataIndexCommand = true;//to avoid issue when gotNowDataIndex cmd could be same as getNowGlucoseData (case block=3)
                 Log.i(TAG, "getNowGlucoseDataIndexCommand");
@@ -329,10 +347,6 @@ public class Blukon {
 
         } else if (currentCommand.startsWith("010d0e0103") /*getNowDataIndex*/ && m_getNowGlucoseDataIndexCommand == true && strRecCmd.startsWith("8bde")) {
             cmdFound = 1;
-            // calculate time delta to last valid BG reading
-            m_persistentTimeLastBg = PersistentStore.getLong("blukon-time-of-last-reading");
-            m_minutesDiffToLastReading = (int) ((((JoH.tsl() - m_persistentTimeLastBg) / 1000) + 30) / 60);
-            Log.i(TAG, "m_minutesDiffToLastReading=" + m_minutesDiffToLastReading + ", last reading: " + JoH.dateTimeText(m_persistentTimeLastBg));
 
             // check time range for valid backfilling
             if ((m_minutesDiffToLastReading > 7) && (m_minutesDiffToLastReading < (8 * 60))) {
@@ -489,15 +503,41 @@ public class Blukon {
             m_communicationStarted = false;
 
             Log.i(TAG, "Full data that was received is " + HexDump.dumpHexString(m_full_data));
-            LibreBlock.createAndSave("blukon", now, m_full_data, 0);
-            
-            Intent intent = new Intent(Intents.XDRIP_PLUS_LIBRE_DATA);
-            Bundle bundle = new Bundle();
-            bundle.putByteArray(Intents.LIBRE_DATA_BUFFER, m_full_data);
-            bundle.putLong(Intents.LIBRE_DATA_TIMESTAMP, now);
-            intent.putExtras(bundle);
-            intent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
-            xdrip.getAppContext().sendBroadcast(intent);
+
+            if (Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
+                LibreBlock.createAndSave("blukon", now, m_full_data, 0);
+
+                Intent intent = new Intent(Intents.XDRIP_PLUS_LIBRE_DATA);
+                Bundle bundle = new Bundle();
+                bundle.putByteArray(Intents.LIBRE_DATA_BUFFER, m_full_data);
+                bundle.putLong(Intents.LIBRE_DATA_TIMESTAMP, now);
+                intent.putExtras(bundle);
+                intent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
+                xdrip.getAppContext().sendBroadcast(intent);
+            } else {
+                String tagId = PersistentStore.getString("blukon-serial-number");
+                final ReadingData mResult = NFCReaderX.parseData(0, tagId, m_full_data, now);
+
+                new Thread() {
+                    @Override
+                    public void run() {
+                        final PowerManager.WakeLock wl = JoH.getWakeLock("processTransferObject", 60000);
+                        try {
+                            LibreAlarmReceiver.processReadingDataTransferObject(new ReadingData.TransferObject(1, mResult), now);
+                            Home.staticRefreshBGCharts();
+                        } finally {
+                            JoH.releaseWakeLock(wl);
+                        }
+                    }
+                }.start();
+
+                PersistentStore.setLong("blukon-time-of-last-reading", m_timeLastBg);
+                Log.i(TAG, "time of current reading: " + JoH.dateTimeText(m_timeLastBg));
+
+                currentCommand = "010c0e00";
+                Log.i(TAG, "Send sleep cmd");
+                m_communicationStarted = false;
+            }
         } else {
             currentCommand = "";
         }

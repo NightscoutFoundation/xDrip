@@ -798,21 +798,28 @@
                     android:key="predictive_bg"
                     android:summary="@string/predictive_readings_old"
                     android:title="@string/display_predictive_values" />
-                
+
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="external_blukon_algorithm"
                     android:summary="@string/use_external_blukon_algorithm_summary"
                     android:title="@string/use_external_blukon_algorithm" />
                 
-	    <CheckBoxPreference
+        	    <CheckBoxPreference
                     android:enabled="false"
                     android:defaultValue="false"
                     android:dependency="external_blukon_algorithm"
                     android:key="calibrate_external_libre_algorithm"
                     android:summary="@string/calibrate_external_libre_algorithm_summary"
                     android:title="@string/calibrate_external_libre_algorithm_title" />
-                
+
+                <CheckBoxPreference
+                    android:enabled="true"
+                    android:defaultValue="false"
+                    android:key="retrieve_blukon_history"
+                    android:summary="@string/retrieve_blukon_history_summary"
+                    android:title="@string/retrieve_blukon_history_title" />
+
             </PreferenceScreen>
             <PreferenceCategory
                 android:key="community_help_category"
