@@ -5,20 +5,17 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.PowerManager;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
 
 import com.eveningoutpost.dexdrip.Home;
-import com.eveningoutpost.dexdrip.LibreAlarmReceiver;
 import com.eveningoutpost.dexdrip.NFCReaderX;
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.LibreBlock;
-import com.eveningoutpost.dexdrip.Models.ReadingData;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.UserError;
@@ -607,40 +604,11 @@ private static final int POSITION_OF_SENSOR_STATUS_BYTE = 17;
 
             Log.i(TAG, "Full data that was received is " + HexDump.dumpHexString(m_full_data));
 
-            if (Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
-                LibreBlock.createAndSave("blukon", now, m_full_data, 0);
+            final String tagId = PersistentStore.getString("LibreSN");
+            NFCReaderX.HandleGoodReading(tagId, m_full_data, now);
 
-                Intent intent = new Intent(Intents.XDRIP_PLUS_LIBRE_DATA);
-                Bundle bundle = new Bundle();
-                bundle.putByteArray(Intents.LIBRE_DATA_BUFFER, m_full_data);
-                bundle.putLong(Intents.LIBRE_DATA_TIMESTAMP, now);
-                intent.putExtras(bundle);
-                intent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
-                xdrip.getAppContext().sendBroadcast(intent);
-            } else {
-                String tagId = PersistentStore.getString("blukon-serial-number");
-                final ReadingData mResult = NFCReaderX.parseData(0, tagId, m_full_data, now);
-
-                new Thread() {
-                    @Override
-                    public void run() {
-                        final PowerManager.WakeLock wl = JoH.getWakeLock("processTransferObject", 60000);
-                        try {
-                            LibreAlarmReceiver.processReadingDataTransferObject(new ReadingData.TransferObject(1, mResult), now);
-                            Home.staticRefreshBGCharts();
-                        } finally {
-                            JoH.releaseWakeLock(wl);
-                        }
-                    }
-                }.start();
-
-                PersistentStore.setLong("blukon-time-of-last-reading", m_timeLastBg);
-                Log.i(TAG, "time of current reading: " + JoH.dateTimeText(m_timeLastBg));
-
-                currentCommand = "010c0e00";
-                Log.i(TAG, "Send sleep cmd");
-                m_communicationStarted = false;
-            }
+            PersistentStore.setLong("blukon-time-of-last-reading", now);
+            Log.i(TAG, "time of current reading: " + JoH.dateTimeText(now));
         } else {
             currentCommand = "";
         }
