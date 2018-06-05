@@ -51,11 +51,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -118,7 +118,7 @@ import com.eveningoutpost.dexdrip.ui.NumberGraphic;
 import com.eveningoutpost.dexdrip.ui.UiPing;
 import com.eveningoutpost.dexdrip.ui.dialog.HeyFamUpdateOptInDialog;
 import com.eveningoutpost.dexdrip.ui.graphic.ITrendArrow;
-import com.eveningoutpost.dexdrip.ui.graphic.JamTrendArrowImpl;
+import com.eveningoutpost.dexdrip.ui.graphic.TrendArrowFactory;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.eveningoutpost.dexdrip.utils.BgToSpeech;
 import com.eveningoutpost.dexdrip.utils.DatabaseUtil;
@@ -365,6 +365,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 binding.setVs(homeShelf);
                 binding.setHome(home);
+                homeShelf.set("arrow_configurator", false);
                 dialog.setContentView(binding.getRoot());
                 dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 dialog.show();
@@ -3590,7 +3591,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     public void initializeGraphicTrendArrow() {
         if (homeShelf.get("graphic_trend_arrow")) {
             if (itr == null) {
-                itr = new JamTrendArrowImpl((ImageView) findViewById(R.id.trendArrow));
+                itr = TrendArrowFactory.create(findViewById(R.id.trendArrow));
             }
         } else {
             if (itr != null) {
@@ -3656,6 +3657,47 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             }
         }
 
+    }
+
+
+    public void showArrowConfigurator(View v, boolean show, boolean refresh) {
+
+        if (homeShelf.get("arrow_configurator") && show) {
+            show = false; // hide on second click of spanner
+        }
+
+        homeShelf.set("arrow_configurator", show);
+        try {
+            final View configurator = itr.getConfigurator();
+            try {
+                ((ViewGroup) configurator.getParent()).removeView(configurator);
+            } catch (NullPointerException e) {
+                // not yet assigned
+            }
+            final ViewGroup parent = (ViewGroup) v.getParent().getParent();
+            parent.removeView(configurator);
+            if (show && configurator != null) {
+                parent.addView(configurator);
+            }
+        } catch (NullPointerException e) {
+            // not instantiated
+        }
+        if (refresh) {
+            staticRefreshBGCharts();
+        }
+    }
+
+    public int arrowSelectionCurrent() {
+        return TrendArrowFactory.getArrayPosition();
+    }
+
+    public void arrowSelectionChanged(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+        if (TrendArrowFactory.setType(position)) {
+            showArrowConfigurator(selectedItemView, false, false);
+            itr = null;
+            initializeGraphicTrendArrow();
+            showArrowConfigurator(selectedItemView, true, true);
+        }
     }
 
     private View.OnClickListener makeSnackBarUriLauncher(final Uri uri, final String text) {

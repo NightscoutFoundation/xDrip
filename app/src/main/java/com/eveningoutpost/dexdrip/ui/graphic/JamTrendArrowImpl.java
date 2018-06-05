@@ -2,54 +2,52 @@ package com.eveningoutpost.dexdrip.ui.graphic;
 
 // jamorham
 
+import android.graphics.ColorFilter;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.SeekBar;
 
 import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.xdrip;
 
-public class JamTrendArrowImpl implements ITrendArrow {
+import static com.eveningoutpost.dexdrip.ui.helpers.ColorUtil.hueFilter;
+import static com.eveningoutpost.dexdrip.ui.helpers.UiHelper.convertDpToPixel;
+
+public class JamTrendArrowImpl extends TrendArrowBase {
+
+    private static final String PREF_JAM_TREND_HUE = "jamTrendArrowHue";
 
     private static final double LARGE_CHANGE = 2d; // some devices use 3.0
     private static final double MAX_CHANGE = 3.5d; // some devices use 3.0
     private static final float SOURCE_SCALE_ADJUST = 2.0f;
     private static final double BOOST_SCALE_MAX_ADDITION = 0.5;
 
-    private static float lastRotation = -1000;
 
-    private ImageView myArrow;
+    private LinearLayout configuratorLayout;
+    private ColorFilter colorfilter;
+    private int hue = 0;
 
 
-    public JamTrendArrowImpl() {
-        this(null);
+    JamTrendArrowImpl(ImageView v) {
+        super(v);
+        setBoostScaleMaxAddition(BOOST_SCALE_MAX_ADDITION);
+        setLargeChange(LARGE_CHANGE);
+        setMaxChange(MAX_CHANGE);
+        setSourceScaleAdjust(SOURCE_SCALE_ADJUST);
+        setImage(R.drawable.ic_gtk_go_forward_ltr);
+        loadHue();
+        updateColorFilter();
     }
 
-    public JamTrendArrowImpl(ImageView v) {
-        init(v);
-        myArrow.setImageResource(R.drawable.ic_gtk_go_forward_ltr);
-        update(null);
-    }
-
-
-    public void init(ImageView view) {
-        if (view == null) {
-            myArrow = new ImageView(xdrip.getAppContext());
-        } else {
-            myArrow = view;
-        }
-    }
-
-    @Override
-    public View get() {
-        return myArrow;
-    }
 
     @Override
     public boolean update(final Double mgdl) {
-
+        final ImageView myArrow = getMyArrow();
         if (mgdl != null) {
 
             final float newRotation = calculateRotation(mgdl);
@@ -74,9 +72,11 @@ public class JamTrendArrowImpl implements ITrendArrow {
 
             myArrow.startAnimation(rotateAnimation);
             final float newScale = calculateScale(mgdl);
-            myArrow.setScaleX(newScale * SOURCE_SCALE_ADJUST);
-            myArrow.setScaleY(newScale * SOURCE_SCALE_ADJUST);
+            myArrow.setScaleX(newScale * getSourceScaleAdjust());
+            myArrow.setScaleY(newScale * getSourceScaleAdjust());
             myArrow.setVisibility(View.VISIBLE);
+
+            myArrow.setColorFilter(colorfilter);
 
             return false;
         } else {
@@ -87,22 +87,51 @@ public class JamTrendArrowImpl implements ITrendArrow {
         return true;
     }
 
+    // seekbar to change hue
+    @Override
+    public synchronized View getConfigurator() {
+        if (configuratorLayout == null) {
+            configuratorLayout = new LinearLayout(xdrip.getAppContext());
+            final SeekBar seekBar = new SeekBar(xdrip.getAppContext());
+            seekBar.setProgress((int) ((hue + 180f) / 3.6f));
+            SeekBar.OnSeekBarChangeListener seekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
 
-    private static float calculateRotation(double mgdl_by_minute) {
-        double degrees = mgdl_by_minute * -45;
-        if (degrees < -90) degrees = -90;
-        if (degrees > 90) degrees = 90;
-        return (float) degrees;
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+                }
+
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    hue = (int) (-180f + (progress * 3.6f));
+                    updateColorFilter();
+                    getMyArrow().setColorFilter(colorfilter);
+                    saveHue();
+                }
+            };
+            seekBar.setOnSeekBarChangeListener(seekBarChangeListener);
+
+            LinearLayout.LayoutParams seekBarLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            final int marginPx = convertDpToPixel(10);
+            seekBarLayoutParams.setMargins(marginPx, marginPx, marginPx, marginPx);
+            configuratorLayout.addView(seekBar, seekBarLayoutParams);
+        }
+        return configuratorLayout;
     }
 
-    // when above LARGE_CHANGE then boost scale up to MAX_CHANGE on scale based by BOOST_SCALE_MAX_ADDITION
-    static float calculateScale(double mgdl_by_minute) {
-        final double abs = Math.abs(mgdl_by_minute);
-        if (abs >= LARGE_CHANGE) {
-            return (float) ((1 - (MAX_CHANGE - Math.min(MAX_CHANGE, abs)) / (MAX_CHANGE - LARGE_CHANGE)) * BOOST_SCALE_MAX_ADDITION + 1);
-        } else {
-            return 1;
-        }
+    private void loadHue() {
+        hue = Pref.getStringToInt(PREF_JAM_TREND_HUE, 0);
+    }
+
+    private void saveHue() {
+        Pref.setString(PREF_JAM_TREND_HUE, "" + hue);
+    }
+
+    private void updateColorFilter() {
+        colorfilter = hueFilter(hue);
     }
 
 }
