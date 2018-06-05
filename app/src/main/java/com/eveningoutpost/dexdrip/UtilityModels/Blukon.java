@@ -241,8 +241,8 @@ private static final int POSITION_OF_SENSOR_STATUS_BYTE = 17;
         m_minutesDiffToLastReading = (int) ((((JoH.tsl() - m_persistentTimeLastBg) / 1000) + 30) / 60);
         Log.i(TAG, "m_minutesDiffToLastReading=" + m_minutesDiffToLastReading + ", last reading: " + JoH.dateTimeText(m_persistentTimeLastBg));
 
-        // Get history if the last reading is more than 15 minutes old
-        if (Pref.getBooleanDefaultFalse("retrieve_blukon_history") && (m_persistentTimeLastBg > 0) && (m_minutesDiffToLastReading > 15)) {
+        // Get history if the last reading is older than we can reasonably backfill
+        if (Pref.getBooleanDefaultFalse("retrieve_blukon_history") && (m_persistentTimeLastBg > 0) && (m_minutesDiffToLastReading > 17)) {
             getHistoricReadings = true;
         }
 
