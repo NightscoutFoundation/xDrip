@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <data>
         <variable name="vs" type="com.eveningoutpost.dexdrip.ui.BaseShelf"/>
@@ -29,6 +31,7 @@
             android:checked="@{safeUnbox(vs.included[`time_buttons`])}"
             android:onClick="@{() -> vs.ptoggle(`time_buttons`)}"
             android:text="Show Time Buttons" />
+
         <Switch
             android:id="@+id/pswitch2"
             android:layout_width="match_parent"
@@ -36,14 +39,49 @@
             android:checked="@{safeUnbox(vs.included[`chart_preview`])}"
             android:onClick="@{() -> vs.ptoggle(`chart_preview`)}"
             android:text="Show Chart Preview" />
-        <Switch
-            android:id="@+id/pswitch3"
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/trendConfiguratorButton"
+                android:layout_width="75dp"
+                android:layout_height="25dp"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:onClick="@{(v) -> home.showArrowConfigurator(v, safeUnbox(vs.included[`graphic_trend_arrow`]), false)}"
+                android:scaleType="fitCenter"
+                app:showIfTrue="@{safeUnbox(vs.included[`graphic_trend_arrow`])}"
+                app:srcCompat="@drawable/ic_wrench_grey600_48dp" />
+
+            <Switch
+                android:id="@+id/pswitch3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:checked="@{safeUnbox(vs.included[`graphic_trend_arrow`])}"
+                android:onCheckedChanged="@{(v, result) -> home.showArrowConfigurator(v, false, true)}"
+                android:onClick="@{() -> vs.ptoggle(`graphic_trend_arrow`)}"
+                android:text="Show Graphical Trend Arrow" />
+
+
+
+        </LinearLayout>
+
+        <Spinner
+            android:id="@+id/trendArrowSpinner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:checked="@{safeUnbox(vs.included[`graphic_trend_arrow`])}"
-            android:onClick="@{() -> vs.ptoggle(`graphic_trend_arrow`)}"
-            android:onCheckedChanged="@{() -> home.staticRefreshBGCharts()}"
-            android:text="Show Graphical Trend Arrow" />
+            android:layout_margin="10dp"
+            android:entries="@array/TrendArrows"
+            android:selection="@{home.arrowSelectionCurrent}"
+            app:showIfTrue="@{safeUnbox(vs.included[`arrow_configurator`])}"
+            android:onItemSelected="@{(a,b,c,d) -> home.arrowSelectionChanged(a,b,c,d)}"
+            android:layout_weight="1" />
+
     </LinearLayout>
 
 </layout>
