@@ -1,6 +1,8 @@
 package com.eveningoutpost.dexdrip.utils;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import com.eveningoutpost.dexdrip.NFCReaderX;
@@ -21,8 +23,8 @@ public class LibreTrendUtil {
     private static final String TAG = "LibreTrendGraph";
     final int MAX_POINTS = 16 * 24 * 60; // Assume that there will not be data for longer than 14 days + some extra.
 
-    long m_latestPointTimestamp = 0;
-    long m_latestId = 0;
+    private LibreTrendLatest m_libreTrendLatest;
+    
     ArrayList<LibreTrendPoint> m_points;
     
     public synchronized static LibreTrendUtil getInstance() {
@@ -39,6 +41,7 @@ public class LibreTrendUtil {
         while(m_points.size() < MAX_POINTS) {
             m_points.add(m_points.size(), new LibreTrendPoint());
         }
+        m_libreTrendLatest = new LibreTrendLatest();
     }
     
     
@@ -49,10 +52,31 @@ public class LibreTrendUtil {
     List<LibreTrendPoint> getData(long startTimestamp, long endTimestamp) {
         Log.e(TAG, "Size of array is " + m_points.size() + " this = " + this);
         
-        long startTime = Math.max(startTimestamp, m_latestPointTimestamp);
+        long startTime = Math.max(startTimestamp, m_libreTrendLatest.timestamp);
         List<LibreBlock> latestBlocks = LibreBlock.getForTrend(startTime, endTimestamp);
         
         Log.e(TAG, "Size of latestBlocks is " + latestBlocks.size());
+        
+        // Go for the last libreBlock and get calculated bg and timestamp.
+        if (latestBlocks.size() > 0) {
+            LibreBlock lastBlock = latestBlocks.get(latestBlocks.size() - 1);
+            // 
+            ReadingData readingData = NFCReaderX.getTrend(lastBlock);
+            if(readingData.trend.size() > 0 ) {
+                m_libreTrendLatest.id = readingData.trend.get(0).sensorTime;
+                m_libreTrendLatest.glucoseLevelRaw = readingData.trend.get(0).glucoseLevelRaw;
+            } else {
+                Log.wtf(TAG, "Error no readingData.trend for this point, returning withoug doing anything");
+                return m_points;
+            }
+            m_libreTrendLatest.timestamp = lastBlock.timestamp;
+            m_libreTrendLatest.bg = lastBlock.calculated_bg;
+            String time = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(new Date((long) m_libreTrendLatest.timestamp));
+            Log.e(TAG, "Latest values " + time + " m_latestId = " + m_libreTrendLatest.id  + " m_libreTrendLatest.m_GlucoseLevelRaw = " + m_libreTrendLatest.glucoseLevelRaw + " bg = " + m_libreTrendLatest.bg );
+             
+        }
+        
+        
         for (LibreBlock libreBlock : latestBlocks) {
             ReadingData readingData = NFCReaderX.getTrend(libreBlock);
             // Go over all trend data (from the last to the start)
@@ -75,11 +99,11 @@ public class LibreTrendUtil {
                 } else {
                     m_points.get((int)id).rawSensorValue = glucoseData.glucoseLevelRaw;
                     m_points.get((int)id).sensorTime  = id;
-                    if(m_latestId > id) {
-                        Log.wtf(TAG, "Error latest id is going back " + m_latestId + " " + id);
+                    if(m_libreTrendLatest.id < id) {
+                        Log.wtf(TAG, "Error - we have seen an id bigger than latest id. m_libreTrendLatest.m_Id = " + m_libreTrendLatest.id + " id = " + id);
                         return m_points;
                     }
-                    m_latestId = id;
+                    
                 }
             }
         }
@@ -100,5 +124,12 @@ public class LibreTrendUtil {
 class LibreTrendPoint {
     long sensorTime; // The number of minutes from sensor start. //????????? Do we need this
     long rawSensorValue; // The raw value of the sensor 
-    
+}
+
+// Represents the last point that we have data on.
+class LibreTrendLatest {
+    long timestamp = 0;
+    long id = 0;
+    double bg = 0;
+    int glucoseLevelRaw;
 }
