@@ -205,7 +205,13 @@ public class BluetoothScan extends ListActivityWithMenu {
                 @Override
                 public void run() {
                     is_scanning = false;
-                    if (bluetooth_adapter != null) bluetooth_adapter.stopLeScan(mLeScanCallback);
+                    try {
+                        if ((bluetooth_adapter != null) && (mLeScanCallback != null)) {
+                            bluetooth_adapter.stopLeScan(mLeScanCallback);
+                        }
+                    } catch (NullPointerException e) {
+                        // concurrency pain
+                    }
                     invalidateOptionsMenu();
                 }
             }, SCAN_PERIOD);
