@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 
-import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.NavDrawerBuilder;
 import com.eveningoutpost.dexdrip.NavigationDrawerFragment;
 import com.eveningoutpost.dexdrip.R;
@@ -27,7 +27,11 @@ public abstract class ActivityWithMenu extends AppCompatActivity implements Navi
 
     @Override
     protected void onResume(){
-        super.onResume();
+        try {
+            super.onResume();
+        } catch (IllegalArgumentException e) {
+            UserError.Log.wtf("ActivityWithMenu", "Nasty error trying to call onResume() " + e);
+        }
         menu_name = getMenuName();
         NavDrawerBuilder navDrawerBuilder = new NavDrawerBuilder(getApplicationContext());
         List<String> menu_option_list = navDrawerBuilder.nav_drawer_options;
