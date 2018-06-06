@@ -341,7 +341,9 @@ public class EventLogActivity extends AppCompatActivity {
             JoH.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    streamed_items.addAll(0, newItems);
+                    synchronized (items) {
+                        streamed_items.addAll(0, newItems);
+                    }
                     refreshNewItems(newItems.size());
                     if (isAtTop()) {
                         // If unmoved or already at top then scroll to new values
@@ -402,13 +404,15 @@ public class EventLogActivity extends AppCompatActivity {
         void filter(final String filter) {
             currentFilter = filter.or(getCurrentFilter()).toLowerCase().trim();
             visible.clear();
+            synchronized (items) {
             // skip filter on initial defaults for speed
             if (isDefaultFilters()) {
                 visible.addAll(items);
             } else {
-                for (UserError item : items) {
-                    if (filterMatch(item)) {
-                        visible.add(item);
+                    for (UserError item : items) {
+                        if (filterMatch(item)) {
+                            visible.add(item);
+                        }
                     }
                 }
             }
@@ -420,13 +424,15 @@ public class EventLogActivity extends AppCompatActivity {
             currentFilter = filter.or(getCurrentFilter()).toLowerCase().trim();
             int c = 0;
             int added = 0;
-            for (UserError item : items) {
-                if (filterMatch(item)) {
-                    visible.add(0, item);
-                    added++;
+            synchronized (items) {
+                for (UserError item : items) {
+                    if (filterMatch(item)) {
+                        visible.add(0, item);
+                        added++;
+                    }
+                    c++;
+                    if (c >= count) break;
                 }
-                c++;
-                if (c >= count) break;
             }
             adapterChain.notifyItemRangeChanged(0, added);
             // avoid duplicate titles
