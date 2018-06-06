@@ -74,7 +74,8 @@ public class BluetoothGlucoseMeter extends Service {
             = "com.eveningoutpost.dexdrip.BLUETOOTH_GLUCOSE_METER_NEW_SCAN_DEVICE";
     public final static String BLUETOOTH_GLUCOSE_METER_TAG = "Bluetooth Glucose Meter";
 
-    private final static String TAG = BluetoothGlucoseMeter.class.getSimpleName();
+    private static final String GLUCOSE_READING_MARKER = "Glucose Reading From: ";
+    private static final String TAG = BluetoothGlucoseMeter.class.getSimpleName();
 
     private static final UUID GLUCOSE_SERVICE = UUID.fromString("00001808-0000-1000-8000-00805f9b34fb");
     private static final UUID CURRENT_TIME_SERVICE = UUID.fromString("00001805-0000-1000-8000-00805f9b34fb");
@@ -94,12 +95,19 @@ public class BluetoothGlucoseMeter extends Service {
 
     private static final UUID MANUFACTURER_NAME = UUID.fromString("00002a29-0000-1000-8000-00805f9b34fb");
 
+    private static final byte ALL_RECORDS = 0x01;
+    private static final byte FIRST_RECORD = 0x05; // first/last order needs verifying
+    private static final byte LAST_RECORD = 0x06; // first/last order needs verifying
+
+
     private static final ConcurrentLinkedQueue<Bluetooth_CMD> queue = new ConcurrentLinkedQueue<>();
     private static final Object mLock = new Object(); // ok static?
 
     private static final int STATE_DISCONNECTED = 0;
     private static final int STATE_CONNECTING = 1;
     private static final int STATE_CONNECTED = 2;
+
+    private static final long NO_CLOCK_THRESHOLD = Constants.MINUTE_IN_MS * 70; // +- minutes
 
     private static final boolean d = false;
     private static final boolean ignore_control_solution_tests = true;
@@ -213,7 +221,7 @@ public class BluetoothGlucoseMeter extends Service {
 
                     Bluetooth_CMD.enable_indications(GLUCOSE_SERVICE, RECORDS_CHARACTERISTIC, "readings indication request");
                     Bluetooth_CMD.notify(GLUCOSE_SERVICE, RECORDS_CHARACTERISTIC, "notify glucose record");
-                    Bluetooth_CMD.write(GLUCOSE_SERVICE, RECORDS_CHARACTERISTIC, new byte[]{0x01, 0x01}, "request all readings");
+                    Bluetooth_CMD.write(GLUCOSE_SERVICE, RECORDS_CHARACTERISTIC, new byte[]{0x01, ALL_RECORDS}, "request all readings");
                     Bluetooth_CMD.notify(GLUCOSE_SERVICE, GLUCOSE_CHARACTERISTIC, "notify new glucose record again"); // dummy
 
                     Bluetooth_CMD.poll_queue();
@@ -283,6 +291,25 @@ public class BluetoothGlucoseMeter extends Service {
                     if (mLastManufacturer.startsWith("Roche")) {
                         Bluetooth_CMD.transmute_command(CURRENT_TIME_SERVICE, TIME_CHARACTERISTIC,
                                 GLUCOSE_SERVICE, DATE_TIME_CHARACTERISTIC);
+                    }
+
+                    // Diamond Mobile Mini DM30b firmware v1.2.4
+                    // v1.2.4 has reversed sequence numbers and first item is last item and no clock access
+                    if (mLastManufacturer.startsWith("TaiDoc")) {
+                        // no time service!
+                        Bluetooth_CMD.delete_command(CURRENT_TIME_SERVICE, TIME_CHARACTERISTIC);
+                        ct = new CurrentTimeRx(); // implicitly trust meter time stamps!! beware daylight saving time changes
+                        ct.noClockAccess = true;
+                        ct.sequenceNotReliable = true;
+
+                        // no glucose context!
+                        Bluetooth_CMD.delete_command(GLUCOSE_SERVICE, CONTEXT_CHARACTERISTIC);
+                        Bluetooth_CMD.delete_command(GLUCOSE_SERVICE, CONTEXT_CHARACTERISTIC);
+
+                        // only request last reading - diamond mini seems to make sequence 0 be the most recent record
+                        Bluetooth_CMD.replace_command(GLUCOSE_SERVICE, RECORDS_CHARACTERISTIC, "W",
+                                new Bluetooth_CMD("W", GLUCOSE_SERVICE, RECORDS_CHARACTERISTIC, new byte[]{0x01, FIRST_RECORD}, "request newest reading"));
+
                     }
 
                     // LifeScan Verio Flex
@@ -584,20 +611,43 @@ public class BluetoothGlucoseMeter extends Service {
             if (ct == null) {
                 statusUpdate("Cannot process glucose record as we do not know device time!");
             } else {
-                markDeviceAsSuccessful(gatt);
+                if (JoH.quietratelimit("mark-meter-device-success", 10)) {
+                    markDeviceAsSuccessful(gatt);
+                }
                 statusUpdate("Glucose Record: " + JoH.dateTimeText((gtb.time - ct.timediff) + gtb.offsetMs()) + "\n" + unitized_string_with_units_static(gtb.mgdl));
 
                 if (playSounds() && JoH.ratelimit("bt_meter_data_in", 1))
                     JoH.playResourceAudio(R.raw.bt_meter_data_in);
 
                 if ((!ignore_control_solution_tests) || (gtb.sampleType != 10)) {
-                    final BloodTest bt = BloodTest.create((gtb.time - ct.timediff) + gtb.offsetMs(), gtb.mgdl, BLUETOOTH_GLUCOSE_METER_TAG + ":\n" + mLastManufacturer + "   " + mLastConnectedDeviceAddress);
+
+                    if (ct.sequenceNotReliable) {
+                        // sequence numbers on some meters are reversed so instead invent one using timestamp with 5 second resolution
+                        gtb.sequence = (int)((gtb.time / 5000)-(1496755620 / 5));
+                    }
+
+                    if (ct.noClockAccess && Pref.getBooleanDefaultFalse("meter_recent_reading_as_now")) {
+                        // for diamond mini we don't know if the clock is correct but if it is within the threshold period then we treat it as if the reading
+                        // has just happened. We only do this when we have received at least one synced reading so the first one after pairing isn't munged.
+                        if (JoH.absMsSince(gtb.time) < NO_CLOCK_THRESHOLD
+                                && PersistentStore.getBoolean(GLUCOSE_READING_MARKER + mLastConnectedDeviceAddress)) {
+                            final long saved_time = gtb.time;
+                            gtb.time = JoH.tsl() - Constants.SECOND_IN_MS * 30; // when the reading was most likely taken
+                            UserError.Log.e(TAG, "Munged meter reading time from: " + JoH.dateTimeText(saved_time) + " to " + JoH.dateTimeText(gtb.time));
+                        }
+                        if (JoH.quietratelimit(GLUCOSE_READING_MARKER, 10)) {
+                            PersistentStore.setBoolean(GLUCOSE_READING_MARKER + mLastConnectedDeviceAddress, true);
+                        }
+                    }
+
+                    final BloodTest bt = BloodTest.create((gtb.time - ct.timediff) + gtb.offsetMs(), gtb.mgdl, BLUETOOTH_GLUCOSE_METER_TAG + ":\n" + mLastManufacturer + "   " + mLastConnectedDeviceAddress, gtb.getUuid().toString());
                     if (bt != null) {
                         UserError.Log.d(TAG, "Successfully created new BloodTest: " + bt.toS());
                         bt.glucoseReadingRx = gtb; // add reference
                         lastBloodTest = bt;
 
                         final long record_time = lastBloodTest.timestamp;
+                        // TODO better replaced with Inevitable task
                         JoH.runOnUiThreadDelayed(new Runnable() {
                             @Override
                             public void run() {
@@ -637,6 +687,7 @@ public class BluetoothGlucoseMeter extends Service {
                         lastBloodTest = bt;
 
                         final long record_time = lastBloodTest.timestamp;
+                        // TODO better replaced with Inevitable Task
                         JoH.runOnUiThreadDelayed(new Runnable() {
                             @Override
                             public void run() {
@@ -687,7 +738,7 @@ public class BluetoothGlucoseMeter extends Service {
                     if (lastBloodTest.timestamp > PersistentStore.getLong(timestamp_id)) {
                         PersistentStore.setLong(timestamp_id, lastBloodTest.timestamp);
                         Log.d(TAG, "evaluateLastRecords: appears to be a new record: sequence:" + lastGlucoseRecord.sequence);
-
+                        JoH.runOnUiThreadDelayed(Home::staticRefreshBGCharts, 300);
                         if (Pref.getBooleanDefaultFalse("bluetooth_meter_for_calibrations")
                                 || Pref.getBooleanDefaultFalse("bluetooth_meter_for_calibrations_auto")) {
                             final long time_since = JoH.msSince(lastBloodTest.timestamp);
@@ -1120,6 +1171,20 @@ public class BluetoothGlucoseMeter extends Service {
             queue.clear();
         }
 
+        private static synchronized void delete_command(final UUID fromService, final UUID fromCharacteristic) {
+            try {
+                for (Bluetooth_CMD btc : queue) {
+                    if (btc.service.equals(fromService) && btc.characteristic.equals(fromCharacteristic)) {
+                        Log.d(TAG, "Removing: " + btc.note);
+                        queue.remove(btc);
+                        break; // currently we only ever need to do one so break for speed
+                    }
+                }
+            } catch (Exception e) {
+                Log.wtf("Got exception in delete: ", e);
+            }
+        }
+
         private static synchronized void transmute_command(final UUID fromService, final UUID fromCharacteristic,
                                                            final UUID toService, final UUID toCharacteristic) {
             try {
@@ -1137,11 +1202,13 @@ public class BluetoothGlucoseMeter extends Service {
             }
         }
 
-        private static synchronized void replace_command(final UUID fromService, final UUID fromCharacteristic,
+        private static synchronized void replace_command(final UUID fromService, final UUID fromCharacteristic, String type,
                                                          Bluetooth_CMD btc_replacement) {
             try {
                 for (Bluetooth_CMD btc : queue) {
-                    if (btc.service.equals(fromService) && btc.characteristic.equals(fromCharacteristic)) {
+                    if (btc.service.equals(fromService)
+                            && btc.characteristic.equals(fromCharacteristic)
+                            && btc.cmd.equals(type)) {
                         btc.service = btc_replacement.service;
                         btc.characteristic = btc_replacement.characteristic;
                         btc.cmd = btc_replacement.cmd;

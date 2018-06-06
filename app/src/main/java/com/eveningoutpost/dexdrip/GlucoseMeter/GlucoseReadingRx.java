@@ -1,10 +1,12 @@
 package com.eveningoutpost.dexdrip.GlucoseMeter;
 
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Calendar;
+import java.util.UUID;
 
 /**
  * Created by jamorham on 06/12/2016.
@@ -94,6 +96,13 @@ public class GlucoseReadingRx extends BluetoothCHelper {
 
     public long offsetMs() {
         return (offset * 60000);
+    }
+
+    public UUID getUuid() {
+        data.rewind();
+        final byte[] barr = new byte[data.remaining()];
+        data.get(barr);
+        return UUID.nameUUIDFromBytes(barr);
     }
 
 }
