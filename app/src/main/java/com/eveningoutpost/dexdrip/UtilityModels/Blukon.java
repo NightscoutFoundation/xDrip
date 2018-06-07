@@ -818,6 +818,7 @@ private static final int POSITION_OF_SENSOR_STATUS_BYTE = 17;
                 if (getPin() != null) {
                     JoH.static_toast_long("Data source set to: " + activity.getString(R.string.blukon) + " pin: " + getPin());
                     runnable.run();
+                    dialog.dismiss();
                 } else {
                     JoH.static_toast_long("Invalid pin!");
                 }
