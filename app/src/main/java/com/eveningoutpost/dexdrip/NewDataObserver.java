@@ -6,6 +6,7 @@ import com.eveningoutpost.dexdrip.Models.LibreBlock;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.ShareModels.BgUploader;
 import com.eveningoutpost.dexdrip.ShareModels.Models.ShareUploadPayload;
+import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleUtil;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleWatchSync;
@@ -33,6 +34,7 @@ public class NewDataObserver {
 
         sendToPebble();
         sendToWear();
+        Notifications.start();
         uploadToShare(bgReading, is_follower);
         textToSpeech(bgReading, null);
         LibreBlock.UpdateBgVal(bgReading.timestamp, bgReading.calculated_value);

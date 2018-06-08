@@ -2288,7 +2288,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             updateCurrentBgInfoForWifiWixel(collector, notificationText);
         } else if (is_follower || collector.equals(DexCollectionType.NSEmulator)) {
             displayCurrentInfo();
-            getApplicationContext().startService(new Intent(getApplicationContext(), Notifications.class));
+            Notifications.start();
         } else if (!alreadyDisplayedBgInfoCommon && DexCollectionType.getDexCollectionType() == DexCollectionType.LibreAlarm) {
             updateCurrentBgInfoCommon(collector, notificationText);
         }

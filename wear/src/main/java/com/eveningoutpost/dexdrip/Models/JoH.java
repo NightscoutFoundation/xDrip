@@ -1035,6 +1035,9 @@ public class JoH {
         }
     }
 
+    public static void startService(Class c) {
+        xdrip.getAppContext().startService(new Intent(xdrip.getAppContext(), c));
+    }
 
     public static void startActivity(Class c) {
         xdrip.getAppContext().startActivity(getStartActivityIntent(c));
