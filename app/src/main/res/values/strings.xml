@@ -607,6 +607,8 @@
     <string name="use_external_blukon_algorithm">Out of process libre algorithm.</string>
     <string name="calibrate_external_libre_algorithm_summary">Apply xDrip calibration methods on OOP data.</string>
     <string name="calibrate_external_libre_algorithm_title">OOP algorithm calibration.</string>
+    <string name="retrieve_blukon_history_title">Retrieve Libre history</string>
+    <string name="retrieve_blukon_history_summary">Retrieve missed history from Blukon device when reconnecting to sensor.</string>
     <string name="interpret_share_raw">If using Share, xDrip will show values when they are normally hidden on the receiver.</string>
     <string name="interpret_raw">Interpret Raw Values</string>
     <string name="use_infrequent_calibrations">If needed, use calibrations from longer ago, eg if calibrations are supplied infrequently.</string>
