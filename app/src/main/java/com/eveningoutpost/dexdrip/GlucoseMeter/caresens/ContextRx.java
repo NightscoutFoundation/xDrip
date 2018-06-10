@@ -48,6 +48,10 @@ public class ContextRx {
         return mealType == 0x06;
     }
 
+    public boolean normalRecord() {
+        return mealType >= 0 && mealType <= 3;
+    }
+
     public String toString() {
         return "Context: "
                 + "Sequence: " + sequence + " "
