@@ -6,6 +6,26 @@
         android:summary="@string/pebble_and_android_wear_options"
         android:title="@string/smart_watch_features">
         <PreferenceScreen
+            icon="@drawable/ic_heart_pulse_grey600_24dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:title="@string/amazfit_sync_service">
+            <SwitchPreference
+                android:defaultValue="false"
+                android:disableDependentsState="false"
+                android:key="pref_amazfit_enable_key"
+                android:summary="@string/pref_amazfit_enable_summary"
+                android:title="@string/pref_amazfit_tile" />
+            <SwitchPreference
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:defaultValue="false"
+                android:dependency="pref_amazfit_enable_key"
+                android:key="pref_amazfit_alarm_enable_key"
+                android:summary="@string/pref_amazfit_alarm_enable_summary"
+                android:title="@string/pref_amazfit_alarm_tile" />
+        </PreferenceScreen>
+        <PreferenceScreen
             android:title="@string/android_wear_integration">
         <PreferenceCategory
             android:key="watch_integration"
