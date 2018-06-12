@@ -174,6 +174,7 @@
     <string name="check_for_updated_version">Check for updated version</string>
     <string name="send_feedback_to_developer">Send Feedback to developer</string>
     <string name="home_screen">Home Screen</string>
+    <string name="event_logs">Event Logs</string>
     <string name="calibration_graph">Calibration Graph</string>
     <string name="glucose_units">Glucose Units</string>
     <string name="mmol_or_mgdl_high_and_low">mmol/l or mg/dl high and low</string>
@@ -617,6 +618,8 @@
     <string name="use_external_blukon_algorithm">Out of process libre algorithm.</string>
     <string name="calibrate_external_libre_algorithm_summary">Apply xDrip calibration methods on OOP data.</string>
     <string name="calibrate_external_libre_algorithm_title">OOP algorithm calibration.</string>
+    <string name="retrieve_blukon_history_title">Retrieve Libre history</string>
+    <string name="retrieve_blukon_history_summary">Retrieve missed history from Blukon device when reconnecting to sensor.</string>
     <string name="interpret_share_raw">If using Share, xDrip will show values when they are normally hidden on the receiver.</string>
     <string name="interpret_raw">Interpret Raw Values</string>
     <string name="use_infrequent_calibrations">If needed, use calibrations from longer ago, eg if calibrations are supplied infrequently.</string>
@@ -689,7 +692,7 @@
     <string name="low_level_value">Low level diagnostic/prototype value</string>
     <string name="transmitter_id">ID of your Dexcom Transmitter, eg 12AB3</string>
     <string name="advanced_g5_settings">Advanced G5 settings for rare situations</string>
-    <string name="g5_debug_settings">G5 Debug Settings</string>
+    <string name="g5_debug_settings">G5/G6 Debug Settings</string>
     <string name="g5_scan_constantly">Some devices work better when scanning constantly, others do not. If reading is reliable when this setting is not selected, you should have improved battery life. Normally best to keep this disabled</string>
     <string name="scan_for_g5_constantly">Scan for G5 constantly</string>
     <string name="g5_force_ui_thread">This is crucial for some Android devices to properly connect, but can cause missed readings when other UI intensive activities are in use.</string>
@@ -883,6 +886,21 @@
     <string name="Speech_pitch">Speech pitch</string>
     <string name="Speak_Alerts">Speak Alerts</string>
     <string name="Speak_Alerts_Summary">Also give some spoken alert messages</string>
+    <string name="advanced_bluereader_settings_summary">Advanced blueReader Settings</string>
+    <string name="advanced_bluereader_settings">blueReader Settings</string>
+    <string name="bluereader_restdays_onhome_sum">Shows the estimated rest Days for blueReader on home screen after the battery must be reload</string>
+    <string name="bluereader_restdays_onhome">Rest days on Home Screen</string>
+    <string name="bluereader_turnoff_sum">Switch the blueReader off, if the battery is less then selected value</string>
+    <string name="bluereader_turnoff">Safety switch off</string>
+    <string name="blueReader_turnoffvalue">Value in %</string>
+    <string name="blueReader_turnoffvalue_sum">where the Bluereader will be turned off</string>
+    <string name="days">days rest</string>
+    <string name="bluereaderoff">blueReader will be turn off, as the battery is lower then </string>
+    <string name="bluereader_position">check position of blueReader on the sensor, as it was not able to read!</string>
+    <string name="bluereaderuglystate">The blueReader was found in an ugly state! It will be now turn off now, and you turn it back to on (short press of the button). After that the blueReader should work as expectet!</string>
+    <string name="offical_msg">The official app</string>
+    <string name="use_conflict_msg">may try to access the transmitter device too and this can cause problems with both apps</string>
+    <string name="use_confict_msg_glimp">You can adjust Glimp Settings: options -> devices -> unselect Bluetooth option</string>
     <string name="yes">Yes</string>
     <string name="xdrip_compatible_features">xDrip+ %s Features</string>
     <string name="garmin">Garmin</string>
@@ -901,7 +919,10 @@
     <string name="enter_your_transmitter_id_exactly">Enter your transmitter ID exactly as it is printed</string>
     <string name="which_type_of_device">Which type of device?</string>
     <string name="enable_local_broadcast">Enable local broadcast?</string>
+    <string name="broadcast_only_to">Broadcast only to?</string>
+    <string name="enable_wear_os_sync">Enable Sync to Android Wear OS?</string>
     <string name="androidaps">AndroidAPS</string>
+    <string name="androidwear">Android Wear OS</string>
     <string name="librealarm">LibreAlarm</string>
     <string name="use_librealarm">Use LibreAlarm app as data source?</string>
     <string name="noise_blocking">Noise Blocking</string>
@@ -912,10 +933,14 @@
     <string name="settings_updated_to_mmol">Settings updated to mmol/L</string>
     <string name="external_calibration_app">External Calibration App</string>
     <string name="use_app_for_calibration">use app for calibration?</string>
-
-
-
     <string name="channel_name">Foreground Service</string>
-
-
-    </resources>
+    <string name="code_accepted">Code accepted</string>
+    <string name="invalid_or_unsupported_code">Invalid or unsupported code!</string>
+    <string name="g6_sensor_code">G6 Sensor Code</string>
+    <string name="please_enter_printed_calibration_code">Please enter the printed calibration code number, 4 digits, eg: 5678</string>
+    <string name="enable_update_checks">Enable update checks?</string>
+    <string name="you_can_easily_roll_back_dialog_msg">With xDrip you can easily roll back to previous versions just by re-running the APK installer for the old version in your Downloads folder if you don\'t like the new version.\n\nWould you like to enable update checks?</string>
+    <string name="hey_fam">Hey Fam...</string>
+    <string name="you_have_update_checks_off">You have update checks switched off!\n\nWe try to fix bugs and add new features to xDrip+ over time.\n\nEvery 60 days this reminder will appear to ask you to turn update checking on.</string>
+    <string name="update_checking_enabled">Update checking enabled!</string>
+</resources>

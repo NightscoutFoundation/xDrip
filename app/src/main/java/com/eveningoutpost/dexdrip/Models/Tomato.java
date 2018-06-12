@@ -3,6 +3,7 @@ package com.eveningoutpost.dexdrip.Models;
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.NFCReaderX;
+import com.eveningoutpost.dexdrip.UtilityModels.Blukon;
 import com.eveningoutpost.dexdrip.UtilityModels.BridgeResponse;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
@@ -48,8 +49,8 @@ public class Tomato {
         final BridgeResponse reply = new BridgeResponse();
         // Check time, probably need to start on sending
         long now = JoH.tsl();
-        if(now - s_lastReceiveTimestamp > 10*1000) {
-            // We did not receive data in 10 seconds, moving to init state again
+        if(now - s_lastReceiveTimestamp > 3*1000) {
+            // We did not receive data in 3 seconds, moving to init state again
             Log.e(TAG, "Recieved a buffer after " + (now - s_lastReceiveTimestamp) / 1000 +  " seconds, starting again. "+
             "already acumulated " + s_acumulatedSize + " bytes.");
             s_state = TOMATO_STATES.REQUEST_DATA_SENT;
@@ -102,7 +103,7 @@ public class Tomato {
                 
             } else {
                 if (JoH.quietratelimit("unknown-initial-packet", 1)) {
-                    Log.d(TAG, "Unknown initial packet makeup received");
+                    Log.d(TAG,"Unknown initial packet makeup received" + HexDump.dumpHexString(buffer));
                 }
                 return reply;
             }
@@ -159,12 +160,19 @@ public class Tomato {
         byte[] data = Arrays.copyOfRange(s_full_data, TOMATO_HEADER_LENGTH, TOMATO_HEADER_LENGTH+344);
         s_recviedEnoughData = true;
         
-        boolean checksum_ok = NFCReaderX.HandleGoodReading("tomato", data);
+        long now = JoH.tsl();
+        boolean checksum_ok = NFCReaderX.HandleGoodReading("tomato", data, now);
         Log.e(TAG, "We have all the data that we need " + s_acumulatedSize + " checksum_ok = " + checksum_ok + HexDump.dumpHexString(data));
 
         if(!checksum_ok) {
             throw new RuntimeException(CHECKSUM_FAILED);
         }
+        
+        
+        // Important note, the actual serial number is 8 bytes long and starts at addresses 0. Since the existing
+        // code is looking for them starting at place 3, we copy extra 3 bytes.
+        byte[] serialBuffer = Arrays.copyOfRange(s_full_data, 2, 13);
+        Blukon.decodeSerialNumber(serialBuffer);
         PersistentStore.setString("Tomatobattery", Integer.toString(s_full_data[13]));
         PersistentStore.setString("TomatoHArdware",HexDump.toHexString(s_full_data,16,2));
         PersistentStore.setString("TomatoFirmware",HexDump.toHexString(s_full_data,14,2));
@@ -211,12 +219,11 @@ public class Tomato {
         ArrayList<ByteBuffer> ret = new ArrayList<>();
 
         s_state = TOMATO_STATES.REQUEST_DATA_SENT;
-
-        // For debug, make it send data every minute (ERROR - We fail to send this message... needs more work,
-        // not sure it works at all)
-        ByteBuffer newFreqMessage = ByteBuffer.allocate(2);
-        newFreqMessage.put(0, (byte) 0xD1);
-        newFreqMessage.put(1, (byte) 0x05);
+        
+        // Make tomato send data every 5 minutes
+        ByteBuffer newFreqMessage = ByteBuffer.allocate(2);    
+        newFreqMessage.put(0, (byte) 0xD1);    
+        newFreqMessage.put(1, (byte) 0x05);    
         ret.add(newFreqMessage);
 
         //command to start reading

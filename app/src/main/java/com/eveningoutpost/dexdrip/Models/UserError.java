@@ -7,13 +7,15 @@ import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
-//import com.bugfender.sdk.Bugfender;
+import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.google.gson.annotations.Expose;
 
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
+
+//import com.bugfender.sdk.Bugfender;
 
 /**
  * Created by Emma Black on 8/3/15.
@@ -41,7 +43,7 @@ public class UserError extends Model {
 
     @Expose
     @Column(name = "timestamp", index = true)
-    public double timestamp; // Time the error was raised
+    public long timestamp; // Time the error was raised
 
     //todo: rather than include multiples of the same error, should we have a "Count" and just increase that on duplicates?
     //or rather, perhaps we should group up the errors
@@ -94,6 +96,16 @@ public class UserError extends Model {
 
     public static UserError UserEventHigh(String shortError, String message) {
         return new UserError(6, shortError, message);
+    }
+
+    // TODO move time calc stuff to JOH, wrap it here with our timestamp
+    public String bestTime() {
+        final long since = JoH.msSince(timestamp);
+        if (since < Constants.DAY_IN_MS) {
+            return JoH.hourMinuteString(timestamp);
+        } else {
+            return JoH.dateTimeText(timestamp);
+        }
     }
 
 
@@ -154,6 +166,55 @@ public class UserError extends Model {
                 .orderBy("timestamp desc")
                 .execute();
     }
+
+    public static List<UserError> bySeverityNewerThanID(long id, Integer[] levels, int limit) {
+        String levelsString = " ";
+        for (int level : levels) {
+            levelsString += level + ",";
+        }
+        Log.d("UserError", "severity in (" + levelsString.substring(0, levelsString.length() - 1) + ")");
+        return new Select()
+                .from(UserError.class)
+                .where("_ID > ?", id)
+                .where("severity in (" + levelsString.substring(0, levelsString.length() - 1) + ")")
+                .orderBy("timestamp desc")
+                .limit(limit)
+                .execute();
+    }
+
+    public static List<UserError> newerThanID(long id, int limit) {
+        return new Select()
+                .from(UserError.class)
+                .where("_ID > ?", id)
+                .orderBy("timestamp desc")
+                .limit(limit)
+                .execute();
+    }
+
+    public static List<UserError> olderThanID(long id, int limit) {
+        return new Select()
+                .from(UserError.class)
+                .where("_ID < ?", id)
+                .orderBy("timestamp desc")
+                .limit(limit)
+                .execute();
+    }
+
+    public static List<UserError> bySeverityOlderThanID(long id, Integer[] levels, int limit) {
+        String levelsString = " ";
+        for (int level : levels) {
+            levelsString += level + ",";
+        }
+        Log.d("UserError", "severity in (" + levelsString.substring(0, levelsString.length() - 1) + ")");
+        return new Select()
+                .from(UserError.class)
+                .where("_ID < ?", id)
+                .where("severity in (" + levelsString.substring(0, levelsString.length() - 1) + ")")
+                .orderBy("timestamp desc")
+                .limit(limit)
+                .execute();
+    }
+
 
     public static UserError getForTimestamp(UserError error) {
         try {

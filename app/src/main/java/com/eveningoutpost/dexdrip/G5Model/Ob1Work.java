@@ -1,6 +1,8 @@
 package com.eveningoutpost.dexdrip.G5Model;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.google.common.collect.ImmutableSet;
+import com.google.gson.annotations.Expose;
 
 /**
  * Created by jamorham on 12/10/2017.
@@ -8,8 +10,13 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 
 public class Ob1Work {
 
+    private static final ImmutableSet<Class> streamClasses = ImmutableSet.of(SessionStartTxMessage.class, SessionStopTxMessage.class, CalibrateTxMessage.class);
+
+    @Expose
     public final TransmitterMessage msg;
+    @Expose
     public final String text;
+    @Expose
     public final long timestamp;
     public volatile int retry = 0;
 
@@ -17,6 +24,10 @@ public class Ob1Work {
         this.msg = msg;
         this.text = text;
         this.timestamp = JoH.tsl();
+    }
+
+    public boolean streamable() {
+        return streamClasses.contains(msg.getClass());
     }
 
 }

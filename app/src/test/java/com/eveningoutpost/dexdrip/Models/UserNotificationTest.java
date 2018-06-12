@@ -2,6 +2,7 @@ package com.eveningoutpost.dexdrip.Models;
 
 import com.activeandroid.query.Delete;
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
+import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 
 import org.junit.After;
@@ -180,9 +181,9 @@ public class UserNotificationTest extends RobolectricTestWithConfig {
         // :: Verify
         assertThat(userNotification).isNull();
 
-        assertThat(Pref.getString("UserNotification:timestamp:" + type, "Not Set"))
+        assertThat(PersistentStore.getString("UserNotification:timestamp:" + type))
                 .isEqualTo(JoH.qs(timestamp));
-        assertThat(Pref.getString("UserNotification:message:" + type, "Not Set"))
+        assertThat(PersistentStore.getString("UserNotification:message:" + type))
                 .isEqualTo(message);
     }
 

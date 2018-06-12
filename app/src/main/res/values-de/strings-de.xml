@@ -785,4 +785,19 @@
 	<string name="Speech_pitch">Sprachliche Tonhöhe</string>
 	<string name="Speak_Alerts">Sprich Alarme</string>
 	<string name="Speak_Alerts_Summary">Spricht die Alarmwerte bei Über-/Unterschreitungn aus</string>
+	<string name="advanced_bluereader_settings_summary">Erweiterte blueReader Einstellungen</string>
+	<string name="advanced_bluereader_settings">blueReader Einstellungen</string>
+	<string name="bluereader_restdays_onhome_sum">Zeigt die kalkulierte Restbatterielaufzeit in Tagen auf dem Übersichtsbildschirm an</string>
+	<string name="bluereader_restdays_onhome">Restlaufzeit auf Home-Bildschirm</string>
+	<string name="bluereader_turnoff_sum">Schalte den blueReader aus, wenn die Batterie unter den eingestellten Wert sinkt</string>
+	<string name="bluereader_turnoff">Sicherheitsauschaltung</string>
+	<string name="blueReader_turnoffvalue">Wert in %</string>
+    <string name="blueReader_turnoffvalue_sum">unter dem der Bluereader ausgeschaltet wird</string>
+	<string name="days">Tage rest</string>
+	<string name="bluereaderoff">blueReader wird ausgeschaltet, da die Batterie folgenden Wert unterschreitet: </string>
+	<string name="bluereader_position">Bitte Positionierung des BlueReaders auf dem Sensor prüfen!</string>
+	<string name="bluereaderuglystate">Der blueReader hat sich aufgehängt! Er wird nun ausgeschaltet. Bitte schlten Sie ihn in ein paar Sekunden wieder an (Taste nur kurz drücken). Danach sollte der blueReader wieder funktionieren!</string>
+	<string name="offical_msg">Die offizielle App</string>
+	<string name="use_conflict_msg">kann versuchen gleichzeitig auf den Transmitter zuzugreifen, was Probleme verursachen kann</string>
+	<string name="use_confict_msg_glimp">Sie können die Glimp-Einstellungen anpassen: Einstellngen -> devices -> deselektieren der Bluetooth-Option</string>
 </resources>

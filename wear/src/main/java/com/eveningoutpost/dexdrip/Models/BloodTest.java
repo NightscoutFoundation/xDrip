@@ -554,5 +554,9 @@ public class BloodTest extends Model {
         }
         patched = true;
     }
+
+    public static void opportunisticCalibration() {
+        // stub placeholder on wear
+    }
 }
 

@@ -4,6 +4,7 @@ package com.eveningoutpost.dexdrip.G5Model;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -12,6 +13,8 @@ import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+
+import static com.eveningoutpost.dexdrip.G5Model.DexTimeKeeper.fromDexTimeCached;
 
 public class BackFillStream extends TransmitterMessage {
 
@@ -45,7 +48,6 @@ public class BackFillStream extends TransmitterMessage {
         final List<Backsie> backsies = new LinkedList<>();
 
         int extent = data.position();
-        System.out.println("Extent: " + extent);
         data.rewind();
         final int length = data.getInt();
         // TODO check length
@@ -55,20 +57,49 @@ public class BackFillStream extends TransmitterMessage {
             final byte type = data.get();
             final byte trend = data.get();
 
+            final CalibrationState state = CalibrationState.parse(type);
 
-            if (type == 0x06 || type == 0x07) {
-                if (dexTime != 0) {
-                    backsies.add(new Backsie(glucose, trend, dexTime));
-                }
-            } else {
-                if (type == 0x00) {
-                    //
-                } else {
-                    UserError.Log.wtf(TAG, "Encountered backfill data we don't recognise: " + type);
-                }
+            switch (state) {
+                case Ok:
+                case NeedsCalibration:
+                    insertBackfillItem(backsies, dexTime, glucose, trend);
+                    break;
+
+                case WarmingUp:
+                    break;
+
+                case Errors:
+                    if (Pref.getBooleanDefaultFalse("ob1_g5_use_errored_data")) {
+                        insertBackfillItem(backsies, dexTime, glucose, trend);
+                    }
+                    break;
+
+                case InsufficientCalibration:
+                    if (Pref.getBooleanDefaultFalse("ob1_g5_use_insufficiently_calibrated")) {
+                        insertBackfillItem(backsies, dexTime, glucose, trend);
+                    }
+                    break;
+
+                case NeedsFirstCalibration:
+                case NeedsSecondCalibration:
+                case Unknown:
+                    break;
+
+                default:
+                    UserError.Log.wtf(TAG, "Encountered backfill data we don't recognise: " + type + " " + glucose + " " + trend + " " + " " + JoH.dateTimeText(fromDexTimeCached(dexTime)));
+                    break;
+
             }
         }
         return backsies;
+
+
+    }
+
+    private void insertBackfillItem(List<Backsie> backsies, int dexTime, int glucose, byte trend) {
+        if (dexTime != 0) {
+            backsies.add(new Backsie(glucose, trend, dexTime));
+        }
     }
 
     public void enumerate(int size) {

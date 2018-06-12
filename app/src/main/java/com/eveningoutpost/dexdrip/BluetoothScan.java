@@ -36,6 +36,7 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.Blukon;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.utils.AndroidBarcode;
 import com.eveningoutpost.dexdrip.utils.ListActivityWithMenu;
@@ -205,7 +206,13 @@ public class BluetoothScan extends ListActivityWithMenu {
                 @Override
                 public void run() {
                     is_scanning = false;
-                    if (bluetooth_adapter != null) bluetooth_adapter.stopLeScan(mLeScanCallback);
+                    try {
+                        if ((bluetooth_adapter != null) && (mLeScanCallback != null)) {
+                            bluetooth_adapter.stopLeScan(mLeScanCallback);
+                        }
+                    } catch (NullPointerException e) {
+                        // concurrency pain
+                    }
                     invalidateOptionsMenu();
                 }
             }, SCAN_PERIOD);
@@ -403,7 +410,7 @@ public class BluetoothScan extends ListActivityWithMenu {
 
             } else if (device.getName().toLowerCase().contains("drip")) {
                 if (!
-                        (CollectionServiceStarter.isBTWixel(getApplicationContext())
+                        (CollectionServiceStarter.isBTWixelOrLimiTTer(getApplicationContext())
                                 || CollectionServiceStarter.isWifiandBTWixel(getApplicationContext())
                         ) || CollectionServiceStarter.isLimitter()) {
                     prefs.edit().putString("dex_collection_method", "BluetoothWixel").apply();
@@ -420,7 +427,7 @@ public class BluetoothScan extends ListActivityWithMenu {
                 }
                 returnToHome();
             } else if (device.getName().toLowerCase().contains("miaomiao")) {
-                if (!CollectionServiceStarter.isLimitter()) {
+                if (!(CollectionServiceStarter.isLimitter() || CollectionServiceStarter.isWifiandBTLibre())) {
                     prefs.edit().putString("dex_collection_method", "LimiTTer").apply();
                 }
                 returnToHome();
@@ -452,12 +459,16 @@ public class BluetoothScan extends ListActivityWithMenu {
     }
 
     public void returnToHome() {
-        if (is_scanning) {
-            bluetooth_adapter.stopLeScan(mLeScanCallback);
-            is_scanning = false;
+        try {
+            if (is_scanning) {
+                is_scanning = false;
+                bluetooth_adapter.stopLeScan(mLeScanCallback);
+            }
+        } catch (NullPointerException e) {
+            // meh
         }
-        Intent intent = new Intent(this, Home.class);
-        CollectionServiceStarter.restartCollectionService(getApplicationContext());
+        Inevitable.task("restart-collector", 2000, () -> CollectionServiceStarter.restartCollectionService(getApplicationContext()));
+        final Intent intent = new Intent(this, Home.class);
         startActivity(intent);
         finish();
     }

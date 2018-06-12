@@ -589,9 +589,13 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
                 if (requestCode == REQUEST_CODE_CHOOSE_FILE) {
                     final Uri selectedFileUri = data.getData();
                     //JoH.static_toast_long(selectedFileUri.toString());
-                    selectedSound = selectedFileUri.toString();
-                    PersistentStore.setString("reminders-last-sound", selectedSound);
-                    // play it?
+                    try {
+                        selectedSound = selectedFileUri.toString();
+                        PersistentStore.setString("reminders-last-sound", selectedSound);
+                        // play it?
+                    } catch (NullPointerException e) {
+                        JoH.static_toast_long("Problem with sound");
+                    }
                 }
             }
         }

@@ -3,6 +3,7 @@ package com.eveningoutpost.dexdrip.Models;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
@@ -10,6 +11,7 @@ import android.provider.BaseColumns;
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
+import com.activeandroid.query.Delete;
 import com.activeandroid.query.Select;
 import com.activeandroid.util.SQLiteUtils;
 import com.eveningoutpost.dexdrip.BestGlucose;
@@ -31,6 +33,7 @@ import com.eveningoutpost.dexdrip.calibrations.CalibrationAbstract;
 import com.eveningoutpost.dexdrip.messages.BgReadingMessage;
 import com.eveningoutpost.dexdrip.messages.BgReadingMultiMessage;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
+import com.eveningoutpost.dexdrip.utils.SqliteRejigger;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -64,10 +67,14 @@ public class BgReading extends Model implements ShareUploadableBg {
     //TODO: Have these as adjustable settings!!
     public final static double BESTOFFSET = (60000 * 0); // Assume readings are about x minutes off from actual!
 
+    public static final int BG_READING_ERROR_VALUE = 38; // error marker
+    public static final int BG_READING_MINIMUM_VALUE = 39;
+    public static final int BG_READING_MAXIMUM_VALUE = 400;
+
     @Column(name = "sensor", index = true)
     public Sensor sensor;
 
-    @Column(name = "calibration", index = true)
+    @Column(name = "calibration", index = true, onDelete = Column.ForeignKeyAction.CASCADE)
     public Calibration calibration;
 
     @Expose
@@ -130,6 +137,7 @@ public class BgReading extends Model implements ShareUploadableBg {
     @Column(name = "rc")
     public double rc;
     @Expose
+    // TODO unification with wear support ConflictAction.REPLACE for wear, done with rejig below
     @Column(name = "uuid", unique = true, onUniqueConflicts = Column.ConflictAction.IGNORE)
     public String uuid;
 
@@ -170,13 +178,28 @@ public class BgReading extends Model implements ShareUploadableBg {
     @Column(name = "dg_delta_name")
     public String dg_delta_name;
 
-    public static void updateDB(){
-        String[] updates = new String[]{"ALTER TABLE BgReadings ADD COLUMN dg_mgdl REAL;", "ALTER TABLE BgReadings ADD COLUMN dg_slope REAL;", "ALTER TABLE BgReadings ADD COLUMN dg_delta_name TEXT;"};
-        for (String patch:updates) {
+    @Expose
+    @Column(name = "source_info")
+    public String source_info;
+
+    public synchronized static void updateDB() {
+        final String[] updates = new String[]{"ALTER TABLE BgReadings ADD COLUMN dg_mgdl REAL;",
+                "ALTER TABLE BgReadings ADD COLUMN dg_slope REAL;",
+                "ALTER TABLE BgReadings ADD COLUMN dg_delta_name TEXT;",
+                "ALTER TABLE BgReadings ADD COLUMN source_info TEXT;"};
+        for (String patch : updates) {
             try {
                 SQLiteUtils.execSql(patch);
-            } catch (Exception e){
+            } catch (Exception e) {
             }
+        }
+
+        // needs different handling on wear
+        if (JoH.areWeRunningOnAndroidWear()) {
+            BgSendQueue.emptyQueue();
+            SqliteRejigger.rejigSchema("BgReadings", "uuid TEXT UNIQUE ON CONFLICT FAIL", "uuid TEXT UNIQUE ON CONFLICT REPLACE");
+            SqliteRejigger.rejigSchema("BgReadings", "uuid TEXT UNIQUE ON CONFLICT IGNORE", "uuid TEXT UNIQUE ON CONFLICT REPLACE");
+            SqliteRejigger.rejigSchema("BgSendQueue", "BgReadings_temp", "BgReadings");
         }
 
     }
@@ -188,6 +211,7 @@ public class BgReading extends Model implements ShareUploadableBg {
 
     public double getDg_slope(){
         if(dg_mgdl != 0) return dg_slope;
+        if(calculated_value_slope !=0) return calculated_value_slope;
         return currentSlope();
     }
 
@@ -356,7 +380,8 @@ public class BgReading extends Model implements ShareUploadableBg {
             bgReading.save();
             bgReading.find_new_curve();
             bgReading.find_new_raw_curve();
-            context.startService(new Intent(context, Notifications.class));
+            //context.startService(new Intent(context, Notifications.class));
+            Notifications.start(); // this may not be needed as it is duplicated in handleNewBgReading
             BgSendQueue.handleNewBgReading(bgReading, "create", context);
         }
     }
@@ -380,6 +405,27 @@ public class BgReading extends Model implements ShareUploadableBg {
         Log.d(TAG, "getForTimestamp: No luck finding a BG timestamp match");
         return null;
     }
+
+    // used in wear
+    public static BgReading getForTimestampExists(double timestamp) {
+        Sensor sensor = Sensor.currentSensor();
+        if (sensor != null) {
+            BgReading bgReading = new Select()
+                    .from(BgReading.class)
+                    .where("Sensor = ? ", sensor.getId())
+                    .where("timestamp <= ?", (timestamp + (60 * 1000))) // 1 minute padding (should never be that far off, but why not)
+                    .orderBy("timestamp desc")
+                    .executeSingle();
+            if (bgReading != null && Math.abs(bgReading.timestamp - timestamp) < (3 * 60 * 1000)) { //cool, so was it actually within 4 minutes of that bg reading?
+                Log.i(TAG, "getForTimestamp: Found a BG timestamp match");
+                return bgReading;
+            }
+        }
+        Log.d(TAG, "getForTimestamp: No luck finding a BG timestamp match");
+        return null;
+    }
+
+
 
     public static BgReading getForPreciseTimestamp(long timestamp, double precision) {
         return getForPreciseTimestamp(timestamp, precision, true);
@@ -431,7 +477,7 @@ public class BgReading extends Model implements ShareUploadableBg {
     public static BgReading create(double raw_data, double filtered_data, Context context, Long timestamp, boolean quick) {
         if (context == null) context = xdrip.getAppContext();
         final BgReading bgReading = new BgReading();
-        Sensor sensor = Sensor.currentSensor();
+        final Sensor sensor = Sensor.currentSensor();
         if (sensor == null) {
             Log.i("BG GSON: ", bgReading.toS());
             return bgReading;
@@ -457,6 +503,7 @@ public class BgReading extends Model implements ShareUploadableBg {
 
             bgReading.save();
             bgReading.perform_calculations();
+            BgSendQueue.sendToPhone(context);
         } else {
             Log.d(TAG, "Calibrations, so doing everything: " + calibration.uuid);
             bgReading.sensor = sensor;
@@ -514,11 +561,9 @@ public class BgReading extends Model implements ShareUploadableBg {
                         bgReading.calculated_value = ((calibration.slope * bgReading.age_adjusted_raw_value) + calibration.intercept);
                         bgReading.filtered_calculated_value = ((calibration.slope * bgReading.ageAdjustedFiltered()) + calibration.intercept);
                     }
-                }
-            }
 
-            if (SensorSanity.isRawValueSane(bgReading.raw_data)) {
-                updateCalculatedValueToWithinMinMax(bgReading);
+                    updateCalculatedValueToWithinMinMax(bgReading);
+                }
             }
 
             // LimiTTer can send 12 to indicate problem with NFC reading.
@@ -538,7 +583,8 @@ public class BgReading extends Model implements ShareUploadableBg {
                     BloodTest.opportunisticCalibration();
                 }
 
-                context.startService(new Intent(context, Notifications.class));
+                //context.startService(new Intent(context, Notifications.class));
+                // allow this instead to be fired inside handleNewBgReading when noise will have been injected already
             }
             bgReading.injectNoise(true); // Add noise parameter for nightscout
             bgReading.injectDisplayGlucose(BestGlucose.getDisplayGlucose()); // Add display glucose for nightscout
@@ -553,10 +599,10 @@ public class BgReading extends Model implements ShareUploadableBg {
     static void updateCalculatedValueToWithinMinMax(BgReading bgReading) {
         // TODO should this really be <10 other values also special??
         if (bgReading.calculated_value < 10) {
-            bgReading.calculated_value = 38;
+            bgReading.calculated_value = BG_READING_ERROR_VALUE;
             bgReading.hide_slope = true;
         } else {
-            bgReading.calculated_value = Math.min(400, Math.max(39, bgReading.calculated_value));
+            bgReading.calculated_value = Math.min(BG_READING_MAXIMUM_VALUE, Math.max(BG_READING_MINIMUM_VALUE, bgReading.calculated_value));
         }
         Log.i(TAG, "NEW VALUE CALCULATED AT: " + bgReading.calculated_value);
     }
@@ -617,6 +663,10 @@ public class BgReading extends Model implements ShareUploadableBg {
                 SyncService.startSyncService(3000); // sync in 3 seconds
             }
         }
+    }
+
+    public String displaySlopeArrow() {
+        return slopeToArrowSymbol(this.dg_mgdl > 0 ? this.dg_slope * 60000 : this.calculated_value_slope * 60000);
     }
 
     public static String activeSlopeArrow() {
@@ -779,7 +829,8 @@ public class BgReading extends Model implements ShareUploadableBg {
     }
 
     public static List<BgReading> latest_by_size(int number) {
-        Sensor sensor = Sensor.currentSensor();
+        final Sensor sensor = Sensor.currentSensor();
+        if (sensor == null) return null;
         return new Select()
                 .from(BgReading.class)
                 .where("Sensor = ? ", sensor.getId())
@@ -926,7 +977,11 @@ public class BgReading extends Model implements ShareUploadableBg {
     public static boolean isDataSuitableForDoubleCalibration() {
         final List<BgReading> uncalculated = BgReading.latestUnCalculated(3);
         if (uncalculated.size() < 3) return false;
-        return ProcessInitialDataQuality.getInitialDataQuality(uncalculated).pass || Pref.getBooleanDefaultFalse("bypass_calibration_quality_check");
+        final ProcessInitialDataQuality.InitialDataQuality idq = ProcessInitialDataQuality.getInitialDataQuality(uncalculated);
+        if (!idq.pass) {
+            UserError.Log.d(TAG, "Data quality failure for double calibration: " + idq.advice);
+        }
+        return idq.pass || Pref.getBooleanDefaultFalse("bypass_calibration_quality_check");
     }
 
 
@@ -939,12 +994,13 @@ public class BgReading extends Model implements ShareUploadableBg {
                 .execute();
     }
 
-   /* public static BgReading findByUuid(String uuid) {
+    // used in wear
+    public static BgReading findByUuid(String uuid) {
         return new Select()
                 .from(BgReading.class)
                 .where("uuid = ?", uuid)
                 .executeSingle();
-    }*/
+    }
 
     public static double estimated_bg(double timestamp) {
         timestamp = timestamp + BESTOFFSET;
@@ -989,6 +1045,18 @@ public class BgReading extends Model implements ShareUploadableBg {
         }
     }
 
+    public void appendSourceInfo(String info) {
+        if ((source_info == null) || (source_info.length() == 0)) {
+            source_info = info;
+        } else {
+            source_info += "::" + info;
+        }
+    }
+
+    public boolean isBackfilled() {
+        return raw_data == SPECIAL_G5_PLACEHOLDER;
+    }
+
     public static final double SPECIAL_G5_PLACEHOLDER = -0.1597;
 
     // TODO remember to sync this with wear code base
@@ -1010,10 +1078,12 @@ public class BgReading extends Model implements ShareUploadableBg {
             bgr.uuid = UUID.randomUUID().toString();
             bgr.calculated_value = calculated_value;
             bgr.raw_data = SPECIAL_G5_PLACEHOLDER; // placeholder
+            bgr.appendSourceInfo("G5 Native");
             bgr.save();
             if (JoH.ratelimit("sync wakelock", 15)) {
                 final PowerManager.WakeLock linger = JoH.getWakeLock("G5 Insert", 4000);
             }
+            // TODO make Inevitable
             new Thread(() -> {
                 JoH.threadSleep(3000);
                 notifyAndSync(bgr);
@@ -1027,7 +1097,7 @@ public class BgReading extends Model implements ShareUploadableBg {
     public static void notifyAndSync(final BgReading bgr) {
         final boolean recent = bgr.isCurrent();
         if (recent) {
-            xdrip.getAppContext().startService(new Intent(xdrip.getAppContext(), Notifications.class)); // alerts et al
+            Notifications.start(); // may not be needed as this is duplicated in handleNewBgReading
             // probably not wanted for G5 internal values?
             //bgr.injectNoise(true); // Add noise parameter for nightscout
             //bgr.injectDisplayGlucose(BestGlucose.getDisplayGlucose()); // Add display glucose for nightscout
@@ -1058,7 +1128,8 @@ public class BgReading extends Model implements ShareUploadableBg {
                     }
                     bgr.save();
                     if (do_notification) {
-                        xdrip.getAppContext().startService(new Intent(xdrip.getAppContext(), Notifications.class)); // alerts et al
+                        Notifications.start(); // this may not be needed as it fires in handleNewBgReading
+                        //xdrip.getAppContext().startService(new Intent(xdrip.getAppContext(), Notifications.class)); // alerts et al
                         BgSendQueue.handleNewBgReading(bgr, "create", xdrip.getAppContext(), Home.get_follower()); // pebble and widget and follower
                     }
                 } else {
@@ -1107,7 +1178,8 @@ public class BgReading extends Model implements ShareUploadableBg {
                     bgr.save();
                     bgr.find_slope();
                     if (do_notification) {
-                        xdrip.getAppContext().startService(new Intent(xdrip.getAppContext(), Notifications.class)); // alerts et al
+                       // xdrip.getAppContext().startService(new Intent(xdrip.getAppContext(), Notifications.class)); // alerts et al
+                        Notifications.start(); // this may not be needed as it is duplicated in handleNewBgReading
                     }
                     BgSendQueue.handleNewBgReading(bgr, "create", xdrip.getAppContext(), false, !do_notification); // pebble and widget
                 } else {
@@ -1266,6 +1338,63 @@ public class BgReading extends Model implements ShareUploadableBg {
             Log.d(TAG, "Deleting all BGReadings");
         } catch (Exception e) {
             Log.e(TAG, "Got exception running deleteALL " + e.toString());
+        }
+    }
+
+    public static void deleteRandomData() {
+        Random rand = new Random();
+        int  minutes_ago_end = rand.nextInt(120);
+        int  minutes_ago_start = minutes_ago_end + rand.nextInt(35)+5;
+        long ts_start = JoH.tsl() - minutes_ago_start * Constants.MINUTE_IN_MS;
+        long ts_end = JoH.tsl() - minutes_ago_end * Constants.MINUTE_IN_MS;
+        UserError.Log.d(TAG,"Deleting random bgreadings: "+JoH.dateTimeText(ts_start)+" -> "+JoH.dateTimeText(ts_end));
+        testDeleteRange(ts_start, ts_end);
+    }
+
+    public static void testDeleteRange(long start_time, long end_time) {
+        List<BgReading> bgrs = new Delete()
+                .from(BgReading.class)
+                .where("timestamp < ?", end_time)
+                .where("timestamp > ?",start_time)
+                .execute();
+       // UserError.Log.d("OB1TEST","Deleted: "+bgrs.size()+" records");
+    }
+
+    public static List<BgReading> cleanup(int retention_days) {
+        return new Delete()
+                .from(BgReading.class)
+                .where("timestamp < ?", JoH.tsl() - (retention_days * Constants.DAY_IN_MS))
+                .execute();
+    }
+
+    // used in wear
+    public static void cleanup(long timestamp) {
+        try {
+            SQLiteUtils.execSql("delete from BgSendQueue");
+            List<BgReading> data = new Select()
+                    .from(BgReading.class)
+                    .where("timestamp < ?", timestamp)
+                    .orderBy("timestamp desc")
+                    .execute();
+            if (data != null) Log.d(TAG, "cleanup BgReading size=" + data.size());
+            new Cleanup().execute(data);
+        } catch (Exception e) {
+            Log.e(TAG, "Got exception running cleanup " + e.toString());
+        }
+    }
+
+    // used in wear
+    private static class Cleanup extends AsyncTask<List<BgReading>, Integer, Boolean> {
+        @Override
+        protected Boolean doInBackground(List<BgReading>... errors) {
+            try {
+                for(BgReading data : errors[0]) {
+                    data.delete();
+                }
+                return true;
+            } catch(Exception e) {
+                return false;
+            }
         }
     }
 

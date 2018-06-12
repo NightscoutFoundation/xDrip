@@ -13,6 +13,8 @@ import java.util.Calendar;
 public class CurrentTimeRx extends BluetoothCHelper {
 
     private ByteBuffer data = null;
+    public boolean noClockAccess = false;
+    public boolean sequenceNotReliable = false;
     public int year, month, day, hour, minute, second;
     public long time;
     public long timediff;

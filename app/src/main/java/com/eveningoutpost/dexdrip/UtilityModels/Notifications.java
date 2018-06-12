@@ -123,15 +123,16 @@ public class Notifications extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        PowerManager pm = (PowerManager) getApplicationContext().getSystemService(Context.POWER_SERVICE);
-        PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "NotificationsIntent");
-        wl.acquire(60000);
+
+        final PowerManager.WakeLock wl = JoH.getWakeLock("NotificationsService", 60000);
+
         boolean unclearReading = false;
         try {
             Log.d("Notifications", "Running Notifications Intent Service");
             final Context context = getApplicationContext();
 
             if (Pref.getBoolean("motion_tracking_enabled", false)) {
+                // TODO move this
                 ActivityRecognizedService.reStartActivityRecogniser(context);
             }
 
@@ -140,20 +141,12 @@ public class Notifications extends IntentService {
             ArmTimer(context, unclearReading);
             context.startService(new Intent(context, MissedReadingService.class));
 
-
         } finally {
-            if (wl.isHeld()) wl.release();
+            JoH.releaseWakeLock(wl);
         }
     }
 
-    public static void staticUpdateNotification() {
-        try {
-            Context context = xdrip.getAppContext();
-            context.startService(new Intent(context, Notifications.class));
-        } catch (Exception e) {
-            Log.e(TAG, "Got exception in staticupdatenotification: " + e);
-        }
-    }
+
 
 
     public void ReadPerfs(Context context) {
@@ -183,7 +176,7 @@ public class Notifications extends IntentService {
  * Function for new notifications
  */
 
-
+// TODO REFACTOR
     private void FileBasedNotifications(Context context) {
         ReadPerfs(context);
         Sensor sensor = Sensor.currentSensor();
@@ -600,14 +593,37 @@ public class Notifications extends IntentService {
                 .setSmallIcon(R.drawable.ic_action_communication_invert_colors_on)
                 .setUsesChronometer(false);
 
+        boolean setLargeIcon = false;
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             // in case the graphic crashes the system-ui we wont do it immediately after reboot so the
             // user has a chance to disable the feature
             if (SystemClock.uptimeMillis() > Constants.MINUTE_IN_MS * 15) {
                 if (NumberGraphic.numberIconEnabled()) {
                     if ((dg != null) && (!dg.isStale())) {
-                        final Bitmap icon_bitmap = NumberGraphic.getBitmap(dg.unitized);
+                        final Bitmap icon_bitmap = NumberGraphic.getSmallIconBitmap(dg.unitized);
                         if (icon_bitmap != null) b.setSmallIcon(Icon.createWithBitmap(icon_bitmap));
+
+                    }
+                }
+
+                if (NumberGraphic.largeWithArrowEnabled()) {
+                    if ((dg != null) && (!dg.isStale())) {
+                        final Bitmap icon_bitmap = NumberGraphic.getLargeWithArrowBitmap(dg.unitized, dg.delta_arrow);
+                        //if (icon_bitmap != null) b.setSmallIcon(Icon.createWithBitmap(icon_bitmap));
+                        if (icon_bitmap != null) {
+                            b.setLargeIcon(Icon.createWithBitmap(icon_bitmap));
+                            setLargeIcon = true;
+                        }
+                    }
+                } else if (NumberGraphic.largeNumberIconEnabled()) {
+                    if ((dg != null) && (!dg.isStale())) {
+                        final Bitmap icon_bitmap = NumberGraphic.getLargeIconBitmap(dg.unitized);
+                        //if (icon_bitmap != null) b.setSmallIcon(Icon.createWithBitmap(icon_bitmap));
+                        if (icon_bitmap != null) {
+                            b.setLargeIcon(Icon.createWithBitmap(icon_bitmap));
+                            setLargeIcon = true;
+                        }
                     }
                 }
             }
@@ -627,7 +643,7 @@ public class Notifications extends IntentService {
                     .setBgGraphBuilder(bgGraphBuilder)
                     .setBackgroundColor(getCol(X.color_notification_chart_background))
                     .build();
-            b.setLargeIcon(iconBitmap);
+            if (!setLargeIcon) b.setLargeIcon(iconBitmap);
             Notification.BigPictureStyle bigPictureStyle = new Notification.BigPictureStyle();
             notifiationBitmap = new BgSparklineBuilder(mContext)
                     .setBgGraphBuilder(bgGraphBuilder)
@@ -978,6 +994,23 @@ public class Notifications extends IntentService {
         if (userNotification != null) {
             userNotification.delete();
             notificationDismiss(extraCalibrationNotificationId);
+        }
+    }
+
+    // rate limited
+    public static void start() {
+        // TODO consider how inevitable task could change dynamic of this instead of rate limit
+        if (JoH.ratelimit("start-notifications",10)) {
+            JoH.startService(Notifications.class);
+        }
+    }
+
+    // not rate limited - force recheck
+    public static void staticUpdateNotification() {
+        try {
+            JoH.startService(Notifications.class);
+        } catch (Exception e) {
+            Log.e(TAG, "Got exception in staticupdatenotification: " + e);
         }
     }
 }

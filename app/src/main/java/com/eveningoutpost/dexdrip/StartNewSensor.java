@@ -24,6 +24,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.Experience;
 import com.eveningoutpost.dexdrip.profileeditor.DatePickerFragment;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileAdapter;
 import com.eveningoutpost.dexdrip.profileeditor.TimePickerFragment;
+import com.eveningoutpost.dexdrip.ui.dialog.G6CalibrationCodeDialog;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.LocationHelper;
@@ -161,6 +162,14 @@ public class StartNewSensor extends ActivityWithMenu {
     }
 
     private void realStartSensor() {
+        if (Ob1G5StateMachine.usingG6()) {
+            G6CalibrationCodeDialog.ask(this, this::realRealStartSensor);
+        } else {
+            realRealStartSensor();
+        }
+    }
+
+    private void realRealStartSensor() {
         long startTime = ucalendar.getTime().getTime();
         Log.d(TAG, "Starting sensor time: " + JoH.dateTimeText(ucalendar.getTime().getTime()));
 

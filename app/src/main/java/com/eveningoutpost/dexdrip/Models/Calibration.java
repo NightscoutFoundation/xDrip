@@ -19,6 +19,7 @@ import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.CalRecord;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.CalSubrecord;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.CalibrationSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
@@ -263,7 +264,7 @@ public class Calibration extends Model {
             bg1 = bg1 * Constants.MMOLL_TO_MGDL;
             bg2 = bg2 * Constants.MMOLL_TO_MGDL;
         }
-        clear_all_existing_calibrations();
+
         JoH.clearCache();
         final Calibration higherCalibration = new Calibration();
         final Calibration lowerCalibration = new Calibration();
@@ -273,7 +274,14 @@ public class Calibration extends Model {
         // don't allow initial calibration if data would be stale
             if ((bgReadings == null) || (bgReadings.size() != 3) || !isDataSuitableForDoubleCalibration() ){
             UserError.Log.wtf(TAG, "Did not find 3 readings for initial calibration - aborting");
-            JoH.static_toast_long("Not enough recent sensor data! - cancelling!");
+
+            if (Ob1G5CollectionService.usingNativeMode()) {
+                JoH.static_toast_long("Sending Blood Tests to G5 Native");
+                BloodTest.create(JoH.tsl() - (Constants.SECOND_IN_MS * 30), bg1, "Initial Calibration");
+                BloodTest.create(JoH.tsl(), bg2, "Initial Calibration");
+            } else {
+                JoH.static_toast_long("Not enough recent sensor data! - cancelling!");
+            }
             return;
         }
 
@@ -287,6 +295,8 @@ public class Calibration extends Model {
             JoH.static_toast_long(msg);
             return;
         }
+
+        clear_all_existing_calibrations();
 
         BgReading highBgReading;
         BgReading lowBgReading;
@@ -342,7 +352,7 @@ public class Calibration extends Model {
 
         JoH.clearCache();
 
-        Ob1G5StateMachine.addCalibration((int) bg1, JoH.tsl() - Constants.MINUTE_IN_MS);
+        Ob1G5StateMachine.addCalibration((int) bg1, JoH.tsl() - (Constants.SECOND_IN_MS * 30));
         Ob1G5StateMachine.addCalibration((int) bg2, JoH.tsl());
 
         final List<Calibration> calibrations = new ArrayList<Calibration>();
@@ -366,9 +376,11 @@ public class Calibration extends Model {
             CalibrationSendQueue.addToQueue(calibration, context);
         }
         JoH.clearCache();
-        adjustRecentBgReadings(5);
+        if (!Ob1G5CollectionService.usingNativeMode()) {
+            adjustRecentBgReadings(5);
+        }
         CalibrationRequest.createOffset(lowerCalibration.bg, 35);
-        context.startService(new Intent(context, Notifications.class));
+        Notifications.staticUpdateNotification();
     }
 
     //Create Calibration Checkin Dexcom Bluetooth Share
@@ -441,7 +453,7 @@ public class Calibration extends Model {
                     Calibration.create(calRecords, context, true, 0);
                 }
             }
-            context.startService(new Intent(context, Notifications.class));
+            Notifications.start();
         }
     }
 
@@ -532,7 +544,7 @@ public class Calibration extends Model {
                 bgReading = BgReading.getForPreciseTimestamp(new Date().getTime() - ((timeoffset - estimatedInterstitialLagSeconds) * 1000 ), (15 * 60 * 1000));
             }
             if (bgReading != null) {
-                if (SensorSanity.isRawValueSane(bgReading.raw_data, DexCollectionType.getDexCollectionType())) {
+                if (SensorSanity.isRawValueSane(bgReading.raw_data, DexCollectionType.getDexCollectionType(), true)) {
                     calibration.sensor = sensor;
                     calibration.bg = bg;
                     calibration.check_in = false;
@@ -560,6 +572,12 @@ public class Calibration extends Model {
                     }
                     calibration.sensor_age_at_time_of_estimation = calibration.timestamp - sensor.started_at;
                     calibration.uuid = UUID.randomUUID().toString();
+
+                    if (!SensorSanity.isRawValueSane(calibration.estimate_raw_at_time_of_calibration, true)) {
+                        JoH.static_toast_long("Estimated raw value out of range - cannot calibrate");
+                        return null;
+                    }
+
                     calibration.save();
 
                     if (!note_only) {
@@ -574,8 +592,10 @@ public class Calibration extends Model {
                         calculate_w_l_s(prefs.getBoolean("infrequent_calibration", false));
                         CalibrationSendQueue.addToQueue(calibration, context);
                         BgReading.pushBgReadingSyncToWatch(bgReading, false);
-                        adjustRecentBgReadings(adjustPast ? 30 : 2);
-                        context.startService(new Intent(context, Notifications.class));
+                        if (!Ob1G5CollectionService.usingNativeMode()) {
+                            adjustRecentBgReadings(adjustPast ? 30 : 2);
+                        }
+                        Notifications.start();
                         Calibration.requestCalibrationIfRangeTooNarrow();
                         newFingerStickData();
                     } else {
@@ -809,10 +829,6 @@ public class Calibration extends Model {
         return Math.max((((((slope_confidence + sensor_confidence) * (time_percentage))) / 2) * 100), 1);
     }
 
-    // this method no longer used
-    public static void adjustRecentBgReadings() {// This just adjust the last 30 bg readings transition from one calibration point to the next
-        adjustRecentBgReadings(30);
-    }
 
     public static void adjustRecentBgReadings(int adjustCount) {
         //TODO: add some handling around calibration overrides as they come out looking a bit funky

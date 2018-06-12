@@ -18,16 +18,25 @@ import static com.eveningoutpost.dexdrip.xdrip.getAppContext;
 
 public class BroadcastGlucose {
 
+    private static final String TAG = "BroadcastGlucose";
 
     public static void sendLocalBroadcast(final BgReading bgReading) {
 
-        // TODO extract to separate class/method and put in to new data observer
+        if (bgReading.calculated_value == 0) {
+            UserError.Log.wtf(TAG, "Refusing to broadcast reading with calculated value of 0");
+            return;
+        }
+
+
         BestGlucose.DisplayGlucose dg = null;
         if (Pref.getBoolean("broadcast_data_through_intents", false)) {
             UserError.Log.i("SENSOR QUEUE:", "Broadcast data");
             final Bundle bundle = new Bundle();
 
             bundle.putString(Intents.XDRIP_DATA_SOURCE_DESCRIPTION, DexCollectionType.getBestCollectorHardwareName());
+            if (bgReading.source_info != null) {
+                bundle.putString(Intents.XDRIP_DATA_SOURCE_INFO, bgReading.source_info);
+            }
 
             // TODO this cannot handle out of sequence data due to displayGlucose taking most recent?!
             // TODO can we do something with munging for quick data and getDisplayGlucose for non quick?
@@ -36,7 +45,10 @@ public class BroadcastGlucose {
             final int noiseBlockLevel = Noise.getNoiseBlockLevel();
             bundle.putInt(Intents.EXTRA_NOISE_BLOCK_LEVEL, noiseBlockLevel);
             bundle.putString(Intents.EXTRA_NS_NOISE_LEVEL, bgReading.noise);
-            if ((Pref.getBoolean("broadcast_data_use_best_glucose", false)) && ((dg = BestGlucose.getDisplayGlucose()) != null)) {
+            if ((Pref.getBoolean("broadcast_data_use_best_glucose", false))
+                    && !bgReading.isBackfilled()
+                    && ((dg = BestGlucose.getDisplayGlucose()) != null)) {
+
                 bundle.putDouble(Intents.EXTRA_NOISE, dg.noise);
                 bundle.putInt(Intents.EXTRA_NOISE_WARNING, dg.warning);
 
@@ -110,6 +122,12 @@ public class BroadcastGlucose {
             }
             bundle.putDouble(Intents.EXTRA_RAW, raw);
             final Intent intent = new Intent(Intents.ACTION_NEW_BG_ESTIMATE);
+
+            final String destination = Pref.getString("local_broadcast_specific_package_destination", "").trim();
+            if (destination.length() > 3) {
+                intent.setPackage(destination);
+            }
+
             intent.putExtras(bundle);
             intent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
 

@@ -103,5 +103,6 @@
 -dontnote **rx.Observable.**
 
 -keepclassmembers class com.eveningoutpost.dexdrip.** {
-    public static boolean isRunning ();
+   public static boolean isRunning();
+   public static boolean isCollecting();
 }

@@ -70,6 +70,12 @@
                 android:key="disable_wearG5_on_missedreadings_level"
                 android:summary=""
                 android:title="@string/pref_disable_wearG5_on_missedreadings_level" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:dependency="force_wearG5"
+                android:key="only_ever_use_wear_collector"
+                android:summary="If you plan to only use a Wear collector and never your phone."
+                android:title="Only use Wear" />
             <EditTextPreference
                 android:defaultValue=""
                 android:dependency="force_wearG5"
@@ -269,6 +275,22 @@
                 android:switchTextOff="@string/short_off_text_for_switches"
                 android:switchTextOn="@string/short_on_text_for_switches"
                 android:title="@string/speak_readings" />
+            <SeekBarPreference
+                android:key="speak_readings_change_threshold"
+                android:dependency="bg_to_speech"
+                android:title="When changes by"
+                android:summary=""
+                android:max="300"
+                android:min="0"
+                android:defaultValue="0" />
+            <SeekBarPreference
+                android:key="speak_readings_change_time"
+                android:dependency="bg_to_speech"
+                android:title="Or per number of minutes"
+                android:summary=""
+                android:max="300"
+                android:min="0"
+                android:defaultValue="0" />
             <SwitchPreference
                 android:defaultValue="false"
                 android:key="speak_alerts"
@@ -347,6 +369,11 @@
                 android:key="broadcast_data_through_intents_without_permission"
                 android:summary="@string/send_broadcasts_old_permission_model"
                 android:title="@string/compatible_broadcast" />
+            <EditTextPreference
+                android:dependency="broadcast_data_through_intents"
+                android:key="local_broadcast_specific_package_destination"
+                android:title="Identify receiver"
+                android:summary="Only send to named package"/>
             <SwitchPreference
                 android:defaultValue="true"
                 android:key="accept_nsclient_treatments"
@@ -368,6 +395,18 @@
                 android:switchTextOff="@string/short_off_text_for_switches"
                 android:switchTextOn="@string/short_on_text_for_switches"
                 android:title="xDrip Web Service" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:dependency="xdrip_webservice"
+                android:key="xdrip_webservice_open"
+                android:summary="Accept connections from any network instead of just internally within this device. There are security implications to enabling this! Shared Secret will be required if set."
+                android:title="Open Web Service" />
+            <EditTextPreference
+                android:defaultValue=""
+                android:dependency="xdrip_webservice"
+                android:key="xdrip_webservice_secret"
+                android:summary="Shared Secret for open web service (should match your Nightcout API secret)"
+                android:title="xDrip Web Service Secret" />
         </PreferenceScreen>
         <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
             android:key="xdrip_less_common_settings"
@@ -609,7 +648,7 @@
                     android:summary="@string/reset_bluetooth_g5"
                     android:title="@string/g5_bluetooth_watchdog" />
                 <CheckBoxPreference
-                    android:defaultValue="true"
+                    android:defaultValue="false"
                     android:key="close_gatt_on_ble_disconnect"
                     android:summary="@string/close_gatt"
                     android:title="@string/close_gatt_on_ble_disconnect" />
@@ -650,6 +689,39 @@
                     android:summary="Only suitable for phones which support automatic pairing"
                     android:title="Allow blucon unbonding" />
             </PreferenceScreen>
+        <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+            android:key="xdrip_blueReader_advanced_settings"
+            android:summary="@string/advanced_bluereader_settings_summary"
+            android:title="@string/advanced_bluereader_settings">
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="blueReader_restdays_on_home"
+                android:summary="@string/bluereader_restdays_onhome_sum"
+                android:title="@string/bluereader_restdays_onhome" />
+            <SwitchPreference
+                android:defaultValue="false"
+                android:key="blueReader_turn_off"
+                android:summary="@string/bluereader_turnoff_sum"
+                android:title="@string/bluereader_turnoff" />
+            <SeekBarPreference
+                android:key="blueReader_turn_off_value"
+                android:dependency="blueReader_turn_off"
+                android:title="@string/blueReader_turnoffvalue"
+                android:summary="@string/blueReader_turnoffvalue_sum"
+                android:max="20"
+                android:min="1"
+                android:defaultValue="5" />
+            <SwitchPreference
+                android:defaultValue="false"
+                android:key="blueReader_suppressuglystatemsg"
+                android:summary="Suppress the ugly state message if Problem appears"
+                android:title="supress ugly state message" />
+            <SwitchPreference
+                android:defaultValue="false"
+                android:key="blueReader_writebatterylog"
+                android:summary="write the Battery-Information for additional analytic in a file. Please only use this, if you will be asked by a developer!"
+                android:title="Batterylog" />
+        </PreferenceScreen>
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:key="aggressive_service_restart"
@@ -714,6 +786,13 @@
                 android:key="save_db_ondemand"
                 android:summary="@string/allow_daily_db_save"
                 android:title="@string/daily_save_db" />
+            <EditTextPreference
+                android:key="retention_days_bg_reading"
+                android:title="Glucose Retention"
+                android:summary="Erase data older than this many days. 0 = don't erase anything"
+                android:max="366"
+                android:numeric="integer"
+                android:defaultValue="0" />
             <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
                 android:key="xdrip_other_misc_extra_screen"
                 android:summary=""
@@ -740,22 +819,28 @@
                     android:key="predictive_bg"
                     android:summary="@string/predictive_readings_old"
                     android:title="@string/display_predictive_values" />
-                
+
                 <CheckBoxPreference
                     android:defaultValue="false"
-                    android:dependency="engineering_mode"
                     android:key="external_blukon_algorithm"
                     android:summary="@string/use_external_blukon_algorithm_summary"
                     android:title="@string/use_external_blukon_algorithm" />
                 
-	    <CheckBoxPreference
+        	    <CheckBoxPreference
                     android:enabled="false"
                     android:defaultValue="false"
                     android:dependency="external_blukon_algorithm"
                     android:key="calibrate_external_libre_algorithm"
                     android:summary="@string/calibrate_external_libre_algorithm_summary"
                     android:title="@string/calibrate_external_libre_algorithm_title" />
-                
+
+                <CheckBoxPreference
+                    android:enabled="true"
+                    android:defaultValue="false"
+                    android:key="retrieve_blukon_history"
+                    android:summary="@string/retrieve_blukon_history_summary"
+                    android:title="@string/retrieve_blukon_history_title" />
+
             </PreferenceScreen>
             <PreferenceCategory
                 android:key="community_help_category"

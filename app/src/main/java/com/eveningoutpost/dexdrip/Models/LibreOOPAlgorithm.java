@@ -3,26 +3,18 @@ package com.eveningoutpost.dexdrip.Models;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.eveningoutpost.dexdrip.LibreAlarmReceiver;
-import com.eveningoutpost.dexdrip.NSEmulatorReceiver;
-import com.eveningoutpost.dexdrip.xdrip;
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
+import com.eveningoutpost.dexdrip.LibreAlarmReceiver;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
-import com.eveningoutpost.dexdrip.Services.TransmitterRawData;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Intents;
-import com.eveningoutpost.dexdrip.UtilityModels.MockDataSource;
+import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.xdrip;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import static com.eveningoutpost.dexdrip.Models.BgReading.bgReadingInsertFromJson;
-
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import org.json.JSONException;
 
 public class LibreOOPAlgorithm {
     private static final String TAG = "LibreOOPAlgorithm";
@@ -46,6 +38,8 @@ public class LibreOOPAlgorithm {
         Bundle bundle = new Bundle();
         bundle.putByteArray(Intents.LIBRE_DATA_BUFFER, fullData);
         bundle.putLong(Intents.LIBRE_DATA_TIMESTAMP, timestamp);
+        bundle.putString(Intents.LIBRE_SN, PersistentStore.getString("LibreSN"));
+        
         intent.putExtras(bundle);
         intent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
         xdrip.getAppContext().sendBroadcast(intent);

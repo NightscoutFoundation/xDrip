@@ -33,18 +33,19 @@ public class HexDump {
     public static String dumpHexString(byte[] array, int offset, int length) {
         if (array == null) return "<null>";
         StringBuilder result = new StringBuilder();
+        final int LINESIZE = 16;
 
-        byte[] line = new byte[16];
+        byte[] line = new byte[LINESIZE];
         int lineIndex = 0;
 
         result.append("\n0x");
         result.append(toHexString(offset));
 
         for (int i = offset; i < offset + length; i++) {
-            if (lineIndex == 16) {
+            if (lineIndex == LINESIZE) {
                 result.append(" ");
 
-                for (int j = 0; j < 16; j++) {
+                for (int j = 0; j < LINESIZE; j++) {
                     if (line[j] > ' ' && line[j] < '~') {
                         result.append(new String(line, j, 1));
                     } else {
@@ -65,8 +66,8 @@ public class HexDump {
             line[lineIndex++] = b;
         }
 
-        if (lineIndex != 16) {
-            int count = (16 - lineIndex) * 3;
+        if (lineIndex != LINESIZE) {
+            int count = (LINESIZE - lineIndex) * 3;
             count++;
             for (int i = 0; i < count; i++) {
                 result.append(" ");

@@ -20,6 +20,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 //KS import android.graphics.Canvas;
 //KS import android.graphics.Color;
@@ -53,6 +54,7 @@ import android.view.Surface;
 import android.view.View;
 import android.widget.Toast;
 
+import com.activeandroid.ActiveAndroid;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
@@ -63,6 +65,7 @@ import com.eveningoutpost.dexdrip.xdrip;
 import com.google.common.primitives.Bytes;
 import com.google.common.primitives.UnsignedInts;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.ByteArrayInputStream;
@@ -561,6 +564,18 @@ public class JoH {
         }.getType());
     }
 
+    private static Gson gson_instance;
+    public static Gson defaultGsonInstance() {
+        if (gson_instance == null) {
+            gson_instance = new GsonBuilder()
+                    .excludeFieldsWithoutExposeAnnotation()
+                    //.registerTypeAdapter(Date.class, new DateTypeAdapter())
+                    // .serializeSpecialFloatingPointValues()
+                    .create();
+        }
+        return gson_instance;
+    }
+
     public static String hourMinuteString() {
         // Date date = new Date();
         // SimpleDateFormat sd = new SimpleDateFormat("HH:mm");
@@ -610,6 +625,29 @@ public class JoH {
         }
         if (t != 1) unit = unit + "s";
         return qs((double) t, 0) + " " + unit;
+    }
+
+    public static String niceTimeScalar(double t, int digits) {
+        String unit = "second";
+        t = t / 1000;
+        if (t > 59) {
+            unit = "minute";
+            t = t / 60;
+            if (t > 59) {
+                unit = "hour";
+                t = t / 60;
+                if (t > 24) {
+                    unit = "day";
+                    t = t / 24;
+                    if (t > 28) {
+                        unit = "week";
+                        t = t / 7;
+                    }
+                }
+            }
+        }
+        if (t != 1) unit = unit + "s";
+        return qs( t, digits) + " " + unit;
     }
 
     public static String niceTimeScalarNatural(long t) {
@@ -997,6 +1035,9 @@ public class JoH {
         }
     }
 
+    public static void startService(Class c) {
+        xdrip.getAppContext().startService(new Intent(xdrip.getAppContext(), c));
+    }
 
     public static void startActivity(Class c) {
         xdrip.getAppContext().startActivity(getStartActivityIntent(c));
@@ -1150,6 +1191,12 @@ public class JoH {
                 else
                     activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
+    }
+
+    public static boolean areWeRunningOnAndroidWear() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH
+                && (xdrip.getAppContext().getResources().getConfiguration().uiMode
+                & Configuration.UI_MODE_TYPE_MASK) == Configuration.UI_MODE_TYPE_WATCH;
     }
 
     public static boolean isAirplaneModeEnabled(Context context) {
@@ -1524,6 +1571,14 @@ public class JoH {
         } catch (NumberFormatException e) {
             Log.e(TAG, "Error parsing integer number = " + number + " radix = " + radix);
             return defaultVal;
+        }
+    }
+
+    public static void clearCache() {
+        try {
+            ActiveAndroid.clearCache();
+        } catch (Exception e) {
+            Log.e(TAG, "Error clearing active android cache: " + e);
         }
     }
 }

@@ -9,6 +9,8 @@
         <item>G4 Share Receiver</item>
         <item>G5 Transmitter</item>
         <item>Libre Bluetooth</item>
+        <item>Libre Bluetooth + wifi</item>
+        <item>Libre wifi</item>
         <item>xDrip+ Sync Follower</item>
         <item>LibreAlarm</item>
         <item>640G / EverSense</item>
@@ -24,6 +26,8 @@
         <item>DexcomShare</item>
         <item>DexcomG5</item>
         <item>LimiTTer</item>
+        <item>LimiTTerWifi</item>
+        <item>LibreWifi</item>
         <item>Follower</item>
         <item>LibreAlarm</item>
         <item>NSEmulator</item>
@@ -163,5 +167,18 @@
         <item>10</item>
     </string-array>
 
+
+    <string-array name="TrendArrows">
+        <item>Jam Expressive Arrow 1</item>
+        <item>Jam Simple White Arrow 1</item>
+        <item>Jam Simple Color Arrow 1</item>
+        <item>Candy Cane</item>
+    </string-array>
+    <string-array name="TrendArrowValues">
+        <item>JamTrendArrowImpl</item>
+        <item>JamTrendArrow2Impl</item>
+        <item>JamTrendArrow2bImpl</item>
+        <item>JamTrendArrow3Impl</item>
+    </string-array>
 
 </resources>

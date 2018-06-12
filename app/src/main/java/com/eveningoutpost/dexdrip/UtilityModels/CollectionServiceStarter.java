@@ -48,6 +48,16 @@ public class CollectionServiceStarter {
         return false;
     }
 
+    public static boolean isWifiandBTLibre(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String collection_method = prefs.getString("dex_collection_method", "BluetoothWixel");
+        if (collection_method.compareTo("LimiTTerWifi") == 0) {
+            return true;
+        }
+        return false;
+    }
+
+    
     // are we in the specifc mode supporting wifi and dexbridge at the same time
     public static boolean isWifiandDexBridge()
     {
@@ -60,13 +70,13 @@ public class CollectionServiceStarter {
         return isWifiandDexBridge() || isDexbridgeWixel(xdrip.getAppContext());
     }
 
-    public static boolean isBTWixel(Context context) {
+    public static boolean isBTWixelOrLimiTTer(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String collection_method = prefs.getString("dex_collection_method", "BluetoothWixel");
-        return isBTWixel(collection_method);
+        return isBTWixelOrLimiTTer(collection_method);
     }
 
-    public static boolean isBTWixel(String collection_method) {
+    public static boolean isBTWixelOrLimiTTer(String collection_method) {
         return collection_method.equals("BluetoothWixel")
                 || collection_method.equals("LimiTTer");
     }
@@ -119,6 +129,15 @@ public class CollectionServiceStarter {
         return false;
     }
 
+    public static boolean isWifiLibre(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String collection_method = prefs.getString("dex_collection_method", "BluetoothWixel");
+        if (collection_method.compareTo("LibreWifi") == 0) {
+            return true;
+        }
+        return false;
+    }
+
         /*
      * LimiTTer emulates a BT-Wixel and works with the BT-Wixel service.
      * It would work without any changes but in some cases knowing that the data does not
@@ -128,10 +147,20 @@ public class CollectionServiceStarter {
     public static boolean isLimitter() {
         return Pref.getStringDefaultBlank("dex_collection_method").equals("LimiTTer");
     }
+    
+    public static boolean isWifiandBTLibre() {
+        return Pref.getStringDefaultBlank("dex_collection_method").equals("LimiTTerWifi");
+    }
+    
 
     public static boolean isWifiWixel(String collection_method) {
         return collection_method.equals("WifiWixel") || DexCollectionType.getDexCollectionType() == DexCollectionType.Mock;
     }
+    
+    public static boolean isWifiLibre(String collection_method) {
+        return collection_method.equals("LibreWifi") || DexCollectionType.getDexCollectionType() == DexCollectionType.Mock;
+    }
+    
 
     public static boolean isFollower(String collection_method) {
         return collection_method.equals("Follower");
@@ -147,7 +176,7 @@ public class CollectionServiceStarter {
         xdrip.checkAppContext(context);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.mContext);
 
-        if (isBTWixel(collection_method) || isDexbridgeWixel(collection_method)) {
+        if (isBTWixelOrLimiTTer(collection_method) || isDexbridgeWixel(collection_method)) {
             Log.d("DexDrip", "Starting bt wixel collector");
             stopWifWixelThread();
             stopBtShareService();
@@ -165,7 +194,7 @@ public class CollectionServiceStarter {
             else {
                 startBtWixelService();
             }
-        } else if (isWifiWixel(collection_method)) {
+        } else if (isWifiWixel(collection_method) || isWifiLibre(collection_method)) {
             Log.d("DexDrip", "Starting wifi wixel collector");
             stopBtWixelService();
             stopFollowerThread();
@@ -212,7 +241,7 @@ public class CollectionServiceStarter {
                 startBtG5Service();
             }
 
-        } else if (isWifiandBTWixel(context) || isWifiandDexBridge()) {
+        } else if (isWifiandBTWixel(context) || isWifiandDexBridge() || isWifiandBTLibre(context)) {
             Log.d("DexDrip", "Starting wifi and bt wixel collector");
             stopBtWixelService();
             stopFollowerThread();
@@ -419,6 +448,7 @@ public class CollectionServiceStarter {
         this.mContext.stopService(new Intent(this.mContext, G5CollectionService.class));
         Ob1G5CollectionService.keep_running = false; // ensure zombie stays down
         this.mContext.stopService(new Intent(this.mContext, Ob1G5CollectionService.class));
+        Ob1G5CollectionService.resetSomeInternalState();
     }
 
 }

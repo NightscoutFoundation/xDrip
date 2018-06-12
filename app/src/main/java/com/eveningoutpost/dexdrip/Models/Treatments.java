@@ -403,7 +403,7 @@ public class Treatments extends Model {
 
     public static synchronized boolean pushTreatmentFromJson(String json, boolean from_interactive) {
         Log.d(TAG, "converting treatment from json: " + json);
-        Treatments mytreatment = fromJSON(json);
+        final Treatments mytreatment = fromJSON(json);
         if (mytreatment != null) {
             if ((mytreatment.carbs == 0) && (mytreatment.insulin == 0)
                     && (mytreatment.notes != null) && (mytreatment.notes.equals("AndroidAPS started"))) {
@@ -425,12 +425,26 @@ public class Treatments extends Model {
                 }
                 if (mytreatment.uuid == null) mytreatment.uuid = UUID.randomUUID().toString();
             }
-            Treatments dupe_treatment = byTimestamp(mytreatment.timestamp);
+            // anything received +- 1500 ms is going to be treated as a duplicate
+            final Treatments dupe_treatment = byTimestamp(mytreatment.timestamp);
             if (dupe_treatment != null) {
                 Log.i(TAG, "Duplicate treatment for: " + mytreatment.timestamp);
 
+                if ((dupe_treatment.insulin == 0) && (mytreatment.insulin > 0)) {
+                    dupe_treatment.insulin = mytreatment.insulin;
+                    dupe_treatment.save();
+                    Home.staticRefreshBGChartsOnIdle();
+                }
+
+                if ((dupe_treatment.carbs == 0) && (mytreatment.carbs > 0)) {
+                    dupe_treatment.carbs = mytreatment.carbs;
+                    dupe_treatment.save();
+                    Home.staticRefreshBGChartsOnIdle();
+                }
+
                 if ((dupe_treatment.uuid !=null) && (mytreatment.uuid !=null) && (dupe_treatment.uuid.equals(mytreatment.uuid)) && (mytreatment.notes != null))
                 {
+
                     if ((dupe_treatment.notes == null) || (dupe_treatment.notes.length() < mytreatment.notes.length()))
                     {
                         dupe_treatment.notes = mytreatment.notes;
@@ -439,7 +453,7 @@ public class Treatments extends Model {
                         Log.d(TAG,"Saved updated treatement notes");
                         // should not end up needing to append notes and be from_interactive via undo as these
                         // would be mutually exclusive operations so we don't need to handle that here.
-                        Home.staticRefreshBGCharts();
+                        Home.staticRefreshBGChartsOnIdle();
                     }
                 }
 

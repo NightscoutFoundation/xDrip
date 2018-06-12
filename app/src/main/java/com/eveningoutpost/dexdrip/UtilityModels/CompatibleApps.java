@@ -1,12 +1,14 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AlertDialog;
 
@@ -22,6 +24,9 @@ import static com.eveningoutpost.dexdrip.UtilityModels.Constants.COMPATIBLE_BASE
 
 /**
  * Created by jamorham on 01/11/2017.
+ *
+ * Prompt helpfully about other compatible apps within the device ecosystem.
+ *
  */
 
 public class CompatibleApps extends BroadcastReceiver {
@@ -52,11 +57,28 @@ public class CompatibleApps extends BroadcastReceiver {
             }
         }
 
+        package_name = "com.google.android.wearable.app";
+        if (InstalledApps.checkPackageExists(context, package_name)) {
+            if (!Pref.getBooleanDefaultFalse("wear_sync")) {
+                if (JoH.pratelimit(package_name + NOTIFY_MARKER, RENOTIFY_TIME)) {
+                    id = notify(gs(R.string.androidwear), gs(R.string.enable_wear_os_sync), id, Feature.ENABLE_WEAR_OS_SYNC);
+                }
+            }
+        }
+
         package_name = "info.nightscout.androidaps";
         if (InstalledApps.checkPackageExists(context, package_name)) {
             if (!Pref.getBooleanDefaultFalse("broadcast_data_through_intents")) {
                 if (JoH.pratelimit(package_name + NOTIFY_MARKER, RENOTIFY_TIME)) {
                     id = notify(gs(R.string.androidaps), gs(R.string.enable_local_broadcast), id, Feature.ENABLE_ANDROIDAPS_FEATURE1);
+                }
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                if (Pref.getString("local_broadcast_specific_package_destination", "").length() == 0) {
+                    if (JoH.pratelimit(package_name + NOTIFY_MARKER + "2", RENOTIFY_TIME)) {
+                        id = notify(gs(R.string.androidaps), gs(R.string.broadcast_only_to), id, Feature.ENABLE_ANDROIDAPS_FEATURE2);
+                    }
                 }
             }
         }
@@ -84,9 +106,21 @@ public class CompatibleApps extends BroadcastReceiver {
             }
         }
 
+        checkMemoryConstraints();
+
+        // TODO add pebble
 
         // TODO add more here
 
+    }
+
+
+    private static void checkMemoryConstraints() {
+        final ActivityManager actManager = (ActivityManager) xdrip.getAppContext().getSystemService(Context.ACTIVITY_SERVICE);
+        final ActivityManager.MemoryInfo memInfo = new ActivityManager.MemoryInfo();
+        actManager.getMemoryInfo(memInfo);
+        final long totalMemory = memInfo.totalMem;
+        // TODO react to total memory
     }
 
     private static String gs(int id) {
@@ -212,16 +246,19 @@ public class CompatibleApps extends BroadcastReceiver {
 
                     case ENABLE_GARMIN_FEATURES:
                     case ENABLE_FITBIT_FEATURES:
-                        Pref.setBoolean("xdrip_webservice", true);
+                        enableBoolean("xdrip_webservice", "xDrip Web Service Enabled!", intent);
                         XdripWebService.immortality();
-                        cancelSourceNotification(intent);
-                        JoH.static_toast_long("xDrip Web Service Enabled!");
                         break;
 
                     case ENABLE_ANDROIDAPS_FEATURE1:
-                        Pref.setBoolean("broadcast_data_through_intents", true);
+                        enableBoolean("broadcast_data_through_intents", "Local Broadcast Enabled!", intent);
+                        break;
+
+                    case ENABLE_ANDROIDAPS_FEATURE2:
+                        final String msg = "Enabling broadcast only to info.nightscout.androidaps !";
+                        Pref.setString("local_broadcast_specific_package_destination", "info.nightscout.androidaps");
+                        JoH.static_toast_long(msg);
                         cancelSourceNotification(intent);
-                        JoH.static_toast_long("Local Broadcast Enabled!");
                         break;
 
                     case ENABLE_LIBRE_ALARM:
@@ -230,9 +267,11 @@ public class CompatibleApps extends BroadcastReceiver {
                         break;
 
                     case ENABLE_OOP:
-                        Pref.setBoolean("external_blukon_algorithm", true);
-                        JoH.static_toast_long("Enabled External Calibration App!");
-                        cancelSourceNotification(intent);
+                        enableBoolean("external_blukon_algorithm", "Enabled External Calibration App!", intent);
+                        break;
+
+                    case ENABLE_WEAR_OS_SYNC:
+                        enableBoolean("wear_sync", "Enabled Wear OS Sync!", intent);
                         break;
 
                     default:
@@ -246,15 +285,23 @@ public class CompatibleApps extends BroadcastReceiver {
         }
     }
 
+    private void enableBoolean(String id, String msg, Intent intent) {
+        Pref.setBoolean(id, true);
+        JoH.static_toast_long(msg);
+        cancelSourceNotification(intent);
+    }
+
     private enum Feature {
         UNKNOWN,
         CHOICE,
         CANCEL,
         ENABLE_GARMIN_FEATURES,
         ENABLE_ANDROIDAPS_FEATURE1,
+        ENABLE_ANDROIDAPS_FEATURE2,
         ENABLE_FITBIT_FEATURES,
         ENABLE_LIBRE_ALARM,
         ENABLE_OOP,
+        ENABLE_WEAR_OS_SYNC,
         FEATURE_X
     }
 

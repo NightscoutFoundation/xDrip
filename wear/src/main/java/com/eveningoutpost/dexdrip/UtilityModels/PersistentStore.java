@@ -10,31 +10,34 @@ import com.google.common.primitives.Bytes;
 
 /**
  * Created by jamorham on 23/09/2016.
- *
+ * <p>
  * This is for internal data which is never backed up,
  * separate file means it doesn't clutter prefs
  * we can afford to lose it, it is for internal states
  * and is alternative to static variables which get
  * flushed when classes are destroyed by garbage collection
- *
+ * <p>
  * It is suitable for cache type variables where losing
  * state will cause problems. Obviously it will be slower than
  * pure in-memory state variables.
- *
  */
 
 
 public class PersistentStore {
 
+    // TODO optimize init_prefs
+
     private static final String DATA_STORE_INTERNAL = "persist_internal_store";
     private static SharedPreferences prefs;
     private static final boolean d = false; // debug flag
 
-    public static void init_prefs() {
+    static {
+        init_prefs();
+    }
+
+    private static void init_prefs() {
         if (prefs == null) prefs = xdrip.getAppContext()
                 .getSharedPreferences(DATA_STORE_INTERNAL, Context.MODE_PRIVATE);
-
-
     }
 
     public static String getString(String name) {
@@ -74,14 +77,37 @@ public class PersistentStore {
         return prefs.getLong(name, 0);
     }
 
+    public static float getFloat(String name) {
+        init_prefs();
+        return prefs.getFloat(name, 0);
+    }
+
     public static void setLong(String name, long value) {
         init_prefs();
         prefs.edit().putLong(name, value).apply();
     }
 
+    public static void setFloat(String name, float value) {
+        init_prefs();
+        prefs.edit().putFloat(name, value).apply();
+    }
+
+    public static void setDouble(String name, double value) {
+        setLong(name, Double.doubleToRawLongBits(value));
+    }
+
+    public static double getDouble(String name) {
+        return Double.longBitsToDouble(getLong(name));
+    }
+
     public static boolean getBoolean(String name) {
         init_prefs();
         return prefs.getBoolean(name, false);
+    }
+
+    public static boolean getBoolean(String name, boolean value) {
+        init_prefs();
+        return prefs.getBoolean(name, value);
     }
 
     public static void setBoolean(String name, boolean value) {
@@ -96,7 +122,7 @@ public class PersistentStore {
     }
 
     public static void setLongZeroIfSet(String name) {
-        if (getLong(name)>0) setLong(name,0);
+        if (getLong(name) > 0) setLong(name, 0);
     }
 
     @SuppressLint("ApplySharedPref")
