@@ -11,6 +11,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleUtil;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleWatchSync;
 import com.eveningoutpost.dexdrip.utils.BgToSpeech;
+import com.eveningoutpost.dexdrip.wearintegration.Amazfitservice;
 import com.eveningoutpost.dexdrip.wearintegration.ExternalStatusService;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 
@@ -34,6 +35,7 @@ public class NewDataObserver {
 
         sendToPebble();
         sendToWear();
+        sendToAmazfit();
         Notifications.start();
         uploadToShare(bgReading, is_follower);
         textToSpeech(bgReading, null);
@@ -52,6 +54,7 @@ public class NewDataObserver {
             }
             // send to pebble
             sendToPebble();
+            sendToAmazfit();
             // TODO should we also be syncing wear here?
         }
 
@@ -61,6 +64,12 @@ public class NewDataObserver {
     private static void sendToPebble() {
         if (Pref.getBooleanDefaultFalse("broadcast_to_pebble") && (PebbleUtil.getCurrentPebbleSyncType() != 1)) {
             JoH.startService(PebbleWatchSync.class);
+        }
+    }
+    // send data to Amazfit if enabled
+    private static void sendToAmazfit() {
+        if (Pref.getBooleanDefaultFalse("pref_amazfit_enable_key")){
+            JoH.startService(Amazfitservice.class);
         }
     }
 

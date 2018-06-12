@@ -65,6 +65,7 @@ import com.eveningoutpost.dexdrip.WidgetUpdateService;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileEditor;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
+import com.eveningoutpost.dexdrip.wearintegration.Amazfitservice;
 import com.eveningoutpost.dexdrip.webservices.XdripWebService;
 import com.eveningoutpost.dexdrip.xDripWidget;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -898,6 +899,25 @@ public class Preferences extends PreferenceActivity {
             final Preference enableBF = findPreference("enable_bugfender");
             final PreferenceCategory displayCategory = (PreferenceCategory) findPreference("xdrip_plus_display_category");
 
+
+            final Preference enableAmazfit = findPreference("pref_amazfit_enable_key");
+
+
+            enableAmazfit.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+               @Override
+               public boolean onPreferenceChange(Preference preference, Object newValue) {
+                  final Context context = preference.getContext();
+                  Boolean enabled = (boolean) newValue;
+                   if (enabled==true) {
+                       context.startService(new Intent(context, Amazfitservice.class));
+
+                   }else {
+                       context.stopService(new Intent(context, Amazfitservice.class));
+                   }
+
+                return true;
+                }
+            });
 
             // TODO build list of preferences to cause wear refresh from list
             findPreference("wear_sync").setOnPreferenceChangeListener((preference, newValue) -> {
@@ -1903,7 +1923,6 @@ public class Preferences extends PreferenceActivity {
         }
 
         private static int pebbleType = 1;
-
         private void enablePebble(int newValueInt, boolean enabled, Context context) {
             Log.d(TAG,"enablePebble called with: "+newValueInt+" "+enabled);
             if (pebbleType == 1) {
