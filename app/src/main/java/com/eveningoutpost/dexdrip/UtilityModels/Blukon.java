@@ -614,7 +614,7 @@ private static final int POSITION_OF_SENSOR_STATUS_BYTE = 17;
         }
     }
 
-    private static boolean isSensorReady(byte sensorStatusByte) {
+    public static boolean isSensorReady(byte sensorStatusByte) {
 
         String sensorStatusString = "";
         boolean ret = false;
