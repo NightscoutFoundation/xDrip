@@ -1417,12 +1417,16 @@ public class BluetoothGlucoseMeter extends Service {
                             JoH.runOnUiThreadDelayed(new Runnable() {
                                 @Override
                                 public void run() {
-                                    if (!mBluetoothGatt.writeCharacteristic(characteristic)) {
-                                        Log.d(TAG, "Failed in write characteristic");
-                                        waitFor(150);
+                                    try {
                                         if (!mBluetoothGatt.writeCharacteristic(characteristic)) {
-                                            Log.e(TAG, "Failed second time in write charactersitic");
+                                            Log.d(TAG, "Failed in write characteristic");
+                                            waitFor(150);
+                                            if (!mBluetoothGatt.writeCharacteristic(characteristic)) {
+                                                Log.e(TAG, "Failed second time in write charactersitic");
+                                            }
                                         }
+                                    } catch (NullPointerException e) {
+                                        UserError.Log.e(TAG, "Got null pointer exception writing characteristic - probably temporary failure");
                                     }
                                 }
                             }, 0);
