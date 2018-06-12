@@ -53,8 +53,6 @@ public class Blukon {
         INITIAL
     }
 
-    private static final boolean testWithDeadSensor = false; // never in production
-
     private static boolean m_getNowGlucoseDataIndexCommand = false;
     private static final int GET_SENSOR_AGE_DELAY = 3 * 3600;
     private static final String BLUKON_GETSENSORAGE_TIMER = "blukon-getSensorAge-timer";
@@ -268,7 +266,7 @@ public class Blukon {
                 decodeSerialNumber(buffer);
             }
 
-            if (isSensorReady(buffer[17])) {
+            if (LibreUtils.isSensorReady(buffer[17])) {
                 currentCommand = "810a00";
                 Log.i(TAG, "Send ACK");
             } else {
@@ -511,51 +509,6 @@ public class Blukon {
         }
     }
 
-    private static boolean isSensorReady(byte sensorStatusByte) {
-
-        String sensorStatusString = "";
-        boolean ret = false;
-
-        switch (sensorStatusByte) {
-            case 0x01:
-                sensorStatusString = "not yet started";
-                break;
-            case 0x02:
-                sensorStatusString = "starting";
-                ret = true;
-                break;
-            case 0x03:          // status for 14 days and 12 h of normal operation, abbott reader quits after 14 days
-                sensorStatusString = "ready";
-                ret = true;
-                break;
-            case 0x04:          // status of the following 12 h, sensor delivers last BG reading constantly
-                sensorStatusString = "expired";
-                // @keencave: to use dead sensor for test
-//                ret = true;
-                break;
-            case 0x05:          // sensor stops operation after 15d after start
-                sensorStatusString = "shutdown";
-                // @keencave: to use dead sensors for test
-//                ret = true;
-                break;
-            case 0x06:
-                sensorStatusString = "in failure";
-                break;
-            default:
-                sensorStatusString = "in an unknown state";
-                break;
-        }
-
-        Log.i(TAG, "Sensor status is: " + sensorStatusString);
-
-        if (testWithDeadSensor) return true;
-
-        if (!ret) {
-            Home.toaststaticnext("Can't use this sensor as it is " + sensorStatusString);
-        }
-
-        return ret;
-    }
     // This function assumes that the UID is starting at place 3, and is 8 bytes long
     public static void decodeSerialNumber(byte[] input) {
 
