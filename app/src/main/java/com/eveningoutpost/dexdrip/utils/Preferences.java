@@ -67,7 +67,6 @@ import com.eveningoutpost.dexdrip.profileeditor.ProfileEditor;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.eveningoutpost.dexdrip.wearintegration.Amazfitservice;
 import com.eveningoutpost.dexdrip.webservices.XdripWebService;
-
 import com.eveningoutpost.dexdrip.xDripWidget;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.zxing.integration.android.IntentIntegrator;
@@ -856,11 +855,6 @@ public class Preferences extends PreferenceActivity {
             final Preference pebbleSync2 = findPreference("broadcast_to_pebble_type");
             final Preference pebbleSync1 = findPreference("broadcast_to_pebble");
 
-
-
-
-
-
             // Pebble Trend - START
             final Preference watchIntegration = findPreference("watch_integration");
             final PreferenceCategory watchCategory = (PreferenceCategory) findPreference("pebble_integration");
@@ -925,11 +919,6 @@ public class Preferences extends PreferenceActivity {
                 }
             });
 
-
-
-
-
-
             // TODO build list of preferences to cause wear refresh from list
             findPreference("wear_sync").setOnPreferenceChangeListener((preference, newValue) -> {
                         WatchUpdaterService.startSelf();
@@ -973,7 +962,6 @@ public class Preferences extends PreferenceActivity {
                 XdripWebService.settingsChanged(); // refresh
                 return true;
             });
-
 
             if (enableBF != null ) enableBF.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                                                                               @Override
@@ -1934,9 +1922,6 @@ public class Preferences extends PreferenceActivity {
             alert.show();
         }
 
-
-
-
         private static int pebbleType = 1;
         private void enablePebble(int newValueInt, boolean enabled, Context context) {
             Log.d(TAG,"enablePebble called with: "+newValueInt+" "+enabled);
@@ -1981,7 +1966,6 @@ public class Preferences extends PreferenceActivity {
                 }
             });
         }
-
 
         private void refresh_extra_items() {
             try {
