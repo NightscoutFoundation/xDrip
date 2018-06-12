@@ -33,6 +33,7 @@ import android.widget.Toast;
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.Blukon;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
@@ -291,7 +292,12 @@ public class BluetoothScan extends ListActivityWithMenu {
                     public void run() {
                         is_scanning = false;
                         if (bluetooth_adapter != null && bluetooth_adapter.isEnabled()) {
-                            lollipopScanner.stopScan(mScanCallback);
+                            try {
+                                lollipopScanner.stopScan(mScanCallback);
+                            } catch (IllegalStateException e) {
+                                JoH.static_toast_long(e.toString());
+                                UserError.Log.e(TAG, "error stopping scan: " + e.toString());
+                            }
                         }
                         invalidateOptionsMenu();
                     }
