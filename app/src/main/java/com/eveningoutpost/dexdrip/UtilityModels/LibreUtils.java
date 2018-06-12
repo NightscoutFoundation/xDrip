@@ -2,9 +2,9 @@ package com.eveningoutpost.dexdrip.UtilityModels;
 
 import android.util.Log;
 
-public class LibreCrc {
+public class LibreUtils {
 
-    private static final String TAG = LibreCrc.class.getSimpleName();
+    private static final String TAG = LibreUtils.class.getSimpleName();
 
     private final static long[] crc16table = {
             0, 4489, 8978, 12955, 17956, 22445, 25910, 29887, 35912,
