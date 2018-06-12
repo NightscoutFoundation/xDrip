@@ -15,7 +15,9 @@ import com.eveningoutpost.dexdrip.Models.UserError.Log;
 // This class is used to hold a cache of the latest points in the database.
 // It should be used for efficient retrieval of data. (even when showing more than the
 // latest 15 minutes of data.)
-// This class will be a singleton to allow storing the data from time to time.
+// This class will be a singleton to allow storing the data from time to time. (for more efficent operation).
+// There is an assumpation here that we only see data from one sensor.
+// This assumpation is correct, since we don't ask for more data than an hour. We might change this in the future.
 
 public class LibreTrendUtil {
 
@@ -63,7 +65,7 @@ public class LibreTrendUtil {
             // 
             ReadingData readingData = NFCReaderX.getTrend(lastBlock);
             if(readingData.trend.size() > 0 ) {
-                m_libreTrendLatest.id = readingData.trend.get(0).sensorTime;
+                m_libreTrendLatest.id = (int)readingData.trend.get(0).sensorTime;
                 m_libreTrendLatest.glucoseLevelRaw = readingData.trend.get(0).glucoseLevelRaw;
             } else {
                 Log.wtf(TAG, "Error no readingData.trend for this point, returning withoug doing anything");
@@ -76,10 +78,10 @@ public class LibreTrendUtil {
              
         }
         
-        
+        // Go over all blocks from the start to the later, and fill the data.
         for (LibreBlock libreBlock : latestBlocks) {
             ReadingData readingData = NFCReaderX.getTrend(libreBlock);
-            // Go over all trend data (from the last to the start)
+            // Go over all trend data (from the start to the later)
             for (int i = readingData.trend.size() - 1; i >= 0; i--) {
                 GlucoseData glucoseData = readingData.trend.get(i);
                 Log.e(TAG, "time = " + glucoseData.sensorTime + " = " + glucoseData.glucoseLevelRaw);
@@ -118,18 +120,21 @@ public class LibreTrendUtil {
         }
         return m_points;
     }
-    
+    LibreTrendLatest getLibreTrendLatest() {
+        return m_libreTrendLatest;
+    }
 }
 
 class LibreTrendPoint {
-    long sensorTime; // The number of minutes from sensor start. //????????? Do we need this
+    long sensorTime; // The number of minutes from sensor start. // curently it is not realy used, but might be used
+                                                                 // in the future.
     long rawSensorValue; // The raw value of the sensor 
 }
 
 // Represents the last point that we have data on.
 class LibreTrendLatest {
     long timestamp = 0;
-    long id = 0;
+    int id = 0;
     double bg = 0;
     int glucoseLevelRaw;
 }
