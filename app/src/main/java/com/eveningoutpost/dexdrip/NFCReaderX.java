@@ -27,7 +27,6 @@ import com.eveningoutpost.dexdrip.Models.LibreBlock;
 import com.eveningoutpost.dexdrip.Models.LibreOOPAlgorithm;
 import com.eveningoutpost.dexdrip.Models.ReadingData;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
-import com.eveningoutpost.dexdrip.UtilityModels.Blukon;
 import com.eveningoutpost.dexdrip.UtilityModels.LibreUtils;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
@@ -223,7 +222,7 @@ public class NFCReaderX {
         }
         
         // The 4'th byte is where the sensor status is.
-        if(!Blukon.isSensorReady(data1[4])) {
+        if(!LibreUtils.isSensorReady(data1[4])) {
             Log.e(TAG, "Sensor is not ready, Ignoring reading!");
             return true;
         }
