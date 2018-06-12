@@ -931,4 +931,7 @@
     <string name="hey_fam">Hey Fam...</string>
     <string name="you_have_update_checks_off">You have update checks switched off!\n\nWe try to fix bugs and add new features to xDrip+ over time.\n\nEvery 60 days this reminder will appear to ask you to turn update checking on.</string>
     <string name="update_checking_enabled">Update checking enabled!</string>
+    <string name="cancel_alarm">Cancel Alarm?</string>
+    <string name="please_confirm_to_cancel_the_alert">Please confirm to cancel the alert?</string>
+    <string name="yes_cancel">Yes Cancel</string>
 </resources>

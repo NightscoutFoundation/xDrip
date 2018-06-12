@@ -128,6 +128,10 @@ public class AlertPlayer {
         return alertPlayerInstance;
     }
 
+    public static void defaultSnooze() {
+        AlertPlayer.getPlayer().Snooze(xdrip.getAppContext(), -1);
+    }
+
     public synchronized void startAlert(Context ctx, boolean trendingToAlertEnd, AlertType newAlert, String bgValue) {
         startAlert(ctx, trendingToAlertEnd, newAlert, bgValue, Pref.getBooleanDefaultFalse("start_snoozed")); // for start snoozed by default!
     }

@@ -115,6 +115,7 @@ import com.eveningoutpost.dexdrip.ui.MicroStatus;
 import com.eveningoutpost.dexdrip.ui.MicroStatusImpl;
 import com.eveningoutpost.dexdrip.ui.NumberGraphic;
 import com.eveningoutpost.dexdrip.ui.UiPing;
+import com.eveningoutpost.dexdrip.ui.dialog.DidYouCancelAlarm;
 import com.eveningoutpost.dexdrip.ui.dialog.HeyFamUpdateOptInDialog;
 import com.eveningoutpost.dexdrip.ui.graphic.ITrendArrow;
 import com.eveningoutpost.dexdrip.ui.graphic.TrendArrowFactory;
@@ -1076,6 +1077,12 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                         JoH.static_toast_long("Could not find blood test data!! " + bt_uuid);
                     }
                 }
+            } else if (bundle.getString("confirmsnooze") != null) {
+                switch (bundle.getString("confirmsnooze")) {
+                    case "simpleconfirm":
+                        DidYouCancelAlarm.dialog(this, AlertPlayer::defaultSnooze);
+                        break;
+                }
             }
         }
     }
@@ -1123,11 +1130,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     }
 
     public void viewEventLog(MenuItem x) {
-        if (get_engineering_mode()) {
-            startActivity(new Intent(this, EventLogActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK).putExtra("events", ""));
-        } else {
-            startActivity(new Intent(this, ErrorsActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK).putExtra("events", ""));
-        }
+        startActivity(new Intent(this, EventLogActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK).putExtra("events", ""));
     }
 
     public void ShowLibreTrend(MenuItem x) {
