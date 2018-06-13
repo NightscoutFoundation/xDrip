@@ -1,32 +1,19 @@
 package com.eveningoutpost.dexdrip.wearintegration;
 
-import com.eveningoutpost.dexdrip.Models.BgReading;
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
-import com.eveningoutpost.dexdrip.Models.HeartRate;
-import com.eveningoutpost.dexdrip.Models.StepCounter;
-
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
-import android.util.Log;
-
 import com.eveningoutpost.dexdrip.BestGlucose;
+import com.eveningoutpost.dexdrip.Models.HeartRate;
+import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.StepCounter;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.huami.watch.transport.DataBundle;
 import com.huami.watch.transport.TransportDataItem;
-
-
 import com.kieronquinn.library.amazfitcommunication.Transporter;
 import com.kieronquinn.library.amazfitcommunication.TransporterClassic;
-import com.kieronquinn.library.amazfitcommunication.Utils;
-
-import android.os.Handler;
-
-
 
 
 /**
@@ -36,7 +23,7 @@ import android.os.Handler;
 public class Amazfitservice extends Service {
     BestGlucose.DisplayGlucose dg;
     private Transporter transporter;
-    private Context context;
+    //private Context context;
     DataBundle dataBundle = new DataBundle();
     private HeartRate heartrate;
     private StepCounter stepcounter;
@@ -45,14 +32,14 @@ public class Amazfitservice extends Service {
     public void onCreate() {
         super.onCreate();
 
-        transporter = (TransporterClassic)Transporter.get(getApplicationContext(), "com.eveningoutpost.dexdrip.wearintegration");
+        transporter = (TransporterClassic) Transporter.get(getApplicationContext(), "com.eveningoutpost.dexdrip.wearintegration");
         transporter.connectTransportService();
         transporter.addChannelListener(new Transporter.ChannelListener() {
             @Override
             public void onChannelChanged(boolean ready) {
                 //Transporter is ready if ready is true, send an action now. This will **NOT** work before the transporter is ready!
                 //You can change the action to whatever you want, there's also an option for a data bundle to be added (see below)
-                if(ready) UserError.Log.e("Amazfitservice", "channel changed ");
+                if (ready) UserError.Log.e("Amazfitservice", "channel changed ");
             }
         });
 
@@ -62,9 +49,9 @@ public class Amazfitservice extends Service {
                 if (item.getAction().equals("Amazfit_Healthdata")) {
                     DataBundle databundle = item.getData();
                     final StepCounter pm = StepCounter.createEfficientRecord(JoH.tsl(), databundle.getInt("steps"));
-                    HeartRate.create(JoH.tsl(),databundle.getInt("heart_rate"), databundle.getInt("heart_acuracy"));
+                    HeartRate.create(JoH.tsl(), databundle.getInt("heart_rate"), databundle.getInt("heart_acuracy"));
 
-                }else  UserError.Log.e("Amazfitservice", item.getAction());
+                } else UserError.Log.e("Amazfitservice", item.getAction());
             }
 
 
@@ -82,9 +69,11 @@ public class Amazfitservice extends Service {
     @Override
     public void onDestroy() {
 
-
-        transporter.disconnectTransportService();
+        if (transporter != null) {
+            transporter.disconnectTransportService();
+        }
         UserError.Log.e("Amazfitservice", "killing service ");
+
         super.onDestroy();
     }
 
@@ -92,24 +81,25 @@ public class Amazfitservice extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
 
 
-        if (!transporter.isTransportServiceConnected()){
+        if (!transporter.isTransportServiceConnected()) {
             UserError.Log.e("Amazfitservice", "Service not connected - trying to reconnect ");
             transporter.connectTransportService();
             try {
                 wait(1000);
-            } catch (Exception e) {}
+            } catch (Exception e) {
             }
+        }
 
 
-            if (!transporter.isTransportServiceConnected()) {
-                UserError.Log.e("Amazfitservice", "Service is not connectable ");
-                ;
-            }else{
+        if (!transporter.isTransportServiceConnected()) {
+            UserError.Log.e("Amazfitservice", "Service is not connectable ");
+            ;
+        } else {
             UserError.Log.e("Amazfitservice", "Service is connected ");
 
             transporter.send("Xdrip_synced_SGV_data", getDataBundle());
-            UserError.Log.e("Amazfitservice", "Send Data to watch " );
-            }
+            UserError.Log.e("Amazfitservice", "Send Data to watch ");
+        }
         return START_STICKY;
 
     }
@@ -120,7 +110,7 @@ public class Amazfitservice extends Service {
         //UserError.Log.e("Amazfitservice", "putting data together ");
 
         dataBundle.putLong("date", dg.timestamp);
-        dataBundle.putString("sgv", String.valueOf(dg.unitized)+" "+ dg.delta_arrow);
+        dataBundle.putString("sgv", String.valueOf(dg.unitized) + " " + dg.delta_arrow);
         dataBundle.putString("delta", String.valueOf(dg.spannableString(dg.unitized_delta)));
         dataBundle.putBoolean("ishigh", dg.isHigh());
         dataBundle.putBoolean("islow", dg.isLow());
