@@ -122,6 +122,12 @@ public class BroadcastGlucose {
             }
             bundle.putDouble(Intents.EXTRA_RAW, raw);
             final Intent intent = new Intent(Intents.ACTION_NEW_BG_ESTIMATE);
+
+            final String destination = Pref.getString("local_broadcast_specific_package_destination", "").trim();
+            if (destination.length() > 3) {
+                intent.setPackage(destination);
+            }
+
             intent.putExtras(bundle);
             intent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
 

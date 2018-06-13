@@ -161,7 +161,7 @@ public final class FireReceiver extends BroadcastReceiver {
                             break;
 
                         case "SNOOZE":
-                            AlertPlayer.getPlayer().Snooze(xdrip.getAppContext(), -1);
+                            AlertPlayer.defaultSnooze();
                             JoH.static_toast_long("SNOOZE from Tasker");
                             break;
 

@@ -25,7 +25,7 @@ public class LowPriorityThread extends Thread {
         try {
             super.run();
         } finally {
-            wl.release();
+            JoH.releaseWakeLock(wl);
         }
     }
 }

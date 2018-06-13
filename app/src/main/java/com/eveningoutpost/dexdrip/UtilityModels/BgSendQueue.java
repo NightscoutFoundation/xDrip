@@ -141,7 +141,6 @@ public class BgSendQueue extends Model {
 
             if (!quick) {
                 NewDataObserver.newBgReading(bgReading, is_follower);
-
             }
 
             if ((!is_follower) && (Pref.getBoolean("plus_follow_master", false))) {
@@ -150,7 +149,8 @@ public class BgSendQueue extends Model {
                     // TODO does this currently ignore noise or is noise properly calculated on the follower?
                     // munge bgReading for follower TODO will probably want extra option for this in future
                     // TODO we maybe don't need deep clone for this! Check how value will be used below
-                    GcmActivity.syncBGReading(PluggableCalibration.mungeBgReading(new Cloner().deepClone(bgReading)));
+                    //GcmActivity.syncBGReading(PluggableCalibration.mungeBgReading(new Cloner().deepClone(bgReading)));
+                    GcmActivity.syncBGReading(PluggableCalibration.mungeBgReading(BgReading.fromJSON(bgReading.toJSON(true))));
                 } else {
                     // send as is
                     GcmActivity.syncBGReading(bgReading);
@@ -164,7 +164,7 @@ public class BgSendQueue extends Model {
 
 
         } finally {
-            wakeLock.release();
+            JoH.releaseWakeLock(wakeLock);
         }
     }
 

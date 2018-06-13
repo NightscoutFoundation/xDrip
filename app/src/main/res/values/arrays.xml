@@ -168,4 +168,17 @@
     </string-array>
 
 
+    <string-array name="TrendArrows">
+        <item>Jam Expressive Arrow 1</item>
+        <item>Jam Simple White Arrow 1</item>
+        <item>Jam Simple Color Arrow 1</item>
+        <item>Candy Cane</item>
+    </string-array>
+    <string-array name="TrendArrowValues">
+        <item>JamTrendArrowImpl</item>
+        <item>JamTrendArrow2Impl</item>
+        <item>JamTrendArrow2bImpl</item>
+        <item>JamTrendArrow3Impl</item>
+    </string-array>
+
 </resources>

@@ -596,6 +596,10 @@
             android:value="598.0dip" />
 
         <activity android:name=".UtilityModels.XDripDreamSettingsActivity" />
+        <service
+            android:name=".wearintegration.Amazfitservice"
+            android:enabled="true"
+            android:exported="true"></service>
         <activity
             android:name=".EventLogActivity"
             android:configChanges="orientation|screenSize"
