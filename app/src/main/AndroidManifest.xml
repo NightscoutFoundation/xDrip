@@ -182,6 +182,12 @@
                 <action android:name="com.eveningoutpost.dexdrip.ExternalStatusline" />
             </intent-filter>
         </receiver>
+        <receiver android:name=".utils.DisconnectReceiver">
+            <intent-filter>
+                <action android:name="android.bluetooth.device.action.ACL_DISCONNECTED" />
+            </intent-filter>
+        </receiver>
+
 
         <activity
             android:name=".Tables.CalibrationDataTable"

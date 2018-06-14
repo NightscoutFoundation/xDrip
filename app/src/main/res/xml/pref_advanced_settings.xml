@@ -651,6 +651,11 @@
                     android:summary="@string/close_gatt"
                     android:title="@string/close_gatt_on_ble_disconnect" />
                 <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="bluetooth_trust_autoconnect"
+                    android:summary="Use and trust Android bluetooth auto connect feature"
+                    android:title="Trust Auto-Connect" />
+                <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="bluetooth_excessive_wakelocks"
                     android:summary="@string/older_bluetooth_wakelocks"
