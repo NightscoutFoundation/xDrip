@@ -946,4 +946,5 @@
     <string name="cancel_alarm">Cancel Alarm?</string>
     <string name="please_confirm_to_cancel_the_alert">Please confirm to cancel the alert?</string>
     <string name="yes_cancel">Yes Cancel</string>
+    <string name="warning_no_alert_will_be_played_in_silent_mode">Warning, no alert will be played when phone in silent/vibrate mode!!!</string>
 </resources>
