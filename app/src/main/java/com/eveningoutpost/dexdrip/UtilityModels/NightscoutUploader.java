@@ -453,7 +453,7 @@ public class NightscoutUploader {
                                     // Log.d(TAG, "json processing: " + e);
                                 }
 
-                                if ((notes != null) && ((notes.equals("AndroidAPS started") || notes.equals("null") || (notes.equals("Bolus Std")))))
+                                if ((notes != null) && ((notes.startsWith("AndroidAPS started") || notes.equals("null") || (notes.equals("Bolus Std")))))
                                     notes = null;
 
                                 if ((carbs > 0) || (insulin > 0) || (notes != null)) {
