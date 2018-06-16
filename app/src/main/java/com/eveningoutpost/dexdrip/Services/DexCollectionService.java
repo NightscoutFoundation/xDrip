@@ -64,8 +64,10 @@ import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.UtilityModels.XbridgePlus;
+import com.eveningoutpost.dexdrip.utils.BtCallBack;
 import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
+import com.eveningoutpost.dexdrip.utils.DisconnectReceiver;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.android.gms.wearable.DataMap;
 import com.rits.cloning.Cloner;
@@ -82,7 +84,7 @@ import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.getStatusName
 import static com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder.DEXCOM_PERIOD;
 
 @TargetApi(Build.VERSION_CODES.KITKAT)
-public class DexCollectionService extends Service {
+public class DexCollectionService extends Service implements BtCallBack{
     public static final String LIMITTER_NAME = "LimiTTer";
     private final static String TAG = DexCollectionService.class.getSimpleName();
     private static final boolean d = false;
@@ -138,7 +140,6 @@ public class DexCollectionService extends Service {
     private static long failover_time_watch = 0;
     private static String static_last_hexdump_watch;
     private static String static_last_sent_hexdump_watch;
-    private static final boolean trust_auto_connect = true;
     private static final UUID CCCD = UUID.fromString(HM10Attributes.CLIENT_CHARACTERISTIC_CONFIG);
     public final UUID nrfDataService = UUID.fromString(HM10Attributes.NRF_UART_SERVICE);
     public final UUID nrfDataRXCharacteristic = UUID.fromString(HM10Attributes.NRF_UART_TX);
@@ -221,6 +222,50 @@ public class DexCollectionService extends Service {
         }
     }
 
+    @Override
+    public void btCallback(String address, String status) {
+        UserError.Log.d(TAG, "Processing callback: " + address + " " + status);
+        if (address.equals(mDeviceAddress)) {
+            switch (status) {
+                case "DISCONNECTED":
+                    handleDisconnectedStateChange();
+                    break;
+                default:
+                    UserError.Log.e(TAG, "Unknown status callback for: " + address + " with " + status);
+            }
+        } else {
+            UserError.Log.d(TAG, "Ignoring: " + status + " for " + address + " as we are using: " + mDeviceAddress);
+        }
+    }
+
+    private synchronized void handleDisconnectedStateChange() {
+        if (JoH.ratelimit("handle-disconnected-state-change", 2)) {
+            mConnectionState = STATE_DISCONNECTED;
+            ActiveBluetoothDevice.disconnected();
+            if (prefs.getBoolean("close_gatt_on_ble_disconnect", true)) {
+                if (mBluetoothGatt != null) {
+                    Log.i(TAG, "onConnectionStateChange: mBluetoothGatt is not null, closing.");
+                    if (JoH.ratelimit("refresh-gatt", 60)) {
+                        Log.d(TAG, "Refresh result state close: " + JoH.refreshDeviceCache(TAG, mBluetoothGatt));
+                    }
+                    mBluetoothGatt.close();
+                    mBluetoothGatt = null;
+                    mCharacteristic = null;
+                    servicesDiscovered = DISCOVERED.NULL;
+                } else {
+                    Log.d(TAG, "mBluetoothGatt is null so not closing");
+                }
+                lastdata = null;
+            } else {
+                UserError.Log.d(TAG, "Not closing gatt on bluetooth disconnect");
+            }
+            Log.i(TAG, "onConnectionStateChange: Disconnected from GATT server.");
+            setRetryTimer();
+        } else {
+            UserError.Log.d(TAG, "Ignoring duplicate disconnected state change");
+        }
+    }
+
     private final BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {
         @Override
         public synchronized void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
@@ -274,29 +319,7 @@ public class DexCollectionService extends Service {
             }
         }
 
-        private void handleDisconnectedStateChange() {
-            mConnectionState = STATE_DISCONNECTED;
-            ActiveBluetoothDevice.disconnected();
-            if (prefs.getBoolean("close_gatt_on_ble_disconnect", true)) {
-                if (mBluetoothGatt != null) {
-                    Log.i(TAG, "onConnectionStateChange: mBluetoothGatt is not null, closing.");
-                    if (JoH.ratelimit("refresh-gatt", 60)) {
-                        Log.d(TAG, "Refresh result state close: " + JoH.refreshDeviceCache(TAG, mBluetoothGatt));
-                    }
-                    mBluetoothGatt.close();
-                    mBluetoothGatt = null;
-                    mCharacteristic = null;
-                    servicesDiscovered = DISCOVERED.NULL;
-                } else {
-                    Log.d(TAG, "mBluetoothGatt is null so not closing");
-                }
-                lastdata = null;
-            } else {
-                UserError.Log.d(TAG, "Not closing gatt on bluetooth disconnect");
-            }
-            Log.i(TAG, "onConnectionStateChange: Disconnected from GATT server.");
-            setRetryTimer();
-        }
+
 
         @Override
         public synchronized void onServicesDiscovered(BluetoothGatt gatt, int status) {
@@ -997,6 +1020,7 @@ public class DexCollectionService extends Service {
             return START_NOT_STICKY;
         }
         lastdata = null;
+        DisconnectReceiver.addCallBack(this, TAG);
         checkConnection();
         watchdog();
         JoH.releaseWakeLock(wl);
@@ -1017,6 +1041,8 @@ public class DexCollectionService extends Service {
         } catch (Exception e) {
             android.util.Log.e(TAG, "Error unregistering pairing receiver: " + e);
         }
+
+        DisconnectReceiver.removeCallBack(TAG);
 
         if (shouldServiceRun()) {//Android killed service
             setRetryTimer();
@@ -1157,7 +1183,7 @@ public class DexCollectionService extends Service {
             }
         } else if (mConnectionState == STATE_CONNECTING) {
             mStaticState = mConnectionState;
-            if (JoH.msSince(last_connect_request) > (trust_auto_connect ? Constants.SECOND_IN_MS * 3600 : Constants.SECOND_IN_MS * 30)) {
+            if (JoH.msSince(last_connect_request) > (getTrustAutoConnect() ? Constants.SECOND_IN_MS * 3600 : Constants.SECOND_IN_MS * 30)) {
                 Log.i(TAG, "Connecting for too long, shutting down");
                 retry_backoff = 0;
                 close();
@@ -1353,7 +1379,7 @@ public class DexCollectionService extends Service {
         setRetryTimer();
         if (mBluetoothGatt == null) {
             Log.i(TAG, "connect: Trying to create a new connection.");
-            mBluetoothGatt = device.connectGatt(getApplicationContext(), trust_auto_connect, mGattCallback);
+            mBluetoothGatt = device.connectGatt(getApplicationContext(), getTrustAutoConnect(), mGattCallback);
         } else {
             Log.i(TAG, "connect: Trying to re-use connection.");
             mBluetoothGatt.connect();
@@ -1361,6 +1387,10 @@ public class DexCollectionService extends Service {
         mConnectionState = STATE_CONNECTING;
         last_connect_request = JoH.tsl();
         return true;
+    }
+
+    private static boolean getTrustAutoConnect() {
+        return Pref.getBoolean("bluetooth_trust_autoconnect", true);
     }
 
     private void closeCycle(boolean should_close) {
