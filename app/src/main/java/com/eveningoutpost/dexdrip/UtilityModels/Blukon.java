@@ -260,11 +260,6 @@ private static final int POSITION_OF_SENSOR_STATUS_BYTE = 17;
         if (strRecCmd.equalsIgnoreCase(WAKEUP_COMMAND)) {
             cmdFound = 1;
 
-            // calculate time delta to last valid BG reading
-            m_persistentTimeLastBg = PersistentStore.getLong("blukon-time-of-last-reading");
-            m_minutesDiffToLastReading = (int) ((((JoH.tsl() - m_persistentTimeLastBg) / 1000) + 30) / 60);
-            Log.e(TAG, "m_minutesDiffToLastReading=" + m_minutesDiffToLastReading + ", last reading: " + JoH.dateTimeText(m_persistentTimeLastBg));
-
             if (m_minutesDiffToLastReading >= 4) {
                 Log.i(TAG, "Reset currentCommand");
                 currentCommand = "";
