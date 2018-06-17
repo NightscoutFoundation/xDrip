@@ -123,15 +123,16 @@ public class Notifications extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        PowerManager pm = (PowerManager) getApplicationContext().getSystemService(Context.POWER_SERVICE);
-        PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "NotificationsIntent");
-        wl.acquire(60000);
+
+        final PowerManager.WakeLock wl = JoH.getWakeLock("NotificationsService", 60000);
+
         boolean unclearReading = false;
         try {
             Log.d("Notifications", "Running Notifications Intent Service");
             final Context context = getApplicationContext();
 
             if (Pref.getBoolean("motion_tracking_enabled", false)) {
+                // TODO move this
                 ActivityRecognizedService.reStartActivityRecogniser(context);
             }
 
@@ -140,20 +141,12 @@ public class Notifications extends IntentService {
             ArmTimer(context, unclearReading);
             context.startService(new Intent(context, MissedReadingService.class));
 
-
         } finally {
-            if (wl.isHeld()) wl.release();
+            JoH.releaseWakeLock(wl);
         }
     }
 
-    public static void staticUpdateNotification() {
-        try {
-            Context context = xdrip.getAppContext();
-            context.startService(new Intent(context, Notifications.class));
-        } catch (Exception e) {
-            Log.e(TAG, "Got exception in staticupdatenotification: " + e);
-        }
-    }
+
 
 
     public void ReadPerfs(Context context) {
@@ -183,7 +176,7 @@ public class Notifications extends IntentService {
  * Function for new notifications
  */
 
-
+// TODO REFACTOR
     private void FileBasedNotifications(Context context) {
         ReadPerfs(context);
         Sensor sensor = Sensor.currentSensor();
@@ -1001,6 +994,23 @@ public class Notifications extends IntentService {
         if (userNotification != null) {
             userNotification.delete();
             notificationDismiss(extraCalibrationNotificationId);
+        }
+    }
+
+    // rate limited
+    public static void start() {
+        // TODO consider how inevitable task could change dynamic of this instead of rate limit
+        if (JoH.ratelimit("start-notifications",10)) {
+            JoH.startService(Notifications.class);
+        }
+    }
+
+    // not rate limited - force recheck
+    public static void staticUpdateNotification() {
+        try {
+            JoH.startService(Notifications.class);
+        } catch (Exception e) {
+            Log.e(TAG, "Got exception in staticupdatenotification: " + e);
         }
     }
 }

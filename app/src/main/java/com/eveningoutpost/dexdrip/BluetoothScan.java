@@ -33,9 +33,11 @@ import android.widget.Toast;
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.Blukon;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.utils.AndroidBarcode;
 import com.eveningoutpost.dexdrip.utils.ListActivityWithMenu;
@@ -205,7 +207,13 @@ public class BluetoothScan extends ListActivityWithMenu {
                 @Override
                 public void run() {
                     is_scanning = false;
-                    if (bluetooth_adapter != null) bluetooth_adapter.stopLeScan(mLeScanCallback);
+                    try {
+                        if ((bluetooth_adapter != null) && (mLeScanCallback != null)) {
+                            bluetooth_adapter.stopLeScan(mLeScanCallback);
+                        }
+                    } catch (NullPointerException e) {
+                        // concurrency pain
+                    }
                     invalidateOptionsMenu();
                 }
             }, SCAN_PERIOD);
@@ -284,7 +292,12 @@ public class BluetoothScan extends ListActivityWithMenu {
                     public void run() {
                         is_scanning = false;
                         if (bluetooth_adapter != null && bluetooth_adapter.isEnabled()) {
-                            lollipopScanner.stopScan(mScanCallback);
+                            try {
+                                lollipopScanner.stopScan(mScanCallback);
+                            } catch (IllegalStateException e) {
+                                JoH.static_toast_long(e.toString());
+                                UserError.Log.e(TAG, "error stopping scan: " + e.toString());
+                            }
                         }
                         invalidateOptionsMenu();
                     }
@@ -452,12 +465,16 @@ public class BluetoothScan extends ListActivityWithMenu {
     }
 
     public void returnToHome() {
-        if (is_scanning) {
-            bluetooth_adapter.stopLeScan(mLeScanCallback);
-            is_scanning = false;
+        try {
+            if (is_scanning) {
+                is_scanning = false;
+                bluetooth_adapter.stopLeScan(mLeScanCallback);
+            }
+        } catch (NullPointerException e) {
+            // meh
         }
-        Intent intent = new Intent(this, Home.class);
-        CollectionServiceStarter.restartCollectionService(getApplicationContext());
+        Inevitable.task("restart-collector", 2000, () -> CollectionServiceStarter.restartCollectionService(getApplicationContext()));
+        final Intent intent = new Intent(this, Home.class);
         startActivity(intent);
         finish();
     }

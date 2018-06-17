@@ -31,7 +31,6 @@ import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.speech.RecognizerIntent;
-import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
@@ -116,6 +115,7 @@ import com.eveningoutpost.dexdrip.ui.MicroStatus;
 import com.eveningoutpost.dexdrip.ui.MicroStatusImpl;
 import com.eveningoutpost.dexdrip.ui.NumberGraphic;
 import com.eveningoutpost.dexdrip.ui.UiPing;
+import com.eveningoutpost.dexdrip.ui.dialog.DidYouCancelAlarm;
 import com.eveningoutpost.dexdrip.ui.dialog.HeyFamUpdateOptInDialog;
 import com.eveningoutpost.dexdrip.ui.graphic.ITrendArrow;
 import com.eveningoutpost.dexdrip.ui.graphic.TrendArrowFactory;
@@ -128,6 +128,7 @@ import com.eveningoutpost.dexdrip.utils.DisplayQRCode;
 import com.eveningoutpost.dexdrip.utils.LibreTrendGraph;
 import com.eveningoutpost.dexdrip.utils.Preferences;
 import com.eveningoutpost.dexdrip.utils.SdcardImportExport;
+import com.eveningoutpost.dexdrip.wearintegration.Amazfitservice;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.Target;
@@ -1077,6 +1078,12 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                         JoH.static_toast_long("Could not find blood test data!! " + bt_uuid);
                     }
                 }
+            } else if (bundle.getString("confirmsnooze") != null) {
+                switch (bundle.getString("confirmsnooze")) {
+                    case "simpleconfirm":
+                        DidYouCancelAlarm.dialog(this, AlertPlayer::defaultSnooze);
+                        break;
+                }
             }
         }
     }
@@ -1124,11 +1131,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     }
 
     public void viewEventLog(MenuItem x) {
-        if (get_engineering_mode()) {
-            startActivity(new Intent(this, EventLogActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK).putExtra("events", ""));
-        } else {
-            startActivity(new Intent(this, ErrorsActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK).putExtra("events", ""));
-        }
+        startActivity(new Intent(this, EventLogActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK).putExtra("events", ""));
     }
 
     public void ShowLibreTrend(MenuItem x) {
@@ -1384,6 +1387,9 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         } else if (allWords.contentEquals("delete all glucose data")) {
             deleteAllBG(null);
             LibreAlarmReceiver.clearSensorStats();
+        }
+        else if (allWords.contentEquals("test trend arrow")) {
+            testGraphicalTrendArrow();
         } else {
             VoiceCommands.processVoiceCommand(allWords, this);
         }
@@ -2286,7 +2292,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             updateCurrentBgInfoForWifiWixel(collector, notificationText);
         } else if (is_follower || collector.equals(DexCollectionType.NSEmulator)) {
             displayCurrentInfo();
-            getApplicationContext().startService(new Intent(getApplicationContext(), Notifications.class));
+            Notifications.start();
         } else if (!alreadyDisplayedBgInfoCommon && DexCollectionType.getDexCollectionType() == DexCollectionType.LibreAlarm) {
             updateCurrentBgInfoCommon(collector, notificationText);
         }
@@ -3109,9 +3115,10 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         //wear integration
         if (!Pref.getBoolean("wear_sync", false)) {
             menu.removeItem(R.id.action_open_watch_settings);
-            menu.removeItem(R.id.action_resend_last_bg);
             menu.removeItem(R.id.action_sync_watch_db);//KS
         }
+        if (!Pref.getBoolean("wear_sync", false) && !Pref.getBoolean("pref_amazfit_enable_key", false)) {
+            menu.removeItem(R.id.action_resend_last_bg); }
 
         //speak readings
         MenuItem menuItem = menu.findItem(R.id.action_toggle_speakreadings);
@@ -3463,6 +3470,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         switch (item.getItemId()) {
             case R.id.action_resend_last_bg:
                 startService(new Intent(this, WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_RESEND));
+                if(Pref.getBoolean("pref_amazfit_enable_key", true)) JoH.startService(Amazfitservice.class);
                 break;
             case R.id.action_open_watch_settings:
                 startService(new Intent(this, WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_OPEN_SETTINGS));
@@ -3700,6 +3708,15 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         }
     }
 
+    private void testGraphicalTrendArrow() {
+        if (itr != null) {
+            JoH.runOnUiThreadDelayed(() -> itr.update(5d), 1000);
+            JoH.runOnUiThreadDelayed(() -> itr.update(-5d), 5000);
+            JoH.runOnUiThreadDelayed(() -> itr.update(-0d), 9000);
+            JoH.runOnUiThreadDelayed(() -> itr.update(5d), 13000);
+        }
+    }
+
     private View.OnClickListener makeSnackBarUriLauncher(final Uri uri, final String text) {
         return new View.OnClickListener() {
             @Override
@@ -3776,7 +3793,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     }
 
 
-    class ToolbarActionItemTarget implements Target {
+  /*  class ToolbarActionItemTarget implements Target {
 
         private final Toolbar toolbar;
         private final int menuItemId;
@@ -3791,7 +3808,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             return new ViewTarget(toolbar.findViewById(menuItemId)).getPoint();
         }
 
-    }
+    }*/
 
 }
 

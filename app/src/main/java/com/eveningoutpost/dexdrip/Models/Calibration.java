@@ -380,7 +380,7 @@ public class Calibration extends Model {
             adjustRecentBgReadings(5);
         }
         CalibrationRequest.createOffset(lowerCalibration.bg, 35);
-        context.startService(new Intent(context, Notifications.class));
+        Notifications.staticUpdateNotification();
     }
 
     //Create Calibration Checkin Dexcom Bluetooth Share
@@ -453,7 +453,7 @@ public class Calibration extends Model {
                     Calibration.create(calRecords, context, true, 0);
                 }
             }
-            context.startService(new Intent(context, Notifications.class));
+            Notifications.start();
         }
     }
 
@@ -595,7 +595,7 @@ public class Calibration extends Model {
                         if (!Ob1G5CollectionService.usingNativeMode()) {
                             adjustRecentBgReadings(adjustPast ? 30 : 2);
                         }
-                        context.startService(new Intent(context, Notifications.class));
+                        Notifications.start();
                         Calibration.requestCalibrationIfRangeTooNarrow();
                         newFingerStickData();
                     } else {

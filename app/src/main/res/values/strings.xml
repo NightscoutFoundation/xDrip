@@ -88,6 +88,17 @@
     <string name="pref_pebble_display_high_line">Display High Line</string>
     <string name="pref_pebble_display_low_line">Display Low Line</string>
 
+    <!-- Amazfit Settings -->
+    <string name="amazfit_sync_service">AmazFit Sync Service</string>
+
+    <string name="pref_amazfit_enable_summary">Enable Amazfit Data support</string>
+    <string name="pref_amazfit_enable">Enable</string>
+    <string name="pref_amazfit_tile">Amazfit Service</string>
+    <string name="pref_amazfit_alarm_enable_summary">Sends Alarms to Smartwatch and mutes Phone</string>
+    <string name="pref_amazfit_alarm_enable">Enable</string>
+    <string name="pref_amazfit_alarm_tile">Watch Alarm</string>
+
+
 
     <string name="toast_crash">Something went wrong :( a report has been sent to help fix the issue.</string>
 
@@ -607,6 +618,8 @@
     <string name="use_external_blukon_algorithm">Out of process libre algorithm.</string>
     <string name="calibrate_external_libre_algorithm_summary">Apply xDrip calibration methods on OOP data.</string>
     <string name="calibrate_external_libre_algorithm_title">OOP algorithm calibration.</string>
+    <string name="retrieve_blukon_history_title">Retrieve Libre history</string>
+    <string name="retrieve_blukon_history_summary">Retrieve missed history from Blukon device when reconnecting to sensor.</string>
     <string name="interpret_share_raw">If using Share, xDrip will show values when they are normally hidden on the receiver.</string>
     <string name="interpret_raw">Interpret Raw Values</string>
     <string name="use_infrequent_calibrations">If needed, use calibrations from longer ago, eg if calibrations are supplied infrequently.</string>
@@ -920,6 +933,7 @@
     <string name="settings_updated_to_mmol">Settings updated to mmol/L</string>
     <string name="external_calibration_app">External Calibration App</string>
     <string name="use_app_for_calibration">use app for calibration?</string>
+    <string name="channel_name">Foreground Service</string>
     <string name="code_accepted">Code accepted</string>
     <string name="invalid_or_unsupported_code">Invalid or unsupported code!</string>
     <string name="g6_sensor_code">G6 Sensor Code</string>
@@ -929,4 +943,7 @@
     <string name="hey_fam">Hey Fam...</string>
     <string name="you_have_update_checks_off">You have update checks switched off!\n\nWe try to fix bugs and add new features to xDrip+ over time.\n\nEvery 60 days this reminder will appear to ask you to turn update checking on.</string>
     <string name="update_checking_enabled">Update checking enabled!</string>
+    <string name="cancel_alarm">Cancel Alarm?</string>
+    <string name="please_confirm_to_cancel_the_alert">Please confirm to cancel the alert?</string>
+    <string name="yes_cancel">Yes Cancel</string>
 </resources>

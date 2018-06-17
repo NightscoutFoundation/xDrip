@@ -182,6 +182,12 @@
                 <action android:name="com.eveningoutpost.dexdrip.ExternalStatusline" />
             </intent-filter>
         </receiver>
+        <receiver android:name=".utils.DisconnectReceiver">
+            <intent-filter>
+                <action android:name="android.bluetooth.device.action.ACL_DISCONNECTED" />
+            </intent-filter>
+        </receiver>
+
 
         <activity
             android:name=".Tables.CalibrationDataTable"
@@ -596,6 +602,10 @@
             android:value="598.0dip" />
 
         <activity android:name=".UtilityModels.XDripDreamSettingsActivity" />
+        <service
+            android:name=".wearintegration.Amazfitservice"
+            android:enabled="true"
+            android:exported="true"></service>
         <activity
             android:name=".EventLogActivity"
             android:configChanges="orientation|screenSize"
