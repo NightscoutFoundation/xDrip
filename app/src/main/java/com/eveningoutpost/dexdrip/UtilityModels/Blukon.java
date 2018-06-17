@@ -260,6 +260,9 @@ private static final int POSITION_OF_SENSOR_STATUS_BYTE = 17;
         if (strRecCmd.equalsIgnoreCase(WAKEUP_COMMAND)) {
             cmdFound = 1;
 
+            m_minutesDiffToLastReading = (int) ((((JoH.tsl() - m_persistentTimeLastBg) / 1000)) / 60);
+            Log.i(TAG, "m_minutesDiffToLastReading (no rounding)=" + m_minutesDiffToLastReading + ", last reading: " + JoH.dateTimeText(m_persistentTimeLastBg));
+
             if (m_minutesDiffToLastReading >= 4) {
                 Log.i(TAG, "Reset currentCommand");
                 currentCommand = "";
