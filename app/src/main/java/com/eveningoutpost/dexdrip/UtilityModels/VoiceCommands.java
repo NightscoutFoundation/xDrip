@@ -5,6 +5,7 @@ package com.eveningoutpost.dexdrip.UtilityModels;
 import android.app.Activity;
 
 import com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine;
+import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.BloodTest;
 import com.eveningoutpost.dexdrip.Models.Calibration;
@@ -46,13 +47,13 @@ public class VoiceCommands {
             G5BaseService.hardResetTransmitterNow = true;
             JoH.static_toast_long("Will attempt to reset transmitter on next poll!! Can take 15 minutes to process");
         } else if (allWords.contentEquals("reset heart rate sync")) {
-            PersistentStore.setLong("nightscout-rest-heartrate-synced-time",0);
+            PersistentStore.setLong("nightscout-rest-heartrate-synced-time", 0);
             JoH.static_toast_long("Cleared heart rate sync data");
         } else if (allWords.contentEquals("reset step count sync")) {
-            PersistentStore.setLong("nightscout-rest-steps-synced-time",0);
+            PersistentStore.setLong("nightscout-rest-steps-synced-time", 0);
             JoH.static_toast_long("Cleared step count sync data");
         } else if (allWords.contentEquals("reset motion count sync")) {
-            PersistentStore.setLong("nightscout-rest-motion-synced-time",0);
+            PersistentStore.setLong("nightscout-rest-motion-synced-time", 0);
             JoH.static_toast_long("Cleared motion count sync data");
         } else if (allWords.contentEquals("vehicle mode test")) {
             ActivityRecognizedService.spoofActivityRecogniser(mActivity, JoH.tsl() + "^" + 0);
@@ -92,6 +93,9 @@ public class VoiceCommands {
                 Ob1G5StateMachine.restartSensorWithTimeTravel();
                 JoH.static_toast_long("Attempting to restart sensor session");
                 break;
+            case "restart g5 session nearly ended":
+                Ob1G5StateMachine.restartSensorWithTimeTravel((JoH.tsl() - Constants.DAY_IN_MS * 1) + Constants.MINUTE_IN_MS * 20);
+                break;
             case "stop g5 session":
                 Ob1G5StateMachine.stopSensor();
                 JoH.static_toast_long("Attempting to stop sensor session");
@@ -104,6 +108,14 @@ public class VoiceCommands {
             case "clear last update check time":
                 UpdateActivity.clearLastCheckTime();
                 JoH.static_toast_long(allWords);
+                break;
+            case "stop sensor on master":
+                JoH.static_toast_long(allWords);
+                GcmActivity.push_stop_master_sensor();
+                break;
+            case "start sensor on master":
+                JoH.static_toast_long(allWords);
+                GcmActivity.push_start_master_sensor();
                 break;
         }
 
