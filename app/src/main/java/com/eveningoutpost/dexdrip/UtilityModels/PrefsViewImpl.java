@@ -1,14 +1,16 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
-import android.databinding.BaseObservable;
+import android.support.annotation.NonNull;
+
+import com.eveningoutpost.dexdrip.adapters.ObservableArrayMapNoNotify;
 
 /**
  * Created by jamorham on 05/10/2017.
- * <p>
+ *
  * Implementation of PrefsView
  */
 
-public class PrefsViewImpl extends BaseObservable implements PrefsView {
+public class PrefsViewImpl extends ObservableArrayMapNoNotify<String, Boolean> implements PrefsView {
 
     public boolean getbool(String name) {
         return Pref.getBooleanDefaultFalse(name);
@@ -16,10 +18,21 @@ public class PrefsViewImpl extends BaseObservable implements PrefsView {
 
     public void setbool(String name, boolean value) {
         Pref.setBoolean(name, value);
-        notifyChange();
+        put(name, value);
     }
 
     public void togglebool(String name) {
         setbool(name, !getbool(name));
+    }
+
+    @NonNull
+    @Override
+    public Boolean get(Object key) {
+        Boolean value = super.get(key);
+        if (value == null) {
+            value = getbool((String) key);
+            super.putNoNotify((String) key, value);
+        }
+        return value;
     }
 }
