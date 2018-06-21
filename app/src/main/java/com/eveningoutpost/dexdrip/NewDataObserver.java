@@ -44,7 +44,7 @@ public class NewDataObserver {
     }
 
     // when we receive a new external status broadcast
-    public static void newExternalStatus() {
+    public static void newExternalStatus(boolean receivedLocally) {
 
         final String statusLine = ExternalStatusService.getLastStatusLine();
         if (statusLine.length() > 0) {
@@ -55,7 +55,13 @@ public class NewDataObserver {
             // send to pebble
             sendToPebble();
             sendToAmazfit();
-            // TODO should we also be syncing wear here?
+
+            // don't send via GCM if received via GCM!
+            if (receivedLocally) {
+                // SEND TO GCM
+                GcmActivity.push_external_status_update(JoH.tsl(), statusLine);
+
+            }
         }
 
     }
@@ -66,9 +72,10 @@ public class NewDataObserver {
             JoH.startService(PebbleWatchSync.class);
         }
     }
+
     // send data to Amazfit if enabled
     private static void sendToAmazfit() {
-        if (Pref.getBooleanDefaultFalse("pref_amazfit_enable_key")){
+        if (Pref.getBooleanDefaultFalse("pref_amazfit_enable_key")) {
             JoH.startService(Amazfitservice.class);
         }
     }

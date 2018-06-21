@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.eveningoutpost.dexdrip.AddCalibration;
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.Models.APStatus;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.BloodTest;
 import com.eveningoutpost.dexdrip.Models.Calibration;
@@ -289,6 +290,49 @@ public class BgGraphBuilder {
         Log.d(TAG,"Extend line size: "+points.size());
     }
 
+
+    private List<Line> basalLines() {
+        final List<Line> basalLines = new ArrayList<>();
+        if (prefs.getBoolean("show_basal_line", false)) {
+            final List<APStatus> aplist = APStatus.latestForGraph(2000, loaded_start, loaded_end);
+            if (aplist.size() > 0) {
+                final List<PointValue> points = new ArrayList<>(aplist.size());
+
+                final float yscale = doMgdl ? (float) Constants.MMOLL_TO_MGDL : 1f;
+                final float ypos = 13 * yscale; // TODO Configurable
+                int last_percent = -1;
+                float last_ypos = -1;
+                for (APStatus item : aplist) {
+                    if (item.basal_percent != last_percent) {
+                        final float this_ypos = ypos - item.basal_percent / 100f;
+                        if (last_ypos >= 0) {
+                            // create square wave point
+                            points.add(new PointValue((float) item.timestamp / FUZZER, last_ypos));
+                        }
+                        points.add(new PointValue((float) item.timestamp / FUZZER, this_ypos));
+                        last_ypos = this_ypos;
+                        last_percent = item.basal_percent;
+                    }
+                }
+
+                final Line line = new Line(points);
+                line.setFilled(true);
+                line.setFillFlipped(true);
+                line.setHasGradientToTransparent(true);
+                line.setHasPoints(false);
+                line.setStrokeWidth(1);
+                line.setHasLines(true);
+                line.setPointRadius(1);
+                line.setGradientDivider(10f);
+
+                line.setColor(getCol(X.color_basal_tbr));
+                basalLines.add(line);
+            }
+        }
+
+        return basalLines;
+    }
+
     // line illustrating result from step counter
     private List<Line> stepsLines() {
         final List<Line> stepsLines = new ArrayList<>();
@@ -541,9 +585,9 @@ public class BgGraphBuilder {
                 if (Pref.getBoolean("motion_tracking_enabled", false) && Pref.getBoolean("plot_motion", false)) {
                     lines.addAll(motionLine());
                 }
+                lines.addAll(basalLines());
                 lines.addAll(heartLines());
                 lines.addAll(stepsLines());
-
             }
 
             Line[] calib = calibrationValuesLine();
