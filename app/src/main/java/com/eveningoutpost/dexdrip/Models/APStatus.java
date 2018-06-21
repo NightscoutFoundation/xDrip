@@ -65,7 +65,7 @@ public class APStatus extends PlusModel {
                     .basal_percent(basal_percent)
                     .build();
 
-            UserError.Log.e(TAG, "New record created: " + fresh.toS());
+            UserError.Log.d(TAG, "New record created: " + fresh.toS());
 
             fresh.save();
             return fresh;
