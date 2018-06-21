@@ -129,6 +129,7 @@ import com.eveningoutpost.dexdrip.utils.LibreTrendGraph;
 import com.eveningoutpost.dexdrip.utils.Preferences;
 import com.eveningoutpost.dexdrip.utils.SdcardImportExport;
 import com.eveningoutpost.dexdrip.wearintegration.Amazfitservice;
+import com.eveningoutpost.dexdrip.wearintegration.ExternalStatusService;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.Target;
@@ -2810,6 +2811,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         }
     }
 
+    // TODO EXTRACT METHOD
     @NonNull
     public static String extraStatusLine() {
 
@@ -2845,7 +2847,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 || Pref.getBoolean("status_line_royce_ratio", false)
                 || Pref.getBoolean("status_line_accuracy", false)
                 || Pref.getBoolean("status_line_capture_percentage", false)
-                || Pref.getBoolean("status_line_pump_reservoir", false)) {
+                || Pref.getBoolean("status_line_pump_reservoir", false)
+                || Pref.getBooleanDefaultFalse("status_line_external_status")) {
 
             final StatsResult statsResult = new StatsResult(Pref.getInstance(), Pref.getBooleanDefaultFalse("extra_status_stats_24h"));
 
@@ -2911,6 +2914,11 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 extraline.append(PumpStatus.getBolusIoBString());
                 extraline.append(PumpStatus.getReservoirString());
                 extraline.append(PumpStatus.getBatteryString());
+            }
+
+            if (Pref.getBooleanDefaultFalse("status_line_external_status")) {
+                if (extraline.length() != 0) extraline.append(' ');
+                extraline.append(ExternalStatusService.getLastStatusLine());
             }
 
         }

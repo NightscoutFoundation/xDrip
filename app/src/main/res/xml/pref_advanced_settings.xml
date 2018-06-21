@@ -495,6 +495,12 @@
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="extra_status_line"
+                    android:key="status_line_external_status"
+                    android:summary="Display status from other apps like AndroidAPS"
+                    android:title="External Status" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:dependency="extra_status_line"
                     android:key="status_line_pump_reservoir"
                     android:summary="Display pump status information if available"
                     android:title="Pump Status" />
@@ -849,7 +855,7 @@
                 android:key="community_help_category"
                 android:title="@string/help_the_community">
                 <CheckBoxPreference
-                    android:defaultValue="true"
+                    android:defaultValue="false"
                     android:key="store_sensor_location"
                     android:summary="@string/help_the_developers_improve_the_algorithm"
                     android:title="@string/store_sensor_location_to_help" />
