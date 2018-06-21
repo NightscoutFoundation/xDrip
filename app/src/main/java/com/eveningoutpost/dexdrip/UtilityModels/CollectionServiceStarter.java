@@ -312,6 +312,10 @@ public class CollectionServiceStarter {
         restartCollectionService(xdrip.getAppContext());
     }
 
+    public static void restartCollectionServiceBackground() {
+        Inevitable.task("restart-collection-service",500,() -> restartCollectionService(xdrip.getAppContext()));
+    }
+
     public static void restartCollectionService(Context context) {
         if (context == null) context = xdrip.getAppContext();
         CollectionServiceStarter collectionServiceStarter = new CollectionServiceStarter(context);
