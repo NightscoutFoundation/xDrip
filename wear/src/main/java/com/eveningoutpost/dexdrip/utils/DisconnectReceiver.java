@@ -43,7 +43,7 @@ public class DisconnectReceiver extends BroadcastReceiver {
             if (intent.getAction().equals("android.bluetooth.device.action.ACL_DISCONNECTED")) {
                 final String address = ((BluetoothDevice) intent.getParcelableExtra("android.bluetooth.device.extra.DEVICE")).getAddress();
                 if (address != null) {
-                    UserError.Log.e(TAG, "Disconnection notice: " + address);
+                    UserError.Log.d(TAG, "Disconnection notice: " + address);
                     processCallBacks(address, "DISCONNECTED");
                 }
             }
