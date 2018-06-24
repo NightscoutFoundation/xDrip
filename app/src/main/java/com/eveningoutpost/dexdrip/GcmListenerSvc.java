@@ -255,8 +255,10 @@ public class GcmListenerSvc extends FirebaseMessagingService {
                                 message_array[2] = Long.toString(Long.parseLong(message_array[2]) + timediff);
                             }
                             Log.i(TAG, "Processing remote CAL " + message_array[1] + " age: " + message_array[2]);
+                            calintent.putExtra("timestamp", JoH.tsl());
                             calintent.putExtra("bg_string", message_array[1]);
                             calintent.putExtra("bg_age", message_array[2]);
+                            calintent.putExtra("cal_source", "gcm cal packet");
                             if (timediff < 3600) {
                                 getApplicationContext().startActivity(calintent);
                             }
@@ -280,9 +282,10 @@ public class GcmListenerSvc extends FirebaseMessagingService {
                                 bg_age += timediff;
                             }
                             Log.i(TAG, "Processing remote CAL " + newCalibration.bgValue + " age: " + bg_age);
-
+                            calintent.putExtra("timestamp", JoH.tsl());
                             calintent.putExtra("bg_string", "" + (Pref.getString("units", "mgdl").equals("mgdl") ? newCalibration.bgValue : newCalibration.bgValue * Constants.MGDL_TO_MMOLL));
                             calintent.putExtra("bg_age", "" + bg_age);
+                            calintent.putExtra("cal_source", "gcm cal2 packet");
                             if (timediff < 3600) {
                                 getApplicationContext().startActivity(calintent);
                             } else {

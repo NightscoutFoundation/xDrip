@@ -646,6 +646,7 @@ public class BluetoothGlucoseMeter extends Service {
                 UserError.Log.d(TAG, "Successfully created new BloodTest: " + bt.toS());
                 bt.glucoseReadingRx = gtb; // add reference
                 lastBloodTest = bt;
+                UserError.Log.uel(TAG, "New blood test data: " + BgGraphBuilder.unitized_string_static(bt.mgdl) + " @ " + JoH.dateTimeText(bt.timestamp) + " " + bt.source);
 
                 Inevitable.task("evaluate-meter-records", 2000, this::evaluateLastRecords);
 
@@ -708,6 +709,7 @@ public class BluetoothGlucoseMeter extends Service {
                         UserError.Log.d(TAG, "Successfully created new BloodTest: " + bt.toS());
                         bt.glucoseReadingRx = gtb; // add reference
                         lastBloodTest = bt;
+                        UserError.Log.uel(TAG, "New verio blood test data: " + BgGraphBuilder.unitized_string_static(bt.mgdl) + " @ " + JoH.dateTimeText(bt.timestamp) + " " + bt.source);
 
                         final long record_time = lastBloodTest.timestamp;
                         // TODO better replaced with Inevitable Task
@@ -796,7 +798,7 @@ public class BluetoothGlucoseMeter extends Service {
                                     // check must also be younger than most recent calibration
                                     if ((calibration == null) || (lastBloodTest.timestamp > calibration.timestamp)) {
                                         UserError.Log.ueh(TAG, "Prompting for calibration for: " + BgGraphBuilder.unitized_string_with_units_static(lastBloodTest.mgdl) + " from: " + JoH.dateTimeText(lastBloodTest.timestamp));
-
+                                        JoH.clearCache();
                                         Home.startHomeWithExtra(getApplicationContext(), Home.HOME_FULL_WAKEUP, "1");
                                         JoH.runOnUiThreadDelayed(new Runnable() {
                                             @Override

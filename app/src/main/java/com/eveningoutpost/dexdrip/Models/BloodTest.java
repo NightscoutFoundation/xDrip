@@ -467,8 +467,8 @@ public class BloodTest extends Model {
             // TODO store evaluation failure for this record in cache for future optimization
 
             // TODO Check we have prior reading as well perhaps
-
-            UserError.Log.ueh(TAG, "Opportunistic calibration for Blood Test at " + JoH.dateTimeText(bt.timestamp) + " of " + BgGraphBuilder.unitized_string_with_units_static(bt.mgdl) + " matching sensor slope at: " + JoH.dateTimeText(bgReading.timestamp));
+            JoH.clearCache();
+            UserError.Log.ueh(TAG, "Opportunistic calibration for Blood Test at " + JoH.dateTimeText(bt.timestamp) + " of " + BgGraphBuilder.unitized_string_with_units_static(bt.mgdl) + " matching sensor slope at: " + JoH.dateTimeText(bgReading.timestamp) + " from source " + bt.source);
             final long time_since = JoH.msSince(bt.timestamp);
 
 
