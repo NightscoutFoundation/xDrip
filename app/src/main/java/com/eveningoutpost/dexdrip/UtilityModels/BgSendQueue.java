@@ -16,6 +16,7 @@ import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.NewDataObserver;
 import com.eveningoutpost.dexdrip.Services.SyncService;
@@ -106,8 +107,11 @@ public class BgSendQueue extends Model {
     }
 
     // TODO extract to non depreciated class
-    public static void handleNewBgReading(BgReading bgReading, String operation_type, Context context, boolean is_follower, boolean quick) {
-
+    public static void handleNewBgReading(final BgReading bgReading, String operation_type, Context context, boolean is_follower, boolean quick) {
+        if (bgReading == null) {
+            UserError.Log.wtf("BgSendQueue", "handleNewBgReading called with null bgReading!");
+            return;
+        }
         final PowerManager.WakeLock wakeLock = JoH.getWakeLock("sendQueue", 120000);
         try {
 
@@ -172,10 +176,10 @@ public class BgSendQueue extends Model {
         // This is just a stub - only used on Android Wear
     }
 
-    @Deprecated
+   /* @Deprecated
     public void markMongoSuccess() {
         this.mongo_success = true;
         save();
-    }
+    }*/
 
 }
