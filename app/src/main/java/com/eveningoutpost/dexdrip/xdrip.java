@@ -181,5 +181,14 @@ public class xdrip extends Application {
             Log.d(TAG, "Already set to locale: " + forced_language);
         }
     }
+
+    public static String gs(int id) {
+        return getAppContext().getString(id);
+    }
+
+    public static String gs(int id, String... args) {
+        return getAppContext().getString(id, (Object[]) args);
+    }
+
     //}
 }
