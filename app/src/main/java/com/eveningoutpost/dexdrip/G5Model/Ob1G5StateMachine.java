@@ -1010,7 +1010,7 @@ public class Ob1G5StateMachine {
         DexTimeKeeper.updateAge(getTransmitterID(), glucose.timestamp);
         if (glucose.usable() || (glucose.insufficient() && Pref.getBooleanDefaultFalse("ob1_g5_use_insufficiently_calibrated"))) {
             UserError.Log.d(TAG, "Got usable glucose data from G5!!");
-            final BgReading bgReading = BgReading.bgReadingInsertFromG5(glucose.glucose, JoH.tsl());
+            final BgReading bgReading = BgReading.bgReadingInsertFromG5(glucose.glucose, JoH.tsl(), null);
             if (bgReading != null) {
                 try {
                     bgReading.calculated_value_slope = glucose.getTrend() / Constants.MINUTE_IN_MS; // note this is different to the typical calculated slope, (normally delta)
@@ -1218,8 +1218,7 @@ public class Ob1G5StateMachine {
                 UserError.Log.wtf(TAG, "Backfill timestamp unrealistic: " + JoH.dateTimeText(time) + " (ignored)");
             } else {
                 if (BgReading.getForPreciseTimestamp(time, Constants.MINUTE_IN_MS * 4) == null) {
-                    final BgReading bgr = BgReading.bgReadingInsertFromG5(backsie.getGlucose(), time);
-                    if (bgr != null) bgr.appendSourceInfo("Backfill");
+                    final BgReading bgr = BgReading.bgReadingInsertFromG5(backsie.getGlucose(), time, "Backfill");
                     lastGlucoseBgReading = bgr;
                     UserError.Log.d(TAG, "Adding backfilled reading: " + JoH.dateTimeText(time) + " " + BgGraphBuilder.unitized_string_static(backsie.getGlucose()));
                     changed = true;

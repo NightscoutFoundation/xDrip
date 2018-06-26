@@ -1060,7 +1060,7 @@ public class BgReading extends Model implements ShareUploadableBg {
     public static final double SPECIAL_G5_PLACEHOLDER = -0.1597;
 
     // TODO remember to sync this with wear code base
-    public static synchronized BgReading bgReadingInsertFromG5(double calculated_value, long timestamp) {
+    public static synchronized BgReading bgReadingInsertFromG5(double calculated_value, long timestamp, String sourceInfoAppend) {
 
         final Sensor sensor = Sensor.currentSensor();
         if (sensor == null) {
@@ -1079,6 +1079,9 @@ public class BgReading extends Model implements ShareUploadableBg {
             bgr.calculated_value = calculated_value;
             bgr.raw_data = SPECIAL_G5_PLACEHOLDER; // placeholder
             bgr.appendSourceInfo("G5 Native");
+            if (sourceInfoAppend != null && sourceInfoAppend.length() > 0) {
+                bgr.appendSourceInfo(sourceInfoAppend);
+            }
             bgr.save();
             if (JoH.ratelimit("sync wakelock", 15)) {
                 final PowerManager.WakeLock linger = JoH.getWakeLock("G5 Insert", 4000);
