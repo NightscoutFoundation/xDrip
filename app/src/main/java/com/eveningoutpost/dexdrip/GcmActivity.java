@@ -265,6 +265,10 @@ public class GcmActivity extends FauxActivity {
     }
 
     public synchronized static void syncBGReading(BgReading bgReading) {
+        if (bgReading == null) {
+            UserError.Log.wtf(TAG, "Cannot sync null bgreading - should never occur");
+            return;
+        }
         Log.d(TAG, "syncBGReading called");
         if (JoH.ratelimit("gcm-bgs-batch", 15)) {
             GcmActivity.sendMessage("bgs", bgReading.toJSON(true));
