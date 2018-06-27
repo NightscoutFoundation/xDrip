@@ -1382,6 +1382,8 @@ public class Preferences extends PreferenceActivity {
 
             bindPreferenceTitleAppendToStringValue(findPreference("retention_days_bg_reading"));
 
+            bindPreferenceTitleAppendToStringValue(findPreference("pendiq_pin"));
+
             // Pebble Trend -- START
 
             int currentPebbleSync = PebbleUtil.getCurrentPebbleSyncType();

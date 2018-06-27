@@ -769,4 +769,41 @@
                 android:targetPackage="@string/local_target_package" />
         </Preference>
     </PreferenceCategory>
+    <PreferenceCategory
+        android:key="xdrip_plus_experimental"
+        android:title="Experimental Section">
+
+        <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+            android:icon="@drawable/ic_mode_edit_grey_600_48dp"
+            android:key="pendiq_screen"
+            android:summary="Reading and writing dosages"
+            android:title="Pendiq 2.0 Insulin Pen">
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="use_pendiq"
+            android:switchTextOff="@string/short_off_text_for_switches"
+            android:switchTextOn="@string/short_on_text_for_switches"
+            android:title="Pendiq 2.0 Support" />
+
+            <SwitchPreference
+                android:defaultValue="false"
+                android:dependency="use_pendiq"
+                android:key="pendiq_send_treatments"
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
+                android:title="Send Treatments to Pen"
+                android:summary="Prepare the pen with entered treatment insulin units. You must always double check this."/>
+
+            <EditTextPreference
+                android:defaultValue="@string/zero_zero_zero_zero"
+                android:maxLength="4"
+                android:inputType="numberPassword|textVisiblePassword"
+                android:dependency="use_pendiq"
+                android:key="pendiq_pin"
+                android:title="Pen Pin Code"/>
+
+
+        </PreferenceScreen>
+
+    </PreferenceCategory>
 </PreferenceScreen>

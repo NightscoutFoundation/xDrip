@@ -99,7 +99,6 @@
     <string name="pref_amazfit_alarm_tile">Watch Alarm</string>
 
 
-
     <string name="toast_crash">Something went wrong :( a report has been sent to help fix the issue.</string>
 
     <string name="taskerConfigInstruction">Just click the Tick icon here to confirm. You shouldn\'t need to change the configuration string.</string>
@@ -949,4 +948,6 @@
     <string name="please_confirm_to_cancel_the_alert">Please confirm to cancel the alert?</string>
     <string name="yes_cancel">Yes Cancel</string>
     <string name="warning_no_alert_will_be_played_in_silent_mode">Warning, no alert will be played when phone in silent/vibrate mode!!!</string>
+    <string name="automatic_message_from_xdrip">automatic message from xDrip+</string>
+    <string name="zero_zero_zero_zero">0000</string>
 </resources>

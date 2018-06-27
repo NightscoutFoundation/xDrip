@@ -106,6 +106,7 @@ import com.eveningoutpost.dexdrip.dagger.Injectors;
 import com.eveningoutpost.dexdrip.databinding.ActivityHomeBinding;
 import com.eveningoutpost.dexdrip.databinding.ActivityHomeShelfSettingsBinding;
 import com.eveningoutpost.dexdrip.databinding.PopupInitialStatusHelperBinding;
+import com.eveningoutpost.dexdrip.insulin.pendiq.Pendiq;
 import com.eveningoutpost.dexdrip.languageeditor.LanguageEditor;
 import com.eveningoutpost.dexdrip.profileeditor.DatePickerFragment;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileAdapter;
@@ -493,6 +494,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 textInsulinDose.setVisibility(View.INVISIBLE);
                 btnInsulinDose.setVisibility(View.INVISIBLE);
                 Treatments.create(0, thisinsulinnumber, Treatments.getTimeStampWithOffset(thistimeoffset));
+                Pendiq.handleTreatment(thisinsulinnumber);
                 thisinsulinnumber = 0;
                 reset_viewport = true;
                 if (hideTreatmentButtonsIfAllDone()) {
@@ -927,6 +929,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 if (exists == null) {
                     Log.d(TAG, "processAndApproveTreatment create watchkeypad Treatment carbs=" + thiscarbsnumber + " insulin=" + thisinsulinnumber + " timestamp=" + JoH.dateTimeText(time) + " uuid=" + thisuuid);
                     Treatments.create(thiscarbsnumber, thisinsulinnumber, time, thisuuid);
+                    Pendiq.handleTreatment(thisinsulinnumber);
                 } else {
                     Log.d(TAG, "processAndApproveTreatment Treatment already exists carbs=" + thiscarbsnumber + " insulin=" + thisinsulinnumber + " timestamp=" + JoH.dateTimeText(time));
                 }
@@ -934,6 +937,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         } else {
             WatchUpdaterService.sendWearToast("Treatment processed", Toast.LENGTH_LONG);
             Treatments.create(thiscarbsnumber, thisinsulinnumber, Treatments.getTimeStampWithOffset(mytimeoffset));
+            Pendiq.handleTreatment(thisinsulinnumber);
         }
         hideAllTreatmentButtons();
 
@@ -1917,6 +1921,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
         HeyFamUpdateOptInDialog.heyFam(this); // remind about updates
 
+        Pendiq.immortality(); // Experimental testing phase
 
     }
 
@@ -3311,7 +3316,6 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     public void showRemindersFromMenu(MenuItem myitem) {
         startActivity(new Intent(getApplicationContext(), Reminders.class));
     }
-    
 
     public void parakeetSetupMode(MenuItem myitem) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);

@@ -317,6 +317,10 @@
         <service
             android:name=".Services.Ob1G5CollectionService"
             android:enabled="true" />
+        <service
+            android:name=".insulin.pendiq.PendiqService"
+            android:enabled="true"
+            android:exported="false"/>
 
         <activity
             android:name=".ShareTest"
@@ -613,7 +617,7 @@
             android:name=".EventLogActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_error" />
-
+      
     </application>
 
 </manifest>
