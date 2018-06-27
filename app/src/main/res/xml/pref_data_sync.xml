@@ -122,6 +122,11 @@
                         android:key="warn_nightscout_failures"
                         android:summary="Display and sound a notification if Nightscout upload is failing."
                         android:title="Alert on failures" />
+                    <CheckBoxPreference
+                        android:defaultValue="false"
+                        android:key="nightscout_device_append_source_info"
+                        android:summary="For G5, sends collector type (e.g. OB1) and reading backfill status (for native) to Nightscout."
+                        android:title="Append source info to device name" />
                     <Preference
                         android:summary="Tap to send historical data to Nightscout"
                         android:title="Back-fill data">

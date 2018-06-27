@@ -1634,6 +1634,7 @@ public class WatchUpdaterService extends WearableListenerService implements
             dataMap.putBoolean("status_line_stdev", mPrefs.getBoolean("status_line_stdev", false));
             dataMap.putBoolean("status_line_royce_ratio", mPrefs.getBoolean("status_line_royce_ratio", false));
             dataMap.putBoolean("status_line_capture_percentage", mPrefs.getBoolean("status_line_capture_percentage", false));
+            dataMap.putBoolean("status_line_realtime_capture_percentage", mPrefs.getBoolean("status_line_realtime_capture_percentage", false));
 
             //Calibration plugin
             dataMap.putBoolean("extra_status_calibration_plugin", mPrefs.getBoolean("extra_status_calibration_plugin", false));

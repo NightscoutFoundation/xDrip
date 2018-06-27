@@ -2859,6 +2859,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 || Pref.getBoolean("status_line_royce_ratio", false)
                 || Pref.getBoolean("status_line_accuracy", false)
                 || Pref.getBoolean("status_line_capture_percentage", false)
+                || Pref.getBoolean("status_line_realtime_capture_percentage", false)
                 || Pref.getBoolean("status_line_pump_reservoir", false)
                 || Pref.getBooleanDefaultFalse("status_line_external_status")) {
 
@@ -2908,6 +2909,11 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             if (Pref.getBoolean("status_line_capture_percentage", false)) {
                 if (extraline.length() != 0) extraline.append(' ');
                 extraline.append(statsResult.getCapturePercentage(false));
+            }
+            if (Pref.getBoolean("status_line_realtime_capture_percentage", false) &&
+                    statsResult.canShowRealtimeCapture()) {
+                if (extraline.length() != 0) extraline.append(' ');
+                extraline.append(statsResult.getRealtimeCapturePercentage(false));
             }
             if (Pref.getBoolean("status_line_accuracy", false)) {
                 final long accuracy_period = DAY_IN_MS * 3;
