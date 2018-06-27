@@ -46,6 +46,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
+import com.eveningoutpost.dexdrip.wearintegration.AmazfitAlarm;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 
 import java.text.DecimalFormat;
@@ -941,7 +942,6 @@ public class EditAlertActivity extends ActivityWithMenu {
             } else if (Pref.getStringDefaultBlank("bg_alert_profile").equals("Silent")) {
                 JoH.static_toast_long("Volume Profile is set to silent!");
             }
-
             AlertType.testAlert(alertText.getText().toString(), above, threshold, allDay, 1, mp3_file, timeStart, timeEnd, overrideSilentMode, defaultSnooze, vibrate, mContext);
         } catch (NullPointerException e) {
             JoH.static_toast_long("Snooze value is not a number - cannot test");

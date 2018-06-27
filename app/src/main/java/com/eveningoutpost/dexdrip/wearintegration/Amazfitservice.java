@@ -1,6 +1,12 @@
 package com.eveningoutpost.dexdrip.wearintegration;
 
+import com.eveningoutpost.dexdrip.AlertList;
+import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
+import com.eveningoutpost.dexdrip.Models.AlertType;
+import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import android.app.Service;
@@ -8,7 +14,9 @@ import android.content.Context;
 import android.content.Intent;
 import com.eveningoutpost.dexdrip.Models.HeartRate;
 import com.eveningoutpost.dexdrip.Models.StepCounter;
+import com.eveningoutpost.dexdrip.Home;
 
+import android.graphics.Color;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
@@ -16,6 +24,9 @@ import android.util.Log;
 
 import com.eveningoutpost.dexdrip.BestGlucose;
 import com.eveningoutpost.dexdrip.Models.UserError;
+
+import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.huami.watch.transport.DataBundle;
 import com.huami.watch.transport.TransportDataItem;
 
@@ -25,21 +36,24 @@ import com.kieronquinn.library.amazfitcommunication.TransporterClassic;
 import com.kieronquinn.library.amazfitcommunication.Utils;
 
 import android.os.Handler;
-
-
+import android.view.View;
+import android.widget.TextView;
 
 
 /**
  * Created by klaus3d3.
  */
 
-public class Amazfitservice extends Service {
+public class Amazfitservice  extends Service {
     BestGlucose.DisplayGlucose dg;
-    private Transporter transporter;
+
+
+    Transporter transporter;
     private Context context;
     DataBundle dataBundle = new DataBundle();
     private HeartRate heartrate;
     private StepCounter stepcounter;
+
 
     @Override
     public void onCreate() {
@@ -64,7 +78,14 @@ public class Amazfitservice extends Service {
                     final StepCounter pm = StepCounter.createEfficientRecord(JoH.tsl(), databundle.getInt("steps"));
                     HeartRate.create(JoH.tsl(),databundle.getInt("heart_rate"), databundle.getInt("heart_acuracy"));
 
-                }else  UserError.Log.e("Amazfitservice", item.getAction());
+                }else {if (item.getAction().equals("Amazfit_Snooze")) {
+                    UserError.Log.e("Amazfitservice", "Remote Snooze Received - snoozing all alarms");
+                    if (ActiveBgAlert.getOnly()!=null) AlertPlayer.defaultSnooze();
+                    else UserError.Log.e("Amazfitservice", "No Alarms found to snooze");
+                }
+                else UserError.Log.e("Amazfitservice", item.getAction());
+                }
+
             }
 
 
@@ -90,25 +111,26 @@ public class Amazfitservice extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        try {
+            wait(1000);
+        } catch (Exception e) {}
 
+        
 
         if (!transporter.isTransportServiceConnected()){
             UserError.Log.e("Amazfitservice", "Service not connected - trying to reconnect ");
             transporter.connectTransportService();
-            try {
-                wait(1000);
-            } catch (Exception e) {}
             }
 
 
             if (!transporter.isTransportServiceConnected()) {
                 UserError.Log.e("Amazfitservice", "Service is not connectable ");
-                ;
+
             }else{
             UserError.Log.e("Amazfitservice", "Service is connected ");
 
             transporter.send("Xdrip_synced_SGV_data", getDataBundle());
-            UserError.Log.e("Amazfitservice", "Send Data to watch " );
+            UserError.Log.e("Amazfitservice", "Send SGV Data to watch " );
             }
         return START_STICKY;
 
@@ -117,6 +139,9 @@ public class Amazfitservice extends Service {
 
     public DataBundle getDataBundle() {
         BestGlucose.DisplayGlucose dg = BestGlucose.getDisplayGlucose();
+String prediction_text = "";
+
+
         //UserError.Log.e("Amazfitservice", "putting data together ");
 
         dataBundle.putLong("date", dg.timestamp);
@@ -126,13 +151,38 @@ public class Amazfitservice extends Service {
         dataBundle.putBoolean("islow", dg.isLow());
         dataBundle.putBoolean("isstale", dg.isStale());
         dataBundle.putBoolean("fromplugin", dg.from_plugin);
-        dataBundle.putString("extra_string", dg.extra_string);
+
+        prediction_text="";
+
+        if (BgGraphBuilder.low_occurs_at > 0) {
+
+            final double now = JoH.ts();
+            final double predicted_low_in_mins = (BgGraphBuilder.low_occurs_at - now) / 60000;
+
+            if (predicted_low_in_mins > 1) {
+                prediction_text=(getString(R.string.low_predicted) + " " + getString(R.string.in) + ": " + (int) predicted_low_in_mins + getString(R.string.space_mins));
+            }
+
+        }
+        dataBundle.putString("extra_string", prediction_text);
+
+
+
+
+
         dataBundle.putString("plugin_name", dg.plugin_name);
         dataBundle.putInt("warning", dg.warning);
+
+
+
 
 
         return dataBundle;
     }
 
+public Transporter gettransporter(){
+        return transporter;
+
+}
 
 }

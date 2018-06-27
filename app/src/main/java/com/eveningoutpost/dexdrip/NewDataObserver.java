@@ -15,6 +15,9 @@ import com.eveningoutpost.dexdrip.wearintegration.Amazfitservice;
 import com.eveningoutpost.dexdrip.wearintegration.ExternalStatusService;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 
+import android.content.Context;
+import android.content.Intent;
+
 import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
 
 /**
@@ -25,6 +28,7 @@ import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
 
 public class NewDataObserver {
 
+    Context context;
     private static final String TAG = "NewDataObserver";
 
     // TODO after restructuring so that the triggering is organized by data type,
@@ -69,7 +73,9 @@ public class NewDataObserver {
     // send data to Amazfit if enabled
     private static void sendToAmazfit() {
         if (Pref.getBooleanDefaultFalse("pref_amazfit_enable_key")){
+
             JoH.startService(Amazfitservice.class);
+
         }
     }
 

@@ -909,6 +909,7 @@ public class Preferences extends PreferenceActivity {
                   final Context context = preference.getContext();
                   Boolean enabled = (boolean) newValue;
                    if (enabled==true) {
+
                        context.startService(new Intent(context, Amazfitservice.class));
 
                    }else {

@@ -27,6 +27,7 @@ import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.SnoozeOnNotificationDismissService;
 import com.eveningoutpost.dexdrip.SnoozeActivity;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleWatchSync;
+import com.eveningoutpost.dexdrip.wearintegration.AmazfitAlarm;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.eveningoutpost.dexdrip.xdrip;
 
@@ -133,10 +134,14 @@ public class AlertPlayer {
     }
 
     public synchronized void startAlert(Context ctx, boolean trendingToAlertEnd, AlertType newAlert, String bgValue) {
+        AmazfitAlarm alarm = new AmazfitAlarm();
+        alarm.AmazfitAlarm();
         startAlert(ctx, trendingToAlertEnd, newAlert, bgValue, Pref.getBooleanDefaultFalse("start_snoozed")); // for start snoozed by default!
     }
 
     public synchronized  void startAlert(Context ctx, boolean trendingToAlertEnd, AlertType newAlert, String bgValue , boolean start_snoozed)  {
+        AmazfitAlarm alarm = new AmazfitAlarm();
+        alarm.AmazfitAlarm();
         Log.d(TAG, "startAlert called, Threadid " + Thread.currentThread().getId());
         if (trendingToAlertEnd) {
             Log.d(TAG, "startAlert: This alert is trending to it's end will not do anything");
