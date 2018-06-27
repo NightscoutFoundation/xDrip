@@ -149,6 +149,13 @@
                 android:title="Allow OB1 unbonding"
                 />
             <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="ob1_initiate_bonding_flag"
+                android:dependency="use_ob1_g5_collector_service"
+                android:summary="OB1 collector can initiate bonding."
+                android:title="Allow OB1 initiate bonding"
+                />
+            <CheckBoxPreference
                 android:defaultValue="false"
                 android:key="run_ble_scan_constantly"
                 android:summary="@string/g5_scan_constantly"

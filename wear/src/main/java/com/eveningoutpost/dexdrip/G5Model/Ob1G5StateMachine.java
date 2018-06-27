@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.G5Model;
 
+import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothGatt;
 import android.os.Build;
 import android.os.PowerManager;
@@ -26,6 +27,13 @@ import com.polidea.rxandroidble.exceptions.BleCannotSetCharacteristicNotificatio
 import com.polidea.rxandroidble.exceptions.BleDisconnectedException;
 import com.polidea.rxandroidble.exceptions.BleGattCharacteristicException;
 
+
+/*
+import com.polidea.rxandroidble2.RxBleConnection;
+import com.polidea.rxandroidble2.exceptions.BleCannotSetCharacteristicNotificationException;
+import com.polidea.rxandroidble2.exceptions.BleDisconnectedException;
+import com.polidea.rxandroidble2.exceptions.BleGattCharacteristicException;
+*/
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.nio.ByteBuffer;
@@ -101,6 +109,7 @@ public class Ob1G5StateMachine {
     private static volatile boolean backup_loaded = false;
 
     // Auth Check + Request
+    @SuppressLint("CheckResult")
     public static boolean doCheckAuth(Ob1G5CollectionService parent, RxBleConnection connection) {
 
         if (connection == null) return false;
@@ -288,6 +297,7 @@ public class Ob1G5StateMachine {
     }
 
     // Handle bonding
+    @SuppressLint("CheckResult")
     public synchronized static boolean doKeepAliveAndBondRequest(Ob1G5CollectionService parent, RxBleConnection connection) {
 
         if (connection == null) return false;
@@ -354,6 +364,7 @@ public class Ob1G5StateMachine {
         return true;
     }
 
+    @SuppressLint("CheckResult")
     public static boolean doReset(Ob1G5CollectionService parent, RxBleConnection connection) {
         if (connection == null) return false;
         parent.msg("Hard Resetting Transmitter");
@@ -374,6 +385,7 @@ public class Ob1G5StateMachine {
     }
 
     // Get Data
+    @SuppressLint("CheckResult")
     public static boolean doGetData(Ob1G5CollectionService parent, RxBleConnection connection) {
         if (connection == null) return false;
         // TODO switch modes depending on conditions as to whether we are using internal
@@ -608,6 +620,7 @@ public class Ob1G5StateMachine {
         Inevitable.task("Ob1G5 disconnect", 500 + guardTime + speakSlowlyDelay(), () -> disconnectNow(parent, connection));
     }
 
+    @SuppressLint("CheckResult")
     private static void disconnectNow(Ob1G5CollectionService parent, RxBleConnection connection) {
         // tell device to disconnect now
         UserError.Log.d(TAG, "Disconnect NOW: " + JoH.dateTimeText(JoH.tsl()));
@@ -947,6 +960,7 @@ public class Ob1G5StateMachine {
         return false;
     }
 
+    @SuppressLint("CheckResult")
     private static void processQueueCommand(Ob1G5CollectionService parent, RxBleConnection connection) {
         boolean changed = false;
         synchronized (commandQueue) {
