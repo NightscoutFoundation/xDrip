@@ -409,8 +409,8 @@ public class BloodTest extends Model {
                 Log.d(TAG, "opportunistic: No blood tests");
                 return;
             }
-            if (JoH.msSince(bt.timestamp) > Constants.DAY_IN_MS) {
-                Log.d(TAG, "opportunistic: Blood test older than 1 days ago");
+            if (JoH.msSince(bt.timestamp) > (Constants.HOUR_IN_MS * 8)) {
+                Log.d(TAG, "opportunistic: Blood test older than 8 hours ago");
                 return;
             }
 
