@@ -8,6 +8,7 @@ import com.eveningoutpost.dexdrip.LibreAlarmReceiver;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Intents;
+import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.gson.Gson;
@@ -37,6 +38,8 @@ public class LibreOOPAlgorithm {
         Bundle bundle = new Bundle();
         bundle.putByteArray(Intents.LIBRE_DATA_BUFFER, fullData);
         bundle.putLong(Intents.LIBRE_DATA_TIMESTAMP, timestamp);
+        bundle.putString(Intents.LIBRE_SN, PersistentStore.getString("LibreSN"));
+        
         intent.putExtras(bundle);
         intent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
         xdrip.getAppContext().sendBroadcast(intent);
