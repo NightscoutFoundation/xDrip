@@ -14,7 +14,7 @@ import static com.eveningoutpost.dexdrip.utils.CipherUtils.getRandomKey;
  */
 @SuppressWarnings("FieldCanBeLocal")
 public class AuthRequestTxMessage extends TransmitterMessage {
-    public final byte opcode = 0x1;
+    public final byte opcode = 0x01;
     public byte[] singleUseToken;
     private final byte endByteStd = 0x2;
     private final byte endByteAlt = 0x1;

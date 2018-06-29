@@ -29,7 +29,8 @@ public class SessionStartTxMessage extends TransmitterMessage {
     public SessionStartTxMessage(long startTime, int dexTime, String code) {
         this.startTime = startTime;
         this.dexTime = dexTime;
-        data = ByteBuffer.allocate(code == null || new G6CalibrationParameters(code).isNullCode() ? 11 : 15);
+        final boolean using_g6 = (code != null);
+        data = ByteBuffer.allocate(code == null || new G6CalibrationParameters(code).isNullCode() ? (using_g6 ? 13 : 11) : 17);
         data.order(ByteOrder.LITTLE_ENDIAN);
         data.put(opcode);
         data.putInt(dexTime);
@@ -45,6 +46,9 @@ public class SessionStartTxMessage extends TransmitterMessage {
                     throw new IllegalArgumentException("Invalid G6 code in SessionStartTxMessage");
                 }
             }
+        }
+        if (using_g6) {
+            data.putShort((short) 0x0000);
         }
         appendCRC();
         UserError.Log.d(TAG, "SessionStartTxMessage dbg: " + JoH.bytesToHex(byteSequence));

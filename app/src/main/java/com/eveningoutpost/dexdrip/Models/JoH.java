@@ -198,6 +198,10 @@ public class JoH {
         return new String(hexChars);
     }
 
+    public static byte[] tolerantHexStringToByteArray(String str) {
+        return hexStringToByteArray(str.toUpperCase().replaceAll("[^A-F0-9]",""));
+    }
+
     public static byte[] hexStringToByteArray(String str) {
         try {
             str = str.toUpperCase().trim();
