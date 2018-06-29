@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothGatt;
 import android.os.Build;
 import android.os.PowerManager;
 
+import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
@@ -27,13 +28,6 @@ import com.polidea.rxandroidble.exceptions.BleCannotSetCharacteristicNotificatio
 import com.polidea.rxandroidble.exceptions.BleDisconnectedException;
 import com.polidea.rxandroidble.exceptions.BleGattCharacteristicException;
 
-
-/*
-import com.polidea.rxandroidble2.RxBleConnection;
-import com.polidea.rxandroidble2.exceptions.BleCannotSetCharacteristicNotificationException;
-import com.polidea.rxandroidble2.exceptions.BleDisconnectedException;
-import com.polidea.rxandroidble2.exceptions.BleGattCharacteristicException;
-*/
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.nio.ByteBuffer;
@@ -71,6 +65,13 @@ import static com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder.DEXCOM_PER
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.HOUR_IN_MS;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.MINUTE_IN_MS;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.SECOND_IN_MS;
+
+/*
+import com.polidea.rxandroidble2.RxBleConnection;
+import com.polidea.rxandroidble2.exceptions.BleCannotSetCharacteristicNotificationException;
+import com.polidea.rxandroidble2.exceptions.BleDisconnectedException;
+import com.polidea.rxandroidble2.exceptions.BleGattCharacteristicException;
+*/
 
 
 /**
@@ -313,7 +314,7 @@ public class Ob1G5StateMachine {
                             UserError.Log.d(TAG, "Wrote keep-alive request successfully");
                             speakSlowly(); // is this really needed here?
                             parent.unBond();
-                            parent.instantCreateBond();
+                            parent.instantCreateBondIfAllowed();
                             speakSlowly();
                             connection.writeCharacteristic(Authentication, new BondRequestTxMessage().byteSequence)
                                     .subscribe(
@@ -330,7 +331,7 @@ public class Ob1G5StateMachine {
                                                                     UserError.Log.d(TAG, "Wrote bond request successfully");
                                                                     parent.waitingBondConfirmation = 1; // waiting
 
-                                                                    parent.instantCreateBond();
+                                                                    parent.instantCreateBondIfAllowed();
                                                                     UserError.Log.d(TAG, "Sleeping for bond");
                                                                     for (int i = 0; i < 9; i++) {
                                                                         if (parent.waitingBondConfirmation == 2) {
@@ -722,6 +723,9 @@ public class Ob1G5StateMachine {
                     return;
                 }
                 item = new Ob1Work(tm, msg);
+                if (d) {
+                    UserError.Log.d(TAG, "Adding to queue packet: " + msg + " " + HexDump.dumpHexString(tm.byteSequence));
+                }
                 commandQueue.add(item);
                 streamCheck(item);
             }
@@ -892,6 +896,9 @@ public class Ob1G5StateMachine {
                 tm.byteSequence = new SessionStartTxMessage(ssm.getStartTime(), DexTimeKeeper.getDexTime(getTransmitterID(), ssm.getStartTime())).byteSequence;
             }
             UserError.Log.d(TAG, "New session start: " + ssm.getDexTime() + " for time: " + JoH.dateTimeText(ssm.getStartTime()));
+            if (d) {
+                UserError.Log.d(TAG, "New packet: " + HexDump.dumpHexString(tm.byteSequence));
+            }
         }
     }
 

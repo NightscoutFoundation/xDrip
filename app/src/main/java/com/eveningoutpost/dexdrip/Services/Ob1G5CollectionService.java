@@ -174,7 +174,8 @@ public class Ob1G5CollectionService extends G5BaseService {
 
     private static final boolean d = false;
 
-    private static boolean always_scan = false;
+    private static volatile boolean always_scan = false;
+    private static volatile boolean scan_next_run = true;
     private static boolean always_discover = false;
     private static boolean always_connect = false;
     private static boolean do_discovery = true;
@@ -302,8 +303,12 @@ public class Ob1G5CollectionService extends G5BaseService {
                       }
                         break;
                     case BOND:
+                        if (getInitiateBondingFlag()) {
+                            UserError.Log.d(TAG, "State bond attempting to create bond");
+                        } else {
+                            UserError.Log.d(TAG, "State bond currently does nothing as setting disabled");
+                        }
                         create_bond();
-                        UserError.Log.d(TAG, "State bond may currently do nothing depending on settings");
                         break;
                     case RESET:
                         UserError.Log.d(TAG, "Entering hard reset state");
@@ -376,7 +381,8 @@ public class Ob1G5CollectionService extends G5BaseService {
             msg("Scanning");
             stopScan();
             tryLoadingSavedMAC(); // did we already find it?
-            if (always_scan || (transmitterMAC == null) || (!transmitterID.equals(transmitterIDmatchingMAC)) || (static_last_timestamp < 1)) {
+            if (always_scan || scan_next_run || (transmitterMAC == null) || (!transmitterID.equals(transmitterIDmatchingMAC)) || (static_last_timestamp < 1)) {
+                scan_next_run = false; // reset if set
                 transmitterMAC = null; // reset if set
                 last_scan_started = JoH.tsl();
                 scanWakeLock = JoH.getWakeLock("xdrip-jam-g5-scan", (int) Constants.MINUTE_IN_MS * 6);
@@ -510,11 +516,20 @@ public class Ob1G5CollectionService extends G5BaseService {
     }
 
     private synchronized void do_create_bond() {
-        UserError.Log.d(TAG, "Attempting to create bond, device is : " + (isDeviceLocallyBonded() ? "BONDED" : "NOT Bonded"));
-        try {
-            instantCreateBond();
-        } catch (Exception e) {
-            UserError.Log.wtf(TAG, "Got exception in do_create_bond() " + e);
+        final boolean isDeviceLocallyBonded = isDeviceLocallyBonded();
+        UserError.Log.d(TAG, "Attempting to create bond, device is : " + (isDeviceLocallyBonded ? "BONDED" : "NOT Bonded"));
+
+        if (isDeviceLocallyBonded && getInitiateBondingFlag()) {
+            UserError.Log.d(TAG,"Device is marked as bonded but we are being asked to bond so attempting to unbond first");
+            unbondIfAllowed();
+            changeState(CLOSE);
+        } else {
+
+            try {
+                instantCreateBondIfAllowed();
+            } catch (Exception e) {
+                UserError.Log.wtf(TAG, "Got exception in do_create_bond() " + e);
+            }
         }
     }
 
@@ -928,6 +943,21 @@ public class Ob1G5CollectionService extends G5BaseService {
         }
     }
 
+    private void unbondIfAllowed() {
+        if (Pref.getBoolean("ob1_g5_allow_resetbond", true)) {
+            unBond();
+        } else {
+            UserError.Log.e(TAG, "Would have tried to unpair but preference setting prevents it. (unbond)");
+        }
+    }
+
+    private void resetBondIfAllowed(boolean force) {
+        if (Pref.getBoolean("ob1_g5_allow_resetbond", true)) {
+            reset_bond(force);
+        } else {
+            UserError.Log.e(TAG, "Would have tried to unpair but preference setting prevents it. (resetbond)");
+        }
+    }
 
     // Connection has been terminated or failed
     // - quite normal when device switches to sleep between readings
@@ -938,11 +968,7 @@ public class Ob1G5CollectionService extends G5BaseService {
 
         if (state == DISCOVER) {
             // possible encryption failure
-            if (Pref.getBoolean("ob1_g5_allow_resetbond", true)) {
-                reset_bond(false);
-            } else {
-                UserError.Log.e(TAG, "Would have tried to unpair but preference setting prevents it.");
-            }
+            resetBondIfAllowed(false);
         }
 
         if (state == STATE.CONNECT_NOW) {
@@ -1202,7 +1228,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                                     } catch (InterruptedException e) {
                                         //
                                     }
-                                    instantCreateBond();
+                                    instantCreateBondIfAllowed();
                                 }
                             }
                         }
@@ -1214,7 +1240,7 @@ public class Ob1G5CollectionService extends G5BaseService {
         }
     };
 
-    public void instantCreateBond() {
+    public void instantCreateBondIfAllowed() {
         if (getInitiateBondingFlag()) {
             try {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -1225,7 +1251,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                 UserError.Log.e(TAG, "Got exception in instantCreateBond() " + e);
             }
         } else {
-            UserError.Log.e(TAG, "instantCreateBond blocked by initiate_bonding flag");
+            UserError.Log.e(TAG, "instantCreateBond blocked by lack of initiate_bonding flag");
         }
     }
 
@@ -1551,8 +1577,9 @@ public class Ob1G5CollectionService extends G5BaseService {
 
     public static void resetSomeInternalState() {
         UserError.Log.d(TAG, "Resetting internal state by request");
-        transmitterMAC = null;
+        transmitterMAC = null; // probably gets reloaded from cache
         state = INIT;
+        scan_next_run = true;
     }
 
     // remember needs proguard exclusion due to access by reflection

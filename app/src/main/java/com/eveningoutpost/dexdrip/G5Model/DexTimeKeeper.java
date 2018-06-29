@@ -65,7 +65,7 @@ public class DexTimeKeeper {
             return -4;
         }
         lastTransmitterId = transmitterId;
-        return (int) (ms_since / 1000);
+        return (int) (ms_since / 1000L);
     }
 
     public static long fromDexTimeCached(int dexTimeStamp) {
