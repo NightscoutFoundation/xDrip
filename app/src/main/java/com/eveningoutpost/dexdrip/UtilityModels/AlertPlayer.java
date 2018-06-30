@@ -27,7 +27,7 @@ import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.SnoozeOnNotificationDismissService;
 import com.eveningoutpost.dexdrip.SnoozeActivity;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleWatchSync;
-import com.eveningoutpost.dexdrip.wearintegration.AmazfitAlarm;
+import com.eveningoutpost.dexdrip.wearintegration.Amazfitservice;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.eveningoutpost.dexdrip.xdrip;
 
@@ -113,6 +113,7 @@ public class AlertPlayer {
     final static int ALERT_PROFILE_MEDIUM = 3;
     final static int ALERT_PROFILE_VIBRATE_ONLY = 4;
     final static int ALERT_PROFILE_SILENT = 5;
+    public static boolean amazfitalarm_helper;
 
     // when ascending how many minutes since alert started do we wait before escalating
     final static int MAX_VIBRATING_MINUTES = 2;
@@ -134,14 +135,13 @@ public class AlertPlayer {
     }
 
     public synchronized void startAlert(Context ctx, boolean trendingToAlertEnd, AlertType newAlert, String bgValue) {
-        AmazfitAlarm alarm = new AmazfitAlarm();
-        alarm.AmazfitAlarm();
+
         startAlert(ctx, trendingToAlertEnd, newAlert, bgValue, Pref.getBooleanDefaultFalse("start_snoozed")); // for start snoozed by default!
+
     }
 
     public synchronized  void startAlert(Context ctx, boolean trendingToAlertEnd, AlertType newAlert, String bgValue , boolean start_snoozed)  {
-        AmazfitAlarm alarm = new AmazfitAlarm();
-        alarm.AmazfitAlarm();
+
         Log.d(TAG, "startAlert called, Threadid " + Thread.currentThread().getId());
         if (trendingToAlertEnd) {
             Log.d(TAG, "startAlert: This alert is trending to it's end will not do anything");
@@ -154,6 +154,8 @@ public class AlertPlayer {
 
         ActiveBgAlert.Create(newAlert.uuid, start_snoozed, nextAlertTime);
         if (!start_snoozed) VibrateNotifyMakeNoise(ctx, newAlert, bgValue, newAlert.override_silent_mode, 0);
+        JoH.startService(Amazfitservice.class);
+
     }
 
     public synchronized void stopAlert(Context ctx, boolean ClearData, boolean clearIfSnoozeFinished) {
@@ -178,6 +180,7 @@ public class AlertPlayer {
             mediaPlayer = null;
         }
         revertCurrentVolume(ctx);
+        //JoH.startService(Amazfitservice.class);
     }
 
     // only do something if an alert is active - only call from interactive
@@ -547,4 +550,5 @@ public class AlertPlayer {
         // unknown mode, not sure let's play just in any case.
         return true;
     }
+
 }

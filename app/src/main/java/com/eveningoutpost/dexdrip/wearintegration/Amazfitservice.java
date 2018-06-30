@@ -24,6 +24,7 @@ import android.util.Log;
 
 import com.eveningoutpost.dexdrip.BestGlucose;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
@@ -44,15 +45,15 @@ import android.widget.TextView;
  * Created by klaus3d3.
  */
 
-public class Amazfitservice  extends Service {
+public class Amazfitservice extends Service {
     BestGlucose.DisplayGlucose dg;
-
 
     Transporter transporter;
     private Context context;
     DataBundle dataBundle = new DataBundle();
     private HeartRate heartrate;
     private StepCounter stepcounter;
+
 
 
     @Override
@@ -73,18 +74,28 @@ public class Amazfitservice  extends Service {
         transporter.addDataListener(new Transporter.DataListener() {
             @Override
             public void onDataReceived(TransportDataItem item) {
-                if (item.getAction().equals("Amazfit_Healthdata")) {
-                    DataBundle databundle = item.getData();
-                    final StepCounter pm = StepCounter.createEfficientRecord(JoH.tsl(), databundle.getInt("steps"));
-                    HeartRate.create(JoH.tsl(),databundle.getInt("heart_rate"), databundle.getInt("heart_acuracy"));
 
-                }else {if (item.getAction().equals("Amazfit_Snooze")) {
-                    UserError.Log.e("Amazfitservice", "Remote Snooze Received - snoozing all alarms");
-                    if (ActiveBgAlert.getOnly()!=null) AlertPlayer.defaultSnooze();
-                    else UserError.Log.e("Amazfitservice", "No Alarms found to snooze");
+                //Confirmation that watch received SGV Data
+                if (item.getAction().equals("SGVDataConfirmation")) {
+                    UserError.Log.e("Amazfitservice", "Data transmission confirmed by watch");
                 }
-                else UserError.Log.e("Amazfitservice", item.getAction());
+
+                // In case of getting a remote Snooze from watch check for an active alert and confirm snooze in case of
+                if (item.getAction().equals("Amazfit_Remote_Snooze")) {
+
+                    if (ActiveBgAlert.getOnly()!=null) {
+                        UserError.Log.e("Amazfitservice", "Remote Snooze Received - snoozing all alarms");
+                        AlertPlayer.defaultSnooze();
+                        DataBundle db = new DataBundle();
+                        db.putString("U","test");
+                        if (!transporter.isTransportServiceConnected()) UserError.Log.e("Amazfitservice", "Transporter is not available");
+                        transporter.send("SnoozeRemoteConfirmation", db);
+                    }
+                    else {UserError.Log.e("Amazfitservice", "No Alarms found to snooze");
+                       }
                 }
+                //else UserError.Log.e("Amazfitservice", item.getAction());
+
 
             }
 
@@ -111,11 +122,7 @@ public class Amazfitservice  extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        try {
-            wait(1000);
-        } catch (Exception e) {}
 
-        
 
         if (!transporter.isTransportServiceConnected()){
             UserError.Log.e("Amazfitservice", "Service not connected - trying to reconnect ");
@@ -127,22 +134,22 @@ public class Amazfitservice  extends Service {
                 UserError.Log.e("Amazfitservice", "Service is not connectable ");
 
             }else{
-            UserError.Log.e("Amazfitservice", "Service is connected ");
+
 
             transporter.send("Xdrip_synced_SGV_data", getDataBundle());
-            UserError.Log.e("Amazfitservice", "Send SGV Data to watch " );
+            UserError.Log.e("Amazfitservice", "trying to send Data to watch " );
             }
         return START_STICKY;
+
 
     }
 
 
     public DataBundle getDataBundle() {
         BestGlucose.DisplayGlucose dg = BestGlucose.getDisplayGlucose();
-String prediction_text = "";
+        String prediction_text = "";
 
-
-        //UserError.Log.e("Amazfitservice", "putting data together ");
+       //UserError.Log.e("Amazfitservice", "putting data together ");
 
         dataBundle.putLong("date", dg.timestamp);
         dataBundle.putString("sgv", String.valueOf(dg.unitized)+" "+ dg.delta_arrow);
@@ -153,36 +160,24 @@ String prediction_text = "";
         dataBundle.putBoolean("fromplugin", dg.from_plugin);
 
         prediction_text="";
-
         if (BgGraphBuilder.low_occurs_at > 0) {
-
             final double now = JoH.ts();
             final double predicted_low_in_mins = (BgGraphBuilder.low_occurs_at - now) / 60000;
-
             if (predicted_low_in_mins > 1) {
                 prediction_text=(getString(R.string.low_predicted) + " " + getString(R.string.in) + ": " + (int) predicted_low_in_mins + getString(R.string.space_mins));
             }
-
         }
         dataBundle.putString("extra_string", prediction_text);
-
-
-
-
-
         dataBundle.putString("plugin_name", dg.plugin_name);
         dataBundle.putInt("warning", dg.warning);
 
+        Notifications.
 
-
-
-
+        UserError.Log.e("AmazfitService", "Alarming =" + String.valueOf(ActiveBgAlert.currentlyAlerting()));
+        dataBundle.putBoolean("activealarm",ActiveBgAlert.currentlyAlerting());
         return dataBundle;
     }
 
-public Transporter gettransporter(){
-        return transporter;
 
-}
 
 }

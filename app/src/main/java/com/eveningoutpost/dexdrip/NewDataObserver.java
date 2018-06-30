@@ -15,6 +15,7 @@ import com.eveningoutpost.dexdrip.wearintegration.Amazfitservice;
 import com.eveningoutpost.dexdrip.wearintegration.ExternalStatusService;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 
+
 import android.content.Context;
 import android.content.Intent;
 
@@ -39,11 +40,11 @@ public class NewDataObserver {
 
         sendToPebble();
         sendToWear();
-        sendToAmazfit();
         Notifications.start();
         uploadToShare(bgReading, is_follower);
         textToSpeech(bgReading, null);
         LibreBlock.UpdateBgVal(bgReading.timestamp, bgReading.calculated_value);
+        sendToAmazfit();
 
     }
 
@@ -73,6 +74,7 @@ public class NewDataObserver {
     // send data to Amazfit if enabled
     private static void sendToAmazfit() {
         if (Pref.getBooleanDefaultFalse("pref_amazfit_enable_key")){
+
 
             JoH.startService(Amazfitservice.class);
 
