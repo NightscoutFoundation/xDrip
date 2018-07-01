@@ -526,7 +526,12 @@ public class Ob1G5CollectionService extends G5BaseService {
         } else {
 
             try {
-                instantCreateBondIfAllowed();
+                Ob1G5StateMachine.doKeepAlive(this, connection, () -> {
+                    weInitiatedBondConfirmation = 1;
+                    instantCreateBondIfAllowed();
+                });
+
+                //background_automata(10000);
             } catch (Exception e) {
                 UserError.Log.wtf(TAG, "Got exception in do_create_bond() " + e);
             }
@@ -1189,7 +1194,8 @@ public class Ob1G5CollectionService extends G5BaseService {
     }
 
     private int currentBondState = 0;
-    public int waitingBondConfirmation = 0; // 0 = not waiting, 1 = waiting, 2 = received
+    public volatile int waitingBondConfirmation = 0; // 0 = not waiting, 1 = waiting, 2 = received
+    public volatile int weInitiatedBondConfirmation = 0; // 0 = not waiting, 1 = waiting, 2 = received
     final BroadcastReceiver mBondStateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -1230,6 +1236,11 @@ public class Ob1G5CollectionService extends G5BaseService {
                                     }
                                     instantCreateBondIfAllowed();
                                 }
+                            }
+
+                            if (weInitiatedBondConfirmation == 1) {
+                                weInitiatedBondConfirmation = 2;
+                                changeState(GET_DATA);
                             }
                         }
                     }

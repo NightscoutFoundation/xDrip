@@ -297,6 +297,25 @@ public class Ob1G5StateMachine {
         }
     }
 
+
+    public synchronized static void doKeepAlive(Ob1G5CollectionService parent, RxBleConnection connection, Runnable runnable) {
+        if (connection == null) return;
+        connection.writeCharacteristic(Authentication, new KeepAliveTxMessage(60).byteSequence)
+                .timeout(2, TimeUnit.SECONDS)
+                .subscribe(
+                        characteristicValue -> {
+                            UserError.Log.d(TAG, "Sent keep-alive "+ ((runnable != null) ? "Running runnable chain" : ""));
+                            if (runnable != null) {
+                                runnable.run();
+                            }
+                            throw new OperationSuccess("keep-alive runnable complete");
+                        }, throwable -> {
+                            if (!(throwable instanceof OperationSuccess)) {
+                                UserError.Log.e(TAG, "Got error sending keepalive: " + throwable);
+                            }
+                        });
+    }
+
     // Handle bonding
     @SuppressLint("CheckResult")
     public synchronized static boolean doKeepAliveAndBondRequest(Ob1G5CollectionService parent, RxBleConnection connection) {
@@ -308,7 +327,7 @@ public class Ob1G5StateMachine {
             connection.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH, 500, TimeUnit.MILLISECONDS);
         }
         UserError.Log.e(TAG, "Sending keepalive..");
-        connection.writeCharacteristic(Authentication, new KeepAliveTxMessage(25).byteSequence)
+        connection.writeCharacteristic(Authentication, new KeepAliveTxMessage(60).byteSequence)
                 .subscribe(
                         characteristicValue -> {
                             UserError.Log.d(TAG, "Wrote keep-alive request successfully");
