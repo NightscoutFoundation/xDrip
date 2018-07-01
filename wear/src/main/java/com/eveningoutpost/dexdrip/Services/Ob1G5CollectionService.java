@@ -120,6 +120,7 @@ public class Ob1G5CollectionService extends G5BaseService {
     public static final String TAG = Ob1G5CollectionService.class.getSimpleName();
     public static final String OB1G5_PREFS = "use_ob1_g5_collector_service";
     private static final String OB1G5_MACSTORE = "G5-mac-for-txid-";
+    private static final int DEFAULT_AUTOMATA_DELAY = 100;
     private static final String BUGGY_SAMSUNG_ENABLED = "buggy-samsung-enabled";
     private static volatile STATE state = INIT;
     private static volatile STATE last_automata_state = CLOSED;
@@ -158,7 +159,7 @@ public class Ob1G5CollectionService extends G5BaseService {
     private RxBleConnection connection;
 
     private PowerManager.WakeLock connection_linger;
-    private PowerManager.WakeLock scanWakeLock;
+    private volatile PowerManager.WakeLock scanWakeLock;
     private volatile PowerManager.WakeLock floatingWakeLock;
     private PowerManager.WakeLock fullWakeLock;
 
@@ -228,7 +229,7 @@ public class Ob1G5CollectionService extends G5BaseService {
     }
 
     public void background_automata() {
-        background_automata(100);
+        background_automata(DEFAULT_AUTOMATA_DELAY);
     }
 
     public synchronized void background_automata(final int timeout) {
@@ -347,12 +348,15 @@ public class Ob1G5CollectionService extends G5BaseService {
     }
 
     public void changeState(STATE new_state) {
+        changeState(new_state, DEFAULT_AUTOMATA_DELAY);
+    }
+    public void changeState(STATE new_state, int timeout) {
         if ((state == CLOSED || state == CLOSE) && new_state == CLOSE) {
             UserError.Log.d(TAG, "Not closing as already closed");
         } else {
             UserError.Log.d(TAG, "Changing state from: " + state + " to " + new_state);
             state = new_state;
-            background_automata();
+            background_automata(timeout);
         }
     }
 
@@ -906,7 +910,7 @@ public class Ob1G5CollectionService extends G5BaseService {
             //if (JoH.ratelimit("ob1-g5-scan-to-connect-transition", 3)) {
             if (state == SCAN) {
                 //  if (always_scan) {
-                changeState(STATE.CONNECT_NOW);
+                changeState(STATE.CONNECT_NOW, 500);
                 //   } else {
                 //       changeState(STATE.CONNECT);
                 //  }
