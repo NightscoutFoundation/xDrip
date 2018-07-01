@@ -89,6 +89,13 @@
                     android:summary="May trigger ambient display notifications on some devices. Needs testing!"
                     android:title="Use ongoing notification channel" />
 
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:dependency="use_notification_channels"
+                    android:key="notification_channels_grouping"
+                    android:summary="Whether notifications should be grouped together. Incompatible with 'Number Item in Notification Area' option"
+                    android:title="Group notifications together" />
+
             </PreferenceScreen>
 
 

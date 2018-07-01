@@ -147,6 +147,14 @@ public class NotificationChannels {
 
     }
 
+    private static boolean addChannelGroup() {
+        // If notifications are grouped, the BG number icon doesn't update
+        if (Pref.getBooleanDefaultFalse("use_number_icon")) {
+            return false;
+        }
+        return Pref.getBooleanDefaultFalse("notification_channels_grouping");
+    }
+
     @TargetApi(26)
     public static NotificationChannel getChan(NotificationCompat.Builder wip) {
 
@@ -186,7 +194,11 @@ public class NotificationChannels {
 
         // mirror the settings from the previous channel
         channel.setSound(template.getSound(), generic_audio);
-        channel.setGroup(template.getGroup());
+        if (addChannelGroup()) {
+            channel.setGroup(template.getGroup());
+        } else {
+            channel.setGroup(channel.getId());
+        }
         channel.setDescription(template.getDescription());
         channel.setVibrationPattern(template.getVibrationPattern());
         template.setLightColor(wip.mNotification.ledARGB);
@@ -240,7 +252,11 @@ public class NotificationChannels {
 
         // mirror the settings from the previous channel
         channel.setSound(template.getSound(), generic_audio);
-        channel.setGroup(template.getGroup());
+        if (addChannelGroup()) {
+            channel.setGroup(template.getGroup());
+        } else {
+            channel.setGroup(channel.getId());
+        }
         channel.setDescription(template.getDescription());
         channel.setVibrationPattern(template.getVibrationPattern());
         template.setLightColor(temp.ledARGB);
