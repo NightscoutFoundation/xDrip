@@ -69,6 +69,8 @@ import rx.schedulers.Schedulers;
 
 import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.getUUIDName;
 import static com.eveningoutpost.dexdrip.G5Model.CalibrationState.Ok;
+import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.CLOSED_OK_TEXT;
+import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.evaluateG6Settings;
 import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.pendingCalibration;
 import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.pendingStart;
 import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.pendingStop;
@@ -237,13 +239,13 @@ public class Ob1G5CollectionService extends G5BaseService {
             UserError.Log.d(TAG, "Blocked by existing background automata pending");
             return;
         }
-        final PowerManager.WakeLock wl = JoH.getWakeLock("jam-g5-background", timeout + 1000);
+        final PowerManager.WakeLock wl = JoH.getWakeLock("jam-g5-background", timeout + 5000);
         background_launch_waiting = true;
         new Thread(() -> {
             JoH.threadSleep(timeout);
             background_launch_waiting = false;
-            JoH.releaseWakeLock(wl);
             automata();
+            JoH.releaseWakeLock(wl);
         }).start();
     }
 
@@ -428,7 +430,8 @@ public class Ob1G5CollectionService extends G5BaseService {
     private synchronized void connect_to_device(boolean auto) {
         if ((state == STATE.CONNECT) || (state == STATE.CONNECT_NOW)) {
             // TODO check mac
-            if (transmitterMAC != null) {
+            final String localTransmitterMAC = transmitterMAC;
+            if (localTransmitterMAC != null) {
                 msg("Connect request");
                 if (state == STATE.CONNECT_NOW) {
                     if (connection_linger != null) JoH.releaseWakeLock(connection_linger);
@@ -439,7 +442,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                 stopConnect();
 
                 try {
-                    bleDevice = rxBleClient.getBleDevice(transmitterMAC);
+                    bleDevice = rxBleClient.getBleDevice(localTransmitterMAC);
 
                     /// / Listen for connection state changes
                     stateSubscription = bleDevice.observeConnectionStateChanges()
@@ -822,6 +825,11 @@ public class Ob1G5CollectionService extends G5BaseService {
             checkAndEnableBT();
 
             Ob1G5StateMachine.restoreQueue();
+
+            if (JoH.quietratelimit("evaluateG6Settings", 600)) {
+                evaluateG6Settings();
+            }
+
             automata(); // sequence logic
 
             UserError.Log.d(TAG, "Releasing service start");
@@ -1075,8 +1083,11 @@ public class Ob1G5CollectionService extends G5BaseService {
         }
     }
 
-    public static void connectionStateChange(String connection_state) {
+    public void connectionStateChange(String connection_state) {
         static_connection_state = connection_state;
+        if (connection_state.equals(CLOSED_OK_TEXT)) {
+            JoH.releaseWakeLock(floatingWakeLock);
+        }
     }
 
 
@@ -1567,6 +1578,11 @@ public class Ob1G5CollectionService extends G5BaseService {
                         }
                     }));
         }
+
+        if (JoH.quietratelimit("update-g5-battery-warning", 10)) {
+            updateBatteryWarningLevel();
+        }
+
         if ((bt != null) && (last_battery_query > 0)) {
             l.add(new StatusItem("Battery Last queried", JoH.niceTimeSince(last_battery_query) + " " + "ago", Highlight.NORMAL, "long-press",
                     new Runnable() {
@@ -1595,6 +1611,18 @@ public class Ob1G5CollectionService extends G5BaseService {
         transmitterMAC = null; // probably gets reloaded from cache
         state = INIT;
         scan_next_run = true;
+    }
+
+    public static void setG6Defaults() {
+        Pref.setBoolean("use_ob1_g5_collector_service", true);
+        Pref.setBoolean("ob1_g5_use_transmitter_alg", true);
+        Pref.setBoolean("ob1_g5_fallback_to_xdrip", false);
+        Pref.setBoolean("using_g6", true);
+        // TODO add initiate bonding true in case gets disabled??
+        final int battery_warning_level = Pref.getStringToInt("g5-battery-warning-level", G5_LOW_BATTERY_WARNING_DEFAULT);
+        if (battery_warning_level == G5_LOW_BATTERY_WARNING_DEFAULT) {
+            Pref.setString("g5-battery-warning-level", "" + G6_LOW_BATTERY_WARNING_DEFAULT);
+        }
     }
 
     // remember needs proguard exclusion due to access by reflection

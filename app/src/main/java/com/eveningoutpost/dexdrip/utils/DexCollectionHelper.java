@@ -14,6 +14,7 @@ import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -33,10 +34,8 @@ public class DexCollectionHelper {
 
             // g6 is currently a pseudo type which enables required g6 settings and then sets g5
             case DexcomG6:
-                Pref.setBoolean("use_ob1_g5_collector_service", true);
-                Pref.setBoolean("ob1_g5_use_transmitter_alg", true);
-                Pref.setBoolean("using_g6", true);
-                // TODO add initiate bonding true in case gets disabled??
+                Ob1G5CollectionService.setG6Defaults();
+
                 DexCollectionType.setDexCollectionType(DexCollectionType.DexcomG5);
                 // intentional fall thru
 

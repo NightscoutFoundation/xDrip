@@ -1,7 +1,6 @@
 package com.eveningoutpost.dexdrip.Models;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.PowerManager;
@@ -26,6 +25,7 @@ import com.eveningoutpost.dexdrip.ShareModels.ShareUploadableBg;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
@@ -87,7 +87,7 @@ public class BgReading extends Model implements ShareUploadableBg {
 
     @Expose
     @Column(name = "raw_data")
-    public double raw_data;
+    public volatile double raw_data;
 
     @Expose
     @Column(name = "filtered_data")
@@ -180,7 +180,7 @@ public class BgReading extends Model implements ShareUploadableBg {
 
     @Expose
     @Column(name = "source_info")
-    public String source_info;
+    public volatile String source_info;
 
     public synchronized static void updateDB() {
         final String[] updates = new String[]{"ALTER TABLE BgReadings ADD COLUMN dg_mgdl REAL;",
@@ -1045,12 +1045,17 @@ public class BgReading extends Model implements ShareUploadableBg {
         }
     }
 
-    public void appendSourceInfo(String info) {
+    public BgReading appendSourceInfo(String info) {
         if ((source_info == null) || (source_info.length() == 0)) {
             source_info = info;
         } else {
-            source_info += "::" + info;
+            if (!source_info.startsWith(info) && (!source_info.contains("::" + info))) {
+                source_info += "::" + info;
+            } else {
+                UserError.Log.e(TAG, "Ignoring duplicate source info " + source_info + " -> " + info);
+            }
         }
+        return this;
     }
 
     public boolean isBackfilled() {
@@ -1059,7 +1064,10 @@ public class BgReading extends Model implements ShareUploadableBg {
 
     public static final double SPECIAL_G5_PLACEHOLDER = -0.1597;
 
-    // TODO remember to sync this with wear code base
+    public static BgReading bgReadingInsertFromG5(double calculated_value, long timestamp) {
+        return bgReadingInsertFromG5(calculated_value, timestamp, null);
+    }
+                                                               // TODO remember to sync this with wear code base
     public static synchronized BgReading bgReadingInsertFromG5(double calculated_value, long timestamp, String sourceInfoAppend) {
 
         final Sensor sensor = Sensor.currentSensor();
@@ -1086,11 +1094,7 @@ public class BgReading extends Model implements ShareUploadableBg {
             if (JoH.ratelimit("sync wakelock", 15)) {
                 final PowerManager.WakeLock linger = JoH.getWakeLock("G5 Insert", 4000);
             }
-            // TODO make Inevitable
-            new Thread(() -> {
-                JoH.threadSleep(3000);
-                notifyAndSync(bgr);
-            }).start();
+            Inevitable.task("NotifySyncBgr" + bgr.timestamp, 3000, () -> notifyAndSync(bgr));
             return bgr;
         } else {
             return existing;
