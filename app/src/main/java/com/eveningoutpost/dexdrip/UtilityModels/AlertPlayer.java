@@ -104,8 +104,8 @@ public class AlertPlayer {
 
     private final static String TAG = AlertPlayer.class.getSimpleName();
     private volatile MediaPlayer mediaPlayer;
-    int volumeBeforeAlert = -1;
-    int volumeForThisAlert = -1;
+    volatile int volumeBeforeAlert = -1;
+    volatile int volumeForThisAlert = -1;
 
     final static int ALERT_PROFILE_HIGH = 1;
     final static int ALERT_PROFILE_ASCENDING = 2;
@@ -344,7 +344,13 @@ public class AlertPlayer {
             volumeForThisAlert = (int) (maxVolume * VolumeFrac);
 
             Log.i(TAG, "before playing volumeBeforeAlert " + volumeBeforeAlert + " volumeForThisAlert " + volumeForThisAlert);
-            manager.setStreamVolume(getAlertPlayerStreamType(), volumeForThisAlert, 0);
+            try {
+                manager.setStreamVolume(getAlertPlayerStreamType(), volumeForThisAlert, 0);
+            } catch (SecurityException e) {
+                if (JoH.ratelimit("sound volume error", 12000)) {
+                    UserError.Log.wtf(TAG, "This device does not allow us to modify the sound volume");
+                }
+            }
             try {
                 mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                     @Override
@@ -366,19 +372,27 @@ public class AlertPlayer {
             Log.wtf(TAG, "PlayFile: Starting an alert failed, what should we do !!!");
         }
     }
-    
-    private void revertCurrentVolume(final Context ctx) {
+
+    private synchronized void revertCurrentVolume(final Context ctx) {
         AudioManager manager = (AudioManager) ctx.getSystemService(Context.AUDIO_SERVICE);
         int currentVolume = manager.getStreamVolume(getAlertPlayerStreamType());
         Log.i(TAG, "revertCurrentVolume volumeBeforeAlert " + volumeBeforeAlert + " volumeForThisAlert " + volumeForThisAlert
                 + " currentVolume " + currentVolume);
         if (volumeForThisAlert == currentVolume && (volumeBeforeAlert != -1) && (volumeForThisAlert != -1)) {
             // If the user has changed the volume, don't change it again.
-            manager.setStreamVolume(getAlertPlayerStreamType(), volumeBeforeAlert, 0);
+
+            try {
+                manager.setStreamVolume(getAlertPlayerStreamType(), volumeBeforeAlert, 0);
+            } catch (SecurityException e) {
+                if (JoH.ratelimit("sound volume error", 12000)) {
+                    UserError.Log.wtf(TAG, "This device does not allow us to modify the sound volume");
+                }
+            }
+
         }
         volumeBeforeAlert = -1;
-        volumeForThisAlert = - 1;
-        
+        volumeForThisAlert = -1;
+
     }
 
     private PendingIntent notificationIntent(Context ctx, Intent intent){
