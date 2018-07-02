@@ -302,8 +302,10 @@ public class BgGraphBuilder {
                 final float ypos = 13 * yscale; // TODO Configurable
                 int last_percent = -1;
                 float last_ypos = -1;
+
+                int count = aplist.size();
                 for (APStatus item : aplist) {
-                    if (item.basal_percent != last_percent) {
+                    if (--count == 0 || (item.basal_percent != last_percent)) {
                         final float this_ypos = ypos - item.basal_percent / 100f;
                         if (last_ypos >= 0) {
                             // create square wave point
