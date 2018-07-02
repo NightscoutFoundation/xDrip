@@ -107,7 +107,11 @@ public class WebServiceSgv extends BaseWebService {
 
                     item.put("date", reading.timestamp);
                     item.put("sgv", (int) reading.getDg_mgdl());
-                    item.put("delta", new BigDecimal(reading.getDg_slope() * 5 * 60 * 1000).setScale(3, BigDecimal.ROUND_HALF_UP));
+                    try {
+                        item.put("delta", new BigDecimal(reading.getDg_slope() * 5 * 60 * 1000).setScale(3, BigDecimal.ROUND_HALF_UP));
+                    } catch (NumberFormatException e) {
+                        UserError.Log.e(TAG, "Could not pass delta to webservice as was invalid number");
+                    }
                     item.put("direction", reading.getDg_deltaName());
                     item.put("noise", reading.noiseValue());
 
