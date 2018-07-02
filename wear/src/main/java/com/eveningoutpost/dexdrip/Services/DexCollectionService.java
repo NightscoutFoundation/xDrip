@@ -80,7 +80,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import static android.bluetooth.BluetoothDevice.TRANSPORT_LE;
 import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.getStatusName;
+import static com.eveningoutpost.dexdrip.Models.JoH.convertPinToBytes;
 import static com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder.DEXCOM_PERIOD;
 
 @TargetApi(Build.VERSION_CODES.KITKAT)
@@ -167,7 +169,11 @@ public class DexCollectionService extends Service implements BtCallBack{
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.d(TAG, "Received pairing request");
-            JoH.doPairingRequest(context, this, intent, mDeviceAddress, DEFAULT_BT_PIN);
+            if (!JoH.doPairingRequest(context, this, intent, mDeviceAddress, DEFAULT_BT_PIN)) {
+                UserError.Log.d(TAG,"Pairing request marked as failed, reducing settings to avoid auto-pairing");
+                Pref.setBoolean("blukon_unbonding", false);
+                unRegisterPairingReceiver();
+            }
         }
     };
     private ForegroundServiceStarter foregroundServiceStarter;
@@ -340,7 +346,7 @@ public class DexCollectionService extends Service implements BtCallBack{
                             Home.toaststaticnext("Bonding failing so disabling bonding feature");
                             Pref.setBoolean(PREF_DEX_COLLECTION_BONDING, false);
                         } else {
-                            device.setPin(JoH.convertPinToBytes(DEFAULT_BT_PIN));
+                            device.setPin(convertPinToBytes(DEFAULT_BT_PIN));
                             device.createBond();
                         }
                     }
@@ -863,7 +869,7 @@ public class DexCollectionService extends Service implements BtCallBack{
                         @Override
                         public void run() {
                             Pref.setBoolean(PREF_DEX_COLLECTION_BONDING, true);
-                            JoH.static_toast_long("This probably only works on HM10/HM11 devices at the moment and takes a minute");
+                            JoH.static_toast_long("This probably only works on HM10/HM11 and blucon devices at the moment and takes a minute");
                             new Thread(new Runnable() {
                                 @Override
                                 public void run() {
@@ -1027,6 +1033,13 @@ public class DexCollectionService extends Service implements BtCallBack{
         return START_STICKY;
     }
 
+    private void unRegisterPairingReceiver() {
+        try {
+            unregisterReceiver(mPairingRequestRecevier);
+        } catch (Exception e) {
+            android.util.Log.e(TAG, "Error unregistering pairing receiver: " + e);
+        }
+    }
 
     @Override
     public void onDestroy() {
@@ -1036,11 +1049,7 @@ public class DexCollectionService extends Service implements BtCallBack{
         close();
         foregroundServiceStarter.stop();
 
-        try {
-            unregisterReceiver(mPairingRequestRecevier);
-        } catch (Exception e) {
-            android.util.Log.e(TAG, "Error unregistering pairing receiver: " + e);
-        }
+        unRegisterPairingReceiver();
 
         DisconnectReceiver.removeCallBack(TAG);
 
@@ -1297,6 +1306,7 @@ public class DexCollectionService extends Service implements BtCallBack{
             return writeChar(mCharacteristicSend, value);
         }
 
+        // BLUCON NULL HERE? HOW TO RESOLVE?
         if (mCharacteristic == null) {
             status("Error: mCharacteristic was null in sendBtMessage");
             Log.e(TAG, lastState);
@@ -1376,10 +1386,21 @@ public class DexCollectionService extends Service implements BtCallBack{
             return false;
         }
 
+        if (static_use_blukon || Blukon.expectingBlukonDevice()) {
+            UserError.Log.d(TAG, "Setting blukon pairing pin to: " + DEFAULT_BT_PIN);
+            device.setPin(convertPinToBytes(DEFAULT_BT_PIN));
+        }
+
         setRetryTimer();
         if (mBluetoothGatt == null) {
             Log.i(TAG, "connect: Trying to create a new connection.");
-            mBluetoothGatt = device.connectGatt(getApplicationContext(), getTrustAutoConnect(), mGattCallback);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                mBluetoothGatt = device.connectGatt(getApplicationContext(), getTrustAutoConnect(), mGattCallback, TRANSPORT_LE);
+            } else {
+                mBluetoothGatt = device.connectGatt(getApplicationContext(), getTrustAutoConnect(), mGattCallback);
+            }
+
         } else {
             Log.i(TAG, "connect: Trying to re-use connection.");
             mBluetoothGatt.connect();
