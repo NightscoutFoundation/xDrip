@@ -153,8 +153,14 @@ public class AlertPlayer {
         long nextAlertTime = newAlert.getNextAlertTime(ctx);
 
         ActiveBgAlert.Create(newAlert.uuid, start_snoozed, nextAlertTime);
-        if (!start_snoozed) VibrateNotifyMakeNoise(ctx, newAlert, bgValue, newAlert.override_silent_mode, 0);
-        JoH.startService(Amazfitservice.class);
+        if (!start_snoozed) {
+            VibrateNotifyMakeNoise(ctx, newAlert, bgValue, newAlert.override_silent_mode, 0);
+
+            Amazfitservice.setAction("xDrip_Alarm");
+            JoH.startService(Amazfitservice.class);
+        }
+
+
 
     }
 
@@ -180,7 +186,8 @@ public class AlertPlayer {
             mediaPlayer = null;
         }
         revertCurrentVolume(ctx);
-        //JoH.startService(Amazfitservice.class);
+        Amazfitservice.setAction("xDrip_AlarmCancel");
+        JoH.startService(Amazfitservice.class);
     }
 
     // only do something if an alert is active - only call from interactive

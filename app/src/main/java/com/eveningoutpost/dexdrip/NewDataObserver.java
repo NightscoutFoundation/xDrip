@@ -17,7 +17,6 @@ import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 
 
 import android.content.Context;
-import android.content.Intent;
 
 import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
 
@@ -74,9 +73,9 @@ public class NewDataObserver {
     // send data to Amazfit if enabled
     private static void sendToAmazfit() {
         if (Pref.getBooleanDefaultFalse("pref_amazfit_enable_key")){
-
-
+            Amazfitservice.setAction("xDrip_synced_SGV_data");
             JoH.startService(Amazfitservice.class);
+
 
         }
     }

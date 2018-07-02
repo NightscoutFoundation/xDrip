@@ -3471,7 +3471,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             case R.id.action_resend_last_bg:
                 startService(new Intent(this, WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_RESEND));
                 if(Pref.getBoolean("pref_amazfit_enable_key", true)) {
-
+                    Amazfitservice.setAction("xDrip_synced_SGV_data");
                     JoH.startService(Amazfitservice.class);
                 }
                 break;
