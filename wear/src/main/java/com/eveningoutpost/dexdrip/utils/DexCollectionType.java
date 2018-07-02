@@ -29,6 +29,7 @@ public enum DexCollectionType {
     WifiBlueToothWixel("WifiBlueToothWixel"),
     WifiWixel("WifiWixel"),
     DexcomG5("DexcomG5"),
+    DexcomG6("DexcomG6"), // currently pseudo
     WifiDexBridgeWixel("WifiDexbridgeWixel"),
     Follower("Follower"),
     LibreAlarm("LibreAlarm"),
