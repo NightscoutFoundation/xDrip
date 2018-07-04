@@ -94,7 +94,7 @@
     <string name="pref_amazfit_enable_summary">Enable Amazfit Data support</string>
     <string name="pref_amazfit_enable">Enable</string>
     <string name="pref_amazfit_tile">Amazfit Service</string>
-    <string name="pref_amazfit_alarm_enable_summary">Sends Alarms to Smartwatch and mutes Phone</string>
+    <string name="pref_amazfit_alarm_enable_summary">Sends Alarms to Smartwatch</string>
     <string name="pref_amazfit_alarm_enable">Enable</string>
     <string name="pref_amazfit_alarm_tile">Watch Alarm</string>
 

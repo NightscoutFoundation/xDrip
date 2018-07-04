@@ -153,15 +153,7 @@ public class AlertPlayer {
         long nextAlertTime = newAlert.getNextAlertTime(ctx);
 
         ActiveBgAlert.Create(newAlert.uuid, start_snoozed, nextAlertTime);
-        if (!start_snoozed) {
-            VibrateNotifyMakeNoise(ctx, newAlert, bgValue, newAlert.override_silent_mode, 0);
-
-            Amazfitservice.setAction("xDrip_Alarm");
-            JoH.startService(Amazfitservice.class);
-        }
-
-
-
+        if (!start_snoozed) VibrateNotifyMakeNoise(ctx, newAlert, bgValue, newAlert.override_silent_mode, 0);
     }
 
     public synchronized void stopAlert(Context ctx, boolean ClearData, boolean clearIfSnoozeFinished) {
@@ -186,8 +178,9 @@ public class AlertPlayer {
             mediaPlayer = null;
         }
         revertCurrentVolume(ctx);
+        if (!Pref.getBoolean("pref_amazfit_enable_key", false)&&!Pref.getBoolean("pref_amazfit_alarm_enable_key", false)){
         Amazfitservice.setAction("xDrip_AlarmCancel");
-        JoH.startService(Amazfitservice.class);
+        JoH.startService(Amazfitservice.class);}
     }
 
     // only do something if an alert is active - only call from interactive
@@ -523,6 +516,13 @@ public class AlertPlayer {
                 JoH.startService(PebbleWatchSync.class);
             }
         }
+
+        //send alert to amazfit
+        if (Pref.getBoolean("pref_amazfit_enable_key", false)&&Pref.getBoolean("pref_amazfit_alarm_enable_key", false))
+        {      Amazfitservice.setAction("xDrip_Alarm");
+            JoH.startService(Amazfitservice.class);
+        }
+
 
         // speak alert
         if (Pref.getBooleanDefaultFalse("speak_alerts")) {

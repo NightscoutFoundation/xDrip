@@ -10,6 +10,8 @@ import android.content.Context;
 import android.content.Intent;
 import com.eveningoutpost.dexdrip.Models.HeartRate;
 import com.eveningoutpost.dexdrip.Models.StepCounter;
+
+import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import com.eveningoutpost.dexdrip.BestGlucose;
@@ -18,6 +20,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 
 import com.eveningoutpost.dexdrip.xdrip;
 import com.huami.watch.transport.DataBundle;
+import com.huami.watch.transport.DataTransportResult;
 import com.huami.watch.transport.TransportDataItem;
 
 
@@ -50,9 +53,8 @@ public class Amazfitservice extends Service {
         super.onCreate();
 
 
-
-
         transporter = (TransporterClassic)Transporter.get(getApplicationContext(), "com.eveningoutpost.dexdrip.wearintegration");
+
         transporter.connectTransportService();
         transporter.addChannelListener(new Transporter.ChannelListener() {
             @Override
@@ -61,8 +63,16 @@ public class Amazfitservice extends Service {
                 //You can change the action to whatever you want, there's also an option for a data bundle to be added (see below)
                 if(ready) UserError.Log.e("Amazfitservice", "channel changed ");
             }
+
         });
 
+        Transporter.DataSendResultCallback test = new Transporter.DataSendResultCallback() {
+            @Override
+            public void onResultBack(DataTransportResult dataTransportResult) {
+
+                UserError.Log.e("Amazfitservice", "Result back ");
+            }
+        };
         transporter.addDataListener(new Transporter.DataListener() {
             @Override
             public void onDataReceived(TransportDataItem item) {
@@ -133,8 +143,10 @@ public class Amazfitservice extends Service {
             }else{
 
 
-            transporter.send(getAction(), getDataBundle());
-            UserError.Log.e("Amazfitservice", "trying to send Data to watch "+ getAction());
+
+                transporter.send(getAction(), getDataBundle());
+            UserError.Log.e("Amazfitservice", "trying to send Data to watch ");
+
             }
         return START_STICKY;
 
