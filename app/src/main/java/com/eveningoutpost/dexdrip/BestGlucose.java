@@ -120,7 +120,7 @@ public class BestGlucose {
         }
 
         public String humanSummary() {
-            return unitized + " " + (doMgDl ? "mg/dl" : "mmol/l") + (isStale() ? ", " + minutesAgo(true) : "");
+            return unitized + " " + (doMgDl ? "mg/dl" : "mmol/l") + (isStale() ? ", " + minutesAgo(true).toLowerCase() : "");
         }
 
     }

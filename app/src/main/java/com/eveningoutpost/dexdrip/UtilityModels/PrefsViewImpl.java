@@ -18,7 +18,7 @@ public class PrefsViewImpl extends ObservableArrayMapNoNotify<String, Boolean> i
 
     public void setbool(String name, boolean value) {
         Pref.setBoolean(name, value);
-        put(name, value);
+        super.put(name, value);
     }
 
     public void togglebool(String name) {
@@ -35,4 +35,20 @@ public class PrefsViewImpl extends ObservableArrayMapNoNotify<String, Boolean> i
         }
         return value;
     }
+
+    @Override
+    public Boolean put(String key, Boolean value) {
+        if (!(super.get(key).equals(value))) {
+            Pref.setBoolean(key, value);
+            super.put(key, value);
+        }
+        return value;
+    }
+
+    public void put(Object key, boolean value) {
+        if (!(super.get(key).equals(value))) {
+            super.put((String) key, value);
+        }
+    }
+
 }

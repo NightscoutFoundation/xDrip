@@ -617,6 +617,9 @@
             android:name=".EventLogActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_error" />
+        <activity
+            android:name=".eassist.EmergencyAssistActivity"
+            android:label="@string/emergency_messages" />
     </application>
 
 </manifest>

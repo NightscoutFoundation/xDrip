@@ -72,7 +72,7 @@
 
     <!-- Location Settings -->
     <string name="location_not_found_title">Location Is Not Enabled</string>
-    <string name="location_not_found_message">For Bluetooth discovery to work on newer devices, location must be enabled. xDrip does not track your location and it can be disabled after pairing is successful.</string>
+    <string name="location_not_found_message">For Bluetooth discovery to work on newer devices, location must be enabled. xDrip does not track your location except with the optional Emergency Message feature</string>
     <string name="location_yes">Enable</string>
 
     <!-- broadcast settings -->
@@ -950,4 +950,21 @@
     <string name="warning_no_alert_will_be_played_in_silent_mode">Warning, no alert will be played when phone in silent/vibrate mode!!!</string>
     <string name="automatic_message_from_xdrip">automatic message from xDrip+</string>
     <string name="zero_zero_zero_zero">0000</string>
+    <string name="emergency_messages">Emergency Messages</string>
+    <string name="emergency_message_feature">Emergency Message Feature</string>
+    <string name="text_messages_can_be_sent_with_your_location_if_you_do_not_respond_to_alarms_this_feature_is_experimental_and_may_not_be_reliable">Text messages can be sent with your location if you do not respond to alarms. This feature is experimental and may not be reliable.</string>
+    <string name="your_name">Your name</string>
+    <string name="did_not_acknowledge_a_low_glucose_alert">%s did not acknowledge a low glucose alert for %s</string>
+    <string name="did_not_acknowledge_a_high_glucose_alert">%s did not acknowledge a high glucose alert for %s</string>
+    <string name="has_not_had_glucose_data_received_for">%s has not had glucose data received for %s</string>
+    <string name="phone_has_not_been_used_for">%s phone has not been used for %s</string>
+    <string name="is_requesting_assistance">%s is Requesting assistance</string>
+    <string name="is_testing_the_assistance_request_feature">%s is testing the assistance request feature</string>
+    <string name="emergency_message_near_format_string">%s near %s %s %s %s</string>
+    <string name="choose_when_to_send_messages">Choose when to send messages:</string>
+    <string name="low_alert_not_acknowledged">Low Alert not acknowledged</string>
+    <string name="high_alert_not_acknowledged">High Alert not acknowledged</string>
+    <string name="device_inactivity">Device inactivity</string>
+    <string name="test_message_sending">Test Message Sending</string>
+    <string name="d_selected_contacts_for_text_messages_format">%d selected contacts for text messages</string>
 </resources>
