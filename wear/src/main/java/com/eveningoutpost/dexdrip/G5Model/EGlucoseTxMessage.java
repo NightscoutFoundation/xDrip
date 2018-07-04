@@ -11,8 +11,7 @@ public class EGlucoseTxMessage extends TransmitterMessage {
     final byte opcode = 0x4e;
 
     public EGlucoseTxMessage() {
-        data = ByteBuffer.allocate(6);
-        data.order(ByteOrder.LITTLE_ENDIAN);
+        data = ByteBuffer.allocate(3).order(ByteOrder.LITTLE_ENDIAN);
         data.put(opcode);
         appendCRC();
     }
