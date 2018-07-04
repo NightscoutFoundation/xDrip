@@ -702,6 +702,14 @@ public class JoH {
         return niceTimeScalar(t).replaceFirst("([A-z]).*$", "$1");
     }
 
+    public static String niceTimeScalarShortWithDecimalHours(long t) {
+        if (t > Constants.HOUR_IN_MS) {
+            return niceTimeScalar(t,1).replaceFirst("([A-z]).*$", "$1");
+        } else {
+            return niceTimeScalar(t).replaceFirst("([A-z]).*$", "$1");
+        }
+    }
+
 
     public static double tolerantParseDouble(String str) throws NumberFormatException {
         return Double.parseDouble(str.replace(",", "."));
