@@ -4,11 +4,14 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.databinding.BindingAdapter;
+import android.graphics.Typeface;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 
@@ -24,9 +27,38 @@ public class BindingAdapterUtils {
 
     private static volatile long endTime;
 
+    @BindingAdapter(value = {"showIfTrueAnimated"}, requireAll = true)
+    public static void setShowIfTrueAnimated(@NonNull View view, boolean isVisible) {
+        setVisibility(view, isVisible ? View.VISIBLE : View.GONE);
+    }
+
     @BindingAdapter(value = {"showIfTrue"}, requireAll = true)
     public static void setShowIfTrue(@NonNull View view, boolean isVisible) {
         view.setVisibility(isVisible ? View.VISIBLE : View.GONE);
+    }
+
+    @BindingAdapter(value = {"showIfTrue"}, requireAll = true)
+    public static void setShowIfTrue(@NonNull View view, Boolean isVisible) {
+        if (isVisible == null) isVisible = false;
+        view.setVisibility(isVisible ? View.VISIBLE : View.GONE);
+    }
+
+    @BindingAdapter("boldIfTrue")
+    public static void boldIfTrue(TextView view, boolean value) {
+        if (value) {
+            view.setTypeface(null, Typeface.BOLD);
+        } else {
+            view.setTypeface(null, Typeface.NORMAL);
+        }
+    }
+
+    @BindingAdapter("boldIfTrue")
+    public static void boldIfTrueButton(CompoundButton view, boolean value) {
+        if (value) {
+            view.setTypeface(null, Typeface.BOLD);
+        } else {
+            view.setTypeface(null, Typeface.NORMAL);
+        }
     }
 
     @BindingAdapter(value = {"showIfTrueInRecycler"}, requireAll = true)
