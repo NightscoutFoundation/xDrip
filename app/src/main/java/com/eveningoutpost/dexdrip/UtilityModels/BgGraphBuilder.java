@@ -301,7 +301,7 @@ public class BgGraphBuilder {
                 final List<PointValue> gpoints = new ArrayList<>(plist.size());
                 final float yscale = !doMgdl ? (float) Constants.MGDL_TO_MMOLL : 1f;
                 for (Prediction p : plist) {
-                    final PointValue point = new PointValue(((float) (p.timestamp + (Constants.MINUTE_IN_MS * 30)) / FUZZER), (float) (p.glucose * yscale));
+                    final PointValue point = new PointValue(((float) (p.timestamp + (Constants.MINUTE_IN_MS * 10)) / FUZZER), (float) (p.glucose * yscale));
                     switch (p.source) {
                         case "EGlucoseRx":
                             gpoints.add(point);
@@ -312,11 +312,11 @@ public class BgGraphBuilder {
 
                 if (gpoints.size() > 0) {
                     lines.add(new Line(gpoints)
+                            .setHasLabels(false)
                             .setHasPoints(true)
                             .setHasLines(false)
                             .setPointRadius(1)
                             .setColor(ChartUtils.darkenColor(ChartUtils.darkenColor(getCol(X.color_predictive)))));
-
                 }
             }
         }
