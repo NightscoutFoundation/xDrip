@@ -358,7 +358,6 @@
                 android:title="@string/show_libre_trend" />
             <CheckBoxPreference
                 android:defaultValue="false"
-                android:dependency="using_g6"
                 android:key="show_g_prediction"
                 android:summary="Show G6 predictive glucose dots"
                 android:title="G6 Prediction"
