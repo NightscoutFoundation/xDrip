@@ -741,6 +741,7 @@ public class BgReading extends Model implements ShareUploadableBg {
     }
 
     public static double slopefromName(String slope_name) {
+        if (slope_name == null) return 0;
         double slope_by_minute = 0;
         if (slope_name.compareTo("DoubleDown") == 0) {
             slope_by_minute = -3.5;
@@ -1112,14 +1113,14 @@ public class BgReading extends Model implements ShareUploadableBg {
         BgSendQueue.handleNewBgReading(bgr, "create", xdrip.getAppContext(), Home.get_follower(), !recent); // pebble and widget and follower
     }
 
-    public static void bgReadingInsertFromJson(String json, boolean do_notification) {
-        bgReadingInsertFromJson(json, do_notification, false);
+    public static BgReading bgReadingInsertFromJson(String json, boolean do_notification) {
+        return bgReadingInsertFromJson(json, do_notification, false);
     }
 
-    public static void bgReadingInsertFromJson(String json, boolean do_notification, boolean force_sensor) {
+    public static BgReading bgReadingInsertFromJson(String json, boolean do_notification, boolean force_sensor) {
         if ((json == null) || (json.length() == 0)) {
             Log.e(TAG, "bgreadinginsertfromjson passed a null or zero length json");
-            return;
+            return null;
         }
         final BgReading bgr = fromJSON(json);
         if (bgr != null) {
@@ -1148,6 +1149,7 @@ public class BgReading extends Model implements ShareUploadableBg {
         } else {
             Log.e(TAG,"Got null bgr from json");
         }
+        return bgr;
     }
 
     // TODO this method shares some code with above.. merge
