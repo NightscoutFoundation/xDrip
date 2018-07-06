@@ -663,6 +663,11 @@
                     android:summary="@string/close_gatt"
                     android:title="@string/close_gatt_on_ble_disconnect" />
                 <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="bluetooth_use_scan"
+                    android:summary="Scan before connecting on xBridge and Libre bluetooth"
+                    android:title="Use scanning" />
+                <CheckBoxPreference
                     android:defaultValue="true"
                     android:key="bluetooth_trust_autoconnect"
                     android:summary="Use and trust Android bluetooth auto connect feature"

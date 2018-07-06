@@ -270,7 +270,7 @@ private static final int POSITION_OF_SENSOR_STATUS_BYTE = 17;
             } else {
                 Log.e(TAG, "New Cmd received too early, send blukon to sleep");
                 currentCommand = SLEEP_COMMAND;
-                Home.toaststaticnext("New Cmd received too early: ignore it!");
+                //Home.toaststaticnext("New Cmd received too early: ignore it!");
             }
         }
 

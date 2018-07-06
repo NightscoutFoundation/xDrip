@@ -25,6 +25,7 @@ public class WearSyncBooleans {
         booleansToSync.add("only_ever_use_wear_collector");
         booleansToSync.add("external_blukon_algorithm");
         booleansToSync.add("bluetooth_trust_autoconnect");
+        booleansToSync.add("bluetooth_use_scan");
         booleansToSync.add("using_g6");
     }
 

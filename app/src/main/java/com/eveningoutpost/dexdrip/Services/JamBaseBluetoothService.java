@@ -7,11 +7,8 @@ import android.os.PowerManager;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.utils.bt.HandleBleScanException;
 import com.polidea.rxandroidble.exceptions.BleScanException;
-
-import java.util.Date;
-import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 
 
 // jamorham base class for reactive bluetooth services
@@ -22,57 +19,8 @@ public abstract class JamBaseBluetoothService extends Service {
     protected String TAG = this.getClass().getSimpleName();
     private volatile boolean background_launch_waiting = false;
 
-    private static long secondsTill(Date retryDateSuggestion) {
-        return TimeUnit.MILLISECONDS.toSeconds(retryDateSuggestion.getTime() - System.currentTimeMillis());
-    }
-
     protected String handleBleScanException(BleScanException bleScanException) {
-        final String text;
-
-        switch (bleScanException.getReason()) {
-            case BleScanException.BLUETOOTH_NOT_AVAILABLE:
-                text = "Bluetooth is not available";
-                break;
-            case BleScanException.BLUETOOTH_DISABLED:
-                text = "Enable bluetooth and try again";
-                break;
-            case BleScanException.LOCATION_PERMISSION_MISSING:
-                text = "On Android 6.0+ location permission is required. Implement Runtime Permissions";
-                break;
-            case BleScanException.LOCATION_SERVICES_DISABLED:
-                text = "Location services needs to be enabled on Android 6.0+";
-                break;
-            case BleScanException.SCAN_FAILED_ALREADY_STARTED:
-                text = "Scan with the same filters is already started";
-                break;
-            case BleScanException.SCAN_FAILED_APPLICATION_REGISTRATION_FAILED:
-                text = "Failed to register application for bluetooth scan";
-                break;
-            case BleScanException.SCAN_FAILED_FEATURE_UNSUPPORTED:
-                text = "Scan with specified parameters is not supported";
-                break;
-            case BleScanException.SCAN_FAILED_INTERNAL_ERROR:
-                text = "Scan failed due to internal error";
-                break;
-            case BleScanException.SCAN_FAILED_OUT_OF_HARDWARE_RESOURCES:
-                text = "Scan cannot start due to limited hardware resources";
-                break;
-            case BleScanException.UNDOCUMENTED_SCAN_THROTTLE:
-                text = String.format(
-                        Locale.getDefault(),
-                        "Android 7+ does not allow more scans. Try in %d seconds",
-                        secondsTill(bleScanException.getRetryDateSuggestion())
-                );
-                break;
-            case BleScanException.UNKNOWN_ERROR_CODE:
-            case BleScanException.BLUETOOTH_CANNOT_START:
-            default:
-                text = "Unable to start scanning";
-                break;
-        }
-        UserError.Log.w(TAG, text + " " + bleScanException);
-        return text;
-
+        return HandleBleScanException.handle(TAG, bleScanException);
     }
 
     public void background_automata() {
