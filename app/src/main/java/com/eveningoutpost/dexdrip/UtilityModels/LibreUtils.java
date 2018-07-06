@@ -3,12 +3,13 @@ package com.eveningoutpost.dexdrip.UtilityModels;
 import com.eveningoutpost.dexdrip.Home;
 
 import android.util.Log;
+import lombok.Getter;
 
 public class LibreUtils {
 
     private static final String TAG = LibreUtils.class.getSimpleName();
 
-    private static final boolean testWithDeadSensor = false; // never in production
+    @Getter private static final boolean testWithDeadSensor = false; // never in production
 
     private final static long[] crc16table = {
             0, 4489, 8978, 12955, 17956, 22445, 25910, 29887, 35912,
