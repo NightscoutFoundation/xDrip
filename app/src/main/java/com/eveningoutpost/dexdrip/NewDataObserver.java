@@ -58,6 +58,7 @@ public class NewDataObserver {
             }
             // send to pebble
             sendToPebble();
+            //send to amazfit
             sendToAmazfit();
             // TODO should we also be syncing wear here?
         }
@@ -72,11 +73,8 @@ public class NewDataObserver {
     }
     // send data to Amazfit if enabled
     private static void sendToAmazfit() {
-        if (Pref.getBooleanDefaultFalse("pref_amazfit_enable_key")){
-            Amazfitservice.setAction("xDrip_synced_SGV_data");
-            JoH.startService(Amazfitservice.class);
-
-
+        if(Pref.getBoolean("pref_amazfit_enable_key", true)) {
+            Amazfitservice.start("xDrip_synced_SGV_data");
         }
     }
 

@@ -525,7 +525,7 @@ public class Notifications extends IntentService {
         }
     }
 
-    private Bitmap createWearBitmap(long start, long end) {
+    public Bitmap createWearBitmap(long start, long end) {
         return new BgSparklineBuilder(mContext)
                 .setBgGraphBuilder(new BgGraphBuilder(mContext))
                 .setStart(start)

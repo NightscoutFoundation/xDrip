@@ -165,12 +165,15 @@ public class AlertPlayer {
         Log.d(TAG, "stopAlert: stop called ClearData " + ClearData + "  ThreadID " + Thread.currentThread().getId());
         if (ClearData) {
             ActiveBgAlert.ClearData();
+
         }
         if (clearIfSnoozeFinished) {
             ActiveBgAlert.ClearIfSnoozeFinished();
+
         }
         if (cancelNotification) {
             notificationDismiss(ctx);
+
         }
         if (mediaPlayer != null) {
             mediaPlayer.stop();
@@ -178,9 +181,7 @@ public class AlertPlayer {
             mediaPlayer = null;
         }
         revertCurrentVolume(ctx);
-        if (!Pref.getBoolean("pref_amazfit_enable_key", false)&&!Pref.getBoolean("pref_amazfit_alarm_enable_key", false)){
-        Amazfitservice.setAction("xDrip_AlarmCancel");
-        JoH.startService(Amazfitservice.class);}
+
     }
 
     // only do something if an alert is active - only call from interactive
@@ -519,8 +520,7 @@ public class AlertPlayer {
 
         //send alert to amazfit
         if (Pref.getBoolean("pref_amazfit_enable_key", false)&&Pref.getBoolean("pref_amazfit_alarm_enable_key", false))
-        {      Amazfitservice.setAction("xDrip_Alarm");
-            JoH.startService(Amazfitservice.class);
+        {       Amazfitservice.start("xDrip_Alarm",alert);
         }
 
 
@@ -537,6 +537,7 @@ public class AlertPlayer {
         } catch (NullPointerException e) {
             UserError.Log.e(TAG,"Got null pointer in notificationDismiss !!");
         }
+
     }
 
     // True means play the file false means only vibrate.

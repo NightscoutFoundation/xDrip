@@ -24,6 +24,14 @@
                 android:key="pref_amazfit_alarm_enable_key"
                 android:summary="@string/pref_amazfit_alarm_enable_summary"
                 android:title="@string/pref_amazfit_alarm_tile" />
+            <EditTextPreference
+                android:defaultValue="5"
+                android:dependency="pref_amazfit_enable_key"
+                android:digits="0123456789"
+                android:inputType="number"
+                android:key="amazfit_widget_graph_hours"
+                android:summary=""
+                android:title="@string/pref_amazfit_widget_graph_hours" />
         </PreferenceScreen>
         <PreferenceScreen
             android:title="@string/android_wear_integration">

@@ -1,6 +1,9 @@
 package com.eveningoutpost.dexdrip.wearintegration;
 
 
+import com.eveningoutpost.dexdrip.Models.AlertType;
+import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
@@ -8,6 +11,11 @@ import com.eveningoutpost.dexdrip.Models.UserError;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import java.io.ByteArrayOutputStream;
+import java.io.ByteArrayInputStream;
+import android.util.Base64;
+import java.nio.ByteBuffer;
 import com.eveningoutpost.dexdrip.Models.HeartRate;
 import com.eveningoutpost.dexdrip.Models.StepCounter;
 
@@ -17,7 +25,11 @@ import android.support.annotation.Nullable;
 import com.eveningoutpost.dexdrip.BestGlucose;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
+import com.eveningoutpost.dexdrip.UtilityModels.BgSparklineBuilder;
+import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.utils.PowerStateReceiver;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.huami.watch.transport.DataBundle;
 import com.huami.watch.transport.DataTransportResult;
@@ -43,6 +55,7 @@ public class Amazfitservice extends Service {
 
 
     private static String action;
+    private static AlertType alert_to_send;
     private String space_mins;
     private double low_occurs_at;
 
@@ -145,7 +158,7 @@ public class Amazfitservice extends Service {
 
 
                 transporter.send(getAction(), getDataBundle());
-            UserError.Log.e("Amazfitservice", "trying to send Data to watch ");
+                UserError.Log.e("Amazfitservice", "trying to send Data to watch "+action);
 
             }
         return START_STICKY;
@@ -157,6 +170,7 @@ public class Amazfitservice extends Service {
     public static void setAction(String actionremote) {
         action=actionremote;
     }
+
 
     public DataBundle getDataBundle() {
         DataBundle datatosend = new DataBundle();
@@ -172,37 +186,82 @@ public class Amazfitservice extends Service {
         DataBundle db = new DataBundle();
         BestGlucose.DisplayGlucose dg = BestGlucose.getDisplayGlucose();
         db.putLong("date", dg.timestamp);
-        db.putString("sgv", String.valueOf(dg.unitized)+" "+ dg.delta_arrow);
+        db.putString("sgv", String.valueOf(dg.unitized));
+        db.putString("delta_arrow", String.valueOf(dg.delta_arrow));
         db.putString("delta", String.valueOf(dg.spannableString(dg.unitized_delta)));
         db.putBoolean("ishigh", dg.isHigh());
         db.putBoolean("islow", dg.isLow());
         db.putBoolean("isstale", dg.isStale());
         db.putBoolean("fromplugin", dg.from_plugin);
+
         if (BgGraphBuilder.low_occurs_at > 0) {
             db.putString("low_predicted", xdrip.getAppContext().getString(R.string.low_predicted));
             db.putString("in", xdrip.getAppContext().getString(R.string.in));
             db.putString("space_mins", xdrip.getAppContext().getString(R.string.space_mins));
             db.putDouble("low_occurs_at",BgGraphBuilder.low_occurs_at);
         }
+
         db.putString("plugin_name", dg.plugin_name);
         db.putString("reply_message", "Watch acknowledged DATA");
-
+        db.putString("phone_battery", String.valueOf(PowerStateReceiver.getBatteryLevel(getApplicationContext())));
+        db.putString("SGVGraph",BitmaptoString(createWearBitmap(Pref.getStringToInt("amazfit_widget_graph_hours",4))));
         return db;
     }
     public DataBundle getAlarmdata() {
         DataBundle db = new DataBundle();
-        db.putString("uuid", ActiveBgAlert.getOnly().alert_uuid.toString());
+        db.putString("uuid", alert_to_send.name);
         db.putString("reply_message", "Watch acknowledged ALARM");
-        db.putString("alarmtext", ActiveBgAlert.getOnly().toString());
+        db.putString("alarmtext", (alert_to_send.above ? xdrip.getAppContext().getString(R.string.high) : xdrip.getAppContext().getString(R.string.low)).toUpperCase());
+        db.putLong("date", System.currentTimeMillis());
         return db;
     }
     public DataBundle getAlarmCancelData() {
         DataBundle db = new DataBundle();
         db.putString("reply_message", "Watch acknowledged CANCEL");
+        db.putLong("date", System.currentTimeMillis());
         return db;
     }
 
+public static void start(String action_text,BgReading bg){
+        action=action_text;
+        JoH.startService(Amazfitservice.class);
 
+}
+    public static void start(String action_text,AlertType alert){
+        action=action_text;
+        alert_to_send=alert;
+        JoH.startService(Amazfitservice.class);
+
+    }
+    public static void start(String action_text){
+        action=action_text;
+        JoH.startService(Amazfitservice.class);
+
+    }
+    private Bitmap createWearBitmap(long start, long end) {
+        return new BgSparklineBuilder(xdrip.getAppContext())
+                .setBgGraphBuilder(new BgGraphBuilder(xdrip.getAppContext()))
+                .setStart(start)
+                .setEnd(end)
+                .showHighLine()
+                .showLowLine()
+                .showAxes()
+                .setWidthPx(290)
+                .setHeightPx(160)
+                .setSmallDots()
+                .build();
+    }
+
+    private Bitmap createWearBitmap(long hours) {
+        return createWearBitmap(System.currentTimeMillis() - 60000 * 60 * hours, System.currentTimeMillis());
+    }
+
+    private String BitmaptoString(Bitmap bitmap)
+    {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+        return Base64.encodeToString(outputStream.toByteArray(), Base64.DEFAULT);
+    }
 
 
 }

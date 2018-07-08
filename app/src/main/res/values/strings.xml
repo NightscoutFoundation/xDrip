@@ -97,6 +97,7 @@
     <string name="pref_amazfit_alarm_enable_summary">Sends Alarms to Smartwatch</string>
     <string name="pref_amazfit_alarm_enable">Enable</string>
     <string name="pref_amazfit_alarm_tile">Watch Alarm</string>
+    <string name="pref_amazfit_widget_graph_hours">How many hours tobe shown in the widget graph</string>
 
 
 
