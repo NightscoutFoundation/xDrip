@@ -39,11 +39,12 @@ public class NewDataObserver {
 
         sendToPebble();
         sendToWear();
+        sendToAmazfit();
         Notifications.start();
         uploadToShare(bgReading, is_follower);
         textToSpeech(bgReading, null);
         LibreBlock.UpdateBgVal(bgReading.timestamp, bgReading.calculated_value);
-        sendToAmazfit();
+
 
     }
 

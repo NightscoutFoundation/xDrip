@@ -181,7 +181,9 @@ public class AlertPlayer {
             mediaPlayer = null;
         }
         revertCurrentVolume(ctx);
-
+        if (Pref.getBoolean("pref_amazfit_enable_key", false)&&Pref.getBoolean("pref_amazfit_alarm_enable_key", false))
+        {       Amazfitservice.start("xDrip_AlarmCancel");
+        }
     }
 
     // only do something if an alert is active - only call from interactive

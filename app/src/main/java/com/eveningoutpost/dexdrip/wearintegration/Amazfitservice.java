@@ -186,8 +186,7 @@ public class Amazfitservice extends Service {
         DataBundle db = new DataBundle();
         BestGlucose.DisplayGlucose dg = BestGlucose.getDisplayGlucose();
         db.putLong("date", dg.timestamp);
-        db.putString("sgv", String.valueOf(dg.unitized));
-        db.putString("delta_arrow", String.valueOf(dg.delta_arrow));
+        db.putString("sgv", String.valueOf(dg.unitized)+String.valueOf(dg.delta_arrow));
         db.putString("delta", String.valueOf(dg.spannableString(dg.unitized_delta)));
         db.putBoolean("ishigh", dg.isHigh());
         db.putBoolean("islow", dg.isLow());
