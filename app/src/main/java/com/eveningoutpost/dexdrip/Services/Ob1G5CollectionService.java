@@ -1008,22 +1008,24 @@ public class Ob1G5CollectionService extends G5BaseService {
 
     public void tryGattRefresh() {
         if (JoH.ratelimit("ob1-gatt-refresh", 60)) {
-            try {
-                if (connection != null)
-                    UserError.Log.d(TAG, "Trying gatt refresh queue");
-                connection.queue((new GattRefreshOperation(0))).timeout(2, TimeUnit.SECONDS).subscribe(
-                        readValue -> {
-                            UserError.Log.d(TAG, "Refresh OK: " + readValue);
-                        }, throwable -> {
-                            UserError.Log.d(TAG, "Refresh exception: " + throwable);
-                        });
-            } catch (NullPointerException e) {
-                UserError.Log.d(TAG, "Probably harmless gatt refresh exception: " + e);
-            } catch (Exception e) {
-                UserError.Log.d(TAG, "Got exception trying gatt refresh: " + e);
+            if (Pref.getBooleanDefaultFalse("use_gatt_refresh")) {
+                try {
+                    if (connection != null)
+                        UserError.Log.d(TAG, "Trying gatt refresh queue");
+                    connection.queue((new GattRefreshOperation(0))).timeout(2, TimeUnit.SECONDS).subscribe(
+                            readValue -> {
+                                UserError.Log.d(TAG, "Refresh OK: " + readValue);
+                            }, throwable -> {
+                                UserError.Log.d(TAG, "Refresh exception: " + throwable);
+                            });
+                } catch (NullPointerException e) {
+                    UserError.Log.d(TAG, "Probably harmless gatt refresh exception: " + e);
+                } catch (Exception e) {
+                    UserError.Log.d(TAG, "Got exception trying gatt refresh: " + e);
+                }
+            } else {
+                UserError.Log.d(TAG, "Gatt refresh rate limited");
             }
-        } else {
-            UserError.Log.d(TAG, "Gatt refresh rate limited");
         }
     }
 
