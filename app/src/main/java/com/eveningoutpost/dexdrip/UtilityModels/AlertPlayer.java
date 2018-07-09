@@ -27,14 +27,10 @@ import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.SnoozeOnNotificationDismissService;
 import com.eveningoutpost.dexdrip.SnoozeActivity;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleWatchSync;
-<<<<<<< HEAD
 import com.eveningoutpost.dexdrip.wearintegration.Amazfitservice;
-=======
 import com.eveningoutpost.dexdrip.eassist.AlertTracker;
->>>>>>> upstream/master
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.eveningoutpost.dexdrip.xdrip;
-
 import java.io.IOException;
 import java.util.Date;
 

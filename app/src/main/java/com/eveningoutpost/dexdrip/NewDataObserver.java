@@ -81,14 +81,10 @@ public class NewDataObserver {
 
     // send data to Amazfit if enabled
     private static void sendToAmazfit() {
-<<<<<<< HEAD
+
         if(Pref.getBoolean("pref_amazfit_enable_key", true)) {
-            Amazfitservice.start("xDrip_synced_SGV_data");
-=======
-        if (Pref.getBooleanDefaultFalse("pref_amazfit_enable_key")) {
-            JoH.startService(Amazfitservice.class);
->>>>>>> upstream/master
-        }
+            Amazfitservice.start("xDrip_synced_SGV_data");}
+
     }
 
     // send to wear
