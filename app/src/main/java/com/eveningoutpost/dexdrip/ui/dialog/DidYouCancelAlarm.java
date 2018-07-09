@@ -32,6 +32,15 @@ public class DidYouCancelAlarm {
             }
         });
 
-        builder.create().show();
+        final AlertDialog dialog = builder.create();
+        // apparently possible dialog is already showing, probably due to hash code
+        try {
+            if (dialog.isShowing()) {
+                dialog.dismiss();
+            }
+        } catch (Exception e) {
+            //
+        }
+        dialog.show();
     }
 }

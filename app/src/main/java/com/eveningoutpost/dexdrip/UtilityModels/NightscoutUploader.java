@@ -453,7 +453,7 @@ public class NightscoutUploader {
                                     // Log.d(TAG, "json processing: " + e);
                                 }
 
-                                if ((notes != null) && ((notes.equals("AndroidAPS started") || notes.equals("null") || (notes.equals("Bolus Std")))))
+                                if ((notes != null) && ((notes.startsWith("AndroidAPS started") || notes.equals("null") || (notes.equals("Bolus Std")))))
                                     notes = null;
 
                                 if ((carbs > 0) || (insulin > 0) || (notes != null)) {
@@ -710,12 +710,22 @@ public class NightscoutUploader {
         Log.e(TAG, msg);
     }
 
+    private String getDeviceString(BgReading record) {
+        String withMethod = "xDrip-" + prefs.getString("dex_collection_method", "BluetoothWixel");
+        if (Pref.getBooleanDefaultFalse("nightscout_device_append_source_info") &&
+                record.source_info != null &&
+                record.source_info.length() > 0) {
+            return withMethod + " " + record.source_info;
+        }
+        return withMethod;
+    }
+
 
     private void populateV1APIBGEntry(JSONArray array, BgReading record) throws Exception {
         JSONObject json = new JSONObject();
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.US);
         format.setTimeZone(TimeZone.getDefault());
-        json.put("device", "xDrip-" + prefs.getString("dex_collection_method", "BluetoothWixel"));
+        json.put("device", getDeviceString(record));
         if (record != null) {//KS
             json.put("date", record.timestamp);
             json.put("dateString", format.format(record.timestamp));
@@ -744,7 +754,7 @@ public class NightscoutUploader {
             JSONObject json = new JSONObject();
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.US);
             format.setTimeZone(TimeZone.getDefault());
-            json.put("device", "xDrip-"+prefs.getString("dex_collection_method", "BluetoothWixel"));
+            json.put("device", getDeviceString(record));
             json.put("date", record.timestamp);
             json.put("dateString", format.format(record.timestamp));
             json.put("sgv", (int)record.calculated_value);

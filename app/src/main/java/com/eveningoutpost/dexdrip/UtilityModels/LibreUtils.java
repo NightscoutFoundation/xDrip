@@ -1,10 +1,15 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+import com.eveningoutpost.dexdrip.Home;
+
 import android.util.Log;
+import lombok.Getter;
 
-public class LibreCrc {
+public class LibreUtils {
 
-    private static final String TAG = LibreCrc.class.getSimpleName();
+    private static final String TAG = LibreUtils.class.getSimpleName();
+
+    @Getter private static final boolean testWithDeadSensor = false; // never in production
 
     private final static long[] crc16table = {
             0, 4489, 8978, 12955, 17956, 22445, 25910, 29887, 35912,
@@ -67,5 +72,51 @@ public class LibreCrc {
         checksum_ok &= CheckCRC16(data, 320 ,24);
         return checksum_ok;
 
+    }
+
+    public static boolean isSensorReady(byte sensorStatusByte) {
+    
+        String sensorStatusString = "";
+        boolean ret = false;
+    
+        switch (sensorStatusByte) {
+            case 0x01:
+                sensorStatusString = "not yet started";
+                break;
+            case 0x02:
+                sensorStatusString = "starting";
+                ret = true;
+                break;
+            case 0x03:          // status for 14 days and 12 h of normal operation, abbott reader quits after 14 days
+                sensorStatusString = "ready";
+                ret = true;
+                break;
+            case 0x04:          // status of the following 12 h, sensor delivers last BG reading constantly
+                sensorStatusString = "expired";
+                // @keencave: to use dead sensor for test
+    //            ret = true;
+                break;
+            case 0x05:          // sensor stops operation after 15d after start
+                sensorStatusString = "shutdown";
+                // @keencave: to use dead sensors for test
+    //            ret = true;
+                break;
+            case 0x06:
+                sensorStatusString = "in failure";
+                break;
+            default:
+                sensorStatusString = "in an unknown state";
+                break;
+        }
+    
+        Log.i(TAG, "Sensor status is: " + sensorStatusString);
+    
+        if (testWithDeadSensor) return true;
+    
+        if (!ret) {
+            Home.toaststaticnext("Can't use this sensor as it is " + sensorStatusString);
+        }
+    
+        return ret;
     }
 }

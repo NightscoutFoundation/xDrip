@@ -34,6 +34,7 @@ public class DailyIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        // TODO background thread
         final PowerManager.WakeLock wl = JoH.getWakeLock("DailyIntentService", 120000);
         try {
             if (JoH.pratelimit("daily-intent-service", 60000)) {
@@ -108,6 +109,7 @@ public class DailyIntentService extends IntentService {
                     Log.e(TAG, "exception on RollCall prune " + e);
                 }
                 try {
+                    Telemetry.sendFirmwareReport();
                     Telemetry.sendCaptureReport();
                 } catch (Exception e) {
                     Log.e(TAG, "Exception in Telemetry: " + e);

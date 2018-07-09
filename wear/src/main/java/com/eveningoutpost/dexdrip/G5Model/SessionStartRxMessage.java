@@ -74,7 +74,7 @@ public class SessionStartRxMessage extends TransmitterMessage {
             case 0x03:
                 return "Invalid";
             case 0x04:
-                return "Clock not synchronized"; // probably
+                return "Clock not synchronized or other error"; // probably
             default:
                 return "Unknown code: " + info;
         }

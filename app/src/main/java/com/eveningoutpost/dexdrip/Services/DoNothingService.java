@@ -72,6 +72,8 @@ public class DoNothingService extends Service {
         UserError.Log.i(TAG, "onCreate: STARTING SERVICE");
     }
 
+    private static final long TOLERABLE_JITTER = 10000;
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         final PowerManager.WakeLock wl = JoH.getWakeLock("donothing-follower", 60000);
@@ -82,12 +84,20 @@ public class DoNothingService extends Service {
             return START_NOT_STICKY;
         }
 
+        JoH.persistentBuggySamsungCheck();
+
         if (nextWakeUpTime > 0) {
             wake_time_difference = Calendar.getInstance().getTimeInMillis() - nextWakeUpTime;
-            if (wake_time_difference > 10000) {
+            if (wake_time_difference > TOLERABLE_JITTER) {
                 UserError.Log.e(TAG, "Slow Wake up! time difference in ms: " + wake_time_difference);
                 wakeUpErrors = wakeUpErrors + 3;
                 max_wake_time_difference = Math.max(max_wake_time_difference, wake_time_difference);
+
+                if (!JoH.buggy_samsung && JoH.isSamsung()) {
+                    UserError.Log.wtf(TAG, "Enabled Buggy Samsung workaround due to jitter of: " + JoH.niceTimeScalar(wake_time_difference));
+                    JoH.setBuggySamsungEnabled();
+                }
+
             } else {
                 if (wakeUpErrors > 0) wakeUpErrors--;
             }
@@ -192,6 +202,10 @@ public class DoNothingService extends Service {
             }
             if (max_wake_time_difference > 0) {
                 l.add(new StatusItem("Slowest Wake up", JoH.niceTimeScalar(max_wake_time_difference)));
+            }
+
+            if (JoH.buggy_samsung) {
+                l.add(new StatusItem("Buggy Samsung", "Using workaround", max_wake_time_difference < TOLERABLE_JITTER ? StatusItem.Highlight.GOOD : StatusItem.Highlight.BAD));
             }
 
             if (nextWakeUpTime != -1) {

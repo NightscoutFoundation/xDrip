@@ -406,7 +406,7 @@ public class Treatments extends Model {
         final Treatments mytreatment = fromJSON(json);
         if (mytreatment != null) {
             if ((mytreatment.carbs == 0) && (mytreatment.insulin == 0)
-                    && (mytreatment.notes != null) && (mytreatment.notes.equals("AndroidAPS started"))) {
+                    && (mytreatment.notes != null) && (mytreatment.notes.startsWith("AndroidAPS started"))) {
                 Log.d(TAG, "Skipping AndroidAPS started message");
                 return false;
             }

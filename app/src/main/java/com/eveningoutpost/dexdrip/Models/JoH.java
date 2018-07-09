@@ -107,6 +107,7 @@ import static com.eveningoutpost.dexdrip.stats.StatsActivity.SHOW_STATISTICS_PRI
 public class JoH {
     private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
     private final static String TAG = "jamorham JoH";
+    private final static int PAIRING_VARIANT_PASSKEY = 1; // hidden in api
     private final static boolean debug_wakelocks = false;
 
     private static double benchmark_time = 0;
@@ -196,6 +197,10 @@ public class JoH {
             hexChars[j * 2 + 1] = hexArray[v & 0x0F];
         }
         return new String(hexChars);
+    }
+
+    public static byte[] tolerantHexStringToByteArray(String str) {
+        return hexStringToByteArray(str.toUpperCase().replaceAll("[^A-F0-9]",""));
     }
 
     public static byte[] hexStringToByteArray(String str) {
@@ -697,6 +702,14 @@ public class JoH {
         return niceTimeScalar(t).replaceFirst("([A-z]).*$", "$1");
     }
 
+    public static String niceTimeScalarShortWithDecimalHours(long t) {
+        if (t > Constants.HOUR_IN_MS) {
+            return niceTimeScalar(t,1).replaceFirst("([A-z]).*$", "$1");
+        } else {
+            return niceTimeScalar(t).replaceFirst("([A-z]).*$", "$1");
+        }
+    }
+
 
     public static double tolerantParseDouble(String str) throws NumberFormatException {
         return Double.parseDouble(str.replace(",", "."));
@@ -906,29 +919,34 @@ public class JoH {
         static_toast(context, msg, Toast.LENGTH_LONG);
     }
 
-    public static void show_ok_dialog(final Activity activity, String title, String message, final Runnable runnable) {
-        try {
-            AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(activity, R.style.AppTheme));
-            builder.setTitle(title);
-            builder.setMessage(message);
-            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    try {
-                        dialog.dismiss();
-                    } catch (Exception e) {
-                        //
-                    }
-                    if (runnable != null) {
-                        runOnUiThreadDelayed(runnable, 10);
-                    }
-                }
-            });
+    public static void show_ok_dialog(final Activity activity, final String title, final String message, final Runnable runnable) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(activity, R.style.AppTheme));
+                    builder.setTitle(title);
+                    builder.setMessage(message);
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            try {
+                                dialog.dismiss();
+                            } catch (Exception e) {
+                                //
+                            }
+                            if (runnable != null) {
+                                runOnUiThreadDelayed(runnable, 10);
+                            }
+                        }
+                    });
 
-            builder.create().show();
-        } catch (Exception e) {
-            Log.wtf(TAG, "show_dialog exception: " + e);
-            static_toast_long(message);
-        }
+                    builder.create().show();
+                } catch (Exception e) {
+                    Log.wtf(TAG, "show_dialog exception: " + e);
+                    static_toast_long(message);
+                }
+            }
+        });
     }
 
     public static synchronized void playResourceAudio(int id) {
@@ -1277,12 +1295,17 @@ public class JoH {
     }
 
     @TargetApi(19)
-    public static boolean doPairingRequest(Context context, BroadcastReceiver broadcastReceiver, Intent intent, String mBluetoothDeviceAddress, String pinHint) {
+    public static boolean doPairingRequest(Context context, BroadcastReceiver broadcastReceiver, Intent intent, final String mBluetoothDeviceAddress, final String pinHint) {
         if (BluetoothDevice.ACTION_PAIRING_REQUEST.equals(intent.getAction())) {
             final BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
             if (device != null) {
                 int type = intent.getIntExtra(BluetoothDevice.EXTRA_PAIRING_VARIANT, BluetoothDevice.ERROR);
                 if ((mBluetoothDeviceAddress != null) && (device.getAddress().equals(mBluetoothDeviceAddress))) {
+
+                    if (type == PAIRING_VARIANT_PASSKEY && pinHint != null) {
+                        return false;
+                    }
+
                     if ((type == PAIRING_VARIANT_PIN) && (pinHint != null)) {
                         device.setPin(convertPinToBytes(pinHint));
                         Log.d(TAG, "Setting pairing pin to " + pinHint);
@@ -1290,12 +1313,12 @@ public class JoH {
                     }
                     try {
                         UserError.Log.e(TAG, "Pairing type: " + type);
-                        if (type != PAIRING_VARIANT_PIN) {
+                        if (type != PAIRING_VARIANT_PIN && type != PAIRING_VARIANT_PASSKEY) {
                             device.setPairingConfirmation(true);
                             JoH.static_toast_short("xDrip Pairing");
                             broadcastReceiver.abortBroadcast();
                         } else {
-                            Log.d(TAG,"Attempting to passthrough PIN pairing");
+                            Log.d(TAG, "Attempting to passthrough PIN pairing");
                         }
 
                     } catch (Exception e) {

@@ -1604,6 +1604,7 @@ public class G5CollectionService extends G5BaseService {
         UserError.Log.e(TAG, "Store: BatteryRX dbg: " + JoH.bytesToHex(data));
         if (transmitterId.length() != 6) return false;
         if (data.length < 10) return false;
+        updateBatteryWarningLevel();
         final BatteryInfoRxMessage batteryInfoRxMessage = new BatteryInfoRxMessage(data);
         Log.wtf(TAG, "Saving battery data: " +batteryInfoRxMessage.toString());
         PersistentStore.setBytes(G5_BATTERY_MARKER + transmitterId, data);
@@ -1714,7 +1715,7 @@ public class G5CollectionService extends G5BaseService {
 
     @SuppressLint("GetInstance")
     private synchronized byte[] calculateHash(byte[] data) {
-        if (data.length != 8) {
+        if (data == null || data.length != 8) {
             Log.e(TAG, "Decrypt Data length should be exactly 8.");
             return null;
         }

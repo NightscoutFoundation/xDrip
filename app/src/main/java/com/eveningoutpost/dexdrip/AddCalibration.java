@@ -1,35 +1,30 @@
 package com.eveningoutpost.dexdrip;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.PowerManager;
-import android.preference.PreferenceManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
+import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.UndoRedo;
-import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
-
-import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
 
 import java.util.UUID;
 
 public class AddCalibration extends AppCompatActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
     Button button;
-    //public static String menu_name = "Add Calibration";
     private static final String TAG = "AddCalibration";
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private static double lastExternalCalibrationValue = 0;
@@ -68,96 +63,106 @@ public class AddCalibration extends AppCompatActivity implements NavigationDrawe
     public synchronized void automatedCalibration() {
 
         final PowerManager.WakeLock wl = JoH.getWakeLock("xdrip-autocalib", 60000);
+        try {
+            Log.d(TAG, "Auto calibration...");
+            final Bundle extras = getIntent().getExtras();
+            if (extras != null) {
+                JoH.clearCache();
+                final String string_value = extras.getString("bg_string");
+                final String cal_source = extras.getString("cal_source","unknown");
+                final long timestamp = extras.getLong("timestamp", -1);
+                final String bg_age = extras.getString("bg_age");
+                final String from_external = extras.getString("from_external", "false");
+                final String from_interactive = extras.getString("from_interactive", "false");
+                final String note_only = extras.getString("note_only", "false");
+                final String allow_undo = extras.getString("allow_undo", "false");
 
-        Log.d(TAG, "Auto calibration...");
-        final Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-            final String string_value = extras.getString("bg_string");
-            final String bg_age = extras.getString("bg_age");
-            final String from_external = extras.getString("from_external", "false");
-            final String from_interactive = extras.getString("from_interactive", "false");
-            final String note_only = extras.getString("note_only", "false");
-            final String allow_undo = extras.getString("allow_undo", "false");
+                if (JoH.msSince(timestamp) < 0 || JoH.msSince(timestamp) > Constants.SECOND_IN_MS * 20) {
+                    UserError.Log.wtf(TAG, "Blocked auto-calibration with out of range timestamp: " + JoH.dateTimeText(timestamp) + " " + timestamp + " from " + cal_source);
+                    return;
+                }
 
-            if ((Sensor.isActive() || Home.get_follower())) {
+                if ((Sensor.isActive() || Home.get_follower())) {
 
-                if (!TextUtils.isEmpty(string_value)) {
-                    if (!TextUtils.isEmpty(bg_age)) {
-                        final double calValue = Double.parseDouble(string_value);
-                        new Thread() {
-                            @Override
-                            public void run() {
+                    if (!TextUtils.isEmpty(string_value)) {
+                        if (!TextUtils.isEmpty(bg_age)) {
+                            final double calValue = Double.parseDouble(string_value);
+                            new Thread() {
+                                @Override
+                                public void run() {
 
-                                final PowerManager.WakeLock wlt = JoH.getWakeLock("xdrip-autocalibt", 60000);
+                                    final PowerManager.WakeLock wlt = JoH.getWakeLock("xdrip-autocalibt", 60000);
 
-                                long bgAgeNumber = Long.parseLong(bg_age);
+                                    long bgAgeNumber = Long.parseLong(bg_age);
 
-                                if ((bgAgeNumber >= 0) && (bgAgeNumber < 86400)) {
-                                    long localEstimatedInterstitialLagSeconds = 0;
+                                    if ((bgAgeNumber >= 0) && (bgAgeNumber < 86400)) {
+                                        long localEstimatedInterstitialLagSeconds = 0;
 
-                                    // most appropriate raw value to calculate calibration
-                                    // from should be some time after venous glucose reading
-                                    // adjust timestamp for this if we can
-                                    if (bgAgeNumber > estimatedInterstitialLagSeconds) {
-                                        localEstimatedInterstitialLagSeconds = estimatedInterstitialLagSeconds;
-                                    }
-                                    // Sanity checking can go here
-
-                                    if (calValue > 0) {
-                                        if (lastExternalCalibrationValue == 0) {
-                                            lastExternalCalibrationValue = PersistentStore.getDouble(LAST_EXTERNAL_CALIBRATION);
+                                        // most appropriate raw value to calculate calibration
+                                        // from should be some time after venous glucose reading
+                                        // adjust timestamp for this if we can
+                                        if (bgAgeNumber > estimatedInterstitialLagSeconds) {
+                                            localEstimatedInterstitialLagSeconds = estimatedInterstitialLagSeconds;
                                         }
-                                        if (calValue != lastExternalCalibrationValue) {
+                                        // Sanity checking can go here
 
-                                            if (!Home.get_follower()) {
-                                                lastExternalCalibrationValue = calValue;
-                                                PersistentStore.setDouble(LAST_EXTERNAL_CALIBRATION, calValue);
-                                                final Calibration calibration = Calibration.create(calValue, bgAgeNumber, getApplicationContext(), (note_only.equals("true")), localEstimatedInterstitialLagSeconds);
-                                                if ((calibration != null) && allow_undo.equals("true")) {
-                                                    UndoRedo.addUndoCalibration(calibration.uuid);
-                                                }
-                                                //startWatchUpdaterService(getApplicationContext(), WatchUpdaterService.ACTION_SYNC_CALIBRATION, TAG);
-                                            } else {
-                                                // follower sends the calibration data onwards only if sourced from interactive request
-                                                if (from_interactive.equals("true")) {
-                                                    Log.d(TAG, "Interactive calibration and we are follower so sending to master");
-                                                    sendFollowerCalibration(calValue, bgAgeNumber);
+                                        if (calValue > 0) {
+                                            if (lastExternalCalibrationValue == 0) {
+                                                lastExternalCalibrationValue = PersistentStore.getDouble(LAST_EXTERNAL_CALIBRATION);
+                                            }
+                                            if (calValue != lastExternalCalibrationValue) {
+
+                                                if (!Home.get_follower()) {
+                                                    lastExternalCalibrationValue = calValue;
+                                                    PersistentStore.setDouble(LAST_EXTERNAL_CALIBRATION, calValue);
+                                                    UserError.Log.uel(TAG, "Creating auto calibration from: " + calValue + " requested: " + JoH.dateTimeText(timestamp) + " from source: " + cal_source);
+                                                    final Calibration calibration = Calibration.create(calValue, bgAgeNumber, getApplicationContext(), (note_only.equals("true")), localEstimatedInterstitialLagSeconds);
+                                                    if ((calibration != null) && allow_undo.equals("true")) {
+                                                        UndoRedo.addUndoCalibration(calibration.uuid);
+                                                    }
+                                                    //startWatchUpdaterService(getApplicationContext(), WatchUpdaterService.ACTION_SYNC_CALIBRATION, TAG);
                                                 } else {
-                                                    Log.d(TAG, "Not an interactive calibration so not sending to master");
+                                                    // follower sends the calibration data onwards only if sourced from interactive request
+                                                    if (from_interactive.equals("true")) {
+                                                        Log.d(TAG, "Interactive calibration and we are follower so sending to master");
+                                                        sendFollowerCalibration(calValue, bgAgeNumber);
+                                                    } else {
+                                                        Log.d(TAG, "Not an interactive calibration so not sending to master");
+                                                    }
                                                 }
+
+                                            } else {
+                                                UserError.Log.e(TAG, "Ignoring Remote calibration value as identical to last one: " + calValue);
                                             }
 
-                                        } else {
-                                            Log.w(TAG, "Ignoring Remote calibration value as identical to last one: " + calValue);
+                                            if (from_external.equals("true")) {
+                                                Log.d("jamorham calib", "Relaying tasker pushed calibration");
+                                                GcmActivity.pushCalibration(string_value, bg_age);
+                                            }
                                         }
-
-                                        if (from_external.equals("true")) {
-                                            Log.d("jamorham calib", "Relaying tasker pushed calibration");
-                                            GcmActivity.pushCalibration(string_value, bg_age);
-                                        }
+                                    } else {
+                                        Log.wtf("CALERROR", "bg age either in future or older than 1 day: " + bgAgeNumber);
                                     }
-                                } else {
-                                    Log.wtf("CALERROR", "bg age either in future or older than 1 day: " + bgAgeNumber);
+
+                                    JoH.releaseWakeLock(wlt);
                                 }
+                            }.start();
 
-                                JoH.releaseWakeLock(wlt);
-                            }
-                        }.start();
-
+                        } else {
+                            Log.w("CALERROR", "ERROR during automated calibration - no valid bg age");
+                        }
                     } else {
-                        Log.w("CALERROR", "ERROR during automated calibration - no valid bg age");
+                        Log.w("CALERROR", "ERROR during automated calibration - no valid value");
                     }
                 } else {
-                    Log.w("CALERROR", "ERROR during automated calibration - no valid value");
+                    Log.w("CALERROR", "ERROR during automated calibration - no active sensor");
                 }
-            } else {
-                Log.w("CALERROR", "ERROR during automated calibration - no active sensor");
+                finish();
             }
+
+        } finally {
             JoH.releaseWakeLock(wl);
-            finish();
         }
-
-
     }
 
 

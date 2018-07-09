@@ -1,7 +1,6 @@
 package com.eveningoutpost.dexdrip.Models;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.PowerManager;
@@ -26,6 +25,7 @@ import com.eveningoutpost.dexdrip.ShareModels.ShareUploadableBg;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
@@ -87,7 +87,7 @@ public class BgReading extends Model implements ShareUploadableBg {
 
     @Expose
     @Column(name = "raw_data")
-    public double raw_data;
+    public volatile double raw_data;
 
     @Expose
     @Column(name = "filtered_data")
@@ -180,7 +180,7 @@ public class BgReading extends Model implements ShareUploadableBg {
 
     @Expose
     @Column(name = "source_info")
-    public String source_info;
+    public volatile String source_info;
 
     public synchronized static void updateDB() {
         final String[] updates = new String[]{"ALTER TABLE BgReadings ADD COLUMN dg_mgdl REAL;",
@@ -380,7 +380,8 @@ public class BgReading extends Model implements ShareUploadableBg {
             bgReading.save();
             bgReading.find_new_curve();
             bgReading.find_new_raw_curve();
-            context.startService(new Intent(context, Notifications.class));
+            //context.startService(new Intent(context, Notifications.class));
+            Notifications.start(); // this may not be needed as it is duplicated in handleNewBgReading
             BgSendQueue.handleNewBgReading(bgReading, "create", context);
         }
     }
@@ -582,7 +583,8 @@ public class BgReading extends Model implements ShareUploadableBg {
                     BloodTest.opportunisticCalibration();
                 }
 
-                context.startService(new Intent(context, Notifications.class));
+                //context.startService(new Intent(context, Notifications.class));
+                // allow this instead to be fired inside handleNewBgReading when noise will have been injected already
             }
             bgReading.injectNoise(true); // Add noise parameter for nightscout
             bgReading.injectDisplayGlucose(BestGlucose.getDisplayGlucose()); // Add display glucose for nightscout
@@ -1043,12 +1045,17 @@ public class BgReading extends Model implements ShareUploadableBg {
         }
     }
 
-    public void appendSourceInfo(String info) {
+    public BgReading appendSourceInfo(String info) {
         if ((source_info == null) || (source_info.length() == 0)) {
             source_info = info;
         } else {
-            source_info += "::" + info;
+            if (!source_info.startsWith(info) && (!source_info.contains("::" + info))) {
+                source_info += "::" + info;
+            } else {
+                UserError.Log.e(TAG, "Ignoring duplicate source info " + source_info + " -> " + info);
+            }
         }
+        return this;
     }
 
     public boolean isBackfilled() {
@@ -1057,8 +1064,11 @@ public class BgReading extends Model implements ShareUploadableBg {
 
     public static final double SPECIAL_G5_PLACEHOLDER = -0.1597;
 
-    // TODO remember to sync this with wear code base
-    public static synchronized BgReading bgReadingInsertFromG5(double calculated_value, long timestamp) {
+    public static BgReading bgReadingInsertFromG5(double calculated_value, long timestamp) {
+        return bgReadingInsertFromG5(calculated_value, timestamp, null);
+    }
+                                                               // TODO remember to sync this with wear code base
+    public static synchronized BgReading bgReadingInsertFromG5(double calculated_value, long timestamp, String sourceInfoAppend) {
 
         final Sensor sensor = Sensor.currentSensor();
         if (sensor == null) {
@@ -1077,14 +1087,14 @@ public class BgReading extends Model implements ShareUploadableBg {
             bgr.calculated_value = calculated_value;
             bgr.raw_data = SPECIAL_G5_PLACEHOLDER; // placeholder
             bgr.appendSourceInfo("G5 Native");
+            if (sourceInfoAppend != null && sourceInfoAppend.length() > 0) {
+                bgr.appendSourceInfo(sourceInfoAppend);
+            }
             bgr.save();
             if (JoH.ratelimit("sync wakelock", 15)) {
                 final PowerManager.WakeLock linger = JoH.getWakeLock("G5 Insert", 4000);
             }
-            new Thread(() -> {
-                JoH.threadSleep(3000);
-                notifyAndSync(bgr);
-            }).start();
+            Inevitable.task("NotifySyncBgr" + bgr.timestamp, 3000, () -> notifyAndSync(bgr));
             return bgr;
         } else {
             return existing;
@@ -1094,7 +1104,7 @@ public class BgReading extends Model implements ShareUploadableBg {
     public static void notifyAndSync(final BgReading bgr) {
         final boolean recent = bgr.isCurrent();
         if (recent) {
-            xdrip.getAppContext().startService(new Intent(xdrip.getAppContext(), Notifications.class)); // alerts et al
+            Notifications.start(); // may not be needed as this is duplicated in handleNewBgReading
             // probably not wanted for G5 internal values?
             //bgr.injectNoise(true); // Add noise parameter for nightscout
             //bgr.injectDisplayGlucose(BestGlucose.getDisplayGlucose()); // Add display glucose for nightscout
@@ -1125,7 +1135,8 @@ public class BgReading extends Model implements ShareUploadableBg {
                     }
                     bgr.save();
                     if (do_notification) {
-                        xdrip.getAppContext().startService(new Intent(xdrip.getAppContext(), Notifications.class)); // alerts et al
+                        Notifications.start(); // this may not be needed as it fires in handleNewBgReading
+                        //xdrip.getAppContext().startService(new Intent(xdrip.getAppContext(), Notifications.class)); // alerts et al
                         BgSendQueue.handleNewBgReading(bgr, "create", xdrip.getAppContext(), Home.get_follower()); // pebble and widget and follower
                     }
                 } else {
@@ -1174,7 +1185,8 @@ public class BgReading extends Model implements ShareUploadableBg {
                     bgr.save();
                     bgr.find_slope();
                     if (do_notification) {
-                        xdrip.getAppContext().startService(new Intent(xdrip.getAppContext(), Notifications.class)); // alerts et al
+                       // xdrip.getAppContext().startService(new Intent(xdrip.getAppContext(), Notifications.class)); // alerts et al
+                        Notifications.start(); // this may not be needed as it is duplicated in handleNewBgReading
                     }
                     BgSendQueue.handleNewBgReading(bgr, "create", xdrip.getAppContext(), false, !do_notification); // pebble and widget
                 } else {

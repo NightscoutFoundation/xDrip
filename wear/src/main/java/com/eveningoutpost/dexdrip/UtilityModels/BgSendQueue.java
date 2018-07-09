@@ -123,6 +123,7 @@ public class BgSendQueue extends Model {
         wakeLock.acquire(120000);
         try {
 
+            Notifications.start();
             CustomComplicationProviderService.refresh();
 
             if (!is_follower) addToQueue(bgReading, operation_type);

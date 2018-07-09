@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 
+import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.LibreOOPAlgorithm;
 import com.eveningoutpost.dexdrip.Models.Sensor;
@@ -107,7 +108,10 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
                                                     final String type = json_object.getString("type");
                                                     switch (type) {
                                                         case "sgv":
-                                                            bgReadingInsertFromData(json_object.getLong("date"), json_object.getDouble("sgv"), true);
+                                                            bgReadingInsertFromData(json_object.getLong("date"),
+                                                                    json_object.getDouble("sgv"),
+                                                                    BgReading.slopefromName(json_object.getString("direction")),
+                                                                    true);
 
                                                             break;
                                                         default:
@@ -188,13 +192,14 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
         }.start();
     }
 
-    static public void bgReadingInsertFromData(long timestamp, double sgv, boolean do_notification) {
+    public static BgReading bgReadingInsertFromData(long timestamp, double sgv, double slope, boolean do_notification) {
         Log.e(TAG, "bgReadingInsertFromData called timestamp = " + timestamp + " bg = " + sgv + " time =" + JoH.dateTimeText(timestamp));
         JSONObject faux_bgr = new JSONObject();
         try {
             faux_bgr.put("timestamp", timestamp);
             faux_bgr.put("calculated_value", sgv);
             faux_bgr.put("filtered_calculated_value", sgv);
+            faux_bgr.put("calculated_value_slope", slope);
             // sanity checking???
             // fake up some extra data
             faux_bgr.put("raw_data", sgv);
@@ -205,10 +210,10 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
         } catch (JSONException e) {
             // TODO Auto-generated catch block
             Log.e(TAG, "Got JSON exception: " + e);
-            return;
+            return null;
         }
 
         Log.d(TAG, "Received NSEmulator SGV: " + faux_bgr);
-        bgReadingInsertFromJson(faux_bgr.toString(), do_notification, true); // notify and force sensor
+        return bgReadingInsertFromJson(faux_bgr.toString(), do_notification, true); // notify and force sensor
     }
 }

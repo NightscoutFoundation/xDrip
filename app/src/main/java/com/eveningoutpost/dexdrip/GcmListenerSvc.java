@@ -36,6 +36,7 @@ import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
 import com.eveningoutpost.dexdrip.utils.Preferences;
 import com.eveningoutpost.dexdrip.utils.WebAppHelper;
+import com.eveningoutpost.dexdrip.wearintegration.ExternalStatusService;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -254,8 +255,10 @@ public class GcmListenerSvc extends FirebaseMessagingService {
                                 message_array[2] = Long.toString(Long.parseLong(message_array[2]) + timediff);
                             }
                             Log.i(TAG, "Processing remote CAL " + message_array[1] + " age: " + message_array[2]);
+                            calintent.putExtra("timestamp", JoH.tsl());
                             calintent.putExtra("bg_string", message_array[1]);
                             calintent.putExtra("bg_age", message_array[2]);
+                            calintent.putExtra("cal_source", "gcm cal packet");
                             if (timediff < 3600) {
                                 getApplicationContext().startActivity(calintent);
                             }
@@ -279,9 +282,10 @@ public class GcmListenerSvc extends FirebaseMessagingService {
                                 bg_age += timediff;
                             }
                             Log.i(TAG, "Processing remote CAL " + newCalibration.bgValue + " age: " + bg_age);
-
+                            calintent.putExtra("timestamp", JoH.tsl());
                             calintent.putExtra("bg_string", "" + (Pref.getString("units", "mgdl").equals("mgdl") ? newCalibration.bgValue : newCalibration.bgValue * Constants.MGDL_TO_MMOLL));
                             calintent.putExtra("bg_age", "" + bg_age);
+                            calintent.putExtra("cal_source", "gcm cal2 packet");
                             if (timediff < 3600) {
                                 getApplicationContext().startActivity(calintent);
                             } else {
@@ -472,6 +476,33 @@ public class GcmListenerSvc extends FirebaseMessagingService {
                         BgReading.processFromMultiMessage(bpayload);
                     } else {
                         Log.i(TAG, "Receive multi glucose readings but we are not a follower");
+                    }
+                } else if (action.equals("esup")) {
+                    if (Home.get_master_or_follower()) {
+                        final String[] segments = payload.split("\\^");
+                        try {
+                            ExternalStatusService.update(Long.parseLong(segments[0]), segments[1], false);
+                        } catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
+                            UserError.Log.wtf(TAG, "Could not split esup payload");
+                        }
+                    }
+                } else if (action.equals("ssom")) {
+                    if (Home.get_master()) {
+                        if (payload.equals("challenge string")) {
+                            UserError.Log.e(TAG, "Stopping sensor by remote");
+                            StopSensor.stop();
+                        } else {
+                            UserError.Log.wtf(TAG, "Challenge string failed in ssom");
+                        }
+                    }
+                } else if (action.equals("rsom")) {
+                    if (Home.get_master()) {
+                        try {
+                            final Long timestamp = Long.parseLong(payload);
+                            StartNewSensor.startSensorForTime(timestamp);
+                        } catch (NumberFormatException | NullPointerException e) {
+                            UserError.Log.wtf(TAG, "Exception processing rsom timestamp");
+                        }
                     }
 
                 } else {

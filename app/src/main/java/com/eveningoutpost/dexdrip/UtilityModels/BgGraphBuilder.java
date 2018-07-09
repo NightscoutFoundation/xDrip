@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.eveningoutpost.dexdrip.AddCalibration;
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.Models.APStatus;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.BloodTest;
 import com.eveningoutpost.dexdrip.Models.Calibration;
@@ -25,6 +26,7 @@ import com.eveningoutpost.dexdrip.Models.Forecast.TrendLine;
 import com.eveningoutpost.dexdrip.Models.HeartRate;
 import com.eveningoutpost.dexdrip.Models.Iob;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.Prediction;
 import com.eveningoutpost.dexdrip.Models.Profile;
 import com.eveningoutpost.dexdrip.Models.StepCounter;
 import com.eveningoutpost.dexdrip.Models.Treatments;
@@ -48,6 +50,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -287,6 +290,85 @@ public class BgGraphBuilder {
         }
         points.add(new PointValue(x, y));
         Log.d(TAG,"Extend line size: "+points.size());
+    }
+
+    private List<Line> predictiveLines() {
+        final List<Line> lines = new LinkedList<>();
+
+        if (Pref.getBooleanDefaultFalse("show_g_prediction")) {
+            final List<Prediction> plist = Prediction.latestForGraph(2000, loaded_start, loaded_end);
+            if (plist.size() > 0) {
+                final List<PointValue> gpoints = new ArrayList<>(plist.size());
+                final float yscale = !doMgdl ? (float) Constants.MGDL_TO_MMOLL : 1f;
+                for (Prediction p : plist) {
+                    final PointValue point = new PointValue(((float) (p.timestamp + (Constants.MINUTE_IN_MS * 10)) / FUZZER), (float) (p.glucose * yscale));
+                    switch (p.source) {
+                        case "EGlucoseRx":
+                            gpoints.add(point);
+                            break;
+
+                    }
+                }
+
+                if (gpoints.size() > 0) {
+                    lines.add(new Line(gpoints)
+                            .setHasLabels(false)
+                            .setHasPoints(true)
+                            .setHasLines(false)
+                            .setPointRadius(1)
+                            .setColor(ChartUtils.darkenColor(ChartUtils.darkenColor(getCol(X.color_predictive)))));
+                }
+            }
+        }
+
+        return lines;
+    }
+
+
+
+
+    private List<Line> basalLines() {
+        final List<Line> basalLines = new ArrayList<>();
+        if (prefs.getBoolean("show_basal_line", false)) {
+            final List<APStatus> aplist = APStatus.latestForGraph(2000, loaded_start, loaded_end);
+            final float yscale = doMgdl ? (float) Constants.MMOLL_TO_MGDL : 1f;
+            if (aplist.size() > 0) {
+                final List<PointValue> points = new ArrayList<>(aplist.size());
+
+                final float ypos = 13 * yscale; // TODO Configurable
+                int last_percent = -1;
+                float last_ypos = -1;
+
+                int count = aplist.size();
+                for (APStatus item : aplist) {
+                    if (--count == 0 || (item.basal_percent != last_percent)) {
+                        final float this_ypos = ypos - item.basal_percent / 100f;
+                        if (last_ypos >= 0) {
+                            // create square wave point
+                            points.add(new PointValue((float) item.timestamp / FUZZER, last_ypos));
+                        }
+                        points.add(new PointValue((float) item.timestamp / FUZZER, this_ypos));
+                        last_ypos = this_ypos;
+                        last_percent = item.basal_percent;
+                    }
+                }
+
+                final Line line = new Line(points);
+                line.setFilled(true);
+                line.setFillFlipped(true);
+                line.setHasGradientToTransparent(true);
+                line.setHasPoints(false);
+                line.setStrokeWidth(1);
+                line.setHasLines(true);
+                line.setPointRadius(1);
+                line.setGradientDivider(10f);
+
+                line.setColor(getCol(X.color_basal_tbr));
+                basalLines.add(line);
+            }
+        }
+
+        return basalLines;
     }
 
     // line illustrating result from step counter
@@ -541,9 +623,10 @@ public class BgGraphBuilder {
                 if (Pref.getBoolean("motion_tracking_enabled", false) && Pref.getBoolean("plot_motion", false)) {
                     lines.addAll(motionLine());
                 }
+                lines.addAll(basalLines());
                 lines.addAll(heartLines());
                 lines.addAll(stepsLines());
-
+                lines.addAll(predictiveLines());
             }
 
             Line[] calib = calibrationValuesLine();
@@ -1746,7 +1829,6 @@ public class BgGraphBuilder {
         line.setColor(Color.argb(240,25,206,244)); // temporary pending preference
         return line;
     }
-
 
     /////////AXIS RELATED//////////////
     public Axis yAxis() {

@@ -182,28 +182,33 @@ public class GcmActivity extends FauxActivity {
             return;
         }
 
-        final double MAX_QUEUE_AGE = (5 * 60 * 60 * 1000); // 5 hours
-        final double MIN_QUEUE_AGE = (15000);
-        final double MAX_RESENT = 10;
-        Double timenow = JoH.ts();
+        final long MAX_QUEUE_AGE = (5 * 60 * 60 * 1000); // 5 hours
+        final long MIN_QUEUE_AGE = (15000);
+        final long MAX_RESENT = 10;
+        final long timenow = JoH.tsl();
         boolean queuechanged = false;
         if (!recursive) recursion_depth = 0;
         synchronized (queue_lock) {
             for (GCM_data datum : gcm_queue) {
-                if ((timenow - datum.timestamp) > MAX_QUEUE_AGE
-                        || datum.resent > MAX_RESENT) {
-                    queuechanged = true;
-                    Log.i(TAG, "Removing old unacknowledged queue item: resent: " + datum.resent);
-                    gcm_queue.remove(gcm_queue.indexOf(datum));
-                    break;
-                } else if (timenow - datum.timestamp > MIN_QUEUE_AGE) {
-                    try {
-                        Log.i(TAG, "Resending unacknowledged queue item: " + datum.bundle.getString("action") + datum.bundle.getString("payload"));
-                        datum.resent++;
-                        GoogleCloudMessaging.getInstance(context).send(senderid + "@gcm.googleapis.com", Integer.toString(msgId.incrementAndGet()), datum.bundle);
-                    } catch (Exception e) {
-                        Log.e(TAG, "Got exception during resend: " + e.toString());
+                if (datum != null) {
+                    if ((timenow - datum.timestamp) > MAX_QUEUE_AGE
+                            || datum.resent > MAX_RESENT) {
+                        queuechanged = true;
+                        Log.i(TAG, "Removing old unacknowledged queue item: resent: " + datum.resent);
+                        gcm_queue.remove(gcm_queue.indexOf(datum));
+                        break;
+                    } else if (timenow - datum.timestamp > MIN_QUEUE_AGE) {
+                        try {
+                            Log.i(TAG, "Resending unacknowledged queue item: " + datum.bundle.getString("action") + datum.bundle.getString("payload"));
+                            datum.resent++;
+                            GoogleCloudMessaging.getInstance(context).send(senderid + "@gcm.googleapis.com", Integer.toString(msgId.incrementAndGet()), datum.bundle);
+                        } catch (Exception e) {
+                            Log.e(TAG, "Got exception during resend: " + e.toString());
+                        }
+                        break;
                     }
+            } else {
+                    UserError.Log.wtf(TAG,"Null datum in gcm_queue - should be impossible!");
                     break;
                 }
             }
@@ -260,6 +265,10 @@ public class GcmActivity extends FauxActivity {
     }
 
     public synchronized static void syncBGReading(BgReading bgReading) {
+        if (bgReading == null) {
+            UserError.Log.wtf(TAG, "Cannot sync null bgreading - should never occur");
+            return;
+        }
         Log.d(TAG, "syncBGReading called");
         if (JoH.ratelimit("gcm-bgs-batch", 15)) {
             GcmActivity.sendMessage("bgs", bgReading.toJSON(true));
@@ -583,6 +592,20 @@ public class GcmActivity extends FauxActivity {
     public static void push_delete_treatment(Treatments treatment) {
         Log.i(TAG, "Sending push for specific treatment");
         sendMessage(myIdentity(), "dt", treatment.uuid);
+    }
+
+    public static void push_stop_master_sensor() {
+        sendMessage("ssom","challenge string");
+    }
+
+    public static void push_start_master_sensor() {
+        sendMessage("rsom",JoH.tsl()+"");
+    }
+
+    public static void push_external_status_update(long timestamp, String statusLine) {
+        if (JoH.ratelimit("gcm-esup", 30)) {
+            sendMessage("esup", timestamp + "^" + statusLine);
+        }
     }
 
     static String myIdentity() {
@@ -925,12 +948,12 @@ public class GcmActivity extends FauxActivity {
 
     private static class GCM_data {
         public Bundle bundle;
-        public Double timestamp;
+        public long timestamp;
         private int resent;
 
         private GCM_data(Bundle data) {
             bundle = data;
-            timestamp = JoH.ts();
+            timestamp = JoH.tsl();
             resent = 0;
         }
     }

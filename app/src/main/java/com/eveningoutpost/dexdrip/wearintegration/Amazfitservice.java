@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.wearintegration;
 
+<<<<<<< HEAD
 
 import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Models.BgReading;
@@ -8,9 +9,11 @@ import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
 import com.eveningoutpost.dexdrip.Models.UserError;
+=======
+>>>>>>> upstream/master
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
+<<<<<<< HEAD
 import android.graphics.Bitmap;
 import java.io.ByteArrayOutputStream;
 import java.io.ByteArrayInputStream;
@@ -22,7 +25,15 @@ import com.eveningoutpost.dexdrip.Models.StepCounter;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+=======
+import android.os.IBinder;
+import android.support.annotation.Nullable;
+
+>>>>>>> upstream/master
 import com.eveningoutpost.dexdrip.BestGlucose;
+import com.eveningoutpost.dexdrip.Models.HeartRate;
+import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.StepCounter;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSparklineBuilder;
@@ -34,12 +45,13 @@ import com.eveningoutpost.dexdrip.xdrip;
 import com.huami.watch.transport.DataBundle;
 import com.huami.watch.transport.DataTransportResult;
 import com.huami.watch.transport.TransportDataItem;
-
-
 import com.kieronquinn.library.amazfitcommunication.Transporter;
 import com.kieronquinn.library.amazfitcommunication.TransporterClassic;
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> upstream/master
 
 
 /**
@@ -48,6 +60,7 @@ import com.kieronquinn.library.amazfitcommunication.TransporterClassic;
 
 public class Amazfitservice extends Service {
     BestGlucose.DisplayGlucose dg;
+<<<<<<< HEAD
 
     Transporter transporter;
     private Context context;
@@ -60,21 +73,32 @@ public class Amazfitservice extends Service {
     private double low_occurs_at;
 
 
+=======
+    private Transporter transporter;
+    //private Context context;
+    DataBundle dataBundle = new DataBundle();
+    private HeartRate heartrate;
+    private StepCounter stepcounter;
+>>>>>>> upstream/master
 
     @Override
     public void onCreate() {
         super.onCreate();
 
+<<<<<<< HEAD
 
         transporter = (TransporterClassic)Transporter.get(getApplicationContext(), "com.eveningoutpost.dexdrip.wearintegration");
 
+=======
+        transporter = (TransporterClassic) Transporter.get(getApplicationContext(), "com.eveningoutpost.dexdrip.wearintegration");
+>>>>>>> upstream/master
         transporter.connectTransportService();
         transporter.addChannelListener(new Transporter.ChannelListener() {
             @Override
             public void onChannelChanged(boolean ready) {
                 //Transporter is ready if ready is true, send an action now. This will **NOT** work before the transporter is ready!
                 //You can change the action to whatever you want, there's also an option for a data bundle to be added (see below)
-                if(ready) UserError.Log.e("Amazfitservice", "channel changed ");
+                if (ready) UserError.Log.e("Amazfitservice", "channel changed ");
             }
 
         });
@@ -89,6 +113,7 @@ public class Amazfitservice extends Service {
         transporter.addDataListener(new Transporter.DataListener() {
             @Override
             public void onDataReceived(TransportDataItem item) {
+<<<<<<< HEAD
 
                 //Confirmation that watch received SGV Data
                 if (item.getAction().equals("SGVDataConfirmation")) {
@@ -117,6 +142,14 @@ public class Amazfitservice extends Service {
 
 
 
+=======
+                if (item.getAction().equals("Amazfit_Healthdata")) {
+                    DataBundle databundle = item.getData();
+                    final StepCounter pm = StepCounter.createEfficientRecord(JoH.tsl(), databundle.getInt("steps"));
+                    HeartRate.create(JoH.tsl(), databundle.getInt("heart_rate"), databundle.getInt("heart_acuracy"));
+
+                } else UserError.Log.e("Amazfitservice", item.getAction());
+>>>>>>> upstream/master
             }
 
 
@@ -134,9 +167,11 @@ public class Amazfitservice extends Service {
     @Override
     public void onDestroy() {
 
-
-        transporter.disconnectTransportService();
+        if (transporter != null) {
+            transporter.disconnectTransportService();
+        }
         UserError.Log.e("Amazfitservice", "killing service ");
+
         super.onDestroy();
     }
 
@@ -144,12 +179,20 @@ public class Amazfitservice extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
 
 
-        if (!transporter.isTransportServiceConnected()){
+        if (!transporter.isTransportServiceConnected()) {
             UserError.Log.e("Amazfitservice", "Service not connected - trying to reconnect ");
             transporter.connectTransportService();
+<<<<<<< HEAD
+=======
+            try {
+                wait(1000);
+            } catch (Exception e) {
+>>>>>>> upstream/master
             }
+        }
 
 
+<<<<<<< HEAD
             if (!transporter.isTransportServiceConnected()) {
                 UserError.Log.e("Amazfitservice", "Service is not connectable ");
 
@@ -161,6 +204,17 @@ public class Amazfitservice extends Service {
                 UserError.Log.e("Amazfitservice", "trying to send Data to watch "+action);
 
             }
+=======
+        if (!transporter.isTransportServiceConnected()) {
+            UserError.Log.e("Amazfitservice", "Service is not connectable ");
+            ;
+        } else {
+            UserError.Log.e("Amazfitservice", "Service is connected ");
+
+            transporter.send("Xdrip_synced_SGV_data", getDataBundle());
+            UserError.Log.e("Amazfitservice", "Send Data to watch ");
+        }
+>>>>>>> upstream/master
         return START_STICKY;
 
 
@@ -231,10 +285,23 @@ public static void start(String action_text,BgReading bg){
         alert_to_send=alert;
         JoH.startService(Amazfitservice.class);
 
+<<<<<<< HEAD
     }
     public static void start(String action_text){
         action=action_text;
         JoH.startService(Amazfitservice.class);
+=======
+        dataBundle.putLong("date", dg.timestamp);
+        dataBundle.putString("sgv", String.valueOf(dg.unitized) + " " + dg.delta_arrow);
+        dataBundle.putString("delta", String.valueOf(dg.spannableString(dg.unitized_delta)));
+        dataBundle.putBoolean("ishigh", dg.isHigh());
+        dataBundle.putBoolean("islow", dg.isLow());
+        dataBundle.putBoolean("isstale", dg.isStale());
+        dataBundle.putBoolean("fromplugin", dg.from_plugin);
+        dataBundle.putString("extra_string", dg.extra_string);
+        dataBundle.putString("plugin_name", dg.plugin_name);
+        dataBundle.putInt("warning", dg.warning);
+>>>>>>> upstream/master
 
     }
     private Bitmap createWearBitmap(long start, long end) {

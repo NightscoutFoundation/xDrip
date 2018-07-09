@@ -97,9 +97,10 @@ public class Sensor extends Model {
             return;
         }
         sensor.stopped_at = new Date().getTime();
-        Log.i("SENSOR", "Sensor stopped at " + sensor.stopped_at);
+        UserError.Log.ueh("SENSOR", "Sensor stopped at " + JoH.dateTimeText(sensor.stopped_at));
         sensor.save();
         SensorSendQueue.addToQueue(sensor);
+        JoH.clearCache();
 
     }
 

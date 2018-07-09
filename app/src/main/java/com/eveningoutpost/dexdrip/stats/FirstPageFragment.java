@@ -145,6 +145,12 @@ public class FirstPageFragment extends Fragment {
                 bgListByTime = pass2DataCleaning(bgListByTime);
 
                 double normalReadingspct= inRange*100/total; //TODO calculate from cleaned data?
+
+                // list size can be 0 after cleaning so cancel if so
+                if (bgListByTime.size() == 0) {
+                    return;
+                }
+
                 double glucoseFirst = bgListByTime.get(0).calculated_value;
                 double glucoseLast = glucoseFirst;
                 double glucoseTotal =  glucoseLast;

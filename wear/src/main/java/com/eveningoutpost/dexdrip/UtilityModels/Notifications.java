@@ -941,4 +941,13 @@ public class Notifications extends IntentService {
 
         return df.format(threshold / Constants.MMOLL_TO_MGDL);
     }
+
+    // rate limited
+    public static void start() {
+        // TODO consider how inevitable task could change dynamic of this instead of rate limit
+        if (JoH.ratelimit("start-notifications",10)) {
+            JoH.startService(Notifications.class);
+        }
+    }
+
 }

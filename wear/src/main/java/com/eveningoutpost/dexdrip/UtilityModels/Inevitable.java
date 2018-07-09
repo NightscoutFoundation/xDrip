@@ -60,7 +60,7 @@ public class Inevitable {
         }
     }
 
-    public void kill(final String id) {
+    public static void kill(final String id) {
         tasks.remove(id);
     }
 

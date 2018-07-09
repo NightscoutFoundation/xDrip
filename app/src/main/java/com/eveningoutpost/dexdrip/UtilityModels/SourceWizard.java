@@ -20,6 +20,8 @@ import java.util.List;
 
 import me.tatarka.bindingcollectionadapter2.ItemBinding;
 
+import static com.eveningoutpost.dexdrip.ui.helpers.UiHelper.convertDpToPixel;
+
 /**
  * Created by jamorham on 20/12/2017.
  *
@@ -36,7 +38,11 @@ public class SourceWizard {
     private Tree<Item> root = new Tree<>(new Item("Choose Data Source", "Which system do you use?"));
 
     {
-        root.addChild(new Item("G5", DexCollectionType.DexcomG5, R.drawable.g5_icon));
+        Tree<Item> g5g6 = root.addChild(new Item("G5 / G6", "G5 or G6 ?", R.drawable.g5_icon));
+        {
+            g5g6.addChild(new Item("G5", DexCollectionType.DexcomG5, R.drawable.g5_icon));
+            g5g6.addChild(new Item("G6", DexCollectionType.DexcomG6, R.drawable.g5_icon));
+        }
         Tree<Item> g4 = root.addChild(new Item("G4", "What type of G4 bridge device do you use?", R.drawable.g4_icon));
         {
             Tree<Item> wixel = g4.addChild(new Item(gs(R.string.bluetooth_wixel), gs(R.string.which_software_is_the_wixel_running), R.drawable.wixel_icon));
@@ -182,6 +188,10 @@ public class SourceWizard {
 
         public boolean isShortName() {
             return this.name.length() < 10;
+        }
+
+        public float dpToPx(float size) {
+            return convertDpToPixel(size);
         }
 
         public boolean isCollectionType() {

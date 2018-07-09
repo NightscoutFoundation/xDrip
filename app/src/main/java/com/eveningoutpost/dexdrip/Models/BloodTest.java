@@ -409,8 +409,8 @@ public class BloodTest extends Model {
                 Log.d(TAG, "opportunistic: No blood tests");
                 return;
             }
-            if (JoH.msSince(bt.timestamp) > Constants.DAY_IN_MS) {
-                Log.d(TAG, "opportunistic: Blood test older than 1 days ago");
+            if (JoH.msSince(bt.timestamp) > (Constants.HOUR_IN_MS * 8)) {
+                Log.d(TAG, "opportunistic: Blood test older than 8 hours ago");
                 return;
             }
 
@@ -467,8 +467,8 @@ public class BloodTest extends Model {
             // TODO store evaluation failure for this record in cache for future optimization
 
             // TODO Check we have prior reading as well perhaps
-
-            UserError.Log.ueh(TAG, "Opportunistic calibration for Blood Test at " + JoH.dateTimeText(bt.timestamp) + " of " + BgGraphBuilder.unitized_string_with_units_static(bt.mgdl) + " matching sensor slope at: " + JoH.dateTimeText(bgReading.timestamp));
+            JoH.clearCache();
+            UserError.Log.ueh(TAG, "Opportunistic calibration for Blood Test at " + JoH.dateTimeText(bt.timestamp) + " of " + BgGraphBuilder.unitized_string_with_units_static(bt.mgdl) + " matching sensor slope at: " + JoH.dateTimeText(bgReading.timestamp) + " from source " + bt.source);
             final long time_since = JoH.msSince(bt.timestamp);
 
 

@@ -226,6 +226,14 @@
                         app:colorpicker_selectNoneButtonText="@string/revert_to_default"
                         app:colorpicker_showHex="false" />
 
+                    <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
+                        android:defaultValue="#D33172DE"
+                        android:key="color_basal_tbr"
+                        android:title="Basal TBR"
+                        app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
+                        app:colorpicker_selectNoneButtonText="@string/revert_to_default"
+                        app:colorpicker_showHex="false" />
+
                 </PreferenceCategory>
                 <PreferenceCategory
                     android:key="xdrip_plus_display_colorset9_android5plus"
@@ -324,6 +332,11 @@
                 android:summary="@string/the_standard_xdrip_calculated_value"
                 android:title="@string/display_raw_plot_data" />
             <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="show_basal_line"
+                android:summary="Show TBR information from external status"
+                android:title="Show Basal TBR" />
+            <CheckBoxPreference
                 android:defaultValue="false"
                 android:key="show_target_line"
                 android:summary="@string/display_ideal_glucose_target_line"
@@ -343,6 +356,12 @@
                 android:key="show_libre_trend_line"
                 android:summary=""
                 android:title="@string/show_libre_trend" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="show_g_prediction"
+                android:summary="Show G6 predictive glucose dots"
+                android:title="G6 Prediction"
+                />
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:key="show_momentum_working_line"
@@ -755,5 +774,42 @@
                 android:targetClass="com.eveningoutpost.dexdrip.utils.SdcardImportExport"
                 android:targetPackage="@string/local_target_package" />
         </Preference>
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:key="xdrip_plus_experimental"
+        android:title="Experimental Section">
+
+        <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+            android:icon="@drawable/ic_mode_edit_grey_600_48dp"
+            android:key="pendiq_screen"
+            android:summary="Reading and writing dosages"
+            android:title="Pendiq 2.0 Insulin Pen">
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="use_pendiq"
+            android:switchTextOff="@string/short_off_text_for_switches"
+            android:switchTextOn="@string/short_on_text_for_switches"
+            android:title="Pendiq 2.0 Support" />
+
+            <SwitchPreference
+                android:defaultValue="false"
+                android:dependency="use_pendiq"
+                android:key="pendiq_send_treatments"
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
+                android:title="Send Treatments to Pen"
+                android:summary="Prepare the pen with entered treatment insulin units. You must always double check this."/>
+
+            <EditTextPreference
+                android:defaultValue="@string/zero_zero_zero_zero"
+                android:maxLength="4"
+                android:inputType="numberPassword|textVisiblePassword"
+                android:dependency="use_pendiq"
+                android:key="pendiq_pin"
+                android:title="Pen Pin Code"/>
+
+
+        </PreferenceScreen>
+
     </PreferenceCategory>
 </PreferenceScreen>

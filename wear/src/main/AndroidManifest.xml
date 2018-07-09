@@ -186,6 +186,11 @@
             </intent-filter>
         </receiver>
         <receiver android:name=".Services.ComplicationTapBroadcastReceiver" />
+        <receiver android:name=".utils.DisconnectReceiver">
+            <intent-filter>
+                <action android:name="android.bluetooth.device.action.ACL_DISCONNECTED" />
+            </intent-filter>
+        </receiver>
         <activity
             android:name=".NWPreferences"
             android:icon="@drawable/ic_icon"

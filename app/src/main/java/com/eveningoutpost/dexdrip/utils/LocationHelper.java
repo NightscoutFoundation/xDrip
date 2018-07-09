@@ -92,6 +92,32 @@ public class LocationHelper {
         }
     }
 
+    public static void requestLocationForEmergencyMessage(final Activity activity) {
+        // Location needs to be enabled for Bluetooth discovery on Marshmallow.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
+            if (ContextCompat.checkSelfPermission(activity,
+                    android.Manifest.permission.ACCESS_FINE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED) {
+
+                JoH.show_ok_dialog(activity, "Please Allow Permission", "Without Location permission emergency messages cannot use location data", new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            ActivityCompat.requestPermissions(activity,
+                                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                                    0);
+                        } catch (Exception e) {
+                            JoH.static_toast_long("Got Exception with Location Permission: " + e);
+                        }
+                    }
+                });
+            }
+
+            LocationHelper.requestLocation(activity);
+        }
+    }
+
     // TODO probably can use application context here
     public static boolean isLocationPermissionOk(Context context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

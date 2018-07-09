@@ -119,10 +119,11 @@ public final class FireReceiver extends BroadcastReceiver {
                             final Intent calintent = new Intent();
                             calintent.setClassName(xdrip.getAppContext().getString(R.string.local_target_package), "com.eveningoutpost.dexdrip.AddCalibration");
                             calintent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
+                            calintent.putExtra("timestamp", JoH.tsl());
                             calintent.putExtra("bg_string", message_array[1]);
                             calintent.putExtra("bg_age", message_array[2]);
                             calintent.putExtra("from_external", "true");
+                            calintent.putExtra("cal_source", "FireReceiver");
                             context.startActivity(calintent);
 
                             break;
