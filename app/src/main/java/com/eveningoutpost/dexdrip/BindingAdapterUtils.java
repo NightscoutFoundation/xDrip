@@ -32,6 +32,11 @@ public class BindingAdapterUtils {
         setVisibility(view, isVisible ? View.VISIBLE : View.GONE);
     }
 
+    @BindingAdapter(value = {"showIfTrueAnimated"}, requireAll = true)
+    public static void setShowIfTrueAnimatedBoolean(@NonNull View view, Boolean isVisible) {
+       setShowIfTrueAnimated(view, isVisible != null ? isVisible : false);
+    }
+
     @BindingAdapter(value = {"showIfTrue"}, requireAll = true)
     public static void setShowIfTrue(@NonNull View view, boolean isVisible) {
         view.setVisibility(isVisible ? View.VISIBLE : View.GONE);
@@ -59,6 +64,11 @@ public class BindingAdapterUtils {
         } else {
             view.setTypeface(null, Typeface.NORMAL);
         }
+    }
+
+    @BindingAdapter("boldIfTrue")
+    public static void boldIfTrueButtonBoolean(CompoundButton view, Boolean value) {
+        boldIfTrue(view, value != null ? value : false);
     }
 
     @BindingAdapter(value = {"showIfTrueInRecycler"}, requireAll = true)
