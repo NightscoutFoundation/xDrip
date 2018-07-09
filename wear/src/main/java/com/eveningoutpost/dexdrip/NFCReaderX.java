@@ -27,7 +27,7 @@ import com.eveningoutpost.dexdrip.Models.LibreBlock;
 import com.eveningoutpost.dexdrip.Models.LibreOOPAlgorithm;
 import com.eveningoutpost.dexdrip.Models.ReadingData;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
-import com.eveningoutpost.dexdrip.UtilityModels.LibreCrc;
+import com.eveningoutpost.dexdrip.UtilityModels.LibreUtils;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
@@ -216,7 +216,7 @@ public class NFCReaderX {
     // returns true if checksum passed.
     public static boolean HandleGoodReading(String tagId, byte[] data1, final long CaptureDateTime ) {
 
-        final boolean checksum_ok = LibreCrc.verify(data1);
+        final boolean checksum_ok = LibreUtils.verify(data1);
         if (!checksum_ok) {
             return false;
         }
