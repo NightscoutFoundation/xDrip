@@ -177,19 +177,7 @@ public class Amazfitservice extends Service {
         }
 
 
-            if (!transporter.isTransportServiceConnected()) {
-                UserError.Log.e("Amazfitservice", "Service is not connectable ");
-
-            }else{
-
-
-
-                transporter.send(getAction(), getDataBundle());
-                UserError.Log.e("Amazfitservice", "trying to send Data to watch "+action);
-
-            }
-
-        if (!transporter.isTransportServiceConnected()) {
+          if (!transporter.isTransportServiceConnected()) {
             UserError.Log.e("Amazfitservice", "Service is not connectable ");
             ;
         } else {
