@@ -57,3 +57,4 @@ patches/
 *.dll
 *.exe
 *.iml
+app/src/main/java/com/eveningoutpost/dexdrip/wearintegration/Amazfitservice.java
