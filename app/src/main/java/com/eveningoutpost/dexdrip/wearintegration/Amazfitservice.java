@@ -177,29 +177,17 @@ public class Amazfitservice extends Service {
         }
 
 
-<<<<<<< HEAD
             if (!transporter.isTransportServiceConnected()) {
                 UserError.Log.e("Amazfitservice", "Service is not connectable ");
 
             }else{
 
-
-
                 transporter.send(getAction(), getDataBundle());
                 UserError.Log.e("Amazfitservice", "trying to send Data to watch "+action);
 
-            }
-=======
-          if (!transporter.isTransportServiceConnected()) {
-            UserError.Log.e("Amazfitservice", "Service is not connectable ");
-            ;
-        } else {
-            UserError.Log.e("Amazfitservice", "Service is connected ");
+    }
 
-            transporter.send("Xdrip_synced_SGV_data", getDataBundle());
-            UserError.Log.e("Amazfitservice", "Send Data to watch ");
-        }
->>>>>>> f3613011d9ea082eb32f9a1c8043f443f6cd5121
+
 
         return START_STICKY;
 
