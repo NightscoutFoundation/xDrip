@@ -97,7 +97,8 @@
     <string name="pref_amazfit_alarm_enable_summary">Sends Alarms to Smartwatch</string>
     <string name="pref_amazfit_alarm_enable">Enable</string>
     <string name="pref_amazfit_alarm_tile">Watch Alarm</string>
-    <string name="pref_amazfit_widget_graph_hours">How many hours tobe shown in the widget graph</string>
+    <string name="pref_amazfit_widget_graph_hours_title">Widget graph</string>
+    <string name="pref_amazfit_widget_graph_hours_summary">set how many hours in graph</string>
 
 
     <string name="toast_crash">Something went wrong :( a report has been sent to help fix the issue.</string>
@@ -293,7 +294,7 @@
     <string name="start_snoozed">Start Snoozed</string>
     <string name="adjust_all_by_a_factor">Adjust all by a factor</string>
     <string name="reset">Reset</string>
-    <string name="pebble_and_android_wear_options">Pebble and Android Wear options</string>
+    <string name="pebble_and_android_wear_options">Pebble/Android Wear/Amazfit options</string>
     <string name="customize_colours">Customize Colours</string>
     <string name="xdrip_plus_color_settings">xDrip+ Color Settings</string>
     <string name="glucose_values_and_lines">Glucose Values and Lines</string>

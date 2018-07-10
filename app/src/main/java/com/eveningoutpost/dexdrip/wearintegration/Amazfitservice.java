@@ -133,7 +133,7 @@ public class Amazfitservice extends Service {
                     final StepCounter pm = StepCounter.createEfficientRecord(JoH.tsl(), databundle.getInt("steps"));
                     HeartRate.create(JoH.tsl(), databundle.getInt("heart_rate"), databundle.getInt("heart_acuracy"));
 
-                } else UserError.Log.e("Amazfitservice", item.getAction());
+                }
 
             }
 
@@ -188,16 +188,6 @@ public class Amazfitservice extends Service {
                 UserError.Log.e("Amazfitservice", "trying to send Data to watch "+action);
 
             }
-
-        if (!transporter.isTransportServiceConnected()) {
-            UserError.Log.e("Amazfitservice", "Service is not connectable ");
-            ;
-        } else {
-            UserError.Log.e("Amazfitservice", "Service is connected ");
-
-            transporter.send("Xdrip_synced_SGV_data", getDataBundle());
-            UserError.Log.e("Amazfitservice", "Send Data to watch ");
-        }
 
         return START_STICKY;
 
