@@ -959,6 +959,11 @@ public class Treatments extends Model {
         }
     }
 
+    private static final double MAX_SMB_UNITS = 0.3;
+    public boolean likelySMB() {
+        return (carbs == 0 && insulin > 0 && insulin <= MAX_SMB_UNITS && (notes == null || notes.length() == 0));
+    }
+
     public String toS() {
         Gson gson = new GsonBuilder()
                 .excludeFieldsWithoutExposeAnnotation()
