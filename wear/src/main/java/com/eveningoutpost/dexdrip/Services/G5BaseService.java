@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothDevice;
 import android.os.PowerManager;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.google.android.gms.wearable.DataMap;
@@ -102,5 +103,14 @@ public abstract class G5BaseService extends Service {
         JoH.releaseWakeLock(wl);
     }
 
+    protected static byte[] nn(final byte[] array) {
+        if (array == null) {
+            if (JoH.ratelimit("never-null", 60)) {
+                UserError.Log.wtf("NeverNullG5Base", "Attempt to pass null!!! " + JoH.backTrace());
+                return new byte[1];
+            }
+        }
+        return array;
+    }
 
 }
