@@ -1008,7 +1008,7 @@ public class Ob1G5CollectionService extends G5BaseService {
 
     public void tryGattRefresh() {
         if (JoH.ratelimit("ob1-gatt-refresh", 60)) {
-            if (Pref.getBooleanDefaultFalse("use_gatt_refresh")) {
+            if (Pref.getBoolean("use_gatt_refresh", true)) {
                 try {
                     if (connection != null)
                         UserError.Log.d(TAG, "Trying gatt refresh queue");
