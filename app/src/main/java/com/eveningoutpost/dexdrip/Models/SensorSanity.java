@@ -15,7 +15,7 @@ public class SensorSanity {
     public static final double DEXCOM_MIN_RAW = 5; // raw values below this will be treated as error
     public static final double DEXCOM_MAX_RAW = 1000; // raw values above this will be treated as error
 
-    public static final double DEXCOM_G6_MIN_RAW = 0.01; // raw values below this will be treated as error
+    public static final double DEXCOM_G6_MIN_RAW = 5; // raw values below this will be treated as error
     public static final double DEXCOM_G6_MAX_RAW = 1000; // raw values above this will be treated as error
 
     public static final double LIBRE_MIN_RAW = 5; // raw values below this will be treated as error
