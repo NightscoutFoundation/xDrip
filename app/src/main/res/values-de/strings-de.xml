@@ -72,6 +72,18 @@
 	<string name="pref_summary_display_trend">BG Trend auf dem xDrip Pebble Watchface anzeigen.</string>
 	<string name="pref_pebble_display_high_line">Linie für Hoch anzeigen</string>
 	<string name="pref_pebble_display_low_line">Linie für niedrig anzeigen</string>
+	<!-- Amazfit Settings -->
+	<string name="amazfit_sync_service">AmazFit Sync Service</string>
+
+	<string name="pref_amazfit_enable_summary">Enable Amazfit Datenunterstützung</string>
+	<string name="pref_amazfit_enable">Ein</string>
+	<string name="pref_amazfit_tile">Amazfit Service</string>
+	<string name="pref_amazfit_alarm_enable_summary">Sende Alarme zur Smartwatch</string>
+	<string name="pref_amazfit_alarm_enable">Ein</string>
+	<string name="pref_amazfit_alarm_tile">Watch Alarm</string>
+	<string name="pref_amazfit_widget_graph_hours_title">Widget Grafik</string>
+	<string name="pref_amazfit_widget_graph_hours_summary">Wieviele Stunden sollen in der Grafik dargestellt werden</string>
+
 	<string name="toast_crash">Da ist etwas schief gegangen :( Ein Bericht über das Problem wurde an die Entwickler versendet.</string>
 	<string name="taskerConfigInstruction">Einfach mit einem Klick auf den Haken bestätigen. Die Konfigurationszeile muss nicht geändert werden.</string>
 	<string name="taskerConfiguration">Tasker-Konfiguration</string>
@@ -252,7 +264,7 @@
 	<string name="start_snoozed">Starten im Snooze-Modus</string>
 	<string name="adjust_all_by_a_factor">Mit globalem Faktor anpassen</string>
 	<string name="reset">Zurücksetzen</string>
-	<string name="pebble_and_android_wear_options">Pebble und Android Wear Optionen</string>
+	<string name="pebble_and_android_wear_options">Pebble/Android Wear/Amazfit Optionen</string>
 	<string name="customize_colours">Farben anpassen</string>
 	<string name="xdrip_plus_color_settings">xDrip+ Farbeinstellungen</string>
 	<string name="glucose_values_and_lines">Grenzwerte und Linien</string>

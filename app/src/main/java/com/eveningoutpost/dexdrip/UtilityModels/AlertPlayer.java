@@ -538,7 +538,7 @@ public class AlertPlayer {
 
         //send alert to amazfit
         if (Pref.getBoolean("pref_amazfit_enable_key", false)&&Pref.getBoolean("pref_amazfit_alarm_enable_key", false))
-        {       Amazfitservice.start("xDrip_Alarm",alert);
+        {       Amazfitservice.start("xDrip_Alarm",alert.name);
         }
 
 

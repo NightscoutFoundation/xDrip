@@ -56,7 +56,7 @@ public class Amazfitservice extends Service {
 
 
     private static String action;
-    private static AlertType alert_to_send;
+    private static String alert_to_send;
     private String space_mins;
     private double low_occurs_at;
     private Transporter transporter;
@@ -168,12 +168,6 @@ public class Amazfitservice extends Service {
             UserError.Log.e("Amazfitservice", "Service not connected - trying to reconnect ");
             transporter.connectTransportService();
 
-
-            try {
-                wait(1000);
-            } catch (Exception e) {
-
-            }
         }
 
 
@@ -205,7 +199,7 @@ public class Amazfitservice extends Service {
         if (action.equals("xDrip_synced_SGV_data")) {datatosend =  getSGVdata();}
         if (action.equals("xDrip_Alarm")) {datatosend =  getAlarmdata();}
         if (action.equals("xDrip_AlarmCancel")) {datatosend =  getAlarmCancelData();}
-       return datatosend;
+        return datatosend;
     }
 
 
@@ -236,12 +230,15 @@ public class Amazfitservice extends Service {
     }
     public DataBundle getAlarmdata() {
         DataBundle db = new DataBundle();
-        db.putString("uuid", alert_to_send.name);
+        BestGlucose.DisplayGlucose dg = BestGlucose.getDisplayGlucose();
+        db.putString("uuid", alert_to_send);
         db.putString("reply_message", "Watch acknowledged ALARM");
-        db.putString("alarmtext", (alert_to_send.above ? xdrip.getAppContext().getString(R.string.high) : xdrip.getAppContext().getString(R.string.low)).toUpperCase());
+        db.putString("alarmtext", alert_to_send);
         db.putLong("date", System.currentTimeMillis());
+        db.putString("sgv", String.valueOf(dg.unitized)+String.valueOf(dg.delta_arrow));
         return db;
     }
+
     public DataBundle getAlarmCancelData() {
         DataBundle db = new DataBundle();
         db.putString("reply_message", "Watch acknowledged CANCEL");
@@ -254,9 +251,10 @@ public static void start(String action_text,BgReading bg){
         JoH.startService(Amazfitservice.class);
 
 }
-    public static void start(String action_text,AlertType alert){
+    public static void start(String action_text,String alert){
         action=action_text;
         alert_to_send=alert;
+        UserError.Log.e("Amazfitservice", "1 " + alert_to_send );
         JoH.startService(Amazfitservice.class);
 
     }
