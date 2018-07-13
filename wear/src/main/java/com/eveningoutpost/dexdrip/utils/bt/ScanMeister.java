@@ -36,14 +36,17 @@ public class ScanMeister {
     private static final String TAG = ScanMeister.class.getSimpleName();
     private static final String STOP_SCAN_TASK_ID = "stop_meister_scan";
     private static final int DEFAULT_SCAN_SECONDS = 30;
-    private static final int MINIMUM_RSSI = -97; // ignore all quieter than this
+    protected static final int MINIMUM_RSSI = -97; // ignore all quieter than this
     private static volatile Subscription scanSubscription;
     private final RxBleClient rxBleClient = RxBleProvider.getSingleton();
     private final ConcurrentHashMap<String, BtCallBack> callbacks = new ConcurrentHashMap<>();
     private final PowerManager.WakeLock wl = JoH.getWakeLock("jam-bluetooth-meister", 1000);
     private int scanSeconds = DEFAULT_SCAN_SECONDS;
-    private volatile String address;
+    protected volatile String address;
+    private static String lastFailureReason = "";
 
+
+    // TODO Log errors when location disabled etc
 
     public ScanMeister(String address) {
         this.address = address;
@@ -69,7 +72,7 @@ public class ScanMeister {
         callbacks.remove(name);
     }
 
-    private synchronized void processCallBacks(String address, String status) {
+    protected synchronized void processCallBacks(String address, String status) {
         if (address == null) address = "NULL";
         boolean called_back = false;
         UserError.Log.d(TAG, "Processing callbacks for " + address + " " + status);
@@ -115,7 +118,7 @@ public class ScanMeister {
         processCallBacks(address, "SCAN_TIMEOUT");
     }
 
-    private synchronized void stopScan(String source) {
+    protected synchronized void stopScan(String source) {
         UserError.Log.d(TAG, "stopScan called from: " + source);
         if (scanSubscription != null) {
             scanSubscription.unsubscribe();
@@ -127,7 +130,7 @@ public class ScanMeister {
 
 
     // Successful result from our bluetooth scan
-    private synchronized void onScanResult(ScanResult bleScanResult) {
+    protected synchronized void onScanResult(ScanResult bleScanResult) {
 
         if (address == null) {
             UserError.Log.d(TAG, "Address has been set to null, stopping scan.");
@@ -159,11 +162,15 @@ public class ScanMeister {
 
 
     // Failed result from our bluetooth scan
-    private synchronized void onScanFailure(Throwable throwable) {
+    protected synchronized void onScanFailure(Throwable throwable) {
         UserError.Log.d(TAG, "onScanFailure: " + throwable);
         if (throwable instanceof BleScanException) {
             final String info = HandleBleScanException.handle(TAG, (BleScanException) throwable);
             UserError.Log.d(TAG, "Scan failure: " + info);
+            if (!lastFailureReason.equals(info) || JoH.ratelimit("scanmeister-fail-error", 600)) {
+                UserError.Log.e(TAG, "Failed to scan: " + info);
+                lastFailureReason = info;
+            }
             if (((BleScanException) throwable).getReason() == BleScanException.BLUETOOTH_DISABLED) {
                 // Attempt to turn bluetooth on
                 if (ratelimit("bluetooth_toggle_on", 30)) {
@@ -189,7 +196,7 @@ public class ScanMeister {
         wl.acquire(ms);
     }
 
-    private void releaseWakeLock() {
+    protected void releaseWakeLock() {
         JoH.releaseWakeLock(wl);
     }
 
