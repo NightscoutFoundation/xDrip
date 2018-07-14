@@ -163,7 +163,6 @@ public class Amazfitservice extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-
         if (!transporter.isTransportServiceConnected()) {
             UserError.Log.e("Amazfitservice", "Service not connected - trying to reconnect ");
             transporter.connectTransportService();
@@ -171,20 +170,21 @@ public class Amazfitservice extends Service {
         }
 
 
-            if (!transporter.isTransportServiceConnected()) {
-                UserError.Log.e("Amazfitservice", "Service is not connectable ");
+        if (!transporter.isTransportServiceConnected()) {
+            UserError.Log.e("Amazfitservice", "Service is not connectable ");
 
-            }else{
+        } else {
 
-                transporter.send(getAction(), getDataBundle());
-                UserError.Log.e("Amazfitservice", "trying to send Data to watch "+action);
+            transporter.send(getAction(), getDataBundle());
+            UserError.Log.e("Amazfitservice", "trying to send Data to watch " + action);
+        }
+
+        return START_NOT_STICKY;
+
 
     }
 
-
-
-        return START_STICKY;
-
+    private void Amazfit_send_data() {
 
     }
 
@@ -248,18 +248,20 @@ public class Amazfitservice extends Service {
 
 public static void start(String action_text,BgReading bg){
         action=action_text;
-        JoH.startService(Amazfitservice.class);
+
+    //JoH.startService(Amazfitservice.class);
 
 }
     public static void start(String action_text,String alert){
         action=action_text;
         alert_to_send=alert;
-        UserError.Log.e("Amazfitservice", "1 " + alert_to_send );
-        JoH.startService(Amazfitservice.class);
+
+        //JoH.startService(Amazfitservice.class);
 
     }
     public static void start(String action_text){
         action=action_text;
+
         JoH.startService(Amazfitservice.class);
 
            }

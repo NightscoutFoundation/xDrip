@@ -170,10 +170,16 @@ public class AlertPlayer {
         }
         if (clearIfSnoozeFinished) {
             ActiveBgAlert.ClearIfSnoozeFinished();
+            if (Pref.getBoolean("pref_amazfit_enable_key", false)&&Pref.getBoolean("pref_amazfit_alarm_enable_key", false))
+            {       Amazfitservice.start("xDrip_AlarmCancel");
+            }
 
         }
         if (cancelNotification) {
             notificationDismiss(ctx);
+            if (Pref.getBoolean("pref_amazfit_enable_key", false)&&Pref.getBoolean("pref_amazfit_alarm_enable_key", false))
+            {       Amazfitservice.start("xDrip_AlarmCancel");
+            }
 
         }
         if (mediaPlayer != null) {
@@ -182,9 +188,8 @@ public class AlertPlayer {
             mediaPlayer = null;
         }
         revertCurrentVolume(ctx);
-        if (Pref.getBoolean("pref_amazfit_enable_key", false)&&Pref.getBoolean("pref_amazfit_alarm_enable_key", false))
-        {       Amazfitservice.start("xDrip_AlarmCancel");
-        }
+
+
     }
 
     // only do something if an alert is active - only call from interactive
@@ -253,7 +258,7 @@ public class AlertPlayer {
     }
 
 
-    // Check the state and alrarm if needed
+    // Check the state and alarm if needed
     public void ClockTick(Context ctx, boolean trendingToAlertEnd, String bgValue)
     {
         if (trendingToAlertEnd) {
@@ -281,6 +286,7 @@ public class AlertPlayer {
             
             VibrateNotifyMakeNoise(ctx, alert, bgValue, alert.override_silent_mode, minutesFromStartPlaying);
             AlertTracker.evaluate();
+
         }
 
     }
@@ -539,6 +545,7 @@ public class AlertPlayer {
         //send alert to amazfit
         if (Pref.getBoolean("pref_amazfit_enable_key", false)&&Pref.getBoolean("pref_amazfit_alarm_enable_key", false))
         {       Amazfitservice.start("xDrip_Alarm",alert.name);
+            UserError.Log.e("AlertPlayer", "StartAlert");
         }
 
 
