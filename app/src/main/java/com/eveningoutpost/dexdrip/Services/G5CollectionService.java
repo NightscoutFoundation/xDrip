@@ -45,6 +45,7 @@ import com.eveningoutpost.dexdrip.G5Model.BluetoothServices;
 import com.eveningoutpost.dexdrip.G5Model.BondRequestTxMessage;
 import com.eveningoutpost.dexdrip.G5Model.DisconnectTxMessage;
 import com.eveningoutpost.dexdrip.G5Model.Extensions;
+import com.eveningoutpost.dexdrip.G5Model.FirmwareCapability;
 import com.eveningoutpost.dexdrip.G5Model.GlucoseRxMessage;
 import com.eveningoutpost.dexdrip.G5Model.GlucoseTxMessage;
 import com.eveningoutpost.dexdrip.G5Model.KeepAliveTxMessage;
@@ -62,6 +63,7 @@ import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.NotificationChannels;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
@@ -330,6 +332,10 @@ public class G5CollectionService extends G5BaseService {
 
                     service_running=false;
 
+                    if (JoH.quietratelimit("evaluateG6Settingsc", 600)) {
+                        evaluateG6Settings();
+                    }
+
                     return START_STICKY;
                 }
             } else {
@@ -340,6 +346,20 @@ public class G5CollectionService extends G5BaseService {
 
         } finally {
             JoH.releaseWakeLock(wl);
+        }
+    }
+
+    public void evaluateG6Settings() {
+        if (defaultTransmitter == null) {
+            getTransmitterDetails();
+        }
+        if (haveFirmwareDetails()) {
+            if (FirmwareCapability.isTransmitterG6(defaultTransmitter.transmitterId)) {
+                if (!usingG6()) {
+                    setG6bareBones();
+                    JoH.showNotification("Enabled G6", "G6 Features for old collector automatically enabled", null, Constants.G6_DEFAULTS_MESSAGE, false, true, false);
+                }
+            }
         }
     }
 
@@ -1532,7 +1552,9 @@ public class G5CollectionService extends G5BaseService {
                 } else {
                     doDisconnectMessage(gatt, characteristic);
                 }
-                processNewTransmitterData(sensorRx.unfiltered, sensorRx.filtered, sensor_battery_level, new Date().getTime());
+
+                final boolean g6 = usingG6();
+                processNewTransmitterData(g6 ? sensorRx.unfiltered * G6_SCALING : sensorRx.unfiltered, g6 ? sensorRx.filtered * G6_SCALING : sensorRx.filtered, sensor_battery_level, new Date().getTime());
                 // was this the first success after we force enabled always_authenticate?
                 if (force_always_authenticate && (successes == 1)) {
                     Log.wtf(TAG, "We apparently only got a reading after forcing the Always Authenticate option");

@@ -61,6 +61,7 @@ import static com.eveningoutpost.dexdrip.Services.G5BaseService.G5_BATTERY_LEVEL
 import static com.eveningoutpost.dexdrip.Services.G5BaseService.G5_BATTERY_MARKER;
 import static com.eveningoutpost.dexdrip.Services.G5BaseService.G5_BATTERY_WEARABLE_SEND;
 import static com.eveningoutpost.dexdrip.Services.G5BaseService.G5_FIRMWARE_MARKER;
+import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.G6_SCALING;
 import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.android_wear;
 import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.getTransmitterID;
 import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.onlyUsingNativeMode;
@@ -97,7 +98,6 @@ public class Ob1G5StateMachine {
     private static final long MAX_BACKFILL_PERIOD_MS = HOUR_IN_MS * 3; // how far back to request backfill data
     private static final int BACKFILL_CHECK_SMALL = 3;
     private static final int BACKFILL_CHECK_LARGE = (int) (MAX_BACKFILL_PERIOD_MS / DEXCOM_PERIOD);
-    private static final int G6_SCALING = 32;
 
     private static final boolean getVersionDetails = true; // try to load firmware version details
     private static final boolean getBatteryDetails = true; // try to load battery info details

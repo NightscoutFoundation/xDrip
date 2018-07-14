@@ -19,6 +19,8 @@ public abstract class G5BaseService extends Service {
 
     private final PowerManager.WakeLock wl = JoH.getWakeLock("g5-base-bt", 100);
 
+    public static final int G6_SCALING = 32;
+
     public static final String G5_FIRMWARE_MARKER = "g5-firmware-";
 
     public static final String G5_BATTERY_MARKER = "g5-battery-";
@@ -112,5 +114,26 @@ public abstract class G5BaseService extends Service {
         }
         return array;
     }
+
+    public static boolean usingG6() {
+        return Pref.getBooleanDefaultFalse("using_g6");
+    }
+
+    public static void setG6bareBones() {
+        Pref.setBoolean("using_g6", true);
+        // TODO add initiate bonding true in case gets disabled??
+        final int battery_warning_level = Pref.getStringToInt("g5-battery-warning-level", G5_LOW_BATTERY_WARNING_DEFAULT);
+        if (battery_warning_level == G5_LOW_BATTERY_WARNING_DEFAULT) {
+            Pref.setString("g5-battery-warning-level", "" + G6_LOW_BATTERY_WARNING_DEFAULT);
+        }
+    }
+
+    public static void setG6Defaults() {
+        Pref.setBoolean("use_ob1_g5_collector_service", true);
+        Pref.setBoolean("ob1_g5_use_transmitter_alg", true);
+        Pref.setBoolean("ob1_g5_fallback_to_xdrip", false);
+        setG6bareBones();
+    }
+
 
 }
