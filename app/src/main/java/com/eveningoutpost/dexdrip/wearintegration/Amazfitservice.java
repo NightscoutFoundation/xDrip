@@ -112,16 +112,23 @@ public class Amazfitservice extends Service {
 
                 // In case of getting a remote Snooze from watch check for an active alert and confirm snooze in case of
                 if (item.getAction().equals("Amazfit_Remote_Snooze")) {
-                    DataBundle db = new DataBundle();
-                    UserError.Log.e("Amazfitservice", "Remote SNOOZE recieved");
-                    if (ActiveBgAlert.currentlyAlerting()) {
-                        UserError.Log.e("Amazfitservice", "snoozing all alarms");
-                        AlertPlayer.defaultSnooze();
-                        db.putString("reply_message","Snooze accepted by Phone"); }
-                    else {
-                        UserError.Log.e("Amazfitservice", "No Alarms found to snooze");
-                        db.putString("reply_message","No alert found");
+                    DataBundle db = item.getData();
+
+
+                        UserError.Log.e("Amazfitservice", "Remote SNOOZE recieved for " + db.getString("snoozetime") + " mins");
+
+                        if (ActiveBgAlert.currentlyAlerting() && db.getString("snoozetime")!=null) {
+                            UserError.Log.e("Amazfitservice", "snoozing all alarms");
+                            AlertPlayer.getPlayer().Snooze(xdrip.getAppContext(),Integer.valueOf(db.getString("snoozetime")),true);
+                            db.putString("reply_message", "Snooze accepted by Phone");
+                        } else if (ActiveBgAlert.currentlyAlerting()) {
+                            AlertPlayer.defaultSnooze();
+                            db.putString("reply_message", "Snooze accepted by Phone");}
+                            else{
+                            UserError.Log.e("Amazfitservice", "No Alarms found to snooze");
+                            db.putString("reply_message", "No alert found");
                         }
+
                     transporter.send("SnoozeRemoteConfirmation", db);
                 }
 
