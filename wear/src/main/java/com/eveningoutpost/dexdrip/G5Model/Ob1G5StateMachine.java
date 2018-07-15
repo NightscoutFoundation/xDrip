@@ -537,7 +537,9 @@ public class Ob1G5StateMachine {
                             final SessionStopRxMessage session_stop = (SessionStopRxMessage) data_packet.msg;
                             if (session_stop.isOkay()) {
                                 // TODO persist this
-                                parent.msg("Session Stopped Successfully: " + JoH.dateTimeText(session_stop.getSessionStart()) + " " + JoH.dateTimeText(session_stop.getSessionStop()));
+                                final String msg = "Session Stopped Successfully: " + JoH.dateTimeText(session_stop.getSessionStart()) + " " + JoH.dateTimeText(session_stop.getSessionStop());
+                                parent.msg(msg);
+                                UserError.Log.ueh(TAG, msg);
                                 reReadGlucoseData();
                                 enqueueUniqueCommand(new TransmitterTimeTxMessage(), "Query time after stop");
                             } else {
@@ -550,9 +552,9 @@ public class Ob1G5StateMachine {
                             parent.processCalibrationState(glucose.calibrationState());
 
                             if (glucose.usable()) {
-                                parent.msg("Got G5 glucose");
+                                parent.msg("Got "+devName()+" glucose");
                             } else {
-                                parent.msg("Got data from G5");
+                                parent.msg("Got data from "+devName());
                             }
                             if (JoH.ratelimit("ob1-g5-also-read-raw", 20)) {
                                 enqueueUniqueCommand(new SensorTxMessage(), "Also read raw");
@@ -1490,5 +1492,9 @@ public class Ob1G5StateMachine {
             }
         }
         return array;
+    }
+
+    private static String devName() {
+        return usingG6() ? "G6" : "G5";
     }
 }

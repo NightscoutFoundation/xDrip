@@ -31,7 +31,13 @@ public enum CalibrationState {
     UnusualCalibration(0x0d, "Unusual Calibration"),
     InsufficientCalibration(0x0e, "Insufficient Calibration"),
     Ended(0x0f, "Ended"),
-    Errors(0x12, "Errors");
+    SensorFailed3(0x10, "Sensor Failed 3"),
+    TransmitterProblem(0x11, "Transmitter Problem"),
+    Errors(0x12, "Errors"),
+    SensorFailed4(0x13, "Sensor Failed 4"),
+    SensorFailed5(0x14, "Sensor Failed 5"),
+    SensorFailed6(0x15, "Sensor Failed 6"),
+    SensorFailedStart(0x16, "Sensor Failed Start");
 
     @Getter
     byte value;
@@ -40,7 +46,9 @@ public enum CalibrationState {
 
 
     private static final SparseArray<CalibrationState> lookup = new SparseArray<>();
-    private static final ImmutableSet<CalibrationState> stopped = ImmutableSet.of(Stopped, Ended, SensorFailed, SensorFailed2);
+    private static final ImmutableSet<CalibrationState> failed = ImmutableSet.of(SensorFailed, SensorFailed2, SensorFailed3, SensorFailed4, SensorFailed5, SensorFailed6, SensorFailedStart);
+    private static final ImmutableSet<CalibrationState> stopped = ImmutableSet.of(Stopped, Ended, SensorFailed, SensorFailed2, SensorFailed3, SensorFailed4, SensorFailed5, SensorFailed6, SensorFailedStart);
+
 
     CalibrationState(int value, String text) {
         this.value = (byte) value;
@@ -89,7 +97,7 @@ public enum CalibrationState {
     }
 
     public boolean sensorFailed() {
-        return this == SensorFailed || this == SensorFailed2;
+        return failed.contains(this);
     }
 
     public boolean ended() {

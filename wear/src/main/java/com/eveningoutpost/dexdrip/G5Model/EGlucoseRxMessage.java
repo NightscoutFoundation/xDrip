@@ -7,7 +7,7 @@ import com.eveningoutpost.dexdrip.Models.UserError;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-public class EGlucoseRxMessage extends GlucoseRxMessage {
+public class EGlucoseRxMessage extends BaseGlucoseRxMessage {
 
     private static final String TAG = EGlucoseRxMessage.class.getSimpleName();
 
