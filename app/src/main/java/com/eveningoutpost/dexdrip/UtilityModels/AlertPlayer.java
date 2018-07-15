@@ -170,16 +170,12 @@ public class AlertPlayer {
         }
         if (clearIfSnoozeFinished) {
             ActiveBgAlert.ClearIfSnoozeFinished();
-            if (Pref.getBoolean("pref_amazfit_enable_key", false)&&Pref.getBoolean("pref_amazfit_alarm_enable_key", false))
-            {       Amazfitservice.start("xDrip_AlarmCancel");
-            }
+
 
         }
         if (cancelNotification) {
             notificationDismiss(ctx);
-            if (Pref.getBoolean("pref_amazfit_enable_key", false)&&Pref.getBoolean("pref_amazfit_alarm_enable_key", false))
-            {       Amazfitservice.start("xDrip_AlarmCancel");
-            }
+
 
         }
         if (mediaPlayer != null) {
@@ -188,7 +184,10 @@ public class AlertPlayer {
             mediaPlayer = null;
         }
         revertCurrentVolume(ctx);
+        if (Pref.getBoolean("pref_amazfit_enable_key", false)&&Pref.getBoolean("pref_amazfit_alarm_enable_key", false))
+        {       Amazfitservice.start("xDrip_AlarmCancel");
 
+        }
 
     }
 
@@ -531,6 +530,11 @@ public class AlertPlayer {
             builder.setVibrate(new long[]{1, 0});
         }
         Log.ueh("Alerting", content);
+        //send alert to amazfit
+        if (Pref.getBoolean("pref_amazfit_enable_key", false)&&Pref.getBoolean("pref_amazfit_alarm_enable_key", false))
+        {       Amazfitservice.start("xDrip_Alarm",alert.name,alert.default_snooze);
+
+        }
         final NotificationManager mNotifyMgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         //mNotifyMgr.cancel(Notifications.exportAlertNotificationId); // this appears to confuse android wear version 2.0.0.141773014.gms even though it shouldn't - can we survive without this?
         mNotifyMgr.notify(Notifications.exportAlertNotificationId, XdripNotificationCompat.build(builder));
@@ -542,11 +546,7 @@ public class AlertPlayer {
             }
         }
 
-        //send alert to amazfit
-        if (Pref.getBoolean("pref_amazfit_enable_key", false)&&Pref.getBoolean("pref_amazfit_alarm_enable_key", false))
-        {       Amazfitservice.start("xDrip_Alarm",alert.name);
 
-        }
 
 
         // speak alert

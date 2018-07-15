@@ -57,6 +57,7 @@ public class Amazfitservice extends Service {
 
     private static String action;
     private static String alert_to_send;
+    private static int default_snooze;
     private String space_mins;
     private double low_occurs_at;
     private Transporter transporter;
@@ -115,11 +116,11 @@ public class Amazfitservice extends Service {
                     DataBundle db = item.getData();
 
 
-                        UserError.Log.e("Amazfitservice", "Remote SNOOZE recieved for " + db.getString("snoozetime") + " mins");
+                        UserError.Log.e("Amazfitservice", "Remote SNOOZE recieved for " + db.getInt("snoozetime") + " mins");
 
-                        if (ActiveBgAlert.currentlyAlerting() && db.getString("snoozetime")!=null) {
+                        if (ActiveBgAlert.currentlyAlerting() && db.getInt("snoozetime")>0) {
                             UserError.Log.e("Amazfitservice", "snoozing all alarms");
-                            AlertPlayer.getPlayer().Snooze(xdrip.getAppContext(),Integer.valueOf(db.getString("snoozetime")),true);
+                            AlertPlayer.getPlayer().Snooze(xdrip.getAppContext(),db.getInt("snoozetime"),true);
                             db.putString("reply_message", "Snooze accepted by Phone");
                         } else if (ActiveBgAlert.currentlyAlerting()) {
                             AlertPlayer.defaultSnooze();
@@ -243,6 +244,7 @@ public class Amazfitservice extends Service {
         db.putString("alarmtext", alert_to_send);
         db.putLong("date", System.currentTimeMillis());
         db.putString("sgv", String.valueOf(dg.unitized)+String.valueOf(dg.delta_arrow));
+        db.putInt("default_snooze",default_snooze);
         return db;
     }
 
@@ -259,13 +261,17 @@ public static void start(String action_text,BgReading bg){
     //JoH.startService(Amazfitservice.class);
 
 }
-    public static void start(String action_text,String alert){
+
+    public static void start(String action_text,String alert_name, int snooze_time){
         action=action_text;
-        alert_to_send=alert;
+        alert_to_send=alert_name;
+        default_snooze=snooze_time;
 
         //JoH.startService(Amazfitservice.class);
-
     }
+
+
+
     public static void start(String action_text){
         action=action_text;
 

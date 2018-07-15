@@ -48,6 +48,7 @@ import com.eveningoutpost.dexdrip.ui.NumberGraphic;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.PowerStateReceiver;
 import com.eveningoutpost.dexdrip.xdrip;
+import com.eveningoutpost.dexdrip.wearintegration.Amazfitservice;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -217,6 +218,7 @@ public class Notifications extends IntentService {
                 Log.d(TAG, "FileBasedNotifications - No active notifcation exists, stopping all alerts");
                 // No alert should work, Stop all alerts, but keep the snoozing...
                 AlertPlayer.getPlayer().stopAlert(context, false, true);
+
                 return;
             }
 
@@ -278,10 +280,12 @@ public class Notifications extends IntentService {
             // For now, we are stopping the old alert and starting a new one.
             Log.d(TAG, "Found a new alert, that is higher than the previous one will play it. " + newAlert.name);
             AlertPlayer.getPlayer().stopAlert(context, true, false);
+
             boolean trendingToAlertEnd = trendingToAlertEnd(context, true, newAlert);
             AlertPlayer.getPlayer().startAlert(context, trendingToAlertEnd, newAlert, EditAlertActivity.unitsConvert2Disp(doMgdl, calculated_value));
         } else {
             AlertPlayer.getPlayer().stopAlert(context, true, false);
+
         }
     }
 
@@ -323,6 +327,7 @@ public class Notifications extends IntentService {
         //boolean watchAlert = (Home.get_forced_wear() && bg_notifications_watch);
         if (unclearReading) {
             AlertPlayer.getPlayer().stopAlert(context, false, true);
+
         } else {
             FileBasedNotifications(context);
             BgReading.checkForDropAllert(context);
@@ -969,6 +974,10 @@ public class Notifications extends IntentService {
             //mNotifyMgr.cancel(notificatioId);
             //Log.d(TAG, "Notify");
             Log.ueh("Other Alert",message);
+            if (Pref.getBoolean("pref_amazfit_enable_key", false)&&Pref.getBoolean("pref_amazfit_alarm_enable_key", false))
+            {       Amazfitservice.start("xDrip_Alarm",message,30);
+
+            }
             mNotifyMgr.notify(notificatioId, XdripNotificationCompat.build(mBuilder));
         }
     }

@@ -43,6 +43,7 @@ import com.eveningoutpost.dexdrip.Services.SnoozeOnNotificationDismissService;
 import com.eveningoutpost.dexdrip.utils.PowerStateReceiver;
 import com.eveningoutpost.dexdrip.xdrip;
 
+
 import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -892,6 +893,7 @@ public class Notifications extends IntentService {
             //mNotifyMgr.cancel(notificatioId);
             //Log.d(TAG, "Notify");
             Log.ueh("Other Alert",message);
+
             mNotifyMgr.notify(notificatioId, mBuilder.build());
         }
     }
