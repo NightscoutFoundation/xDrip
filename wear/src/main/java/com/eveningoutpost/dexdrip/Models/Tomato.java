@@ -174,6 +174,7 @@ public class Tomato {
         byte[] serialBuffer = Arrays.copyOfRange(s_full_data, 2, 13);
         Blukon.decodeSerialNumber(serialBuffer);
         PersistentStore.setString("Tomatobattery", Integer.toString(s_full_data[13]));
+        Pref.setInt("bridge_battery", s_full_data[13]);
         PersistentStore.setString("TomatoHArdware",HexDump.toHexString(s_full_data,16,2));
         PersistentStore.setString("TomatoFirmware",HexDump.toHexString(s_full_data,14,2));
 
