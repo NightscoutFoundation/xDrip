@@ -111,7 +111,7 @@ public class LibreUtils {
         
         
         
-        if (Pref.getBooleanDefaultFalse("allow_testing_with_dead_sensor")) {
+        if (allowTestingWithDeadSensor()) {
             Log.e(TAG, "Warning allow to use a dead sensor");
             return true;
         }
@@ -121,5 +121,10 @@ public class LibreUtils {
         }
     
         return ret;
+    }
+    
+    public static boolean allowTestingWithDeadSensor() {
+        return Pref.getBooleanDefaultFalse("engineering_mode") && 
+               Pref.getBooleanDefaultFalse("allow_testing_with_dead_sensor");
     }
 }

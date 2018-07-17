@@ -863,7 +863,7 @@
 
                 <CheckBoxPreference
                     android:defaultValue="false"
-                    android:dependency="engineering_mode"
+                    android:dependency="allow_testing_with_dead_sensor"
                     android:key="allow_testing_with_dead_sensor"
                     android:summary="allow testing with dead sensor"
                     android:title="NOT FOR PRODUCTION USE" />
