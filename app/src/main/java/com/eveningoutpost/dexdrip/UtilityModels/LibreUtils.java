@@ -74,6 +74,12 @@ public class LibreUtils {
 
     }
 
+    public static int getSensorAge(byte[] data) {
+        int sensorAge = 256 * (data[317] & 0xFF) + (data[316] & 0xFF);
+        Log.i(TAG, "sensorAge=" + sensorAge);
+
+        return sensorAge;
+    }
     public static boolean isSensorReady(byte sensorStatusByte) {
     
         String sensorStatusString = "";

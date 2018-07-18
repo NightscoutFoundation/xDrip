@@ -494,7 +494,7 @@ public class NFCReaderX {
 
         int indexHistory = data[27] & 0xFF; // double check this bitmask? should be lower?
 
-        final int sensorTime = 256 * (data[317] & 0xFF) + (data[316] & 0xFF);
+        final int sensorTime = LibreUtils.getSensorAge(data);
 
         long sensorStartTime = CaptureDateTime - sensorTime * MINUTE;
 
