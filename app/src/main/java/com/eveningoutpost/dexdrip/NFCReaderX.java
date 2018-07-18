@@ -227,6 +227,9 @@ public class NFCReaderX {
             return true;
         }
 
+	int sensorAge = LibreUtils.getSensorAge(data1);
+	Pref.setInt("nfc_sensor_age", sensorAge);
+
         if (Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
             // Save raw block record (we start from block 0)
             LibreBlock.createAndSave(tagId, CaptureDateTime, data1, 0);
