@@ -964,6 +964,10 @@ public class Treatments extends Model {
         return (carbs == 0 && insulin > 0 && insulin <= MAX_SMB_UNITS && (notes == null || notes.length() == 0));
     }
 
+    public boolean noteOnly() {
+        return (carbs == 0 && insulin == 0 && (notes != null && notes.length() > 0));
+    }
+
     public String toS() {
         Gson gson = new GsonBuilder()
                 .excludeFieldsWithoutExposeAnnotation()
