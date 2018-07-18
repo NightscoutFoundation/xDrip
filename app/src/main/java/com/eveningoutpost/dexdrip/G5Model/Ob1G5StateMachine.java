@@ -1016,6 +1016,7 @@ public class Ob1G5StateMachine {
                 return;
             }
 
+            UserError.Log.uel(TAG, "Queuing Calibration for transmitter: " + BgGraphBuilder.unitized_string_with_units_static(glucose) + " " + JoH.dateTimeText(timestamp));
 
             enqueueCommand(new CalibrateTxMessage(
                             glucose, DexTimeKeeper.getDexTime(getTransmitterID(), timestamp)),

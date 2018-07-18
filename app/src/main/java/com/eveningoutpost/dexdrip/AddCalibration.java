@@ -120,6 +120,9 @@ public class AddCalibration extends AppCompatActivity implements NavigationDrawe
                                                     if ((calibration != null) && allow_undo.equals("true")) {
                                                         UndoRedo.addUndoCalibration(calibration.uuid);
                                                     }
+                                                    if (calibration != null) {
+                                                        Ob1G5StateMachine.addCalibration((int)calibration.bg, calibration.timestamp);
+                                                    }
                                                     //startWatchUpdaterService(getApplicationContext(), WatchUpdaterService.ACTION_SYNC_CALIBRATION, TAG);
                                                 } else {
                                                     // follower sends the calibration data onwards only if sourced from interactive request
