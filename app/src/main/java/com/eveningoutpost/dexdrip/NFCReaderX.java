@@ -227,6 +227,9 @@ public class NFCReaderX {
             return true;
         }
 
+	int sensorAge = LibreUtils.getSensorAge(data1);
+	Pref.setInt("nfc_sensor_age", sensorAge);
+
         if (Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
             // Save raw block record (we start from block 0)
             LibreBlock.createAndSave(tagId, CaptureDateTime, data1, 0);
@@ -494,7 +497,7 @@ public class NFCReaderX {
 
         int indexHistory = data[27] & 0xFF; // double check this bitmask? should be lower?
 
-        final int sensorTime = 256 * (data[317] & 0xFF) + (data[316] & 0xFF);
+        final int sensorTime = LibreUtils.getSensorAge(data);
 
         long sensorStartTime = CaptureDateTime - sensorTime * MINUTE;
 
