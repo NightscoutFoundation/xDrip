@@ -65,6 +65,7 @@ public class Amazfitservice extends Service {
     DataBundle dataBundle = new DataBundle();
     private HeartRate heartrate;
     private StepCounter stepcounter;
+    private static String alerttype;
 
 
     @Override
@@ -245,6 +246,7 @@ public class Amazfitservice extends Service {
         db.putLong("date", System.currentTimeMillis());
         db.putString("sgv", String.valueOf(dg.unitized)+String.valueOf(dg.delta_arrow));
         db.putInt("default_snooze",default_snooze);
+        db.putString("Alerttype",alerttype);
         return db;
     }
 
@@ -262,14 +264,15 @@ public static void start(String action_text,BgReading bg){
 
 }
 
-    public static void start(String action_text,String alert_name, int snooze_time){
+
+    public static void start(String action_text,String alert_name, int snooze_time,String Alerttype){
         action=action_text;
         alert_to_send=alert_name;
         default_snooze=snooze_time;
+        alerttype=Alerttype;
 
         //JoH.startService(Amazfitservice.class);
     }
-
 
 
     public static void start(String action_text){
