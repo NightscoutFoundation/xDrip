@@ -186,11 +186,11 @@ public class GetLocation {
             final List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
 
             UserError.Log.d(TAG, addresses.toString());
-            String address = addresses.get(0).getAddressLine(0);
+            final String address = addresses.get(0).getAddressLine(0);
             UserError.Log.d(TAG, "Street address: " + address);
             return address;
 
-        } catch (NullPointerException e) {
+        } catch (IndexOutOfBoundsException | NullPointerException e) {
             UserError.Log.e(TAG, "Couldn't isolate street address");
         } catch (IOException e) {
             UserError.Log.e(TAG, "Location error (reboot sometimes helps fix geocoding): " + e);
