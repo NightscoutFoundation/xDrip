@@ -39,6 +39,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.Blukon;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.cgm.medtrum.Medtrum;
 import com.eveningoutpost.dexdrip.utils.AndroidBarcode;
 import com.eveningoutpost.dexdrip.utils.ListActivityWithMenu;
 import com.eveningoutpost.dexdrip.utils.LocationHelper;
@@ -56,6 +57,7 @@ import java.util.Map;
 import lecho.lib.hellocharts.util.ChartUtils;
 
 import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
+import static com.eveningoutpost.dexdrip.cgm.medtrum.Medtrum.getDeviceInfoStringFromLegacy;
 
 @TargetApi(android.os.Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class BluetoothScan extends ListActivityWithMenu {
@@ -455,6 +457,14 @@ public class BluetoothScan extends ListActivityWithMenu {
                             }
                         });
 
+            } else if (device.getName().matches("MT")) {
+                if (Medtrum.saveSerialFromLegacy(adverts.get(device.getAddress()))) {
+                    JoH.static_toast_long("Set Medtrum serial number");
+                    CollectionServiceStarter.restartCollectionServiceBackground();
+                    returnToHome();
+                } else {
+                    JoH.static_toast_long("Failed to find Medtrum serial number");
+                }
             } else {
                 returnToHome();
             }
@@ -614,6 +624,12 @@ public class BluetoothScan extends ListActivityWithMenu {
             viewHolder.deviceName.setText(deviceName);
             viewHolder.deviceAddress.setText(device.getAddress());
             if (adverts.containsKey(device.getAddress())) {
+                if (deviceName.equals("MT")) {
+                    final String medtrum = getDeviceInfoStringFromLegacy(adverts.get(device.getAddress()));
+                    if (medtrum != null) {
+                        viewHolder.deviceName.setText(medtrum);
+                    }
+                }
                 try {
                     if (Pref.getBooleanDefaultFalse("engineering_mode")) {
                         viewHolder.deviceAddress.append("   " + new String(adverts.get(device.getAddress()), "UTF-8"));
