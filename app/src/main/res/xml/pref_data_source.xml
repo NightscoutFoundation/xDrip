@@ -88,6 +88,11 @@
             android:summary="@string/transmitter_id"
             android:title="@string/dexcom_transmitter_id" />
 
+        <CheckBoxPreference
+            android:key="medtrum_use_native"
+            android:defaultValue="true"
+            android:summary="Use transmitter calibration instead of xDrip for primary"
+            android:title="Medtrum Native" />
 
         <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
             android:key="xdrip_plus_g5_extra_settings"

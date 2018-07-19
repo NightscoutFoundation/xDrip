@@ -28,6 +28,7 @@ import rx.schedulers.Schedulers;
 public abstract class JamBaseBluetoothService extends Service {
 
     private final PowerManager.WakeLock wl = JoH.getWakeLock("jam-bluetooth-generic", 1000);
+    protected static boolean android_wear = false;
     protected static final String BUGGY_SAMSUNG_ENABLED = "buggy-samsung-enabled";
     protected String TAG = this.getClass().getSimpleName();
     private volatile boolean background_launch_waiting = false;
