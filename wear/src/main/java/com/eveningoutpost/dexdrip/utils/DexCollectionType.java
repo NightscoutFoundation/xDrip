@@ -7,6 +7,7 @@ import com.eveningoutpost.dexdrip.Services.G5CollectionService;
 import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.Services.WifiCollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.cgm.medtrum.MedtrumCollectionService;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
@@ -34,6 +35,7 @@ public enum DexCollectionType {
     Follower("Follower"),
     LibreAlarm("LibreAlarm"),
     NSEmulator("NSEmulator"),
+    Medtrum("Medtrum"),
     Disabled("Disabled"),
     Mock("Mock"),
     Manual("Manual");
@@ -62,7 +64,7 @@ public enum DexCollectionType {
             mapToInternalName.put(dct.internalName, dct);
         }
 
-        Collections.addAll(usesBluetooth, BluetoothWixel, DexcomShare, DexbridgeWixel, LimiTTer, WifiBlueToothWixel, DexcomG5, WifiDexBridgeWixel, LimiTTerWifi);
+        Collections.addAll(usesBluetooth, BluetoothWixel, DexcomShare, DexbridgeWixel, LimiTTer, WifiBlueToothWixel, DexcomG5, WifiDexBridgeWixel, LimiTTerWifi, Medtrum);
         Collections.addAll(usesBtWixel, BluetoothWixel, LimiTTer, WifiBlueToothWixel, LimiTTerWifi); // Name is misleading here, should probably be using dexcollectionservice
         Collections.addAll(usesWifi, WifiBlueToothWixel,WifiWixel,WifiDexBridgeWixel, Mock, LimiTTerWifi, LibreWifi);
         Collections.addAll(usesXbridge, DexbridgeWixel,WifiDexBridgeWixel);
@@ -144,7 +146,11 @@ public enum DexCollectionType {
     }
 
     public static Class<?> getCollectorServiceClass() {
-        switch (getDexCollectionType()) {
+        return getCollectorServiceClass(getDexCollectionType());
+    }
+
+    public static Class<?> getCollectorServiceClass(DexCollectionType type) {
+        switch (type) {
             case DexcomG5:
                 if (Pref.getBooleanDefaultFalse(Ob1G5CollectionService.OB1G5_PREFS)) {
                     return Ob1G5CollectionService.class;
@@ -155,6 +161,8 @@ public enum DexCollectionType {
                 return DexShareCollectionService.class;
             case WifiWixel:
                 return WifiCollectionService.class;
+            case Medtrum:
+                return MedtrumCollectionService.class;
             default:
                 return DexCollectionService.class;
         }
