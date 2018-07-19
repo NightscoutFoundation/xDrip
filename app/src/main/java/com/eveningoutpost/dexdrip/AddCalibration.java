@@ -20,6 +20,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.UndoRedo;
+import com.eveningoutpost.dexdrip.calibrations.NativeCalibrationPipe;
 
 import java.util.UUID;
 
@@ -121,7 +122,8 @@ public class AddCalibration extends AppCompatActivity implements NavigationDrawe
                                                         UndoRedo.addUndoCalibration(calibration.uuid);
                                                     }
                                                     if (calibration != null) {
-                                                        Ob1G5StateMachine.addCalibration((int)calibration.bg, calibration.timestamp);
+                                                        //Ob1G5StateMachine.addCalibration((int)calibration.bg, calibration.timestamp);
+                                                        NativeCalibrationPipe.addCalibration((int)calibration.bg, calibration.timestamp);
                                                     }
                                                     //startWatchUpdaterService(getApplicationContext(), WatchUpdaterService.ACTION_SYNC_CALIBRATION, TAG);
                                                 } else {
@@ -189,7 +191,8 @@ public class AddCalibration extends AppCompatActivity implements NavigationDrawe
                                 if (calibration != null) {
                                     UndoRedo.addUndoCalibration(calibration.uuid);
                                     //startWatchUpdaterService(v.getContext(), WatchUpdaterService.ACTION_SYNC_CALIBRATION, TAG);
-                                    Ob1G5StateMachine.addCalibration((int)calibration.bg, calibration.timestamp);
+                                    //Ob1G5StateMachine.addCalibration((int)calibration.bg, calibration.timestamp);
+                                    NativeCalibrationPipe.addCalibration((int)calibration.bg, calibration.timestamp);
                                 } else {
                                     Log.e(TAG, "Calibration creation resulted in null");
                                     JoH.static_toast_long("Could not create calibration!");

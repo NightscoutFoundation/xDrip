@@ -20,6 +20,7 @@ import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Experience;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
@@ -164,7 +165,7 @@ public class StartNewSensor extends ActivityWithMenu {
     }
 
     private void realStartSensor() {
-        if (Ob1G5StateMachine.usingG6()) {
+        if (Ob1G5CollectionService.usingCollector() && Ob1G5StateMachine.usingG6()) {
             G6CalibrationCodeDialog.ask(this, this::realRealStartSensor);
         } else {
             realRealStartSensor();
