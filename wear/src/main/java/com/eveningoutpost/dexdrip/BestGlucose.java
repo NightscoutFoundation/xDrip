@@ -119,6 +119,10 @@ public class BestGlucose {
             ret.setSpan(what, 0, ret.length(), 0);
         }
 
+        public String humanSummary() {
+            return unitized + " " + (doMgDl ? "mg/dl" : "mmol/l") + (isStale() ? ", " + minutesAgo(true).toLowerCase() : "");
+        }
+
     }
 
     // note we don't support the original depreciated "predictive" mode
