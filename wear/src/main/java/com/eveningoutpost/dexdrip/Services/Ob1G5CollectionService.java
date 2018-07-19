@@ -87,6 +87,7 @@ import static com.eveningoutpost.dexdrip.UtilityModels.Constants.G5_SENSOR_FAILE
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.G5_SENSOR_RESTARTED;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.G5_SENSOR_STARTED;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.SECOND_IN_MS;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.DexcomG5;
 
 
 /*
@@ -585,7 +586,7 @@ public class Ob1G5CollectionService extends G5BaseService {
     private static boolean shouldServiceRun() {
         if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) return false;
         if (!Pref.getBooleanDefaultFalse(OB1G5_PREFS)) return false;
-        if (!(DexCollectionType.getDexCollectionType() == DexCollectionType.DexcomG5)) return false;
+        if (!(DexCollectionType.getDexCollectionType() == DexcomG5)) return false;
 
         if (!android_wear) {
             if (Home.get_forced_wear()) {
@@ -1450,7 +1451,8 @@ public class Ob1G5CollectionService extends G5BaseService {
 
     // are we using the G5 Transmitter to evaluate readings
     public static boolean usingNativeMode() {
-        return Pref.getBooleanDefaultFalse("ob1_g5_use_transmitter_alg")
+        return usingCollector()
+                && Pref.getBooleanDefaultFalse("ob1_g5_use_transmitter_alg")
                 && Pref.getBooleanDefaultFalse(OB1G5_PREFS);
     }
 
@@ -1620,5 +1622,9 @@ public class Ob1G5CollectionService extends G5BaseService {
     public static boolean isCollecting() {
         // TODO report true if wear is active?
         return JoH.msSince(static_last_timestamp) < Constants.MINUTE_IN_MS * 6;
+    }
+
+    public static boolean usingCollector() {
+        return Pref.getBooleanDefaultFalse(OB1G5_PREFS) && DexCollectionType.getDexCollectionType() == DexcomG5;
     }
 }
