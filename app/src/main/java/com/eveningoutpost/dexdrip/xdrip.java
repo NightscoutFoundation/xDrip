@@ -78,7 +78,8 @@ public class xdrip extends Application {
             MissedReadingService.delayedLaunch();
             NFCReaderX.handleHomeScreenScanPreference(getApplicationContext());
             AlertType.fromSettings(getApplicationContext());
-            new CollectionServiceStarter(getApplicationContext()).start(getApplicationContext());
+            //new CollectionServiceStarter(getApplicationContext()).start(getApplicationContext());
+            CollectionServiceStarter.restartCollectionServiceBackground();
             PlusSyncService.startSyncService(context, "xdrip.java");
             if (Pref.getBoolean("motion_tracking_enabled", false)) {
                 ActivityRecognizedService.startActivityRecogniser(getApplicationContext());
