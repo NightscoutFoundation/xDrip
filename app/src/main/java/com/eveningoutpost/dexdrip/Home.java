@@ -602,6 +602,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         }
 
 
+        currentBgValueText.setText(""); // clear any design prototyping default
+
         if (checkedeula && is_newbie && ((dialog == null) || !dialog.isShowing())) {
             if (!SdcardImportExport.handleBackup(this)) {
                 if (!Pref.getString("units", "mgdl").equals("mmol")) {
@@ -1951,6 +1953,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         chart.setBackgroundColor(getCol(X.color_home_chart_background));
         chart.setZoomType(ZoomType.HORIZONTAL);
 
+        chart.getChartData().setAxisXTop(null);
+
         //Transmitter Battery Level
         final Sensor sensor = Sensor.currentSensor();
 
@@ -2188,6 +2192,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         holdViewport.top = moveViewPort.top;
         holdViewport.bottom = moveViewPort.bottom;
         chart.setCurrentViewport(holdViewport);
+
         previewChart.setCurrentViewport(holdViewport);
     }
 
@@ -2324,7 +2329,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         } else if (is_follower || collector.equals(DexCollectionType.NSEmulator)) {
             displayCurrentInfo();
             Notifications.start();
-        } else if (!alreadyDisplayedBgInfoCommon && DexCollectionType.getDexCollectionType() == DexCollectionType.LibreAlarm) {
+        } else if (!alreadyDisplayedBgInfoCommon && (DexCollectionType.getDexCollectionType() == DexCollectionType.LibreAlarm || collector == DexCollectionType.Medtrum)) {
             updateCurrentBgInfoCommon(collector, notificationText);
         }
         if (collector.equals(DexCollectionType.Disabled)) {

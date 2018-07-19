@@ -57,6 +57,8 @@ public class ColorCache {
         color_upper_flair_bar("color_upper_flair_bar"),
         color_lower_flair_bar("color_lower_flair_bar"),
         color_heart_rate1("color_heart_rate1"),
+        color_smb_icon("color_smb_icon"),
+        color_smb_line("color_smb_line"),
         color_basal_tbr("color_basal_tbr");
 
         String internalName;
