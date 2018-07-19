@@ -193,43 +193,61 @@
                     android:key="xdrip_plus_display_colorset8"
                     android:title="Plugins and Features">
 
-                    <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
-                        android:defaultValue="#8a6b4c33"
-                        android:dependency="plugin_plot_on_graph"
-                        android:key="color_secondary_glucose_value"
-                        android:title="@string/secondary_plugin_glucose_value"
-                        app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
-                        app:colorpicker_selectNoneButtonText="@string/revert_to_default"
-                        app:colorpicker_showHex="false" />
+                <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
+                    android:defaultValue="#8a6b4c33"
+                    android:dependency="plugin_plot_on_graph"
+                    android:key="color_secondary_glucose_value"
+                    android:title="@string/secondary_plugin_glucose_value"
+                    app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
+                    app:colorpicker_selectNoneButtonText="@string/revert_to_default"
+                    app:colorpicker_showHex="false" />
 
-                    <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
-                        android:defaultValue="#3e29937b"
-                        android:key="color_step_counter1"
-                        android:title="@string/step_counter_1st_color"
-                        app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
-                        app:colorpicker_selectNoneButtonText="@string/revert_to_default"
-                        app:colorpicker_showHex="false" />
+                <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
+                    android:defaultValue="#3e29937b"
+                    android:key="color_step_counter1"
+                    android:title="@string/step_counter_1st_color"
+                    app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
+                    app:colorpicker_selectNoneButtonText="@string/revert_to_default"
+                    app:colorpicker_showHex="false" />
 
-                    <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
-                        android:defaultValue="#3c72c3c0"
-                        android:key="color_step_counter2"
-                        android:title="@string/step_counter_2nd_color"
-                        app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
-                        app:colorpicker_selectNoneButtonText="@string/revert_to_default"
-                        app:colorpicker_showHex="false" />
+                <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
+                    android:defaultValue="#3c72c3c0"
+                    android:key="color_step_counter2"
+                    android:title="@string/step_counter_2nd_color"
+                    app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
+                    app:colorpicker_selectNoneButtonText="@string/revert_to_default"
+                    app:colorpicker_showHex="false" />
 
-                    <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
-                        android:defaultValue="#2B212FDE"
-                        android:key="color_heart_rate1"
-                        android:title="Heart rate monitor"
-                        app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
-                        app:colorpicker_selectNoneButtonText="@string/revert_to_default"
-                        app:colorpicker_showHex="false" />
+                <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
+                    android:defaultValue="#2B212FDE"
+                    android:key="color_heart_rate1"
+                    android:title="Heart rate monitor"
+                    app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
+                    app:colorpicker_selectNoneButtonText="@string/revert_to_default"
+                    app:colorpicker_showHex="false" />
+                </PreferenceCategory>
+                <PreferenceCategory
+                    android:key="xdrip_plus_display_colorset12"
+                    android:title="Insulin Colors">
 
                     <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
                         android:defaultValue="#D33172DE"
                         android:key="color_basal_tbr"
                         android:title="Basal TBR"
+                        app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
+                        app:colorpicker_selectNoneButtonText="@string/revert_to_default"
+                        app:colorpicker_showHex="true" />
+                    <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
+                        android:defaultValue="#D4DED843"
+                        android:key="color_smb_icon"
+                        android:title="SMB Icon"
+                        app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
+                        app:colorpicker_selectNoneButtonText="@string/revert_to_default"
+                        app:colorpicker_showHex="false" />
+                    <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
+                        android:defaultValue="#D6597FCC"
+                        android:key="color_smb_line"
+                        android:title="SMB Line"
                         app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
                         app:colorpicker_selectNoneButtonText="@string/revert_to_default"
                         app:colorpicker_showHex="false" />
@@ -360,8 +378,12 @@
                 android:defaultValue="false"
                 android:key="show_g_prediction"
                 android:summary="Show G6 predictive glucose dots"
-                android:title="G6 Prediction"
-                />
+                android:title="G6 Prediction" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="show_medtrum_secondary"
+                android:summary="Show alternate glucose dots"
+                android:title="Medtrum Secondary" />
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:key="show_momentum_working_line"
@@ -784,29 +806,29 @@
             android:key="pendiq_screen"
             android:summary="Reading and writing dosages"
             android:title="Pendiq 2.0 Insulin Pen">
-        <SwitchPreference
-            android:defaultValue="false"
-            android:key="use_pendiq"
-            android:switchTextOff="@string/short_off_text_for_switches"
-            android:switchTextOn="@string/short_on_text_for_switches"
-            android:title="Pendiq 2.0 Support" />
+            <SwitchPreference
+                android:defaultValue="false"
+                android:key="use_pendiq"
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
+                android:title="Pendiq 2.0 Support" />
 
             <SwitchPreference
                 android:defaultValue="false"
                 android:dependency="use_pendiq"
                 android:key="pendiq_send_treatments"
+                android:summary="Prepare the pen with entered treatment insulin units. You must always double check this."
                 android:switchTextOff="@string/short_off_text_for_switches"
                 android:switchTextOn="@string/short_on_text_for_switches"
-                android:title="Send Treatments to Pen"
-                android:summary="Prepare the pen with entered treatment insulin units. You must always double check this."/>
+                android:title="Send Treatments to Pen" />
 
             <EditTextPreference
                 android:defaultValue="@string/zero_zero_zero_zero"
-                android:maxLength="4"
-                android:inputType="numberPassword|textVisiblePassword"
                 android:dependency="use_pendiq"
+                android:inputType="numberPassword|textVisiblePassword"
                 android:key="pendiq_pin"
-                android:title="Pen Pin Code"/>
+                android:maxLength="4"
+                android:title="Pen Pin Code" />
 
 
         </PreferenceScreen>
