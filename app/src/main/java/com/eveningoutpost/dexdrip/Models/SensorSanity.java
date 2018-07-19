@@ -53,6 +53,9 @@ public class SensorSanity {
 
         } else if (DexCollectionType.hasLibre(type)) {
             if (raw_value < LIBRE_MIN_RAW) state = false;
+        } else if (type == DexCollectionType.Medtrum) {
+            if (raw_value < DEXCOM_MIN_RAW) state = false;
+            else if (raw_value > DEXCOM_MAX_RAW) state = false;
         }
 
         if (!state) {

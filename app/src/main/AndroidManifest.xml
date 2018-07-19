@@ -321,6 +321,10 @@
             android:name=".insulin.pendiq.PendiqService"
             android:enabled="true"
             android:exported="false"/>
+        <service
+            android:name=".cgm.medtrum.MedtrumCollectionService"
+            android:enabled="true"
+            android:exported="false"/>
 
         <activity
             android:name=".ShareTest"
