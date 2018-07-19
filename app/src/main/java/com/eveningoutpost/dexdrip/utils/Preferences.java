@@ -64,8 +64,8 @@ import com.eveningoutpost.dexdrip.UtilityModels.pebble.watchface.InstallPebbleWa
 import com.eveningoutpost.dexdrip.WidgetUpdateService;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileEditor;
-import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.eveningoutpost.dexdrip.wearintegration.Amazfitservice;
+import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.eveningoutpost.dexdrip.webservices.XdripWebService;
 import com.eveningoutpost.dexdrip.xDripWidget;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -1114,6 +1114,14 @@ public class Preferences extends PreferenceActivity {
                 otherCategory.removePreference(predictiveBG);
                 alertsCategory.removePreference(calibrationAlertsScreen);
                 this.prefs.edit().putBoolean("calibration_notifications", false).apply();
+            }
+
+            if (collectionType != DexCollectionType.Medtrum) {
+                try {
+                    collectionCategory.removePreference(findPreference("medtrum_use_native"));
+                } catch (Exception e) {
+                    //
+                }
             }
 
             try {
