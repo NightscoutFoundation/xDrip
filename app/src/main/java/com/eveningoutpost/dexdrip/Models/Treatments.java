@@ -960,8 +960,10 @@ public class Treatments extends Model {
     }
 
     private static final double MAX_SMB_UNITS = 0.3;
+    private static final double MAX_OPENAPS_SMB_UNITS = 0.4;
     public boolean likelySMB() {
-        return (carbs == 0 && insulin > 0 && insulin <= MAX_SMB_UNITS && (notes == null || notes.length() == 0));
+        return (carbs == 0 && insulin > 0
+                && ((insulin <= MAX_SMB_UNITS && (notes == null || notes.length() == 0)) || (enteredBy != null && enteredBy.startsWith("openaps:") && insulin <= MAX_OPENAPS_SMB_UNITS)));
     }
 
     public boolean noteOnly() {

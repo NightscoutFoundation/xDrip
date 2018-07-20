@@ -317,29 +317,30 @@ public class BgGraphBuilder {
 
             final float yscale = doMgdl ? (float) Constants.MMOLL_TO_MGDL : 1f;
 
-            // divider line
-
-            final Line dividerLine = new Line();
-            dividerLine.setTag("tbr"); // not quite true
-            dividerLine.setHasPoints(false);
-            dividerLine.setHasLines(true);
-            dividerLine.setStrokeWidth(1);
-            dividerLine.setColor(getCol(X.color_basal_tbr));
-            dividerLine.setPathEffect(new DashPathEffect(new float[]{10.0f, 10.0f}, 0));
-            dividerLine.setReverseYAxis(true);
-            dividerLine.setHasPoints(false);
-
-            final float one_hundred_percent = (100 * yscale) / 100f;
-            final List<PointValue> divider_points = new ArrayList<>(2);
-            divider_points.add(new PointValue(loaded_start / FUZZER, one_hundred_percent));
-            dividerLine.setPointRadius(0);
-            divider_points.add(new PointValue(loaded_end / FUZZER, one_hundred_percent));
-            dividerLine.setValues(divider_points);
-            basalLines.add(dividerLine);
-
             final List<APStatus> aplist = APStatus.latestForGraph(2000, loaded_start, loaded_end);
 
             if (aplist.size() > 0) {
+
+                // divider line
+
+                final Line dividerLine = new Line();
+                dividerLine.setTag("tbr"); // not quite true
+                dividerLine.setHasPoints(false);
+                dividerLine.setHasLines(true);
+                dividerLine.setStrokeWidth(1);
+                dividerLine.setColor(getCol(X.color_basal_tbr));
+                dividerLine.setPathEffect(new DashPathEffect(new float[]{10.0f, 10.0f}, 0));
+                dividerLine.setReverseYAxis(true);
+                dividerLine.setHasPoints(false);
+
+                final float one_hundred_percent = (100 * yscale) / 100f;
+                final List<PointValue> divider_points = new ArrayList<>(2);
+                divider_points.add(new PointValue(loaded_start / FUZZER, one_hundred_percent));
+                dividerLine.setPointRadius(0);
+                divider_points.add(new PointValue(loaded_end / FUZZER, one_hundred_percent));
+                dividerLine.setValues(divider_points);
+                basalLines.add(dividerLine);
+
                 final List<PointValue> points = new ArrayList<>(aplist.size());
 
                 int last_percent = -1;
@@ -1444,13 +1445,13 @@ public class BgGraphBuilder {
                     for (Treatments treatment : treatments) {
 
                         if (showSMB && treatment.likelySMB()) {
-                            final Pair<Float,Float> yPositions = GraphTools.bestYPosition(bgReadings, treatment.timestamp, doMgdl, false, highMark, 10+(100d*treatment.insulin));
+                            final Pair<Float, Float> yPositions = GraphTools.bestYPosition(bgReadings, treatment.timestamp, doMgdl, false, highMark, 10 + (100d * treatment.insulin));
                             final PointValueExtended pv = new PointValueExtended(treatment.timestamp / FUZZER, yPositions.first); // TEST VALUES
-                            pv.setPlumbPos(GraphTools.yposRatio(yPositions.second,yPositions.first,0.1f));
+                            pv.setPlumbPos(GraphTools.yposRatio(yPositions.second, yPositions.first, 0.1f));
                             BitmapLoader.loadAndSetKey(pv, R.drawable.triangle, 180);
                             pv.setBitmapTint(getCol(X.color_smb_icon));
                             pv.setBitmapScale((float) (0.5f + (treatment.insulin * 5f))); // 0.1U == 100% 0.2U = 150%
-                            pv.note = "SMB: " + treatment.insulin + "U";
+                            pv.note = "SMB: " + treatment.insulin + "U" + (treatment.notes != null ? " " + treatment.notes : "");
                             smbValues.add(pv);
                             continue;
                         }
