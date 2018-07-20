@@ -6,6 +6,8 @@ import com.eveningoutpost.dexdrip.cgm.medtrum.Const;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import static com.eveningoutpost.dexdrip.cgm.medtrum.Const.DEX_RAW_SCALE;
+
 /**
  * jamorham
  *
@@ -47,6 +49,18 @@ public class BaseMessage {
 
     public boolean exceedsMTU() {
         return data.array().length > Const.BLUETOOTH_MTU;
+    }
+
+    public double performCalculation(int sensorRaw, int calibrationSlope, int calibrationIntercept) {
+        return (double) sensorRaw * 1000d / (double) calibrationSlope + ((double) calibrationIntercept);
+    }
+
+    public int getSensorRawEmulateDex(int sensorRaw) {
+        if (sensorRaw > 0) {
+            return sensorRaw * DEX_RAW_SCALE;
+        } else {
+            return 0;
+        }
     }
 
     public String toS() {

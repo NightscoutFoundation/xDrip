@@ -69,7 +69,7 @@ public class MissedReadingService extends IntentService {
                     if (JoH.ratelimit("aggressive-restart", aggressive_backoff_timer)) {
                         Log.e(TAG, "Aggressively restarting collector service due to lack of reception: backoff: " + aggressive_backoff_timer);
                         if (aggressive_backoff_timer < 1200) aggressive_backoff_timer += 60;
-                        CollectionServiceStarter.restartCollectionService();
+                        CollectionServiceStarter.restartCollectionServiceBackground();
                     } else {
                         aggressive_backoff_timer = 120; // reset
                     }

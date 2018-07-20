@@ -48,7 +48,7 @@ public class Medtrum {
             if (advert.isValid()) {
                 lastAdvertAnnex = advert.getAnnex();
                 UserError.Log.d(TAG, "Advert: " + advert.toS());
-                advert.getAnnex().processForTimeKeeper(advert.serial); // TODO is timekeeper valid here?
+                //advert.getAnnex().processForTimeKeeper(advert.serial); // TODO is timekeeper valid here?
                 setVersion(advert.serial, advert.version);
             }
         } else {

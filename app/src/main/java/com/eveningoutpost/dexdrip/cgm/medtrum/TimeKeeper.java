@@ -4,6 +4,8 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 
+import static com.eveningoutpost.dexdrip.UtilityModels.Constants.MINUTE_IN_MS;
+
 /**
  * JamOrHam
  *
@@ -19,6 +21,18 @@ public class TimeKeeper {
         final long stored_time = getTime(serial);
         if (stored_time == 0) return -1;
         return (int) ((time - stored_time) / 1000);
+    }
+
+    public static long timeStampFromTickCounter(long serial, int tick) {
+        final long stored_time = getTime(serial);
+        if (stored_time == 0) return -1;
+        return stored_time + (tick * MINUTE_IN_MS * 2);
+    }
+
+    public static int tickCounterFromTimeStamp(long serial, long timestmap) {
+        final long stored_time = getTime(serial);
+        if (stored_time == 0) return -1;
+        return (int) ((timestmap - stored_time) / (MINUTE_IN_MS * 2));
     }
 
     public static void setTime(long serial, long time) {

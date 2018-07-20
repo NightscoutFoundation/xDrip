@@ -30,7 +30,7 @@ public class AnnexARx extends BaseMessage {
     @Getter
     int batteryPercent = 0;
     @Expose
-    int sensorAge = 0;
+    public int sensorAge = 0;
     @Expose
     public int referenceCounter = 0;
     @Expose
@@ -109,7 +109,7 @@ public class AnnexARx extends BaseMessage {
         }
 
         glucoseRate = getUnsignedByte();
-        calibrationIntercept = getUnsignedByte();
+        calibrationIntercept = data.get();
         calibrationSlope = getUnsignedShort();
 
         sensorState = status1 & 0x03;
@@ -133,6 +133,8 @@ public class AnnexARx extends BaseMessage {
         }
 
     }
+
+    // TODO handle GLUCOSE RATE
 
     public SensorState getState() {
         switch (sensorState) {
@@ -191,16 +193,12 @@ public class AnnexARx extends BaseMessage {
     }
 
     public int getSensorRawEmulateDex() {
-        if (sensorRaw > 0) {
-            return sensorRaw * 500;
-        } else {
-            return 0;
-        }
+        return getSensorRawEmulateDex(sensorRaw);
     }
 
     public double calculatedGlucose() {
         // TODO CHECK STATUS AND RETURN FAILURE VALUE -1
-        return (double) sensorRaw * 1000d / (double) calibrationSlope + ((double) calibrationIntercept);
+        return performCalculation(sensorRaw, calibrationSlope, calibrationIntercept);
     }
 
     public boolean recent() {
