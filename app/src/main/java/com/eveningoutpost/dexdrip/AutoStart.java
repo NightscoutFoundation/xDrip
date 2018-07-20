@@ -17,7 +17,8 @@ public class AutoStart extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.d("DexDrip", "Service auto starter, starting!");
-        CollectionServiceStarter.newStart(context);
+        //CollectionServiceStarter.newStart(context);
+        CollectionServiceStarter.restartCollectionServiceBackground();
         PlusSyncService.startSyncService(context, "AutoStart");
 
         if (Pref.getBooleanDefaultFalse("show_home_on_boot")) {

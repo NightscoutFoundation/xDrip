@@ -188,7 +188,7 @@ public class StartNewSensor extends ActivityWithMenu {
         // reverse libre hacky workaround
         Treatments.SensorStart((DexCollectionType.hasLibre() ? startTime + (3600000) : startTime));
 
-        CollectionServiceStarter.newStart(xdrip.getAppContext());
+        CollectionServiceStarter.restartCollectionServiceBackground();
 
         Ob1G5StateMachine.startSensor(startTime);
         JoH.clearCache();

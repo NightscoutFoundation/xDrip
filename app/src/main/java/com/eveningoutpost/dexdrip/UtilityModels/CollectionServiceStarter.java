@@ -21,7 +21,6 @@ import com.eveningoutpost.dexdrip.Services.SyncService;
 import com.eveningoutpost.dexdrip.Services.WifiCollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleUtil;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleWatchSync;
-import com.eveningoutpost.dexdrip.cgm.medtrum.MedtrumCollectionService;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -171,9 +170,8 @@ public class CollectionServiceStarter {
         return collection_method.equals("Follower");
     }
 
-    public static void newStart(Context context) {
-        CollectionServiceStarter collectionServiceStarter = new CollectionServiceStarter(context);
-        collectionServiceStarter.start(context);
+    private static void newStart(final Context context) {
+        new CollectionServiceStarter(context).start(context);
     }
 
     public void stopAll() {
@@ -317,7 +315,7 @@ public class CollectionServiceStarter {
         this.mContext = context;
     }
 
-    public static void restartCollectionService() {
+    private static void restartCollectionService() {
         restartCollectionService(xdrip.getAppContext());
     }
 
@@ -328,9 +326,9 @@ public class CollectionServiceStarter {
 
     public static void restartCollectionService(Context context) {
         if (context == null) context = xdrip.getAppContext();
-        CollectionServiceStarter collectionServiceStarter = new CollectionServiceStarter(context);
+        final CollectionServiceStarter collectionServiceStarter = new CollectionServiceStarter(context);
         collectionServiceStarter.stopAll();
-        collectionServiceStarter.start(context);
+        Inevitable.task("restart-collection-service-start", 1000, () -> collectionServiceStarter.start(xdrip.getAppContext()));
     }
 
     public static void restartCollectionService(Context context, String collection_method) {
