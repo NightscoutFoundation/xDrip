@@ -731,7 +731,11 @@ public class Ob1G5StateMachine {
                     if ((reading != null) && (msSince(reading.timestamp) <= MAX_BACKFILL_PERIOD_MS)) {
                         earliest_timestamp = reading.timestamp;
                     }
-                    UserError.Log.d(TAG, "Flagging backfill tripped by reading: " + i + " at time: " + JoH.dateTimeText(reading.timestamp) + " creating backfill window: " + JoH.dateTimeText(earliest_timestamp));
+                    if (reading != null) {
+                        UserError.Log.d(TAG, "Flagging backfill tripped by reading: " + i + " at time: " + JoH.dateTimeText(reading.timestamp) + " creating backfill window: " + JoH.dateTimeText(earliest_timestamp));
+                    } else {
+                        UserError.Log.d(TAG, "Flagging backfill tripped by null reading: " + i);
+                    }
                     break;
                 } else {
                     // good record
@@ -1207,6 +1211,7 @@ public class Ob1G5StateMachine {
                     Ob1G5CollectionService.setG6Defaults();
                     JoH.showNotification("Enabled G6", "G6 Features and default settings automatically enabled", null, Constants.G6_DEFAULTS_MESSAGE, false, true, false);
                 } else if (!onlyUsingNativeMode() && !Home.get_engineering_mode()) {
+                    // TODO revisit this now that there is scaling
                     Ob1G5CollectionService.setG6Defaults();
                     JoH.showNotification("Enabled G6", "G6 Native mode enabled", null, Constants.G6_DEFAULTS_MESSAGE, false, true, false);
                 }
