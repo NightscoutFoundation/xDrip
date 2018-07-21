@@ -25,7 +25,7 @@ import static com.eveningoutpost.dexdrip.UtilityModels.Constants.HOUR_IN_MS;
 public class BackfillAssessor {
 
     private static final String TAG = "MedtrumBackfill";
-    private static final long MAX_BACKFILL_PERIOD_MS = HOUR_IN_MS * 3; // how far back to request backfill data
+    private static final long MAX_BACKFILL_PERIOD_MS = HOUR_IN_MS * 4; // how far back to request backfill data
     private static final int BACKFILL_CHECK_SMALL = 3;
     private static final int BACKFILL_CHECK_LARGE = (int) (MAX_BACKFILL_PERIOD_MS / DEXCOM_PERIOD);
 
@@ -36,16 +36,19 @@ public class BackfillAssessor {
 
         final int check_readings = nextBackFillCheckSize;
         UserError.Log.d(TAG, "Checking " + check_readings + " for backfill requirement");
-        final List<BgReading> lastReadings = BgReading.latest_by_size(check_readings);
+        final List<BgReading> lastReadings = BgReading.latest_by_size(check_readings); // newest first
         boolean ask_for_backfill = false;
+        long check_timestamp = JoH.tsl(); // TODO can this be merged with latest timestamp??
         long earliest_timestamp = JoH.tsl() - MAX_BACKFILL_PERIOD_MS;
         long latest_timestamp = JoH.tsl();
         if ((lastReadings == null) || (lastReadings.size() != check_readings)) {
             ask_for_backfill = true;
         } else {
+            // find a gap larger than specified period
             for (int i = 0; i < lastReadings.size(); i++) {
                 final BgReading reading = lastReadings.get(i);
-                if ((reading == null) || (msSince(reading.timestamp) > ((DEXCOM_PERIOD * i) + Constants.MINUTE_IN_MS * 7))) {
+                // TODO this can't handle readings more frequent than dexcom period
+                if ((reading == null) || (check_timestamp - reading.timestamp) > (DEXCOM_PERIOD + (Constants.MINUTE_IN_MS * 2))) {
                     ask_for_backfill = true;
                     if ((reading != null) && (msSince(reading.timestamp) <= MAX_BACKFILL_PERIOD_MS)) {
                         earliest_timestamp = reading.timestamp;
@@ -59,6 +62,7 @@ public class BackfillAssessor {
                 } else {
                     // good record
                     latest_timestamp = reading.timestamp;
+                    check_timestamp = reading.timestamp;
                 }
             }
         }

@@ -19,6 +19,7 @@ import com.eveningoutpost.dexdrip.Services.JamBaseBluetoothService;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
+import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.RxBleProvider;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
@@ -55,7 +56,9 @@ import rx.schedulers.Schedulers;
 import static com.eveningoutpost.dexdrip.Models.BgReading.bgReadingInsertMedtrum;
 import static com.eveningoutpost.dexdrip.Models.JoH.msSince;
 import static com.eveningoutpost.dexdrip.Models.JoH.msTill;
+import static com.eveningoutpost.dexdrip.Models.JoH.quietratelimit;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.HOUR_IN_MS;
+import static com.eveningoutpost.dexdrip.UtilityModels.Constants.MINUTE_IN_MS;
 import static com.eveningoutpost.dexdrip.cgm.medtrum.Const.CGM_CHARACTERISTIC_INDICATE;
 import static com.eveningoutpost.dexdrip.cgm.medtrum.Const.OPCODE_AUTH_REPLY;
 import static com.eveningoutpost.dexdrip.cgm.medtrum.Const.OPCODE_BACK_REPLY;
@@ -87,14 +90,15 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
 
     protected String TAG = this.getClass().getSimpleName();
     private static final String STATIC_TAG = MedtrumCollectionService.class.getSimpleName();
+    private static final String LAST_RECORD_TIME = "mtc-last-record-time";
 
     private static final long MINIMUM_RECORD_INTERVAL = 280000; // A6 gives records every 2 minutes but we want per 5 minutes as standard
     private static final long MAX_RETRY_BACKOFF_MS = 60000; // sleep for max ms if we have had no signal
+    private static final int LISTEN_STASIS_SECONDS = 7200; // max time to be in listen state
     private static String address = "";
     private static long serial;
 
     public static String lastState = "Not running";
-    public static String lastError = null;
 
     private static final int DEFAULT_AUTOMATA_DELAY = 100;
 
@@ -105,7 +109,6 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
 
     private static volatile Subscription connectionSubscription;
     private static volatile Subscription stateSubscription;
-    //private static volatile Subscription discoverSubscription;
     private static volatile Subscription indicationSubscription;
     private static volatile Subscription notificationSubscription;
 
@@ -117,15 +120,17 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
     private static PendingIntent serviceIntent;
     private static PendingIntent serviceFailoverIntent;
     private static long retry_time;
+    private static long failover_time;
+    private static long last_wake_up_time;
     private static long retry_backoff = 0;
     private static long lastRecordTime = -1;
-    private static long lastInteractionTime = -1;
+    private static volatile long lastInteractionTime = -1;
     private static int requestedBackfillSize = 0;
 
     private static AnnexARx lastAnnex = null;
 
 
-    // TODO service wake up healthchecker alarm - check last notification within time - try reconnect if not
+    // TODO can we use display glucose instead of calculated value anywhere?
 
     // Internal process state tracking
     public enum STATE {
@@ -134,11 +139,9 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
         CONNECT("Waiting connect"),
         ENABLE("Enabling"),
         DISCOVER("Examining"),
-        CHECK_AUTH("Checking Auth"),
         SET_TIME("Setting Time"),
         SET_CONN_PARAM("Setting Parameters"),
         CALIBRATE("Check Calibration"),
-        BOND("Bonding"),
         LISTEN("Listening"),
         GET_DATA("Getting Data"),
         CLOSE("Sleeping"),
@@ -146,7 +149,7 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
 
         private static List<STATE> sequence = new ArrayList<>();
 
-        private String str;
+        private final String str;
 
         STATE(String custom) {
             this.str = custom;
@@ -194,7 +197,6 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
                     case SCAN:
                         scan_for_device();
                         break;
-
                     case CONNECT:
                         connect_to_device();
                         break;
@@ -205,13 +207,9 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
                     case DISCOVER:
                         changeState(state.next());
                         break;
-                    case CHECK_AUTH:
-                        break;
-
                     case CALIBRATE:
                         check_calibrate();
                         break;
-
                     case GET_DATA:
                         get_data();
                         break;
@@ -226,11 +224,14 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
                         sendTx(new ConnParamTx());
                         break;
                     case CLOSE:
-                        //prepareToWakeup();
-                        changeState(INIT);
+                        //prepareToWakeup(); // TODO this skips service wake up
+                        stopConnect();
+                        setRetryTimer();
+                        state = CLOSED;
+                        //changeState(INIT);
                         break;
                     case CLOSED:
-                        //handleWakeup();
+                        setRetryTimer();
                         break;
                     case LISTEN:
                         status("Listening");
@@ -278,76 +279,83 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
 
     }
 
-    private final int LISTEN_STASIS_SECONDS = 3600;
 
     private synchronized void enable_features_and_listen() {
         UserError.Log.d(TAG, "enable features - enter");
         stopListening();
+        if (connection != null) {
+            notificationSubscription = connection.setupNotification(Const.CGM_CHARACTERISTIC_NOTIFY)
+                    .timeout(LISTEN_STASIS_SECONDS, TimeUnit.SECONDS) // WARN
+                    .observeOn(Schedulers.newThread())
+                    .doOnNext(notificationObservable -> {
 
-        notificationSubscription = connection.setupNotification(Const.CGM_CHARACTERISTIC_NOTIFY)
-                .timeout(LISTEN_STASIS_SECONDS, TimeUnit.SECONDS) // WARN
-                .observeOn(Schedulers.newThread())
-                .doOnNext(notificationObservable -> {
-
-                    UserError.Log.d(TAG, "Notifications enabled");
-
-
-                })
-                .flatMap(notificationObservable -> notificationObservable)
-                .subscribe(bytes -> {
-                            final PowerManager.WakeLock wl = JoH.getWakeLock("medtrum-receive-n", 60000);
-                            try {
-                                UserError.Log.d(TAG, "Received notification bytes: " + JoH.bytesToHex(bytes));
-                                lastInteractionTime = JoH.tsl();
-                                lastAnnex = new AnnexARx(bytes);
-                                UserError.Log.d(TAG, "Notification: " + lastAnnex.toS());
-                                createRecordFromAnnexData(lastAnnex);
-                                backFillIfNeeded(lastAnnex);
-                            } finally {
-                                JoH.releaseWakeLock(wl);
-                            }
-                        }, throwable -> {
-                            UserError.Log.d(TAG, "notification throwable: " + throwable);
-                        }
-                );
+                        UserError.Log.d(TAG, "Notifications enabled");
 
 
-        final InboundStream inboundStream = new InboundStream();
+                    })
+                    .flatMap(notificationObservable -> notificationObservable)
+                    .subscribe(bytes -> {
+                                final PowerManager.WakeLock wl = JoH.getWakeLock("medtrum-receive-n", 60000);
+                                try {
+                                    UserError.Log.d(TAG, "Received notification bytes: " + JoH.bytesToHex(bytes));
+                                    lastInteractionTime = JoH.tsl();
+                                    setFailOverTimer();
+                                    lastAnnex = new AnnexARx(bytes);
+                                    UserError.Log.d(TAG, "Notification: " + lastAnnex.toS());
+                                    createRecordFromAnnexData(lastAnnex);
+                                    backFillIfNeeded(lastAnnex);
 
-        indicationSubscription = connection.setupIndication(CGM_CHARACTERISTIC_INDICATE)
-                .timeout(LISTEN_STASIS_SECONDS, TimeUnit.SECONDS) // WARN
-                .observeOn(Schedulers.newThread())
-                .doOnNext(notificationObservable -> {
-
-                    UserError.Log.d(TAG, "Indications enabled");
-
-                    sendTx(new AuthTx(serial));
-
-                })
-                .flatMap(notificationObservable -> notificationObservable)
-                .subscribe(bytes -> {
-
-                            final PowerManager.WakeLock wl = JoH.getWakeLock("medtrum-receive-i", 60000);
-                            try {
-                                UserError.Log.d(TAG, "Received indication bytes: " + JoH.bytesToHex(bytes));
-                                lastInteractionTime = JoH.tsl();
-                                inboundStream.push(bytes);
-                                if (!checkAndProcessInboundStream(inboundStream)) {
-                                    Inevitable.task("mt-reset-stream-no-data", 2000, () -> {
-                                        if (inboundStream.hasSomeData()) {
-                                            UserError.Log.d(TAG, "Resetting stream as incomplete after 2s");
-                                            inboundStream.reset();
-                                        }
-                                    });
+                                } finally {
+                                    JoH.releaseWakeLock(wl);
                                 }
-
-                            } finally {
-                                JoH.releaseWakeLock(wl);
+                            }, throwable -> {
+                                UserError.Log.d(TAG, "notification throwable: " + throwable);
                             }
-                        }, throwable -> {
-                            UserError.Log.d(TAG, "indication throwable: " + throwable);
-                        }
-                );
+                    );
+
+
+            final InboundStream inboundStream = new InboundStream();
+
+            indicationSubscription = connection.setupIndication(CGM_CHARACTERISTIC_INDICATE)
+                    .timeout(LISTEN_STASIS_SECONDS, TimeUnit.SECONDS) // WARN
+                    .observeOn(Schedulers.newThread())
+                    .doOnNext(notificationObservable -> {
+
+                        UserError.Log.d(TAG, "Indications enabled");
+
+                        sendTx(new AuthTx(serial));
+
+                    })
+                    .flatMap(notificationObservable -> notificationObservable)
+                    .subscribe(bytes -> {
+
+                                final PowerManager.WakeLock wl = JoH.getWakeLock("medtrum-receive-i", 60000);
+                                try {
+                                    UserError.Log.d(TAG, "Received indication bytes: " + JoH.bytesToHex(bytes));
+                                    if (inboundStream.hasSomeData() && msSince(lastInteractionTime) > Constants.SECOND_IN_MS * 10) {
+                                        UserError.Log.d(TAG, "Resetting stream due to earlier timeout");
+                                    }
+                                    lastInteractionTime = JoH.tsl();
+                                    inboundStream.push(bytes);
+                                    if (!checkAndProcessInboundStream(inboundStream)) {
+                                        Inevitable.task("mt-reset-stream-no-data", 3000, () -> {
+                                            if (inboundStream.hasSomeData()) {
+                                                UserError.Log.d(TAG, "Resetting stream as incomplete after 3s");
+                                                inboundStream.reset();
+                                            }
+                                        });
+                                    }
+
+                                } finally {
+                                    JoH.releaseWakeLock(wl);
+                                }
+                            }, throwable -> {
+                                UserError.Log.d(TAG, "indication throwable: " + throwable);
+                            }
+                    );
+        } else {
+            UserError.Log.e(TAG, "Connection null when trying to set notifications");
+        }
 
     }
 
@@ -380,8 +388,9 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
                         });
 
                 // Attempt to establish a connection
+                auto = false; // auto not allowed due to timeout
                 connectionSubscription = bleDevice.establishConnection(auto)
-                        .timeout(7, TimeUnit.MINUTES)
+                        .timeout(LISTEN_STASIS_SECONDS, TimeUnit.SECONDS)
                         // .flatMap(RxBleConnection::discoverServices)
                         // .observeOn(AndroidSchedulers.mainThread())
                         // .doOnUnsubscribe(this::clearSubscription)
@@ -422,13 +431,17 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
 
     private void sendTx(BaseMessage msg) {
         if (connection != null) {
-            connection.writeCharacteristic(CGM_CHARACTERISTIC_INDICATE, nn(msg.getByteSequence()))
-                    .subscribe(
-                            characteristicValue -> {
-                                UserError.Log.d(TAG, "Wrote " + msg.getClass().getSimpleName() + " request: ");
-                            }, throwable -> {
-                                UserError.Log.e(TAG, "Failed to write " + msg.getClass().getSimpleName() + " " + throwable);
-                            });
+            try {
+                connection.writeCharacteristic(CGM_CHARACTERISTIC_INDICATE, nn(msg.getByteSequence()))
+                        .subscribe(
+                                characteristicValue -> {
+                                    UserError.Log.d(TAG, "Wrote " + msg.getClass().getSimpleName() + " request: ");
+                                }, throwable -> {
+                                    UserError.Log.e(TAG, "Failed to write " + msg.getClass().getSimpleName() + " " + throwable);
+                                });
+            } catch (NullPointerException e) {
+                UserError.Log.e(TAG, "Race condition when writing characteristic: " + e);
+            }
         }
     }
 
@@ -440,7 +453,6 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
             return;
         }
         //
-        UserError.Log.d(TAG, "Received inbound packet: " + HexDump.dumpHexString(packet));
 
         if (packet.length < 2) {
             UserError.Log.e(TAG, "Packet too short");
@@ -516,48 +528,73 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
 
             case OPCODE_BACK_REPLY:
                 UserError.Log.d(TAG, "Got backfill reply");
-
                 status("Got back fill");
-                final BackFillRx backFillRx = new BackFillRx(packet);
-                UserError.Log.d(TAG, backFillRx.toS());
-                if (backFillRx.isOk()) {
-                    boolean changed = false;
-                    final List<Integer> backsies = backFillRx.getRawList();
-                    if (backsies != null) {
-                        for (int index = 0; index < backsies.size(); index++) {
-                            final long timestamp = timeStampFromTickCounter(serial, backFillRx.sequenceStart + index);
-                            UserError.Log.d(TAG, "Backsie:  id:" + (backFillRx.sequenceStart + index) + " raw:" + backsies.get(index) + " @ " + JoH.dateTimeText(timestamp));
-                            final long since = msSince(timestamp);
-                            if ((since > HOUR_IN_MS * 6) || (since < 0)) {
-                                UserError.Log.wtf(TAG, "Backfill timestamp unrealistic: " + JoH.dateTimeText(timestamp) + " (ignored)");
-                            } else {
-                                final double glucose = backFillRx.getGlucose(backsies.get(index));
-                                if (BgReading.getForPreciseTimestamp(timestamp, Constants.MINUTE_IN_MS * 2.5) == null) {
-                                    BgReading.bgReadingInsertMedtrum(glucose, timestamp, "Backfill", backFillRx.getSensorRawEmulateDex(backsies.get(index)));
-                                    UserError.Log.d(TAG, "Adding backfilled reading: " + JoH.dateTimeText(timestamp) + " " + BgGraphBuilder.unitized_string_static(glucose));
-                                    Inevitable.task("backfill-ui-update", 3000, Home::staticRefreshBGCharts);
-                                    changed = true;
-                                }
-                            }
-                        }
-                        if (!changed && backsies.size() < requestedBackfillSize) {
-                            if (JoH.ratelimit("mt-backfill-repeat", 60)) {
-                                UserError.Log.d(TAG, "Requesting additional backfill with offset: " + backsies.size());
-                                backFillIfNeeded(lastAnnex, backsies.size());
-                            }
-                        }
-                    }
-                } else {
-                    UserError.Log.e(TAG, "Backfill data reports not ok");
-                }
+                processBackFillPacket(packet);
                 break;
 
             default:
                 UserError.Log.d(TAG, "Unknown inbound opcode: " + opcode);
+                UserError.Log.e(TAG, "Received unknown inbound packet: " + HexDump.dumpHexString(packet));
         }
     }
 
-    private static final int MAX_BACKFILL_ENTRIES = 10;
+
+    private void processBackFillPacket(final byte[] packet) {
+        final BackFillRx backFillRx = new BackFillRx(packet);
+        UserError.Log.d(TAG, backFillRx.toS());
+        if (backFillRx.isOk()) {
+            boolean changed = false;
+            final List<Integer> backsies = backFillRx.getRawList();
+            if (backsies != null) {
+                for (int index = 0; index < backsies.size(); index++) {
+                    final long timestamp = timeStampFromTickCounter(serial, backFillRx.sequenceStart + index);
+                    UserError.Log.d(TAG, "Backsie:  id:" + (backFillRx.sequenceStart + index) + " raw:" + backsies.get(index) + " @ " + JoH.dateTimeText(timestamp));
+                    final long since = msSince(timestamp);
+                    if ((since > HOUR_IN_MS * 6) || (since < 0)) {
+                        UserError.Log.wtf(TAG, "Backfill timestamp unrealistic: " + JoH.dateTimeText(timestamp) + " (ignored)");
+                    } else {
+
+                        final double glucose = backFillRx.getGlucose(backsies.get(index));
+                        final int scaled_raw_data = backFillRx.getSensorRawEmulateDex(backsies.get(index));
+                        if (BgReading.getForPreciseTimestamp(timestamp, Constants.MINUTE_IN_MS * 2.5) == null) {
+
+                            if (isNative()) {
+                                // Native version
+                                BgReading.bgReadingInsertMedtrum(glucose, timestamp, "Backfill", scaled_raw_data);
+                                final BgReading bgReadingTemp = BgReading.createFromRawNoSave(null, null, scaled_raw_data, scaled_raw_data, timestamp);
+                                Prediction.create(bgReadingTemp.timestamp, (int) bgReadingTemp.calculated_value, "Medtrum2nd").save();
+                            } else {
+                                if (glucose > 0) {
+                                    Prediction.create(timestamp, (int) glucose, "Medtrum2nd").save();
+                                }
+                                // xDrip as primary
+                                final BgReading bgreading = BgReading.create(scaled_raw_data, scaled_raw_data, xdrip.getAppContext(), timestamp);
+                                if (bgreading != null) {
+                                    UserError.Log.d(TAG, "Backfilled BgReading created: " + bgreading.uuid + " " + JoH.dateTimeText(bgreading.timestamp));
+                                } else {
+                                    UserError.Log.d(TAG, "BgReading null!");
+                                }
+                            }
+
+                            UserError.Log.d(TAG, "Adding backfilled reading: " + JoH.dateTimeText(timestamp) + " " + BgGraphBuilder.unitized_string_static(glucose));
+                            Inevitable.task("backfill-ui-update", 3000, Home::staticRefreshBGCharts);
+                            changed = true;
+                        }
+                    }
+                }
+                if (!changed && backsies.size() < requestedBackfillSize) {
+                    if (JoH.ratelimit("mt-backfill-repeat", 60)) {
+                        UserError.Log.d(TAG, "Requesting additional backfill with offset: " + backsies.size());
+                        backFillIfNeeded(lastAnnex, backsies.size());
+                    }
+                }
+            }
+        } else {
+            UserError.Log.e(TAG, "Backfill data reports not ok");
+        }
+    }
+
+    private static final int MAX_BACKFILL_ENTRIES = 30;
 
     private boolean backFillIfNeeded(final AnnexARx annex) {
         return backFillIfNeeded(annex, 0);
@@ -588,6 +625,10 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
         return false;
     }
 
+    private boolean isNative() {
+        return Pref.getBooleanDefaultFalse("medtrum_use_native");
+    }
+
 
     private void createRecordFromAnnexData(AnnexARx annex) {
 
@@ -595,27 +636,28 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
         // TODO check annex sanity
         status("Got data");
 
+        if (lastRecordTime == 0) {
+            lastRecordTime = PersistentStore.getLong(LAST_RECORD_TIME);
+        }
         if (msSince(lastRecordTime) > MINIMUM_RECORD_INTERVAL) {
-            // TODO check existing record time to avoid too many insertions
             UserError.Log.d(TAG, "Creating transmitter data from record annex");
             final TransmitterData transmitterData = TransmitterData.create(annex.getSensorRawEmulateDex(), annex.getSensorRawEmulateDex(), annex.getBatteryPercent(), JoH.tsl());
             if (transmitterData != null) {
                 lastRecordTime = transmitterData.timestamp;
-
+                PersistentStore.setLong(LAST_RECORD_TIME, transmitterData.timestamp);
                 if (transmitterData.raw_data > 0) {
                     // TODO sanity check raw data etc before creating
 
                     // TODO sensor good flag???
                     if (annex.getState() == Ok) {
                         final double glucose = annex.calculatedGlucose();
-                        final boolean use_native = Pref.getBooleanDefaultFalse("medtrum_use_native");
-                        if (use_native) {
+                        if (isNative()) {
                             if (glucose > 0) {
                                 final BgReading bgReading = bgReadingInsertMedtrum(glucose, JoH.tsl(), null, transmitterData.raw_data);
                             }
                             // xDrip calibration as secondary trace
                             final BgReading bgReadingTemp = BgReading.createFromRawNoSave(null, null, transmitterData.raw_data, transmitterData.raw_data, transmitterData.timestamp);
-                            Prediction.create(JoH.tsl(), (int) bgReadingTemp.calculated_value, "Medtrum2nd").save();
+                            Prediction.create(bgReadingTemp.timestamp, (int) bgReadingTemp.calculated_value, "Medtrum2nd").save();
                         } else {
 
                             if (glucose > 0) {
@@ -657,10 +699,8 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
                 break;
             case DISCONNECTED:
                 connection_state = "Disconnected";
-                // JoH.releaseWakeLock(floatingWakeLock);
                 status("Disconnected");
                 changeState(CLOSE);
-                setRetryTimer();
                 break;
         }
         status(connection_state);
@@ -672,12 +712,16 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
     }
 
     // We have connected to the device!
-    private void onConnectionReceived(RxBleConnection this_connection) {
+    private void onConnectionReceived(final RxBleConnection this_connection) {
         status("Connected");
         // TODO close off existing connection?
         connection = this_connection;
-        changeState(ENABLE);
-
+        if (this_connection != null) {
+            changeState(ENABLE);
+        } else {
+            UserError.Log.d(TAG, "New connection null!");
+            changeState(CLOSE);
+        }
     }
 
     private void onConnectionFailure(Throwable throwable) {
@@ -743,6 +787,7 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
         scanner.setTag(TAG);
         scanner.addCallBack(this, TAG);
         DisconnectReceiver.addCallBack(this, TAG);
+        UserError.Log.d(TAG, "SERVICE CREATED - SERVICE CREATED");
     }
 
 
@@ -766,12 +811,16 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
             final PowerManager.WakeLock wl = JoH.getWakeLock("medtrum-start-service", 600000);
             try {
                 UserError.Log.d(TAG, "WAKE UP WAKE UP WAKE UP WAKE UP @ " + JoH.dateTimeText(JoH.tsl()) + " State: " + state);
+                setFailOverTimer();
                 retry_time = 0; // we have woken up
+                last_wake_up_time = JoH.tsl();
                 try {
                     address = ActiveBluetoothDevice.first().address;
                 } catch (NullPointerException e) {
                     // bluetooth device not set - launch scan ui???
                 }
+
+                processInitialState();
                 background_automata();
 
                 if (intent != null) {
@@ -788,6 +837,23 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
         }
     }
 
+    private void processInitialState() {
+        switch (state) {
+            case INIT:
+            case SCAN:
+                return;
+            case CLOSE:
+            case CLOSED:
+                UserError.Log.d(TAG, "Changing from initial state of " + state + " to INIT");
+                state = INIT;
+                return;
+        }
+        if (msSince(lastInteractionTime) > MINUTE_IN_MS * 5) {
+            UserError.Log.d(TAG, "Changing from initial state of " + state + " to INIT due to interaction timeout");
+            state = INIT;
+        }
+    }
+
     @Override
     public void btCallback(String address, String status) {
         UserError.Log.d(TAG, "Processing callback: " + address + " :: " + status);
@@ -795,7 +861,6 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
             switch (status) {
                 case "DISCONNECTED":
                     changeState(CLOSE);
-                    setRetryTimer();
                     break;
                 case "SCAN_FOUND":
                     changeState(CONNECT);
@@ -832,6 +897,10 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
     }
 
     private void setRetryTimer() {
+        Inevitable.task("mt-set-retry", 500, this::setRetryTimerReal);
+    }
+
+    private void setRetryTimerReal() {
         if (shouldServiceRun()) {
             final long retry_in = whenToRetryNext();
             UserError.Log.d(TAG, "setRetryTimer: Restarting in: " + (retry_in / Constants.SECOND_IN_MS) + " seconds");
@@ -845,11 +914,13 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
 
     private void setFailOverTimer() {
         if (shouldServiceRun()) {
-            final long retry_in = Constants.MINUTE_IN_MS * 7;
-            UserError.Log.d(TAG, "setFailOverTimer: Restarting in: " + (retry_in / Constants.SECOND_IN_MS) + " seconds");
-            serviceIntent = PendingIntent.getService(this, Constants.MEDTRUM_SERVICE_FAILOVER_ID,
-                    new Intent(this, this.getClass()), 0);
-            retry_time = JoH.wakeUpIntent(this, retry_in, serviceIntent);
+            if (quietratelimit("mt-failover-cooldown", 30)) {
+                final long retry_in = Constants.MINUTE_IN_MS * 7;
+                UserError.Log.d(TAG, "setFailOverTimer: Restarting in: " + (retry_in / Constants.SECOND_IN_MS) + " seconds");
+                serviceFailoverIntent = PendingIntent.getService(this, Constants.MEDTRUM_SERVICE_FAILOVER_ID,
+                        new Intent(this, this.getClass()), 0);
+                failover_time = JoH.wakeUpIntent(this, retry_in, serviceFailoverIntent);
+            }
         } else {
             UserError.Log.d(TAG, "Not setting retry timer as service should not be running");
         }
@@ -883,7 +954,9 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
             }
             l.add(new StatusItem("Sensor State", lastAnnex.getState().getDescription(), lastAnnex.getState() == Ok ? StatusItem.Highlight.GOOD : StatusItem.Highlight.NORMAL));
 
-            if (lastAnnex.getState() == SensorState.WarmingUp2) {
+            if (lastAnnex.getState() == SensorState.WarmingUp1) {
+                l.add(new StatusItem("Warm up", "Initial warm up", StatusItem.Highlight.NOTICE));
+            } else if (lastAnnex.getState() == SensorState.WarmingUp2) {
                 final long warmupMinsLeft = ((2 * HOUR_IN_MS) - lastAnnex.getSensorAgeInMs()) / Constants.MINUTE_IN_MS;
                 if (warmupMinsLeft > -1 && warmupMinsLeft < 121) {
                     l.add(new StatusItem("Warmup left", warmupMinsLeft + " mins", StatusItem.Highlight.NOTICE));
@@ -896,10 +969,10 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
 
             if (lastAnnex.sensorGood) {
                 l.add(new StatusItem("Sensor", "Good", StatusItem.Highlight.GOOD));
-            } else {
-                if (lastAnnex.getState() == Ok) {
-                    l.add(new StatusItem("Sensor", "Unclear", StatusItem.Highlight.NORMAL));
-                }
+                // } else {
+                // if (lastAnnex.getState() == Ok) {
+                //     l.add(new StatusItem("Sensor", "Ok", StatusItem.Highlight.NORMAL));
+                // }
             }
 
             if (lastAnnex.sensorError) {
@@ -943,6 +1016,15 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
 
             if (retry_time != 0) {
                 l.add(new StatusItem("Wake up in", JoH.niceTimeScalar(msTill(retry_time))));
+            }
+            if (failover_time != 0) {
+                l.add(new StatusItem("System check in", JoH.niceTimeScalar(msTill(failover_time))));
+            }
+
+            if (Home.get_engineering_mode()) {
+                l.add(new StatusItem("Brain State", state.getString()));
+                l.add(new StatusItem("Last Interaction", JoH.niceTimeScalar(msSince(lastInteractionTime))));
+                l.add(new StatusItem("Last Wake Up", JoH.niceTimeScalar(msSince(last_wake_up_time))));
             }
 
         } else {

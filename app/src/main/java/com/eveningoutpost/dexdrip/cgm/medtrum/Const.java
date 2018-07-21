@@ -15,7 +15,7 @@ public class Const {
     static final UUID CGM_CHARACTERISTIC_INDICATE = UUID.fromString("669A9101-0008-968F-E311-6050405558B3");
     static final int MANUFACTURER_ID = 18305;
     static final long CIPHER_BIT_FLIP = 0x50274781;
-    public static final int DEX_RAW_SCALE = 500;
+    public static final int DEX_RAW_SCALE = 1000;
 
 
     public static final int OPCODE_AUTH_REQST = 0x05;
