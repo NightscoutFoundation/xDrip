@@ -12,12 +12,34 @@ import com.eveningoutpost.dexdrip.Models.ReadingData;
 
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
-// This class is used to hold a cache of the latest points in the database.
-// It should be used for efficient retrieval of data. (even when showing more than the
-// latest 15 minutes of data.)
-// This class will be a singleton to allow storing the data from time to time. (for more efficent operation).
-// There is an assumpation here that we only see data from one sensor.
-// This assumpation is correct, since we don't ask for more data than an hour. We might change this in the future.
+/* 
+    This class helps to retrieve the latest libre trend points. It holds data of one sensor only.
+    So, it can hold data of up to 14.5 days (actually storage is of 16 days).
+    It gets it's data from LibreBlock, and caches the results that it sees.
+    It always work form the first point to the last point, so when asked to get data, it gets it by the time.
+    This class will be a singleton to allow storing the data from time to time. (For more efficient operation).
+    
+    For each sensor, we hold the data based on the minute from start that we see.
+    If we missed more than 3 readings we might not have data for some time.
+    
+    If we identify a change in sensor id, we clear all existing points and start calculating again.
+    
+
+*/
+// This class represents a per minute data from the libre.
+class LibreTrendPoint {
+    long sensorTime; // The number of minutes from sensor start.
+    long rawSensorValue; // The raw value of the sensor 
+}
+
+// Represents the last point that we have data on.
+class LibreTrendLatest {
+    long timestamp = 0;
+    int id = 0;
+    double bg = 0;
+    int glucoseLevelRaw;
+    String SensorSN; 
+}
 
 public class LibreTrendUtil {
 
@@ -39,13 +61,21 @@ public class LibreTrendUtil {
     
     LibreTrendUtil() {
         Log.e(TAG, "LibreTrendUtil constructor called this = " + this);
-        m_points = new ArrayList<LibreTrendPoint>(MAX_POINTS);// (Collections.nCopies(MAX_POINTS,new LibreTrendPoint()));// Arrays.asList(new LibreTrendPoint[MAX_POINTS]);//new ArrayList<LibreTrendPoint>(MAX_POINTS);
+        Reset();
+    }
+    
+    void ResetPoints() {
+        m_points = new ArrayList<LibreTrendPoint>(MAX_POINTS);
         while(m_points.size() < MAX_POINTS) {
             m_points.add(m_points.size(), new LibreTrendPoint());
         }
-        m_libreTrendLatest = new LibreTrendLatest();
     }
     
+    void Reset() {
+        ResetPoints();
+        m_libreTrendLatest = new LibreTrendLatest();
+ 
+    }
     
     boolean IsTimeValid(long timeId) {
         return timeId >= 0 && timeId < MAX_POINTS;
@@ -68,20 +98,25 @@ public class LibreTrendUtil {
                 m_libreTrendLatest.id = (int)readingData.trend.get(0).sensorTime;
                 m_libreTrendLatest.glucoseLevelRaw = readingData.trend.get(0).glucoseLevelRaw;
             } else {
-                Log.wtf(TAG, "Error no readingData.trend for this point, returning withoug doing anything");
+                Log.e(TAG, "Error no readingData.trend for this point, returning withoug doing anything");
                 return m_points;
             }
             m_libreTrendLatest.timestamp = lastBlock.timestamp;
             m_libreTrendLatest.bg = lastBlock.calculated_bg;
             String time = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(new Date((long) m_libreTrendLatest.timestamp));
             Log.e(TAG, "Latest values " + time + " m_latestId = " + m_libreTrendLatest.id  + " m_libreTrendLatest.m_GlucoseLevelRaw = " + m_libreTrendLatest.glucoseLevelRaw + " bg = " + m_libreTrendLatest.bg );
-             
         }
         
-        // Go over all blocks from the start to the later, and fill the data.
+        // Go over all blocks from the earlier to the latest, and fill the data.
         for (LibreBlock libreBlock : latestBlocks) {
+            if(!libreBlock.reference.equals(m_libreTrendLatest.SensorSN)) {
+                Log.e(TAG, "Detected a sensor change new sn is " + libreBlock.reference);
+                ResetPoints();
+                m_libreTrendLatest.SensorSN = libreBlock.reference;
+            }
+            
             ReadingData readingData = NFCReaderX.getTrend(libreBlock);
-            // Go over all trend data (from the start to the later)
+            // Go over all trend data (from the earlier to the later)
             for (int i = readingData.trend.size() - 1; i >= 0; i--) {
                 GlucoseData glucoseData = readingData.trend.get(i);
                 Log.e(TAG, "time = " + glucoseData.sensorTime + " = " + glucoseData.glucoseLevelRaw);
@@ -101,11 +136,10 @@ public class LibreTrendUtil {
                 } else {
                     m_points.get((int)id).rawSensorValue = glucoseData.glucoseLevelRaw;
                     m_points.get((int)id).sensorTime  = id;
-                    if(m_libreTrendLatest.id < id) {
+                    if(m_libreTrendLatest.id < id && m_libreTrendLatest.id != 0) {
                         Log.wtf(TAG, "Error - we have seen an id bigger than latest id. m_libreTrendLatest.m_Id = " + m_libreTrendLatest.id + " id = " + id);
-                        return m_points;
+                        Reset();
                     }
-                    
                 }
             }
         }
@@ -115,7 +149,10 @@ public class LibreTrendUtil {
                 if(i != m_points.get(i).sensorTime) {
                     Log.e(TAG, "Error in index i = " + i + " sensorTime = " + m_points.get(i).sensorTime);
                 }
-                Log.e(TAG, "" + i + " " + m_points.get(i).rawSensorValue);
+                // Only print last 60 minutes.
+                if(m_libreTrendLatest.id - i <  60) {
+                    Log.e(TAG, "" + i + " " + m_points.get(i).rawSensorValue);
+                }
             }
         }
         return m_points;
@@ -125,16 +162,4 @@ public class LibreTrendUtil {
     }
 }
 
-class LibreTrendPoint {
-    long sensorTime; // The number of minutes from sensor start. // curently it is not realy used, but might be used
-                                                                 // in the future.
-    long rawSensorValue; // The raw value of the sensor 
-}
 
-// Represents the last point that we have data on.
-class LibreTrendLatest {
-    long timestamp = 0;
-    int id = 0;
-    double bg = 0;
-    int glucoseLevelRaw;
-}
