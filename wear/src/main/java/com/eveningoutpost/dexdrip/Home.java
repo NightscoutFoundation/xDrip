@@ -159,6 +159,8 @@ public class Home extends BaseWatchFace {
 
             mStatus.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mStatus_home));
 
+            mLinearLayout.setBackgroundColor(Color.WHITE);
+
             if (chart != null) {
                 highColor = ContextCompat.getColor(getApplicationContext(), R.color.dark_highColor);
                 lowColor = ContextCompat.getColor(getApplicationContext(), R.color.dark_lowColor);
@@ -180,10 +182,10 @@ public class Home extends BaseWatchFace {
             mSgv.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor));
             mDelta.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor));
             mDirection.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor));
-            mTimestamp.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mTimestamp1_home));
-            mUploaderBattery.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_uploaderBattery));
-            mUploaderXBattery.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_uploaderBattery));
-            mStatus.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mStatus_home));
+            mTimestamp.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mTime));
+            mUploaderBattery.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mTime));
+            mUploaderXBattery.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mTime));
+            mStatus.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mTime));
             if (chart != null) {
                 highColor = ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor);
                 lowColor = ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor);
@@ -191,6 +193,10 @@ public class Home extends BaseWatchFace {
                 pointSize = 2;
                 setupCharts();
             }
+
+            mLinearLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_background));
+
+
         } catch (NullPointerException e) {
             Log.e(TAG, "Null pointer exception in setColorLowRes: " + e);
         }
@@ -238,6 +244,9 @@ public class Home extends BaseWatchFace {
 
                 mTime.setTextColor(Color.BLACK);
                 mDate.setTextColor(Color.BLACK);
+
+                mLinearLayout.setBackgroundColor(Color.BLACK);
+
                 if (chart != null) {
                     highColor = ContextCompat.getColor(getApplicationContext(), R.color.light_highColor);
                     lowColor = ContextCompat.getColor(getApplicationContext(), R.color.light_lowColor);

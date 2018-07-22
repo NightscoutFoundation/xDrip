@@ -220,6 +220,12 @@ public class NFCReaderX {
         if (!checksum_ok) {
             return false;
         }
+        
+        // The 4'th byte is where the sensor status is.
+        if(!LibreUtils.isSensorReady(data1[4])) {
+            Log.e(TAG, "Sensor is not ready, Ignoring reading!");
+            return true;
+        }
 
         if (Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
             // Save raw block record (we start from block 0)
