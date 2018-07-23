@@ -75,6 +75,7 @@ import static com.eveningoutpost.dexdrip.cgm.medtrum.MedtrumCollectionService.ST
 import static com.eveningoutpost.dexdrip.cgm.medtrum.MedtrumCollectionService.STATE.INIT;
 import static com.eveningoutpost.dexdrip.cgm.medtrum.MedtrumCollectionService.STATE.SCAN;
 import static com.eveningoutpost.dexdrip.cgm.medtrum.MedtrumCollectionService.STATE.SET_CONN_PARAM;
+import static com.eveningoutpost.dexdrip.cgm.medtrum.SensorState.NotCalibrated;
 import static com.eveningoutpost.dexdrip.cgm.medtrum.SensorState.Ok;
 import static com.eveningoutpost.dexdrip.cgm.medtrum.TimeKeeper.timeStampFromTickCounter;
 
@@ -560,9 +561,15 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
 
                             if (isNative()) {
                                 // Native version
-                                BgReading.bgReadingInsertMedtrum(glucose, timestamp, "Backfill", scaled_raw_data);
+                                if (glucose > 0) {
+                                    BgReading.bgReadingInsertMedtrum(glucose, timestamp, "Backfill", scaled_raw_data);
+                                    UserError.Log.d(TAG, "Adding native backfilled reading: " + JoH.dateTimeText(timestamp) + " " + BgGraphBuilder.unitized_string_static(glucose));
+
+                                }
                                 final BgReading bgReadingTemp = BgReading.createFromRawNoSave(null, null, scaled_raw_data, scaled_raw_data, timestamp);
-                                Prediction.create(bgReadingTemp.timestamp, (int) bgReadingTemp.calculated_value, "Medtrum2nd").save();
+                                if (bgReadingTemp.calculated_value > 0) {
+                                    Prediction.create(bgReadingTemp.timestamp, (int) bgReadingTemp.calculated_value, "Medtrum2nd").save();
+                                }
                             } else {
                                 if (glucose > 0) {
                                     Prediction.create(timestamp, (int) glucose, "Medtrum2nd").save();
@@ -576,7 +583,6 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
                                 }
                             }
 
-                            UserError.Log.d(TAG, "Adding backfilled reading: " + JoH.dateTimeText(timestamp) + " " + BgGraphBuilder.unitized_string_static(glucose));
                             Inevitable.task("backfill-ui-update", 3000, Home::staticRefreshBGCharts);
                             changed = true;
                         }
@@ -602,12 +608,13 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
 
     private boolean backFillIfNeeded(final AnnexARx annex, int offset) {
         if (annex == null) return false;
+        if (!annex.isStateOkForBackFill()) return false;
         final Pair<Long, Long> backfillTimes = BackfillAssessor.check();
         if (backfillTimes != null) {
             int startTick = TimeKeeper.tickCounterFromTimeStamp(serial, backfillTimes.first);
             int endTick = TimeKeeper.tickCounterFromTimeStamp(serial, backfillTimes.second);
             if (endTick >= annex.sensorAge) endTick = annex.sensorAge - 1;
-            if (startTick < 1) startTick = 1;
+            if (startTick < 62) startTick = 62; // after warmup only
             if (endTick < 1) endTick = 1;
             startTick += offset;
             if ((startTick != endTick) && (endTick > startTick)) {
@@ -649,7 +656,7 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
                     // TODO sanity check raw data etc before creating
 
                     // TODO sensor good flag???
-                    if (annex.getState() == Ok) {
+                    if (annex.getState() == Ok || annex.getState() == NotCalibrated) {
                         final double glucose = annex.calculatedGlucose();
                         if (isNative()) {
                             if (glucose > 0) {
@@ -657,7 +664,10 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
                             }
                             // xDrip calibration as secondary trace
                             final BgReading bgReadingTemp = BgReading.createFromRawNoSave(null, null, transmitterData.raw_data, transmitterData.raw_data, transmitterData.timestamp);
-                            Prediction.create(bgReadingTemp.timestamp, (int) bgReadingTemp.calculated_value, "Medtrum2nd").save();
+                            if (bgReadingTemp.calculated_value > 0) {
+                                Prediction.create(bgReadingTemp.timestamp, (int) bgReadingTemp.calculated_value, "Medtrum2nd").save();
+                                UserError.Log.d(TAG, "Created secondary trace for value: " + bgReadingTemp.calculated_value);
+                            }
                         } else {
 
                             if (glucose > 0) {
@@ -672,7 +682,11 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
                                 UserError.Log.d(TAG, "BgReading null!");
                             }
                         }
+                    } else {
+                        UserError.Log.d(TAG, "Ignoring due to sensor state: " + annex.getState());
                     }
+                } else {
+                    UserError.Log.d(TAG, "Raw data was invalid so not proceeding");
                 }
             }
         } else {
