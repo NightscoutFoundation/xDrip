@@ -392,7 +392,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                 scan_next_run = false; // reset if set
                 transmitterMAC = null; // reset if set
                 last_scan_started = JoH.tsl();
-                scanWakeLock = JoH.getWakeLock("xdrip-jam-g5-scan", (int) Constants.MINUTE_IN_MS * 6);
+                scanWakeLock = JoH.getWakeLock("xdrip-jam-g5-scan", (int) Constants.MINUTE_IN_MS * 7);
 
 
                 historicalTransmitterMAC = PersistentStore.getString(OB1G5_MACSTORE + transmitterID); // "" if unset
