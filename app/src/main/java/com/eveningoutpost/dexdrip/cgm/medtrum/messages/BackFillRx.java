@@ -80,7 +80,7 @@ public class BackFillRx extends BaseMessage {
     }
 
     public double getGlucose(int sensorRaw) {
-        if (!valid || sensorFailed) return -1;
+        if (!valid || sensorFailed || slope == 0 || sensorRaw == 0) return -1;
         return performCalculation(sensorRaw, slope, intercept);
 
     }
