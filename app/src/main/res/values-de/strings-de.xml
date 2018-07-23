@@ -75,12 +75,15 @@
 	<!-- Amazfit Settings -->
 	<string name="amazfit_sync_service">AmazFit Sync Service</string>
 
-	<string name="pref_amazfit_enable_summary">Enable Amazfit Datenunterstützung</string>
+	<string name="pref_amazfit_enable_summary">Amazfit Datenunterstützung</string>
 	<string name="pref_amazfit_enable">Ein</string>
 	<string name="pref_amazfit_tile">Amazfit Service</string>
-	<string name="pref_amazfit_alarm_enable_summary">Sende Alarme zur Smartwatch</string>
-	<string name="pref_amazfit_alarm_enable">Ein</string>
-	<string name="pref_amazfit_alarm_tile">Watch Alarm</string>
+	<string name="pref_amazfit_BG_alert_enable_summary">Sende Glukose Alarme zur Smartwatch</string>
+	<string name="pref_amazfit_BG_alert_enable">Ein</string>
+	<string name="pref_amazfit_BG_alert_title">BZ Alarme</string>
+	<string name="pref_amazfit_other_alert_enable_summary">Sende weitere Alarme zur Smartwatch</string>
+	<string name="pref_amazfit_other_alert_enable">EIN</string>
+	<string name="pref_amazfit_other_alert_title">Weitere Alarme</string>
 	<string name="pref_amazfit_widget_graph_hours_title">Widget Grafik</string>
 	<string name="pref_amazfit_widget_graph_hours_summary">Wieviele Stunden sollen in der Grafik dargestellt werden</string>
 

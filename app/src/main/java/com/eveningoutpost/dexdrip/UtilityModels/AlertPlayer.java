@@ -531,8 +531,8 @@ public class AlertPlayer {
         }
         Log.ueh("Alerting", content);
         //send alert to amazfit
-        if (Pref.getBoolean("pref_amazfit_enable_key", false)&&Pref.getBoolean("pref_amazfit_alarm_enable_key", false))
-        {       Amazfitservice.start("xDrip_Alarm",alert.name,alert.default_snooze,"BGAlert");
+        if (Pref.getBoolean("pref_amazfit_enable_key", false)&&Pref.getBoolean("pref_amazfit_BG_alert_enable_key", false))
+        {       Amazfitservice.start("xDrip_Alarm",alert.name,alert.default_snooze);
 
         }
         final NotificationManager mNotifyMgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);

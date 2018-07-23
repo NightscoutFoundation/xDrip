@@ -974,9 +974,8 @@ public class Notifications extends IntentService {
             //mNotifyMgr.cancel(notificatioId);
             //Log.d(TAG, "Notify");
             Log.ueh("Other Alert",message);
-            if (Pref.getBoolean("pref_amazfit_enable_key", false)&&Pref.getBoolean("pref_amazfit_alarm_enable_key", false))
-            {       Amazfitservice.start("xDrip_Alarm",message,30,"Otheralert");
-
+            if (Pref.getBoolean("pref_amazfit_enable_key", false)&&Pref.getBoolean("pref_amazfit_other_alert_enable_key", false))
+            {       Amazfitservice.start("xDrip_Otheralert",message,30);
             }
             mNotifyMgr.notify(notificatioId, XdripNotificationCompat.build(mBuilder));
         }

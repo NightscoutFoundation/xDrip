@@ -228,9 +228,17 @@
                 android:layout_height="wrap_content"
                 android:defaultValue="false"
                 android:dependency="pref_amazfit_enable_key"
-                android:key="pref_amazfit_alarm_enable_key"
-                android:summary="@string/pref_amazfit_alarm_enable_summary"
-                android:title="@string/pref_amazfit_alarm_tile" />
+                android:key="pref_amazfit_BG_alert_enable_key"
+                android:summary="@string/pref_amazfit_BG_alert_enable_summary"
+                android:title="@string/pref_amazfit_BG_alert_title" />
+            <SwitchPreference
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:defaultValue="false"
+                android:dependency="pref_amazfit_enable_key"
+                android:key="pref_amazfit_other_alert_enable_key"
+                android:summary="@string/pref_amazfit_other_alert_enable_summary"
+                android:title="@string/pref_amazfit_other_alert_title" />
             <EditTextPreference
                 android:defaultValue="5"
                 android:dependency="pref_amazfit_enable_key"

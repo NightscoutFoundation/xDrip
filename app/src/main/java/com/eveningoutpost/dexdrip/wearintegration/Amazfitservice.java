@@ -58,6 +58,7 @@ public class Amazfitservice extends Service {
     private static String action;
     private static String alert_to_send;
     private static int default_snooze;
+
     private String space_mins;
     private double low_occurs_at;
     private Transporter transporter;
@@ -65,7 +66,6 @@ public class Amazfitservice extends Service {
     DataBundle dataBundle = new DataBundle();
     private HeartRate heartrate;
     private StepCounter stepcounter;
-    private static String alerttype;
 
 
     @Override
@@ -207,6 +207,7 @@ public class Amazfitservice extends Service {
         DataBundle datatosend = new DataBundle();
         if (action.equals("xDrip_synced_SGV_data")) {datatosend =  getSGVdata();}
         if (action.equals("xDrip_Alarm")) {datatosend =  getAlarmdata();}
+        if (action.equals("xDrip_Otheralert")) {datatosend =  getOtheralertdata();}
         if (action.equals("xDrip_AlarmCancel")) {datatosend =  getAlarmCancelData();}
         return datatosend;
     }
@@ -246,7 +247,19 @@ public class Amazfitservice extends Service {
         db.putLong("date", System.currentTimeMillis());
         db.putString("sgv", String.valueOf(dg.unitized)+String.valueOf(dg.delta_arrow));
         db.putInt("default_snooze",default_snooze);
-        db.putString("Alerttype",alerttype);
+
+        return db;
+    }
+    public DataBundle getOtheralertdata() {
+        DataBundle db = new DataBundle();
+        BestGlucose.DisplayGlucose dg = BestGlucose.getDisplayGlucose();
+        db.putString("uuid", alert_to_send);
+        db.putString("reply_message", "Watch acknowledged OTHERALERT");
+        db.putString("alarmtext", alert_to_send);
+        db.putLong("date", System.currentTimeMillis());
+        db.putString("sgv", String.valueOf(dg.unitized)+String.valueOf(dg.delta_arrow));
+
+
         return db;
     }
 
@@ -265,11 +278,11 @@ public static void start(String action_text,BgReading bg){
 }
 
 
-    public static void start(String action_text,String alert_name, int snooze_time,String Alerttype){
+    public static void start(String action_text,String alert_name, int snooze_time){
         action=action_text;
         alert_to_send=alert_name;
         default_snooze=snooze_time;
-        alerttype=Alerttype;
+
 
         //JoH.startService(Amazfitservice.class);
     }
