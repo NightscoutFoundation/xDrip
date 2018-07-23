@@ -197,8 +197,12 @@ public class AnnexARx extends BaseMessage {
     }
 
     public double calculatedGlucose() {
-        // TODO CHECK STATUS AND RETURN FAILURE VALUE -1
+        if (calibrationSlope == 0 || sensorRaw == 0 || getState() != SensorState.Ok) return -1;
         return performCalculation(sensorRaw, calibrationSlope, calibrationIntercept);
+    }
+
+    public boolean isStateOkForBackFill() {
+        return getState() == SensorState.Ok && getSensorAgeInMs() > Constants.MINUTE_IN_MS * 150;
     }
 
     public boolean recent() {
