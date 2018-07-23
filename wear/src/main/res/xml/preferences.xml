@@ -246,5 +246,10 @@
             android:key="use_low_bit_mode"
             android:summary="Always use low color ambient mode"
             android:title="Low color" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="use_black_divider"
+            android:summary="Divider matches background"
+            android:title="Match Divider" />
     </PreferenceCategory>
 </PreferenceScreen>
