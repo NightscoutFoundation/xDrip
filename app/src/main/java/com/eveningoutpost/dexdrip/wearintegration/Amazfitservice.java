@@ -1,7 +1,7 @@
 package com.eveningoutpost.dexdrip.wearintegration;
 
 
-import com.eveningoutpost.dexdrip.Models.AlertType;
+
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.R;
@@ -52,9 +52,8 @@ import com.kieronquinn.library.amazfitcommunication.TransporterClassic;
  */
 
 public class Amazfitservice extends Service {
+
     BestGlucose.DisplayGlucose dg;
-
-
     private static String action;
     private static String alert_to_send;
     private static int default_snooze;
@@ -85,7 +84,8 @@ public class Amazfitservice extends Service {
             public void onChannelChanged(boolean ready) {
                 //Transporter is ready if ready is true, send an action now. This will **NOT** work before the transporter is ready!
                 //You can change the action to whatever you want, there's also an option for a data bundle to be added (see below)
-                if (ready) UserError.Log.e("Amazfitservice", "channel changed ");
+                if (ready) UserError.Log.e("Amazfitservice", "channel changed - trying automatic resend ");
+                Amazfitservice.start("xDrip_synced_SGV_data");
             }
 
         });
@@ -193,9 +193,7 @@ public class Amazfitservice extends Service {
 
     }
 
-    private void Amazfit_send_data() {
 
-    }
 
     public static String getAction() { return action;}
     public static void setAction(String actionremote) {
