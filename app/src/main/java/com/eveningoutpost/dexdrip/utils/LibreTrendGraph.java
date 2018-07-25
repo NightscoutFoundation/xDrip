@@ -83,7 +83,6 @@ public class LibreTrendGraph extends AppCompatActivity {
     
     private static ArrayList<Float> getLatestBgForXMinutes(int NumberOfMinutes) {
 
-    
         Log.e(TAG, "getLatestBgForXMinutes number of minutes = " + NumberOfMinutes);
         
         List<LibreTrendPoint> LibreTrendPoints = LibreTrendUtil.getInstance().getData(JoH.tsl() - NumberOfMinutes * 60 * 1000, JoH.tsl());
@@ -119,11 +118,6 @@ public class LibreTrendGraph extends AppCompatActivity {
             ret.add(new Float(factor * LibreTrendPoints.get(i).rawSensorValue));
         }
             
-        
-        //for (GlucoseData data : readingData.trend) {
-        //    ret.add(new Float(factor * data.glucoseLevelRaw));
-        // }
-        
         return ret;
 
     }
@@ -139,8 +133,6 @@ public class LibreTrendGraph extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         setupCharts();
-        
-        //????LibreTrendUtil.getInstance().getData(JoH.tsl() - 30 * 60 * 1000, JoH.tsl());
     }
 
     public static List<PointValue> getTrendDataPointsOld(boolean doMgdl, long start_time, long end_time) {
@@ -176,7 +168,6 @@ public class LibreTrendGraph extends AppCompatActivity {
          if(libreTrendLatest.glucoseLevelRaw == 0) {
              Log.e(TAG, "libreBlock exists but libreTrendLatest.glucoseLevelRaw is zero ");
              return null;
-             //???????????? check what happens in the case of null
          }
          
 
@@ -186,7 +177,6 @@ public class LibreTrendGraph extends AppCompatActivity {
          //int i = 0;
          for (Float bg : bg_data) {
              if(bg <= 0) {
-       //          i++;
                  time_offset += Constants.MINUTE_IN_MS;
                  continue;   
              }
