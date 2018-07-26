@@ -31,8 +31,6 @@ public class VoiceCommands {
         } else if (allWords.contentEquals("enable engineering mode")) {
             Pref.setBoolean("engineering_mode", true);
             JoH.static_toast_long("Engineering mode enabled - be careful");
-
-
         } else if (get_engineering_mode() && allWords.contentEquals("enable fake data source")) {
             Pref.setString(DexCollectionType.DEX_COLLECTION_METHOD, DexCollectionType.Mock.toString());
             JoH.static_toast_long("YOU ARE NOW USING FAKE DATA!!!");
@@ -86,6 +84,12 @@ public class VoiceCommands {
             } catch (Exception e) {
                 // do nothing
             }
+        } else if (get_engineering_mode() && allWords.contentEquals("enable dead sensor")) {
+            Pref.setBoolean("allow_testing_with_dead_sensor", true);
+            JoH.static_toast_long("testing libre with dead sensor enabled - be careful");
+        } else if (allWords.contentEquals("disable dead sensor")) {
+            Pref.setBoolean("allow_testing_with_dead_sensor", false);
+            JoH.static_toast_long("testing libre with dead sensor disabled");
         }
 
         switch (allWords) {
