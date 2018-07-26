@@ -3,13 +3,10 @@ package com.eveningoutpost.dexdrip.UtilityModels;
 import com.eveningoutpost.dexdrip.Home;
 
 import android.util.Log;
-import lombok.Getter;
 
 public class LibreUtils {
 
     private static final String TAG = LibreUtils.class.getSimpleName();
-
-    @Getter private static final boolean testWithDeadSensor = false; // never in production
 
     private final static long[] crc16table = {
             0, 4489, 8978, 12955, 17956, 22445, 25910, 29887, 35912,
@@ -111,12 +108,23 @@ public class LibreUtils {
     
         Log.i(TAG, "Sensor status is: " + sensorStatusString);
     
-        if (testWithDeadSensor) return true;
+        
+        
+        
+        if (allowTestingWithDeadSensor()) {
+            Log.e(TAG, "Warning allow to use a dead sensor");
+            return true;
+        }
     
         if (!ret) {
             Home.toaststaticnext("Can't use this sensor as it is " + sensorStatusString);
         }
     
         return ret;
+    }
+    
+    public static boolean allowTestingWithDeadSensor() {
+        return Pref.getBooleanDefaultFalse("engineering_mode") && 
+               Pref.getBooleanDefaultFalse("allow_testing_with_dead_sensor");
     }
 }

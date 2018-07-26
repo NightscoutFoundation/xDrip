@@ -846,7 +846,7 @@
                     android:summary="@string/use_external_blukon_algorithm_summary"
                     android:title="@string/use_external_blukon_algorithm" />
                 
-        	    <CheckBoxPreference
+                <CheckBoxPreference
                     android:enabled="false"
                     android:defaultValue="false"
                     android:dependency="external_blukon_algorithm"
@@ -860,6 +860,13 @@
                     android:key="retrieve_blukon_history"
                     android:summary="@string/retrieve_blukon_history_summary"
                     android:title="@string/retrieve_blukon_history_title" />
+
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:dependency="allow_testing_with_dead_sensor"
+                    android:key="allow_testing_with_dead_sensor"
+                    android:summary="allow testing with dead sensor"
+                    android:title="NOT FOR PRODUCTION USE" />
 
             </PreferenceScreen>
             <PreferenceCategory

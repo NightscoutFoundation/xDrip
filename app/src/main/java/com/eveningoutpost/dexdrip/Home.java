@@ -142,6 +142,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -1386,12 +1387,15 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             thisuuid = (end > 0 ? allWords.substring(0, end) : "");
             allWords = allWords.substring(end + 6, allWords.length());
         }
+        byte[] RTL_BYTES = {(byte)0xE2, (byte)0x80, (byte)0x8f}; // See https://stackoverflow.com/questions/21470476/why-is-e2808f-being-added-to-my-youtube-embed-code
+       
         allWords = allWords.trim();
         allWords = allWords.replaceAll(":", "."); // fix real times
         allWords = allWords.replaceAll("(\\d)([a-zA-Z])", "$1 $2"); // fix like 22mm
         allWords = allWords.replaceAll("([0-9]\\.[0-9])([0-9][0-9])", "$1 $2"); // fix multi number order like blood 3.622 grams
+        allWords = allWords.replaceAll(new String(RTL_BYTES, StandardCharsets.UTF_8),"");
         allWords = allWords.toLowerCase();
-
+        
         Log.d(TAG, "Processing speech input allWords second: " + allWords + " UUID: " + thisuuid);
 
         if (allWords.contentEquals("delete last treatment")
