@@ -13,6 +13,7 @@ import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Delete;
 import com.activeandroid.query.Select;
 import com.activeandroid.util.SQLiteUtils;
+import com.eveningoutpost.dexdrip.wearintegration.Amazfitservice;
 import com.eveningoutpost.dexdrip.BestGlucose;
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
@@ -663,6 +664,7 @@ public class BgReading extends Model implements ShareUploadableBg {
                 SyncService.startSyncService(3000); // sync in 3 seconds
             }
         }
+
     }
 
     public String displaySlopeArrow() {
@@ -1111,6 +1113,7 @@ public class BgReading extends Model implements ShareUploadableBg {
             //bgr.injectDisplayGlucose(BestGlucose.getDisplayGlucose()); // Add display glucose for nightscout
         }
         BgSendQueue.handleNewBgReading(bgr, "create", xdrip.getAppContext(), Home.get_follower(), !recent); // pebble and widget and follower
+
     }
 
     public static BgReading bgReadingInsertFromJson(String json, boolean do_notification) {

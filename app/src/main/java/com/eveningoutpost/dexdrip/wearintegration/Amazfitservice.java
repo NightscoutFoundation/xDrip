@@ -23,20 +23,11 @@ import com.eveningoutpost.dexdrip.Models.StepCounter;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-
-import android.os.IBinder;
-import android.support.annotation.Nullable;
-
-
 import com.eveningoutpost.dexdrip.BestGlucose;
 import com.eveningoutpost.dexdrip.Models.HeartRate;
-import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.StepCounter;
-import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSparklineBuilder;
-import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
-
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.utils.PowerStateReceiver;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -90,13 +81,7 @@ public class Amazfitservice extends Service {
 
         });
 
-        Transporter.DataSendResultCallback test = new Transporter.DataSendResultCallback() {
-            @Override
-            public void onResultBack(DataTransportResult dataTransportResult) {
 
-                UserError.Log.e("Amazfitservice", "Result back ");
-            }
-        };
         transporter.addDataListener(new Transporter.DataListener() {
             @Override
             public void onDataReceived(TransportDataItem item) {
@@ -105,11 +90,11 @@ public class Amazfitservice extends Service {
                 //Confirmation that watch received SGV Data
                 if (item.getAction().equals("SGVDataConfirmation")) {
                     DataBundle db = item.getData();
-                    UserError.Log.e("Amazfitservice", db.getString("reply_message"));
+                    //UserError.Log.e("Amazfitservice", db.getString("reply_message"));
                 }
                 if (item.getAction().equals("CancelConfirmation")) {
                     DataBundle db = item.getData();
-                    UserError.Log.e("Amazfitservice", db.getString("reply_message"));
+                    //UserError.Log.e("Amazfitservice", db.getString("reply_message"));
                 }
 
                 // In case of getting a remote Snooze from watch check for an active alert and confirm snooze in case of
@@ -172,6 +157,13 @@ public class Amazfitservice extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
+        Transporter.DataSendResultCallback test = new Transporter.DataSendResultCallback() {
+            @Override
+            public void onResultBack(DataTransportResult dataTransportResult) {
+
+                UserError.Log.e("Amazfitservice", dataTransportResult.toString() );
+            }
+        };
         if (!transporter.isTransportServiceConnected()) {
             UserError.Log.e("Amazfitservice", "Service not connected - trying to reconnect ");
             transporter.connectTransportService();
@@ -184,11 +176,11 @@ public class Amazfitservice extends Service {
 
         } else {
 
-            transporter.send(getAction(), getDataBundle());
-            UserError.Log.e("Amazfitservice", "trying to send Data to watch " + action);
+            transporter.send(getAction(), getDataBundle(),test  );
+            //UserError.Log.e("Amazfitservice", "trying to send Data to watch " + action);
         }
 
-        return START_NOT_STICKY;
+        return START_STICKY;
 
 
     }
@@ -282,7 +274,7 @@ public static void start(String action_text,BgReading bg){
         default_snooze=snooze_time;
 
 
-        //JoH.startService(Amazfitservice.class);
+        JoH.startService(Amazfitservice.class);
     }
 
 

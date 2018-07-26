@@ -11,6 +11,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleUtil;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleWatchSync;
 import com.eveningoutpost.dexdrip.utils.BgToSpeech;
+
 import com.eveningoutpost.dexdrip.wearintegration.Amazfitservice;
 import com.eveningoutpost.dexdrip.wearintegration.ExternalStatusService;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
@@ -41,6 +42,7 @@ public class NewDataObserver {
         sendToWear();
         sendToAmazfit();
         Notifications.start();
+
         uploadToShare(bgReading, is_follower);
         textToSpeech(bgReading, null);
         LibreBlock.UpdateBgVal(bgReading.timestamp, bgReading.calculated_value);
@@ -60,7 +62,7 @@ public class NewDataObserver {
             // send to pebble
             sendToPebble();
             //send to amazfit
-            sendToAmazfit();
+           sendToAmazfit();
 
             // don't send via GCM if received via GCM!
             if (receivedLocally) {
@@ -81,10 +83,8 @@ public class NewDataObserver {
 
     // send data to Amazfit if enabled
     private static void sendToAmazfit() {
-
         if(Pref.getBoolean("pref_amazfit_enable_key", true)) {
             Amazfitservice.start("xDrip_synced_SGV_data");}
-
     }
 
     // send to wear

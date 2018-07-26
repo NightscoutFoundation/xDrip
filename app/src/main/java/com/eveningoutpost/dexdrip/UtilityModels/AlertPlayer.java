@@ -184,10 +184,7 @@ public class AlertPlayer {
             mediaPlayer = null;
         }
         revertCurrentVolume(ctx);
-        if (Pref.getBoolean("pref_amazfit_enable_key", false)&&Pref.getBoolean("pref_amazfit_alarm_enable_key", false))
-        {       Amazfitservice.start("xDrip_AlarmCancel");
 
-        }
 
     }
 
@@ -210,6 +207,10 @@ public class AlertPlayer {
         Snooze(ctx, repeatTime, true);
         if (Pref.getBooleanDefaultFalse("bg_notifications_watch") ) {
             startWatchUpdaterService(ctx, WatchUpdaterService.ACTION_SNOOZE_ALERT, TAG, "repeatTime", "" + repeatTime);
+        }
+        if (Pref.getBoolean("pref_amazfit_enable_key", false)&&Pref.getBoolean("pref_amazfit_BG_alert_enable_key", false))
+        {       Amazfitservice.start("xDrip_AlarmCancel");
+
         }
     }
 
@@ -535,6 +536,8 @@ public class AlertPlayer {
         {       Amazfitservice.start("xDrip_Alarm",alert.name,alert.default_snooze);
 
         }
+
+
         final NotificationManager mNotifyMgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         //mNotifyMgr.cancel(Notifications.exportAlertNotificationId); // this appears to confuse android wear version 2.0.0.141773014.gms even though it shouldn't - can we survive without this?
         mNotifyMgr.notify(Notifications.exportAlertNotificationId, XdripNotificationCompat.build(builder));
@@ -562,7 +565,6 @@ public class AlertPlayer {
         } catch (NullPointerException e) {
             UserError.Log.e(TAG,"Got null pointer in notificationDismiss !!");
         }
-
     }
 
     // True means play the file false means only vibrate.

@@ -217,13 +217,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:title="@string/amazfit_sync_service">
-            <SwitchPreference
+            <CheckBoxPreference
                 android:defaultValue="false"
                 android:disableDependentsState="false"
                 android:key="pref_amazfit_enable_key"
                 android:summary="@string/pref_amazfit_enable_summary"
                 android:title="@string/pref_amazfit_tile" />
-            <SwitchPreference
+            <CheckBoxPreference
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:defaultValue="false"
@@ -231,7 +231,7 @@
                 android:key="pref_amazfit_BG_alert_enable_key"
                 android:summary="@string/pref_amazfit_BG_alert_enable_summary"
                 android:title="@string/pref_amazfit_BG_alert_title" />
-            <SwitchPreference
+            <CheckBoxPreference
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:defaultValue="false"
