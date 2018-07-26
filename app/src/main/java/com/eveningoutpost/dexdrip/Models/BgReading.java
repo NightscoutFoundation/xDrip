@@ -34,6 +34,7 @@ import com.eveningoutpost.dexdrip.messages.BgReadingMessage;
 import com.eveningoutpost.dexdrip.messages.BgReadingMultiMessage;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.SqliteRejigger;
+import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -70,6 +71,8 @@ public class BgReading extends Model implements ShareUploadableBg {
     public static final int BG_READING_ERROR_VALUE = 38; // error marker
     public static final int BG_READING_MINIMUM_VALUE = 39;
     public static final int BG_READING_MAXIMUM_VALUE = 400;
+
+    private static volatile long earliest_backfill = 0;
 
     @Column(name = "sensor", index = true)
     public Sensor sensor;
@@ -1157,9 +1160,22 @@ public class BgReading extends Model implements ShareUploadableBg {
                 final PowerManager.WakeLock linger = JoH.getWakeLock("Medtrum Insert", 4000);
             }
             Inevitable.task("NotifySyncBgr" + bgr.timestamp, 3000, () -> notifyAndSync(bgr));
+            if (bgr.isBackfilled()) {
+                handleResyncWearAfterBackfill(bgr.timestamp);
+            }
             return bgr;
         } else {
             return existing;
+        }
+    }
+
+    public static void handleResyncWearAfterBackfill(final long earliest) {
+        if (earliest_backfill == 0 || earliest < earliest_backfill) earliest_backfill = earliest;
+        if (WatchUpdaterService.isEnabled()) {
+            Inevitable.task("wear-backfill-sync", 10000, () -> {
+                WatchUpdaterService.startServiceAndResendDataIfNeeded(earliest_backfill);
+                earliest_backfill = 0;
+            });
         }
     }
 
@@ -1437,6 +1453,15 @@ public class BgReading extends Model implements ShareUploadableBg {
                 .where("timestamp < ?", JoH.tsl() - (retention_days * Constants.DAY_IN_MS))
                 .execute();
     }
+
+    public static void cleanupOutOfRangeValues() {
+        new Delete()
+                .from(BgReading.class)
+                .where("timestamp > ?", JoH.tsl() - (3 * Constants.DAY_IN_MS))
+                .where("calculated_value > ?", 324)
+                .execute();
+    }
+
 
     // used in wear
     public static void cleanup(long timestamp) {

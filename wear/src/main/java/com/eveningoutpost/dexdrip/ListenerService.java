@@ -57,15 +57,19 @@ import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.WearSyncBooleans;
+import com.eveningoutpost.dexdrip.UtilityModels.WearSyncPersistentStrings;
 import com.eveningoutpost.dexdrip.stats.StatsResult;
 import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
+import com.eveningoutpost.dexdrip.utils.VersionFixer;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.wearable.CapabilityApi;
 import com.google.android.gms.wearable.CapabilityInfo;
+import com.google.android.gms.wearable.Channel;
+import com.google.android.gms.wearable.ChannelApi;
 import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
 import com.google.android.gms.wearable.DataMap;
@@ -79,6 +83,10 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.internal.bind.DateTypeAdapter;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -89,6 +97,8 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
+
+import lombok.Getter;
 
 import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.PREF_QUEUE_DRAINED;
 import static com.eveningoutpost.dexdrip.Models.JoH.ts;
@@ -106,7 +116,7 @@ import static com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue.sgvLevel;
  * Created by Emma Black on 12/26/14.
  */
 public class ListenerService extends WearableListenerService implements GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener {
+        GoogleApiClient.OnConnectionFailedListener, ChannelApi.ChannelListener {
     private static final String WEARABLE_DATA_PATH = "/nightscout_watch_data";
     private static final String WEARABLE_RESEND_PATH = "/nightscout_watch_data_resend";
     private static final String OPEN_SETTINGS = "/openwearsettings";
@@ -147,6 +157,8 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     public static final String WEARABLE_TREATMENT_PAYLOAD = "/xdrip_plus_treatment_payload";
     public static final String WEARABLE_TOAST_NOTIFICATON = "/xdrip_plus_toast";
     private static final String WEARABLE_TOAST_LOCAL_NOTIFICATON = "/xdrip_plus_local_toast";
+    private static final String WEARABLE_REQUEST_APK = "/xdrip_plus_can_i_has_apk";
+    private static final String WEARABLE_APK_DELIVERY = "/xdrip_plus_here_is_apk";
     public static final String WEARABLE_G5BATTERY_PAYLOAD = "/xdrip_plus_battery_payload";
     public final static String ACTION_BLUETOOTH_COLLECTION_SERVICE_UPDATE
             = "com.eveningoutpost.dexdrip.BLUETOOTH_COLLECTION_SERVICE_UPDATE";
@@ -179,7 +191,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     private boolean is_using_bt = false;
     private static int aggressive_backoff_timer = 120;
 
-    private GoogleApiClient googleApiClient;
+    private volatile GoogleApiClient googleApiClient;
     private static long lastRequest = 0;
     private DataRequester mDataRequester = null;
     private static final int GET_CAPABILITIES_TIMEOUT_MS = 5000;
@@ -213,6 +225,12 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     private static long last_movement_timestamp = 0;
     final private static String pref_last_movement_timestamp = "last_movement_timestamp";
     final private static String pref_msteps = "msteps";
+
+    private static volatile byte[] apkBytesOutput = new byte[0];
+    @Getter
+    private static volatile int apkBytesRead = -1;
+    @Getter
+    private static volatile String apkBytesVersion = "";
 
     public class DataRequester extends AsyncTask<Void, Void, Void> {
         final String path;
@@ -301,6 +319,8 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                                 }
                                 Log.d(TAG, "doInBackground path: " + path);
                                 switch (path) {
+                                    // simple send as is payloads
+                                    case WEARABLE_REQUEST_APK:
                                     case WEARABLE_INITDB_PATH:
                                     case WEARABLE_INITTREATMENTS_PATH:
                                     case WEARABLE_REPLYMSG_PATH:
@@ -325,59 +345,67 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                                         sendMessagePayload(node, "WEARABLE_RESEND_PATH", path, payload);
                                         break;
                                     default://SYNC_ALL_DATA
-                                        Log.d(TAG, "doInBackground SYNC_ALL_DATA");
-                                        if (sync_step_counter) {
-                                            datamap = getWearStepSensorData(send_step_count, last_send_previous_step_sensor, 0);
-                                            if (datamap != null) {
-                                                sendMessagePayload(node, "SYNC_STEP_SENSOR_PATH", SYNC_STEP_SENSOR_PATH, datamap.toByteArray());
-                                            }
-                                            datamap = getWearHeartSensorData(send_heart_count, last_send_previous_heart_sensor, 0);
-                                            if (datamap != null) {
-                                                sendMessagePayload(node, "SYNC_HEART_SENSOR_PATH", SYNC_HEART_SENSOR_PATH, datamap.toByteArray());
-                                            }
-                                        }
-                                        datamap = getWearTreatmentsData(send_treatments_count, last_send_previous_treatments, 0);
-                                        if (datamap != null) {
-                                            sendMessagePayload(node, "SYNC_TREATMENTS_PATH", SYNC_TREATMENTS_PATH, datamap.toByteArray());
-                                        }
-                                        if (enable_wearG5) {//KS
-                                            if (!Ob1G5CollectionService.usingNativeMode()) {
-                                                datamap = getWearTransmitterData(send_bg_count, last_send_previous, 0);//KS 36 data for last 3 hours; 288 for 1 day
-                                            }
-                                                // fallback to using precalculated if our collection method doesn't appear to provide transmitter data or we know it doesn't
-                                            if (datamap == null) {
-                                                datamap = getWearBgReadingData(send_bg_count, last_send_previous, 0);//KS 36 data for last 3 hours; 288 for 1 day
-                                                if (datamap == null) {
-                                                    datamap = new DataMap(); // no readings but we need to update status in native mode
+                                        // this fall through is messy and non-deterministic for new paths
+                                        if (path.startsWith(WEARABLE_REQUEST_APK)) {
+                                            sendMessagePayload(node, path, path, payload);
+                                        } else {
+
+                                            Log.d(TAG, "doInBackground SYNC_ALL_DATA - or unknown path: " + path);
+                                            if (sync_step_counter) {
+                                                datamap = getWearStepSensorData(send_step_count, last_send_previous_step_sensor, 0);
+                                                if (datamap != null) {
+                                                    sendMessagePayload(node, "SYNC_STEP_SENSOR_PATH", SYNC_STEP_SENSOR_PATH, datamap.toByteArray());
                                                 }
-                                                final boolean queue_drained = PersistentStore.getBoolean(PREF_QUEUE_DRAINED);
-                                                if (queue_drained) PersistentStore.setBoolean(PREF_QUEUE_DRAINED, false); // TODO only set this when we get ack
-                                                datamap.putBoolean(PREF_QUEUE_DRAINED, queue_drained);
-                                                datamap.putString("dextime", Ob1G5StateMachine.extractDexTime());
-                                                final CalibrationState lastState = Ob1G5CollectionService.lastSensorState;
-                                                datamap.putInt("native_calibration_state", lastState != null ? lastState.getValue() : 0);
-                                                sendMessagePayload(node, "SYNC_BGS_PRECALCULATED_PATH", SYNC_BGS_PRECALCULATED_PATH, datamap.toByteArray());
-                                            } else {
-                                                Log.d(TAG,"Sending transmitter data: "+datamap.size());
-                                                sendMessagePayload(node, "SYNC_BGS_PATH", SYNC_BGS_PATH, datamap.toByteArray());
+                                                datamap = getWearHeartSensorData(send_heart_count, last_send_previous_heart_sensor, 0);
+                                                if (datamap != null) {
+                                                    sendMessagePayload(node, "SYNC_HEART_SENSOR_PATH", SYNC_HEART_SENSOR_PATH, datamap.toByteArray());
+                                                }
                                             }
-                                        }
-                                        if (sync_wear_logs) {
-                                            datamap = getWearLogData(send_log_count, last_send_previous_log, 0, -1);//UserError gen @10K messages just for G5CollectionService; UserError 2300 recs = @150K over @4 hrs when "scan cycle start" was logging / 5 secs.
+                                            datamap = getWearTreatmentsData(send_treatments_count, last_send_previous_treatments, 0);
                                             if (datamap != null) {
-                                                byte[] compressPayload = JoH.compressBytesToBytesGzip((datamap.toByteArray()));
-                                                sendMessagePayload(node, "SYNC_LOGS_PATH", SYNC_LOGS_PATH, compressPayload);
+                                                sendMessagePayload(node, "SYNC_TREATMENTS_PATH", SYNC_TREATMENTS_PATH, datamap.toByteArray());
                                             }
+                                            if (enable_wearG5) {//KS
+                                                if (!Ob1G5CollectionService.usingNativeMode()) {
+                                                    datamap = getWearTransmitterData(send_bg_count, last_send_previous, 0);//KS 36 data for last 3 hours; 288 for 1 day
+                                                }
+                                                // fallback to using precalculated if our collection method doesn't appear to provide transmitter data or we know it doesn't
+                                                if (datamap == null) {
+                                                    datamap = getWearBgReadingData(send_bg_count, last_send_previous, 0);//KS 36 data for last 3 hours; 288 for 1 day
+                                                    if (datamap == null) {
+                                                        datamap = new DataMap(); // no readings but we need to update status in native mode
+                                                    }
+                                                    final boolean queue_drained = PersistentStore.getBoolean(PREF_QUEUE_DRAINED);
+                                                    if (queue_drained)
+                                                        PersistentStore.setBoolean(PREF_QUEUE_DRAINED, false); // TODO only set this when we get ack
+                                                    datamap.putBoolean(PREF_QUEUE_DRAINED, queue_drained);
+                                                    datamap.putString("dextime", Ob1G5StateMachine.extractDexTime());
+                                                    final CalibrationState lastState = Ob1G5CollectionService.lastSensorState;
+                                                    datamap.putInt("native_calibration_state", lastState != null ? lastState.getValue() : 0);
+                                                    sendMessagePayload(node, "SYNC_BGS_PRECALCULATED_PATH", SYNC_BGS_PRECALCULATED_PATH, datamap.toByteArray());
+                                                } else {
+                                                    Log.d(TAG, "Sending transmitter data: " + datamap.size());
+                                                    sendMessagePayload(node, "SYNC_BGS_PATH", SYNC_BGS_PATH, datamap.toByteArray());
+                                                }
+                                            }
+                                            if (sync_wear_logs) {
+                                                datamap = getWearLogData(send_log_count, last_send_previous_log, 0, -1);//UserError gen @10K messages just for G5CollectionService; UserError 2300 recs = @150K over @4 hrs when "scan cycle start" was logging / 5 secs.
+                                                if (datamap != null) {
+                                                    byte[] compressPayload = JoH.compressBytesToBytesGzip((datamap.toByteArray()));
+                                                    sendMessagePayload(node, "SYNC_LOGS_PATH", SYNC_LOGS_PATH, compressPayload);
+                                                }
+                                            }
+                                            if (PersistentStore.getBoolean(G5_BATTERY_WEARABLE_SEND)) {
+                                                PersistentStore.setBoolean(G5_BATTERY_WEARABLE_SEND, false);
+                                                sendPersistentStore();
+                                            }
+                                            if (PersistentStore.getBoolean(WEARABLE_RESEND_PATH)) {
+                                                Log.d(TAG, "doInBackground WEARABLE_RESEND_PATH");
+                                                sendMessagePayload(node, "WEARABLE_RESEND_PATH", path, payload);
+                                            }
+                                            break;
+                                        // end default case
                                         }
-                                        if (PersistentStore.getBoolean(G5_BATTERY_WEARABLE_SEND)) {
-                                            PersistentStore.setBoolean(G5_BATTERY_WEARABLE_SEND, false);
-                                            sendPersistentStore();
-                                        }
-                                        if (PersistentStore.getBoolean(WEARABLE_RESEND_PATH)) {
-                                            Log.d(TAG, "doInBackground WEARABLE_RESEND_PATH");
-                                            sendMessagePayload(node, "WEARABLE_RESEND_PATH", path, payload);
-                                        }
-                                        break;
                                 }
                             }
                         } else {
@@ -428,7 +456,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             return false;
         }
 
-        private void sendMessagePayload(Node node, String pathdesc, String path, byte[] payload) {
+        private void sendMessagePayload(Node node, String pathdesc, final String path, byte[] payload) {
             Log.d(TAG, "Benchmark: doInBackground sendMessagePayload " + pathdesc + "=" + path + " nodeID=" + node.getId() + " nodeName=" + node.getDisplayName() + ((payload != null) ? (" payload.length=" + payload.length) : ""));
 
             //ORIGINAL ASYNC METHOD
@@ -437,9 +465,9 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                 @Override
                 public void onResult(MessageApi.SendMessageResult sendMessageResult) {
                     if (!sendMessageResult.getStatus().isSuccess()) {
-                        Log.e(TAG, "ERROR: failed to send request Status=" + sendMessageResult.getStatus().getStatusMessage());
+                        Log.e(TAG, "sendMessagePayload ERROR: failed to send request " + path + " Status=" + sendMessageResult.getStatus().getStatusMessage());
                     } else {
-                        Log.i(TAG, "Sent request Status=: " + sendMessageResult.getStatus().getStatusMessage());
+                        Log.d(TAG, "sendMessagePayload Sent request " + node.getDisplayName() + " " + path + " Status=: " + sendMessageResult.getStatus().getStatusMessage());
                     }
                 }
             });
@@ -656,6 +684,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     private synchronized DataMap getWearLogData(int count, long last_send_time, int min_count, long syncLogsRequested) {
         forceGoogleApiConnect();
 
+        min_count = 0; // FORCE ALWAYS SEND // TODO revisit this
         Log.d(TAG, "getWearLogData last_send_time:" + JoH.dateTimeText(last_send_time) + " max count=" + count + " min_count=" + min_count + " syncLogsRequested=" + syncLogsRequested);
 
         UserError last_log = UserError.last();
@@ -865,7 +894,8 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             mDataRequester = (DataRequester) new DataRequester(this, path, payload).execute();
         } else {
             Log.d(TAG, "sendData SDK >= M call executeOnExecutor lastRequest:" + JoH.dateTimeText(lastRequest));
-            mDataRequester = (DataRequester) new DataRequester(this, path, payload).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            // TODO xdrip executor
+            mDataRequester = (DataRequester) new DataRequester(this, path, payload).executeOnExecutor(xdrip.executor);
         }
     }
 
@@ -1026,15 +1056,17 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         DataMap dataMap = null;
 
         for (DataEvent event : dataEvents) {
-
             if (event.getType() == DataEvent.TYPE_CHANGED) {
-
-                try {
-                    dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
-                } catch (Exception e) {
-                    //
-                }
                 final String path = event.getDataItem().getUri().getPath();
+
+                if (!path.startsWith(WEARABLE_APK_DELIVERY)) {
+                    try {
+                        dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
+                    } catch (Exception e) {
+                        //
+                    }
+                }
+
                 Log.d(TAG, "onDataChanged top path=" + path + " DataMap=" + dataMap);
                 if (path.equals(OPEN_SETTINGS)) {
                     //TODO: OpenSettings
@@ -1681,9 +1713,13 @@ public class ListenerService extends WearableListenerService implements GoogleAp
 
             // just add to this list to sync booleans with the same name
             final List<String> defaultFalseBooleansToReceive = WearSyncBooleans.getBooleansToSync();
+            final List<String> defaultBlankPersistentStringsToReceive = WearSyncPersistentStrings.getPersistentStrings();
 
             for (String preference_name : defaultFalseBooleansToReceive) {
                 prefs.putBoolean(preference_name, dataMap.getBoolean(preference_name, false));
+            }
+            for (String store_name : defaultBlankPersistentStringsToReceive) {
+                PersistentStore.setString(store_name, dataMap.getString(store_name, ""));
             }
 
             //Advanced Bluetooth Settings used by G4+xBridge DexCollectionService - temporarily just use the Phone's settings
@@ -1764,7 +1800,9 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                 sendData(WEARABLE_INITDB_PATH, null);
             }
 
-        } finally {
+            VersionFixer.updateAndCheck(dataMap.getString("build-version-name", null), apkBytesVersion);
+
+            } finally {
             JoH.releaseWakeLock(wl);
         }
     }
@@ -1931,9 +1969,9 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             if (sensor != null) {
                 for (DataMap entry : entries) {
                     if (entry != null) {
-                        String bgrecord = entry.getString("bgs");
-                        if (bgrecord != null) {
-                            Calibration bgData = gson.fromJson(bgrecord, Calibration.class);
+                        String calibration = entry.getString("bgs"); // bgs should be refactored to avoid confusion
+                        if (calibration != null) {
+                            Calibration bgData = gson.fromJson(calibration, Calibration.class);
                             Calibration exists = Calibration.findByUuid(bgData.uuid);
                             bgData.sensor = sensor;
                             if (exists != null) {
@@ -2282,6 +2320,16 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                     .create();
 
             Log.d(TAG, "syncBGData add BgReading Table entries count=" + entries.size());
+
+            if (entries.size() == 0) {
+                final String bgs = dataMap.getString("bgs");
+                if (bgs != null) {
+                   // entries = new ArrayList<>();
+                    entries.add(dataMap);
+                    UserError.Log.d(TAG, "Reformulating empty entries with recursive solo bgs record");
+                }
+            }
+
             if (JoH.ratelimit("init-db2", 15)) {
                 Sensor.InitDb(context);//ensure database has already been initialized
             }
@@ -2291,7 +2339,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                     if (entry != null) {
                         String bgrecord = entry.getString("bgs");
                         if (bgrecord != null) {
-                            BgReading bgData = gson.fromJson(bgrecord, BgReading.class);
+                            final BgReading bgData = gson.fromJson(bgrecord, BgReading.class);
 
                         /*    // TODO this is a hack to use display glucose but it is incomplete regarding delta
                             if (bgData.dg_mgdl > 0) {
@@ -2351,16 +2399,23 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                                 Calibration calibration = Calibration.byuuid(calibrationUuid);
                                 calibration = calibration != null ? calibration : Calibration.byuuid(bgData.calibration_uuid);
                                 if (calibration != null) {
-                                    Log.d(TAG, "syncBGData add BG; does NOT exist for uuid=" + bgData.uuid + " timestamp=" + bgData.timestamp + " timeString=" + JoH.dateTimeText(bgData.timestamp));
+                                    Log.d(TAG, "syncBGData add BG; calibration does exist for uuid=" + bgData.uuid + " timestamp=" + bgData.timestamp + " timeString=" + JoH.dateTimeText(bgData.timestamp));
                                     bgData.calibration = calibration;
                                     bgData.calibration_uuid = calibration.uuid;
                                     bgData.sensor = sensor;
                                     bgData.sensor_uuid = sensor.uuid;
                                     changed = true;
                                     bgData.save();
-                                }
-                                else {
-                                    Log.e(TAG, "syncBGData new BgReading calibrationUuid not found by byuuid; calibrationUuid=" + calibrationUuid + " bgData.calibration_uuid=" + bgData.calibration_uuid + " bgData.uuid=" + bgData.uuid + " timeString=" +  JoH.dateTimeText(bgData.timestamp));
+                                } else {
+                                    if (bgData.source_info.contains("Native")) {
+                                        UserError.Log.d(TAG, "Saving BgData without calibration as source info is native");
+                                        bgData.sensor = sensor;
+                                        bgData.sensor_uuid = sensor.uuid;
+                                        changed = true;
+                                        bgData.save();
+                                    } else {
+                                        Log.e(TAG, "syncBGData new BgReading calibrationUuid not found by byuuid; cannot save! calibrationUuid=" + calibrationUuid + " bgData.calibration_uuid=" + bgData.calibration_uuid + " bgData.uuid=" + bgData.uuid + " timeString=" + JoH.dateTimeText(bgData.timestamp));
+                                    }
                                 }
                             }
                         }
@@ -2745,6 +2800,22 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         });
     }
 
+    public static void requestAPK(String peerVersion) {
+        if (peerVersion == null) return;
+        if (!peerVersion.equals(apkBytesVersion)) {
+            UserError.Log.d(TAG, "Requesting apk from start");
+            requestAPK(0);
+        } else {
+            UserError.Log.d(TAG, "Resuming request apk from: " + apkBytesRead + " for matching: " + peerVersion);
+            requestAPK(apkBytesRead);
+        }
+    }
+
+    public static void requestAPK(int position) {
+        Log.d(TAG, "Requesting APK from phone: position: " + position);
+        SendData(xdrip.getAppContext(), WEARABLE_REQUEST_APK + (position > 0 ? "^" + position : ""), null);
+    }
+
     @Override
     public void onCapabilityChanged(CapabilityInfo capabilityInfo) {
         Node phoneNode = updatePhoneSyncBgsCapability(capabilityInfo);
@@ -2765,6 +2836,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     @Override
     public void onConnected(Bundle bundle) {
         Log.d(TAG, "onConnected call requestData");
+        Wearable.ChannelApi.addListener(googleApiClient, this);
         requestData();
     }
 
@@ -2785,6 +2857,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         }
         if (googleApiClient != null) {
             Wearable.MessageApi.removeListener(googleApiClient, this);
+            Wearable.ChannelApi.removeListener(googleApiClient, this);
         }
 
         Log.d(TAG, "Stop Sensors");
@@ -2794,6 +2867,174 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         if (mPrefs.getBoolean("enable_wearG5", true)) {
             Log.d(TAG, "Start BT Collection Service");
             stopBtService();
+        }
+    }
+
+    @Override
+    public void onChannelOpened(final Channel channel) {
+        android.util.Log.d(TAG, "onChannelOpened: A new channel to this device was just opened.\n" +
+                "From Node ID" + channel.getNodeId() + "\n" + "Path: " + channel.getPath());
+
+        switch (channel.getPath()) {
+
+            case "/updated-apk":
+                final Thread thread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        final PowerManager.WakeLock wl = JoH.getWakeLock("receive-apk-update", 300000);
+                        try {
+                            channel.getInputStream(googleApiClient).setResultCallback(new ResultCallback<Channel.GetInputStreamResult>() {
+                                @Override
+                                public void onResult(Channel.GetInputStreamResult getInputStreamResult) {
+                                    android.util.Log.d(TAG, "onChannelOpened: onResult");
+                                    if (getInputStreamResult == null) {
+                                        UserError.Log.d(TAG, "Channel input stream result is NULL!");
+                                        return;
+                                    }
+
+                                    InputStream input = null;
+                                    BufferedReader reader = null;
+                                    try {
+                                        input = getInputStreamResult.getInputStream();
+                                        if (input == null) {
+                                            UserError.Log.e(TAG, "Input stream is null!");
+                                            return;
+                                        }
+                                        reader = new BufferedReader(new InputStreamReader(input));
+
+                                        // this protocol can never change
+                                        final String versionId = reader.readLine();
+                                        UserError.Log.d(TAG, "Source version identifier: " + versionId);
+                                        final String sizeText = reader.readLine();
+                                        final int size = Integer.parseInt(sizeText);
+                                        final String startText = reader.readLine();
+                                        final int startAt = Integer.parseInt(startText);
+                                        if (!versionId.equals(apkBytesVersion)) {
+                                            UserError.Log.d(TAG, "New UUID to buffer: " + apkBytesVersion + " vs " + versionId);
+                                            apkBytesOutput = new byte[size];
+                                            apkBytesRead = 0;
+                                            apkBytesVersion = versionId;
+                                        }
+
+                                        if (apkBytesOutput.length != size) {
+                                            UserError.Log.d(TAG, "Buffer size wrong! us:" + apkBytesOutput.length + " vs " + size);
+                                            return;
+                                        }
+
+                                        if (startAt > apkBytesRead) {
+                                            UserError.Log.e(TAG, "Cannot start at position: " + startAt + " vs " + apkBytesRead);
+                                            return;
+                                        }
+
+                                        if (startAt != apkBytesRead) {
+                                            UserError.Log.d(TAG, "Setting start position to: " + startAt);
+                                            apkBytesRead = startAt;
+                                        }
+
+                                        while (apkBytesRead < apkBytesOutput.length) {
+                                            final int complete = (apkBytesRead * 100 / apkBytesOutput.length);
+                                            android.util.Log.d(TAG, "Preparing to read, total: " + apkBytesRead + " out of " + apkBytesOutput.length + " complete " + complete + "%");
+                                            if (JoH.quietratelimit("wear-update-notice", 5)) {
+                                                JoH.static_toast_long("Updating xDrip " + complete + "%");
+                                            }
+
+                                            final long startedWaiting = JoH.tsl();
+                                            while (apkBytesRead < apkBytesOutput.length && input.available() == 0) {
+                                                if (JoH.msSince(startedWaiting) > Constants.SECOND_IN_MS * 30) {
+                                                    UserError.Log.e(TAG, "Timed out waiting for new APK data!");
+                                                    Inevitable.task("re-request-apk", 5000, new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            UserError.Log.d(TAG, "Asking to resume apk from: " + apkBytesRead);
+                                                            ListenerService.requestAPK(apkBytesRead);
+                                                        }
+                                                    });
+                                                    return;
+                                                }
+                                                android.util.Log.d(TAG, "Pausing for new data");
+                                                JoH.threadSleep(1000);
+                                            }
+                                            apkBytesRead += input.read(apkBytesOutput, apkBytesRead, Math.min(input.available(), apkBytesOutput.length - apkBytesRead));
+                                        }
+
+                                        android.util.Log.d(TAG, "onChannelOpened: onResult: Received the following COMPLETE message: " + apkBytesRead);
+                                        VersionFixer.runPackageInstaller(apkBytesOutput);
+                                        apkBytesOutput = new byte[0];
+                                        apkBytesRead = 0;
+                                        apkBytesVersion = "";
+
+                                    } catch (final IOException ioexception) {
+                                        android.util.Log.w(TAG, "Could not read channel message \n" + "Node ID: " + channel.getNodeId() + "\n" +
+                                                "Path: " + channel.getPath() + "\n" + "Error message: " + ioexception.getMessage() + "\n" +
+                                                "Error cause: " + ioexception.getCause());
+                                    } finally {
+                                        try {
+                                            if (input != null) {
+                                                input.close();
+                                            }
+                                            if (reader != null) {
+                                                reader.close();
+                                            }
+                                        } catch (final IOException ioexception) {
+                                            android.util.Log.d(TAG, "onChannelOpened: onResult: Could not close buffered reader.\n" +
+                                                    "Node ID: " + channel.getNodeId() + "\n" + "Path: " + channel.getPath() + "\n" +
+                                                    "Error message: " + ioexception.getMessage() + "\n" + "Error cause: " + ioexception.getCause());
+                                        }
+                                    }
+                                }
+
+                            });
+
+                        } finally {
+                            JoH.releaseWakeLock(wl);
+                        }
+                    }
+
+                });
+                thread.setPriority(Thread.NORM_PRIORITY - 1);
+                thread.start();
+            default:
+                UserError.Log.e(TAG, "Unknown channel: " + channel.getPath());
+        }
+    }
+
+    @Override
+    public void onChannelClosed(final Channel channel, final int closeReason, final int appSpecificErrorCode) {
+        logChannelCloseReason("Whole Channel", channel, closeReason, appSpecificErrorCode);
+    }
+
+    @Override
+    public void onInputClosed(final Channel channel, final int closeReason, final int appSpecificErrorCode) {
+        logChannelCloseReason("Channel input", channel, closeReason, appSpecificErrorCode);
+    }
+
+    @Override
+    public void onOutputClosed(final Channel channel, final int closeReason, final int appSpecificErrorCode) {
+        logChannelCloseReason("Channel output", channel, closeReason, appSpecificErrorCode);
+    }
+
+    private void logChannelCloseReason(String source, final Channel channel, final int closeReason, final int appSpecificErrorCode) {
+        switch (closeReason) {
+            case CLOSE_REASON_NORMAL:
+                UserError.Log.d(TAG, source + " closed. Reason: normal close (" + closeReason + ") Error code: " + appSpecificErrorCode + "\n" +
+                        "From Node ID" + channel.getNodeId() + "\n" +
+                        "Path: " + channel.getPath());
+                break;
+            case CLOSE_REASON_DISCONNECTED:
+                UserError.Log.d(TAG, source + " closed. Reason: disconnected (" + closeReason + ") Error code: " + appSpecificErrorCode + "\n" +
+                        "From Node ID" + channel.getNodeId() + "\n" +
+                        "Path: " + channel.getPath());
+                break;
+            case CLOSE_REASON_REMOTE_CLOSE:
+                UserError.Log.d(TAG, source + " closed. Reason: closed by remote (" + closeReason + ") Error code: " + appSpecificErrorCode + "\n" +
+                        "From Node ID" + channel.getNodeId() + "\n" +
+                        "Path: " + channel.getPath());
+                break;
+            case CLOSE_REASON_LOCAL_CLOSE:
+                UserError.Log.d(TAG, source + " closed. Reason: closed locally (" + closeReason + ") Error code: " + appSpecificErrorCode + "\n" +
+                        "From Node ID" + channel.getNodeId() + "\n" +
+                        "Path: " + channel.getPath());
+                break;
         }
     }
 }
