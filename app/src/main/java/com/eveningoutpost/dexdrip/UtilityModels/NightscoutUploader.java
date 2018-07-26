@@ -92,6 +92,7 @@ public class NightscoutUploader {
         private static final int CONNECTION_TIMEOUT = 30000;
         private static final boolean d = false;
         private static final boolean USE_GZIP = true; // conditional inside interceptor
+        public static final String VIA_NIGHTSCOUT_LOADER_TAG = "Nightscout Loader";
 
         public static long last_success_time = -1;
         public static long last_exception_time = -1;
@@ -828,7 +829,7 @@ public class NightscoutUploader {
     private void populateV1APITreatmentEntry(JSONArray array, Treatments treatment) throws Exception {
 
         if (treatment == null) return;
-        if ((treatment.enteredBy != null) && (treatment.enteredBy.endsWith(VIA_NIGHTSCOUT_TAG))) return; // don't send back to nightscout what came from there
+        if (treatment.enteredBy != null && ((treatment.enteredBy.endsWith(VIA_NIGHTSCOUT_TAG)) || (treatment.enteredBy.contains(VIA_NIGHTSCOUT_LOADER_TAG)))) return; // don't send back to nightscout what came from there
         final JSONObject record = new JSONObject();
         final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.US);
         record.put("timestamp", treatment.timestamp);
