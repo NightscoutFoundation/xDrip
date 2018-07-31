@@ -358,7 +358,9 @@ private static final int POSITION_OF_SENSOR_STATUS_BYTE = 17;
             */
 
             if (JoH.pratelimit(BLUKON_DECODE_SERIAL_TIMER, GET_DECODE_SERIAL_DELAY)) {
-                decodeSerialNumber(buffer);
+                String SensorSn = decodeSerialNumber(buffer);
+                // TODO: Only write this after checksum was verified
+                PersistentStore.setString("LibreSN", SensorSn);
             }
 
             if (LibreUtils.isSensorReady(buffer[POSITION_OF_SENSOR_STATUS_BYTE])) {
@@ -623,8 +625,8 @@ private static final int POSITION_OF_SENSOR_STATUS_BYTE = 17;
     }
 
     // This function assumes that the UID is starting at place 3, and is 8 bytes long
-    public static void decodeSerialNumber(byte[] input) {
-
+    public static String decodeSerialNumber(byte[] input) {
+        
         byte[] uuid = new byte[]{0, 0, 0, 0, 0, 0, 0, 0};
         String lookupTable[] =
                 {
@@ -646,7 +648,7 @@ private static final int POSITION_OF_SENSOR_STATUS_BYTE = 17;
             binS = String.format("%8s", Integer.toBinaryString(uuidShort[i] & 0xFF)).replace(' ', '0');
             binary += binS;
         }
-
+        
         String v = "0";
         char[] pozS = {0, 0, 0, 0, 0};
         for (i = 0; i < 10; i++) {
@@ -656,7 +658,7 @@ private static final int POSITION_OF_SENSOR_STATUS_BYTE = 17;
         }
         Log.e(TAG, "decodeSerialNumber=" + v);
 
-        PersistentStore.setString("LibreSN", v);
+        return v;
     }
 
 

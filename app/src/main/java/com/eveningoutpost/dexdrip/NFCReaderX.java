@@ -238,7 +238,7 @@ public class NFCReaderX {
                 public void run() {
                     final PowerManager.WakeLock wl = JoH.getWakeLock("processTransferObject", 60000);
                     try {
-                        LibreAlarmReceiver.processReadingDataTransferObject(new ReadingData.TransferObject(1, mResult), CaptureDateTime );
+                        LibreAlarmReceiver.processReadingDataTransferObject(new ReadingData.TransferObject(1, mResult), CaptureDateTime, tagId );
                         Home.staticRefreshBGCharts();
                     } finally {
                         JoH.releaseWakeLock(wl);
