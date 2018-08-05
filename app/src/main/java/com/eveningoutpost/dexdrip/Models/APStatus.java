@@ -114,12 +114,14 @@ public class APStatus extends PlusModel {
                 final long last_raw_record_timestamp = ExternalStatusService.getLastStatusLineTime();
                 // check are not already using the latest.
                 if (last_raw_record_timestamp > last.timestamp) {
-                    final int last_recorded_tbr = ExternalStatusService.getTBRInt();
-                    if ((last.basal_percent == last_recorded_tbr)
-                            && (JoH.msSince(last.timestamp) < Constants.HOUR_IN_MS * 3)
-                            && (JoH.msSince(ExternalStatusService.getLastStatusLineTime()) < Constants.MINUTE_IN_MS * 20)) {
-                        results.add(new APStatus(JoH.tsl(), last_recorded_tbr));
-                        UserError.Log.d(TAG, "Adding extension record");
+                    final Integer last_recorded_tbr = ExternalStatusService.getTBRInt();
+                    if (last_recorded_tbr != null) {
+                        if ((last.basal_percent == last_recorded_tbr)
+                                && (JoH.msSince(last.timestamp) < Constants.HOUR_IN_MS * 3)
+                                && (JoH.msSince(ExternalStatusService.getLastStatusLineTime()) < Constants.MINUTE_IN_MS * 20)) {
+                            results.add(new APStatus(JoH.tsl(), last_recorded_tbr));
+                            UserError.Log.d(TAG, "Adding extension record");
+                        }
                     }
                 }
             }
