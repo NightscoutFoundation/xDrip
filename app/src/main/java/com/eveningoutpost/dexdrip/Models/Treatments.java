@@ -45,9 +45,11 @@ import java.util.UUID;
 
 @Table(name = "Treatments", id = BaseColumns._ID)
 public class Treatments extends Model {
-    private final static String TAG = "jamorham " + Treatments.class.getSimpleName();
+    private static final String TAG = "jamorham " + Treatments.class.getSimpleName();
+    private static final String DEFAULT_EVENT_TYPE = "<none>";
     public final static String XDRIP_TAG = "xdrip";
-    public static double activityMultipler = 8.4; // somewhere between 8.2 and 8.8
+
+    //public static double activityMultipler = 8.4; // somewhere between 8.2 and 8.8
     private static Treatments lastCarbs;
     private static boolean patched = false;
 
@@ -114,7 +116,7 @@ public class Treatments extends Model {
             Treatment.enteredBy = XDRIP_TAG;
         }
 
-        Treatment.eventType = "<none>";
+        Treatment.eventType = DEFAULT_EVENT_TYPE;
         Treatment.carbs = carbs;
         Treatment.insulin = insulin;
         Treatment.timestamp = timestamp;
@@ -160,7 +162,7 @@ public class Treatments extends Model {
             Log.d(TAG, "Creating new treatment entry for note");
             is_new = true;
 
-            treatment.eventType = "<none>";
+            treatment.eventType = DEFAULT_EVENT_TYPE;
             treatment.carbs = 0;
             treatment.insulin = 0;
             treatment.notes = note;
@@ -464,7 +466,7 @@ public class Treatments extends Model {
                 mytreatment.enteredBy = "sync";
             }
             if ((mytreatment.eventType == null) || (mytreatment.eventType.equals(""))) {
-                mytreatment.eventType = "<none>"; // should have a default
+                mytreatment.eventType = DEFAULT_EVENT_TYPE; // should have a default
             }
             if ((mytreatment.created_at == null) || (mytreatment.created_at.equals(""))) {
                 try {
@@ -775,7 +777,7 @@ public class Treatments extends Model {
     }
 
 
-    /// OLD ONE BELOW
+   /* /// OLD ONE BELOW
 
     public static List<Iob> ioBForGraph_old(int number, double startTime) {
 
@@ -932,10 +934,10 @@ public class Treatments extends Model {
         Log.d(TAG, "Finished Processing iobforgraph: main - processed:  " + Integer.toString(counter) + " Timeslot records");
         JoH.benchmark_method_end();
         return responses;
-    }
+    }*/
 
     public String getBestShortText() {
-        if (!eventType.equals("<none>")) {
+        if (!eventType.equals(DEFAULT_EVENT_TYPE)) {
             return eventType;
         } else {
             return "Treatment";
@@ -967,7 +969,19 @@ public class Treatments extends Model {
     }
 
     public boolean noteOnly() {
-        return (carbs == 0 && insulin == 0 && (notes != null && notes.length() > 0));
+        return carbs == 0 && insulin == 0 && noteHasContent();
+    }
+
+    public boolean hasContent() {
+        return insulin != 0 || carbs != 0 || noteHasContent() || !isEventTypeDefault();
+    }
+
+    public boolean noteHasContent() {
+        return notes != null && notes.length() > 0;
+    }
+
+    public boolean isEventTypeDefault() {
+        return eventType == null || eventType.equalsIgnoreCase(DEFAULT_EVENT_TYPE);
     }
 
     public String toS() {
