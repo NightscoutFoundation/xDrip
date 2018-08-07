@@ -11,10 +11,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.PowerManager;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 
 import com.eveningoutpost.dexdrip.AddCalibration;
@@ -77,6 +79,7 @@ import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.pendingStop;
 import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.STATE.BOND;
 import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.STATE.CLOSE;
 import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.STATE.CLOSED;
+import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.STATE.CONNECT_NOW;
 import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.STATE.DISCOVER;
 import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.STATE.GET_DATA;
 import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.STATE.INIT;
@@ -178,6 +181,7 @@ public class Ob1G5CollectionService extends G5BaseService {
 
     private static final boolean d = false;
 
+    private static volatile boolean never_scan = false; // DEBUG TEST ONLY
     private static volatile boolean always_scan = false;
     private static volatile boolean scan_next_run = true;
     private static boolean always_discover = false;
@@ -271,7 +275,14 @@ public class Ob1G5CollectionService extends G5BaseService {
                                 break;
                             }
                         }
-                        scan_for_device();
+                        // TODO check if we know mac!!! Sync as part of wear sync?? - TODO preload transmitter mac??
+                        // TODO sync timings better
+                        if (never_scan && transmitterMAC != null) {
+                            UserError.Log.d(TAG, "Skipping Scanning! : Changing state due to never_scan flag");
+                            changeState(CONNECT_NOW);
+                        } else {
+                            scan_for_device();
+                        }
                         break;
                     case CONNECT_NOW:
                         connect_to_device(false);
@@ -402,7 +413,8 @@ public class Ob1G5CollectionService extends G5BaseService {
                                 //.setScanMode(static_last_timestamp < 1 ? ScanSettings.SCAN_MODE_LOW_LATENCY : ScanSettings.SCAN_MODE_BALANCED)
                                 //.setCallbackType(ScanSettings.CALLBACK_TYPE_FIRST_MATCH)
                                 .setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES)
-                                .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
+                                // TODO revisit scan mode
+                                .setScanMode(android_wear ? ScanSettings.SCAN_MODE_BALANCED : ScanSettings.SCAN_MODE_LOW_LATENCY)
                                 .build()//,
 
                         // scan filter doesn't work reliable on android sdk 23+
@@ -784,6 +796,7 @@ public class Ob1G5CollectionService extends G5BaseService {
             }
         }
         if (d) RxBleClient.setLogLevel(RxBleLog.DEBUG);
+        listenForChangeInSettings(true);
     }
 
     @Override
@@ -856,6 +869,7 @@ public class Ob1G5CollectionService extends G5BaseService {
         stateSubscription = null;
         discoverSubscription = null;
 
+        listenForChangeInSettings(false);
         unregisterPairingReceiver();
 
         try {
@@ -1616,6 +1630,26 @@ public class Ob1G5CollectionService extends G5BaseService {
         state = INIT;
         scan_next_run = true;
     }
+
+
+    public void listenForChangeInSettings(boolean listen) {
+        try {
+            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+            if (listen) {
+                prefs.registerOnSharedPreferenceChangeListener(prefListener);
+            } else {
+                prefs.unregisterOnSharedPreferenceChangeListener(prefListener);
+            }
+        } catch (Exception e) {
+            UserError.Log.e(TAG, "Error with preference listener: " + e + " " + listen);
+        }
+    }
+
+    public final SharedPreferences.OnSharedPreferenceChangeListener prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+        public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+            checkPreferenceKey(key, prefs);
+        }
+    };
 
 
     // remember needs proguard exclusion due to access by reflection

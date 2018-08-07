@@ -65,9 +65,9 @@ public class Notifications extends IntentService {
     public static boolean bg_notifications_watch;
     public static boolean bg_persistent_high_alert_enabled_watch;
     public static boolean bg_ongoing;
-    public static boolean bg_vibrate;
-    public static boolean bg_lights;
-    public static boolean bg_sound;
+    //public static boolean bg_vibrate;
+   // public static boolean bg_lights;
+   // public static boolean bg_sound;
     public static boolean bg_sound_in_silent;
     public static String bg_notification_sound;
 
@@ -155,9 +155,9 @@ public class Notifications extends IntentService {
         bg_notifications = prefs.getBoolean("bg_notifications", true);
         bg_notifications_watch = PersistentStore.getBoolean("bg_notifications_watch");
         bg_persistent_high_alert_enabled_watch = PersistentStore.getBoolean("persistent_high_alert_enabled_watch");
-        bg_vibrate = prefs.getBoolean("bg_vibrate", true);
-        bg_lights = prefs.getBoolean("bg_lights", true);
-        bg_sound = prefs.getBoolean("bg_play_sound", true);
+        //bg_vibrate = prefs.getBoolean("bg_vibrate", true);
+        //bg_lights = prefs.getBoolean("bg_lights", true);
+        //bg_sound = prefs.getBoolean("bg_play_sound", true);
         bg_notification_sound = prefs.getString("bg_notification_sound", "content://settings/system/notification_sound");
         bg_sound_in_silent = prefs.getBoolean("bg_sound_in_silent", false);
 
@@ -576,7 +576,7 @@ public class Notifications extends IntentService {
         //final NotificationCompat.Builder b = new NotificationCompat.Builder(mContext, NotificationChannels.ONGOING_CHANNEL);
         //final NotificationCompat.Builder b = new NotificationCompat.Builder(mContext); // temporary fix until ONGOING CHANNEL is silent by default on android 8+
         final Notification.Builder b = new Notification.Builder(mContext); // temporary fix until ONGOING CHANNEL is silent by default on android 8+
-        //b.setOngoing(true); // TODO CHECK THIS!!
+        b.setOngoing(true); // TODO CHECK THIS!!
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             b.setVisibility(Pref.getBooleanDefaultFalse("public_notifications") ? Notification.VISIBILITY_PUBLIC : Notification.VISIBILITY_PRIVATE);
             b.setCategory(NotificationCompat.CATEGORY_STATUS);

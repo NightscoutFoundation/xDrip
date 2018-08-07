@@ -8,7 +8,6 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
-import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
@@ -64,7 +63,6 @@ import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
-import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.NotificationChannels;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
@@ -113,9 +111,7 @@ public class G5CollectionService extends G5BaseService {
     private static int failures = 0;
     private boolean force_always_authenticate = false;
 
-    private ForegroundServiceStarter foregroundServiceStarter;
 
-    public Service service;
     //private BgToSpeech bgToSpeech;
     private static PendingIntent pendingIntent;
 
@@ -190,16 +186,14 @@ public class G5CollectionService extends G5BaseService {
     @Override
     public void onCreate() {
         super.onCreate();
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             initScanCallback();
         }
         advertiseTimeMS.add((long)0);
-        service = this;
-        foregroundServiceStarter = new ForegroundServiceStarter(getApplicationContext(), service);
-        foregroundServiceStarter.start();
 
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        listenForChangeInSettings();
+        listenForChangeInSettings(true);
 
         // TODO check this
         //bgToSpeech = BgToSpeech.setupTTS(getApplicationContext()); //keep reference to not being garbage collected
@@ -255,21 +249,11 @@ public class G5CollectionService extends G5BaseService {
     };
 
 
-    public SharedPreferences.OnSharedPreferenceChangeListener prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+    public final SharedPreferences.OnSharedPreferenceChangeListener prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
         public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-            if(key.compareTo("run_service_in_foreground") == 0) {
-                Log.d("FOREGROUND", "run_service_in_foreground changed!");
-                if (prefs.getBoolean("run_service_in_foreground", false)) {
-                    foregroundServiceStarter = new ForegroundServiceStarter(getApplicationContext(), service);
-                    foregroundServiceStarter.start();
-                    Log.i(TAG, "Moving to foreground");
-                } else {
-                    service.stopForeground(true);
-                    Log.i(TAG, "Removing from foreground");
-                }
-            }
+            checkPreferenceKey(key, prefs);
 
-            if(key.compareTo("run_ble_scan_constantly") == 0 || key.compareTo("always_unbond_G5") == 0
+            if (key.compareTo("run_ble_scan_constantly") == 0 || key.compareTo("always_unbond_G5") == 0
                     || key.compareTo("always_get_new_keys") == 0 || key.compareTo("run_G5_ble_tasks_on_uithread") == 0) {
                 Log.i(TAG, "G5 Setting Change");
                 cycleScan(0);
@@ -279,9 +263,16 @@ public class G5CollectionService extends G5BaseService {
         }
     };
 
-    public void listenForChangeInSettings() {
-        prefs.registerOnSharedPreferenceChangeListener(prefListener);
-        // TODO do we need an unregister!?
+    public void listenForChangeInSettings(boolean listen) {
+        try {
+            if (listen) {
+                prefs.registerOnSharedPreferenceChangeListener(prefListener);
+            } else {
+                prefs.unregisterOnSharedPreferenceChangeListener(prefListener);
+            }
+        } catch (Exception e) {
+            UserError.Log.e(TAG, "Error with preference listener: " + e + " " + listen);
+        }
     }
 
 
@@ -407,7 +398,7 @@ public class G5CollectionService extends G5BaseService {
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
+        listenForChangeInSettings(false);
         isScanning = true;//enable to ensure scanning is stopped to prevent service from starting back up onScanResult()
         stopScan();
         isScanning = false;
@@ -417,8 +408,8 @@ public class G5CollectionService extends G5BaseService {
         scan_interval_timer.cancel();
         if (pendingIntent != null && !shouldServiceRun()) {
             Log.d(TAG, "onDestroy stop Alarm pendingIntent");
-            AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
-            alarm.cancel(pendingIntent);
+            final AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
+            if (alarm != null) alarm.cancel(pendingIntent);
         }
 
         // TODO do we need to gatt disconnect or close??
@@ -436,9 +427,10 @@ public class G5CollectionService extends G5BaseService {
         } catch (Exception e) {
             Log.e(TAG, "Got exception unregistering pairing receiver: ", e);
         }
-//        BgToSpeech.tearDownTTS();
+
         Log.i(TAG, "SERVICE STOPPED");
         lastState="Stopped";
+        super.onDestroy();
     }
 
     public synchronized void keepAlive() {

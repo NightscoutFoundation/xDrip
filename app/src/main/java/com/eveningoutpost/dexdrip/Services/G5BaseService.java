@@ -2,10 +2,13 @@ package com.eveningoutpost.dexdrip.Services;
 
 import android.app.Service;
 import android.bluetooth.BluetoothDevice;
+import android.content.SharedPreferences;
 import android.os.PowerManager;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
+import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.google.android.gms.wearable.DataMap;
@@ -41,8 +44,20 @@ public abstract class G5BaseService extends Service {
     protected static long static_last_timestamp = 0;
     protected static long static_last_timestamp_watch = 0;
 
+    protected ForegroundServiceStarter foregroundServiceStarter;
+    protected Service service;
+
     static {
         updateBatteryWarningLevel();
+    }
+
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        service = this;
+        UserError.Log.d("FOREGROUND", "Current Service: " + service.getClass().getSimpleName());
+        startInForeground();
     }
 
     public static void setWatchStatus(DataMap dataMap) {
@@ -80,6 +95,7 @@ public abstract class G5BaseService extends Service {
     public static boolean isRunning() {
         return runningStringCheck(lastState);
     }
+
     public static boolean isWatchRunning() {
         return runningStringCheck(lastStateWatch);
     }
@@ -103,6 +119,39 @@ public abstract class G5BaseService extends Service {
 
     protected synchronized void releaseWakeLock() {
         JoH.releaseWakeLock(wl);
+    }
+
+    protected void checkPreferenceKey(final String key, final SharedPreferences prefs) {
+        if (key.equals("run_service_in_foreground")) {
+            UserError.Log.d("FOREGROUND", "run_service_in_foreground changed!");
+            if (prefs.getBoolean("run_service_in_foreground", false)) {
+                startInForeground();
+                UserError.Log.i(service.getClass().getSimpleName(), "Moving to foreground");
+            } else {
+                stopInForeground();
+                UserError.Log.i(service.getClass().getSimpleName(), "Removing from foreground");
+            }
+        }
+    }
+
+    protected void startInForeground() {
+        foregroundServiceStarter = new ForegroundServiceStarter(getApplicationContext(), service);
+        foregroundServiceStarter.start();
+        foregroundStatus();
+    }
+
+    protected void stopInForeground() {
+        // TODO refuse to stop on oreo+ ?
+        if (service != null) {
+            service.stopForeground(true);
+        } else {
+            UserError.Log.e("FOREGROUND", "Cannot stop foreground as service is null");
+        }
+        foregroundStatus();
+    }
+
+    protected void foregroundStatus() {
+        Inevitable.task("foreground-status", 2000, () -> UserError.Log.d("FOREGROUND", service.getClass().getSimpleName() + (JoH.isServiceRunningInForeground(service.getClass()) ? " is running in foreground" : " is not running in foreground")));
     }
 
     protected static byte[] nn(final byte[] array) {

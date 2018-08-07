@@ -3,6 +3,7 @@ package com.eveningoutpost.dexdrip.Models;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -1584,6 +1585,20 @@ public class JoH {
             ActiveAndroid.clearCache();
         } catch (Exception e) {
             Log.e(TAG, "Error clearing active android cache: " + e);
+        }
+    }
+
+    public static boolean isServiceRunningInForeground(Class<?> serviceClass) {
+        final ActivityManager manager = (ActivityManager) xdrip.getAppContext().getSystemService(Context.ACTIVITY_SERVICE);
+        try {
+            for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+                if (serviceClass.getName().equals(service.service.getClassName())) {
+                    return service.foreground;
+                }
+            }
+            return false;
+        } catch (NullPointerException e) {
+            return false;
         }
     }
 }
