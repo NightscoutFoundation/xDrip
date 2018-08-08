@@ -22,7 +22,7 @@ public abstract class G5BaseService extends Service {
 
     private final PowerManager.WakeLock wl = JoH.getWakeLock("g5-base-bt", 100);
 
-    public static final int G6_SCALING = 32;
+    public static final int G6_SCALING = 34;
 
     public static final String G5_FIRMWARE_MARKER = "g5-firmware-";
 
