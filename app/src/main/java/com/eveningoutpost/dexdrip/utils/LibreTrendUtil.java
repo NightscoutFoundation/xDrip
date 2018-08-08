@@ -94,6 +94,10 @@ public class LibreTrendUtil {
             LibreBlock lastBlock = latestBlocks.get(latestBlocks.size() - 1);
             // 
             ReadingData readingData = NFCReaderX.getTrend(lastBlock);
+            if(readingData == null){
+                Log.e(TAG, "Error: NFCReaderX.getTrend retuned null for latest block");
+                return m_points;
+            }
             if(readingData.trend.size() > 0 ) {
                 m_libreTrendLatest.id = (int)readingData.trend.get(0).sensorTime;
                 m_libreTrendLatest.glucoseLevelRaw = readingData.trend.get(0).glucoseLevelRaw;
@@ -116,6 +120,10 @@ public class LibreTrendUtil {
             }
             
             ReadingData readingData = NFCReaderX.getTrend(libreBlock);
+            if(readingData == null) {
+                Log.i(TAG, "NFCReaderX.getTrend returned null, ignoring reading");
+                continue;
+            }
             // Go over all trend data (from the earlier to the later)
             for (int i = readingData.trend.size() - 1; i >= 0; i--) {
                 GlucoseData glucoseData = readingData.trend.get(i);

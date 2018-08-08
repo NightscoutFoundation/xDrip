@@ -183,8 +183,6 @@ public class LibreTrendGraph extends AppCompatActivity {
              long bg_time = libreTrendLatest.timestamp - time_offset;
              if (bg_time <= end_time && bg_time >= start_time) {
                  double time = (double) ((double)(bg_time) / FUZZER);
-                 Log.e("xxx", "float val is " + time);
-                 
                  points.add(new PointValue((float) ((double)(bg_time) / FUZZER), bg * conversion_factor_mmol));
              }
              
