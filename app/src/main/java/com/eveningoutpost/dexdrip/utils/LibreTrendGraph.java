@@ -38,6 +38,7 @@ public class LibreTrendGraph extends AppCompatActivity {
     private LineChartView chart;
     private LineChartData data;
     private final boolean doMgdl = Pref.getString("units", "mgdl").equals("mgdl");
+    private final int MINUTES_TO_DISPLAY = 45;
     
     public void closeNow(View view) {
         try {
@@ -132,6 +133,8 @@ public class LibreTrendGraph extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        String titleFormat = getResources().getString(R.string.libre_last_x_minutes_graph);
+        setTitle(String.format(titleFormat, MINUTES_TO_DISPLAY));
         setupCharts();
     }
 
@@ -212,10 +215,7 @@ public class LibreTrendGraph extends AppCompatActivity {
         }
         String time = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(new Date((long) libreBlock.timestamp));
 
-        //ArrayList<Float> bg_data = getLatestBg(libreBlock);
-        ArrayList<Float> bg_data = getLatestBgForXMinutes(50);
-        
-        
+        ArrayList<Float> bg_data = getLatestBgForXMinutes(MINUTES_TO_DISPLAY);
         
         if(bg_data == null) {
             trendView.setText("Error displaying data for " + time);
@@ -247,6 +247,7 @@ public class LibreTrendGraph extends AppCompatActivity {
         trendLine.setColor(ChartUtils.COLOR_RED);
         trendLine.setHasLines(false);
         trendLine.setHasPoints(true);
+        trendLine.setPointRadius(3);
         lines.add(trendLine);
         
         final int MIN_GRAPH = 20;
