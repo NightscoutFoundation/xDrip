@@ -8,7 +8,13 @@ package com.eveningoutpost.dexdrip.UtilityModels;
 
 // TODO move elements relating only to vehicle mode from ActivityRecognizedService to here
 
+import android.content.Intent;
+import android.os.Bundle;
+
 import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
+
+import static com.eveningoutpost.dexdrip.UtilityModels.Intents.ACTION_VEHICLE_MODE;
+import static com.eveningoutpost.dexdrip.UtilityModels.Intents.EXTRA_VEHICLE_MODE_ENABLED;
 
 public class VehicleMode {
 
@@ -41,4 +47,11 @@ public class VehicleMode {
         ActivityRecognizedService.set_vehicle_mode(active);
     }
 
+    public static void sendBroadcast() {
+        if (SendXdripBroadcast.enabled()) {
+            final Bundle bundle = new Bundle();
+            bundle.putString(EXTRA_VEHICLE_MODE_ENABLED, isVehicleModeActive() ? "true" : "false");
+            SendXdripBroadcast.send(new Intent(ACTION_VEHICLE_MODE), bundle);
+        }
+    }
 }

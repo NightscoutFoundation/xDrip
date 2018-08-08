@@ -24,6 +24,7 @@ import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.ShotStateStore;
+import com.eveningoutpost.dexdrip.UtilityModels.VehicleMode;
 import com.eveningoutpost.dexdrip.utils.PowerStateReceiver;
 import com.eveningoutpost.dexdrip.utils.WebAppHelper;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -174,7 +175,7 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
 
     private static void setInternalPrefsString(String name, String value) {
         init_prefs();
-        prefs.edit().putString(name, value).commit(); // TODO check if commit needed
+        prefs.edit().putString(name, value).apply();
     }
 
     private static long getInternalPrefsLong(String name) {
@@ -254,12 +255,13 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
         final double ratio = ((received_all_time * 100) / requested_all_time);
         if (d)
             Log.d(TAG, "evaluteRequestReceived: " + requested_all_time + "/" + received_all_time + " " + JoH.qs(ratio, 2));
-        // TODO use persistent rate limit
+        /*
+        disabled as was for early debug only
         if (JoH.ratelimit("evalute-request-received", 86400) || (disable)) {
             if (Pref.getBoolean("enable_crashlytics", true)) {
                 new WebAppHelper(null).executeOnExecutor(xdrip.executor, xdrip.getAppContext().getString(R.string.wserviceurl) + "/joh-mreport/" + (disable ? 1 : 0) + "/" + requested_all_time + "/" + received_all_time + "/" + JoH.qs(ratio, 0) + "/" + JoH.base64encode(JoH.getDeviceDetails()));
             }
-        }
+        }*/
 
         // mutually exclusive logic
         if ((!disable) && (requested_all_time > 100) && (ratio < 90 ) && (!PowerStateReceiver.is_power_connected()) && (JoH.isAnyNetworkConnected()) && (JoH.ratelimit("disable_motion", 86400))) {
@@ -274,8 +276,11 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
         setInternalPrefsLong(RECEIVED, 0);
     }
 
+    // TODO refactor all the actual vehicle mode handling in to its own class
+    // TODO would reversing the order of these items be more efficient?
     public static boolean is_in_vehicle_mode() {
-        return Pref.getBoolean("motion_tracking_enabled", false) && Pref.getBoolean("vehicle_mode_enabled", false) && getInternalPrefsString(PREFS_MOTION_VEHICLE_MODE).equals("true");
+        return (Pref.getBooleanDefaultFalse("motion_tracking_enabled") || VehicleMode.viaCarAudio())
+                && VehicleMode.isEnabled() && getInternalPrefsString(PREFS_MOTION_VEHICLE_MODE).equals("true");
     }
 
     public static boolean raise_limit_due_to_vehicle_mode() {
@@ -293,6 +298,7 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
                 UserError.Log.ueh(TAG, "Exiting vehicle mode after: " + duration + " minutes");
             }
         }
+        VehicleMode.sendBroadcast();
     }
 
     private static int get_vehicle_mode_minutes() {
@@ -521,7 +527,10 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
                     if ((received > MAX_RECEIVED) || (topConfidence > 90))
                         stopUpdates(); // one hit only
                 } else {
-                    UserError.Log.wtf(TAG, "Received ActivityRecognition we were not expecting!"); /// DEEEBUG
+                    if (JoH.ratelimit("not-expected-activity", 1200)) {
+                        UserError.Log.e(TAG, "Received ActivityRecognition we were not expecting!"); /// DEEEBUG
+                        stop();
+                    }
                 }
             } else {
                 // spoof from intent
@@ -582,7 +591,7 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
                                 // confidence condition above overrides this for non consolidated entries
                                 if (topActivity.getConfidence() >= 75) {
 
-                                    if (!is_in_vehicle_mode()) set_vehicle_mode(true);
+                                    if (!VehicleMode.isVehicleModeActive()) VehicleMode.setVehicleModeActive(true);
                                     // also checks if vehicle mode enabled on this handset if get != set
                                     if (is_in_vehicle_mode()) {
                                         raise_vehicle_notification("In Vehicle Mode: " + JoH.dateTimeText(JoH.tsl()));
@@ -622,7 +631,7 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
         final NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
         builder.setContentText(msg);
         builder.setSmallIcon(R.drawable.ic_launcher);
-        if (Pref.getBoolean("play_sound_in_vehicle_mode", false)) {
+        if (VehicleMode.shouldPlaySound()) {
             setInternalPrefsLong(VEHICLE_MODE_LAST_ALERT, JoH.tsl());
             builder.setSound(Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + getPackageName() + "/" + R.raw.labbed_musical_chime));
         }
@@ -699,7 +708,7 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
         public ArrayList<motionData> entries;
 
         motionDataWrapper() {
-            entries = new ArrayList<motionData>();
+            entries = new ArrayList<>();
         }
     }
 

@@ -23,6 +23,9 @@ public interface Intents {
     String ACTION_REMOTE_CALIBRATION = "com.eveningoutpost.dexdrip.NewCalibration";
     String ACTION_NEW_BG_ESTIMATE_NO_DATA = "com.eveningoutpost.dexdrip.BgEstimateNoData";
 
+    String ACTION_VEHICLE_MODE = "com.eveningoutpost.dexdrip.VehicleMode";
+    String EXTRA_VEHICLE_MODE_ENABLED = "com.eveningoutpost.dexdrip.VehicleMode.Enabled";
+
     // From NS Android Client
     // send
     String ACTION_NEW_TREATMENT = "info.nightscout.client.NEW_TREATMENT";
