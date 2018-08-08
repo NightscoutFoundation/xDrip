@@ -704,18 +704,45 @@
             android:title="@string/act_as_motion_master" />
         <SwitchPreference
             android:defaultValue="false"
-            android:dependency="motion_tracking_enabled"
             android:key="vehicle_mode_enabled"
             android:summary="@string/vehicle_motion_extras"
             android:switchTextOff="@string/short_off_text_for_switches"
             android:switchTextOn="@string/short_on_text_for_switches"
             android:title="@string/enable_vehicle_mode" />
+        <SwitchPreference
+            android:defaultValue="false"
+            android:dependency="vehicle_mode_enabled"
+            android:key="vehicle_mode_via_car_audio"
+            android:summary="@string/automatically_enable_when_connected_to_car_bluetooth"
+            android:switchTextOff="@string/short_off_text_for_switches"
+            android:switchTextOn="@string/short_on_text_for_switches"
+            android:title="@string/detect_car_audio" />
+        <Preference
+            android:dependency="vehicle_mode_enabled"
+            android:key="learn_this_audio_device"
+            android:summary="@string/tap_to_set_current_car_audio_device"
+            android:title="@string/learn_current_car_audio">
+            <intent
+                android:action="android.intent.action.MAIN"
+                android:targetClass="com.eveningoutpost.dexdrip.ui.activities.SelectAudioDevice"
+                android:targetPackage="@string/local_target_package">
+                <extra
+                    android:name="none"
+                    android:value="none" />
+            </intent>
+        </Preference>
         <CheckBoxPreference
             android:defaultValue="false"
             android:dependency="vehicle_mode_enabled"
             android:key="raise_low_limit_in_vehicle_mode"
             android:summary="@string/increase_low_alarms_vehicle_mode"
             android:title="@string/raise_low_threshold" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:dependency="vehicle_mode_enabled"
+            android:key="speak_readings_in_vehicle_mode"
+            android:title="@string/speak_readings"
+            android:summary="@string/enable_speak_readings_when_in_vehicle"/>
         <CheckBoxPreference
             android:defaultValue="true"
             android:dependency="vehicle_mode_enabled"

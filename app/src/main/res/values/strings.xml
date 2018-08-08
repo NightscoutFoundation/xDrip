@@ -827,7 +827,7 @@
     <string name="use_remote_motion">Use remote motion</string>
     <string name="be_motion_master">Be the master for motion data even if we are a follower. Set this on only one handset!</string>
     <string name="act_as_motion_master">Act as motion master</string>
-    <string name="vehicle_motion_extras">When vehicle motion is detected enable extra features</string>
+    <string name="vehicle_motion_extras">When vehicle is detected enable extra features</string>
     <string name="enable_vehicle_mode">Enable Vehicle Mode</string>
     <string name="increase_low_alarms_vehicle_mode">Increase the level at which Low alarms will be triggered when in vehicle mode</string>
     <string name="raise_low_threshold">Raise \'Low\' threshold</string>
@@ -967,4 +967,13 @@
     <string name="device_inactivity">Device inactivity</string>
     <string name="test_message_sending">Test Message Sending</string>
     <string name="d_selected_contacts_for_text_messages_format">%d selected contacts for text messages</string>
+    <string name="xdrip_software_changed_format">xDrip software version changed from: %s to %s</string>
+    <string name="when_connected_to_the_audio_device_shown_below_switch_to_vehicle_mode">Switch to Vehicle Mode when connected to the audio device shown below.</string>
+    <string name="select_device">Select Device</string>
+    <string name="no_bluetooth_audio_found">No bluetooth audio found</string>
+    <string name="tap_to_set_current_car_audio_device">Tap to set the currently connected car audio device</string>
+    <string name="learn_current_car_audio">Learn current car audio</string>
+    <string name="detect_car_audio">Detect car audio</string>
+    <string name="automatically_enable_when_connected_to_car_bluetooth">Automatically enable vehicle mode when connected to car bluetooth</string>
+    <string name="enable_speak_readings_when_in_vehicle">Enable speak readings feature when in vehicle mode</string>
 </resources>
