@@ -20,6 +20,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.IdempotentMigrations;
 import com.eveningoutpost.dexdrip.UtilityModels.PlusAsyncExecutor;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.UtilityModels.VersionTracker;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.webservices.XdripWebService;
 
@@ -86,6 +87,7 @@ public class xdrip extends Application {
             }
             BluetoothGlucoseMeter.startIfEnabled();
             XdripWebService.immortality();
+            VersionTracker.updatePhone();
 
         } else {
             Log.d(TAG, "Detected running test mode, holding back on background processes");
