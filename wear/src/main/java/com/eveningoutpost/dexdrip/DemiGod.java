@@ -9,10 +9,12 @@ import android.content.pm.PackageManager;
 import android.support.v4.content.ContextCompat;
 
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 
 public class DemiGod {
 
     private static final String TAG = DemiGod.class.getSimpleName();
+    private static final String PREF_MARKER = "has_demigod_mode";
 
     private static final String DEVICE_POWER = "android.permission.DEVICE_POWER";
 
@@ -21,7 +23,12 @@ public class DemiGod {
     public static boolean isPresent() {
         if (enabled == null) {
             enabled = determineDemiGodMode();
-            if (enabled) UserError.Log.uel(TAG, "DemiGod mode reports as: " + enabled);
+            if (enabled) {
+                UserError.Log.uel(TAG, "DemiGod mode reports as: " + enabled);
+            }
+            if (Pref.getBooleanDefaultFalse(PREF_MARKER) != enabled) {
+                Pref.setBoolean(PREF_MARKER, enabled);
+            }
         }
         return enabled;
     }
