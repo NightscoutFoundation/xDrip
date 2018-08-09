@@ -16,25 +16,36 @@ import lecho.lib.hellocharts.model.PointValue;
 public class NoteClassifier {
 
     // TODO add to colorpickerx
-    private static final int red = ColorUtil.blendColor(Color.RED, Color.TRANSPARENT, 0.1f);
-    private static final int amber = ColorUtil.blendColor(Color.YELLOW, Color.TRANSPARENT, 0.1f); // TODO orange
-    private static final int green = ColorUtil.blendColor(Color.parseColor("#2eb82e"), Color.TRANSPARENT, 0.5f);
+    private static final int red = ColorUtil.blendColor(Color.parseColor("#FF2929"), Color.TRANSPARENT, 0.2f);
+    private static final int amber = ColorUtil.blendColor(Color.parseColor("#FF9400"), Color.TRANSPARENT, 0.2f);
+    private static final int green = ColorUtil.blendColor(Color.parseColor("#2eb82e"), Color.TRANSPARENT, 0.2f);
+    private static final int grey = ColorUtil.blendColor(Color.parseColor("#666666"), Color.TRANSPARENT, 0.2f);
 
     public static PointValue noteToPointValue(final String note) {
 
         final String haystack = note.toLowerCase();
         if (haystack.contains("battery low")) {
+            return red(R.drawable.alert_icon, note);
 
         } else if (haystack.contains("stopped")) {
             return red(R.drawable.flag_variant, note);
+
         } else if (haystack.contains("paused")) {
             return amber(R.drawable.flag_variant, note);
+
         } else if (haystack.contains("started")) {
             return green(R.drawable.flag_variant, note);
+
         } else if (haystack.contains("cartridge low")) {
-            //  return amber(R.drawable.reservoir_alert, note);
+            return red(R.drawable.alert_icon, note);
+
+        } else if (haystack.startsWith("warning")) {
+            return amber(R.drawable.alert_icon, note);
+
+        } else if (haystack.startsWith("maintenance")) {
+            return grey(R.drawable.wrench_icon, note);
         }
-        return null;
+        return grey(R.drawable.note_text_icon, note);
     }
 
 
@@ -48,6 +59,10 @@ public class NoteClassifier {
 
     private static PointValue green(@DrawableRes int id, String note) {
         return icon(id, green, note);
+    }
+
+    private static PointValue grey(@DrawableRes int id, String note) {
+        return icon(id, grey, note);
     }
 
     private static PointValue icon(@DrawableRes int id, @ColorInt int color, String note) {
