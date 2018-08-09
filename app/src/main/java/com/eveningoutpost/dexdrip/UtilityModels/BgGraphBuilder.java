@@ -1442,6 +1442,8 @@ public class BgGraphBuilder {
                 readings_lock.lock();
                 try {
                     // display treatment blobs and annotations
+                    long lastIconTimestamp = 0;
+                    int consecutiveCloseIcons = 0;
                     for (Treatments treatment : treatments) {
 
                         if (!treatment.hasContent()) continue;
@@ -1465,10 +1467,17 @@ public class BgGraphBuilder {
                         if (treatment.noteOnly()) {
                             final PointValue pv = NoteClassifier.noteToPointValue(treatment.notes);
                             if (pv != null) {
-                                final Pair<Float, Float> yPositions = GraphTools.bestYPosition(bgReadings, treatment.timestamp, doMgdl, false, highMark, 27d);
+                                final boolean tooClose = Math.abs(treatment.timestamp - lastIconTimestamp) < Constants.MINUTE_IN_MS * 6;
+                                if (tooClose) {
+                                    consecutiveCloseIcons++;
+                                } else {
+                                    consecutiveCloseIcons = 0;
+                                }
+                                final Pair<Float, Float> yPositions = GraphTools.bestYPosition(bgReadings, treatment.timestamp, doMgdl, false, highMark, 27d + (18d * consecutiveCloseIcons));
                                 pv.set(treatment.timestamp / FUZZER, yPositions.first);
                                 //pv.setPlumbPos(yPositions.second);
                                 iconValues.add(pv);
+                                lastIconTimestamp = treatment.timestamp;
                                 continue;
                             }
                         }
@@ -1912,6 +1921,8 @@ public class BgGraphBuilder {
         line.setPointColor(ColorUtil.blendColor(Color.BLACK,Color.TRANSPARENT, 0.99f));
         line.setBitmapScale(1f);
         line.setBitmapLabels(true);
+        line.setBitmapLabelShadowColor(Color.WHITE);
+        line.setFullShadow(true);
         line.setBitmapCacheProvider(BitmapLoader.getInstance());
         lines.add(line);
         return lines;
