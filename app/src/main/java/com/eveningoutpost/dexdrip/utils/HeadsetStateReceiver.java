@@ -43,7 +43,7 @@ public class HeadsetStateReceiver extends BroadcastReceiver {
             if (device != null && device.getAddress() != null) {
                 final int state = intent.getIntExtra(BluetoothHeadset.EXTRA_STATE, -1);
                 final int previousState = intent.getIntExtra(BluetoothHeadset.EXTRA_PREVIOUS_STATE, -1);
-                final String deviceInfo = device.getName() + "\n" + device.getAddress() + " " + device.getBluetoothClass().toString();
+                final String deviceInfo = device.getName() + "\n" + device.getAddress() + " " + (device.getBluetoothClass() != null ? device.getBluetoothClass() : "<unknown class>");
                 //UserError.Log.uel(TAG, "Bluetooth audio connection state change: " + state + " was " + previousState + " " + device.getAddress() + " " + device.getName());
                 if (state == BluetoothProfile.STATE_CONNECTED && previousState != BluetoothProfile.STATE_CONNECTED) {
                     PersistentStore.setString(PREF_LAST_CONNECTED_MAC, device.getAddress());
