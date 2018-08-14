@@ -9,6 +9,8 @@ import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.google.gson.annotations.Expose;
 
+import java.text.DecimalFormat;
+import java.util.List;
 /**
  * Created by jamorham on 19/10/2017.
  */
@@ -99,6 +101,18 @@ public class LibreBlock extends PlusModel {
                 .where("timestamp <= ?", end_time)
                 .orderBy("timestamp desc")
                 .executeSingle();
+    }
+    
+    public static List<LibreBlock> getForTrend(long start_time, long end_time) {
+
+        return new Select()
+                .from(LibreBlock.class)
+                .where("bytestart == 0")
+                .where("byteend >= 344")
+                .where("timestamp >= ?", start_time)
+                .where("timestamp <= ?", end_time)
+                .orderBy("timestamp asc")
+                .execute();
     }
 
     public static LibreBlock getForTimestamp(long timestamp) {

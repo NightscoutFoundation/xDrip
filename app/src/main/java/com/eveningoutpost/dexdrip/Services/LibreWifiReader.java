@@ -17,8 +17,10 @@ import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.ParakeetHelper;
+import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.MockDataSource;
+import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
@@ -585,10 +587,19 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
                 Log.d(TAG, "calling HandleGoodReading from " +  JoH.dateTimeText(LastReading.CaptureDateTime ));
 
                 byte data[] = Base64.decode(LastReading.BlockBytes, Base64.DEFAULT);
-                boolean checksum_ok = NFCReaderX.HandleGoodReading("tomato", data, LastReading.CaptureDateTime);
+                boolean checksum_ok = NFCReaderX.HandleGoodReading(LastReading.SensorId, data, LastReading.CaptureDateTime);
                 if (checksum_ok) {
                     // TODO use battery, and other interesting data.
                     LastReportedTime = LastReading.CaptureDateTime;
+                    
+                    PersistentStore.setString("Tomatobattery", Integer.toString(LastReading.TomatoBatteryLife));
+                    Pref.setInt("bridge_battery", LastReading.TomatoBatteryLife);
+                    PersistentStore.setString("TomatoHArdware", LastReading.HwVersion);
+                    PersistentStore.setString("TomatoFirmware",LastReading.FwVersion);
+                    Log.e("XXX", "LastReading.SensorId " + LastReading.SensorId);
+                    PersistentStore.setString("LibreSN", LastReading.SensorId);
+                    
+                    
                 } else {
                     Log.e(TAG, "Recieved a pacjet with bad checksum");
                 }

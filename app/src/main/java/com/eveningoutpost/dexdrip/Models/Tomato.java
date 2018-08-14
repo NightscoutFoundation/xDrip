@@ -161,7 +161,11 @@ public class Tomato {
         s_recviedEnoughData = true;
         
         long now = JoH.tsl();
-        boolean checksum_ok = NFCReaderX.HandleGoodReading("tomato", data, now);
+        // Important note, the actual serial number is 8 bytes long and starts at addresses 0. Since the existing
+        // code is looking for them starting at place 3, we copy extra 3 bytes.
+        byte[] serialBuffer = Arrays.copyOfRange(s_full_data, 2, 13);
+        String SensorSn = Blukon.decodeSerialNumber(serialBuffer);
+        boolean checksum_ok = NFCReaderX.HandleGoodReading(SensorSn, data, now);
         Log.e(TAG, "We have all the data that we need " + s_acumulatedSize + " checksum_ok = " + checksum_ok + HexDump.dumpHexString(data));
 
         if(!checksum_ok) {
@@ -169,10 +173,6 @@ public class Tomato {
         }
         
         
-        // Important note, the actual serial number is 8 bytes long and starts at addresses 0. Since the existing
-        // code is looking for them starting at place 3, we copy extra 3 bytes.
-        byte[] serialBuffer = Arrays.copyOfRange(s_full_data, 2, 13);
-        Blukon.decodeSerialNumber(serialBuffer);
         PersistentStore.setString("Tomatobattery", Integer.toString(s_full_data[13]));
         Pref.setInt("bridge_battery", s_full_data[13]);
         PersistentStore.setString("TomatoHArdware",HexDump.toHexString(s_full_data,16,2));
