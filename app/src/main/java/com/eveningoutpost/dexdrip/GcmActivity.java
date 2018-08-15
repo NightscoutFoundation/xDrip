@@ -67,6 +67,7 @@ public class GcmActivity extends FauxActivity {
     private static int bg_sync_backoff = 0;
     private static double last_ping_request = 0;
     private static long last_rlcl_request = 0;
+    private static long cool_down_till = 0;
     public static AtomicInteger msgId = new AtomicInteger(1);
     public static String token = null;
     public static String senderid = null;
@@ -182,6 +183,11 @@ public class GcmActivity extends FauxActivity {
             return;
         }
 
+        if (overHeated()) {
+            Log.e(TAG,"Can't process old queue as in cool down state");
+            return;
+        }
+
         final long MAX_QUEUE_AGE = (5 * 60 * 60 * 1000); // 5 hours
         final long MIN_QUEUE_AGE = (15000);
         final long MAX_RESENT = 10;
@@ -191,6 +197,7 @@ public class GcmActivity extends FauxActivity {
         synchronized (queue_lock) {
             for (GCM_data datum : gcm_queue) {
                 if (datum != null) {
+                    if (overHeated()) break;
                     if ((timenow - datum.timestamp) > MAX_QUEUE_AGE
                             || datum.resent > MAX_RESENT) {
                         queuechanged = true;
@@ -672,6 +679,11 @@ public class GcmActivity extends FauxActivity {
                 return "";
             }
 
+            if (overHeated()) {
+                UserError.Log.e(TAG, "Cannot send message due to cool down period: " + action);
+                return "";
+            }
+
             final Bundle data = new Bundle();
             data.putString("action", action);
             data.putString("identity", identity);
@@ -898,6 +910,15 @@ public class GcmActivity extends FauxActivity {
                 }
             }
         }
+    }
+
+    static void coolDown() {
+        cool_down_till = JoH.tsl() + Constants.MINUTE_IN_MS * 20;
+        Log.wtf(TAG, "Too many messages, activating cool down till: " + JoH.dateTimeText(cool_down_till));
+    }
+
+    static boolean overHeated() {
+        return (cool_down_till != 0 && JoH.msSince(cool_down_till) < 0);
     }
 
     /**

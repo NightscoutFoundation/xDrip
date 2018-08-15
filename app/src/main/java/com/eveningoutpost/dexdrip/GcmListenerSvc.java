@@ -89,6 +89,9 @@ public class GcmListenerSvc extends FirebaseMessagingService {
     @Override
     public void onSendError(String msgID, Exception exception) {
         Log.e(TAG, "onSendError called" + msgID, exception);
+        if (exception.getMessage().equals("TooManyMessages")) {
+            GcmActivity.coolDown();
+        }
     }
 
     @Override
