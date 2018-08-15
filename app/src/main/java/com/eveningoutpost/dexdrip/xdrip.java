@@ -3,7 +3,9 @@ package com.eveningoutpost.dexdrip;
 import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -163,8 +165,6 @@ public class xdrip extends Application {
     }
 
     public static void checkForcedEnglish(Context context) {
-        //    if (Locale.getDefault() != Locale.ENGLISH) {
-        //       Log.d(TAG, "Locale is non-english");
         if (Pref.getBoolean("force_english", false)) {
             final String forced_language = Pref.getString("forced_language", "en");
             final String current_language = Locale.getDefault().getLanguage();
@@ -172,18 +172,50 @@ public class xdrip extends Application {
                 Log.i(TAG, "Forcing locale: " + forced_language + " was: " + current_language);
                 LOCALE = new Locale(forced_language, "", "");
                 Locale.setDefault(LOCALE);
-                Configuration config = context.getResources().getConfiguration();
-                config.locale = LOCALE;
+                final Configuration config = context.getResources().getConfiguration();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    config.setLocale(LOCALE);
+                } else {
+                    config.locale = LOCALE;
+                }
                 try {
                     ((Application) context).getBaseContext().getResources().updateConfiguration(config, ((Application) context).getBaseContext().getResources().getDisplayMetrics());
                 } catch (ClassCastException e) {
-                    Log.i(TAG, "Using activity context instead of base for Locale change");
+                    //
+                }
+                try {
                     context.getResources().updateConfiguration(config, context.getResources().getDisplayMetrics());
+                } catch (ClassCastException e) {
+                    //
+
                 }
             }
             Log.d(TAG, "Already set to locale: " + forced_language);
         }
     }
+
+    // force language on oreo activities
+    public static Context getLangContext(Context context) {
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && Pref.getBooleanDefaultFalse("force_english")) {
+                final String forced_language = Pref.getString("forced_language", "en");
+                final Configuration config = context.getResources().getConfiguration();
+
+                if (LOCALE == null) LOCALE = new Locale(forced_language);
+                Locale.setDefault(LOCALE);
+                config.setLocale(LOCALE);
+                context = context.createConfigurationContext(config);
+                //Log.d(TAG, "Sending language context for: " + LOCALE);
+                return new ContextWrapper(context);
+            } else {
+                return context;
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Got exception in getLangContext: " + e);
+            return context;
+        }
+    }
+
 
     public static String gs(int id) {
         return getAppContext().getString(id);
