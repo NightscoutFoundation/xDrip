@@ -16,7 +16,7 @@ import com.eveningoutpost.dexdrip.Models.UserError;
 import com.google.android.gms.common.GoogleApiAvailability;
 
 
-public class LicenseAgreementActivity extends AppCompatActivity {
+public class LicenseAgreementActivity extends BaseAppCompatActivity {
     boolean IUnderstand;
     boolean appended = false;
     CheckBox agreeCheckBox;

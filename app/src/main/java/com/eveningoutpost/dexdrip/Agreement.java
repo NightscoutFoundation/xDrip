@@ -11,7 +11,7 @@ import android.widget.CheckBox;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 
-public class Agreement extends AppCompatActivity {
+public class Agreement extends BaseAppCompatActivity {
 
     final static String prefmarker = "warning_agreed_to";
     boolean IUnderstand;

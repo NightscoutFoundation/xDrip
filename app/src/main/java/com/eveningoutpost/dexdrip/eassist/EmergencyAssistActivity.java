@@ -18,6 +18,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.eveningoutpost.dexdrip.BR;
+import com.eveningoutpost.dexdrip.BaseAppCompatActivity;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.R;
@@ -46,7 +47,7 @@ import static com.eveningoutpost.dexdrip.eassist.EmergencyAssist.EMERGENCY_LOW_M
  *
  */
 
-public class EmergencyAssistActivity extends AppCompatActivity {
+public class EmergencyAssistActivity extends BaseAppCompatActivity {
 
     private static final String TAG = EmergencyAssistActivity.class.getSimpleName();
     private static final int CONTACT_REQUEST_CODE = 46912;

@@ -3,9 +3,10 @@ package com.eveningoutpost.dexdrip.UtilityModels;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
+import com.eveningoutpost.dexdrip.BaseAppCompatActivity;
 import com.eveningoutpost.dexdrip.databinding.ActivityXdripDreamSettingsBinding;
 
-public class XDripDreamSettingsActivity extends AppCompatActivity {
+public class XDripDreamSettingsActivity extends BaseAppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

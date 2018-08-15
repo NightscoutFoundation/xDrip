@@ -11,7 +11,7 @@ import android.view.View;
  * Triggered from App screen
  */
 
-public class NFCScanningX extends Activity {
+public class NFCScanningX extends BaseActivity {
 
     private View decorView;
     private final static String TAG = "NFCFilterX";
