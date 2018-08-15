@@ -31,6 +31,7 @@ import android.text.TextUtils;
 import android.widget.BaseAdapter;
 import android.widget.Toast;
 
+import com.eveningoutpost.dexdrip.BasePreferenceActivity;
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
@@ -91,7 +92,7 @@ import java.util.Map;
  * href="http://developer.android.com/guide/topics/ui/settings.html">Settings
  * API Guide</a> for more information on developing a Settings UI.
  */
-public class Preferences extends PreferenceActivity {
+public class Preferences extends BasePreferenceActivity {
     private static final String TAG = "jamorham PREFS";
     private static byte[] staticKey;
     private AllPrefsFragment preferenceFragment;
