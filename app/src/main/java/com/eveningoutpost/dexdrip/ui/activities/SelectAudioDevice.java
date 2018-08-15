@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 
+import com.eveningoutpost.dexdrip.BaseAppCompatActivity;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
@@ -20,7 +21,7 @@ import com.eveningoutpost.dexdrip.utils.HeadsetStateReceiver;
  */
 
 
-public class SelectAudioDevice extends AppCompatActivity {
+public class SelectAudioDevice extends BaseAppCompatActivity {
 
     private static final String PREF_MAC_STORE = "vehicle-mode-audio-mac";
 

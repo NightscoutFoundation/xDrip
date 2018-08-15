@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 
+import com.eveningoutpost.dexdrip.BaseAppCompatActivity;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.NavDrawerBuilder;
 import com.eveningoutpost.dexdrip.NavigationDrawerFragment;
@@ -15,7 +16,7 @@ import java.util.List;
 /**
  * Created by Emma Black on 6/8/15.
  */
-public abstract class ActivityWithMenu extends AppCompatActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+public abstract class ActivityWithMenu extends BaseAppCompatActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
     private int menu_position;
     private String menu_name;
     private NavigationDrawerFragment mNavigationDrawerFragment;

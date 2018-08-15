@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
 
+import com.eveningoutpost.dexdrip.BaseAppCompatActivity;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.GlucoseData;
 import com.eveningoutpost.dexdrip.Models.JoH;
@@ -31,7 +32,7 @@ import lecho.lib.hellocharts.view.LineChartView;
 import static com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder.FUZZER;
 
 
-public class LibreTrendGraph extends AppCompatActivity {
+public class LibreTrendGraph extends BaseAppCompatActivity {
 
     private static final String TAG = "LibreTrendGraph";
     private static LibreTrendGraph mInstance;

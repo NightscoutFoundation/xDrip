@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.eveningoutpost.dexdrip.BaseAppCompatActivity;
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.AlertType;
@@ -34,7 +35,7 @@ import java.util.List;
 import static com.eveningoutpost.dexdrip.utils.FileUtils.getExternalDir;
 
 
-public class SdcardImportExport extends AppCompatActivity {
+public class SdcardImportExport extends BaseAppCompatActivity {
 
     private final static String TAG = "jamorham sdcard";
     private final static int MY_PERMISSIONS_REQUEST_STORAGE = 104;
