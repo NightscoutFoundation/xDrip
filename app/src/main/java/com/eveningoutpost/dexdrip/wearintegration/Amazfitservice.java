@@ -209,23 +209,22 @@ public class Amazfitservice extends Service {
         BestGlucose.DisplayGlucose dg = BestGlucose.getDisplayGlucose();
         db.putLong("date", dg.timestamp);
         db.putString("sgv", String.valueOf(dg.unitized)+String.valueOf(dg.delta_arrow));
+
         db.putString("delta", String.valueOf(dg.spannableString(dg.unitized_delta)));
         db.putBoolean("ishigh", dg.isHigh());
         db.putBoolean("islow", dg.isLow());
         db.putBoolean("isstale", dg.isStale());
-        db.putBoolean("fromplugin", dg.from_plugin);
-
         if (BgGraphBuilder.low_occurs_at > 0) {
             db.putString("low_predicted", xdrip.getAppContext().getString(R.string.low_predicted));
             db.putString("in", xdrip.getAppContext().getString(R.string.in));
             db.putString("space_mins", xdrip.getAppContext().getString(R.string.space_mins));
             db.putDouble("low_occurs_at",BgGraphBuilder.low_occurs_at);
         }
-
         db.putString("plugin_name", dg.plugin_name);
         db.putString("reply_message", "Watch acknowledged DATA");
         db.putString("phone_battery", String.valueOf(PowerStateReceiver.getBatteryLevel(getApplicationContext())));
         db.putString("SGVGraph",BitmaptoString(createWearBitmap(Pref.getStringToInt("amazfit_widget_graph_hours",4))));
+        db.putString("WFGraph",BitmaptoString(createWFBitmap(Pref.getStringToInt("amazfit_widget_graph_hours",4))));
         return db;
     }
     public DataBundle getAlarmdata() {
@@ -289,17 +288,29 @@ public static void start(String action_text,BgReading bg){
                 .setBgGraphBuilder(new BgGraphBuilder(xdrip.getAppContext()))
                 .setStart(start)
                 .setEnd(end)
-                .showHighLine()
-                .showLowLine()
                 .showAxes()
                 .setWidthPx(290)
                 .setHeightPx(160)
                 .setSmallDots()
                 .build();
     }
+    private Bitmap createWFBitmap(long start, long end) {
+        return new BgSparklineBuilder(xdrip.getAppContext())
+                .setBgGraphBuilder(new BgGraphBuilder(xdrip.getAppContext()))
+                .setStart(start)
+                .setEnd(end)
+                //.showAxes()
+                .setWidthPx(300)
+                .setHeightPx(130)
+                .setSmallDots()
+                .build();
+    }
 
     private Bitmap createWearBitmap(long hours) {
         return createWearBitmap(System.currentTimeMillis() - 60000 * 60 * hours, System.currentTimeMillis());
+    }
+    private Bitmap createWFBitmap(long hours) {
+        return createWFBitmap(System.currentTimeMillis() - 60000 * 60 * hours, System.currentTimeMillis());
     }
 
     private String BitmaptoString(Bitmap bitmap)
