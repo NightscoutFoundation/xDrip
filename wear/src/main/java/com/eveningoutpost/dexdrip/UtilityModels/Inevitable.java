@@ -18,12 +18,15 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Inevitable {
 
     private static final String TAG = Inevitable.class.getSimpleName();
-    private static final int MAX_QUEUE_TIME = (int) Constants.MINUTE_IN_MS * 5;
+    private static final int MAX_QUEUE_TIME = (int) Constants.MINUTE_IN_MS * 6;
     private static final boolean d = true;
 
     private static final ConcurrentHashMap<String, Task> tasks = new ConcurrentHashMap<>();
 
     public static synchronized void task(final String id, long idle_for, Runnable runnable) {
+        if (idle_for > MAX_QUEUE_TIME) {
+            throw new RuntimeException(id + " Requested time: " + idle_for + " beyond max queue time");
+        }
         final Task task = tasks.get(id);
         if (task != null) {
             // if it already exists then extend the time
@@ -88,7 +91,7 @@ public class Inevitable {
                 what.run();
                 return true;
             } else if (till > MAX_QUEUE_TIME) {
-                UserError.Log.wtf(TAG, "In queue too long: " + till);
+                UserError.Log.wtf(TAG, "Task: " + this.id + " In queue too long: " + till);
                 tasks.remove(this.id);
                 return true;
             }
