@@ -9,6 +9,9 @@ import android.support.annotation.NonNull;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
+import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
+import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.utils.bt.HandleBleScanException;
 import com.polidea.rxandroidble.RxBleConnection;
@@ -32,9 +35,23 @@ public abstract class JamBaseBluetoothService extends Service {
     protected static final String BUGGY_SAMSUNG_ENABLED = "buggy-samsung-enabled";
     protected String TAG = this.getClass().getSimpleName();
     private volatile boolean background_launch_waiting = false;
+    protected static final long TOLERABLE_JITTER = 10000;
+
+    protected ForegroundServiceStarter foregroundServiceStarter;
+    protected Service service;
 
     protected String handleBleScanException(BleScanException bleScanException) {
         return HandleBleScanException.handle(TAG, bleScanException);
+    }
+
+    protected void startInForeground() {
+        foregroundServiceStarter = new ForegroundServiceStarter(getApplicationContext(), service);
+        foregroundServiceStarter.start();
+        foregroundStatus();
+    }
+
+    protected void foregroundStatus() {
+        Inevitable.task("jam-base-foreground-status", 2000, () -> UserError.Log.d("FOREGROUND", service.getClass().getSimpleName() + (JoH.isServiceRunningInForeground(service.getClass()) ? " is running in foreground" : " is not running in foreground")));
     }
 
     public void background_automata() {
@@ -141,6 +158,21 @@ public abstract class JamBaseBluetoothService extends Service {
             }
         }
         return array;
+    }
+
+    protected static void enableBuggySamsungIfNeeded(final String TAG) {
+        if ((JoH.isSamsung() && PersistentStore.getLong(BUGGY_SAMSUNG_ENABLED) > 4)) {
+            UserError.Log.d(TAG, "Enabling buggy samsung due to persistent metric");
+            JoH.buggy_samsung = true;
+        }
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        service = this;
+        UserError.Log.d("FOREGROUND", "Current Service: " + service.getClass().getSimpleName());
+        startInForeground();
     }
 
 }
