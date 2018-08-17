@@ -6,6 +6,7 @@ import android.app.Activity;
 
 import com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine;
 import com.eveningoutpost.dexdrip.GcmActivity;
+import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.BloodTest;
 import com.eveningoutpost.dexdrip.Models.Calibration;
@@ -13,6 +14,7 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.Services.G5BaseService;
+import com.eveningoutpost.dexdrip.cgm.medtrum.MedtrumCollectionService;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.SdcardImportExport;
 
@@ -41,7 +43,7 @@ public class VoiceCommands {
             JoH.static_toast_long("Repairing fake data source");
             MockDataSource.fixRaw();
 
-        } else if (get_engineering_mode() && allWords.contentEquals("hard reset transmitter")) {
+        } else if (allWords.contentEquals("hard reset transmitter")) {
             G5BaseService.hardResetTransmitterNow = true;
             JoH.static_toast_long("Will attempt to reset transmitter on next poll!! Can take 15 minutes to process");
         } else if (allWords.contentEquals("reset heart rate sync")) {
@@ -108,10 +110,13 @@ public class VoiceCommands {
                 Ob1G5StateMachine.startSensor(JoH.tsl());
                 JoH.static_toast_long("Attempting to start sensor session");
                 break;
-
             case "clear last update check time":
                 UpdateActivity.clearLastCheckTime();
                 JoH.static_toast_long(allWords);
+                break;
+            case "clean up excessive high readings":
+                BgReading.cleanupOutOfRangeValues();
+                Home.staticRefreshBGChartsOnIdle();
                 break;
             case "stop sensor on master":
                 JoH.static_toast_long(allWords);
@@ -120,6 +125,9 @@ public class VoiceCommands {
             case "start sensor on master":
                 JoH.static_toast_long(allWords);
                 GcmActivity.push_start_master_sensor();
+                break;
+            case "test medtrum calibrate":
+                MedtrumCollectionService.calibratePing();
                 break;
         }
 
