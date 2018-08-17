@@ -75,7 +75,7 @@ public class BackFillStream extends TransmitterMessage {
                     break;
 
                 case InsufficientCalibration:
-                    if (Pref.getBooleanDefaultFalse("ob1_g5_use_insufficiently_calibrated")) {
+                    if (Pref.getBoolean("ob1_g5_use_insufficiently_calibrated", true)) {
                         insertBackfillItem(backsies, dexTime, glucose, trend);
                     }
                     break;
