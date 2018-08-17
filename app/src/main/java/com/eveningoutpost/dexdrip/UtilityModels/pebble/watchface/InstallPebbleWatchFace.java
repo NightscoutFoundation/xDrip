@@ -19,6 +19,7 @@ import android.support.v7.widget.LinearLayoutCompat;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.eveningoutpost.dexdrip.BaseAppCompatActivity;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.R;
@@ -32,7 +33,7 @@ import java.io.OutputStream;
  * Created by jamorham on 22/04/2016.
  * modified by Andy, to be able to add additional PebbleWtatchFace, which can just extend this
  */
-public class InstallPebbleWatchFace extends AppCompatActivity {
+public class InstallPebbleWatchFace extends BaseAppCompatActivity {
 
     private final static int MY_PERMISSIONS_REQUEST_STORAGE = 99;
     private static String TAG = "InstallPebbleWatchFace";
