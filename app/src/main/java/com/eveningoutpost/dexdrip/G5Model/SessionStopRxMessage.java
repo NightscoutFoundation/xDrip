@@ -3,12 +3,15 @@ package com.eveningoutpost.dexdrip.G5Model;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import lombok.Getter;
+
 // created by jamorham
 
 public class SessionStopRxMessage extends TransmitterMessage {
 
     public static final byte opcode = 0x29;
     final byte length = 17;
+    @Getter
     private byte status = (byte)0xFF;
     private byte received = (byte)0xFF;
     final String transmitterId;
