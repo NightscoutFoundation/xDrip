@@ -543,7 +543,9 @@ public class Ob1G5StateMachine {
                                 reReadGlucoseData();
                                 enqueueUniqueCommand(new TransmitterTimeTxMessage(), "Query time after stop");
                             } else {
-                                UserError.Log.e(TAG, "Session Stop Error!");
+                                // TODO what does an error when session isn't started look like? Probably best to downgrade those somewhat
+                                final String msg = "Session Stop Failed: packet valid: " + session_stop.isValid() + "  Status code: " + session_stop.getStatus();
+                                UserError.Log.uel(TAG, msg);
                             }
                             break;
 
@@ -1098,7 +1100,7 @@ public class Ob1G5StateMachine {
         if (glucose == null) return;
         lastGlucosePacket = JoH.tsl();
         DexTimeKeeper.updateAge(getTransmitterID(), glucose.timestamp);
-        if (glucose.usable() || (glucose.insufficient() && Pref.getBooleanDefaultFalse("ob1_g5_use_insufficiently_calibrated"))) {
+        if (glucose.usable() || (glucose.insufficient() && Pref.getBoolean("ob1_g5_use_insufficiently_calibrated", true))) {
             UserError.Log.d(TAG, "Got usable glucose data from G5!!");
             final BgReading bgReading = BgReading.bgReadingInsertFromG5(glucose.glucose, JoH.tsl());
             if (bgReading != null) {
