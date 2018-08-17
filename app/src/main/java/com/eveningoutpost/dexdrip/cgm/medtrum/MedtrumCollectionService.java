@@ -130,6 +130,10 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
 
     private static AnnexARx lastAnnex = null;
 
+    private static long wakeup_time = 0;
+    private static long wakeup_jitter = 0;
+    private static long max_wakeup_jitter = 0;
+
 
     // TODO can we use display glucose instead of calculated value anywhere?
 
@@ -583,7 +587,7 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
                                 }
                             }
 
-                            Inevitable.task("backfill-ui-update", 3000, Home::staticRefreshBGCharts);
+                            Inevitable.task("backfill-ui-update", 3000, Home::staticRefreshBGChartsOnIdle);
                             changed = true;
                         }
                     }
@@ -802,6 +806,7 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
         scanner.addCallBack(this, TAG);
         DisconnectReceiver.addCallBack(this, TAG);
         UserError.Log.d(TAG, "SERVICE CREATED - SERVICE CREATED");
+        enableBuggySamsungIfNeeded(TAG);
     }
 
 
@@ -814,6 +819,8 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
         }
         stopConnect();
         DisconnectReceiver.removeCallBack(TAG);
+        wakeup_time = 0;
+        last_automata_state = CLOSED;
         status("Stopped");
         super.onDestroy();
     }
@@ -826,6 +833,29 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
             try {
                 UserError.Log.d(TAG, "WAKE UP WAKE UP WAKE UP WAKE UP @ " + JoH.dateTimeText(JoH.tsl()) + " State: " + state);
                 setFailOverTimer();
+
+                if (wakeup_time > 0) {
+                    wakeup_jitter = JoH.msSince(wakeup_time);
+                    if (wakeup_jitter < 0) {
+                        UserError.Log.d(TAG, "Woke up Early..");
+                    } else {
+                        if (wakeup_jitter > 1000) {
+                            UserError.Log.d(TAG, "Wake up, time jitter: " + JoH.niceTimeScalar(wakeup_jitter));
+                            if ((wakeup_jitter > TOLERABLE_JITTER) && (!JoH.buggy_samsung) && JoH.isSamsung()) {
+                                UserError.Log.wtf(TAG, "Enabled Buggy Samsung workaround due to jitter of: " + JoH.niceTimeScalar(wakeup_jitter));
+                                JoH.buggy_samsung = true;
+                                PersistentStore.incrementLong(BUGGY_SAMSUNG_ENABLED);
+                                max_wakeup_jitter = 0;
+                            } else {
+                                max_wakeup_jitter = Math.max(max_wakeup_jitter, wakeup_jitter);
+                            }
+
+                        }
+                    }
+                    wakeup_time = 0; // don't check this one again
+                }
+
+
                 retry_time = 0; // we have woken up
                 last_wake_up_time = JoH.tsl();
                 try {
@@ -921,6 +951,7 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
             serviceIntent = PendingIntent.getService(this, Constants.MEDTRUM_SERVICE_RETRY_ID,
                     new Intent(this, this.getClass()), 0);
             retry_time = JoH.wakeUpIntent(this, retry_in, serviceIntent);
+            wakeup_time = JoH.tsl() + retry_in;
         } else {
             UserError.Log.d(TAG, "Not setting retry timer as service should not be running");
         }
