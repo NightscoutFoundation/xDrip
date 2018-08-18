@@ -71,6 +71,12 @@
             android:key="persistent_high_alert_enabled"
             android:summary="@string/pref_summary_persistent_high_alert_enabled"
             android:title="@string/pref_persistent_high_alert_enabled" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:dependency="bg_notifications"
+            android:key="alert_use_sounds"
+            android:summary="Use watch speaker if it has one to play alert sound"
+            android:title="Play Sound" />
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -251,5 +257,13 @@
             android:key="use_black_divider"
             android:summary="Divider matches background"
             android:title="Match Divider" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="has_demigod_mode"
+            android:enabled="false"
+            android:summary="Running on a patched rom giving us full control"
+            android:title="DemiGod Mode" />
+
+
     </PreferenceCategory>
 </PreferenceScreen>
