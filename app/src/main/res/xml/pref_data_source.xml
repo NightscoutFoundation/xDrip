@@ -98,17 +98,19 @@
             android:key="xdrip_plus_g5_extra_settings"
             android:summary="@string/advanced_g5_settings"
             android:title="@string/g5_debug_settings">
-
+            <PreferenceCategory
+                android:key="ob1_options"
+                android:title="OB1 G5/G6 Collector Settings">
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:key="use_ob1_g5_collector_service"
-                android:summary="Complete re-write, should work on Android 4.4, supports native mode and more"
-                android:title="Use the new OB1 Collector" />
+                android:summary="Complete re-write, should work on Android 4.4-9, supports native mode and more"
+                android:title="Use the OB1 Collector" />
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:dependency="use_ob1_g5_collector_service"
                 android:key="ob1_g5_use_transmitter_alg"
-                android:summary="Use the transmitter's internal algorithm to calculate glucose values when possible. (Experimental!)"
+                android:summary="Use the transmitter's internal algorithm to calculate glucose values when possible."
                 android:title="Native Algorithm"
                 />
             <CheckBoxPreference
@@ -122,11 +124,11 @@
                 android:defaultValue="false"
                 android:dependency="ob1_g5_use_transmitter_alg"
                 android:key="ob1_g5_preemptive_restart"
-                android:summary="Preemptively restart a sensor before the session ends on day 6 to avoid the warm-up time"
+                android:summary="Preemptively restart a sensor before the session ends on day 6/9 to avoid the warm-up time"
                 android:title="Preemptive restarts"
                 />
             <CheckBoxPreference
-                android:defaultValue="false"
+                android:defaultValue="true"
                 android:dependency="ob1_g5_use_transmitter_alg"
                 android:key="ob1_g5_use_insufficiently_calibrated"
                 android:summary="Keep using data even if there are not enough good calibrations (Experimental!)"
@@ -138,6 +140,13 @@
                 android:key="ob1_g5_fallback_to_xdrip"
                 android:summary="Revert to xDrip algorithm if G5 doesn't provide glucose data (Potentially risky!)"
                 android:title="Fallback to xDrip"
+                />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:dependency="use_ob1_g5_collector_service"
+                android:key="ob1_minimize_scanning"
+                android:summary="Use heuristics to minimize bluetooth scanning + save power"
+                android:title="Minimize Scanning"
                 />
             <CheckBoxPreference
                 android:defaultValue="false"
@@ -160,6 +169,10 @@
                 android:summary="OB1 collector can initiate bonding."
                 android:title="Allow OB1 initiate bonding"
                 />
+            </PreferenceCategory>
+            <PreferenceCategory
+                android:key="old_g5_options"
+                android:title="Old G5 Collector Settings">
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:key="run_ble_scan_constantly"
@@ -180,12 +193,17 @@
                 android:key="always_unbond_G5"
                 android:summary="@string/g5_remove_before_read"
                 android:title="@string/unbond_g5_before_read" />
+            </PreferenceCategory>
+            <PreferenceCategory
+                android:key="dex_battery_category"
+                android:title="G5/G6 battery options">
             <EditTextPreference
                 android:key="g5-battery-warning-level"
                 android:title="Adjust battery warning level"
                 android:defaultValue="300"
                 android:numeric="integer"
                 />
+            </PreferenceCategory>
 
         </PreferenceScreen>
 
