@@ -24,6 +24,7 @@ import com.eveningoutpost.dexdrip.DoubleCalibrationActivity;
 import com.eveningoutpost.dexdrip.G5Model.BatteryInfoRxMessage;
 import com.eveningoutpost.dexdrip.G5Model.BluetoothServices;
 import com.eveningoutpost.dexdrip.G5Model.CalibrationState;
+import com.eveningoutpost.dexdrip.G5Model.DexSyncKeeper;
 import com.eveningoutpost.dexdrip.G5Model.Extensions;
 import com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine;
 import com.eveningoutpost.dexdrip.G5Model.TransmitterStatus;
@@ -79,6 +80,7 @@ import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.pendingStop;
 import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.STATE.BOND;
 import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.STATE.CLOSE;
 import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.STATE.CLOSED;
+import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.STATE.CONNECT;
 import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.STATE.CONNECT_NOW;
 import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.STATE.DISCOVER;
 import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.STATE.GET_DATA;
@@ -128,6 +130,7 @@ public class Ob1G5CollectionService extends G5BaseService {
     private static final String OB1G5_MACSTORE = "G5-mac-for-txid-";
     private static final int DEFAULT_AUTOMATA_DELAY = 100;
     private static final String BUGGY_SAMSUNG_ENABLED = "buggy-samsung-enabled";
+    private static final String STOP_SCAN_TASK_ID = "ob1-g5-scan-timeout_scan";
     private static volatile STATE state = INIT;
     private static volatile STATE last_automata_state = CLOSED;
 
@@ -174,6 +177,8 @@ public class Ob1G5CollectionService extends G5BaseService {
     private static int error_count = 0;
     private static int connectNowFailures = 0;
     private static int connectFailures = 0;
+    private static int scanTimeouts = 0;
+    private static boolean lastConnectFailed = false;
     private static boolean auth_succeeded = false;
     private int error_backoff_ms = 1000;
     private static final int max_error_backoff_ms = 10000;
@@ -181,7 +186,8 @@ public class Ob1G5CollectionService extends G5BaseService {
 
     private static final boolean d = false;
 
-    private static volatile boolean never_scan = false; // DEBUG TEST ONLY
+    private static boolean use_auto_connect = false;
+    private static volatile boolean minimize_scanning = false; // set by preference
     private static volatile boolean always_scan = false;
     private static volatile boolean scan_next_run = true;
     private static boolean always_discover = false;
@@ -256,7 +262,7 @@ public class Ob1G5CollectionService extends G5BaseService {
 
     private synchronized void automata() {
 
-        if ((last_automata_state != state) || (JoH.ratelimit("jam-g5-dupe-auto", 2))) {
+        if ((last_automata_state != state) || state == INIT || (JoH.ratelimit("jam-g5-dupe-auto", 2))) {
             last_automata_state = state;
             final PowerManager.WakeLock wl = JoH.getWakeLock("jam-g5-automata", 60000);
             try {
@@ -267,18 +273,16 @@ public class Ob1G5CollectionService extends G5BaseService {
                         break;
                     case SCAN:
                         // no connection? lets try a restart
-                        if (JoH.msSince(static_last_connected) > 10 * 60 * 1000) {
+                        if (JoH.msSince(static_last_connected) > 30 * 60 * 1000) {
                             if (JoH.pratelimit("ob1-collector-restart", 1200)) {
-                                new Thread(() -> {
-                                    CollectionServiceStarter.restartCollectionService(xdrip.getAppContext());
-                                }).start();
+                                CollectionServiceStarter.restartCollectionServiceBackground();
                                 break;
                             }
                         }
                         // TODO check if we know mac!!! Sync as part of wear sync?? - TODO preload transmitter mac??
-                        // TODO sync timings better
-                        if (never_scan && transmitterMAC != null) {
-                            UserError.Log.d(TAG, "Skipping Scanning! : Changing state due to never_scan flag");
+
+                        if (useMinimizeScanningStrategy()) {
+                            UserError.Log.d(TAG, "Skipping Scanning! : Changing state due to minimize_scanning flags");
                             changeState(CONNECT_NOW);
                         } else {
                             scan_for_device();
@@ -308,14 +312,14 @@ public class Ob1G5CollectionService extends G5BaseService {
                         }
                         break;
                     case PREBOND:
-                      if (!getInitiateBondingFlag()) {
-                          final PowerManager.WakeLock linger_wl_prebond = JoH.getWakeLock("jam-g5-prebond-linger", 16000);
-                          if (!Ob1G5StateMachine.doKeepAliveAndBondRequest(this, connection))
-                              resetState();
-                      } else {
-                          UserError.Log.d(TAG,"Going directly to initiate bond");
-                          changeState(BOND);
-                      }
+                        if (!getInitiateBondingFlag()) {
+                            final PowerManager.WakeLock linger_wl_prebond = JoH.getWakeLock("jam-g5-prebond-linger", 16000);
+                            if (!Ob1G5StateMachine.doKeepAliveAndBondRequest(this, connection))
+                                resetState();
+                        } else {
+                            UserError.Log.d(TAG, "Going directly to initiate bond");
+                            changeState(BOND);
+                        }
                         break;
                     case BOND:
                         if (getInitiateBondingFlag()) {
@@ -352,6 +356,12 @@ public class Ob1G5CollectionService extends G5BaseService {
         }
     }
 
+    private boolean useMinimizeScanningStrategy() {
+        tryLoadingSavedMAC();
+        UserError.Log.d(TAG, "minimize: " + minimize_scanning + " mac: " + transmitterMAC + " lastfailed:" + lastConnectFailed + " nowfail:" + connectNowFailures + " stimeout:" + scanTimeouts + " modulo:" + ((connectNowFailures + scanTimeouts) % 2));
+        return minimize_scanning && transmitterMAC != null && (!lastConnectFailed || (connectNowFailures + scanTimeouts) % 2 == 1);
+    }
+
     private void resetState() {
         UserError.Log.e(TAG, "Resetting sequence state to INIT");
         changeState(INIT);
@@ -364,6 +374,7 @@ public class Ob1G5CollectionService extends G5BaseService {
     public void changeState(STATE new_state) {
         changeState(new_state, DEFAULT_AUTOMATA_DELAY);
     }
+
     public void changeState(STATE new_state, int timeout) {
         if ((state == CLOSED || state == CLOSE) && new_state == CLOSE) {
             UserError.Log.d(TAG, "Not closing as already closed");
@@ -414,7 +425,9 @@ public class Ob1G5CollectionService extends G5BaseService {
                                 //.setCallbackType(ScanSettings.CALLBACK_TYPE_FIRST_MATCH)
                                 .setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES)
                                 // TODO revisit scan mode
-                                .setScanMode(android_wear ? ScanSettings.SCAN_MODE_BALANCED : ScanSettings.SCAN_MODE_LOW_LATENCY)
+                                .setScanMode(android_wear ? ScanSettings.SCAN_MODE_BALANCED :
+                                        minimize_scanning ? ScanSettings.SCAN_MODE_BALANCED : ScanSettings.SCAN_MODE_LOW_LATENCY)
+                                // .setScanMode(ScanSettings.SCAN_MODE_BALANCED)
                                 .build()//,
 
                         // scan filter doesn't work reliable on android sdk 23+
@@ -429,10 +442,15 @@ public class Ob1G5CollectionService extends G5BaseService {
                         //.doOnUnsubscribe(this::clearSubscription)
                         .subscribeOn(Schedulers.io())
                         .subscribe(this::onScanResult, this::onScanFailure);
+                if (minimize_scanning) {
+                    // Must be less than fail over timeout
+                    Inevitable.task(STOP_SCAN_TASK_ID, 320 * Constants.SECOND_IN_MS, this::stopScanWithTimeoutAndReschedule);
+                }
+
                 UserError.Log.d(TAG, "Scanning for: " + getTransmitterBluetoothName());
             } else {
                 UserError.Log.d(TAG, "Transmitter mac already known: " + transmitterMAC);
-                changeState(STATE.CONNECT);
+                changeState(CONNECT);
 
             }
         } else {
@@ -440,13 +458,25 @@ public class Ob1G5CollectionService extends G5BaseService {
         }
     }
 
+    private void stopScanWithTimeoutAndReschedule() {
+        stopScan();
+        UserError.Log.d(TAG, "Stopped scan due to timeout at: " + JoH.dateTimeText(JoH.tsl()));
+        scanTimeouts++;
+        tryLoadingSavedMAC();
+        prepareToWakeup();
+    }
+
+
     private synchronized void connect_to_device(boolean auto) {
-        if ((state == STATE.CONNECT) || (state == STATE.CONNECT_NOW)) {
+        if ((state == CONNECT) || (state == CONNECT_NOW)) {
             // TODO check mac
+            if (transmitterMAC == null) {
+                tryLoadingSavedMAC();
+            }
             final String localTransmitterMAC = transmitterMAC;
             if (localTransmitterMAC != null) {
                 msg("Connect request");
-                if (state == STATE.CONNECT_NOW) {
+                if (state == CONNECT_NOW) {
                     if (connection_linger != null) JoH.releaseWakeLock(connection_linger);
                     connection_linger = JoH.getWakeLock("jam-g5-pconnect", 60000);
                 }
@@ -465,7 +495,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                                 UserError.Log.wtf(TAG, "Got Error from state subscription: " + throwable);
                             });
 
-                    // Attempt to establish a connection
+                    // Attempt to establish a connection // TODO does this need different connection timeout for auto vs normal?
                     connectionSubscription = bleDevice.establishConnection(auto)
                             .timeout(7, TimeUnit.MINUTES)
                             // .flatMap(RxBleConnection::discoverServices)
@@ -540,7 +570,7 @@ public class Ob1G5CollectionService extends G5BaseService {
         UserError.Log.d(TAG, "Attempting to create bond, device is : " + (isDeviceLocallyBonded ? "BONDED" : "NOT Bonded"));
 
         if (isDeviceLocallyBonded && getInitiateBondingFlag()) {
-            UserError.Log.d(TAG,"Device is marked as bonded but we are being asked to bond so attempting to unbond first");
+            UserError.Log.d(TAG, "Device is marked as bonded but we are being asked to bond so attempting to unbond first");
             unbondIfAllowed();
             changeState(CLOSE);
         } else {
@@ -690,15 +720,15 @@ public class Ob1G5CollectionService extends G5BaseService {
             UserError.Log.d(TAG, "Always scan mode");
             changeState(SCAN);
         } else {
-            if (connectFailures > 0) {
+            if (connectFailures > 0 || (!use_auto_connect && connectNowFailures > 0)) {
                 always_scan = true;
                 UserError.Log.e(TAG, "Switching to scan always mode due to connect failures metric: " + connectFailures);
                 changeState(SCAN);
-            } else if ((connectNowFailures > 1) && (connectFailures < 0)) {
+            } else if (use_auto_connect && (connectNowFailures > 1) && (connectFailures < 0)) {
                 UserError.Log.d(TAG, "Avoiding power connect due to failure metric: " + connectNowFailures + " " + connectFailures);
-                changeState(STATE.CONNECT);
+                changeState(CONNECT);
             } else {
-                changeState(STATE.CONNECT_NOW);
+                changeState(CONNECT_NOW);
             }
         }
     }
@@ -706,13 +736,20 @@ public class Ob1G5CollectionService extends G5BaseService {
 
     private synchronized void prepareToWakeup() {
         if (JoH.ratelimit("g5-wakeup-timer", 5)) {
-            scheduleWakeUp(Constants.SECOND_IN_MS * 285, "anticipate");
+            final long when = DexSyncKeeper.anticipate(transmitterID);
+            if (when > 0) {
+                final long when_offset = when - JoH.tsl();
+                UserError.Log.d(TAG, "(" + JoH.dateTimeText(JoH.tsl()) + ")  Wake up time anticipated at: " + JoH.dateTimeText(when));
+                scheduleWakeUp(when_offset - Constants.SECOND_IN_MS * 15, "anticipate");
+            } else {
+                scheduleWakeUp(Constants.SECOND_IN_MS * 285, "anticipate");
+            }
         }
 
         if ((android_wear && wakeup_jitter > TOLERABLE_JITTER) || always_connect) {
             // TODO should be max_wakeup_jitter perhaps or set always_connect flag
             UserError.Log.d(TAG, "Not stopping connect due to " + (always_connect ? "always_connect flag" : "unreliable wake up"));
-            state = STATE.CONNECT;
+            state = CONNECT;
             background_automata(6000);
         } else {
             state = CLOSED; // Don't poll automata as we want to do this on waking
@@ -722,7 +759,7 @@ public class Ob1G5CollectionService extends G5BaseService {
     }
 
     private void scheduleWakeUp(long future, final String info) {
-        if (future < 0) future = 5000;
+        if (future <= 0) future = 5000;
         UserError.Log.d(TAG, "Scheduling wakeup @ " + JoH.dateTimeText(JoH.tsl() + future) + " (" + info + ")");
         if (pendingIntent == null)
             pendingIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), 0);
@@ -834,7 +871,8 @@ public class Ob1G5CollectionService extends G5BaseService {
 
 
             scheduleWakeUp(Constants.MINUTE_IN_MS * 6, "fail-over");
-            if ((state == BOND) || (state == PREBOND) || (state == DISCOVER)) state = SCAN;
+            if ((state == BOND) || (state == PREBOND) || (state == DISCOVER) || (state == CONNECT))
+                state = SCAN;
 
             checkAndEnableBT();
 
@@ -843,6 +881,8 @@ public class Ob1G5CollectionService extends G5BaseService {
             if (JoH.quietratelimit("evaluateG6Settings", 600)) {
                 evaluateG6Settings();
             }
+
+            minimize_scanning = Pref.getBooleanDefaultFalse("ob1_minimize_scanning");
 
             automata(); // sequence logic
 
@@ -879,6 +919,7 @@ public class Ob1G5CollectionService extends G5BaseService {
         }
 
         state = INIT; // Should be STATE.END ?
+        last_automata_state = CLOSED;
         msg("Service Stopped");
         super.onDestroy();
     }
@@ -895,6 +936,8 @@ public class Ob1G5CollectionService extends G5BaseService {
         if (scanSubscription != null) {
             scanSubscription.unsubscribe();
         }
+        UserError.Log.d(TAG, "DEBUG: killing stop scan task");
+        Inevitable.kill(STOP_SCAN_TASK_ID);
         if (scanWakeLock != null) {
             JoH.releaseWakeLock(scanWakeLock);
         }
@@ -915,6 +958,20 @@ public class Ob1G5CollectionService extends G5BaseService {
         }
     }
 
+    private boolean isScanMatch(final String this_address, final String historical_address, final String this_name, final String search_name) {
+        boolean result = this_address.equalsIgnoreCase(historical_address) || (this_name != null && this_name.equalsIgnoreCase(search_name));
+        if (result) {
+            if (historical_address.length() == this_address.length()
+                    && !this_address.equalsIgnoreCase(historical_address)) {
+                if (JoH.ratelimit("ob1-address-change-error", 30)) {
+                    UserError.Log.wtf(TAG, "Bluetooth device: " + search_name + " apparently changed from mac: " + historical_address + " to: " + this_address + " :: There appears to be confusion between devices - ignoring this scan result");
+                }
+                result = false;
+            }
+        }
+        return result;
+    }
+
     // Successful result from our bluetooth scan
     private synchronized void onScanResult(ScanResult bleScanResult) {
         // TODO MIN RSSI
@@ -922,7 +979,8 @@ public class Ob1G5CollectionService extends G5BaseService {
         final String this_name = bleScanResult.getBleDevice().getName();
         final String this_address = bleScanResult.getBleDevice().getMacAddress();
         final String search_name = getTransmitterBluetoothName();
-        if (this_address.equals(historicalTransmitterMAC) || (this_name != null && this_name.equalsIgnoreCase(search_name))) {
+
+        if (isScanMatch(this_address, historicalTransmitterMAC, this_name, search_name)) {
             stopScan(); // we got one!
             last_scan_started = 0; // clear scanning for time
             lastScanError = null; // error should be cleared
@@ -933,7 +991,7 @@ public class Ob1G5CollectionService extends G5BaseService {
             //if (JoH.ratelimit("ob1-g5-scan-to-connect-transition", 3)) {
             if (state == SCAN) {
                 //  if (always_scan) {
-                changeState(STATE.CONNECT_NOW, 500);
+                changeState(CONNECT_NOW, 500);
                 //   } else {
                 //       changeState(STATE.CONNECT);
                 //  }
@@ -971,7 +1029,14 @@ public class Ob1G5CollectionService extends G5BaseService {
             }
             // TODO count scan duration
             stopScan();
-            backoff_automata();
+
+            // Note that this is not reached on timeout only failure
+            if (minimize_scanning) {
+                UserError.Log.d(TAG, "Preparing to wake up at next expected time");
+                prepareToWakeup();
+            } else {
+                backoff_automata();
+            }
         }
     }
 
@@ -1001,16 +1066,24 @@ public class Ob1G5CollectionService extends G5BaseService {
         if (state == DISCOVER) {
             // possible encryption failure
             resetBondIfAllowed(false);
+            return;
         }
 
-        if (state == STATE.CONNECT_NOW) {
+        if (state == CONNECT_NOW) {
             connectNowFailures++;
+            lastConnectFailed = true;
             UserError.Log.d(TAG, "Connect Now failures incremented to: " + connectNowFailures);
-            changeState(STATE.CONNECT);
+            if (minimize_scanning && DexSyncKeeper.anticipate(transmitterID) > 0) {
+                changeState(STATE.CLOSE);
+            } else {
+                changeState(CONNECT);
+            }
+            return;
         }
 
-        if (state == STATE.CONNECT) {
+        if (state == CONNECT) {
             connectFailures++;
+            lastConnectFailed = true;
             // TODO check bluetooth on or in connect section
             if (JoH.ratelimit("ob1-restart-scan-on-connect-failure", 10)) {
                 UserError.Log.d(TAG, "Restarting scan due to connect failure");
@@ -1048,16 +1121,21 @@ public class Ob1G5CollectionService extends G5BaseService {
     private void onConnectionReceived(RxBleConnection this_connection) {
         msg("Connected");
         static_last_connected = JoH.tsl();
+        lastConnectFailed = false;
+
+        DexSyncKeeper.store(transmitterID, static_last_connected);
         // TODO check connection already exists - close etc?
         if (connection_linger != null) JoH.releaseWakeLock(connection_linger);
         connection = this_connection;
 
-        if (state == STATE.CONNECT_NOW) {
+        if (state == CONNECT_NOW) {
             connectNowFailures = -3; // mark good
         }
-        if (state == STATE.CONNECT) {
+        if (state == CONNECT) {
             connectFailures = -1; // mark good
         }
+
+        scanTimeouts = 0; // reset counter
 
         if (JoH.ratelimit("g5-to-discover", 1)) {
             changeState(DISCOVER);
@@ -1127,6 +1205,7 @@ public class Ob1G5CollectionService extends G5BaseService {
     private void onDiscoverFailed(Throwable throwable) {
         UserError.Log.e(TAG, "Discover failure: " + throwable.toString());
         incrementErrors();
+        prepareToWakeup();
     }
 
     private void clearSubscription() {
@@ -1390,10 +1469,10 @@ public class Ob1G5CollectionService extends G5BaseService {
         if (!is_started && was_started) {
             if (Pref.getBooleanDefaultFalse("ob1_g5_restart_sensor") && (Sensor.isActive())) {
                 if (state.ended()) {
-                    UserError.Log.uel(TAG,"Requesting time-travel restart");
+                    UserError.Log.uel(TAG, "Requesting time-travel restart");
                     Ob1G5StateMachine.restartSensorWithTimeTravel();
                 } else {
-                    UserError.Log.uel(TAG,"Attempting to auto-start sensor");
+                    UserError.Log.uel(TAG, "Attempting to auto-start sensor");
                     Ob1G5StateMachine.startSensor(JoH.tsl());
                 }
                 final PendingIntent pi = PendingIntent.getActivity(xdrip.getAppContext(), G5_SENSOR_RESTARTED, JoH.getStartActivityIntent(Home.class), PendingIntent.FLAG_UPDATE_CURRENT);
@@ -1575,7 +1654,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                 if (Home.get_engineering_mode()) {
                     l.add(new StatusItem("Bluetooth Version", vr.bluetooth_firmware_version_string));
                     l.add(new StatusItem("Other Version", vr.other_firmware_version));
-                  //  l.add(new StatusItem("Hardware Version", vr.hardwarev));
+                    //  l.add(new StatusItem("Hardware Version", vr.hardwarev));
                     if (vr.asic != 61440)
                         l.add(new StatusItem("ASIC", vr.asic, Highlight.NOTICE)); // TODO color code
                 }
