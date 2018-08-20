@@ -239,9 +239,25 @@
                 android:key="pref_amazfit_other_alert_enable_key"
                 android:summary="@string/pref_amazfit_other_alert_enable_summary"
                 android:title="@string/pref_amazfit_other_alert_title" />
+            <CheckBoxPreference
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:defaultValue="false"
+                android:dependency="pref_amazfit_enable_key"
+                android:key="pref_amazfit_watchface_graph"
+                android:summary="@string/pref_amazfit_watchface_graph_enable_summary"
+                android:title="@string/pref_amazfit_watchface_graph_title" />
+            <CheckBoxPreference
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:defaultValue="false"
+                android:dependency="pref_amazfit_watchface_graph"
+                android:key="pref_amazfit_watchface_graph_dots"
+                android:summary="@string/pref_amazfit_watchface_graph_dots_summary"
+                android:title="@string/pref_amazfit_watchface_graph_dots_title" />
             <EditTextPreference
                 android:defaultValue="5"
-                android:dependency="pref_amazfit_enable_key"
+                android:dependency="pref_amazfit_watchface_graph"
                 android:digits="0123456789"
                 android:inputType="number"
                 android:key="amazfit_widget_graph_hours"

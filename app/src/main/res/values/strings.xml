@@ -102,6 +102,11 @@
     <string name="pref_amazfit_other_alert_enable_summary">Sends other alerts to smartwatch</string>
     <string name="pref_amazfit_other_alert_enable">Enable</string>
     <string name="pref_amazfit_other_alert_title">Other Alerts</string>
+    <string name="pref_amazfit_watchface_graph_enable">Enable</string>
+    <string name="pref_amazfit_watchface_graph_title">Watchface Graph</string>
+    <string name="pref_amazfit_watchface_graph_enable_summary">Shows graph in watchfaces background</string>
+    <string name="pref_amazfit_watchface_graph_dots_title">Watchface Graph Dots</string>
+    <string name="pref_amazfit_watchface_graph_dots_summary">Shows tiny dots instead of small</string>
 
     <string name="toast_crash">Something went wrong :( a report has been sent to help fix the issue.</string>
 

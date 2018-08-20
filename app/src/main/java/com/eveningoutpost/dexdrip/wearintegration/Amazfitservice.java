@@ -225,6 +225,7 @@ public class Amazfitservice extends Service {
         db.putString("phone_battery", String.valueOf(PowerStateReceiver.getBatteryLevel(getApplicationContext())));
         db.putString("SGVGraph",BitmaptoString(createWearBitmap(Pref.getStringToInt("amazfit_widget_graph_hours",4))));
         db.putString("WFGraph",BitmaptoString(createWFBitmap(Pref.getStringToInt("amazfit_widget_graph_hours",4))));
+        db.putBoolean("watchface_graph",Pref.getBoolean("pref_amazfit_watchface_graph",false));
         return db;
     }
     public DataBundle getAlarmdata() {
@@ -294,7 +295,18 @@ public static void start(String action_text,BgReading bg){
                 .setSmallDots()
                 .build();
     }
-    private Bitmap createWFBitmap(long start, long end) {
+    private Bitmap createWFBitmapTinyDots(long start, long end) {
+        return new BgSparklineBuilder(xdrip.getAppContext())
+                .setBgGraphBuilder(new BgGraphBuilder(xdrip.getAppContext()))
+                .setStart(start)
+                .setEnd(end)
+                //.showAxes()
+                .setWidthPx(300)
+                .setHeightPx(130)
+                .setTinyDots()
+                .build();
+    }
+    private Bitmap createWFBitmapSmallDots(long start, long end) {
         return new BgSparklineBuilder(xdrip.getAppContext())
                 .setBgGraphBuilder(new BgGraphBuilder(xdrip.getAppContext()))
                 .setStart(start)
@@ -310,7 +322,10 @@ public static void start(String action_text,BgReading bg){
         return createWearBitmap(System.currentTimeMillis() - 60000 * 60 * hours, System.currentTimeMillis());
     }
     private Bitmap createWFBitmap(long hours) {
-        return createWFBitmap(System.currentTimeMillis() - 60000 * 60 * hours, System.currentTimeMillis());
+        if(Pref.getBoolean("pref_amazfit_watchface_graph_dots",false))
+        return createWFBitmapTinyDots(System.currentTimeMillis() - 60000 * 60 * hours, System.currentTimeMillis());
+        else
+            return createWFBitmapSmallDots(System.currentTimeMillis() - 60000 * 60 * hours, System.currentTimeMillis());
     }
 
     private String BitmaptoString(Bitmap bitmap)
