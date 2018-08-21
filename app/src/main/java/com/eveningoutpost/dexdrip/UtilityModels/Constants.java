@@ -46,4 +46,7 @@ public class Constants {
     // increments from this start number
     public static final int INCOMPATIBLE_BASE_ID = 5000;
     public static final int COMPATIBLE_BASE_ID = 6000;
+    public static final int DEX_BASE_ID = 6400;
+
+
 }
