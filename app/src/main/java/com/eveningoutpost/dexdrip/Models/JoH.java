@@ -1174,8 +1174,12 @@ public class JoH {
     }
 
     public static void cancelNotification(int notificationId) {
-        final NotificationManager mNotifyMgr = (NotificationManager) xdrip.getAppContext().getSystemService(Context.NOTIFICATION_SERVICE);
-        mNotifyMgr.cancel(notificationId);
+        try {
+            final NotificationManager mNotifyMgr = (NotificationManager) xdrip.getAppContext().getSystemService(Context.NOTIFICATION_SERVICE);
+            mNotifyMgr.cancel(notificationId);
+        } catch (Exception e) {
+            //
+        }
     }
 
     public static void showNotification(String title, String content, PendingIntent intent, int notificationId, boolean sound, boolean vibrate, boolean onetime) {

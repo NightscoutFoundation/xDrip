@@ -68,6 +68,10 @@ public class DexSyncKeeper {
         return next;
     }
 
+    public static boolean isReady(final String transmitterId) {
+        return anticipate(transmitterId, JoH.tsl()) != -1;
+    }
+
     // are we outside connection window?
     // TODO also handle waking up before window PRE_GRACE_TIME = 20seconds?
     public static boolean outsideWindow(final String transmitterId) {

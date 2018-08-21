@@ -358,8 +358,9 @@ public class Ob1G5CollectionService extends G5BaseService {
 
     private boolean useMinimizeScanningStrategy() {
         tryLoadingSavedMAC();
-        UserError.Log.d(TAG, "minimize: " + minimize_scanning + " mac: " + transmitterMAC + " lastfailed:" + lastConnectFailed + " nowfail:" + connectNowFailures + " stimeout:" + scanTimeouts + " modulo:" + ((connectNowFailures + scanTimeouts) % 2));
-        return minimize_scanning && transmitterMAC != null && (!lastConnectFailed || (connectNowFailures + scanTimeouts) % 2 == 1);
+        final int modulo = (connectNowFailures + scanTimeouts) % 2;
+        UserError.Log.d(TAG, "minimize: " + minimize_scanning + " mac: " + transmitterMAC + " lastfailed:" + lastConnectFailed + " nowfail:" + connectNowFailures + " stimeout:" + scanTimeouts + " modulo:" + modulo);
+        return minimize_scanning && transmitterMAC != null && (!lastConnectFailed || (modulo == 1)) && (DexSyncKeeper.isReady(transmitterID));
     }
 
     private void resetState() {
