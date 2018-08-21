@@ -53,6 +53,7 @@ import com.polidea.rxandroidble.RxBleDeviceServices;
 import com.polidea.rxandroidble.exceptions.BleScanException;
 import com.polidea.rxandroidble.internal.RxBleLog;
 import com.polidea.rxandroidble.internal.connection.RxBleGattCallback;
+import com.polidea.rxandroidble.scan.ScanFilter;
 import com.polidea.rxandroidble.scan.ScanResult;
 import com.polidea.rxandroidble.scan.ScanSettings;
 
@@ -429,13 +430,13 @@ public class Ob1G5CollectionService extends G5BaseService {
                                 .setScanMode(android_wear ? ScanSettings.SCAN_MODE_BALANCED :
                                         minimize_scanning ? ScanSettings.SCAN_MODE_BALANCED : ScanSettings.SCAN_MODE_LOW_LATENCY)
                                 // .setScanMode(ScanSettings.SCAN_MODE_BALANCED)
-                                .build()//,
+                                .build(),
 
                         // scan filter doesn't work reliable on android sdk 23+
-                        //new ScanFilter.Builder()
+                        new ScanFilter.Builder()
                         //.
                         //          .setDeviceName(getTransmitterBluetoothName())
-                        //         .build()
+                                 .build()
 
                 )
                         // observe on?
