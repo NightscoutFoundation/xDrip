@@ -652,7 +652,7 @@
     <string name="show_total_insulin">Show treatment insulin total</string>
     <string name="total_insulin">Total Insulin</string>
     <string name="received_readings_percentage">Percentage of sensor readings received</string>
-    <string name="received_realtime_readings_percentage">Percentage of sensor readings received in realtime (non-backfilled). G5 Native mode ONLY</string>
+    <string name="received_realtime_readings_percentage">Percentage of sensor readings received in realtime (non-backfilled). G5/G6 Native mode ONLY</string>
     <string name="capture_percentage">Packet capture percentage</string>
     <string name="realtime_capture_percentage">Realtime packet capture percentage</string>
     <string name="show_calibration_accuracy">Show calibration accuracy evaluation from last 3 days</string>

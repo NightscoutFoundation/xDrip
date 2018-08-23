@@ -228,7 +228,11 @@ public enum DexCollectionType {
                 return "Network G4 and Classic xDrip";
             case DexcomG5:
                 if (Ob1G5CollectionService.usingNativeMode()) {
-                    return "G5 Native";
+                    if (Ob1G5StateMachine.usingG6()) {
+                        return "G6 Native";
+                    } else {
+                        return "G5 Native";
+                    }
                 }
                 return dct.name();
             case LibreWifi:
