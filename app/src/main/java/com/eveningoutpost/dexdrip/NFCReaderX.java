@@ -34,6 +34,7 @@ import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -272,10 +273,12 @@ public class NFCReaderX {
                 if (succeeded) {
                     final String tagId = bytesToHexString(tag.getId());
                     long now = JoH.tsl();
+                    String SensorSn = LibreUtils.decodeSerialNumberKey(tag.getId());
                     boolean checksum_ok = HandleGoodReading(tagId, data, now);
                     if(checksum_ok == false) {
                         Log.e(TAG, "Read data but checksum is wrong");
                     }
+                    PersistentStore.setString("LibreSN", SensorSn);
                 } else {
                     Log.d(TAG, "Scan did not succeed so ignoring buffer");
                 }
