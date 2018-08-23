@@ -229,7 +229,8 @@ public enum DexCollectionType {
             case DexcomG5:
                 if (Ob1G5CollectionService.usingNativeMode()) {
                     if (Ob1G5StateMachine.usingG6()) {
-                        return "G6 Native";
+                        // keep "G5 Native" label for legacy compat
+                        return "G5 Native (G6 Native)";
                     } else {
                         return "G5 Native";
                     }

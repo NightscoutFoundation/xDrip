@@ -1113,7 +1113,11 @@ public class BgReading extends Model implements ShareUploadableBg {
             bgr.uuid = UUID.randomUUID().toString();
             bgr.calculated_value = calculated_value;
             bgr.raw_data = SPECIAL_G5_PLACEHOLDER; // placeholder
-            bgr.appendSourceInfo(Ob1G5CollectionService.usingG6() ? "G6 Native" : "G5 Native");
+            bgr.appendSourceInfo("G5 Native");
+            // send both G5 and G6 native for legacy compat
+            if (Ob1G5CollectionService.usingG6()) {
+                bgr.appendSourceInfo("G6 Native");
+            }
             if (sourceInfoAppend != null && sourceInfoAppend.length() > 0) {
                 bgr.appendSourceInfo(sourceInfoAppend);
             }
