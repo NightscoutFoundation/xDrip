@@ -157,7 +157,9 @@ public class TransmitterData extends Model {
         transmitterData.timestamp = timestamp;
         transmitterData.uuid = UUID.randomUUID().toString();
         transmitterData.save();
-        // should battery save go here on wear?
+        if (JoH.areWeRunningOnAndroidWear()) {
+            saveWearBattery();
+        }
         return transmitterData;
     }
 
