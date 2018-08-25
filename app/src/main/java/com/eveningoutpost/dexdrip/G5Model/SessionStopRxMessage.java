@@ -7,7 +7,7 @@ import lombok.Getter;
 
 // created by jamorham
 
-public class SessionStopRxMessage extends TransmitterMessage {
+public class SessionStopRxMessage extends BaseMessage {
 
     public static final byte opcode = 0x29;
     final byte length = 17;

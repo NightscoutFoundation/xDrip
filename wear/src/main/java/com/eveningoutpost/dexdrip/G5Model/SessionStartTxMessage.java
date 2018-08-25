@@ -10,7 +10,7 @@ import lombok.Getter;
 
 // created by jamorham
 
-public class SessionStartTxMessage extends TransmitterMessage {
+public class SessionStartTxMessage extends BaseMessage {
 
     final byte opcode = 0x26;
     @Getter

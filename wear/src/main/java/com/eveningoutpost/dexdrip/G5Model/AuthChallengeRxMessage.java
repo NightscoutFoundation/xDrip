@@ -10,7 +10,7 @@ import java.util.Arrays;
 /**
  * Created by joeginley on 3/16/16.
  */
-public class AuthChallengeRxMessage extends TransmitterMessage {
+public class AuthChallengeRxMessage extends BaseMessage {
     public static final int opcode = 0x03;
     public byte[] tokenHash;
     public byte[] challenge;

@@ -43,4 +43,10 @@ public class DexSessionKeeper {
             return "";
         }
     }
+
+    // check for mismatch between sensor state currency and transmitter time
+    public static boolean warmUpTimeValid() {
+        return (isStarted() && (JoH.msSince(getStart()) <= WARMUP_PERIOD));
+    }
+
 }

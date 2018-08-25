@@ -37,7 +37,7 @@ public abstract class G5BaseService extends Service {
     protected static int LOW_BATTERY_WARNING_LEVEL = G5_LOW_BATTERY_WARNING_DEFAULT; // updated by updateBatteryWarningLevel()
 
     public static volatile boolean getBatteryStatusNow = false;
-    public static volatile boolean hardResetTransmitterNow = false;
+    protected static volatile boolean hardResetTransmitterNow = false;
 
     protected static String lastState = "Not running";
     protected static String lastStateWatch = "Not running";
@@ -184,5 +184,8 @@ public abstract class G5BaseService extends Service {
         setG6bareBones();
     }
 
+    public static void setHardResetTransmitterNow() {
+        hardResetTransmitterNow = true;
+    }
 
 }

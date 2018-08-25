@@ -49,4 +49,8 @@ public class Constants {
     public static final int DEX_BASE_ID = 6400;
 
 
+
+    //
+    public static final int HEART_RATE_JOB_ID = 60920012;
+
 }

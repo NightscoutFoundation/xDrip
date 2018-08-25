@@ -122,7 +122,11 @@ public enum CalibrationState {
                 }
             case WarmingUp:
                 if (DexSessionKeeper.isStarted()) {
-                    return getText() + "\n" + DexSessionKeeper.prettyTime() + " left";
+                    if (DexSessionKeeper.warmUpTimeValid()) {
+                        return getText() + "\n" + DexSessionKeeper.prettyTime() + " left";
+                    } else {
+                        return getText();
+                    }
                 } else {
                     return getText();
                 }

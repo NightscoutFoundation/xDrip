@@ -16,7 +16,7 @@ import lombok.Data;
 
 import static com.eveningoutpost.dexdrip.G5Model.DexTimeKeeper.fromDexTimeCached;
 
-public class BackFillStream extends TransmitterMessage {
+public class BackFillStream extends BaseMessage {
 
     private int last_sequence = 0;
 
