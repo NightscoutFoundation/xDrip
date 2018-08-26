@@ -2,21 +2,38 @@ package com.eveningoutpost.dexdrip.wearintegration;
 
 
 
+import com.eveningoutpost.dexdrip.BGHistory;
+import com.eveningoutpost.dexdrip.G5Model.Extensions;
+import com.eveningoutpost.dexdrip.G5Model.Transmitter;
+import com.eveningoutpost.dexdrip.GcmActivity;
+import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Dex_Constants;
+import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
 import com.eveningoutpost.dexdrip.Models.UserError;
 
 import android.app.Service;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothManager;
+import android.content.Context;
 import android.content.Intent;
 
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import java.io.ByteArrayOutputStream;
 import java.io.ByteArrayInputStream;
+
+import android.os.Build;
+import android.preference.PreferenceManager;
 import android.util.Base64;
 import java.nio.ByteBuffer;
+import java.util.Set;
+
 import com.eveningoutpost.dexdrip.Models.HeartRate;
 import com.eveningoutpost.dexdrip.Models.StepCounter;
 
@@ -48,6 +65,9 @@ public class Amazfitservice extends Service {
     private static String action;
     private static String alert_to_send;
     private static int default_snooze;
+    private ActiveBluetoothDevice activeBluetoothDevice;
+    private BluetoothManager mBluetoothManager;
+    private BluetoothAdapter mBluetoothAdapter;
 
     private String space_mins;
     private double low_occurs_at;
@@ -56,12 +76,12 @@ public class Amazfitservice extends Service {
     DataBundle dataBundle = new DataBundle();
     private HeartRate heartrate;
     private StepCounter stepcounter;
-
+    private SharedPreferences prefs;
 
     @Override
     public void onCreate() {
         super.onCreate();
-
+        prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
 
         transporter = (TransporterClassic)Transporter.get(getApplicationContext(), "com.eveningoutpost.dexdrip.wearintegration");
@@ -203,13 +223,85 @@ public class Amazfitservice extends Service {
     }
 
 
+    private String gettransmitterbattery(){
+        TransmitterData td = TransmitterData.last();
+        String returntext;
+        if (td== null || td.sensor_battery_level == 0){
+            returntext="not available";
+
+        } else if((System.currentTimeMillis() - td.timestamp) > 1000*60*60*24){
+            returntext="no data in 24 hours";
+
+        } else {
+            returntext="" + td.sensor_battery_level;
+
+            if (td.sensor_battery_level <= Dex_Constants.TRANSMITTER_BATTERY_EMPTY) {
+                returntext = returntext +" - very low";
+            } else if (td.sensor_battery_level <= Dex_Constants.TRANSMITTER_BATTERY_LOW) {
+                returntext = returntext +" - low";
+                returntext = returntext +"\n(experimental interpretation)";
+            } else {
+                returntext = returntext +" - ok";
+            }
+        }
+        return returntext;
+    }
+    public String getCurrentDevice() {
+        activeBluetoothDevice = ActiveBluetoothDevice.first();
+        mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+        String currentdevice;
+        if (activeBluetoothDevice != null) {
+            currentdevice=activeBluetoothDevice.name;
+        } else {
+            currentdevice="None Set";
+        }
+
+        String collection_method = prefs.getString("dex_collection_method", "BluetoothWixel");
+        if (collection_method.compareTo("DexcomG5") == 0) {
+            Transmitter defaultTransmitter = new Transmitter(prefs.getString("dex_txid", "ABCDEF"));
+            if (Build.VERSION.SDK_INT >= 18) {
+                mBluetoothAdapter = mBluetoothManager.getAdapter();
+            }
+            if (mBluetoothAdapter != null) {
+                Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+                if ((pairedDevices != null) && (pairedDevices.size() > 0)) {
+                    for (BluetoothDevice device : pairedDevices) {
+                        if (device.getName() != null) {
+
+                            String transmitterIdLastTwo = Extensions.lastTwoCharactersOfString(defaultTransmitter.transmitterId);
+                            String deviceNameLastTwo = Extensions.lastTwoCharactersOfString(device.getName());
+
+                            if (transmitterIdLastTwo.equals(deviceNameLastTwo)) {
+                                currentdevice=defaultTransmitter.transmitterId;
+                            }
+
+                        }
+                    }
+                }
+            } else {
+                currentdevice="No Bluetooth";
+            }
+        }
+        return currentdevice;
+    }
+    private String getCollectionMethod() {
+        return prefs.getString("dex_collection_method", "BluetoothWixel").replace("Dexbridge", "xBridge");
+    }
 
     public DataBundle getSGVdata() {
+        final int sensor_age = Pref.getInt("nfc_sensor_age", 0);
+        final String age_problem = (Pref.getBooleanDefaultFalse("nfc_age_problem") ? " \u26A0\u26A0\u26A0" : "");
+        final double expires = JoH.tolerantParseDouble(prefs.getString("nfc_expiry_days", "14.5")) - ((double) sensor_age) / 1440;
+
         DataBundle db = new DataBundle();
         BestGlucose.DisplayGlucose dg = BestGlucose.getDisplayGlucose();
+        db.putString("Collection_info",getCollectionMethod());
+        db.putString("hardware_source_info",getCurrentDevice());
+        db.putString("sensor.latest_battery_level",gettransmitterbattery());
+        db.putString("sensor_expires",((expires >= 0) ? (JoH.qs(expires, 1) + "d") : "EXPIRED! ") + age_problem);
+
         db.putLong("date", dg.timestamp);
         db.putString("sgv", String.valueOf(dg.unitized)+String.valueOf(dg.delta_arrow));
-
         db.putString("delta", String.valueOf(dg.spannableString(dg.unitized_delta)));
         db.putBoolean("ishigh", dg.isHigh());
         db.putBoolean("islow", dg.isLow());
@@ -223,9 +315,16 @@ public class Amazfitservice extends Service {
         db.putString("plugin_name", dg.plugin_name);
         db.putString("reply_message", "Watch acknowledged DATA");
         db.putString("phone_battery", String.valueOf(PowerStateReceiver.getBatteryLevel(getApplicationContext())));
-        db.putString("SGVGraph",BitmaptoString(createWearBitmap(Pref.getStringToInt("amazfit_widget_graph_hours",4))));
-        db.putString("WFGraph",BitmaptoString(createWFBitmap(Pref.getStringToInt("amazfit_widget_graph_hours",4))));
-        db.putBoolean("watchface_graph",Pref.getBoolean("pref_amazfit_watchface_graph",false));
+
+        if(Pref.getBoolean("pref_amazfit_widget_graph",false))
+            db.putString("SGVGraph",BitmaptoString(createWearBitmap(Pref.getStringToInt("amazfit_widget_graph_hours",4))));
+        else
+            db.putString("SGVGraph","false");
+
+        if(Pref.getBoolean("pref_amazfit_watchface_graph",false))
+            db.putString("WFGraph",BitmaptoString(createWFBitmap(Pref.getStringToInt("amazfit_watchface_graph_hours",4))));
+        else
+            db.putString("WFGraph","false");
         return db;
     }
     public DataBundle getAlarmdata() {
@@ -284,7 +383,18 @@ public static void start(String action_text,BgReading bg){
         JoH.startService(Amazfitservice.class);
 
            }
-    private Bitmap createWearBitmap(long start, long end) {
+    private Bitmap createWearBitmapTinyDots(long start, long end) {
+        return new BgSparklineBuilder(xdrip.getAppContext())
+                .setBgGraphBuilder(new BgGraphBuilder(xdrip.getAppContext()))
+                .setStart(start)
+                .setEnd(end)
+                .showAxes()
+                .setWidthPx(290)
+                .setHeightPx(160)
+                .setTinyDots()
+                .build();
+    }
+    private Bitmap createWearBitmapSmallDots(long start, long end) {
         return new BgSparklineBuilder(xdrip.getAppContext())
                 .setBgGraphBuilder(new BgGraphBuilder(xdrip.getAppContext()))
                 .setStart(start)
@@ -319,7 +429,10 @@ public static void start(String action_text,BgReading bg){
     }
 
     private Bitmap createWearBitmap(long hours) {
-        return createWearBitmap(System.currentTimeMillis() - 60000 * 60 * hours, System.currentTimeMillis());
+        if(Pref.getBoolean("pref_amazfit_widget_graph_dots",false))
+        return createWearBitmapTinyDots(System.currentTimeMillis() - 60000 * 60 * hours, System.currentTimeMillis());
+        else
+            return createWearBitmapSmallDots(System.currentTimeMillis() - 60000 * 60 * hours, System.currentTimeMillis());
     }
     private Bitmap createWFBitmap(long hours) {
         if(Pref.getBoolean("pref_amazfit_watchface_graph_dots",false))

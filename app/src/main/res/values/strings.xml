@@ -97,16 +97,27 @@
     <string name="pref_amazfit_BG_alert_enable_summary">Sends active BG Alerts to Smartwatch</string>
     <string name="pref_amazfit_BG_alert_enable">Enable</string>
     <string name="pref_amazfit_BG_alert_title">BG Alerts</string>
-    <string name="pref_amazfit_widget_graph_hours_title">Widget graph</string>
-    <string name="pref_amazfit_widget_graph_hours_summary">set how many hours in graph</string>
-    <string name="pref_amazfit_other_alert_enable_summary">Sends other alerts to smartwatch</string>
+      <string name="pref_amazfit_other_alert_enable_summary">Sends other alerts to smartwatch</string>
     <string name="pref_amazfit_other_alert_enable">Enable</string>
     <string name="pref_amazfit_other_alert_title">Other Alerts</string>
+    <string name="pref_amazfit_watchface_graph_dots_title">Watchface Graph Dots</string>
+    <string name="pref_amazfit_watchface_graph_dots_summary">Shows tiny dots instead of small</string>
     <string name="pref_amazfit_watchface_graph_enable">Enable</string>
     <string name="pref_amazfit_watchface_graph_title">Watchface Graph</string>
     <string name="pref_amazfit_watchface_graph_enable_summary">Shows graph in watchfaces background</string>
-    <string name="pref_amazfit_watchface_graph_dots_title">Watchface Graph Dots</string>
-    <string name="pref_amazfit_watchface_graph_dots_summary">Shows tiny dots instead of small</string>
+    <string name="pref_amazfit_watchface_graph_hours_title">Watchface Graph</string>
+    <string name="pref_amazfit_watchface_graph_hours_summary">set how many hours in graph</string>
+    <string name="pref_amazfit_widget_graph_hours_title">Widget Graph</string>
+    <string name="pref_amazfit_widget_graph_hours_summary">set how many hours in graph</string>
+    <string name="pref_amazfit_widget_graph_dots_title">Widget Graph Dots</string>
+    <string name="pref_amazfit_widget_graph_dots_summary">Shows tiny dots instead of small</string>
+    <string name="pref_amazfit_widget_graph_enable">Enable</string>
+    <string name="pref_amazfit_widget_graph_title">Widget Graph</string>
+    <string name="pref_amazfit_widget_graph_enable_summary">Shows graph in the widget</string>
+
+    <string name="pref_amazfit_watchface_settings">Watchface Settings (may need more battery)</string>
+    <string name="pref_amazfit_widget_settings">Widget Settings (may need more battery)</string>
+
 
     <string name="toast_crash">Something went wrong :( a report has been sent to help fix the issue.</string>
 
