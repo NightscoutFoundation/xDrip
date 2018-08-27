@@ -45,6 +45,7 @@ public class LibreTrendUtil {
 
     private static LibreTrendUtil singleton;
     private static final String TAG = "LibreTrendGraph";
+    private static final boolean debug_per_minute = false;
     final int MAX_POINTS = 16 * 24 * 60; // Assume that there will not be data for longer than 14 days + some extra.
 
     private LibreTrendLatest m_libreTrendLatest;
@@ -55,12 +56,12 @@ public class LibreTrendUtil {
         if(singleton == null) {
            singleton = new LibreTrendUtil();
         }
-        Log.e(TAG, "getInstance this = " + singleton);
+        Log.i(TAG, "getInstance this = " + singleton);
         return singleton;
      }
     
     LibreTrendUtil() {
-        Log.e(TAG, "LibreTrendUtil constructor called this = " + this);
+        Log.i(TAG, "LibreTrendUtil constructor called this = " + this);
         Reset();
     }
     
@@ -82,12 +83,12 @@ public class LibreTrendUtil {
     }
     
     List<LibreTrendPoint> getData(long startTimestamp, long endTimestamp) {
-        Log.e(TAG, "Size of array is " + m_points.size() + " this = " + this);
+        Log.i(TAG, "Size of array is " + m_points.size() + " this = " + this);
         
         long startTime = Math.max(startTimestamp, m_libreTrendLatest.timestamp);
         List<LibreBlock> latestBlocks = LibreBlock.getForTrend(startTime, endTimestamp);
         
-        Log.e(TAG, "Size of latestBlocks is " + latestBlocks.size());
+        Log.i(TAG, "Size of latestBlocks is " + latestBlocks.size());
         
         // Go for the last libreBlock and get calculated bg and timestamp.
         if (latestBlocks.size() > 0) {
@@ -108,13 +109,13 @@ public class LibreTrendUtil {
             m_libreTrendLatest.timestamp = lastBlock.timestamp;
             m_libreTrendLatest.bg = lastBlock.calculated_bg;
             String time = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(new Date((long) m_libreTrendLatest.timestamp));
-            Log.e(TAG, "Latest values " + time + " m_latestId = " + m_libreTrendLatest.id  + " m_libreTrendLatest.m_GlucoseLevelRaw = " + m_libreTrendLatest.glucoseLevelRaw + " bg = " + m_libreTrendLatest.bg );
+            Log.i(TAG, "Latest values " + time + " m_latestId = " + m_libreTrendLatest.id  + " m_libreTrendLatest.m_GlucoseLevelRaw = " + m_libreTrendLatest.glucoseLevelRaw + " bg = " + m_libreTrendLatest.bg );
         }
         
         // Go over all blocks from the earlier to the latest, and fill the data.
         for (LibreBlock libreBlock : latestBlocks) {
             if(!libreBlock.reference.equals(m_libreTrendLatest.SensorSN)) {
-                Log.e(TAG, "Detected a sensor change new sn is " + libreBlock.reference);
+                Log.i(TAG, "Detected a sensor change new sn is " + libreBlock.reference);
                 ResetPoints();
                 m_libreTrendLatest.SensorSN = libreBlock.reference;
             }
@@ -127,7 +128,9 @@ public class LibreTrendUtil {
             // Go over all trend data (from the earlier to the later)
             for (int i = readingData.trend.size() - 1; i >= 0; i--) {
                 GlucoseData glucoseData = readingData.trend.get(i);
-                Log.e(TAG, "time = " + glucoseData.sensorTime + " = " + glucoseData.glucoseLevelRaw);
+                if (debug_per_minute) {
+                    Log.i(TAG, "time = " + glucoseData.sensorTime + " = " + glucoseData.glucoseLevelRaw);
+                }
                 
                 long id = glucoseData.sensorTime;
                 if(IsTimeValid(id) == false) {
@@ -151,15 +154,18 @@ public class LibreTrendUtil {
                 }
             }
         }
-        Log.e(TAG, "Here are the points that we have");
-        for(int i =0 ; i < MAX_POINTS ; i++) {
-            if(m_points.get(i).rawSensorValue != 0) {
-                if(i != m_points.get(i).sensorTime) {
-                    Log.e(TAG, "Error in index i = " + i + " sensorTime = " + m_points.get(i).sensorTime);
-                }
-                // Only print last 60 minutes.
-                if(m_libreTrendLatest.id - i <  60) {
-                    Log.e(TAG, "" + i + " " + m_points.get(i).rawSensorValue);
+        if(debug_per_minute) {
+            Log.i(TAG, "Here are the points that we have");
+        
+            for(int i =0 ; i < MAX_POINTS ; i++) {
+                if(m_points.get(i).rawSensorValue != 0) {
+                    if(i != m_points.get(i).sensorTime) {
+                        Log.i(TAG, "Error in index i = " + i + " sensorTime = " + m_points.get(i).sensorTime);
+                    }
+                    // Only print last 60 minutes.
+                    if(m_libreTrendLatest.id - i <  60) {
+                        Log.i(TAG, "" + i + " " + m_points.get(i).rawSensorValue);
+                    }
                 }
             }
         }
