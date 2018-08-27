@@ -2,10 +2,12 @@ package com.eveningoutpost.dexdrip.utils;
 
 import android.annotation.SuppressLint;
 import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageInstaller;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.util.Log;
 
@@ -71,7 +73,7 @@ public class VersionFixer {
         }
     }
 
-    public static void runPackageInstaller(byte[] buffer) {
+    public static void runPackageInstaller(final byte[] buffer) {
         if (buffer == null) return;
         try {
             UserError.Log.ueh(TAG, "Running demigod package installer with payload size: " + buffer.length);
@@ -121,6 +123,18 @@ public class VersionFixer {
         out.close();
         session.commit(createIntentSender(context, sessionId));
         return true;
+    }
+
+    public static void disableUpdates() {
+        if (DemiGod.isPresent()) {
+            try {
+                UserError.Log.e(TAG, "Attempting to disable system update");
+                xdrip.getAppContext().getPackageManager().setComponentEnabledSetting(new ComponentName("com.google.android.gms", "com.google.android.gms.update.SystemUpdateService"),
+                        PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
+            } catch (Exception e) {
+                UserError.Log.e(TAG, "Exception trying to disable system update: " + e);
+            }
+        }
     }
 
 
