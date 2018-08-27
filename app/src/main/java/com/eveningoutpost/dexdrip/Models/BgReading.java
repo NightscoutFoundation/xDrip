@@ -1056,13 +1056,13 @@ public class BgReading extends Model implements ShareUploadableBg {
     }
 
     private static void FixCalibration(BgReading bgr) {
-        if("".equals(bgr.calibration_uuid)) {
+        if (bgr.calibration_uuid == null || "".equals(bgr.calibration_uuid)) {
             Log.d(TAG, "Bgr with no calibration, doing nothing");
             return;
         }
         Calibration calibration = Calibration.byuuid(bgr.calibration_uuid);
-        if(calibration == null) {
-            Log.i(TAG, "recieved Unknown calibration," + bgr.calibration_uuid + " asking for sensor upate..." );
+        if (calibration == null) {
+            Log.i(TAG, "received Unknown calibration: " + bgr.calibration_uuid + " asking for sensor upate...");
             GcmActivity.requestSensorCalibrationsUpdate();
         } else {
             bgr.calibration = calibration;
@@ -1120,7 +1120,7 @@ public class BgReading extends Model implements ShareUploadableBg {
             if (JoH.ratelimit("sync wakelock", 15)) {
                 final PowerManager.WakeLock linger = JoH.getWakeLock("G5 Insert", 4000);
             }
-            Inevitable.task("NotifySyncBgr" + bgr.timestamp, 3000, () -> notifyAndSync(bgr));
+            Inevitable.stackableTask("NotifySyncBgr", 3000, () -> notifyAndSync(bgr));
             return bgr;
         } else {
             return existing;
