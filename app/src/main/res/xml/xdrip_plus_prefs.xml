@@ -381,6 +381,11 @@
                 android:title="G6 Prediction" />
             <CheckBoxPreference
                 android:defaultValue="true"
+                android:key="show_smb_icons"
+                android:summary="Declutter graph with treatment icons for small boluses"
+                android:title="Show micro bolus icons" />
+            <CheckBoxPreference
+                android:defaultValue="true"
                 android:key="show_medtrum_secondary"
                 android:summary="Show alternate glucose dots"
                 android:title="Medtrum Secondary" />
@@ -663,6 +668,41 @@
                     android:key="remote_snoozes_wifi_match"
                     android:summary="@string/only_accept_same_network"
                     android:title="@string/wifi_name_must_match" />
+            </PreferenceScreen>
+            <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+                android:key="xdrip_plus_desert_sync_settings"
+                android:summary="Off-Grid following"
+                android:icon="@drawable/desert_sync"
+                android:title="Desert Sync">
+                <SwitchPreference
+                    android:defaultValue="false"
+                    android:key="desert_sync_enabled"
+                    android:summary="Enabled local non-internet sync facilities"
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
+                    android:title="Desert Sync" />
+                <EditTextPreference
+                    android:defaultValue=""
+                    android:dependency="desert_sync_enabled"
+                    android:key="desert_sync_master_ip"
+                    android:maxLength="15"
+                    android:title="Master IP address" />
+                <Preference
+                    android:key="send_sync_show_qr"
+                    android:dependency="desert_sync_enabled"
+                    android:summary="Barcode for followers to scan to auto-configure them"
+                    android:title="Show QR Code">
+                    <intent
+                        android:action="xdrip_plus_desert_sync_qr"
+                        android:targetClass="com.eveningoutpost.dexdrip.utils.DisplayQRCode"
+                        android:targetPackage="@string/local_target_package" />
+                </Preference>
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="desert_use_https"
+                    android:summary="Add another layer of encryption for shared networks, eg public wifi"
+                    android:title="Use HTTPS" />
+
             </PreferenceScreen>
             <CheckBoxPreference
                 android:defaultValue="false"

@@ -58,6 +58,10 @@ public class Singleton extends SingletonHotel {
     @Named("WebServiceHeart")
     Lazy<BaseWebService> webServiceHeart;
 
+    @Inject
+    @Named("WebServiceSync")
+    Lazy<BaseWebService> webServiceSync;
+
     private Singleton() {
         super(Singleton.class);
         // inject from whatever components we are using
