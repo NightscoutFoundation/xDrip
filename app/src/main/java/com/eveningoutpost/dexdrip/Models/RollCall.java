@@ -48,6 +48,7 @@ public class RollCall {
     @Expose
     Long last_seen;
 
+    final long created = JoH.tsl();
 
     public RollCall() {
         this.device_manufactuer = Build.MANUFACTURER;
