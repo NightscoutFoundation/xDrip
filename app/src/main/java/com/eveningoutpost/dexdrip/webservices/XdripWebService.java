@@ -267,7 +267,6 @@ public class XdripWebService implements Runnable {
                 } else if (line.startsWith(("api-secret"))) {
                     final String requestSecret[] = line.split(": ");
                     if (requestSecret.length < 2) continue;
-// TODO special Desert Sync secret? always same?
                     secretCheckResult.set(hashedSecret != null && hashedSecret.equalsIgnoreCase(requestSecret[1]));
                     break; // last and only header checked and will appear after GET request
                 }

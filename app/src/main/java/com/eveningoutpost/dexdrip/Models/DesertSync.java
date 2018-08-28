@@ -48,9 +48,11 @@ public class DesertSync extends PlusModel {
     private static final String TAG = DesertSync.class.getSimpleName();
     public static final String NO_DATA_MARKER = "NO DATA";
     private static final String PREF_SENDER_UUID = "DesertSync-sender-uuid";
+    private static final int MAX_CATCHUP = 20;
     private static final ReentrantLock sequence_lock = new ReentrantLock();
     private static final boolean d = false;
     private static volatile int duplicateIndicator = 0;
+    private static volatile int catchupCounter = 0;
     private static String static_sender = null;
     private static RollCall myRollCall = null;
     private static JamListenerSvc service;
@@ -282,6 +284,7 @@ public class DesertSync extends PlusModel {
         }
     }
 
+    @SuppressWarnings("NonAtomicOperationOnVolatileField")
     public static void fromPull(final String json) {
         if (!json.startsWith(NO_DATA_MARKER)) {
             try {
@@ -298,9 +301,14 @@ public class DesertSync extends PlusModel {
                         }
                         processItem(item);
                     }
-                    if (items.size() == MAX_ITEMS || (duplicateIndicator > 5 && duplicateIndicator == items.size())) {
-                        UserError.Log.d(TAG, "Attempting to catch up as all history is duplicates or max size");
-                        Inevitable.task("Desert catchup", 6000, DesertSync::pullAsEnabled);
+                    if (items.size() == MAX_ITEMS) {
+                        UserError.Log.d(TAG, "Attempting to catch up as all history is duplicates or max size: " + catchupCounter);
+                        if (catchupCounter < MAX_CATCHUP) {
+                            catchupCounter++;
+                            Inevitable.task("Desert catchup", 6000, DesertSync::pullAsEnabled);
+                        }
+                    } else {
+                        catchupCounter = 0;
                     }
                 }
             } catch (JsonSyntaxException e) {
