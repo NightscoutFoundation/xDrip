@@ -40,6 +40,7 @@ public class Constants {
     public static final int G6_DEFAULTS_MESSAGE = 1014;
     public static final int MEDTRUM_SERVICE_RETRY_ID = 1015;
     public static final int MEDTRUM_SERVICE_FAILOVER_ID = 1016;
+    public static final int DESERT_MASTER_UNREACHABLE = 1017;
 
     static final int NIGHTSCOUT_ERROR_NOTIFICATION_ID = 2001;
 
@@ -48,5 +49,7 @@ public class Constants {
     public static final int COMPATIBLE_BASE_ID = 6000;
     public static final int DEX_BASE_ID = 6400;
 
+    //
+    public static final int HEART_RATE_JOB_ID = 60920012;
 
 }
