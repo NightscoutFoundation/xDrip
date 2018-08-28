@@ -5,6 +5,7 @@ import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.NFCReaderX;
 import com.eveningoutpost.dexdrip.UtilityModels.Blukon;
 import com.eveningoutpost.dexdrip.UtilityModels.BridgeResponse;
+import com.eveningoutpost.dexdrip.UtilityModels.LibreUtils;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 
@@ -161,22 +162,19 @@ public class Tomato {
         s_recviedEnoughData = true;
         
         long now = JoH.tsl();
-        // Important note, the actual serial number is 8 bytes long and starts at addresses 0. Since the existing
-        // code is looking for them starting at place 3, we copy extra 3 bytes.
-        byte[] serialBuffer = Arrays.copyOfRange(s_full_data, 2, 13);
-        String SensorSn = Blukon.decodeSerialNumber(serialBuffer);
+        // Important note, the actual serial number is 8 bytes long and starts at addresses 5.
+        String SensorSn = LibreUtils.decodeSerialNumberKey(Arrays.copyOfRange(s_full_data, 5, 13));
         boolean checksum_ok = NFCReaderX.HandleGoodReading(SensorSn, data, now);
         Log.e(TAG, "We have all the data that we need " + s_acumulatedSize + " checksum_ok = " + checksum_ok + HexDump.dumpHexString(data));
 
         if(!checksum_ok) {
             throw new RuntimeException(CHECKSUM_FAILED);
         }
-        
-        
         PersistentStore.setString("Tomatobattery", Integer.toString(s_full_data[13]));
         Pref.setInt("bridge_battery", s_full_data[13]);
         PersistentStore.setString("TomatoHArdware",HexDump.toHexString(s_full_data,16,2));
         PersistentStore.setString("TomatoFirmware",HexDump.toHexString(s_full_data,14,2));
+        PersistentStore.setString("LibreSN", SensorSn);
 
         
     }
