@@ -43,6 +43,10 @@ public class GetWearApk {
             if (exists(path)) {
                 return path;
             }
+            final String alt_path = "/data/app/" + BuildConfig.APPLICATION_ID + "-" + c + ".apk";
+            if (exists(alt_path)) {
+                return alt_path;
+            }
         }
         return null;
     }
