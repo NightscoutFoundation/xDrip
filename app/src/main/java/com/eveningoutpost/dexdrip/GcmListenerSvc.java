@@ -88,11 +88,15 @@ public class GcmListenerSvc extends JamListenerSvc {
 
     @Override
     public void onSendError(String msgID, Exception exception) {
-        Log.e(TAG, "onSendError called" + msgID, exception);
+        boolean unexpected = true;
         if (exception.getMessage().equals("TooManyMessages")) {
             if (isAnyNetworkConnected() && googleReachable()) {
                 GcmActivity.coolDown();
             }
+            unexpected = false;
+        }
+        if (unexpected || JoH.ratelimit("gcm-expected-error", 86400)) {
+            Log.e(TAG, "onSendError called" + msgID, exception);
         }
     }
 
