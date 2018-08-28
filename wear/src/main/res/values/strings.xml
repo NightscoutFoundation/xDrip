@@ -218,5 +218,6 @@
     <string name="bluereaderoff">blueReader will be turn off, as the battery is lower then </string>
     <string name="bluereader_position">check position of blueReader on the sensor, as it was not able to read!</string>
     <string name="bluereaderuglystate">The blueReader was found in an ugly state! It will be now turn off now, and you turn it back to on (short press of the button). After that the blueReader should work as expectet!</string>
+    <string name="xdrip_software_changed_format">xDrip WATCH software version changed from: %s to %s</string>
 
 </resources>
