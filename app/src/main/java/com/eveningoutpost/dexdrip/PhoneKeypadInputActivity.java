@@ -1,6 +1,5 @@
 package com.eveningoutpost.dexdrip;
 
-import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -42,7 +41,7 @@ public class PhoneKeypadInputActivity extends BaseActivity {
     private static final String LAST_TAB_STORE = "phone-keypad-treatment-last-tab";
     private static final String TAG = "KeypadInput";
     private static Map<String, String> values = new HashMap<String, String>();
-    private String units;
+    private String bgUnits;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -248,9 +247,9 @@ public class PhoneKeypadInputActivity extends BaseActivity {
         });
 
         if (Pref.getString("units", "mgdl").equals("mgdl")) {
-            units = " mg/dl";
+            bgUnits = "mg/dl";
         } else {
-            units = " mmol/l";
+            bgUnits = "mmol/l";
         }
 
         updateTab();
@@ -297,14 +296,31 @@ public class PhoneKeypadInputActivity extends BaseActivity {
         updateTab();
     }
 
+    private boolean isNonzeroValueInTab(String tab)
+    {
+        try
+        {
+            return (0 != Double.parseDouble(getValue(tab)));
+        }
+        catch(NumberFormatException e) { return false; }
+    }
 
     private void submitAll() {
 
+        boolean nonzeroBloodValue = isNonzeroValueInTab("bloodtest");
+        boolean nonzeroCarbsValue = isNonzeroValueInTab("carbs");
+        boolean nonzeroInsulinValue = isNonzeroValueInTab("insulin");
+
+        // The green tick is clickable even when it's hidden, so we might get here
+        // without valid data.  Ignore the click if input is incomplete
+        if(!nonzeroBloodValue && !nonzeroCarbsValue && !nonzeroInsulinValue)
+            return;
+
         String mystring = "";
-        mystring += (getValue("time").length() > 0) ? getValue("time") + " time " : "";
-        mystring += (getValue("bloodtest").length() > 0) ? getValue("bloodtest") + " blood " : "";
-        mystring += (getValue("carbs").length() > 0) ? (!getValue("carbs").equals("0") ? getValue("carbs") + " carbs " : "") : "";
-        mystring += (getValue("insulin").length() > 0) ? (!getValue("insulin").equals("0") ? getValue("insulin") + " units " : "") : "";
+        if (getValue("time").length() > 0) mystring += getValue("time") + " time ";
+        if (nonzeroBloodValue) mystring += getValue("bloodtest") + " blood ";
+        if (nonzeroCarbsValue) mystring += getValue("carbs") + " carbs ";
+        if (nonzeroInsulinValue) mystring += getValue("insulin") + " units ";
 
         if (mystring.length() > 1) {
             //SendData(this, WEARABLE_VOICE_PAYLOAD, mystring.getBytes(StandardCharsets.UTF_8));
@@ -327,7 +343,6 @@ public class PhoneKeypadInputActivity extends BaseActivity {
 
 
         String append = "";
-        String value = "";
         switch (currenttab) {
             case "insulin":
                 insulintabbutton.setBackgroundColor(onColor);
@@ -339,22 +354,23 @@ public class PhoneKeypadInputActivity extends BaseActivity {
                 break;
             case "bloodtest":
                 bloodtesttabbutton.setBackgroundColor(onColor);
-                append = units;
+                append = " " + bgUnits;
                 break;
             case "time":
                 timetabbutton.setBackgroundColor(onColor);
                 append = " " + getString(R.string.when);
                 break;
         }
-        value = getValue(currenttab);
+        String value = getValue(currenttab);
         mDialTextView.setText(value + append);
         // show green tick
-        if (value.length() > 0) {
-            mDialTextView.getBackground().setAlpha(255);
-        } else {
-            mDialTextView.getBackground().setAlpha(0);
-        }
-    }
+        boolean showSubmitButton;
+        if (currenttab.equals("time"))
+            showSubmitButton = value.length() > 0 &&
+                    ( isNonzeroValueInTab("bloodtest") || isNonzeroValueInTab("carbs") || isNonzeroValueInTab("insulin"));
+        else
+            showSubmitButton = isNonzeroValueInTab(currenttab);
+        mDialTextView.getBackground().setAlpha(showSubmitButton ? 255 : 0);    }
 
 
     @Override
