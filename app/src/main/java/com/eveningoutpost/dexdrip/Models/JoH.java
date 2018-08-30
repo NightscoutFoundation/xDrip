@@ -1569,5 +1569,9 @@ public class JoH {
         }
     }
 
+    public static boolean emptyString(String str) {
+        return str == null || str.length() == 0;
+    }
+
 
 }
