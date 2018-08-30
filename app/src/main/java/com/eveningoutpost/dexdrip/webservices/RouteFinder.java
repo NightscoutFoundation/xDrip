@@ -3,6 +3,7 @@ package com.eveningoutpost.dexdrip.webservices;
 import com.eveningoutpost.dexdrip.dagger.Singleton;
 
 import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,10 +50,15 @@ public class RouteFinder {
 
     // process a received route
     WebResponse handleRoute(final String route) {
+        return handleRoute(route, null);
+    }
+
+    // process a received route with source details
+    WebResponse handleRoute(final String route, final InetAddress source) {
 
         for (final RouteInfo routeEntry : routes) {
             if (route.startsWith(routeEntry.path)) {
-                return routeEntry.processRequest(route);
+                return routeEntry.processRequest(route, source);
             }
         }
         // unknown service error reply
@@ -75,9 +81,9 @@ public class RouteFinder {
             return (BaseWebService) Singleton.get(module);
         }
 
-        WebResponse processRequest(final String route) {
+        WebResponse processRequest(final String route, final InetAddress source) {
             try {
-                return getService().request(raw ? route : URLDecoder.decode(route, "UTF-8"));
+                return getService().request(raw ? route : URLDecoder.decode(route, "UTF-8"), source);
             } catch (UnsupportedEncodingException e) {
                 return new WebResponse("Decoding error", 500, "text/plain");
             }
