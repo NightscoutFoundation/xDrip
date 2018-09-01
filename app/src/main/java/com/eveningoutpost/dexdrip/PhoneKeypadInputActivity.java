@@ -305,6 +305,17 @@ public class PhoneKeypadInputActivity extends BaseActivity {
         catch(NumberFormatException e) { return false; }
     }
 
+    private boolean isInvalidTime()
+    {
+        String timeValue = getValue("time");
+        if (timeValue.length() == 0) return false;
+        if (!timeValue.contains("."))
+            return (timeValue.length() < 3);
+
+        String[] parts = timeValue.split("\\.");
+        return (parts.length != 2) || (parts[0].length() == 0) || (parts[1].length() != 2);
+    }
+
     private void submitAll() {
 
         boolean nonzeroBloodValue = isNonzeroValueInTab("bloodtest");
@@ -316,8 +327,17 @@ public class PhoneKeypadInputActivity extends BaseActivity {
         if(!nonzeroBloodValue && !nonzeroCarbsValue && !nonzeroInsulinValue)
             return;
 
+        if (isInvalidTime())
+            return;
+
+        // Add the dot to the time if it is missing
+        String timeValue = getValue("time");
+        if (timeValue.length() > 2 && !timeValue.contains(".")) {
+            timeValue = timeValue.substring(0, timeValue.length()-2) + "." + timeValue.substring(timeValue.length()-2);
+        }
+
         String mystring = "";
-        if (getValue("time").length() > 0) mystring += getValue("time") + " time ";
+        if (timeValue.length() > 0) mystring += timeValue + " time ";
         if (nonzeroBloodValue) mystring += getValue("bloodtest") + " blood ";
         if (nonzeroCarbsValue) mystring += getValue("carbs") + " carbs ";
         if (nonzeroInsulinValue) mystring += getValue("insulin") + " units ";
@@ -365,7 +385,11 @@ public class PhoneKeypadInputActivity extends BaseActivity {
         mDialTextView.setText(value + append);
         // show green tick
         boolean showSubmitButton;
-        if (currenttab.equals("time"))
+
+        if (isInvalidTime())
+            showSubmitButton = false;
+
+        else if (currenttab.equals("time"))
             showSubmitButton = value.length() > 0 &&
                     ( isNonzeroValueInTab("bloodtest") || isNonzeroValueInTab("carbs") || isNonzeroValueInTab("insulin"));
         else

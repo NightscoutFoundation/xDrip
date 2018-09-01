@@ -1533,10 +1533,6 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
             case "time":
                 Log.d(TAG, "processing time keyword");
-                // Add the dot to the time if it's missing.
-                if (thisnumber >= 100)
-                    thisnumber /= 100;
-
                 if ((timeset == false) && (thisnumber >= 0)) {
 
                     final NumberFormat nf = NumberFormat.getNumberInstance(Locale.US);
