@@ -1379,6 +1379,14 @@ public class DexCollectionService extends Service implements BtCallBack {
     }
 
     private synchronized boolean writeChar(final BluetoothGattCharacteristic localmCharacteristic, final byte[] value) {
+        if (value == null) {
+            UserError.Log.e(TAG, "Value null in write char");
+            return false;
+        }
+        if (localmCharacteristic == null) {
+            UserError.Log.e(TAG, "localmCharacteristic null in write char");
+            return false;
+        }
         localmCharacteristic.setValue(value);
         final boolean result = mBluetoothGatt != null && mBluetoothGatt.writeCharacteristic(localmCharacteristic);
         if (!result) {
@@ -1731,6 +1739,7 @@ public class DexCollectionService extends Service implements BtCallBack {
     }
 
     private static boolean useScanning() {
+        // TODO check location services
         return Pref.getBooleanDefaultFalse("bluetooth_use_scan");
     }
 
