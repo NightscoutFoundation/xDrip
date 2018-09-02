@@ -4,7 +4,6 @@ import android.os.PowerManager;
 
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.DesertSync;
-import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
@@ -22,9 +21,20 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+import static com.eveningoutpost.dexdrip.Models.JoH.cancelNotification;
+import static com.eveningoutpost.dexdrip.Models.JoH.defaultGsonInstance;
+import static com.eveningoutpost.dexdrip.Models.JoH.emptyString;
+import static com.eveningoutpost.dexdrip.Models.JoH.getWakeLock;
+import static com.eveningoutpost.dexdrip.Models.JoH.msSince;
+import static com.eveningoutpost.dexdrip.Models.JoH.pratelimit;
+import static com.eveningoutpost.dexdrip.Models.JoH.releaseWakeLock;
+import static com.eveningoutpost.dexdrip.Models.JoH.showNotification;
+import static com.eveningoutpost.dexdrip.Models.JoH.tsl;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.DESERT_MASTER_UNREACHABLE;
+import static com.eveningoutpost.dexdrip.UtilityModels.desertsync.DesertComms.QueueHandler.MasterPing;
 import static com.eveningoutpost.dexdrip.UtilityModels.desertsync.DesertComms.QueueHandler.None;
 import static com.eveningoutpost.dexdrip.UtilityModels.desertsync.DesertComms.QueueHandler.Pull;
+import static com.eveningoutpost.dexdrip.UtilityModels.desertsync.DesertComms.QueueHandler.ToFollower;
 
 
 /**
@@ -40,6 +50,8 @@ public class DesertComms {
     private static final int MAX_RETRIES = 10;
     private static final int COMM_FAILURE_NOTIFICATION_THRESHOLD = 2;
     private static volatile int comms_failures = 0;
+    private static int backupSpinner = 0;
+    private static volatile String lastLoadedIP = null;
 
     private static final LinkedBlockingDeque<QueueItem> queue = new LinkedBlockingDeque<>();
 
@@ -54,12 +66,23 @@ public class DesertComms {
                     .addPathSegment(topic).addPathSegment(sender).addEncodedPathSegment(urlEncode(payload)) // workaround okhttp bug with path encoding containing +
                     .build().toString();
 
-            UserError.Log.d(TAG, url);
+            UserError.Log.d(TAG, "To master: " + url);
             queue.add(new QueueItem(url));
             runInBackground();
         } else if (Home.get_master()) {
-            // TODO push to followers
-            UserError.Log.d(TAG, "We are master so push to followers TODO");
+            UserError.Log.d(TAG, "We are master so push to followers.");
+            for (final String address : DesertSync.getActivePeers()) {
+                UserError.Log.d(TAG, "Master attempting to push to follower: " + address);
+                final String url = HttpUrl.parse(getInitialUrl(address)).newBuilder()
+                        .addPathSegment("sync").addPathSegment("push")
+                        .addPathSegment(topic).addPathSegment(sender).addEncodedPathSegment(urlEncode(payload)) // workaround okhttp bug with path encoding containing +
+                        .build().toString();
+
+                UserError.Log.d(TAG, "To follower: " + url);
+                queue.add(new QueueItem(url).setHandler(ToFollower));
+
+            }
+            runInBackground();
         }
         return true;
 
@@ -80,49 +103,98 @@ public class DesertComms {
         return true;
     }
 
-    private static String getOasisIP() {
-        final String stored = PersistentStore.getString(PREF_OASISIP);
-        if (stored.length() < 5) {
-            return Pref.getString("desert_sync_master_ip", "");
+    public static boolean probeOasis(final String topic, final String hint) {
+        if (emptyString(hint)) return false;
+        if (Home.get_follower()) {
+            final String url = HttpUrl.parse(getInitialUrl(hint)).newBuilder().addPathSegment("sync").addPathSegment("id")
+                    .addPathSegment(topic)
+                    .build().toString();
+
+            UserError.Log.d(TAG, "PROBE: " + url);
+            queue.add(new QueueItem(url).setHandler(MasterPing));
+            runInBackground();
+        } else {
+            UserError.Log.e(TAG, "Probe cancelled as not follower");
         }
-        return stored;
+        return true;
+    }
+
+
+    private static String getOasisIP() {
+        final String ip = Pref.getString("desert_sync_master_ip", "");
+        if (emptyString(lastLoadedIP)) {
+            lastLoadedIP = ip;
+        }
+        backupSpinner++;
+        if (backupSpinner % 5 == 1) {
+            if (emptyString(getOasisBackupIP()) || (!ip.equals(lastLoadedIP))) {
+                setOasisIP(ip);
+            }
+        }
+        return ip;
     }
 
     public static void setOasisIP(String ip) {
-        PersistentStore.setString(PREF_OASISIP, ip);
+        // save backup
+        if (!ip.equals(PersistentStore.getString(PREF_OASISIP))) {
+            PersistentStore.setString(PREF_OASISIP, getOasisIP());
+        }
 
+        Pref.setString("desert_sync_master_ip", ip);
+        UserError.Log.uel(TAG, "Master IP updated to: " + ip);
+    }
+
+    public static String getOasisBackupIP() {
+        final String backupIP = PersistentStore.getString(PREF_OASISIP);
+        return emptyString(backupIP) ? null : backupIP;
     }
 
     @SuppressWarnings("NonAtomicOperationOnVolatileField")
     private static void runInBackground() {
 
+        // TODO we should probably do this in parallel for prospective followers
         new Thread(() -> {
-            final PowerManager.WakeLock wl = JoH.getWakeLock("DesertComms send", 60000);
+            if (queue.size() == 0) return;
+            final PowerManager.WakeLock wl = getWakeLock("DesertComms send", 60000);
+            UserError.Log.d(TAG, "Queue size: " + queue.size());
             try {
                 final String result = httpNext();
                 //UserError.Log.d(TAG, "Result: " + result);
                 checkCommsFailures(result == null);
-                // TODO log errors if not null and not OK etc
+                if (((result != null) && queue.size() > 0) || Home.get_master()) {
+                    runInBackground();
+                }
             } finally {
-                JoH.releaseWakeLock(wl);
+                releaseWakeLock(wl);
             }
         }).start();
 
     }
 
     private static String httpNext() {
-        final QueueItem item = queue.getFirst();
-        item.retried++;
-        UserError.Log.d(TAG, "Next item: " + item.toS());
-        final String result = httpGet(item.getUrl(getOasisIP()));
-        if (result != null) {
-            item.handler.process(result);
+        if (queue.peekFirst() == null) return null;
+        try {
+            final QueueItem item = queue.takeFirst(); // removes from queue
+            item.retried++;
+            item.updateLastProcessed();
+            UserError.Log.d(TAG, "Next item: " + item.toS());
+            final String result = httpGet(item.getUrl(Home.get_follower() ? item.handler != MasterPing ? getOasisIP() : null : null));
+            // if (result != null) {
+            item.result = result;
+            item.handler.process(item);
+            // }
+            if (result != null || item.expired()) {
+                queue.remove(item);
+            } else {
+                //    queue.add(item); // re-add
+            }
+            return result;
+        } catch (InterruptedException e) {
+            UserError.Log.e(TAG, "Got interrupted");
+            return null;
         }
-        if (result != null || item.expired()) {
-            queue.remove(item);
-        }
-        return result;
     }
+
 
     private static String httpGet(String url) {
         if (url == null) return null;
@@ -168,19 +240,24 @@ public class DesertComms {
         if (failed) {
             comms_failures++;
             UserError.Log.d(TAG, "Comms failures increased to: " + comms_failures);
-            if (comms_failures > COMM_FAILURE_NOTIFICATION_THRESHOLD) {
-                if (JoH.pratelimit("desert-check-comms", 1800)) {
-                    if (!RouteTools.reachable(getOasisIP())) {
-                        UserError.Log.e(TAG, "Oasis master IP appears unreachable: " + getOasisIP());
-                        JoH.showNotification("Desert Sync Failure", "Master unreachable: " + getOasisIP() + " changed?", null, DESERT_MASTER_UNREACHABLE, false, true, false);
+
+            if (!Home.get_master()) {
+                if (comms_failures > COMM_FAILURE_NOTIFICATION_THRESHOLD) {
+                    if (pratelimit("desert-check-comms", 1800)) {
+                        if (!RouteTools.reachable(getOasisIP())) {
+                            UserError.Log.e(TAG, "Oasis master IP appears unreachable: " + getOasisIP());
+                            showNotification("Desert Sync Failure", "Master unreachable: " + getOasisIP() + " changed?", null, DESERT_MASTER_UNREACHABLE, false, true, false);
+                        }
                     }
                 }
             }
         } else {
-            if (comms_failures > 0) {
-                UserError.Log.d(TAG, "Comms restored after " + comms_failures + " failures");
-                if (comms_failures > COMM_FAILURE_NOTIFICATION_THRESHOLD) {
-                    JoH.cancelNotification(DESERT_MASTER_UNREACHABLE);
+            if (!Home.get_master()) {
+                if (comms_failures > 0) {
+                    UserError.Log.d(TAG, "Comms restored after " + comms_failures + " failures");
+                    if (comms_failures > COMM_FAILURE_NOTIFICATION_THRESHOLD) {
+                        cancelNotification(DESERT_MASTER_UNREACHABLE);
+                    }
                 }
             }
             comms_failures = 0; // reset counter
@@ -202,14 +279,17 @@ public class DesertComms {
         @Expose
         final long entryTime;
         @Expose
+        long lastProcessedTime = -1;
+        @Expose
         int retried = 0;
         @Expose
         QueueHandler handler = None;
 
+        String result;
 
         QueueItem(String url) {
             this.url = url;
-            entryTime = JoH.tsl();
+            entryTime = tsl();
         }
 
         QueueItem setHandler(QueueHandler handler) {
@@ -219,6 +299,7 @@ public class DesertComms {
 
         // reprocess url for specified host
         String getUrl(final String host) {
+            if (emptyString(host)) return url;
             try {
                 return HttpUrl.parse(url).newBuilder().host(host).build().toString();
             } catch (NullPointerException e) {
@@ -226,24 +307,56 @@ public class DesertComms {
             }
         }
 
+        String urlIP() {
+            try {
+                return HttpUrl.parse(url).host();
+            } catch (NullPointerException e) {
+                return null;
+            }
+        }
+
+        void updateLastProcessed() {
+            lastProcessedTime = tsl();
+        }
+
+        boolean okToProcess() {
+            return msSince(lastProcessedTime) > Constants.MINUTE_IN_MS;
+        }
+
         boolean expired() {
-            return JoH.msSince(entryTime) > Constants.DAY_IN_MS;
+            return oneHit() || retried > MAX_RETRIES || msSince(entryTime) > Constants.DAY_IN_MS;
+        }
+
+        boolean oneHit() {
+            return handler == ToFollower || handler == MasterPing || handler == Pull;
         }
 
         String toS() {
-            return JoH.defaultGsonInstance().toJson(this);
+            return defaultGsonInstance().toJson(this);
         }
 
     }
 
     enum QueueHandler {
         None,
-        Pull;
+        Pull,
+        MasterPing,
+        ToFollower;
 
-        void process(final String result) {
+        void process(final QueueItem item) {
             switch (this) {
                 case Pull:
-                    DesertSync.fromPull(result);
+                    if (item.result == null) {
+                        DesertSync.pullFailed(item.urlIP());
+                    } else {
+                        DesertSync.fromPull(item.result);
+                    }
+                    break;
+                case ToFollower:
+                    DesertSync.checkIpChange(item.result);
+                    break;
+                case MasterPing:
+                    DesertSync.masterIdReply(item.result, item.urlIP());
                     break;
             }
         }

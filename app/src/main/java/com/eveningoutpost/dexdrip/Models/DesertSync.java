@@ -7,6 +7,7 @@ import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Delete;
 import com.activeandroid.query.Select;
+import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.GcmListenerSvc;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.JamListenerSvc;
@@ -16,6 +17,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.desertsync.DesertComms;
+import com.eveningoutpost.dexdrip.UtilityModels.desertsync.RouteTools;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
 import com.eveningoutpost.dexdrip.webservices.XdripWebService;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -24,9 +26,11 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.annotations.Expose;
 import com.google.gson.reflect.TypeToken;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -34,6 +38,9 @@ import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 import static com.eveningoutpost.dexdrip.GoogleDriveInterface.getDriveIdentityString;
+import static com.eveningoutpost.dexdrip.Models.JoH.emptyString;
+import static com.eveningoutpost.dexdrip.UtilityModels.desertsync.RouteTools.getBestInterfaceAddress;
+import static com.eveningoutpost.dexdrip.UtilityModels.desertsync.RouteTools.ip;
 
 // created by jamorham 18/08/2018
 
@@ -56,6 +63,9 @@ public class DesertSync extends PlusModel {
     private static String static_sender = null;
     private static RollCall myRollCall = null;
     private static JamListenerSvc service;
+    private static HashMap<InetAddress, Long> peers;
+    private static int spinner = 0;
+    private static volatile String lastUsedIP = null;
 
     private static volatile long highestPullTimeStamp = -1;
 
@@ -238,7 +248,6 @@ public class DesertSync extends PlusModel {
             if (ds != null && !ds.alreadyInDatabase(true)) {
                 DesertComms.pushToOasis(ds.topic, ds.sender, ds.transmissionPayload());
                 ds.save();
-                // TODO when we are master we push to recorded clients??
             } else {
                 UserError.Log.d(TAG, "Not pushing entry without payload / duplicate");
                 return false;
@@ -319,10 +328,80 @@ public class DesertSync extends PlusModel {
         }
     }
 
+    public static void pullFailed(final String host) {
+        UserError.Log.d(TAG, "Pull failed: host: " + host);
+        if (host == null) return;
+        final String hint = RollCall.getBestMasterHintIP();
+        UserError.Log.d(TAG, "Best hint: " + hint);
+        if (hint == null) return;
+        if (host.equals(hint)) {
+            UserError.Log.d(TAG, "Looking for hint but master is still the same: " + hint);
+            final String backupIP = DesertComms.getOasisBackupIP();
+            if (!emptyString(backupIP) && !backupIP.equals(host)) {
+                UserError.Log.d(TAG, "Trying backup: " + backupIP);
+                takeMasterHint(backupIP);
+            }
+        } else {
+            UserError.Log.d(TAG, "Got master hint for: " + hint);
+            takeMasterHint(hint);
+        }
+    }
+
+    private static void takeMasterHint(String hint) {
+        if (RouteTools.reachable(hint)) {
+            UserError.Log.d(TAG, "Master hint of: " + hint + " is reachable - setting up probe");
+            DesertComms.probeOasis(getTopic(), hint);
+        }
+    }
+
     // identity
+
+    private static final String PREF_LAST_DESERT_MY_IP = "last-desert-sync-my-ip";
+
+    public static void checkIpChange(final String result) {
+        // failed to reach peer
+        UserError.Log.d(TAG, "CheckIpChange enter: " + result);
+        if (result == null || (JoH.ratelimit("desert-check-ip-change", 60))) {
+            final String currentIP = getBestInterfaceAddress();
+            UserError.Log.d(TAG, "check ip change: current: " + currentIP);
+
+            if (!emptyString(currentIP)) {
+                if (lastUsedIP == null) {
+                    lastUsedIP = PersistentStore.getString(PREF_LAST_DESERT_MY_IP);
+                }
+                UserError.Log.d(TAG, "check ip change last: " + lastUsedIP);
+                if (emptyString(lastUsedIP) || !currentIP.equals(lastUsedIP)) {
+                    if (!emptyString(lastUsedIP)) {
+                        UserError.Log.uel(TAG, "Our IP appears to have changed from: " + lastUsedIP + " to " + currentIP + " sending notification to peers");
+                        UserError.Log.d(TAG, "check ip change send ping");
+                        GcmActivity.requestPing();
+                    }
+                    lastUsedIP = currentIP;
+
+                    PersistentStore.setString(PREF_LAST_DESERT_MY_IP, lastUsedIP);
+                }
+            }
+        }
+    }
 
     private static String getTopic() {
         return getDriveIdentityString();
+    }
+
+    public static void masterIdReply(final String result, final String host) {
+        if (result == null) return;
+        if (Home.get_follower()) {
+            final RollCall rc = RollCall.fromJson(result);
+            if (rc == null) return;
+            if (rc.role.equals("Master")) {
+                DesertComms.setOasisIP(host);
+                pullAsEnabled();
+            }
+        } else {
+            UserError.Log.e(TAG, "Refusing to process id reply as we are not a follower");
+        }
+
+
     }
 
     public static String mySender() {
@@ -330,7 +409,7 @@ public class DesertSync extends PlusModel {
             synchronized (DesertSync.class) {
                 if (static_sender == null) {
                     String sender = PersistentStore.getString(PREF_SENDER_UUID);
-                    UserError.Log.d(TAG, "From store: " + sender);
+                    //UserError.Log.d(TAG, "From store: " + sender);
                     if (sender.length() != 32) {
                         sender = CipherUtils.getRandomHexKey();
                         UserError.Log.d(TAG, "From key: " + sender);
@@ -344,11 +423,15 @@ public class DesertSync extends PlusModel {
         return static_sender;
     }
 
-    public static String getMyRollCall() {
-        if (myRollCall == null || JoH.msSince(myRollCall.created) > Constants.MINUTE_IN_MS * 15) {
-            myRollCall = new RollCall();
+    public static String getMyRollCall(final String topic) {
+        if (topic != null && topic.equals(getTopic())) {
+            if (myRollCall == null || JoH.msSince(myRollCall.created) > Constants.MINUTE_IN_MS * 15) {
+                myRollCall = new RollCall();
+            }
+            return myRollCall.toS();
+        } else {
+            return "Invalid topic";
         }
-        return myRollCall.toS();
     }
 
     // helpers
@@ -377,6 +460,49 @@ public class DesertSync extends PlusModel {
                 //
             }
         }
+    }
+
+    public static void learnPeer(final InetAddress address) {
+        if (peers == null) {
+            peers = new HashMap<>();
+        }
+        if (!peers.containsKey(address)) {
+            if (RouteTools.isLocal(address)) {
+                UserError.Log.d(TAG, "Learned new peer: " + ip(address));
+            } else {
+                UserError.Log.d(TAG, "Refusing to Learn new peer: " + ip(address));
+                return;
+            }
+        }
+        peers.put(address, JoH.tsl());
+
+        spinner++;
+        if (spinner % 10 == 0) {
+            prunePeers();
+        }
+    }
+
+    private static void prunePeers() {
+        InetAddress toRemove = null;
+        for (final Map.Entry<InetAddress, Long> entry : peers.entrySet()) {
+            if (JoH.msSince(entry.getValue()) > Constants.DAY_IN_MS * 3) {
+                toRemove = entry.getKey();
+                break;
+            }
+        }
+        if (toRemove != null) peers.remove(toRemove);
+    }
+
+    public static List<String> getActivePeers() {
+        final List<String> list = new ArrayList<>();
+        if (peers != null) {
+            for (final Map.Entry<InetAddress, Long> entry : peers.entrySet()) {
+                if (JoH.msSince(entry.getValue()) < Constants.HOUR_IN_MS * 3) {
+                    list.add(ip(entry.getKey()));
+                }
+            }
+        }
+        return list;
     }
 
     private String getYfrom() {

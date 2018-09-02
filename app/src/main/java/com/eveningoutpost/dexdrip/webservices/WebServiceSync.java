@@ -3,6 +3,7 @@ package com.eveningoutpost.dexdrip.webservices;
 import com.eveningoutpost.dexdrip.Models.DesertSync;
 import com.eveningoutpost.dexdrip.Models.UserError;
 
+import java.net.InetAddress;
 import java.util.List;
 
 /**
@@ -15,7 +16,13 @@ public class WebServiceSync extends BaseWebService {
     private static String TAG = "WebServiceSync";
 
     // process the request and produce a response object
+    @Override
     public WebResponse request(String query) {
+        return request(query, null);
+    }
+
+    @Override
+    public WebResponse request(String query, final InetAddress address) {
 
         UserError.Log.d(TAG, query);
 
@@ -32,7 +39,12 @@ public class WebServiceSync extends BaseWebService {
             switch (components.get(0)) {
 
                 case "id":
-                    return webOk(DesertSync.getMyRollCall());
+                    if (components.size() == 2) {
+                        final String topic = components.get(1);
+                        return webOk(DesertSync.getMyRollCall(topic));
+                    } else {
+                        return webError("Invalid parameters");
+                    }
 
                 case "push":
 
@@ -64,7 +76,7 @@ public class WebServiceSync extends BaseWebService {
                                    JoH.threadSleep(3000);
                                    counter++;
                                }*/
-
+                            DesertSync.learnPeer(address);
                             if (result == null) {
                                 return webOk(DesertSync.NO_DATA_MARKER);
                             } else {
@@ -96,4 +108,6 @@ public class WebServiceSync extends BaseWebService {
         }
         return null;
     }
+
+
 }
