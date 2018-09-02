@@ -35,6 +35,8 @@ public class VersionFixer {
     private static final String PEER_VERSION_UPDATED = "PEER_VERSION_UPDATED";
     private static final String PEER_VERSION_CHECKED = "PEER_VERSION_CHECKED";
 
+    private static final int RETRY_TIME = (int) Constants.HOUR_IN_MS * 12;
+
     private static final String APK_PATH = "/data/local/tmp/installme.apk";
     // check peer version
 
@@ -50,7 +52,8 @@ public class VersionFixer {
 
 
     private static boolean updateVersion(String version) {
-        if (!PersistentStore.getString(PEER_VERSION).equals(version)) {
+        if ((!PersistentStore.getString(PEER_VERSION).equals(version)
+                || (JoH.pratelimit("allow-version-recheck", RETRY_TIME)))) {
             PersistentStore.setString(PEER_VERSION, version);
             PersistentStore.setLong(PEER_VERSION_UPDATED, JoH.tsl());
             UserError.Log.d(TAG, "Updated peer version to: " + version);
@@ -127,12 +130,14 @@ public class VersionFixer {
 
     public static void disableUpdates() {
         if (DemiGod.isPresent()) {
-            try {
-                UserError.Log.e(TAG, "Attempting to disable system update");
-                xdrip.getAppContext().getPackageManager().setComponentEnabledSetting(new ComponentName("com.google.android.gms", "com.google.android.gms.update.SystemUpdateService"),
-                        PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
-            } catch (Exception e) {
-                UserError.Log.e(TAG, "Exception trying to disable system update: " + e);
+            if (JoH.pratelimit("disable-gms-updates", 86400)) {
+                try {
+                    UserError.Log.e(TAG, "Attempting to disable system update");
+                    xdrip.getAppContext().getPackageManager().setComponentEnabledSetting(new ComponentName("com.google.android.gms", "com.google.android.gms.update.SystemUpdateService"),
+                            PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
+                } catch (Exception e) {
+                    UserError.Log.e(TAG, "Exception trying to disable system update: " + e);
+                }
             }
         }
     }
@@ -159,12 +164,16 @@ public class VersionFixer {
 
     private static void resolveVersionDifference(String version) {
         UserError.Log.ueh(TAG, "Attempting to resolve version difference");
+        // Check rom permission level
         if (DemiGod.isPresent()) {
-            // Check rom permission level
             // send request for update - notify about download
-            UserError.Log.e(TAG, "Requesting wear app update");
-            JoH.static_toast_long("Requesting wear app download");
-            downloadApk();
+            if (JoH.pratelimit("resolve-version-difference-download", 40000)) {
+                UserError.Log.e(TAG, "Wanting update of wear app for: " + version);
+                JoH.static_toast_long("Asking phone for updated wear app");
+                downloadApk();
+            } else {
+                UserError.Log.e(TAG,"Wanting update but not requesting due to rate limit");
+            }
             // notify or fix
 
         } else {
@@ -175,8 +184,9 @@ public class VersionFixer {
     }
 
 
-    private static void downloadApk() {
-        // TODO ratelimit here?
+    // request the download
+    public static void downloadApk() {
+        JoH.static_toast_long("Requesting wear app download");
         UserError.Log.uel(TAG, "Requesting updated APK from phone, our version: " + getLocalVersion() + " vs " + getPeerVersion());
         ListenerService.requestAPK(getPeerVersion());
     }
@@ -202,6 +212,7 @@ public class VersionFixer {
 
     private static boolean compareVersions() {
         final String peerVersion = getPeerVersion();
+        UserError.Log.d(TAG, "Compare versions: " + getPeerVersion() + " vs " + getLocalVersion());
         return peerVersion == null || getLocalVersion().equals(peerVersion);
     }
 
