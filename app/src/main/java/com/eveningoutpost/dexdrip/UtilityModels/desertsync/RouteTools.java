@@ -16,7 +16,7 @@ public class RouteTools {
 
     private static final String TAG = RouteTools.class.getSimpleName();
 
-    static boolean reachable(final String checkIp) {
+    public static boolean reachable(final String checkIp) {
         try {
             final InetAddress check = ip(checkIp);
             List<InterfaceAddress> addrs = getLikelyInterfaceAddresses();
@@ -87,7 +87,7 @@ public class RouteTools {
     }
 
 
-    static InetAddress ip(final String ip) {
+    public static InetAddress ip(final String ip) {
         return com.google.common.net.InetAddresses.forString(ip);
     }
 
