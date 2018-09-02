@@ -183,6 +183,7 @@
         </service>
         <service android:name=".Services.HeartRateService" />
         <service android:name=".Services.HeartRateJobService" android:permission="android.permission.BIND_JOB_SERVICE"/>
+        <service android:name=".ProcessAPKChannelDownload" android:permission="android.permission.BIND_JOB_SERVICE"/>
 
         <receiver android:name=".NSEmulatorReceiver">
             <intent-filter>
