@@ -367,6 +367,14 @@ public class GcmActivity extends FauxActivity {
         }
     }
 
+    public static void desertPing() {
+        if (JoH.pratelimit("gcm-desert-ping", 300)) {
+            GcmActivity.sendMessage("ping", new RollCall().toS());
+        } else {
+            Log.d(TAG, "Already requested desert ping recently");
+        }
+    }
+
     public static void requestRollCall() {
         if (JoH.tsl() - last_rlcl_request > (60 * 1000)) {
             last_rlcl_request = JoH.tsl();
