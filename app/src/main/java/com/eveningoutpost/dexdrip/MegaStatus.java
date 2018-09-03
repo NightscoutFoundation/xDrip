@@ -30,6 +30,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.eveningoutpost.dexdrip.Models.DesertSync;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.RollCall;
 import com.eveningoutpost.dexdrip.Models.UserError;
@@ -177,6 +178,7 @@ public class MegaStatus extends ActivityWithMenu {
             case XDRIP_PLUS_SYNC:
                 la.addRows(DoNothingService.megaStatus());
                 la.addRows(GcmListenerSvc.megaStatus());
+                la.addRows(DesertSync.megaStatus());
                 la.addRows(RollCall.megaStatus());
                 break;
             case UPLOADERS:

@@ -8,11 +8,14 @@ import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.webservices.XdripWebService;
 import com.google.gson.annotations.Expose;
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 
@@ -125,23 +128,27 @@ public class DesertComms {
         if (emptyString(lastLoadedIP)) {
             lastLoadedIP = ip;
         }
-        backupSpinner++;
-        if (backupSpinner % 5 == 1) {
-            if (emptyString(getOasisBackupIP()) || (!ip.equals(lastLoadedIP))) {
-                setOasisIP(ip);
-            }
-        }
+        setCurrentToBackup(ip, lastLoadedIP);
         return ip;
     }
 
-    public static void setOasisIP(String ip) {
-        // save backup
-        if (!ip.equals(PersistentStore.getString(PREF_OASISIP))) {
-            PersistentStore.setString(PREF_OASISIP, getOasisIP());
-        }
+    public static void setOasisIP(final String ip) {
+        setCurrentToBackup(ip, null);
 
         Pref.setString("desert_sync_master_ip", ip);
         UserError.Log.uel(TAG, "Master IP updated to: " + ip);
+    }
+
+    private static void setCurrentToBackup(final String newIP, String toSave) {
+        if (toSave == null) {
+            toSave = Pref.getString("desert_sync_master_ip", "");
+        }
+        if (toSave.equals(newIP)) return;
+        final String backup = PersistentStore.getString(PREF_OASISIP);
+        if (!toSave.equals(backup) && (!emptyString(toSave))) {
+            PersistentStore.setString(PREF_OASISIP, toSave);
+            UserError.Log.d(TAG, "Saving to backup: " + toSave);
+        }
     }
 
     public static String getOasisBackupIP() {
@@ -360,6 +367,26 @@ public class DesertComms {
                     break;
             }
         }
+    }
+
+    // megastatus
+
+    // data for MegaStatus
+    public static List<StatusItem> megaStatus() {
+        final List<StatusItem> l = new ArrayList<>();
+        if (Home.get_follower()) {
+            if (emptyString(getOasisIP())) {
+                l.add(new StatusItem("Desert Master", "Not known yet - needs QR code scan?"));
+            } else {
+                l.add(new StatusItem("Desert Master", getOasisIP(), RouteTools.reachable(getOasisIP()) ? StatusItem.Highlight.NORMAL : StatusItem.Highlight.BAD));
+            }
+            if (Home.get_engineering_mode()) {
+                l.add(new StatusItem("Desert Backup", getOasisBackupIP()));
+                l.add(new StatusItem("Our IP", RouteTools.getBestInterfaceAddress()));
+            }
+        }
+
+        return l;
     }
 
 }

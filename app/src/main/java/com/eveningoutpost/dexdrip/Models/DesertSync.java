@@ -16,6 +16,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.UtilityModels.desertsync.DesertComms;
 import com.eveningoutpost.dexdrip.UtilityModels.desertsync.RouteTools;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
@@ -374,7 +375,7 @@ public class DesertSync extends PlusModel {
                     if (!emptyString(lastUsedIP)) {
                         UserError.Log.uel(TAG, "Our IP appears to have changed from: " + lastUsedIP + " to " + currentIP + " sending notification to peers");
                         UserError.Log.d(TAG, "check ip change send ping");
-                        GcmActivity.requestPing();
+                        GcmActivity.desertPing();
                     }
                     lastUsedIP = currentIP;
 
@@ -546,6 +547,19 @@ public class DesertSync extends PlusModel {
         new Delete()
                 .from(DesertSync.class)
                 .execute();
+    }
+
+    // megastatus
+
+    // data for MegaStatus
+    public static List<StatusItem> megaStatus() {
+        final List<StatusItem> l = new ArrayList<>();
+        if (isEnabled()) {
+            if (Home.get_follower()) {
+                l.addAll(DesertComms.megaStatus());
+            }
+        }
+        return l;
     }
 
 }
