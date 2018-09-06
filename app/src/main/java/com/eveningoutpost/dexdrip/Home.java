@@ -2401,7 +2401,13 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         lowPredictText.setText("");
         lowPredictText.setVisibility(View.INVISIBLE);
         if (BgGraphBuilder.low_occurs_at > 0) {
-            final double low_predicted_alarm_minutes = Double.parseDouble(Pref.getString("low_predict_alarm_level", "50"));
+
+            double low_predicted_alarm_minutes;
+            try {
+                low_predicted_alarm_minutes = JoH.tolerantParseDouble(Pref.getString("low_predict_alarm_level", "50"));
+            } catch (NumberFormatException e) {
+                low_predicted_alarm_minutes = 50;
+            }
             final double now = JoH.ts();
             final double predicted_low_in_mins = (BgGraphBuilder.low_occurs_at - now) / 60000;
 
