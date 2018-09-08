@@ -4,30 +4,56 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Services.PlusSyncService;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 
-/**
- * Created by Emma Black on 11/3/14.
- */
+// jamorham
+
 public class AutoStart extends BroadcastReceiver {
+
+    private static final String TAG = "AutoStart";
+
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.d("DexDrip", "Service auto starter, starting!");
-        //CollectionServiceStarter.newStart(context);
-        CollectionServiceStarter.restartCollectionServiceBackground();
-        PlusSyncService.startSyncService(context, "AutoStart");
+        if (intent == null) return;
+        // TODO add intent action filter
 
-        if (Pref.getBooleanDefaultFalse("show_home_on_boot")) {
-            Inevitable.task("show_home_on_boot", 5000, new Runnable() {
-                @Override
-                public void run() {
-                    Home.startHomeWithExtra(xdrip.getAppContext(), "auto-start", "start");
-                }
-            });
+        try {
+            UserError.Log.ueh(TAG, "Device Rebooted - Auto Start: " + intent.getAction());
+        } catch (Exception e) {
+            //
+        }
+
+
+        try {
+            CollectionServiceStarter.restartCollectionServiceBackground();
+        } catch (Exception e) {
+            UserError.Log.wtf(TAG, "Failed to start collector: " + e);
+        }
+
+
+        try {
+            PlusSyncService.startSyncService(context, "AutoStart");
+
+        } catch (Exception e) {
+            UserError.Log.wtf(TAG, "Failed to start sync service: " + e);
+        }
+
+
+        try {
+            if (Pref.getBooleanDefaultFalse("show_home_on_boot")) {
+                Inevitable.task("show_home_on_boot", 5000, new Runnable() {
+                    @Override
+                    public void run() {
+                        Home.startHomeWithExtra(xdrip.getAppContext(), "auto-start", "start");
+                    }
+                });
+            }
+        } catch (Exception e) {
+            UserError.Log.wtf(TAG, "Failed to start home: " + e);
         }
     }
 }
