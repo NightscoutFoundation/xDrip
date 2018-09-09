@@ -13,6 +13,7 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 
@@ -53,8 +54,9 @@ public class StopSensor extends ActivityWithMenu {
         });
     }
 
-    public static void stop() {
+    public synchronized static void stop() {
         Sensor.stopSensor();
+        Inevitable.task("stop-sensor",1000, Sensor::stopSensor);
         AlertPlayer.getPlayer().stopAlert(xdrip.getAppContext(), true, false);
 
         JoH.static_toast_long("Sensor stopped");

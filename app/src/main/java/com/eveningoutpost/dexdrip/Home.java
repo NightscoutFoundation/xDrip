@@ -59,6 +59,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
+import com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Dex_Constants;
 import com.eveningoutpost.dexdrip.Models.Accuracy;
 import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
@@ -142,6 +143,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -162,6 +164,7 @@ import lecho.lib.hellocharts.listener.ViewportChangeListener;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.view.LineChartView;
 import lecho.lib.hellocharts.view.PreviewLineChartView;
+import lombok.Getter;
 
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.X;
@@ -297,6 +300,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     private static ShowcaseView myShowcase;
     private static Activity mActivity;
 
+    @Getter
     private static String statusIOB = "";
     private static String statusBWP = "";
 
@@ -601,6 +605,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             showcasemenu(SHOWCASE_VARIANT);
         }
 
+
+        currentBgValueText.setText(""); // clear any design prototyping default
 
         if (checkedeula && is_newbie && ((dialog == null) || !dialog.isShowing())) {
             if (!SdcardImportExport.handleBackup(this)) {
@@ -1384,12 +1390,15 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             thisuuid = (end > 0 ? allWords.substring(0, end) : "");
             allWords = allWords.substring(end + 6, allWords.length());
         }
+        byte[] RTL_BYTES = {(byte)0xE2, (byte)0x80, (byte)0x8f}; // See https://stackoverflow.com/questions/21470476/why-is-e2808f-being-added-to-my-youtube-embed-code
+       
         allWords = allWords.trim();
         allWords = allWords.replaceAll(":", "."); // fix real times
         allWords = allWords.replaceAll("(\\d)([a-zA-Z])", "$1 $2"); // fix like 22mm
         allWords = allWords.replaceAll("([0-9]\\.[0-9])([0-9][0-9])", "$1 $2"); // fix multi number order like blood 3.622 grams
+        allWords = allWords.replaceAll(new String(RTL_BYTES, StandardCharsets.UTF_8),"");
         allWords = allWords.toLowerCase();
-
+        
         Log.d(TAG, "Processing speech input allWords second: " + allWords + " UUID: " + thisuuid);
 
         if (allWords.contentEquals("delete last treatment")
@@ -1803,8 +1812,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
     @Override
     protected void onResume() {
-        xdrip.checkForcedEnglish(xdrip.getAppContext());
         super.onResume();
+        xdrip.checkForcedEnglish(xdrip.getAppContext());
         handleFlairColors();
         checkEula();
         set_is_follower();
@@ -1826,9 +1835,11 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         _broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context ctx, Intent intent) {
-                if (intent.getAction().compareTo(Intent.ACTION_TIME_TICK) == 0) {
-                    updateCurrentBgInfo("time tick");
-                    updateHealthInfo("time_tick");
+                if (intent.getAction() != null && intent.getAction().equals(Intent.ACTION_TIME_TICK)) {
+                    Inevitable.task("process-time-tick", 300, () -> runOnUiThread(() -> {
+                        updateCurrentBgInfo("time tick");
+                        updateHealthInfo("time_tick");
+                    }));
                 }
             }
         };
@@ -1950,6 +1961,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         }
         chart.setBackgroundColor(getCol(X.color_home_chart_background));
         chart.setZoomType(ZoomType.HORIZONTAL);
+
+        chart.getChartData().setAxisXTop(null);
 
         //Transmitter Battery Level
         final Sensor sensor = Sensor.currentSensor();
@@ -2161,7 +2174,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     }
 
     public void sourceWizardButtonClick(View v) {
-        SourceWizard.start(this);
+        SourceWizard.start(this, true);
     }
 
     private long whichTimeLocked() {
@@ -2188,6 +2201,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         holdViewport.top = moveViewPort.top;
         holdViewport.bottom = moveViewPort.bottom;
         chart.setCurrentViewport(holdViewport);
+
         previewChart.setCurrentViewport(holdViewport);
     }
 
@@ -2324,7 +2338,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         } else if (is_follower || collector.equals(DexCollectionType.NSEmulator)) {
             displayCurrentInfo();
             Notifications.start();
-        } else if (!alreadyDisplayedBgInfoCommon && DexCollectionType.getDexCollectionType() == DexCollectionType.LibreAlarm) {
+        } else if (!alreadyDisplayedBgInfoCommon && (DexCollectionType.getDexCollectionType() == DexCollectionType.LibreAlarm || collector == DexCollectionType.Medtrum)) {
             updateCurrentBgInfoCommon(collector, notificationText);
         }
         if (collector.equals(DexCollectionType.Disabled)) {
@@ -2336,7 +2350,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                     public void run() {
                         if ((dialog == null || !dialog.isShowing())) {
                             if (JoH.ratelimit("start_source_wizard", 30)) {
-                                SourceWizard.start(activity);
+                                SourceWizard.start(activity, false);
                             }
                         }
                     }
@@ -2387,7 +2401,13 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         lowPredictText.setText("");
         lowPredictText.setVisibility(View.INVISIBLE);
         if (BgGraphBuilder.low_occurs_at > 0) {
-            final double low_predicted_alarm_minutes = Double.parseDouble(Pref.getString("low_predict_alarm_level", "50"));
+
+            double low_predicted_alarm_minutes;
+            try {
+                low_predicted_alarm_minutes = JoH.tolerantParseDouble(Pref.getString("low_predict_alarm_level", "50"));
+            } catch (NumberFormatException e) {
+                low_predicted_alarm_minutes = 50;
+            }
             final double now = JoH.ts();
             final double predicted_low_in_mins = (BgGraphBuilder.low_occurs_at - now) / 60000;
 
@@ -2543,7 +2563,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
         // TODO this logic needed a rework even a year ago, now its a lot more confused with the additional complexity of native mode
         if (Ob1G5CollectionService.isG5ActiveButUnknownState() && Calibration.latestValid(2).size() < 2) {
-            notificationText.setText("G5 State isn't currently known. Next connection will update this");
+            // TODO use format string
+            notificationText.setText((Ob1G5StateMachine.usingG6() ? "G6" : "G5") + " State isn't currently known. Next connection will update this");
             showUncalibratedSlope();
         } else {
 
@@ -3517,10 +3538,15 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
         switch (item.getItemId()) {
             case R.id.action_resend_last_bg:
+<<<<<<< HEAD
                 startService(new Intent(this, WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_RESEND));
                 if(Pref.getBoolean("pref_amazfit_enable_key", true)) {
                     Amazfitservice.start("xDrip_synced_SGV_data");
                 }
+=======
+                WatchUpdaterService.startServiceAndResendData(0);
+                if(Pref.getBoolean("pref_amazfit_enable_key", true)) JoH.startService(Amazfitservice.class);
+>>>>>>> upstream/master
                 break;
             case R.id.action_open_watch_settings:
                 startService(new Intent(this, WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_OPEN_SETTINGS));

@@ -44,7 +44,7 @@ import rx.Observable;
 import rx.functions.Action1;
 
 
-public class ShareTest extends Activity {
+public class ShareTest extends BaseActivity {
     private final static String TAG = ShareTest.class.getSimpleName();
     Button button;
     Button closeButton;

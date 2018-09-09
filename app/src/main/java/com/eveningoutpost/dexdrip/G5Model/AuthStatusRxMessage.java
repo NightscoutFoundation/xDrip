@@ -10,7 +10,7 @@ import java.nio.ByteOrder;
 /**
  * Created by joeginley on 3/16/16.
  */
-public class AuthStatusRxMessage extends TransmitterMessage {
+public class AuthStatusRxMessage extends BaseMessage {
     public static final int opcode = 0x5;
     public int authenticated;
     public int bonded;

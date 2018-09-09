@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
-public class WearVoiceActivity extends Activity {
+public class WearVoiceActivity extends BaseActivity {
 
     final static boolean debug = true;
     final static String TAG = "jamorham wearvoice";

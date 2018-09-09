@@ -91,7 +91,7 @@ public class Sensor extends Model {
         sensor.save();
     }
 
-    public static void stopSensor() {
+    public synchronized static void stopSensor() {
         Sensor sensor = currentSensor();
         if(sensor == null) {
             return;

@@ -6,7 +6,7 @@ import android.webkit.WebView;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 
-public class HelpActivity extends AppCompatActivity {
+public class HelpActivity extends BaseAppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

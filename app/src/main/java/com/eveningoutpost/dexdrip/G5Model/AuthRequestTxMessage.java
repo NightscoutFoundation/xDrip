@@ -13,7 +13,7 @@ import static com.eveningoutpost.dexdrip.utils.CipherUtils.getRandomKey;
  * Created by joeginley on 3/16/16.
  */
 @SuppressWarnings("FieldCanBeLocal")
-public class AuthRequestTxMessage extends TransmitterMessage {
+public class AuthRequestTxMessage extends BaseMessage {
     public final byte opcode = 0x01;
     public byte[] singleUseToken;
     private final byte endByteStd = 0x2;

@@ -18,12 +18,15 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Inevitable {
 
     private static final String TAG = Inevitable.class.getSimpleName();
-    private static final int MAX_QUEUE_TIME = (int) Constants.MINUTE_IN_MS * 5;
+    private static final int MAX_QUEUE_TIME = (int) Constants.MINUTE_IN_MS * 6;
     private static final boolean d = true;
 
     private static final ConcurrentHashMap<String, Task> tasks = new ConcurrentHashMap<>();
 
     public static synchronized void task(final String id, long idle_for, Runnable runnable) {
+        if (idle_for > MAX_QUEUE_TIME) {
+            throw new RuntimeException(id + " Requested time: " + idle_for + " beyond max queue time");
+        }
         final Task task = tasks.get(id);
         if (task != null) {
             // if it already exists then extend the time
@@ -60,6 +63,17 @@ public class Inevitable {
         }
     }
 
+    public static synchronized void stackableTask(String id, long idle_for, Runnable runnable) {
+        int stack = 0;
+        while (tasks.get(id = id + "-" + stack) != null) {
+            stack++;
+        }
+        if (stack > 0) {
+            UserError.Log.d(TAG, "Task stacked to: " + id);
+        }
+        task(id, idle_for, runnable);
+    }
+
     public static void kill(final String id) {
         tasks.remove(id);
     }
@@ -83,12 +97,12 @@ public class Inevitable {
         public boolean poll() {
             final long till = JoH.msTill(when);
             if (till < 1) {
-                if (d) UserError.Log.d(TAG, "Executing task!");
+                if (d) UserError.Log.d(TAG, "Executing task! " + this.id);
                 tasks.remove(this.id); // early remove to allow overlapping scheduling
                 what.run();
                 return true;
             } else if (till > MAX_QUEUE_TIME) {
-                UserError.Log.wtf(TAG, "In queue too long: " + till);
+                UserError.Log.wtf(TAG, "Task: " + this.id + " In queue too long: " + till);
                 tasks.remove(this.id);
                 return true;
             }

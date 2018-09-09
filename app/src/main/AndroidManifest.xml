@@ -20,7 +20,8 @@
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.READ_CONTACTS"/>
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <uses-permission-sdk-23 android:name="android.permission.CAMERA" />
     <uses-permission-sdk-23 android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -58,7 +59,7 @@
             android:value="41" />
         <meta-data
             android:name="AA_MODELS"
-            android:value="com.eveningoutpost.dexdrip.Models.ActiveBgAlert,com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice,com.eveningoutpost.dexdrip.Models.AlertType,com.eveningoutpost.dexdrip.Models.BgReading,com.eveningoutpost.dexdrip.Models.BgReading,com.eveningoutpost.dexdrip.Models.Calibration,com.eveningoutpost.dexdrip.Models.Calibration,com.eveningoutpost.dexdrip.Models.CalibrationRequest,com.eveningoutpost.dexdrip.Models.Sensor,com.eveningoutpost.dexdrip.Models.TransmitterData,com.eveningoutpost.dexdrip.Models.Treatments,com.eveningoutpost.dexdrip.Models.UserError,com.eveningoutpost.dexdrip.Models.UserNotification,com.eveningoutpost.dexdrip.ShareModels.Models,com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue,com.eveningoutpost.dexdrip.UtilityModels.CalibrationSendQueue,com.eveningoutpost.dexdrip.UtilityModels.SensorSendQueue,com.eveningoutpost.dexdrip.Models.HeartRate,com.eveningoutpost.dexdrip.Models.StepCounter,com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue,com.eveningoutpost.dexdrip.Models.BloodTest,com.eveningoutpost.dexdrip.Models.Accuracy,com.eveningoutpost.dexdrip.Models.Reminder,com.eveningoutpost.dexdrip.Models.LibreData,com.eveningoutpost.dexdrip.Models.LibreBlock,com.eveningoutpost.dexdrip.Models.APStatus,com.eveningoutpost.dexdrip.Models.Prediction" />
+            android:value="com.eveningoutpost.dexdrip.Models.ActiveBgAlert,com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice,com.eveningoutpost.dexdrip.Models.AlertType,com.eveningoutpost.dexdrip.Models.BgReading,com.eveningoutpost.dexdrip.Models.BgReading,com.eveningoutpost.dexdrip.Models.Calibration,com.eveningoutpost.dexdrip.Models.Calibration,com.eveningoutpost.dexdrip.Models.CalibrationRequest,com.eveningoutpost.dexdrip.Models.Sensor,com.eveningoutpost.dexdrip.Models.TransmitterData,com.eveningoutpost.dexdrip.Models.Treatments,com.eveningoutpost.dexdrip.Models.UserError,com.eveningoutpost.dexdrip.Models.UserNotification,com.eveningoutpost.dexdrip.ShareModels.Models,com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue,com.eveningoutpost.dexdrip.UtilityModels.CalibrationSendQueue,com.eveningoutpost.dexdrip.UtilityModels.SensorSendQueue,com.eveningoutpost.dexdrip.Models.HeartRate,com.eveningoutpost.dexdrip.Models.StepCounter,com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue,com.eveningoutpost.dexdrip.Models.BloodTest,com.eveningoutpost.dexdrip.Models.Accuracy,com.eveningoutpost.dexdrip.Models.Reminder,com.eveningoutpost.dexdrip.Models.LibreData,com.eveningoutpost.dexdrip.Models.LibreBlock,com.eveningoutpost.dexdrip.Models.APStatus,com.eveningoutpost.dexdrip.Models.Prediction,com.eveningoutpost.dexdrip.Models.DesertSync" />
 
         <provider
             android:name="com.activeandroid.content.ContentProvider"
@@ -175,6 +176,12 @@
             <intent-filter>
                 <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
                 <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".utils.HeadsetStateReceiver">
+            <intent-filter>
+                <action android:name="android.bluetooth.headset.profile.action.CONNECTION_STATE_CHANGED" />
+                <action android:name="android.bluetooth.headset.profile.action.AUDIO_STATE_CHANGED" />
             </intent-filter>
         </receiver>
         <receiver
@@ -320,7 +327,11 @@
         <service
             android:name=".insulin.pendiq.PendiqService"
             android:enabled="true"
-            android:exported="false"/>
+            android:exported="false" />
+        <service
+            android:name=".cgm.medtrum.MedtrumCollectionService"
+            android:enabled="true"
+            android:exported="false" />
 
         <activity
             android:name=".ShareTest"
@@ -483,6 +494,7 @@
             android:name=".utils.DisplayQRCode"
             android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_display_qrcode"
+            android:exported="false"
             android:noHistory="true" />
         <activity
             android:name=".utils.LibreTrendGraph"
@@ -620,6 +632,9 @@
         <activity
             android:name=".eassist.EmergencyAssistActivity"
             android:label="@string/emergency_messages" />
+        <activity
+            android:name=".ui.activities.SelectAudioDevice"
+            android:label="@string/select_device" />
     </application>
 
 </manifest>

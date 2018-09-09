@@ -8,8 +8,6 @@ public class LibreUtils {
 
     private static final String TAG = LibreUtils.class.getSimpleName();
 
-    private static final boolean testWithDeadSensor = false; // never in production
-
     private final static long[] crc16table = {
             0, 4489, 8978, 12955, 17956, 22445, 25910, 29887, 35912,
             40385, 44890, 48851, 51820, 56293, 59774, 63735, 4225, 264,
@@ -110,12 +108,68 @@ public class LibreUtils {
     
         Log.i(TAG, "Sensor status is: " + sensorStatusString);
     
-        if (testWithDeadSensor) return true;
+        
+        
+        
+        if (allowTestingWithDeadSensor()) {
+            Log.e(TAG, "Warning allow to use a dead sensor");
+            return true;
+        }
     
         if (!ret) {
             Home.toaststaticnext("Can't use this sensor as it is " + sensorStatusString);
         }
     
         return ret;
+    }
+    
+    public static boolean allowTestingWithDeadSensor() {
+        return Pref.getBooleanDefaultFalse("engineering_mode") && 
+               Pref.getBooleanDefaultFalse("allow_testing_with_dead_sensor");
+    }
+    
+    // This is the function that all should read (only the correct 8 bytes)
+    // Since I don't have a blukon to test, not changing decodeSerialNumber
+    public static String decodeSerialNumberKey(byte[] input) {
+        byte[] serialBuffer = new byte[3+8];
+        System.arraycopy(input,0, serialBuffer, 3, 8);
+        return decodeSerialNumber( serialBuffer);
+    }
+    
+    
+    // This function assumes that the UID is starting at place 3, and is 8 bytes long
+    public static String decodeSerialNumber(byte[] input) {
+        
+        String lookupTable[] =
+                {
+                        "0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
+                        "A", "C", "D", "E", "F", "G", "H", "J", "K", "L",
+                        "M", "N", "P", "Q", "R", "T", "U", "V", "W", "X",
+                        "Y", "Z"
+                };
+        byte[] uuidShort = new byte[]{0, 0, 0, 0, 0, 0, 0, 0};
+        int i;
+
+        for (i = 2; i < 8; i++) uuidShort[i - 2] = input[(2 + 8) - i];
+        uuidShort[6] = 0x00;
+        uuidShort[7] = 0x00;
+
+        String binary = "";
+        String binS = "";
+        for (i = 0; i < 8; i++) {
+            binS = String.format("%8s", Integer.toBinaryString(uuidShort[i] & 0xFF)).replace(' ', '0');
+            binary += binS;
+        }
+        
+        String v = "0";
+        char[] pozS = {0, 0, 0, 0, 0};
+        for (i = 0; i < 10; i++) {
+            for (int k = 0; k < 5; k++) pozS[k] = binary.charAt((5 * i) + k);
+            int value = (pozS[0] - '0') * 16 + (pozS[1] - '0') * 8 + (pozS[2] - '0') * 4 + (pozS[3] - '0') * 2 + (pozS[4] - '0') * 1;
+            v += lookupTable[value];
+        }
+        Log.e(TAG, "decodeSerialNumber=" + v);
+
+        return v;
     }
 }

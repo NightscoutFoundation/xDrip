@@ -9,6 +9,7 @@ import android.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.Services.DailyIntentService;
 import com.eveningoutpost.dexdrip.Services.DexCollectionService;
@@ -25,6 +26,9 @@ import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.Calendar;
+
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.Medtrum;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getCollectorServiceClass;
 
 /**
  * Created by Emma Black on 12/22/14.
@@ -166,9 +170,17 @@ public class CollectionServiceStarter {
         return collection_method.equals("Follower");
     }
 
-    public static void newStart(Context context) {
-        CollectionServiceStarter collectionServiceStarter = new CollectionServiceStarter(context);
-        collectionServiceStarter.start(context);
+    private static void newStart(final Context context) {
+        new CollectionServiceStarter(context).start(context);
+    }
+
+    public void stopAll() {
+        stopBtShareService();
+        stopBtWixelService();
+        stopWifWixelThread();
+        stopFollowerThread();
+        stopG5Service();
+        JoH.stopService(getCollectorServiceClass(Medtrum));
     }
 
     public void start(Context context, String collection_method) {
@@ -181,7 +193,7 @@ public class CollectionServiceStarter {
             stopWifWixelThread();
             stopBtShareService();
             stopFollowerThread();
-            stopG5ShareService();
+            stopG5Service();
 
             if (prefs.getBoolean("wear_sync", false)) {//KS
                 boolean enable_wearG5 = prefs.getBoolean("enable_wearG5", false);
@@ -199,7 +211,7 @@ public class CollectionServiceStarter {
             stopBtWixelService();
             stopFollowerThread();
             stopBtShareService();
-            stopG5ShareService();
+            stopG5Service();
 
             startWifWixelThread();
         } else if (isBTShare(collection_method)) {
@@ -207,7 +219,7 @@ public class CollectionServiceStarter {
             stopBtWixelService();
             stopFollowerThread();
             stopWifWixelThread();
-            stopG5ShareService();
+            stopG5Service();
 
             if (prefs.getBoolean("wear_sync", false)) {//KS
                 boolean enable_wearG5 = prefs.getBoolean("enable_wearG5", false);
@@ -247,7 +259,7 @@ public class CollectionServiceStarter {
             stopFollowerThread();
             stopWifWixelThread();
             stopBtShareService();
-            stopG5ShareService();
+            stopG5Service();
 
             // start both
             Log.d("DexDrip", "Starting wifi wixel collector first");
@@ -269,9 +281,14 @@ public class CollectionServiceStarter {
             stopWifWixelThread();
             stopBtShareService();
             stopBtWixelService();
-            stopG5ShareService();
+            stopG5Service();
 
             startFollowerThread();
+        } else {
+            if (DexCollectionType.hasBluetooth()) {
+                Log.d("DexDrip","Starting service based on collector lookup");
+                JoH.startService(DexCollectionType.getCollectorServiceClass());
+            }
         }
 
         if (prefs.getBoolean("broadcast_to_pebble", false) && (PebbleUtil.getCurrentPebbleSyncType() != 1)) {
@@ -282,17 +299,6 @@ public class CollectionServiceStarter {
         startDailyIntentService();
         Log.d(TAG, collection_method);
 
-      /*  // Start logging to logcat
-        if (prefs.getBoolean("store_logs", false)) {
-            String filePath = Environment.getExternalStorageDirectory() + "/xdriplogcat.txt";
-            try {
-                String[] cmd = {"/system/bin/sh", "-c", "ps | grep logcat  || logcat -f " + filePath +
-                        " -v threadtime AlertPlayer:V com.eveningoutpost.dexdrip.Services.WixelReader:V *:E "};
-                Runtime.getRuntime().exec(cmd);
-            } catch (IOException e2) {
-                Log.e(TAG, "running logcat failed, is the device rooted?", e2);
-            }
-        }*/
 
     }
 
@@ -303,12 +309,13 @@ public class CollectionServiceStarter {
         start(context, collection_method);
     }
 
-    public CollectionServiceStarter(Context context) {
+    // private constructer, use static methods to start
+    private CollectionServiceStarter(Context context) {
         if (context == null) context = xdrip.getAppContext();
         this.mContext = context;
     }
 
-    public static void restartCollectionService() {
+    private static void restartCollectionService() {
         restartCollectionService(xdrip.getAppContext());
     }
 
@@ -316,25 +323,18 @@ public class CollectionServiceStarter {
         Inevitable.task("restart-collection-service",500,() -> restartCollectionService(xdrip.getAppContext()));
     }
 
+
     public static void restartCollectionService(Context context) {
         if (context == null) context = xdrip.getAppContext();
-        CollectionServiceStarter collectionServiceStarter = new CollectionServiceStarter(context);
-        collectionServiceStarter.stopBtShareService();
-        collectionServiceStarter.stopBtWixelService();
-        collectionServiceStarter.stopWifWixelThread();
-        collectionServiceStarter.stopFollowerThread();
-        collectionServiceStarter.stopG5ShareService();
-        collectionServiceStarter.start(context);
+        final CollectionServiceStarter collectionServiceStarter = new CollectionServiceStarter(context);
+        collectionServiceStarter.stopAll();
+        Inevitable.task("restart-collection-service-start", 1000, () -> collectionServiceStarter.start(xdrip.getAppContext()));
     }
 
     public static void restartCollectionService(Context context, String collection_method) {
         Log.d(TAG, "restartCollectionService: " + collection_method);
         CollectionServiceStarter collectionServiceStarter = new CollectionServiceStarter(context);
-        collectionServiceStarter.stopBtShareService();
-        collectionServiceStarter.stopBtWixelService();
-        collectionServiceStarter.stopWifWixelThread();
-        collectionServiceStarter.stopFollowerThread();
-        collectionServiceStarter.stopG5ShareService();
+        collectionServiceStarter.stopAll();
         collectionServiceStarter.start(context, collection_method);
     }
 
@@ -349,6 +349,8 @@ public class CollectionServiceStarter {
             case DexcomG5:
                 collectionServiceStarter.startBtG5Service();
                 break;
+            case Medtrum:
+                JoH.startService(getCollectorServiceClass(Medtrum));
             default:
                 collectionServiceStarter.startBtWixelService();
                 break;
@@ -360,7 +362,7 @@ public class CollectionServiceStarter {
         CollectionServiceStarter collectionServiceStarter = new CollectionServiceStarter(context);
         collectionServiceStarter.stopBtShareService();
         collectionServiceStarter.stopBtWixelService();
-        collectionServiceStarter.stopG5ShareService();
+        collectionServiceStarter.stopG5Service();
         Log.d(TAG, "stopBtService should have called onDestroy");
     }
 
@@ -385,7 +387,7 @@ public class CollectionServiceStarter {
 
     private void startBtG5Service() {
         Log.d(TAG,"stopping G5 service");
-        stopG5ShareService();
+        stopG5Service();
         Log.d(TAG, "starting G5 service");
         //if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
        if (!Pref.getBooleanDefaultFalse(Ob1G5CollectionService.OB1G5_PREFS)) {
@@ -446,7 +448,7 @@ public class CollectionServiceStarter {
         this.mContext.stopService(new Intent(this.mContext, DoNothingService.class));
     }
 
-    private void stopG5ShareService() {
+    private void stopG5Service() {
         Log.d(TAG, "stopping G5  service");
         G5CollectionService.keep_running = false; // ensure zombie stays down
         this.mContext.stopService(new Intent(this.mContext, G5CollectionService.class));

@@ -20,6 +20,7 @@ import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Experience;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
@@ -164,7 +165,7 @@ public class StartNewSensor extends ActivityWithMenu {
     }
 
     private void realStartSensor() {
-        if (Ob1G5StateMachine.usingG6()) {
+        if (Ob1G5CollectionService.usingCollector() && Ob1G5StateMachine.usingG6()) {
             G6CalibrationCodeDialog.ask(this, this::realRealStartSensor);
         } else {
             realRealStartSensor();
@@ -182,12 +183,12 @@ public class StartNewSensor extends ActivityWithMenu {
 
         LibreAlarmReceiver.clearSensorStats();
         // TODO this is just a timer and could be confusing - consider removing this notification
-        JoH.scheduleNotification(xdrip.getAppContext(), "Sensor should be ready", xdrip.getAppContext().getString(R.string.please_enter_two_calibrations_to_get_started), 60 * 130, Home.SENSOR_READY_ID);
+       // JoH.scheduleNotification(xdrip.getAppContext(), "Sensor should be ready", xdrip.getAppContext().getString(R.string.please_enter_two_calibrations_to_get_started), 60 * 130, Home.SENSOR_READY_ID);
 
         // reverse libre hacky workaround
         Treatments.SensorStart((DexCollectionType.hasLibre() ? startTime + (3600000) : startTime));
 
-        CollectionServiceStarter.newStart(xdrip.getAppContext());
+        CollectionServiceStarter.restartCollectionServiceBackground();
 
         Ob1G5StateMachine.startSensor(startTime);
         JoH.clearCache();

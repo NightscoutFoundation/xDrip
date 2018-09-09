@@ -76,6 +76,8 @@
     public static ** test();
 }
 
+-keep public class * implements **.BitmapCacheProvider
+
 -keepclassmembers class rx.internal.util.unsafe.*ArrayQueue*Field* {
     long producerIndex;
     long consumerIndex;

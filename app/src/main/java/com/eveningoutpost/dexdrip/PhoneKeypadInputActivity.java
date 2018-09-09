@@ -30,7 +30,7 @@ import static com.eveningoutpost.dexdrip.Home.startHomeWithExtra;
 
 // jamorham xdrip plus
 
-public class PhoneKeypadInputActivity extends Activity {
+public class PhoneKeypadInputActivity extends BaseActivity {
 
     private TextView mDialTextView;
     private Button zeroButton, oneButton, twoButton, threeButton, fourButton, fiveButton,

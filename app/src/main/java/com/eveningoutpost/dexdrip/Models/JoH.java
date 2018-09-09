@@ -3,6 +3,7 @@ package com.eveningoutpost.dexdrip.Models;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.AlarmManager;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -992,6 +993,10 @@ public class JoH {
         }
     }
 
+    public static void stopService(Class c) {
+        xdrip.getAppContext().stopService(new Intent(xdrip.getAppContext(), c));
+    }
+
     public static void startService(Class c) {
         xdrip.getAppContext().startService(new Intent(xdrip.getAppContext(), c));
     }
@@ -1170,9 +1175,18 @@ public class JoH {
     }
 
     public static void cancelNotification(int notificationId) {
+<<<<<<< HEAD
         final NotificationManager mNotifyMgr = (NotificationManager) xdrip.getAppContext().getSystemService(Context.NOTIFICATION_SERVICE);
         mNotifyMgr.cancel(notificationId);
 
+=======
+        try {
+            final NotificationManager mNotifyMgr = (NotificationManager) xdrip.getAppContext().getSystemService(Context.NOTIFICATION_SERVICE);
+            mNotifyMgr.cancel(notificationId);
+        } catch (Exception e) {
+            //
+        }
+>>>>>>> upstream/master
     }
 
     public static void showNotification(String title, String content, PendingIntent intent, int notificationId, boolean sound, boolean vibrate, boolean onetime) {
@@ -1547,6 +1561,24 @@ public class JoH {
         bd = bd.setScale(places, RoundingMode.HALF_UP);
         return bd.doubleValue();
     }
-    
+
+    public static boolean isServiceRunningInForeground(Class<?> serviceClass) {
+        final ActivityManager manager = (ActivityManager) xdrip.getAppContext().getSystemService(Context.ACTIVITY_SERVICE);
+        try {
+            for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+                if (serviceClass.getName().equals(service.service.getClassName())) {
+                    return service.foreground;
+                }
+            }
+            return false;
+        } catch (NullPointerException e) {
+            return false;
+        }
+    }
+
+    public static boolean emptyString(String str) {
+        return str == null || str.length() == 0;
+    }
+
 
 }

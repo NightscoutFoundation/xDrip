@@ -77,6 +77,14 @@ public class WebServiceModule {
         return new WebServiceHeart();
     }
 
+    @Provides
+    @Singleton
+    @Named("WebServiceSync")
+    BaseWebService providesWebServiceSync() {
+        if (d) Log.d("INJECT", "creating WebServiceSync");
+        return new WebServiceSync();
+    }
+
 
 
 }

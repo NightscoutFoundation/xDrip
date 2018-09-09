@@ -1625,7 +1625,11 @@ public class G5CollectionService extends G5BaseService {
                 } else {
                     doDisconnectMessage(gatt, characteristic);
                 }
-                processNewTransmitterData(sensorRx.unfiltered, sensorRx.filtered, sensor_battery_level, new Date().getTime());
+
+                // TODO beware that wear G5CollectionService is now getting rather out of sync with app version
+                final boolean g6 = usingG6();
+                processNewTransmitterData(g6 ? sensorRx.unfiltered * G6_SCALING : sensorRx.unfiltered, g6 ? sensorRx.filtered * G6_SCALING : sensorRx.filtered, sensor_battery_level, new Date().getTime());
+
                 // was this the first success after we force enabled always_authenticate?
                 if (force_always_authenticate && (successes == 1)) {
                     Log.wtf(TAG, "We apparently only got a reading after forcing the Always Authenticate option");

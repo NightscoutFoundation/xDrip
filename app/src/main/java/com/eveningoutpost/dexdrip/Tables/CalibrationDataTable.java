@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.eveningoutpost.dexdrip.BaseListActivity;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.NavigationDrawerFragment;
@@ -23,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class CalibrationDataTable extends ListActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+public class CalibrationDataTable extends BaseListActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
     private static final String menu_name = "Calibration Data Table";
     private NavigationDrawerFragment mNavigationDrawerFragment;
 

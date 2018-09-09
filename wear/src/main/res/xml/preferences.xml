@@ -3,85 +3,92 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:key="preferenceScreen">
     <PreferenceCategory
-        android:title="@string/pref_xdrip_bt_settings"
         android:key="collection_category"
-        android:selectable="false">
+        android:selectable="false"
+        android:title="@string/pref_xdrip_bt_settings">
 
         <Preference
             android:defaultValue="DexcomG5"
+            android:editable="false"
             android:key="dex_collection_method"
             android:summary="@string/pref_summary_bt_collection_method"
-            android:title="@string/pref_bt_collection_method"
-            android:editable="false"/>
+            android:title="@string/pref_bt_collection_method" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="enable_wearG5"
             android:summary="@string/pref_summary_enable_wearG5"
-            android:title="@string/pref_enable_wearG5"/>
+            android:title="@string/pref_enable_wearG5" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:dependency="enable_wearG5"
             android:key="force_wearG5"
             android:summary="@string/pref_summary_force_wearG5"
-            android:title="@string/pref_force_wearG5"/>
+            android:title="@string/pref_force_wearG5" />
         <PreferenceScreen
             android:key="button_xdrip_g5_settings_category_key"
-            android:title="@string/pref_xdrip_g5_settings"
-            android:persistent="false">
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:dependency="enable_wearG5"
-            android:key="run_ble_scan_constantly"
-            android:summary="@string/pref_summary_run_ble_scan_constantly"
-            android:title="@string/pref_run_ble_scan_constantly" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:dependency="enable_wearG5"
-            android:key="run_G5_ble_tasks_on_uithread"
-            android:summary="@string/pref_summary_run_G5_ble_tasks_on_uithread"
-            android:title="@string/pref_run_G5_ble_tasks_on_uithread"/>
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:dependency="enable_wearG5"
-            android:key="always_get_new_keys"
-            android:summary="@string/pref_summary_always_get_new_keys"
-            android:title="@string/pref_always_get_new_keys"/>
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:dependency="enable_wearG5"
-            android:key="always_unbond_G5"
-            android:summary="@string/pref_summary_always_unbond_G5"
-            android:title="@string/pref_always_unbond_G5"/>
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:dependency="enable_wearG5"
-            android:key="always-on-screen"
-            android:summary="Force screen always on prior to BT scanning"
-            android:title="Force Screen Always-on"/>
+            android:persistent="false"
+            android:title="@string/pref_xdrip_g5_settings">
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:dependency="enable_wearG5"
+                android:key="run_ble_scan_constantly"
+                android:summary="@string/pref_summary_run_ble_scan_constantly"
+                android:title="@string/pref_run_ble_scan_constantly" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:dependency="enable_wearG5"
+                android:key="run_G5_ble_tasks_on_uithread"
+                android:summary="@string/pref_summary_run_G5_ble_tasks_on_uithread"
+                android:title="@string/pref_run_G5_ble_tasks_on_uithread" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:dependency="enable_wearG5"
+                android:key="always_get_new_keys"
+                android:summary="@string/pref_summary_always_get_new_keys"
+                android:title="@string/pref_always_get_new_keys" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:dependency="enable_wearG5"
+                android:key="always_unbond_G5"
+                android:summary="@string/pref_summary_always_unbond_G5"
+                android:title="@string/pref_always_unbond_G5" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:dependency="enable_wearG5"
+                android:key="always-on-screen"
+                android:summary="Force screen always on prior to BT scanning"
+                android:title="Force Screen Always-on" />
         </PreferenceScreen>
         <CheckBoxPreference
             android:defaultValue="false"
             android:dependency="force_wearG5"
             android:key="bg_notifications"
             android:summary="@string/pref_summary_bg_notifications"
-            android:title="@string/pref_bg_notifications"/>
+            android:title="@string/pref_bg_notifications" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:dependency="bg_notifications"
             android:key="persistent_high_alert_enabled"
             android:summary="@string/pref_summary_persistent_high_alert_enabled"
-            android:title="@string/pref_persistent_high_alert_enabled"/>
+            android:title="@string/pref_persistent_high_alert_enabled" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:dependency="bg_notifications"
+            android:key="alert_use_sounds"
+            android:summary="Use watch speaker if it has one to play alert sound"
+            android:title="Play Sound" />
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="@string/pref_xdrip_watch_settings"
         android:key="category"
-        android:selectable="false">
+        android:selectable="false"
+        android:title="@string/pref_xdrip_watch_settings">
 
-        <CheckBoxPreference android:title="Dark"
+        <CheckBoxPreference
             android:defaultValue="true"
+            android:key="dark"
             android:summary="Dark theme"
-            android:key="dark" />
+            android:title="Dark" />
 
         <!-- TODO: reenable raw
         <CheckBoxPreference android:title="Show Raw"
@@ -97,144 +104,166 @@
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="refresh_on_change"
-            android:title="@string/pref_refresh_on_change"
             android:summary="@string/pref_summary_refresh_on_change"
+            android:title="@string/pref_refresh_on_change"
             app:wear_iconOff="@drawable/settings_off"
             app:wear_iconOn="@drawable/settings_on" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="show_wear_treatments"
-            android:title="@string/pref_show_treatments"
             android:summary="@string/pref_summary_show_treatments"
+            android:title="@string/pref_show_treatments"
             app:wear_iconOff="@drawable/settings_off"
             app:wear_iconOn="@drawable/settings_on" />
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="use24HourFormat"
-            android:title="@string/pref_use_24HourFormat"
             android:summary="@string/pref_summary_use_24HourFormat"
+            android:title="@string/pref_use_24HourFormat"
             app:wear_iconOff="@drawable/settings_off"
             app:wear_iconOn="@drawable/settings_on" />
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="showDate"
-            android:title="@string/pref_show_date"
             android:summary="@string/pref_summary_show_date"
+            android:title="@string/pref_show_date"
             app:wear_iconOff="@drawable/settings_off"
             app:wear_iconOn="@drawable/settings_on" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="overrideLocale"
-            android:title="@string/pref_override_locale"
             android:summary="@string/pref_summary_override_locale"
+            android:title="@string/pref_override_locale"
             app:wear_iconOff="@drawable/settings_off"
             app:wear_iconOn="@drawable/settings_on" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="show_toasts"
-            android:title="@string/pref_show_toasts"
             android:summary="@string/pref_summary_show_toasts"
+            android:title="@string/pref_show_toasts"
             app:wear_iconOff="@drawable/settings_off"
             app:wear_iconOn="@drawable/settings_on" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="showSteps"
-            android:title="@string/pref_show_steps"
             android:summary="@string/pref_summary_show_steps"
+            android:title="@string/pref_show_steps"
             app:wear_iconOff="@drawable/settings_off"
             app:wear_iconOn="@drawable/settings_on" />
         <ListPreference
-            android:key="step_delay_time"
+            android:defaultValue="10"
             android:dependency="showSteps"
-            android:title="@string/pref_step_delay_time"
-            android:summary="@string/pref_summary_step_delay_time"
             android:entries="@array/step_delay_time"
             android:entryValues="@array/step_delay_time_values"
-            android:defaultValue="10" />
+            android:key="step_delay_time"
+            android:summary="@string/pref_summary_step_delay_time"
+            android:title="@string/pref_step_delay_time" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="showHeartRate"
-            android:title="Heart Rate"
             android:summary="Show last BPM"
+            android:title="Heart Rate"
             app:wear_iconOff="@drawable/settings_off"
             app:wear_iconOn="@drawable/settings_on" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="showExternalStatus"
-            android:title="@string/pref_show_external_status"
             android:summary="@string/pref_summary_show_external_status"
+            android:title="@string/pref_show_external_status"
             app:wear_iconOff="@drawable/settings_off"
             app:wear_iconOn="@drawable/settings_on" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="showBridgeBattery"
-            android:title="@string/pref_show_bridge_battery"
             android:summary="@string/pref_summary_show_bridge_battery"
+            android:title="@string/pref_show_bridge_battery"
             app:wear_iconOff="@drawable/settings_off"
             app:wear_iconOn="@drawable/settings_on" />
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="showOpaqueCard"
-            android:title="@string/pref_show_opaque_card"
             android:summary="@string/pref_summary_show_opaque_card"
+            android:title="@string/pref_show_opaque_card"
             app:wear_iconOff="@drawable/settings_off"
             app:wear_iconOn="@drawable/settings_on" />
         <ListPreference
-            android:key="toggle_fontsize"
-            android:title="@string/pref_toggle_fontsize"
-            android:summary="@string/pref_summary_toggle_fontsize"
+            android:defaultValue="1"
             android:entries="@array/toggle_fontsize"
             android:entryValues="@array/toggle_fontsize_values"
-            android:defaultValue="1" />
+            android:key="toggle_fontsize"
+            android:summary="@string/pref_summary_toggle_fontsize"
+            android:title="@string/pref_toggle_fontsize" />
 
         <ListPreference
-            android:key="chart_timeframe"
-            android:title="@string/pref_chart_time"
-            android:summary="@string/pref_summary_chart_time"
+            android:defaultValue="5"
             android:entries="@array/chart_timeframe"
             android:entryValues="@array/chart_timeframe_values"
-            android:defaultValue="5" />
+            android:key="chart_timeframe"
+            android:summary="@string/pref_summary_chart_time"
+            android:title="@string/pref_chart_time" />
 
         <PreferenceScreen
             android:key="button_circlewf_category_key"
-            android:title="@string/pref_circlewf_settings"
-            android:persistent="false">
-        <CheckBoxPreference android:title="@string/pref_show_ago"
-            android:defaultValue="true"
-            android:summary="@string/pref_summary_show_ago"
-            android:key="showAgo" />
+            android:persistent="false"
+            android:title="@string/pref_circlewf_settings">
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="showAgo"
+                android:summary="@string/pref_summary_show_ago"
+                android:title="@string/pref_show_ago" />
 
-        <CheckBoxPreference android:title="@string/pref_show_delta"
-            android:defaultValue="true"
-            android:summary="@string/pref_summary_show_delta"
-            android:key="showDelta" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="showDelta"
+                android:summary="@string/pref_summary_show_delta"
+                android:title="@string/pref_show_delta" />
 
-        <CheckBoxPreference android:title="@string/pref_show_bg"
-            android:defaultValue="true"
-            android:summary="@string/pref_summary_show_bg"
-            android:key="showBG" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="showBG"
+                android:summary="@string/pref_summary_show_bg"
+                android:title="@string/pref_show_bg" />
 
-        <CheckBoxPreference android:title="@string/pref_show_bignumbers"
-            android:defaultValue="false"
-            android:summary="@string/pref_summary_show_bignumbers"
-            android:key="showBigNumbers" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="showBigNumbers"
+                android:summary="@string/pref_summary_show_bignumbers"
+                android:title="@string/pref_show_bignumbers" />
 
-        <CheckBoxPreference android:title="@string/pref_show_ring_history"
-            android:defaultValue="false"
-            android:summary="@string/pref_summary_show_ring_history"
-            android:key="showRingHistory" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="showRingHistory"
+                android:summary="@string/pref_summary_show_ring_history"
+                android:title="@string/pref_show_ring_history" />
 
-        <CheckBoxPreference android:title="@string/pref_show_light_ring_history"
-            android:defaultValue="true"
-            android:summary="@string/pref_summary_show_light_ring_histor"
-            android:key="softRingHistory" />
-
-
-        <CheckBoxPreference android:title="@string/pref_show_animations"
-            android:defaultValue="true"
-            android:summary="@string/pref_summary_show_animations"
-            android:key="animation" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="softRingHistory"
+                android:summary="@string/pref_summary_show_light_ring_histor"
+                android:title="@string/pref_show_light_ring_history" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="animation"
+                android:summary="@string/pref_summary_show_animations"
+                android:title="@string/pref_show_animations" />
         </PreferenceScreen>
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="use_low_bit_mode"
+            android:summary="Always use low color ambient mode"
+            android:title="Low color" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="use_black_divider"
+            android:summary="Divider matches background"
+            android:title="Match Divider" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="has_demigod_mode"
+            android:enabled="false"
+            android:summary="Running on a patched rom giving us full control"
+            android:title="DemiGod Mode" />
+
 
     </PreferenceCategory>
 </PreferenceScreen>

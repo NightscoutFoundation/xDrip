@@ -20,6 +20,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
 import com.eveningoutpost.dexdrip.calibrations.CalibrationAbstract;
+import com.eveningoutpost.dexdrip.calibrations.NativeCalibrationPipe;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.messages.BloodTestMessage;
 import com.eveningoutpost.dexdrip.messages.BloodTestMultiMessage;
@@ -167,7 +168,8 @@ public class BloodTest extends Model {
 
             if ((JoH.msSince(bt.timestamp) < Constants.MINUTE_IN_MS * 5) && (JoH.msSince(bt.timestamp) > 0)) {
                 UserError.Log.d(TAG, "Blood test value recent enough to send to G5");
-                Ob1G5StateMachine.addCalibration((int) bt.mgdl, timestamp_ms);
+                //Ob1G5StateMachine.addCalibration((int) bt.mgdl, timestamp_ms);
+                NativeCalibrationPipe.addCalibration((int) bt.mgdl, timestamp_ms);
             }
 
             return bt;

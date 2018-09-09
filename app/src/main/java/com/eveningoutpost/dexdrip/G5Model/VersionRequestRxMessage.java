@@ -9,7 +9,7 @@ import java.util.Locale;
  */
 
 
-public class VersionRequestRxMessage extends TransmitterMessage {
+public class VersionRequestRxMessage extends BaseMessage {
 
     public static final byte opcode = 0x4B;
 

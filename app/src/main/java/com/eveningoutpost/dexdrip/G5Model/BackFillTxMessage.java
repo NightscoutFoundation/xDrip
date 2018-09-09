@@ -7,7 +7,7 @@ import static com.eveningoutpost.dexdrip.G5Model.DexTimeKeeper.getDexTime;
 
 // created by jamorham
 
-public class BackFillTxMessage extends TransmitterMessage {
+public class BackFillTxMessage extends BaseMessage {
 
     final byte opcode = 0x50;
     final int length = 20;

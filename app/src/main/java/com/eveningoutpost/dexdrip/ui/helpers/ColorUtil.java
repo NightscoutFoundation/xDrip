@@ -49,7 +49,7 @@ public class ColorUtil {
     }
 
     public static int blendColor(@ColorInt int color1, @ColorInt int color2, float ratio) {
-        return ColorUtils.blendARGB(color1, color2, 0.5f);
+        return ColorUtils.blendARGB(color1, color2, ratio);
     }
 
 }

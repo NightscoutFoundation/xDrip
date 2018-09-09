@@ -56,7 +56,7 @@ import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
  *
  */
 @ExtensionMethod({java.util.Arrays.class, ExtensionMethods.class})
-public class EventLogActivity extends AppCompatActivity {
+public class EventLogActivity extends BaseAppCompatActivity {
 
     private static final List<Integer> severitiesList = new ArrayList<>();
     private static final boolean D = false;

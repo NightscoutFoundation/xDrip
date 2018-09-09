@@ -121,8 +121,9 @@ public class Home extends BaseWatchFace {
 
     @Override
     protected void setColorDark() {
+        final boolean matchingDividerBar = Pref.getBooleanDefaultFalse("use_black_divider");
         try {
-            mLinearLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_statusView));
+          //mLinearLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_statusView));
             mTime.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mTime));
             mDate.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mTime));
             mRelativeLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_background));
@@ -159,6 +160,14 @@ public class Home extends BaseWatchFace {
 
             mStatus.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mStatus_home));
 
+            mLinearLayout.setBackgroundColor(matchingDividerBar ? Color.BLACK : Color.WHITE);
+
+            mTimestamp.setTextColor(ContextCompat.getColor(getApplicationContext(), matchingDividerBar ? R.color.dark_mTime : R.color.dark_mStatus_home));
+            mUploaderBattery.setTextColor(ContextCompat.getColor(getApplicationContext(), matchingDividerBar ? R.color.dark_mTime : R.color.dark_mStatus_home));
+            mUploaderXBattery.setTextColor(ContextCompat.getColor(getApplicationContext(), matchingDividerBar ? R.color.dark_mTime : R.color.dark_mStatus_home));
+            mStatus.setTextColor(ContextCompat.getColor(getApplicationContext(), matchingDividerBar ? R.color.dark_mTime : R.color.dark_mStatus_home));
+
+
             if (chart != null) {
                 highColor = ContextCompat.getColor(getApplicationContext(), R.color.dark_highColor);
                 lowColor = ContextCompat.getColor(getApplicationContext(), R.color.dark_lowColor);
@@ -180,10 +189,10 @@ public class Home extends BaseWatchFace {
             mSgv.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor));
             mDelta.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor));
             mDirection.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor));
-            mTimestamp.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mTimestamp1_home));
-            mUploaderBattery.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_uploaderBattery));
-            mUploaderXBattery.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_uploaderBattery));
-            mStatus.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mStatus_home));
+            mTimestamp.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mTime));
+            mUploaderBattery.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mTime));
+            mUploaderXBattery.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mTime));
+            mStatus.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mTime));
             if (chart != null) {
                 highColor = ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor);
                 lowColor = ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor);
@@ -191,6 +200,10 @@ public class Home extends BaseWatchFace {
                 pointSize = 2;
                 setupCharts();
             }
+
+            mLinearLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_background));
+
+
         } catch (NullPointerException e) {
             Log.e(TAG, "Null pointer exception in setColorLowRes: " + e);
         }
@@ -200,6 +213,8 @@ public class Home extends BaseWatchFace {
     @Override
     protected void setColorBright() {
         try {
+
+            final boolean matchingDividerBar = !Pref.getBooleanDefaultFalse("use_black_divider");
             if (getCurrentWatchMode() == WatchMode.INTERACTIVE) {
                 mLinearLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.light_stripe_background));
                 mRelativeLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.light_background));
@@ -238,6 +253,17 @@ public class Home extends BaseWatchFace {
 
                 mTime.setTextColor(Color.BLACK);
                 mDate.setTextColor(Color.BLACK);
+
+                mLinearLayout.setBackgroundColor(Color.BLACK);
+
+
+                mLinearLayout.setBackgroundColor(matchingDividerBar ? Color.BLACK : Color.WHITE);
+
+                mTimestamp.setTextColor(ContextCompat.getColor(getApplicationContext(), matchingDividerBar ? R.color.dark_mTime : R.color.dark_mStatus_home));
+                mUploaderBattery.setTextColor(ContextCompat.getColor(getApplicationContext(), matchingDividerBar ? R.color.dark_mTime : R.color.dark_mStatus_home));
+                mUploaderXBattery.setTextColor(ContextCompat.getColor(getApplicationContext(), matchingDividerBar ? R.color.dark_mTime : R.color.dark_mStatus_home));
+                mStatus.setTextColor(ContextCompat.getColor(getApplicationContext(), matchingDividerBar ? R.color.dark_mTime : R.color.dark_mStatus_home));
+
                 if (chart != null) {
                     highColor = ContextCompat.getColor(getApplicationContext(), R.color.light_highColor);
                     lowColor = ContextCompat.getColor(getApplicationContext(), R.color.light_lowColor);

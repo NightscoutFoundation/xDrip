@@ -2,13 +2,12 @@ package com.eveningoutpost.dexdrip.UtilityModels;
 
 import android.app.Service;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Looper;
-import android.preference.PreferenceManager;
+
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
-import java.util.Date;
+import static com.eveningoutpost.dexdrip.UtilityModels.Notifications.ongoingNotificationId;
 
 /**
  * Created by Emma Black on 12/25/14.
@@ -16,7 +15,7 @@ import java.util.Date;
 public class ForegroundServiceStarter {
     private Service mService;
     private Context mContext;
-    private boolean run_service_in_foreground = false;
+    private boolean run_service_in_foreground;
     private Handler mHandler;
 
 
@@ -24,19 +23,23 @@ public class ForegroundServiceStarter {
         mContext = context;
         mService = service;
         mHandler = new Handler(Looper.getMainLooper());
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
-        run_service_in_foreground = prefs.getBoolean("run_service_in_foreground", false);
+        // TODO force on with Oreo+?
+        run_service_in_foreground = Pref.getBoolean("run_service_in_foreground", false);
     }
 
     public void start() {
+        if (mService == null) {
+            Log.e("FOREGROUND", "SERVICE IS NULL - CANNOT START!");
+            return;
+        }
         if (run_service_in_foreground) {
             Log.d("FOREGROUND", "should be moving to foreground");
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
                     long end = System.currentTimeMillis() + (60000 * 5);
-                    long start = end - (60000 * 60*3) -  (60000 * 10);
-                    mService.startForeground(new Notifications().ongoingNotificationId, new Notifications().createOngoingNotification(new BgGraphBuilder(mContext, start, end), mContext));
+                    long start = end - (60000 * 60 * 3) - (60000 * 10);
+                    mService.startForeground(ongoingNotificationId, new Notifications().createOngoingNotification(new BgGraphBuilder(mContext, start, end), mContext));
                 }
             });
         }

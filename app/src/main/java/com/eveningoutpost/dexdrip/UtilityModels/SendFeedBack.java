@@ -14,6 +14,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.eveningoutpost.dexdrip.BaseAppCompatActivity;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.R;
 import com.squareup.okhttp.FormEncodingBuilder;
@@ -34,7 +35,7 @@ import okio.Okio;
 
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getBestCollectorHardwareName;
 
-public class SendFeedBack extends AppCompatActivity {
+public class SendFeedBack extends BaseAppCompatActivity {
 
     private static final String TAG = "jamorham feedback";
     private static final String FEEDBACK_CONTACT_REFERENCE = "feedback-contact-reference";

@@ -6,7 +6,7 @@ import java.nio.ByteOrder;
 // created by jamorham
 
 
-public class EGlucoseTxMessage extends TransmitterMessage {
+public class EGlucoseTxMessage extends BaseMessage {
 
     final byte opcode = 0x4e;
 

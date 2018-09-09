@@ -15,7 +15,7 @@ public class SensorSanity {
     public static final double DEXCOM_MIN_RAW = 5; // raw values below this will be treated as error
     public static final double DEXCOM_MAX_RAW = 1000; // raw values above this will be treated as error
 
-    public static final double DEXCOM_G6_MIN_RAW = 0.01; // raw values below this will be treated as error
+    public static final double DEXCOM_G6_MIN_RAW = 5; // raw values below this will be treated as error
     public static final double DEXCOM_G6_MAX_RAW = 1000; // raw values above this will be treated as error
 
     public static final double LIBRE_MIN_RAW = 5; // raw values below this will be treated as error
@@ -53,6 +53,9 @@ public class SensorSanity {
 
         } else if (DexCollectionType.hasLibre(type)) {
             if (raw_value < LIBRE_MIN_RAW) state = false;
+        } else if (type == DexCollectionType.Medtrum) {
+            if (raw_value < DEXCOM_MIN_RAW) state = false;
+            else if (raw_value > DEXCOM_MAX_RAW) state = false;
         }
 
         if (!state) {

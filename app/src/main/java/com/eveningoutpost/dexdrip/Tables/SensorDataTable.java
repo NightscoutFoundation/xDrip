@@ -8,13 +8,14 @@ import android.view.View;
 import android.widget.SimpleCursorAdapter;
 
 import com.activeandroid.Cache;
+import com.eveningoutpost.dexdrip.BaseListActivity;
 import com.eveningoutpost.dexdrip.NavigationDrawerFragment;
 import com.eveningoutpost.dexdrip.R;
 
 import java.util.ArrayList;
 
 
-public class SensorDataTable extends ListActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+public class SensorDataTable extends BaseListActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
     private String menu_name = "Sensor Data Table";
     private NavigationDrawerFragment mNavigationDrawerFragment;
 

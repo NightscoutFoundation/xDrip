@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
  */
 
 @NoArgsConstructor
-public abstract class BaseGlucoseRxMessage extends TransmitterMessage {
+public abstract class BaseGlucoseRxMessage extends BaseMessage {
 
     private final static String TAG = G5CollectionService.TAG; // meh
 

@@ -30,6 +30,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.eveningoutpost.dexdrip.Models.DesertSync;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.RollCall;
 import com.eveningoutpost.dexdrip.Models.UserError;
@@ -44,6 +45,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.ShotStateStore;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
+import com.eveningoutpost.dexdrip.cgm.medtrum.MedtrumCollectionService;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
@@ -56,6 +58,7 @@ import java.util.List;
 
 import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.DexcomG5;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.Medtrum;
 
 public class MegaStatus extends ActivityWithMenu {
 
@@ -94,7 +97,8 @@ public class MegaStatus extends ActivityWithMenu {
     }
 
     private static final String G4_STATUS = "BT Device";
-    private static final String G5_STATUS = "G5 Status";
+    private static final String G5_STATUS = "G5/G6 Status";
+    private static final String MEDTRUM_STATUS = "Medtrum Status";
     private static final String IP_COLLECTOR = "IP Collector";
     private static final String XDRIP_PLUS_SYNC = "Followers";
     private static final String UPLOADERS = "Uploaders";
@@ -119,10 +123,12 @@ public class MegaStatus extends ActivityWithMenu {
             }
             if (dexCollectionType.equals(DexcomG5)) {
                 if (Pref.getBooleanDefaultFalse(Ob1G5CollectionService.OB1G5_PREFS)) {
-                    addAsection(G5_STATUS, "OB1 G5 Collector and Transmitter Status");
+                    addAsection(G5_STATUS, "OB1 G5/G6 Collector and Transmitter Status");
                 } else {
                     addAsection(G5_STATUS, "G5 Collector and Transmitter Status");
                 }
+            } else if (dexCollectionType.equals(Medtrum)) {
+                addAsection(MEDTRUM_STATUS, "Medtrum A6 Status");
             }
             if (DexCollectionType.hasWifi()) {
                 addAsection(IP_COLLECTOR, dexCollectionType == DexCollectionType.Mock ? "FAKE / MOCK DATA SOURCE" : "Wifi Wixel / Parakeet Status");
@@ -163,12 +169,16 @@ public class MegaStatus extends ActivityWithMenu {
                     la.addRows(G5CollectionService.megaStatus());
                 }
                 break;
+            case MEDTRUM_STATUS:
+                la.addRows(MedtrumCollectionService.megaStatus());
+                break;
             case IP_COLLECTOR:
                 la.addRows(WifiCollectionService.megaStatus(mActivity));
                 break;
             case XDRIP_PLUS_SYNC:
                 la.addRows(DoNothingService.megaStatus());
                 la.addRows(GcmListenerSvc.megaStatus());
+                la.addRows(DesertSync.megaStatus());
                 la.addRows(RollCall.megaStatus());
                 break;
             case UPLOADERS:
@@ -270,8 +280,7 @@ public class MegaStatus extends ActivityWithMenu {
         if (Home.get_enable_wear()) {
             if (DexCollectionType.getDexCollectionType().equals(DexcomG5)) {
                 startWatchUpdaterService(xdrip.getAppContext(), WatchUpdaterService.ACTION_STATUS_COLLECTOR, TAG, "getBatteryStatusNow", G5CollectionService.getBatteryStatusNow);
-            }
-            else {
+            } else {
                 startWatchUpdaterService(xdrip.getAppContext(), WatchUpdaterService.ACTION_STATUS_COLLECTOR, TAG);
             }
         }

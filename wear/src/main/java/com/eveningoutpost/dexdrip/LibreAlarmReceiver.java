@@ -150,7 +150,7 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
                                 try {
                                     final ReadingData.TransferObject object =
                                             new Gson().fromJson(data, ReadingData.TransferObject.class);
-                                    processReadingDataTransferObject(object, JoH.tsl());
+                                    processReadingDataTransferObject(object, JoH.tsl(), "LibreAlarm");
                                     Log.d(TAG, "At End: Oldest : " + JoH.dateTimeText(oldest_cmp) + " Newest : " + JoH.dateTimeText(newest_cmp));
                                 } catch (Exception e) {
                                     Log.wtf(TAG, "Could not process data structure from LibreAlarm: " + e.toString());
@@ -171,10 +171,10 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
         }.start();
     }
 
-    public static void processReadingDataTransferObject(ReadingData.TransferObject object, long CaptureDateTime) {
+    public static void processReadingDataTransferObject(ReadingData.TransferObject object, long CaptureDateTime, String tagid) {
     	Log.i(TAG, "Data that was recieved from librealarm is " + HexDump.dumpHexString(object.data.raw_data));
     	// Save raw block record (we start from block 0)
-        LibreBlock.createAndSave("LibreAlarm", CaptureDateTime, object.data.raw_data, 0);
+        LibreBlock.createAndSave(tagid, CaptureDateTime, object.data.raw_data, 0);
 
         if(Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
         	if(object.data.raw_data == null) {

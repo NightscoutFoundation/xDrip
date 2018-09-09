@@ -20,6 +20,7 @@ import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.eveningoutpost.dexdrip.BaseAppCompatActivity;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Dex_Constants;
 import com.eveningoutpost.dexdrip.Models.JoH;
@@ -43,7 +44,7 @@ import java.util.List;
  * Created by jamorham on 21/06/2016.
  */
 
-public class ProfileEditor extends AppCompatActivity {
+public class ProfileEditor extends BaseAppCompatActivity {
 
     private static final String TAG = "jamorhamprofile";
     private final List<ProfileItem> profileItemList = new ArrayList<>();

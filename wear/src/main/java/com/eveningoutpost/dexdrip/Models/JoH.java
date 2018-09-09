@@ -3,6 +3,7 @@ package com.eveningoutpost.dexdrip.Models;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -75,6 +76,8 @@ import java.io.FileOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.URLEncoder;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -1579,11 +1582,32 @@ public class JoH {
         }
     }
 
+    public static double roundDouble(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException("Invalid decimal places");
+        BigDecimal bd = new BigDecimal(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
+    }
+
     public static void clearCache() {
         try {
             ActiveAndroid.clearCache();
         } catch (Exception e) {
             Log.e(TAG, "Error clearing active android cache: " + e);
+        }
+    }
+
+    public static boolean isServiceRunningInForeground(Class<?> serviceClass) {
+        final ActivityManager manager = (ActivityManager) xdrip.getAppContext().getSystemService(Context.ACTIVITY_SERVICE);
+        try {
+            for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+                if (serviceClass.getName().equals(service.service.getClassName())) {
+                    return service.foreground;
+                }
+            }
+            return false;
+        } catch (NullPointerException e) {
+            return false;
         }
     }
 }
