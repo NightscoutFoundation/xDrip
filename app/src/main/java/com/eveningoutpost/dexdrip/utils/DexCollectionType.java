@@ -127,6 +127,8 @@ public enum DexCollectionType {
 
     public static boolean usesClassicTransmitterBattery() { return usesTransmitterBattery.contains(getDexCollectionType()); }
 
+    public static boolean isG5G6() { return getDexCollectionType() == DexcomG5 || getDexCollectionType() == DexcomG6; }
+
     public static boolean hasDexcomRaw(DexCollectionType type) {
         return usesDexcomRaw.contains(type);
     }

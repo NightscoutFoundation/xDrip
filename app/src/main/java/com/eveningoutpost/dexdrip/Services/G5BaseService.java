@@ -51,6 +51,8 @@ public abstract class G5BaseService extends Service {
         updateBatteryWarningLevel();
     }
 
+    public static int getLowBatteryWarningLevel() { return LOW_BATTERY_WARNING_LEVEL; }
+
 
     @Override
     public void onCreate() {

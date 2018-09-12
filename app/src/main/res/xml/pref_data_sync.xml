@@ -113,6 +113,11 @@
                         android:summary="Send your bridge battery level to Nightscout. Uncheck if your battery sensor is broken."
                         android:title="Upload bridge battery" />
                     <CheckBoxPreference
+                        android:defaultValue="false"
+                        android:key="send_g5tx_battery_to_nightscout"
+                        android:summary="Send transmitter battery statistics to Nightscout. Includes detailed info not shown in the UI."
+                        android:title="Upload Ob1G5/G6 transmitter battery" />
+                    <CheckBoxPreference
                         android:defaultValue="true"
                         android:key="send_treatments_to_nightscout"
                         android:summary="Send treatment data to Nightscout. Uncheck if your careportal is broken."

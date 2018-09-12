@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 
+import com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.MegaStatus;
 import com.eveningoutpost.dexdrip.Models.BgReading;
@@ -23,6 +24,7 @@ import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
+import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -1158,6 +1160,7 @@ public class NightscoutUploader {
 
 
     private static final String LAST_NIGHTSCOUT_BATTERY_LEVEL = "last-nightscout-battery-level";
+    private static final String LAST_G5TX_BATTERY_LEVEL = "last-g5tx-battery-level";
 
     private void postDeviceStatus(NightscoutService nightscoutService, String apiSecret) throws Exception {
 
@@ -1170,6 +1173,12 @@ public class NightscoutUploader {
             batteries.add("Bridge");
         }
         if (DexCollectionType.hasWifi()) batteries.add("Parakeet");
+
+        boolean isOb1 = Pref.getBooleanDefaultFalse(Ob1G5CollectionService.OB1G5_PREFS);
+        boolean sendG5TxBattery = Pref.getBooleanDefaultFalse("send_g5tx_battery_to_nightscout");
+        if (DexCollectionType.isG5G6() && isOb1 && sendG5TxBattery) batteries.add("G5 Transmitter");
+
+        TransmitterBattery txBattery = null;
 
         for (String battery : batteries) {
 
@@ -1188,17 +1197,43 @@ public class NightscoutUploader {
                     battery_level = Pref.getInt("parakeet_battery", -1);
                     battery_name = "Parakeet";
                     break;
+                case "G5 Transmitter":
+                    txBattery = Ob1G5TransmitterBattery.getTransmitterBattery();
+                    battery_level = txBattery.voltageA();
+                    battery_name = Ob1G5StateMachine.usingG6() ? "G6 Transmitter" : "G5 Transmitter";
+                    break;
                 default:
                     battery_level = -1;
                     break;
             }
             final long last_battery_level = PersistentStore.getLong(LAST_NIGHTSCOUT_BATTERY_LEVEL);
+            final String last_g5tx_level = PersistentStore.getString(LAST_G5TX_BATTERY_LEVEL);
 
             final JSONArray array = new JSONArray();
             final JSONObject json = new JSONObject();
             final JSONObject uploader = new JSONObject();
 
-            if ((battery_level > 0) && (battery_level != last_battery_level || always_send_battery)) {
+            if (battery_name.equals("G5 Transmitter") || battery_name.equals("G6 Transmitter")) {
+                if (txBattery != null && !last_g5tx_level.equals(txBattery.battery())) {
+                    PersistentStore.setString(LAST_G5TX_BATTERY_LEVEL, txBattery.battery());
+                    uploader.put("days", txBattery.days());
+                    uploader.put("status", txBattery.status().name());
+                    uploader.put("battery", txBattery.battery());
+                    uploader.put("voltagea", txBattery.voltageA());
+                    uploader.put("voltagea_status", txBattery.voltageAStatus().name());
+                    uploader.put("voltageb", txBattery.voltageB());
+                    uploader.put("voltageb_status", txBattery.voltageBStatus().name());
+                    uploader.put("resistance", txBattery.resistance());
+                    uploader.put("resistance_status", txBattery.resistanceStatus().name());
+                    uploader.put("temperature", txBattery.temperature());
+
+                    json.put("device", battery_name);
+                    json.put("uploader", uploader);
+
+                    array.put(json);
+                    postDeviceStatusAPI(json, nightscoutService, apiSecret);
+                }
+            } else if ((battery_level > 0) && (battery_level != last_battery_level || always_send_battery)) {
                 PersistentStore.setLong(LAST_NIGHTSCOUT_BATTERY_LEVEL, battery_level);
                 // UserError.Log.d(TAG, "Uploading battery detail: " + battery_level);
                 // json.put("uploaderBattery", battery_level); // old style
@@ -1209,6 +1244,8 @@ public class NightscoutUploader {
 
                 array.put(json);
 
+                postDeviceStatusAPI(json, nightscoutService, apiSecret);
+
                 // example
                 //{
                 //    "device": "openaps://ediscout2.local",
@@ -1218,20 +1255,21 @@ public class NightscoutUploader {
                 //            "temperature": "+51.0°C"
                 //}
                 //}
-
-
-                final RequestBody body = RequestBody.create(MediaType.parse("application/json"), json.toString());
-                Response<ResponseBody> r;
-                if (apiSecret != null) {
-                    r = nightscoutService.uploadDeviceStatus(apiSecret, body).execute();
-                } else
-                    r = nightscoutService.uploadDeviceStatus(body).execute();
-                if (!r.isSuccessful()) throw new UploaderException(r.message(), r.code());
-                // } else {
-                //     UserError.Log.d(TAG, "Battery level is same as previous - not uploading: " + battery_level);
-                checkGzipSupport(r);
             }
         }
+    }
+
+    private void postDeviceStatusAPI(JSONObject json, NightscoutService nightscoutService, String apiSecret) throws IOException {
+        final RequestBody body = RequestBody.create(MediaType.parse("application/json"), json.toString());
+        Response<ResponseBody> r;
+        if (apiSecret != null) {
+            r = nightscoutService.uploadDeviceStatus(apiSecret, body).execute();
+        } else
+            r = nightscoutService.uploadDeviceStatus(body).execute();
+        if (!r.isSuccessful()) throw new UploaderException(r.message(), r.code());
+        // } else {
+        //     UserError.Log.d(TAG, "Battery level is same as previous - not uploading: " + battery_level);
+        checkGzipSupport(r);
     }
 
 
