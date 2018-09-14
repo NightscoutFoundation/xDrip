@@ -1412,8 +1412,7 @@ public class BgReading extends Model implements ShareUploadableBg {
             //   jsonObject.put("sensor", sensor);
             return jsonObject.toString();
         } catch (JSONException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            Log.e("Exception serializing BgReading", e.toString());
             return "";
         }
     }
