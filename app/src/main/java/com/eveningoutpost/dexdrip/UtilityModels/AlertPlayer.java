@@ -333,8 +333,8 @@ public class AlertPlayer {
             
         try {
             mediaPlayer.prepare();
-        } catch (IOException e) {
-            Log.e(TAG, "Caught exception preparing meidaPlayer", e);
+        } catch (IllegalStateException | IOException e) {
+            Log.e(TAG, "Caught exception preparing mediaPlayer", e);
             return;
         } catch (NullPointerException e) {
             Log.e(TAG,"Possible deep error in mediaPlayer", e);

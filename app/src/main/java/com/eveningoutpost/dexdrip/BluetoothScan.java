@@ -614,28 +614,30 @@ public class BluetoothScan extends ListActivityWithMenu {
                 viewHolder = (ViewHolder) view.getTag();
             }
 
-            BluetoothDevice device = mLeDevices.get(i);
-            final String deviceName = device.getName();
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-            if (prefs.getString("last_connected_device_address", "").compareTo(device.getAddress()) == 0) {
-                viewHolder.deviceName.setTextColor(ChartUtils.COLOR_BLUE);
-                viewHolder.deviceAddress.setTextColor(ChartUtils.COLOR_BLUE);
-            }
-            viewHolder.deviceName.setText(deviceName);
-            viewHolder.deviceAddress.setText(device.getAddress());
-            if (adverts.containsKey(device.getAddress())) {
-                if (deviceName.equals("MT")) {
-                    final String medtrum = getDeviceInfoStringFromLegacy(adverts.get(device.getAddress()));
-                    if (medtrum != null) {
-                        viewHolder.deviceName.setText(medtrum);
-                    }
+            final BluetoothDevice device = mLeDevices.get(i);
+            if (device != null) {
+                final String deviceName = device.getName() != null ? device.getName() : "";
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                if (prefs.getString("last_connected_device_address", "").compareTo(device.getAddress()) == 0) {
+                    viewHolder.deviceName.setTextColor(ChartUtils.COLOR_BLUE);
+                    viewHolder.deviceAddress.setTextColor(ChartUtils.COLOR_BLUE);
                 }
-                try {
-                    if (Pref.getBooleanDefaultFalse("engineering_mode")) {
-                        viewHolder.deviceAddress.append("   " + new String(adverts.get(device.getAddress()), "UTF-8"));
+                viewHolder.deviceName.setText(deviceName);
+                viewHolder.deviceAddress.setText(device.getAddress());
+                if (adverts.containsKey(device.getAddress())) {
+                    if (deviceName.equals("MT")) {
+                        final String medtrum = getDeviceInfoStringFromLegacy(adverts.get(device.getAddress()));
+                        if (medtrum != null) {
+                            viewHolder.deviceName.setText(medtrum);
+                        }
                     }
-                } catch (UnsupportedEncodingException e) {
-                    //
+                    try {
+                        if (Pref.getBooleanDefaultFalse("engineering_mode")) {
+                            viewHolder.deviceAddress.append("   " + new String(adverts.get(device.getAddress()), "UTF-8"));
+                        }
+                    } catch (UnsupportedEncodingException e) {
+                        //
+                    }
                 }
             }
             return view;

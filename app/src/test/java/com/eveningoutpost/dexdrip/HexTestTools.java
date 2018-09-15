@@ -35,4 +35,8 @@ public class HexTestTools {
         }
     }
 
+    public static byte[] toTwoBytes(final int value) {
+        return new byte[] { (byte)(value >> 8), (byte)value};
+    }
+
 }

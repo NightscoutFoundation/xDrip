@@ -53,6 +53,10 @@ public class AdvertRx extends BaseMessage {
     }
 
     public String getDeviceName() {
-        return DeviceType.get(deviceType).name();
+        try {
+            return DeviceType.get(deviceType).name();
+        } catch (NullPointerException e) {
+            return "Unsupported";
+        }
     }
 }

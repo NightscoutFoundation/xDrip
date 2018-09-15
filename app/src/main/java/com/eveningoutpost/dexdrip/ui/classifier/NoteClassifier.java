@@ -39,6 +39,9 @@ public class NoteClassifier {
         } else if (haystack.contains("cartridge low")) {
             return red(R.drawable.alert_icon, note);
 
+        } else if (haystack.equals("connection timed out")) {
+            return red(R.drawable.alert_icon, note);
+
         } else if (haystack.startsWith("warning")) {
             return amber(R.drawable.alert_icon, note);
 

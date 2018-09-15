@@ -163,7 +163,7 @@ public class BgGraphBuilder {
     public static double last_bg_estimate = -99999;
     private KeyStore keyStore = FastStore.getInstance();
 
-    private boolean showSMB = true;
+    private final boolean showSMB = Pref.getBoolean("show_smb_icons", true);
 
     public BgGraphBuilder(Context context) {
         this(context, new Date().getTime() + (60000 * 10));

@@ -6,6 +6,7 @@ import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
+import com.eveningoutpost.dexdrip.UtilityModels.desertsync.RouteTools;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -18,6 +19,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.eveningoutpost.dexdrip.Models.JoH.emptyString;
+
 /**
  * Created by jamorham on 20/01/2017.
  */
@@ -25,7 +28,8 @@ import java.util.Map;
 public class RollCall {
 
     private static final String TAG = "RollCall";
-    private static HashMap<String, RollCall> indexed;
+    private static final int MAX_SSID_LENGTH = 20;
+    private static volatile HashMap<String, RollCall> indexed;
 
     @Expose
     String device_manufactuer;
@@ -41,6 +45,10 @@ public class RollCall {
     String xdrip_version;
     @Expose
     String role;
+    @Expose
+    String ssid;
+    @Expose
+    String mhint;
 
     // not set by instantiation
     @Expose
@@ -48,6 +56,7 @@ public class RollCall {
     @Expose
     Long last_seen;
 
+    final long created = JoH.tsl();
 
     public RollCall() {
         this.device_manufactuer = Build.MANUFACTURER;
@@ -64,6 +73,44 @@ public class RollCall {
         } else {
             this.role = "None";
         }
+
+        if (DesertSync.isEnabled()) {
+            try {
+                this.ssid = wifiString();
+            } catch (Exception e) {
+                //
+            }
+            try {
+                if (this.role.equals("Master")) {
+                    this.mhint = RouteTools.getBestInterfaceAddress();
+                }
+            } catch (Exception e) {
+                //
+            }
+        }
+
+    }
+
+    private static String wifiString() {
+        String ssid = JoH.getWifiSSID();
+        if (ssid != null && ssid.length() > MAX_SSID_LENGTH) {
+            ssid = ssid.substring(0, 20);
+        }
+        return ssid;
+    }
+
+    private String getRemoteIpStatus() {
+        if (mhint != null) {
+            return "\n" + mhint;
+        }
+        return "";
+    }
+
+    private String getRemoteWifiIndicate(final String our_wifi_ssid) {
+        if (emptyString(our_wifi_ssid)) return "";
+        if (emptyString(ssid)) return "";
+        if (!our_wifi_ssid.equals(ssid)) return "\n" + ssid;
+        return "";
     }
 
     public String toS() {
@@ -148,6 +195,23 @@ public class RollCall {
         UserError.Log.d(TAG, "Loaded: count: " + hashmap.size());
     }
 
+    public static String getBestMasterHintIP() {
+        // TODO some intelligence regarding wifi ssid
+        //final String our_wifi_ssid = wifiString();
+        if (indexed == null) loadIndex();
+        RollCall bestMatch = null;
+        for (Map.Entry entry : indexed.entrySet()) {
+            final RollCall rc = (RollCall) entry.getValue();
+            if (!rc.role.equals("Master")) continue;
+            if (emptyString(rc.mhint)) continue;
+            if (bestMatch == null || rc.last_seen > bestMatch.last_seen) {
+                bestMatch = rc;
+            }
+        }
+        UserError.Log.d(TAG, "Returning best master hint ip: " + (bestMatch != null ? bestMatch.toS() : "no match"));
+        return bestMatch != null ? bestMatch.mhint : null;
+    }
+
 
     public static void pruneOld(int depth) {
         if (indexed == null) loadIndex();
@@ -177,16 +241,17 @@ public class RollCall {
         GcmActivity.requestRollCall();
         // TODO sort data
         final boolean engineering = Home.get_engineering_mode();
-
+        final boolean desert_sync = DesertSync.isEnabled();
+        final String our_wifi_ssid = desert_sync ? wifiString() : "";
         final List<StatusItem> lf = new ArrayList<>();
         for (Map.Entry entry : indexed.entrySet()) {
-            RollCall rc = (RollCall) entry.getValue();
-            lf.add(new StatusItem(rc.role + (engineering ? ("\n" + JoH.niceTimeSince(rc.last_seen) + " ago") : ""), rc.bestName()));
+            final RollCall rc = (RollCall) entry.getValue();
+            lf.add(new StatusItem(rc.role + (desert_sync ? rc.getRemoteWifiIndicate(our_wifi_ssid) : "") + (engineering ? ("\n" + JoH.niceTimeSince(rc.last_seen) + " ago") : ""), rc.bestName() + (desert_sync ? rc.getRemoteIpStatus() : "")));
         }
 
         Collections.sort(lf, new Comparator<StatusItem>() {
             public int compare(StatusItem left, StatusItem right) {
-                int val = right.name.replaceFirst("\n.*$","").compareTo(left.name.replaceFirst("\n.*$","")); // descending sort ignore second line
+                int val = right.name.replaceFirst("\n.*$", "").compareTo(left.name.replaceFirst("\n.*$", "")); // descending sort ignore second line
                 if (val == 0) val = left.value.compareTo(right.value); // ascending sort
                 return val;
             }

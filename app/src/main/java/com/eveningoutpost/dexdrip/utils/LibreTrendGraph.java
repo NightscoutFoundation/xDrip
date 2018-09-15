@@ -33,8 +33,8 @@ import static com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder.FUZZER;
 
 
 public class LibreTrendGraph extends BaseAppCompatActivity {
-
     private static final String TAG = "LibreTrendGraph";
+    
     private static LibreTrendGraph mInstance;
     private LineChartView chart;
     private LineChartData data;
@@ -85,7 +85,7 @@ public class LibreTrendGraph extends BaseAppCompatActivity {
     
     private static ArrayList<Float> getLatestBgForXMinutes(int NumberOfMinutes) {
 
-        Log.e(TAG, "getLatestBgForXMinutes number of minutes = " + NumberOfMinutes);
+        Log.i(TAG, "getLatestBgForXMinutes number of minutes = " + NumberOfMinutes);
         
         List<LibreTrendPoint> LibreTrendPoints = LibreTrendUtil.getInstance().getData(JoH.tsl() - NumberOfMinutes * 60 * 1000, JoH.tsl());
         if(LibreTrendPoints == null || LibreTrendPoints.size() == 0) {

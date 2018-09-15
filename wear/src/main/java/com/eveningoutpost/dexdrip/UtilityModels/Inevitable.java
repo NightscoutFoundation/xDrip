@@ -63,6 +63,17 @@ public class Inevitable {
         }
     }
 
+    public static synchronized void stackableTask(String id, long idle_for, Runnable runnable) {
+        int stack = 0;
+        while (tasks.get(id = id + "-" + stack) != null) {
+            stack++;
+        }
+        if (stack > 0) {
+            UserError.Log.d(TAG, "Task stacked to: " + id);
+        }
+        task(id, idle_for, runnable);
+    }
+
     public static void kill(final String id) {
         tasks.remove(id);
     }
@@ -86,7 +97,7 @@ public class Inevitable {
         public boolean poll() {
             final long till = JoH.msTill(when);
             if (till < 1) {
-                if (d) UserError.Log.d(TAG, "Executing task!");
+                if (d) UserError.Log.d(TAG, "Executing task! " + this.id);
                 tasks.remove(this.id); // early remove to allow overlapping scheduling
                 what.run();
                 return true;

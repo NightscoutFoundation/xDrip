@@ -82,7 +82,7 @@ public class SnoozeActivity extends ActivityWithMenu {
         if (above) {
             return 120;
         }
-        return 30;
+        return 35;
     }
 
     static void SetSnoozePickerValues(NumberPicker picker, boolean above, int default_snooze) {

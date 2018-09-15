@@ -5,7 +5,7 @@ import java.nio.ByteOrder;
 
 // created by jamorham
 
-public class CalibrateRxMessage extends TransmitterMessage {
+public class CalibrateRxMessage extends BaseMessage {
 
     public static final int opcode = 0x35;
     private static final int length = 5;

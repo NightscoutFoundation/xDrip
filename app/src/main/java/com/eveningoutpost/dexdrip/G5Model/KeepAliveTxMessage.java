@@ -10,7 +10,7 @@ import java.nio.ByteOrder;
 /**
  * Created by joeginley on 3/16/16.
  */
-public class KeepAliveTxMessage extends TransmitterMessage {
+public class KeepAliveTxMessage extends BaseMessage {
     public static final int opcode = 0x06;
     private int time;
 

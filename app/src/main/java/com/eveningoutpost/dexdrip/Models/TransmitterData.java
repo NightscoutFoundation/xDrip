@@ -2,6 +2,7 @@ package com.eveningoutpost.dexdrip.Models;
 
 import android.provider.BaseColumns;
 
+import com.eveningoutpost.dexdrip.G5Model.Transmitter;
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
@@ -19,6 +20,7 @@ import com.google.gson.annotations.Expose;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -33,6 +35,7 @@ public class TransmitterData extends Model {
     @Column(name = "timestamp", index = true)
     public long timestamp;
 
+    // TODO these should be int or long surely
     @Expose
     @Column(name = "raw_data")
     public double raw_data;
@@ -175,6 +178,14 @@ public class TransmitterData extends Model {
                 .executeSingle();
     }
 
+    public static List<TransmitterData> last(int count) {
+        return new Select()
+                .from(TransmitterData.class)
+                .orderBy("_ID desc")
+                .limit(count)
+                .execute();
+    }
+
     public static TransmitterData lastByTimestamp() {
         return new Select()
                 .from(TransmitterData.class)
@@ -236,6 +247,24 @@ public class TransmitterData extends Model {
         } catch (Exception e) {
             Log.e(TAG,"Got exception updating sensor battery from sync: "+e.toString());
         }
+    }
+
+    private static double roundRaw(TransmitterData td) {
+        return JoH.roundDouble(td.raw_data,3);
+    }
+    private static double roundFiltered(TransmitterData td) {
+        return JoH.roundDouble(td.filtered_data,3);
+    }
+
+    public static boolean unchangedRaw() {
+        final List<TransmitterData> items = last(3);
+        if (items != null && items.size() == 3) {
+            return (roundRaw(items.get(0)) == roundRaw(items.get(1))
+                    && roundRaw(items.get(0)) == roundRaw(items.get(2))
+                    && roundFiltered(items.get(0)) == roundFiltered(items.get(1))
+                    && roundFiltered(items.get(0)) == roundFiltered(items.get(2)));
+        }
+        return false;
     }
 
 }

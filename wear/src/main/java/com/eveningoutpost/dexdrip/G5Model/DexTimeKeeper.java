@@ -18,7 +18,12 @@ public class DexTimeKeeper {
     private static String lastTransmitterId = null;
 
     // update the activation time stored for a transmitter
-    public static void updateAge(String transmitterId, int dexTimeStamp) {
+    public static void updateAge(final String transmitterId, final int dexTimeStamp) {
+        updateAge(transmitterId, dexTimeStamp, false);
+    }
+
+    // update the activation time stored for a transmitter
+    public static void updateAge(final String transmitterId, final int dexTimeStamp, final boolean absolute) {
 
         if ((transmitterId == null) || (transmitterId.length() != 6)) {
             UserError.Log.e(TAG, "Invalid dex transmitter in updateAge: " + transmitterId);
@@ -26,6 +31,9 @@ public class DexTimeKeeper {
         }
         if (dexTimeStamp < 1) {
             UserError.Log.e(TAG, "Invalid dex timestamp in updateAge: " + dexTimeStamp);
+            if (dexTimeStamp == 0 && absolute) {
+                DexResetHelper.offer("Your transmitter clock has stopped or never started. Do you want to hard reset it?");
+            }
             return;
         }
         final long longDexTimeStamp = (long) dexTimeStamp;

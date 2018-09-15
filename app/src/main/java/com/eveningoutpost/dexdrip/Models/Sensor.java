@@ -74,6 +74,14 @@ public class Sensor extends Model {
         return sensor;
     }
 
+    public static Sensor createDefaultIfMissing() {
+        final Sensor sensor = currentSensor();
+        if (sensor == null) {
+            Sensor.create(JoH.tsl());
+        }
+        return currentSensor();
+    }
+
     // Used by xDripViewer
     public static void createUpdate(long started_at, long stopped_at,  int latest_battery_level, String uuid) {
 

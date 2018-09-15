@@ -12,6 +12,9 @@ import com.eveningoutpost.dexdrip.Models.LibreBlock;
 import com.eveningoutpost.dexdrip.Models.LibreData;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.UtilityModels.PlusAsyncExecutor;
+import com.eveningoutpost.dexdrip.UtilityModels.VersionTracker;
+
+import static com.eveningoutpost.dexdrip.utils.VersionFixer.disableUpdates;
 
 //import io.fabric.sdk.android.Fabric;
 
@@ -37,7 +40,9 @@ public class xdrip extends Application {
         DemiGod.isPresent();
         JoH.forceBatteryWhitelisting();
         executor = new PlusAsyncExecutor();
-     }
+        VersionTracker.updateDevice();
+        disableUpdates();
+    }
 
     public static Context getAppContext() {
         return xdrip.context;
