@@ -85,11 +85,14 @@ import java.nio.charset.Charset;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.zip.CRC32;
 import java.util.zip.Checksum;
 import java.util.zip.Deflater;
@@ -626,6 +629,10 @@ public class JoH {
 
     public static String dateText(long timestamp) {
         return android.text.format.DateFormat.format("yyyy-MM-dd", timestamp).toString();
+    }
+
+    public static long getTimeZoneOffsetMs() {
+        return new GregorianCalendar().getTimeZone().getRawOffset();
     }
 
     public static String niceTimeSince(long t) {
