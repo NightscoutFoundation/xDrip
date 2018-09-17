@@ -13,6 +13,8 @@
     <uses-permission android:name="android.permission.BLUETOOTH_PRIVILEGED" />
     <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS_FULL" />
     <uses-permission android:name="android.permission.INSTALL_PACKAGES" />
+    <uses-permission android:name="android.permission.DELETE_PACKAGES" />
+    <uses-permission android:name="android.permission.CHANGE_COMPONENT_ENABLED_STATE" />
     <uses-permission android:name="android.permission.MANAGE_DEVICE_ADMINS"/>
     <uses-permission android:name="android.permission.DEVICE_POWER"
         tools:ignore="ProtectedPermissions" />
@@ -179,7 +181,10 @@
                 android:name="android.support.wearable.complications.UPDATE_PERIOD_SECONDS"
                 android:value="60" />
         </service>
-        <service android:name=".Services.HeartRateService"></service>
+        <service android:name=".Services.HeartRateService" />
+        <service android:name=".Services.HeartRateJobService" android:permission="android.permission.BIND_JOB_SERVICE"/>
+        <service android:name=".ProcessAPKChannelDownload" android:permission="android.permission.BIND_JOB_SERVICE"/>
+
         <receiver android:name=".NSEmulatorReceiver">
             <intent-filter>
                 <action android:name="com.eveningoutpost.dexdrip.NS_EMULATOR" />

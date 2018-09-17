@@ -482,7 +482,7 @@ public class Treatments extends Model {
             if (from_interactive) {
                 pushTreatmentSync(mytreatment);
             }
-            Home.staticRefreshBGCharts();
+            Home.staticRefreshBGChartsOnIdle();
             return true;
         } else {
             return false;

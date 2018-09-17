@@ -7,6 +7,7 @@ import android.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.Models.APStatus;
 import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.Models.DesertSync;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.LibreBlock;
 import com.eveningoutpost.dexdrip.Models.LibreData;
@@ -38,6 +39,7 @@ public class IdempotentMigrations {
         LibreData.updateDB();
         APStatus.updateDB();
         Prediction.updateDB();
+        DesertSync.updateDB();
         JoH.clearCache();
 
         IncompatibleApps.notifyAboutIncompatibleApps();

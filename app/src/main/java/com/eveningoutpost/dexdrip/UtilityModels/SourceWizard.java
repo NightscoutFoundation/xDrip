@@ -111,7 +111,11 @@ public class SourceWizard {
     }
 
     private void dismiss() {
-        if (dialog != null) dismiss();
+        try {
+            if (dialog != null) dialog.dismiss();
+        } catch (Exception e) {
+            //
+        }
     }
 
     // display the dialog for the selected branch of the tree

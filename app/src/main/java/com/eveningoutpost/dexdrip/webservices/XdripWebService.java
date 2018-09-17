@@ -26,6 +26,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.URLDecoder;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.SSLServerSocketFactory;
@@ -54,11 +55,13 @@ import javax.net.ssl.SSLSocket;
 public class XdripWebService implements Runnable {
 
     private static final String TAG = "xDripWebService";
+    private static final int MAX_RUNNING_THREADS = 15;
     private static volatile XdripWebService instance = null;
     private static volatile XdripWebService ssl_instance = null;
 
     private final int listenPort;
     private final boolean useSSL;
+    private final AtomicInteger thread_count = new AtomicInteger();
 
     private boolean isRunning;
     private ServerSocket mServerSocket;
@@ -168,8 +171,32 @@ public class XdripWebService implements Runnable {
             }
             while (isRunning) {
                 final Socket socket = mServerSocket.accept();
-                handle(socket);
-                socket.close();
+                final int runningThreads = thread_count.get();
+                if (runningThreads < MAX_RUNNING_THREADS) {
+                    Log.d(TAG, "Running threads: " + runningThreads);
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            thread_count.incrementAndGet();
+                            try {
+                                handle(socket);
+                                socket.close();
+                            } catch (SocketException e) {
+                                // ignore
+                            } catch (IOException e) {
+                                Log.e(TAG, "Web server thread error.", e);
+                            } finally {
+                                thread_count.decrementAndGet();
+                            }
+                        }
+                    }).start();
+                } else {
+                    if (JoH.ratelimit("webservice-thread-overheat", 60)) {
+                        UserError.Log.wtf(TAG, "Web service jammed with too many connections > " + runningThreads);
+                    }
+                    socket.close();
+                }
+
             }
         } catch (SocketException e) {
             // The server was stopped; ignore.
@@ -213,10 +240,11 @@ public class XdripWebService implements Runnable {
 
             // get the set password if any
             final String secret = Pref.getStringDefaultBlank("xdrip_webservice_secret");
-            final String hashedSecret = secret.isEmpty() ? null : Hashing.sha1().hashBytes(secret.getBytes(Charsets.UTF_8)).toString();
+            final String hashedSecret = hashPassword(secret);
 
             final boolean authNeeded = hashedSecret != null && !socket.getInetAddress().isLoopbackAddress();
             final TriState secretCheckResult = new TriState();
+
 
             String route = null;
 
@@ -230,9 +258,11 @@ public class XdripWebService implements Runnable {
                 if (line.startsWith("GET /")) {
                     int start = line.indexOf('/') + 1;
                     int end = line.indexOf(' ', start);
-                    route = URLDecoder.decode(line.substring(start, end), "UTF-8");
-                    UserError.Log.d(TAG, "Received request for: " + route);
-                    //if (hashedSecret == null) break; // we can't optimize as we always need to look for api-secret even if server doesn't use it
+                    if (start < line.length()) {
+                        route = line.substring(start, end);
+                        UserError.Log.d(TAG, "Received request for: " + route);
+                        //if (hashedSecret == null) break; // we can't optimize as we always need to look for api-secret even if server doesn't use it
+                    }
 
                 } else if (line.startsWith(("api-secret"))) {
                     final String requestSecret[] = line.split(": ");
@@ -256,17 +286,17 @@ public class XdripWebService implements Runnable {
 
             if (secretCheckResult.isFalse() || (authNeeded && !secretCheckResult.isTrue())) {
                 final String failureMessage = "Authentication failed - check api-secret\n"
-                                + "\n" + (authNeeded ? "secret is required " : "secret is not required")
-                                + "\n" + secretCheckResult.trinary("no secret supplied", "supplied secret matches", "supplied secret doesn't match")
-                                + "\n" + "Your address: " + socket.getInetAddress().toString()
-                                + "\n\n";
+                        + "\n" + (authNeeded ? "secret is required " : "secret is not required")
+                        + "\n" + secretCheckResult.trinary("no secret supplied", "supplied secret matches", "supplied secret doesn't match")
+                        + "\n" + "Your address: " + socket.getInetAddress().toString()
+                        + "\n\n";
                 if (JoH.ratelimit("web-auth-failure", 10)) {
                     UserError.Log.e(TAG, failureMessage);
                 }
                 response = new WebResponse(failureMessage, 403, "text/plain");
-                JoH.threadSleep(1000);
+                JoH.threadSleep(1000 + (300 * thread_count.get()));
             } else {
-                response = ((RouteFinder) Singleton.get("RouteFinder")).handleRoute(route);
+                response = ((RouteFinder) Singleton.get("RouteFinder")).handleRoute(route, socket.getInetAddress());
             }
 
             // if we didn't manage to generate a response
@@ -318,5 +348,8 @@ public class XdripWebService implements Runnable {
         UserError.Log.e(TAG, "Internal server error reply");
     }
 
+    public static String hashPassword(final String secret) {
+        return secret.isEmpty() ? null : Hashing.sha1().hashBytes(secret.getBytes(Charsets.UTF_8)).toString();
+    }
 }
 

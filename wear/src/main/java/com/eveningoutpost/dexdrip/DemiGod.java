@@ -24,7 +24,7 @@ public class DemiGod {
         if (enabled == null) {
             enabled = determineDemiGodMode();
             if (enabled) {
-                UserError.Log.uel(TAG, "DemiGod mode reports as: " + enabled);
+                UserError.Log.uel(TAG, "(restart) DemiGod mode reports as: " + enabled);
             }
             if (Pref.getBooleanDefaultFalse(PREF_MARKER) != enabled) {
                 Pref.setBoolean(PREF_MARKER, enabled);

@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.BloodTest;
 import com.eveningoutpost.dexdrip.Models.Calibration;
+import com.eveningoutpost.dexdrip.Models.DesertSync;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.RollCall;
 import com.eveningoutpost.dexdrip.Models.Sensor;
@@ -62,10 +63,10 @@ public class GcmActivity extends FauxActivity {
     static final String TASK_TAG_CHARGING = "charging";
     static final String TASK_TAG_UNMETERED = "unmetered";
     private static final String TAG = "jamorham gcmactivity";
-    public static double last_sync_request = 0;
-    public static double last_sync_fill = 0;
+    public static long last_sync_request = 0;
+    public static long last_sync_fill = 0;
     private static int bg_sync_backoff = 0;
-    private static double last_ping_request = 0;
+    private static long last_ping_request = 0;
     private static long last_rlcl_request = 0;
     private static long cool_down_till = 0;
     public static AtomicInteger msgId = new AtomicInteger(1);
@@ -76,9 +77,9 @@ public class GcmActivity extends FauxActivity {
     private BroadcastReceiver mRegistrationBroadcastReceiver;
     public static boolean cease_all_activity = false;
     private static boolean cease_all_checked = false;
-    public static double last_ack = -1;
-    public static double last_send = -1;
-    public static double last_send_previous = -1;
+    public static volatile long last_ack = -1;
+    public static volatile long last_send = -1;
+    public static volatile long last_send_previous = -1;
     private static final long MAX_ACK_OUTSTANDING_MS = 3600000;
     private static int recursion_depth = 0;
     private static int last_bridge_battery = -1;
@@ -159,7 +160,7 @@ public class GcmActivity extends FauxActivity {
     static synchronized void queueAction(String reference) {
         synchronized (queue_lock) {
             Log.d(TAG, "Received ACK, Queue Size: " + GcmActivity.gcm_queue.size() + " " + reference);
-            last_ack = JoH.ts();
+            last_ack = JoH.tsl();
             for (GCM_data datum : gcm_queue) {
                 String thisref = datum.bundle.getString("action") + datum.bundle.getString("payload");
                 if (thisref.equals(reference)) {
@@ -184,7 +185,7 @@ public class GcmActivity extends FauxActivity {
         }
 
         if (overHeated()) {
-            Log.e(TAG,"Can't process old queue as in cool down state");
+            Log.e(TAG, "Can't process old queue as in cool down state");
             return;
         }
 
@@ -214,8 +215,8 @@ public class GcmActivity extends FauxActivity {
                         }
                         break;
                     }
-            } else {
-                    UserError.Log.wtf(TAG,"Null datum in gcm_queue - should be impossible!");
+                } else {
+                    UserError.Log.wtf(TAG, "Null datum in gcm_queue - should be impossible!");
                     break;
                 }
             }
@@ -356,12 +357,21 @@ public class GcmActivity extends FauxActivity {
     }
 
     public static void requestPing() {
-        if ((JoH.ts() - last_ping_request) > (60 * 1000 * 15)) {
-            last_ping_request = JoH.ts();
+        if ((JoH.tsl() - last_ping_request) > (60 * 1000 * 15)) {
+            last_ping_request = JoH.tsl();
             Log.d(TAG, "Sending ping");
-            if (JoH.pratelimit("gcm-ping", 1199)) GcmActivity.sendMessage("ping", new RollCall().toS());
+            if (JoH.pratelimit("gcm-ping", 1199))
+                GcmActivity.sendMessage("ping", new RollCall().toS());
         } else {
             Log.d(TAG, "Already requested ping recently");
+        }
+    }
+
+    public static void desertPing() {
+        if (JoH.pratelimit("gcm-desert-ping", 300)) {
+            GcmActivity.sendMessage("ping", new RollCall().toS());
+        } else {
+            Log.d(TAG, "Already requested desert ping recently");
         }
     }
 
@@ -497,8 +507,8 @@ public class GcmActivity extends FauxActivity {
 
     public static void requestBGsync() {
         if (token != null) {
-            if ((JoH.ts() - last_sync_request) > (60 * 1000 * (5 + bg_sync_backoff))) {
-                last_sync_request = JoH.ts();
+            if ((JoH.tsl() - last_sync_request) > (60 * 1000 * (5 + bg_sync_backoff))) {
+                last_sync_request = JoH.tsl();
                 if (JoH.pratelimit("gcm-bfr", 299)) GcmActivity.sendMessage("bfr", "");
                 bg_sync_backoff++;
             } else {
@@ -520,13 +530,13 @@ public class GcmActivity extends FauxActivity {
                 final PowerManager.WakeLock wl = JoH.getWakeLock("syncBGTable", 300000);
                 //if ((JoH.ts() - last_sync_fill) > (60 * 1000 * (5 + bg_sync_backoff))) {
                 if (JoH.pratelimit("last-sync-fill", 60 * (5 + bg_sync_backoff))) {
-                    last_sync_fill = JoH.ts();
+                    last_sync_fill = JoH.tsl();
                     bg_sync_backoff++;
 
                     // Since this is a big update, also update sensor and calibrations
                     syncSensor(Sensor.currentSensor(), true);
 
-                    final List<BgReading> bgReadings = BgReading.latestForGraph(300, JoH.ts() - (24 * 60 * 60 * 1000));
+                    final List<BgReading> bgReadings = BgReading.latestForGraph(300, JoH.tsl() - (24 * 60 * 60 * 1000));
 
                     StringBuilder stringBuilder = new StringBuilder();
                     for (BgReading bgReading : bgReadings) {
@@ -602,11 +612,11 @@ public class GcmActivity extends FauxActivity {
     }
 
     public static void push_stop_master_sensor() {
-        sendMessage("ssom","challenge string");
+        sendMessage("ssom", "challenge string");
     }
 
     public static void push_start_master_sensor() {
-        sendMessage("rsom",JoH.tsl()+"");
+        sendMessage("rsom", JoH.tsl() + "");
     }
 
     public static void push_external_status_update(long timestamp, String statusLine) {
@@ -680,7 +690,7 @@ public class GcmActivity extends FauxActivity {
             }
 
             if (overHeated()) {
-                UserError.Log.e(TAG, "Cannot send message due to cool down period: " + action);
+                UserError.Log.e(TAG, "Cannot send message due to cool down period: " + action + " till: " + JoH.dateTimeText(cool_down_till));
                 return "";
             }
 
@@ -718,10 +728,11 @@ public class GcmActivity extends FauxActivity {
             }
             String messageid = Integer.toString(msgId.incrementAndGet());
             gcm.send(senderid + "@gcm.googleapis.com", messageid, data);
-            if (last_ack == -1) last_ack = JoH.ts();
+            if (last_ack == -1) last_ack = JoH.tsl();
             last_send_previous = last_send;
-            last_send = JoH.ts();
+            last_send = JoH.tsl();
             msg = "Sent message OK " + messageid;
+            DesertSync.fromGCM(data);
         } catch (IOException ex) {
             msg = "Error :" + ex.getMessage();
         }
@@ -871,37 +882,40 @@ public class GcmActivity extends FauxActivity {
         if ((GcmActivity.last_ack > -1) && (GcmActivity.last_send_previous > 0)) {
             if (GcmActivity.last_send_previous > GcmActivity.last_ack) {
                 if (Pref.getLong("sync_warning_never", 0) == 0) {
+
                     if (PreferencesNames.SYNC_VERSION.equals("1") && JoH.isOldVersion(context)) {
-                        final double since_send = JoH.ts() - GcmActivity.last_send_previous;
+                        final long since_send = JoH.tsl() - GcmActivity.last_send_previous;
                         if (since_send > 60000) {
-                            final double ack_outstanding = JoH.ts() - GcmActivity.last_ack;
-                            if (ack_outstanding > MAX_ACK_OUTSTANDING_MS) {
-                                if (JoH.ratelimit("ack-failure", 7200)) {
-                                    if (JoH.isAnyNetworkConnected()) {
-                                        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                                        builder.setTitle("Possible Sync Problem");
-                                        builder.setMessage("It appears we haven't been able to send/receive sync data for the last: " + JoH.qs(ack_outstanding / 60000, 0) + " minutes\n\nDo you want to perform a reset of the sync system?");
-                                        builder.setPositiveButton("YES, Do it!", new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                dialog.dismiss();
-                                                JoH.static_toast(context, "Resetting...", Toast.LENGTH_LONG);
-                                                SdcardImportExport.forceGMSreset();
-                                            }
-                                        });
-                                        builder.setNeutralButton("Maybe Later", new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                dialog.dismiss();
-                                            }
-                                        });
-                                        builder.setNegativeButton("NO, Never", new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                dialog.dismiss();
-                                                Pref.setLong("sync_warning_never", (long) JoH.ts());
-                                            }
-                                        });
-                                        AlertDialog alert = builder.create();
-                                        alert.show();
+                            if (!DesertSync.isEnabled()) {
+                                final long ack_outstanding = JoH.tsl() - GcmActivity.last_ack;
+                                if (ack_outstanding > MAX_ACK_OUTSTANDING_MS) {
+                                    if (JoH.ratelimit("ack-failure", 7200)) {
+                                        if (JoH.isAnyNetworkConnected()) {
+                                            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                                            builder.setTitle("Possible Sync Problem");
+                                            builder.setMessage("It appears we haven't been able to send/receive sync data for the last: " + JoH.qs(ack_outstanding / 60000, 0) + " minutes\n\nDo you want to perform a reset of the sync system?");
+                                            builder.setPositiveButton("YES, Do it!", new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    dialog.dismiss();
+                                                    JoH.static_toast(context, "Resetting...", Toast.LENGTH_LONG);
+                                                    SdcardImportExport.forceGMSreset();
+                                                }
+                                            });
+                                            builder.setNeutralButton("Maybe Later", new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    dialog.dismiss();
+                                                }
+                                            });
+                                            builder.setNegativeButton("NO, Never", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    dialog.dismiss();
+                                                    Pref.setLong("sync_warning_never", JoH.tsl());
+                                                }
+                                            });
+                                            AlertDialog alert = builder.create();
+                                            alert.show();
+                                        }
                                     }
                                 }
                             }

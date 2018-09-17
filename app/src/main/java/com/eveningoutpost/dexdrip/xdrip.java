@@ -89,7 +89,7 @@ public class xdrip extends Application {
             }
             BluetoothGlucoseMeter.startIfEnabled();
             XdripWebService.immortality();
-            VersionTracker.updatePhone();
+            VersionTracker.updateDevice();
 
         } else {
             Log.d(TAG, "Detected running test mode, holding back on background processes");

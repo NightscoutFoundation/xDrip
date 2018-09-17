@@ -1,9 +1,5 @@
 package com.eveningoutpost.dexdrip.G5Model;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.Services.G5CollectionService;
-
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Locale;
@@ -13,9 +9,7 @@ import java.util.Locale;
  */
 
 
-public class VersionRequestRxMessage extends TransmitterMessage {
-
-    private final static String TAG = G5CollectionService.TAG; // meh
+public class VersionRequestRxMessage extends BaseMessage {
 
     public static final byte opcode = 0x4B;
 

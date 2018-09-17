@@ -5,7 +5,7 @@ import java.nio.ByteOrder;
 
 // created by jamorham
 
-public class SessionStartRxMessage extends TransmitterMessage {
+public class SessionStartRxMessage extends BaseMessage {
     public static final byte opcode = 0x27;
     final byte length = 17;
 
@@ -39,6 +39,11 @@ public class SessionStartRxMessage extends TransmitterMessage {
 
     boolean isOkay() {
         return isValid() && status == 0x00 && (info == 0x01 || info == 0x05) && sessionStartTime != INVALID_TIME;
+    }
+
+    // beyond hope?
+    boolean isFubar() {
+        return info == 0x04;
     }
 
     long getSessionStart() {

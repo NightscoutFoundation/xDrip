@@ -37,6 +37,10 @@ You can combine both like a normal query string:
 
 There is another option `brief_mode=Y` which you can use to exclude some of the data fields from the results to reduce response size.
 
+There is another option `no_empty=Y` which you can use so that an empty data set returns `""` instead of `"[]"`
+
+There is another option `all_data=Y` which you can use to get data additionally from the previous sensor session.
+
 You can also access the tasker endpoint by appending a query parameter
 
     http://127.0.0.1:17580/sgv.json?tasker=osnooze

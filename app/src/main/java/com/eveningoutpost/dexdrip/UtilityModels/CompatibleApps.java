@@ -13,9 +13,12 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AlertDialog;
 
 import com.eveningoutpost.dexdrip.BuildConfig;
+import com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.Services.G5BaseService;
+import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.webservices.XdripWebService;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -137,7 +140,7 @@ public class CompatibleApps extends BroadcastReceiver {
         return id + 4;
     }
 
-    public static void showNotification(String title, String content, PendingIntent intent, PendingIntent intent2, PendingIntent contentIntent, int notificationId) {
+    public static void showNotification(String title, String content, PendingIntent yesIntent, PendingIntent noIntent, PendingIntent contentIntent, int notificationId) {
 
         final NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(xdrip.getAppContext(), null)
                 .setSmallIcon(R.drawable.ic_action_communication_invert_colors_on)
@@ -145,8 +148,8 @@ public class CompatibleApps extends BroadcastReceiver {
                 .setContentText(content)
                 .setContentIntent(contentIntent)
                 .setPriority(NotificationCompat.PRIORITY_MAX)
-                .addAction(R.drawable.tick_icon_small, gs(R.string.yes), intent)
-                .addAction(android.R.drawable.ic_delete, gs(R.string.no), intent2);
+                .addAction(R.drawable.tick_icon_small, gs(R.string.yes), yesIntent)
+                .addAction(android.R.drawable.ic_delete, gs(R.string.no), noIntent);
 
         final NotificationManager mNotifyMgr = (NotificationManager) xdrip.getAppContext().getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -157,7 +160,7 @@ public class CompatibleApps extends BroadcastReceiver {
         }
     }
 
-    private static PendingIntent createActionIntent(int parent_id, int id, Feature action) {
+    public static PendingIntent createActionIntent(int parent_id, int id, Feature action) {
         return PendingIntent.getBroadcast(xdrip.getAppContext(), id,
                 new Intent(xdrip.getAppContext(), CompatibleApps.class)
                         .putExtra("action", action)
@@ -166,7 +169,7 @@ public class CompatibleApps extends BroadcastReceiver {
                 PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
-    private static PendingIntent createChoiceIntent(int parent_id, int id, Feature action, String title, String msg) {
+    public static PendingIntent createChoiceIntent(int parent_id, int id, Feature action, String title, String msg) {
         return PendingIntent.getBroadcast(xdrip.getAppContext(), id,
                 new Intent(xdrip.getAppContext(), CompatibleApps.class)
                         .putExtra("action", Feature.CHOICE)
@@ -274,6 +277,10 @@ public class CompatibleApps extends BroadcastReceiver {
                         enableBoolean("wear_sync", "Enabled Wear OS Sync!", intent);
                         break;
 
+                    case HARD_RESET_TRANSMITTER:
+                        G5BaseService.setHardResetTransmitterNow();
+                        break;
+
                     default:
                         JoH.static_toast_long("Unhandled action: " + feature);
                         break;
@@ -291,7 +298,7 @@ public class CompatibleApps extends BroadcastReceiver {
         cancelSourceNotification(intent);
     }
 
-    private enum Feature {
+    public enum Feature {
         UNKNOWN,
         CHOICE,
         CANCEL,
@@ -302,6 +309,7 @@ public class CompatibleApps extends BroadcastReceiver {
         ENABLE_LIBRE_ALARM,
         ENABLE_OOP,
         ENABLE_WEAR_OS_SYNC,
+        HARD_RESET_TRANSMITTER,
         FEATURE_X
     }
 
