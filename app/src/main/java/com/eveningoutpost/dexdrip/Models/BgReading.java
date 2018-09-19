@@ -364,9 +364,12 @@ public class BgReading extends Model implements ShareUploadableBg {
             bgReading.calculated_value = egvRecord.getBGValue();
             if (egvRecord.getBGValue() <= 13) {
                 Calibration calibration = bgReading.calibration;
+                double calSlope = 0, calIntercept = 0;
                 double firstAdjSlope = calibration.first_slope + (calibration.first_decay * (Math.ceil(new Date().getTime() - calibration.timestamp) / (1000 * 60 * 10)));
-                double calSlope = (calibration.first_scale / firstAdjSlope) * 1000;
-                double calIntercept = ((calibration.first_scale * calibration.first_intercept) / firstAdjSlope) * -1;
+                if (firstAdjSlope != 0) {
+                    calSlope = (calibration.first_scale / firstAdjSlope) * 1000;
+                    calIntercept = ((calibration.first_scale * calibration.first_intercept) / firstAdjSlope) * -1;
+                }
                 bgReading.raw_calculated = (((calSlope * bgReading.raw_data) + calIntercept) - 5);
             }
             Log.i(TAG, "create: NEW VALUE CALCULATED AT: " + bgReading.calculated_value);
@@ -562,9 +565,12 @@ public class BgReading extends Model implements ShareUploadableBg {
         bgReading.calculateAgeAdjustedRawValue();
 
         if (calibration.check_in) {
+            double calSlope = 0, calIntercept = 0;
             double firstAdjSlope = calibration.first_slope + (calibration.first_decay * (Math.ceil(new Date().getTime() - calibration.timestamp) / (1000 * 60 * 10)));
-            double calSlope = (calibration.first_scale / firstAdjSlope) * 1000;
-            double calIntercept = ((calibration.first_scale * calibration.first_intercept) / firstAdjSlope) * -1;
+            if (firstAdjSlope != 0) {
+                calSlope = (calibration.first_scale / firstAdjSlope) * 1000;
+                calIntercept = ((calibration.first_scale * calibration.first_intercept) / firstAdjSlope) * -1;
+            }
             bgReading.calculated_value = (((calSlope * bgReading.raw_data) + calIntercept) - 5);
             bgReading.filtered_calculated_value = (((calSlope * bgReading.ageAdjustedFiltered()) + calIntercept) - 5);
 
@@ -801,7 +807,7 @@ public class BgReading extends Model implements ShareUploadableBg {
     // Get a slope arrow based on pure guessed defaults so we can show it prior to calibration
     public static String getSlopeArrowSymbolBeforeCalibration() {
         final List<BgReading> last = BgReading.latestUnCalculated(2);
-        if ((last!=null) && (last.size()==2)) {
+        if ((last!=null) && checkDistinctLastReadings(last,2)) {
             final double guess_slope = 1; // This is the "Default" slope for Dex and LimiTTer
             final double time_delta = (last.get(0).timestamp-last.get(1).timestamp);
             if (time_delta<=(BgGraphBuilder.DEXCOM_PERIOD * 2)) {
@@ -1638,7 +1644,7 @@ public class BgReading extends Model implements ShareUploadableBg {
         save();
     }
 
-    boolean checkDistinctLastReadings(List<BgReading> lastReadings, int count)
+    private static boolean checkDistinctLastReadings(List<BgReading> lastReadings, int count)
     {
         if (lastReadings.size() != count)
             return false;
@@ -2070,6 +2076,8 @@ public class BgReading extends Model implements ShareUploadableBg {
 
     // ignores calibration checkins for speed
     public double ageAdjustedFiltered_fast() {
+        if(raw_data == 0d)
+            return filtered_data;
         // adjust the filtered_data with the same factor as the age adjusted raw value
         return filtered_data * (age_adjusted_raw_value / raw_data);
     }
