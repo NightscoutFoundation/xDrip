@@ -721,7 +721,15 @@ public class JoH {
 
     public static double tolerantParseDouble(String str) throws NumberFormatException {
         return Double.parseDouble(str.replace(",", "."));
+    }
 
+    public static double tolerantParseDouble(final String str, final double def) {
+        if (str == null) return def;
+        try {
+            return Double.parseDouble(str.replace(",", "."));
+        } catch (NumberFormatException e) {
+            return def;
+        }
     }
 
     public static String getRFC822String(long timestamp) {
