@@ -364,9 +364,12 @@ public class BgReading extends Model implements ShareUploadableBg {
             bgReading.calculated_value = egvRecord.getBGValue();
             if (egvRecord.getBGValue() <= 13) {
                 Calibration calibration = bgReading.calibration;
+                double calSlope = 0, calIntercept = 0;
                 double firstAdjSlope = calibration.first_slope + (calibration.first_decay * (Math.ceil(new Date().getTime() - calibration.timestamp) / (1000 * 60 * 10)));
-                double calSlope = (calibration.first_scale / firstAdjSlope) * 1000;
-                double calIntercept = ((calibration.first_scale * calibration.first_intercept) / firstAdjSlope) * -1;
+                if (firstAdjSlope != 0) {
+                    calSlope = (calibration.first_scale / firstAdjSlope) * 1000;
+                    calIntercept = ((calibration.first_scale * calibration.first_intercept) / firstAdjSlope) * -1;
+                }
                 bgReading.raw_calculated = (((calSlope * bgReading.raw_data) + calIntercept) - 5);
             }
             Log.i(TAG, "create: NEW VALUE CALCULATED AT: " + bgReading.calculated_value);
@@ -562,9 +565,12 @@ public class BgReading extends Model implements ShareUploadableBg {
         bgReading.calculateAgeAdjustedRawValue();
 
         if (calibration.check_in) {
+            double calSlope = 0, calIntercept = 0;
             double firstAdjSlope = calibration.first_slope + (calibration.first_decay * (Math.ceil(new Date().getTime() - calibration.timestamp) / (1000 * 60 * 10)));
-            double calSlope = (calibration.first_scale / firstAdjSlope) * 1000;
-            double calIntercept = ((calibration.first_scale * calibration.first_intercept) / firstAdjSlope) * -1;
+            if (firstAdjSlope != 0) {
+                calSlope = (calibration.first_scale / firstAdjSlope) * 1000;
+                calIntercept = ((calibration.first_scale * calibration.first_intercept) / firstAdjSlope) * -1;
+            }
             bgReading.calculated_value = (((calSlope * bgReading.raw_data) + calIntercept) - 5);
             bgReading.filtered_calculated_value = (((calSlope * bgReading.ageAdjustedFiltered()) + calIntercept) - 5);
 
@@ -801,7 +807,7 @@ public class BgReading extends Model implements ShareUploadableBg {
     // Get a slope arrow based on pure guessed defaults so we can show it prior to calibration
     public static String getSlopeArrowSymbolBeforeCalibration() {
         final List<BgReading> last = BgReading.latestUnCalculated(2);
-        if ((last!=null) && (last.size()==2)) {
+        if ((last!=null) && checkDistinctLastReadings(last,2)) {
             final double guess_slope = 1; // This is the "Default" slope for Dex and LimiTTer
             final double time_delta = (last.get(0).timestamp-last.get(1).timestamp);
             if (time_delta<=(BgGraphBuilder.DEXCOM_PERIOD * 2)) {
@@ -1412,8 +1418,7 @@ public class BgReading extends Model implements ShareUploadableBg {
             //   jsonObject.put("sensor", sensor);
             return jsonObject.toString();
         } catch (JSONException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            Log.e("Exception serializing BgReading", e.toString());
             return "";
         }
     }
@@ -1527,7 +1532,7 @@ public class BgReading extends Model implements ShareUploadableBg {
     public void find_new_curve() {
         JoH.clearCache();
         List<BgReading> last_3 = BgReading.latest(3);
-        if ((last_3 != null) && (last_3.size() == 3)) {
+        if ((last_3 != null) && checkDistinctLastReadings(last_3, 3)) {
             BgReading latest = last_3.get(0);
             BgReading second_latest = last_3.get(1);
             BgReading third_latest = last_3.get(2);
@@ -1544,9 +1549,7 @@ public class BgReading extends Model implements ShareUploadableBg {
             c = (y1*x2*x3/((x1-x2)*(x1-x3))+y2*x1*x3/((x2-x1)*(x2-x3))+y3*x1*x2/((x3-x1)*(x3-x2)));
 
             Log.i(TAG, "find_new_curve: BG PARABOLIC RATES: "+a+"x^2 + "+b+"x + "+c);
-
-            save();
-        } else if ((last_3 != null) && (last_3.size() == 2)) {
+        } else if ((last_3 != null) && checkDistinctLastReadings(last_3, 2)) {
 
             Log.i(TAG, "find_new_curve: Not enough data to calculate parabolic rates - assume Linear");
                 BgReading latest = last_3.get(0);
@@ -1566,7 +1569,6 @@ public class BgReading extends Model implements ShareUploadableBg {
                 c = -1 * ((latest.b * x1) - y1);
 
             Log.i(TAG, ""+latest.a+"x^2 + "+latest.b+"x + "+latest.c);
-                save();
             } else {
             Log.i(TAG, "find_new_curve: Not enough data to calculate parabolic rates - assume static data");
             a = 0;
@@ -1574,8 +1576,8 @@ public class BgReading extends Model implements ShareUploadableBg {
             c = calculated_value;
 
             Log.i(TAG, ""+a+"x^2 + "+b+"x + "+c);
-            save();
         }
+        save();
     }
 
     public void calculateAgeAdjustedRawValue(){
@@ -1591,7 +1593,7 @@ public class BgReading extends Model implements ShareUploadableBg {
     void find_new_raw_curve() {
         JoH.clearCache();
         final List<BgReading> last_3 = BgReading.latest(3);
-        if ((last_3 != null) && (last_3.size() == 3)) {
+        if ((last_3 != null) && checkDistinctLastReadings(last_3, 3)) {
 
             final BgReading latest = last_3.get(0);
             final BgReading second_latest = last_3.get(1);
@@ -1609,8 +1611,7 @@ public class BgReading extends Model implements ShareUploadableBg {
             rc = (y1*x2*x3/((x1-x2)*(x1-x3))+y2*x1*x3/((x2-x1)*(x2-x3))+y3*x1*x2/((x3-x1)*(x3-x2)));
 
             Log.i(TAG, "find_new_raw_curve: RAW PARABOLIC RATES: "+ra+"x^2 + "+rb+"x + "+rc);
-            save();
-        } else if ((last_3 != null) && (last_3.size()) == 2) {
+        } else if ((last_3 != null) && checkDistinctLastReadings(last_3, 2)) {
             BgReading latest = last_3.get(0);
             BgReading second_latest = last_3.get(1);
 
@@ -1629,7 +1630,6 @@ public class BgReading extends Model implements ShareUploadableBg {
             Log.i(TAG, "find_new_raw_curve: Not enough data to calculate parabolic rates - assume Linear data");
 
             Log.i(TAG, "RAW PARABOLIC RATES: "+ra+"x^2 + "+rb+"x + "+rc);
-            save();
         } else {
             Log.i(TAG, "find_new_raw_curve: Not enough data to calculate parabolic rates - assume static data");
             BgReading latest_entry = BgReading.lastNoSenssor();
@@ -1640,10 +1640,21 @@ public class BgReading extends Model implements ShareUploadableBg {
             } else {
                 rc = 105;
             }
-
-            save();
         }
+        save();
     }
+
+    private static boolean checkDistinctLastReadings(List<BgReading> lastReadings, int count)
+    {
+        if (lastReadings.size() != count)
+            return false;
+        for (int i=1; i< count; i++)
+            for(int j=0; j<i; j++)
+                if (lastReadings.get(i).timestamp == lastReadings.get(j).timestamp)
+                    return false;
+        return true;
+    }
+
     private static double weightedAverageRaw(double timeA, double timeB, double calibrationTime, double rawA, double rawB) {
         final double relativeSlope = (rawB -  rawA)/(timeB - timeA);
         final double relativeIntercept = rawA - (relativeSlope * timeA);
@@ -2065,6 +2076,8 @@ public class BgReading extends Model implements ShareUploadableBg {
 
     // ignores calibration checkins for speed
     public double ageAdjustedFiltered_fast() {
+        if(raw_data == 0d)
+            return filtered_data;
         // adjust the filtered_data with the same factor as the age adjusted raw value
         return filtered_data * (age_adjusted_raw_value / raw_data);
     }
