@@ -14,7 +14,6 @@ import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.eveningoutpost.dexdrip.BR;
@@ -197,32 +196,39 @@ public class EmergencyAssistActivity extends BaseAppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode,
                                     Intent intent) {
+        if (intent == null) return;
         if (requestCode == CONTACT_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 final Uri uri = intent.getData();
                 final String[] projection = {Phone.NUMBER, Phone.DISPLAY_NAME};
                 if (uri != null) {
-                    final Cursor cursor = getContentResolver().query(uri, projection,
-                            null, null, null);
-                    if (cursor != null) {
-                        cursor.moveToFirst();
+                    try {
+                        final Cursor cursor = getContentResolver().query(uri, projection,
+                                null, null, null);
+                        if (cursor != null) {
+                            cursor.moveToFirst();
 
-                        int numberColumnIndex = cursor.getColumnIndex(Phone.NUMBER);
-                        String number = cursor.getString(numberColumnIndex);
+                            int numberColumnIndex = cursor.getColumnIndex(Phone.NUMBER);
+                            String number = cursor.getString(numberColumnIndex);
 
-                        int nameColumnIndex = cursor.getColumnIndex(Phone.DISPLAY_NAME_PRIMARY);
-                        String name = cursor.getString(nameColumnIndex).trim();
+                            int nameColumnIndex = cursor.getColumnIndex(Phone.DISPLAY_NAME_PRIMARY);
+                            String name = cursor.getString(nameColumnIndex).trim();
 
-                        if (name.length() > 0) {
-                            if (number.length() > 5) {
-                                binding.getContactModel().add(name, number);
+                            if (name.length() > 0) {
+                                if (number.length() > 5) {
+                                    binding.getContactModel().add(name, number);
+                                } else {
+                                    JoH.static_toast_long("Cannot add " + name + " as number is invalid!");
+                                }
                             } else {
-                                JoH.static_toast_long("Cannot add " + name + " as number is invalid!");
+                                JoH.static_toast_long("Cannot add as name is invalid");
                             }
-                        } else {
-                            JoH.static_toast_long("Cannot add as name is invalid");
+                            cursor.close();
                         }
-                        cursor.close();
+                    } catch (Exception e) {
+                        final String msg = "Got error trying to read contact information: " + e;
+                        UserError.Log.wtf(TAG, msg);
+                        JoH.static_toast_long(msg);
                     }
                 } else {
                     JoH.static_toast_long("Got null uri trying to read contact");
