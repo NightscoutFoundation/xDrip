@@ -989,7 +989,10 @@ public class DexCollectionService extends Service implements BtCallBack {
             l.add(new StatusItem("Tomato Hardware", PersistentStore.getString("TomatoHArdware")));
             l.add(new StatusItem("Tomato Firmware", PersistentStore.getString("TomatoFirmware")));
             l.add(new StatusItem("Libre SN", PersistentStore.getString("LibreSN")));
+        }
 
+        if (static_use_blukon) {
+            l.add(new StatusItem("Libre SN", PersistentStore.getString("LibreSN")));
         }
 
         return l;
@@ -1723,7 +1726,11 @@ public class DexCollectionService extends Service implements BtCallBack {
     private void watchdog() {
         if (last_time_seen == 0) return;
         if (prefs.getBoolean("bluetooth_watchdog", false)) {
-            if ((JoH.msSince(last_time_seen)) > 1200000) {
+
+            int bt_wdg_timer = Integer.parseInt(Pref.getString("bluetooth_watchdog_timer", "20"));
+            Log.w(TAG,"Use BT Wdg timer=" + bt_wdg_timer);
+
+            if ((JoH.msSince(last_time_seen)) > bt_wdg_timer*Constants.MINUTE_IN_MS) {
                 if (!JoH.isOngoingCall()) {
                     Log.e(TAG, "Watchdog triggered, attempting to reset bluetooth");
                     status("Watchdog triggered");
