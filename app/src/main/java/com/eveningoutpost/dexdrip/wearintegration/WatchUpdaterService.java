@@ -1785,6 +1785,7 @@ public class WatchUpdaterService extends WearableListenerService implements
             dataMap.putBoolean("close_gatt_on_ble_disconnect", mPrefs.getBoolean("close_gatt_on_ble_disconnect", true));
             dataMap.putBoolean("bluetooth_frequent_reset", mPrefs.getBoolean("bluetooth_frequent_reset", false));
             dataMap.putBoolean("bluetooth_watchdog", mPrefs.getBoolean("bluetooth_watchdog", false));
+            dataMap.putString("bluetooth_watchdog_timer", mPrefs.getString("bluetooth_watchdog_timer", "20" + ""));
             dataMap.putInt("bridge_battery", mPrefs.getInt("bridge_battery", -1));
             dataMap.putInt("nfc_sensor_age", mPrefs.getInt("nfc_sensor_age", -1));
 
@@ -1797,6 +1798,7 @@ public class WatchUpdaterService extends WearableListenerService implements
             dataMap.putBoolean("rising_alert", mPrefs.getBoolean("rising_alert", false));
             dataMap.putString("rising_bg_val", mPrefs.getString("rising_bg_val", "2"));
             dataMap.putBoolean("aggressive_service_restart", mPrefs.getBoolean("aggressive_service_restart", false));
+            dataMap.putString("aggressive_service_restart_timer", mPrefs.getString("aggressive_service_restart_timer", "5"));
 
             //Extra Status Line
             dataMap.putBoolean("extra_status_line", mPrefs.getBoolean("extra_status_line", false));
