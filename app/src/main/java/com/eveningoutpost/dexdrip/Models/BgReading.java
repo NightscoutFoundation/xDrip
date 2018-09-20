@@ -1391,7 +1391,7 @@ public class BgReading extends Model implements ShareUploadableBg {
     }
 
     public String toJSON(boolean sendCalibration) {
-        JSONObject jsonObject = new JSONObject();
+        final JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("uuid", uuid);
             jsonObject.put("a", a); // how much of this do we actually need?
@@ -1406,14 +1406,23 @@ public class BgReading extends Model implements ShareUploadableBg {
             jsonObject.put("raw_calculated", raw_calculated);
             jsonObject.put("raw_data", raw_data);
             jsonObject.put("calculated_value_slope", calculated_value_slope);
-            if(sendCalibration) {
+            if (sendCalibration) {
                 jsonObject.put("calibration_uuid", calibration_uuid);
             }
             //   jsonObject.put("sensor", sensor);
             return jsonObject.toString();
         } catch (JSONException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            UserError.Log.wtf(TAG, "Error producing in toJSON: " + e);
+            if (Double.isNaN(a)) Log.e(TAG, "a is NaN");
+            if (Double.isNaN(b)) Log.e(TAG, "b is NaN");
+            if (Double.isNaN(c)) Log.e(TAG, "c is NaN");
+            if (Double.isNaN(age_adjusted_raw_value)) Log.e(TAG, "age_adjusted_raw_value is NaN");
+            if (Double.isNaN(calculated_value)) Log.e(TAG, "calculated_value is NaN");
+            if (Double.isNaN(filtered_calculated_value)) Log.e(TAG, "filtered_calculated_value is NaN");
+            if (Double.isNaN(filtered_data)) Log.e(TAG, "filtered_data is NaN");
+            if (Double.isNaN(raw_calculated)) Log.e(TAG, "raw_calculated is NaN");
+            if (Double.isNaN(raw_data)) Log.e(TAG, "raw_data is NaN");
+            if (Double.isNaN(calculated_value_slope)) Log.e(TAG, "calculated_value_slope is NaN");
             return "";
         }
     }
