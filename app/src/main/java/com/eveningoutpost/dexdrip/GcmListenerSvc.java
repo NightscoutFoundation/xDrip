@@ -158,7 +158,7 @@ public class GcmListenerSvc extends JamListenerSvc {
             if (from.startsWith(getString(R.string.gcmtpc))) {
 
                 String xfrom = data.getString("xfrom");
-                String payload = data.getString("datum");
+                String payload = data.getString("datum", data.getString("payload"));
                 String action = data.getString("action");
 
                 if ((xfrom != null) && (xfrom.equals(GcmActivity.token))) {

@@ -94,16 +94,20 @@ public class DesertComms {
     public static boolean pullFromOasis(final String topic, final long since) {
         final String oasisIP = getOasisIP();
         if (oasisIP.length() == 0) return false;
+        try {
+            final String url = HttpUrl.parse(getInitialUrl(oasisIP)).newBuilder().addPathSegment("sync").addPathSegment("pull")
+                    .addPathSegment("" + since)
+                    .addPathSegment(topic)
+                    .build().toString();
 
-        final String url = HttpUrl.parse(getInitialUrl(oasisIP)).newBuilder().addPathSegment("sync").addPathSegment("pull")
-                .addPathSegment("" + since)
-                .addPathSegment(topic)
-                .build().toString();
-
-        UserError.Log.d(TAG, url);
-        queue.add(new QueueItem(url).setHandler(Pull));
-        runInBackground();
-        return true;
+            UserError.Log.d(TAG, url);
+            queue.add(new QueueItem(url).setHandler(Pull));
+            runInBackground();
+            return true;
+        } catch (NullPointerException e) {
+            UserError.Log.e(TAG, "Exception parsing url: -" + oasisIP + "- probably invalid ip");
+            return false;
+        }
     }
 
     public static boolean probeOasis(final String topic, final String hint) {
