@@ -992,6 +992,8 @@ public class DexCollectionService extends Service implements BtCallBack {
         }
 
         if (static_use_blukon) {
+            l.add(new StatusItem("Battery", Pref.getInt("bridge_battery", 0) + "%"));
+            l.add(new StatusItem("Sensor age", Pref.getInt("nfc_sensor_age", 0) + "days"));
             l.add(new StatusItem("Libre SN", PersistentStore.getString("LibreSN")));
         }
 
