@@ -40,6 +40,8 @@ import com.eveningoutpost.dexdrip.Models.StepCounter;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.util.Log;
+
 import com.eveningoutpost.dexdrip.BestGlucose;
 import com.eveningoutpost.dexdrip.Models.HeartRate;
 import com.eveningoutpost.dexdrip.Models.StepCounter;
@@ -53,6 +55,9 @@ import com.huami.watch.transport.DataTransportResult;
 import com.huami.watch.transport.TransportDataItem;
 import com.kieronquinn.library.amazfitcommunication.Transporter;
 import com.kieronquinn.library.amazfitcommunication.TransporterClassic;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 
 /**
@@ -82,13 +87,7 @@ public class Amazfitservice extends Service {
     public void onCreate() {
         super.onCreate();
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-
-
         transporter = (TransporterClassic)Transporter.get(getApplicationContext(), "com.eveningoutpost.dexdrip.wearintegration");
-
-
-        transporter = (TransporterClassic) Transporter.get(getApplicationContext(), "com.eveningoutpost.dexdrip.wearintegration");
-
         transporter.connectTransportService();
         transporter.addChannelListener(new Transporter.ChannelListener() {
             @Override
@@ -136,7 +135,7 @@ public class Amazfitservice extends Service {
                             db.putString("reply_message", "No alert found");
                         }
 
-                    transporter.send("SnoozeRemoteConfirmation", db);
+                    //transporter.send("SnoozeRemoteConfirmation", db);
                 }
 
 
@@ -195,8 +194,9 @@ public class Amazfitservice extends Service {
             UserError.Log.e("Amazfitservice", "Service is not connectable ");
 
         } else {
-
-            transporter.send(getAction(), getDataBundle(),test  );
+            DataBundle db = new DataBundle();
+            db.putString("Data",getDatatosend());
+            transporter.send(getAction(),db,test  );
             //UserError.Log.e("Amazfitservice", "trying to send Data to watch " + action);
         }
 
@@ -213,12 +213,12 @@ public class Amazfitservice extends Service {
     }
 
 
-    public DataBundle getDataBundle() {
-        DataBundle datatosend = new DataBundle();
-        if (action.equals("xDrip_synced_SGV_data")) {datatosend =  getSGVdata();}
-        if (action.equals("xDrip_Alarm")) {datatosend =  getAlarmdata();}
-        if (action.equals("xDrip_Otheralert")) {datatosend =  getOtheralertdata();}
-        if (action.equals("xDrip_AlarmCancel")) {datatosend =  getAlarmCancelData();}
+    public String getDatatosend() {
+        String datatosend = new String();
+        if (action.equals("xDrip_synced_SGV_data")) datatosend= getSGVJSON();
+        if (action.equals("xDrip_Alarm")) {datatosend =  getAlarmJSON();}
+        if (action.equals("xDrip_Otheralert")) {datatosend =  getOtheralertJSON();}
+        if (action.equals("xDrip_AlarmCancel")) {datatosend =  getAlarmCancelJSON();}
         return datatosend;
     }
 
@@ -288,75 +288,97 @@ public class Amazfitservice extends Service {
         return prefs.getString("dex_collection_method", "BluetoothWixel").replace("Dexbridge", "xBridge");
     }
 
-    public DataBundle getSGVdata() {
+    public String getSGVJSON(){
         final int sensor_age = Pref.getInt("nfc_sensor_age", 0);
         final String age_problem = (Pref.getBooleanDefaultFalse("nfc_age_problem") ? " \u26A0\u26A0\u26A0" : "");
         final double expires = JoH.tolerantParseDouble(prefs.getString("nfc_expiry_days", "14.5")) - ((double) sensor_age) / 1440;
-
-        DataBundle db = new DataBundle();
         BestGlucose.DisplayGlucose dg = BestGlucose.getDisplayGlucose();
-        db.putString("Collection_info",getCollectionMethod());
-        db.putString("hardware_source_info",getCurrentDevice());
-        db.putString("sensor.latest_battery_level",gettransmitterbattery());
-        db.putString("sensor_expires",((expires >= 0) ? (JoH.qs(expires, 1) + "d") : "EXPIRED! ") + age_problem);
 
-        db.putLong("date", dg.timestamp);
-        db.putString("sgv", String.valueOf(dg.unitized)+String.valueOf(dg.delta_arrow));
-        db.putString("delta", String.valueOf(dg.spannableString(dg.unitized_delta)));
-        db.putBoolean("ishigh", dg.isHigh());
-        db.putBoolean("islow", dg.isLow());
-        db.putBoolean("isstale", dg.isStale());
-        if (BgGraphBuilder.low_occurs_at > 0) {
-            db.putString("low_predicted", xdrip.getAppContext().getString(R.string.low_predicted));
-            db.putString("in", xdrip.getAppContext().getString(R.string.in));
-            db.putString("space_mins", xdrip.getAppContext().getString(R.string.space_mins));
-            db.putDouble("low_occurs_at",BgGraphBuilder.low_occurs_at);
+        try {
+            // Extract data from JSON
+
+            JSONObject json_data = new JSONObject();
+            json_data.put("Collection_info",getCollectionMethod());
+            json_data.put("hardware_source_info",getCurrentDevice());
+            json_data.put("sensor.latest_battery_level",gettransmitterbattery());
+            json_data.put("sensor_expires",((expires >= 0) ? (JoH.qs(expires, 1) + "d") : "EXPIRED! ") + age_problem);
+
+            json_data.put("date", dg.timestamp);
+            json_data.put("sgv", String.valueOf(dg.unitized)+String.valueOf(dg.delta_arrow));
+            json_data.put("delta", String.valueOf(dg.spannableString(dg.unitized_delta)));
+            json_data.put("ishigh", dg.isHigh());
+            json_data.put("islow", dg.isLow());
+            json_data.put("isstale", dg.isStale());
+            json_data.put("plugin_name", dg.plugin_name);
+            json_data.put("phone_battery", String.valueOf(PowerStateReceiver.getBatteryLevel(getApplicationContext())));
+
+            if(Pref.getBoolean("pref_amazfit_widget_graph",false))
+                json_data.put("SGVGraph",BitmaptoString(createWearBitmap(Pref.getStringToInt("amazfit_widget_graph_hours",4))));
+            else
+                json_data.put("SGVGraph","false");
+
+            if(Pref.getBoolean("pref_amazfit_watchface_graph",false))
+                json_data.put("WFGraph",BitmaptoString(createWFBitmap(Pref.getStringToInt("amazfit_watchface_graph_hours",4))));
+            else
+                json_data.put("WFGraph","false");
+
+
+            return json_data.toString();
+        }catch (JSONException e) {
+            Log.w("AmazfitService", e.toString());
         }
-        db.putString("plugin_name", dg.plugin_name);
-        db.putString("reply_message", "Watch acknowledged DATA");
-        db.putString("phone_battery", String.valueOf(PowerStateReceiver.getBatteryLevel(getApplicationContext())));
+        return "";
 
-        if(Pref.getBoolean("pref_amazfit_widget_graph",false))
-            db.putString("SGVGraph",BitmaptoString(createWearBitmap(Pref.getStringToInt("amazfit_widget_graph_hours",4))));
-        else
-            db.putString("SGVGraph","false");
-
-        if(Pref.getBoolean("pref_amazfit_watchface_graph",false))
-            db.putString("WFGraph",BitmaptoString(createWFBitmap(Pref.getStringToInt("amazfit_watchface_graph_hours",4))));
-        else
-            db.putString("WFGraph","false");
-        return db;
     }
-    public DataBundle getAlarmdata() {
-        DataBundle db = new DataBundle();
+
+
+    public String getAlarmJSON() {
+
         BestGlucose.DisplayGlucose dg = BestGlucose.getDisplayGlucose();
-        db.putString("uuid", alert_to_send);
-        db.putString("reply_message", "Watch acknowledged ALARM");
-        db.putString("alarmtext", alert_to_send);
-        db.putLong("date", System.currentTimeMillis());
-        db.putString("sgv", String.valueOf(dg.unitized)+String.valueOf(dg.delta_arrow));
-        db.putInt("default_snooze",default_snooze);
+        try {
+            // Extract data from JSON
 
-        return db;
+            JSONObject json_data = new JSONObject();
+            json_data.put("alarmtext", alert_to_send);
+            json_data.put("date", System.currentTimeMillis());
+            json_data.put("sgv", String.valueOf(dg.unitized)+String.valueOf(dg.delta_arrow));
+            json_data.put("default_snooze",default_snooze);
+            return json_data.toString();
+        }catch (JSONException e) {
+            Log.w("AmazfitService", e.toString());
+        }
+        return "";
+
     }
-    public DataBundle getOtheralertdata() {
-        DataBundle db = new DataBundle();
+    public String getOtheralertJSON() {
         BestGlucose.DisplayGlucose dg = BestGlucose.getDisplayGlucose();
-        db.putString("uuid", alert_to_send);
-        db.putString("reply_message", "Watch acknowledged OTHERALERT");
-        db.putString("alarmtext", alert_to_send);
-        db.putLong("date", System.currentTimeMillis());
-        db.putString("sgv", String.valueOf(dg.unitized)+String.valueOf(dg.delta_arrow));
+        try {
+            // Extract data from JSON
 
+            JSONObject json_data = new JSONObject();
 
-        return db;
+            json_data.put("alarmtext", alert_to_send);
+            json_data.put("date", System.currentTimeMillis());
+            json_data.put("sgv", String.valueOf(dg.unitized)+String.valueOf(dg.delta_arrow));
+            return json_data.toString();
+        }catch (JSONException e) {
+            Log.w("AmazfitService", e.toString());
+        }
+        return "";
     }
 
-    public DataBundle getAlarmCancelData() {
-        DataBundle db = new DataBundle();
-        db.putString("reply_message", "Watch acknowledged CANCEL");
-        db.putLong("date", System.currentTimeMillis());
-        return db;
+    public String getAlarmCancelJSON() {
+        try {
+            // Extract data from JSON
+
+            JSONObject json_data = new JSONObject();
+            json_data.put("reply_message", "Watch acknowledged CANCEL");
+            json_data.put("date", System.currentTimeMillis());
+            return json_data.toString();
+        }catch (JSONException e) {
+            Log.w("AmazfitService", e.toString());
+        }
+        return "";
     }
 
 public static void start(String action_text,BgReading bg){
