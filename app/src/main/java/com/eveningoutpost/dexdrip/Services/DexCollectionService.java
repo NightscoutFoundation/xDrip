@@ -1728,9 +1728,9 @@ public class DexCollectionService extends Service implements BtCallBack {
         if (prefs.getBoolean("bluetooth_watchdog", false)) {
 
             int bt_wdg_timer = Integer.parseInt(Pref.getString("bluetooth_watchdog_timer", "20"));
-            Log.d(TAG,"Use BT Wdg timer=" + bt_wdg_timer);
 
             if ((JoH.msSince(last_time_seen)) > bt_wdg_timer*Constants.MINUTE_IN_MS) {
+                Log.d(TAG,"Use BT Watchdog timer=" + bt_wdg_timer);
                 if (!JoH.isOngoingCall()) {
                     Log.e(TAG, "Watchdog triggered, attempting to reset bluetooth");
                     status("Watchdog triggered");
