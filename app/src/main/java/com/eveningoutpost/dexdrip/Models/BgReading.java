@@ -253,16 +253,23 @@ public class BgReading extends Model implements ShareUploadableBg {
         String unit = prefs.getString("units", "mgdl");
         DecimalFormat df = new DecimalFormat("#");
         df.setMaximumFractionDigits(0);
+        double usedBgValue = 0;
 
-        if (calculated_value >= 400) {
+        if (dg_mgdl > 0) {
+            usedBgValue = dg_mgdl;//from plugin
+        } else {
+            usedBgValue = calculated_value;//xdrip original
+        }
+
+        if (usedBgValue >= 400) {
             return "HIGH";
-        } else if (calculated_value >= 40) {
+        } else if (usedBgValue >= 40) {
             if (unit.compareTo("mgdl") == 0) {
                 df.setMaximumFractionDigits(0);
-                return df.format(calculated_value);
+                return df.format(usedBgValue);
             } else {
                 df.setMaximumFractionDigits(1);
-                return df.format(calculated_value_mmol());
+                return df.format(mmolConvert(usedBgValue));
             }
         } else {
             return "LOW";
