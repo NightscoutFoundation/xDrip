@@ -712,8 +712,8 @@
     <string name="mongo_db_uri">Mongo DB Uri</string>
     <string name="skip_local_lan">For local servers with 192.168.x.x addresses, skip uploads when there is no local network connectivity.</string>
     <string name="skip_lan_uploads">Skip LAN uploads</string>
-    <string name="mongo_load_transmitter_data_title">Upload G4/G5 transmitters data</string>
-    <string name="mongo_load_transmitter_data_summary">Allow More than one xDrip to connect to BT devices and store the data that they receive in the cloud. This should allow all house coverage for G5, or 2 parents using the same BT device transperantly.</string>
+    <string name="mongo_load_transmitter_data_title">Upload libre transmitters data</string>
+    <string name="mongo_load_transmitter_data_summary">Allow More than one xDrip to connect to BT devices and store the data that they receive in the cloud. This should allow all house coverage for libre with miaomiao, or 2 parents using the same BT device transperantly.</string>
     <string name="influxdb_sync">Enable InfluxDB sync</string>
     <string name="influxdb_uri">InfluxDB Uri</string>
     <string name="influxdb_database_name">InfluxDB Database Name</string>
