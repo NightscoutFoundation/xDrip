@@ -12,10 +12,12 @@ import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Delete;
 import com.activeandroid.query.Select;
 import com.activeandroid.util.SQLiteUtils;
+import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.BloodTest;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.LibreBlock;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
@@ -164,7 +166,10 @@ public class UploaderQueue extends Model {
             result.reference_uuid = obj instanceof BloodTest ? ((BloodTest) obj).uuid : null;
         if (result.reference_uuid == null)
             result.reference_uuid = obj instanceof TransmitterData ? ((TransmitterData) obj).uuid : null;
+        if (result.reference_uuid == null)
+            result.reference_uuid = obj instanceof LibreBlock ? ((LibreBlock) obj).uuid : null;
 
+            
         if (result.reference_uuid == null) {
             Log.d(TAG, "reference_uuid was null so refusing to create new entry");
             return null;
@@ -186,7 +191,7 @@ public class UploaderQueue extends Model {
     }
 
     public static void newTransmitterDataEntry(String action, Model obj) {
-    	if(!Home.getPreferencesBooleanDefaultFalse("mongo_load_transmitter_data")) {
+    	if(!Pref.getBooleanDefaultFalse("mongo_load_transmitter_data")) {
     		return;
     	}
     	newEntry(action, obj);
