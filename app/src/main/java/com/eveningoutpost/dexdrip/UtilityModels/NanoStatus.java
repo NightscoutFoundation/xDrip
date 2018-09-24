@@ -3,6 +3,7 @@ package com.eveningoutpost.dexdrip.UtilityModels;
 // jamorham
 
 import android.databinding.ObservableField;
+import android.text.SpannableString;
 import android.util.Log;
 
 import com.eveningoutpost.dexdrip.Models.UserError;
@@ -19,9 +20,11 @@ public class NanoStatus {
 
     private final String parameter;
     private final int freqMs;
+    private final SpannableString empty = new SpannableString("");
     private volatile boolean running = false;
     private volatile Thread myThread;
     public ObservableField<String> watch = new ObservableField<>();
+    public ObservableField<SpannableString> color_watch = new ObservableField<>();
 
 
     public NanoStatus(final String parameter, final int freqMs) {
@@ -76,30 +79,35 @@ public class NanoStatus {
     }
 
     private void updateWatch() {
-        final String result = nanoStatus(parameter);
-        watch.set(result != null ? result : "");
+        final SpannableString result = nanoStatusColor(parameter);
+        color_watch.set(result != null ? result : empty);
+        watch.set(result != null ? result.toString() : "");
     }
 
 
     public static String nanoStatus(final String module) {
+        return nanoStatusColor(module).toString();
+    }
+
+    public static SpannableString nanoStatusColor(final String module) {
         switch (module) {
             case "collector":
                 return collectorNano(DexCollectionType.getCollectorServiceClass());
             default:
-                return "Invalid module type";
+                return new SpannableString("Invalid module type");
         }
     }
 
 
-    static String collectorNano(final Class<?> service) {
+    static SpannableString collectorNano(final Class<?> service) {
         if (service != null) {
             try {
                 try {
-                    return (String) cache.get(service).invoke(null);
+                    return (SpannableString) cache.get(service).invoke(null);
                 } catch (NullPointerException e) {
                     final Method method = service.getMethod("nanoStatus");
                     cache.put(service, method);
-                    return (String) method.invoke(null);
+                    return (SpannableString) method.invoke(null);
                 }
 
             } catch (Exception e) {
