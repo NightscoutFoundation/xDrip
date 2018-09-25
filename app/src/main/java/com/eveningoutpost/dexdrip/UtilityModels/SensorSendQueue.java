@@ -56,7 +56,7 @@ public class SensorSendQueue extends Model {
     }
     
     public static void SendToFollower(Sensor sensor) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
+       // SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
         if(Home.get_master()) {
             GcmActivity.syncSensor(sensor, true);
         }
