@@ -82,6 +82,13 @@
             android:onItemSelected="@{(a,b,c,d) -> home.arrowSelectionChanged(a,b,c,d)}"
             android:layout_weight="1" />
 
+        <Switch
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="@{safeUnbox(vs.included[`collector_nano_status`])}"
+            android:onClick="@{() -> vs.ptoggle(`collector_nano_status`)}"
+            android:text="Show Collector Status" />
+
     </LinearLayout>
 
 </layout>
