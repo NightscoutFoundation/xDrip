@@ -138,7 +138,9 @@ public class BroadcastGlucose {
     }
 
     private static void addCollectorStatus(final Bundle bundle) {
-        bundle.putString(Intents.EXTRA_COLLECTOR_NANOSTATUS, NanoStatus.nanoStatus("collector"));
-
+        final String result = NanoStatus.nanoStatus("collector");
+        if (result != null) {
+            bundle.putString(Intents.EXTRA_COLLECTOR_NANOSTATUS, result);
+        }
     }
 }

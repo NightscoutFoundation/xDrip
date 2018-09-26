@@ -86,7 +86,8 @@ public class NanoStatus {
 
 
     public static String nanoStatus(final String module) {
-        return nanoStatusColor(module).toString();
+        final SpannableString result = nanoStatusColor(module);
+        return result != null ? result.toString() : null;
     }
 
     public static SpannableString nanoStatusColor(final String module) {
