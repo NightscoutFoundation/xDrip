@@ -1439,7 +1439,11 @@ public class BgReading extends Model implements ShareUploadableBg {
             jsonObject.put("filtered_data", filtered_data);
             jsonObject.put("raw_calculated", raw_calculated);
             jsonObject.put("raw_data", raw_data);
-            jsonObject.put("calculated_value_slope", calculated_value_slope);
+            try {
+                jsonObject.put("calculated_value_slope", calculated_value_slope);
+            } catch (JSONException e) {
+                jsonObject.put("hide_slope", true); // calculated value slope is NaN - hide slope should already be true locally too
+            }
             if (sendCalibration) {
                 jsonObject.put("calibration_uuid", calibration_uuid);
             }
