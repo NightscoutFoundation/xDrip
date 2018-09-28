@@ -48,8 +48,6 @@ import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.UnknownHostException;
-import java.net.InetAddress;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -1263,19 +1261,11 @@ public class NightscoutUploader {
             final String collectionName = prefs.getString("cloud_storage_mongodb_collection", null);
             final String dsCollectionName = prefs.getString("cloud_storage_mongodb_device_status_collection", "devicestatus");
 
-            
-            try {
-                InetAddress ip = InetAddress.getByName("ds115166.mlab.com");
-                Log.e(TAG, "IP is " + ip.getHostAddress());
-            } catch (Exception ex) {
-                Log.e(TAG,"Exception resolving host name", ex);
-            }
-            Log.e(TAG, dbURI);
             if (dbURI != null && collectionName != null) {
                 try {
 
                     // connect to db
-                    MongoClientURI uri = new MongoClientURI(dbURI.trim()+"?socketTimeoutMS=180000&serverSelectionTimeoutMS=90000");
+                    MongoClientURI uri = new MongoClientURI(dbURI.trim()+"?socketTimeoutMS=180000");
                     MongoClient client = new MongoClient(uri);
 
                     // get db
@@ -1353,7 +1343,6 @@ public class NightscoutUploader {
                             testData.put("SensorId", PersistentStore.getString("LibreSN"));
                             testData.put("CaptureDateTime", libreBlockEntry.timestamp);
                             testData.put("BlockBytes",Base64.encodeToString(libreBlockEntry.blockbytes, Base64.NO_WRAP));
-                            //Base64.decode(LastReading.BlockBytes, Base64.DEFAULT);
                             
                             testData.put("ChecksumOk",ChecksumOk ? 1 : 0);
                             testData.put("Uploaded", 1);
