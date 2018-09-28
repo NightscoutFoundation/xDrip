@@ -339,10 +339,6 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
         xdrip.checkForcedEnglish(Home.this);
 
-        if (Build.VERSION.SDK_INT == 23 && Build.MANUFACTURER.startsWith("LG")) {
-            AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
-        }
-
         super.onCreate(savedInstanceState);
         setTheme(R.style.AppThemeToolBarLite); // for toolbar mode
 

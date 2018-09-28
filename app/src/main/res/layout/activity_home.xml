@@ -127,7 +127,7 @@
                         android:paddingStart="0dp"
                         android:paddingTop="0dp"
 
-                        app:srcCompat="@drawable/ic_gtk_go_forward_ltr"
+                        app:srcCompat="@drawable/ic_arrow_forward_color_24dp"
                         app:showIfTrue="@{safeUnbox(vs.included[`graphic_trend_arrow`])}" />
                 </LinearLayout>
 
