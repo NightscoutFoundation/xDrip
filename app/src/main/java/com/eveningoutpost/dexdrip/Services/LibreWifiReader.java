@@ -587,7 +587,7 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
                 Log.d(TAG, "calling HandleGoodReading from " +  JoH.dateTimeText(LastReading.CaptureDateTime ));
 
                 byte data[] = Base64.decode(LastReading.BlockBytes, Base64.DEFAULT);
-                boolean checksum_ok = NFCReaderX.HandleGoodReading(LastReading.SensorId, data, LastReading.CaptureDateTime);
+                boolean checksum_ok = NFCReaderX.HandleGoodReading(LastReading.SensorId, data, LastReading.CaptureDateTime, false);
                 if (checksum_ok) {
                     // TODO use battery, and other interesting data.
                     LastReportedTime = LastReading.CaptureDateTime;

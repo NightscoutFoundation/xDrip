@@ -145,7 +145,7 @@ public class UploaderQueue extends Model {
     //////////////////////////////////////////
 
     public static UploaderQueue newEntry(String action, Model obj) {
-        Log.d(TAG, "new entry called");
+        UserError.Log.d(TAG, "new entry called");
         final UploaderQueue result = new UploaderQueue();
         result.bitfield_wanted = DEFAULT_UPLOAD_CIRCUITS
                 | (Pref.getBooleanDefaultFalse("cloud_storage_mongodb_enable") ? MONGO_DIRECT : 0)
@@ -169,7 +169,6 @@ public class UploaderQueue extends Model {
         if (result.reference_uuid == null)
             result.reference_uuid = obj instanceof LibreBlock ? ((LibreBlock) obj).uuid : null;
 
-            
         if (result.reference_uuid == null) {
             Log.d(TAG, "reference_uuid was null so refusing to create new entry");
             return null;

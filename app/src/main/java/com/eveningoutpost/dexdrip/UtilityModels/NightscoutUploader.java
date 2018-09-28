@@ -1339,27 +1339,6 @@ public class NightscoutUploader {
                             testData.put("type", "cal");
                             dexcomData.insert(testData, WriteConcern.UNACKNOWLEDGED);
                         }
-                        /*
-                        DBCollection tdCollection = db.getCollection("TransmitterData");
-                        for (TransmitterData transmitterData : transmittersData) {
-                            // make db object
-                            BasicDBObject testData = new BasicDBObject();
-                            testData.put("CaptureDateTime", transmitterData.timestamp);
-                            testData.put("RawValue", transmitterData.raw_data);
-                            testData.put("FilteredValue", transmitterData.filtered_data);
-                            testData.put("BatteryLife", transmitterData.sensor_battery_level);
-                            testData.put("DebugInfo", android.os.Build.MODEL + " " + new Date(transmitterData.timestamp).toLocaleString());
-                            testData.put("UploaderBatteryLife",getBatteryLevel());
-                            
-                            // This are fields that the receiver is expecting, but we don't have good data for them
-                            testData.put("TransmissionId",-1);
-                            testData.put("TransmitterId", "TransmitterId");
-                            testData.put("ReceivedSignalStrength",-1);
-                            
-                            WriteResult wr = tdCollection.insert(testData, WriteConcern.ACKNOWLEDGED);
-                            Log.e(TAG, "uploaded transmitter data with " + new Date(transmitterData.timestamp).toLocaleString()+ " wr = " + wr);
-                        }
-                        */
                         DBCollection libreCollection = db.getCollection("libre");
                         for (LibreBlock libreBlockEntry : libreBlock) {
                             // make db object
@@ -1389,18 +1368,6 @@ public class NightscoutUploader {
                             testData.put("FwVersion", PersistentStore.getString("TomatoFirmware"));
                             testData.put("HwVersion", PersistentStore.getString("TomatoHArdware"));
                             
-                            /*
-                            testData.put("RawValue", transmitterData.raw_data);
-                            testData.put("FilteredValue", transmitterData.filtered_data);
-                            testData.put("BatteryLife", transmitterData.sensor_battery_level);
-                            testData.put("DebugInfo", android.os.Build.MODEL + " " + new Date(transmitterData.timestamp).toLocaleString());
-                            testData.put("UploaderBatteryLife",getBatteryLevel());
-                            
-                            // This are fields that the receiver is expecting, but we don't have good data for them
-                            testData.put("TransmissionId",-1);
-                            testData.put("TransmitterId", "TransmitterId");
-                            testData.put("ReceivedSignalStrength",-1);
-                            */
                             WriteResult wr = libreCollection.insert(testData, WriteConcern.ACKNOWLEDGED);
                             Log.e(TAG, "uploaded libreblock data with " + new Date(libreBlockEntry.timestamp).toLocaleString()+ " wr = " + wr);
                         }

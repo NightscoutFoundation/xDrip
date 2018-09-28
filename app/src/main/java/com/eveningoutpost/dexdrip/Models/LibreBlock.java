@@ -66,12 +66,11 @@ public class LibreBlock extends PlusModel {
     public String uuid;
     
     // if you are indexing by block then just * 8 to get byte start
-    // ?????? Pass a parameter if to upload or not.
-    public static LibreBlock createAndSave(String reference, long timestamp, byte[] blocks, int byte_start) {
+    public static LibreBlock createAndSave(String reference, long timestamp, byte[] blocks, int byte_start, boolean allowUpload) {
         final LibreBlock lb = create(reference, timestamp, blocks, byte_start);
         if (lb != null) {
             lb.save();
-            if(byte_start == 0 && blocks.length == 344) {
+            if(byte_start == 0 && blocks.length == 344 && allowUpload) {
                 Log.e("xxx", "sending new item to queue");
                 UploaderQueue.newTransmitterDataEntry("create" ,lb);
             }
@@ -148,7 +147,7 @@ public class LibreBlock extends PlusModel {
         libreBlock.save();
     }
     
-    public static LibreBlock findByUuid(String uuid) {//KS
+    public static LibreBlock findByUuid(String uuid) {
         try {
             return new Select()
                 .from(LibreBlock.class)
