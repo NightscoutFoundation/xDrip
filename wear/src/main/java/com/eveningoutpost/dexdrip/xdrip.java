@@ -3,9 +3,13 @@ package com.eveningoutpost.dexdrip;
 import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
+import android.os.Build;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import com.activeandroid.ActiveAndroid;
+import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.core.CrashlyticsCore;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.LibreBlock;
@@ -13,6 +17,8 @@ import com.eveningoutpost.dexdrip.Models.LibreData;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.UtilityModels.PlusAsyncExecutor;
 import com.eveningoutpost.dexdrip.UtilityModels.VersionTracker;
+
+import io.fabric.sdk.android.Fabric;
 
 import static com.eveningoutpost.dexdrip.utils.VersionFixer.disableUpdates;
 
@@ -29,11 +35,19 @@ public class xdrip extends Application {
     private static Context context;
     public static PlusAsyncExecutor executor;
     private static boolean fabricInited = false;
+    private static Boolean isRunningTestCache;
 
     @Override
     public void onCreate() {
         xdrip.context = getApplicationContext();
         super.onCreate();
+        try {
+            if (PreferenceManager.getDefaultSharedPreferences(xdrip.context).getBoolean("enable_crashlytics", true)) {
+                initCrashlytics(this);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, e.toString());
+        }
         PreferenceManager.setDefaultValues(this, R.xml.preferences, true);
         ActiveAndroid.initialize(this);
         updateMigrations();
@@ -42,6 +56,20 @@ public class xdrip extends Application {
         executor = new PlusAsyncExecutor();
         VersionTracker.updateDevice();
         disableUpdates();
+    }
+
+    public synchronized static void initCrashlytics(Context context) {
+        if ((!fabricInited && isWear2OrAbove() && !isRunningTest())) {
+            try {
+                Crashlytics crashlyticsKit = new Crashlytics.Builder()
+                        .core(new CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build())
+                        .build();
+                Fabric.with(context, crashlyticsKit);
+            } catch (Exception e) {
+                Log.e(TAG, e.toString());
+            }
+            fabricInited = true;
+        }
     }
 
     public static Context getAppContext() {
@@ -64,4 +92,26 @@ public class xdrip extends Application {
         LibreData.updateDB();
     }
 
+    private static boolean isWear2OrAbove() {
+        return Build.VERSION.SDK_INT > 23;
+    }
+
+    public static synchronized boolean isRunningTest() {
+        android.util.Log.e(TAG, Build.MODEL);
+        if (null == isRunningTestCache) {
+            boolean test_framework;
+            if ("robolectric".equals(Build.FINGERPRINT)) {
+                isRunningTestCache = true;
+            } else {
+                try {
+                    Class.forName("android.support.test.espresso.Espresso");
+                    test_framework = true;
+                } catch (ClassNotFoundException e) {
+                    test_framework = false;
+                }
+                isRunningTestCache = test_framework;
+            }
+        }
+        return isRunningTestCache;
+    }
 }
