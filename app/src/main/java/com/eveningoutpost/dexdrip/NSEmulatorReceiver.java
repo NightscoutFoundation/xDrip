@@ -108,10 +108,14 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
                                                     final String type = json_object.getString("type");
                                                     switch (type) {
                                                         case "sgv":
+                                                            double slope = 0;
+                                                            try {
+                                                                slope = BgReading.slopefromName(json_object.getString("direction"));
+                                                            } catch (JSONException e) {
+                                                                //
+                                                            }
                                                             bgReadingInsertFromData(json_object.getLong("date"),
-                                                                    json_object.getDouble("sgv"),
-                                                                    BgReading.slopefromName(json_object.getString("direction")),
-                                                                    true);
+                                                                    json_object.getDouble("sgv"), slope, true);
 
                                                             break;
                                                         default:
