@@ -36,7 +36,7 @@ public class UploaderTask extends AsyncTask<String, Void, Void> {
 
     public Void doInBackground(String... urls) {
         try {
-            Log.e("xxx", "UploaderTask doInBackground called");
+            Log.d(TAG, "UploaderTask doInBackground called");
             final List<Long> circuits = new ArrayList<>();
             final List<String> types = new ArrayList<>();
 
@@ -119,7 +119,7 @@ public class UploaderTask extends AsyncTask<String, Void, Void> {
                                     } else if (type.equals(TransmitterData.class.getSimpleName())) {
                                         final TransmitterData this_transmitterData = TransmitterData.byid(up.reference_id);
                                         if (this_transmitterData != null) {
-                                        	transmittersData.add(this_transmitterData);
+                                            transmittersData.add(this_transmitterData);
                                         } else {
                                             Log.wtf(TAG, "TransmitterData with ID: " + up.reference_id + " appears to have been deleted");
                                         }

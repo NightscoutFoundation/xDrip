@@ -266,9 +266,9 @@ public class NightscoutUploader {
 
         if (enableRESTUpload) {
             long start = System.currentTimeMillis();
-            Log.e(TAG, String.format("Starting upload of %s record using a REST API", glucoseDataSets.size()));
+            Log.i(TAG, String.format("Starting upload of %s record using a REST API", glucoseDataSets.size()));
             apiStatus = doRESTUpload(prefs, glucoseDataSets, meterRecords, calRecords);
-            Log.e(TAG, String.format("Finished upload of %s record using a REST API in %s ms result: %b", glucoseDataSets.size(), System.currentTimeMillis() - start, apiStatus));
+            Log.i(TAG, String.format("Finished upload of %s record using a REST API in %s ms result: %b", glucoseDataSets.size(), System.currentTimeMillis() - start, apiStatus));
 
             if (prefs.getBoolean("cloud_storage_api_download_enable", false)) {
                 start = System.currentTimeMillis();
@@ -289,7 +289,8 @@ public class NightscoutUploader {
         if (enableMongoUpload) {
             double start = new Date().getTime();
             mongoStatus = doMongoUpload(prefs, glucoseDataSets, meterRecords, calRecords, transmittersData, libreBlock);
-            Log.e(TAG, String.format("Finished upload of %s record using a Mongo in %s ms result: %b", glucoseDataSets.size() + meterRecords.size(), System.currentTimeMillis() - start, mongoStatus));
+            Log.i(TAG, String.format("Finished upload of %s record using a Mongo in %s ms result: %b", 
+                    glucoseDataSets.size() + meterRecords.size() + calRecords.size() + transmittersData.size() + libreBlock.size(), System.currentTimeMillis() - start, mongoStatus));
         }
 
         return mongoStatus;
@@ -1275,7 +1276,7 @@ public class NightscoutUploader {
                     DBCollection dexcomData = db.getCollection(collectionName.trim());
 
                     try {
-                        Log.e(TAG, "The number of EGV records being sent to MongoDB is " + glucoseDataSets.size());
+                        Log.i(TAG, "The number of EGV records being sent to MongoDB is " + glucoseDataSets.size());
                         for (BgReading record : glucoseDataSets) {
                             // make db object
                             BasicDBObject testData = new BasicDBObject();
@@ -1296,7 +1297,7 @@ public class NightscoutUploader {
                                 Log.e(TAG, "MongoDB BG record is null.");
                         }
 
-                        Log.e(TAG, "REST - The number of MBG records being sent to MongoDB is " + meterRecords.size());
+                        Log.i(TAG, "REST - The number of MBG records being sent to MongoDB is " + meterRecords.size());
                         for (Calibration meterRecord : meterRecords) {
                             // make db object
                             BasicDBObject testData = new BasicDBObject();
@@ -1307,7 +1308,7 @@ public class NightscoutUploader {
                             testData.put("mbg", meterRecord.bg);
                             dexcomData.insert(testData, WriteConcern.UNACKNOWLEDGED);
                         }
-                        Log.e(TAG, "REST - Finshed upload of mbg");
+                        Log.i(TAG, "REST - Finshed upload of mbg");
 
                         for (Calibration calRecord : calRecords) {
                             //do not upload undefined slopes
@@ -1331,14 +1332,15 @@ public class NightscoutUploader {
                         }
                         DBCollection libreCollection = db.getCollection("libre");
                         for (LibreBlock libreBlockEntry : libreBlock) {
-                            // make db object
                             
-                            Log.e("xxx", "uploading new item to monog");
+                            
+                            Log.d(TAG, "uploading new item to monog");
                             boolean ChecksumOk = LibreUtils.verify(libreBlockEntry.blockbytes);
                             if(!ChecksumOk) {
-                                Log.e("xxx", "Not uploading packet with badchecksum");//?????
+                                Log.e(TAG, "Not uploading packet with badchecksum");
                                 continue;
                             }
+                            // make db object
                             BasicDBObject testData = new BasicDBObject();
                             testData.put("SensorId", PersistentStore.getString("LibreSN"));
                             testData.put("CaptureDateTime", libreBlockEntry.timestamp);
@@ -1358,7 +1360,7 @@ public class NightscoutUploader {
                             testData.put("HwVersion", PersistentStore.getString("TomatoHArdware"));
                             
                             WriteResult wr = libreCollection.insert(testData, WriteConcern.ACKNOWLEDGED);
-                            Log.e(TAG, "uploaded libreblock data with " + new Date(libreBlockEntry.timestamp).toLocaleString()+ " wr = " + wr);
+                            Log.d(TAG, "uploaded libreblock data with " + new Date(libreBlockEntry.timestamp).toLocaleString()+ " wr = " + wr);
                         }
 
                         // TODO: quick port from original code, revisit before release

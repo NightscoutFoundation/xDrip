@@ -71,7 +71,7 @@ public class LibreBlock extends PlusModel {
         if (lb != null) {
             lb.save();
             if(byte_start == 0 && blocks.length == 344 && allowUpload) {
-                Log.e("xxx", "sending new item to queue");
+                Log.d(TAG, "sending new item to queue");
                 UploaderQueue.newTransmitterDataEntry("create" ,lb);
             }
         }

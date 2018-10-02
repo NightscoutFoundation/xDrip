@@ -23,7 +23,6 @@ public class SyncService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         Log.d(TAG, "STARTING INTENT SERVICE");
-        Log.d("xxx", "SyncService INTENT SERVICE");
         attemptSend();
     }
 
