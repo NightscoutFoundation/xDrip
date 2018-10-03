@@ -39,7 +39,8 @@ public class Span {
     public static SpannableString join(boolean add_spaces, SpannableString... args) {
         final SpannableStringBuilder builder = new SpannableStringBuilder();
         for (SpannableString arg : args) {
-            if (builder.length() > 0) {
+            if (arg == null) continue;
+            if (add_spaces && builder.length() > 0) {
                 builder.append(" ");
             }
             builder.append(arg);
