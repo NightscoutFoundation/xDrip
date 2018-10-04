@@ -13,6 +13,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by Emma Black on 11/29/14.
@@ -109,7 +110,8 @@ public class UserNotification extends Model {
             final String message = PersistentStore.getString("UserNotification:message:" + type);
             if (message.equals("")) return null;
             UserNotification userNotification = new UserNotification();
-            userNotification.timestamp = Double.parseDouble(timestamp);
+            userNotification.timestamp = JoH.tolerantParseDouble(timestamp, -1);
+            if (userNotification.timestamp == -1) return null; // bad data
             userNotification.message = message;
             Log.d(TAG, "Workaround for: " + type + " " + userNotification.message + " timestamp: " + userNotification.timestamp);
             return userNotification;
@@ -169,7 +171,7 @@ public class UserNotification extends Model {
                 break;
             default:
                 Log.d(TAG, "Saving workaround for: " + type + " " + message);
-                PersistentStore.setString("UserNotification:timestamp:" + type, JoH.qs(timestamp));
+                PersistentStore.setString("UserNotification:timestamp:" + type, String.format(Locale.US, "%d", (long) timestamp));
                 PersistentStore.setString("UserNotification:message:" + type, message);
                 return null;
         }
