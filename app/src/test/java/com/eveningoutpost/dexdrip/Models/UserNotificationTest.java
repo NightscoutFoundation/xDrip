@@ -8,6 +8,8 @@ import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import org.junit.After;
 import org.junit.Test;
 
+import java.util.Locale;
+
 import static com.google.common.truth.Truth.assertThat;
 
 /**
@@ -388,5 +390,11 @@ public class UserNotificationTest extends RobolectricTestWithConfig {
         UserNotification calibrationAlert = UserNotification.GetNotificationByType("testAlert");
         assertThat(calibrationAlert).isNotNull();
         assertThat(calibrationAlert.timestamp).isWithin(0).of(initialTimestamp);
+    }
+
+    @Test
+    public void formatTest() {
+        final double tval = 2738568152156d;
+        assertThat(Double.parseDouble(String.format(Locale.US, "%d", (long)tval))).isEqualTo(tval);
     }
 }
