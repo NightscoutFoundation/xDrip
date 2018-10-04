@@ -138,7 +138,13 @@ public class RollCall {
         final Gson gson = new GsonBuilder()
                 .excludeFieldsWithoutExposeAnnotation()
                 .create();
-        return gson.fromJson(json, RollCall.class);
+        try {
+            return gson.fromJson(json, RollCall.class);
+        } catch (Exception e) {
+            UserError.Log.e(TAG, "Got exception processing fromJson() " + e);
+            UserError.Log.e(TAG, "json = "  + json);
+            return null;
+        }   
     }
 
     public synchronized static void Seen(String item_json) {
