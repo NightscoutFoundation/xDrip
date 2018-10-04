@@ -6,23 +6,34 @@ import android.databinding.ObservableField;
 import android.text.SpannableString;
 import android.util.Log;
 
+import com.eveningoutpost.dexdrip.GcmActivity;
+import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
 
+import lombok.Setter;
+
 public class NanoStatus {
 
     private static final String TAG = "NanoStatus";
+    private static final String LAST_COLLECTOR_STATUS_STORE = "LAST_COLLECTOR_STATUS_STORE";
+    private static final String REMOTE_COLLECTOR_STATUS_STORE = "REMOTE_COLLECTOR_STATUS_STORE";
     private static final HashMap<Class<?>, Method> cache = new HashMap<>();
     private static final boolean D = false;
+    private static Gson muhGson;
 
     private final String parameter;
     private final int freqMs;
     private final SpannableString empty = new SpannableString("");
     private volatile boolean running = false;
     private volatile Thread myThread;
+    @Setter
+    private Runnable doveTail;
     public ObservableField<String> watch = new ObservableField<>();
     public ObservableField<SpannableString> color_watch = new ObservableField<>();
 
@@ -68,7 +79,9 @@ public class NanoStatus {
                     }
                     if (D) UserError.Log.d(TAG, "Updating");
                     updateWatch();
-
+                    if (doveTail != null) {
+                        doveTail.run();
+                    }
                 }
                 if (D) UserError.Log.d(TAG, "Stopping");
             }
@@ -116,6 +129,40 @@ public class NanoStatus {
             }
         }
         return null;
+    }
+
+    public static void keepFollowerUpdated() {
+        try {
+            if (Home.get_master()) {
+                if (muhGson == null) {
+                    muhGson = new GsonBuilder().create();
+                }
+                final String serialized = muhGson.toJson(nanoStatusColor("collector"));
+                if (PersistentStore.updateStringIfDifferent(LAST_COLLECTOR_STATUS_STORE, serialized)) {
+                    Inevitable.task("update-follower-to-nanostatus", 500, new Runnable() {
+                        @Override
+                        public void run() {
+                            GcmActivity.sendNanoStatusUpdate(PersistentStore.getString(LAST_COLLECTOR_STATUS_STORE));
+                        }
+                    });
+                }
+            }
+        } catch (Exception e) {
+            UserError.Log.wtf(TAG, "Got exception serializing: " + e);
+        }
+    }
+
+    public static void setRemote(final String json) {
+        PersistentStore.setString(REMOTE_COLLECTOR_STATUS_STORE, json);
+    }
+
+    public static SpannableString getRemote() {
+        // TODO apply timeout?
+        try {
+            return muhGson.fromJson(PersistentStore.getString(REMOTE_COLLECTOR_STATUS_STORE), SpannableString.class);
+        } catch (Exception e) {
+            return new SpannableString("");
+        }
     }
 
 }
