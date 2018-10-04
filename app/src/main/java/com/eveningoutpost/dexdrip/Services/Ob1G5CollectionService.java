@@ -1520,14 +1520,16 @@ public class Ob1G5CollectionService extends G5BaseService {
             }
             final PendingIntent pi = PendingIntent.getActivity(xdrip.getAppContext(), G5_SENSOR_STARTED, JoH.getStartActivityIntent(Home.class), PendingIntent.FLAG_UPDATE_CURRENT);
             JoH.showNotification(state.getText(), "G5 Sensor Stopped", pi, G5_SENSOR_STARTED, true, true, false);
-
+            UserError.Log.ueh(TAG, "Native Sensor is now Stopped: " + state.getExtendedText());
         } else if (is_started && !was_started) {
             JoH.cancelNotification(G5_SENSOR_STARTED);
+            UserError.Log.ueh(TAG, "Native Sensor is now Started: " + state.getExtendedText());
         }
 
         if (is_failed && !was_failed) {
             final PendingIntent pi = PendingIntent.getActivity(xdrip.getAppContext(), G5_SENSOR_FAILED, JoH.getStartActivityIntent(Home.class), PendingIntent.FLAG_UPDATE_CURRENT);
             JoH.showNotification(state.getText(), "G5 Sensor FAILED", pi, G5_SENSOR_FAILED, true, true, false);
+            UserError.Log.ueh(TAG, "Native Sensor is now marked FAILED: " + state.getExtendedText());
         }
 
 
@@ -1657,6 +1659,10 @@ public class Ob1G5CollectionService extends G5BaseService {
         }
         if ((lastSensorStatus != null)) {
             l.add(new StatusItem("Sensor Status", lastSensorStatus, lastSensorState != Ok ? NOTICE : Highlight.NORMAL));
+        }
+
+        if (hardResetTransmitterNow) {
+            l.add(new StatusItem("Hard Reset", "Attempting - please wait", Highlight.CRITICAL));
         }
 
         if (transmitterID != null) {
