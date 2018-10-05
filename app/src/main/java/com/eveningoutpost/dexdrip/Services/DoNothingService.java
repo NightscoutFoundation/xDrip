@@ -20,6 +20,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.InstalledApps;
+import com.eveningoutpost.dexdrip.UtilityModels.NanoStatus;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.ui.helpers.Span;
@@ -232,20 +233,17 @@ public class DoNothingService extends Service {
         }
         if (Home.get_follower()) {
             updateLastBg();
+            final SpannableString remoteStatus = NanoStatus.getRemote();
             if (last_bg != null) {
                 if (JoH.msSince(last_bg.timestamp) > Constants.MINUTE_IN_MS * 15) {
                     final SpannableString lastBgStatus = Span.colorSpan("Last from master: " + JoH.niceTimeSince(last_bg.timestamp) + " ago", NOTICE.color());
-                    if (pingStatus != null) {
-                        return Span.join(true, pingStatus, lastBgStatus);
-                    } else {
-                        return lastBgStatus;
-                    }
+                    return Span.join(true, remoteStatus, pingStatus, lastBgStatus);
                 }
             } else {
-                return new SpannableString("No data received from master yet");
+                return Span.join(true, pingStatus, new SpannableString("No data received from master yet"));
             }
         } else {
-            return pingStatus;
+            return Span.join(true, pingStatus);
         }
         return null;
     }
