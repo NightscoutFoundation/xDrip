@@ -9,4 +9,5 @@
   <!-- pebble settings -->
   <!-- Amazfit Settings -->
   <!-- trend arrow for speak -->
+  <string name="invalid_or_unsupported_code">无效或不支持的代码(code)!</string>
 </resources>
