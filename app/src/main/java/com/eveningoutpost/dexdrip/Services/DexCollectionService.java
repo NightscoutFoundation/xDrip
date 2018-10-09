@@ -1729,7 +1729,7 @@ public class DexCollectionService extends Service implements BtCallBack {
         if (last_time_seen == 0) return;
         if (prefs.getBoolean("bluetooth_watchdog", false)) {
 
-            int bt_wdg_timer = Integer.parseInt(Pref.getString("bluetooth_watchdog_timer", "20"));
+            int bt_wdg_timer = JoH.parseIntWithDefault(Pref.getString("bluetooth_watchdog_timer", "20"), 10, 20);
 
             if ((JoH.msSince(last_time_seen)) > bt_wdg_timer*Constants.MINUTE_IN_MS) {
                 Log.d(TAG,"Use BT Watchdog timer=" + bt_wdg_timer);
