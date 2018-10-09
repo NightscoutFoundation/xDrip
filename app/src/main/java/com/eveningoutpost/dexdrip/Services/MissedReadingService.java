@@ -140,7 +140,7 @@ public class MissedReadingService extends IntentService {
     }
 
     private void checkBackAfterSnoozeTime(Context context, long now) {
-        // This is not 100% acurate, need to take in account also the time of when this alert was snoozed.
+        // This is not 100% accurate, need to take in account also the time of when this alert was snoozed.
         UserNotification userNotification = UserNotification.GetNotificationByType("bg_missed_alerts");
         if (userNotification == null) {
             // No active alert exists, should not happen, we have just created it.
@@ -162,7 +162,8 @@ public class MissedReadingService extends IntentService {
 
     // alarmIn is relative time ms
     public void setAlarm(long alarmIn, boolean force) {
-        int aggressive_timer = Integer.parseInt(Pref.getString("aggressive_service_restart_timer", "5"));
+        int aggressive_timer;
+        aggressive_timer = JoH.parseIntWithDefault(Pref.getString("aggressive_service_restart_timer", "5"), 10, 5);
         Log.d(TAG,"Use aggressive timer="+aggressive_timer);
 
         if (!force && (alarmIn < aggressive_timer * 60 * 1000)) {
