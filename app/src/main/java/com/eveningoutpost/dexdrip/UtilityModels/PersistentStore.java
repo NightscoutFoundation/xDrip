@@ -72,8 +72,16 @@ public class PersistentStore {
         return JoH.base64decodeBytes(getString(name));
     }
 
+    public static byte getByte(String name) {
+        return (byte)getLong(name);
+    }
+
     public static void setBytes(String name, byte[] value) {
         setString(name, JoH.base64encodeBytes(value));
+    }
+
+    public static void setByte(String name, byte value) {
+        setLong(name, value);
     }
 
     public static long getLong(String name) {
