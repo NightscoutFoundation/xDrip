@@ -213,6 +213,9 @@ public class NFCReaderX {
             doTheScan(context, tag, true);
         }
     }
+    public static boolean HandleGoodReading(String tagId, byte[] data1, final long CaptureDateTime) {
+        return HandleGoodReading(tagId, data1, CaptureDateTime, false);
+    }
 
     // returns true if checksum passed.
     public static boolean HandleGoodReading(String tagId, byte[] data1, final long CaptureDateTime, boolean allowUpload ) {
@@ -273,7 +276,7 @@ public class NFCReaderX {
                 if (succeeded) {
                     long now = JoH.tsl();
                     String SensorSn = LibreUtils.decodeSerialNumberKey(tag.getId());
-                    boolean checksum_ok = HandleGoodReading(SensorSn, data, now, false);
+                    boolean checksum_ok = HandleGoodReading(SensorSn, data, now);
                     if(checksum_ok == false) {
                         Log.e(TAG, "Read data but checksum is wrong");
                     }

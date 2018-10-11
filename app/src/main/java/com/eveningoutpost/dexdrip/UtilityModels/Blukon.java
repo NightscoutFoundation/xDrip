@@ -501,7 +501,7 @@ private static final int POSITION_OF_SENSOR_STATUS_BYTE = 17;
                 int blockNum = JoH.parseIntWithDefault(blockId, 16, -1);
                 if(blockNum != -1) {
                     Log.d(TAG, "Saving data: + blockid = " + blockNum);
-                    LibreBlock.createAndSave("blukon", now , buffer, blockNum * 8, false);
+                    LibreBlock.createAndSave("blukon", now , buffer, blockNum * 8);
                 }
             }
 
@@ -615,7 +615,7 @@ private static final int POSITION_OF_SENSOR_STATUS_BYTE = 17;
             Log.i(TAG, "Full data that was received is " + HexDump.dumpHexString(m_full_data));
 
             final String tagId = PersistentStore.getString("LibreSN");
-            NFCReaderX.HandleGoodReading(tagId, m_full_data, now, false);
+            NFCReaderX.HandleGoodReading(tagId, m_full_data, now);
 
             PersistentStore.setLong("blukon-time-of-last-reading", now);
             Log.i(TAG, "time of current reading: " + JoH.dateTimeText(now));

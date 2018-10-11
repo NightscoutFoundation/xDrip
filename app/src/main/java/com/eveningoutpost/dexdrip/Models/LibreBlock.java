@@ -65,6 +65,10 @@ public class LibreBlock extends PlusModel {
     @Column(name = "uuid", index = true)
     public String uuid;
     
+    public static LibreBlock createAndSave(String reference, long timestamp, byte[] blocks, int byte_start) {
+        return createAndSave(reference, timestamp, blocks, byte_start, false);
+    }
+    
     // if you are indexing by block then just * 8 to get byte start
     public static LibreBlock createAndSave(String reference, long timestamp, byte[] blocks, int byte_start, boolean allowUpload) {
         final LibreBlock lb = create(reference, timestamp, blocks, byte_start);
