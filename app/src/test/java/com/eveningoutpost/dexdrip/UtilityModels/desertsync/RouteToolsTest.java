@@ -38,5 +38,11 @@ public class RouteToolsTest {
 
     }
 
+    @Test
+    public void ipTest() {
+        assertWithMessage("ip process ok 1").that(ip(ip("1.2.3.4"))).isEqualTo("1.2.3.4");
+        assertWithMessage("ip process ok 2").that(ip(ip("192.168.10.10"))).isEqualTo("192.168.10.10");
+    }
+
 
 }
