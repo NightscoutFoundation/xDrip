@@ -77,6 +77,7 @@ import rx.schedulers.Schedulers;
 
 import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.getUUIDName;
 import static com.eveningoutpost.dexdrip.G5Model.CalibrationState.Ok;
+import static com.eveningoutpost.dexdrip.G5Model.CalibrationState.Unknown;
 import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.CLOSED_OK_TEXT;
 import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.evaluateG6Settings;
 import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.pendingCalibration;
@@ -97,6 +98,7 @@ import static com.eveningoutpost.dexdrip.UtilityModels.Constants.G5_CALIBRATION_
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.G5_SENSOR_FAILED;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.G5_SENSOR_RESTARTED;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.G5_SENSOR_STARTED;
+import static com.eveningoutpost.dexdrip.UtilityModels.Constants.HOUR_IN_MS;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.SECOND_IN_MS;
 import static com.eveningoutpost.dexdrip.UtilityModels.StatusItem.Highlight.BAD;
 import static com.eveningoutpost.dexdrip.UtilityModels.StatusItem.Highlight.CRITICAL;
@@ -137,6 +139,8 @@ public class Ob1G5CollectionService extends G5BaseService {
     public static final String TAG = Ob1G5CollectionService.class.getSimpleName();
     public static final String OB1G5_PREFS = "use_ob1_g5_collector_service";
     private static final String OB1G5_MACSTORE = "G5-mac-for-txid-";
+    private static final String OB1G5_STATESTORE = "ob1-state-store-";
+    private static final String OB1G5_STATESTORE_TIME = "ob1-state-store-time";
     private static final int DEFAULT_AUTOMATA_DELAY = 100;
     private static final String BUGGY_SAMSUNG_ENABLED = "buggy-samsung-enabled";
     private static final String STOP_SCAN_TASK_ID = "ob1-g5-scan-timeout_scan";
@@ -1474,6 +1478,9 @@ public class Ob1G5CollectionService extends G5BaseService {
 
         lastSensorStatus = state.getExtendedText();
         lastSensorState = state;
+
+        storeCalibrationState(state);
+
         final boolean needs_calibration = state.needsCalibration();
         final boolean was_needing_calibration = PersistentStore.getBoolean(NEEDING_CALIBRATION);
 
@@ -1520,15 +1527,18 @@ public class Ob1G5CollectionService extends G5BaseService {
             }
             final PendingIntent pi = PendingIntent.getActivity(xdrip.getAppContext(), G5_SENSOR_STARTED, JoH.getStartActivityIntent(Home.class), PendingIntent.FLAG_UPDATE_CURRENT);
             JoH.showNotification(state.getText(), "G5 Sensor Stopped", pi, G5_SENSOR_STARTED, true, true, false);
-
+            UserError.Log.ueh(TAG, "Native Sensor is now Stopped: " + state.getExtendedText());
         } else if (is_started && !was_started) {
             JoH.cancelNotification(G5_SENSOR_STARTED);
+            UserError.Log.ueh(TAG, "Native Sensor is now Started: " + state.getExtendedText());
         }
 
         if (is_failed && !was_failed) {
             final PendingIntent pi = PendingIntent.getActivity(xdrip.getAppContext(), G5_SENSOR_FAILED, JoH.getStartActivityIntent(Home.class), PendingIntent.FLAG_UPDATE_CURRENT);
             JoH.showNotification(state.getText(), "G5 Sensor FAILED", pi, G5_SENSOR_FAILED, true, true, false);
+            UserError.Log.ueh(TAG, "Native Sensor is now marked FAILED: " + state.getExtendedText());
         }
+        // we can't easily auto-cancel a failed notice as auto-restart may mean the user is not aware of it?
 
 
         updateG5State(needs_calibration, was_needing_calibration, NEEDING_CALIBRATION);
@@ -1543,18 +1553,42 @@ public class Ob1G5CollectionService extends G5BaseService {
         }
     }
 
+    private static void storeCalibrationState(final CalibrationState state) {
+        PersistentStore.setByte(OB1G5_STATESTORE, state.getValue());
+        PersistentStore.setLong(OB1G5_STATESTORE_TIME, JoH.tsl());
+    }
+
+    private static CalibrationState getStoredCalibrationState() {
+        if (JoH.msSince(PersistentStore.getLong(OB1G5_STATESTORE_TIME)) < HOUR_IN_MS * 2) {
+            return CalibrationState.parse(PersistentStore.getByte(OB1G5_STATESTORE));
+        }
+        return CalibrationState.Unknown;
+    }
+
+    private static void loadCalibrationStateAsRequired() {
+        if ((lastSensorState == null) && JoH.quietratelimit("ob1-load-sensor-state",5)) {
+            final CalibrationState savedState = getStoredCalibrationState();
+            if (savedState != Unknown) {
+                lastSensorState = savedState;
+            }
+        }
+    }
+
     public static boolean isG5ActiveButUnknownState() {
+        loadCalibrationStateAsRequired();
         return (lastSensorState == null || lastSensorState == CalibrationState.Unknown)
                 && usingNativeMode();
     }
 
     public static boolean isG5WarmingUp() {
+        loadCalibrationStateAsRequired();
         return lastSensorState != null
                 && lastSensorState == CalibrationState.WarmingUp
                 && usingNativeMode();
     }
 
     public static boolean isG5SensorStarted() {
+        loadCalibrationStateAsRequired();
         return lastSensorState != null
                 && lastSensorState.sensorStarted()
                 && usingNativeMode()
@@ -1571,12 +1605,14 @@ public class Ob1G5CollectionService extends G5BaseService {
     }
 
     public static boolean isG5WantingInitialCalibration() {
+        loadCalibrationStateAsRequired();
         return lastSensorStatus != null
                 && lastSensorState == CalibrationState.NeedsFirstCalibration
                 && usingNativeMode();
     }
 
     public static boolean isG5WantingCalibration() {
+        loadCalibrationStateAsRequired();
         return lastSensorStatus != null
                 && lastSensorState.needsCalibration()
                 && usingNativeMode();
@@ -1595,6 +1631,7 @@ public class Ob1G5CollectionService extends G5BaseService {
 
     public static boolean isProvidingNativeGlucoseData() {
         // TODO check age of data?
+        loadCalibrationStateAsRequired();
         return usingNativeMode() && lastSensorState != null && lastSensorState.usableGlucose();
     }
 
@@ -1657,6 +1694,10 @@ public class Ob1G5CollectionService extends G5BaseService {
         }
         if ((lastSensorStatus != null)) {
             l.add(new StatusItem("Sensor Status", lastSensorStatus, lastSensorState != Ok ? NOTICE : Highlight.NORMAL));
+        }
+
+        if (hardResetTransmitterNow) {
+            l.add(new StatusItem("Hard Reset", "Attempting - please wait", Highlight.CRITICAL));
         }
 
         if (transmitterID != null) {
