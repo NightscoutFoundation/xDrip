@@ -10,6 +10,7 @@ import android.view.WindowManager;
 import android.widget.EditText;
 
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.NFCReaderX;
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Models.BgReading;
@@ -51,8 +52,6 @@ public class Blukon {
     private static enum BLUKON_STATES {
         INITIAL
     }
-
-    private static final boolean testWithDeadSensor = false; // never in production
 
     private static boolean m_getNowGlucoseDataIndexCommand = false;
     private static final int GET_SENSOR_AGE_DELAY = 3 * 3600;
@@ -226,6 +225,7 @@ private static final int POSITION_OF_SENSOR_STATUS_BYTE = 17;
     public synchronized static byte[] decodeBlukonPacket(byte[] buffer) {
         int cmdFound = 0;
         Boolean gotLowBat = false;
+        Boolean getHistoricReadings = false;
 
         if (buffer == null) {
             Log.e(TAG, "null buffer passed to decodeBlukonPacket");
@@ -233,6 +233,16 @@ private static final int POSITION_OF_SENSOR_STATUS_BYTE = 17;
         }
 
         m_timeLastCmdReceived = JoH.tsl();
+
+        // calculate time delta to last valid BG reading
+        m_persistentTimeLastBg = PersistentStore.getLong("blukon-time-of-last-reading");
+        m_minutesDiffToLastReading = (int) ((((JoH.tsl() - m_persistentTimeLastBg) / 1000) + 30) / 60);
+        Log.i(TAG, "m_minutesDiffToLastReading=" + m_minutesDiffToLastReading + ", last reading: " + JoH.dateTimeText(m_persistentTimeLastBg));
+
+        // Get history if the last reading is older than we can reasonably backfill
+        if (Pref.getBooleanDefaultFalse("retrieve_blukon_history") && (m_persistentTimeLastBg > 0) && (m_minutesDiffToLastReading > 17)) {
+            getHistoricReadings = true;
+        }
 
         //BluCon code by gregorybel
         final String strRecCmd = CipherUtils.bytesToHex(buffer).toLowerCase();
@@ -246,10 +256,20 @@ private static final int POSITION_OF_SENSOR_STATUS_BYTE = 17;
          * step 1: have we got a wakeUp command from blucon?
          */
         if (strRecCmd.equalsIgnoreCase(WAKEUP_COMMAND)) {
-            Log.i(TAG, "Reset currentCommand");
-            currentCommand = "";
             cmdFound = 1;
-            m_communicationStarted = true;
+
+            m_minutesDiffToLastReading = (int) ((((JoH.tsl() - m_persistentTimeLastBg) / 1000)) / 60);
+            Log.i(TAG, "m_minutesDiffToLastReading (no rounding)=" + m_minutesDiffToLastReading + ", last reading: " + JoH.dateTimeText(m_persistentTimeLastBg));
+
+            if (m_minutesDiffToLastReading >= 4) {
+                Log.i(TAG, "Reset currentCommand");
+                currentCommand = "";
+                m_communicationStarted = true;
+            } else {
+                Log.e(TAG, "New Cmd received too early, send blukon to sleep");
+                currentCommand = SLEEP_COMMAND;
+                //Home.toaststaticnext("New Cmd received too early: ignore it!");
+            }
         }
 
         // BluconACKResponse will come in two different situations
@@ -338,10 +358,12 @@ private static final int POSITION_OF_SENSOR_STATUS_BYTE = 17;
             */
 
             if (JoH.pratelimit(BLUKON_DECODE_SERIAL_TIMER, GET_DECODE_SERIAL_DELAY)) {
-                decodeSerialNumber(buffer);
+                String SensorSn = LibreUtils.decodeSerialNumber(buffer);
+                // TODO: Only write this after checksum was verified
+                PersistentStore.setString("LibreSN", SensorSn);
             }
 
-            if (isSensorReady(buffer[POSITION_OF_SENSOR_STATUS_BYTE])) {
+            if (LibreUtils.isSensorReady(buffer[POSITION_OF_SENSOR_STATUS_BYTE])) {
                 currentCommand = ACK_ON_WAKEUP_ANSWER;
                 Log.i(TAG, "Send ACK");
             } else {
@@ -386,7 +408,7 @@ private static final int POSITION_OF_SENSOR_STATUS_BYTE = 17;
                 currentCommand = GET_SENSOR_TIME_COMMAND;
                 Log.i(TAG, "getSensorAge");
             } else {
-                if (Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
+                if (Pref.getBooleanDefaultFalse("external_blukon_algorithm") || getHistoricReadings) {
                     // Send the command to getHistoricData (read all blcoks from 0 to 0x2b)
                     Log.i(TAG, "getHistoricData (2)");
                     currentCommand = GET_HISTORIC_DATA_COMMAND_ALL_BLOCKS;
@@ -407,15 +429,18 @@ private static final int POSITION_OF_SENSOR_STATUS_BYTE = 17;
 
             int sensorAge = sensorAge(buffer);
 
-            if ((sensorAge > 0) && (sensorAge < 200000)) {
-                Pref.setInt("nfc_sensor_age", sensorAge);//in min
-            }
-            if (Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
+            if (Pref.getBooleanDefaultFalse("external_blukon_algorithm") || getHistoricReadings) {
                 // Send the command to getHistoricData (read all blcoks from 0 to 0x2b)
                 Log.i(TAG, "getHistoricData (3)");
                 currentCommand = GET_HISTORIC_DATA_COMMAND_ALL_BLOCKS;
                 m_blockNumber = 0;
             } else {
+                /* LibreAlarmReceiver.CalculateFromDataTransferObject, called when processing historical data,
+                 * expects the sensor age not to be updated yet, so only update the sensor age when not retrieving history.
+                 */
+                if ((sensorAge > 0) && (sensorAge < 200000)) {
+                    Pref.setInt("nfc_sensor_age", sensorAge);//in min
+                }
                 currentCommand = GET_NOW_DATA_INDEX_COMMAND;
                 m_getNowGlucoseDataIndexCommand = true;//to avoid issue when gotNowDataIndex cmd could be same as getNowGlucoseData (case block=3)
                 Log.i(TAG, "getNowGlucoseDataIndexCommand");
@@ -426,10 +451,6 @@ private static final int POSITION_OF_SENSOR_STATUS_BYTE = 17;
          */
         } else if (currentCommand.startsWith(GET_NOW_DATA_INDEX_COMMAND) /*getNowDataIndex*/ && m_getNowGlucoseDataIndexCommand == true && strRecCmd.startsWith(SINGLE_BLOCK_INFO_RESPONSE_PREFIX)) {
             cmdFound = 1;
-            // calculate time delta to last valid BG reading
-            m_persistentTimeLastBg = PersistentStore.getLong("blukon-time-of-last-reading");
-            m_minutesDiffToLastReading = (int) ((((JoH.tsl() - m_persistentTimeLastBg) / 1000) + 30) / 60);
-            Log.i(TAG, "m_minutesDiffToLastReading=" + m_minutesDiffToLastReading + ", last reading: " + JoH.dateTimeText(m_persistentTimeLastBg));
 
             // check time range for valid backfilling
             if ((m_minutesDiffToLastReading > 7) && (m_minutesDiffToLastReading < (8 * 60))) {
@@ -592,100 +613,15 @@ private static final int POSITION_OF_SENSOR_STATUS_BYTE = 17;
             m_communicationStarted = false;
 
             Log.i(TAG, "Full data that was received is " + HexDump.dumpHexString(m_full_data));
-            LibreBlock.createAndSave("blukon", now, m_full_data, 0);
-            
-            Intent intent = new Intent(Intents.XDRIP_PLUS_LIBRE_DATA);
-            Bundle bundle = new Bundle();
-            bundle.putByteArray(Intents.LIBRE_DATA_BUFFER, m_full_data);
-            bundle.putLong(Intents.LIBRE_DATA_TIMESTAMP, now);
-            intent.putExtras(bundle);
-            intent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
-            xdrip.getAppContext().sendBroadcast(intent);
+
+            final String tagId = PersistentStore.getString("LibreSN");
+            NFCReaderX.HandleGoodReading(tagId, m_full_data, now);
+
+            PersistentStore.setLong("blukon-time-of-last-reading", now);
+            Log.i(TAG, "time of current reading: " + JoH.dateTimeText(now));
         } else {
             currentCommand = "";
         }
-    }
-
-    private static boolean isSensorReady(byte sensorStatusByte) {
-
-        String sensorStatusString = "";
-        boolean ret = false;
-
-        switch (sensorStatusByte) {
-            case 0x01:
-                sensorStatusString = "not yet started";
-                break;
-            case 0x02:
-                sensorStatusString = "starting";
-                ret = true;
-                break;
-            case 0x03:          // status for 14 days and 12 h of normal operation, abbott reader quits after 14 days
-                sensorStatusString = "ready";
-                ret = true;
-                break;
-            case 0x04:          // status of the following 12 h, sensor delivers last BG reading constantly
-                sensorStatusString = "expired";
-                // @keencave: to use dead sensor for test
-//                ret = true;
-                break;
-            case 0x05:          // sensor stops operation after 15d after start
-                sensorStatusString = "shutdown";
-                // @keencave: to use dead sensors for test
-//                ret = true;
-                break;
-            case 0x06:
-                sensorStatusString = "in failure";
-                break;
-            default:
-                sensorStatusString = "in an unknown state";
-                break;
-        }
-
-        Log.i(TAG, "Sensor status is: " + sensorStatusString);
-
-        if (testWithDeadSensor) return true;
-
-        if (!ret) {
-            Home.toaststaticnext("Can't use this sensor as it is " + sensorStatusString);
-        }
-
-        return ret;
-    }
-    // This function assumes that the UID is starting at place 3, and is 8 bytes long
-    public static void decodeSerialNumber(byte[] input) {
-
-        byte[] uuid = new byte[]{0, 0, 0, 0, 0, 0, 0, 0};
-        String lookupTable[] =
-                {
-                        "0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
-                        "A", "C", "D", "E", "F", "G", "H", "J", "K", "L",
-                        "M", "N", "P", "Q", "R", "T", "U", "V", "W", "X",
-                        "Y", "Z"
-                };
-        byte[] uuidShort = new byte[]{0, 0, 0, 0, 0, 0, 0, 0};
-        int i;
-
-        for (i = 2; i < 8; i++) uuidShort[i - 2] = input[(2 + 8) - i];
-        uuidShort[6] = 0x00;
-        uuidShort[7] = 0x00;
-
-        String binary = "";
-        String binS = "";
-        for (i = 0; i < 8; i++) {
-            binS = String.format("%8s", Integer.toBinaryString(uuidShort[i] & 0xFF)).replace(' ', '0');
-            binary += binS;
-        }
-
-        String v = "0";
-        char[] pozS = {0, 0, 0, 0, 0};
-        for (i = 0; i < 10; i++) {
-            for (int k = 0; k < 5; k++) pozS[k] = binary.charAt((5 * i) + k);
-            int value = (pozS[0] - '0') * 16 + (pozS[1] - '0') * 8 + (pozS[2] - '0') * 4 + (pozS[3] - '0') * 2 + (pozS[4] - '0') * 1;
-            v += lookupTable[value];
-        }
-        Log.e(TAG, "decodeSerialNumber=" + v);
-
-        PersistentStore.setString("LibreSN", v);
     }
 
 
@@ -818,6 +754,7 @@ private static final int POSITION_OF_SENSOR_STATUS_BYTE = 17;
                 if (getPin() != null) {
                     JoH.static_toast_long("Data source set to: " + activity.getString(R.string.blukon) + " pin: " + getPin());
                     runnable.run();
+                    dialog.dismiss();
                 } else {
                     JoH.static_toast_long("Invalid pin!");
                 }

@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.Build;
+import android.os.Looper;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.widget.Toast;
@@ -56,7 +57,12 @@ public class LocationHelper {
             }
         });
         builder.setNegativeButton(R.string.no, null);
-        builder.create().show();
+        try {
+            builder.create().show();
+        } catch (RuntimeException e) {
+            Looper.prepare();
+            builder.create().show();
+        }
     }
 
     /**
@@ -80,6 +86,32 @@ public class LocationHelper {
                         try {
                             ActivityCompat.requestPermissions(activity,
                                     new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION},
+                                    0);
+                        } catch (Exception e) {
+                            JoH.static_toast_long("Got Exception with Location Permission: " + e);
+                        }
+                    }
+                });
+            }
+
+            LocationHelper.requestLocation(activity);
+        }
+    }
+
+    public static void requestLocationForEmergencyMessage(final Activity activity) {
+        // Location needs to be enabled for Bluetooth discovery on Marshmallow.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
+            if (ContextCompat.checkSelfPermission(activity,
+                    android.Manifest.permission.ACCESS_FINE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED) {
+
+                JoH.show_ok_dialog(activity, "Please Allow Permission", "Without Location permission emergency messages cannot use location data", new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            ActivityCompat.requestPermissions(activity,
+                                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
                                     0);
                         } catch (Exception e) {
                             JoH.static_toast_long("Got Exception with Location Permission: " + e);

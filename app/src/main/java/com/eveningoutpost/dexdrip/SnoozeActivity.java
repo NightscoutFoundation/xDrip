@@ -82,7 +82,7 @@ public class SnoozeActivity extends ActivityWithMenu {
         if (above) {
             return 120;
         }
-        return 30;
+        return 35;
     }
 
     static void SetSnoozePickerValues(NumberPicker picker, boolean above, int default_snooze) {
@@ -278,9 +278,8 @@ public class SnoozeActivity extends ActivityWithMenu {
     }
 
     public void recheckAlerts() {
-        Context context = getApplicationContext();
-        context.startService(new Intent(context, Notifications.class));
-        context.startService(new Intent(context, MissedReadingService.class));
+        Notifications.start();
+        JoH.startService(MissedReadingService.class); // TODO this should be rate limited or similar as it is polled in various locations leading to excessive cpu
     }
 
     public void showDisableEnableButtons() {

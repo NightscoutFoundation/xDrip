@@ -5,7 +5,7 @@ package com.eveningoutpost.dexdrip.G5Model;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-public class InvalidRxMessage extends TransmitterMessage {
+public class InvalidRxMessage extends BaseMessage {
 
     public static final byte opcode = (byte) 0xFF;
     private static final int length = 3;

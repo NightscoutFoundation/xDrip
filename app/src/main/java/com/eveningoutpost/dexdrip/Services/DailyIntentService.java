@@ -6,6 +6,7 @@ import android.os.PowerManager;
 
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.Models.DesertSync;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.StepCounter;
 import com.eveningoutpost.dexdrip.Models.RollCall;
@@ -34,6 +35,7 @@ public class DailyIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        // TODO background thread
         final PowerManager.WakeLock wl = JoH.getWakeLock("DailyIntentService", 120000);
         try {
             if (JoH.pratelimit("daily-intent-service", 60000)) {
@@ -108,6 +110,12 @@ public class DailyIntentService extends IntentService {
                     Log.e(TAG, "exception on RollCall prune " + e);
                 }
                 try {
+                    DesertSync.cleanup();
+                } catch (Exception e) {
+                    Log.e(TAG,"Exception cleaning up DesertSync");
+                }
+                try {
+                    Telemetry.sendFirmwareReport();
                     Telemetry.sendCaptureReport();
                 } catch (Exception e) {
                     Log.e(TAG, "Exception in Telemetry: " + e);

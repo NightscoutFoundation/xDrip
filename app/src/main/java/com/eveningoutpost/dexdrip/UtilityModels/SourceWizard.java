@@ -20,6 +20,8 @@ import java.util.List;
 
 import me.tatarka.bindingcollectionadapter2.ItemBinding;
 
+import static com.eveningoutpost.dexdrip.ui.helpers.UiHelper.convertDpToPixel;
+
 /**
  * Created by jamorham on 20/12/2017.
  *
@@ -36,17 +38,22 @@ public class SourceWizard {
     private Tree<Item> root = new Tree<>(new Item("Choose Data Source", "Which system do you use?"));
 
     {
-        root.addChild(new Item("G5", DexCollectionType.DexcomG5, R.drawable.g5_icon));
-        Tree<Item> g4 = root.addChild(new Item("G4", "What type of G4 bridge device do you use?", R.drawable.g4_icon));
+        Tree<Item> g5g6 = root.addChild(new Item("G4, G5 & G6", gs(R.string.which_type_of_device), R.drawable.g5_icon));
         {
-            Tree<Item> wixel = g4.addChild(new Item(gs(R.string.bluetooth_wixel), gs(R.string.which_software_is_the_wixel_running), R.drawable.wixel_icon));
+            Tree<Item> g4 = g5g6.addChild(new Item("G4", "What type of G4 bridge device do you use?", R.drawable.g4_icon));
             {
-                wixel.addChild(new Item("xBridge compatible", DexCollectionType.DexbridgeWixel, R.drawable.wixel_icon));
-                wixel.addChild(new Item("Classic simple", DexCollectionType.BluetoothWixel, R.drawable.wixel_icon));
-            }
+                Tree<Item> wixel = g4.addChild(new Item(gs(R.string.bluetooth_wixel), gs(R.string.which_software_is_the_wixel_running), R.drawable.wixel_icon));
+                {
+                    wixel.addChild(new Item("xBridge compatible", DexCollectionType.DexbridgeWixel, R.drawable.wixel_icon));
+                    wixel.addChild(new Item("Classic simple", DexCollectionType.BluetoothWixel, R.drawable.wixel_icon));
+                }
 
-            g4.addChild(new Item(gs(R.string.g4_share_receiver), DexCollectionType.DexcomShare, R.drawable.g4_share_icon));
-            g4.addChild(new Item(gs(R.string.parakeet_wifi), DexCollectionType.WifiWixel, R.drawable.jamorham_parakeet_marker));
+                g4.addChild(new Item(gs(R.string.g4_share_receiver), DexCollectionType.DexcomShare, R.drawable.g4_share_icon));
+                g4.addChild(new Item(gs(R.string.parakeet_wifi), DexCollectionType.WifiWixel, R.drawable.jamorham_parakeet_marker));
+            }
+            g5g6.addChild(new Item("G5", DexCollectionType.DexcomG5, R.drawable.g5_icon));
+            g5g6.addChild(new Item("G6", DexCollectionType.DexcomG6, R.drawable.g6_icon));
+
         }
 
         Tree<Item> libre = root.addChild(new Item("Libre", "What type of Libre bridge device do you use?", R.drawable.libre_icon_image));
@@ -57,6 +64,7 @@ public class SourceWizard {
         }
         Tree<Item> other = root.addChild(new Item(gs(R.string.other), gs(R.string.which_type_of_device), R.drawable.wikimedia_question_mark));
         other.addChild(new Item("640G / 670G", DexCollectionType.NSEmulator, R.drawable.wikimedia_pump_image_by_ajepbah));
+        other.addChild(new Item("Medtrum A6", DexCollectionType.Medtrum, R.drawable.a6_icon));
         //
         other.addChild(new Item("EverSense", DexCollectionType.NSEmulator, R.drawable.wikimedia_eversense_icon_pbroks13));
     }
@@ -66,8 +74,15 @@ public class SourceWizard {
         this.activity = activity;
     }
 
-    public synchronized static void start(Activity activity) {
+    public static void start(Activity activity) {
+        start(activity, false);
+    }
+
+    public synchronized static void start(Activity activity, boolean force) {
         if (sw == null) sw = new SourceWizard(activity);
+        if (force) {
+            if (sw.showing()) sw.dismiss();
+        }
         if (!sw.showing()) sw.getTreeDialog(null);
     }
 
@@ -93,6 +108,14 @@ public class SourceWizard {
 
     private boolean showing() {
         return (dialog != null) && dialog.isShowing();
+    }
+
+    private void dismiss() {
+        try {
+            if (dialog != null) dialog.dismiss();
+        } catch (Exception e) {
+            //
+        }
     }
 
     // display the dialog for the selected branch of the tree
@@ -182,6 +205,10 @@ public class SourceWizard {
 
         public boolean isShortName() {
             return this.name.length() < 10;
+        }
+
+        public float dpToPx(float size) {
+            return convertDpToPixel(size);
         }
 
         public boolean isCollectionType() {

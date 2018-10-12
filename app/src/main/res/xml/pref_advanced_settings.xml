@@ -66,7 +66,7 @@
                 android:title="@string/pref_node_wearG5" />
             <CheckBoxPreference
                 android:defaultValue="false"
-                android:dependency="enable_wearG5"
+                android:dependency="wear_sync"
                 android:key="sync_wear_logs"
                 android:summary="@string/pref_summary_sync_wear_logs"
                 android:title="@string/pref_sync_wear_logs" />
@@ -211,6 +211,25 @@
                     android:targetPackage="@string/local_target_package" />
             </Preference>
         </PreferenceCategory>
+        </PreferenceScreen>
+        <PreferenceScreen
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:title="@string/amazfit_sync_service">
+            <SwitchPreference
+                android:defaultValue="false"
+                android:disableDependentsState="false"
+                android:key="pref_amazfit_enable_key"
+                android:summary="@string/pref_amazfit_enable_summary"
+                android:title="@string/pref_amazfit_tile" />
+            <SwitchPreference
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:defaultValue="false"
+                android:dependency="pref_amazfit_enable_key"
+                android:key="pref_amazfit_alarm_enable_key"
+                android:summary="@string/pref_amazfit_alarm_enable_summary"
+                android:title="@string/pref_amazfit_alarm_tile" />
         </PreferenceScreen>
 
     <PreferenceScreen
@@ -476,6 +495,12 @@
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="extra_status_line"
+                    android:key="status_line_external_status"
+                    android:summary="Display status from other apps like AndroidAPS"
+                    android:title="External Status" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:dependency="extra_status_line"
                     android:key="status_line_pump_reservoir"
                     android:summary="Display pump status information if available"
                     android:title="Pump Status" />
@@ -491,6 +516,12 @@
                     android:key="status_line_capture_percentage"
                     android:summary="@string/received_readings_percentage"
                     android:title="@string/capture_percentage" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:dependency="extra_status_line"
+                    android:key="status_line_realtime_capture_percentage"
+                    android:summary="@string/received_realtime_readings_percentage"
+                    android:title="@string/realtime_capture_percentage" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="extra_status_line"
@@ -631,6 +662,16 @@
                     android:key="close_gatt_on_ble_disconnect"
                     android:summary="@string/close_gatt"
                     android:title="@string/close_gatt_on_ble_disconnect" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="bluetooth_use_scan"
+                    android:summary="Scan before connecting on xBridge and Libre bluetooth"
+                    android:title="Use scanning" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="bluetooth_trust_autoconnect"
+                    android:summary="Use and trust Android bluetooth auto connect feature"
+                    android:title="Trust Auto-Connect" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="bluetooth_excessive_wakelocks"
@@ -798,27 +839,41 @@
                     android:key="predictive_bg"
                     android:summary="@string/predictive_readings_old"
                     android:title="@string/display_predictive_values" />
-                
+
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="external_blukon_algorithm"
                     android:summary="@string/use_external_blukon_algorithm_summary"
                     android:title="@string/use_external_blukon_algorithm" />
                 
-	    <CheckBoxPreference
+                <CheckBoxPreference
                     android:enabled="false"
                     android:defaultValue="false"
                     android:dependency="external_blukon_algorithm"
                     android:key="calibrate_external_libre_algorithm"
                     android:summary="@string/calibrate_external_libre_algorithm_summary"
                     android:title="@string/calibrate_external_libre_algorithm_title" />
-                
+
+                <CheckBoxPreference
+                    android:enabled="true"
+                    android:defaultValue="false"
+                    android:key="retrieve_blukon_history"
+                    android:summary="@string/retrieve_blukon_history_summary"
+                    android:title="@string/retrieve_blukon_history_title" />
+
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:dependency="allow_testing_with_dead_sensor"
+                    android:key="allow_testing_with_dead_sensor"
+                    android:summary="allow testing with dead sensor"
+                    android:title="NOT FOR PRODUCTION USE" />
+
             </PreferenceScreen>
             <PreferenceCategory
                 android:key="community_help_category"
                 android:title="@string/help_the_community">
                 <CheckBoxPreference
-                    android:defaultValue="true"
+                    android:defaultValue="false"
                     android:key="store_sensor_location"
                     android:summary="@string/help_the_developers_improve_the_algorithm"
                     android:title="@string/store_sensor_location_to_help" />

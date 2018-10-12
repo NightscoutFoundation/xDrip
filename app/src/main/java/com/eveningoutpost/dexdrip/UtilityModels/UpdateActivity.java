@@ -27,6 +27,7 @@ import android.widget.ScrollView;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.eveningoutpost.dexdrip.BaseAppCompatActivity;
 import com.eveningoutpost.dexdrip.BuildConfig;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
@@ -52,7 +53,7 @@ import okhttp3.Response;
 
 import static com.eveningoutpost.dexdrip.UtilityModels.OkHttpWrapper.enableTls12OnPreLollipop;
 
-public class UpdateActivity extends AppCompatActivity {
+public class UpdateActivity extends BaseAppCompatActivity {
 
     public static final String AUTO_UPDATE_PREFS_NAME = "auto_update_download";
     private static final String useInternalDownloaderPrefsName = "use_internal_downloader";

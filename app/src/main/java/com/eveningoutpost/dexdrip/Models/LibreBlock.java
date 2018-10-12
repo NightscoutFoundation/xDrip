@@ -10,7 +10,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.google.gson.annotations.Expose;
 
 import java.text.DecimalFormat;
-
+import java.util.List;
 /**
  * Created by jamorham on 19/10/2017.
  */
@@ -102,23 +102,31 @@ public class LibreBlock extends PlusModel {
                 .orderBy("timestamp desc")
                 .executeSingle();
     }
+    
+    public static List<LibreBlock> getForTrend(long start_time, long end_time) {
 
-    public static LibreBlock getForTimestamp(long timestamp) {
-        
-        final double margin = (3 * 1000);
-        final DecimalFormat df = new DecimalFormat("#");
-        df.setMaximumFractionDigits(1);
- 
         return new Select()
                 .from(LibreBlock.class)
-                .where("timestamp >= " + df.format(timestamp-margin))
-                .where("timestamp <= " + df.format(timestamp + margin))
+                .where("bytestart == 0")
+                .where("byteend >= 344")
+                .where("timestamp >= ?", start_time)
+                .where("timestamp <= ?", end_time)
+                .orderBy("timestamp asc")
+                .execute();
+    }
+
+    public static LibreBlock getForTimestamp(long timestamp) {
+        final long margin = (3 * 1000);
+        return new Select()
+                .from(LibreBlock.class)
+                .where("timestamp >= ?", (timestamp - margin))
+                .where("timestamp <= ?", (timestamp + margin))
                 .executeSingle();
     }
-    
+
     public static void UpdateBgVal(long timestamp, double calculated_value) {
         LibreBlock libreBlock = getForTimestamp(timestamp);
-        if(libreBlock == null) {
+        if (libreBlock == null) {
             return;
         }
         Log.e(TAG, "Updating bg for timestamp " + timestamp);

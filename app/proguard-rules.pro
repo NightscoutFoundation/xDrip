@@ -45,6 +45,7 @@
 -dontwarn okhttp3.**
 -dontwarn org.influxdb.**
 
+-keep class com.eveningoutpost.dexdrip.tidepool.** { *; }
 -keep class com.nightscout.** { *; }
 -keep class com.squareup.** { *; }
 -keep class net.tribe7.** { *; }
@@ -76,6 +77,8 @@
     public static ** test();
 }
 
+-keep public class * implements **.BitmapCacheProvider
+
 -keepclassmembers class rx.internal.util.unsafe.*ArrayQueue*Field* {
     long producerIndex;
     long consumerIndex;
@@ -101,6 +104,7 @@
 -keepclassmembers class com.eveningoutpost.dexdrip.** {
    public static boolean isRunning();
    public static boolean isCollecting();
+   public static ** nanoStatus();
 }
 
 -dontnote rx.internal.util.PlatformDependent

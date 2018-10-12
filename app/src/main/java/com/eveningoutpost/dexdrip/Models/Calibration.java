@@ -26,6 +26,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.calibrations.NativeCalibrationPipe;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -352,8 +353,12 @@ public class Calibration extends Model {
 
         JoH.clearCache();
 
-        Ob1G5StateMachine.addCalibration((int) bg1, JoH.tsl() - (Constants.SECOND_IN_MS * 30));
-        Ob1G5StateMachine.addCalibration((int) bg2, JoH.tsl());
+        //Ob1G5StateMachine.addCalibration((int) bg1, JoH.tsl() - (Constants.SECOND_IN_MS * 30));
+        //Ob1G5StateMachine.addCalibration((int) bg2, JoH.tsl());
+
+        NativeCalibrationPipe.addCalibration((int) bg1, JoH.tsl() - (Constants.SECOND_IN_MS * 30));
+        NativeCalibrationPipe.addCalibration((int) bg2, JoH.tsl());
+
 
         final List<Calibration> calibrations = new ArrayList<Calibration>();
         calibrations.add(lowerCalibration);
@@ -380,7 +385,7 @@ public class Calibration extends Model {
             adjustRecentBgReadings(5);
         }
         CalibrationRequest.createOffset(lowerCalibration.bg, 35);
-        context.startService(new Intent(context, Notifications.class));
+        Notifications.staticUpdateNotification();
     }
 
     //Create Calibration Checkin Dexcom Bluetooth Share
@@ -453,7 +458,7 @@ public class Calibration extends Model {
                     Calibration.create(calRecords, context, true, 0);
                 }
             }
-            context.startService(new Intent(context, Notifications.class));
+            Notifications.start();
         }
     }
 
@@ -595,7 +600,7 @@ public class Calibration extends Model {
                         if (!Ob1G5CollectionService.usingNativeMode()) {
                             adjustRecentBgReadings(adjustPast ? 30 : 2);
                         }
-                        context.startService(new Intent(context, Notifications.class));
+                        Notifications.start();
                         Calibration.requestCalibrationIfRangeTooNarrow();
                         newFingerStickData();
                     } else {

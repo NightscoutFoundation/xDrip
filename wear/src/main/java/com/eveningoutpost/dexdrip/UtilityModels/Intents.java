@@ -22,6 +22,12 @@ public interface Intents {
 
     String ACTION_REMOTE_CALIBRATION = "com.eveningoutpost.dexdrip.NewCalibration";
     String ACTION_NEW_BG_ESTIMATE_NO_DATA = "com.eveningoutpost.dexdrip.BgEstimateNoData";
+    String ACTION_STATUS_UPDATE = "com.eveningoutpost.dexdrip.StatusUpdate";
+
+    String ACTION_VEHICLE_MODE = "com.eveningoutpost.dexdrip.VehicleMode";
+    String EXTRA_VEHICLE_MODE_ENABLED = "com.eveningoutpost.dexdrip.VehicleMode.Enabled";
+
+    String EXTRA_COLLECTOR_NANOSTATUS = "com.eveningoutpost.dexdrip.Extras.Collector.NanoStatus";
 
     // From NS Android Client
     // send
@@ -45,5 +51,6 @@ public interface Intents {
     String XDRIP_PLUS_LIBRE_DATA = "com.eveningoutpost.dexdrip.LIBRE_DATA";
     String LIBRE_DATA_BUFFER = "com.eveningoutpost.dexdrip.Extras.DATA_BUFFER";
     String LIBRE_DATA_TIMESTAMP = "com.eveningoutpost.dexdrip.Extras.TIMESTAMP";
+    String LIBRE_SN = "com.eveningoutpost.dexdrip.Extras.LIBRE_SN";
 
 }

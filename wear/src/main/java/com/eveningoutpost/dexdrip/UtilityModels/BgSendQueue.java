@@ -123,6 +123,7 @@ public class BgSendQueue extends Model {
         wakeLock.acquire(120000);
         try {
 
+            Notifications.start();
             CustomComplicationProviderService.refresh();
 
             if (!is_follower) addToQueue(bgReading, operation_type);
@@ -284,7 +285,7 @@ public class BgSendQueue extends Model {
         resendData(context, battery);
     }
 
-    //KS start from WatchUpdaterService
+    //KS start from WatchUpdaterService - updates watchface data
     public static void resendData(Context context, int battery) {//KS
         Log.d("BgSendQueue", "resendData enter battery=" + battery);
         long startTime = new Date().getTime() - (60000 * 60 * 24);

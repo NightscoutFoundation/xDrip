@@ -17,6 +17,7 @@ import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.UndoRedo;
 import com.eveningoutpost.dexdrip.UtilityModels.CalibrationSendQueue;
+import com.eveningoutpost.dexdrip.calibrations.NativeCalibrationPipe;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
@@ -70,7 +71,8 @@ public class CalibrationOverride extends ActivityWithMenu {
                             if (calibration != null) {
                                 UndoRedo.addUndoCalibration(calibration.uuid);
                                 GcmActivity.pushCalibration(string_value, "0");
-                                Ob1G5StateMachine.addCalibration((int)calibration.bg, calibration.timestamp);
+                               // Ob1G5StateMachine.addCalibration((int)calibration.bg, calibration.timestamp);
+                                NativeCalibrationPipe.addCalibration((int)calibration.bg, calibration.timestamp);
                                 //startWatchUpdaterService(v.getContext(), WatchUpdaterService.ACTION_SYNC_CALIBRATION, TAG);
 
                             } else {

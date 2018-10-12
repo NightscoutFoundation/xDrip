@@ -74,6 +74,14 @@ public class Sensor extends Model {
         return sensor;
     }
 
+    public static Sensor createDefaultIfMissing() {
+        final Sensor sensor = currentSensor();
+        if (sensor == null) {
+            Sensor.create(JoH.tsl());
+        }
+        return currentSensor();
+    }
+
     // Used by xDripViewer
     public static void createUpdate(long started_at, long stopped_at,  int latest_battery_level, String uuid) {
 
@@ -91,15 +99,16 @@ public class Sensor extends Model {
         sensor.save();
     }
 
-    public static void stopSensor() {
+    public synchronized static void stopSensor() {
         Sensor sensor = currentSensor();
         if(sensor == null) {
             return;
         }
         sensor.stopped_at = new Date().getTime();
-        Log.i("SENSOR", "Sensor stopped at " + sensor.stopped_at);
+        UserError.Log.ueh("SENSOR", "Sensor stopped at " + JoH.dateTimeText(sensor.stopped_at));
         sensor.save();
         SensorSendQueue.addToQueue(sensor);
+        JoH.clearCache();
 
     }
 

@@ -19,7 +19,7 @@ import android.view.ViewGroup;
  */
 
 
-public class ActivityWithRecycler extends AppCompatActivity {
+public class ActivityWithRecycler extends BaseAppCompatActivity {
 
     RecyclerView recyclerView;
     RecyclerAdapater mAdapter;

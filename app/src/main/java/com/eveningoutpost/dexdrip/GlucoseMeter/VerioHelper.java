@@ -12,6 +12,7 @@ import java.util.UUID;
 
 import static com.eveningoutpost.dexdrip.Services.BluetoothGlucoseMeter.mBluetoothDeviceAddress;
 import static com.eveningoutpost.dexdrip.Services.BluetoothGlucoseMeter.statusUpdate;
+import static com.eveningoutpost.dexdrip.utils.CRC16ccitt.crc16ccitt;
 
 /**
  * Created by jamorham on 07/06/2017.
@@ -250,36 +251,7 @@ public class VerioHelper {
         return ((result[0] == bytes[bytes.length - 2]) && (result[1] == bytes[bytes.length - 1]));
     }
 
-    //  1 + x + x^5 + x^12 + x^16 is irreducible polynomial.
-    //  http://introcs.cs.princeton.edu/java/61data/CRC16CCITT.java
-    private static byte[] crc16ccitt(byte[] bytes, boolean skip_last_two, boolean skip_first) {
-        int crc = 0xFFFF;          // initial value
-        final int polynomial = 0x1021;   // 0001 0000 0010 0001  (0, 5, 12)
 
-        int processed = 0;
-        final int toprocess = skip_last_two ? bytes.length - 2 : bytes.length;
-        for (byte b : bytes) {
-            processed++;
-            if (processed > toprocess) break;
-            if (skip_first) {
-                skip_first = false;
-                continue;
-            }
-            for (int i = 0; i < 8; i++) {
-                boolean bit = ((b >> (7 - i) & 1) == 1);
-                boolean c15 = ((crc >> 15 & 1) == 1);
-                crc <<= 1;
-                if (c15 ^ bit) crc ^= polynomial;
-            }
-        }
-
-        crc &= 0xffff; // 16 bits only
-        final byte[] ret = new byte[2];
-        ret[0] = (byte) (crc & 0xff);
-        ret[1] = (byte) (crc >> 8 & 0xff); // little endian
-        if (d) UserError.Log.d(TAG, "CCITT checksum: " + JoH.bytesToHex(ret));
-        return ret;
-    }
 
 
 }

@@ -19,6 +19,7 @@ import android.util.Base64;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.BloodTest;
 import com.eveningoutpost.dexdrip.Models.Calibration;
+import com.eveningoutpost.dexdrip.Models.DesertSync;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.RollCall;
 import com.eveningoutpost.dexdrip.Models.Sensor;
@@ -29,6 +30,7 @@ import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.UtilityModels.NanoStatus;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.PumpStatus;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
@@ -36,8 +38,8 @@ import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
 import com.eveningoutpost.dexdrip.utils.Preferences;
 import com.eveningoutpost.dexdrip.utils.WebAppHelper;
+import com.eveningoutpost.dexdrip.wearintegration.ExternalStatusService;
 import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
 import java.io.UnsupportedEncodingException;
@@ -48,10 +50,10 @@ import java.util.List;
 import java.util.Map;
 
 import static android.support.v4.content.WakefulBroadcastReceiver.completeWakefulIntent;
+import static com.eveningoutpost.dexdrip.Models.JoH.isAnyNetworkConnected;
 import static com.eveningoutpost.dexdrip.Models.JoH.showNotification;
 
-
-public class GcmListenerSvc extends FirebaseMessagingService {
+public class GcmListenerSvc extends JamListenerSvc {
 
     private static final String TAG = "jamorham GCMlis";
     private static final String EXTRA_WAKE_LOCK_ID = "android.support.content.wakelockid";
@@ -87,8 +89,22 @@ public class GcmListenerSvc extends FirebaseMessagingService {
 
     @Override
     public void onSendError(String msgID, Exception exception) {
-        Log.e(TAG, "onSendError called" + msgID, exception);
+        boolean unexpected = true;
+        if (exception.getMessage().equals("TooManyMessages")) {
+            if (isAnyNetworkConnected() && googleReachable()) {
+                GcmActivity.coolDown();
+            }
+            unexpected = false;
+        }
+        if (unexpected || JoH.ratelimit("gcm-expected-error", 86400)) {
+            Log.e(TAG, "onSendError called" + msgID, exception);
+        }
     }
+
+    private static boolean googleReachable() {
+        return false; // TODO we need a method for this to properly handle cooldown default to false to disable functionality
+    }
+
 
     @Override
     public void onDeletedMessages() {
@@ -113,7 +129,14 @@ public class GcmListenerSvc extends FirebaseMessagingService {
                 data.putString(entry.getKey(), entry.getValue());
             }
 
-            if (from == null) from = "null";
+            if (from == null) {
+                if (isInjectable()) {
+                    from = data.getString("yfrom");
+                }
+                if (from == null) {
+                    from = "null";
+                }
+            }
             String message = data.getString("message");
 
             Log.d(TAG, "From: " + from);
@@ -136,7 +159,7 @@ public class GcmListenerSvc extends FirebaseMessagingService {
             if (from.startsWith(getString(R.string.gcmtpc))) {
 
                 String xfrom = data.getString("xfrom");
-                String payload = data.getString("datum");
+                String payload = data.getString("datum", data.getString("payload"));
                 String action = data.getString("action");
 
                 if ((xfrom != null) && (xfrom.equals(GcmActivity.token))) {
@@ -156,6 +179,14 @@ public class GcmListenerSvc extends FirebaseMessagingService {
                     }
                     return;
                 }
+
+                if (!isInjectable()) {
+                    if (!DesertSync.fromGCM(data)) {
+                        UserError.Log.d(TAG, "Skipping inbound data due to duplicate detection");
+                        return;
+                    }
+                }
+
                 byte[] bpayload = null;
                 if (payload == null) payload = "";
                 if (action == null) action = "null";
@@ -254,8 +285,10 @@ public class GcmListenerSvc extends FirebaseMessagingService {
                                 message_array[2] = Long.toString(Long.parseLong(message_array[2]) + timediff);
                             }
                             Log.i(TAG, "Processing remote CAL " + message_array[1] + " age: " + message_array[2]);
+                            calintent.putExtra("timestamp", JoH.tsl());
                             calintent.putExtra("bg_string", message_array[1]);
                             calintent.putExtra("bg_age", message_array[2]);
+                            calintent.putExtra("cal_source", "gcm cal packet");
                             if (timediff < 3600) {
                                 getApplicationContext().startActivity(calintent);
                             }
@@ -279,9 +312,10 @@ public class GcmListenerSvc extends FirebaseMessagingService {
                                 bg_age += timediff;
                             }
                             Log.i(TAG, "Processing remote CAL " + newCalibration.bgValue + " age: " + bg_age);
-
+                            calintent.putExtra("timestamp", JoH.tsl());
                             calintent.putExtra("bg_string", "" + (Pref.getString("units", "mgdl").equals("mgdl") ? newCalibration.bgValue : newCalibration.bgValue * Constants.MGDL_TO_MMOLL));
                             calintent.putExtra("bg_age", "" + bg_age);
+                            calintent.putExtra("cal_source", "gcm cal2 packet");
                             if (timediff < 3600) {
                                 getApplicationContext().startActivity(calintent);
                             } else {
@@ -335,6 +369,11 @@ public class GcmListenerSvc extends FirebaseMessagingService {
                     if (Home.get_follower()) {
                         Log.i(TAG, "Received pump status update");
                         PumpStatus.fromJson(payload);
+                    }
+                } else if (action.equals("nscu")) {
+                    if (Home.get_follower()) {
+                        Log.i(TAG,"Received nanostatus update");
+                        NanoStatus.setRemote(payload);
                     }
                 } else if (action.equals("not")) {
                     if (Home.get_follower()) {
@@ -472,6 +511,33 @@ public class GcmListenerSvc extends FirebaseMessagingService {
                         BgReading.processFromMultiMessage(bpayload);
                     } else {
                         Log.i(TAG, "Receive multi glucose readings but we are not a follower");
+                    }
+                } else if (action.equals("esup")) {
+                    if (Home.get_master_or_follower()) {
+                        final String[] segments = payload.split("\\^");
+                        try {
+                            ExternalStatusService.update(Long.parseLong(segments[0]), segments[1], false);
+                        } catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
+                            UserError.Log.wtf(TAG, "Could not split esup payload");
+                        }
+                    }
+                } else if (action.equals("ssom")) {
+                    if (Home.get_master()) {
+                        if (payload.equals("challenge string")) {
+                            UserError.Log.e(TAG, "Stopping sensor by remote");
+                            StopSensor.stop();
+                        } else {
+                            UserError.Log.wtf(TAG, "Challenge string failed in ssom");
+                        }
+                    }
+                } else if (action.equals("rsom")) {
+                    if (Home.get_master()) {
+                        try {
+                            final Long timestamp = Long.parseLong(payload);
+                            StartNewSensor.startSensorForTime(timestamp);
+                        } catch (NumberFormatException | NullPointerException e) {
+                            UserError.Log.wtf(TAG, "Exception processing rsom timestamp");
+                        }
                     }
 
                 } else {

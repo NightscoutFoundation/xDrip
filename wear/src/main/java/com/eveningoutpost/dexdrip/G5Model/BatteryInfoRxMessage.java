@@ -13,7 +13,7 @@ import java.util.Locale;
  */
 
 
-public class BatteryInfoRxMessage extends TransmitterMessage {
+public class BatteryInfoRxMessage extends BaseMessage {
 
     private final static String TAG = G5CollectionService.TAG; // meh
 

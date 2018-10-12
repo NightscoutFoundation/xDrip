@@ -44,16 +44,12 @@ public class NSClientReceiver extends BroadcastReceiver {
         //  BundleScrubber.scrub(bundle);
         final String action = intent.getAction();
 
-
         if ((bundle != null) && (debug)) {
-            for (String key : bundle.keySet()) {
-                Object value = bundle.get(key);
-                if (value != null) {
-                    Log.d(TAG, String.format("%s %s (%s)", key,
-                            value.toString(), value.getClass().getName()));
-                }
-            }
+            UserError.Log.d(TAG, "Action: " + action);
+            JoH.dumpBundle(bundle, TAG);
         }
+
+        if (action == null) return;
 
         switch (action) {
             case Intents.ACTION_NEW_SGV:
@@ -139,10 +135,12 @@ public class NSClientReceiver extends BroadcastReceiver {
                         UserError.Log.ueh(TAG, "Processing broadcasted calibration: " + JoH.qs(glucose_number, 2) + " offset ms: " + JoH.qs(timeoffset, 0));
                         final Intent calintent = new Intent(xdrip.getAppContext(), AddCalibration.class);
                         calintent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        calintent.putExtra("timestamp",JoH.tsl());
                         calintent.putExtra("bg_string", JoH.qs(glucose_number));
                         calintent.putExtra("bg_age", Long.toString(timeoffset / 1000));
                         calintent.putExtra("allow_undo", "true");
                         calintent.putExtra("note_only", "false");
+                        calintent.putExtra("cal_source", "NSClientReceiver");
                         Home.startIntentThreadWithDelayedRefresh(calintent);
                     } else {
                         Log.e(TAG,"Received broadcast calibration without glucose number");
@@ -172,8 +170,8 @@ public class NSClientReceiver extends BroadcastReceiver {
 
     private void process_TREATMENT_json(String treatment_json) {
         try {
-            Log.i(TAG, "Processing treatment from NS");
-            Treatments.pushTreatmentFromJson(toTreatmentJSON(JoH.JsonStringtoMap(treatment_json)));
+            Log.i(TAG, "Processing treatment from NS: "+treatment_json);
+            Treatments.pushTreatmentFromJson(toTreatmentJSON(JoH.JsonStringtoMap(treatment_json)), true); // warning marked as from interactive - watch out for feedback loops
         } catch (Exception e) {
             Log.e(TAG, "Got exception processing treatment from NS client " + e.toString());
         }

@@ -1,10 +1,12 @@
 package com.eveningoutpost.dexdrip.GlucoseMeter;
 
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Calendar;
+import java.util.UUID;
 
 /**
  * Created by jamorham on 06/12/2016.
@@ -30,6 +32,7 @@ public class GlucoseReadingRx extends BluetoothCHelper {
     public int sampleType;
     public int sampleLocation;
     public String device;
+    public boolean contextInfoFollows;
 
     public GlucoseReadingRx() {}
 
@@ -46,7 +49,7 @@ public class GlucoseReadingRx extends BluetoothCHelper {
             final boolean typeAndLocationPresent = (flags & 0x02) > 0;
             final boolean concentrationUnitKgL = (flags & 0x04) == 0;
             final boolean sensorStatusAnnunciationPresent = (flags & 0x08) > 0;
-            final boolean contextInfoFollows = (flags & 0x10) > 0;
+            contextInfoFollows = (flags & 0x10) > 0;
 
             sequence = data.getShort(1);
             year = data.getShort(3);
@@ -78,6 +81,11 @@ public class GlucoseReadingRx extends BluetoothCHelper {
                 ptr++;
             }
 
+            if (sensorStatusAnnunciationPresent) {
+                final int status = data.get(ptr);
+
+            }
+
             final Calendar calendar = Calendar.getInstance();
             calendar.set(year, month - 1, day, hour, minute, second);
             time = calendar.getTimeInMillis();
@@ -89,11 +97,22 @@ public class GlucoseReadingRx extends BluetoothCHelper {
     public String toString() {
         return "Glucose data: mg/dl: " + mgdl + "  mol/l: " + mol + "  kg/l: " + kgl
                 + "  seq:" + sequence + " sampleType: " + sampleType + "  sampleLocation: " + sampleLocation + "  time: " + hour + ":" + minute + ":" + second
-                + "  " + day + "-" + month + "-" + year + " timeoffset: " + offset + " timestamp: " + time + " from: " + device;
+                + "  " + day + "-" + month + "-" + year + " timeoffset: " + offset + " timestamp: " + time + " from: " + device + (contextInfoFollows ? "  CONTEXT FOLLOWS" : "");
     }
 
     public long offsetMs() {
         return (offset * 60000);
+    }
+
+    public UUID getUuid() {
+        data.rewind();
+        final byte[] barr = new byte[data.remaining()];
+        data.get(barr);
+        return UUID.nameUUIDFromBytes(barr);
+    }
+
+    public double asKetone() {
+        return mgdl / 10d;
     }
 
 }

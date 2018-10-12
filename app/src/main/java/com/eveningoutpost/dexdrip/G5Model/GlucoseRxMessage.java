@@ -7,6 +7,8 @@ import com.eveningoutpost.dexdrip.Services.G5CollectionService;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import lombok.NoArgsConstructor;
+
 /**
  * Created by jamorham on 25/11/2016.
  *
@@ -15,21 +17,13 @@ import java.nio.ByteOrder;
  * initial packet structure cribbed from Loopkit
  */
 
-public class GlucoseRxMessage extends TransmitterMessage {
+@NoArgsConstructor
+public class GlucoseRxMessage extends BaseGlucoseRxMessage {
 
     private final static String TAG = G5CollectionService.TAG; // meh
 
     public static final byte opcode = 0x31;
-    public TransmitterStatus status;
-    public int status_raw;
-    public int timestamp;
-    public int unfiltered;
-    public int filtered;
-    public int sequence; // : UInt32
-    public boolean glucoseIsDisplayOnly; // : Bool
-    public int glucose; // : UInt16
-    public int state; //: UInt8
-    public int trend; // : Int8 127 = invalid
+
 
     public GlucoseRxMessage(byte[] packet) {
         UserError.Log.d(TAG, "GlucoseRX dbg: " + JoH.bytesToHex(packet));
@@ -66,26 +60,6 @@ public class GlucoseRxMessage extends TransmitterMessage {
             UserError.Log.d(TAG, "GlucoseRxMessage packet length received wrong: " + packet.length);
         }
 
-    }
-
-    CalibrationState calibrationState() {
-        return CalibrationState.parse(state);
-    }
-
-    boolean usable() {
-        return calibrationState().usableGlucose();
-    }
-
-    boolean insufficient() {
-        return calibrationState().insufficientCalibration();
-    }
-
-    boolean OkToCalibrate() {
-        return calibrationState().readyForCalibration();
-    }
-
-    public Double getTrend() {
-        return trend != 127 ? ((double) trend) / 10d : Double.NaN;
     }
 
 

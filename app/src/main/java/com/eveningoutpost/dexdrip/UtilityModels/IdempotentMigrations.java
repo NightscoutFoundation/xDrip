@@ -5,10 +5,13 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 
+import com.eveningoutpost.dexdrip.Models.APStatus;
 import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.Models.DesertSync;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.LibreBlock;
 import com.eveningoutpost.dexdrip.Models.LibreData;
+import com.eveningoutpost.dexdrip.Models.Prediction;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.SnoozeActivity;
 import com.eveningoutpost.dexdrip.Models.AlertType;
@@ -34,6 +37,9 @@ public class IdempotentMigrations {
         BgReading.updateDB();
         LibreBlock.updateDB();
         LibreData.updateDB();
+        APStatus.updateDB();
+        Prediction.updateDB();
+        DesertSync.updateDB();
         JoH.clearCache();
 
         IncompatibleApps.notifyAboutIncompatibleApps();

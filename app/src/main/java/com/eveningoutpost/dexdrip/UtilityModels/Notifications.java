@@ -44,6 +44,7 @@ import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.Services.MissedReadingService;
 import com.eveningoutpost.dexdrip.Services.SnoozeOnNotificationDismissService;
+import com.eveningoutpost.dexdrip.evaluators.PersistentHigh;
 import com.eveningoutpost.dexdrip.ui.NumberGraphic;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.PowerStateReceiver;
@@ -65,9 +66,9 @@ public class Notifications extends IntentService {
     public static boolean bg_notifications_watch;
     public static boolean bg_persistent_high_alert_enabled_watch;
     public static boolean bg_ongoing;
-    public static boolean bg_vibrate;
-    public static boolean bg_lights;
-    public static boolean bg_sound;
+    //public static boolean bg_vibrate;
+   // public static boolean bg_lights;
+   // public static boolean bg_sound;
     public static boolean bg_sound_in_silent;
     public static String bg_notification_sound;
 
@@ -123,15 +124,16 @@ public class Notifications extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        PowerManager pm = (PowerManager) getApplicationContext().getSystemService(Context.POWER_SERVICE);
-        PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "NotificationsIntent");
-        wl.acquire(60000);
+
+        final PowerManager.WakeLock wl = JoH.getWakeLock("NotificationsService", 60000);
+
         boolean unclearReading = false;
         try {
             Log.d("Notifications", "Running Notifications Intent Service");
             final Context context = getApplicationContext();
 
             if (Pref.getBoolean("motion_tracking_enabled", false)) {
+                // TODO move this
                 ActivityRecognizedService.reStartActivityRecogniser(context);
             }
 
@@ -140,20 +142,12 @@ public class Notifications extends IntentService {
             ArmTimer(context, unclearReading);
             context.startService(new Intent(context, MissedReadingService.class));
 
-
         } finally {
-            if (wl.isHeld()) wl.release();
+            JoH.releaseWakeLock(wl);
         }
     }
 
-    public static void staticUpdateNotification() {
-        try {
-            Context context = xdrip.getAppContext();
-            context.startService(new Intent(context, Notifications.class));
-        } catch (Exception e) {
-            Log.e(TAG, "Got exception in staticupdatenotification: " + e);
-        }
-    }
+
 
 
     public void ReadPerfs(Context context) {
@@ -162,9 +156,9 @@ public class Notifications extends IntentService {
         bg_notifications = prefs.getBoolean("bg_notifications", true);
         bg_notifications_watch = PersistentStore.getBoolean("bg_notifications_watch");
         bg_persistent_high_alert_enabled_watch = PersistentStore.getBoolean("persistent_high_alert_enabled_watch");
-        bg_vibrate = prefs.getBoolean("bg_vibrate", true);
-        bg_lights = prefs.getBoolean("bg_lights", true);
-        bg_sound = prefs.getBoolean("bg_play_sound", true);
+        //bg_vibrate = prefs.getBoolean("bg_vibrate", true);
+        //bg_lights = prefs.getBoolean("bg_lights", true);
+        //bg_sound = prefs.getBoolean("bg_play_sound", true);
         bg_notification_sound = prefs.getString("bg_notification_sound", "content://settings/system/notification_sound");
         bg_sound_in_silent = prefs.getBoolean("bg_sound_in_silent", false);
 
@@ -183,7 +177,7 @@ public class Notifications extends IntentService {
  * Function for new notifications
  */
 
-
+// TODO REFACTOR
     private void FileBasedNotifications(Context context) {
         ReadPerfs(context);
         Sensor sensor = Sensor.currentSensor();
@@ -337,7 +331,7 @@ public class Notifications extends IntentService {
         }
         // TODO: Add this alerts as well to depend on unclear sensor reading.
         //if (watchAlert && bg_persistent_high_alert_enabled_watch) {
-        BgReading.checkForPersistentHigh();
+        PersistentHigh.checkForPersistentHigh();
         evaluateLowPredictionAlarm();
         reportNoiseChanges();
 
@@ -593,11 +587,11 @@ public class Notifications extends IntentService {
         if (useOngoingChannel()) {
             b = new Notification.Builder(mContext, NotificationChannels.ONGOING_CHANNEL);
             b.setSound(null);
-            b.setOngoing(true);
         } else {
             b = new Notification.Builder(mContext);
         }
-        //b.setOngoing(true); // TODO CHECK THIS!!
+        b.setOngoing(true); // TODO CHECK THIS!!
+      
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             b.setVisibility(Pref.getBooleanDefaultFalse("public_notifications") ? Notification.VISIBILITY_PUBLIC : Notification.VISIBILITY_PRIVATE);
             b.setCategory(NotificationCompat.CATEGORY_STATUS);
@@ -1016,6 +1010,23 @@ public class Notifications extends IntentService {
         if (userNotification != null) {
             userNotification.delete();
             notificationDismiss(extraCalibrationNotificationId);
+        }
+    }
+
+    // rate limited
+    public static void start() {
+        // TODO consider how inevitable task could change dynamic of this instead of rate limit
+        if (JoH.ratelimit("start-notifications",10)) {
+            JoH.startService(Notifications.class);
+        }
+    }
+
+    // not rate limited - force recheck
+    public static void staticUpdateNotification() {
+        try {
+            JoH.startService(Notifications.class);
+        } catch (Exception e) {
+            Log.e(TAG, "Got exception in staticupdatenotification: " + e);
         }
     }
 }

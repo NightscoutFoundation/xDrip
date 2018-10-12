@@ -11,7 +11,7 @@ import android.view.View;
  * <p>
  * Triggered from homescreen
  */
-public class NFCFilterX extends Activity {
+public class NFCFilterX extends BaseActivity {
 
     private View decorView;
     private final static String TAG = "NFCFilterX";

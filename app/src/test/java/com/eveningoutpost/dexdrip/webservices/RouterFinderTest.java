@@ -1,8 +1,10 @@
 package com.eveningoutpost.dexdrip.webservices;
 
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
+import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import static com.google.common.truth.Truth.assertWithMessage;
@@ -16,6 +18,11 @@ public class RouterFinderTest extends RobolectricTestWithConfig {
         System.out.println(msg);
     }
 
+
+    @Before
+    public void cleanup() {
+      BgReading.deleteALL();
+    }
 
     @Test
     public void test_RouteFinder() {

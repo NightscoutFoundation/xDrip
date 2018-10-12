@@ -8,6 +8,7 @@ import android.os.Build;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
+import android.text.SpannableString;
 
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.GcmListenerSvc;
@@ -16,15 +17,22 @@ import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.InstalledApps;
+import com.eveningoutpost.dexdrip.UtilityModels.NanoStatus;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
+import com.eveningoutpost.dexdrip.ui.helpers.Span;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+
+import static com.eveningoutpost.dexdrip.GcmListenerSvc.lastMessageReceived;
+import static com.eveningoutpost.dexdrip.UtilityModels.StatusItem.Highlight.BAD;
+import static com.eveningoutpost.dexdrip.UtilityModels.StatusItem.Highlight.NOTICE;
 
 public class DoNothingService extends Service {
     private final static String TAG = DoNothingService.class.getSimpleName();
@@ -72,22 +80,32 @@ public class DoNothingService extends Service {
         UserError.Log.i(TAG, "onCreate: STARTING SERVICE");
     }
 
+    private static final long TOLERABLE_JITTER = 10000;
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         final PowerManager.WakeLock wl = JoH.getWakeLock("donothing-follower", 60000);
-        lastState="Trying to start "+JoH.hourMinuteString();
+        lastState = "Trying to start " + JoH.hourMinuteString();
         if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
             stopSelf();
             JoH.releaseWakeLock(wl);
             return START_NOT_STICKY;
         }
 
+        JoH.persistentBuggySamsungCheck();
+
         if (nextWakeUpTime > 0) {
             wake_time_difference = Calendar.getInstance().getTimeInMillis() - nextWakeUpTime;
-            if (wake_time_difference > 10000) {
+            if (wake_time_difference > TOLERABLE_JITTER) {
                 UserError.Log.e(TAG, "Slow Wake up! time difference in ms: " + wake_time_difference);
                 wakeUpErrors = wakeUpErrors + 3;
                 max_wake_time_difference = Math.max(max_wake_time_difference, wake_time_difference);
+
+                if (!JoH.buggy_samsung && JoH.isSamsung()) {
+                    UserError.Log.wtf(TAG, "Enabled Buggy Samsung workaround due to jitter of: " + JoH.niceTimeScalar(wake_time_difference));
+                    JoH.setBuggySamsungEnabled();
+                }
+
             } else {
                 if (wakeUpErrors > 0) wakeUpErrors--;
             }
@@ -128,7 +146,7 @@ public class DoNothingService extends Service {
             JoH.releaseWakeLock(wl);
             return START_NOT_STICKY;
         }
-        lastState="Started "+JoH.hourMinuteString();
+        lastState = "Started " + JoH.hourMinuteString();
         return START_STICKY;
 
     }
@@ -139,7 +157,7 @@ public class DoNothingService extends Service {
         UserError.Log.d(TAG, "onDestroy entered");
         foregroundServiceStarter.stop();
         UserError.Log.i(TAG, "SERVICE STOPPED");
-        lastState="Stopped "+JoH.hourMinuteString();
+        lastState = "Stopped " + JoH.hourMinuteString();
     }
 
     private void setFailOverTimer() {
@@ -174,16 +192,9 @@ public class DoNothingService extends Service {
         } else {
             l.add(new StatusItem("Service State", lastState));
 
-
+            updateLastBg();
             if (last_bg != null) {
-                if (JoH.ratelimit("follower-bg-status", 5)) {
-                    last_bg = BgReading.last();
-                }
-                if (last_bg != null) {
-                    l.add(new StatusItem("Glucose Data", JoH.niceTimeSince(last_bg.timestamp)+" ago"));
-                }
-            } else {
-                last_bg = BgReading.last();
+                l.add(new StatusItem("Glucose Data", JoH.niceTimeSince(last_bg.timestamp) + " ago"));
             }
 
             if (wakeUpErrors > 0) {
@@ -194,6 +205,10 @@ public class DoNothingService extends Service {
                 l.add(new StatusItem("Slowest Wake up", JoH.niceTimeScalar(max_wake_time_difference)));
             }
 
+            if (JoH.buggy_samsung) {
+                l.add(new StatusItem("Buggy Samsung", "Using workaround", max_wake_time_difference < TOLERABLE_JITTER ? StatusItem.Highlight.GOOD : BAD));
+            }
+
             if (nextWakeUpTime != -1) {
                 l.add(new StatusItem("Next Wake up: ", JoH.niceTimeTill(nextWakeUpTime)));
 
@@ -202,4 +217,34 @@ public class DoNothingService extends Service {
         return l;
     }
 
+    private static void updateLastBg() {
+        if ((last_bg == null) || JoH.ratelimit("follower-bg-status", 5)) {
+            last_bg = BgReading.last();
+        }
+    }
+
+    public static SpannableString nanoStatus() {
+        SpannableString pingStatus = null;
+        if (lastMessageReceived > 0) {
+            long pingSince = JoH.msSince(lastMessageReceived);
+            if (pingSince > Constants.MINUTE_IN_MS * 30) {
+                pingStatus = Span.colorSpan("No follower sync for: " + JoH.niceTimeScalar(pingSince), BAD.color());
+            }
+        }
+        if (Home.get_follower()) {
+            updateLastBg();
+            final SpannableString remoteStatus = NanoStatus.getRemote();
+            if (last_bg != null) {
+                if (JoH.msSince(last_bg.timestamp) > Constants.MINUTE_IN_MS * 15) {
+                    final SpannableString lastBgStatus = Span.colorSpan("Last from master: " + JoH.niceTimeSince(last_bg.timestamp) + " ago", NOTICE.color());
+                    return Span.join(true, remoteStatus, pingStatus, lastBgStatus);
+                }
+            } else {
+                return Span.join(true, pingStatus, new SpannableString("No data received from master yet"));
+            }
+        } else {
+            return Span.join(true, pingStatus);
+        }
+        return null;
+    }
 }

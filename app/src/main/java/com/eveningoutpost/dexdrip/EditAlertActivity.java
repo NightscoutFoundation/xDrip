@@ -92,8 +92,9 @@ public class EditAlertActivity extends ActivityWithMenu {
 
     private String audioPath;
 
+    private LinearLayout layoutSilentModeWarning;
     private TextView viewAlertOverrideText;
-    private CheckBox checkboxAlertOverride;
+    private CheckBox checkboxOverrideSilent;
     private boolean doMgdl;
 
     private String uuid;
@@ -167,8 +168,9 @@ public class EditAlertActivity extends ActivityWithMenu {
         editSnooze = (EditText) findViewById(R.id.edit_snooze);
         reraise = (EditText) findViewById(R.id.reraise);
 
+        layoutSilentModeWarning = (LinearLayout) findViewById(R.id.layout_silent_mode_warning);
         viewAlertOverrideText = (TextView) findViewById(R.id.view_alert_override_silent);
-        checkboxAlertOverride = (CheckBox) findViewById(R.id.check_override_silent);
+        checkboxOverrideSilent = (CheckBox) findViewById(R.id.check_override_silent);
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         addListenerOnButtons();
 
@@ -222,7 +224,7 @@ public class EditAlertActivity extends ActivityWithMenu {
             checkboxAllDay.setChecked(true);
             checkboxVibrate.setChecked(true);
             checkboxDisabled.setChecked(false);
-            checkboxAlertOverride.setChecked(true);
+            checkboxOverrideSilent.setChecked(true);
 
             audioPath = "";
             alertMp3File.setText(shortPath(audioPath));
@@ -239,8 +241,8 @@ public class EditAlertActivity extends ActivityWithMenu {
             alertReraise = 1;
         } else {
             // We are editing an alert
-            AlertType at = AlertType.get_alert(uuid);
-            if(at==null) {
+            AlertType alertType = AlertType.get_alert(uuid);
+            if(alertType==null) {
                 Log.wtf(TAG, "Error editing alert, when that alert does not exist...");
                 Intent returnIntent = new Intent();
                 setResult(RESULT_CANCELED, returnIntent);
@@ -248,27 +250,27 @@ public class EditAlertActivity extends ActivityWithMenu {
                 return;
             }
 
-            above = at.above;
-            alertText.setText(at.name);
-            alertThreshold.setText(unitsConvert2Disp(doMgdl, at.threshold));
-            checkboxAllDay.setChecked(at.all_day);
-            checkboxVibrate.setChecked(at.vibrate);
-            checkboxDisabled.setChecked(!at.active);
-            checkboxAlertOverride.setChecked(at.override_silent_mode);
-            defaultSnooze = at.default_snooze;
+            above = alertType.above;
+            alertText.setText(alertType.name);
+            alertThreshold.setText(unitsConvert2Disp(doMgdl, alertType.threshold));
+            checkboxAllDay.setChecked(alertType.all_day);
+            checkboxVibrate.setChecked(alertType.vibrate);
+            checkboxDisabled.setChecked(!alertType.active);
+            checkboxOverrideSilent.setChecked(alertType.override_silent_mode);
+            defaultSnooze = alertType.default_snooze;
             if(defaultSnooze == 0) {
                 SnoozeActivity.getDefaultSnooze(above);
             }
 
-            audioPath = getExtra(savedInstanceState, "audioPath" ,at.mp3_file);
+            audioPath = getExtra(savedInstanceState, "audioPath" ,alertType.mp3_file);
             alertMp3File.setText(shortPath(audioPath));
 
             status = "editing " + (above ? "high" : "low") + " alert";
-            startHour = AlertType.time2Hours(at.start_time_minutes);
-            startMinute = AlertType.time2Minutes(at.start_time_minutes);
-            endHour = AlertType.time2Hours(at.end_time_minutes);
-            endMinute = AlertType.time2Minutes(at.end_time_minutes);
-            alertReraise = at.minutes_between;
+            startHour = AlertType.time2Hours(alertType.start_time_minutes);
+            startMinute = AlertType.time2Minutes(alertType.start_time_minutes);
+            endHour = AlertType.time2Hours(alertType.end_time_minutes);
+            endMinute = AlertType.time2Minutes(alertType.end_time_minutes);
+            alertReraise = alertType.minutes_between;
 
             if(uuid.equals(AlertType.LOW_ALERT_55)) {
                 // This is the 55 alert, can not be edited
@@ -277,7 +279,7 @@ public class EditAlertActivity extends ActivityWithMenu {
                 buttonalertMp3.setEnabled(false);
                 checkboxAllDay.setEnabled(false);
                 checkboxVibrate.setEnabled(false);
-                checkboxAlertOverride.setEnabled(false);
+                checkboxOverrideSilent.setEnabled(false);
                 reraise.setEnabled(false);
             }
         }
@@ -288,7 +290,7 @@ public class EditAlertActivity extends ActivityWithMenu {
         setPreSnoozeSpinner();
         enableAllDayControls();
         setDisabledView();
-        enableVibrateControls();
+        showHideSilentModeWarning();
 
 
     }
@@ -368,15 +370,10 @@ public class EditAlertActivity extends ActivityWithMenu {
             }
     	}
     }
-    
 
-    void enableVibrateControls() {
-        boolean overrideSilence = checkboxAlertOverride.isChecked();
-        if(overrideSilence) {
-            checkboxAlertOverride.setText("");
-        } else {
-            checkboxAlertOverride.setText("Warning, no alert will be played at phone silent/vibrate mode!!!");
-        }
+
+    void showHideSilentModeWarning() {
+        layoutSilentModeWarning.setVisibility(checkboxOverrideSilent.isChecked() ? View.GONE : View.VISIBLE);
     }
 
     private boolean verifyThreshold(double threshold, boolean allDay, int startTime, int endTime) {
@@ -539,7 +536,7 @@ public class EditAlertActivity extends ActivityWithMenu {
                 }
                 boolean vibrate = checkboxVibrate.isChecked();
                 
-                boolean overrideSilentMode = checkboxAlertOverride.isChecked();
+                boolean overrideSilentMode = checkboxOverrideSilent.isChecked();
 
                 String mp3_file = audioPath;
                 if (uuid != null) {
@@ -624,10 +621,10 @@ public class EditAlertActivity extends ActivityWithMenu {
         });
 
         
-        checkboxAlertOverride.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        checkboxOverrideSilent.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             //          @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                enableVibrateControls();
+                showHideSilentModeWarning();
             }
         });
 
@@ -929,7 +926,7 @@ public class EditAlertActivity extends ActivityWithMenu {
             return;
         }
         boolean vibrate = checkboxVibrate.isChecked();
-        boolean overrideSilentMode = checkboxAlertOverride.isChecked();
+        boolean overrideSilentMode = checkboxOverrideSilent.isChecked();
         String mp3_file = audioPath;
         try {
             int defaultSnooze = safeGetDefaultSnooze();

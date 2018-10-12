@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
+import com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
@@ -15,6 +16,8 @@ import com.eveningoutpost.dexdrip.stats.StatsResult;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import static com.eveningoutpost.dexdrip.Models.JoH.getVersionDetails;
+import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.getTransmitterID;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.DexcomG5;
 
 /**
  * Created by jamorham on 31/01/2017.
@@ -34,7 +37,34 @@ public class Telemetry {
     This is to try to find any patterns relating to successful combinations, for example
     G5 collection working better with Samsung devices or not.
 
+    Firmware versions of G5 transmitters are also collected to aid in development of code which
+    adjusts features based on which firmware is being used.
+
      */
+
+    public static void sendFirmwareReport() {
+        try {
+            if (JoH.ratelimit("firmware-capture-report", 50000)) {
+                Log.d(TAG, "SEND Firmware EVENT START");
+
+                if (Pref.getBooleanDefaultFalse("enable_crashlytics") && Pref.getBooleanDefaultFalse("enable_telemetry")) {
+                    if (DexCollectionType.getDexCollectionType() == DexcomG5) {
+
+                        final String version = Ob1G5StateMachine.getRawFirmwareVersionString(getTransmitterID());
+                        if (version.length() > 0) {
+                            Answers.getInstance().logCustom(new CustomEvent("GFirmware")
+                                    .putCustomAttribute("Firmware", version));
+                        }
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            Log.e(TAG, "Got exception sending Firmware Report");
+        }
+
+    }
+
 
     public static void sendCaptureReport() {
         try {

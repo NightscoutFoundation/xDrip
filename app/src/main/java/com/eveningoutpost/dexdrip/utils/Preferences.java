@@ -31,8 +31,10 @@ import android.text.TextUtils;
 import android.widget.BaseAdapter;
 import android.widget.Toast;
 
+import com.eveningoutpost.dexdrip.BasePreferenceActivity;
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.Models.DesertSync;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Profile;
 import com.eveningoutpost.dexdrip.Models.UserError.ExtraLogTags;
@@ -64,6 +66,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.pebble.watchface.InstallPebbleWa
 import com.eveningoutpost.dexdrip.WidgetUpdateService;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileEditor;
+import com.eveningoutpost.dexdrip.wearintegration.Amazfitservice;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.eveningoutpost.dexdrip.webservices.XdripWebService;
 import com.eveningoutpost.dexdrip.xDripWidget;
@@ -90,7 +93,7 @@ import java.util.Map;
  * href="http://developer.android.com/guide/topics/ui/settings.html">Settings
  * API Guide</a> for more information on developing a Settings UI.
  */
-public class Preferences extends PreferenceActivity {
+public class Preferences extends BasePreferenceActivity {
     private static final String TAG = "jamorham PREFS";
     private static byte[] staticKey;
     private AllPrefsFragment preferenceFragment;
@@ -191,6 +194,7 @@ public class Preferences extends PreferenceActivity {
                 ExtraLogTags.readPreference(Pref.getStringDefaultBlank("extra_tags_for_logging"));
                 Toast.makeText(getApplicationContext(), "Loaded " + Integer.toString(changes) + " preferences from QR code", Toast.LENGTH_LONG).show();
                 PlusSyncService.clearandRestartSyncService(getApplicationContext());
+                DesertSync.settingsChanged(); // refresh
                 if (prefs.getString("dex_collection_method", "").equals("Follower")) {
                     PlusSyncService.clearandRestartSyncService(getApplicationContext());
                     GcmActivity.last_sync_request = 0;
@@ -899,6 +903,25 @@ public class Preferences extends PreferenceActivity {
             final PreferenceCategory displayCategory = (PreferenceCategory) findPreference("xdrip_plus_display_category");
 
 
+            final Preference enableAmazfit = findPreference("pref_amazfit_enable_key");
+
+
+            enableAmazfit.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+               @Override
+               public boolean onPreferenceChange(Preference preference, Object newValue) {
+                  final Context context = preference.getContext();
+                  Boolean enabled = (boolean) newValue;
+                   if (enabled==true) {
+                       context.startService(new Intent(context, Amazfitservice.class));
+
+                   }else {
+                       context.stopService(new Intent(context, Amazfitservice.class));
+                   }
+
+                return true;
+                }
+            });
+
             // TODO build list of preferences to cause wear refresh from list
             findPreference("wear_sync").setOnPreferenceChangeListener((preference, newValue) -> {
                         WatchUpdaterService.startSelf();
@@ -942,6 +965,14 @@ public class Preferences extends PreferenceActivity {
                 XdripWebService.settingsChanged(); // refresh
                 return true;
             });
+
+            findPreference("desert_sync_enabled").setOnPreferenceChangeListener((preference, newValue) -> {
+                preference.getEditor().putBoolean(preference.getKey(), (boolean) newValue).apply(); // write early for method below
+                DesertSync.settingsChanged(); // refresh
+                return true;
+            });
+
+
 
             if (enableBF != null ) enableBF.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                                                                               @Override
@@ -1096,6 +1127,14 @@ public class Preferences extends PreferenceActivity {
                 this.prefs.edit().putBoolean("calibration_notifications", false).apply();
             }
 
+            if (collectionType != DexCollectionType.Medtrum) {
+                try {
+                    collectionCategory.removePreference(findPreference("medtrum_use_native"));
+                } catch (Exception e) {
+                    //
+                }
+            }
+
             try {
                 findPreference("nfc_scan_homescreen").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                     @Override
@@ -1140,6 +1179,16 @@ public class Preferences extends PreferenceActivity {
                 });
             } catch (NullPointerException e) {
                 Log.d(TAG, "Nullpointer looking for nfc_scan");
+            }
+
+            try {
+                findPreference("external_blukon_algorithm").setOnPreferenceChangeListener((preference, newValue) -> {
+                    boolean isEnabled = ((Boolean) newValue).booleanValue();
+                    findPreference("retrieve_blukon_history").setEnabled(!isEnabled);
+                    return true;
+                });
+            } catch (NullPointerException e) {
+                //
             }
 
             final boolean engineering_mode = this.prefs.getBoolean("engineering_mode",false);
@@ -1250,6 +1299,17 @@ public class Preferences extends PreferenceActivity {
                //     }
                // }
 
+                // remove master ip input if we are the master
+                if (Home.get_master()) {
+                    final PreferenceScreen desert_sync_screen = (PreferenceScreen) findPreference("xdrip_plus_desert_sync_settings");
+                    try {
+                        desert_sync_screen.removePreference(findPreference("desert_sync_master_ip"));
+
+                    } catch (Exception e) {
+                        //
+                    }
+                }
+
 
                 final PreferenceScreen g5_settings_screen = (PreferenceScreen) findPreference("xdrip_plus_g5_extra_settings");
                 if (collectionType == DexCollectionType.DexcomG5) {
@@ -1351,6 +1411,8 @@ public class Preferences extends PreferenceActivity {
             });
 
             bindPreferenceTitleAppendToStringValue(findPreference("retention_days_bg_reading"));
+
+            bindPreferenceTitleAppendToStringValue(findPreference("pendiq_pin"));
 
             // Pebble Trend -- START
 
@@ -1697,7 +1759,8 @@ public class Preferences extends PreferenceActivity {
                     }
 
                     if (preference.getKey().equals("dex_collection_method")) {
-                        CollectionServiceStarter.restartCollectionService(preference.getContext(), (String) newValue);
+                        //CollectionServiceStarter.restartCollectionService(preference.getContext(), (String) newValue);
+
                         if (newValue.equals("Follower")) {
                             // reset battery whenever changing collector type
                             AllPrefsFragment.this.prefs.edit().putInt("bridge_battery",0).apply();
@@ -1709,9 +1772,10 @@ public class Preferences extends PreferenceActivity {
                             }
                             GcmActivity.requestBGsync();
                         }
-                    } else {
-                        CollectionServiceStarter.restartCollectionService(preference.getContext());
+                    //} else {
+                    //    CollectionServiceStarter.restartCollectionService(preference.getContext());
                     }
+                    CollectionServiceStarter.restartCollectionServiceBackground();
                     return true;
                 }
             });
@@ -1774,6 +1838,7 @@ public class Preferences extends PreferenceActivity {
             findPreference("status_line_low").setOnPreferenceChangeListener(new WidgetListener());
             findPreference("extra_status_line").setOnPreferenceChangeListener(new WidgetListener());
             findPreference("status_line_capture_percentage").setOnPreferenceChangeListener(new WidgetListener());
+            findPreference("status_line_realtime_capture_percentage").setOnPreferenceChangeListener(new WidgetListener());
             findPreference("extra_status_stats_24h").setOnPreferenceChangeListener(new WidgetListener());
 
         }
@@ -1893,7 +1958,6 @@ public class Preferences extends PreferenceActivity {
         }
 
         private static int pebbleType = 1;
-
         private void enablePebble(int newValueInt, boolean enabled, Context context) {
             Log.d(TAG,"enablePebble called with: "+newValueInt+" "+enabled);
             if (pebbleType == 1) {

@@ -16,6 +16,14 @@
         android:onClick="showRemindersFromMenu"
         android:showAsAction="never"/>
 
+    <item android:id="@+id/showassist"
+        android:title="@string/emergency_messages"
+        android:checkable="false"
+        android:orderInCategory="1"
+        android:visible="true"
+        android:onClick="showAssistFromMenu"
+        android:showAsAction="never"/>
+
     <item android:id="@+id/export_submenu"
         android:title="@string/export_submenu"
         android:orderInCategory="1">

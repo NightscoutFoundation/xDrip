@@ -21,6 +21,8 @@ import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.view.LineChartView;
 
+import static com.eveningoutpost.dexdrip.ui.helpers.UiHelper.convertDpToPixel;
+
 /**
  * Created by matthiasgranberry on 5/4/15.
  */
@@ -178,13 +180,6 @@ public class BgSparklineBuilder {
         v.setDrawingCacheBackgroundColor(color);
 
         return bitmap;
-    }
-
-    private int convertDpToPixel(float dp){
-        Resources resources = mContext.getResources();
-        DisplayMetrics metrics = resources.getDisplayMetrics();
-        int px = (int) (dp * (metrics.densityDpi / 160f));
-        return px;
     }
 
     public Bitmap build() {

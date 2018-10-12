@@ -1,15 +1,14 @@
 package com.eveningoutpost.dexdrip.stats;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.preference.PreferenceManager;
 
 import com.activeandroid.Cache;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 
 import java.text.DecimalFormat;
 
@@ -21,6 +20,7 @@ public class StatsResult {
     private final int in;
     private final int below;
     private final int above;
+    private int backfilledNativeG5 = -1;
     private double total_carbs = -1;
     private double total_insulin = -1;
     private double stdev = -1;
@@ -72,6 +72,13 @@ public class StatsResult {
         cursor.moveToFirst();
         above = cursor.getInt(0);
         cursor.close();
+
+        if (canShowRealtimeCapture()) {
+            cursor = db.rawQuery("select count(*) from bgreadings  where timestamp >= " + from + " AND timestamp <= " + to + " AND source_info LIKE \"%Backfill\" AND snyced == 0", null);
+            cursor.moveToFirst();
+            backfilledNativeG5 = cursor.getInt(0);
+            cursor.close();
+        }
 
         if(getTotalReadings() > 0){
             cursor= db.rawQuery("select avg(calculated_value) from bgreadings  where timestamp >= " + from + " AND timestamp <= " + to + " AND calculated_value > " + DBSearchUtil.CUTOFF + " AND snyced == 0", null);
@@ -260,6 +267,28 @@ public class StatsResult {
         }
 
         return result;
+    }
+
+    public String getRealtimeCapturePercentage(boolean extended) {
+        int nonBackfilled = getTotalReadings() - Math.max(getBackfilledNativeG5(), 0);
+        boolean regCapture = Pref.getBoolean("status_line_capture_percentage", false);
+        // for use in place of regular capture percentage e.g. widget extraStatusLine
+        String result = (regCapture || extended ? "RealtimeCap:" : "Cap:");
+        result += ((getTotalReadings()>0 && getBackfilledNativeG5() >= 0) ? (nonBackfilled*100/getTotalReadings())+"%" : "-%");
+        if (extended) {
+            result += " (" + nonBackfilled + "/" + getTotalReadings() + ")";
+        }
+        return result;
+    }
+
+    // equivalent to Ob1G5CollectionService.usingNativeMode()
+    public boolean canShowRealtimeCapture() {
+        return Pref.getBooleanDefaultFalse("ob1_g5_use_transmitter_alg") &&
+                Pref.getBooleanDefaultFalse("use_ob1_g5_collector_service");
+    }
+
+    public int getBackfilledNativeG5() {
+        return backfilledNativeG5;
     }
 
 }

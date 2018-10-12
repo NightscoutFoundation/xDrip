@@ -16,6 +16,7 @@ import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.NewDataObserver;
 import com.eveningoutpost.dexdrip.Services.SyncService;
@@ -106,8 +107,11 @@ public class BgSendQueue extends Model {
     }
 
     // TODO extract to non depreciated class
-    public static void handleNewBgReading(BgReading bgReading, String operation_type, Context context, boolean is_follower, boolean quick) {
-
+    public static void handleNewBgReading(final BgReading bgReading, String operation_type, Context context, boolean is_follower, boolean quick) {
+        if (bgReading == null) {
+            UserError.Log.wtf("BgSendQueue", "handleNewBgReading called with null bgReading!");
+            return;
+        }
         final PowerManager.WakeLock wakeLock = JoH.getWakeLock("sendQueue", 120000);
         try {
 
@@ -141,7 +145,6 @@ public class BgSendQueue extends Model {
 
             if (!quick) {
                 NewDataObserver.newBgReading(bgReading, is_follower);
-
             }
 
             if ((!is_follower) && (Pref.getBoolean("plus_follow_master", false))) {
@@ -150,7 +153,8 @@ public class BgSendQueue extends Model {
                     // TODO does this currently ignore noise or is noise properly calculated on the follower?
                     // munge bgReading for follower TODO will probably want extra option for this in future
                     // TODO we maybe don't need deep clone for this! Check how value will be used below
-                    GcmActivity.syncBGReading(PluggableCalibration.mungeBgReading(new Cloner().deepClone(bgReading)));
+                    //GcmActivity.syncBGReading(PluggableCalibration.mungeBgReading(new Cloner().deepClone(bgReading)));
+                    GcmActivity.syncBGReading(PluggableCalibration.mungeBgReading(BgReading.fromJSON(bgReading.toJSON(true))));
                 } else {
                     // send as is
                     GcmActivity.syncBGReading(bgReading);
@@ -164,7 +168,7 @@ public class BgSendQueue extends Model {
 
 
         } finally {
-            wakeLock.release();
+            JoH.releaseWakeLock(wakeLock);
         }
     }
 
@@ -172,10 +176,10 @@ public class BgSendQueue extends Model {
         // This is just a stub - only used on Android Wear
     }
 
-    @Deprecated
+   /* @Deprecated
     public void markMongoSuccess() {
         this.mongo_success = true;
         save();
-    }
+    }*/
 
 }

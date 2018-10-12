@@ -18,9 +18,12 @@ import com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.Treatments;
+import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Experience;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.profileeditor.DatePickerFragment;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileAdapter;
 import com.eveningoutpost.dexdrip.profileeditor.TimePickerFragment;
@@ -162,11 +165,35 @@ public class StartNewSensor extends ActivityWithMenu {
     }
 
     private void realStartSensor() {
-        if (Ob1G5StateMachine.usingG6()) {
+        if (Ob1G5CollectionService.usingCollector() && Ob1G5StateMachine.usingG6()) {
             G6CalibrationCodeDialog.ask(this, this::realRealStartSensor);
         } else {
             realRealStartSensor();
         }
+    }
+
+
+    public static void startSensorForTime(long startTime) {
+        Sensor.create(startTime);
+        UserError.Log.ueh("NEW SENSOR", "Sensor started at " + JoH.dateTimeText(startTime));
+
+        JoH.static_toast_long("NEW SENSOR STARTED");
+
+        startWatchUpdaterService(xdrip.getAppContext(), WatchUpdaterService.ACTION_SYNC_SENSOR, TAG);
+
+        LibreAlarmReceiver.clearSensorStats();
+        // TODO this is just a timer and could be confusing - consider removing this notification
+       // JoH.scheduleNotification(xdrip.getAppContext(), "Sensor should be ready", xdrip.getAppContext().getString(R.string.please_enter_two_calibrations_to_get_started), 60 * 130, Home.SENSOR_READY_ID);
+
+        // reverse libre hacky workaround
+        Treatments.SensorStart((DexCollectionType.hasLibre() ? startTime + (3600000) : startTime));
+
+        CollectionServiceStarter.restartCollectionServiceBackground();
+
+        Ob1G5StateMachine.startSensor(startTime);
+        JoH.clearCache();
+        Home.staticRefreshBGCharts();
+
     }
 
     private void realRealStartSensor() {
@@ -178,30 +205,10 @@ public class StartNewSensor extends ActivityWithMenu {
             return;
         }
 
-        Sensor.create(startTime);
-        Log.d("NEW SENSOR", "Sensor started at " + startTime);
-
-        Toast.makeText(this, "NEW SENSOR STARTED", Toast.LENGTH_LONG).show();
-
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        // TODO add link pickers feature
-        //prefs.edit().putBoolean("start_sensor_link_pickers", linkPickers.isChecked()).apply();
-
-        startWatchUpdaterService(this, WatchUpdaterService.ACTION_SYNC_SENSOR, TAG);
-
-        LibreAlarmReceiver.clearSensorStats();
-        JoH.scheduleNotification(this, "Sensor should be ready", getString(R.string.please_enter_two_calibrations_to_get_started), 60 * 130, Home.SENSOR_READY_ID);
-
-        // reverse libre hacky workaround
-        Treatments.SensorStart((DexCollectionType.hasLibre() ? startTime + (3600000) : startTime));
-
-        CollectionServiceStarter.newStart(getApplicationContext());
-
-        Ob1G5StateMachine.startSensor(startTime);
-
+        startSensorForTime(startTime);
 
         Intent intent;
-        if (prefs.getBoolean("store_sensor_location", false) && Experience.gotData()) {
+        if (Pref.getBoolean("store_sensor_location", false) && Experience.gotData()) {
             intent = new Intent(getApplicationContext(), NewSensorLocation.class);
         } else {
             intent = new Intent(getApplicationContext(), Home.class);

@@ -43,7 +43,7 @@
                 android:layout_marginLeft="10dp"
                 android:layout_weight="1"
                 android:text="@{item.name, default=`Test text`}"
-                android:textSize="@{item.isShortName() ? 24 : 18}" />
+                android:textSize="@{item.isShortName() ? item.dpToPx(24) : item.dpToPx(18)}" />
 
         </LinearLayout>
 

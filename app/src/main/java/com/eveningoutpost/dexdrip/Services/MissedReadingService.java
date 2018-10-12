@@ -11,6 +11,7 @@ import android.preference.PreferenceManager;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.Models.DesertSync;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Reminder;
 import com.eveningoutpost.dexdrip.Models.Sensor;
@@ -69,7 +70,7 @@ public class MissedReadingService extends IntentService {
                     if (JoH.ratelimit("aggressive-restart", aggressive_backoff_timer)) {
                         Log.e(TAG, "Aggressively restarting collector service due to lack of reception: backoff: " + aggressive_backoff_timer);
                         if (aggressive_backoff_timer < 1200) aggressive_backoff_timer += 60;
-                        CollectionServiceStarter.restartCollectionService();
+                        CollectionServiceStarter.restartCollectionServiceBackground();
                     } else {
                         aggressive_backoff_timer = 120; // reset
                     }
@@ -80,6 +81,7 @@ public class MissedReadingService extends IntentService {
             Reminder.processAnyDueReminders();
             BluetoothGlucoseMeter.immortality();
             XdripWebService.immortality(); //
+            DesertSync.pullAsEnabled();
 
             // TODO functionalize the actual checking
             bg_missed_alerts = Pref.getBoolean("bg_missed_alerts", false);
