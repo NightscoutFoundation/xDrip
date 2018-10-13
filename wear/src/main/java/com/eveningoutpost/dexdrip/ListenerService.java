@@ -868,7 +868,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     }
 
     private void requestData() {
-        if (JoH.ratelimit("resend-request",30)) {
+        if (JoH.ratelimit("resend-request",60)) {
             sendData(WEARABLE_RESEND_PATH, null);
         }
     }
@@ -2415,7 +2415,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                                     changed = true;
                                     bgData.save();
                                 } else {
-                                    if (bgData.source_info.contains("Native")) {
+                                    if (bgData.source_info != null && bgData.source_info.contains("Native")) {
                                         UserError.Log.d(TAG, "Saving BgData without calibration as source info is native");
                                         bgData.sensor = sensor;
                                         bgData.sensor_uuid = sensor.uuid;
