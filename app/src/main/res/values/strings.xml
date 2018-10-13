@@ -162,6 +162,7 @@
     <string name="added">Added</string>
     <string name="checking_for_update">Checking for update..</string>
     <string name="signal_missed">Signal Missed</string>
+    <string name="before_minutes_ago">""</string>
     <string name="space_minutes_ago">" Minutes ago"</string>
     <string name="space_minute_ago">" Minute ago"</string>
     <string name="show_parakeet_map">Show Parakeet map</string>
