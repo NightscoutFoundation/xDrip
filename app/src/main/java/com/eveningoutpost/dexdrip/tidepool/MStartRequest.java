@@ -1,0 +1,69 @@
+package com.eveningoutpost.dexdrip.tidepool;
+
+import com.eveningoutpost.dexdrip.BuildConfig;
+import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.utils.DexCollectionType;
+import com.google.gson.annotations.Expose;
+
+import java.util.TimeZone;
+
+import static com.eveningoutpost.dexdrip.Models.JoH.getTimeZoneOffsetMs;
+
+public class MStartRequest extends BaseMessage {
+
+    static final String UPLOAD_TYPE = "continuous";
+
+    @Expose
+    public String deviceId;
+    @Expose
+    public String time = DateUtil.toFormatAsUTC(JoH.tsl());
+    @Expose
+    public int timezoneOffset = (int) (getTimeZoneOffsetMs() / Constants.MINUTE_IN_MS);
+    @Expose
+    public String type = "upload";
+    //public String byUser;
+    @Expose
+    public ClientInfo client = new ClientInfo();
+    @Expose
+    public String computerTime = DateUtil.toFormatNoZone(JoH.tsl());
+    @Expose
+    public String dataSetType = UPLOAD_TYPE;  // omit for "normal"
+    @Expose
+    public String[] deviceManufacturers = {DexCollectionType.getBestCollectorHardwareName()};
+    @Expose
+    public String deviceModel = DexCollectionType.getBestCollectorHardwareName();
+    @Expose
+    public String deviceSerialNumber = "123456";
+    @Expose
+    public String[] deviceTags = {"bgm", "cgm", "insulin-pump"};
+    //@Expose
+    //public Deduplicator deduplicator = new Deduplicator();
+    @Expose
+    public String timeProcessing = "none";
+    @Expose
+    public String timezone = TimeZone.getDefault().getID();
+    @Expose
+    public String version = BuildConfig.VERSION_NAME;
+
+    MStartRequest() {
+        deviceId = "123";
+    }
+
+    class ClientInfo {
+        @Expose
+        final String name = BuildConfig.APPLICATION_ID;
+        @Expose
+        final String version = "0.1.0";
+    }
+
+    class Deduplicator {
+        @Expose
+        final String name = "org.tidepool.continuous";
+    }
+
+    static boolean isNormal() {
+        return UPLOAD_TYPE.equals("normal");
+    }
+
+}
