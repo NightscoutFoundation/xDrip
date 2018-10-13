@@ -3110,7 +3110,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
         if ((!small_width) || (notificationText.length() > 0)) notificationText.append("\n");
         if (!small_width) {
-            notificationText.append(minutes + ((minutes == 1) ? getString(R.string.space_minute_ago) : getString(R.string.space_minutes_ago)));
+            notificationText.append(getString(R.string.before_minutes_ago) + minutes + ((minutes == 1) ? getString(R.string.space_minute_ago) : getString(R.string.space_minutes_ago)));
         } else {
             // small screen
             notificationText.append(minutes + getString(R.string.space_mins));

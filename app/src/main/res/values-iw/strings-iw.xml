@@ -161,9 +161,10 @@
     <string name="cancel_do_nothing">Cancel - do nothing</string>
     <string name="added">Added</string>
     <string name="checking_for_update">Checking for update..</string>
-    <string name="signal_missed">Signal Missed</string>
-    <string name="space_minutes_ago">" Minutes ago"</string>
-    <string name="space_minute_ago">" Minute ago"</string>
+    <string name="signal_missed">אין קליטה</string>
+    <string name="space_minutes_ago">" דקות"</string>
+    <string name="space_minute_ago">" דקה"</string>
+    <string name="before_minutes_ago">"לפני "</string>
     <string name="show_parakeet_map">Show Parakeet map</string>
     <string name="switch_parakeet_to_setup_mode">Switch Parakeet to Setup mode</string>
     <string name="view_events_log">View Events Log</string>
@@ -743,7 +744,7 @@
     <string name="volume_buttons_snooze">Pressing the volume up or down button will snooze an active alarm when in the app</string>
     <string name="buttons_silence_alarms">Buttons silence alarms</string>
     <string name="create_shortcut">Create a shortcut from main navigation to bg level screen</string>
-    <string name="shortcut_to_bg_alerts">Shortcut to Bg Level Alerts</string>
+    <string name="shortcut_to_bg_alerts">קיצור דרך להתראות על רמת סוכר</string>
     <string name="suppress_alerts_missed_readings">Suppress snoozed and active alerts after predefined period of missed readings</string>
     <string name="suppress_alerts_after">Suppress snoozed and active alerts after .. minutes (minimum 10)</string>
     <string name="alert_calibration_request">Alert when a calibration is requested</string>
@@ -857,7 +858,7 @@
     <string name="adjust_note_text_here_there_is_no_undo">Adjust note text here. There is no undo of this</string>
     <string name="no_search_term_found">No search term found</string>
     <string name="bluetooth_scan">Bluetooth סריקת</string>
-    <string name="level_alerts">Level Alerts</string>
+    <string name="level_alerts">התראות על רמת סוכר</string>
     <string name="override_calibration">החלף כיול</string>
     <string name="only_stop_your_sensor_when_you_actually_plan">עצור את הסנסור רק כשאתה מתכון להחליף אותו. אחרת השאר אותו פועל.</string>
     <string name="restart_collector">התחל אוסף מחדש</string>
