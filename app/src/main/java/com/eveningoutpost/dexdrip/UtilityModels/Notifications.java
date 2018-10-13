@@ -554,7 +554,13 @@ public class Notifications extends IntentService {
                 .build();
     }*/
 
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    private boolean useOngoingChannel() {
+        return (Pref.getBooleanDefaultFalse("use_notification_channels") &&
+                Pref.getBooleanDefaultFalse("ongoing_notification_channel") &&
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.O);
+    }
+
+    @TargetApi(Build.VERSION_CODES.O)
     public synchronized Notification createOngoingNotification(BgGraphBuilder bgGraphBuilder, Context context) {
         mContext = context;
         ReadPerfs(mContext);
@@ -576,8 +582,16 @@ public class Notifications extends IntentService {
 
         //final NotificationCompat.Builder b = new NotificationCompat.Builder(mContext, NotificationChannels.ONGOING_CHANNEL);
         //final NotificationCompat.Builder b = new NotificationCompat.Builder(mContext); // temporary fix until ONGOING CHANNEL is silent by default on android 8+
-        final Notification.Builder b = new Notification.Builder(mContext); // temporary fix until ONGOING CHANNEL is silent by default on android 8+
+        //final Notification.Builder b = new Notification.Builder(mContext); // temporary fix until ONGOING CHANNEL is silent by default on android 8+
+        final Notification.Builder b;
+        if (useOngoingChannel()) {
+            b = new Notification.Builder(mContext, NotificationChannels.ONGOING_CHANNEL);
+            b.setSound(null);
+        } else {
+            b = new Notification.Builder(mContext);
+        }
         b.setOngoing(true); // TODO CHECK THIS!!
+      
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             b.setVisibility(Pref.getBooleanDefaultFalse("public_notifications") ? Notification.VISIBILITY_PUBLIC : Notification.VISIBILITY_PRIVATE);
             b.setCategory(NotificationCompat.CATEGORY_STATUS);
@@ -665,7 +679,8 @@ public class Notifications extends IntentService {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
             b.setLocalOnly(true);
         }
-        return b.build();
+        // strips channel ID if disabled
+        return XdripNotification.build(b);
     }
 
     private synchronized void bgOngoingNotification(final BgGraphBuilder bgGraphBuilder) {
