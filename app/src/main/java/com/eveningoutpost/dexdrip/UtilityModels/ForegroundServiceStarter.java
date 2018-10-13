@@ -6,6 +6,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 
+import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 import static com.eveningoutpost.dexdrip.UtilityModels.Notifications.ongoingNotificationId;
@@ -28,7 +29,7 @@ public class ForegroundServiceStarter {
         mService = service;
         mHandler = new Handler(Looper.getMainLooper());
         // Force foreground with Oreo and above
-        run_service_in_foreground = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O || Pref.getBoolean("run_service_in_foreground", false);
+        run_service_in_foreground = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !Home.get_follower()) || Pref.getBoolean("run_service_in_foreground", true);
     }
 
     public void start() {
