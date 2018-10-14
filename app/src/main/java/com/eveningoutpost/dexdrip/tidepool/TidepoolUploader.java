@@ -42,6 +42,8 @@ public class TidepoolUploader {
     public interface Tidepool {
         @Headers({
                 "User-Agent: xDrip+ " + BuildConfig.VERSION_NAME,
+                "X-Tidepool-Client-Name: " + BuildConfig.APPLICATION_ID,
+                "X-Tidepool-Client-Version: 0.1.0", // TODO: const it
         })
 
         @POST("/auth/login")
