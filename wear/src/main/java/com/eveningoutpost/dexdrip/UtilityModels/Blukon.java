@@ -102,8 +102,6 @@ public class Blukon {
     }
 
     public static void initialize() {
-            Log.i(TAG, "initialize Blukon!");
-            Pref.setInt("bridge_battery", 0); //force battery to no-value before first reading
             Pref.setInt("nfc_sensor_age", 0); //force sensor age to no-value before first reading
             JoH.clearRatelimit(BLUKON_GETSENSORAGE_TIMER);
             m_getNowGlucoseDataCommand = false;
@@ -441,7 +439,7 @@ private static final int POSITION_OF_SENSOR_STATUS_BYTE = 17;
                 /* LibreAlarmReceiver.CalculateFromDataTransferObject, called when processing historical data,
                  * expects the sensor age not to be updated yet, so only update the sensor age when not retrieving history.
                  */
-                if ((sensorAge > 0) && (sensorAge < 200000)) {
+                if ((sensorAge >= 0) && (sensorAge < 200000)) {
                     Pref.setInt("nfc_sensor_age", sensorAge);//in min
                 }
                 currentCommand = GET_NOW_DATA_INDEX_COMMAND;
