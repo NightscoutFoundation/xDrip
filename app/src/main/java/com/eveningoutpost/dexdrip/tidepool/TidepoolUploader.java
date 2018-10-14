@@ -29,9 +29,9 @@ import retrofit2.http.Path;
  * huge thanks to bassettb for a working c# reference implementation upon which this is based
  */
 
-public class TidePoolUploader {
+public class TidepoolUploader {
 
-    protected static final String TAG = "TidePoolUploader";
+    protected static final String TAG = "TidepoolUploader";
     private static final boolean D = true;
     private static final boolean REPEAT = false;
 
@@ -39,7 +39,7 @@ public class TidePoolUploader {
     private static final String BASE_URL = "https://int-api.tidepool.org";
     private static final String SESSION_TOKEN_HEADER = "x-tidepool-session-token";
 
-    public interface TidePool {
+    public interface Tidepool {
         @Headers({
                 "User-Agent: xDrip+ " + BuildConfig.VERSION_NAME,
         })
@@ -104,7 +104,7 @@ public class TidePoolUploader {
             final Session session = new Session(MAuthRequest.getAuthRequestHeader(), SESSION_TOKEN_HEADER);
             if (session.authHeader != null) {
                 final Call<MAuthReply> call = session.service.getLogin(session.authHeader);
-                call.enqueue(new TidePoolCallback<>(session, "Login", () -> startSession(session)));
+                call.enqueue(new TidepoolCallback<>(session, "Login", () -> startSession(session)));
             } else {
                 UserError.Log.e(TAG,"Cannot do login as user credentials have not been set correctly");
             }
@@ -117,7 +117,7 @@ public class TidePoolUploader {
 
             if (session.authReply.userid != null) {
                 Call<MStartReply> call = session.service.getStart(session.token, session.authReply.userid, new MStartRequest().getBody());
-                call.enqueue(new TidePoolCallback<>(session, "Session Start", () -> doUpload(session)));
+                call.enqueue(new TidepoolCallback<>(session, "Session Start", () -> doUpload(session)));
             } else {
                 UserError.Log.wtf(TAG, "Got login response but cannot determine userid - cannot proceed");
             }
@@ -139,7 +139,7 @@ public class TidePoolUploader {
             } else {
                 final RequestBody body = RequestBody.create(MediaType.parse("application/json"), chunk);
                 final Call<MUploadReply> call = session.service.doUpload(session.token, session.MStartReply.data.uploadId, body);
-                call.enqueue(new TidePoolCallback<>(session, "Data Upload", () -> {
+                call.enqueue(new TidepoolCallback<>(session, "Data Upload", () -> {
                     UploadChunk.setLastEnd(session.end);
 
                     if (REPEAT && !session.exceededIterations()) {
@@ -163,7 +163,7 @@ public class TidePoolUploader {
 
     private static void doClose(final Session session) {
         final Call<MStartReply> call = session.service.getStop(session.token, session.MStartReply.data.uploadId, new MStopRequest().getBody());
-        call.enqueue(new TidePoolCallback<>(session, "Session Stop", null));
+        call.enqueue(new TidepoolCallback<>(session, "Session Stop", null));
     }
 
     private static void doCompleted(final Session session) {
@@ -178,13 +178,13 @@ public class TidePoolUploader {
 
     private static void readData(final Session session) {
         Call<MStartReply> call = session.service.getReadStart(session.token, session.authReply.userid);
-        call.enqueue(new TidePoolCallback<>(session, "Read Data", null));
+        call.enqueue(new TidepoolCallback<>(session, "Read Data", null));
     }
 
     private static void deleteData(final Session session) {
         if (session.authReply.userid != null) {
             Call<MStartReply> call = session.service.deleteAllData(session.token, session.authReply.userid);
-            call.enqueue(new TidePoolCallback<>(session, "Delete Data", null));
+            call.enqueue(new TidepoolCallback<>(session, "Delete Data", null));
         } else {
             UserError.Log.wtf(TAG, "Got login response but cannot determine userid - cannot proceed");
         }
@@ -192,12 +192,12 @@ public class TidePoolUploader {
 
     private static void getDataSet(final Session session) {
         Call<MStartReply> call = session.service.getDataSet(session.token, "bogus");
-        call.enqueue(new TidePoolCallback<>(session, "Get Data", null));
+        call.enqueue(new TidepoolCallback<>(session, "Get Data", null));
     }
 
     private static void deleteDataSet(final Session session) {
         Call<MStartReply> call = session.service.deleteDataSet(session.token, "bogus");
-        call.enqueue(new TidePoolCallback<>(session, "Delete Data", null));
+        call.enqueue(new TidepoolCallback<>(session, "Delete Data", null));
     }
 
 }

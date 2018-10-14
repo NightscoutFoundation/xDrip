@@ -12,7 +12,7 @@ import retrofit2.Response;
 // Callback template to reduce boiler plate
 
 @AllArgsConstructor
-class TidePoolCallback<T> implements Callback<T> {
+class TidepoolCallback<T> implements Callback<T> {
 
     final Session session;
     final String name;
@@ -21,19 +21,19 @@ class TidePoolCallback<T> implements Callback<T> {
     @Override
     public void onResponse(Call<T> call, Response<T> response) {
         if (response.isSuccessful() && response.body() != null) {
-            UserError.Log.d(TidePoolUploader.TAG, name + " success");
+            UserError.Log.d(TidepoolUploader.TAG, name + " success");
             session.populateBody(response.body());
             session.populateHeaders(response.headers());
             if (onSuccess != null) {
                 onSuccess.run();
             }
         } else {
-            UserError.Log.e(TidePoolUploader.TAG, name + " was not successful: " + response.code() + " " + response.message());
+            UserError.Log.e(TidepoolUploader.TAG, name + " was not successful: " + response.code() + " " + response.message());
         }
     }
 
     @Override
     public void onFailure(Call<T> call, Throwable t) {
-        UserError.Log.e(TidePoolUploader.TAG, name + " Failed: " + t);
+        UserError.Log.e(TidepoolUploader.TAG, name + " Failed: " + t);
     }
 }

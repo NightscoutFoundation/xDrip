@@ -9,7 +9,7 @@ import okhttp3.Headers;
 public class Session {
 
     private final String SESSION_TOKEN_HEADER;
-    final TidePoolUploader.TidePool service = TidePoolUploader.getRetrofitInstance().create(TidePoolUploader.TidePool.class);
+    final TidepoolUploader.Tidepool service = TidepoolUploader.getRetrofitInstance().create(TidepoolUploader.Tidepool.class);
     final String authHeader;
 
     String token;
