@@ -2,11 +2,13 @@ package com.eveningoutpost.dexdrip.ui;
 
 import android.annotation.SuppressLint;
 import android.app.WallpaperManager;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Build;
 
 import com.eveningoutpost.dexdrip.BestGlucose;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.ui.helpers.BitmapUtil;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -25,9 +27,10 @@ import static com.eveningoutpost.dexdrip.ui.helpers.BitmapUtil.getScreenWidth;
 public class LockScreenWallPaper {
 
     private static final String TAG = "WallPaper";
+    private static final String PREF = "number_wall_on_lockscreen";
 
     public static void setIfEnabled() {
-        if (Pref.getBooleanDefaultFalse("number_wall_on_lockscreen")) {
+        if (isEnabled()) {
             set();
         }
     }
@@ -44,6 +47,20 @@ public class LockScreenWallPaper {
         }
     }
 
+    public static void handlePreference() {
+        if (!isEnabled()) {
+            disable();
+        } else {
+            set();
+        }
+    }
+
+    public static void disable() {
+        setBitmap(null);
+    }
+
+
+
     @SuppressLint("WrongConstant")
     public static void setBitmap(final Bitmap bitmap) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -55,5 +72,17 @@ public class LockScreenWallPaper {
             }
         }
     }
+
+    private static boolean isEnabled() {
+        return Pref.getBooleanDefaultFalse(PREF);
+    }
+
+    public static SharedPreferences.OnSharedPreferenceChangeListener prefListener = (prefs, key) -> {
+        switch (key) {
+            case PREF:
+                Inevitable.task("number-wall-handle-pref",300, LockScreenWallPaper::handlePreference);
+                break;
+        }
+    };
 
 }

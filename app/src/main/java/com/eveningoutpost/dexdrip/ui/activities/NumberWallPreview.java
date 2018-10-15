@@ -7,10 +7,12 @@ import android.support.v7.app.AppCompatActivity;
 import com.eveningoutpost.dexdrip.BestGlucose;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.PrefsViewString;
 import com.eveningoutpost.dexdrip.UtilityModels.Unitized;
 import com.eveningoutpost.dexdrip.adapters.ObservableBackground;
 import com.eveningoutpost.dexdrip.databinding.ActivityNumberWallPreviewBinding;
+import com.eveningoutpost.dexdrip.ui.LockScreenWallPaper;
 import com.eveningoutpost.dexdrip.ui.NumberGraphic;
 import com.eveningoutpost.dexdrip.ui.helpers.BitmapUtil;
 
@@ -59,6 +61,7 @@ public class NumberWallPreview extends AppCompatActivity {
             dg.unitized = Unitized.usingMgDl() ? "123" : "12.3";
             final Bitmap bitmap = BitmapUtil.getTiled(NumberGraphic.getLockScreenBitmapWhite(dg.unitized, dg.delta_arrow, false), getScreenWidth(), getScreenHeight());
             background.setBitmap(bitmap);
+            Inevitable.task("refresh-lock-number-wall", 500, LockScreenWallPaper::setIfEnabled);
         }
     }
 
