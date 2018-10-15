@@ -977,4 +977,7 @@
     <string name="detect_car_audio">Detect car audio</string>
     <string name="automatically_enable_when_connected_to_car_bluetooth">Automatically enable vehicle mode when connected to car bluetooth</string>
     <string name="enable_speak_readings_when_in_vehicle">Enable speak readings feature when in vehicle mode</string>
+    <string name="basal_editor">Basal Editor - Select hours to adjust</string>
+    <string name="sensor_is_still_warming_up_please_wait">Sensor is still Warming Up, please wait</string>
+    <string name="number_wall_config">Number Wall Configuration</string>
 </resources>
