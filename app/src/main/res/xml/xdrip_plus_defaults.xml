@@ -4,12 +4,24 @@
         android:defaultValue="10"
         android:key="profile_carb_ratio_default"
         android:summary="@string/grams_of_carbohydrate_one_unit_covers"
-        android:title="@string/carb_ratio">
-    </EditTextPreference>
+        android:title="@string/carb_ratio" />
     <EditTextPreference
         android:defaultValue="54"
         android:key="profile_insulin_sensitivity_default"
         android:summary="@string/glucose_drop_for_one_unit"
-        android:title="@string/insulin_sensitivity">
-    </EditTextPreference>
+        android:title="@string/insulin_sensitivity" />
+
+    <EditTextPreference
+        android:defaultValue="90"
+        android:key="numberwall_x_param"
+        android:summary="default only - should not be visible" />
+    <EditTextPreference
+        android:defaultValue="45"
+        android:key="numberwall_y_param"
+        android:summary="default only - should not be visible" />
+    <EditTextPreference
+        android:defaultValue="10"
+        android:key="numberwall_s_param"
+        android:summary="default only - should not be visible" />
+
 </PreferenceScreen>
