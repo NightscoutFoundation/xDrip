@@ -7,11 +7,9 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
-
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -45,13 +43,13 @@ public final class ObservableBackground extends BaseObservable {
         this.mDrawable = null;
     }
 
-    public final void setDrawable(@NotNull Drawable drawable) {
+    public final void setDrawable(Drawable drawable) {
         this.reset();
         this.mDrawable = drawable;
         this.notifyChange();
     }
 
-    public final void setBitmap(@NotNull Bitmap bitmap) {
+    public final void setBitmap(Bitmap bitmap) {
         this.reset();
         this.mBitmap = bitmap;
         this.notifyChange();
@@ -63,7 +61,7 @@ public final class ObservableBackground extends BaseObservable {
     }
 
     @BindingAdapter(value = "background")
-    public static void setBackground(@NotNull View view, @NotNull ObservableBackground observable) {
+    public static void setBackground(View view, ObservableBackground observable) {
         Integer resource;
         if (observable.getMDrawableResource() != null) {
             resource = observable.getMDrawableResource();
