@@ -80,6 +80,12 @@ public class BestGlucose {
             return this.stale;
         }
 
+        // return boolean if data would be considered stale
+        public boolean isReallyStale() {
+                return this.mssince > (Home.stale_data_millis()*3);
+        }
+
+
         // is this value above the "High" preference value
         public boolean isHigh() {
             if (this.highMark == null)
