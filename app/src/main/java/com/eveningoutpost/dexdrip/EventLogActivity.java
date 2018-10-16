@@ -479,10 +479,12 @@ public class EventLogActivity extends BaseAppCompatActivity {
         // scroll to top and update button visibility accordingly with smooth option
         public void scrollToTop(boolean smooth) {
             showScrollToTop.set(false);
-            if (smooth) {
-                recyclerView.smoothScrollToPosition(0);
-            } else {
-                recyclerView.scrollToPosition(0);
+            if (recyclerView != null) {
+                if (smooth) {
+                    recyclerView.smoothScrollToPosition(0);
+                } else {
+                    recyclerView.scrollToPosition(0);
+                }
             }
         }
 

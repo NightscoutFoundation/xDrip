@@ -1,7 +1,6 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
 import android.annotation.TargetApi;
-import android.app.AlarmManager;
 import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -44,12 +43,12 @@ import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.Services.MissedReadingService;
 import com.eveningoutpost.dexdrip.Services.SnoozeOnNotificationDismissService;
+import com.eveningoutpost.dexdrip.evaluators.PersistentHigh;
 import com.eveningoutpost.dexdrip.ui.NumberGraphic;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.PowerStateReceiver;
 import com.eveningoutpost.dexdrip.xdrip;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -85,7 +84,7 @@ public class Notifications extends IntentService {
 
 
     Context mContext;
-    PendingIntent wakeIntent;
+    private static volatile PendingIntent wakeIntent;
     private static Handler mHandler = new Handler(Looper.getMainLooper());
 
     private BestGlucose.DisplayGlucose dg;
@@ -126,7 +125,7 @@ public class Notifications extends IntentService {
 
         final PowerManager.WakeLock wl = JoH.getWakeLock("NotificationsService", 60000);
 
-        boolean unclearReading = false;
+        boolean unclearReading;
         try {
             Log.d("Notifications", "Running Notifications Intent Service");
             final Context context = getApplicationContext();
@@ -138,7 +137,7 @@ public class Notifications extends IntentService {
 
             ReadPerfs(context);
             unclearReading = notificationSetter(context);
-            ArmTimer(context, unclearReading);
+            scheduleWakeup(context, unclearReading);
             context.startService(new Intent(context, MissedReadingService.class));
 
         } finally {
@@ -330,7 +329,7 @@ public class Notifications extends IntentService {
         }
         // TODO: Add this alerts as well to depend on unclear sensor reading.
         //if (watchAlert && bg_persistent_high_alert_enabled_watch) {
-        BgReading.checkForPersistentHigh();
+        PersistentHigh.checkForPersistentHigh();
         evaluateLowPredictionAlarm();
         reportNoiseChanges();
 
@@ -489,14 +488,12 @@ public class Notifications extends IntentService {
   */
     }
     
-    private void ArmTimer(Context ctx, boolean unclearAlert) {
-        Calendar calendar = Calendar.getInstance();
-        final long now = calendar.getTimeInMillis();
-        Log.d("Notifications", "ArmTimer called");
+    private synchronized void scheduleWakeup(Context context, boolean unclearAlert) {
+       // Calendar calendar = Calendar.getInstance();
+        final long now = JoH.tsl();
+        long wakeTime = calcuatleArmTime(context, now, unclearAlert);
 
-        long wakeTime = calcuatleArmTime(ctx, now, unclearAlert);
-
-        
+        // TODO make this neater - immediate wake time not needed as handled in JoH wakeup?
         if(wakeTime < now ) {
             Log.e("Notifications" , "ArmTimer recieved a negative time, will fire in 6 minutes");
             wakeTime = now + 6 * 60000;
@@ -508,12 +505,20 @@ public class Notifications extends IntentService {
             wakeTime = now + 1000;
         }
         
-        AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
+        //AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
 
         // TODO use JoH wakeup
         Log.d("Notifications" , "ArmTimer waking at: "+ new Date(wakeTime ) +" in " +
             (wakeTime - now) /60000d + " minutes");
-        if (wakeIntent != null)
+
+        if (wakeIntent == null) {
+            // TODO request code??
+            wakeIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), 0);
+        }
+        JoH.wakeUpIntent(context, wakeTime - now, wakeIntent);
+
+
+       /* if (wakeIntent != null)
             alarm.cancel(wakeIntent);
         wakeIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), 0);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -522,7 +527,7 @@ public class Notifications extends IntentService {
             alarm.setExact(AlarmManager.RTC_WAKEUP, wakeTime, wakeIntent);
         } else {
             alarm.set(AlarmManager.RTC_WAKEUP, wakeTime, wakeIntent);
-        }
+        }*/
     }
 
     private Bitmap createWearBitmap(long start, long end) {
@@ -553,7 +558,13 @@ public class Notifications extends IntentService {
                 .build();
     }*/
 
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    private boolean useOngoingChannel() {
+        return (Pref.getBooleanDefaultFalse("use_notification_channels") &&
+                Pref.getBooleanDefaultFalse("ongoing_notification_channel") &&
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.O);
+    }
+
+    @TargetApi(Build.VERSION_CODES.O)
     public synchronized Notification createOngoingNotification(BgGraphBuilder bgGraphBuilder, Context context) {
         mContext = context;
         ReadPerfs(mContext);
@@ -575,8 +586,16 @@ public class Notifications extends IntentService {
 
         //final NotificationCompat.Builder b = new NotificationCompat.Builder(mContext, NotificationChannels.ONGOING_CHANNEL);
         //final NotificationCompat.Builder b = new NotificationCompat.Builder(mContext); // temporary fix until ONGOING CHANNEL is silent by default on android 8+
-        final Notification.Builder b = new Notification.Builder(mContext); // temporary fix until ONGOING CHANNEL is silent by default on android 8+
+        //final Notification.Builder b = new Notification.Builder(mContext); // temporary fix until ONGOING CHANNEL is silent by default on android 8+
+        final Notification.Builder b;
+        if (useOngoingChannel()) {
+            b = new Notification.Builder(mContext, NotificationChannels.ONGOING_CHANNEL);
+            b.setSound(null);
+        } else {
+            b = new Notification.Builder(mContext);
+        }
         b.setOngoing(true); // TODO CHECK THIS!!
+      
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             b.setVisibility(Pref.getBooleanDefaultFalse("public_notifications") ? Notification.VISIBILITY_PUBLIC : Notification.VISIBILITY_PRIVATE);
             b.setCategory(NotificationCompat.CATEGORY_STATUS);
@@ -664,7 +683,8 @@ public class Notifications extends IntentService {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
             b.setLocalOnly(true);
         }
-        return b.build();
+        // strips channel ID if disabled
+        return XdripNotification.build(b);
     }
 
     private synchronized void bgOngoingNotification(final BgGraphBuilder bgGraphBuilder) {
@@ -731,7 +751,7 @@ public class Notifications extends IntentService {
         final double low_occurs_at = BgGraphBuilder.getCurrentLowOccursAt();
 
         if ((low_occurs_at > 0) && (BgGraphBuilder.last_noise < BgGraphBuilder.NOISE_TOO_HIGH_FOR_PREDICT)) {
-            final double low_predicted_alarm_minutes = Double.parseDouble(prefs.getString("low_predict_alarm_level", "40"));
+            final double low_predicted_alarm_minutes = JoH.tolerantParseDouble(prefs.getString("low_predict_alarm_level", "40"), 40);
             final double now = JoH.ts();
             final double predicted_low_in_mins = (low_occurs_at - now) / 60000;
             android.util.Log.d(TAG, "evaluateLowPredictionAlarm: mins: " + predicted_low_in_mins);

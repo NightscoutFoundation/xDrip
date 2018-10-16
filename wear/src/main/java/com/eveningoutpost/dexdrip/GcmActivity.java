@@ -8,12 +8,16 @@ package com.eveningoutpost.dexdrip;
 
 public class GcmActivity {
 
-     public static void sendBridgeBattery(int i) {
+    public static void sendBridgeBattery(int i) {
 
-     }
+    }
 
-     public static void requestSensorCalibrationsUpdate() {
+    public static void requestSensorCalibrationsUpdate() {
 
-     }
+    }
+
+    public static void sendNanoStatusUpdate(String meh) {
+
+    }
 
 }

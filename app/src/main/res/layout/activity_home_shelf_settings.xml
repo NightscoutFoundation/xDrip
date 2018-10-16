@@ -40,6 +40,13 @@
             android:onClick="@{() -> vs.ptoggle(`chart_preview`)}"
             android:text="Show Chart Preview" />
 
+        <Switch
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="@{safeUnbox(vs.included[`collector_nano_status`])}"
+            android:onClick="@{() -> vs.ptoggle(`collector_nano_status`)}"
+            android:text="Show Collector Status" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -81,6 +88,8 @@
             app:showIfTrue="@{safeUnbox(vs.included[`arrow_configurator`])}"
             android:onItemSelected="@{(a,b,c,d) -> home.arrowSelectionChanged(a,b,c,d)}"
             android:layout_weight="1" />
+
+
 
     </LinearLayout>
 

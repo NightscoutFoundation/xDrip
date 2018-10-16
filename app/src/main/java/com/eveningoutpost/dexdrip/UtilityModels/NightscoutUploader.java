@@ -407,7 +407,7 @@ public class NightscoutUploader {
                                             final BloodTest existing = BloodTest.byUUID(uuid);
                                             if (existing == null) {
                                                 final long timestamp = DateUtil.tolerantFromISODateString(tr.getString("created_at")).getTime();
-                                                double mgdl = JoH.tolerantParseDouble(tr.getString("glucose"));
+                                                double mgdl = JoH.tolerantParseDouble(tr.getString("glucose"), 0d);
                                                 if (tr.getString("units").equals("mmol"))
                                                     mgdl = mgdl * Constants.MMOLL_TO_MGDL;
                                                 final BloodTest bt = BloodTest.create(timestamp, mgdl, tr.getString("enteredBy") + " " + VIA_NIGHTSCOUT_TAG);

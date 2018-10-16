@@ -3,6 +3,7 @@ package com.eveningoutpost.dexdrip.utils;
 import com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine;
 import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.Services.DexShareCollectionService;
+import com.eveningoutpost.dexdrip.Services.DoNothingService;
 import com.eveningoutpost.dexdrip.Services.G5CollectionService;
 import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.Services.WifiCollectionService;
@@ -163,6 +164,8 @@ public enum DexCollectionType {
                 return WifiCollectionService.class;
             case Medtrum:
                 return MedtrumCollectionService.class;
+            case Follower:
+                return DoNothingService.class;
             default:
                 return DexCollectionService.class;
         }
@@ -228,7 +231,7 @@ public enum DexCollectionType {
                 return "Network G4 and Classic xDrip";
             case DexcomG5:
                 if (Ob1G5CollectionService.usingNativeMode()) {
-                    return "G5 Native";
+                    return Ob1G5CollectionService.usingG6() ? "G6 Native" : "G5 Native";
                 }
                 return dct.name();
             case LibreWifi:

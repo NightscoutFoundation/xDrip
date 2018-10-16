@@ -30,6 +30,7 @@ import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.UtilityModels.NanoStatus;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.PumpStatus;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
@@ -158,7 +159,7 @@ public class GcmListenerSvc extends JamListenerSvc {
             if (from.startsWith(getString(R.string.gcmtpc))) {
 
                 String xfrom = data.getString("xfrom");
-                String payload = data.getString("datum");
+                String payload = data.getString("datum", data.getString("payload"));
                 String action = data.getString("action");
 
                 if ((xfrom != null) && (xfrom.equals(GcmActivity.token))) {
@@ -368,6 +369,11 @@ public class GcmListenerSvc extends JamListenerSvc {
                     if (Home.get_follower()) {
                         Log.i(TAG, "Received pump status update");
                         PumpStatus.fromJson(payload);
+                    }
+                } else if (action.equals("nscu")) {
+                    if (Home.get_follower()) {
+                        Log.i(TAG,"Received nanostatus update");
+                        NanoStatus.setRemote(payload);
                     }
                 } else if (action.equals("not")) {
                     if (Home.get_follower()) {

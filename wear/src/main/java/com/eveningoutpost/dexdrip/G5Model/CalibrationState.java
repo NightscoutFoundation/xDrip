@@ -33,7 +33,7 @@ public enum CalibrationState {
     Ended(0x0f, "Ended"),
     SensorFailed3(0x10, "Sensor Failed 3"),
     TransmitterProblem(0x11, "Transmitter Problem"),
-    Errors(0x12, "Errors"),
+    Errors(0x12, "Sensor Errors"),
     SensorFailed4(0x13, "Sensor Failed 4"),
     SensorFailed5(0x14, "Sensor Failed 5"),
     SensorFailed6(0x15, "Sensor Failed 6"),
@@ -106,6 +106,10 @@ public enum CalibrationState {
 
     public boolean warmingUp() {
         return this == WarmingUp;
+    }
+
+    public boolean ok() {
+        return this == Ok;
     }
 
     public boolean readyForBackfill() {

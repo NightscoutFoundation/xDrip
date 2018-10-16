@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.Build;
+import android.os.Looper;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.widget.Toast;
@@ -56,7 +57,12 @@ public class LocationHelper {
             }
         });
         builder.setNegativeButton(R.string.no, null);
-        builder.create().show();
+        try {
+            builder.create().show();
+        } catch (RuntimeException e) {
+            Looper.prepare();
+            builder.create().show();
+        }
     }
 
     /**

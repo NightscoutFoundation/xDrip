@@ -85,11 +85,14 @@ import java.nio.charset.Charset;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.zip.CRC32;
 import java.util.zip.Checksum;
 import java.util.zip.Deflater;
@@ -191,9 +194,9 @@ public class JoH {
 
     public static String bytesToHex(byte[] bytes) {
         if (bytes == null) return "<empty>";
-        char[] hexChars = new char[bytes.length * 2];
+        final char[] hexChars = new char[bytes.length * 2];
         for (int j = 0; j < bytes.length; j++) {
-            int v = bytes[j] & 0xFF;
+            final int v = bytes[j] & 0xFF;
             hexChars[j * 2] = hexArray[v >>> 4];
             hexChars[j * 2 + 1] = hexArray[v & 0x0F];
         }
@@ -628,6 +631,10 @@ public class JoH {
         return android.text.format.DateFormat.format("yyyy-MM-dd", timestamp).toString();
     }
 
+    public static long getTimeZoneOffsetMs() {
+        return new GregorianCalendar().getTimeZone().getRawOffset();
+    }
+
     public static String niceTimeSince(long t) {
         return niceTimeScalar(msSince(t));
     }
@@ -714,7 +721,15 @@ public class JoH {
 
     public static double tolerantParseDouble(String str) throws NumberFormatException {
         return Double.parseDouble(str.replace(",", "."));
+    }
 
+    public static double tolerantParseDouble(final String str, final double def) {
+        if (str == null) return def;
+        try {
+            return Double.parseDouble(str.replace(",", "."));
+        } catch (NumberFormatException e) {
+            return def;
+        }
     }
 
     public static String getRFC822String(long timestamp) {
@@ -1548,11 +1563,18 @@ public class JoH {
        }
     }
 
-    public static double roundDouble(double value, int places) {
+    public static double roundDouble(final double value, int places) {
         if (places < 0) throw new IllegalArgumentException("Invalid decimal places");
         BigDecimal bd = new BigDecimal(value);
         bd = bd.setScale(places, RoundingMode.HALF_UP);
         return bd.doubleValue();
+    }
+
+    public static double roundFloat(final float value, int places) {
+        if (places < 0) throw new IllegalArgumentException("Invalid decimal places");
+        BigDecimal bd = new BigDecimal(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.floatValue();
     }
 
     public static boolean isServiceRunningInForeground(Class<?> serviceClass) {

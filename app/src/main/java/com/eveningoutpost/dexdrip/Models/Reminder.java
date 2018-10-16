@@ -13,6 +13,7 @@ import com.activeandroid.util.SQLiteUtils;
 import com.eveningoutpost.dexdrip.Reminders;
 import com.eveningoutpost.dexdrip.Services.MissedReadingService;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.gson.annotations.Expose;
@@ -338,15 +339,24 @@ public class Reminder extends Model {
 
     public synchronized static void firstInit(Context context) {
         fixUpTable(schema);
-        final Reminder reminder = new Select()
-                .from(Reminder.class)
-                .where("enabled = ?", true)
-                .executeSingle();
-        if (reminder != null) {
-            PendingIntent serviceIntent = PendingIntent.getService(xdrip.getAppContext(), 0, new Intent(xdrip.getAppContext(), MissedReadingService.class), PendingIntent.FLAG_UPDATE_CURRENT);
-            JoH.wakeUpIntent(xdrip.getAppContext(), Constants.MINUTE_IN_MS, serviceIntent);
-            UserError.Log.d(TAG, "Starting missed readings service");
-        }
+        Inevitable.task("reminders-first-init", 2000, new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final Reminder reminder = new Select()
+                            .from(Reminder.class)
+                            .where("enabled = ?", true)
+                            .executeSingle();
+                    if (reminder != null) {
+                        PendingIntent serviceIntent = PendingIntent.getService(xdrip.getAppContext(), 0, new Intent(xdrip.getAppContext(), MissedReadingService.class), PendingIntent.FLAG_UPDATE_CURRENT);
+                        JoH.wakeUpIntent(xdrip.getAppContext(), Constants.MINUTE_IN_MS, serviceIntent);
+                        UserError.Log.ueh(TAG, "Starting missed readings service");
+                    }
+                } catch (NullPointerException e) {
+                    UserError.Log.wtf(TAG, "Got nasty initial concurrency exception: " + e);
+                }
+            }
+        });
     }
 
     public static Reminder byid(long id) {

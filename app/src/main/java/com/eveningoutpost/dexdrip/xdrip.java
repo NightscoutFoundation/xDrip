@@ -115,13 +115,17 @@ public class xdrip extends Application {
     public static synchronized boolean isRunningTest() {
         if (null == isRunningTestCache) {
             boolean test_framework;
-            try {
-                Class.forName("android.support.test.espresso.Espresso");
-                test_framework = true;
-            } catch (ClassNotFoundException e) {
-                test_framework = false;
+            if ("robolectric".equals(Build.FINGERPRINT)) {
+                isRunningTestCache = true;
+            } else {
+                try {
+                    Class.forName("android.support.test.espresso.Espresso");
+                    test_framework = true;
+                } catch (ClassNotFoundException e) {
+                    test_framework = false;
+                }
+                isRunningTestCache = test_framework;
             }
-            isRunningTestCache = test_framework;
         }
         return isRunningTestCache;
     }

@@ -129,8 +129,8 @@ public class ProfileEditor extends BaseAppCompatActivity {
 
         if (profileItemList.size() == 0) {
             profileItemList.add(new ProfileItem(0, END_OF_DAY,
-                    JoH.tolerantParseDouble(Pref.getString("profile_carb_ratio_default", "10")),
-                    JoH.tolerantParseDouble(Pref.getString("profile_insulin_sensitivity_default", "0.1"))));
+                    JoH.tolerantParseDouble(Pref.getString("profile_carb_ratio_default", "10"), 10d),
+                    JoH.tolerantParseDouble(Pref.getString("profile_insulin_sensitivity_default", "0.1"), 0.1d)));
         }
 
         updateAdjustmentFactor(1.0);

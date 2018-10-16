@@ -17,6 +17,10 @@
             name="ui"
             type="com.eveningoutpost.dexdrip.ui.UiPing" />
 
+        <variable
+            name="nano"
+            type="com.eveningoutpost.dexdrip.UtilityModels.NanoStatus" />
+
         <import type="android.view.View" />
     </data>
 
@@ -123,7 +127,7 @@
                         android:paddingStart="0dp"
                         android:paddingTop="0dp"
 
-                        app:srcCompat="@drawable/ic_gtk_go_forward_ltr"
+                        app:srcCompat="@drawable/ic_arrow_forward_color_24dp"
                         app:showIfTrue="@{safeUnbox(vs.included[`graphic_trend_arrow`])}" />
                 </LinearLayout>
 
@@ -458,13 +462,35 @@
             </RelativeLayout>
 
             <LinearLayout
+                android:id="@+id/nanoStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal"
+                app:showIfTrue="@{safeUnbox(vs.included[`collector_nano_status`])}">
+
+
+                <TextView
+                    android:id="@+id/nanoStatusText"
+                    android:layout_width="0dp"
+                    android:layout_marginTop="2dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@{nano.color_watch, default=`Nano Status`}"
+                    app:showIfTrue="@{nano.color_watch.length() > 0}"/>
+
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/sourcewizard"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:gravity="center_horizontal"
                 android:orientation="horizontal"
-                android:visibility="@{safeUnbox(vs.included[`source_wizard`]) ? View.VISIBLE: View.GONE}">
+                app:showIfTrue="@{safeUnbox(vs.included[`source_wizard`])}">
+
 
                 <Button
                     android:id="@+id/sourceWizardButton"

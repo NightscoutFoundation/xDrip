@@ -981,4 +981,7 @@
     <string name="aggressive_service_restart_timer_sums">Input value in minutes</string>
     <string name="bluetooth_watchdog_timers">Timer value for BT watchdog</string>
     <string name="bluetooth_watchdog_timer_sums">Input value in minutes</string>
+    <string name="basal_editor">Basal Editor - Select hours to adjust</string>
+    <string name="sensor_is_still_warming_up_please_wait">Sensor is still Warming Up, please wait</string>
+    <string name="number_wall_config">Number Wall Configuration</string>
 </resources>

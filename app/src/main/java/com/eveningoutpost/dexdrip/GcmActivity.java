@@ -505,6 +505,12 @@ public class GcmActivity extends FauxActivity {
         }
     }
 
+    public static void sendNanoStatusUpdate(final String json) {
+        if (JoH.pratelimit("gcm-nscu", 180)) {
+            sendMessage("nscu", json);
+        }
+    }
+
     public static void requestBGsync() {
         if (token != null) {
             if ((JoH.tsl() - last_sync_request) > (60 * 1000 * (5 + bg_sync_backoff))) {

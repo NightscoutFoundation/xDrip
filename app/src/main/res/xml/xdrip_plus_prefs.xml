@@ -439,6 +439,29 @@
                 android:summary="@string/show_reminder_features"
                 android:title="@string/enable_reminder_features" />
             <PreferenceScreen
+                android:key="xdrip_plus_number_wall"
+                android:title="Number Wall on Lock Screen">
+            <Preference
+                android:key="do_number_wall_configuration"
+                android:summary="Adjust and preview wall layout"
+                android:title="Configure Number Wall">
+                <intent
+                    android:action="android.intent.action.MAIN"
+                    android:targetClass="com.eveningoutpost.dexdrip.ui.activities.NumberWallPreview"
+                    android:targetPackage="@string/local_target_package">
+                </intent>
+            </Preference>
+            <SwitchPreference
+                android:defaultValue="false"
+                android:key="number_wall_on_lockscreen"
+                android:summary="Show on lock-screen. Android 7 and above only!"
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
+                android:title="Use on Lock screen" />
+
+            </PreferenceScreen>
+
+            <PreferenceScreen
                 android:key="xdrip_plus_number_icon"
                 android:title="Number Icon in Notification Area">
                 <Preference
