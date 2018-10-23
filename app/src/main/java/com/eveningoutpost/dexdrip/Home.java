@@ -2853,8 +2853,13 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                     toaststaticnext(msg);
                 }
             }
-
-            displayCurrentInfoFromReading(lastBgReading, predictive);
+            if(Calibration.IsReasnoble()) {
+                displayCurrentInfoFromReading(lastBgReading, predictive);
+            } else {
+                currentBgValueText.setText("Bad calibration value. Pleaes recalibrate again in an hour." + 
+                        " If the problem persists, please consider replacing your sensor");
+            }
+            
         } else {
             display_delta = "";
         }

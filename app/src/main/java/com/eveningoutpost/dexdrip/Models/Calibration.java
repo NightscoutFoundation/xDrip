@@ -1088,6 +1088,11 @@ public class Calibration extends Model {
                 .orderBy("timestamp desc")
                 .executeSingle();
     }
+    
+    public static boolean IsReasnoble() {
+        Calibration calibration = lastValid();
+        return calibration.slope < 35;
+    }
 
     public static Calibration first() {
         Sensor sensor = Sensor.currentSensor();
