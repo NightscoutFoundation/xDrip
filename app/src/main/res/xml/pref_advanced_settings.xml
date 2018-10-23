@@ -53,8 +53,8 @@
                 android:defaultValue="false"
                 android:dependency="force_wearG5"
                 android:key="only_ever_use_wear_collector"
-                android:summary="If you plan to only use a Wear collector and never your phone."
-                android:title="Only use Wear" />
+                android:summary="@string/summary_If_you_plan_to_only_use_a_Wear_collector_and_never_your_phone"
+                android:title="@string/title_Only_use_Wear" />
             <EditTextPreference
                 android:defaultValue=""
                 android:dependency="force_wearG5"
@@ -116,7 +116,7 @@
                 android:defaultValue="false"
                 android:dependency="broadcast_to_pebble"
                 android:key="pebble_filtered_line"
-                android:summary="Also show the filtered data on the trend"
+                android:summary="@string/summary_Also_show_the_filtered_data_on_the_trend"
                 android:title="@string/display_filtered_line" />
             <CheckBoxPreference
                 android:defaultValue="false"
@@ -182,8 +182,8 @@
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:key="pebble_show_bwp"
-                android:summary="Show Bolus Wizard Preview Insulin value on watch when appropriate"
-                android:title="Display BWP Insulin" />
+                android:summary="@string/summary_Show_Bolus_Wizard_Preview_Insulin_value_on_watch_when_appropriate"
+                android:title="@string/title_Display_BWP_Insulin" />
             <EditTextPreference
                 android:defaultValue="99"
                 android:dependency="broadcast_to_pebble"
@@ -234,25 +234,25 @@
 
     <PreferenceScreen
         icon="@drawable/ic_heart_pulse_grey600_24dp"
-        android:title="Smartwatch Sensors">
+        android:title="@string/title_Smartwatch_Sensors">
         <SwitchPreference
             android:defaultValue="true"
             android:key="use_pebble_health"
-            android:summary="Collect and display Step counter and Heart rate when available"
+            android:summary="@string/summary_Collect_and_display_Step_counter_and_Heart_rate_when_available"
             android:switchTextOff="@string/short_off_text_for_switches"
             android:switchTextOn="@string/short_on_text_for_switches"
-            android:title="Use Health Data" />
+            android:title="@string/title_Use_Health_Data" />
         <SwitchPreference
             android:defaultValue="true"
             android:key="use_wear_heartrate"
-            android:summary="Activate heart rate sensor if available"
+            android:summary="@string/summary_Activate_heart_rate_sensor_if_available"
             android:switchTextOff="@string/short_off_text_for_switches"
             android:switchTextOn="@string/short_on_text_for_switches"
-            android:title="Heart Rate Sensor" />
+            android:title="@string/title_Heart_Rate_Sensor" />
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="smooth_heartrate"
-            android:summary="Smooth heart rate graph"
+            android:summary="@string/summary_Smooth_heart_rate_graph"
             android:dependency="use_wear_heartrate"
             />
     </PreferenceScreen>
@@ -276,7 +276,7 @@
             <SeekBarPreference
                 android:key="speak_readings_change_threshold"
                 android:dependency="bg_to_speech"
-                android:title="When changes by"
+                android:title="@string/title_When_changes_by"
                 android:summary=""
                 android:max="300"
                 android:min="0"
@@ -284,7 +284,7 @@
             <SeekBarPreference
                 android:key="speak_readings_change_time"
                 android:dependency="bg_to_speech"
-                android:title="Or per number of minutes"
+                android:title="@string/title_Or_per_number_of_minutes"
                 android:summary=""
                 android:max="300"
                 android:min="0"
@@ -370,8 +370,8 @@
             <EditTextPreference
                 android:dependency="broadcast_data_through_intents"
                 android:key="local_broadcast_specific_package_destination"
-                android:title="Identify receiver"
-                android:summary="Only send to named package"/>
+                android:title="@string/title_Identify_receiver"
+                android:summary="@string/summary_Only_send_to_named_package"/>
             <SwitchPreference
                 android:defaultValue="true"
                 android:key="accept_nsclient_treatments"
@@ -385,26 +385,26 @@
                 android:summary="@string/process_broadcasted_calibrations"
                 android:switchTextOff="@string/short_off_text_for_switches"
                 android:switchTextOn="@string/short_on_text_for_switches"
-                android:title="Accept Calibrations" />
+                android:title="@string/title_Accept_Calibrations" />
             <SwitchPreference
                 android:defaultValue="false"
                 android:key="xdrip_webservice"
-                android:summary="Operate a local web server for interacting with Fitbit Ionic etc"
+                android:summary="@string/summary_Operate_a_local_web_server_for_interacting_with_Fitbit_Ionic_etc"
                 android:switchTextOff="@string/short_off_text_for_switches"
                 android:switchTextOn="@string/short_on_text_for_switches"
-                android:title="xDrip Web Service" />
+                android:title="@string/title_xDrip_Web_Service" />
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:dependency="xdrip_webservice"
                 android:key="xdrip_webservice_open"
-                android:summary="Accept connections from any network instead of just internally within this device. There are security implications to enabling this! Shared Secret will be required if set."
-                android:title="Open Web Service" />
+                android:summary="@string/summary_Accept_connections_from_any_network_instead_of_just_internally"
+                android:title="@string/title_Open_Web_Service" />
             <EditTextPreference
                 android:defaultValue=""
                 android:dependency="xdrip_webservice"
                 android:key="xdrip_webservice_secret"
-                android:summary="Shared Secret for open web service (should match your Nightcout API secret)"
-                android:title="xDrip Web Service Secret" />
+                android:summary="@string/summary_Shared_Secret_for_open_web_service"
+                android:title="@string/title_xDrip_Web_Service_Secret" />
         </PreferenceScreen>
         <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
             android:key="xdrip_less_common_settings"
@@ -496,20 +496,20 @@
                     android:defaultValue="false"
                     android:dependency="extra_status_line"
                     android:key="status_line_external_status"
-                    android:summary="Display status from other apps like AndroidAPS"
-                    android:title="External Status" />
+                    android:summary="@string/summary_Display_status_from_other_apps_like_AndroidAPS"
+                    android:title="@string/title_External_Status" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="extra_status_line"
                     android:key="status_line_pump_reservoir"
-                    android:summary="Display pump status information if available"
-                    android:title="Pump Status" />
+                    android:summary="@string/summary_Display_pump_status_information_if_available"
+                    android:title="@string/title_Pump_Status" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="extra_status_line"
                     android:key="status_line_royce_ratio"
-                    android:summary="Show treatment carb/insulin ratio"
-                    android:title="Carb/Insulin Ratio" />
+                    android:summary="@string/summary_Show_treatment_carb_insulin_ratio"
+                    android:title="@string/title_Carb_Insulin_Ratio" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="extra_status_line"
@@ -610,8 +610,8 @@
                 <CheckBoxPreference
                     android:defaultValue="true"
                     android:key="use_double_calibrations"
-                    android:summary="Ask for a second optional initial calibration blood test"
-                    android:title="Double Calibrations" />
+                    android:summary="@string/summary_Ask_for_a_second_optional_initial_calibration_blood_test"
+                    android:title="@string/title_Double_Calibrations" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="engineering_mode"
@@ -626,13 +626,13 @@
                 <CheckBoxPreference
                     android:defaultValue="true"
                     android:key="use_non_fixed_li_parameters"
-                    android:summary="Enable to allow variable slopes with Libre collection methods"
-                    android:title="Non-fixed Libre slopes" />
+                    android:summary="@string/summary_Enable_to_allow_variable_slopes_with_Libre_collection_methods"
+                    android:title="@string/title_Non_fixed_Libre_slopes" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="bypass_calibration_quality_check"
-                    android:summary="Allow initial calibration even if we don't have good enough data. Beware could result in inaccurate calibration!"
-                    android:title="Bypass quality check" />
+                    android:summary="@string/summary_Allow_initial_calibration_no_good_enough_data"
+                    android:title="@string/title_Bypass_quality_check" />
 
 
             </PreferenceScreen>
@@ -665,13 +665,13 @@
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="bluetooth_use_scan"
-                    android:summary="Scan before connecting on xBridge and Libre bluetooth"
-                    android:title="Use scanning" />
+                    android:summary="@string/summary_Scan_before_connecting_on_xBridge_and_Libre_bluetooth"
+                    android:title="@string/title_Use_scanning" />
                 <CheckBoxPreference
                     android:defaultValue="true"
                     android:key="bluetooth_trust_autoconnect"
-                    android:summary="Use and trust Android bluetooth auto connect feature"
-                    android:title="Trust Auto-Connect" />
+                    android:summary="@string/summary_Use_and_trust_Android_bluetooth_auto_connect_feature"
+                    android:title="@string/title_Trust_Auto_Connect" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="bluetooth_excessive_wakelocks"
@@ -695,19 +695,19 @@
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="pref_dex_collection_polling"
-                    android:summary="Experimental support for xBridge+ polling feature"
-                    android:title="xBridge+ Polling Mode" />
+                    android:summary="@string/summary_Experimental_support_for_xBridge_polling_feature"
+                    android:title="@string/title_xBridge_Polling_Mode" />
                 <CheckBoxPreference
                     android:defaultValue="true"
                     android:dependency="engineering_mode"
                     android:key="always_discover_services"
-                    android:summary="Probe Bluetooth services on every connect"
-                    android:title="Always discover services" />
+                    android:summary="@string/summary_Probe_Bluetooth_services_on_every_connect"
+                    android:title="@string/title_Always_discover_services" />
                 <CheckBoxPreference
                     android:defaultValue="true"
                     android:key="blukon_unbonding"
-                    android:summary="Only suitable for phones which support automatic pairing"
-                    android:title="Allow blucon unbonding" />
+                    android:summary="@string/summary_Only_suitable_for_phones_which_support_automatic_pairing"
+                    android:title="@string/title_Allow_blucon_unbonding" />
             </PreferenceScreen>
         <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
             android:key="xdrip_blueReader_advanced_settings"
@@ -734,13 +734,13 @@
             <SwitchPreference
                 android:defaultValue="false"
                 android:key="blueReader_suppressuglystatemsg"
-                android:summary="Suppress the ugly state message if Problem appears"
-                android:title="supress ugly state message" />
+                android:summary="@string/summary_Suppress_the_ugly_state_message_if_Problem_appears"
+                android:title="@string/title_supress_ugly_state_message" />
             <SwitchPreference
                 android:defaultValue="false"
                 android:key="blueReader_writebatterylog"
-                android:summary="write the Battery-Information for additional analytic in a file. Please only use this, if you will be asked by a developer!"
-                android:title="Batterylog" />
+                android:summary="@string/summary_write_Battery_Information_for_additional_analytic"
+                android:title="@string/title_Batterylog" />
         </PreferenceScreen>
             <CheckBoxPreference
                 android:defaultValue="true"
@@ -788,7 +788,7 @@
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:key="display_bridge_battery"
-                android:summary="Choose to display the bridge battery level"
+                android:summary="@string/summary_Choose_to_display_the_bridge_battery_level"
                 android:title="@string/display_bridge_battery" />
             <CheckBoxPreference
                 android:defaultValue="false"
@@ -808,15 +808,15 @@
                 android:title="@string/daily_save_db" />
             <EditTextPreference
                 android:key="retention_days_bg_reading"
-                android:title="Glucose Retention"
-                android:summary="Erase data older than this many days. 0 = don't erase anything"
+                android:title="@string/title_Glucose_Retention"
+                android:summary="@string/summary_Erase_data_older_than_this_many_days"
                 android:max="366"
                 android:numeric="integer"
                 android:defaultValue="0" />
             <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
                 android:key="xdrip_other_misc_extra_screen"
                 android:summary=""
-                android:title="Other misc options">
+                android:title="@string/title_Other_misc_options">
                 <CheckBoxPreference
                     android:defaultValue="true"
                     android:key="run_service_in_foreground"
@@ -865,8 +865,8 @@
                     android:defaultValue="false"
                     android:dependency="allow_testing_with_dead_sensor"
                     android:key="allow_testing_with_dead_sensor"
-                    android:summary="allow testing with dead sensor"
-                    android:title="NOT FOR PRODUCTION USE" />
+                    android:summary="@string/summary_allow_testing_with_dead_sensor"
+                    android:title="@string/title_NOT_FOR_PRODUCTION_USE" />
 
             </PreferenceScreen>
             <PreferenceCategory
