@@ -596,7 +596,7 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
                     Pref.setInt("bridge_battery", LastReading.TomatoBatteryLife);
                     PersistentStore.setString("TomatoHArdware", LastReading.HwVersion);
                     PersistentStore.setString("TomatoFirmware",LastReading.FwVersion);
-                    Log.e("XXX", "LastReading.SensorId " + LastReading.SensorId);
+                    Log.i(TAG, "LastReading.SensorId " + LastReading.SensorId);
                     PersistentStore.setString("LibreSN", LastReading.SensorId);
                     
                     
