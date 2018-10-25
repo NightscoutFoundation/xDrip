@@ -20,6 +20,7 @@ import com.eveningoutpost.dexdrip.Models.UserNotification;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
+import com.eveningoutpost.dexdrip.UtilityModels.NanoStatus;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleUtil;
@@ -82,6 +83,7 @@ public class MissedReadingService extends IntentService {
             BluetoothGlucoseMeter.immortality();
             XdripWebService.immortality(); //
             DesertSync.pullAsEnabled();
+            NanoStatus.keepFollowerUpdated();
 
             // TODO functionalize the actual checking
             bg_missed_alerts = Pref.getBoolean("bg_missed_alerts", false);
@@ -111,6 +113,7 @@ public class MissedReadingService extends IntentService {
             final int bg_missed_minutes = Pref.getStringToInt("bg_missed_minutes", 30);
             final long now = JoH.tsl();
 
+            // check if readings have been missed
             if (BgReading.getTimeSinceLastReading() >= (bg_missed_minutes * 1000 * 60) &&
                     Pref.getLong("alerts_disabled_until", 0) <= now &&
                     (BgReading.getTimeSinceLastReading() < (Constants.HOUR_IN_MS * 6)) &&
