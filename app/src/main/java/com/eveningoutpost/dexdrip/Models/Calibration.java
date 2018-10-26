@@ -1091,7 +1091,7 @@ public class Calibration extends Model {
     
     public static boolean IsReasnoble() {
         Calibration calibration = lastValid();
-        return calibration.slope < 35;
+        return calibration.intercept < 35;
     }
 
     public static Calibration first() {
