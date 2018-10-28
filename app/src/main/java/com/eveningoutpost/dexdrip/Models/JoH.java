@@ -645,48 +645,58 @@ public class JoH {
 
     // temporary
     public static String niceTimeScalar(long t) {
-        String unit = "second";
+        String unit = xdrip.getAppContext().getString(R.string.unit_second);
         t = t / 1000;
+        if (t != 1) unit = xdrip.getAppContext().getString(R.string.unit_seconds);
         if (t > 59) {
-            unit = "minute";
+            unit = xdrip.getAppContext().getString(R.string.unit_minute);
             t = t / 60;
+            if (t != 1) unit = xdrip.getAppContext().getString(R.string.unit_minutes);
             if (t > 59) {
-                unit = "hour";
+                unit = xdrip.getAppContext().getString(R.string.unit_hour);
                 t = t / 60;
+                if (t != 1) unit = xdrip.getAppContext().getString(R.string.unit_hours);
                 if (t > 24) {
-                    unit = "day";
+                    unit = xdrip.getAppContext().getString(R.string.unit_day);
                     t = t / 24;
+                    if (t != 1) unit = xdrip.getAppContext().getString(R.string.unit_days);
                     if (t > 28) {
-                        unit = "week";
+                        unit = xdrip.getAppContext().getString(R.string.unit_week);
                         t = t / 7;
+                        if (t != 1) unit = xdrip.getAppContext().getString(R.string.unit_weeks);
                     }
                 }
             }
         }
-        if (t != 1) unit = unit + "s";
+        //if (t != 1) unit = unit + "s"; //implemented plurality in every step, because in other languages plurality of time is not every time adding the same character
         return qs((double) t, 0) + " " + unit;
     }
 
     public static String niceTimeScalar(double t, int digits) {
-        String unit = "second";
+        String unit = xdrip.getAppContext().getString(R.string.unit_second);
         t = t / 1000;
+        if (t != 1) unit = xdrip.getAppContext().getString(R.string.unit_seconds);
         if (t > 59) {
-            unit = "minute";
+            unit = xdrip.getAppContext().getString(R.string.unit_minute);
             t = t / 60;
+            if (t != 1) unit = xdrip.getAppContext().getString(R.string.unit_minutes);
             if (t > 59) {
-                unit = "hour";
+                unit = xdrip.getAppContext().getString(R.string.unit_hour);
                 t = t / 60;
+                if (t != 1) unit = xdrip.getAppContext().getString(R.string.unit_hours);
                 if (t > 24) {
-                    unit = "day";
+                    unit = xdrip.getAppContext().getString(R.string.unit_day);
                     t = t / 24;
+                    if (t != 1) unit = xdrip.getAppContext().getString(R.string.unit_days);
                     if (t > 28) {
-                        unit = "week";
+                        unit = xdrip.getAppContext().getString(R.string.unit_week);
                         t = t / 7;
+                        if (t != 1) unit = xdrip.getAppContext().getString(R.string.unit_weeks);
                     }
                 }
             }
         }
-        if (t != 1) unit = unit + "s";
+        //if (t != 1) unit = unit + "s"; //implemented plurality in every step, because in other languages plurality of time is not every time adding the same character
         return qs( t, digits) + " " + unit;
     }
 

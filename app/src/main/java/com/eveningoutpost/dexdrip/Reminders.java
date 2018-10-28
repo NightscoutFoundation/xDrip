@@ -134,7 +134,7 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
         //setSupportActionBar((Toolbar)findViewById(R.id.reminder_toolbar));
         JoH.fixActionBar(this);
 
-        setTitle("xDrip+ Reminders");
+        setTitle(getString(R.string.xdrip_reminders));
         // TODO subtitle with summary
         recyclerView = (RecyclerView) findViewById(R.id.reminder_recycler);
         floatingsnooze = (CardView) findViewById(R.id.floatingsnooze);
@@ -603,7 +603,7 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
 
 
     public void snoozeAdjust(View v) {
-        final String button_text = ((Button) v).getText().toString();
+        final String button_text = ((Button) v).getTag().toString(); //changed String to Tag, to make the texts translateable
         Log.d(TAG, "Snooze adjust button: " + button_text);
         long multiplier = Constants.MINUTE_IN_MS;
         final String[] button_textA = button_text.split(" ");
