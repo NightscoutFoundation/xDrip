@@ -845,7 +845,7 @@
 	<string name="nothing_to_undo">Nichts zum Rückgängig machen!</string>
 	<string name="something_went_wrong_reminder">Etwas ging schief bei der Erstellung der Erinnerung</string>
 	<string name="snoozed_reminder_for">Schlummer Erinnerung für</string>
-	<string name="reminder_title">Erinnerungs-Titel"</string>
+	<string name="reminder_title">Erinnerungs-Titel</string>
 	<string name="id_reference">ID-Referenz</string>
 	<string name="reminder_period">Erinnerungszeitraum</string>
 	<string name="hours">Stunden</string>
