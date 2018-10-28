@@ -880,4 +880,5 @@
 	<string name="alerts_disabled">Alarme deaktiviert</string>
 	<string name="restart_in_the_morning">Wieder starten am Morgen</string>
 	<string name="advanced_mode">Fortgeschrittener Modus</string>
+	<string name="reminder_title">Erinnerungstitel</string>
 </resources>

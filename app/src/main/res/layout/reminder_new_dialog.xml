@@ -28,7 +28,7 @@
             android:id="@+id/reminder_edit_new"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Reminder Title"
+            android:hint="@string/reminder_title"
             android:layout_below="@+id/reminder_edit_alt_title"
             android:inputType="text|textCapWords"
             android:lines="4"
