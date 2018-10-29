@@ -102,7 +102,7 @@ public class Blukon {
     }
 
     public static void initialize() {
-            Pref.setInt("nfc_sensor_age", 0); //force sensor age to no-value before first reading
+            Log.i(TAG, "initialize Blukon!");
             JoH.clearRatelimit(BLUKON_GETSENSORAGE_TIMER);
             m_getNowGlucoseDataCommand = false;
             m_getNowGlucoseDataIndexCommand = false;
@@ -441,6 +441,8 @@ private static final int POSITION_OF_SENSOR_STATUS_BYTE = 17;
                  */
                 if ((sensorAge >= 0) && (sensorAge < 200000)) {
                     Pref.setInt("nfc_sensor_age", sensorAge);//in min
+                } else {
+                    Log.e(TAG, "Do not set 'nfc_sensor_age'");
                 }
                 currentCommand = GET_NOW_DATA_INDEX_COMMAND;
                 m_getNowGlucoseDataIndexCommand = true;//to avoid issue when gotNowDataIndex cmd could be same as getNowGlucoseData (case block=3)
