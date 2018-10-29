@@ -977,8 +977,6 @@
     <string name="detect_car_audio">Detect car audio</string>
     <string name="automatically_enable_when_connected_to_car_bluetooth">Automatically enable vehicle mode when connected to car bluetooth</string>
     <string name="enable_speak_readings_when_in_vehicle">Enable speak readings feature when in vehicle mode</string>
-    <string name="aggressive_service_restart_timers">Timer value for aggressiv service restart</string>
-    <string name="aggressive_service_restart_timer_sums">Input value in minutes</string>
     <string name="bluetooth_watchdog_timers">Timer value for BT watchdog</string>
     <string name="bluetooth_watchdog_timer_sums">Input value in minutes</string>
 </resources>

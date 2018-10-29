@@ -756,14 +756,6 @@
                 android:summary="@string/repeatedly_restart_collection_service"
                 android:title="@string/aggressive_service_restarts" />
 
-            <EditTextPreference
-                android:key="aggressive_service_restart_timer"
-                android:dependency="aggressive_service_restart"
-                android:title="@string/aggressive_service_restart_timers"
-                android:numeric="decimal"
-                android:inputType="numberDecimal"
-                android:summary="@string/aggressive_service_restart_timer_sums"
-                android:defaultValue="5" />
 
             <CheckBoxPreference
                 android:defaultValue="false"
