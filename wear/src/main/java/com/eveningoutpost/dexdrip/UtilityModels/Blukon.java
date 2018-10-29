@@ -405,15 +405,18 @@ private static final int POSITION_OF_SENSOR_STATUS_BYTE = 17;
                 gotLowBat = true;
             }
 
-            if (JoH.pratelimit(BLUKON_GETSENSORAGE_TIMER, GET_SENSOR_AGE_DELAY)) {
-                currentCommand = GET_SENSOR_TIME_COMMAND;
-                Log.i(TAG, "getSensorAge");
+            /* LibreAlarmReceiver.CalculateFromDataTransferObject, called when processing historical data,
+             * expects the sensor age not to be updated yet, so only update the sensor age when not retrieving history.
+             */
+            if (Pref.getBooleanDefaultFalse("external_blukon_algorithm") || getHistoricReadings) {
+                // Send the command to getHistoricData (read all blcoks from 0 to 0x2b)
+                Log.i(TAG, "getHistoricData (2)");
+                currentCommand = GET_HISTORIC_DATA_COMMAND_ALL_BLOCKS;
+                m_blockNumber = 0;
             } else {
-                if (Pref.getBooleanDefaultFalse("external_blukon_algorithm") || getHistoricReadings) {
-                    // Send the command to getHistoricData (read all blcoks from 0 to 0x2b)
-                    Log.i(TAG, "getHistoricData (2)");
-                    currentCommand = GET_HISTORIC_DATA_COMMAND_ALL_BLOCKS;
-                    m_blockNumber = 0;
+                if (JoH.pratelimit(BLUKON_GETSENSORAGE_TIMER, GET_SENSOR_AGE_DELAY)) {
+                    currentCommand = GET_SENSOR_TIME_COMMAND;
+                    Log.i(TAG, "getSensorAge");
                 } else {
                     currentCommand = GET_NOW_DATA_INDEX_COMMAND;
                     m_getNowGlucoseDataIndexCommand = true;//to avoid issue when gotNowDataIndex cmd could be same as getNowGlucoseData (case block=3)
@@ -430,24 +433,14 @@ private static final int POSITION_OF_SENSOR_STATUS_BYTE = 17;
 
             int sensorAge = sensorAge(buffer);
 
-            if (Pref.getBooleanDefaultFalse("external_blukon_algorithm") || getHistoricReadings) {
-                // Send the command to getHistoricData (read all blcoks from 0 to 0x2b)
-                Log.i(TAG, "getHistoricData (3)");
-                currentCommand = GET_HISTORIC_DATA_COMMAND_ALL_BLOCKS;
-                m_blockNumber = 0;
+            if ((sensorAge >= 0) && (sensorAge < 200000)) {
+                Pref.setInt("nfc_sensor_age", sensorAge);//in min
             } else {
-                /* LibreAlarmReceiver.CalculateFromDataTransferObject, called when processing historical data,
-                 * expects the sensor age not to be updated yet, so only update the sensor age when not retrieving history.
-                 */
-                if ((sensorAge >= 0) && (sensorAge < 200000)) {
-                    Pref.setInt("nfc_sensor_age", sensorAge);//in min
-                } else {
-                    Log.e(TAG, "Do not set 'nfc_sensor_age'");
-                }
-                currentCommand = GET_NOW_DATA_INDEX_COMMAND;
-                m_getNowGlucoseDataIndexCommand = true;//to avoid issue when gotNowDataIndex cmd could be same as getNowGlucoseData (case block=3)
-                Log.i(TAG, "getNowGlucoseDataIndexCommand");
+                Log.e(TAG, "Do not set 'nfc_sensor_age'");
             }
+            currentCommand = GET_NOW_DATA_INDEX_COMMAND;
+            m_getNowGlucoseDataIndexCommand = true;//to avoid issue when gotNowDataIndex cmd could be same as getNowGlucoseData (case block=3)
+            Log.i(TAG, "getNowGlucoseDataIndexCommand");
 
         /*
          * step 8: determine trend or historic data index
