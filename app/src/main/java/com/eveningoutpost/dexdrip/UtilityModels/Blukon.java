@@ -441,6 +441,8 @@ private static final int POSITION_OF_SENSOR_STATUS_BYTE = 17;
                  */
                 if ((sensorAge >= 0) && (sensorAge < 200000)) {
                     Pref.setInt("nfc_sensor_age", sensorAge);//in min
+                } else {
+                    Log.e(TAG, "Do not set 'nfc_sensor_age'");
                 }
                 currentCommand = GET_NOW_DATA_INDEX_COMMAND;
                 m_getNowGlucoseDataIndexCommand = true;//to avoid issue when gotNowDataIndex cmd could be same as getNowGlucoseData (case block=3)
