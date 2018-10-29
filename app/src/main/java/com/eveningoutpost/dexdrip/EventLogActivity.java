@@ -564,7 +564,7 @@ public class EventLogActivity extends BaseAppCompatActivity {
 
         // reformat text size for long messages
         public float textSize(String message) {
-            final float scale = 4f;
+            final float scale = 2.666f * getResources().getDisplayMetrics().density;
             if (message.length() > 100) return 5f * scale;
             return 7f * scale;
         }
