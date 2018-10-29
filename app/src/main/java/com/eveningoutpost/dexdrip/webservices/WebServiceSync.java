@@ -13,7 +13,7 @@ import java.util.List;
 
 public class WebServiceSync extends BaseWebService {
 
-    private static String TAG = "WebServiceSync";
+    private final static String TAG = "WebServiceSync";
 
     // process the request and produce a response object
     @Override
@@ -32,7 +32,7 @@ public class WebServiceSync extends BaseWebService {
 
         query = stripFirstComponent(query);
 
-        List<String> components = getUrlComponents(query);
+        final List<String> components = getUrlComponents(query);
 
         if (components.size() > 0) {
             UserError.Log.d(TAG, "Processing " + query);

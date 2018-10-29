@@ -213,9 +213,12 @@ public class NFCReaderX {
             doTheScan(context, tag, true);
         }
     }
+    public static boolean HandleGoodReading(String tagId, byte[] data1, final long CaptureDateTime) {
+        return HandleGoodReading(tagId, data1, CaptureDateTime, false);
+    }
 
     // returns true if checksum passed.
-    public static boolean HandleGoodReading(String tagId, byte[] data1, final long CaptureDateTime ) {
+    public static boolean HandleGoodReading(String tagId, byte[] data1, final long CaptureDateTime, boolean allowUpload ) {
 
         final boolean checksum_ok = LibreUtils.verify(data1);
         if (!checksum_ok) {
@@ -230,7 +233,7 @@ public class NFCReaderX {
 
         if (Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
             // Save raw block record (we start from block 0)
-            LibreBlock.createAndSave(tagId, CaptureDateTime, data1, 0);
+            LibreBlock.createAndSave(tagId, CaptureDateTime, data1, 0, allowUpload);
             LibreOOPAlgorithm.SendData(data1, CaptureDateTime);
         } else {
             final ReadingData mResult = parseData(0, tagId, data1, CaptureDateTime);
@@ -239,7 +242,7 @@ public class NFCReaderX {
                 public void run() {
                     final PowerManager.WakeLock wl = JoH.getWakeLock("processTransferObject", 60000);
                     try {
-                        LibreAlarmReceiver.processReadingDataTransferObject(new ReadingData.TransferObject(1, mResult), CaptureDateTime, tagId );
+                        LibreAlarmReceiver.processReadingDataTransferObject(new ReadingData.TransferObject(1, mResult), CaptureDateTime, tagId, allowUpload );
                         Home.staticRefreshBGCharts();
                     } finally {
                         JoH.releaseWakeLock(wl);

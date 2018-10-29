@@ -4,6 +4,7 @@ import android.os.PowerManager;
 
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.DesertSync;
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
@@ -94,16 +95,20 @@ public class DesertComms {
     public static boolean pullFromOasis(final String topic, final long since) {
         final String oasisIP = getOasisIP();
         if (oasisIP.length() == 0) return false;
+        try {
+            final String url = HttpUrl.parse(getInitialUrl(oasisIP)).newBuilder().addPathSegment("sync").addPathSegment("pull")
+                    .addPathSegment("" + since)
+                    .addPathSegment(topic)
+                    .build().toString();
 
-        final String url = HttpUrl.parse(getInitialUrl(oasisIP)).newBuilder().addPathSegment("sync").addPathSegment("pull")
-                .addPathSegment("" + since)
-                .addPathSegment(topic)
-                .build().toString();
-
-        UserError.Log.d(TAG, url);
-        queue.add(new QueueItem(url).setHandler(Pull));
-        runInBackground();
-        return true;
+            UserError.Log.d(TAG, url);
+            queue.add(new QueueItem(url).setHandler(Pull));
+            runInBackground();
+            return true;
+        } catch (NullPointerException e) {
+            UserError.Log.e(TAG, "Exception parsing url: -" + oasisIP + "- probably invalid ip");
+            return false;
+        }
     }
 
     public static boolean probeOasis(final String topic, final String hint) {
@@ -208,8 +213,15 @@ public class DesertComms {
         final String hash = XdripWebService.hashPassword(Pref.getString(DesertSync.PREF_WEBSERVICE_SECRET, ""));
         final Request.Builder builder = new Request.Builder().url(url).addHeader("User-Agent", "xDrip+ Desert Comms");
         if (hash != null) builder.addHeader("api-secret", hash);
-        try (Response response = getHttpInstance().newCall(builder.build()).execute()) {
-            return response.body().string();
+        try (final Response response = getHttpInstance().newCall(builder.build()).execute()) {
+            if (response.isSuccessful()) {
+                return response.body().string();
+            } else {
+                if (JoH.ratelimit("desert-error-response", 180)) {
+                    UserError.Log.wtf(TAG, "Got error code: " + response.code() + " " + response.message() + " " + response.body().toString());
+                }
+                return null;
+            }
         } catch (IOException | NullPointerException e) {
             return null;
         }

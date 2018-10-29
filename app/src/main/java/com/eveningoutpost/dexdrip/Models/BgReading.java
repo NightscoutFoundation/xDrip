@@ -956,6 +956,40 @@ public class BgReading extends Model implements ShareUploadableBg {
                 .execute();
     }
 
+    public static List<BgReading> latestForSensorAsc(int number, long startTime, long endTime, boolean follower) {
+        if (follower) {
+            return new Select()
+                    .from(BgReading.class)
+                    .where("timestamp >= ?", Math.max(startTime, 0))
+                    .where("timestamp <= ?", endTime)
+                    .where("calculated_value != 0")
+                    .where("raw_data != 0")
+                    .orderBy("timestamp asc")
+                    .limit(number)
+                    .execute();
+        } else {
+            final Sensor sensor = Sensor.currentSensor();
+            if (sensor == null) {
+                return null;
+            }
+            return new Select()
+                    .from(BgReading.class)
+                    .where("Sensor = ? ", sensor.getId())
+                    .where("timestamp >= ?", Math.max(startTime, 0))
+                    .where("timestamp <= ?", endTime)
+                    .where("calculated_value != 0")
+                    .where("raw_data != 0")
+                    .orderBy("timestamp asc")
+                    .limit(number)
+                    .execute();
+        }
+    }
+
+    public static List<BgReading> latestForSensorAsc(int number, long startTime, long endTime) {
+        return latestForSensorAsc(number, startTime, endTime, false);
+    }
+
+
     public static List<BgReading> latestForGraphAsc(int number, long startTime) {//KS
         return latestForGraphAsc(number, startTime, Long.MAX_VALUE);
     }
@@ -1403,7 +1437,11 @@ public class BgReading extends Model implements ShareUploadableBg {
             jsonObject.put("filtered_data", filtered_data);
             jsonObject.put("raw_calculated", raw_calculated);
             jsonObject.put("raw_data", raw_data);
-            jsonObject.put("calculated_value_slope", calculated_value_slope);
+            try {
+                jsonObject.put("calculated_value_slope", calculated_value_slope);
+            } catch (JSONException e) {
+                jsonObject.put("hide_slope", true); // calculated value slope is NaN - hide slope should already be true locally too
+            }
             if (sendCalibration) {
                 jsonObject.put("calibration_uuid", calibration_uuid);
             }

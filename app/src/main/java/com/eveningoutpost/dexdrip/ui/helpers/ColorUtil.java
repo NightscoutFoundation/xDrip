@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.ui.helpers;
 
+import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
@@ -50,6 +51,15 @@ public class ColorUtil {
 
     public static int blendColor(@ColorInt int color1, @ColorInt int color2, float ratio) {
         return ColorUtils.blendARGB(color1, color2, ratio);
+    }
+
+    @ColorInt
+    public static int adjustHue(@ColorInt int color, float rotation) {
+        final float[] hsv = new float[3];
+        Color.colorToHSV(color, hsv);
+        hsv[0] = (hsv[0] + rotation) % 360;
+        // copy alpha from source
+        return Color.HSVToColor(hsv) & 0x00FFFFFF | (color & 0xFF000000);
     }
 
 }

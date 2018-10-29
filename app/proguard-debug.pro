@@ -29,3 +29,20 @@
 -dontwarn sun.misc.**
 -dontnote **rx.Observable.**
 -dontnote **
+
+-keepclassmembers class com.eveningoutpost.dexdrip.** {
+   public static boolean isRunning();
+   public static boolean isCollecting();
+   public static ** nanoStatus();
+}
+
+-dontnote rx.internal.util.PlatformDependent
+-dontnote rx.**
+-dontnote **rx.Observable.**
+-dontnote com.squareup.**
+
+-dontwarn java.lang.invoke.*
+-dontwarn **$$Lambda$*
+
+-dontwarn com.google.devtools.build
+-dontwarn com.google.devtools.build.android.desugar.runtime.**

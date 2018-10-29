@@ -645,7 +645,7 @@ public class WatchUpdaterService extends WearableListenerService implements
                             continue;
                         }
                         final long since = JoH.msSince(timestamp);
-                        if ((since < 0) || (since > Constants.HOUR_IN_MS * 72)) {
+                        if ((since < -(Constants.SECOND_IN_MS * 5)) || (since > Constants.HOUR_IN_MS * 72)) {
                             JoH.static_toast_long("Rejecting wear treatment as time out of range!");
                             UserError.Log.e(TAG, "Rejecting wear treatment due to time: " + record + " since: " + since);
                         } else {

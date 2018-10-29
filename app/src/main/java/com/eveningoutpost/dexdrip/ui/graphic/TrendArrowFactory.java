@@ -1,7 +1,9 @@
 package com.eveningoutpost.dexdrip.ui.graphic;
 
+import android.os.Build;
 import android.widget.ImageView;
 
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -21,7 +23,16 @@ public class TrendArrowFactory {
     private static final String PREF_TREND_ARROW_TYPE = "trend_arrow_type";
 
     public static ITrendArrow create(ImageView imageView) {
-        return create(Pref.getString(PREF_TREND_ARROW_TYPE, ""), imageView);
+        final String arrow_type = Pref.getString(PREF_TREND_ARROW_TYPE, "");
+
+        // yucky workaround for broken LG lack of gradient fill.
+        if (Build.VERSION.SDK_INT == 23 && Build.MANUFACTURER.startsWith("LG")) {
+            if (arrow_type.equals("JamTrendArrowImpl")) {
+                JoH.static_toast_long("LG Phones have problems with some arrows, choose another");
+                return create("JamTrendArrow2Impl", imageView);
+            }
+        }
+        return create(arrow_type, imageView);
     }
 
     public static void setType(String type) {

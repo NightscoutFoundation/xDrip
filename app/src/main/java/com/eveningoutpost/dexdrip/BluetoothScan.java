@@ -616,9 +616,12 @@ public class BluetoothScan extends ListActivityWithMenu {
 
             final BluetoothDevice device = mLeDevices.get(i);
             if (device != null) {
-                final String deviceName = device.getName() != null ? device.getName() : "";
-                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                if (prefs.getString("last_connected_device_address", "").compareTo(device.getAddress()) == 0) {
+                String deviceName = device.getName();
+                if (deviceName == null) {
+                    deviceName = "";
+                }
+                //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                if (Pref.getString("last_connected_device_address", "").equalsIgnoreCase(device.getAddress())) {
                     viewHolder.deviceName.setTextColor(ChartUtils.COLOR_BLUE);
                     viewHolder.deviceAddress.setTextColor(ChartUtils.COLOR_BLUE);
                 }

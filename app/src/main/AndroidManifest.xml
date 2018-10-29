@@ -43,6 +43,7 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
+    <uses-permission android:name="android.permission.SET_WALLPAPER" />
 
     <application
         android:name=".xdrip"
@@ -493,8 +494,8 @@
         <activity
             android:name=".utils.DisplayQRCode"
             android:configChanges="orientation|screenSize"
-            android:label="@string/title_activity_display_qrcode"
             android:exported="false"
+            android:label="@string/title_activity_display_qrcode"
             android:noHistory="true" />
         <activity
             android:name=".utils.LibreTrendGraph"
@@ -635,6 +636,10 @@
         <activity
             android:name=".ui.activities.SelectAudioDevice"
             android:label="@string/select_device" />
+        <activity
+            android:label="@string/number_wall_config"
+            android:exported="true"
+            android:name=".ui.activities.NumberWallPreview" />
     </application>
 
 </manifest>

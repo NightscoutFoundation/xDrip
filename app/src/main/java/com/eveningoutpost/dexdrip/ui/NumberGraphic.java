@@ -20,6 +20,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
+import static com.eveningoutpost.dexdrip.ui.helpers.BitmapUtil.getScreenDpi;
 
 /**
  * Created by jamorham on 05/03/2018.
@@ -92,20 +93,43 @@ public class NumberGraphic {
         return getBitmap(text, Color.BLACK, arrow);
     }
 
+    public static Bitmap getLockScreenBitmapWhite(final String text, final String arrow, final boolean strike_through) {
+        final double x_ratio = JoH.tolerantParseDouble(Pref.getString("numberwall_x_param", ""), 50d) / 100d;
+        final double y_ratio = JoH.tolerantParseDouble(Pref.getString("numberwall_y_param", ""), 50d) / 100d;
+        final double spacer_ratio = JoH.tolerantParseDouble(Pref.getString("numberwall_s_param", ""), 10d) / 100d;
+        UserError.Log.d(TAG, "x_y_s_ratio: " + x_ratio + " " + y_ratio + " " + spacer_ratio);
+        return getBitmap(text, Color.WHITE, arrow, (int) (getScreenDpi() * x_ratio), (int) (getScreenDpi() * x_ratio * y_ratio), (int) (getScreenDpi() * x_ratio * spacer_ratio), strike_through);
+    }
+
     public static Bitmap getBitmap(final String text, int fillColor, final String arrow) {
+        try {
+            final int width = (int) xdrip.getAppContext().getResources().getDimension(android.R.dimen.notification_large_icon_width);
+            final int height = (int) xdrip.getAppContext().getResources().getDimension(android.R.dimen.notification_large_icon_height);
+            return getBitmap(text, fillColor, arrow, width, height);
+        } catch (Exception e) {
+            if (JoH.ratelimit("icon-failure", 60)) {
+                UserError.Log.e(TAG, "Cannot create number icon dimensions: " + e);
+            }
+            return null;
+        }
+    }
+
+    public static Bitmap getBitmap(final String text, int fillColor, final String arrow, final int width, final int height) {
+        return getBitmap(text, fillColor, arrow, width, height, 0, false);
+    }
+
+    public static Bitmap getBitmap(final String text, int fillColor, final String arrow, final int width, final int height, final int margin, final boolean strike_through) {
         {
             if ((text == null) || (text.length() > 4)) return null;
             try {
-                final int width = (int) xdrip.getAppContext().getResources().getDimension(android.R.dimen.notification_large_icon_width);
-                final int height = (int) xdrip.getAppContext().getResources().getDimension(android.R.dimen.notification_large_icon_height);
-
                 final DisplayMetrics dm = new DisplayMetrics();
                 final Resources r = xdrip.getAppContext().getResources();
 
-                if ((width > 600) || height > 600 || height < 16 || width < 16) return null;
+                if ((width > 1900) || height > 1900 || height < 16 || width < 16) return null;
 
                 final Paint paint = new Paint();
 
+                paint.setStrikeThruText(strike_through);
                 paint.setStyle(Paint.Style.FILL);
                 paint.setColor(fillColor);
                 paint.setAntiAlias(true);
@@ -119,7 +143,7 @@ public class NumberGraphic {
                 String fullText = text + (arrow != null ? arrow : "");
 
                 paint.getTextBounds(fullText, 0, fullText.length(), bounds);
-                float textsize = ((paintTs-1) * width) / bounds.width();
+                float textsize = ((paintTs - 1) * (width - margin)) / bounds.width();
                 paint.setTextSize(textsize);
                 paint.getTextBounds(fullText, 0, fullText.length(), bounds);
 

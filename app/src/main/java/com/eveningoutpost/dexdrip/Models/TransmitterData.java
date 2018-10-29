@@ -2,15 +2,14 @@ package com.eveningoutpost.dexdrip.Models;
 
 import android.provider.BaseColumns;
 
-import com.eveningoutpost.dexdrip.G5Model.Transmitter;
-import com.eveningoutpost.dexdrip.GcmActivity;
-import com.eveningoutpost.dexdrip.Home;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
-
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
+import com.eveningoutpost.dexdrip.GcmActivity;
+import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
@@ -53,7 +52,9 @@ public class TransmitterData extends Model {
     public String uuid;
 
     public static synchronized TransmitterData create(byte[] buffer, int len, Long timestamp) {
-        if (len < 6) { return null; }
+        if (len < 6) {
+            return null;
+        }
         final TransmitterData transmitterData = new TransmitterData();
         try {
             if ((buffer[0] == 0x11 || buffer[0] == 0x15) && buffer[1] == 0x00) {
@@ -133,9 +134,8 @@ public class TransmitterData extends Model {
             transmitterData.uuid = UUID.randomUUID().toString();
             transmitterData.save();
             return transmitterData;
-        }catch(Exception e)
-        {
-            Log.e(TAG, "Got exception processing fields in protocol: " + e);
+        } catch (Exception e) {
+            Log.e(TAG, "Got exception processing fields in protocol: " + e + " " + HexDump.dumpHexString(buffer));
         }
         return null;
     }
@@ -225,6 +225,13 @@ public class TransmitterData extends Model {
             Log.e(TAG,"findByUuid() Got exception on Select : "+e.toString());
             return null;
         }
+    }
+    
+    public static TransmitterData byid(long id) {
+        return new Select()
+                .from(TransmitterData.class)
+                .where("_ID = ?", id)
+                .executeSingle();
     }
 
     public static void updateTransmitterBatteryFromSync(final int battery_level) {

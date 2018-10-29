@@ -15,6 +15,7 @@ import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
+import com.eveningoutpost.dexdrip.UtilityModels.BroadcastGlucose;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.NotificationChannels;
@@ -64,6 +65,7 @@ import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.G6_SCAL
 import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.android_wear;
 import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.getTransmitterID;
 import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.onlyUsingNativeMode;
+import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.wear_broadcast;
 import static com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder.DEXCOM_PERIOD;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.HOUR_IN_MS;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.MINUTE_IN_MS;
@@ -125,7 +127,7 @@ public class Ob1G5StateMachine {
             UserError.Log.d(TAG, "Setting speak slowly to true"); // WARN should be reactive or on named devices
         }
 
-        final AuthRequestTxMessage authRequest = new AuthRequestTxMessage(getTokenSize(), JoH.areWeRunningOnAndroidWear() && !Pref.getBooleanDefaultFalse("only_ever_use_wear_collector"));
+        final AuthRequestTxMessage authRequest = new AuthRequestTxMessage(getTokenSize(), usingAlt());
         UserError.Log.i(TAG, "AuthRequestTX: " + JoH.bytesToHex(authRequest.byteSequence));
 
         connection.setupNotification(Authentication)
@@ -418,7 +420,7 @@ public class Ob1G5StateMachine {
         if (connection == null) return false;
         // TODO switch modes depending on conditions as to whether we are using internal
         final boolean use_g5_internal_alg = Pref.getBooleanDefaultFalse("ob1_g5_use_transmitter_alg");
-        UserError.Log.d(TAG, use_g5_internal_alg ? "Requesting Glucose Data" : "Requesting Sensor Data");
+        UserError.Log.d(TAG, use_g5_internal_alg ? ("Requesting Glucose Data " + (getEGlucose() ? "G6" : "G5")) : "Requesting Sensor Data");
 
         if (!use_g5_internal_alg) {
             parent.lastSensorStatus = null; // not applicable
@@ -432,7 +434,7 @@ public class Ob1G5StateMachine {
                     if (d) UserError.Log.d(TAG, "Notifications enabled");
                     speakSlowly();
 
-                    connection.writeCharacteristic(Control, nn(use_g5_internal_alg ? (usingG6() ? new EGlucoseTxMessage().byteSequence : new GlucoseTxMessage().byteSequence) : new SensorTxMessage().byteSequence))
+                    connection.writeCharacteristic(Control, nn(use_g5_internal_alg ? (getEGlucose() ? new EGlucoseTxMessage().byteSequence : new GlucoseTxMessage().byteSequence) : new SensorTxMessage().byteSequence))
                             .subscribe(
                                     characteristicValue -> {
                                         if (d)
@@ -561,24 +563,8 @@ public class Ob1G5StateMachine {
                             } else {
                                 parent.msg("Got data from " + devName());
                             }
-                            if (JoH.ratelimit("ob1-g5-also-read-raw", 20)) {
-                                enqueueUniqueCommand(new SensorTxMessage(), "Also read raw");
-                            }
 
-                            if (JoH.pratelimit("g5-tx-time-since", 7200)
-                                    || glucose.calibrationState().warmingUp()) {
-                                if (JoH.ratelimit("g5-tx-time-governer", 30)) {
-                                    enqueueUniqueCommand(new TimeTxMessage(), "Periodic Query Time");
-                                }
-                            }
-
-                            // TODO check firmware version
-                            if (glucose.calibrationState().readyForBackfill() && !parent.getBatteryStatusNow) {
-                                backFillIfNeeded(parent, connection);
-                            }
-                            processGlucoseRxMessage(parent, glucose);
-                            parent.updateLast(JoH.tsl());
-                            parent.clearErrors();
+                            glucoseRxCommon(glucose, parent, connection);
                             break;
 
                         // TODO base class duplication
@@ -591,24 +577,8 @@ public class Ob1G5StateMachine {
                             } else {
                                 parent.msg("Got data from G6");
                             }
-                            if (JoH.ratelimit("ob1-g5-also-read-raw", 20)) {
-                                enqueueUniqueCommand(new SensorTxMessage(), "Also read raw");
-                            }
 
-                            if (JoH.pratelimit("g5-tx-time-since", 7200)
-                                    || eglucose.calibrationState().warmingUp()) {
-                                if (JoH.ratelimit("g5-tx-time-governer", 30)) {
-                                    enqueueUniqueCommand(new TimeTxMessage(), "Periodic Query Time");
-                                }
-                            }
-
-                            // TODO check firmware version
-                            if (eglucose.calibrationState().readyForBackfill() && !parent.getBatteryStatusNow) {
-                                backFillIfNeeded(parent, connection);
-                            }
-                            processGlucoseRxMessage(parent, eglucose);
-                            parent.updateLast(JoH.tsl());
-                            parent.clearErrors();
+                            glucoseRxCommon(eglucose, parent, connection);
                             break;
 
 
@@ -680,6 +650,28 @@ public class Ob1G5StateMachine {
 
 
         return true;
+    }
+
+    private static void glucoseRxCommon(final BaseGlucoseRxMessage glucose, final Ob1G5CollectionService parent, final RxBleConnection connection) {
+        if (JoH.ratelimit("ob1-g5-also-read-raw", 20)) {
+            enqueueUniqueCommand(new SensorTxMessage(), "Also read raw");
+        }
+
+        if (JoH.pratelimit("g5-tx-time-since", 7200)
+                || glucose.calibrationState().warmingUp()
+                || !DexSessionKeeper.isStarted()) {
+            if (JoH.ratelimit("g5-tx-time-governer", 30)) {
+                enqueueUniqueCommand(new TimeTxMessage(), "Periodic Query Time");
+            }
+        }
+
+        // TODO check firmware version
+        if (glucose.calibrationState().readyForBackfill() && !parent.getBatteryStatusNow) {
+            backFillIfNeeded(parent, connection);
+        }
+        processGlucoseRxMessage(parent, glucose);
+        parent.updateLast(JoH.tsl());
+        parent.clearErrors();
     }
 
     private static void inevitableDisconnect(Ob1G5CollectionService parent, RxBleConnection connection) {
@@ -1109,8 +1101,11 @@ public class Ob1G5StateMachine {
             if (bgReading != null) {
                 try {
                     bgReading.calculated_value_slope = glucose.getTrend() / Constants.MINUTE_IN_MS; // note this is different to the typical calculated slope, (normally delta)
+                    if (bgReading.calculated_value_slope == Double.NaN) {
+                        bgReading.hide_slope = true;
+                    }
                 } catch (Exception e) {
-                    // not a good number
+                    // not a good number - does this exception ever actually fire?
                 }
                 if (glucose.insufficient()) {
                     bgReading.appendSourceInfo("Insufficient").save();
@@ -1127,6 +1122,12 @@ public class Ob1G5StateMachine {
                     Prediction.create(JoH.tsl(), glucose.getPredictedGlucose(), "EGlucoseRx").save();
                 }
             }
+
+            if (android_wear && wear_broadcast && bgReading != null) {
+                // emit local broadcast
+                BroadcastGlucose.sendLocalBroadcast(bgReading);
+            }
+
         } else {
             // TODO this is duplicated in processCalibrationState()
             if (glucose.calibrationState().sensorFailed()) {
@@ -1486,6 +1487,18 @@ public class Ob1G5StateMachine {
 
     public static boolean usingG6() {
         return Pref.getBooleanDefaultFalse("using_g6");
+    }
+
+    private static boolean getEGlucose() {
+        if (android_wear) {
+            return usingG6() && Pref.getBooleanDefaultFalse("show_g_prediction");
+        } else {
+            return usingG6();
+        }
+    }
+
+    public static boolean usingAlt() {
+        return android_wear && !Pref.getBooleanDefaultFalse("only_ever_use_wear_collector");
     }
 
     private static class OperationSuccess extends RuntimeException {

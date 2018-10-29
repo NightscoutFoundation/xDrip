@@ -2,6 +2,7 @@ package com.eveningoutpost.dexdrip.eassist;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -151,9 +152,13 @@ public class EmergencyAssistActivity extends BaseAppCompatActivity {
 
     public void chooseContact(View v) {
         if (checkContactsPermission()) {
-            final Intent intent = new Intent(Intent.ACTION_PICK, Uri.parse("content://contacts"));
-            intent.setType(ContactsContract.CommonDataKinds.Phone.CONTENT_TYPE);
-            startActivityForResult(intent, CONTACT_REQUEST_CODE);
+            try {
+                final Intent intent = new Intent(Intent.ACTION_PICK, Uri.parse("content://contacts"));
+                intent.setType(ContactsContract.CommonDataKinds.Phone.CONTENT_TYPE);
+                startActivityForResult(intent, CONTACT_REQUEST_CODE);
+            } catch (ActivityNotFoundException e) {
+                JoH.static_toast_long("Device doesn't have a contact picker!?");
+            }
         }
     }
 

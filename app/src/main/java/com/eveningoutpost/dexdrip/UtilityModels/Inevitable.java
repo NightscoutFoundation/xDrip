@@ -78,6 +78,9 @@ public class Inevitable {
         tasks.remove(id);
     }
 
+    public static boolean waiting(final String id) {
+        return tasks.containsKey(id);
+    }
 
     private static class Task {
         private long when;

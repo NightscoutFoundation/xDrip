@@ -164,7 +164,7 @@ public class Tomato {
         long now = JoH.tsl();
         // Important note, the actual serial number is 8 bytes long and starts at addresses 5.
         String SensorSn = LibreUtils.decodeSerialNumberKey(Arrays.copyOfRange(s_full_data, 5, 13));
-        boolean checksum_ok = NFCReaderX.HandleGoodReading(SensorSn, data, now);
+        boolean checksum_ok = NFCReaderX.HandleGoodReading(SensorSn, data, now, true);
         Log.e(TAG, "We have all the data that we need " + s_acumulatedSize + " checksum_ok = " + checksum_ok + HexDump.dumpHexString(data));
 
         if(!checksum_ok) {

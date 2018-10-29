@@ -15,7 +15,9 @@ public class HomeShelfImpl extends BaseShelf {
         map.put("chart_preview", "Chart Preview");
         map.put("source_wizard", "Source Wizard");
         map.put("graphic_trend_arrow", "Graphic Trend Arrow");
+        map.put("collector_nano_status", "Collector Status");
         defaults.put("chart_preview", true);
+        defaults.put("collector_nano_status", true);
         populate();
     }
 
