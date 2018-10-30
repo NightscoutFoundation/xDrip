@@ -208,8 +208,8 @@ public class BgReading extends Model implements ShareUploadableBg {
     }
 
     public double getDg_mgdl(){
-        if(dg_mgdl != 0) return dg_mgdl;//from plugin
-        return calculated_value;//xdrip original
+        if(dg_mgdl != 0) return dg_mgdl;
+        return calculated_value;
     }
 
     public double getDg_slope(){
