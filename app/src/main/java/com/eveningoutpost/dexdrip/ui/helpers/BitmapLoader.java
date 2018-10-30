@@ -53,7 +53,7 @@ public class BitmapLoader implements BitmapCacheProvider {
         point.setLabelBitMapKey(getCacheName(resource, rotation, 1f));
     }
 
-    private static Bitmap bitmapFromBundleCache(final String key) {
+    public static Bitmap bitmapFromBundleCache(final String key) {
         final Bundle bundle = cache.get(key);
         if (bundle != null) {
             final Bitmap result = bundle.getParcelable("bitmap");
@@ -99,7 +99,13 @@ public class BitmapLoader implements BitmapCacheProvider {
         return result;
     }
 
-    private static void saveBitmapAsBundle(String key, Bitmap bitmap) {
+    public static void deleteCacheEntry(String key) {
+        if (key != null) {
+            cache.remove(key);
+        }
+    }
+
+    public static void saveBitmapAsBundle(String key, Bitmap bitmap) {
         final Bundle bundle = new Bundle();
         bundle.putParcelable("bitmap", bitmap);
         cache.put(key, bundle);
