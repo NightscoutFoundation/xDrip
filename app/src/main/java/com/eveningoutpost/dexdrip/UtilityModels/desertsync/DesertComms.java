@@ -127,9 +127,14 @@ public class DesertComms {
         return true;
     }
 
+    private static String getOasisIPfromPrefs() {
+        final String ip = Pref.getString("desert_sync_master_ip", "").trim().replace("/", "");
+        return ip;
+    }
 
     private static String getOasisIP() {
-        final String ip = Pref.getString("desert_sync_master_ip", "");
+        final String ip = getOasisIPfromPrefs();
+
         if (emptyString(lastLoadedIP)) {
             lastLoadedIP = ip;
         }
@@ -146,7 +151,7 @@ public class DesertComms {
 
     private static void setCurrentToBackup(final String newIP, String toSave) {
         if (toSave == null) {
-            toSave = Pref.getString("desert_sync_master_ip", "");
+            toSave = getOasisIPfromPrefs();
         }
         if (toSave.equals(newIP)) return;
         final String backup = PersistentStore.getString(PREF_OASISIP);
