@@ -26,6 +26,7 @@ import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.PlusSyncService;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.InstalledApps;
@@ -443,9 +444,9 @@ public class GcmActivity extends FauxActivity {
     static void sendSnoozeToRemoteWithConfirm(final Context context) {
         final long when = JoH.tsl();
         final AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("Confirm Remote Snooze");
-        builder.setMessage("Are you sure you wish to snooze all other devices in your sync group?");
-        builder.setPositiveButton("YES, send it!", new DialogInterface.OnClickListener() {
+        builder.setTitle(xdrip.getAppContext().getString(R.string.confirm_remote_snooze));
+        builder.setMessage(xdrip.getAppContext().getString(R.string.are_you_sure_you_wish_to_snooze_all_other_devices_in_your_sync_group));
+        builder.setPositiveButton(xdrip.getAppContext().getString(R.string.yes_send_it), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
                 if ((JoH.tsl() - when) < 120000) {
@@ -458,7 +459,7 @@ public class GcmActivity extends FauxActivity {
             }
         });
 
-        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(xdrip.getAppContext().getString(R.string.no), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
