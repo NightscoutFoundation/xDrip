@@ -85,14 +85,12 @@ import java.nio.charset.Charset;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.TimeZone;
 import java.util.zip.CRC32;
 import java.util.zip.Checksum;
 import java.util.zip.Deflater;
@@ -119,6 +117,12 @@ public class JoH {
     private static final Map<String, Long> rateLimits = new HashMap<>();
 
     public static boolean buggy_samsung = false; // flag set when we detect samsung devices which do not perform to android specifications
+
+    // quick string conversion with leading zero
+    public static String qs0(double x, int digits) {
+        final String qs = qs(x, digits);
+        return qs.startsWith(".") ? "0" + qs : qs;
+    }
 
     // qs = quick string conversion of double for printing
     public static String qs(double x) {
@@ -727,6 +731,15 @@ public class JoH {
         if (str == null) return def;
         try {
             return Double.parseDouble(str.replace(",", "."));
+        } catch (NumberFormatException e) {
+            return def;
+        }
+    }
+
+    public static int tolerantParseInt(final String str, final int def) {
+        if (str == null) return def;
+        try {
+            return Integer.parseInt(str);
         } catch (NumberFormatException e) {
             return def;
         }
