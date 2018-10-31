@@ -397,7 +397,7 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
                         }
                         firstpart = xdrip.getAppContext().getString(R.string.due) +" " + natural_due;
                     } else {
-                        firstpart = xdrip.getAppContext().getString(R.string.due) + " " + JoH.hourMinuteString(reminder_item.next_due);
+                        firstpart = xdrip.getAppContext().getString(R.string.due_uppercase) + " " + JoH.hourMinuteString(reminder_item.next_due);
                         holder.wholeBlock.setBackgroundColor(Color.parseColor("#660066"));
                         highlighted++;
                     }

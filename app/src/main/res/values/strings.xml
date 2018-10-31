@@ -1069,6 +1069,7 @@
     <string name="completed">completed</string>
     <string name="next_in">next in</string>
     <string name="due">Due</string>
+    <string name="due_uppercase">DUE</string>
     <string name="repeats_every">repeats every</string>
     <string name="next">next</string>
     <string name="last">last</string>
