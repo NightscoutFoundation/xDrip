@@ -982,7 +982,6 @@
     <string name="basal_editor">Basal Editor - Select hours to adjust</string>
     <string name="sensor_is_still_warming_up_please_wait">Sensor is still Warming Up, please wait</string>
     <string name="number_wall_config">Number Wall Configuration</string>
-
     <string name="summary_If_you_plan_to_only_use_a_Wear_collector_and_never_your_phone">If you plan to only use a Wear collector and never your phone.</string>
     <string name="title_Only_use_Wear">Only use Wear</string>
     <string name="summary_Also_show_the_filtered_data_on_the_trend">Also show the filtered data on the trend</string>
@@ -1037,5 +1036,6 @@
     <string name="title_Other_misc_options">Other misc options</string>
     <string name="summary_allow_testing_with_dead_sensor">allow testing with dead sensor</string>
     <string name="title_NOT_FOR_PRODUCTION_USE">NOT FOR PRODUCTION USE</string>
+    <string name="what_time_of_day_question">What time of day?</string>
 
 </resources>
