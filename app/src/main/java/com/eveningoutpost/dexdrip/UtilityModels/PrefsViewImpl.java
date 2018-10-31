@@ -12,6 +12,8 @@ import com.eveningoutpost.dexdrip.adapters.ObservableArrayMapNoNotify;
 
 public class PrefsViewImpl extends ObservableArrayMapNoNotify<String, Boolean> implements PrefsView {
 
+    private Runnable runnable;
+
     public boolean getbool(String name) {
         return Pref.getBooleanDefaultFalse(name);
     }
@@ -19,10 +21,22 @@ public class PrefsViewImpl extends ObservableArrayMapNoNotify<String, Boolean> i
     public void setbool(String name, boolean value) {
         Pref.setBoolean(name, value);
         super.put(name, value);
+        doRunnable();
     }
 
     public void togglebool(String name) {
         setbool(name, !getbool(name));
+    }
+
+    public PrefsViewImpl setRefresh(final Runnable runnable) {
+        this.runnable = runnable;
+        return this;
+    }
+
+    private void doRunnable() {
+        if (runnable != null) {
+            runnable.run();
+        }
     }
 
     @NonNull
@@ -41,6 +55,7 @@ public class PrefsViewImpl extends ObservableArrayMapNoNotify<String, Boolean> i
         if (!(super.get(key).equals(value))) {
             Pref.setBoolean(key, value);
             super.put(key, value);
+            doRunnable();
         }
         return value;
     }
