@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.ParcelFileDescriptor;
 import android.support.annotation.RequiresApi;
 
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
@@ -45,7 +46,12 @@ public class MtpTools {
         final MtpDevice mtpDevice = new MtpDevice(device);
 
         final UsbDeviceConnection usbDeviceConnection = usbManager.openDevice(device);
-        if (!mtpDevice.open(usbDeviceConnection)) {
+        try {
+            if (!mtpDevice.open(usbDeviceConnection)) {
+                return null;
+            }
+        } catch (Exception e) {
+            JoH.static_toast_long("Exception opening USB: " + e);
             return null;
         }
 
