@@ -989,7 +989,12 @@ public class DexCollectionService extends Service implements BtCallBack {
             l.add(new StatusItem("Tomato Hardware", PersistentStore.getString("TomatoHArdware")));
             l.add(new StatusItem("Tomato Firmware", PersistentStore.getString("TomatoFirmware")));
             l.add(new StatusItem("Libre SN", PersistentStore.getString("LibreSN")));
+        }
 
+        if (static_use_blukon) {
+            l.add(new StatusItem("Battery", Pref.getInt("bridge_battery", 0) + "%"));
+            l.add(new StatusItem("Sensor age", JoH.qs(((double) Pref.getInt("nfc_sensor_age", 0)) / 1440, 1) + "d"));
+            l.add(new StatusItem("Libre SN", PersistentStore.getString("LibreSN")));
         }
 
         return l;
@@ -1723,7 +1728,16 @@ public class DexCollectionService extends Service implements BtCallBack {
     private void watchdog() {
         if (last_time_seen == 0) return;
         if (prefs.getBoolean("bluetooth_watchdog", false)) {
-            if ((JoH.msSince(last_time_seen)) > 1200000) {
+
+            int MAX_BT_WDG = 20;
+            int bt_wdg_timer = JoH.parseIntWithDefault(Pref.getString("bluetooth_watchdog_timer", Integer.toString(MAX_BT_WDG)), 10, MAX_BT_WDG);
+
+            if ( (bt_wdg_timer <= 0) || (bt_wdg_timer > MAX_BT_WDG) ) {
+                bt_wdg_timer = MAX_BT_WDG;
+            }
+
+            if ((JoH.msSince(last_time_seen)) > bt_wdg_timer*Constants.MINUTE_IN_MS) {
+                Log.d(TAG,"Use BT Watchdog timer=" + bt_wdg_timer);
                 if (!JoH.isOngoingCall()) {
                     Log.e(TAG, "Watchdog triggered, attempting to reset bluetooth");
                     status("Watchdog triggered");

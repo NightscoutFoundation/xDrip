@@ -979,10 +979,11 @@
     <string name="detect_car_audio">Detect car audio</string>
     <string name="automatically_enable_when_connected_to_car_bluetooth">Automatically enable vehicle mode when connected to car bluetooth</string>
     <string name="enable_speak_readings_when_in_vehicle">Enable speak readings feature when in vehicle mode</string>
+    <string name="bluetooth_watchdog_timers">Timer value for BT watchdog</string>
+    <string name="bluetooth_watchdog_timer_sums">Input value in minutes</string>
     <string name="basal_editor">Basal Editor - Select hours to adjust</string>
     <string name="sensor_is_still_warming_up_please_wait">Sensor is still Warming Up, please wait</string>
     <string name="number_wall_config">Number Wall Configuration</string>
-
     <string name="summary_If_you_plan_to_only_use_a_Wear_collector_and_never_your_phone">If you plan to only use a Wear collector and never your phone.</string>
     <string name="title_Only_use_Wear">Only use Wear</string>
     <string name="summary_Also_show_the_filtered_data_on_the_trend">Also show the filtered data on the trend</string>
@@ -1037,5 +1038,4 @@
     <string name="title_Other_misc_options">Other misc options</string>
     <string name="summary_allow_testing_with_dead_sensor">allow testing with dead sensor</string>
     <string name="title_NOT_FOR_PRODUCTION_USE">NOT FOR PRODUCTION USE</string>
-
 </resources>

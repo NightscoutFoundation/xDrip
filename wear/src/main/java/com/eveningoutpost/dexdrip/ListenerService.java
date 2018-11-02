@@ -1739,6 +1739,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             prefs.putBoolean("close_gatt_on_ble_disconnect", dataMap.getBoolean("close_gatt_on_ble_disconnect", true));
             prefs.putBoolean("bluetooth_frequent_reset", dataMap.getBoolean("bluetooth_frequent_reset", false));
             prefs.putBoolean("bluetooth_watchdog", dataMap.getBoolean("bluetooth_watchdog", false));
+            prefs.putString("bluetooth_watchdog_timer", dataMap.getString("bluetooth_watchdog_timer", "20"));
 
             prefs.putBoolean("sync_wear_logs", dataMap.getBoolean("sync_wear_logs", false));
 
