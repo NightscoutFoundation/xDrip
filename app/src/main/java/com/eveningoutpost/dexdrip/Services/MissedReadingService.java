@@ -145,7 +145,7 @@ public class MissedReadingService extends IntentService {
     }
 
     private void checkBackAfterSnoozeTime(Context context, long now) {
-        // This is not 100% acurate, need to take in account also the time of when this alert was snoozed.
+        // This is not 100% accurate, need to take in account also the time of when this alert was snoozed.
         UserNotification userNotification = UserNotification.GetNotificationByType("bg_missed_alerts");
         if (userNotification == null) {
             // No active alert exists, should not happen, we have just created it.
