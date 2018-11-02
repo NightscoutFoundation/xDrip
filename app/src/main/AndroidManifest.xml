@@ -636,10 +636,15 @@
         <activity
             android:name=".ui.activities.SelectAudioDevice"
             android:label="@string/select_device" />
+      
         <activity
-            android:label="@string/number_wall_config"
+            android:name=".UtilityModels.MtpConfigureActivity"
+            android:label="USB programmer" />
+        <activity
+            android:name=".ui.activities.NumberWallPreview"
             android:exported="true"
-            android:name=".ui.activities.NumberWallPreview" />
+            android:label="@string/number_wall_config" />
+        <activity android:name=".ui.activities.TimePickerPrefActivity"></activity>
     </application>
 
 </manifest>
