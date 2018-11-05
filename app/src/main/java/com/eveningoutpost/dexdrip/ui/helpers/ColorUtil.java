@@ -62,4 +62,8 @@ public class ColorUtil {
         return Color.HSVToColor(hsv) & 0x00FFFFFF | (color & 0xFF000000);
     }
 
+    public static String colorIntToHex(@ColorInt int color) {
+        return String.format("#%08X", color);
+    }
+
 }

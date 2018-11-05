@@ -319,6 +319,14 @@
                 android:key="show_showcase"
                 android:summary="@string/show_tips_hints"
                 android:title="@string/show_interface_hints" />
+
+            <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+                android:icon="@drawable/ic_chart_areaspline_grey600_48dp"
+                android:key="xdrip_plus_graph_display_settings"
+                android:summary="Adjust chart items"
+                android:title="Graph Settings">
+
+
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:key="rewrite_history"
@@ -402,6 +410,9 @@
             <CheckBoxPreference
                 android:key="illustrate_backfilled_data"
                 android:summary="Indicate backfilled data on chart" />
+
+            </PreferenceScreen>
+
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:key="bg_from_filtered"
@@ -439,6 +450,7 @@
                 android:summary="@string/show_reminder_features"
                 android:title="@string/enable_reminder_features" />
             <PreferenceScreen
+                xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:key="xdrip_plus_number_wall"
                 android:title="Number Wall on Lock Screen">
             <Preference
@@ -451,13 +463,53 @@
                     android:targetPackage="@string/local_target_package">
                 </intent>
             </Preference>
-            <SwitchPreference
-                android:defaultValue="false"
-                android:key="number_wall_on_lockscreen"
-                android:summary="Show on lock-screen. Android 7 and above only!"
-                android:switchTextOff="@string/short_off_text_for_switches"
-                android:switchTextOn="@string/short_on_text_for_switches"
-                android:title="Use on Lock screen" />
+                <SwitchPreference
+                    android:defaultValue="false"
+                    android:key="number_wall_on_lockscreen"
+                    android:summary="Show on lock-screen. Android 7 and above only!"
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
+                    android:title="Use on Lock screen" />
+                <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
+                    android:defaultValue="#FFEEEEEE"
+                    android:key="color_number_wall"
+                    android:title="Wall Text Color"
+                    app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
+                    app:colorpicker_selectNoneButtonText="@string/revert_to_default"
+                    app:colorpicker_showHex="false" />
+                <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
+                    android:defaultValue="#FF000000"
+                    android:key="color_number_wall_shadow"
+                    android:title="Wall Shadow Color"
+                    app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
+                    app:colorpicker_selectNoneButtonText="@string/revert_to_default"
+                    app:colorpicker_showHex="false" />
+                <Preference
+                    android:key="pick_numberwall_start"
+                    android:summary="Chose time to start showing"
+                    android:title="Turn On">
+                    <intent
+                        android:action="android.intent.action.MAIN"
+                        android:targetClass="com.eveningoutpost.dexdrip.ui.activities.TimePickerPrefActivity"
+                        android:targetPackage="@string/local_target_package">
+                        <extra
+                            android:name="pref-name"
+                            android:value="number_wall_start_time" />
+                    </intent>
+                </Preference>
+                <Preference
+                    android:key="pick_numberwall_stop"
+                    android:summary="Chose time to stop - set to same as start for always on"
+                    android:title="Turn Off Time">
+                    <intent
+                        android:action="android.intent.action.MAIN"
+                        android:targetClass="com.eveningoutpost.dexdrip.ui.activities.TimePickerPrefActivity"
+                        android:targetPackage="@string/local_target_package">
+                        <extra
+                            android:name="pref-name"
+                            android:value="number_wall_stop_time" />
+                    </intent>
+                </Preference>
 
             </PreferenceScreen>
 

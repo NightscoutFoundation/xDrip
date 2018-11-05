@@ -1,10 +1,13 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+import android.graphics.Color;
 import android.util.Log;
 
 import com.eveningoutpost.dexdrip.Models.UserError;
 
 import java.util.EnumMap;
+
+import lombok.Getter;
 
 /**
  * Created by jamorham on 11/03/2016.
@@ -22,9 +25,14 @@ public class ColorCache {
         if (debug) Log.i(TAG, "Cache cleared");
     }
 
-    public static int getCol(X color) {
+    public static int getCol(final X color) {
         if (!the_cache.containsKey(color)) {
-            the_cache.put(color, Pref.getInt(color.internalName, 0xABCDEF));
+            try {
+                the_cache.put(color, Pref.getInt(color.internalName, 0xABCDEF));
+            } catch (ClassCastException e) {
+                UserError.Log.wtf(TAG, "Cannot set initial value - preference type likely wrong for: " + color.internalName + " " + e);
+                the_cache.put(color, Color.GRAY);
+            }
             if (debug)
                 UserError.Log.d(TAG, "Setting cache for color: " + color.internalName + " / " + Pref.getInt(color.internalName, 1234));
         }
@@ -59,8 +67,11 @@ public class ColorCache {
         color_heart_rate1("color_heart_rate1"),
         color_smb_icon("color_smb_icon"),
         color_smb_line("color_smb_line"),
+        color_number_wall("color_number_wall"),
+        color_number_wall_shadow("color_number_wall_shadow"),
         color_basal_tbr("color_basal_tbr");
 
+        @Getter
         String internalName;
 
         X(String name) {

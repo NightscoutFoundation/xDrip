@@ -20,10 +20,12 @@ import com.eveningoutpost.dexdrip.Models.UserNotification;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
+import com.eveningoutpost.dexdrip.UtilityModels.NanoStatus;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleUtil;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleWatchSync;
+import com.eveningoutpost.dexdrip.ui.LockScreenWallPaper;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.eveningoutpost.dexdrip.webservices.XdripWebService;
@@ -82,6 +84,8 @@ public class MissedReadingService extends IntentService {
             BluetoothGlucoseMeter.immortality();
             XdripWebService.immortality(); //
             DesertSync.pullAsEnabled();
+            NanoStatus.keepFollowerUpdated();
+            LockScreenWallPaper.timerPoll();
 
             // TODO functionalize the actual checking
             bg_missed_alerts = Pref.getBoolean("bg_missed_alerts", false);
@@ -111,6 +115,7 @@ public class MissedReadingService extends IntentService {
             final int bg_missed_minutes = Pref.getStringToInt("bg_missed_minutes", 30);
             final long now = JoH.tsl();
 
+            // check if readings have been missed
             if (BgReading.getTimeSinceLastReading() >= (bg_missed_minutes * 1000 * 60) &&
                     Pref.getLong("alerts_disabled_until", 0) <= now &&
                     (BgReading.getTimeSinceLastReading() < (Constants.HOUR_IN_MS * 6)) &&
@@ -140,7 +145,7 @@ public class MissedReadingService extends IntentService {
     }
 
     private void checkBackAfterSnoozeTime(Context context, long now) {
-        // This is not 100% acurate, need to take in account also the time of when this alert was snoozed.
+        // This is not 100% accurate, need to take in account also the time of when this alert was snoozed.
         UserNotification userNotification = UserNotification.GetNotificationByType("bg_missed_alerts");
         if (userNotification == null) {
             // No active alert exists, should not happen, we have just created it.

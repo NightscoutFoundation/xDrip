@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -86,7 +85,8 @@ public class SdcardImportExport extends BaseAppCompatActivity {
         return checkPermissions(this, true, MY_PERMISSIONS_REQUEST_STORAGE); // ask by default
     }
 
-    private static boolean checkPermissions(Activity context, boolean ask, int request_code) {
+    // TODO refactor to own class
+    public static boolean checkPermissions(Activity context, boolean ask, int request_code) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(context,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -140,11 +140,11 @@ public class SdcardImportExport extends BaseAppCompatActivity {
 
     public static void deletePersistentStore() {
         final String filename = "shared_prefs/persist_internal_store.xml";
-            if (deleteFolder(new File(xdrip.getAppContext().getFilesDir().getParent() + "/" + filename), false)) {
-                Log.d(TAG, "Successfully deleted: " + filename);
-            } else {
-                Log.e(TAG, "Error deleting: " + filename);
-            }
+        if (deleteFolder(new File(xdrip.getAppContext().getFilesDir().getParent() + "/" + filename), false)) {
+            Log.d(TAG, "Successfully deleted: " + filename);
+        } else {
+            Log.e(TAG, "Error deleting: " + filename);
+        }
         hardReset();
     }
 
@@ -351,7 +351,7 @@ public class SdcardImportExport extends BaseAppCompatActivity {
                 return false;
             }
         } else {
-            Log.e(TAG,"Weirdly "+source_filename+" doesn't seem to exist or failed to copy somehow! "+dest_file.getAbsolutePath());
+            Log.e(TAG, "Weirdly " + source_filename + " doesn't seem to exist or failed to copy somehow! " + dest_file.getAbsolutePath());
         }
         return false;
     }
@@ -364,12 +364,10 @@ public class SdcardImportExport extends BaseAppCompatActivity {
         Log.d(TAG, source_file.toString() + " or " + source_file_xdrip.toString() + " to: " + dest_file.toString());
 
 
-        if (source_file.exists() && source_file_xdrip.exists())
-        {
+        if (source_file.exists() && source_file_xdrip.exists()) {
             toast(getString(R.string.warning_settings_from_xdrip_and_plus_exist));
         } else {
-            if (source_file_xdrip.exists())
-            {
+            if (source_file_xdrip.exists()) {
                 source_file = source_file_xdrip;
                 toast(getString(R.string.loading_settings_from_xdrip_mainline));
             }
@@ -391,7 +389,7 @@ public class SdcardImportExport extends BaseAppCompatActivity {
         Log.i(TAG, "Attempt to copy: " + source_filename.toString() + " to " + dest_filename.toString());
         try {
             final InputStream in = new FileInputStream(source_filename);
-            final OutputStream out =  new FileOutputStream(dest_filename);
+            final OutputStream out = new FileOutputStream(dest_filename);
             byte[] buffer = new byte[8192];
             int read;
             while ((read = in.read(buffer)) != -1) {
