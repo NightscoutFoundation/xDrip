@@ -16,23 +16,23 @@ via Settings -> Connected Devices -> Bluetooth -> BLU00XXX -> Forget
   * ```settings -> Hardware Data source -> Libre Bluetooth```
   * ```settings -> Less Common Settings```
     * ```Advanced calibration```
-      * ```Calibration plugin -> datricsae```
-      * Select ```Use Plugin Glucose```
-      * if you want [EXPERIMETAL] ```Non-fixed Libre slopes```
-    * ```Bluetooth settings``` select *ONLY*:
-      * ```Turn Bluetooth ON```
-      * ```Bluetooth watchdog```
-      * ```timer for BT watchdog``` = 13
-      * ```Trust Auto-connect```
-      * ```Always discover services``` 
-    * Enable ```Agressive servive restarts```
-    * Enable ```Display Bridge Battery```
-    * ```Other misc options```:
-      * ```Retrieve Libre history```
-    * ```settings -> Alarms and Alerts```
-      * ```Missed reading alert```
-        * 8 minutes
-        * 5 minutes before raising
+     * ```Calibration plugin -> datricsae```
+     * Select ```Use Plugin Glucose```
+     * if you want [EXPERIMETAL] ```Non-fixed Libre slopes```
+   * ```Bluetooth settings``` select *ONLY*:
+     * ```Turn Bluetooth ON```
+     * ```Bluetooth watchdog```
+     * ```timer for BT watchdog``` = 13min
+     * ```Trust Auto-connect```
+     * ```Always discover services``` 
+   * Enable ```Agressive servive restarts```
+   * Enable ```Display Bridge Battery```
+   * ```Other misc options```:
+     * ```Retrieve Libre history```
+   * ```settings -> Alarms and Alerts```
+     * ```Missed reading alert```
+       * 8 minutes
+       * 5 minutes before raising
 * Make sure that Blucon is on top of sensor
 * Press reset on blucon
 * In the top left "burger" menu, open Bluetooth Scan and Scan for BLU00XXX device
@@ -43,9 +43,10 @@ via Settings -> Connected Devices -> Bluetooth -> BLU00XXX -> Forget
 * After 2 BG readings from Blucon, xDrip+ will ask you to enter one or two calibrated value (blood prick).
 * Enter this now.
 
-* If lots of connection issues:
- * Under Bluetooth settings, try ```Allow blucon unbunding```
- * look this page: 
+
+# If lots of connection issues:
+* Under Bluetooth settings, try ```Allow blucon unbunding```
+* look this page: 
 
 
 # Regarding battery:
