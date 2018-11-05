@@ -1117,4 +1117,5 @@
     <string name="restart_in_the_morning">Restart in the Morning</string>
     <string name="advanced_mode">Advanced Mode</string>
     <string name="reminder_title">Reminder Title</string>
+    <string name="what_time_of_day_question">What time of day?</string>
 </resources>
