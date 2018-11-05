@@ -46,7 +46,7 @@ via Settings -> Connected Devices -> Bluetooth -> BLU00XXX -> Forget
 
 # If lots of connection issues:
 * Under Bluetooth settings, try ```Allow blucon unbunding```
-* look this page: 
+* look this page: [libre-fix-bt-connection-issues.md](./libre-fix-bt-connection-issues.md)
 
 
 # Regarding battery:
