@@ -230,6 +230,8 @@ If placing right or left, it looks like this:
 
 <img align="middle" src="./images/wear-complication-long.png" title="Wear complication long">
 
+If getting "Null, Null" displayed, try to add a blood calibration (see https://github.com/NightscoutFoundation/xDrip/issues/651)
+
 
 #### Watchface Tap Feature
 Watchface tap feature is now implemented for the following preferences:
