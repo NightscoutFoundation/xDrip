@@ -5,11 +5,14 @@
 You can other settings:
 
 * Solution 1:
+  * ```Trust Auto Connect``` to ON
+  * ```close GATT on disconnect``` to OFF
+* Solution 2:
   * ```Trust Auto Connect``` to OFF
   * ```close GATT on disconnect``` to ON (only if Trust Auto connect is OFF)
-* Solution 2:
-  * Enable or disable ```Use scanning```
 * Solution 3:
+  * Enable or disable ```Use scanning```
+* Solution 4:
   * Enable or disable ```Always discover services```
   
 # On each try, make sure to:
