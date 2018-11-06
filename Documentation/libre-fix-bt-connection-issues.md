@@ -8,9 +8,9 @@ You can other settings:
   * ```Trust Auto Connect``` to OFF
   * ```close GATT on disconnect``` to ON (only if Trust Auto connect is OFF)
 * Solution 2:
-  * Enable ```Use scanning```
+  * Enable or disable ```Use scanning```
 * Solution 3:
-  * Disable ```Always discover services```
+  * Enable or disable ```Always discover services```
   
 # On each try, make sure to:
 * reset your device
@@ -26,4 +26,4 @@ You can other settings:
     * ```Settings -> less common settings -> Extra logging settings -> Extra tags for logging``` and add:
       * DexCollectionService:v
   * Reproduce issue
-  * Send log from within the App
+  * Send logs from within the App
