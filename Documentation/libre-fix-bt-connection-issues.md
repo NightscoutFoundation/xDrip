@@ -2,7 +2,7 @@
 
 # If you have a lot of missed readings:
 
-You can other settings:
+You can try other settings:
 
 * Solution 1:
   * ```Trust Auto Connect``` to ON
@@ -30,3 +30,6 @@ You can other settings:
       * DexCollectionService:v
   * Reproduce issue
   * Send logs from within the App
+   * Click 3 points on main screen
+   * ```View event logs```
+   * ```Upload logs```
