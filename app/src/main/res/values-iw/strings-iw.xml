@@ -986,5 +986,10 @@
     <string name="all_alerts_currently_disabled">כל ההתראות מושבתות כעת</string>
     <string name="low_and_high_alerts_currently_disabled">התראות נמוכות וגבוהות מושבתות כעת</string>
     <string name="low_alerts_currently_disabled">התראות נמוכות מושבתות כעת</string>
-    <string name="high_alerts_currently_disabled">התראות גבוהות מושבתות כעת</string>    
+    <string name="high_alerts_currently_disabled">התראות גבוהות מושבתות כעת</string>
+    <string name="bg_reading_missed">אין קליטה של רמת הסוכר</string>
+    <string name="not_connected">לא מחובר</string>
+    <string name="no_data">אין נתונים</string>
+    <string name="no_bluetooth">אין bluetooth</string> 
+    <string name="connection_status">   מצב החיבור:  </string>
 </resources>

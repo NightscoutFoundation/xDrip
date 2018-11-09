@@ -1051,4 +1051,9 @@
     <string name="low_and_high_alerts_currently_disabled">LOW AND HIGH ALERTS CURRENTLY DISABLED</string>
     <string name="low_alerts_currently_disabled">LOW ALERTS CURRENTLY DISABLED</string>
     <string name="high_alerts_currently_disabled">HIGH ALERTS CURRENTLY DISABLED</string>
+    <string name="bg_reading_missed">BG Readings Missed</string>
+    <string name="not_connected">Not Connected</string>
+    <string name="no_data">No data</string>
+    <string name="no_bluetooth">No bluetooth</string>
+    <string name="connection_status">Connection Status:   </string>
 </resources>
