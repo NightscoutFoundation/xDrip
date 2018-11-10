@@ -999,6 +999,10 @@ public class JoH {
         }
     }
 
+    public static boolean validateMacAddress(final String mac) {
+        return mac != null && mac.length() == 17 && mac.matches("([\\da-fA-F]{1,2}(?:\\:|$)){6}");
+    }
+
     public static String urlEncode(String source) {
         try {
             return URLEncoder.encode(source, "UTF-8");
@@ -1027,6 +1031,14 @@ public class JoH {
     public static void startService(Class c) {
         xdrip.getAppContext().startService(new Intent(xdrip.getAppContext(), c));
     }
+
+    public static void startService(Class c, String key, String value) {
+        xdrip.getAppContext().startService(new Intent(xdrip.getAppContext(), c).putExtra(key, value));
+    }
+    public static void startService(Class c, String key, String value, String key2, String value2) {
+        xdrip.getAppContext().startService(new Intent(xdrip.getAppContext(), c).putExtra(key, value).putExtra(key2, value2));
+    }
+
 
     public static void startActivity(Class c) {
         xdrip.getAppContext().startActivity(getStartActivityIntent(c));
