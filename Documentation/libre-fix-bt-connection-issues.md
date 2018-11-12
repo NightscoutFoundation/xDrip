@@ -4,6 +4,12 @@
 
 You can try other settings:
 
+* Solution 0:
+  * Make sure xdrip is not being killed by OS
+   * set xdrip into the "ignored battery optimization" list
+   * If you use a Huawei phone:
+     * lock app
+     * allow xdrip to be launched at start
 * Solution 1:
   * ```Trust Auto Connect``` to ON
   * ```close GATT on disconnect``` to OFF
