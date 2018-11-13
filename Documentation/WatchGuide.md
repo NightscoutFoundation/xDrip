@@ -208,6 +208,31 @@ The following images show required xDrip+ preferences and examples of Watch Step
 
 <img align="middle" src="./images/prefs-phone-sync-steps.png" title="XDrip Phone and Watchface Step Counter">
 
+#### Use Android Wear complication since Wear 2.0
+
+You can also install Watchfaces supporting ```complication```, for example:
+
+https://play.google.com/store/apps/details?id=co.smartwatchface.watch.face.aviator.android.wear&hl=en_US
+
+How-to use:
+* long press on watchface
+* open settings
+* complication
+* 3rd party
+* select where to place complication
+* select xdrip pref
+
+If placing right or left, it looks like this:
+
+<img align="middle" src="./images/wear-complication-short.png" title="Wear complication short">
+
+* If under xdrip settings you have selected ```Loop status``` and placing up or bottom, it looks like this:
+
+<img align="middle" src="./images/wear-complication-long.png" title="Wear complication long">
+
+If getting "Null, Null" displayed, try to add a blood calibration (see https://github.com/NightscoutFoundation/xDrip/issues/651)
+
+
 #### Watchface Tap Feature
 Watchface tap feature is now implemented for the following preferences:
 * Chart Timeframe - double tap on the chart in any of the watchfaces will toggle the chart timeframe allowing one to zoom in/out of a frame.
