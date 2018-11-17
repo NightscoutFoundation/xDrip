@@ -73,8 +73,8 @@ public abstract class JamBaseBluetoothService extends Service {
         }).start();
     }
 
-    protected synchronized void automata() {
-        throw new RuntimeException("automata stub");
+    protected synchronized boolean automata() {
+        throw new RuntimeException("automata stub - not implemented!");
     }
 
     protected synchronized void extendWakeLock(long ms) {
