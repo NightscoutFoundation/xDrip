@@ -188,7 +188,7 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
     }
 
 
-    public synchronized void automata() {
+    public synchronized boolean automata() {
 
         if ((last_automata_state != state) || (JoH.ratelimit("jam-g5-dupe-auto", 2))) {
             last_automata_state = state;
@@ -252,6 +252,7 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
         } else {
             UserError.Log.d(TAG, "Ignoring duplicate automata state within 2 seconds: " + state);
         }
+        return true;
     }
 
     ///
@@ -970,7 +971,6 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
             UserError.Log.d(TAG, "Not setting retry timer as service should not be running");
         }
     }
-
 
     private static long whenToRetryNext() {
         retry_backoff += Constants.SECOND_IN_MS;
