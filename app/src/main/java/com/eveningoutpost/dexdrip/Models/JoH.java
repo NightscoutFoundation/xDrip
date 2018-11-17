@@ -1032,11 +1032,15 @@ public class JoH {
         xdrip.getAppContext().startService(new Intent(xdrip.getAppContext(), c));
     }
 
-    public static void startService(Class c, String key, String value) {
-        xdrip.getAppContext().startService(new Intent(xdrip.getAppContext(), c).putExtra(key, value));
-    }
-    public static void startService(Class c, String key, String value, String key2, String value2) {
-        xdrip.getAppContext().startService(new Intent(xdrip.getAppContext(), c).putExtra(key, value).putExtra(key2, value2));
+    public static void startService(final Class c, final String... args) {
+        final Intent intent = new Intent(xdrip.getAppContext(), c);
+        if (args.length % 2 == 1) {
+            throw new RuntimeException("Odd number of args for JoH.startService");
+        }
+        for (int i = 0; i < args.length; i += 2) {
+            intent.putExtra(args[i], args[i + 1]);
+        }
+        xdrip.getAppContext().startService(intent);
     }
 
 
