@@ -28,6 +28,8 @@ import com.eveningoutpost.dexdrip.Services.SnoozeOnNotificationDismissService;
 import com.eveningoutpost.dexdrip.SnoozeActivity;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleWatchSync;
 import com.eveningoutpost.dexdrip.eassist.AlertTracker;
+import com.eveningoutpost.dexdrip.watch.lefun.LeFun;
+import com.eveningoutpost.dexdrip.watch.lefun.LeFunEntry;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.eveningoutpost.dexdrip.xdrip;
 
@@ -178,7 +180,7 @@ public class AlertPlayer {
     }
 
     // only do something if an alert is active - only call from interactive
-    public synchronized void OpportunisticSnooze() {
+    public synchronized boolean OpportunisticSnooze() {
         if (JoH.ratelimit("opp-snooze-check", 3)) {
             if (ActiveBgAlert.getOnly() != null) {
                 // there is an alert so do something
@@ -187,8 +189,10 @@ public class AlertPlayer {
                 if (JoH.ratelimit("opportunistic-snooze-toast", 300)) {
                     JoH.static_toast_long("Opportunistic Snooze");
                 }
+                return true;
             }
         }
+        return false;
     }
 
     //  default signature for user initiated interactive snoozes only
@@ -524,6 +528,10 @@ public class AlertPlayer {
             if (JoH.ratelimit("pebble_vibe_start", 59)) {
                 JoH.startService(PebbleWatchSync.class);
             }
+        }
+
+        if (LeFunEntry.areAlertsEnabled() && ActiveBgAlert.currentlyAlerting()) {
+            LeFun.sendAlert(highlow, bgValue);
         }
 
         // speak alert

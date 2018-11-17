@@ -27,6 +27,8 @@ import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleUtil;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleWatchSync;
 import com.eveningoutpost.dexdrip.ui.LockScreenWallPaper;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
+import com.eveningoutpost.dexdrip.watch.lefun.LeFun;
+import com.eveningoutpost.dexdrip.watch.lefun.LeFunEntry;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.eveningoutpost.dexdrip.webservices.XdripWebService;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -57,6 +59,7 @@ public class MissedReadingService extends IntentService {
 
             final long stale_millis = Home.stale_data_millis();
 
+
             // send to pebble
             if (Pref.getBoolean("broadcast_to_pebble", false) && (PebbleUtil.getCurrentPebbleSyncType() != 1) && !BgReading.last_within_millis(stale_millis)) {
                 if (JoH.ratelimit("peb-miss", 120)) {
@@ -64,6 +67,10 @@ public class MissedReadingService extends IntentService {
                     JoH.startService(PebbleWatchSync.class);
                 }
                 // update pebble even when we don't have data to ensure missed readings show
+            }
+
+            if (LeFunEntry.isEnabled() && (!BgReading.last_within_millis(stale_millis))) {
+                LeFun.showLatestBG();
             }
 
 

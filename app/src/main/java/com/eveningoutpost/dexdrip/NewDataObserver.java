@@ -6,6 +6,7 @@ import com.eveningoutpost.dexdrip.Models.LibreBlock;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.ShareModels.BgUploader;
 import com.eveningoutpost.dexdrip.ShareModels.Models.ShareUploadPayload;
+import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.VehicleMode;
@@ -13,6 +14,8 @@ import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleUtil;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleWatchSync;
 import com.eveningoutpost.dexdrip.ui.LockScreenWallPaper;
 import com.eveningoutpost.dexdrip.utils.BgToSpeech;
+import com.eveningoutpost.dexdrip.watch.lefun.LeFun;
+import com.eveningoutpost.dexdrip.watch.lefun.LeFunEntry;
 import com.eveningoutpost.dexdrip.wearintegration.Amazfitservice;
 import com.eveningoutpost.dexdrip.wearintegration.ExternalStatusService;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
@@ -38,6 +41,7 @@ public class NewDataObserver {
         sendToPebble();
         sendToWear();
         sendToAmazfit();
+        sendToLeFun();
         Notifications.start();
         uploadToShare(bgReading, is_follower);
         textToSpeech(bgReading, null);
@@ -80,6 +84,12 @@ public class NewDataObserver {
     private static void sendToAmazfit() {
         if (Pref.getBooleanDefaultFalse("pref_amazfit_enable_key")) {
             JoH.startService(Amazfitservice.class);
+        }
+    }
+
+    private static void sendToLeFun() {
+        if (LeFunEntry.isEnabled()) {
+            Inevitable.task("poll-le-fun-for-bg",500, LeFun::showLatestBG);
         }
     }
 
