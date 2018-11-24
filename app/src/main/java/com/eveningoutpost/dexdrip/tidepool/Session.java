@@ -14,7 +14,7 @@ public class Session {
 
     String token;
     MAuthReply authReply;
-    MStartReply MStartReply;
+    MNewDatasetReply MNewDatasetReply;
     long start;
     long end;
     volatile int iterations;
@@ -35,8 +35,8 @@ public class Session {
         if (obj == null) return;
         if (obj instanceof MAuthReply) {
             authReply = (MAuthReply) obj;
-        } else if (obj instanceof MStartReply) {
-            MStartReply = (MStartReply) obj;
+        } else if (obj instanceof MNewDatasetReply) {
+            MNewDatasetReply = (MNewDatasetReply) obj;
         }
     }
 

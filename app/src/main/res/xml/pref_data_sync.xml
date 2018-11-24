@@ -258,6 +258,9 @@
                     android:key="tidepool_password"
                     android:summary="Your Tidepool login password"
                     android:title="Login Password" />
+                <Preference
+                    android:key="tidepool_test_login"
+                    android:title="Test Tidepool Login"></Preference>
 
             </PreferenceScreen>
         </PreferenceScreen>

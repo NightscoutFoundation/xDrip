@@ -52,6 +52,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Experience;
+import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.ShotStateStore;
 import com.eveningoutpost.dexdrip.UtilityModels.SpeechUtil;
@@ -66,6 +67,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.pebble.watchface.InstallPebbleWa
 import com.eveningoutpost.dexdrip.WidgetUpdateService;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileEditor;
+import com.eveningoutpost.dexdrip.tidepool.TidepoolUploader;
 import com.eveningoutpost.dexdrip.wearintegration.Amazfitservice;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.eveningoutpost.dexdrip.webservices.XdripWebService;
@@ -850,6 +852,14 @@ public class Preferences extends BasePreferenceActivity {
             sharePassword.setOnPreferenceChangeListener(shareTokenResettingListener);
             final Preference shareAccountName = findPreference("dexcom_account_name");
             shareAccountName.setOnPreferenceChangeListener(shareTokenResettingListener);
+
+            final Preference tidepoolTestLogin = findPreference("tidepool_test_login");
+            tidepoolTestLogin.setOnPreferenceClickListener(preference -> {
+//                Runnable r = () -> TidepoolUploader.testLogin(preference.getContext());
+                Inevitable.task("tidepool-upload", 200, TidepoolUploader::doLogin);
+//                TidepoolUploader.testLogin(preference.getContext());
+                return false;
+            });
 
             final Preference scanShare = findPreference("scan_share2_barcode");
             final EditTextPreference transmitterId = (EditTextPreference) findPreference("dex_txid");

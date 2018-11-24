@@ -1,16 +1,26 @@
 package com.eveningoutpost.dexdrip.tidepool;
 
+import android.app.AlertDialog;
+import android.content.Context;
+
 import com.eveningoutpost.dexdrip.BuildConfig;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 
+import java.io.IOException;
+import java.util.Collections;
+
+import okhttp3.CipherSuite;
+import okhttp3.ConnectionSpec;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
+import okhttp3.TlsVersion;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.Body;
@@ -21,6 +31,7 @@ import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 /** jamorham
  *
@@ -49,26 +60,29 @@ public class TidepoolUploader {
         @POST("/auth/login")
         Call<MAuthReply> getLogin(@Header("Authorization") String secret);
 
-        @DELETE("dataservices/v1/users/{userId}/data")
-        Call<MStartReply> deleteAllData(@Header(SESSION_TOKEN_HEADER) String token, @Path("userId") String id);
+        @DELETE("/v1/users/{userId}/data")
+        Call<MNewDatasetReply> deleteAllData(@Header(SESSION_TOKEN_HEADER) String token, @Path("userId") String id);
 
-        @DELETE("dataservices/v1/datasets/{dataSetId}")
-        Call<MStartReply> deleteDataSet(@Header(SESSION_TOKEN_HEADER) String token, @Path("dataSetId") String id);
+        @DELETE("/v1/datasets/{dataSetId}")
+        Call<MNewDatasetReply> deleteDataSet(@Header(SESSION_TOKEN_HEADER) String token, @Path("dataSetId") String id);
 
-        @GET("dataservices/v1/datasets/{dataSetId}")
-        Call<MStartReply> getDataSet(@Header(SESSION_TOKEN_HEADER) String token, @Path("dataSetId") String id);
+        @GET("/v1/users/{userId}/datasets")
+        Call<MGetDatasetsReply> getDataSets(@Header(SESSION_TOKEN_HEADER) String token,
+                                            @Path("userId") String id,
+                                            @Query("client.name") String clientName,
+                                            @Query("size") int size);
 
-        @GET("dataservices/v1/users/{userId}/datasets")
-        Call<MStartReply> getReadStart(@Header(SESSION_TOKEN_HEADER) String token, @Path("userId") String id);
+        @GET("/v1/datasets/{dataSetId}")
+        Call<MNewDatasetReply> getDataSet(@Header(SESSION_TOKEN_HEADER) String token, @Path("dataSetId") String id);
 
-        @POST("dataservices/v1/users/{userId}/datasets")
-        Call<MStartReply> getStart(@Header(SESSION_TOKEN_HEADER) String token, @Path("userId") String id, @Body RequestBody body);
+        @POST("/v1/users/{userId}/datasets")
+        Call<MNewDatasetReply> getStart(@Header(SESSION_TOKEN_HEADER) String token, @Path("userId") String id, @Body RequestBody body);
 
-        @POST("dataservices/v1/datasets/{sessionId}/data")
+        @POST("/v1/datasets/{sessionId}/data")
         Call<MUploadReply> doUpload(@Header(SESSION_TOKEN_HEADER) String token, @Path("sessionId") String id, @Body RequestBody body);
 
-        @PUT("dataservices/v1/datasets/{sessionId}")
-        Call<MStartReply> getStop(@Header(SESSION_TOKEN_HEADER) String token, @Path("sessionId") String id, @Body RequestBody body);
+        @PUT("/v1/datasets/{sessionId}")
+        Call<MNewDatasetReply> getStop(@Header(SESSION_TOKEN_HEADER) String token, @Path("sessionId") String id, @Body RequestBody body);
 
     }
 
@@ -94,14 +108,13 @@ public class TidepoolUploader {
         return retrofit;
     }
 
-
     public static void doLogin() {
         if (!enabled()) {
             UserError.Log.d(TAG,"Cannot login as disabled by preference");
             return;
         }
         // TODO failure backoff
-        if (JoH.ratelimit("tidepool-login", 60)) {
+        if (JoH.ratelimit("tidepool-login", 1)) {
 
             final Session session = new Session(MAuthRequest.getAuthRequestHeader(), SESSION_TOKEN_HEADER);
             if (session.authHeader != null) {
@@ -113,13 +126,55 @@ public class TidepoolUploader {
         }
     }
 
+    public static void testLogin(Context rootContext) {
+        if (JoH.ratelimit("tidepool-login", 1)) {
+
+            String message = "Failed to log into Tidepool.\n" +
+                    "Check that your user name and password are correct.";
+
+            final Session session = new Session(MAuthRequest.getAuthRequestHeader(), SESSION_TOKEN_HEADER);
+            if (session.authHeader != null) {
+                final Call<MAuthReply> call = session.service.getLogin(session.authHeader);
+
+                try {
+                    Response<MAuthReply> response = call.execute();
+                    UserError.Log.e(TAG, "Header: " + response.code());
+                    message = "Successfully logged into Tidepool.";
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                UserError.Log.e(TAG,"Cannot do login as user credentials have not been set correctly");
+            }
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(rootContext);
+
+            builder.setTitle("Tidepool Login");
+
+            builder.setMessage(message);
+
+            builder.setPositiveButton("OK", (dialog, id) -> {
+                dialog.dismiss();
+            });
+
+            final AlertDialog alert = builder.create();
+            alert.show();
+        }
+    }
+
 
     private static void startSession(final Session session) {
-        if (JoH.ratelimit("tidepool-start-session", 60)) {
+        if (JoH.ratelimit("tidepool-start-session", 1)) {
 
             if (session.authReply.userid != null) {
-                Call<MStartReply> call = session.service.getStart(session.token, session.authReply.userid, new MStartRequest().getBody());
-                call.enqueue(new TidepoolCallback<>(session, "Session Start", () -> doUpload(session)));
+                // See if we already have an open data set to write to
+                Call<MGetDatasetsReply> datasetCall = session.service.getDataSets(session.token,
+                        session.authReply.userid, BuildConfig.APPLICATION_ID, 1);
+                datasetCall.enqueue(new TidepoolCallback<>(session, "Get Datasets", () -> {
+                    // FIXME: Only if data.size > 0
+                    Call<MNewDatasetReply> call = session.service.getStart(session.token, session.authReply.userid, new MNewDatasetRequest().getBody());
+                    call.enqueue(new TidepoolCallback<>(session, "Session Start", () -> doUpload(session)));
+                }));
             } else {
                 UserError.Log.wtf(TAG, "Got login response but cannot determine userid - cannot proceed");
             }
@@ -140,7 +195,7 @@ public class TidepoolUploader {
                 doCompleted(session);
             } else {
                 final RequestBody body = RequestBody.create(MediaType.parse("application/json"), chunk);
-                final Call<MUploadReply> call = session.service.doUpload(session.token, session.MStartReply.data.uploadId, body);
+                final Call<MUploadReply> call = session.service.doUpload(session.token, session.MNewDatasetReply.data.uploadId, body);
                 call.enqueue(new TidepoolCallback<>(session, "Data Upload", () -> {
                     UploadChunk.setLastEnd(session.end);
 
@@ -149,7 +204,7 @@ public class TidepoolUploader {
                         Inevitable.task("Tidepool-next", 10000, () -> doUpload(session));
                     } else {
 
-                        if (MStartRequest.isNormal()) {
+                        if (MNewDatasetRequest.isNormal()) {
                             doClose(session);
                         } else {
                             doCompleted(session);
@@ -164,7 +219,7 @@ public class TidepoolUploader {
 
 
     private static void doClose(final Session session) {
-        final Call<MStartReply> call = session.service.getStop(session.token, session.MStartReply.data.uploadId, new MStopRequest().getBody());
+        final Call<MNewDatasetReply> call = session.service.getStop(session.token, session.MNewDatasetReply.data.uploadId, new MCloseDatasetRequest().getBody());
         call.enqueue(new TidepoolCallback<>(session, "Session Stop", null));
     }
 
@@ -178,14 +233,9 @@ public class TidepoolUploader {
 
     // experimental - not used
 
-    private static void readData(final Session session) {
-        Call<MStartReply> call = session.service.getReadStart(session.token, session.authReply.userid);
-        call.enqueue(new TidepoolCallback<>(session, "Read Data", null));
-    }
-
     private static void deleteData(final Session session) {
         if (session.authReply.userid != null) {
-            Call<MStartReply> call = session.service.deleteAllData(session.token, session.authReply.userid);
+            Call<MNewDatasetReply> call = session.service.deleteAllData(session.token, session.authReply.userid);
             call.enqueue(new TidepoolCallback<>(session, "Delete Data", null));
         } else {
             UserError.Log.wtf(TAG, "Got login response but cannot determine userid - cannot proceed");
@@ -193,12 +243,12 @@ public class TidepoolUploader {
     }
 
     private static void getDataSet(final Session session) {
-        Call<MStartReply> call = session.service.getDataSet(session.token, "bogus");
+        Call<MNewDatasetReply> call = session.service.getDataSet(session.token, "bogus");
         call.enqueue(new TidepoolCallback<>(session, "Get Data", null));
     }
 
     private static void deleteDataSet(final Session session) {
-        Call<MStartReply> call = session.service.deleteDataSet(session.token, "bogus");
+        Call<MNewDatasetReply> call = session.service.deleteDataSet(session.token, "bogus");
         call.enqueue(new TidepoolCallback<>(session, "Delete Data", null));
     }
 

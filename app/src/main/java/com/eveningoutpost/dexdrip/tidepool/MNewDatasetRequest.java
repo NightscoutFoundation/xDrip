@@ -10,7 +10,7 @@ import java.util.TimeZone;
 
 import static com.eveningoutpost.dexdrip.Models.JoH.getTimeZoneOffsetMs;
 
-public class MStartRequest extends BaseMessage {
+public class MNewDatasetRequest extends BaseMessage {
 
     static final String UPLOAD_TYPE = "continuous";
 
@@ -38,7 +38,7 @@ public class MStartRequest extends BaseMessage {
     @Expose
     public String[] deviceTags = {"bgm", "cgm", "insulin-pump"};
     //@Expose
-    //public Deduplicator deduplicator = new Deduplicator();
+    public Deduplicator deduplicator = new Deduplicator();
     @Expose
     public String timeProcessing = "none";
     @Expose
@@ -46,7 +46,7 @@ public class MStartRequest extends BaseMessage {
     @Expose
     public String version = BuildConfig.VERSION_NAME;
 
-    MStartRequest() {
+    MNewDatasetRequest() {
         deviceId = "123";
     }
 
@@ -54,12 +54,12 @@ public class MStartRequest extends BaseMessage {
         @Expose
         final String name = BuildConfig.APPLICATION_ID;
         @Expose
-        final String version = "0.1.0";
+        final String version = "0.1.0"; // TODO: const it
     }
 
     class Deduplicator {
         @Expose
-        final String name = "org.tidepool.continuous";
+        final String name = "org.tidepool.deduplicator.dataset.delete.origin";
     }
 
     static boolean isNormal() {

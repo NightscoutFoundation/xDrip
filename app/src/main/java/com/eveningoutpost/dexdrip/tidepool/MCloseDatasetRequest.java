@@ -2,7 +2,7 @@ package com.eveningoutpost.dexdrip.tidepool;
 
 import com.google.gson.annotations.Expose;
 
-public class MStopRequest extends BaseMessage {
+public class MCloseDatasetRequest extends BaseMessage {
     @Expose
     String dataState = "closed";
 
