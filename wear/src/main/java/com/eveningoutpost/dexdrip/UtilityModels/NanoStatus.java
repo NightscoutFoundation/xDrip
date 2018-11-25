@@ -144,12 +144,16 @@ public class NanoStatus {
         return null;
     }
 
+    private static void gsonInstance() {
+        if (muhGson == null) {
+            muhGson = new GsonBuilder().create();
+        }
+    }
+
     public static void keepFollowerUpdated() {
         try {
             if (Home.get_master()) {
-                if (muhGson == null) {
-                    muhGson = new GsonBuilder().create();
-                }
+                gsonInstance();
                 final String serialized = muhGson.toJson(nanoStatusColor("collector"));
                 if (PersistentStore.updateStringIfDifferent(LAST_COLLECTOR_STATUS_STORE, serialized)) {
                     Inevitable.task("update-follower-to-nanostatus", 500, new Runnable() {
@@ -172,6 +176,7 @@ public class NanoStatus {
     public static SpannableString getRemote() {
         // TODO apply timeout?
         try {
+            gsonInstance();
             return muhGson.fromJson(PersistentStore.getString(REMOTE_COLLECTOR_STATUS_STORE), SpannableString.class);
         } catch (Exception e) {
             return new SpannableString("");
