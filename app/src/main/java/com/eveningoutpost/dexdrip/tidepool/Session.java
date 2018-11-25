@@ -4,6 +4,8 @@ package com.eveningoutpost.dexdrip.tidepool;
 
 // Manages the session data
 
+import java.util.List;
+
 import okhttp3.Headers;
 
 public class Session {
@@ -14,7 +16,8 @@ public class Session {
 
     String token;
     MAuthReply authReply;
-    MNewDatasetReply MNewDatasetReply;
+    MDatasetReply getDatasetsReply;
+    MDatasetReply newDatasetReply;
     long start;
     long end;
     volatile int iterations;
@@ -35,8 +38,13 @@ public class Session {
         if (obj == null) return;
         if (obj instanceof MAuthReply) {
             authReply = (MAuthReply) obj;
-        } else if (obj instanceof MNewDatasetReply) {
-            MNewDatasetReply = (MNewDatasetReply) obj;
+        } else if (obj instanceof List) {
+            List list = (List)obj;
+            if (list.size() > 0 && list.get(0) instanceof MDatasetReply) {
+                getDatasetsReply = (MDatasetReply) list.get(0);
+            }
+        } else if (obj instanceof MDatasetReply) {
+            newDatasetReply = (MDatasetReply) obj;
         }
     }
 

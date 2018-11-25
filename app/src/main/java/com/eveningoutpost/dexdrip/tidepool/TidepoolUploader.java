@@ -10,14 +10,11 @@ import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 
 import java.io.IOException;
-import java.util.Collections;
+import java.util.List;
 
-import okhttp3.CipherSuite;
-import okhttp3.ConnectionSpec;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
-import okhttp3.TlsVersion;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Response;
@@ -61,28 +58,29 @@ public class TidepoolUploader {
         Call<MAuthReply> getLogin(@Header("Authorization") String secret);
 
         @DELETE("/v1/users/{userId}/data")
-        Call<MNewDatasetReply> deleteAllData(@Header(SESSION_TOKEN_HEADER) String token, @Path("userId") String id);
+        Call<MDatasetReply> deleteAllData(@Header(SESSION_TOKEN_HEADER) String token, @Path("userId") String id);
 
         @DELETE("/v1/datasets/{dataSetId}")
-        Call<MNewDatasetReply> deleteDataSet(@Header(SESSION_TOKEN_HEADER) String token, @Path("dataSetId") String id);
+        Call<MDatasetReply> deleteDataSet(@Header(SESSION_TOKEN_HEADER) String token, @Path("dataSetId") String id);
 
-        @GET("/v1/users/{userId}/datasets")
-        Call<MGetDatasetsReply> getDataSets(@Header(SESSION_TOKEN_HEADER) String token,
-                                            @Path("userId") String id,
-                                            @Query("client.name") String clientName,
-                                            @Query("size") int size);
+        @GET("/v1/users/{userId}/data_sets")
+        Call<List<MDatasetReply>> getOpenDataSets(@Header(SESSION_TOKEN_HEADER) String token,
+                                                  @Path("userId") String id,
+                                                  @Query("client.name") String clientName,
+                                                  @Query("deviceId") String deviceId,
+                                                  @Query("size") int size);
 
         @GET("/v1/datasets/{dataSetId}")
-        Call<MNewDatasetReply> getDataSet(@Header(SESSION_TOKEN_HEADER) String token, @Path("dataSetId") String id);
+        Call<MDatasetReply> getDataSet(@Header(SESSION_TOKEN_HEADER) String token, @Path("dataSetId") String id);
 
-        @POST("/v1/users/{userId}/datasets")
-        Call<MNewDatasetReply> getStart(@Header(SESSION_TOKEN_HEADER) String token, @Path("userId") String id, @Body RequestBody body);
+        @POST("/v1/users/{userId}/data_sets")
+        Call<MDatasetReply> openDataSet(@Header(SESSION_TOKEN_HEADER) String token, @Path("userId") String id, @Body RequestBody body);
 
         @POST("/v1/datasets/{sessionId}/data")
         Call<MUploadReply> doUpload(@Header(SESSION_TOKEN_HEADER) String token, @Path("sessionId") String id, @Body RequestBody body);
 
         @PUT("/v1/datasets/{sessionId}")
-        Call<MNewDatasetReply> getStop(@Header(SESSION_TOKEN_HEADER) String token, @Path("sessionId") String id, @Body RequestBody body);
+        Call<MDatasetReply> getStop(@Header(SESSION_TOKEN_HEADER) String token, @Path("sessionId") String id, @Body RequestBody body);
 
     }
 
@@ -164,16 +162,23 @@ public class TidepoolUploader {
 
 
     private static void startSession(final Session session) {
-        if (JoH.ratelimit("tidepool-start-session", 1)) {
+        if (JoH.ratelimit("tidepool-start-session", 60)) {
 
             if (session.authReply.userid != null) {
                 // See if we already have an open data set to write to
-                Call<MGetDatasetsReply> datasetCall = session.service.getDataSets(session.token,
-                        session.authReply.userid, BuildConfig.APPLICATION_ID, 1);
-                datasetCall.enqueue(new TidepoolCallback<>(session, "Get Datasets", () -> {
-                    // FIXME: Only if data.size > 0
-                    Call<MNewDatasetReply> call = session.service.getStart(session.token, session.authReply.userid, new MNewDatasetRequest().getBody());
-                    call.enqueue(new TidepoolCallback<>(session, "Session Start", () -> doUpload(session)));
+                Call<List<MDatasetReply>> datasetCall = session.service.getOpenDataSets(session.token,
+                        session.authReply.userid, BuildConfig.APPLICATION_ID, MOpenDatasetRequest.DEVICE_ID, 1);
+
+                datasetCall.enqueue(new TidepoolCallback<>(session, "Get Open Datasets", () -> {
+                    UserError.Log.d(TAG, "Existing Dataset: " + session.getDatasetsReply);
+                    if(session.getDatasetsReply == null) {
+                        Call<MDatasetReply> call = session.service.openDataSet(session.token, session.authReply.userid, new MOpenDatasetRequest().getBody());
+                        call.enqueue(new TidepoolCallback<>(session, "Open New Dataset", () -> doUpload(session)));
+                    } else {
+                        // TODO: Wouldn't need to do this if we could block on the above `call.enqueue`.
+                        // ie, do the openDataSet conditionally, and then do `doUpload` either way.
+                        doUpload(session);
+                    }
                 }));
             } else {
                 UserError.Log.wtf(TAG, "Got login response but cannot determine userid - cannot proceed");
@@ -195,7 +200,7 @@ public class TidepoolUploader {
                 doCompleted(session);
             } else {
                 final RequestBody body = RequestBody.create(MediaType.parse("application/json"), chunk);
-                final Call<MUploadReply> call = session.service.doUpload(session.token, session.MNewDatasetReply.data.uploadId, body);
+                final Call<MUploadReply> call = session.service.doUpload(session.token, session.newDatasetReply.data.uploadId, body);
                 call.enqueue(new TidepoolCallback<>(session, "Data Upload", () -> {
                     UploadChunk.setLastEnd(session.end);
 
@@ -204,7 +209,7 @@ public class TidepoolUploader {
                         Inevitable.task("Tidepool-next", 10000, () -> doUpload(session));
                     } else {
 
-                        if (MNewDatasetRequest.isNormal()) {
+                        if (MOpenDatasetRequest.isNormal()) {
                             doClose(session);
                         } else {
                             doCompleted(session);
@@ -219,7 +224,7 @@ public class TidepoolUploader {
 
 
     private static void doClose(final Session session) {
-        final Call<MNewDatasetReply> call = session.service.getStop(session.token, session.MNewDatasetReply.data.uploadId, new MCloseDatasetRequest().getBody());
+        final Call<MDatasetReply> call = session.service.getStop(session.token, session.newDatasetReply.data.uploadId, new MCloseDatasetRequest().getBody());
         call.enqueue(new TidepoolCallback<>(session, "Session Stop", null));
     }
 
@@ -235,7 +240,7 @@ public class TidepoolUploader {
 
     private static void deleteData(final Session session) {
         if (session.authReply.userid != null) {
-            Call<MNewDatasetReply> call = session.service.deleteAllData(session.token, session.authReply.userid);
+            Call<MDatasetReply> call = session.service.deleteAllData(session.token, session.authReply.userid);
             call.enqueue(new TidepoolCallback<>(session, "Delete Data", null));
         } else {
             UserError.Log.wtf(TAG, "Got login response but cannot determine userid - cannot proceed");
@@ -243,12 +248,12 @@ public class TidepoolUploader {
     }
 
     private static void getDataSet(final Session session) {
-        Call<MNewDatasetReply> call = session.service.getDataSet(session.token, "bogus");
+        Call<MDatasetReply> call = session.service.getDataSet(session.token, "bogus");
         call.enqueue(new TidepoolCallback<>(session, "Get Data", null));
     }
 
     private static void deleteDataSet(final Session session) {
-        Call<MNewDatasetReply> call = session.service.deleteDataSet(session.token, "bogus");
+        Call<MDatasetReply> call = session.service.deleteDataSet(session.token, "bogus");
         call.enqueue(new TidepoolCallback<>(session, "Delete Data", null));
     }
 

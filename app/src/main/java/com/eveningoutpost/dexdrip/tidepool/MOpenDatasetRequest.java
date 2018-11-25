@@ -10,9 +10,10 @@ import java.util.TimeZone;
 
 import static com.eveningoutpost.dexdrip.Models.JoH.getTimeZoneOffsetMs;
 
-public class MNewDatasetRequest extends BaseMessage {
+public class MOpenDatasetRequest extends BaseMessage {
 
     static final String UPLOAD_TYPE = "continuous";
+    static final String DEVICE_ID = "123"; // FIXME: This should be derived from the device
 
     @Expose
     public String deviceId;
@@ -37,7 +38,7 @@ public class MNewDatasetRequest extends BaseMessage {
     public String deviceSerialNumber = "123456";
     @Expose
     public String[] deviceTags = {"bgm", "cgm", "insulin-pump"};
-    //@Expose
+    @Expose
     public Deduplicator deduplicator = new Deduplicator();
     @Expose
     public String timeProcessing = "none";
@@ -46,8 +47,8 @@ public class MNewDatasetRequest extends BaseMessage {
     @Expose
     public String version = BuildConfig.VERSION_NAME;
 
-    MNewDatasetRequest() {
-        deviceId = "123";
+    MOpenDatasetRequest() {
+        deviceId = DEVICE_ID;
     }
 
     class ClientInfo {

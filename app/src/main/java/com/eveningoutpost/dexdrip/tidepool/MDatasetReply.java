@@ -2,7 +2,7 @@ package com.eveningoutpost.dexdrip.tidepool;
 
 import java.util.List;
 
-public class MNewDatasetReply {
+public class MDatasetReply {
 
     Data data;
 
