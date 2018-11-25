@@ -14,5 +14,8 @@ public class WholeHouse {
         return false;
     }
 
+    public static boolean isRpi() {
+        return false;
+    }
 
 }
