@@ -66,5 +66,4 @@ public class MOpenDatasetRequest extends BaseMessage {
     static boolean isNormal() {
         return UPLOAD_TYPE.equals("normal");
     }
-
 }

@@ -18,14 +18,14 @@ public class EBolus extends BaseElement {
         type = "bolus";
     }
 
-    EBolus(double insulinDelivered, double insulinExpected, long timestamp) {
+    EBolus(double insulinDelivered, double insulinExpected, long timestamp, String uuid) {
         this.normal = insulinDelivered;
         this.expectedNormal = insulinExpected;
-        populate(timestamp);
+        populate(timestamp, uuid);
     }
 
     public static EBolus fromTreatment(Treatments treatment) {
-        return new EBolus(treatment.insulin, treatment.insulin, treatment.timestamp);
+        return new EBolus(treatment.insulin, treatment.insulin, treatment.timestamp, treatment.uuid);
     }
 
 }

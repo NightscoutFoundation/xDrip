@@ -22,13 +22,13 @@ public class EWizard extends BaseElement {
     }
 
     public static EWizard fromTreatment(final Treatments treatment) {
-        final EWizard result = (EWizard)new EWizard().populate(treatment.timestamp);
+        final EWizard result = (EWizard)new EWizard().populate(treatment.timestamp, treatment.uuid);
         result.carbInput = treatment.carbs;
         result.insulinCarbRatio = Profile.getCarbRatio(treatment.timestamp);
         if (treatment.insulin > 0) {
-            result.bolus = new EBolus(treatment.insulin, treatment.insulin, treatment.timestamp);
+            result.bolus = new EBolus(treatment.insulin, treatment.insulin, treatment.timestamp, treatment.uuid);
         } else {
-            result.bolus = new EBolus(0.0001,0.0001, treatment.timestamp); // fake insulin record
+            result.bolus = new EBolus(0.0001,0.0001, treatment.timestamp, treatment.uuid); // fake insulin record
         }
         return result;
         }

@@ -25,7 +25,7 @@ class EBloodGlucose extends BaseElement {
 
     static EBloodGlucose fromBloodTest(final BloodTest bloodtest) {
         final EBloodGlucose bg = new EBloodGlucose();
-        bg.populate(bloodtest.timestamp);
+        bg.populate(bloodtest.timestamp, bloodtest.uuid);
 
         bg.subType = "manual"; // TODO
         bg.value = (int) bloodtest.mgdl;

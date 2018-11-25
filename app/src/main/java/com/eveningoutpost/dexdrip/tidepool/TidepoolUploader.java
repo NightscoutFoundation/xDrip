@@ -44,7 +44,8 @@ public class TidepoolUploader {
     private static final boolean REPEAT = false;
 
     private static Retrofit retrofit;
-    private static final String BASE_URL = "https://int-api.tidepool.org";
+//    private static final String BASE_URL = "https://int-api.tidepool.org";
+    private static final String BASE_URL = "https://132e3caa.ngrok.io";
     private static final String SESSION_TOKEN_HEADER = "x-tidepool-session-token";
 
     public interface Tidepool {
@@ -80,7 +81,7 @@ public class TidepoolUploader {
         Call<MUploadReply> doUpload(@Header(SESSION_TOKEN_HEADER) String token, @Path("sessionId") String id, @Body RequestBody body);
 
         @PUT("/v1/datasets/{sessionId}")
-        Call<MDatasetReply> getStop(@Header(SESSION_TOKEN_HEADER) String token, @Path("sessionId") String id, @Body RequestBody body);
+        Call<MDatasetReply> closeDataSet(@Header(SESSION_TOKEN_HEADER) String token, @Path("sessionId") String id, @Body RequestBody body);
 
     }
 
@@ -170,8 +171,8 @@ public class TidepoolUploader {
                         session.authReply.userid, BuildConfig.APPLICATION_ID, MOpenDatasetRequest.DEVICE_ID, 1);
 
                 datasetCall.enqueue(new TidepoolCallback<>(session, "Get Open Datasets", () -> {
-                    UserError.Log.d(TAG, "Existing Dataset: " + session.getDatasetsReply);
-                    if(session.getDatasetsReply == null) {
+                    UserError.Log.d(TAG, "Existing Dataset: " + session.datasetReply);
+                    if(session.datasetReply == null) {
                         Call<MDatasetReply> call = session.service.openDataSet(session.token, session.authReply.userid, new MOpenDatasetRequest().getBody());
                         call.enqueue(new TidepoolCallback<>(session, "Open New Dataset", () -> doUpload(session)));
                     } else {
@@ -200,7 +201,7 @@ public class TidepoolUploader {
                 doCompleted(session);
             } else {
                 final RequestBody body = RequestBody.create(MediaType.parse("application/json"), chunk);
-                final Call<MUploadReply> call = session.service.doUpload(session.token, session.newDatasetReply.data.uploadId, body);
+                final Call<MUploadReply> call = session.service.doUpload(session.token, session.datasetReply.data.uploadId, body);
                 call.enqueue(new TidepoolCallback<>(session, "Data Upload", () -> {
                     UploadChunk.setLastEnd(session.end);
 
@@ -224,7 +225,7 @@ public class TidepoolUploader {
 
 
     private static void doClose(final Session session) {
-        final Call<MDatasetReply> call = session.service.getStop(session.token, session.newDatasetReply.data.uploadId, new MCloseDatasetRequest().getBody());
+        final Call<MDatasetReply> call = session.service.closeDataSet(session.token, session.datasetReply.data.uploadId, new MCloseDatasetRequest().getBody());
         call.enqueue(new TidepoolCallback<>(session, "Session Stop", null));
     }
 

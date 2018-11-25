@@ -24,7 +24,7 @@ import static com.eveningoutpost.dexdrip.Models.JoH.dateTimeText;
 
 public class UploadChunk {
 
-    private static final String TAG = "TidePoolUploadChunk";
+    private static final String TAG = "TidepoolUploadChunk";
     private static final String LAST_UPLOAD_END_PREF = "tidepool-last-end";
 
     private static final long MAX_UPLOAD_SIZE = Constants.DAY_IN_MS * 3;
@@ -124,7 +124,8 @@ public class UploadChunk {
                 }
             }
             if (current == null) {
-                current = new EBasal(this_rate, apStatus.timestamp, 0); // start duration is 0
+                // TODO: UUID should not be hard-coded
+                current = new EBasal(this_rate, apStatus.timestamp, 0, "99deff51-91b0-4a51-9ad4-a38913fbed5f"); // start duration is 0
             }
         }
         return basals;

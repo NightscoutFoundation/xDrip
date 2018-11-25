@@ -26,11 +26,11 @@ public class EBasal extends BaseElement {
         type = "basal";
     }
 
-    EBasal(double rate, long timeStart, long duration) {
+    EBasal(double rate, long timeStart, long duration, String uuid) {
         this.timestamp = timeStart;
         this.rate = rate;
         this.duration = duration;
-        populate(timeStart);
+        populate(timeStart, uuid);
     }
 
     boolean isValid() {

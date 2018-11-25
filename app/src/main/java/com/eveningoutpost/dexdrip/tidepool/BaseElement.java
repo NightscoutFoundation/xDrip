@@ -2,6 +2,8 @@ package com.eveningoutpost.dexdrip.tidepool;
 
 import com.google.gson.annotations.Expose;
 
+import lombok.AllArgsConstructor;
+
 /**
  * jamorham
  *
@@ -19,14 +21,22 @@ public abstract class BaseElement {
     public int timezoneOffset;
     @Expose
     public String type;
+    @Expose
+    public Origin origin;
 
 
-    BaseElement populate(final long timestamp) {
+    BaseElement populate(final long timestamp, final String uuid) {
         deviceTime = DateUtil.toFormatNoZone(timestamp);
         time = DateUtil.toFormatAsUTC(timestamp);
         timezoneOffset = DateUtil.getTimeZoneOffsetMinutes(timestamp); // TODO
-        deviceId = "42"; // TODO
+        deviceId = MOpenDatasetRequest.DEVICE_ID; // TODO
+        origin = new Origin(uuid);
         return this;
     }
 
+    @AllArgsConstructor
+    public class Origin {
+        @Expose
+        String id;
+    }
 }

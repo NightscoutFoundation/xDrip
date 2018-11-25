@@ -16,8 +16,7 @@ public class Session {
 
     String token;
     MAuthReply authReply;
-    MDatasetReply getDatasetsReply;
-    MDatasetReply newDatasetReply;
+    MDatasetReply datasetReply;
     long start;
     long end;
     volatile int iterations;
@@ -41,10 +40,10 @@ public class Session {
         } else if (obj instanceof List) {
             List list = (List)obj;
             if (list.size() > 0 && list.get(0) instanceof MDatasetReply) {
-                getDatasetsReply = (MDatasetReply) list.get(0);
+                datasetReply = (MDatasetReply) list.get(0);
             }
         } else if (obj instanceof MDatasetReply) {
-            newDatasetReply = (MDatasetReply) obj;
+            datasetReply = (MDatasetReply) obj;
         }
     }
 

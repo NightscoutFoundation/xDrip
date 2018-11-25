@@ -24,7 +24,7 @@ public class ESensorGlucose extends BaseElement {
 
     static ESensorGlucose fromBgReading(final BgReading bgReading) {
         final ESensorGlucose sensorGlucose = new ESensorGlucose();
-        sensorGlucose.populate(bgReading.timestamp);
+        sensorGlucose.populate(bgReading.timestamp, bgReading.uuid);
         sensorGlucose.value = (int) bgReading.calculated_value; // TODO best glucose?
         return sensorGlucose;
     }
