@@ -18,7 +18,7 @@ public class WholeHouse {
     }
 
     public static boolean isLive() {
-        return isEnabled() && isAndroidTV();
+        return isEnabled() && (isRpi() || isAndroidTV());
     }
 
     public static boolean isRpi() {
