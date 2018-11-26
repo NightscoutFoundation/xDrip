@@ -16,7 +16,9 @@ public class ModelFeatures {
 
         switch (model) {
 
+            case "W3":
             case "F3S":
+            case "F11":
                 return 7;
 
             case "F3":          // doesn't id by string
