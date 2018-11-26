@@ -13,6 +13,7 @@ import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Services.JamBaseBluetoothSequencer;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.store.FastStore;
 import com.eveningoutpost.dexdrip.store.KeyStore;
 import com.eveningoutpost.dexdrip.watch.lefun.messages.BaseRx;
@@ -29,6 +30,9 @@ import com.eveningoutpost.dexdrip.watch.lefun.messages.TxShakeDetect;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.polidea.rxandroidble.RxBleDeviceServices;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -37,8 +41,11 @@ import rx.schedulers.Schedulers;
 import static com.eveningoutpost.dexdrip.Models.ActiveBgAlert.currentlyAlerting;
 import static com.eveningoutpost.dexdrip.Models.JoH.bytesToHex;
 import static com.eveningoutpost.dexdrip.Models.JoH.emptyString;
+import static com.eveningoutpost.dexdrip.Models.JoH.msTill;
+import static com.eveningoutpost.dexdrip.Models.JoH.niceTimeScalar;
 import static com.eveningoutpost.dexdrip.Models.JoH.roundDouble;
 import static com.eveningoutpost.dexdrip.Services.JamBaseBluetoothSequencer.BaseState.CLOSE;
+import static com.eveningoutpost.dexdrip.Services.JamBaseBluetoothSequencer.BaseState.DISCOVER;
 import static com.eveningoutpost.dexdrip.Services.JamBaseBluetoothSequencer.BaseState.INIT;
 import static com.eveningoutpost.dexdrip.UtilityModels.Unitized.mmolConvert;
 import static com.eveningoutpost.dexdrip.watch.lefun.Const.REPLY_CHARACTERISTIC;
@@ -128,6 +135,8 @@ public class LeFunService extends JamBaseBluetoothSequencer {
     }
 
 
+    private static final UUID[] huntCharacterstics = new UUID[]{REPLY_CHARACTERISTIC};
+
     @Override
     protected void onServicesDiscovered(RxBleDeviceServices services) {
         boolean found = false;
@@ -136,12 +145,16 @@ public class LeFunService extends JamBaseBluetoothSequencer {
             for (BluetoothGattCharacteristic characteristic : service.getCharacteristics()) {
                 UserError.Log.d(TAG, "-- Character: " + getUUIDName(characteristic.getUuid()));
 
-                if (characteristic.getUuid().equals(REPLY_CHARACTERISTIC)) {
-                    found = true;
+                for (final UUID check : huntCharacterstics) {
+                    if (characteristic.getUuid().equals(check)) {
+                        I.readCharacteristic = check;
+                        found = true;
+                    }
                 }
             }
         }
         if (found) {
+            I.isDiscoveryComplete = true;
             enableNotification();
         } else {
             UserError.Log.e(TAG, "Could not find characteristic during service discovery. This is very unusual");
@@ -156,7 +169,11 @@ public class LeFunService extends JamBaseBluetoothSequencer {
             UserError.Log.d(TAG, "Cannot enable as connection is null!");
             return;
         }
-        I.connection.setupNotification(REPLY_CHARACTERISTIC)
+        if (I.readCharacteristic == null) {
+            UserError.Log.d(TAG, "Cannot enable as read characterstic is null");
+            return;
+        }
+        I.connection.setupNotification(I.readCharacteristic)
                 .timeout(630, TimeUnit.SECONDS) // WARN
                 //.observeOn(Schedulers.newThread()) // needed?
                 .doOnNext(notificationObservable -> {
@@ -261,7 +278,7 @@ public class LeFunService extends JamBaseBluetoothSequencer {
 
     private void prototype() {
 
-        LeFun.sendAlert("TEST","12.3");
+        LeFun.sendAlert("TEST", "12.3");
       /*  new QueueMe()
                 .setBytes(new TxSetLang().getBytes())
                 .setDescription("Set prototype lang")
@@ -387,10 +404,14 @@ public class LeFunService extends JamBaseBluetoothSequencer {
         UserError.Log.d(TAG, "Automata called in LeFun");
 
         if (alwaysConnected()) {
-
-            if (I.isConnected && !I.isNotificationEnabled) {
-                UserError.Log.d(TAG, "Notifications not enabled");
-                I.state = ENABLE_NOTIFICATIONS;
+            if ((I.isConnected) && !I.state.equals(CLOSE)) {
+                if (!I.isDiscoveryComplete) {
+                    UserError.Log.d(TAG, "Services not discovered");
+                    I.state = DISCOVER;
+                } else if (!I.isNotificationEnabled) {
+                    UserError.Log.d(TAG, "Notifications not enabled");
+                    I.state = ENABLE_NOTIFICATIONS;
+                }
             }
 
             switch (I.state) {
@@ -460,4 +481,30 @@ public class LeFunService extends JamBaseBluetoothSequencer {
     }
 
 
+    // Mega Status
+    public static List<StatusItem> megaStatus() {
+
+        final List<StatusItem> l = new ArrayList<>();
+        final Inst II = Inst.get(LeFunService.class.getSimpleName());
+
+        l.add(new StatusItem("Model", LeFun.getModel()));
+        l.add(new StatusItem("Mac address", LeFun.getMac()));
+
+        l.add(new StatusItem("Connected", II.isConnected ? "Yes" : "No"));
+        if (II.wakeup_time != 0) {
+            final long till = msTill(II.wakeup_time);
+            if (till > 0) l.add(new StatusItem("Wake Up", niceTimeScalar(till)));
+        }
+        // if (II.retry_time != 0) {
+        //    l.add(new StatusItem("Retry", niceTimeScalar(msTill(II.retry_time))));
+        //  }
+        l.add(new StatusItem("State", II.state));
+
+        final int qsize = II.getQueueSize();
+        if (qsize > 0) {
+            l.add(new StatusItem("Queue", qsize + " items"));
+        }
+
+        return l;
+    }
 }
