@@ -76,6 +76,9 @@ public abstract class JamBaseBluetoothSequencer extends JamBaseBluetoothService 
         public volatile String address;
         public volatile boolean isConnected;
         public volatile boolean isNotificationEnabled;
+        public volatile boolean isDiscoveryComplete;
+        public volatile UUID readCharacteristic;
+        public volatile UUID writeCharacteristic;
         public volatile String state;
         public volatile UUID queue_write_characterstic;
         public volatile long lastProcessedIncomingData = -1;
@@ -108,6 +111,10 @@ public abstract class JamBaseBluetoothSequencer extends JamBaseBluetoothService 
                 singletons.put(id, singleton);
                 return singleton;
             }
+        }
+
+        public int getQueueSize() {
+            return write_queue.size();
         }
 
     }
