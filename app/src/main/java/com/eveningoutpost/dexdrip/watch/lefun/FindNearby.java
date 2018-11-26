@@ -23,6 +23,7 @@ public class FindNearby implements BtCallBack {
         scanMeister
                 .setName("Lefun")
                 .setName("F3")
+                .setName("W3")
                 .addCallBack(this, TAG).scan();
     }
 
