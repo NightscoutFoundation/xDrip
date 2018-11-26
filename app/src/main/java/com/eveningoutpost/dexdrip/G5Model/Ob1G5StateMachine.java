@@ -21,8 +21,10 @@ import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.NotificationChannels;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.UtilityModels.WholeHouse;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.PowerStateReceiver;
+import com.eveningoutpost.dexdrip.utils.bt.Mimeograph;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.gson.reflect.TypeToken;
@@ -420,7 +422,7 @@ public class Ob1G5StateMachine {
         if (connection == null) return false;
         // TODO switch modes depending on conditions as to whether we are using internal
         final boolean use_g5_internal_alg = Pref.getBooleanDefaultFalse("ob1_g5_use_transmitter_alg");
-        UserError.Log.d(TAG, use_g5_internal_alg ? ("Requesting Glucose Data " + (getEGlucose() ? "G6" : "G5")) : "Requesting Sensor Data");
+        UserError.Log.d(TAG, use_g5_internal_alg ? ("Requesting Glucose Data " + (usingG6() ? "G6" : "G5")) : "Requesting Sensor Data");
 
         if (!use_g5_internal_alg) {
             parent.lastSensorStatus = null; // not applicable
@@ -904,6 +906,22 @@ public class Ob1G5StateMachine {
         }
     }
 
+    public static boolean deleteFirstQueueCalibration(final int mgdl) {
+        synchronized (commandQueue) {
+            final Ob1Work item = commandQueue.peek();
+            if (item != null) {
+                if (item.msg instanceof CalibrateTxMessage) {
+                    final CalibrateTxMessage cal = (CalibrateTxMessage) item.msg;
+                    if (mgdl == -1 || cal.glucose == mgdl) {
+                        commandQueue.poll(); // eat this entry
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     public static String getFirstQueueItemName() {
         synchronized (commandQueue) {
             final Ob1Work item = commandQueue.peek();
@@ -1128,6 +1146,10 @@ public class Ob1G5StateMachine {
                 BroadcastGlucose.sendLocalBroadcast(bgReading);
             }
 
+            if (WholeHouse.isLive()) {
+                Mimeograph.poll(false);
+            }
+
         } else {
             // TODO this is duplicated in processCalibrationState()
             if (glucose.calibrationState().sensorFailed()) {
@@ -1159,6 +1181,10 @@ public class Ob1G5StateMachine {
         } else {
             final boolean g6 = usingG6();
             processNewTransmitterData(g6 ? sensorRx.unfiltered * G6_SCALING : sensorRx.unfiltered, g6 ? sensorRx.filtered * G6_SCALING : sensorRx.filtered, sensor_battery_level, new Date().getTime());
+        }
+
+        if (WholeHouse.isLive()) {
+            Mimeograph.poll(false);
         }
     }
 
@@ -1490,15 +1516,16 @@ public class Ob1G5StateMachine {
     }
 
     private static boolean getEGlucose() {
-        if (android_wear) {
+       // if (android_wear) {
             return usingG6() && Pref.getBooleanDefaultFalse("show_g_prediction");
-        } else {
-            return usingG6();
-        }
+      //  } else {
+     //       return usingG6();
+      //  }
     }
 
     public static boolean usingAlt() {
-        return android_wear && !Pref.getBooleanDefaultFalse("only_ever_use_wear_collector");
+        return (android_wear && !Pref.getBooleanDefaultFalse("only_ever_use_wear_collector"))
+                || WholeHouse.isLive();
     }
 
     private static class OperationSuccess extends RuntimeException {
