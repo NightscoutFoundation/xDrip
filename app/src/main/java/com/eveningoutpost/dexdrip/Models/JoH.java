@@ -1620,7 +1620,7 @@ public class JoH {
         }
     }
 
-    public static boolean emptyString(String str) {
+    public static boolean emptyString(final String str) {
         return str == null || str.length() == 0;
     }
 
