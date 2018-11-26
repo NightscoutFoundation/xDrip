@@ -48,7 +48,6 @@ import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
 import com.eveningoutpost.dexdrip.cgm.medtrum.MedtrumCollectionService;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
-import com.eveningoutpost.dexdrip.watch.lefun.LeFun;
 import com.eveningoutpost.dexdrip.watch.lefun.LeFunEntry;
 import com.eveningoutpost.dexdrip.watch.lefun.LeFunService;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
@@ -586,9 +585,9 @@ public class MegaStatus extends ActivityWithMenu {
 
                 final int new_colour = row.highlight.color();
                 //if (new_colour != -1) {
-                    viewHolder.value.setBackgroundColor(new_colour);
-                    viewHolder.spacer.setBackgroundColor(new_colour);
-                    viewHolder.name.setBackgroundColor(new_colour);
+                viewHolder.value.setBackgroundColor(new_colour);
+                viewHolder.spacer.setBackgroundColor(new_colour);
+                viewHolder.name.setBackgroundColor(new_colour);
                 //}
                 view.setOnClickListener(null); // reset
                 if ((row.runnable != null) && (row.button_name != null) && (row.button_name.equals("long-press"))) {
