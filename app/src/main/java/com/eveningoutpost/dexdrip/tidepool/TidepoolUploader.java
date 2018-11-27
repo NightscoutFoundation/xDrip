@@ -7,7 +7,6 @@ import com.eveningoutpost.dexdrip.BuildConfig;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 
 import java.io.IOException;
 import java.util.List;
@@ -44,8 +43,8 @@ public class TidepoolUploader {
     private static final boolean REPEAT = false;
 
     private static Retrofit retrofit;
-//    private static final String BASE_URL = "https://int-api.tidepool.org";
-    private static final String BASE_URL = "https://132e3caa.ngrok.io";
+    private static final String BASE_URL = "https://int-api.tidepool.org";
+   // private static final String BASE_URL = "https://132e3caa.ngrok.io";
     private static final String SESSION_TOKEN_HEADER = "x-tidepool-session-token";
 
     public interface Tidepool {
@@ -108,7 +107,7 @@ public class TidepoolUploader {
     }
 
     public static void doLogin() {
-        if (!enabled()) {
+        if (!TidepoolEntry.enabled()) {
             UserError.Log.d(TAG,"Cannot login as disabled by preference");
             return;
         }
@@ -189,7 +188,7 @@ public class TidepoolUploader {
 
 
     private static void doUpload(final Session session) {
-        if (!enabled()) {
+        if (!TidepoolEntry.enabled()) {
             UserError.Log.e(TAG,"Cannot upload - preference disabled");
             return;
         }
@@ -201,7 +200,7 @@ public class TidepoolUploader {
                 doCompleted(session);
             } else {
                 final RequestBody body = RequestBody.create(MediaType.parse("application/json"), chunk);
-                final Call<MUploadReply> call = session.service.doUpload(session.token, session.datasetReply.data.uploadId, body);
+                final Call<MUploadReply> call = session.service.doUpload(session.token, session.datasetReply.getUploadId(), body);
                 call.enqueue(new TidepoolCallback<>(session, "Data Upload", () -> {
                     UploadChunk.setLastEnd(session.end);
 
@@ -225,16 +224,12 @@ public class TidepoolUploader {
 
 
     private static void doClose(final Session session) {
-        final Call<MDatasetReply> call = session.service.closeDataSet(session.token, session.datasetReply.data.uploadId, new MCloseDatasetRequest().getBody());
+        final Call<MDatasetReply> call = session.service.closeDataSet(session.token, session.datasetReply.getUploadId(), new MCloseDatasetRequest().getBody());
         call.enqueue(new TidepoolCallback<>(session, "Session Stop", null));
     }
 
     private static void doCompleted(final Session session) {
         UserError.Log.d(TAG, "ALL COMPLETED OK!");
-    }
-
-    public static boolean enabled() {
-        return Pref.getBooleanDefaultFalse("cloud_storage_tidepool_enable");
     }
 
     // experimental - not used
