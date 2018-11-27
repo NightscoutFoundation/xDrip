@@ -33,4 +33,15 @@ public class MDatasetReply {
 
     }
 
+
+    // openDataSet and others return this in the root of the json reply it seems
+    String id;
+    String uploadId;
+
+    public String getUploadId() {
+        return (data != null && data.uploadId != null) ? data.uploadId : uploadId;
+    }
+
+
+
 }
