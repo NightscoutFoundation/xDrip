@@ -33,7 +33,13 @@ public class UploadChunk {
     public static String getNext(final Session session) {
         session.start = getLastEnd();
         session.end = maxWindow(session.start);
-        return get(session.start, session.end);
+
+        final String result = get(session.start, session.end);
+        if (result != null && result.length() < 3) {
+            UserError.Log.d(TAG, "No records in this time period, setting start to best end time");
+            setLastEnd(Math.max(session.end, getOldestRecordTimeStamp()));
+        }
+        return result;
     }
 
     public static String get(final long start, final long end) {
@@ -92,7 +98,21 @@ public class UploadChunk {
         return result;
     }
 
+
     // numeric limits must match max time windows
+
+    static long getOldestRecordTimeStamp() {
+        // TODO we could make sure we include records older than the first bg record for completeness
+
+        final long start = 0;
+        final long end = JoH.tsl();
+
+        final List<BgReading> bgReadingList = BgReading.latestForGraphAsc(1, start, end);
+        if (bgReadingList != null && bgReadingList.size() > 0) {
+            return bgReadingList.get(0).timestamp;
+        }
+        return -1;
+    }
 
     static List<EBloodGlucose> getBloodTests(final long start, final long end) {
         return EBloodGlucose.fromBloodTests(BloodTest.latestForGraph(600, start, end));
