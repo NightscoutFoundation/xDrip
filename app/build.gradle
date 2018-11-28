@@ -229,6 +229,7 @@ dependencies {
     implementation 'com.squareup.okhttp3:logging-interceptor:3.10.0'
     //implementation 'com.jakewharton.retrofit:retrofit1-okhttp3-client:1.1.0'
     implementation 'com.squareup.retrofit2:retrofit:2.4.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.1.0'
     implementation 'com.squareup.retrofit2:converter-moshi:2.4.0'
     implementation 'com.squareup.moshi:moshi:1.4.0'
     //implementation 'org.influxdb:influxdb-java:2.6'
