@@ -6,6 +6,7 @@ import android.util.Pair;
 
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.watch.lefun.messages.TxSetFeatures;
+import com.eveningoutpost.dexdrip.watch.lefun.messages.TxSetLocaleFeature;
 import com.eveningoutpost.dexdrip.watch.lefun.messages.TxSetScreens;
 
 import java.util.ArrayList;
@@ -36,6 +37,8 @@ public class PrefBinding {
         add("lefun_feature_camera", TxSetFeatures.CAMERA);
         add("lefun_feature_anti_lost", TxSetFeatures.ANTI_LOST);
 
+        add("lefun_locale_12_hour", TxSetLocaleFeature.CLOCK_FORMAT_12_HOUR);
+
     }
 
     public static PrefBinding getInstance() {
@@ -60,5 +63,16 @@ public class PrefBinding {
         }
         return results;
     }
+
+    public List<Pair<Integer, Boolean>> getStates(final String prefix) {
+        final List<Pair<Integer, Boolean>> results = new ArrayList<>();
+        for (Pair<String, Integer> pair : items) {
+            if (pair.first.startsWith(prefix)) {
+                results.add(new Pair<>(pair.second, Pref.getBooleanDefaultFalse(pair.first)));
+            }
+        }
+        return results;
+    }
+
 
 }

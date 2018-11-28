@@ -274,8 +274,10 @@
                     <CheckBoxPreference
                         android:key="lefun_feature_anti_lost"
                         android:title="Disconnect Alert" />
-
-
+                    <CheckBoxPreference
+                        android:key="lefun_locale_12_hour"
+                        android:defaultValue="true"
+                        android:title="Use 12 Hour Clock"/>
                 </PreferenceCategory>
 
                 <PreferenceCategory android:title="Screens">

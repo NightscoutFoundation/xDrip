@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
 import android.content.Intent;
 import android.os.PowerManager;
+import android.util.Pair;
 
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.Models.BgReading;
@@ -24,6 +25,7 @@ import com.eveningoutpost.dexdrip.watch.lefun.messages.RxShake;
 import com.eveningoutpost.dexdrip.watch.lefun.messages.TxAlert;
 import com.eveningoutpost.dexdrip.watch.lefun.messages.TxPing;
 import com.eveningoutpost.dexdrip.watch.lefun.messages.TxSetFeatures;
+import com.eveningoutpost.dexdrip.watch.lefun.messages.TxSetLocaleFeature;
 import com.eveningoutpost.dexdrip.watch.lefun.messages.TxSetScreens;
 import com.eveningoutpost.dexdrip.watch.lefun.messages.TxSetTime;
 import com.eveningoutpost.dexdrip.watch.lefun.messages.TxShakeDetect;
@@ -249,9 +251,17 @@ public class LeFunService extends JamBaseBluetoothSequencer {
 
     private void sendSettings() {
 
-        BaseTx screens = new TxSetScreens();
-
         probeModelTypeIfUnknown();
+
+        for (Pair<Integer, Boolean> lState : PrefBinding.getInstance().getStates("lefun_locale_")) {
+            new QueueMe()
+                    .setBytes(new TxSetLocaleFeature(lState.first, lState.second).getBytes())
+                    .setDescription("Set Locale Features")
+                    .expectReply().expireInSeconds(30)
+                    .queue();
+        }
+
+        BaseTx screens = new TxSetScreens();
 
         for (int screen : PrefBinding.getInstance().getEnabled("lefun_screen")) {
             screens.enable(screen);
@@ -261,7 +271,6 @@ public class LeFunService extends JamBaseBluetoothSequencer {
                 .setDescription("Set screens for: ")
                 .expectReply().expireInSeconds(30)
                 .queue();
-
 
         BaseTx features = new TxSetFeatures();
         for (int feature : PrefBinding.getInstance().getEnabled("lefun_feature")) {
@@ -337,7 +346,7 @@ public class LeFunService extends JamBaseBluetoothSequencer {
                     .setBytes(new TxShakeDetect(false).getBytes())
                     .setDescription("Disable Shake detection")
                     .expectReply().expireInSeconds(60)
-                    //    .setRunnable(canceller) // disable to test without alert in progress
+                    .setRunnable(canceller)
                     .queue();
 
             new QueueMe()
@@ -408,7 +417,7 @@ public class LeFunService extends JamBaseBluetoothSequencer {
                 if (!I.isDiscoveryComplete) {
                     UserError.Log.d(TAG, "Services not discovered");
                     I.state = DISCOVER;
-                } else if (!I.isNotificationEnabled) {
+                } else if ((!I.isNotificationEnabled) && (JoH.ratelimit("lefun-enable-notifications", 2))) {
                     UserError.Log.d(TAG, "Notifications not enabled");
                     I.state = ENABLE_NOTIFICATIONS;
                 }
