@@ -3,9 +3,9 @@ package com.eveningoutpost.dexdrip.utils;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.AppCompatActivity;
 
 import com.eveningoutpost.dexdrip.BaseAppCompatActivity;
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.NavDrawerBuilder;
 import com.eveningoutpost.dexdrip.NavigationDrawerFragment;
@@ -45,10 +45,14 @@ public abstract class ActivityWithMenu extends BaseAppCompatActivity implements 
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         NavDrawerBuilder navDrawerBuilder = new NavDrawerBuilder(getApplicationContext());
-        List<String> menu_option_list = navDrawerBuilder.nav_drawer_options;
-        List<Intent> intent_list = navDrawerBuilder.nav_drawer_intents;
+        //List<String> menu_option_list = navDrawerBuilder.nav_drawer_options;
+        final List<Intent> intent_list = navDrawerBuilder.nav_drawer_intents;
         if (position != menu_position) {
-            startActivity(intent_list.get(position));
+            if (position >= intent_list.size()) {
+                JoH.static_toast_long("Menu got confused! try again or report this error");
+            } else {
+                startActivity(intent_list.get(position));
+            }
             //do not close activity if it is the Launcher or "Home".
             if (!getMenuName().equalsIgnoreCase(getString(R.string.home_screen))) {
                 finish();

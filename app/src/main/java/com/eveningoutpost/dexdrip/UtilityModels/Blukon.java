@@ -82,7 +82,8 @@ public class Blukon {
         // then we will never get reset due to missed reading service restarts
         long m_minutesDiff = 0;
 
-        m_minutesDiff = (long) ((((JoH.tsl() - m_timeLastCmdReceived) / 1000) + 30) / 60);
+        m_minutesDiff = (long) (JoH.msSince(m_timeLastCmdReceived) / Constants.MINUTE_IN_MS);
+
         Log.i(TAG, "m_minutesDiff to last cmd=" + m_minutesDiff + ", last cmd received at: " + JoH.dateTimeText(m_timeLastCmdReceived));
 
         if (m_communicationStarted) {
@@ -101,9 +102,7 @@ public class Blukon {
     }
 
     public static void initialize() {
-            Log.i(TAG, "initialize!");
-            Pref.setInt("bridge_battery", 0); //force battery to no-value before first reading
-            Pref.setInt("nfc_sensor_age", 0); //force sensor age to no-value before first reading
+            Log.i(TAG, "initialize Blukon!");
             JoH.clearRatelimit(BLUKON_GETSENSORAGE_TIMER);
             m_getNowGlucoseDataCommand = false;
             m_getNowGlucoseDataIndexCommand = false;
@@ -236,7 +235,8 @@ private static final int POSITION_OF_SENSOR_STATUS_BYTE = 17;
 
         // calculate time delta to last valid BG reading
         m_persistentTimeLastBg = PersistentStore.getLong("blukon-time-of-last-reading");
-        m_minutesDiffToLastReading = (int) ((((JoH.tsl() - m_persistentTimeLastBg) / 1000) + 30) / 60);
+        m_minutesDiffToLastReading = (int) (((JoH.msSince(m_persistentTimeLastBg) / 1000) + 30) / 60);
+
         Log.i(TAG, "m_minutesDiffToLastReading=" + m_minutesDiffToLastReading + ", last reading: " + JoH.dateTimeText(m_persistentTimeLastBg));
 
         // Get history if the last reading is older than we can reasonably backfill
@@ -258,7 +258,8 @@ private static final int POSITION_OF_SENSOR_STATUS_BYTE = 17;
         if (strRecCmd.equalsIgnoreCase(WAKEUP_COMMAND)) {
             cmdFound = 1;
 
-            m_minutesDiffToLastReading = (int) ((((JoH.tsl() - m_persistentTimeLastBg) / 1000)) / 60);
+            m_minutesDiffToLastReading = (int) (JoH.msSince(m_persistentTimeLastBg) / Constants.MINUTE_IN_MS);
+
             Log.i(TAG, "m_minutesDiffToLastReading (no rounding)=" + m_minutesDiffToLastReading + ", last reading: " + JoH.dateTimeText(m_persistentTimeLastBg));
 
             if (m_minutesDiffToLastReading >= 4) {
@@ -438,8 +439,10 @@ private static final int POSITION_OF_SENSOR_STATUS_BYTE = 17;
                 /* LibreAlarmReceiver.CalculateFromDataTransferObject, called when processing historical data,
                  * expects the sensor age not to be updated yet, so only update the sensor age when not retrieving history.
                  */
-                if ((sensorAge > 0) && (sensorAge < 200000)) {
+                if ((sensorAge >= 0) && (sensorAge < 200000)) {
                     Pref.setInt("nfc_sensor_age", sensorAge);//in min
+                } else {
+                    Log.e(TAG, "Do not set 'nfc_sensor_age'");
                 }
                 currentCommand = GET_NOW_DATA_INDEX_COMMAND;
                 m_getNowGlucoseDataIndexCommand = true;//to avoid issue when gotNowDataIndex cmd could be same as getNowGlucoseData (case block=3)

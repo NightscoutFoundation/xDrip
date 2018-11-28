@@ -108,6 +108,10 @@ public enum CalibrationState {
         return this == WarmingUp;
     }
 
+    public boolean ok() {
+        return this == Ok;
+    }
+
     public boolean readyForBackfill() {
         return this != WarmingUp && this != Stopped && this != Unknown && this != NeedsFirstCalibration && this != NeedsSecondCalibration;
     }

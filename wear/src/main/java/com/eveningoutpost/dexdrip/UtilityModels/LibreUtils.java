@@ -1,6 +1,7 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.Models.SensorSanity;
 
 import android.util.Log;
 
@@ -111,7 +112,7 @@ public class LibreUtils {
         
         
         
-        if (allowTestingWithDeadSensor()) {
+        if (SensorSanity.allowTestingWithDeadSensor()) {
             Log.e(TAG, "Warning allow to use a dead sensor");
             return true;
         }
@@ -122,11 +123,7 @@ public class LibreUtils {
     
         return ret;
     }
-    
-    public static boolean allowTestingWithDeadSensor() {
-        return Pref.getBooleanDefaultFalse("engineering_mode") && 
-               Pref.getBooleanDefaultFalse("allow_testing_with_dead_sensor");
-    }
+
     
     // This is the function that all should read (only the correct 8 bytes)
     // Since I don't have a blukon to test, not changing decodeSerialNumber

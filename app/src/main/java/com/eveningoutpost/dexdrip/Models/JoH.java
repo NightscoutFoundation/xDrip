@@ -85,14 +85,12 @@ import java.nio.charset.Charset;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.TimeZone;
 import java.util.zip.CRC32;
 import java.util.zip.Checksum;
 import java.util.zip.Deflater;
@@ -119,6 +117,12 @@ public class JoH {
     private static final Map<String, Long> rateLimits = new HashMap<>();
 
     public static boolean buggy_samsung = false; // flag set when we detect samsung devices which do not perform to android specifications
+
+    // quick string conversion with leading zero
+    public static String qs0(double x, int digits) {
+        final String qs = qs(x, digits);
+        return qs.startsWith(".") ? "0" + qs : qs;
+    }
 
     // qs = quick string conversion of double for printing
     public static String qs(double x) {
@@ -732,6 +736,15 @@ public class JoH {
         }
     }
 
+    public static int tolerantParseInt(final String str, final int def) {
+        if (str == null) return def;
+        try {
+            return Integer.parseInt(str);
+        } catch (NumberFormatException e) {
+            return def;
+        }
+    }
+
     public static String getRFC822String(long timestamp) {
         final SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
         return dateFormat.format(new Date(timestamp));
@@ -986,6 +999,10 @@ public class JoH {
         }
     }
 
+    public static boolean validateMacAddress(final String mac) {
+        return mac != null && mac.length() == 17 && mac.matches("([\\da-fA-F]{1,2}(?:\\:|$)){6}");
+    }
+
     public static String urlEncode(String source) {
         try {
             return URLEncoder.encode(source, "UTF-8");
@@ -1014,6 +1031,18 @@ public class JoH {
     public static void startService(Class c) {
         xdrip.getAppContext().startService(new Intent(xdrip.getAppContext(), c));
     }
+
+    public static void startService(final Class c, final String... args) {
+        final Intent intent = new Intent(xdrip.getAppContext(), c);
+        if (args.length % 2 == 1) {
+            throw new RuntimeException("Odd number of args for JoH.startService");
+        }
+        for (int i = 0; i < args.length; i += 2) {
+            intent.putExtra(args[i], args[i + 1]);
+        }
+        xdrip.getAppContext().startService(intent);
+    }
+
 
     public static void startActivity(Class c) {
         xdrip.getAppContext().startActivity(getStartActivityIntent(c));
@@ -1563,11 +1592,18 @@ public class JoH {
        }
     }
 
-    public static double roundDouble(double value, int places) {
+    public static double roundDouble(final double value, int places) {
         if (places < 0) throw new IllegalArgumentException("Invalid decimal places");
         BigDecimal bd = new BigDecimal(value);
         bd = bd.setScale(places, RoundingMode.HALF_UP);
         return bd.doubleValue();
+    }
+
+    public static double roundFloat(final float value, int places) {
+        if (places < 0) throw new IllegalArgumentException("Invalid decimal places");
+        BigDecimal bd = new BigDecimal(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.floatValue();
     }
 
     public static boolean isServiceRunningInForeground(Class<?> serviceClass) {
@@ -1584,7 +1620,7 @@ public class JoH {
         }
     }
 
-    public static boolean emptyString(String str) {
+    public static boolean emptyString(final String str) {
         return str == null || str.length() == 0;
     }
 

@@ -34,10 +34,12 @@ import com.eveningoutpost.dexdrip.UtilityModels.NanoStatus;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.PumpStatus;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
+import com.eveningoutpost.dexdrip.UtilityModels.WholeHouse;
 import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
 import com.eveningoutpost.dexdrip.utils.Preferences;
 import com.eveningoutpost.dexdrip.utils.WebAppHelper;
+import com.eveningoutpost.dexdrip.utils.bt.Mimeograph;
 import com.eveningoutpost.dexdrip.wearintegration.ExternalStatusService;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.RemoteMessage;
@@ -451,8 +453,8 @@ public class GcmListenerSvc extends JamListenerSvc {
                     }
                 } else if (action.equals("bgs")) {
                     Log.i(TAG, "Received BG packet(s)");
-                    if (Home.get_follower()) {
-                        String bgs[] = payload.split("\\^");
+                    if (Home.get_follower() || WholeHouse.isEnabled()) {
+                        final String bgs[] = payload.split("\\^");
                         for (String bgr : bgs) {
                             BgReading.bgReadingInsertFromJson(bgr);
                         }
@@ -490,7 +492,7 @@ public class GcmListenerSvc extends JamListenerSvc {
                     }
                 } else if (action.equals("sensorupdate")) {
                     Log.i(TAG, "Received sensorupdate packet(s)");
-                    if (Home.get_follower()) {
+                    if (Home.get_follower() || WholeHouse.isEnabled()) {
                         GcmActivity.upsertSensorCalibratonsFromJson(payload);
                     } else {
                         Log.e(TAG, "Received sensorupdate packets but we are not set as a follower");
@@ -499,6 +501,10 @@ public class GcmListenerSvc extends JamListenerSvc {
                     if (Home.get_master()) {
                         Log.i(TAG, "Received request for sensor calibration update");
                         GcmActivity.syncSensor(Sensor.currentSensor(), false);
+                    }
+                } else if (action.equals("mimg")) {
+                    if (Home.get_master() && WholeHouse.isLive()) {
+                        Mimeograph.putXferFromJson(payload);
                     }
                 } else if (action.equals("btmm")) {
                     if (Home.get_master_or_follower() && Home.follower_or_accept_follower()) {

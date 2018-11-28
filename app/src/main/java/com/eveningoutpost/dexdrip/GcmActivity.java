@@ -507,9 +507,18 @@ public class GcmActivity extends FauxActivity {
 
     public static void sendNanoStatusUpdate(final String json) {
         if (JoH.pratelimit("gcm-nscu", 180)) {
+            UserError.Log.d(TAG, "Sending nano status update: " + json);
             sendMessage("nscu", json);
         }
     }
+
+    public static void sendMimeoGraphUpdate(final String json) {
+        if (JoH.pratelimit("gcm-mimg", 180)) {
+            UserError.Log.d(TAG, "Sending mimeograph key update: " + json);
+            sendMessage("mimg", json);
+        }
+    }
+
 
     public static void requestBGsync() {
         if (token != null) {

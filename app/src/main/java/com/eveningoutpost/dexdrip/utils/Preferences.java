@@ -67,6 +67,8 @@ import com.eveningoutpost.dexdrip.UtilityModels.pebble.watchface.InstallPebbleWa
 import com.eveningoutpost.dexdrip.WidgetUpdateService;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileEditor;
+import com.eveningoutpost.dexdrip.ui.LockScreenWallPaper;
+import com.eveningoutpost.dexdrip.watch.lefun.LeFunEntry;
 import com.eveningoutpost.dexdrip.tidepool.TidepoolUploader;
 import com.eveningoutpost.dexdrip.wearintegration.Amazfitservice;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
@@ -110,6 +112,8 @@ public class Preferences extends BasePreferenceActivity {
     private static Preference nfc_expiry_days;
 
     private static AllPrefsFragment pFragment;
+
+
 
     private void refreshFragments() {
         this.preferenceFragment = new AllPrefsFragment();
@@ -307,6 +311,14 @@ public class Preferences extends BasePreferenceActivity {
 
         refreshFragments();
         processExtraData();
+
+        // cannot be in onResume as we display dialog to set
+        try {
+            PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(preferenceFragment.lockListener.prefListener);
+        } catch (Exception e) {
+            Log.e(TAG,"Got exception registering lockListener: "+e+ " "+(preferenceFragment.lockListener == null));
+        }
+
     }
 
     @Override
@@ -317,14 +329,26 @@ public class Preferences extends BasePreferenceActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && DexCollectionType.hasBluetooth()) {
             LocationHelper.requestLocationForBluetooth(this); // double check!
         }
+        PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(LeFunEntry.prefListener);
     }
 
     @Override
     protected void onPause()
     {
-        super.onPause();
         PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(ActivityRecognizedService.prefListener);
+        PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(LeFunEntry.prefListener);
         pFragment = null;
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        try {
+            PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(preferenceFragment.lockListener.prefListener);
+        } catch (Exception e) {
+            //
+        }
+        super.onDestroy();
     }
 
     @Override
@@ -634,6 +658,8 @@ public class Preferences extends BasePreferenceActivity {
 
         SharedPreferences prefs;
 
+        public LockScreenWallPaper.PrefListener lockListener = new LockScreenWallPaper.PrefListener();
+
         private void setSummary(String pref_name) {
      /*       try {
                 // is there a cleaner way to bind these values when setting programatically?
@@ -703,6 +729,8 @@ public class Preferences extends BasePreferenceActivity {
             bindPreferenceSummaryToValue(findPreference("persistent_high_repeat_mins"));
 
             bindPreferenceTitleAppendToValueUpdateChannel(findPreference("update_channel"));
+
+
 
             profile_insulin_sensitivity_default = findPreference("profile_insulin_sensitivity_default");
             profile_carb_ratio_default = findPreference("profile_carb_ratio_default");
@@ -912,6 +940,8 @@ public class Preferences extends BasePreferenceActivity {
             final Preference enableBF = findPreference("enable_bugfender");
             final PreferenceCategory displayCategory = (PreferenceCategory) findPreference("xdrip_plus_display_category");
 
+
+            lockListener.setSummaryPreference(findPreference("pick_numberwall_start"));
 
             final Preference enableAmazfit = findPreference("pref_amazfit_enable_key");
 

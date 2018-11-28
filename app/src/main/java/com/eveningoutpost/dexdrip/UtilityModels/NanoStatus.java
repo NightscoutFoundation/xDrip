@@ -1,11 +1,22 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
-// jamorham
+/**
+ * NanoStatus allows access to a static class based status interface
+ *
+ * It can push to observable fields, ui elements and remote followers
+ *
+ * Use of dovetailing means runnables can also be attached
+ *
+ * This allows us to provide dynamic UI updates behind a layer of abstraction for classes and
+ * services which have not yet been instantiated or which maintain a static singleton state
+ *
+ */
 
 import android.databinding.ObservableField;
 import android.text.SpannableString;
 import android.util.Log;
 
+import com.eveningoutpost.dexdrip.BuildConfig;
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.UserError;
@@ -107,6 +118,8 @@ public class NanoStatus {
         switch (module) {
             case "collector":
                 return collectorNano(DexCollectionType.getCollectorServiceClass());
+            case "mtp-configure":
+                return collectorNano(getClassByName(".UtilityModels.MtpConfigure"));
             default:
                 return new SpannableString("Invalid module type");
         }
@@ -131,12 +144,16 @@ public class NanoStatus {
         return null;
     }
 
+    private static void gsonInstance() {
+        if (muhGson == null) {
+            muhGson = new GsonBuilder().create();
+        }
+    }
+
     public static void keepFollowerUpdated() {
         try {
             if (Home.get_master()) {
-                if (muhGson == null) {
-                    muhGson = new GsonBuilder().create();
-                }
+                gsonInstance();
                 final String serialized = muhGson.toJson(nanoStatusColor("collector"));
                 if (PersistentStore.updateStringIfDifferent(LAST_COLLECTOR_STATUS_STORE, serialized)) {
                     Inevitable.task("update-follower-to-nanostatus", 500, new Runnable() {
@@ -159,9 +176,18 @@ public class NanoStatus {
     public static SpannableString getRemote() {
         // TODO apply timeout?
         try {
+            gsonInstance();
             return muhGson.fromJson(PersistentStore.getString(REMOTE_COLLECTOR_STATUS_STORE), SpannableString.class);
         } catch (Exception e) {
             return new SpannableString("");
+        }
+    }
+
+    private static Class<?> getClassByName(final String name) {
+        try {
+            return Class.forName(BuildConfig.APPLICATION_ID + name);
+        } catch (ClassNotFoundException e) {
+            return null;
         }
     }
 

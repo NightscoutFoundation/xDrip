@@ -197,8 +197,8 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
     }
 
     public static BgReading bgReadingInsertFromData(long timestamp, double sgv, double slope, boolean do_notification) {
-        Log.e(TAG, "bgReadingInsertFromData called timestamp = " + timestamp + " bg = " + sgv + " time =" + JoH.dateTimeText(timestamp));
-        JSONObject faux_bgr = new JSONObject();
+        Log.d(TAG, "bgReadingInsertFromData called timestamp = " + timestamp + " bg = " + sgv + " time =" + JoH.dateTimeText(timestamp));
+        final JSONObject faux_bgr = new JSONObject();
         try {
             faux_bgr.put("timestamp", timestamp);
             faux_bgr.put("calculated_value", sgv);
@@ -213,7 +213,7 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
             faux_bgr.put("uuid", UUID.randomUUID().toString());
         } catch (JSONException e) {
             // TODO Auto-generated catch block
-            Log.e(TAG, "Got JSON exception: " + e);
+            UserError.Log.e(TAG, "bgReadingInsertFromData Got JSON exception: " + e);
             return null;
         }
 

@@ -9,7 +9,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -34,6 +33,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.SendFeedBack;
 import com.eveningoutpost.dexdrip.databinding.ActivityEventLogBinding;
+import com.eveningoutpost.dexdrip.ui.helpers.BitmapUtil;
 import com.eveningoutpost.dexdrip.utils.ExtensionMethods;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 
@@ -479,10 +479,12 @@ public class EventLogActivity extends BaseAppCompatActivity {
         // scroll to top and update button visibility accordingly with smooth option
         public void scrollToTop(boolean smooth) {
             showScrollToTop.set(false);
-            if (smooth) {
-                recyclerView.smoothScrollToPosition(0);
-            } else {
-                recyclerView.scrollToPosition(0);
+            if (recyclerView != null) {
+                if (smooth) {
+                    recyclerView.smoothScrollToPosition(0);
+                } else {
+                    recyclerView.scrollToPosition(0);
+                }
             }
         }
 
@@ -562,7 +564,8 @@ public class EventLogActivity extends BaseAppCompatActivity {
 
         // reformat text size for long messages
         public float textSize(String message) {
-            final float scale = 4f;
+            //   final float scale = 4f;
+            final float scale = 2.0f * BitmapUtil.getScreenDensity();
             if (message.length() > 100) return 5f * scale;
             return 7f * scale;
         }

@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.ParcelFileDescriptor;
 import android.support.annotation.RequiresApi;
 
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
@@ -45,7 +46,12 @@ public class MtpTools {
         final MtpDevice mtpDevice = new MtpDevice(device);
 
         final UsbDeviceConnection usbDeviceConnection = usbManager.openDevice(device);
-        if (!mtpDevice.open(usbDeviceConnection)) {
+        try {
+            if (!mtpDevice.open(usbDeviceConnection)) {
+                return null;
+            }
+        } catch (Exception e) {
+            JoH.static_toast_long("Exception opening USB: " + e);
             return null;
         }
 
@@ -83,9 +89,22 @@ public class MtpTools {
         return false;
     }
 
+    public static int existsInTopLevelFolder(final MtpDevice mtpDevice, final int storageId, final String folder, final String filename) {
+        final HashMap<String, Integer> folders = getTopLevelFolders(mtpDevice, storageId);
+        if (folders == null || folders.get(folder) == null) {
+            return -1;
+        }
+        return existsInFolderHandle(mtpDevice, storageId, filename, folders.get(folder));
+    }
+
     // -1 = not found
     public static int existsInRoot(final MtpDevice mtpDevice, final int storageId, final String filename) {
-        final int[] objectHandles = mtpDevice.getObjectHandles(storageId, 0, -1);
+        return existsInFolderHandle(mtpDevice, storageId, filename, -1);
+    }
+
+    // -1 = not found
+    public static int existsInFolderHandle(final MtpDevice mtpDevice, final int storageId, final String filename, final int handle) {
+        final int[] objectHandles = mtpDevice.getObjectHandles(storageId, 0, handle);
         if (objectHandles == null) {
             return -1;
         }
@@ -302,6 +321,14 @@ public class MtpTools {
 
         public int recreateRootFile(final String filename, final byte[] data) {
             return MtpTools.recreateFile(filename, data, device, getFirstStorageId(), 0);
+        }
+
+        public boolean existsInRoot(final String filename) {
+            return MtpTools.existsInRoot(device, getFirstStorageId(), filename) != -1;
+        }
+
+        public boolean existsInFolder(final String folder, final String filename) {
+            return MtpTools.existsInTopLevelFolder(device, getFirstStorageId(), folder, filename) != -1;
         }
 
         public void close() {

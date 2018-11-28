@@ -14,6 +14,8 @@ import com.polidea.rxandroidble.exceptions.BleScanException;
 import com.polidea.rxandroidble.scan.ScanResult;
 import com.polidea.rxandroidble.scan.ScanSettings;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -43,8 +45,12 @@ public class ScanMeister {
     private final PowerManager.WakeLock wl = JoH.getWakeLock("jam-bluetooth-meister", 1000);
     private int scanSeconds = DEFAULT_SCAN_SECONDS;
     protected volatile String address;
+    protected volatile List<String> name;
     private static String lastFailureReason = "";
 
+    public static final String SCAN_TIMEOUT_CALLBACK = "SCAN_TIMEOUT";
+    public static final String SCAN_FAILED_CALLBACK = "SCAN_FAILED";
+    public static final String SCAN_FOUND_CALLBACK = "SCAN_FOUND";
 
     // TODO Log errors when location disabled etc
 
@@ -59,6 +65,14 @@ public class ScanMeister {
 
     public ScanMeister setAddress(String address) {
         this.address = address;
+        return this;
+    }
+
+    public ScanMeister setName(String name) {
+        if (this.name == null) {
+            this.name = new ArrayList<>();
+        }
+        this.name.add(name);
         return this;
     }
 
@@ -91,7 +105,7 @@ public class ScanMeister {
     public synchronized void scan() {
         extendWakeLock((scanSeconds + 1) * Constants.SECOND_IN_MS);
         stopScan("Scan start");
-        UserError.Log.d(TAG, "startScan called: hunting: " + address);
+        UserError.Log.d(TAG, "startScan called: hunting: " + address + " " + name);
         scanSubscription = rxBleClient.scanBleDevices(
                 new ScanSettings.Builder()
 
@@ -115,7 +129,7 @@ public class ScanMeister {
 
     private void stopScanWithTimeoutCallback() {
         stopScan("Stop with Timeout");
-        processCallBacks(address, "SCAN_TIMEOUT");
+        processCallBacks(address, SCAN_TIMEOUT_CALLBACK);
     }
 
     protected synchronized void stopScan(String source) {
@@ -132,7 +146,7 @@ public class ScanMeister {
     // Successful result from our bluetooth scan
     protected synchronized void onScanResult(ScanResult bleScanResult) {
 
-        if (address == null) {
+        if (address == null && name == null) {
             UserError.Log.d(TAG, "Address has been set to null, stopping scan.");
             stopScan("Address nulled");
             return;
@@ -142,14 +156,19 @@ public class ScanMeister {
         if (rssi > MINIMUM_RSSI) {
             //final String this_name = bleScanResult.getBleDevice().getName();
             final String this_address = bleScanResult.getBleDevice().getMacAddress();
-            final boolean matches = address != null && address.equalsIgnoreCase(this_address);
+            String this_name = "";
+            if (name != null) {
+                this_name = bleScanResult.getBleDevice().getName();
+            }
+            final boolean matches = (address != null && address.equalsIgnoreCase(this_address))
+                    || (name != null && this_name != null && name.contains(this_name));
             if (matches || JoH.quietratelimit("scanmeister-show-result", 2)) {
-                UserError.Log.d(TAG, "Found a device: " + this_address + " rssi: " + rssi + "  " + (matches ? "-> MATCH" : ""));
+                UserError.Log.d(TAG, "Found a device: " + this_address + " " + this_name + " rssi: " + rssi + "  " + (matches ? "-> MATCH" : ""));
             }
             if (matches) {
                 stopScan("Got match");
                 JoH.threadSleep(500);
-                processCallBacks(this_address, "SCAN_FOUND");
+                processCallBacks(this_address, SCAN_FOUND_CALLBACK);
                 releaseWakeLock();
             }
 
@@ -180,10 +199,10 @@ public class ScanMeister {
                     JoH.setBluetoothEnabled(xdrip.getAppContext(), true);
                 }
             }
-            processCallBacks(address, "SCAN_FAILED");
+            processCallBacks(address, SCAN_FAILED_CALLBACK);
         } else if (throwable instanceof TimeoutException) {
             // note this code path not always reached - see inevitable task
-            processCallBacks(address, "SCAN_TIMEOUT");
+            processCallBacks(address, SCAN_TIMEOUT_CALLBACK);
         }
 
         stopScan("Scan failure");

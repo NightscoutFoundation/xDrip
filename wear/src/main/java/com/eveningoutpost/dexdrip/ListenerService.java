@@ -868,7 +868,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     }
 
     private void requestData() {
-        if (JoH.ratelimit("resend-request",30)) {
+        if (JoH.ratelimit("resend-request",60)) {
             sendData(WEARABLE_RESEND_PATH, null);
         }
     }
@@ -1739,6 +1739,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             prefs.putBoolean("close_gatt_on_ble_disconnect", dataMap.getBoolean("close_gatt_on_ble_disconnect", true));
             prefs.putBoolean("bluetooth_frequent_reset", dataMap.getBoolean("bluetooth_frequent_reset", false));
             prefs.putBoolean("bluetooth_watchdog", dataMap.getBoolean("bluetooth_watchdog", false));
+            prefs.putString("bluetooth_watchdog_timer", dataMap.getString("bluetooth_watchdog_timer", "20"));
 
             prefs.putBoolean("sync_wear_logs", dataMap.getBoolean("sync_wear_logs", false));
 
@@ -2415,7 +2416,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                                     changed = true;
                                     bgData.save();
                                 } else {
-                                    if (bgData.source_info.contains("Native")) {
+                                    if (bgData.source_info != null && bgData.source_info.contains("Native")) {
                                         UserError.Log.d(TAG, "Saving BgData without calibration as source info is native");
                                         bgData.sensor = sensor;
                                         bgData.sensor_uuid = sensor.uuid;

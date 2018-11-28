@@ -29,6 +29,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
+import com.eveningoutpost.dexdrip.UtilityModels.WholeHouse;
 import com.eveningoutpost.dexdrip.calibrations.CalibrationAbstract;
 import com.eveningoutpost.dexdrip.messages.BgReadingMessage;
 import com.eveningoutpost.dexdrip.messages.BgReadingMultiMessage;
@@ -249,20 +250,18 @@ public class BgReading extends Model implements ShareUploadableBg {
     }
 
     public String displayValue(Context context) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        String unit = prefs.getString("units", "mgdl");
-        DecimalFormat df = new DecimalFormat("#");
-        df.setMaximumFractionDigits(0);
-
-        if (calculated_value >= 400) {
+        final String unit = Pref.getString("units", "mgdl");
+        final DecimalFormat df = new DecimalFormat("#");
+        final double this_value = getDg_mgdl();
+        if (this_value >= 400) {
             return "HIGH";
-        } else if (calculated_value >= 40) {
-            if (unit.compareTo("mgdl") == 0) {
+        } else if (this_value >= 40) {
+            if (unit.equals("mgdl")) {
                 df.setMaximumFractionDigits(0);
-                return df.format(calculated_value);
+                return df.format(this_value);
             } else {
                 df.setMaximumFractionDigits(1);
-                return df.format(calculated_value_mmol());
+                return df.format(mmolConvert(this_value));
             }
         } else {
             return "LOW";
@@ -824,6 +823,14 @@ public class BgReading extends Model implements ShareUploadableBg {
         return reading != null && ((JoH.tsl() - reading.timestamp) < millis);
     }
 
+    public boolean within_millis(final long millis) {
+        return ((JoH.tsl() - this.timestamp) < millis);
+    }
+
+    public boolean isStale() {
+        return !within_millis(Home.stale_data_millis());
+    }
+
     public static BgReading last()
     {
         return BgReading.last(Home.get_follower());
@@ -835,6 +842,7 @@ public class BgReading extends Model implements ShareUploadableBg {
                     .from(BgReading.class)
                     .where("calculated_value != 0")
                     .where("raw_data != 0")
+                    .where("timestamp <= ?", JoH.tsl())
                     .orderBy("timestamp desc")
                     .executeSingle();
         } else {
@@ -845,6 +853,7 @@ public class BgReading extends Model implements ShareUploadableBg {
                         .where("Sensor = ? ", sensor.getId())
                         .where("calculated_value != 0")
                         .where("raw_data != 0")
+                        .where("timestamp <= ?", JoH.tsl())
                         .orderBy("timestamp desc")
                         .executeSingle();
             }
@@ -869,6 +878,7 @@ public class BgReading extends Model implements ShareUploadableBg {
                 .from(BgReading.class)
                 .where("calculated_value != 0")
                 .where("raw_data != 0")
+                .where("timestamp <= ?", JoH.tsl())
                 .orderBy("timestamp desc")
                 .executeSingle();
     }
@@ -884,6 +894,7 @@ public class BgReading extends Model implements ShareUploadableBg {
                     .from(BgReading.class)
                     .where("calculated_value != 0")
                     .where("raw_data != 0")
+                    .where("timestamp <= ?", JoH.tsl())
                     .orderBy("timestamp desc")
                     .limit(number)
                     .execute();
@@ -897,6 +908,7 @@ public class BgReading extends Model implements ShareUploadableBg {
                     .where("Sensor = ? ", sensor.getId())
                     .where("calculated_value != 0")
                     .where("raw_data != 0")
+                    .where("timestamp <= ?", JoH.tsl())
                     .orderBy("timestamp desc")
                     .limit(number)
                     .execute();
@@ -1009,12 +1021,12 @@ public class BgReading extends Model implements ShareUploadableBg {
     }
 
     public static BgReading readingNearTimeStamp(double startTime) {
-        final double margin = (4 * 60*1000);
+        final double margin = (4 * 60 * 1000);
         final DecimalFormat df = new DecimalFormat("#");
         df.setMaximumFractionDigits(1);
         return new Select()
                 .from(BgReading.class)
-                .where("timestamp >= " + df.format(startTime-margin))
+                .where("timestamp >= " + df.format(startTime - margin))
                 .where("timestamp <= " + df.format(startTime + margin))
                 .where("calculated_value != 0")
                 .where("raw_data != 0")
@@ -1226,7 +1238,7 @@ public class BgReading extends Model implements ShareUploadableBg {
     }
 
     public static BgReading bgReadingInsertFromJson(String json, boolean do_notification) {
-        return bgReadingInsertFromJson(json, do_notification, false);
+        return bgReadingInsertFromJson(json, do_notification, WholeHouse.isEnabled() ? true : false);
     }
 
     public static BgReading bgReadingInsertFromJson(String json, boolean do_notification, boolean force_sensor) {

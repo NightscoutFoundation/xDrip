@@ -48,6 +48,8 @@ import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
 import com.eveningoutpost.dexdrip.cgm.medtrum.MedtrumCollectionService;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
+import com.eveningoutpost.dexdrip.watch.lefun.LeFunEntry;
+import com.eveningoutpost.dexdrip.watch.lefun.LeFunService;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
@@ -102,6 +104,7 @@ public class MegaStatus extends ActivityWithMenu {
     private static final String IP_COLLECTOR = "IP Collector";
     private static final String XDRIP_PLUS_SYNC = "Followers";
     private static final String UPLOADERS = "Uploaders";
+    private static final String LEFUN_STATUS = "Lefun";
 
     public static PendingIntent getStatusPendingIntent(String section_name) {
         final Intent intent = new Intent(xdrip.getAppContext(), MegaStatus.class);
@@ -141,6 +144,9 @@ public class MegaStatus extends ActivityWithMenu {
                     || Pref.getBooleanDefaultFalse("share_upload")
                     || (Pref.getBooleanDefaultFalse("wear_sync") && Home.get_engineering_mode())) {
                 addAsection(UPLOADERS, "Cloud Uploader Queues");
+            }
+            if (LeFunEntry.isEnabled()) {
+                addAsection(LEFUN_STATUS, "Lefun Watch Status");
             }
 
             //addAsection("Misc", "Currently Empty");
@@ -184,6 +190,8 @@ public class MegaStatus extends ActivityWithMenu {
             case UPLOADERS:
                 la.addRows(UploaderQueue.megaStatus());
                 break;
+            case LEFUN_STATUS:
+                la.addRows(LeFunService.megaStatus());
         }
         la.changed();
     }
@@ -577,9 +585,9 @@ public class MegaStatus extends ActivityWithMenu {
 
                 final int new_colour = row.highlight.color();
                 //if (new_colour != -1) {
-                    viewHolder.value.setBackgroundColor(new_colour);
-                    viewHolder.spacer.setBackgroundColor(new_colour);
-                    viewHolder.name.setBackgroundColor(new_colour);
+                viewHolder.value.setBackgroundColor(new_colour);
+                viewHolder.spacer.setBackgroundColor(new_colour);
+                viewHolder.name.setBackgroundColor(new_colour);
                 //}
                 view.setOnClickListener(null); // reset
                 if ((row.runnable != null) && (row.button_name != null) && (row.button_name.equals("long-press"))) {

@@ -89,10 +89,10 @@ public class VoiceCommands {
             }
         } else if (get_engineering_mode() && allWords.contentEquals("enable dead sensor")) {
             Pref.setBoolean("allow_testing_with_dead_sensor", true);
-            JoH.static_toast_long("testing libre with dead sensor enabled - be careful");
+            JoH.static_toast_long("testing with dead sensor enabled - be careful");
         } else if (allWords.contentEquals("disable dead sensor")) {
             Pref.setBoolean("allow_testing_with_dead_sensor", false);
-            JoH.static_toast_long("testing libre with dead sensor disabled");
+            JoH.static_toast_long("testing with dead sensor disabled");
         }
 
         switch (allWords) {
@@ -133,6 +133,9 @@ public class VoiceCommands {
             case "delete all desert sync data":
                 JoH.static_toast_long("deleted all desert sync data");
                 DesertSync.deleteAll();
+                break;
+            case "start usb configuration":
+                JoH.startActivity(MtpConfigureActivity.class);
                 break;
         }
 

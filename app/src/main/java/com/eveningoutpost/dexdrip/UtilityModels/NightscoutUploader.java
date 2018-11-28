@@ -8,6 +8,7 @@ import android.os.BatteryManager;
 import android.os.Build;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
+import android.util.Base64;
 
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.MegaStatus;
@@ -18,9 +19,11 @@ import com.eveningoutpost.dexdrip.Models.DateUtil;
 import com.eveningoutpost.dexdrip.Models.HeartRate;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.StepCounter;
+import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Models.LibreBlock;
 import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
@@ -30,6 +33,7 @@ import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
+import com.mongodb.WriteResult;
 import com.mongodb.DBCollection;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
@@ -278,14 +282,15 @@ public class NightscoutUploader {
         return apiStatus;
     }
 
-    public boolean uploadMongo(List<BgReading> glucoseDataSets, List<Calibration> meterRecords, List<Calibration> calRecords) {
+    public boolean uploadMongo(List<BgReading> glucoseDataSets, List<Calibration> meterRecords, List<Calibration> calRecords, List<TransmitterData> transmittersData, List<LibreBlock> libreBlock) {
         boolean mongoStatus = false;
 
 
         if (enableMongoUpload) {
             double start = new Date().getTime();
-            mongoStatus = doMongoUpload(prefs, glucoseDataSets, meterRecords, calRecords);
-            Log.i(TAG, String.format("Finished upload of %s record using a Mongo in %s ms result: %b", glucoseDataSets.size() + meterRecords.size(), System.currentTimeMillis() - start, mongoStatus));
+            mongoStatus = doMongoUpload(prefs, glucoseDataSets, meterRecords, calRecords, transmittersData, libreBlock);
+            Log.i(TAG, String.format("Finished upload of %s record using a Mongo in %s ms result: %b", 
+                    glucoseDataSets.size() + meterRecords.size() + calRecords.size() + transmittersData.size() + libreBlock.size(), System.currentTimeMillis() - start, mongoStatus));
         }
 
         return mongoStatus;
@@ -1236,7 +1241,8 @@ public class NightscoutUploader {
 
 
         private boolean doMongoUpload(SharedPreferences prefs, List<BgReading> glucoseDataSets,
-                                      List<Calibration> meterRecords,  List<Calibration> calRecords) {
+                                      List<Calibration> meterRecords,  List<Calibration> calRecords, List<TransmitterData> transmittersData,
+                                      List<LibreBlock> libreBlock) {
             final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.US);
             format.setTimeZone(TimeZone.getDefault());
 
@@ -1291,7 +1297,7 @@ public class NightscoutUploader {
                                 Log.e(TAG, "MongoDB BG record is null.");
                         }
 
-                        Log.i(TAG, "The number of MBG records being sent to MongoDB is " + meterRecords.size());
+                        Log.i(TAG, "REST - The number of MBG records being sent to MongoDB is " + meterRecords.size());
                         for (Calibration meterRecord : meterRecords) {
                             // make db object
                             BasicDBObject testData = new BasicDBObject();
@@ -1302,6 +1308,7 @@ public class NightscoutUploader {
                             testData.put("mbg", meterRecord.bg);
                             dexcomData.insert(testData, WriteConcern.UNACKNOWLEDGED);
                         }
+                        Log.i(TAG, "REST - Finshed upload of mbg");
 
                         for (Calibration calRecord : calRecords) {
                             //do not upload undefined slopes
@@ -1322,6 +1329,38 @@ public class NightscoutUploader {
                             }
                             testData.put("type", "cal");
                             dexcomData.insert(testData, WriteConcern.UNACKNOWLEDGED);
+                        }
+                        DBCollection libreCollection = db.getCollection("libre");
+                        for (LibreBlock libreBlockEntry : libreBlock) {
+                            
+                            
+                            Log.d(TAG, "uploading new item to monog");
+                            boolean ChecksumOk = LibreUtils.verify(libreBlockEntry.blockbytes);
+                            if(!ChecksumOk) {
+                                Log.e(TAG, "Not uploading packet with badchecksum");
+                                continue;
+                            }
+                            // make db object
+                            BasicDBObject testData = new BasicDBObject();
+                            testData.put("SensorId", PersistentStore.getString("LibreSN"));
+                            testData.put("CaptureDateTime", libreBlockEntry.timestamp);
+                            testData.put("BlockBytes",Base64.encodeToString(libreBlockEntry.blockbytes, Base64.NO_WRAP));
+                            
+                            testData.put("ChecksumOk",ChecksumOk ? 1 : 0);
+                            testData.put("Uploaded", 1);
+                            testData.put("UploaderBatteryLife",getBatteryLevel());
+                            testData.put("DebugInfo", android.os.Build.MODEL + " " + new Date(libreBlockEntry.timestamp).toLocaleString());
+                            
+                            try {
+                                testData.put("TomatoBatteryLife", Integer.parseInt(PersistentStore.getString("Tomatobattery")));
+                            } catch (NumberFormatException e) {
+                                Log.e(TAG, "Error reading battery daya" + PersistentStore.getString("Tomatobattery") );
+                            }
+                            testData.put("FwVersion", PersistentStore.getString("TomatoFirmware"));
+                            testData.put("HwVersion", PersistentStore.getString("TomatoHArdware"));
+                            
+                            WriteResult wr = libreCollection.insert(testData, WriteConcern.ACKNOWLEDGED);
+                            Log.d(TAG, "uploaded libreblock data with " + new Date(libreBlockEntry.timestamp).toLocaleString()+ " wr = " + wr);
                         }
 
                         // TODO: quick port from original code, revisit before release
