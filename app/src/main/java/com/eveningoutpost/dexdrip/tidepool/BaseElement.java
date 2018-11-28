@@ -14,8 +14,6 @@ public abstract class BaseElement {
     @Expose
     public String deviceTime;
     @Expose
-    public String deviceId;
-    @Expose
     public String time;
     @Expose
     public int timezoneOffset;
@@ -29,7 +27,6 @@ public abstract class BaseElement {
         deviceTime = DateUtil.toFormatNoZone(timestamp);
         time = DateUtil.toFormatAsUTC(timestamp);
         timezoneOffset = DateUtil.getTimeZoneOffsetMinutes(timestamp); // TODO
-        deviceId = MOpenDatasetRequest.DEVICE_ID; // TODO
         origin = new Origin(uuid);
         return this;
     }

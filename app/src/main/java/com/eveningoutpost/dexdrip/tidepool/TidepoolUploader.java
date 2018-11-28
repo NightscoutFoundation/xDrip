@@ -44,7 +44,6 @@ public class TidepoolUploader {
 
     private static Retrofit retrofit;
     private static final String BASE_URL = "https://int-api.tidepool.org";
-   // private static final String BASE_URL = "https://132e3caa.ngrok.io";
     private static final String SESSION_TOKEN_HEADER = "x-tidepool-session-token";
 
     public interface Tidepool {
@@ -67,7 +66,6 @@ public class TidepoolUploader {
         Call<List<MDatasetReply>> getOpenDataSets(@Header(SESSION_TOKEN_HEADER) String token,
                                                   @Path("userId") String id,
                                                   @Query("client.name") String clientName,
-                                                  @Query("deviceId") String deviceId,
                                                   @Query("size") int size);
 
         @GET("/v1/datasets/{dataSetId}")
@@ -167,7 +165,7 @@ public class TidepoolUploader {
             if (session.authReply.userid != null) {
                 // See if we already have an open data set to write to
                 Call<List<MDatasetReply>> datasetCall = session.service.getOpenDataSets(session.token,
-                        session.authReply.userid, BuildConfig.APPLICATION_ID, MOpenDatasetRequest.DEVICE_ID, 1);
+                        session.authReply.userid, BuildConfig.APPLICATION_ID, 1);
 
                 datasetCall.enqueue(new TidepoolCallback<>(session, "Get Open Datasets", () -> {
                     UserError.Log.d(TAG, "Existing Dataset: " + session.datasetReply);
