@@ -181,6 +181,7 @@ public abstract class JamBaseBluetoothSequencer extends JamBaseBluetoothService 
         if (I.connectionSubscription != null) {
             I.connectionSubscription.unsubscribe();
         }
+        I.isConnected = false;
     }
 
     protected synchronized void watchConnection(final String address) {
