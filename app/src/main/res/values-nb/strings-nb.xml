@@ -154,6 +154,7 @@
   <string name="signal_missed">Mistet Signal</string>
   <string name="space_minutes_ago">" Minutter siden"</string>
   <string name="space_minute_ago">" Minutt siden"</string>
+  <string name="minutes_ago">{0, choice,0#{0, number, integer} Minutter siden|1#{0, number, integer} Minutt siden|1&lt;{0, number, integer} Minutter siden}</string>
   <string name="show_parakeet_map">Vis Parakeet kart</string>
   <string name="switch_parakeet_to_setup_mode">Bytt Parakeet til oppsettsmodus</string>
   <string name="view_events_log">Se Aktivitetslogg</string>

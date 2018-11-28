@@ -131,6 +131,7 @@
     <string name="signal_missed">Signal propušten</string>
     <string name="space_minutes_ago">" min. prije"</string>
     <string name="space_minute_ago">" min. prije"</string>
+    <string name="minutes_ago">{0, choice,0#{0, number, integer} min. prije|1#{0, number, integer} min. prije|1&lt;{0, number, integer} min. prije}</string>
     <string name="show_parakeet_map">Prikaži Parakeet kartu</string>
     <string name="switch_parakeet_to_setup_mode">Prebaci Parakeet u način za promjenu postavki</string>
     <string name="view_events_log">Pogledaj zapise događaja</string>

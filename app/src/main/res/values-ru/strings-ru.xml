@@ -131,6 +131,7 @@
   <string name="signal_missed">Сигнал Пропущенный</string>
   <string name="space_minutes_ago">" Минут назад"</string>
   <string name="space_minute_ago">" Минуту назад"</string>
+  <string name="minutes_ago">{0, choice,0#{0, number, integer} Минут назад|1#{0, number, integer} Минуту назад|1&lt;{0, number, integer} Минут назад}</string>
   <string name="show_parakeet_map">Показать карту Попугай</string>
   <string name="switch_parakeet_to_setup_mode">Переключатель Попугай в режим настройки</string>
   <string name="view_events_log">Просмотр событий Вход</string>
