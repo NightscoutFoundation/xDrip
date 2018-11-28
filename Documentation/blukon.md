@@ -56,4 +56,20 @@ via Settings -> Connected Devices -> Bluetooth -> BLU00XXX -> Forget
 * @keencave: I think the edge measured with a voltage meter is < 2.8x V. In my test setup I feeded the system with an adjustable power source down to 2,65 V before I see the battery low indication message. As any battery has an idle voltage and an internal resistance this will lead to a slightly higher voltage in real life. I guess that the peak current to drive the RF circuit is too low with voltages < ~2.8x Vs. My last 4 batteries all have had a voltage > 2.8x V after 14 days and I got no battery low indication at all. Seems that 2.8 V measured with a voltage meter is a good citeria to check wether an unknown battery can be used or not. Fresh ones should have >3.2x V.
 
 
+# If really nothing works
+You might have a hardware issue, please check this:
+* is led flashing shortly when you push 2 times reset button?
+ * If not maybe battery empty
+ * Battery contacts need maybe to be bent a bit (be careful).
+ * Or your device is maybe dead
+  * need claim it.
+  * did you try first with manufacturer App?
+
+
+# If issues with Wear
+* With wear 2.0 you need to uninstall app and reinstall it
+* Enable Wear logs: ```Settings -> Smart Watch Features -> Android Wear Integration -> Send wear Logs``` 
+* Send/check your logs
+
+
 Credits to: @StoneISStephan and @gregorybel

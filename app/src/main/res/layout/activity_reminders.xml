@@ -111,7 +111,8 @@
                     android:layout_weight="1"
 
                     android:onClick="snoozeAdjust"
-                    android:text="15 Min" />
+                    android:tag="15 Min"
+                    android:text="@string/button_15_min"/>
 
                 <Button
                     android:id="@+id/button11"
@@ -120,7 +121,8 @@
                     android:layout_gravity="center_horizontal"
                     android:layout_weight="1"
                     android:onClick="snoozeAdjust"
-                    android:text="2 Hour" />
+                    android:tag="2 Hour"
+                    android:text="@string/button_2_hour" />
 
                 <Button
                     android:id="@+id/button10"
@@ -128,7 +130,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:onClick="snoozeAdjust"
-                    android:text="1 Day" />
+                    android:tag="1 Day"
+                    android:text="@string/button_1_day" />
             </LinearLayout>
 
             <LinearLayout
@@ -143,7 +146,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:onClick="snoozeAdjust"
-                    android:text="30 min" />
+                    android:tag="30 min"
+                    android:text="@string/button_30_min" />
 
                 <Button
                     android:id="@+id/button5"
@@ -152,7 +156,8 @@
                     android:layout_gravity="center_horizontal"
                     android:layout_weight="1"
                     android:onClick="snoozeAdjust"
-                    android:text="4 Hour" />
+                    android:tag="4 Hour"
+                    android:text="@string/button_4_hour" />
 
                 <Button
                     android:id="@+id/button4"
@@ -162,7 +167,8 @@
                     android:layout_weight="1"
 
                     android:onClick="snoozeAdjust"
-                    android:text="2 Day" />
+                    android:tag="2 Day"
+                    android:text="@string/button_2_day" />
             </LinearLayout>
 
             <LinearLayout
@@ -177,7 +183,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:onClick="snoozeAdjust"
-                    android:text="1 Hour" />
+                    android:tag="1 Hour"
+                    android:text="@string/button_1_hour" />
 
                 <Button
                     android:id="@+id/button8"
@@ -186,14 +193,16 @@
                     android:layout_gravity="center_horizontal"
                     android:layout_weight="1"
                     android:onClick="snoozeAdjust"
-                    android:text="8 Hour" />
+                    android:tag="8 Hour"
+                    android:text="@string/button_8_hour" />
 
                 <Button
                     android:id="@+id/button9"
                     android:onClick="snoozeAdjust"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="1 week"
+                    android:tag="1 week"
+                    android:text="@string/button_1_week"
                     android:layout_weight="1"
                     android:layout_gravity="left" />
             </LinearLayout>

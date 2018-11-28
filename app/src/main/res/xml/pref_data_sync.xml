@@ -243,6 +243,32 @@
                         android:targetPackage="@string/local_target_package" />
                 </Preference>
             </PreferenceScreen>
+            <PreferenceScreen
+                android:key="tidepool_upload_screen"
+                android:summary="Upload data to the Tidepool service"
+                android:title="Tidepool">
+
+                <SwitchPreference
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
+                    android:defaultValue="false"
+                    android:key="cloud_storage_tidepool_enable"
+                    android:title="Sync to Tidepool" />
+
+                <EditTextPreference
+                    android:key="tidepool_username"
+                    android:summary="Your Tidepool login user name, normally your email address"
+                    android:title="Login User Name" />
+                <EditTextPreference
+                    android:inputType="textPassword"
+                    android:key="tidepool_password"
+                    android:summary="Your Tidepool login password"
+                    android:title="Login Password" />
+                <Preference
+                    android:key="tidepool_test_login"
+                    android:title="Test Tidepool Login"></Preference>
+
+            </PreferenceScreen>
         </PreferenceScreen>
         <PreferenceScreen
             android:icon="@drawable/ic_touch_app_grey600_48dp"
@@ -286,7 +312,6 @@
                 android:title="@string/automatic_calibration" />
 
         </PreferenceScreen>
-
 
     </PreferenceCategory>
 

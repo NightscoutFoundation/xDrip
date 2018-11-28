@@ -7,6 +7,8 @@ In theory, using the same phone with the same Android version should allow you t
 
 Phone Model | Android Version | Mode
 --- | --- | ---
+Google Pixel 2 | 9 |
+Google Pixel 2XL | 9 |
 Google Pixel | 7.1.1 |
 Google Pixel | 7.1.2 |
 Google Pixel XL | 7.1.1
