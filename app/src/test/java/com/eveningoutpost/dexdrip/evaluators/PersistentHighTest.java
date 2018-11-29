@@ -3,20 +3,24 @@ package com.eveningoutpost.dexdrip.evaluators;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
-import com.eveningoutpost.dexdrip.RobolectricTestWithConfigAndPowerMockLogRedirect;
+import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 
 import org.junit.Test;
+import org.robolectric.shadows.ShadowLog;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
 
 // jamorham
-
-public class PersistentHighTest extends RobolectricTestWithConfigAndPowerMockLogRedirect {
+// Asbjørn Aarrestad
+public class PersistentHighTest extends RobolectricTestWithConfig {
 
     private static long START_TIME = JoH.tsl() - Constants.HOUR_IN_MS * 4;
     private static final double HIGH_MARK = 170;
-
 
     @Test
     public void dataQualityCheckTest() {
@@ -33,7 +37,9 @@ public class PersistentHighTest extends RobolectricTestWithConfigAndPowerMockLog
         for (int i = 0; i < (12 * 4); i++) {
             final long timestamp = START_TIME + Constants.MINUTE_IN_MS * 5 * i;
             final BgReading bgr = BgReading.bgReadingInsertFromG5(400, timestamp);
-            assertWithMessage("Test result A: " + i + " " + JoH.dateTimeText(timestamp) + " different to expected").that(PersistentHigh.dataQualityCheck(START_TIME + Constants.MINUTE_IN_MS * 10, HIGH_MARK)).isEqualTo(i > 16);
+            assertWithMessage("Test result A: " + i + " " + JoH.dateTimeText(timestamp) + " different to expected")
+                    .that(PersistentHigh.dataQualityCheck(START_TIME + Constants.MINUTE_IN_MS * 10, HIGH_MARK))
+                    .isEqualTo(i > 16);
         }
 
         START_TIME++;
@@ -42,7 +48,9 @@ public class PersistentHighTest extends RobolectricTestWithConfigAndPowerMockLog
         for (int i = 0; i < (12 * 4); i++) {
             final long timestamp = START_TIME + Constants.MINUTE_IN_MS * 5 * i;
             final BgReading bgr = BgReading.bgReadingInsertFromG5(i == 20 ? 100 : 400, timestamp);
-            assertWithMessage("Test result C: " + i + " " + JoH.dateTimeText(timestamp) + " different to expected").that(PersistentHigh.dataQualityCheck(START_TIME + Constants.MINUTE_IN_MS * 10, HIGH_MARK)).isEqualTo(i > 16 && i < 20);
+            assertWithMessage("Test result C: " + i + " " + JoH.dateTimeText(timestamp) + " different to expected")
+                    .that(PersistentHigh.dataQualityCheck(START_TIME + Constants.MINUTE_IN_MS * 10, HIGH_MARK))
+                    .isEqualTo(i > 16 && i < 20);
         }
 
         START_TIME++;
@@ -51,10 +59,20 @@ public class PersistentHighTest extends RobolectricTestWithConfigAndPowerMockLog
         for (int i = 0; i < (12 * 4); i++) {
             final long timestamp = START_TIME + Constants.MINUTE_IN_MS * 5 * i;
             final BgReading bgr = BgReading.bgReadingInsertFromG5(i == 8 ? 100 : 400, timestamp);
-            assertWithMessage("Test result D: " + i + " " + JoH.dateTimeText(timestamp) + " different to expected").that(PersistentHigh.dataQualityCheck(START_TIME + Constants.MINUTE_IN_MS * 10, HIGH_MARK)).isFalse();
+            assertWithMessage("Test result D: " + i + " " + JoH.dateTimeText(timestamp) + " different to expected")
+                    .that(PersistentHigh.dataQualityCheck(START_TIME + Constants.MINUTE_IN_MS * 10, HIGH_MARK))
+                    .isFalse();
         }
 
+        // Extract all log messages for tag
+        List<String> logMessages = ShadowLog.getLogsForTag("PersistentHigh").stream()
+                .map(log -> log.msg)
+                .collect(Collectors.toList());
+
+        // Assert on log output
+        assertThat(logMessages).contains("Cannot raise persistent high alert as readings frequency is: 3 hours");
+
+        // Print all logs
+        printLogs("PersistentHigh");
     }
-
-
 }

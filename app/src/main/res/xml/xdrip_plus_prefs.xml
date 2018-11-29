@@ -711,6 +711,14 @@
                 android:key="plus_accept_follower_actions"
                 android:summary="Treatments and Calibrations from followers will be accepted"
                 android:title="Accept follower actions" />
+            <SwitchPreference
+                android:defaultValue="false"
+                android:dependency="plus_follow_master"
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
+                android:key="plus_whole_house"
+                android:summary="Participate in a Whole House Network"
+                android:title="Whole House" />
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:dependency="plus_follow_master"

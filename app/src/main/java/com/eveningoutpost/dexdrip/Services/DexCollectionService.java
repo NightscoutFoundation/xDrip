@@ -1732,7 +1732,7 @@ public class DexCollectionService extends Service implements BtCallBack {
             int MAX_BT_WDG = 20;
             int bt_wdg_timer = JoH.parseIntWithDefault(Pref.getString("bluetooth_watchdog_timer", Integer.toString(MAX_BT_WDG)), 10, MAX_BT_WDG);
 
-            if ( (bt_wdg_timer <= 0) || (bt_wdg_timer > MAX_BT_WDG) ) {
+            if ( (bt_wdg_timer <= 5) || (bt_wdg_timer > MAX_BT_WDG) ) {
                 bt_wdg_timer = MAX_BT_WDG;
             }
 

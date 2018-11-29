@@ -24,6 +24,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.PlusAsyncExecutor;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.VersionTracker;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
+import com.eveningoutpost.dexdrip.watch.lefun.LeFunEntry;
 import com.eveningoutpost.dexdrip.webservices.XdripWebService;
 
 import java.util.Locale;
@@ -88,6 +89,7 @@ public class xdrip extends Application {
                 ActivityRecognizedService.startActivityRecogniser(getApplicationContext());
             }
             BluetoothGlucoseMeter.startIfEnabled();
+            LeFunEntry.initialStartIfEnabled();
             XdripWebService.immortality();
             VersionTracker.updateDevice();
 

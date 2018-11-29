@@ -41,6 +41,8 @@ public class Constants {
     public static final int MEDTRUM_SERVICE_RETRY_ID = 1015;
     public static final int MEDTRUM_SERVICE_FAILOVER_ID = 1016;
     public static final int DESERT_MASTER_UNREACHABLE = 1017;
+    public static final int LEFUN_SERVICE_RETRY_ID = 1018;
+    public static final int LEFUN_SERVICE_FAILOVER_ID = 1019;
 
     static final int NIGHTSCOUT_ERROR_NOTIFICATION_ID = 2001;
 

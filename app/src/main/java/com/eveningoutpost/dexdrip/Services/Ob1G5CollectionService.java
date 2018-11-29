@@ -32,6 +32,7 @@ import com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine;
 import com.eveningoutpost.dexdrip.G5Model.TransmitterStatus;
 import com.eveningoutpost.dexdrip.G5Model.VersionRequestRxMessage;
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.UserError;
@@ -45,6 +46,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.RxBleProvider;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem.Highlight;
+import com.eveningoutpost.dexdrip.UtilityModels.WholeHouse;
 import com.eveningoutpost.dexdrip.ui.helpers.Span;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -54,6 +56,7 @@ import com.polidea.rxandroidble.RxBleConnection;
 import com.polidea.rxandroidble.RxBleCustomOperation;
 import com.polidea.rxandroidble.RxBleDevice;
 import com.polidea.rxandroidble.RxBleDeviceServices;
+import com.polidea.rxandroidble.exceptions.BleGattCallbackTimeoutException;
 import com.polidea.rxandroidble.exceptions.BleScanException;
 import com.polidea.rxandroidble.internal.RxBleLog;
 import com.polidea.rxandroidble.internal.connection.RxBleGattCallback;
@@ -126,7 +129,7 @@ import io.reactivex.schedulers.Schedulers;
 
 
 /**
- * OB1 G5 collector
+ * OB1 G5/G6 collector
  * Created by jamorham on 16/09/2017.
  *
  * App version is master, best to avoid editing wear version directly
@@ -188,11 +191,13 @@ public class Ob1G5CollectionService extends G5BaseService {
 
     private volatile boolean background_launch_waiting = false;
     private static long last_scan_started = -1;
+    private static volatile long last_connect_started = -1;
     private static int error_count = 0;
     private static int connectNowFailures = 0;
     private static int connectFailures = 0;
     private static int scanTimeouts = 0;
     private static boolean lastConnectFailed = false;
+    private static boolean preScanFailureMarker = false;
     private static boolean auth_succeeded = false;
     private int error_backoff_ms = 1000;
     private static final int max_error_backoff_ms = 10000;
@@ -311,7 +316,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                     case DISCOVER:
                         if (wear_broadcast && usingAlt()) {
                             msg("Pausing");
-                            UserError.Log.d(TAG,"Pausing for alt: ");
+                            UserError.Log.d(TAG, "Pausing for alt: ");
                             JoH.threadSleep(1000);
                         }
                         if (do_discovery) {
@@ -379,7 +384,22 @@ public class Ob1G5CollectionService extends G5BaseService {
         tryLoadingSavedMAC();
         final int modulo = (connectNowFailures + scanTimeouts) % 2;
         UserError.Log.d(TAG, "minimize: " + minimize_scanning + " mac: " + transmitterMAC + " lastfailed:" + lastConnectFailed + " nowfail:" + connectNowFailures + " stimeout:" + scanTimeouts + " modulo:" + modulo);
-        return minimize_scanning && transmitterMAC != null && (!lastConnectFailed || (modulo == 1)) && (DexSyncKeeper.isReady(transmitterID));
+        final boolean wholeHouse = WholeHouse.isLive();
+        boolean alwaysMinimize = false;
+        if (wholeHouse) {
+            estimateAnticipateFromLinkedData();
+            alwaysMinimize = !preScanFailureMarker;
+        }
+        return minimize_scanning && transmitterMAC != null && (!lastConnectFailed || (modulo == 1) || alwaysMinimize) && (DexSyncKeeper.isReady(transmitterID));
+    }
+
+    private void estimateAnticipateFromLinkedData() {
+        final BgReading bg = BgReading.last();
+        if (bg != null && bg.timestamp > static_last_connected && JoH.msSince(bg.timestamp) < HOUR_IN_MS * 3) {
+            final long ts = bg.timestamp - Constants.SECOND_IN_MS;
+            UserError.Log.d(TAG, "Updating Sync Keeper with network learned timestamp: " + JoH.dateTimeText(ts));
+            DexSyncKeeper.store(transmitterID, ts);
+        }
     }
 
     private void resetState() {
@@ -524,6 +544,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                                 UserError.Log.wtf(TAG, "Got Error from state subscription: " + throwable);
                             });
 
+                    last_connect_started = JoH.tsl();
                     // Attempt to establish a connection // TODO does this need different connection timeout for auto vs normal?
                     connectionSubscription = bleDevice.establishConnection(auto)
                             .timeout(7, TimeUnit.MINUTES)
@@ -632,6 +653,10 @@ public class Ob1G5CollectionService extends G5BaseService {
         final String transmitterIdLastTwo = Extensions.lastTwoCharactersOfString(transmitterID);
         // todo check for bad config
         return "Dexcom" + transmitterIdLastTwo;
+    }
+
+    public static String getMac() {
+        return transmitterMAC;
     }
 
     private void tryLoadingSavedMAC() {
@@ -1053,6 +1078,18 @@ public class Ob1G5CollectionService extends G5BaseService {
             final String info = handleBleScanException((BleScanException) throwable);
             lastScanError = info;
             UserError.Log.d(TAG, info);
+
+            if (((BleScanException) throwable).getReason() == BleScanException.SCAN_FAILED_APPLICATION_REGISTRATION_FAILED) {
+                if (JoH.ratelimit("bluetooth-cannot-register", 120)) {
+                    if (Pref.getBooleanDefaultFalse("automatically_turn_bluetooth_on")) {
+                        UserError.Log.wtf(TAG, "Android bluetooth appears broken - attempting to turn off and on");
+                        JoH.niceRestartBluetooth(xdrip.getAppContext());
+                    } else {
+                        UserError.Log.e(TAG, "Cannot reset bluetooth due to preference being disabled");
+                    }
+                }
+            }
+
             if (((BleScanException) throwable).getReason() == BleScanException.BLUETOOTH_DISABLED) {
                 // Attempt to turn bluetooth on
                 if (JoH.ratelimit("bluetooth_toggle_on", 30)) {
@@ -1062,8 +1099,14 @@ public class Ob1G5CollectionService extends G5BaseService {
                     } catch (InterruptedException e) {
                         //
                     }
-                    UserError.Log.e(TAG, "Trying to Turn Bluetooth on");
-                    JoH.setBluetoothEnabled(xdrip.getAppContext(), true);
+
+                   if (WholeHouse.isRpi()) {
+                       UserError.Log.e(TAG,"Trying to turn off/on bluetooth");
+                       JoH.niceRestartBluetooth(xdrip.getAppContext());
+                   } else {
+                       UserError.Log.e(TAG, "Trying to Turn Bluetooth on");
+                       JoH.setBluetoothEnabled(xdrip.getAppContext(), true);
+                   }
                 }
             }
             // TODO count scan duration
@@ -1099,7 +1142,7 @@ public class Ob1G5CollectionService extends G5BaseService {
 
     // Connection has been terminated or failed
     // - quite normal when device switches to sleep between readings
-    private void onConnectionFailure(Throwable throwable) {
+    private void onConnectionFailure(final Throwable throwable) {
         // msg("Connection failure");
         // TODO under what circumstances should we change state or do something here?
         UserError.Log.d(TAG, "Connection Disconnected/Failed: " + throwable);
@@ -1107,7 +1150,7 @@ public class Ob1G5CollectionService extends G5BaseService {
         if (state == DISCOVER) {
             // possible encryption failure
             if (!resetBondIfAllowed(false) && android_wear) {
-                UserError.Log.d(TAG,"Trying alternate reconnection strategy");
+                UserError.Log.d(TAG, "Trying alternate reconnection strategy");
                 changeState(CONNECT_NOW);
             }
             return;
@@ -1116,9 +1159,20 @@ public class Ob1G5CollectionService extends G5BaseService {
         if (state == CONNECT_NOW) {
             connectNowFailures++;
             lastConnectFailed = true;
+            if (throwable instanceof BleGattCallbackTimeoutException) {
+                if (throwable.getMessage().contains("BleGattOperation{description='CONNECTION_STATE'")) {
+                    UserError.Log.d(TAG, "Setting pre-scan failure marker enabled due to exception type");
+                    preScanFailureMarker = true;
+                }
+            } else if (JoH.msSince(last_connect_started) < Constants.SECOND_IN_MS) {
+                UserError.Log.d(TAG, "Setting pre-scan failure marker enabled due to exception timing");
+                preScanFailureMarker = true;
+            }
+
             UserError.Log.d(TAG, "Connect Now failures incremented to: " + connectNowFailures);
             if (minimize_scanning && DexSyncKeeper.anticipate(transmitterID) > 0) {
-                changeState(STATE.CLOSE);
+                // TODO under what circumstances does this CLOSE state not get executed? and anticipate not scheduled?
+                changeState(CLOSE);
             } else {
                 changeState(CONNECT);
             }
@@ -1166,6 +1220,7 @@ public class Ob1G5CollectionService extends G5BaseService {
         msg("Connected");
         static_last_connected = JoH.tsl();
         lastConnectFailed = false;
+        preScanFailureMarker = false;
 
         DexSyncKeeper.store(transmitterID, static_last_connected);
         // TODO check connection already exists - close etc?
@@ -1566,7 +1621,7 @@ public class Ob1G5CollectionService extends G5BaseService {
     }
 
     private static void loadCalibrationStateAsRequired() {
-        if ((lastSensorState == null) && JoH.quietratelimit("ob1-load-sensor-state",5)) {
+        if ((lastSensorState == null) && JoH.quietratelimit("ob1-load-sensor-state", 5)) {
             final CalibrationState savedState = getStoredCalibrationState();
             if (savedState != Unknown) {
                 lastSensorState = savedState;
@@ -1832,8 +1887,7 @@ public class Ob1G5CollectionService extends G5BaseService {
 
     // remember needs proguard exclusion due to access by reflection
     public static boolean isCollecting() {
-        // TODO report true if wear is active?
-        return JoH.msSince(static_last_timestamp) < Constants.MINUTE_IN_MS * 6;
+        return (state == CONNECT_NOW && JoH.msSince(static_last_timestamp) < Constants.MINUTE_IN_MS * 30) || JoH.msSince(static_last_timestamp) < Constants.MINUTE_IN_MS * 6;
     }
 
     public static boolean usingCollector() {

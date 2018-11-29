@@ -34,7 +34,17 @@ public class SensorSanity {
         return isRawValueSane(raw_value, type, false);
 
     }
+
     public static boolean isRawValueSane(double raw_value, DexCollectionType type, boolean hard_check) {
+
+        // bypass checks if the allowing dead sensor engineering mode is enabled
+        if (allowTestingWithDeadSensor()) {
+            if (JoH.pratelimit("dead-sensor-sanity-passing", 3600)) {
+                UserError.Log.e(TAG, "Allowing any value due to Allow Dead Sensor being enabled");
+            }
+            return true;
+        }
+
         // passes by default!
         boolean state = true;
 
@@ -67,6 +77,11 @@ public class SensorSanity {
         }
 
         return state;
+    }
+
+    public static boolean allowTestingWithDeadSensor() {
+        return Pref.getBooleanDefaultFalse("allow_testing_with_dead_sensor")
+                && Pref.getBooleanDefaultFalse("engineering_mode");
     }
 
 }

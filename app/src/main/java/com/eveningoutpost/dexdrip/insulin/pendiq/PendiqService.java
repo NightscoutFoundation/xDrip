@@ -192,7 +192,7 @@ public class PendiqService extends JamBaseBluetoothService {
 
 
     @Override
-    protected synchronized void automata() {
+    protected synchronized boolean automata() {
 
         UserError.Log.d(TAG, "automata state: " + state);
         extendWakeLock(3000);
@@ -234,6 +234,7 @@ public class PendiqService extends JamBaseBluetoothService {
         } finally {
             //
         }
+        return true;
     }
 
 
