@@ -21,6 +21,9 @@ import com.eveningoutpost.dexdrip.Models.LibreBlock;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.tidepool.TidepoolEntry;
+import com.eveningoutpost.dexdrip.tidepool.TidepoolStatus;
+import com.eveningoutpost.dexdrip.tidepool.TidepoolUploader;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
@@ -441,6 +444,9 @@ public class UploaderQueue extends Model {
                             if (JoH.ratelimit("nightscout-manual-poll", 15)) {
                                 startSyncService(100);
                                 JoH.static_toast_short("Polling");
+                                if (TidepoolEntry.enabled()) {
+                                    TidepoolUploader.doLogin(true);
+                                }
                             }
                         }
                     }));
@@ -525,6 +531,12 @@ public class UploaderQueue extends Model {
         if (NightscoutUploader.last_exception_time > 0) {
             l.add(new StatusItem("REST-API problem\n" + JoH.dateTimeText(NightscoutUploader.last_exception_time) + " (" + NightscoutUploader.last_exception_count + ")", NightscoutUploader.last_exception, JoH.msSince(NightscoutUploader.last_exception_time) < (Constants.MINUTE_IN_MS * 6) ? StatusItem.Highlight.BAD : StatusItem.Highlight.NORMAL));
         }
+
+
+        if (TidepoolEntry.enabled()) {
+            l.addAll(TidepoolStatus.megaStatus());
+        }
+
 
         if (last_cleanup > 0)
             l.add(new StatusItem("Last clean up", JoH.niceTimeSince(last_cleanup) + " ago"));
