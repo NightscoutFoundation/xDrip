@@ -188,8 +188,6 @@ public class TidepoolUploader {
                         session.authReply.userid, BuildConfig.APPLICATION_ID, 1);
 
                 datasetCall.enqueue(new TidepoolCallback<List<MDatasetReply>>(session, "Get Open Datasets", () -> {
-                    UserError.Log.d(TAG, "Existing Dataset: " + session.datasetReply.getUploadId());
-
                     if (session.datasetReply == null) {
                         status("New data set");
                         if (fromUi) {
@@ -199,6 +197,7 @@ public class TidepoolUploader {
                         call.enqueue(new TidepoolCallback<MDatasetReply>(session, "Open New Dataset", () -> doUpload(session))
                                 .setOnFailure(TidepoolUploader::releaseWakeLock));
                     } else {
+                        UserError.Log.d(TAG, "Existing Dataset: " + session.datasetReply.getUploadId());
                         // TODO: Wouldn't need to do this if we could block on the above `call.enqueue`.
                         // ie, do the openDataSet conditionally, and then do `doUpload` either way.
                         status("Appending");
