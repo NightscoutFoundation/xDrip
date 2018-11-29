@@ -63,7 +63,7 @@ public class SourceWizard {
 
         }
         Tree<Item> other = root.addChild(new Item(gs(R.string.other), gs(R.string.which_type_of_device), R.drawable.wikimedia_question_mark));
-        other.addChild(new Item("640G / 670G", DexCollectionType.NSEmulator, R.drawable.wikimedia_pump_image_by_ajepbah));
+        other.addChild(new Item("640G / 670G", DexCollectionType.NSEmulator, R.drawable.mm600_series));
         other.addChild(new Item("Medtrum A6", DexCollectionType.Medtrum, R.drawable.a6_icon));
         //
         other.addChild(new Item("EverSense", DexCollectionType.NSEmulator, R.drawable.wikimedia_eversense_icon_pbroks13));
