@@ -16,7 +16,7 @@ public class TidepoolEntry {
 
     public static void newData() {
         if (enabled() && JoH.pratelimit("tidepool-new-data-upload", 1200)) {
-            TidepoolUploader.doLogin();
+            TidepoolUploader.doLogin(false);
         }
     }
 }
