@@ -131,6 +131,7 @@
 	<string name="signal_missed">Sinal perdido</string>
 	<string name="space_minutes_ago">" Minutos atrás"</string>
 	<string name="space_minute_ago">" Minutos atrás"</string>
+	<string name="minutes_ago">{0, choice,0#{0, number, integer} Minutos atrás|1#{0, number, integer} Minutos atrás|1&lt;{0, number, integer} Minutos atrás}</string>
 	<string name="show_parakeet_map">Mostrar Parakeet map</string>
 	<string name="switch_parakeet_to_setup_mode">Mudar Parakeet para Modo de Setup</string>
 	<string name="view_events_log">Ver Log de Eventos</string>

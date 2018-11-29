@@ -131,6 +131,7 @@
 	<string name="signal_missed">S-a pierdut semnalul</string>
 	<string name="space_minutes_ago">" Minute în urmă"</string>
 	<string name="space_minute_ago">" Minut în urmă"</string>
+	<string name="minutes_ago">{0, choice,0#{0, number, integer} Minute în urmă|1#{0, number, integer} Minut în urmă|1&lt;{0, number, integer} Minute în urmă}</string>
 	<string name="show_parakeet_map">Arată harta Parakeet</string>
 	<string name="switch_parakeet_to_setup_mode">Comută Parakeet în modul de configurare</string>
 	<string name="view_events_log">Vizualizează Jurnalul de evenimente</string>

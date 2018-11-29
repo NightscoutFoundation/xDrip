@@ -128,6 +128,7 @@
     <string name="signal_missed">신호 끊김</string>
     <string name="space_minutes_ago">" 몇분 전에"</string>
     <string name="space_minute_ago">" 분 전"</string>
+    <string name="minutes_ago">{0, choice,0#{0, number, integer} 몇분 전에|1#{0, number, integer} 분 전|1&lt;{0, number, integer} 몇분 전에}</string>
     <string name="show_parakeet_map">Parakeet map을 보여 주세요.</string>
     <string name="switch_parakeet_to_setup_mode">셋업 모드에서 Parakeet으로 전환 하세요.</string>
     <string name="view_events_log">이벤트 로그 보기</string>

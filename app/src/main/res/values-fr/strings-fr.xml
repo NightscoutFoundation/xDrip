@@ -129,6 +129,7 @@
   <string name="signal_missed">Signal manqué</string>
   <string name="space_minutes_ago">" Minutes"</string>
   <string name="space_minute_ago">" Minute"</string>
+  <string name="minutes_ago">{0, choice,0#{0, number, integer} Minutes|1#{0, number, integer} Minute|1&lt;{0, number, integer} Minutes}</string>
   <string name="show_parakeet_map">Afficher la carte Parakeet</string>
   <string name="switch_parakeet_to_setup_mode">Mettre Parakeet en mode de configuration</string>
   <string name="view_events_log">Afficher le journal d\'événements</string>

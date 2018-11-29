@@ -62,6 +62,7 @@ import android.widget.Toast;
 import com.crashlytics.android.Crashlytics;
 import com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Dex_Constants;
+import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.Models.Accuracy;
 import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
@@ -147,6 +148,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
+import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -2367,15 +2369,15 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             notificationText.append("\n USING FAKE DATA SOURCE !!!");
         }
         if (Pref.getLong("alerts_disabled_until", 0) > new Date().getTime()) {
-            notificationText.append("\n ALL ALERTS CURRENTLY DISABLED");
+            notificationText.append("\n " + getString(R.string.all_alerts_currently_disabled));
         } else if (Pref.getLong("low_alerts_disabled_until", 0) > new Date().getTime()
                 &&
                 Pref.getLong("high_alerts_disabled_until", 0) > new Date().getTime()) {
-            notificationText.append("\n LOW AND HIGH ALERTS CURRENTLY DISABLED");
+            notificationText.append("\n " + getString(R.string.low_and_high_alerts_currently_disabled));
         } else if (Pref.getLong("low_alerts_disabled_until", 0) > new Date().getTime()) {
-            notificationText.append("\n LOW ALERTS CURRENTLY DISABLED");
+            notificationText.append("\n " + getString(R.string.low_alerts_currently_disabled));
         } else if (Pref.getLong("high_alerts_disabled_until", 0) > new Date().getTime()) {
-            notificationText.append("\n HIGH ALERTS CURRENTLY DISABLED");
+            notificationText.append("\n " + getString(R.string.high_alerts_currently_disabled));
         }
         NavigationDrawerFragment navigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
 
@@ -3110,7 +3112,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
         if ((!small_width) || (notificationText.length() > 0)) notificationText.append("\n");
         if (!small_width) {
-            notificationText.append(minutes + ((minutes == 1) ? getString(R.string.space_minute_ago) : getString(R.string.space_minutes_ago)));
+            final String fmt = getString(R.string.minutes_ago);
+            notificationText.append(MessageFormat.format(fmt,minutes));
         } else {
             // small screen
             notificationText.append(minutes + getString(R.string.space_mins));
@@ -3159,13 +3162,35 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         }
     }
 
+    // This function is needed in hebrew in order to allow printing the text (for exapmle) -3 mg/dl
+    // It seems that without this hack, printing it is impossibale. Android will print something like:
+    // -mg/dl 3 or mg/dl 3- or  mg/dl -3. (but never -3 mg/dl)
+    // The problem seems to happen becaud of the extra 0x0a char that somehow gets to the buffer.
+    // Since this text has high visabilty, I'm doing it. Will not be done in other places.
+    private void HebrewAppendDisplayData() {
+        // Do the append for the hebrew language
+         String original_text = notificationText.getText().toString();
+        Log.d(TAG, "original_text = " + HexDump.dumpHexString(original_text.getBytes()));
+        if(original_text.length() >=1 && original_text.charAt(0) == 0x0a) {
+            Log.d(TAG,"removing first and appending " + display_delta);
+            notificationText.setText(display_delta + "  " + original_text.substring(1));
+        } else {
+            notificationText.setText(display_delta + "  " + original_text);
+        }
+    }
+
     private void addDisplayDelta() {
         if (BgGraphBuilder.isXLargeTablet(getApplicationContext())) {
-            notificationText.append("  ");
+            if(Locale.getDefault().getLanguage() == "iw") {
+                HebrewAppendDisplayData();
+            } else {
+               notificationText.append("  ");
+               notificationText.append(display_delta);
+            }
         } else {
             notificationText.append("\n");
+            notificationText.append(display_delta);
         }
-        notificationText.append(display_delta);
     }
 
     @Override

@@ -129,6 +129,7 @@
   <string name="signal_missed">Signal Gemiste</string>
   <string name="space_minutes_ago">" Minuten geleden"</string>
   <string name="space_minute_ago">" Minute geleden"</string>
+  <string name="minutes_ago">{0, choice,0#{0, number, integer} Minuten geleden|1#{0, number, integer} Minute geleden|1&lt;{0, number, integer} Minuten geleden}</string>
   <string name="show_parakeet_map">Toon Parkiet kaart</string>
   <string name="switch_parakeet_to_setup_mode">Schakel Parkiet naar Setupmodus</string>
   <string name="view_events_log">View Events Log</string>

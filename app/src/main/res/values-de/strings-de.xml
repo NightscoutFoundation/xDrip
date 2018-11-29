@@ -131,6 +131,7 @@
   <string name="signal_missed">Keine Daten empfangen</string>
   <string name="space_minutes_ago">" Minuten her"</string>
   <string name="space_minute_ago">" Minute her"</string>
+  <string name="minutes_ago">{0, choice,0#{0, number, integer} Minuten her|1#{0, number, integer} Minute her|1&lt;{0, number, integer} Minuten her}</string>
   <string name="show_parakeet_map">Parakeet Map anzeigen</string>
   <string name="switch_parakeet_to_setup_mode">Parakeet in Setup-Modus starten</string>
   <string name="view_events_log">Log anzeigen</string>
