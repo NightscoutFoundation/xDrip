@@ -162,6 +162,7 @@
     <string name="added">Added</string>
     <string name="checking_for_update">Checking for update..</string>
     <string name="signal_missed">Signal Missed</string>
+    <string name="minutes_ago">{0, choice,0#{0, number, integer} Minutes ago|1#{0, number, integer} Minute ago|1&lt;{0, number, integer} Minutes ago}</string>
     <string name="space_minutes_ago">" Minutes ago"</string>
     <string name="space_minute_ago">" Minute ago"</string>
     <string name="show_parakeet_map">Show Parakeet map</string>
@@ -818,8 +819,14 @@
     <string name="confirm_sensing_snooze">Confirm sending snooze</string>
     <string name="allow_remotes_silence">Allow remote handsets to silence alarms on this one</string>
     <string name="acccept_remote_snoozes">Accept remote snoozes</string>
+    <string name="send_remote_snooze">Send Remote Snooze</string>
     <string name="only_accept_same_network">Only accept if the remote wifi network name starts with the same letters as ours and matches very closely</string>
     <string name="wifi_name_must_match">Wifi name must match</string>
+    <string name="confirm_remote_snooze">Confirm Remote Snooze</string>
+    <string name="are_you_sure_you_wish_to_snooze_all_other_devices_in_your_sync_group">Are you sure you wish to snooze all other devices in your sync group?</string>
+    <string name="yes_send_it">YES, send it!</string>
+    
+    
     <string name="movement_detection_and_vehicle_mode">Movement detection and vehicle mode</string>
     <string name="xdrip_motion_tracking">xDrip+ Motion Tracking</string>
     <string name="detect_motion_types">Use sensors to detect types of motion</string>
@@ -1121,7 +1128,19 @@
     <string name="advanced_mode">Advanced Mode</string>
     <string name="reminder_title">Reminder Title</string>
     <string name="what_time_of_day_question">What time of day?</string>
+
+    <string name="all_alerts_currently_disabled">ALL ALERTS CURRENTLY DISABLED</string>
+    <string name="low_and_high_alerts_currently_disabled">LOW AND HIGH ALERTS CURRENTLY DISABLED</string>
+    <string name="low_alerts_currently_disabled">LOW ALERTS CURRENTLY DISABLED</string>
+    <string name="high_alerts_currently_disabled">HIGH ALERTS CURRENTLY DISABLED</string>
+    <string name="bg_reading_missed">BG Readings Missed</string>
+    <string name="not_connected">Not Connected</string>
+    <string name="no_data">No data</string>
+    <string name="no_bluetooth">No bluetooth</string>
+    <string name="connection_status">Connection Status:   </string>
+
     <string name="please_allow_permission">Please Allow Permission</string>
     <string name="without_location_scan_doesnt_work">Without Location permission Android Bluetooth scan doesn\'t work</string>
     <string name="without_location_permission_emergency_cannot_get_location">Without Location permission emergency messages cannot use location data</string>
+
 </resources>

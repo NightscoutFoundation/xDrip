@@ -349,7 +349,7 @@ public class SystemStatusFragment extends Fragment {
 
     private void setConnectionStatusFollower() {
         if (GcmListenerSvc.lastMessageReceived == 0) {
-            connection_status.setText("No data");
+            connection_status.setText(safeGetContext().getString(R.string.no_data));
         } else {
             connection_status.setText((JoH.qs((JoH.ts() - GcmListenerSvc.lastMessageReceived) / 60000, 0)) + " mins ago");
         }
@@ -359,7 +359,7 @@ public class SystemStatusFragment extends Fragment {
         if (ParakeetHelper.isParakeetCheckingIn()) {
             connection_status.setText(ParakeetHelper.parakeetStatusString());
         } else {
-            connection_status.setText("No data");
+            connection_status.setText(safeGetContext().getString(R.string.no_data));
         }
     }
 
@@ -379,9 +379,9 @@ public class SystemStatusFragment extends Fragment {
             }
         }
         if (connected) {
-            connection_status.setText("Connected");
+            connection_status.setText(safeGetContext().getString(R.string.connected));
         } else {
-            connection_status.setText("Not Connected");
+            connection_status.setText(safeGetContext().getString(R.string.not_connected));
         }
 
         String collection_method = prefs.getString("dex_collection_method", "BluetoothWixel");
@@ -407,7 +407,7 @@ public class SystemStatusFragment extends Fragment {
                     }
                 }
             } else {
-                connection_status.setText("No bluetooth");
+                connection_status.setText(safeGetContext().getString(R.string.no_bluetooth)); 
             }
         }
     }

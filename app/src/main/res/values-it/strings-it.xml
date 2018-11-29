@@ -129,6 +129,7 @@
   <string name="signal_missed">Segnale Perso</string>
   <string name="space_minutes_ago">" Minuti fa"</string>
   <string name="space_minute_ago">" Minuto fa"</string>
+  <string name="minutes_ago">{0, choice,0#{0, number, integer} Minuti fa|1#{0, number, integer} Minuto fa|1&lt;{0, number, integer} Minuti fa}</string>
   <string name="show_parakeet_map">Visualizza mappa Parakeet</string>
   <string name="switch_parakeet_to_setup_mode">Passare Parakeet alla modalità di installazione</string>
   <string name="view_events_log">Visualizza eventi Log</string>

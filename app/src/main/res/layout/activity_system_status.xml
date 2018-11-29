@@ -112,7 +112,7 @@
                     android:layout_gravity="center_vertical"
                     android:paddingTop="10dp"
 
-                    android:text="Connection Status:   "
+                    android:text="@string/connection_status"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
 
                 <TextView

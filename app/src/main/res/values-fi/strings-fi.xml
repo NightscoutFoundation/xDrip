@@ -129,6 +129,7 @@
   <string name="signal_missed">Signal Missed</string>
   <string name="space_minutes_ago">" Minuuttia sitten"</string>
   <string name="space_minute_ago">" Minute sitten"</string>
+  <string name="minutes_ago">{0, choice,0#{0, number, integer} Minuuttia sitten|1#{0, number, integer} Minute sitten|1&lt;{0, number, integer} Minuuttia sitten}</string>
   <string name="show_parakeet_map">Näytä Parakeet kartta</string>
   <string name="switch_parakeet_to_setup_mode">Vaihda Parakeet asetustilaan</string>
   <string name="view_events_log">View Tapahtumat Log</string>
