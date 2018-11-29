@@ -13,6 +13,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 import static com.eveningoutpost.dexdrip.Models.JoH.dateTimeText;
 
@@ -27,7 +28,7 @@ public class UploadChunk {
     private static final String TAG = "TidepoolUploadChunk";
     private static final String LAST_UPLOAD_END_PREF = "tidepool-last-end";
 
-    private static final long MAX_UPLOAD_SIZE = Constants.DAY_IN_MS * 3;
+    private static final long MAX_UPLOAD_SIZE = Constants.DAY_IN_MS * 7; // don't change this
 
 
     public static String getNext(final Session session) {
@@ -69,7 +70,7 @@ public class UploadChunk {
         return Math.min(last_end + MAX_UPLOAD_SIZE, JoH.tsl() - Constants.MINUTE_IN_MS * 15);
     }
 
-    private static long getLastEnd() {
+    public static long getLastEnd() {
         long result = PersistentStore.getLong(LAST_UPLOAD_END_PREF);
         return Math.max(result, JoH.tsl() - Constants.MONTH_IN_MS * 2);
     }
@@ -85,7 +86,7 @@ public class UploadChunk {
 
     static List<BaseElement> getTreatments(final long start, final long end) {
         List<BaseElement> result = new LinkedList<>();
-        final List<Treatments> treatments = Treatments.latestForGraph(600, start, end);
+        final List<Treatments> treatments = Treatments.latestForGraph(1800, start, end);
         for (Treatments treatment : treatments) {
             if (treatment.carbs > 0) {
                 result.add(EWizard.fromTreatment(treatment));
@@ -115,16 +116,16 @@ public class UploadChunk {
     }
 
     static List<EBloodGlucose> getBloodTests(final long start, final long end) {
-        return EBloodGlucose.fromBloodTests(BloodTest.latestForGraph(600, start, end));
+        return EBloodGlucose.fromBloodTests(BloodTest.latestForGraph(1800, start, end));
     }
 
     static List<ESensorGlucose> getBgReadings(final long start, final long end) {
-        return ESensorGlucose.fromBgReadings(BgReading.latestForGraphAsc(4000, start, end));
+        return ESensorGlucose.fromBgReadings(BgReading.latestForGraphAsc(15000, start, end));
     }
 
     static List<EBasal> getBasals(final long start, final long end) {
         final List<EBasal> basals = new LinkedList<>();
-        final List<APStatus> aplist = APStatus.latestForGraph(4000, start, end);
+        final List<APStatus> aplist = APStatus.latestForGraph(15000, start, end);
         EBasal current = null;
         for (APStatus apStatus : aplist) {
             final double this_rate = Profile.getBasalRate(apStatus.timestamp) * apStatus.basal_percent / 100d;
@@ -144,8 +145,7 @@ public class UploadChunk {
                 }
             }
             if (current == null) {
-                // TODO: UUID should not be hard-coded
-                current = new EBasal(this_rate, apStatus.timestamp, 0, "99deff51-91b0-4a51-9ad4-a38913fbed5f"); // start duration is 0
+                current = new EBasal(this_rate, apStatus.timestamp, 0, UUID.nameUUIDFromBytes(("tidepool-basal" + apStatus.timestamp).getBytes()).toString()); // start duration is 0
             }
         }
         return basals;
