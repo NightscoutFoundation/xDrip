@@ -1,8 +1,9 @@
 package com.eveningoutpost.dexdrip.tidepool;
 
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.store.FastStore;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -11,12 +12,19 @@ import retrofit2.Response;
 
 // Callback template to reduce boiler plate
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 class TidepoolCallback<T> implements Callback<T> {
 
     final Session session;
     final String name;
     final Runnable onSuccess;
+
+    Runnable onFailure;
+
+    TidepoolCallback<T> setOnFailure(final Runnable runnable) {
+        this.onFailure = runnable;
+        return this;
+    }
 
     @Override
     public void onResponse(Call<T> call, Response<T> response) {
@@ -28,12 +36,24 @@ class TidepoolCallback<T> implements Callback<T> {
                 onSuccess.run();
             }
         } else {
-            UserError.Log.e(TidepoolUploader.TAG, name + " was not successful: " + response.code() + " " + response.message());
+            final String msg = name + " was not successful: " + response.code() + " " + response.message();
+            UserError.Log.e(TidepoolUploader.TAG, msg);
+            status(msg);
         }
     }
 
     @Override
     public void onFailure(Call<T> call, Throwable t) {
-        UserError.Log.e(TidepoolUploader.TAG, name + " Failed: " + t);
+        final String msg = name + " Failed: " + t;
+        UserError.Log.e(TidepoolUploader.TAG, msg);
+        status(msg);
+        if (onFailure != null) {
+            onFailure.run();
+        }
+    }
+
+
+    private static void status(final String status) {
+        FastStore.getInstance().putS(TidepoolUploader.STATUS_KEY, status);
     }
 }

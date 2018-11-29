@@ -1,14 +1,13 @@
 package com.eveningoutpost.dexdrip.tidepool;
 
-import android.app.AlertDialog;
-import android.content.Context;
+import android.os.PowerManager;
 
 import com.eveningoutpost.dexdrip.BuildConfig;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
+import com.eveningoutpost.dexdrip.store.FastStore;
 
-import java.io.IOException;
 import java.util.List;
 
 import okhttp3.MediaType;
@@ -16,7 +15,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
-import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.Body;
@@ -39,12 +37,15 @@ import retrofit2.http.Query;
 public class TidepoolUploader {
 
     protected static final String TAG = "TidepoolUploader";
+    protected static final String STATUS_KEY = "Tidepool-Status";
     private static final boolean D = true;
     private static final boolean REPEAT = false;
 
     private static Retrofit retrofit;
     private static final String BASE_URL = "https://int-api.tidepool.org";
     private static final String SESSION_TOKEN_HEADER = "x-tidepool-session-token";
+
+    private static PowerManager.WakeLock wl;
 
     public interface Tidepool {
         @Headers({
@@ -86,13 +87,14 @@ public class TidepoolUploader {
     public static Retrofit getRetrofitInstance() {
         if (retrofit == null) {
 
-            final HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+            final HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
             if (D) {
-                interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+                httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
             }
             final OkHttpClient client = new OkHttpClient.Builder()
-                    .addInterceptor(interceptor)
-                    //.addInterceptor(new GzipRequestInterceptor())
+                    .addInterceptor(httpLoggingInterceptor)
+                    .addInterceptor(new InfoInterceptor(TAG))
+                    //          .addInterceptor(new GzipRequestInterceptor())
                     .build();
 
             retrofit = new retrofit2.Retrofit.Builder()
@@ -104,25 +106,43 @@ public class TidepoolUploader {
         return retrofit;
     }
 
-    public static void doLogin() {
+    public static void doLoginFromUi() {
+        doLogin(true);
+    }
+
+    public static synchronized void doLogin(final boolean fromUi) {
         if (!TidepoolEntry.enabled()) {
-            UserError.Log.d(TAG,"Cannot login as disabled by preference");
+            UserError.Log.d(TAG, "Cannot login as disabled by preference");
+            if (fromUi) {
+                JoH.static_toast_long("Cannot login as Tidepool feature not enabled");
+            }
             return;
         }
         // TODO failure backoff
-        if (JoH.ratelimit("tidepool-login", 1)) {
-
+        if (JoH.ratelimit("tidepool-login", 10)) {
+            extendWakeLock(30000);
             final Session session = new Session(MAuthRequest.getAuthRequestHeader(), SESSION_TOKEN_HEADER);
             if (session.authHeader != null) {
                 final Call<MAuthReply> call = session.service.getLogin(session.authHeader);
-                call.enqueue(new TidepoolCallback<>(session, "Login", () -> startSession(session)));
+                status("Connecting");
+                if (fromUi) {
+                    JoH.static_toast_long("Connecting to Tidepool");
+                }
+
+                call.enqueue(new TidepoolCallback<MAuthReply>(session, "Login", () -> startSession(session, fromUi))
+                        .setOnFailure(TidepoolUploader::releaseWakeLock));
             } else {
-                UserError.Log.e(TAG,"Cannot do login as user credentials have not been set correctly");
+                UserError.Log.e(TAG, "Cannot do login as user credentials have not been set correctly");
+                status("Invalid credentials");
+                if (fromUi) {
+                    JoH.static_toast_long("Cannot login as Tidepool credentials have not been set correctly");
+                }
+                releaseWakeLock();
             }
         }
     }
 
-    public static void testLogin(Context rootContext) {
+/*    public static void testLogin(Context rootContext) {
         if (JoH.ratelimit("tidepool-login", 1)) {
 
             String message = "Failed to log into Tidepool.\n" +
@@ -156,30 +176,50 @@ public class TidepoolUploader {
             final AlertDialog alert = builder.create();
             alert.show();
         }
-    }
+    }*/
 
 
-    private static void startSession(final Session session) {
+    private static void startSession(final Session session, boolean fromUi) {
         if (JoH.ratelimit("tidepool-start-session", 60)) {
-
+            extendWakeLock(30000);
             if (session.authReply.userid != null) {
                 // See if we already have an open data set to write to
                 Call<List<MDatasetReply>> datasetCall = session.service.getOpenDataSets(session.token,
                         session.authReply.userid, BuildConfig.APPLICATION_ID, 1);
 
-                datasetCall.enqueue(new TidepoolCallback<>(session, "Get Open Datasets", () -> {
-                    UserError.Log.d(TAG, "Existing Dataset: " + session.datasetReply);
-                    if(session.datasetReply == null) {
+                datasetCall.enqueue(new TidepoolCallback<List<MDatasetReply>>(session, "Get Open Datasets", () -> {
+                    UserError.Log.d(TAG, "Existing Dataset: " + session.datasetReply.getUploadId());
+
+                    if (session.datasetReply == null) {
+                        status("New data set");
+                        if (fromUi) {
+                            JoH.static_toast_long("Creating new data set");
+                        }
                         Call<MDatasetReply> call = session.service.openDataSet(session.token, session.authReply.userid, new MOpenDatasetRequest().getBody());
-                        call.enqueue(new TidepoolCallback<>(session, "Open New Dataset", () -> doUpload(session)));
+                        call.enqueue(new TidepoolCallback<MDatasetReply>(session, "Open New Dataset", () -> doUpload(session))
+                                .setOnFailure(TidepoolUploader::releaseWakeLock));
                     } else {
                         // TODO: Wouldn't need to do this if we could block on the above `call.enqueue`.
                         // ie, do the openDataSet conditionally, and then do `doUpload` either way.
+                        status("Appending");
+                        if (fromUi) {
+                            JoH.static_toast_long("Found existing remote data set");
+                        }
                         doUpload(session);
                     }
-                }));
+                }).setOnFailure(TidepoolUploader::releaseWakeLock));
             } else {
                 UserError.Log.wtf(TAG, "Got login response but cannot determine userid - cannot proceed");
+                if (fromUi) {
+                    JoH.static_toast_long("Error: Cannot determine userid");
+                }
+                status("Error userid");
+                releaseWakeLock();
+            }
+        } else {
+            status("Cool Down Wait");
+            if (fromUi) {
+                JoH.static_toast_long("In cool down period, please wait 1 minute");
             }
         }
     }
@@ -187,9 +227,10 @@ public class TidepoolUploader {
 
     private static void doUpload(final Session session) {
         if (!TidepoolEntry.enabled()) {
-            UserError.Log.e(TAG,"Cannot upload - preference disabled");
+            UserError.Log.e(TAG, "Cannot upload - preference disabled");
             return;
         }
+        extendWakeLock(60000);
         session.iterations++;
         final String chunk = UploadChunk.getNext(session);
         if (chunk != null) {
@@ -198,11 +239,14 @@ public class TidepoolUploader {
                 doCompleted(session);
             } else {
                 final RequestBody body = RequestBody.create(MediaType.parse("application/json"), chunk);
+
                 final Call<MUploadReply> call = session.service.doUpload(session.token, session.datasetReply.getUploadId(), body);
-                call.enqueue(new TidepoolCallback<>(session, "Data Upload", () -> {
+                status("Uploading");
+                call.enqueue(new TidepoolCallback<MUploadReply>(session, "Data Upload", () -> {
                     UploadChunk.setLastEnd(session.end);
 
                     if (REPEAT && !session.exceededIterations()) {
+                        status("Queued Next");
                         UserError.Log.d(TAG, "Scheduling next upload");
                         Inevitable.task("Tidepool-next", 10000, () -> doUpload(session));
                     } else {
@@ -213,21 +257,50 @@ public class TidepoolUploader {
                             doCompleted(session);
                         }
                     }
-                }));
+                }).setOnFailure(TidepoolUploader::releaseWakeLock));
             }
         } else {
             UserError.Log.e(TAG, "Upload chunk is null, cannot proceed");
+            releaseWakeLock();
         }
     }
 
 
     private static void doClose(final Session session) {
+        status("Closing");
+        extendWakeLock(20000);
         final Call<MDatasetReply> call = session.service.closeDataSet(session.token, session.datasetReply.getUploadId(), new MCloseDatasetRequest().getBody());
-        call.enqueue(new TidepoolCallback<>(session, "Session Stop", null));
+        call.enqueue(new TidepoolCallback<>(session, "Session Stop", TidepoolUploader::closeSuccess));
+    }
+
+    private static void closeSuccess() {
+        status("Closed");
+        UserError.Log.d(TAG, "Close success");
+        releaseWakeLock();
     }
 
     private static void doCompleted(final Session session) {
+        status("Completed OK");
         UserError.Log.d(TAG, "ALL COMPLETED OK!");
+        releaseWakeLock();
+    }
+
+    private static void status(final String status) {
+        FastStore.getInstance().putS(STATUS_KEY, status);
+    }
+
+    private static synchronized void extendWakeLock(long ms) {
+        if (wl == null) {
+            wl = JoH.getWakeLock("tidepool-uploader", (int) ms);
+        } else {
+            JoH.releaseWakeLock(wl); // lets not get too messy
+            wl.acquire(ms);
+        }
+    }
+
+    protected static synchronized void releaseWakeLock() {
+        UserError.Log.d(TAG, "Releasing wakelock");
+        JoH.releaseWakeLock(wl);
     }
 
     // experimental - not used
