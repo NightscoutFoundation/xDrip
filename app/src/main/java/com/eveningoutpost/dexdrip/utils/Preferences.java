@@ -67,9 +67,9 @@ import com.eveningoutpost.dexdrip.UtilityModels.pebble.watchface.InstallPebbleWa
 import com.eveningoutpost.dexdrip.WidgetUpdateService;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileEditor;
+import com.eveningoutpost.dexdrip.tidepool.TidepoolUploader;
 import com.eveningoutpost.dexdrip.ui.LockScreenWallPaper;
 import com.eveningoutpost.dexdrip.watch.lefun.LeFunEntry;
-import com.eveningoutpost.dexdrip.tidepool.TidepoolUploader;
 import com.eveningoutpost.dexdrip.wearintegration.Amazfitservice;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.eveningoutpost.dexdrip.webservices.XdripWebService;
@@ -883,9 +883,7 @@ public class Preferences extends BasePreferenceActivity {
 
             final Preference tidepoolTestLogin = findPreference("tidepool_test_login");
             tidepoolTestLogin.setOnPreferenceClickListener(preference -> {
-//                Runnable r = () -> TidepoolUploader.testLogin(preference.getContext());
-                Inevitable.task("tidepool-upload", 200, TidepoolUploader::doLogin);
-//                TidepoolUploader.testLogin(preference.getContext());
+                Inevitable.task("tidepool-upload", 200, TidepoolUploader::doLoginFromUi);
                 return false;
             });
 
