@@ -3,6 +3,7 @@ package com.eveningoutpost.dexdrip.watch.lefun;
 // jamorham
 
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.UserError;
 
 import java.util.Calendar;
 
@@ -31,8 +32,12 @@ public class FunAlmanac {
 
         if (value <= 13) {
 
+            // java's annoying imprecision with double type means that statements like this
+            // ((int) ((10.1 - 10) * 10))) would be expected to yield '1' but instead yield '0'
+            // So we get BigDecimal involved for such a trivial calculation...
+
             macro = (int) value;
-            micro = (int) ((value - macro) * 10);
+            micro = (int) (JoH.roundDouble(value - macro, 1) * 10);
 
             android.util.Log.d(TAG, "Result: " + macro + " " + micro);
 
