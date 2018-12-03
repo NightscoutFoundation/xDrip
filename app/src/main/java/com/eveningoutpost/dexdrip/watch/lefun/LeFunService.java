@@ -119,7 +119,7 @@ public class LeFunService extends JamBaseBluetoothSequencer {
                             }
                         } else {
                             // no specific function
-                            UserError.Log.uel(TAG, "SET TIME CALLED");
+                            UserError.Log.d(TAG, "SET TIME CALLED");
                             changeState(SET_TIME);
                         }
                     }
