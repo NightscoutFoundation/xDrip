@@ -27,6 +27,8 @@ import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
+import static com.eveningoutpost.dexdrip.UtilityModels.OkHttpWrapper.enableTls12OnPreLollipop;
+
 /** jamorham
  *
  * Tidepool Uploader
@@ -91,7 +93,7 @@ public class TidepoolUploader {
             if (D) {
                 httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
             }
-            final OkHttpClient client = new OkHttpClient.Builder()
+            final OkHttpClient client = enableTls12OnPreLollipop(new OkHttpClient.Builder())
                     .addInterceptor(httpLoggingInterceptor)
                     .addInterceptor(new InfoInterceptor(TAG))
                     //          .addInterceptor(new GzipRequestInterceptor())
@@ -130,7 +132,7 @@ public class TidepoolUploader {
                 }
 
                 call.enqueue(new TidepoolCallback<MAuthReply>(session, "Login", () -> startSession(session, fromUi))
-                        .setOnFailure(TidepoolUploader::releaseWakeLock));
+                        .setOnFailure(() -> loginFailed(fromUi)));
             } else {
                 UserError.Log.e(TAG, "Cannot do login as user credentials have not been set correctly");
                 status("Invalid credentials");
@@ -140,6 +142,13 @@ public class TidepoolUploader {
                 releaseWakeLock();
             }
         }
+    }
+
+    private static void loginFailed(boolean fromUi) {
+        if (fromUi) {
+            JoH.static_toast_long("Login failed - see event log for details");
+        }
+        releaseWakeLock();
     }
 
 /*    public static void testLogin(Context rootContext) {
