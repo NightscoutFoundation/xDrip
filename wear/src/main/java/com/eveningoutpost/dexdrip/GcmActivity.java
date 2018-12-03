@@ -20,4 +20,8 @@ public class GcmActivity {
 
     }
 
+    public static void sendMimeoGraphUpdate(String result) {
+
+    }
+
 }
