@@ -15,6 +15,7 @@ Google Pixel XL | 7.1.1
 Google Pixel XL | 7.1.2
 OnePlus A3003 | 7.0
 OnePlus A0001 | 6.0.1
+OnePlus 6T A6013 | 9.0
 Samsung Galaxy S4 (SCH-I545) | 5.0.1
 Samsung Galaxy S5 (SM-G900V) | 6.0.1
 Samsung Galaxy Note 5 (N920V) | 7.0
