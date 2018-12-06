@@ -37,7 +37,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.util.DisplayMetrics;
@@ -105,6 +104,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.UndoRedo;
 import com.eveningoutpost.dexdrip.UtilityModels.UpdateActivity;
 import com.eveningoutpost.dexdrip.UtilityModels.VoiceCommands;
 import com.eveningoutpost.dexdrip.calibrations.CalibrationAbstract;
+import com.eveningoutpost.dexdrip.calibrations.NativeCalibrationPipe;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.dagger.Injectors;
 import com.eveningoutpost.dexdrip.databinding.ActivityHomeBinding;
@@ -283,12 +283,14 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     boolean watchkeypadset = false;
     long watchkeypad_timestamp = -1;
     private wordDataWrapper searchWords = null;
-    private AlertDialog dialog;
+    public AlertDialog dialog;
     private AlertDialog helper_dialog;
     private AlertDialog status_helper_dialog;
     private PopupInitialStatusHelperBinding initial_status_binding;
     private ActivityHomeBinding binding;
     private boolean is_newbie;
+    private boolean checkedeula;
+
 
     @Inject
     BaseShelf homeShelf;
@@ -358,7 +360,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         set_is_follower();
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
-        final boolean checkedeula = checkEula();
+        checkedeula = checkEula();
 
         binding = ActivityHomeBinding.inflate(getLayoutInflater());
         binding.setVs(homeShelf);
@@ -616,40 +618,19 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
         currentBgValueText.setText(""); // clear any design prototyping default
 
+
+
+    }
+
+    private boolean firstRunDialogs(final boolean checkedeula) {
+
         if (checkedeula && is_newbie && ((dialog == null) || !dialog.isShowing())) {
-            if (!SdcardImportExport.handleBackup(this)) {
-                if (!Pref.getString("units", "mgdl").equals("mmol")) {
-                    Log.d(TAG, "Newbie mmol prompt");
-                    if (Experience.defaultUnitsAreMmol()) {
-                        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                        builder.setTitle(R.string.glucose_units_mmol_or_mgdl);
-                        builder.setMessage(R.string.is_your_typical_glucose_value);
 
-                        builder.setNegativeButton("5.5", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                                Pref.setString("units", "mmol");
-                                Preferences.handleUnitsChange(null, "mmol", null);
-                                Home.staticRefreshBGCharts();
-                                toast(getString(R.string.settings_updated_to_mmol));
-                            }
-                        });
+            if (Experience.processSteps(this)) {
 
-                        builder.setPositiveButton("100", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                Home.staticRefreshBGCharts();
-                                dialog.dismiss();
-                            }
-                        });
-
-                        dialog = builder.create();
-                        dialog.show();
-                    }
-                }
             }
         }
-
+        return true; // not sure about this
     }
 
     private boolean checkBatteryOptimization() {
@@ -743,7 +724,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
 
     // handle sending the intent
-    private void processFingerStickCalibration(final double glucosenumber, final double timeoffset, boolean dontask) {
+    private synchronized void processFingerStickCalibration(final double glucosenumber, final double timeoffset, boolean dontask) {
         JoH.clearCache();
         UserError.Log.uel(TAG, "Processing Finger stick Calibration with values: glucose: " + glucosenumber + " timeoffset: " + timeoffset + " full auto: " + dontask);
         if (glucosenumber > 0) {
@@ -1087,6 +1068,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                                     public void onClick(DialogInterface dialog, int which) {
                                         dialog.dismiss();
                                         bt.removeState(BloodTest.STATE_VALID);
+                                        NativeCalibrationPipe.removePendingCalibration((int)bt.mgdl);
                                         GcmActivity.syncBloodTests();
                                         if (Home.get_show_wear_treatments())
                                             BloodTest.pushBloodTestSyncToWatch(bt, false);
@@ -1404,7 +1386,9 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         allWords = allWords.replaceAll(":", "."); // fix real times
         allWords = allWords.replaceAll("(\\d)([a-zA-Z])", "$1 $2"); // fix like 22mm
         allWords = allWords.replaceAll("([0-9]\\.[0-9])([0-9][0-9])", "$1 $2"); // fix multi number order like blood 3.622 grams
-        allWords = allWords.replaceAll(new String(RTL_BYTES, StandardCharsets.UTF_8),"");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            allWords = allWords.replaceAll(new String(RTL_BYTES, StandardCharsets.UTF_8),"");
+        }
         allWords = allWords.toLowerCase();
         
         Log.d(TAG, "Processing speech input allWords second: " + allWords + " UUID: " + thisuuid);
@@ -1898,6 +1882,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         }
 
         HeyFamUpdateOptInDialog.heyFam(this); // remind about updates
+        firstRunDialogs(checkedeula);
 
         Inevitable.task("home-resume-bg", 2000, new Runnable() {
                     @Override
@@ -2345,13 +2330,14 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             updateCurrentBgInfoForWifiWixel(collector, notificationText);
         } else if (is_follower || collector.equals(DexCollectionType.NSEmulator)) {
             displayCurrentInfo();
-            Notifications.start();
+            Inevitable.task("home-notifications-start", 5000, Notifications::start);
         } else if (!alreadyDisplayedBgInfoCommon && (DexCollectionType.getDexCollectionType() == DexCollectionType.LibreAlarm || collector == DexCollectionType.Medtrum)) {
             updateCurrentBgInfoCommon(collector, notificationText);
         }
         if (collector.equals(DexCollectionType.Disabled)) {
             notificationText.append("\n DATA SOURCE DISABLED");
             if (!Experience.gotData()) {
+                // TODO should this move to Experience::processSteps ?
                 final Activity activity = this;
                 JoH.runOnUiThreadDelayed(new Runnable() {
                     @Override
@@ -2577,10 +2563,11 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         } else {
 
             if (Ob1G5CollectionService.isG5WarmingUp() || (Ob1G5CollectionService.isPendingStart())) {
-                notificationText.setText("G5 Transmitter is still Warming Up, please wait");
+                notificationText.setText(R.string.sensor_is_still_warming_up_please_wait);
                 showUncalibratedSlope();
             } else {
-                if ((BgReading.latest(3).size() > 2) || (Ob1G5CollectionService.onlyUsingNativeMode() && BgReading.latest(1).size() > 0)) {
+                final int calculatedBgReadingsCount = BgReading.latest(3).size();
+                if ((calculatedBgReadingsCount > 2) || (Ob1G5CollectionService.onlyUsingNativeMode() && BgReading.latest(1).size() > 0)) {
                     // TODO potential to calibrate off stale data here
                     final List<Calibration> calibrations = Calibration.latestValid(2);
                     if ((calibrations.size() > 1) || Ob1G5CollectionService.onlyUsingNativeMode()) {
@@ -2607,6 +2594,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                         }
                     }
                 } else {
+                    UserError.Log.d(TAG,"NOT ENOUGH CALCULATED READINGS: "+calculatedBgReadingsCount);
                     if (!BgReading.isDataSuitableForDoubleCalibration() && (!Ob1G5CollectionService.usingNativeMode() || Ob1G5CollectionService.fallbackToXdripAlgorithm())) {
                         notificationText.setText(R.string.please_wait_need_two_readings_first);
                         showInitialStatusHelper();
