@@ -41,6 +41,7 @@ public class SdcardImportExport extends BaseAppCompatActivity {
     public final static int TRIGGER_RESTORE_PERMISSIONS_REQUEST_STORAGE = 9104;
     private final static String PREFERENCES_FILE = "shared_prefs/" + xdrip.getAppContext().getString(R.string.local_target_package) + "_preferences.xml";
     private final static String EXPORT_FOLDER = "xDrip-export";
+    private static boolean backupDismissed;
     //private static Activity activity;
     public static boolean deleteFolder(File path, boolean recursion) {
         try {
@@ -253,14 +254,17 @@ public class SdcardImportExport extends BaseAppCompatActivity {
     // restore settings backup if there is one, produce dialogs for prompting and permissions as required
     public static boolean handleBackup(final Activity activity) {
         final List<String> results = findAnyBackups(activity);
-        if ((results != null) && (results.size() > 0)) {
+        if (!backupDismissed && (results != null) && (results.size() > 0)) {
             Log.e(TAG, "Found: " + results.size() + " backup files");
 
             final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
             builder.setTitle("Backup detected");
             builder.setMessage("It looks like you maybe have a settings backup, shall we try to restore it?");
 
-            builder.setNegativeButton("No", (dialog, which) -> dialog.dismiss());
+            builder.setNegativeButton("No", (dialog, which) -> {
+                backupDismissed = true;
+                dialog.dismiss();
+            });
 
             builder.setPositiveButton("Restore Settings", (dialog, which) -> {
                 if (checkPermissions(activity, true, TRIGGER_RESTORE_PERMISSIONS_REQUEST_STORAGE)) {
