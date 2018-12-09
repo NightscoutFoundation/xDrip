@@ -625,6 +625,7 @@
             android:name=".wearintegration.Amazfitservice"
             android:enabled="true"
             android:exported="true" />
+        <service android:name=".watch.lefun.LeFunService" />
 
         <activity
             android:name=".EventLogActivity"
@@ -636,7 +637,7 @@
         <activity
             android:name=".ui.activities.SelectAudioDevice"
             android:label="@string/select_device" />
-      
+
         <activity
             android:name=".UtilityModels.MtpConfigureActivity"
             android:label="USB programmer" />
