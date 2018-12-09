@@ -185,6 +185,7 @@ public class DexCollectionService extends Service implements BtCallBack {
     // Experimental support for rfduino from Tomasz Stachowicz
     private static volatile BluetoothGattCharacteristic mCharacteristicSend;
     private byte[] lastdata = null;
+    private static int mStatus = -1; // for display in system status
     public SharedPreferences.OnSharedPreferenceChangeListener prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
         public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
             if (key.compareTo("run_service_in_foreground") == 0) {
@@ -233,6 +234,12 @@ public class DexCollectionService extends Service implements BtCallBack {
         } else {
             Log.d(TAG, "Services already discovered");
             checkImmediateSend();
+        }
+
+        if (mBluetoothGatt == null) {
+            //gregorybel: no needs to continue if Gatt is null!
+            UserError.Log.e(TAG, "gregorybel: force disconnect!");
+            handleDisconnectedStateChange();
         }
     }
 
@@ -308,6 +315,9 @@ public class DexCollectionService extends Service implements BtCallBack {
         @Override
         public synchronized void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
             final PowerManager.WakeLock wl = JoH.getWakeLock("bluetooth-gatt", 60000);
+
+            mStatus = status; // for display in system status
+
             if (status == 133) {
                 error133++;
             } else {
@@ -844,6 +854,30 @@ public class DexCollectionService extends Service implements BtCallBack {
         }
 
         l.add(new StatusItem("Bluetooth Device", JoH.ucFirst(getStateStr(mStaticState))));
+
+        if (device != null) {
+            l.add(new StatusItem("Device Mac Address", device.getAddress()));
+        }
+
+        if (Home.get_engineering_mode()) {
+            l.add(new StatusItem("Active device connected", String.valueOf(ActiveBluetoothDevice.is_connected())));
+            l.add(new StatusItem("Bluetooth GATT", String.valueOf(mBluetoothGatt)));
+
+            String hint = "";
+            if (mStatus == 133) {
+                hint = " (restart device?)";
+            }
+
+            l.add(new StatusItem("Last status", String.valueOf(mStatus) + hint));
+
+            BluetoothManager myBluetoothManager = (BluetoothManager) xdrip.getAppContext().getSystemService(Context.BLUETOOTH_SERVICE);
+
+            if (myBluetoothManager != null) {
+                for (BluetoothDevice bluetoothDevice : myBluetoothManager.getConnectedDevices(BluetoothProfile.GATT)) {
+                    l.add(new StatusItem("GATT device connected", bluetoothDevice.getAddress()));
+                }
+            }
+        }
 
         if (mStaticState == STATE_CONNECTING) {
             final long connecting_ms = JoH.msSince(last_connect_request);
