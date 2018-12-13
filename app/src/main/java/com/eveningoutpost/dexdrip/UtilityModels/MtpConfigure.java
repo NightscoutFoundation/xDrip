@@ -140,10 +140,11 @@ public class MtpConfigure {
         final String txid = Pref.getString("dex_txid", null);
         final String units = Pref.getString("units", "mgdl");
         final boolean usingMgDl = Pref.getString("units", "mgdl").equals("mgdl");
+        final boolean onlyEverUseWearCollector = Pref.getBooleanDefaultFalse("only_ever_use_wear_collector");
 
         @Override
         public String toString() {
-            return collector + " " + txid + " " + units + " " + usingMgDl;
+            return collector + " " + txid + " " + units + " " + usingMgDl + " " + onlyEverUseWearCollector;
         }
     }
 
