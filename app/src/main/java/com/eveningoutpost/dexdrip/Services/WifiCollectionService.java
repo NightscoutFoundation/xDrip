@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
+import android.text.SpannableString;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
@@ -186,5 +187,10 @@ public class WifiCollectionService extends Service {
             task = new WixelReader(getApplicationContext());
         }
         task.executeOnExecutor(xdrip.executor);
+    }
+
+    // data for NanoStatus
+    public static SpannableString nanoStatus() {
+        return null;
     }
 }
