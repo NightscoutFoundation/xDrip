@@ -507,6 +507,10 @@
     <string name="use_bluetooth_meter">Utilizar Medidor Bluetooth</string>
     <string name="scan_for_bluetooth_meter">Procurar Medidores Bluetooth</string>
     <string name="automatic_calibration">Calibração Automática</string>
+    <string name="volume_buttons_snooze">Pressionar o botão de volume para cima ou para baixo o alarme activo será silenciado quando a app aberta</string>
+    <string name="alert_snooze">Alerta Silêncio</string>
+    <string name="send_remote_snooze">Enviar Silêncio Remoto</string>
+    <string name="confirm_remote_snooze">Confirmar Silêncio Remoto</string>
     <string name="blukon">Blucon</string>
     <string name="tomato">Tomato</string>
     <string name="edit_note">Editar Nota</string>
@@ -527,4 +531,6 @@
     <string name="yes_cancel">Sim, Cancelar</string>
     <string name="zero_zero_zero_zero">0000</string>
     <string name="your_name">O seu nome</string>
+    <string name="snoozed_for">silenciado por</string>
+    <string name="snoozed_reminder_for">Lembrete Silêncio por </string>
 </resources>
