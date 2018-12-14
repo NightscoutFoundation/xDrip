@@ -25,7 +25,7 @@
     <string name="title_activity_usb_connected">Actividad usb conectado</string>
     <string name="snooze">Silenciar</string>
     <string name="snooze_hint">Silenciar alerta durante x minutos</string>
-    <string name="ok">DE ACUERDO</string>
+    <string name="ok">OK</string>
     <string name="cancel">Cancelar</string>
     <string name="no">No</string>
     <string name="pref_sensor_location_dont_ask_again"> ¡No me pregunte de nuevo</string>
