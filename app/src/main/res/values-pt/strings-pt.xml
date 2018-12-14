@@ -497,5 +497,13 @@
     <string name="vibrate_alerts">Vibrar nos Alertas</string>
     <string name="bluetooth_settings">Definições de Bluetooth</string>
     <string name="turn_bluetooth_on">Ligar Bluetooth</string>
+    <string name="daily_save_db">Guardar Base de Dados diariamente</string>
+    <string name="total_insulin">Insulina Total</string>
+    <string name="user">Utilizador</string>
+    <string name="password">Palavra-passe</string>
+    <string name="glucose_meters">Medidores de Glicose</string>
+    <string name="use_bluetooth_meter">Utilizar Medidor Bluetooth</string>
+    <string name="scan_for_bluetooth_meter">Procurar Medidores Bluetooth</string>
+    <string name="automatic_calibration">Calibração Automática</string>
     <!-- trend arrow for speak -->
 </resources>
