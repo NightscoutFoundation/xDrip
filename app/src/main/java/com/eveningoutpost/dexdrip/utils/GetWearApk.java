@@ -1,7 +1,10 @@
 package com.eveningoutpost.dexdrip.utils;
 
+import android.content.pm.ApplicationInfo;
+
 import com.eveningoutpost.dexdrip.BuildConfig;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.xdrip;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -31,13 +34,25 @@ public class GetWearApk {
             final String path = findOuterApkPath();
             return path != null ? extractFromApk(new File(path)) : null;
         } else {
-            UserError.Log.d(TAG, "Cannot find file");
+            UserError.Log.e(TAG, "Cannot find file");
             return null;
         }
     }
 
 
     private static String findOuterApkPath() {
+        try {
+            final ApplicationInfo applicationInfo = xdrip.getAppContext().getPackageManager().getApplicationInfo(BuildConfig.APPLICATION_ID, 0);
+            return applicationInfo.publicSourceDir;
+        } catch (Exception e) {
+            UserError.Log.e(TAG, "Got exception getting apk file: " + e);
+            //
+        }
+        return findOuterApkPathLegacy();
+    }
+
+    // probably never reached anymore
+    private static String findOuterApkPathLegacy() {
         for (int c = 0; c < 5; c++) {
             final String path = "/data/app/" + BuildConfig.APPLICATION_ID + "-" + c + "/base.apk";
             if (exists(path)) {
