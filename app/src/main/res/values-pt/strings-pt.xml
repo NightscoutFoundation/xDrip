@@ -516,4 +516,13 @@
     <string name="garmin">Garmin</string>
     <string name="fitbit">Fitbit</string>
     <string name="other">Outro</string>
+    <string name="androidaps">AndroidAPS</string>
+    <string name="androidwear">Android Wear OS</string>
+    <string name="librealarm">LibreAlarm</string>
+    <string name="use_librealarm">Utilizar app LibreAlarm como fonte de dados?</string>
+    <string name="use_app_for_calibration">utilizar app para calibração?</string>
+    <string name="code_accepted">Código aceite</string>
+    <string name="yes_cancel">Sim, Cancelar</string>
+    <string name="zero_zero_zero_zero">0000</string>
+    <string name="your_name">O seu nome</string>
 </resources>
