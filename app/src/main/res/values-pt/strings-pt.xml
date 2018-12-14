@@ -22,8 +22,8 @@
     <string name="navigation_drawer_close">Feche a gaveta de navegação</string>
     <string name="title_activity_calibration_check_in">Atividade de calibração</string>
     <string name="title_activity_usb_connected">Atividade USB conectado</string>
-    <string name="snooze">Soneca</string>
-    <string name="snooze_hint">Não alertar por x minutos</string>
+    <string name="snooze">Silenciar</string>
+    <string name="snooze_hint">Silenciar alerta por x minutos</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancelar</string>
     <string name="no">Não</string>
@@ -176,7 +176,7 @@
     <string name="alerts_and_notifications">Alertas e Notificações</string>
     <string name="glucose_level_alerts_list">Lista de Níveis Glicémios de Alerta</string>
     <string name="glucose_alerts_settings">Definições de Alertas de Glicémia</string>
-    <string name="smart_snoozing">Snooze inteligente</string>
+    <string name="smart_snoozing">Silêncio Inteligente</string>
     <string name="calibration_alerts">Alertas de Calibração</string>
     <string name="missed_reading_alert">Alerta de falha de leitura</string>
     <string name="other_alerts">Outros Alertas</string>
@@ -228,6 +228,7 @@
     <string name="special_value">Valor Especial</string>
     <string name="history">História</string>
     <string name="statistics">Estatísticas</string>
+    <string name="snooze_alert">Silenciar Alerta</string>
     <string name="less_common_settings">Definições menos comúns</string>
     <string name="view_recent_errors_warnings">Ver Erros/Avisos recentes</string>
     <string name="other_settings">Outras definições</string>
@@ -242,7 +243,7 @@
     <string name="alert_volume_profile">Perfil de volume de alerta</string>
     <string name="smart_alerting">Alertas inteligentes</string>
     <string name="dont_alarm_during_phone_calls">Não alertar durante chamadas</string>
-    <string name="start_snoozed">Iniciado com Soneca</string>
+    <string name="start_snoozed">Iniciar Silenciado</string>
     <string name="adjust_all_by_a_factor">Ajustar todos por um fator</string>
     <string name="reset">Reiniciar</string>
     <string name="pebble_and_android_wear_options">Opções Pebble e Android Wear</string>
@@ -276,11 +277,11 @@
     <string name="this_does_not_get_used_for_anything_its_just_to_keep_track_of_differences_for_algorithem_improvement_purposes">Isto não é usado para nada, apenas para registar alterações para melhorias do algoritmo</string>
     <string name="no_active_alert_exists">Não existem alertas ativos</string>
     <string name="active_alert_exists_named">Existem alertas ativos com o nome</string>
-    <string name="bracket_not_snoozed">(sem snooze)</string>
+    <string name="bracket_not_snoozed">(não silenciado)</string>
     <string name="all_alerts_disabled_until">"Todos os alertas desativados até que "</string>
     <string name="low_alerts_disabled_until">"Alertas de Hipo desativados até "</string>
     <string name="high_alerts_disabled_until">"Alertas de Hiper desativados até "</string>
-    <string name="default_snooze">Snooze Pré-definido</string>
+    <string name="default_snooze">Silêncio Pré-definido</string>
     <string name="until_you_reenable">Até serem re-ativados</string>
     <string name="set">Definir</string>
     <string name="disable_low_alerts">Desativar alertas de Hipo</string>
@@ -289,6 +290,7 @@
     <string name="re_enable_high_alerts">Re-Ativar alertas de Hiper</string>
     <string name="disable_all_alerts">Desativar todos os alertas</string>
     <string name="re_enable_all_alerts">Re-Ativar todos os alertas</string>
+    <string name="alert_snoozed_by_watch">Alerta adiado pelo relógio</string>
     <string name="update_channel_colon_space">"Canal de Updates: "</string>
     <string name="a_new_version_is_available">Está disponível uma nova versão</string>
     <string name="version_details">Detalhes de versão</string>
@@ -364,7 +366,7 @@
     <string name="parakeet_related_alerts">Alertas Parakeet</string>
     <string name="raise_parakeet_notification_silently_when_charging">Aumentar notificação silenciosa Parakeet enquanto carrega</string>
     <string name="silent_alert_when_charging">Alerta silencioso enquanto carrega</string>
-    <string name="alerts_start_out_snoozed_and_must_persist_for_a_while">O alarta inicia-se em snooze e deverá persistir durante uns momentos até ser ativado</string>
+    <string name="alerts_start_out_snoozed_and_must_persist_for_a_while">Alerta inicia em silêncio e deverá persistir durante uns momentos até ser activado</string>
     <string name="alarms_silenced_during_telephone_calls">Alarmes silenciados durante chamadas</string>
     <string name="suppress_alerts_if_missed_readings">Suprimir alertas se leituras estão em falta</string>
     <string name="bad_noisy_value_alerts">Alerta de más leituras (noisy)</string>
@@ -459,7 +461,7 @@
     <string name="disable_alert">desativar alerta</string>
     <string name="save_alert">guardar alerta</string>
     <string name="remove_alert">remover alerta</string>
-    <string name="snooze_alert_before_it_fires">fazer snooze ao alerta antes de ser iniciado</string>
+    <string name="snooze_alert_before_it_fires">silenciar alerta antes de ser iniciado</string>
     <string name="create_low_alert">Criar alerta Hipo</string>
     <string name="create_high_alert">Criar alerta Hiper</string>
     <string name="long_press_an_existing_alert_to_edit">(Pressionar longo em alerta existente para editar)</string>
