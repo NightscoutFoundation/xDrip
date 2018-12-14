@@ -501,6 +501,13 @@
     <string name="turn_bluetooth_on">Ligar Bluetooth</string>
     <string name="daily_save_db">Guardar Base de Dados diariamente</string>
     <string name="total_insulin">Insulina Total</string>
+    <string name="sensor_age_or_expiry">Idade ou Caducidade do Sensor </string>
+    <string name="scan_when_app_closed">Ler quando xDrip+ estiver fechado</string>
+    <string name="data_sync">Sincronizar Dados</string>
+    <string name="options_for_upload">Configurações de envio para Nightscout, MongDB or Dexcom Share</string>
+    <string name="cloud_upload">Envio para a Cloud</string>
+    <string name="skip_lan_uploads">Ignorar envios na LAN</string>
+    <string name="influxdb_sync">Activar sincronização InfluxDB</string>
     <string name="user">Utilizador</string>
     <string name="password">Palavra-passe</string>
     <string name="glucose_meters">Medidores de Glicose</string>
