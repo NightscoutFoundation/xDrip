@@ -40,13 +40,16 @@ public class DexCollectionHelper {
                 // intentional fall thru
 
             case DexcomG5:
+                final String pref = "dex_txid";
                 textSettingDialog(activity,
-                        "dex_txid", activity.getString(R.string.dexcom_transmitter_id),
+                        pref, activity.getString(R.string.dexcom_transmitter_id),
                         activity.getString(R.string.enter_your_transmitter_id_exactly),
                         InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD,
                         new Runnable() {
                             @Override
                             public void run() {
+                                // InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS does not seem functional here
+                                Pref.setString(pref, Pref.getString(pref, "").toUpperCase());
                                 Home.staticRefreshBGCharts();
                                 CollectionServiceStarter.restartCollectionServiceBackground();
                             }
