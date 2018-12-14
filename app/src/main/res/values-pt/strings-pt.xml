@@ -509,6 +509,9 @@
     <string name="automatic_calibration">Calibração Automática</string>
     <string name="volume_buttons_snooze">Pressionar o botão de volume para cima ou para baixo o alarme activo será silenciado quando a app aberta</string>
     <string name="alert_snooze">Alerta Silêncio</string>
+    <string name="send_snooze_to_all">Enviar Silêncio para todos</string>
+    <string name="confirm_sensing_snooze">Confirmar envio Silêncio</string>
+    <string name="acccept_remote_snoozes">Aceitar Silêncio remotos</string>
     <string name="send_remote_snooze">Enviar Silêncio Remoto</string>
     <string name="confirm_remote_snooze">Confirmar Silêncio Remoto</string>
     <string name="blukon">Blucon</string>
@@ -531,6 +534,7 @@
     <string name="yes_cancel">Sim, Cancelar</string>
     <string name="zero_zero_zero_zero">0000</string>
     <string name="your_name">O seu nome</string>
+    <string name="message_snooze_trash">O botão de lixo exclui permanentemente o lembrete apagado.</string>
     <string name="snoozed_for">silenciado por</string>
     <string name="snoozed_reminder_for">Lembrete Silêncio por </string>
 </resources>
