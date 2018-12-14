@@ -44,6 +44,7 @@
     <string name="pref_summary_mongodb_enabled">Se utiliza MongoLab e Azure isto deve estar ligado</string>
     <string name="pref_dialog_mongodb_uri">Introduza MongoDB URI\"</string>
     <string name="pref_message_mongodb_uri">Substituir valores de exemplo em {} com seus valores</string>
+    <string name="pref_default_mongodb_uri">mongodb://{utilizador}:{palavra-passe}@{host}.mongolab.com:{11111}/{base-de-dados}</string>
     <string name="pref_title_mongodb_collection">O nome da coleção</string>
     <string name="pref_dialog_mongodb_collection">Introduza nome de coleção</string>
     <string name="pref_message_mongodb_collection">Este é o nome da coleção onde será guardada a informação de CGM</string>
@@ -89,6 +90,7 @@
     <string name="title_activity_update">Atualização xDrip+ disponível</string>
     <string name="title_activity_display_qrcode">Partilhar definições via QR code</string>
     <string name="title_activity_send_feed_back">Enviar feedback para Jamorham</string>
+    <string name="title_activity_maps">Mapa Parakeet</string>
     <string name="title_activity_display_preferences">Preferências de visualização</string>
     <string name="export_submenu">Importar / Exportar</string>
     <string name="action_resend_to_watch">Reenviar glicémia para smartwatch</string>
