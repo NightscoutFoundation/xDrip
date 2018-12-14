@@ -505,5 +505,15 @@
     <string name="use_bluetooth_meter">Utilizar Medidor Bluetooth</string>
     <string name="scan_for_bluetooth_meter">Procurar Medidores Bluetooth</string>
     <string name="automatic_calibration">Calibração Automática</string>
+    <string name="blukon">Blucon</string>
+    <string name="tomato">Tomato</string>
+    <string name="edit_note">Editar Nota</string>
+    <string name="bluetooth_scan">Pesquisa Bluetooth</string>
+    <string name="forget_device">Esquecer Dispositivo</string>
+    <string name="other_notes">Outras Notas:</string>
     <!-- trend arrow for speak -->
+    <string name="yes">Sim</string>
+    <string name="garmin">Garmin</string>
+    <string name="fitbit">Fitbit</string>
+    <string name="other">Outro</string>
 </resources>
