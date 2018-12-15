@@ -96,7 +96,7 @@
     <string name="title_activity_maps">Mapa Parakeet</string>
     <string name="title_activity_display_preferences">Preferências de visualização</string>
     <string name="export_submenu">Importar / Exportar</string>
-    <string name="action_resend_to_watch">Reenviar glicémia para smartwatch</string>
+    <string name="action_resend_to_watch">Reenviar glicemia para smartwatch</string>
     <string name="action_open_watch_setting">Abrir Definições no Wear</string>
     <string name="action_sync_watch_db">Restaurar DB Wear</string>
     <string name="erase">Apagar</string>
@@ -154,7 +154,7 @@
     <string name="home_screen">Ecrã Principal</string>
     <string name="event_logs">Registos de Eventos</string>
     <string name="calibration_graph">Gráfico de Calibração</string>
-    <string name="glucose_units">Unidade de Glicémia</string>
+    <string name="glucose_units">Unidades de Glicemia</string>
     <string name="mmol_or_mgdl_high_and_low">mmol/l ou mg/dl hiper e hipo</string>
     <string name="general_settings">Definições Gerais</string>
     <string name="high_value">Valor Hiper</string>
@@ -166,7 +166,7 @@
     <string name="not_for_medical_use">Não é para fins médicos - Apenas ferramenta de investigação</string>
     <string name="deel_settings_for_algs">Definições de algoritmos</string>
     <string name="low_level_prediction_values">Valores de previsão de Hipo</string>
-    <string name="glucose_drop_for_one_unit">Baixa de Glicémia por 1 uni.</string>
+    <string name="glucose_drop_for_one_unit">Baixa de Glicemia por 1 Uni.</string>
     <string name="xdrip_plus_prediction_settings">Simulação Preditiva xDrip+</string>
     <string name="settings_for_syncing">Definições para sincronização entre dispositivos</string>
     <string name="xdrip_plus_sync_settings">Definições de sincronização xDrip+</string>
@@ -182,7 +182,7 @@
     <string name="alarms_and_alerts">Alarmes e Alertas</string>
     <string name="alerts_and_notifications">Alertas e Notificações</string>
     <string name="glucose_level_alerts_list">Lista de Níveis Glicémios de Alerta</string>
-    <string name="glucose_alerts_settings">Definições de Alertas de Glicémia</string>
+    <string name="glucose_alerts_settings">Definições de Alertas de Glicemia</string>
     <string name="smart_snoozing">Silêncio Inteligente</string>
     <string name="calibration_alerts">Alertas de Calibração</string>
     <string name="missed_reading_alert">Alerta de falha de leitura</string>
@@ -204,7 +204,7 @@
     <string name="system_status">Estado de Sistema</string>
     <string name="settings">Definições</string>
     <string name="calibration_data_table">Tabela de Calibração</string>
-    <string name="bg_data_table">Tabela de Glicémia</string>
+    <string name="bg_data_table">Tabela de Glicemia</string>
     <string name="cannot_calibrate_right_now">Impossível Calibrar agora</string>
     <string name="hardware_data_source">Hardware Fonte de Dados</string>
     <string name="enter_ten_character_dexcom_receiver_serial">Introduza 10 caracteres do número de serie do Dexcom Receiver</string>
@@ -230,7 +230,7 @@
     <string name="pebble_watch_integration">Integração Pebble Watch</string>
     <string name="standard_or_trend_pebble_watchface">Watchfaces Standard ou Trend do pebble</string>
     <string name="choose_pebble_watchface">Escolher Watchface Pebble</string>
-    <string name="message_to_display_when_bgl_hits">Mensagem a mostrar quando Glicémia atinge o valor especial acima</string>
+    <string name="message_to_display_when_bgl_hits">Mensagem a mostrar quando Glicemia atinge o valor acima</string>
     <string name="text_to_display_when_hitting_special_value">Texto a mostrar quando valor especial é atingido</string>
     <string name="special_value">Valor Especial</string>
     <string name="history">História</string>
@@ -246,7 +246,7 @@
     <string name="upload_data_to_dex_servers">Enviar dados para os servidores da Dexcom para que possa usa-los nas apps Dexcom</string>
     <string name="manage_followers">Gerir Seguidores</string>
     <string name="manage_existing_followers">Gira os seus seguidores e convide novos.</string>
-    <string name="glucose_calibration_and_other_alerts">Glicémia, Calibração e Outros alertas</string>
+    <string name="glucose_calibration_and_other_alerts">Glicemia, Calibração e Outros alertas</string>
     <string name="alert_volume_profile">Perfil de volume de alerta</string>
     <string name="smart_alerting">Alertas inteligentes</string>
     <string name="dont_alarm_during_phone_calls">Não alertar durante chamadas</string>
@@ -256,7 +256,7 @@
     <string name="pebble_and_android_wear_options">Opções Pebble e Android Wear</string>
     <string name="customize_colours">Personalizar Cores</string>
     <string name="xdrip_plus_color_settings">Definiçoes de cores xDrip+</string>
-    <string name="glucose_values_and_lines">Valor de Glicémia e Linhas</string>
+    <string name="glucose_values_and_lines">Valor de Glicemia e Linhas</string>
     <string name="high_glucose_values">Valores Glicémia Hiper</string>
     <string name="in_range_glucose_values">Valores Glicémia no algo</string>
     <string name="default_color_selected">Cor pré-definida Selecionado</string>
