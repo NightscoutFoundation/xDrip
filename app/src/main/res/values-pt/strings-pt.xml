@@ -46,8 +46,8 @@
     <string name="pref_message_mongodb_uri">Substituir valores de exemplo em {} com seus valores</string>
     <string name="pref_default_mongodb_uri">mongodb://{utilizador}:{palavra-passe}@{host}.mongolab.com:{11111}/{base-de-dados}</string>
     <string name="pref_title_mongodb_collection">O nome da coleção</string>
-    <string name="pref_dialog_mongodb_collection">Introduza nome de coleção</string>
-    <string name="pref_message_mongodb_collection">Este é o nome da coleção onde será guardada a informação de CGM</string>
+    <string name="pref_dialog_mongodb_collection">Introduza nome de colecção</string>
+    <string name="pref_message_mongodb_collection">Este é o nome da colecção onde será guardada a informação do CGM</string>
     <string name="pref_title_mongodb_device_status_collection">Nome da coleção Device Status</string>
     <string name="pref_dialog_mongodb_device_status_collection">Introduza nome da coleção Device Status\"</string>
     <string name="pref_message_mongodb_device_status_collection">Este é o nome da coleção onde dados sobre bateria e outros dados do dispositivo serão guardados</string>
@@ -210,7 +210,7 @@
     <string name="cannot_calibrate_right_now">Impossível Calibrar agora</string>
     <string name="hardware_data_source">Hardware Fonte de Dados</string>
     <string name="enter_ten_character_dexcom_receiver_serial">Introduza 10 caracteres do número de serie do Dexcom Receiver</string>
-    <string name="run_collector_in_foreground">Executar Collector em primeiro plano</string>
+    <string name="run_collector_in_foreground">Executar Dispositivo BT em primeiro plano</string>
     <string name="shows_a_persistent_notification">Mostra uma notificação persistente com um gráfico, visivel no ecrã de bloqueio e previne que o Android mate o serviço.</string>
     <string name="list_of_receivers">Lista de recetores</string>
     <string name="extra_tags_for_logging">Tags extra para log</string>
@@ -222,7 +222,7 @@
     <string name="send_data_to_android_wear_watch">Enviar informação para o Android Wear Watchface.</string>
     <string name="android_wear_integration">Integração Android Wear</string>
     <string name="pref_enable_wearG5">Ligar Wear Collection Service</string>
-    <string name="pref_summary_enable_wearG5">Ligar Wear ao Dexcom quando o telefone está fora de alcance</string>
+    <string name="pref_summary_enable_wearG5">Ligar Wear ao Dispositivo BT quando o telefone está fora de alcance</string>
     <string name="pref_force_wearG5">Forçar Wear Collection Service</string>
     <string name="pref_summary_force_wearG5">Forçar telefone a usar Wear Collection Service</string>
     <string name="pref_node_wearG5">Dispositivo a correr Collection Service</string>
