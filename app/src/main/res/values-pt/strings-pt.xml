@@ -78,9 +78,12 @@
     <string name="pref_pebble_display_high_line">Mostrar linha Hiper</string>
     <string name="pref_pebble_display_low_line">Mostrar linha Hipo</string>
     <!-- Amazfit Settings -->
+    <string name="pref_amazfit_enable_summary">Activar o suporte de dados do Amazfit</string>
     <string name="pref_amazfit_enable">Activar</string>
     <string name="pref_amazfit_tile">Serviço Amazfit</string>
+    <string name="pref_amazfit_alarm_enable_summary">Envia alarmes para Smartwatch e silencia o telefone</string>
     <string name="pref_amazfit_alarm_enable">Activar</string>
+    <string name="pref_amazfit_alarm_tile">Alarme do relógio</string>
     <string name="toast_crash">Aconteceu um erro :( foi enviado um relatório para ajudar a corrigir o problema.</string>
     <string name="taskerConfigInstruction">Cloque no ícone de Visto para confirmar. Não deve ser necessário alterar a string de definição.</string>
     <string name="taskerConfiguration">Definição Tasker</string>
@@ -143,6 +146,8 @@
     <string name="show_parakeet_map">Mostrar Parakeet map</string>
     <string name="switch_parakeet_to_setup_mode">Mudar Parakeet para Modo de Setup</string>
     <string name="view_events_log">Ver Log de Eventos</string>
+    <string name="show_libre_trend">Mostrar tendência do Libre</string>
+    <string name="libre_15_minutes_graph">Gráfico do Libre de 15 minutos</string>
     <string name="share_config_via_qr_code">Partilhar config. via QR code</string>
     <string name="check_for_updated_version">Procurar atualizações</string>
     <string name="send_feedback_to_developer">Enviar feedback para o programador</string>
@@ -495,6 +500,8 @@
     <string name="split">Dividir</string>
     <string name="delete">Apagar</string>
     <string name="title_activity_btglucose_meter">Pesquisar Medidor</string>
+    <string name="label_show_insulin">U:%1$su</string>
+    <string name="label_show_steps">Passos:%1$d</string>
     <string name="pref_dialog_influxdb_database">Base de dados</string>
     <string name="pref_dialog_influxdb_username">Utilizador</string>
     <string name="pref_dialog_influxdb_password">Palavra-passe</string>
@@ -502,7 +509,10 @@
     <string name="bluetooth_settings">Definições de Bluetooth</string>
     <string name="turn_bluetooth_on">Ligar Bluetooth</string>
     <string name="daily_save_db">Guardar Base de Dados diariamente</string>
+    <string name="total_carbs">Total de Hidratos Carbono</string>
     <string name="total_insulin">Insulina Total</string>
+    <string name="calibration_plugin">Plugin de Calibração</string>
+    <string name="advanced_calibration">Calibração Avançada</string>
     <string name="sensor_age_or_expiry">Idade ou Caducidade do Sensor </string>
     <string name="scan_when_app_closed">Ler quando xDrip+ estiver fechado</string>
     <string name="data_sync">Sincronizar Dados</string>
@@ -517,14 +527,21 @@
     <string name="scan_for_bluetooth_meter">Procurar Medidores Bluetooth</string>
     <string name="automatic_calibration">Calibração Automática</string>
     <string name="volume_buttons_snooze">Pressionar o botão de volume para cima ou para baixo o alarme activo será silenciado quando a app aberta</string>
+    <string name="repeat_alerts">Repetir Alertas</string>
     <string name="alert_snooze">Alerta Silêncio</string>
+    <string name="remote_snoozing">A Silenciar Remoto</string>
     <string name="send_snooze_to_all">Enviar Silêncio para todos</string>
     <string name="confirm_sensing_snooze">Confirmar envio Silêncio</string>
     <string name="acccept_remote_snoozes">Aceitar Silêncio remotos</string>
     <string name="send_remote_snooze">Enviar Silêncio Remoto</string>
+    <string name="wifi_name_must_match">Nome de WiFi deve ser igual</string>
     <string name="confirm_remote_snooze">Confirmar Silêncio Remoto</string>
+    <string name="play_sound">Tocar som</string>
+    <string name="repeat_sound">Repetir som</string>
     <string name="blukon">Blucon</string>
     <string name="tomato">Tomato</string>
+    <string name="reminders">Lembretes</string>
+    <string name="error">erro</string>
     <string name="edit_note">Editar Nota</string>
     <string name="bluetooth_scan">Pesquisa Bluetooth</string>
     <string name="forget_device">Esquecer Dispositivo</string>
