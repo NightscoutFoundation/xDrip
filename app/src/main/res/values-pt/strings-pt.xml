@@ -567,11 +567,15 @@
     <string name="calibration_plugin">Plugin de Calibração</string>
     <string name="advanced_calibration">Calibração Avançada</string>
     <string name="use_plugin_glucose">Utilizar Plugin de Glicose</string>
+    <string name="nfc_options">Opções para leitura com telemóvel em sensores com NFC</string>
     <string name="nfc_scan_features">Funções de Leitura NFC</string>
     <string name="use_nfc_feature">Utilizar função NFC</string>
     <string name="sensor_age_or_expiry">Idade ou Caducidade do Sensor </string>
     <string name="nfc_scanning_xdrip_open">Leitura NFC é feita apenas quando a app xDrip+ estiver visível</string>
+    <string name="nfc_scanning_launcher">Leitura NFC também funcionará através do ecrã principal da app</string>
     <string name="scan_when_app_closed">Ler quando xDrip+ estiver fechado</string>
+    <string name="vibrate_scanning_status">Vibrar para indicar o estado de leitura</string>
+    <string name="beep_when_scanning_within_app">Sinal sonoro quando leitura é feita dentro da app xDrip+</string>
     <string name="scan_for_g5_constantly">Pesquisar constantemente pelo G5</string>
     <string name="data_sync">Sincronizar Dados</string>
     <string name="options_for_upload">Configurações de envio para Nightscout, MongDB or Dexcom Share</string>
@@ -669,6 +673,7 @@
     <string name="select_device">Seleccionar Dispositivo</string>
     <string name="title_Smartwatch_Sensors">Sensores Smartwatch</string>
     <string name="title_Pump_Status">Estado da Bomba</string>
+    <string name="summary_Scan_before_connecting_on_xBridge_and_Libre_bluetooth">Pesquisar antes da ligação ao xBridge e Libre Bluetooth</string>
     <string name="title_Use_scanning">Utilizar procura</string>
     <string name="message_snooze_trash">O botão de lixo exclui permanentemente o lembrete apagado.</string>
     <string name="snoozed_for">silenciado por</string>
