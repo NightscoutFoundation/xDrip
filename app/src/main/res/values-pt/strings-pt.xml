@@ -18,6 +18,7 @@
     <string name="title_activity_start_new_sensor">Iniciar Novo Sensor</string>
     <string name="title_activity_new_sensor_location">Novo local de Sensor</string>
     <string name="title_activity_stop_sensor">Parar Sensor</string>
+    <string name="title_activity_nav_drawer">Menu de Navegação</string>
     <string name="navigation_drawer_open">Gaveta de navegação aberta</string>
     <string name="navigation_drawer_close">Feche a gaveta de navegação</string>
     <string name="title_activity_calibration_check_in">Atividade de calibração</string>
@@ -194,6 +195,7 @@
     <string name="persistent_high_alert">Alerta de Hiper persistente</string>
     <string name="forecasted_low_alert">Alerta de previsão de Hipo</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Extrapolar dados para tentar prever Hipos</string>
+    <string name="alarm_at_forecasted_low_mins">Alarme para Previsões de Baixa em mins</string>
     <string name="other_xdrip_plus_alerts">Outros alertas xDrip+</string>
     <string name="xdrip_plus_display_settings">Definições de visualização xDrip+</string>
     <string name="display_customisations">Personalizações de visualização</string>
@@ -227,6 +229,7 @@
     <string name="pref_summary_enable_wearG5">Ligar Wear ao Dispositivo BT quando o telefone está fora de alcance</string>
     <string name="pref_force_wearG5">Forçar Wear Collection Service</string>
     <string name="pref_summary_force_wearG5">Forçar telefone a usar Wear Collection Service</string>
+    <string name="pref_disable_wearG5_on_missedreadings_level">Minutos desde a última Leitura do Wear</string>
     <string name="pref_node_wearG5">Dispositivo a correr Collection Service</string>
     <string name="pref_summary_node_wearG5">Forçar telefone a usar este Wear Collection Service</string>
     <string name="pref_show_treatments">Mostrar Tratamentos</string>
@@ -544,8 +547,10 @@
     <string name="aggressive_service_restarts">Serviço agressivo de reinícios</string>
     <string name="display_predictive_values">Mostrar Previsão de Valores</string>
     <string name="use_external_blukon_algorithm">Algoritmo externo para o Libre.</string>
+    <string name="calibrate_external_libre_algorithm_title">Algoritmo de calibração OOP.</string>
     <string name="retrieve_blukon_history_title">Recuperar leitura do Libre</string>
     <string name="retrieve_blukon_history_summary">Recuperar as leituras perdidas do Blukon ao ligar-se novamente ao sensor.</string>
+    <string name="engineering_mode">Modo de Programador</string>
     <string name="daily_save_db">Guardar Base de Dados diariamente</string>
     <string name="todays_average_value">Valor médio de hoje.</string>
     <string name="ac1_estimation_dcct">Estimativa de A1c em formato DCCT (%)</string>
@@ -591,6 +596,7 @@
     <string name="carb_ratio">Rácio de Hidratos</string>
     <string name="insulin_sensitivity">Sensibilidade Insulina</string>
     <string name="force_english_text">Forçar Texto em Inglês</string>
+    <string name="show_test_features">Mostrar funcionalidades extra e teste alpha</string>
     <string name="enable_reminder_features">Activar funções de Lembretes</string>
     <string name="remote_snoozing">A Silenciar Remoto</string>
     <string name="send_snooze_to_all">Enviar Silêncio para todos</string>
@@ -632,7 +638,7 @@
     <string name="Speech_pitch">Tom de Voz</string>
     <string name="Speak_Alerts">Alertas de Voz</string>
     <string name="yes">Sim</string>
-    <string name="xdrip_compatible_features">xDrip+ %s Características</string>
+    <string name="xdrip_compatible_features">xDrip+ %s Funcionalidades</string>
     <string name="garmin">Garmin</string>
     <string name="fitbit">Fitbit</string>
     <string name="are_you_sure">Tem a certeza?</string>
