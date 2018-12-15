@@ -523,6 +523,7 @@
     <string name="label_show_carbs">Hidratos:%1$sg</string>
     <string name="label_show_steps">Passos:%1$d</string>
     <string name="label_show_steps_km">km:%1$s</string>
+    <string name="label_show_steps_mi">mi:%1$s</string>
     <string name="pref_message_influxdb_uri">Substituir valores exemplo nos {}\'s pelos seus valores correctos</string>
     <string name="pref_dialog_influxdb_uri">Introduzir URL do InfluxDB</string>
     <string name="pref_dialog_influxdb_database">Base de dados</string>
@@ -552,6 +553,7 @@
     <string name="calibrate_external_libre_algorithm_title">Algoritmo de calibração OOP.</string>
     <string name="retrieve_blukon_history_title">Recuperar leitura do Libre</string>
     <string name="retrieve_blukon_history_summary">Recuperar as leituras perdidas do Blukon ao ligar-se novamente ao sensor.</string>
+    <string name="extra_logging">Definições de registo extra</string>
     <string name="engineering_mode">Modo de Programador</string>
     <string name="daily_save_db">Guardar Base de Dados diariamente</string>
     <string name="todays_average_value">Valor médio de hoje.</string>
@@ -582,6 +584,8 @@
     <string name="password">Palavra-passe</string>
     <string name="upload_to_dexcom">Activar para enviar para os servidores Dexcom</string>
     <string name="upload_to_dexcom_share">Enviar valores de Glicose como Dexcom Share</string>
+    <string name="dexcom_user">Login da conta Dexcom</string>
+    <string name="dexcom_password">Palavra-passe da conta Dexcom</string>
     <string name="glucose_meters">Medidores de Glicose</string>
     <string name="use_bluetooth_meter">Utilizar Medidor Bluetooth</string>
     <string name="scan_for_bluetooth_meter">Procurar Medidores Bluetooth</string>
@@ -593,6 +597,8 @@
     <string name="override_silent_mode">Sobrepor modo de Silêncio</string>
     <string name="repeat_alerts">Repetir Alertas</string>
     <string name="alert_snooze">Alerta Silêncio</string>
+    <string name="bg_falling_fast">Glic em descida rápida</string>
+    <string name="bg_rising_fast">Glic em subida rápida</string>
     <string name="alert_sound">Som do Alerta</string>
     <string name="collector_battery_alerts">Alertas bateria Dispositivo BT</string>
     <string name="carb_ratio">Rácio de Hidratos</string>
