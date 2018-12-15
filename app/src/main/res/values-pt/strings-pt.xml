@@ -509,7 +509,7 @@
     <string name="predictive_model_inner_workings">Funcionamento do modelo de Previsão</string>
     <string name="noise_model_inner_workings">Funcionamento do modelo de Noise</string>
     <string name="glucose_number_from_filtered">Valores glicémicos filtrados</string>
-    <string name="if_the_phone_has_text_to_speech">Se o telefone tiver capacidade de sintetizar texto, o resultado será falado.</string>
+    <string name="if_the_phone_has_text_to_speech">Se o telefone tiver capacidade texto-para-voz, o resultado será falado.</string>
     <string name="upload_logs">Enviar Registos</string>
     <string name="short_off_text_for_switches">Desligado</string>
     <string name="short_on_text_for_switches">Ligado</string>
@@ -611,6 +611,7 @@
     <string name="force_english_text">Forçar Texto em Inglês</string>
     <string name="show_test_features">Mostrar funcionalidades extra e teste alpha</string>
     <string name="enable_reminder_features">Activar funções de Lembretes</string>
+    <string name="target_glucose_default">Alvo Padrão da Glicose</string>
     <string name="remote_snoozing">A Silenciar Remoto</string>
     <string name="send_snooze_to_all">Enviar Silêncio para todos</string>
     <string name="confirm_sensing_snooze">Confirmar envio Silêncio</string>
@@ -627,6 +628,7 @@
     <string name="tomato">Tomato</string>
     <string name="reminders">Lembretes</string>
     <string name="error">erro</string>
+    <string name="install_text_to_speech_data_question">Instalar dados Texto-Para-Voz?</string>
     <string name="stop_sensor">Parar Sensor</string>
     <string name="initial_calibration">Calibração Inicial</string>
     <string name="calibration_can_not_be_blank">Calibração não pode estar vazia</string>
@@ -640,6 +642,7 @@
     <string name="restart_collector">Reiniciar Dispositivo BT</string>
     <string name="forget_device">Esquecer Dispositivo</string>
     <string name="other_notes">Outras Notas:</string>
+    <string name="delete_future_data">Apagar Dados Futuros</string>
     <string name="collecting_initial_readings">A recolher Leituras Iniciais</string>
     <string name="data_collector_running">Dados Dispositivo BT em execução</string>
     <string name="receiving_data_from_collector">A Receber Dados do %s Dispositivo BT</string>
