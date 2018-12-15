@@ -232,6 +232,8 @@
     <string name="pref_disable_wearG5_on_missedreadings_level">Minutos desde a última Leitura do Wear</string>
     <string name="pref_node_wearG5">Dispositivo a correr Collection Service</string>
     <string name="pref_summary_node_wearG5">Forçar telefone a usar este Wear Collection Service</string>
+    <string name="pref_sync_wear_logs">Sincronizar registos Wear</string>
+    <string name="pref_summary_sync_wear_logs">Enviar registros Wear para Visualizador de Eventos</string>
     <string name="pref_show_treatments">Mostrar Tratamentos</string>
     <string name="pref_summary_show_treatments">Mostrar pontos de Tratamento no gráfico</string>
     <string name="pebble_integration">Integração Pebble</string>
