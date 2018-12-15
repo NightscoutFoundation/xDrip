@@ -42,6 +42,7 @@
     <!-- MongoDB Settings -->
     <string name="pref_title_mongodb">MongoDB</string>
     <string name="pref_summary_mongodb_enabled">Se utiliza MongoLab e Azure isto deve estar ligado</string>
+    <string name="pref_title_mongodb_uri">URL</string>
     <string name="pref_dialog_mongodb_uri">Introduza MongoDB URI\"</string>
     <string name="pref_message_mongodb_uri">Substituir valores de exemplo em {} com seus valores</string>
     <string name="pref_default_mongodb_uri">mongodb://{utilizador}:{palavra-passe}@{host}.mongolab.com:{11111}/{base-de-dados}</string>
@@ -248,6 +249,7 @@
     <string name="use_excessive_wakelocks">Utilizar Wakelocks excessivos</string>
     <string name="speak_readings">Falar Leituras</string>
     <string name="extra_status_line">Linha extra de estado</string>
+    <string name="dexcom_share_server_upload">Envio de dados para servidor de partilha Dexcom</string>
     <string name="upload_data_to_dex_servers">Enviar dados para os servidores da Dexcom para que possa usa-los nas apps Dexcom</string>
     <string name="manage_followers">Gerir Seguidores</string>
     <string name="manage_existing_followers">Gira os seus seguidores e convide novos.</string>
