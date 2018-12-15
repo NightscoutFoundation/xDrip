@@ -458,6 +458,7 @@
     <string name="show_graph_target_line">Mostrar linha alvo no gráfico</string>
     <string name="show_graph_recent_average">Mostrar média recente no gráfico</string>
     <string name="show_graph_total_average">Mostrar média total no gráfico</string>
+    <string name="show_noise_workings">Mostrar correcções de leituras irregulares (noise)</string>
     <string name="parakeet_and_extra_features">Parakeet e funcionalidades extra de teste</string>
     <string name="insulin_duration_hours">Duração da insulina em horas</string>
     <string name="default_liver_sensitivity_ratio">Rácio de Sensibilidade do Fígado</string>
@@ -517,10 +518,16 @@
     <string name="label_show_steps">Passos:%1$d</string>
     <string name="label_show_steps_km">km:%1$s</string>
     <string name="pref_message_influxdb_uri">Substituir valores exemplo nos {}\'s pelos seus valores correctos</string>
+    <string name="pref_dialog_influxdb_uri">Introduzir URL do InfluxDB</string>
     <string name="pref_dialog_influxdb_database">Base de dados</string>
     <string name="pref_dialog_influxdb_username">Utilizador</string>
     <string name="pref_dialog_influxdb_password">Palavra-passe</string>
     <string name="vibrate_alerts">Vibrar nos Alertas</string>
+    <string name="interapp_settings">Configurações entre aplicações</string>
+    <string name="accept_treatments">Aceitar Tratamentos</string>
+    <string name="process_broadcasted_calibrations">Processar calibrações recebidas de outras apps</string>
+    <string name="spoken_readings_locale">Personalizar Região para Leitura de Voz, ex.: de, en_IN ou pt_PT</string>
+    <string name="speak_glucose_twice">Dizer o valor da glicose duas vezes</string>
     <string name="bluetooth_settings">Definições de Bluetooth</string>
     <string name="turn_bluetooth_on">Ligar Bluetooth</string>
     <string name="daily_save_db">Guardar Base de Dados diariamente</string>
