@@ -539,6 +539,8 @@
     <string name="rfduino_support">Suporte para RFDUINO</string>
     <string name="display_predictive_values">Mostrar Previsão de Valores</string>
     <string name="use_external_blukon_algorithm">Algoritmo externo para o Libre.</string>
+    <string name="retrieve_blukon_history_title">Recuperar leitura do Libre</string>
+    <string name="retrieve_blukon_history_summary">Recuperar as leituras perdidas do Blukon ao ligar-se novamente ao sensor.</string>
     <string name="daily_save_db">Guardar Base de Dados diariamente</string>
     <string name="total_carbs">Total de Hidratos Carbono</string>
     <string name="total_insulin">Insulina Total</string>
