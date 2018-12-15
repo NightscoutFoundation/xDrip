@@ -566,4 +566,5 @@
     <string name="snoozed_reminder_for">Lembrete Silêncio por </string>
     <string name="connection_status">Estado da Ligação:   </string>
     <string name="please_allow_permission">Permita Autorização</string>
+    <string name="without_location_scan_doesnt_work">Sem a permissão de Localização a pesquisa do Android Bluetooth não funciona</string>
 </resources>
