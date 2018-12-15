@@ -139,7 +139,7 @@
     <string name="delete_this_time_block">Apagar este bloco de tempo</string>
     <string name="cancel_do_nothing">Cancelar - não fazer nada</string>
     <string name="added">Adicionado</string>
-    <string name="checking_for_update">À procura de atualizações...</string>
+    <string name="checking_for_update">A verificar actualização...</string>
     <string name="signal_missed">Sinal perdido</string>
     <string name="minutes_ago">{0, choice,0#{0, number, integer} Minutos atrás|1#{0, number, integer} Minutos atrás|1&lt;{0, number, integer} Minutos atrás}</string>
     <string name="space_minutes_ago">" Minutos atrás"</string>
@@ -151,7 +151,7 @@
     <string name="libre_15_minutes_graph">Gráfico do Libre de 15 minutos</string>
     <string name="libre_last_x_minutes_graph">Gráfico do Libre de %d minutos</string>
     <string name="share_config_via_qr_code">Partilhar config. via QR code</string>
-    <string name="check_for_updated_version">Procurar atualizações</string>
+    <string name="check_for_updated_version">Procurar actualização</string>
     <string name="send_feedback_to_developer">Enviar feedback para o programador</string>
     <string name="home_screen">Ecrã Principal</string>
     <string name="event_logs">Registos de Eventos</string>
