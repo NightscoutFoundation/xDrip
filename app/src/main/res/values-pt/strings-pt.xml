@@ -548,6 +548,12 @@
     <string name="forget_device">Esquecer Dispositivo</string>
     <string name="other_notes">Outras Notas:</string>
     <!-- trend arrow for speak -->
+    <string name="FortyFiveDown">Descida Ligeira</string>
+    <string name="Flat">Estável</string>
+    <string name="FortyFiveUp">Subida Ligeira</string>
+    <string name="Speech_speed">Velocidade da fala</string>
+    <string name="Speech_pitch">Tom de Voz</string>
+    <string name="Speak_Alerts">Alertas de Voz</string>
     <string name="yes">Sim</string>
     <string name="garmin">Garmin</string>
     <string name="fitbit">Fitbit</string>
