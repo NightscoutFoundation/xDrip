@@ -6,7 +6,7 @@
     <string name="disconnected">Desligado</string>
     <string name="menu_scan">Procurar</string>
     <string name="menu_stop">Parar</string>
-    <string name="menu_refresh">Atualizar</string>
+    <string name="menu_refresh">Actualizar</string>
     <string name="menu_export_database">Exportar base de dados</string>
     <string name="menu_export_csv_sidiary">Exportar CSV (formato SiDiary)</string>
     <string name="menu_import_db">Importar base de dados</string>
@@ -53,7 +53,7 @@
     <string name="pref_message_mongodb_device_status_collection">Este é o nome da coleção onde dados sobre bateria e outros dados do dispositivo serão guardados</string>
     <!-- API Settings -->
     <string name="pref_title_api">API Upload (REST)</string>
-    <string name="pref_title_api_enabled">Ativado</string>
+    <string name="pref_title_api_enabled">Activado</string>
     <string name="pref_summary_api_enabled">A API REST é uma alternativa à inserção direta no mongodb</string>
     <string name="pref_title_api_url">URL base</string>
     <string name="pref_dialog_api_url">Introduza URL base da API</string>
@@ -65,15 +65,15 @@
     <!-- Location Settings -->
     <string name="location_not_found_title">Localização não está ligada</string>
     <string name="location_not_found_message">Para que a descoberta Bluetooth funcione em dispositivos mais recentes, a localização tem que estar ligada. O xDrip não rastreia a sua localização e esta pode ser desativada após emparelhamento bem sucedido.</string>
-    <string name="location_yes">Ligar</string>
+    <string name="location_yes">Activar</string>
     <!-- broadcast settings -->
     <string name="pref_title_broadcast_enabled">Transmissão local</string>
     <string name="pref_summary_broadcast_enabled">Ligar transmissão local de dados para que outras aplicações (ex. NightWatch), possam ler novos valores</string>
-    <string name="title_activity_share_test">Testar Partilha</string>
+    <string name="title_activity_share_test">Partilhar Teste</string>
     <!-- pebble settings -->
-    <string name="pref_pebble_trend_watchface">Usar Pebble Trend Watchface</string>
-    <string name="pref_summary_pebble_trend_watchface">Usar/instalar Pebble Trend Watchface (experimental)</string>
-    <string name="pref_pebble_display_trend">Mostrar tendência</string>
+    <string name="pref_pebble_trend_watchface">Utilizar Pebble Trend Watchface</string>
+    <string name="pref_summary_pebble_trend_watchface">Utilizar/instalar Pebble Trend Watchface (experimental)</string>
+    <string name="pref_pebble_display_trend">Mostrar Tendência</string>
     <string name="pref_summary_display_trend">Mostrar a tendência glicémica na Watchface xDrip do Pebble.</string>
     <string name="pref_pebble_display_high_line">Mostrar linha Hiper</string>
     <string name="pref_pebble_display_low_line">Mostrar linha Hipo</string>
@@ -99,7 +99,7 @@
     <string name="action_resend_to_watch">Reenviar glicemia para smartwatch</string>
     <string name="action_open_watch_setting">Abrir Definições no Wear</string>
     <string name="action_sync_watch_db">Restaurar DB Wear</string>
-    <string name="erase">Apagar</string>
+    <string name="erase">Eliminar</string>
     <string name="interface_tips_from_start">Todas as dicas de interface serão mostradas desde o início</string>
     <string name="note_button">Botão de Nota</string>
     <string name="showcase_note_long">O botão de Nota agora pede entrada de voz.\n\nPressione longo para introduzir com o teclado ou alterar opções.</string>
@@ -115,7 +115,7 @@
     <string name="first_configure_ip_address">Configure o IP do seu wifi wixel reader ou URL do parakeet</string>
     <string name="now_start_your_sensor">Agora inicie o seu sensor ou verifique as Definições</string>
     <string name="please_wait_while_sensor_warms_up">Por favor aguarde enquanto o sensor inicializa! (</string>
-    <string name="minutes_with_bracket">" Minutos)"</string>
+    <string name="minutes_with_bracket">" minutos)"</string>
     <string name="possible_bad_calibration">Declive de calibração provavelmente errado. Por favor beba agua, lave as mãos e recalibre dentro de uns momentos!</string>
     <string name="please_wait_need_two_readings_first">Por favor aguarde, são necessárias 2 leituras do transmissor para começar.</string>
     <string name="please_enter_two_calibrations_to_get_started">Por favor introduza duas calibrações para começar!</string>
@@ -126,7 +126,7 @@
     <string name="unfortunately_andoird_version_no_blueooth_low_energy">Infelizmente a sua versão do Android não suporta Bluetooth Low Energy</string>
     <string name="waiting_for_packet">Aguardando pacote</string>
     <string name="persistent_high_for_greater_than">Hiper periste por &gt; </string>
-    <string name="space_mins">" Mins"</string>
+    <string name="space_mins">" mins"</string>
     <string name="till">até</string>
     <string name="low_predicted">Hipo prevista</string>
     <string name="in">em</string>
@@ -170,11 +170,11 @@
     <string name="xdrip_plus_prediction_settings">Simulação Preditiva xDrip+</string>
     <string name="settings_for_syncing">Definições para sincronização entre dispositivos</string>
     <string name="xdrip_plus_sync_settings">Definições de sincronização xDrip+</string>
-    <string name="xdrip_plus_update_settings">Definições de atualizações xDrip+</string>
-    <string name="automatic_update_check">Verificar por atualizações automaticamente</string>
-    <string name="update_channel">Canal de Atualizações</string>
+    <string name="xdrip_plus_update_settings">Definições de Actualização xDrip+</string>
+    <string name="automatic_update_check">Verificar actualização automaticamente</string>
+    <string name="update_channel">Canal de Actualização</string>
     <string name="send_crash_errors_to_developer">Enviar relatório de erros para o programador</string>
-    <string name="automatic_crash_reporting">Relatorio de erro automatico</string>
+    <string name="automatic_crash_reporting">Relatório de erro automatico</string>
     <string name="send_feedback_message">Enviar Mensagem de Feedback</string>
     <string name="copying_settings">Definições de Cópia</string>
     <string name="show_settings_qr_codes">Mostrar códigos QR de Definições</string>
