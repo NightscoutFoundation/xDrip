@@ -553,7 +553,10 @@
     <string name="calibrate_external_libre_algorithm_title">Algoritmo de calibração OOP.</string>
     <string name="retrieve_blukon_history_title">Recuperar leitura do Libre</string>
     <string name="retrieve_blukon_history_summary">Recuperar as leituras perdidas do Blukon ao ligar-se novamente ao sensor.</string>
+    <string name="infrequent_calibrations">Calibração pouco frequente</string>
     <string name="extra_logging">Definições de registo extra</string>
+    <string name="only_enable_on_trouble">Activar apenas se existem problemas com a app.</string>
+    <string name="store_logs">Guardar relatórios para resolução de problemas</string>
     <string name="engineering_mode">Modo de Programador</string>
     <string name="daily_save_db">Guardar Base de Dados diariamente</string>
     <string name="todays_average_value">Valor médio de hoje.</string>
