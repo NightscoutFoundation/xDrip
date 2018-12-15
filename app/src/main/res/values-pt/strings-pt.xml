@@ -234,6 +234,7 @@
     <string name="pref_summary_node_wearG5">Forçar telefone a usar este Wear Collection Service</string>
     <string name="pref_sync_wear_logs">Sincronizar registos Wear</string>
     <string name="pref_summary_sync_wear_logs">Enviar registros Wear para Visualizador de Eventos</string>
+    <string name="pref_wear_logs_prefix">Prefixos do Registo Wear</string>
     <string name="pref_show_treatments">Mostrar Tratamentos</string>
     <string name="pref_summary_show_treatments">Mostrar pontos de Tratamento no gráfico</string>
     <string name="pebble_integration">Integração Pebble</string>
@@ -469,6 +470,7 @@
     <string name="default_liver_sensitivity_ratio">Rácio de Sensibilidade do Fígado</string>
     <string name="key_is_used_instead_of_google_account">Chave é usada em vez da conta Google</string>
     <string name="sync_using_custom_security_key">Sincronizar usando chave de segurança personalizada</string>
+    <string name="handset_group_security_key">Chave de Segurança de Sincronismo do Grupo de Terminais</string>
     <string name="alert_name_colon">Nome do Alerta:</string>
     <string name="threshold_colon">Limite:</string>
     <string name="default_snooze_colon">Silenciar Por Defeito:</string>
@@ -543,6 +545,7 @@
     <string name="process_broadcasted_calibrations">Processar calibrações recebidas de outras apps</string>
     <string name="spoken_readings_locale">Personalizar Região para Leitura de Voz, ex.: de, en_IN ou pt_PT</string>
     <string name="speak_glucose_twice">Dizer o valor da glicose duas vezes</string>
+    <string name="short_speak_readings_shortcut">Mostrar atalho no ☰ menu para ligar e desligar Leituras Faladas</string>
     <string name="speak_readings_shortcut">Atalho para leituras por voz</string>
     <string name="battery_optimization_on">Não perguntar sobre optimização de bateria. Não recomendado</string>
     <string name="battery_optimization_prompt">Comando para optimização de bateria</string>
