@@ -941,6 +941,7 @@
     <string name="summary_allow_testing_with_dead_sensor">permitir testes com leitor morto</string>
     <string name="title_NOT_FOR_PRODUCTION_USE">NÃO PARA USO DE PRODUÇÃO</string>
     <string name="title_You_have_no_reminders_yet">Não existem lembretes</string>
+    <string name="message_reminders_explanation">Lembretes podem ser usados para situações como mudança de local da bomba e outras coisas.\n\nPodem repetir, ser definidos para vários períodos de tempo. Ser silenciados, adiados, reagendados etc.\n\nCarregar no botão + para adicionar um lembrete.</string>
     <string name="title_swipe_reminder">Deslizar para a esquerda ou direita</string>
     <string name="message_swipe_explanation">\u2190 Desliza para ESQUERDA para atrasar ou silenciar um lembrete\n\n\u2192 Desliza para DIREITA para agendar um lembrete futuro\n\nCarregando no título ou na hora permite edição. Pressionar longamente título para editar outros parâmetros.</string>
     <string name="title_reminder_snooze_undo">Painel Lembrete Adiado - Desfazer</string>
