@@ -518,7 +518,7 @@
     <string name="short_on_text_for_switches">Ligado</string>
     <string name="install_pebble_apps">Instalar Apps Pebble</string>
     <string name="sliding_24_hour_window_summary">Utilzar últimas 24 horas em vez da meia noite para estatísticas.</string>
-    <string name="sliding_24_hour_window">Janela Deslizande</string>
+    <string name="sliding_24_hour_window">Janela Deslizante</string>
     <string name="split">Dividir</string>
     <string name="delete">Apagar</string>
     <string name="title_activity_btglucose_meter">Pesquisar Medidor</string>
