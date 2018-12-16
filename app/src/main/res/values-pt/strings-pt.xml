@@ -729,6 +729,7 @@
     <string name="alert_snooze">Alerta Silêncio</string>
     <string name="reraise_before_snooze">Alertar novamente antes do tempo silenciado</string>
     <string name="reraise_not_snoozed_sooner">Alertar novamente se não for silenciado mais cedo</string>
+    <string name="alert_reraise_time">Duração do aumento do alarme</string>
     <string name="bg_falling_fast">Glic em descida rápida</string>
     <string name="bg_rising_fast">Glic em subida rápida</string>
     <string name="set_sound_for_bg_alerts">Definir som para Alertas Glic.</string>
