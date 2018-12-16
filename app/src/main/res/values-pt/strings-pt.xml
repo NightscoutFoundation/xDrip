@@ -543,6 +543,7 @@
     <string name="attach_to_button">Associe-o um botão para dar Snooze instantaneamente a qualquer alerta ativo do seu relógio. Também para fazer snooze remotamente.</string>
     <string name="for_interacting_compatible_apps">Para interagir com outras aplicações compatíveis</string>
     <string name="interapp_settings">Configurações entre aplicações</string>
+    <string name="send_display_glucose">Enviar Glicose Mostrada</string>
     <string name="accept_treatments">Aceitar Tratamentos</string>
     <string name="process_broadcasted_calibrations">Processar calibrações recebidas de outras apps</string>
     <string name="spoken_readings_locale">Personalizar Região para Leitura de Voz, ex.: de, en_IN ou pt_PT</string>
