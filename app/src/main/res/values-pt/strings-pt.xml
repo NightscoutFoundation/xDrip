@@ -652,6 +652,7 @@
     <string name="use_meter_for_calibrations">Utilizar Medidor para as Calibrações</string>
     <string name="automatic_calibration">Calibração Automática</string>
     <string name="volume_buttons_snooze">Pressionar o botão de volume para cima ou para baixo o alarme activo será silenciado quando a app aberta</string>
+    <string name="buttons_silence_alarms">Botões silenciar alarmes</string>
     <string name="shortcut_to_bg_alerts">Atalho para Níveis de Alerta Glic</string>
     <string name="alert_calibration_request">Alertar quando uma calibração é solicitada</string>
     <string name="calibrations_request_time_time_difference">Quantas horas entre as solicitações de calibração</string>
@@ -703,9 +704,12 @@
     <string name="confirm_remote_snooze">Confirmar Silêncio Remoto</string>
     <string name="yes_send_it">SIM, enviar!</string>
     <string name="movement_detection_and_vehicle_mode">Detecção de movimento e modo veículo</string>
+    <string name="xdrip_motion_tracking">xDrip+ Detecção de Movimento</string>
     <string name="display_motion_types">Guardar recentes tipos de movimento e traçá-los no gráfico principal</string>
     <string name="log_and_plot_motion">Registar e Traçar movimento</string>
     <string name="use_remote_motion">Utilizar movimento remoto</string>
+    <string name="be_motion_master">Ser mestre para dados de movimento mesmo sendo seguidor. Definir apenas num aparelho!</string>
+    <string name="act_as_motion_master">Actuar como mestre de movimento</string>
     <string name="vehicle_motion_extras">Quando veículo for detectado activar funções extra</string>
     <string name="enable_vehicle_mode">Activar Modo Veículo</string>
     <string name="raise_low_threshold">Elevar limiar \'Hipo\'</string>
@@ -846,6 +850,7 @@
     <string name="title_Use_scanning">Utilizar procura</string>
     <string name="title_Trust_Auto_Connect">Confiar Auto-Connect</string>
     <string name="title_xBridge_Polling_Mode">Modo de Procura xBridge+</string>
+    <string name="title_Allow_blucon_unbonding">Permitir desagregação do Blucon</string>
     <string name="title_Batterylog">Registo de Bateria</string>
     <string name="summary_Choose_to_display_the_bridge_battery_level">Seleccionar para mostrar nível de bateria do transmissor</string>
     <string name="title_Glucose_Retention">Armazenar Glicose</string>
