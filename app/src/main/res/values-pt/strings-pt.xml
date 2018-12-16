@@ -238,6 +238,7 @@
     <string name="pref_wear_logs_prefix">Prefixos do Registo Wear</string>
     <string name="pref_show_treatments">Mostrar Tratamentos</string>
     <string name="pref_summary_show_treatments">Mostrar pontos de Tratamento no gráfico</string>
+    <string name="pref_use_wear_health">Utilizar Dados de Saúde do Wear</string>
     <string name="pebble_integration">Integração Pebble</string>
     <string name="send_data_to_pebble_watchface">Enviar informaçãi para o Pebble Watchface.</string>
     <string name="pebble_watch_integration">Integração Pebble Watch</string>
@@ -744,6 +745,7 @@
     <string name="enable_motion_tracking">Activar Detecção de Movimento</string>
     <string name="display_motion_types">Guardar recentes tipos de movimento e traçá-los no gráfico principal</string>
     <string name="log_and_plot_motion">Registar e Traçar movimento</string>
+    <string name="use_remote_motion_data">Dados de movimento extraídos de dispositivo remoto em vez de local</string>
     <string name="use_remote_motion">Utilizar movimento remoto</string>
     <string name="be_motion_master">Ser mestre para dados de movimento mesmo sendo seguidor. Definir apenas num dispositivo móvel!</string>
     <string name="act_as_motion_master">Actuar como mestre de movimento</string>
