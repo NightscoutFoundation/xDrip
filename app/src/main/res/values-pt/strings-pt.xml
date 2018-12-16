@@ -595,16 +595,19 @@
     <string name="show_extra_status_on_widget">Mostrar linha extra de estado no widget</string>
     <string name="calibration_plugin">Plugin de Calibração</string>
     <string name="advanced_calibration">Calibração Avançada</string>
+    <string name="usw_treatment_bg">Utilizar Valores Glic do Tratamento</string>
     <string name="experimental_calibration_plugin">Plugin de calibração secundário experimental</string>
     <string name="show_plugin_results_on_graph">Mostrar resultados da glicose do plugin no gráfico principal</string>
     <string name="use_plugin_glucose">Utilizar Plugin de Glicose</string>
     <string name="main_glucose_plugin">Valor da glicose do ecrã principal é do plugin!</string>
     <string name="plugin_override_all">Plugin Sobrepõe TUDO</string>
     <string name="all_new_glucose_data_plugin">TODOS os novos dados de glicose serão calculados e gravados pelo plugin selecionado e não pelo algoritmo standard do xDrip. Não foi testado e pode ser incorreto e com bugs. Utilizar com extremo cuidado.</string>
+    <string name="old_school_calibration_mode">Modo calibração antigo</string>
     <string name="nfc_options">Opções para leitura com telemóvel em sensores com NFC</string>
     <string name="nfc_scan_features">Funções de Leitura NFC</string>
     <string name="use_nfc_feature">Utilizar função NFC</string>
     <string name="sensor_age_or_expiry">Idade ou Caducidade do Sensor </string>
+    <string name="show_sensor_age">Mostrar idade do sensor no ecrã principal</string>
     <string name="change_sensor_total_days">Alterar Total de Dias do Sensor</string>
     <string name="nfc_scanning_xdrip_open">Leitura NFC é feita apenas quando a app xDrip+ estiver visível</string>
     <string name="nfc_scanning_launcher">Leitura NFC também funcionará através do ecrã principal da app</string>
@@ -613,6 +616,7 @@
     <string name="beep_when_scanning_within_app">Sinal sonoro quando leitura é feita dentro da app xDrip+</string>
     <string name="transmitter_id">ID do Transmissor Dexcom, ex 12AB3</string>
     <string name="scan_for_g5_constantly">Pesquisar constantemente pelo G5</string>
+    <string name="use_calibrated_data">Utilizar dados calibrados como fonte</string>
     <string name="data_sync">Sincronizar Dados</string>
     <string name="options_for_upload">Configurações de envio para Nightscout, MongDB or Dexcom Share</string>
     <string name="cloud_upload">Envio para a Cloud</string>
@@ -644,6 +648,7 @@
     <string name="use_meter_for_calibrations">Utilizar Medidor para as Calibrações</string>
     <string name="automatic_calibration">Calibração Automática</string>
     <string name="volume_buttons_snooze">Pressionar o botão de volume para cima ou para baixo o alarme activo será silenciado quando a app aberta</string>
+    <string name="shortcut_to_bg_alerts">Atalho para Níveis de Alerta Glic</string>
     <string name="hours_between_calibrations">Horas entre calibrações</string>
     <string name="calibrations_sound">Definir som para pedidos de calibração.</string>
     <string name="override_silent_mode">Sobrepor modo de Silêncio</string>
@@ -657,6 +662,7 @@
     <string name="set_sound_for_bg_alerts">Definir som para Alertas Glic.</string>
     <string name="alert_sound">Som do Alerta</string>
     <string name="override_silent_mode_these">Sobrepor o modo Silêncio sobre esses alertas</string>
+    <string name="persistent_repeat_max">A repetir máximo cada (minutos)</string>
     <string name="collector_battery_alerts">Alertas bateria Dispositivo BT</string>
     <string name="low_battery_percentage">Percentagem de bateria fraca</string>
     <string name="carb_ratio">Rácio de Hidratos</string>
@@ -713,6 +719,9 @@
     <string name="delete_future_data">Apagar Dados Futuros</string>
     <string name="collecting_initial_readings">A recolher Leituras Iniciais</string>
     <string name="data_collector_running">Dados Dispositivo BT em execução</string>
+    <string name="received_some_recent_data">Alguns Dados Recebidos Recentemente</string>
+    <string name="received_enough_good_data_to_calibrate">Recebidos Bons Dados Suficientes para Calibrar</string>
+    <string name="play_sound_when_ready_for_calibration">Tocar som quando pronto para Calibração</string>
     <string name="receiving_data_from_collector">A Receber Dados do %s Dispositivo BT</string>
     <!-- trend arrow for speak -->
     <string name="DoubleDown">Descendo Rapidamente</string>
@@ -722,6 +731,7 @@
     <string name="FortyFiveUp">Subida Ligeira</string>
     <string name="SingleUp">Ascendente</string>
     <string name="DoubleUp">Subindo Rapidamente</string>
+    <string name="Speak_trend_arrow_name">Ler seta de tendência</string>
     <string name="Speak_everything_twice">Falar tudo duas vezes</string>
     <string name="Speech_speed">Velocidade da fala</string>
     <string name="Speech_pitch">Tom de Voz</string>
@@ -729,6 +739,7 @@
     <string name="Speak_Alerts_Summary">Também dá algumas mensagens de alerta faladas</string>
     <string name="advanced_bluereader_settings_summary">Configurações Avançadas do blueReader</string>
     <string name="advanced_bluereader_settings">Configurações blueReader</string>
+    <string name="bluereader_restdays_onhome">Dias restantes no Ecrã Inicial</string>
     <string name="blueReader_turnoffvalue">Valor em %</string>
     <string name="days">dias restantes</string>
     <string name="bluereaderoff">blueReader será desligado, quando a bateria inferior a </string>
@@ -740,6 +751,7 @@
     <string name="fitbit">Fitbit</string>
     <string name="set_data_source_to">Definir Fonte de Dados para: %s ?</string>
     <string name="are_you_sure">Tem a certeza?</string>
+    <string name="g4_share_receiver">Receptor G4 Share</string>
     <string name="bluetooth_wixel">Bluetooth Wixel</string>
     <string name="parakeet_wifi">Parakeet / Wifi</string>
     <string name="other">Outro</string>
@@ -758,6 +770,7 @@
     <string name="noise_blocking">Bloqueio de Leituras Irregulares (Noise)</string>
     <string name="low_parakeet_battery">Parakeet bateria fraca</string>
     <string name="glucose_units_mmol_or_mgdl">Unidades de Glicose mmol/L or mg/dL</string>
+    <string name="settings_updated_to_mmol">Definições actualizadas para mmol/L</string>
     <string name="external_calibration_app">App Externa de Calibração</string>
     <string name="use_app_for_calibration">utilizar app para calibração?</string>
     <string name="channel_name">Serviço em Primeiro Plano</string>
@@ -799,9 +812,13 @@
     <string name="bluetooth_watchdog_timer_sums">Insira o valor em minutos</string>
     <string name="title_Only_use_Wear">Uitlizar apenas Wear</string>
     <string name="title_Smartwatch_Sensors">Sensores Smartwatch</string>
+    <string name="title_Heart_Rate_Sensor">Sensor de Ritmo Cardíaco</string>
+    <string name="title_Or_per_number_of_minutes">Ou por número de minutos</string>
     <string name="title_Identify_receiver">Identificar receptor</string>
+    <string name="summary_Only_send_to_named_package">Enviar apenas pacote nomeado</string>
     <string name="title_Accept_Calibrations">Aceitar Calibrações</string>
     <string name="title_xDrip_Web_Service">Serviço Web xDrip</string>
+    <string name="title_Open_Web_Service">Abrir Serviço Web</string>
     <string name="title_External_Status">Estado Externo</string>
     <string name="title_Pump_Status">Estado da Bomba</string>
     <string name="summary_Show_treatment_carb_insulin_ratio">Mostrar Rácio Hidratos/Insulina</string>
@@ -823,16 +840,21 @@
     <string name="title_what_time_day">A que hora do dia?</string>
     <string name="title_add_reminder">Adicionar Lembrete</string>
     <string name="title_edit_reminder">Editar Lembrete</string>
+    <string name="always_use_same_title">utilizar sempre o mesmo título</string>
     <string name="sound_once">soar uma vez</string>
     <string name="Please_Allow_Permission">Permita Autorização</string>
     <string name="need_storage_permission">Requer permissão de armazenamento para aceder a todos os toques</string>
     <string name="select_tone_alert">Escolher o som para Alerta:</string>
     <string name="snoozed_for">silenciado por</string>
     <string name="completed">concluído</string>
+    <string name="next_in">próximo em</string>
+    <string name="due">A concluir</string>
+    <string name="due_uppercase">A CONCLUIR</string>
     <string name="repeats_every">repetir a cada</string>
     <string name="next">seguinte</string>
     <string name="last">último</string>
     <string name="using_default_sound">A utilizar o som por defeito</string>
+    <string name="cannot_chose_file">Não pode seleccionar ficheiro sem permissão de armazenamento</string>
     <string name="problem_with_sound">Problema com o som</string>
     <string name="invalid_number">Número inválido</string>
     <string name="toast_deleted">Eliminado:</string>
@@ -844,6 +866,7 @@
     <string name="hours">Horas</string>
     <string name="weeks">Semanas</string>
     <string name="repeat">Repetir</string>
+    <string name="alternating">A alternar</string>
     <string name="weekdays">Dias Úteis</string>
     <string name="weekends">Fins-de-Semana</string>
     <string name="mega_priority">Mega-prioridade</string>
@@ -871,6 +894,7 @@
     <string name="alerts_disabled">Alertas desactivados</string>
     <string name="restart_in_the_morning">Reiniciar pela Manhã</string>
     <string name="advanced_mode">Modo Avançado</string>
+    <string name="reminder_title">Título do Lembrete</string>
     <string name="what_time_of_day_question">A que hora do dia?</string>
     <string name="all_alerts_currently_disabled">TODOS OS ALERTAS ACTUALMENTE DESACTIVADOS</string>
     <string name="low_and_high_alerts_currently_disabled">ALERTAS HIPO E HIPER ACTUALMENTE DESACTIVADOS</string>
@@ -883,4 +907,5 @@
     <string name="connection_status">Estado da Ligação:   </string>
     <string name="please_allow_permission">Permita Autorização</string>
     <string name="without_location_scan_doesnt_work">Sem a permissão de Localização a pesquisa do Android Bluetooth não funciona</string>
+    <string name="without_location_permission_emergency_cannot_get_location">Sem permissão de Localização as mensagens de emergência não podem usar dados de localização</string>
 </resources>
