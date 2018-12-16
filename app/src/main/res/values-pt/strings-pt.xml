@@ -769,6 +769,7 @@
     <string name="predictive_simulations">Simulações Preditivas</string>
     <string name="low_prediction_values">Valores de previsão de hipos</string>
     <string name="target_glucose_default">Alvo Padrão da Glicose</string>
+    <string name="default_liver_maximum_impact">Impacto Máximo do Fígado Padrão (0-1)</string>
     <string name="remote_snoozes">Enviar e receber silenciar remoto</string>
     <string name="remote_snoozing">A Silenciar Remoto</string>
     <string name="snoozes_will_silence_all">Silenciar silenciará todos os dispositivo móvel no grupo que tem a opção abaixo activada neles</string>
