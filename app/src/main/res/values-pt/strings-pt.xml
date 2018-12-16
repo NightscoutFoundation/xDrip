@@ -558,7 +558,9 @@
     <string name="auto_turn_on_bluetooth">Ativar automaticamente o Bluetooth se estiver desligado quando tentarmos ligar a um dispositivo Bluetooth</string>
     <string name="turn_bluetooth_on">Ligar Bluetooth</string>
     <string name="reset_bluetooth">Efetuar reset ao Bluetooth desligando e voltando a ligar se não receber dados em 20 minutos</string>
+    <string name="bluetooth_watchdog">Vigilante Bluetooth</string>
     <string name="reset_bluetooth_g5">Efetuar reset ao Bluetooth desligando e voltando a ligar como forma de manter a recolha de dados do G5. Sem isto o coletor G5 pode falhar.</string>
+    <string name="g5_bluetooth_watchdog">Vigilante Bluetooth G5</string>
     <string name="older_bluetooth_wakelocks">Antigos bluetooth wakelocks que podem drenar bateria extra, mas podem ser necessários para a receção bluetooth</string>
     <string name="reset_bluetooth_on_off">Reset Bluetooth desligando e ligando a cada poucos minutos! Seleccionar só para testes. Pode desligar qualquer outra utilização do bluetooth.</string>
     <string name="constantly_reset_bluetooth">Reiniciar constantemente o Bluetooth</string>
@@ -581,6 +583,7 @@
     <string name="infrequent_calibrations">Calibração pouco frequente</string>
     <string name="extra_logging">Definições de registo extra</string>
     <string name="enable_remote_logging">Activar Relatório Remoto</string>
+    <string name="set_logging_appid">Definir AppID para Registo</string>
     <string name="only_enable_on_trouble">Activar apenas se existem problemas com a app.</string>
     <string name="store_logs">Guardar relatórios para resolução de problemas</string>
     <string name="engineering_mode">Modo de Programador</string>
@@ -626,11 +629,14 @@
     <string name="scan_when_app_closed">Ler quando xDrip+ estiver fechado</string>
     <string name="vibrate_scanning_status">Vibrar para indicar o estado de leitura</string>
     <string name="beep_when_scanning_within_app">Sinal sonoro quando leitura é feita dentro da app xDrip+</string>
+    <string name="low_level_value">Valor baixo diagnóstico/protótipo</string>
     <string name="transmitter_id">ID do Transmissor Dexcom, ex 12AB3</string>
+    <string name="advanced_g5_settings">Definições Avançadas para situações raras do G5</string>
     <string name="g5_debug_settings">Configurações de depurar G5/G6</string>
     <string name="scan_for_g5_constantly">Pesquisar constantemente pelo G5</string>
     <string name="authentificate_before_reading">Autenticar G5 antes de cada leitura</string>
     <string name="unbond_g5_before_read">Desagregar G5 antes de cada leitura</string>
+    <string name="g5_experimental_mode">Modo experimental o qual não usa dados brutos</string>
     <string name="use_calibrated_data">Utilizar dados calibrados como fonte</string>
     <string name="data_sync">Sincronizar Dados</string>
     <string name="options_for_upload">Configurações de envio para Nightscout, MongDB or Dexcom Share</string>
