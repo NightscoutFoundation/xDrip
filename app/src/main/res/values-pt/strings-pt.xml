@@ -872,13 +872,19 @@
     <string name="message_snooze_trash">O botão de lixo exclui permanentemente o lembrete apagado.</string>
     <string name="title_snooze_hide">Painel de Silenciar Lembrete - Ocultar</string>
     <string name="message_snooze_hide">O Botão Ocultar oculta painel de silenciar</string>
+    <string name="message_snooze_times">Os diferentes botões muda rapidamente o silenciar por defeito para um diferente período de silenciar.</string>
     <string name="title_which_day">Em que dia?</string>
     <string name="title_what_time_day">A que hora do dia?</string>
     <string name="reminder_due">Lembrete concluído</string>
     <string name="title_add_reminder">Adicionar Lembrete</string>
     <string name="title_edit_reminder">Editar Lembrete</string>
+    <string name="alternate_between_titles">alterna entre diferentes títulos cada</string>
     <string name="always_use_same_title">utilizar sempre o mesmo título</string>
+    <string name="reminder_will">Lembrete irá</string>
     <string name="sound_once">soar uma vez</string>
+    <string name="alert_until_dismissed">alertar até dispensado</string>
+    <string name="and_then_repeat">e repitar cada</string>
+    <string name="will_not_repeat">mas não repetir depois de</string>
     <string name="Please_Allow_Permission">Permita Autorização</string>
     <string name="need_storage_permission">Requer permissão de armazenamento para aceder a todos os toques</string>
     <string name="select_file_reminder_sound">Seleccionar Ficheiro de Som para Lembrete</string>
@@ -898,6 +904,7 @@
     <string name="invalid_number">Número inválido</string>
     <string name="toast_deleted">Eliminado:</string>
     <string name="nothing_to_undo">Nada para desfazer!</string>
+    <string name="something_went_wrong_reminder">Ocorreu um erro ao criar lembrete</string>
     <string name="snoozed_reminder_for">Lembrete Silêncio por </string>
     <string name="id_reference">Referência ID</string>
     <string name="reminder_period">Período de Lembrete</string>
