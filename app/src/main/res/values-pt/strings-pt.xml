@@ -36,7 +36,7 @@
     <string name="title_activity_double_calibration">Calibração dupla</string>
     <string name="title_activity_calibration_override">Substituir calibração</string>
     <string name="pref_header_cloud_storage">Armazenamento na núvem</string>
-    <string name="auto_configure_title">Configurar automaticamente</string>
+    <string name="auto_configure_title">Configurar Automaticamente</string>
     <string name="prefs_auto_config_summary">Configuração Automática utilizando código de barras.</string>
     <string name="scan_share2_barcode">Ler código de barras de partilha</string>
     <string name="pref_share2_scan_barcode_summary">Ou leia o código de barras no receptor de partilha</string>
@@ -222,7 +222,7 @@
     <string name="extra_tags_dialog_message">As tags inseridas aqui será registrado em xDrip. O formato é tag: nível. Nível pode ser v, d, i. Por exemplo bgreading: i, DexCollectionService: v. Este tags serão registrados com baixa prioridade ao erro e lista de eventos.</string>
     <string name="extra_tags_dialog_title">Introduza mais tags para serem logadas</string>
     <string name="data_source_settings">Definições da Fonte de Dados</string>
-    <string name="smart_watch_features">Funcionalidades Smartwatch</string>
+    <string name="smart_watch_features">Funcionalidades Smart Watch</string>
     <string name="wear_integration">Integração Wear</string>
     <string name="send_data_to_android_wear_watch">Enviar informação para o Android Wear Watchface.</string>
     <string name="android_wear_integration">Integração Android Wear</string>
@@ -306,11 +306,11 @@
     <string name="default_snooze">Silêncio Pré-definido</string>
     <string name="until_you_reenable">Até serem re-ativados</string>
     <string name="set">Definir</string>
-    <string name="disable_low_alerts">Desativar alertas de Hipo</string>
+    <string name="disable_low_alerts">Desactivar alertas de Hipo</string>
     <string name="re_enable_low_alerts">Re-Ativar alertas de Hipo</string>
-    <string name="disable_high_alerts">Desativar alertas de Hiper</string>
+    <string name="disable_high_alerts">Desactivar alertas de Hiper</string>
     <string name="re_enable_high_alerts">Re-Ativar alertas de Hiper</string>
-    <string name="disable_all_alerts">Desativar todos os alertas</string>
+    <string name="disable_all_alerts">Descativar Todos os alertas</string>
     <string name="re_enable_all_alerts">Re-Ativar todos os alertas</string>
     <string name="alert_snoozed_by_watch">Alerta adiado pelo relógio</string>
     <string name="update_channel_colon_space">"Canal de Updates: "</string>
@@ -322,7 +322,7 @@
     <string name="save_all_settings_to_sdcard">Guardar todas as Definições para o SDcard</string>
     <string name="load_all_settings_from_sdcard">Carregar todas as Definições do SDcard</string>
     <string name="delete_any_settings_on_sdcard">Apagar todas as definições do SDcard</string>
-    <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[Utilize QR codes para transferir definições em Definições-&gt;funcionalidade Auto Definição]]></string>
+    <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[Utilizar códigos QR para transferir definições em Definições->Configurar Automaticamente]]></string>
     <string name="xdrip_plus_security_key_settings_only">Apenas definições de Chave de Segurança xDrip+</string>
     <string name="show_general_and_collection_settings">Mostrar Definições Gerais e de Coleções</string>
     <string name="copy_all_settings">Copiar todas as Definições</string>
@@ -456,7 +456,7 @@
     <string name="notification_chart_background">Fundo do gráfico na Notificação</string>
     <string name="widget_chart_background">Fundo do Gráfico do Widget</string>
     <string name="try_to_work_around_noisy_readings">Tentar resolver leituras irregulares (noisy)</string>
-    <string name="show_tips_hints">Mostrar dicas que descrevem botões e funcionalidades, etc. Desligue e Ligue novamente para mostrar todas desde o início</string>
+    <string name="show_tips_hints">Mostrar dicas que descrevem botões e funções, etc. Desligue e Ligue novamente para mostrar todas desde o início</string>
     <string name="show_interface_hints">Mostrar dicas de interface</string>
     <string name="show_graph_time_lines">Mostrar grelhas temporais</string>
     <string name="show_graph_glucose_lines">Mostrar linhas de glicemia no Gráfico</string>
@@ -466,7 +466,7 @@
     <string name="show_graph_recent_average">Mostrar média recente no gráfico</string>
     <string name="show_graph_total_average">Mostrar média total no gráfico</string>
     <string name="show_noise_workings">Mostrar correcções de leituras irregulares (noise)</string>
-    <string name="parakeet_and_extra_features">Parakeet e funcionalidades extra de teste</string>
+    <string name="parakeet_and_extra_features">Parakeet e funções extra de teste</string>
     <string name="insulin_duration_hours">Duração da insulina em horas</string>
     <string name="default_liver_sensitivity_ratio">Rácio de Sensibilidade do Fígado</string>
     <string name="key_is_used_instead_of_google_account">Chave é usada em vez da conta Google</string>
@@ -484,7 +484,7 @@
     <string name="override_phone_silent_mode_colon">Ignorar modo de silêncio do telemóvel:</string>
     <string name="vibrate_on_alert">Vibrar nos alertas</string>
     <string name="test_alert">testar alerta</string>
-    <string name="disable_alert">desativar alerta</string>
+    <string name="disable_alert">Desactivar alerta</string>
     <string name="save_alert">guardar alerta</string>
     <string name="remove_alert">remover alerta</string>
     <string name="snooze_alert_before_it_fires">silenciar alerta antes de ser iniciado</string>
@@ -509,7 +509,7 @@
     <string name="display_ideal_glucose_target_line">Mostrar linha de glicemia ideal</string>
     <string name="display_eight_hour_average_line">Mostrar média de 8 horas</string>
     <string name="display_twenty_four_hour_average_line">Mostrar média de 24 horas</string>
-    <string name="predictive_model_inner_workings">Funcionamento do modelo de Previsão</string>
+    <string name="predictive_model_inner_workings">Modelo interno de Previsão</string>
     <string name="noise_model_inner_workings">Funcionamento do modelo de Noise</string>
     <string name="glucose_number_from_filtered">Valores glicémicos filtrados</string>
     <string name="if_the_phone_has_text_to_speech">Se o telefone tiver capacidade texto-para-voz, o resultado será falado.</string>
