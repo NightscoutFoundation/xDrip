@@ -230,8 +230,8 @@
     <string name="pref_summary_enable_wearG5">Ligar Wear ao Dispositivo BT quando o telefone está fora de alcance</string>
     <string name="pref_force_wearG5">Forçar Wear Collection Service</string>
     <string name="pref_summary_force_wearG5">Forçar telefone a usar Wear Collection Service</string>
-    <string name="pref_disable_wearG5_on_lowbattery">Desativar o Force quando a carga da bateria estiver baixa</string>
-    <string name="pref_summary_disable_wearG5_on_lowbattery">Desligar o serviço de recolha de dados do Force Wear quando a bateria estiver baixa</string>
+    <string name="pref_disable_wearG5_on_lowbattery">Desativar o Force quando a carga da bateria estiver fraca</string>
+    <string name="pref_summary_disable_wearG5_on_lowbattery">Desligar o serviço de recolha de dados do Force Wear quando a bateria estiver fraca</string>
     <string name="pref_disable_wearG5_on_missedreadings">Desligar o Force quando há falha de leituras</string>
     <string name="pref_summary_disable_wearG5_on_missedreadings">Desligar o serviço de recolha de dados do Force Wear para a função \"minutos desde a ultima leitura vinda do Wear\"</string>
     <string name="pref_disable_wearG5_on_missedreadings_level">Minutos desde a última Leitura do Wear</string>
@@ -244,6 +244,7 @@
     <string name="pref_show_treatments">Mostrar Tratamentos</string>
     <string name="pref_summary_show_treatments">Mostrar pontos de Tratamento no gráfico</string>
     <string name="pref_use_wear_health">Utilizar Dados de Saúde do Wear</string>
+    <string name="pref_summary_use_wear_health">Receber e mostrar contador de passos e ritmo cardíaco quando disponível</string>
     <string name="pebble_integration">Integração Pebble</string>
     <string name="send_data_to_pebble_watchface">Enviar informaçãi para o Pebble Watchface.</string>
     <string name="pebble_watch_integration">Integração Pebble Watch</string>
@@ -423,7 +424,7 @@
     <string name="show_datatables">Mostrar tabelas de dados</string>
     <string name="display_bridge_battery">Mostrar bateria do Bridge</string>
     <string name="close_gatt_on_ble_disconnect">Fechar GATT quando BLE desliga</string>
-    <string name="disable_battery_warning">Desativar avisos de bateria</string>
+    <string name="disable_battery_warning">Desactivar avisos de bateria</string>
     <string name="additional_text_status">Estatuto texto adicional</string>
     <string name="average">Média</string>
     <string name="in_percentage">Em percentagem</string>
@@ -471,6 +472,7 @@
     <string name="show_graph_target_line">Mostrar linha alvo no gráfico</string>
     <string name="show_graph_recent_average">Mostrar média recente no gráfico</string>
     <string name="show_graph_total_average">Mostrar média total no gráfico</string>
+    <string name="show_momentum_working_curve">Mostrar a curva dinâmica de funcionamento</string>
     <string name="show_noise_workings">Mostrar correcções de leituras irregulares (noise)</string>
     <string name="parakeet_and_extra_features">Parakeet e funções extra de teste</string>
     <string name="insulin_duration_hours">Duração da insulina em horas</string>
@@ -529,6 +531,8 @@
     <string name="split">Dividir</string>
     <string name="delete">Apagar</string>
     <string name="title_activity_btglucose_meter">Pesquisar Medidor</string>
+    <string name="notify_when_wear_low_battery">A desligar o serviço de recolha de dados do Force Wear devido a bateria fraca!</string>
+    <string name="notify_disable_wearG5_on_missedreadings">Desligando o serviço de recolha de dados do Force no Wear devido a %1$d minutos de leituras perdidas no relógio!</string>
     <string name="label_show_insulin">U:%1$su</string>
     <string name="label_show_carbs">Hidratos:%1$sg</string>
     <string name="label_show_royceratio">HC/I:%1$s</string>
@@ -550,7 +554,10 @@
     <string name="attach_to_button">Associe-o um botão para dar Snooze instantaneamente a qualquer alerta ativo do seu relógio. Também para fazer snooze remotamente.</string>
     <string name="for_interacting_compatible_apps">Para interagir com outras aplicações compatíveis</string>
     <string name="interapp_settings">Configurações entre aplicações</string>
+    <string name="use_plugins_for_brodcast">Usar suavização de leitura irregulares e plugins, etc (se activado) para o valor transmitido</string>
     <string name="send_display_glucose">Enviar Glicose Mostrada</string>
+    <string name="send_broadcasts_old_permission_model">Enviar transmissões sem cingir ao antigo modelo de permissões</string>
+    <string name="process_nsclient_treatments">Processar dados de tratamento recebidos da aplicação NSClient</string>
     <string name="accept_treatments">Aceitar Tratamentos</string>
     <string name="process_broadcasted_calibrations">Processar calibrações recebidas de outras apps</string>
     <string name="spoken_readings_locale">Personalizar Região para Leitura de Voz, ex.: de, en_IN ou pt_PT</string>
@@ -568,7 +575,7 @@
     <string name="bluetooth_watchdog">Vigilante Bluetooth</string>
     <string name="reset_bluetooth_g5">Efetuar reset ao Bluetooth desligando e voltando a ligar como forma de manter a recolha de dados do G5. Sem isto o coletor G5 pode falhar.</string>
     <string name="g5_bluetooth_watchdog">Vigilante Bluetooth G5</string>
-    <string name="older_bluetooth_wakelocks">Antigos bluetooth wakelocks que podem drenar bateria extra, mas podem ser necessários para a receção bluetooth</string>
+    <string name="older_bluetooth_wakelocks">Antigos bluetooth wakelocks que podem drenar bateria extra, mas podem ser necessários para a recepção bluetooth</string>
     <string name="reset_bluetooth_on_off">Reset Bluetooth desligando e ligando a cada poucos minutos! Seleccionar só para testes. Pode desligar qualquer outra utilização do bluetooth.</string>
     <string name="constantly_reset_bluetooth">Reiniciar constantemente o Bluetooth</string>
     <string name="experimental_transmitter_fpv_uav">Suporte experimental para dispositivo \'Transmiter\' de @FPV-UAV - apenas para teste</string>
@@ -757,6 +764,7 @@
     <string name="vehicle_motion_extras">Quando veículo for detectado activar funções extra</string>
     <string name="enable_vehicle_mode">Activar Modo Veículo</string>
     <string name="raise_low_threshold">Elevar limiar \'Hipo\'</string>
+    <string name="notification_sound_vehicle_mode">Notificação sonora quando modo veículo é detectado</string>
     <string name="play_sound">Tocar som</string>
     <string name="repeat_sound">Repetir som</string>
     <string name="enable_telemetry">Activar Telemetria</string>
@@ -931,6 +939,7 @@
     <string name="title_You_have_no_reminders_yet">Não existem lembretes</string>
     <string name="title_swipe_reminder">Deslizar para a esquerda ou direita</string>
     <string name="title_reminder_snooze_undo">Painel Lembrete Adiado - Desfazer</string>
+    <string name="message_snooze_explanaition_undo">O botão Desfazer restaura o lembrete para como era antes de ser parado.</string>
     <string name="title_snooze_trash">Painel Lembrete Adiado - Lixo</string>
     <string name="message_snooze_trash">O botão de lixo exclui permanentemente o lembrete apagado.</string>
     <string name="title_snooze_hide">Painel de Silenciar Lembrete - Ocultar</string>
