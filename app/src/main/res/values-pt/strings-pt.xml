@@ -108,9 +108,9 @@
     <string name="note_button">Botão de Nota</string>
     <string name="showcase_note_long">O botão de Nota agora pede entrada de voz.\n\nPressione longo para introduzir com o teclado ou alterar opções.</string>
     <string name="redo_button">Refazer botão</string>
-    <string name="showcase_redo">O botão Refazer pode aplicar ações feitas pelo Simulador de Tratamento, Calibrações e Notas\n\nApós 30 minutos vai se esconder novamente</string>
+    <string name="showcase_redo">O botão Refazer pode aplicar acções feitas pelo Simulador de Tratamento, Calibrações e Notas\n\nApós 30 minutos vai se esconder novamente</string>
     <string name="undo_button">Desfazer Botão</string>
-    <string name="showcase_undo">O botão Desfazer pode cancelar ações do Simulador de Tratamento, Calibrações e Notas\n\nApós 30 minutos vai se esconder novamente</string>
+    <string name="showcase_undo">O botão Desfazer pode cancelar acções do Simulador de Tratamento, Calibrações e Notas\n\nApós 30 minutos vai se esconder novamente</string>
     <string name="add_note">Adicionar Nota</string>
     <string name="blood_test">Teste de sangue</string>
     <string name="share">Partilhar</string>
@@ -860,6 +860,8 @@
     <string name="title_You_have_no_reminders_yet">Não existem lembretes</string>
     <string name="title_swipe_reminder">Deslizar para a esquerda ou direita</string>
     <string name="message_snooze_trash">O botão de lixo exclui permanentemente o lembrete apagado.</string>
+    <string name="title_snooze_hide">Painel de Silenciar Lembrete - Ocultar</string>
+    <string name="message_snooze_hide">O Botão Ocultar oculta painel de silenciar</string>
     <string name="title_which_day">Em que dia?</string>
     <string name="title_what_time_day">A que hora do dia?</string>
     <string name="reminder_due">Lembrete concluído</string>
