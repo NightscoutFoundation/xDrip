@@ -633,7 +633,9 @@
     <string name="password">Palavra-passe</string>
     <string name="upload_to_dexcom">Activar para enviar para os servidores Dexcom</string>
     <string name="upload_to_dexcom_share">Enviar valores de Glicose como Dexcom Share</string>
-    <string name="usa_based_account">Conta Dexcom USA</string>
+    <string name="accounts_outside_usa">Desactivado = Sua conta e apps de seguidor são fora dos EUA</string>
+    <string name="accounts_inside_usa">Activado = Sua conta e apps de seguidor são dos EUA</string>
+    <string name="usa_based_account">Conta Dexcom EUA</string>
     <string name="dexcom_login">Login do Website Dexcom</string>
     <string name="dexcom_user">Login da conta Dexcom</string>
     <string name="dexcom_login_password">Password do Website Dexcom</string>
