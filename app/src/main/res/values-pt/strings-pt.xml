@@ -778,6 +778,7 @@
     <string name="allow_remotes_silence">Permitir dispositivos móveis remotos silenciar alarmes neste</string>
     <string name="acccept_remote_snoozes">Aceitar Silêncio remotos</string>
     <string name="send_remote_snooze">Enviar Silêncio Remoto</string>
+    <string name="only_accept_same_network">Só aceita se o nome da rede WiFi remota começa com as mesmas letras da nossa e corresponde muito de perto</string>
     <string name="wifi_name_must_match">Nome de WiFi deve ser igual</string>
     <string name="confirm_remote_snooze">Confirmar Silêncio Remoto</string>
     <string name="yes_send_it">SIM, enviar!</string>
