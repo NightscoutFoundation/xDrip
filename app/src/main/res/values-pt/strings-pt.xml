@@ -667,6 +667,7 @@
     <string name="g5_scan_constantly">Alguns dispositivos funcionam melhor quando pesquisar constantemente, outros não. Se a leitura é fiável com esta configuração desativada, a vida da bateria será maior. Normalmente é melhor desta forma</string>
     <string name="scan_for_g5_constantly">Pesquisar constantemente pelo G5</string>
     <string name="g5_force_ui_thread">Isto é crucial para alguns dispositivos Android se ligarem correctamente, mas pode causar leituras perdidas se acontecerem outras actividades intensivas em simultâneo no mesmo dispositivo.</string>
+    <string name="force_g5_ui_thread">Forçar G5 para UI Thread</string>
     <string name="authentificate_before_reading">Autenticar G5 antes de cada leitura</string>
     <string name="g5_full_authentification">Isto tentará uma autenticação completa a cada tentativa de leitura. Necessário para versões mais recentes de firmware de transmissor G5.</string>
     <string name="unbond_g5_before_read">Desagregar G5 antes de cada leitura</string>
@@ -722,6 +723,7 @@
     <string name="calibrations_sound">Definir som para pedidos de calibração.</string>
     <string name="override_silent_mode">Sobrepor modo de Silêncio</string>
     <string name="even_when_charging">Mesmo quando a carregar</string>
+    <string name="no_calibration_requests_charging">Desmarque a opção para não perguntar por calibrações quando o telefone está a carregar</string>
     <string name="keep_alert_no_calibration">Manter alertas se nenhuma calibração é efectuada</string>
     <string name="repeat_alerts">Repetir Alertas</string>
     <string name="alert_repeat_minutes">Minutos Repetição Alerta</string>
@@ -730,6 +732,7 @@
     <string name="reraise_before_snooze">Alertar novamente antes do tempo silenciado</string>
     <string name="reraise_not_snoozed_sooner">Alertar novamente se não for silenciado mais cedo</string>
     <string name="alert_reraise_time">Duração do aumento do alarme</string>
+    <string name="alert_seconds_reraise">Número de segundos antes do aumento do mesmo alerta</string>
     <string name="bg_falling_fast">Glic em descida rápida</string>
     <string name="bg_rising_fast">Glic em subida rápida</string>
     <string name="set_sound_for_bg_alerts">Definir som para Alertas Glic.</string>
