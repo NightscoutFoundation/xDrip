@@ -661,6 +661,8 @@
     <string name="alert_repeat_minutes">Minutos Repetição Alerta</string>
     <string name="alert_noisy_values">Alerta após x minutos de leituras irregulares (noise)</string>
     <string name="alert_snooze">Alerta Silêncio</string>
+    <string name="reraise_before_snooze">Alertar novamente antes do tempo silenciado</string>
+    <string name="reraise_not_snoozed_sooner">Alertar novamente se não for silenciado mais cedo</string>
     <string name="bg_falling_fast">Glic em descida rápida</string>
     <string name="bg_rising_fast">Glic em subida rápida</string>
     <string name="set_sound_for_bg_alerts">Definir som para Alertas Glic.</string>
@@ -701,6 +703,7 @@
     <string name="movement_detection_and_vehicle_mode">Detecção de movimento e modo veículo</string>
     <string name="display_motion_types">Guardar recentes tipos de movimento e traçá-los no gráfico principal</string>
     <string name="log_and_plot_motion">Registar e Traçar movimento</string>
+    <string name="use_remote_motion">Utilizar movimento remoto</string>
     <string name="vehicle_motion_extras">Quando veículo for detectado activar funções extra</string>
     <string name="enable_vehicle_mode">Activar Modo Veículo</string>
     <string name="raise_low_threshold">Elevar limiar \'Hipo\'</string>
@@ -712,6 +715,7 @@
     <string name="reminders">Lembretes</string>
     <string name="error">erro</string>
     <string name="install_text_to_speech_data_question">Instalar dados Texto-Para-Voz?</string>
+    <string name="after_installation_of_languages_you_might_have_to">(Após idiomas instalados poderá ser necessário pressionar \"Reiniciar Dispositivo BT\" em Estado do Sistema.)</string>
     <string name="stop_sensor">Parar Sensor</string>
     <string name="initial_calibration">Calibração Inicial</string>
     <string name="calibration_can_not_be_blank">Calibração não pode estar vazia</string>
@@ -848,14 +852,17 @@
     <string name="message_snooze_trash">O botão de lixo exclui permanentemente o lembrete apagado.</string>
     <string name="title_which_day">Em que dia?</string>
     <string name="title_what_time_day">A que hora do dia?</string>
+    <string name="reminder_due">Lembrete concluído</string>
     <string name="title_add_reminder">Adicionar Lembrete</string>
     <string name="title_edit_reminder">Editar Lembrete</string>
     <string name="always_use_same_title">utilizar sempre o mesmo título</string>
     <string name="sound_once">soar uma vez</string>
     <string name="Please_Allow_Permission">Permita Autorização</string>
     <string name="need_storage_permission">Requer permissão de armazenamento para aceder a todos os toques</string>
+    <string name="select_file_reminder_sound">Seleccionar Ficheiro de Som para Lembrete</string>
     <string name="select_tone_alert">Escolher o som para Alerta:</string>
     <string name="snoozed_for">silenciado por</string>
+    <string name="postponed_for">adiado por</string>
     <string name="completed">concluído</string>
     <string name="next_in">próximo em</string>
     <string name="due">A concluir</string>
@@ -876,6 +883,7 @@
     <string name="hours">Horas</string>
     <string name="weeks">Semanas</string>
     <string name="repeat">Repetir</string>
+    <string name="chime_only">Timbre apenas</string>
     <string name="alternating">A alternar</string>
     <string name="weekdays">Dias Úteis</string>
     <string name="weekends">Fins-de-Semana</string>
