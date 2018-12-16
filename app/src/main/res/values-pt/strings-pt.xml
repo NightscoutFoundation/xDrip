@@ -230,12 +230,17 @@
     <string name="pref_summary_enable_wearG5">Ligar Wear ao Dispositivo BT quando o telefone está fora de alcance</string>
     <string name="pref_force_wearG5">Forçar Wear Collection Service</string>
     <string name="pref_summary_force_wearG5">Forçar telefone a usar Wear Collection Service</string>
+    <string name="pref_disable_wearG5_on_lowbattery">Desativar o Force quando a carga da bateria estiver baixa</string>
+    <string name="pref_summary_disable_wearG5_on_lowbattery">Desligar o serviço de recolha de dados do Force Wear quando a bateria estiver baixa</string>
+    <string name="pref_disable_wearG5_on_missedreadings">Desligar o Force quando há falha de leituras</string>
+    <string name="pref_summary_disable_wearG5_on_missedreadings">Desligar o serviço de recolha de dados do Force Wear para a função \"minutos desde a ultima leitura vinda do Wear\"</string>
     <string name="pref_disable_wearG5_on_missedreadings_level">Minutos desde a última Leitura do Wear</string>
     <string name="pref_node_wearG5">Dispositivo a correr Collection Service</string>
     <string name="pref_summary_node_wearG5">Forçar telefone a usar este Wear Collection Service</string>
     <string name="pref_sync_wear_logs">Sincronizar registos Wear</string>
     <string name="pref_summary_sync_wear_logs">Enviar registros Wear para Visualizador de Eventos</string>
     <string name="pref_wear_logs_prefix">Prefixos do Registo Wear</string>
+    <string name="pref_summary_wear_logs_prefix">Prefixo para entradas de diário do Wear</string>
     <string name="pref_show_treatments">Mostrar Tratamentos</string>
     <string name="pref_summary_show_treatments">Mostrar pontos de Tratamento no gráfico</string>
     <string name="pref_use_wear_health">Utilizar Dados de Saúde do Wear</string>
