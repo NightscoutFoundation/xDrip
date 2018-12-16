@@ -591,8 +591,15 @@
     <string name="percentage_in_range">Percentagem de valores no intervalo.</string>
     <string name="percentage_below_range">Percentagem de valores abaixo do intervalo.</string>
     <string name="percentage_above_range">Percentagem de valores acima do intervalo.</string>
+    <string name="show_standard_deviation">Mostrar desvio padrão de valores.</string>
+    <string name="standard_deviation">Desvio Padrão</string>
+    <string name="show_total_carbs">Mostrar total de hidratos de carbono do tratamento</string>
     <string name="total_carbs">Total de Hidratos Carbono</string>
+    <string name="show_total_insulin">Mostrar total de insulina do tratamento</string>
     <string name="total_insulin">Insulina Total</string>
+    <string name="received_readings_percentage">Percentagem de leituras recebidas do sensor</string>
+    <string name="capture_percentage">Percentagem de captura de pacotes</string>
+    <string name="accuracy_evaluation">Avaliação de Precisão</string>
     <string name="show_extra_status_on_widget">Mostrar linha extra de estado no widget</string>
     <string name="calibration_plugin">Plugin de Calibração</string>
     <string name="advanced_calibration">Calibração Avançada</string>
@@ -617,6 +624,7 @@
     <string name="vibrate_scanning_status">Vibrar para indicar o estado de leitura</string>
     <string name="beep_when_scanning_within_app">Sinal sonoro quando leitura é feita dentro da app xDrip+</string>
     <string name="transmitter_id">ID do Transmissor Dexcom, ex 12AB3</string>
+    <string name="g5_debug_settings">Configurações de depurar G5/G6</string>
     <string name="scan_for_g5_constantly">Pesquisar constantemente pelo G5</string>
     <string name="use_calibrated_data">Utilizar dados calibrados como fonte</string>
     <string name="data_sync">Sincronizar Dados</string>
@@ -850,6 +858,8 @@
     <string name="title_Use_scanning">Utilizar procura</string>
     <string name="title_Trust_Auto_Connect">Confiar Auto-Connect</string>
     <string name="title_xBridge_Polling_Mode">Modo de Procura xBridge+</string>
+    <string name="title_Always_discover_services">Descobrir sempre serviços</string>
+    <string name="summary_Only_suitable_for_phones_which_support_automatic_pairing">Somente adequado para telemóveis com suporte automático de emparelhamento</string>
     <string name="title_Allow_blucon_unbonding">Permitir desagregação do Blucon</string>
     <string name="title_Batterylog">Registo de Bateria</string>
     <string name="summary_Choose_to_display_the_bridge_battery_level">Seleccionar para mostrar nível de bateria do transmissor</string>
