@@ -600,6 +600,7 @@
     <string name="total_insulin">Insulina Total</string>
     <string name="received_readings_percentage">Percentagem de leituras recebidas do sensor</string>
     <string name="capture_percentage">Percentagem de captura de pacotes</string>
+    <string name="realtime_capture_percentage">Percentagem de captura de pacotes em tempo real</string>
     <string name="accuracy_evaluation">Avaliação de Precisão</string>
     <string name="show_extra_status_on_widget">Mostrar linha extra de estado no widget</string>
     <string name="calibration_plugin">Plugin de Calibração</string>
@@ -628,6 +629,8 @@
     <string name="transmitter_id">ID do Transmissor Dexcom, ex 12AB3</string>
     <string name="g5_debug_settings">Configurações de depurar G5/G6</string>
     <string name="scan_for_g5_constantly">Pesquisar constantemente pelo G5</string>
+    <string name="authentificate_before_reading">Autenticar G5 antes de cada leitura</string>
+    <string name="unbond_g5_before_read">Desagregar G5 antes de cada leitura</string>
     <string name="use_calibrated_data">Utilizar dados calibrados como fonte</string>
     <string name="data_sync">Sincronizar Dados</string>
     <string name="options_for_upload">Configurações de envio para Nightscout, MongDB or Dexcom Share</string>
@@ -688,6 +691,10 @@
     <string name="notify_data_arrives_master"><![CDATA[Notificar quando dados recebidos do Master se o o intervalo é > 20 mins.]]></string>
     <string name="carb_ratio">Rácio de Hidratos</string>
     <string name="insulin_sensitivity">Sensibilidade Insulina</string>
+    <string name="flair_colors">Cores Elegantes</string>
+    <string name="use_flair_colors">Utilizar Cores Elegantes</string>
+    <string name="upper_title_bar_flair">Barra de Título Superior Elegante</string>
+    <string name="lower_button_bar_falir">Barra de Botões Inferior Elegante</string>
     <string name="force_english_text">Forçar Texto em Inglês</string>
     <string name="using_local_language">Actualmente a utilizar o idioma local do seu dispositivo</string>
     <string name="forcing_alternate_language">Actualmente a forçar utilização de idioma alternativo</string>
