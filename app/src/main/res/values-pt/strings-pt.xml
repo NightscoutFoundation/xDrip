@@ -627,7 +627,10 @@
     <string name="password">Palavra-passe</string>
     <string name="upload_to_dexcom">Activar para enviar para os servidores Dexcom</string>
     <string name="upload_to_dexcom_share">Enviar valores de Glicose como Dexcom Share</string>
+    <string name="usa_based_account">Conta Dexcom USA</string>
+    <string name="dexcom_login">Login do Website Dexcom</string>
     <string name="dexcom_user">Login da conta Dexcom</string>
+    <string name="dexcom_login_password">Password do Website Dexcom</string>
     <string name="dexcom_password">Palavra-passe da conta Dexcom</string>
     <string name="dexcom_receiver_serial">Número Série de 10 Caracteres do Receptor Dexcom</string>
     <string name="dexcom_test_mode_serial">Modo de Teste com Número de Série de 10 Caracteres</string>
@@ -635,6 +638,9 @@
     <string name="glucose_meter_options">Opções para medidores de glicose sem fios</string>
     <string name="use_bluetooth_meter">Utilizar Medidor Bluetooth</string>
     <string name="scan_for_bluetooth_meter">Pesquisar por Medidores Bluetooth</string>
+    <string name="meter_connect_sound">Activar para efeitos sonoros quando o medidor liga, desliga ou sincronia dados</string>
+    <string name="meter_connect_sound_effect">Indicadores de Efeito Sonoro</string>
+    <string name="ask_for_calibration">Quando novo resultado de glicose é recebido, perguntar se deve ser utilizado para calibrar</string>
     <string name="use_meter_for_calibrations">Utilizar Medidor para as Calibrações</string>
     <string name="automatic_calibration">Calibração Automática</string>
     <string name="volume_buttons_snooze">Pressionar o botão de volume para cima ou para baixo o alarme activo será silenciado quando a app aberta</string>
@@ -643,10 +649,14 @@
     <string name="override_silent_mode">Sobrepor modo de Silêncio</string>
     <string name="even_when_charging">Mesmo quando a carregar</string>
     <string name="repeat_alerts">Repetir Alertas</string>
+    <string name="alert_repeat_minutes">Minutos Repetição Alerta</string>
+    <string name="alert_noisy_values">Alerta após x minutos de leituras irregulares (noise)</string>
     <string name="alert_snooze">Alerta Silêncio</string>
     <string name="bg_falling_fast">Glic em descida rápida</string>
     <string name="bg_rising_fast">Glic em subida rápida</string>
+    <string name="set_sound_for_bg_alerts">Definir som para Alertas Glic.</string>
     <string name="alert_sound">Som do Alerta</string>
+    <string name="override_silent_mode_these">Sobrepor o modo Silêncio sobre esses alertas</string>
     <string name="collector_battery_alerts">Alertas bateria Dispositivo BT</string>
     <string name="low_battery_percentage">Percentagem de bateria fraca</string>
     <string name="carb_ratio">Rácio de Hidratos</string>
@@ -654,13 +664,16 @@
     <string name="force_english_text">Forçar Texto em Inglês</string>
     <string name="using_local_language">Actualmente a utilizar o idioma local do seu dispositivo</string>
     <string name="forcing_alternate_language">Actualmente a forçar utilização de idioma alternativo</string>
+    <string name="need_alternate_language">Se precisar de uma tradução de idioma alternativo dentro de xDrip +</string>
     <string name="chosse_language">Escolher um idioma específico</string>
     <string name="widget_range_lines">Linhas do Intervalo no Widget</string>
     <string name="show_range_on_widget">Mostrar linha de valor alto e baixo no widget.</string>
+    <string name="show_bolus_wizard_preview">Mostrar Pré-visualização do Assistente de Bólus</string>
     <string name="display_calculations">Mostrar Cálculos Insulina/Hidratos</string>
     <string name="display_calculations_everytime">Mostrar Cálculos Insulina/Hidratos em todo o momento</string>
     <string name="always_show_bolus_wizard_preview">Mostrar sempre Pré-visualização do Assistente de Bólus</string>
     <string name="show_test_features">Mostrar funcionalidades extra e teste alpha</string>
+    <string name="show_reminder_features">Mostrar funções e menus de Lembretes</string>
     <string name="enable_reminder_features">Activar funções de Lembretes</string>
     <string name="predictive_simulations">Simulações Preditivas</string>
     <string name="target_glucose_default">Alvo Padrão da Glicose</string>
@@ -701,9 +714,13 @@
     <string name="data_collector_running">Dados Dispositivo BT em execução</string>
     <string name="receiving_data_from_collector">A Receber Dados do %s Dispositivo BT</string>
     <!-- trend arrow for speak -->
+    <string name="DoubleDown">Descendo Rapidamente</string>
+    <string name="SingleDown">Caindo</string>
     <string name="FortyFiveDown">Descida Ligeira</string>
     <string name="Flat">Estável</string>
     <string name="FortyFiveUp">Subida Ligeira</string>
+    <string name="SingleUp">Ascendente</string>
+    <string name="DoubleUp">Subindo Rapidamente</string>
     <string name="Speech_speed">Velocidade da fala</string>
     <string name="Speech_pitch">Tom de Voz</string>
     <string name="Speak_Alerts">Alertas de Voz</string>
