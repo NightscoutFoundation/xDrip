@@ -186,7 +186,7 @@
     <string name="load_save_settings_to_sdcard">Carregar / Guardar definições no cartão SD</string>
     <string name="alarms_and_alerts">Alarmes e Alertas</string>
     <string name="alerts_and_notifications">Alertas e Notificações</string>
-    <string name="glucose_level_alerts_list">Lista de Níveis Glicémios de Alerta</string>
+    <string name="glucose_level_alerts_list">Lista de Alertas de Nível de Glicose</string>
     <string name="glucose_alerts_settings">Definições de Alertas de Glicemia</string>
     <string name="smart_snoozing">Silenciar Inteligente</string>
     <string name="calibration_alerts">Alertas de Calibração</string>
