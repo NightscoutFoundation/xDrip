@@ -575,6 +575,7 @@
     <string name="bluetooth_watchdog">Vigilante Bluetooth</string>
     <string name="reset_bluetooth_g5">Efetuar reset ao Bluetooth desligando e voltando a ligar como forma de manter a recolha de dados do G5. Sem isto o coletor G5 pode falhar.</string>
     <string name="g5_bluetooth_watchdog">Vigilante Bluetooth G5</string>
+    <string name="close_gatt">Se o bluetooth reativa muitas vezes, então tente desmarcar esta opção para ver se ajuda</string>
     <string name="older_bluetooth_wakelocks">Antigos bluetooth wakelocks que podem drenar bateria extra, mas podem ser necessários para a recepção bluetooth</string>
     <string name="reset_bluetooth_on_off">Reset Bluetooth desligando e ligando a cada poucos minutos! Seleccionar só para testes. Pode desligar qualquer outra utilização do bluetooth.</string>
     <string name="constantly_reset_bluetooth">Reiniciar constantemente o Bluetooth</string>
@@ -585,6 +586,7 @@
     <string name="repeatedly_restart_collection_service">Reiniciar repetidamente o serviço de recolha de dados em qualquer indicio de dados perdidos. Ativar só se estiver a receber indicação de falha de dados.</string>
     <string name="aggressive_service_restarts">Serviço agressivo de reinícios</string>
     <string name="predictive_readings_old">Método antigo - Não recomendado! Tenta prever leituras a cada minuto baseado nos últimos valores.</string>
+    <string name="use_external_blukon_algorithm_summary">Utilizar um algoritmo do Libre que esteja fora de processo. (Blukon/NFC/LibreAlarm)</string>
     <string name="display_predictive_values">Mostrar Previsão de Valores</string>
     <string name="use_external_blukon_algorithm">Algoritmo externo para o Libre.</string>
     <string name="calibrate_external_libre_algorithm_summary">Aplica métodos de calibração xDrip em dados OOP.</string>
@@ -596,10 +598,12 @@
     <string name="use_infrequent_calibrations">Se necessário, utilizar calibrações antigas, por exemplo se as calibrações forem efetuadas com pouca frequência.</string>
     <string name="infrequent_calibrations">Calibração pouco frequente</string>
     <string name="extra_logging">Definições de registo extra</string>
+    <string name="send_logs_to_developer">Enviar lista de eventos e de erros automaticamente para o programador</string>
     <string name="enable_remote_logging">Activar Relatório Remoto</string>
     <string name="set_logging_appid">Definir AppID para Registo</string>
     <string name="only_enable_on_trouble">Activar apenas se existem problemas com a app.</string>
     <string name="store_logs">Guardar relatórios para resolução de problemas</string>
+    <string name="disable_log_transmitter_battery_warning">Desactivar o aviso de estado de bateria fraca do transmissor no ecrã inicial. (Só relevante para os receptores autodidatas.)</string>
     <string name="engineering_mode">Modo de Programador</string>
     <string name="daily_save_db">Guardar Base de Dados diariamente</string>
     <string name="options_for_extra_line">Opções para a linha extra</string>
@@ -938,6 +942,7 @@
     <string name="title_NOT_FOR_PRODUCTION_USE">NÃO PARA USO DE PRODUÇÃO</string>
     <string name="title_You_have_no_reminders_yet">Não existem lembretes</string>
     <string name="title_swipe_reminder">Deslizar para a esquerda ou direita</string>
+    <string name="message_swipe_explanation">\u2190 Desliza para ESQUERDA para atrasar ou silenciar um lembrete\n\n\u2192 Desliza para DIREITA para agendar um lembrete futuro\n\nCarregando no título ou na hora permite edição. Pressionar longamente título para editar outros parâmetros.</string>
     <string name="title_reminder_snooze_undo">Painel Lembrete Adiado - Desfazer</string>
     <string name="message_snooze_explanaition_undo">O botão Desfazer restaura o lembrete para como era antes de ser parado.</string>
     <string name="title_snooze_trash">Painel Lembrete Adiado - Lixo</string>
