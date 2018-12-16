@@ -259,7 +259,7 @@
     <string name="dexcom_share_server_upload">Envio de dados para servidor de partilha Dexcom</string>
     <string name="upload_data_to_dex_servers">Enviar dados para os servidores da Dexcom para que possa usa-los nas apps Dexcom</string>
     <string name="manage_followers">Gerir Seguidores</string>
-    <string name="manage_existing_followers">Gira os seus seguidores e convide novos.</string>
+    <string name="manage_existing_followers">Gerir seguidores e convidar novos.</string>
     <string name="glucose_calibration_and_other_alerts">Glicemia, Calibração e Outros alertas</string>
     <string name="alert_volume_profile">Perfil de volume de alerta</string>
     <string name="smart_alerting">Alertas Inteligentes</string>
