@@ -603,6 +603,7 @@
     <string name="show_extra_status_on_widget">Mostrar linha extra de estado no widget</string>
     <string name="calibration_plugin">Plugin de Calibração</string>
     <string name="advanced_calibration">Calibração Avançada</string>
+    <string name="extra_calibration_options">Opções extra relacionadas com calibrações</string>
     <string name="usw_treatment_bg">Utilizar Valores Glic do Tratamento</string>
     <string name="experimental_calibration_plugin">Plugin de calibração secundário experimental</string>
     <string name="show_plugin_results_on_graph">Mostrar resultados da glicose do plugin no gráfico principal</string>
@@ -840,7 +841,9 @@
     <string name="bluetooth_watchdog_timer_sums">Insira o valor em minutos</string>
     <string name="title_Only_use_Wear">Uitlizar apenas Wear</string>
     <string name="title_Smartwatch_Sensors">Sensores Smartwatch</string>
+    <string name="summary_Activate_heart_rate_sensor_if_available">Activar sensor batimento cardíaco se disponível</string>
     <string name="title_Heart_Rate_Sensor">Sensor de Ritmo Cardíaco</string>
+    <string name="summary_Smooth_heart_rate_graph">Gráfico de batimento cardíaco suave</string>
     <string name="title_Or_per_number_of_minutes">Ou por número de minutos</string>
     <string name="title_Identify_receiver">Identificar receptor</string>
     <string name="summary_Only_send_to_named_package">Enviar apenas pacote nomeado</string>
