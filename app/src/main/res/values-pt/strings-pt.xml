@@ -712,8 +712,11 @@
     <string name="predictive_simulations">Simulações Preditivas</string>
     <string name="low_prediction_values">Valores de previsão de hipos</string>
     <string name="target_glucose_default">Alvo Padrão da Glicose</string>
+    <string name="remote_snoozes">Enviar e receber silenciar remoto</string>
     <string name="remote_snoozing">A Silenciar Remoto</string>
+    <string name="snoozes_will_silence_all">Silenciar silenciará todos os dispositivos no grupo que tem a opção abaixo activada neles</string>
     <string name="send_snooze_to_all">Enviar Silêncio para todos</string>
+    <string name="confirm_remote_snoozes">Mostrar mensagem de confirmação de cada envio silenciar remoto</string>
     <string name="confirm_sensing_snooze">Confirmar envio Silêncio</string>
     <string name="acccept_remote_snoozes">Aceitar Silêncio remotos</string>
     <string name="send_remote_snooze">Enviar Silêncio Remoto</string>
@@ -722,6 +725,8 @@
     <string name="yes_send_it">SIM, enviar!</string>
     <string name="movement_detection_and_vehicle_mode">Detecção de movimento e modo veículo</string>
     <string name="xdrip_motion_tracking">xDrip+ Detecção de Movimento</string>
+    <string name="detect_motion_types">Utilizar sensores para detectar tipos de movimento</string>
+    <string name="enable_motion_tracking">Activar Detecção de Movimento</string>
     <string name="display_motion_types">Guardar recentes tipos de movimento e traçá-los no gráfico principal</string>
     <string name="log_and_plot_motion">Registar e Traçar movimento</string>
     <string name="use_remote_motion">Utilizar movimento remoto</string>
@@ -732,6 +737,9 @@
     <string name="raise_low_threshold">Elevar limiar \'Hipo\'</string>
     <string name="play_sound">Tocar som</string>
     <string name="repeat_sound">Repetir som</string>
+    <string name="enable_telemetry">Activar Telemetria</string>
+    <string name="send_data_to_developers">Enviar dados para os programadores sobre as taxas de sucesso de diferentes dispositivos</string>
+    <string name="sidiary_date_title">Exportar a partir de?</string>
     <string name="blukon">Blucon</string>
     <string name="tomato">Tomato</string>
     <string name="low_bridge_battery">Bridge bateria fraca</string>
@@ -754,6 +762,7 @@
     <string name="forget_device">Esquecer Dispositivo</string>
     <string name="other_notes">Outras Notas:</string>
     <string name="delete_future_data">Apagar Dados Futuros</string>
+    <string name="show_only_untranslated">Mostrar apenas o não-traduzido</string>
     <string name="collecting_initial_readings">A recolher Leituras Iniciais</string>
     <string name="data_collector_running">Dados Dispositivo BT em execução</string>
     <string name="received_some_recent_data">Alguns Dados Recebidos Recentemente</string>
@@ -777,7 +786,9 @@
     <string name="advanced_bluereader_settings_summary">Configurações Avançadas do blueReader</string>
     <string name="advanced_bluereader_settings">Configurações blueReader</string>
     <string name="bluereader_restdays_onhome">Dias restantes no Ecrã Inicial</string>
+    <string name="bluereader_turnoff">Desligar Segurança</string>
     <string name="blueReader_turnoffvalue">Valor em %</string>
+    <string name="blueReader_turnoffvalue_sum">onde o Bluereader será desligado</string>
     <string name="days">dias restantes</string>
     <string name="bluereaderoff">blueReader será desligado, quando a bateria inferior a </string>
     <string name="bluereader_position">verificar a posição do blueReader no sensor, como não foi capaz de ler!</string>
@@ -849,10 +860,15 @@
     <string name="bluetooth_watchdog_timer_sums">Insira o valor em minutos</string>
     <string name="basal_editor">Editor Basal - Seleccionar horas para ajustar</string>
     <string name="title_Only_use_Wear">Uitlizar apenas Wear</string>
+    <string name="summary_Show_Bolus_Wizard_Preview_Insulin_value_on_watch_when_appropriate">Mostrar valor Insulina na Pré-Visualização Assistente de Bólus quando apropriado no relógio</string>
+    <string name="title_Display_BWP_Insulin">Mostrar Insulina Pré-VAB</string>
     <string name="title_Smartwatch_Sensors">Sensores Smartwatch</string>
-    <string name="summary_Activate_heart_rate_sensor_if_available">Activar sensor batimento cardíaco se disponível</string>
+    <string name="summary_Collect_and_display_Step_counter_and_Heart_rate_when_available">Receber e mostrar contador de passos e ritmo cardíaco quando disponível</string>
+    <string name="title_Use_Health_Data">Utilizar Dados de Saúde</string>
+    <string name="summary_Activate_heart_rate_sensor_if_available">Activar sensor ritmo cardíaco se disponível</string>
     <string name="title_Heart_Rate_Sensor">Sensor de Ritmo Cardíaco</string>
-    <string name="summary_Smooth_heart_rate_graph">Gráfico de batimento cardíaco suave</string>
+    <string name="summary_Smooth_heart_rate_graph">Gráfico de ritmo cardíaco suave</string>
+    <string name="title_When_changes_by">Quando alterações por</string>
     <string name="title_Or_per_number_of_minutes">Ou por número de minutos</string>
     <string name="title_Identify_receiver">Identificar receptor</string>
     <string name="summary_Only_send_to_named_package">Enviar apenas pacote nomeado</string>
