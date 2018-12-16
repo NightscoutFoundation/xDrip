@@ -66,7 +66,7 @@
     <string name="wifi_recievers_dialog_title">Introduza os endereços IP e portas de receptores (incluindo endereços MongoDB se necessário)</string>
     <!-- Location Settings -->
     <string name="location_not_found_title">Localização não está ligada</string>
-    <string name="location_not_found_message">Para que a descoberta Bluetooth funcione em dispositivos mais recentes, a localização tem que estar ligada. O xDrip não rastreia a sua localização e esta pode ser desativada após emparelhamento bem sucedido.</string>
+    <string name="location_not_found_message">Para que a descoberta do Bluetooth funcione em dispositivos mais recentes, a localização tem que ser activada. O xDrip não rastreia a sua localização excepto na função de Mensagem de Emergência</string>
     <string name="location_yes">Activar</string>
     <!-- broadcast settings -->
     <string name="pref_title_broadcast_enabled">Transmissão local</string>
@@ -222,7 +222,7 @@
     <string name="extra_tags_dialog_message">As tags inseridas aqui será registrado em xDrip. O formato é tag: nível. Nível pode ser v, d, i. Por exemplo bgreading: i, DexCollectionService: v. Este tags serão registrados com baixa prioridade ao erro e lista de eventos.</string>
     <string name="extra_tags_dialog_title">Introduza mais tags para serem logadas</string>
     <string name="data_source_settings">Definições da Fonte de Dados</string>
-    <string name="smart_watch_features">Funcionalidades Smart Watch</string>
+    <string name="smart_watch_features">Funções Smartwatch</string>
     <string name="wear_integration">Integração Wear</string>
     <string name="send_data_to_android_wear_watch">Enviar informação para o Android Wear Watchface.</string>
     <string name="android_wear_integration">Integração Android Wear</string>
@@ -510,7 +510,7 @@
     <string name="display_eight_hour_average_line">Mostrar média de 8 horas</string>
     <string name="display_twenty_four_hour_average_line">Mostrar média de 24 horas</string>
     <string name="predictive_model_inner_workings">Modelo interno de Previsão</string>
-    <string name="noise_model_inner_workings">Funcionamento do modelo de Noise</string>
+    <string name="noise_model_inner_workings">Funcionamento do modelo de leituras irregulares (noise)</string>
     <string name="glucose_number_from_filtered">Valores glicémicos filtrados</string>
     <string name="if_the_phone_has_text_to_speech">Se o telefone tiver capacidade texto-para-voz, o resultado será falado.</string>
     <string name="upload_logs">Enviar Registos</string>
@@ -684,7 +684,7 @@
     <string name="display_calculations">Mostrar Cálculos Insulina/Hidratos</string>
     <string name="display_calculations_everytime">Mostrar Cálculos Insulina/Hidratos em todo o momento</string>
     <string name="always_show_bolus_wizard_preview">Mostrar sempre Pré-visualização do Assistente de Bólus</string>
-    <string name="show_test_features">Mostrar funcionalidades extra e teste alpha</string>
+    <string name="show_test_features">Mostrar funções extra e teste alpha</string>
     <string name="show_reminder_features">Mostrar funções e menus de Lembretes</string>
     <string name="enable_reminder_features">Activar funções de Lembretes</string>
     <string name="predictive_simulations">Simulações Preditivas</string>
@@ -756,7 +756,7 @@
     <string name="bluereader_position">verificar a posição do blueReader no sensor, como não foi capaz de ler!</string>
     <string name="offical_msg">App Oficial</string>
     <string name="yes">Sim</string>
-    <string name="xdrip_compatible_features">xDrip+ %s Funcionalidades</string>
+    <string name="xdrip_compatible_features">xDrip+ %s Funções</string>
     <string name="garmin">Garmin</string>
     <string name="fitbit">Fitbit</string>
     <string name="set_data_source_to">Definir Fonte de Dados para: %s ?</string>
