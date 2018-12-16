@@ -287,7 +287,7 @@
     <string name="units">unidades</string>
     <string name="carbs">HC</string>
     <string name="when">quando</string>
-    <string name="speak_your_treatment">Fale o seu tratamento ex:\nx.x units insulin / xx grams carbs</string>
+    <string name="speak_your_treatment">Fale o seu tratamento ex:\nx.x unidades insulina / xx gramas hidratos</string>
     <string name="speech_recognition_is_not_supported">Reconhecimento de fala não suportado</string>
     <string name="treatment_note">Nota de Tratamento</string>
     <string name="could_not_export_database">Impossível exportar base de dados :(</string>
@@ -806,7 +806,7 @@
     <string name="use_librealarm">Utilizar app LibreAlarm como fonte de dados?</string>
     <string name="noise_blocking">Bloqueio de Leituras Irregulares (Noise)</string>
     <string name="low_parakeet_battery">Parakeet bateria fraca</string>
-    <string name="glucose_units_mmol_or_mgdl">Unidades de Glicose mmol/L or mg/dL</string>
+    <string name="glucose_units_mmol_or_mgdl">Unidades de Glicose mmol/L ou mg/dL</string>
     <string name="settings_updated_to_mmol">Definições actualizadas para mmol/L</string>
     <string name="external_calibration_app">App Externa de Calibração</string>
     <string name="use_app_for_calibration">utilizar app para calibração?</string>
@@ -859,6 +859,8 @@
     <string name="title_Accept_Calibrations">Aceitar Calibrações</string>
     <string name="title_xDrip_Web_Service">Serviço Web xDrip</string>
     <string name="title_Open_Web_Service">Abrir Serviço Web</string>
+    <string name="summary_Shared_Secret_for_open_web_service">Partilhado Secret para serviço aberto (deverá corresponder aoNightscout API secret)</string>
+    <string name="title_xDrip_Web_Service_Secret">Secret do Serviço Web xDrip</string>
     <string name="title_External_Status">Estado Externo</string>
     <string name="title_Pump_Status">Estado da Bomba</string>
     <string name="summary_Show_treatment_carb_insulin_ratio">Mostrar Rácio Hidratos/Insulina</string>
