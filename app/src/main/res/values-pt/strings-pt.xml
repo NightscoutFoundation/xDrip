@@ -44,14 +44,14 @@
     <string name="pref_title_mongodb">MongoDB</string>
     <string name="pref_summary_mongodb_enabled">Se utiliza MongoLab e Azure isto deve estar ligado</string>
     <string name="pref_title_mongodb_uri">URL</string>
-    <string name="pref_dialog_mongodb_uri">Introduza MongoDB URI\"</string>
+    <string name="pref_dialog_mongodb_uri">Introduza MongoDB URL\"</string>
     <string name="pref_message_mongodb_uri">Substituir valores de exemplo em {} com seus valores</string>
     <string name="pref_default_mongodb_uri">mongodb://{utilizador}:{palavra-passe}@{host}.mongolab.com:{11111}/{base-de-dados}</string>
-    <string name="pref_title_mongodb_collection">O nome da coleção</string>
+    <string name="pref_title_mongodb_collection">Nome da colecção</string>
     <string name="pref_dialog_mongodb_collection">Introduza nome de colecção</string>
     <string name="pref_message_mongodb_collection">Este é o nome da colecção onde será guardada a informação do CGM</string>
-    <string name="pref_title_mongodb_device_status_collection">Nome da coleção Device Status</string>
-    <string name="pref_dialog_mongodb_device_status_collection">Introduza nome da coleção Device Status\"</string>
+    <string name="pref_title_mongodb_device_status_collection">Nome da coleção Estado do Sistema</string>
+    <string name="pref_dialog_mongodb_device_status_collection">Introduza nome da coleção Estado do Sistema\"</string>
     <string name="pref_message_mongodb_device_status_collection">Este é o nome da coleção onde dados sobre bateria e outros dados do dispositivo serão guardados</string>
     <!-- API Settings -->
     <string name="pref_title_api">API Upload (REST)</string>
