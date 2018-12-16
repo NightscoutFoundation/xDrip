@@ -904,6 +904,7 @@
     <string name="bluetooth_watchdog_timer_sums">Insira o valor em minutos</string>
     <string name="basal_editor">Editor Basal - Seleccionar horas para ajustar</string>
     <string name="sensor_is_still_warming_up_please_wait">Sensor ainda está em preparação, por favor espere</string>
+    <string name="summary_If_you_plan_to_only_use_a_Wear_collector_and_never_your_phone">Se planeia utilizar Wear como receptor e nunca o telemóvel.</string>
     <string name="title_Only_use_Wear">Uitlizar apenas Wear</string>
     <string name="summary_Show_Bolus_Wizard_Preview_Insulin_value_on_watch_when_appropriate">Mostrar valor Insulina na Pré-Visualização Assistente de Bólus quando apropriado no relógio</string>
     <string name="title_Display_BWP_Insulin">Mostrar Insulina Pré-VAB</string>
@@ -934,7 +935,8 @@
     <string name="summary_Scan_before_connecting_on_xBridge_and_Libre_bluetooth">Pesquisar antes da ligação ao xBridge e Libre Bluetooth</string>
     <string name="title_Use_scanning">Utilizar procura</string>
     <string name="title_Trust_Auto_Connect">Confiar Auto-Connect</string>
-    <string name="title_xBridge_Polling_Mode">Modo de Procura xBridge+</string>
+    <string name="summary_Experimental_support_for_xBridge_polling_feature">Suporte experimental para função procura do xBridge+</string>
+    <string name="title_xBridge_Polling_Mode">Modo de Procura do xBridge+</string>
     <string name="title_Always_discover_services">Descobrir sempre serviços</string>
     <string name="summary_Only_suitable_for_phones_which_support_automatic_pairing">Somente adequado para telemóveis com suporte automático de emparelhamento</string>
     <string name="title_Allow_blucon_unbonding">Permitir desagregação do Blucon</string>
