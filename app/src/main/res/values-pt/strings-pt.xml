@@ -746,10 +746,12 @@
     <string name="alert_sound">Som do Alerta</string>
     <string name="override_silent_mode_these">Sobrepor o modo Silêncio sobre esses alertas</string>
     <string name="persistent_repeat_max">A repetir máximo cada (minutos)</string>
+    <string name="momentum_indicates_low">Quando a tendência indica uma Hipo seria prevista</string>
     <string name="notify_on_low_battery_level">Notificar quando o nível de bateria estiver abaixo</string>
     <string name="collector_battery_alerts">Alertas bateria Dispositivo BT</string>
     <string name="low_battery_percentage">Percentagem de bateria fraca</string>
     <string name="notify_data_arrives_master"><![CDATA[Notificar quando dados recebidos do Master se o o intervalo é > 20 mins.]]></string>
+    <string name="follower_chime_new">Novo Tom Seguidor</string>
     <string name="carb_ratio">Rácio de Hidratos</string>
     <string name="insulin_sensitivity">Sensibilidade Insulina</string>
     <string name="secondary_plugin_glucose_value">Valor de Glicose Plugin Secundário</string>
@@ -766,6 +768,7 @@
     <string name="chosse_language">Escolher um idioma específico</string>
     <string name="widget_range_lines">Linhas do Intervalo no Widget</string>
     <string name="show_range_on_widget">Mostrar linha de valor alto e baixo no widget.</string>
+    <string name="delayed_but_more_stable">Atrasado mas mais estavél quando com noise (não recomendado)</string>
     <string name="show_bolus_wizard_preview">Mostrar Pré-visualização do Assistente de Bólus</string>
     <string name="display_calculations">Mostrar Cálculos Insulina/Hidratos</string>
     <string name="display_calculations_everytime">Mostrar Cálculos Insulina/Hidratos em todo o momento</string>
@@ -773,6 +776,7 @@
     <string name="show_test_features">Mostrar funções extra e teste alpha</string>
     <string name="show_reminder_features">Mostrar funções e menus de Lembretes</string>
     <string name="enable_reminder_features">Activar funções de Lembretes</string>
+    <string name="display_mathamatical_simulations">Mostrar simulações matemáticas baseadas nos dados de perfil e registos de hidratos/insulina</string>
     <string name="predictive_simulations">Simulações Preditivas</string>
     <string name="low_prediction_values">Valores de previsão de hipos</string>
     <string name="target_glucose_default">Alvo Padrão da Glicose</string>
@@ -789,6 +793,7 @@
     <string name="only_accept_same_network">Só aceita se o nome da rede WiFi remota começa com as mesmas letras da nossa e corresponde muito de perto</string>
     <string name="wifi_name_must_match">Nome de WiFi deve ser igual</string>
     <string name="confirm_remote_snooze">Confirmar Silêncio Remoto</string>
+    <string name="are_you_sure_you_wish_to_snooze_all_other_devices_in_your_sync_group">Tem certeza que quer silenciar todos os outros dispositivos no grupo de sincronismo?</string>
     <string name="yes_send_it">SIM, enviar!</string>
     <string name="movement_detection_and_vehicle_mode">Detecção de movimento e modo veículo</string>
     <string name="xdrip_motion_tracking">xDrip+ Detecção de Movimento</string>
@@ -802,6 +807,7 @@
     <string name="act_as_motion_master">Actuar como mestre de movimento</string>
     <string name="vehicle_motion_extras">Quando veículo for detectado activar funções extra</string>
     <string name="enable_vehicle_mode">Activar Modo Veículo</string>
+    <string name="increase_low_alarms_vehicle_mode">Aumentar o limite que os alertas de Hipo são acionados em modo de veículo</string>
     <string name="raise_low_threshold">Elevar limiar \'Hipo\'</string>
     <string name="notification_sound_vehicle_mode">Notificação sonora quando modo veículo é detectado</string>
     <string name="play_sound">Tocar som</string>
@@ -809,6 +815,7 @@
     <string name="repeat_sound">Repetir som</string>
     <string name="enable_telemetry">Activar Telemetria</string>
     <string name="send_data_to_developers">Enviar dados para os programadores sobre as taxas de sucesso de diferentes dispositivos</string>
+    <string name="try_to_work_around_noisy_readings_ultrasensitive">Iniciar análise sobre leituras irregulares mesmo em valores baixos de ruído (só em modo programador)</string>
     <string name="sidiary_date_title">Exportar a partir de?</string>
     <string name="blukon">Blucon</string>
     <string name="tomato">Tomato</string>
@@ -858,6 +865,7 @@
     <string name="Speak_Alerts_Summary">Também dá algumas mensagens de alerta faladas</string>
     <string name="advanced_bluereader_settings_summary">Configurações Avançadas do blueReader</string>
     <string name="advanced_bluereader_settings">Configurações blueReader</string>
+    <string name="bluereader_restdays_onhome_sum">Mostra a estimativa de dias restantes para o blueReader no ecrã principal para a bateria ser carregada</string>
     <string name="bluereader_restdays_onhome">Dias restantes no Ecrã Inicial</string>
     <string name="bluereader_turnoff_sum">Desligar blueReader, se a bateria estiver inferior ao valor seleccionado</string>
     <string name="bluereader_turnoff">Desligar Segurança</string>
@@ -866,7 +874,9 @@
     <string name="days">dias restantes</string>
     <string name="bluereaderoff">blueReader será desligado, quando a bateria inferior a </string>
     <string name="bluereader_position">verificar a posição do blueReader no sensor, como não foi capaz de ler!</string>
+    <string name="bluereaderuglystate">O blueReader foi detetado em estado incorrecto! Será desligado de imediato, poderá ligar de novo (breve pressão do botão). Após isso o blueReader deverá funcionar como esperado!</string>
     <string name="offical_msg">App Oficial</string>
+    <string name="use_conflict_msg">pode também tentar aceder ao dispositivo transmissor e pode causar problemas em ambas as apps</string>
     <string name="use_confict_msg_glimp">Ajustar Configurações do Glimp: opções -&gt; dispositivos -&gt; desseleccionar opção Bluetooth</string>
     <string name="yes">Sim</string>
     <string name="xdrip_compatible_features">xDrip+ %s Funções</string>
@@ -893,8 +903,10 @@
     <string name="librealarm">LibreAlarm</string>
     <string name="use_librealarm">Utilizar app LibreAlarm como fonte de dados?</string>
     <string name="noise_blocking">Bloqueio de Leituras Irregulares (Noise)</string>
+    <string name="level_at_which_noisy_data_should_not_be_broadcast">Nível na quais leituras irregulares não são difundidas já que poderiam enganar as apps receptoras</string>
     <string name="low_parakeet_battery">Parakeet bateria fraca</string>
     <string name="glucose_units_mmol_or_mgdl">Unidades de Glicose mmol/L ou mg/dL</string>
+    <string name="is_your_typical_glucose_value">É o seu nível habitual de glicose: 5.5 (mmol/L) or 100 (mg/dL) Por favor selecione abaixo</string>
     <string name="settings_updated_to_mmol">Definições actualizadas para mmol/L</string>
     <string name="external_calibration_app">App Externa de Calibração</string>
     <string name="use_app_for_calibration">utilizar app para calibração?</string>
@@ -904,7 +916,9 @@
     <string name="g6_sensor_code">Código do Sensor G6</string>
     <string name="please_enter_printed_calibration_code">Introduza o código de calibração impresso, 4 dígitos, ex: 5678</string>
     <string name="enable_update_checks">Activar verificação de actualização?</string>
+    <string name="you_can_easily_roll_back_dialog_msg">Com o xDrip consegue facilmente voltar a versões anteriores basta correr a instalação da versão antiga na pasta Downloads se não gostar da nova versão.\n\nQuer ativar a verificação de novas versões?</string>
     <string name="hey_fam">Olá Fam...</string>
+    <string name="you_have_update_checks_off">Tem a verificação de actualização desligada!\n\nTentamos corrigir bugs e adicionar novas funções no xDrip+ com o passar do tempo.\n\nTodos os 60 dias este alerta vai surgir para ativar a verificação de actualização.</string>
     <string name="update_checking_enabled">Verificação de actualização activada!</string>
     <string name="cancel_alarm">Cancelar Alarme?</string>
     <string name="please_confirm_to_cancel_the_alert">Confirme para cancelar o alerta? </string>
@@ -942,6 +956,7 @@
     <string name="bluetooth_watchdog_timer_sums">Insira o valor em minutos</string>
     <string name="basal_editor">Editor Basal - Seleccionar horas para ajustar</string>
     <string name="sensor_is_still_warming_up_please_wait">Sensor ainda está em preparação, por favor espere</string>
+    <string name="number_wall_config">Configuração Number Wall</string>
     <string name="summary_If_you_plan_to_only_use_a_Wear_collector_and_never_your_phone">Se planeia utilizar Wear como receptor e nunca o telemóvel.</string>
     <string name="title_Only_use_Wear">Uitlizar apenas Wear</string>
     <string name="summary_Also_show_the_filtered_data_on_the_trend">Mostrar também os dados filtrados na tendência</string>
