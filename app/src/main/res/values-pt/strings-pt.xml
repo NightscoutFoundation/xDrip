@@ -622,6 +622,7 @@
     <string name="received_readings_percentage">Percentagem de leituras recebidas do sensor</string>
     <string name="capture_percentage">Percentagem de captura de pacotes</string>
     <string name="realtime_capture_percentage">Percentagem de captura de pacotes em tempo real</string>
+    <string name="show_calibration_accuracy">Mostrar precisão da calibração dos últimos 3 dias</string>
     <string name="accuracy_evaluation">Avaliação de Precisão</string>
     <string name="show_extra_status_on_widget">Mostrar linha extra de estado no widget</string>
     <string name="calibration_plugin">Plugin de Calibração</string>
@@ -877,6 +878,7 @@
     <string name="zero_zero_zero_zero">0000</string>
     <string name="emergency_messages">Mensagens de Emergência</string>
     <string name="emergency_message_feature">Função de Mensagem de Emergência</string>
+    <string name="text_messages_can_be_sent_with_your_location_if_you_do_not_respond_to_alarms_this_feature_is_experimental_and_may_not_be_reliable">Mensagens de texto podem ser enviadas com a sua localização caso não responda aos alarmes. Esta função é experimental e pode não ser fiável.</string>
     <string name="your_name">O seu nome</string>
     <string name="did_not_acknowledge_a_low_glucose_alert">%s não reconheceu alerta de hipo por %s</string>
     <string name="did_not_acknowledge_a_high_glucose_alert">%s não reconheceu alerta de hipo por %s</string>
@@ -897,6 +899,7 @@
     <string name="tap_to_set_current_car_audio_device">Toque para definir dispositivo car áudio actualmente ligado</string>
     <string name="learn_current_car_audio">Aprender Áudio do Carro actual</string>
     <string name="detect_car_audio">Detectar áudio do carro</string>
+    <string name="enable_speak_readings_when_in_vehicle">Activar função fala de leituras quando em modo veículo</string>
     <string name="bluetooth_watchdog_timers">Valor de temporizador para vigilante BT</string>
     <string name="bluetooth_watchdog_timer_sums">Insira o valor em minutos</string>
     <string name="basal_editor">Editor Basal - Seleccionar horas para ajustar</string>
@@ -919,7 +922,9 @@
     <string name="title_Open_Web_Service">Abrir Serviço Web</string>
     <string name="summary_Shared_Secret_for_open_web_service">Partilhado Secret para serviço aberto (deverá corresponder aoNightscout API secret)</string>
     <string name="title_xDrip_Web_Service_Secret">Secret do Serviço Web xDrip</string>
+    <string name="summary_Display_status_from_other_apps_like_AndroidAPS">Exibir estado de outras apps como AndroidAPS</string>
     <string name="title_External_Status">Estado Externo</string>
+    <string name="summary_Display_pump_status_information_if_available">Exibir informação do estado da bomba se disponível</string>
     <string name="title_Pump_Status">Estado da Bomba</string>
     <string name="summary_Show_treatment_carb_insulin_ratio">Mostrar Rácio Hidratos/Insulina</string>
     <string name="title_Carb_Insulin_Ratio">Rácio Hidratos/Insulina</string>
