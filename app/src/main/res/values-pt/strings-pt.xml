@@ -930,6 +930,7 @@
     <string name="sensor_is_still_warming_up_please_wait">Sensor ainda está em preparação, por favor espere</string>
     <string name="summary_If_you_plan_to_only_use_a_Wear_collector_and_never_your_phone">Se planeia utilizar Wear como receptor e nunca o telemóvel.</string>
     <string name="title_Only_use_Wear">Uitlizar apenas Wear</string>
+    <string name="summary_Also_show_the_filtered_data_on_the_trend">Mostrar também os dados filtrados na tendência</string>
     <string name="summary_Show_Bolus_Wizard_Preview_Insulin_value_on_watch_when_appropriate">Mostrar valor Insulina na Pré-Visualização Assistente de Bólus quando apropriado no relógio</string>
     <string name="title_Display_BWP_Insulin">Mostrar Insulina Pré-VAB</string>
     <string name="title_Smartwatch_Sensors">Sensores Smartwatch</string>
@@ -943,6 +944,7 @@
     <string name="title_Identify_receiver">Identificar receptor</string>
     <string name="summary_Only_send_to_named_package">Enviar apenas pacote nomeado</string>
     <string name="title_Accept_Calibrations">Aceitar Calibrações</string>
+    <string name="summary_Operate_a_local_web_server_for_interacting_with_Fitbit_Ionic_etc">Usar um servidor web local para interagir com Fitbit Ionic etc</string>
     <string name="title_xDrip_Web_Service">Serviço Web xDrip</string>
     <string name="summary_Accept_connections_from_any_network_instead_of_just_internally">Aceitar neste aparelho ligações de qualquer rede em vez de apenas ligação interna. Há implicações de segurança ao ativar esta opção! Shared Secret vai ser necessário se opção for activada.</string>
     <string name="title_Open_Web_Service">Abrir Serviço Web</string>
