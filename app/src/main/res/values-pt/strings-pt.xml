@@ -839,6 +839,7 @@
     <string name="learn_current_car_audio">Aprender Áudio do Carro actual</string>
     <string name="detect_car_audio">Detectar áudio do carro</string>
     <string name="bluetooth_watchdog_timer_sums">Insira o valor em minutos</string>
+    <string name="basal_editor">Editor Basal - Seleccionar horas para ajustar</string>
     <string name="title_Only_use_Wear">Uitlizar apenas Wear</string>
     <string name="title_Smartwatch_Sensors">Sensores Smartwatch</string>
     <string name="summary_Activate_heart_rate_sensor_if_available">Activar sensor batimento cardíaco se disponível</string>
