@@ -77,7 +77,7 @@
     <string name="pref_summary_pebble_trend_watchface">Utilizar/instalar Pebble Trend Watchface (experimental)</string>
     <string name="pref_pebble_display_trend">Mostrar Tendência</string>
     <string name="pref_summary_display_trend">Mostrar a tendência glicémica na Watchface xDrip do Pebble.</string>
-    <string name="pref_pebble_display_high_line">Mostrar linha Hiper</string>
+    <string name="pref_pebble_display_high_line">Mostrar Linha Hiper</string>
     <string name="pref_pebble_display_low_line">Mostrar linha Hipo</string>
     <!-- Amazfit Settings -->
     <string name="amazfit_sync_service">Serviço de Sincronização AmazFit</string>
@@ -460,7 +460,7 @@
     <string name="show_interface_hints">Mostrar dicas de interface</string>
     <string name="show_graph_time_lines">Mostrar grelhas temporais</string>
     <string name="show_graph_glucose_lines">Mostrar linhas de glicemia no Gráfico</string>
-    <string name="display_filtered_plot">Mostrar plot foltrado</string>
+    <string name="display_filtered_plot">Mostrar plot filtrado</string>
     <string name="display_raw_plot_data">Mostrar dados plot em bruto</string>
     <string name="show_graph_target_line">Mostrar linha alvo no gráfico</string>
     <string name="show_graph_recent_average">Mostrar média recente no gráfico</string>
