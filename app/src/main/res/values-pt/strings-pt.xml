@@ -173,7 +173,7 @@
     <string name="low_level_prediction_values">Valores de previsão de Hipo</string>
     <string name="glucose_drop_for_one_unit">Baixa de Glicemia por 1 Uni.</string>
     <string name="xdrip_plus_prediction_settings">Simulação Preditiva xDrip+</string>
-    <string name="settings_for_syncing">Definições para sincronização entre dispositivos</string>
+    <string name="settings_for_syncing">Definições para sincronização entre dispositivos móveis</string>
     <string name="xdrip_plus_sync_settings">Definições de sincronização xDrip+</string>
     <string name="xdrip_plus_update_settings">Definições de Actualização xDrip+</string>
     <string name="automatic_update_check">Verificar actualização automaticamente</string>
@@ -471,7 +471,8 @@
     <string name="default_liver_sensitivity_ratio">Rácio de Sensibilidade do Fígado</string>
     <string name="key_is_used_instead_of_google_account">Chave é usada em vez da conta Google</string>
     <string name="sync_using_custom_security_key">Sincronizar usando chave de segurança personalizada</string>
-    <string name="handset_group_security_key">Chave de Segurança de Sincronismo do Grupo de Terminais</string>
+    <string name="handset_group_security_key">Chave de Segurança de Sincronismo do Grupo de Dispositivo Móvel</string>
+    <string name="handset_sync_grouping_key">Chave de agrupamento de sincronização do dispositivo móvel</string>
     <string name="alert_name_colon">Nome do Alerta:</string>
     <string name="threshold_colon">Limite:</string>
     <string name="default_snooze_colon">Silenciar Por Defeito:</string>
@@ -727,10 +728,11 @@
     <string name="target_glucose_default">Alvo Padrão da Glicose</string>
     <string name="remote_snoozes">Enviar e receber silenciar remoto</string>
     <string name="remote_snoozing">A Silenciar Remoto</string>
-    <string name="snoozes_will_silence_all">Silenciar silenciará todos os dispositivos no grupo que tem a opção abaixo activada neles</string>
+    <string name="snoozes_will_silence_all">Silenciar silenciará todos os dispositivo móvel no grupo que tem a opção abaixo activada neles</string>
     <string name="send_snooze_to_all">Enviar Silêncio para todos</string>
     <string name="confirm_remote_snoozes">Mostrar mensagem de confirmação de cada envio silenciar remoto</string>
     <string name="confirm_sensing_snooze">Confirmar envio Silêncio</string>
+    <string name="allow_remotes_silence">Permitir dispositivos móveis remotos silenciar alarmes neste</string>
     <string name="acccept_remote_snoozes">Aceitar Silêncio remotos</string>
     <string name="send_remote_snooze">Enviar Silêncio Remoto</string>
     <string name="wifi_name_must_match">Nome de WiFi deve ser igual</string>
@@ -743,7 +745,7 @@
     <string name="display_motion_types">Guardar recentes tipos de movimento e traçá-los no gráfico principal</string>
     <string name="log_and_plot_motion">Registar e Traçar movimento</string>
     <string name="use_remote_motion">Utilizar movimento remoto</string>
-    <string name="be_motion_master">Ser mestre para dados de movimento mesmo sendo seguidor. Definir apenas num aparelho!</string>
+    <string name="be_motion_master">Ser mestre para dados de movimento mesmo sendo seguidor. Definir apenas num dispositivo móvel!</string>
     <string name="act_as_motion_master">Actuar como mestre de movimento</string>
     <string name="vehicle_motion_extras">Quando veículo for detectado activar funções extra</string>
     <string name="enable_vehicle_mode">Activar Modo Veículo</string>
@@ -808,6 +810,7 @@
     <string name="bluereaderoff">blueReader será desligado, quando a bateria inferior a </string>
     <string name="bluereader_position">verificar a posição do blueReader no sensor, como não foi capaz de ler!</string>
     <string name="offical_msg">App Oficial</string>
+    <string name="use_confict_msg_glimp">Ajustar Configurações do Glimp: opções -&gt; dispositivos -&gt; desseleccionar opção Bluetooth</string>
     <string name="yes">Sim</string>
     <string name="xdrip_compatible_features">xDrip+ %s Funções</string>
     <string name="garmin">Garmin</string>
