@@ -622,14 +622,18 @@
     <string name="show_total_insulin">Mostrar total de insulina do tratamento</string>
     <string name="total_insulin">Insulina Total</string>
     <string name="received_readings_percentage">Percentagem de leituras recebidas do sensor</string>
+    <string name="received_realtime_readings_percentage">Percentagem das leituras do sensor recebidas em tempo real. SOMENTE no modo Nativo do G5</string>
     <string name="capture_percentage">Percentagem de captura de pacotes</string>
     <string name="realtime_capture_percentage">Percentagem de captura de pacotes em tempo real</string>
     <string name="show_calibration_accuracy">Mostrar precisão da calibração dos últimos 3 dias</string>
     <string name="accuracy_evaluation">Avaliação de Precisão</string>
     <string name="show_extra_status_on_widget">Mostrar linha extra de estado no widget</string>
+    <string name="show_long_calibration_data">Mostra inclinação e intercepção em formato longo.</string>
+    <string name="show_short_calibration_data">Mostra inclinação e intercepção em formato curto.</string>
     <string name="calibration_plugin">Plugin de Calibração</string>
     <string name="advanced_calibration">Calibração Avançada</string>
     <string name="extra_calibration_options">Opções extra relacionadas com calibrações</string>
+    <string name="choose_use_treament_bg">Escolher calibrar com o valor de glicemia capilar ou não, numa entrada de tratamento</string>
     <string name="usw_treatment_bg">Utilizar Valores Glic do Tratamento</string>
     <string name="experimental_calibration_plugin">Plugin de calibração secundário experimental</string>
     <string name="show_plugin_results_on_graph">Mostrar resultados da glicose do plugin no gráfico principal</string>
@@ -639,6 +643,7 @@
     <string name="plugin_override_all">Plugin Sobrepõe TUDO</string>
     <string name="all_new_glucose_data_plugin">TODOS os novos dados de glicose serão calculados e gravados pelo plugin selecionado e não pelo algoritmo standard do xDrip. Não foi testado e pode ser incorreto e com bugs. Utilizar com extremo cuidado.</string>
     <string name="old_school_calibration_mode">Modo calibração antigo</string>
+    <string name="how_receive_data">Como vai receber dados do seu Dexcom/transmissor?</string>
     <string name="nfc_options">Opções para leitura com telemóvel em sensores com NFC</string>
     <string name="nfc_scan_features">Funções de Leitura NFC</string>
     <string name="use_nfc_feature">Utilizar função NFC</string>
