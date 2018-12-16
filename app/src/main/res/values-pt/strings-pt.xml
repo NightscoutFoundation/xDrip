@@ -772,6 +772,7 @@
     <string name="calibration_out_of_range">Calibração fora do intervalo</string>
     <string name="note_search">Pesquisar Nota</string>
     <string name="edit_note">Editar Nota</string>
+    <string name="adjust_note_text_here_there_is_no_undo">Ajustar aqui texto da nota. Não é possível desfazer</string>
     <string name="no_search_term_found">Nenhum resultado de pesquisa encontrado</string>
     <string name="bluetooth_scan">Pesquisa Bluetooth</string>
     <string name="level_alerts">Níveis de Alertas</string>
