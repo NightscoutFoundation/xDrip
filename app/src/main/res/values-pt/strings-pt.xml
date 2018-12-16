@@ -843,7 +843,10 @@
     <string name="summary_Scan_before_connecting_on_xBridge_and_Libre_bluetooth">Pesquisar antes da ligação ao xBridge e Libre Bluetooth</string>
     <string name="title_Use_scanning">Utilizar procura</string>
     <string name="title_Trust_Auto_Connect">Confiar Auto-Connect</string>
+    <string name="title_xBridge_Polling_Mode">Modo de Procura xBridge+</string>
     <string name="title_Batterylog">Registo de Bateria</string>
+    <string name="summary_Choose_to_display_the_bridge_battery_level">Seleccionar para mostrar nível de bateria do transmissor</string>
+    <string name="title_Glucose_Retention">Armazenar Glicose</string>
     <string name="title_Other_misc_options">Outras Opções</string>
     <string name="summary_allow_testing_with_dead_sensor">permitir testes com leitor morto</string>
     <string name="title_NOT_FOR_PRODUCTION_USE">NÃO PARA USO DE PRODUÇÃO</string>
