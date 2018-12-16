@@ -679,6 +679,7 @@
     <string name="calibrations_sound">Definir som para pedidos de calibração.</string>
     <string name="override_silent_mode">Sobrepor modo de Silêncio</string>
     <string name="even_when_charging">Mesmo quando a carregar</string>
+    <string name="keep_alert_no_calibration">Manter alertas se nenhuma calibração é efectuada</string>
     <string name="repeat_alerts">Repetir Alertas</string>
     <string name="alert_repeat_minutes">Minutos Repetição Alerta</string>
     <string name="alert_noisy_values">Alerta após x minutos de leituras irregulares (noise)</string>
@@ -863,8 +864,10 @@
     <string name="tap_to_set_current_car_audio_device">Toque para definir dispositivo car áudio actualmente ligado</string>
     <string name="learn_current_car_audio">Aprender Áudio do Carro actual</string>
     <string name="detect_car_audio">Detectar áudio do carro</string>
+    <string name="bluetooth_watchdog_timers">Valor de temporizador para vigilante BT</string>
     <string name="bluetooth_watchdog_timer_sums">Insira o valor em minutos</string>
     <string name="basal_editor">Editor Basal - Seleccionar horas para ajustar</string>
+    <string name="sensor_is_still_warming_up_please_wait">Sensor ainda está em preparação, por favor espere</string>
     <string name="title_Only_use_Wear">Uitlizar apenas Wear</string>
     <string name="summary_Show_Bolus_Wizard_Preview_Insulin_value_on_watch_when_appropriate">Mostrar valor Insulina na Pré-Visualização Assistente de Bólus quando apropriado no relógio</string>
     <string name="title_Display_BWP_Insulin">Mostrar Insulina Pré-VAB</string>
@@ -900,14 +903,18 @@
     <string name="title_Batterylog">Registo de Bateria</string>
     <string name="summary_Choose_to_display_the_bridge_battery_level">Seleccionar para mostrar nível de bateria do transmissor</string>
     <string name="title_Glucose_Retention">Armazenar Glicose</string>
+    <string name="summary_Erase_data_older_than_this_many_days">Eliminar dados com mais de que estes dias. 0 = não elimina nada</string>
     <string name="title_Other_misc_options">Outras Opções</string>
     <string name="summary_allow_testing_with_dead_sensor">permitir testes com leitor morto</string>
     <string name="title_NOT_FOR_PRODUCTION_USE">NÃO PARA USO DE PRODUÇÃO</string>
     <string name="title_You_have_no_reminders_yet">Não existem lembretes</string>
     <string name="title_swipe_reminder">Deslizar para a esquerda ou direita</string>
+    <string name="title_reminder_snooze_undo">Painel Lembrete Adiado - Desfazer</string>
+    <string name="title_snooze_trash">Painel Lembrete Adiado - Lixo</string>
     <string name="message_snooze_trash">O botão de lixo exclui permanentemente o lembrete apagado.</string>
     <string name="title_snooze_hide">Painel de Silenciar Lembrete - Ocultar</string>
     <string name="message_snooze_hide">O Botão Ocultar oculta painel de silenciar</string>
+    <string name="title_snooze_times">Painel Lembrete Adiado - Tempos</string>
     <string name="message_snooze_times">Os diferentes botões muda rapidamente o silenciar por defeito para um diferente período de silenciar.</string>
     <string name="title_which_day">Em que dia?</string>
     <string name="title_what_time_day">A que hora do dia?</string>
