@@ -792,6 +792,7 @@
     <string name="raise_low_threshold">Elevar limiar \'Hipo\'</string>
     <string name="notification_sound_vehicle_mode">Notificação sonora quando modo veículo é detectado</string>
     <string name="play_sound">Tocar som</string>
+    <string name="repeat_notification_every_90_minutes">Repetir o som de notificação a cada 90 minutos se ainda estiver no modo de veículo</string>
     <string name="repeat_sound">Repetir som</string>
     <string name="enable_telemetry">Activar Telemetria</string>
     <string name="send_data_to_developers">Enviar dados para os programadores sobre as taxas de sucesso de diferentes dispositivos</string>
