@@ -21,7 +21,7 @@
     <string name="title_activity_nav_drawer">Menu de Navegação</string>
     <string name="navigation_drawer_open">Abrir menu de navegação</string>
     <string name="navigation_drawer_close">Fechar menu de navegação</string>
-    <string name="title_activity_calibration_check_in">Atividade de calibração</string>
+    <string name="title_activity_calibration_check_in">Actividade de Calibração</string>
     <string name="title_activity_usb_connected">Actividade USB Ligado</string>
     <string name="snooze">Silenciar</string>
     <string name="snooze_hint">Silenciar alerta por x minutos</string>
@@ -45,7 +45,7 @@
     <string name="pref_summary_mongodb_enabled">Se utiliza MongoLab e Azure isto deve estar ligado</string>
     <string name="pref_title_mongodb_uri">URL</string>
     <string name="pref_dialog_mongodb_uri">Introduza MongoDB URL\"</string>
-    <string name="pref_message_mongodb_uri">Substituir valores exemplo nos {} pelos seus valores</string>
+    <string name="pref_message_mongodb_uri">Substituir valores exemplo em {} pelos seus valores</string>
     <string name="pref_default_mongodb_uri">mongodb://{utilizador}:{palavra-passe}@{host}.mongolab.com:{11111}/{base-de-dados}</string>
     <string name="pref_title_mongodb_collection">Nome da colecção</string>
     <string name="pref_dialog_mongodb_collection">Introduza nome de colecção</string>
@@ -59,13 +59,13 @@
     <string name="pref_summary_api_enabled">A API REST é uma alternativa à inserção direta no mongodb</string>
     <string name="pref_title_api_url">URL base</string>
     <string name="pref_dialog_api_url">Introduza URL base da API</string>
-    <string name="pref_message_api_url">Isto é apenas o URL base, o uploader acrescentará automaticamente /entries para o POST. O API_SECRET no servidor deverá ser igual à suapassphrase nesta definição.</string>
-    <string name="pref_default_api_url">https://suapassphrase@{YOUR-SITE}.azurewebsites.net/api/v1/</string>
+    <string name="pref_message_api_url">Isto é apenas o URL base, o uploader acrescentará automaticamente /entries para o POST. O API_SECRET no servidor deverá ser igual à suapalavrapasse nesta definição.</string>
+    <string name="pref_default_api_url">https://suapalavrapasse@{SEU-SITE}.azurewebsites.net/api/v1/</string>
     <!-- wifi Settings -->
     <string name="wifi_recievers_dialog_message">Lista separada por vírgula de ip:port (por exemplo 37.142.132.220:50005,37.142.132.220:50010,mongodb://user:pass@ds053958.mongolab.com:53958/db/collection)</string>
     <string name="wifi_recievers_dialog_title">Introduza os endereços IP e portas de receptores (incluindo endereços MongoDB se necessário)</string>
     <!-- Location Settings -->
-    <string name="location_not_found_title">Localização não está ligada</string>
+    <string name="location_not_found_title">Localização não está activada</string>
     <string name="location_not_found_message">Para que a descoberta do Bluetooth funcione em dispositivos mais recentes, a localização tem que ser activada. O xDrip não rastreia a sua localização excepto na função de Mensagem de Emergência</string>
     <string name="location_yes">Activar</string>
     <!-- broadcast settings -->
@@ -76,9 +76,9 @@
     <string name="pref_pebble_trend_watchface">Utilizar Pebble Trend Watchface</string>
     <string name="pref_summary_pebble_trend_watchface">Utilizar/instalar Pebble Trend Watchface (experimental)</string>
     <string name="pref_pebble_display_trend">Mostrar Tendência</string>
-    <string name="pref_summary_display_trend">Mostrar a tendência glicémica na Watchface xDrip do Pebble.</string>
+    <string name="pref_summary_display_trend">Mostrar a tendência glicemica na Watchface xDrip do Pebble.</string>
     <string name="pref_pebble_display_high_line">Mostrar Linha Hiper</string>
-    <string name="pref_pebble_display_low_line">Mostrar linha Hipo</string>
+    <string name="pref_pebble_display_low_line">Mostrar Linha Hipo</string>
     <!-- Amazfit Settings -->
     <string name="amazfit_sync_service">Serviço de Sincronização AmazFit</string>
     <string name="pref_amazfit_enable_summary">Activar o suporte de dados do Amazfit</string>
@@ -88,11 +88,11 @@
     <string name="pref_amazfit_alarm_enable">Activar</string>
     <string name="pref_amazfit_alarm_tile">Alarme do relógio</string>
     <string name="toast_crash">Aconteceu um erro :( foi enviado um relatório para ajudar a corrigir o problema.</string>
-    <string name="taskerConfigInstruction">Cloque no ícone de Visto para confirmar. Não deve ser necessário alterar a string de definição.</string>
-    <string name="taskerConfiguration">Definição Tasker</string>
+    <string name="taskerConfigInstruction">Clique no ícone de Visto para confirmar. Não deve ser necessário alterar o valor de definição.</string>
+    <string name="taskerConfiguration">Configuração Tasker</string>
     <string name="finish_preferences_activity">finish_preferences_activity</string>
     <string name="add_widget">Adicionar Widget</string>
-    <string name="title_activity_alert_list">Lista de alertas</string>
+    <string name="title_activity_alert_list">Lista de Alertas</string>
     <string name="speaktreatment">Falar tratamento</string>
     <string name="title_activity_update">Atualização xDrip+ disponível</string>
     <string name="title_activity_display_qrcode">Partilhar definições via QR code</string>
