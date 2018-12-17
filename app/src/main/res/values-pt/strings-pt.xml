@@ -557,14 +557,14 @@
     <string name="use_plugins_for_brodcast">Usar suavização de leitura irregulares e plugins, etc (se activado) para o valor transmitido</string>
     <string name="send_display_glucose">Enviar Glicose Mostrada</string>
     <string name="send_broadcasts_old_permission_model">Enviar transmissões sem cingir ao antigo modelo de permissões</string>
-    <string name="process_nsclient_treatments">Processar dados de tratamento recebidos da aplicação NSClient</string>
+    <string name="process_nsclient_treatments">Processar dados de tratamento recebidos da app NSClient</string>
     <string name="accept_treatments">Aceitar Tratamentos</string>
     <string name="process_broadcasted_calibrations">Processar calibrações recebidas de outras apps</string>
     <string name="spoken_readings_locale">Personalizar Região para Leitura de Voz, ex.: de, en_IN ou pt_PT</string>
     <string name="speak_glucose_twice">Dizer o valor da glicose duas vezes</string>
     <string name="short_speak_readings_shortcut">Mostrar atalho no ☰ menu para ligar e desligar Leituras Faladas</string>
     <string name="speak_readings_shortcut">Atalho para leituras por voz</string>
-    <string name="battery_optimization_off">Recomendado. Em Android 6 ou superior garanta que otimização de bateria esteja desligada</string>
+    <string name="battery_optimization_off">Recomendado. Em Android 6 ou superior garanta que optimização de bateria esteja desligada</string>
     <string name="battery_optimization_on">Não perguntar sobre optimização de bateria. Não recomendado</string>
     <string name="battery_optimization_prompt">Comando para optimização de bateria</string>
     <string name="advanced_bluetooth_settings">Configurações Avançadas do Bluetooth</string>
@@ -595,7 +595,7 @@
     <string name="retrieve_blukon_history_summary">Recuperar as leituras perdidas do Blukon ao ligar-se novamente ao sensor.</string>
     <string name="interpret_share_raw">Se estiver a usar Partilha, o xDrip irá mostrar os valores que normalmente estão escondidos no receptor.</string>
     <string name="interpret_raw">Interpretar Valores em Bruto</string>
-    <string name="use_infrequent_calibrations">Se necessário, utilizar calibrações antigas, por exemplo se as calibrações forem efetuadas com pouca frequência.</string>
+    <string name="use_infrequent_calibrations">Se necessário, utilizar calibrações antigas, por exemplo se as calibrações forem efectuadas com pouca frequência.</string>
     <string name="infrequent_calibrations">Calibração pouco frequente</string>
     <string name="extra_logging">Definições de registo extra</string>
     <string name="send_logs_to_developer">Enviar lista de eventos e de erros automaticamente para o programador</string>
@@ -906,7 +906,7 @@
     <string name="level_at_which_noisy_data_should_not_be_broadcast">Nível na quais leituras irregulares não são difundidas já que poderiam enganar as apps receptoras</string>
     <string name="low_parakeet_battery">Parakeet bateria fraca</string>
     <string name="glucose_units_mmol_or_mgdl">Unidades de Glicose mmol/L ou mg/dL</string>
-    <string name="is_your_typical_glucose_value">É o seu nível habitual de glicose: 5.5 (mmol/L) or 100 (mg/dL) Por favor selecione abaixo</string>
+    <string name="is_your_typical_glucose_value">É o seu nível habitual de glicose: 5.5 (mmol/L) or 100 (mg/dL) Por favor seleccione abaixo</string>
     <string name="settings_updated_to_mmol">Definições actualizadas para mmol/L</string>
     <string name="external_calibration_app">App Externa de Calibração</string>
     <string name="use_app_for_calibration">utilizar app para calibração?</string>
