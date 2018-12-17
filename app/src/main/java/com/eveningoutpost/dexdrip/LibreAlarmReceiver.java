@@ -63,10 +63,15 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
         return (lib_raw_value * LIBRE_MULTIPLIER); // to match (raw/8.5)*1000
     }
 
-    private static void createBGfromGD(GlucoseData gd, boolean quick) {
+    private static void createBGfromGD(GlucoseData gd, boolean use_smoothed_data, boolean quick) {
         final double converted;
         if (gd.glucoseLevelRaw > 0) {
-            converted = convert_for_dex(gd.glucoseLevelRaw);
+            if(use_smoothed_data) {
+                converted = convert_for_dex(gd.glucoseLevelRawSmoothed);
+                Log.e(TAG,"Using smoothed value " + converted + " instead of " + convert_for_dex(gd.glucoseLevelRaw) );
+            } else {
+                converted = convert_for_dex(gd.glucoseLevelRaw);
+            }
         } else {
             converted = 12; // RF error message - might be something else like unconstrained spline
         }
@@ -150,6 +155,7 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
                                 try {
                                     final ReadingData.TransferObject object =
                                             new Gson().fromJson(data, ReadingData.TransferObject.class);
+                                    object.data.CalculateSmothedData();
                                     processReadingDataTransferObject(object, JoH.tsl(), "LibreAlarm", false);
                                     Log.d(TAG, "At End: Oldest : " + JoH.dateTimeText(oldest_cmp) + " Newest : " + JoH.dateTimeText(newest_cmp));
                                 } catch (Exception e) {
@@ -189,7 +195,7 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
     }
         
     public static void CalculateFromDataTransferObject(ReadingData.TransferObject object, boolean use_raw) {
-    	
+    	boolean use_smoothed_data = Pref.getBooleanDefaultFalse("libre_use_smoothed_data");
         // insert any recent data we can
         final List<GlucoseData> mTrend = object.data.trend;
         if (mTrend != null && mTrend.size() > 0) {
@@ -230,7 +236,7 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
                         continue;
                     }
                     if (use_raw) {
-                        createBGfromGD(gd, false); // not quick for recent
+                        createBGfromGD(gd, use_smoothed_data, false); // not quick for recent
                     } else {
                         BgReading.bgReadingInsertFromInt(gd.glucoseLevel, gd.realDate, true);
                     }
@@ -252,13 +258,13 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
                     polyxList.add((double) gd.realDate);
                     if (use_raw) {
                         polyyList.add((double) gd.glucoseLevelRaw);
-                        createBGfromGD(gd, true);
+                        // For history, data is already averaged, no need for us to use smoothed data
+                        createBGfromGD(gd, false, true);
                     } else {
                         polyyList.add((double) gd.glucoseLevel);
                         // add in the actual value
                         BgReading.bgReadingInsertFromInt(gd.glucoseLevel, gd.realDate, false);
                     }
-
                 }
 
                 //ConstrainedSplineInterpolator splineInterp = new ConstrainedSplineInterpolator();
@@ -278,7 +284,8 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
                             if (d)
                                 Log.d(TAG, "Spline: " + JoH.dateTimeText((long) ptime) + " value: " + (int) polySplineF.value(ptime));
                             if (use_raw) {
-                                createBGfromGD(new GlucoseData((int) polySplineF.value(ptime), ptime), true);
+                                // Here we do not use smoothed data, since data is already smoothed for the history
+                                createBGfromGD(new GlucoseData((int) polySplineF.value(ptime), ptime), false, true);
                             } else {
                                 BgReading.bgReadingInsertFromInt((int) polySplineF.value(ptime), ptime, false);
                             }
