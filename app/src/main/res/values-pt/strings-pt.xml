@@ -54,7 +54,7 @@
     <string name="pref_dialog_mongodb_device_status_collection">Introduza nome da colecção Estado do Dispositivo\"</string>
     <string name="pref_message_mongodb_device_status_collection">Este é o nome da colecção onde dados sobre bateria e outros dados do dispositivo serão guardados</string>
     <!-- API Settings -->
-    <string name="pref_title_api">Nightscout (REST-API)</string>
+    <string name="pref_title_api">Sincronização Nightscout (REST-API)</string>
     <string name="pref_title_api_enabled">Activado</string>
     <string name="pref_summary_api_enabled">A API REST é uma alternativa à inserção direta no mongodb</string>
     <string name="pref_title_api_url">URL base</string>
