@@ -86,7 +86,7 @@
     <string name="pref_amazfit_tile">Serviço Amazfit</string>
     <string name="pref_amazfit_alarm_enable_summary">Envia alarmes para Smartwatch e silencia o telefone</string>
     <string name="pref_amazfit_alarm_enable">Activar</string>
-    <string name="pref_amazfit_alarm_tile">Alarme do relógio</string>
+    <string name="pref_amazfit_alarm_tile">Alarme do Relógio</string>
     <string name="toast_crash">Aconteceu um erro :( foi enviado um relatório para ajudar a corrigir o problema.</string>
     <string name="taskerConfigInstruction">Clique no ícone de Visto para confirmar. Não deve ser necessário alterar o valor de definição.</string>
     <string name="taskerConfiguration">Configuração Tasker</string>
@@ -94,7 +94,7 @@
     <string name="add_widget">Adicionar Widget</string>
     <string name="title_activity_alert_list">Lista de Alertas</string>
     <string name="speaktreatment">Falar tratamento</string>
-    <string name="title_activity_update">Actualização xDrip+ disponível</string>
+    <string name="title_activity_update">Actualização xDrip+ Disponível</string>
     <string name="title_activity_display_qrcode">Partilhar definições via código QR</string>
     <string name="title_activity_send_feed_back">Enviar feedback para Jamorham</string>
     <string name="title_activity_maps">Mapa Parakeet</string>
