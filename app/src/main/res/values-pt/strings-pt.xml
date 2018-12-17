@@ -50,8 +50,8 @@
     <string name="pref_title_mongodb_collection">Nome da colecção</string>
     <string name="pref_dialog_mongodb_collection">Introduza nome de colecção</string>
     <string name="pref_message_mongodb_collection">Este é o nome da colecção onde será guardada a informação do CGM</string>
-    <string name="pref_title_mongodb_device_status_collection">Nome da coleção Estado do Sistema</string>
-    <string name="pref_dialog_mongodb_device_status_collection">Introduza nome da coleção Estado do Sistema\"</string>
+    <string name="pref_title_mongodb_device_status_collection">Nome da coleção Estado do Dispositivo</string>
+    <string name="pref_dialog_mongodb_device_status_collection">Introduza nome da coleção Estado do Dispositivo\"</string>
     <string name="pref_message_mongodb_device_status_collection">Este é o nome da coleção onde dados sobre bateria e outros dados do dispositivo serão guardados</string>
     <!-- API Settings -->
     <string name="pref_title_api">API Upload (REST)</string>
