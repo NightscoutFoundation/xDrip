@@ -1006,7 +1006,7 @@
     <string name="summary_write_Battery_Information_for_additional_analytic">adiciona a um ficheiro a Informação da Bateria para análise adicional. Por favor use esta opção caso venha a ser questionado por um programador!</string>
     <string name="title_Batterylog">Registo de Bateria</string>
     <string name="summary_Choose_to_display_the_bridge_battery_level">Seleccionar para mostrar nível de bateria do transmissor</string>
-    <string name="title_Glucose_Retention">Armazenar Glicose</string>
+    <string name="title_Glucose_Retention">Retenção de glicose</string>
     <string name="summary_Erase_data_older_than_this_many_days">Eliminar dados com mais de que estes dias. 0 = não elimina nada</string>
     <string name="title_Other_misc_options">Outras Opções</string>
     <string name="summary_allow_testing_with_dead_sensor">permitir testes com leitor morto</string>
