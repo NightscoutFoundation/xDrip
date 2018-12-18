@@ -14,7 +14,7 @@
     <string name="unknown_device">Dispositivo não reconhecido</string>
     <string name="connecting_to_device">A estabelecer ligação ao dispositivo</string>
     <string name="title_activity_raw_data_table">Tabela de dados em bruto</string>
-    <string name="title_activity_calculated_data_table">Tabela de dados calculados</string>
+    <string name="title_activity_calculated_data_table">Tabela de Dados Calculados</string>
     <string name="title_activity_start_new_sensor">Iniciar Novo Sensor</string>
     <string name="title_activity_new_sensor_location">Localização de Novo Sensor</string>
     <string name="title_activity_stop_sensor">Parar Sensor</string>
@@ -95,7 +95,7 @@
     <string name="title_activity_alert_list">Lista de Alertas</string>
     <string name="speaktreatment">Falar tratamento</string>
     <string name="title_activity_update">Actualização xDrip+ Disponível</string>
-    <string name="title_activity_display_qrcode">Partilhar definições via código QR</string>
+    <string name="title_activity_display_qrcode">Partilhar Definições via código QR</string>
     <string name="title_activity_send_feed_back">Enviar feedback para Jamorham</string>
     <string name="title_activity_maps">Mapa Parakeet</string>
     <string name="title_activity_display_preferences">Preferências de Visualização</string>
@@ -326,7 +326,7 @@
     <string name="download_now">Descarregar agora</string>
     <string name="automatically_check_for_updates">Verificar por atualizações automaticamente</string>
     <string name="here_you_can_save_the_settings_to_the_external_storage_sdcard">Aqui pode guardar as definições para um dispositivo de armazenamento externo (cartão SD).\n\nAssim que for guardado, qualquer app pode potencialmente ler as definições que podem conter informações sensíveis.\n\nCaso isto o preocupe, aconselhamos a apagar as definições depois de as ter importado.</string>
-    <string name="save_all_settings_to_sdcard">Guardar todas as Definições para o Cartão SD</string>
+    <string name="save_all_settings_to_sdcard">Guardar todas as Definições no Cartão SD</string>
     <string name="load_all_settings_from_sdcard">Carregar todas as Definições do Cartão SD</string>
     <string name="delete_any_settings_on_sdcard">Apagar todas as definições do Cartão SD</string>
     <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[Utilizar códigos QR para transferir definições em Definições->Configurar Automaticamente]]></string>
