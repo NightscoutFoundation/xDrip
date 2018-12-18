@@ -201,8 +201,8 @@
     <string name="xdrip_plus_display_settings">Definições de visualização xDrip+</string>
     <string name="display_customisations">Personalizações de visualização</string>
     <string name="insulin_carb_ratios_etc_for_models">Insulina, rácios de Hidratos etc para modelos</string>
-    <string name="grams_of_carbohydrate_one_unit_covers">Gramas de HC que 1 Uni. cobre</string>
-    <string name="linear_model_carbs_absorbed_per_hour">Modelo linear de absorção de HC por hora</string>
+    <string name="grams_of_carbohydrate_one_unit_covers">Gramas de Hidratos que cobre 1 Uni.</string>
+    <string name="linear_model_carbs_absorbed_per_hour">Modelo linear de absorção de Hidratos por hora</string>
     <string name="carb_absorption_rate">Taxa de Absorção de Hidratos</string>
     <string name="calculate_including_glucose_trend">Calcular incluindo tendência glicémica</string>
     <string name="use_trend_momentum">Usar tendência</string>
@@ -768,7 +768,7 @@
     <string name="chosse_language">Escolher um idioma específico</string>
     <string name="widget_range_lines">Linhas do Intervalo no Widget</string>
     <string name="show_range_on_widget">Mostrar linha de valor alto e baixo no widget.</string>
-    <string name="delayed_but_more_stable">Atrasado mas mais estavél quando com noise (não recomendado)</string>
+    <string name="delayed_but_more_stable">Com atraso mas mais estável quando com ruído (noisy) (não recomendado)</string>
     <string name="show_bolus_wizard_preview">Mostrar Pré-visualização do Assistente de Bólus</string>
     <string name="display_calculations">Mostrar Cálculos Insulina/Hidratos</string>
     <string name="display_calculations_everytime">Mostrar Cálculos Insulina/Hidratos em todo o momento</string>
