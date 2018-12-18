@@ -586,13 +586,13 @@
     <string name="repeatedly_restart_collection_service">Reiniciar repetidamente o serviço de recolha de dados em qualquer indicio de dados perdidos. Ativar só se estiver a receber indicação de falha de dados.</string>
     <string name="aggressive_service_restarts">Serviço agressivo de reinícios</string>
     <string name="predictive_readings_old">Método antigo - Não recomendado! Tenta prever leituras a cada minuto baseado nos últimos valores.</string>
-    <string name="use_external_blukon_algorithm_summary">Utilizar um algoritmo do Libre que esteja fora de processo. (Blukon/NFC/LibreAlarm)</string>
+    <string name="use_external_blukon_algorithm_summary">Utilizar um algoritmo do Libre que esteja fora de processo. (Blucon/NFC/LibreAlarm)</string>
     <string name="display_predictive_values">Mostrar Previsão de Valores</string>
     <string name="use_external_blukon_algorithm">Algoritmo externo para o Libre.</string>
     <string name="calibrate_external_libre_algorithm_summary">Aplica métodos de calibração xDrip em dados OOP.</string>
     <string name="calibrate_external_libre_algorithm_title">Algoritmo de calibração OOP.</string>
     <string name="retrieve_blukon_history_title">Recuperar histórico do Libre</string>
-    <string name="retrieve_blukon_history_summary">Recuperar as leituras perdidas do Blukon ao ligar-se novamente ao sensor.</string>
+    <string name="retrieve_blukon_history_summary">Recuperar as leituras perdidas do Blucon ao ligar-se novamente ao sensor.</string>
     <string name="interpret_share_raw">Se estiver a usar Partilha, o xDrip irá mostrar os valores que normalmente estão escondidos no receptor.</string>
     <string name="interpret_raw">Interpretar Valores em Bruto</string>
     <string name="use_infrequent_calibrations">Se necessário, utilizar calibrações antigas, por exemplo se as calibrações forem efectuadas com pouca frequência.</string>
