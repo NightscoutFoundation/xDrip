@@ -892,7 +892,7 @@
     <string name="other">Outro</string>
     <string name="which_software_is_the_wixel_running">Que software o Wixel está a correr?</string>
     <string name="start_source_setup_wizard">Iniciar Assistente de Configuração da Fonte</string>
-    <string name="hour_format">%s Hora</string>
+    <string name="hour_format">%s Horas</string>
     <string name="enter_your_transmitter_id_exactly">Insira ID do transmissor, exactamente como está impresso</string>
     <string name="which_type_of_device">Que tipo de dispositivo?</string>
     <string name="enable_local_broadcast">Activar transmissão local?</string>
