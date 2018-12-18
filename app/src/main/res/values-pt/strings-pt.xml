@@ -476,7 +476,7 @@
     <string name="show_noise_workings">Mostrar correcções de leituras irregulares (noise)</string>
     <string name="parakeet_and_extra_features">Parakeet e funções extra de teste</string>
     <string name="insulin_duration_hours">Duração da insulina em horas</string>
-    <string name="default_liver_sensitivity_ratio">Rácio de Sensibilidade por Defeito do Fígado</string>
+    <string name="default_liver_sensitivity_ratio">Rácio de Sensibilidade Padrão do Fígado</string>
     <string name="key_is_used_instead_of_google_account">Chave é usada em vez da conta Google</string>
     <string name="sync_using_custom_security_key">Sincronizar usando chave de segurança personalizada</string>
     <string name="handset_group_security_key">Chave de Segurança de Sincronismo do Grupo de Dispositivo Móvel</string>
