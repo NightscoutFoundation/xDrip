@@ -509,7 +509,7 @@
     <string name="xbridge_battery">Bateria xBridge</string>
     <string name="limitter_battery">Bateria Libre</string>
     <string name="parakeet_battery">Bateria Parakeet</string>
-    <string name="after_calibration_rewrite_history">Após calibração, ajuste recente gráfico em bruto para suave para a nova calibração</string>
+    <string name="after_calibration_rewrite_history">Após calibração, ajuste gráfico recente em bruto para suave para a nova calibração</string>
     <string name="rewrite_history">Re-escrever Histórico</string>
     <string name="grid_time_lines_visible">Grelha de horas visível</string>
     <string name="grid_glucose_lines_visible">Grelha de glicemia visível</string>
@@ -851,11 +851,11 @@
     <string name="receiving_data_from_collector">A Receber Dados do %s Dispositivo BT</string>
     <!-- trend arrow for speak -->
     <string name="DoubleDown">Descendo Rapidamente</string>
-    <string name="SingleDown">Caindo</string>
-    <string name="FortyFiveDown">Descida Ligeira</string>
+    <string name="SingleDown">Descida Rápida</string>
+    <string name="FortyFiveDown">Descida Lenta</string>
     <string name="Flat">Estável</string>
-    <string name="FortyFiveUp">Subida Ligeira</string>
-    <string name="SingleUp">Ascendente</string>
+    <string name="FortyFiveUp">Subida Lenta</string>
+    <string name="SingleUp">Subida Rápida</string>
     <string name="DoubleUp">Subindo Rapidamente</string>
     <string name="Speak_trend_arrow_name">Ler seta de tendência</string>
     <string name="Speak_everything_twice">Falar tudo duas vezes</string>
