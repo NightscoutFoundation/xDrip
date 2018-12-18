@@ -200,10 +200,10 @@
     <string name="other_xdrip_plus_alerts">Outros alertas xDrip+</string>
     <string name="xdrip_plus_display_settings">Definições de visualização xDrip+</string>
     <string name="display_customisations">Personalizações de visualização</string>
-    <string name="insulin_carb_ratios_etc_for_models">Insulina, carios de HC etc para modelos</string>
+    <string name="insulin_carb_ratios_etc_for_models">Insulina, rácios de Hidratos etc para modelos</string>
     <string name="grams_of_carbohydrate_one_unit_covers">Gramas de HC que 1 Uni. cobre</string>
     <string name="linear_model_carbs_absorbed_per_hour">Modelo linear de absorção de HC por hora</string>
-    <string name="carb_absorption_rate">Taxa de Absorção Carb</string>
+    <string name="carb_absorption_rate">Taxa de Absorção de Hidratos</string>
     <string name="calculate_including_glucose_trend">Calcular incluindo tendência glicémica</string>
     <string name="use_trend_momentum">Usar tendência</string>
     <string name="add_calibration">Adicionar Calibração</string>
@@ -782,7 +782,7 @@
     <string name="target_glucose_default">Alvo Padrão da Glicose</string>
     <string name="default_liver_maximum_impact">Impacto Máximo do Fígado Padrão (0-1)</string>
     <string name="remote_snoozes">Enviar e receber silenciar remoto</string>
-    <string name="remote_snoozing">A Silenciar Remoto</string>
+    <string name="remote_snoozing">Silenciar Remoto</string>
     <string name="snoozes_will_silence_all">Silenciar silenciará todos os dispositivo móvel no grupo que tem a opção abaixo activada neles</string>
     <string name="send_snooze_to_all">Enviar Silêncio para todos</string>
     <string name="confirm_remote_snoozes">Mostrar mensagem de confirmação de cada envio silenciar remoto</string>
