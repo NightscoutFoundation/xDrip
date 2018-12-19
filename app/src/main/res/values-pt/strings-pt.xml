@@ -387,7 +387,7 @@
     <string name="choose_sound_used_for_persistent_high_alarm">Escolha o som para o alarme de Hiper persistente.</string>
     <string name="persistent_high_sound">Som de Hiper Persistente</string>
     <string name="forecast_lows">Previsão de Hipos</string>
-    <string name="raise_alarm_on_forecast_low">Aumentar Alarme em Previsão de Hipo</string>
+    <string name="raise_alarm_on_forecast_low">Aumentar Alarme na Previsão de Hipo</string>
     <string name="notify_when_predicted_low_time_reaches_threshold">Notificar quando tempo previsto para Hipo atingir o limite</string>
     <string name="predicted_low_sound">Som de Hipo Prevista</string>
     <string name="choose_sound_used_for_predicted_low_alarm">Escolha o som para previsão de Hipo.</string>
@@ -749,7 +749,7 @@
     <string name="momentum_indicates_low">Quando a tendência indica uma Hipo seria prevista</string>
     <string name="notify_on_low_battery_level">Notificar quando o nível de bateria estiver abaixo</string>
     <string name="collector_battery_alerts">Alertas Bateria Dispositivo BT</string>
-    <string name="low_battery_percentage">Percentagem de bateria fraca</string>
+    <string name="low_battery_percentage">Percentagem de Bateria Fraca</string>
     <string name="notify_data_arrives_master"><![CDATA[Notificar quando dados recebidos do Master se o o intervalo é > 20 mins.]]></string>
     <string name="follower_chime_new">Novo Tom Seguidor</string>
     <string name="carb_ratio">Rácio de Hidratos</string>
