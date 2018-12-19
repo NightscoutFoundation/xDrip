@@ -317,8 +317,8 @@
     <string name="re_enable_low_alerts">Re-Ativar Alertas de Hipo</string>
     <string name="disable_high_alerts">Desactivar Alertas de Hiper</string>
     <string name="re_enable_high_alerts">Re-Ativar Alertas de Hiper</string>
-    <string name="disable_all_alerts">Descativar Todos os alertas</string>
-    <string name="re_enable_all_alerts">Re-Ativar Todos os Alertas</string>
+    <string name="disable_all_alerts">Desactivar Todos os Alertas</string>
+    <string name="re_enable_all_alerts">Re-Activar Todos os Alertas</string>
     <string name="alert_snoozed_by_watch">Alerta adiado pelo relógio</string>
     <string name="update_channel_colon_space">"Canal de Actualização: "</string>
     <string name="a_new_version_is_available">Está disponível uma nova versão</string>
