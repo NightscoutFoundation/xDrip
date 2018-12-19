@@ -475,7 +475,7 @@
     <string name="show_momentum_working_curve">Mostrar a curva dinâmica de funcionamento</string>
     <string name="show_noise_workings">Mostrar correcções de leituras irregulares (noise)</string>
     <string name="parakeet_and_extra_features">Parakeet e funções extra de teste</string>
-    <string name="insulin_duration_hours">Duração da insulina em horas</string>
+    <string name="insulin_duration_hours">Duração da acção da insulina em Horas</string>
     <string name="default_liver_sensitivity_ratio">Rácio de Sensibilidade Padrão do Fígado</string>
     <string name="key_is_used_instead_of_google_account">Chave é usada em vez da conta Google</string>
     <string name="sync_using_custom_security_key">Sincronizar usando chave de segurança personalizada</string>
@@ -736,7 +736,7 @@
     <string name="alert_minutes_reraise">Número de minutos antes de acionar o mesmo alerta após o silêncio.</string>
     <string name="reraise_before_snooze">Alertar novamente antes do tempo silenciado</string>
     <string name="reraise_not_snoozed_sooner">Alertar novamente se não for silenciado mais cedo</string>
-    <string name="alert_reraise_time">Duração do aumento do alarme</string>
+    <string name="alert_reraise_time">Duração do Aumento do Alarme</string>
     <string name="alert_seconds_reraise">Número de segundos antes do aumento do mesmo alerta</string>
     <string name="bg_falling_fast">Glic em descida rápida</string>
     <string name="bg_rising_fast">Glic em subida rápida</string>
@@ -769,7 +769,7 @@
     <string name="widget_range_lines">Linhas do Intervalo no Widget</string>
     <string name="show_range_on_widget">Mostrar linha de valor alto e baixo no widget.</string>
     <string name="delayed_but_more_stable">Com atraso mas mais estável quando com ruído (noisy) (não recomendado)</string>
-    <string name="show_bolus_wizard_preview">Mostrar Pré-visualização do Assistente de Bólus</string>
+    <string name="show_bolus_wizard_preview">Mostrar Pré-Visualização do Assistente de Bólus</string>
     <string name="display_calculations">Mostrar Cálculos Insulina/Hidratos</string>
     <string name="display_calculations_everytime">Mostrar Cálculos Insulina/Hidratos em todo o momento</string>
     <string name="always_show_bolus_wizard_preview">Mostrar sempre Pré-visualização do Assistente de Bólus</string>
@@ -800,11 +800,11 @@
     <string name="detect_motion_types">Utilizar sensores para detectar tipos de movimento</string>
     <string name="enable_motion_tracking">Activar Detecção de Movimento</string>
     <string name="display_motion_types">Guardar recentes tipos de movimento e traçá-los no gráfico principal</string>
-    <string name="log_and_plot_motion">Registar e Traçar movimento</string>
+    <string name="log_and_plot_motion">Registar e Traçar Movimento</string>
     <string name="use_remote_motion_data">Dados de movimento extraídos de dispositivo remoto em vez de local</string>
-    <string name="use_remote_motion">Utilizar movimento remoto</string>
+    <string name="use_remote_motion">Utilizar movimento Remoto</string>
     <string name="be_motion_master">Ser mestre para dados de movimento mesmo sendo seguidor. Definir apenas num dispositivo móvel!</string>
-    <string name="act_as_motion_master">Actuar como mestre de movimento</string>
+    <string name="act_as_motion_master">Actuar como Mestre de Movimento</string>
     <string name="vehicle_motion_extras">Quando veículo for detectado activar funções extra</string>
     <string name="enable_vehicle_mode">Activar Modo Veículo</string>
     <string name="increase_low_alarms_vehicle_mode">Aumentar o limite que os alertas de Hipo são acionados em modo de veículo</string>
