@@ -190,10 +190,10 @@
     <string name="glucose_alerts_settings">Definições de Alertas de Glicemia</string>
     <string name="smart_snoozing">Silenciar Inteligente</string>
     <string name="calibration_alerts">Alertas de Calibração</string>
-    <string name="missed_reading_alert">Alerta de falha de leitura</string>
+    <string name="missed_reading_alert">Alerta de Falha de Leitura</string>
     <string name="other_alerts">Outros Alertas</string>
     <string name="extra_alerts_xdrip_plus">Alertas Extra (xDrip+)</string>
-    <string name="persistent_high_alert">Alerta de Hiper persistente</string>
+    <string name="persistent_high_alert">Alerta de Hiper Persistente</string>
     <string name="forecasted_low_alert">Alerta de previsão de Hipo</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Extrapolar dados para tentar prever Hipos</string>
     <string name="alarm_at_forecasted_low_mins">Alarme para Previsões de Baixa em mins</string>
@@ -309,7 +309,7 @@
     <string name="bracket_not_snoozed">(não silenciado)</string>
     <string name="all_alerts_disabled_until">"Todos os alertas desactivados até que "</string>
     <string name="low_alerts_disabled_until">"Alertas de Hipo desactivados até "</string>
-    <string name="high_alerts_disabled_until">"Alertas de Hiper desativados até "</string>
+    <string name="high_alerts_disabled_until">"Alertas de Hiper Desativados até "</string>
     <string name="default_snooze">Silêncio Pré-definido</string>
     <string name="until_you_reenable">Até serem re-ativados</string>
     <string name="set">Definir</string>
@@ -383,11 +383,11 @@
     <string name="old_version_date_colon">"Data da versão antiga: "</string>
     <string name="speak_your_note_text">Fale a sua nota de texto</string>
     <string name="alarm_if_above_high_value">Alarme se acima valor alto</string>
-    <string name="for_longer_than_minutes">por mais de (minutos)</string>
+    <string name="for_longer_than_minutes">Por mais de (minutos)</string>
     <string name="choose_sound_used_for_persistent_high_alarm">Escolha o som para o alarme de Hiper persistente.</string>
     <string name="persistent_high_sound">Som de Hiper Persistente</string>
     <string name="forecast_lows">Previsão de Hipos</string>
-    <string name="raise_alarm_on_forecast_low">Aumentar alarme em Previsão de Hipo</string>
+    <string name="raise_alarm_on_forecast_low">Aumentar Alarme em Previsão de Hipo</string>
     <string name="notify_when_predicted_low_time_reaches_threshold">Notificar quando tempo previsto para Hipo atingir o limite</string>
     <string name="predicted_low_sound">Som de Hipo Prevista</string>
     <string name="choose_sound_used_for_predicted_low_alarm">Escolha o som para previsão de Hipo.</string>
@@ -748,7 +748,7 @@
     <string name="persistent_repeat_max">A repetir máximo cada (minutos)</string>
     <string name="momentum_indicates_low">Quando a tendência indica uma Hipo seria prevista</string>
     <string name="notify_on_low_battery_level">Notificar quando o nível de bateria estiver abaixo</string>
-    <string name="collector_battery_alerts">Alertas bateria Dispositivo BT</string>
+    <string name="collector_battery_alerts">Alertas Bateria Dispositivo BT</string>
     <string name="low_battery_percentage">Percentagem de bateria fraca</string>
     <string name="notify_data_arrives_master"><![CDATA[Notificar quando dados recebidos do Master se o o intervalo é > 20 mins.]]></string>
     <string name="follower_chime_new">Novo Tom Seguidor</string>
