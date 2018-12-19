@@ -568,7 +568,7 @@
     <string name="battery_optimization_on">Não perguntar sobre optimização de bateria. Não recomendado</string>
     <string name="battery_optimization_prompt">Comando para Optimização de Bateria</string>
     <string name="advanced_bluetooth_settings">Configurações Avançadas do Bluetooth</string>
-    <string name="bluetooth_settings">Definições de Bluetooth</string>
+    <string name="bluetooth_settings">Definições do Bluetooth</string>
     <string name="auto_turn_on_bluetooth">Ativar automaticamente o Bluetooth se estiver desligado quando tentarmos ligar a um dispositivo Bluetooth</string>
     <string name="turn_bluetooth_on">Ligar Bluetooth</string>
     <string name="reset_bluetooth">Efetuar reset ao Bluetooth desligando e voltando a ligar se não receber dados em 20 minutos</string>
@@ -992,13 +992,13 @@
     <string name="summary_Allow_initial_calibration_no_good_enough_data">Permitir calibração inicial mesmo que não existam dados bons e suficientes. Atenção que pode resultar numa calibração incorrecta!</string>
     <string name="title_Bypass_quality_check">Ignorar Controlo de Qualidade</string>
     <string name="summary_Scan_before_connecting_on_xBridge_and_Libre_bluetooth">Pesquisar antes da ligação ao xBridge e Libre Bluetooth</string>
-    <string name="title_Use_scanning">Utilizar procura</string>
+    <string name="title_Use_scanning">Utilizar Procura</string>
     <string name="summary_Use_and_trust_Android_bluetooth_auto_connect_feature">Usar e confiar na função automática de ligação bluetooth Android</string>
     <string name="title_Trust_Auto_Connect">Confiar Auto-Connect</string>
     <string name="summary_Experimental_support_for_xBridge_polling_feature">Suporte experimental para função procura do xBridge+</string>
     <string name="title_xBridge_Polling_Mode">Modo de Procura do xBridge+</string>
     <string name="summary_Probe_Bluetooth_services_on_every_connect">Sonda os serviços de Bluetooth em cada ligação</string>
-    <string name="title_Always_discover_services">Descobrir sempre serviços</string>
+    <string name="title_Always_discover_services">Descobrir sempre Serviços</string>
     <string name="summary_Only_suitable_for_phones_which_support_automatic_pairing">Somente adequado para telemóveis com suporte automático de emparelhamento</string>
     <string name="title_Allow_blucon_unbonding">Permitir desagregação do Blucon</string>
     <string name="summary_Suppress_the_ugly_state_message_if_Problem_appears">Suprime estado feio da mensagem se um Problema aparecer</string>
