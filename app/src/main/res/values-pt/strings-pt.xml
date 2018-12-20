@@ -48,7 +48,7 @@
     <string name="pref_message_mongodb_uri">Substituir valores exemplo em {} pelos seus valores</string>
     <string name="pref_default_mongodb_uri">mongodb://{utilizador}:{palavra-passe}@{host}.mongolab.com:{11111}/{base-de-dados}</string>
     <string name="pref_title_mongodb_collection">Nome da colecção</string>
-    <string name="pref_dialog_mongodb_collection">Introduza nome de colecção</string>
+    <string name="pref_dialog_mongodb_collection">Introduzir nome da colecção</string>
     <string name="pref_message_mongodb_collection">Este é o nome da colecção onde será guardada a informação do CGM</string>
     <string name="pref_title_mongodb_device_status_collection">Nome da colecção Estado do Dispositivo</string>
     <string name="pref_dialog_mongodb_device_status_collection">Introduza nome da colecção Estado do Dispositivo\"</string>
