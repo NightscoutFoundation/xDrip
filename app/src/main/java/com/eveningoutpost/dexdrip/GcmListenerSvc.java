@@ -75,7 +75,7 @@ public class GcmListenerSvc extends JamListenerSvc {
     }
 
     @Override
-    protected Intent zzaa(Intent inteceptedIntent) {
+    protected Intent zzD(Intent inteceptedIntent) {
         // intercept and fix google play services wakelocking bug
         try {
             if (!Pref.getBooleanDefaultFalse("excessive_wakelocks")) {
@@ -86,7 +86,7 @@ public class GcmListenerSvc extends JamListenerSvc {
         } catch (Exception e) {
             UserError.Log.wtf(TAG, "Error patching play services: " + e);
         }
-        return super.zzaa(inteceptedIntent);
+        return super.zzD(inteceptedIntent);
     }
 
     @Override
