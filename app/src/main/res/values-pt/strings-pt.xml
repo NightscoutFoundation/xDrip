@@ -977,7 +977,7 @@
     <string name="title_xDrip_Web_Service">Serviço Web xDrip</string>
     <string name="summary_Accept_connections_from_any_network_instead_of_just_internally">Aceitar neste aparelho ligações de qualquer rede em vez de apenas ligação interna. Há implicações de segurança ao ativar esta opção! Shared Secret vai ser necessário se opção for activada.</string>
     <string name="title_Open_Web_Service">Abrir Serviço Web</string>
-    <string name="summary_Shared_Secret_for_open_web_service">Partilhado Secret para serviço aberto (deverá corresponder aoNightscout API secret)</string>
+    <string name="summary_Shared_Secret_for_open_web_service">Partilhado Secret para serviço web aberto (deverá corresponder ao Nightscout API Secret)</string>
     <string name="title_xDrip_Web_Service_Secret">Secret do Serviço Web xDrip</string>
     <string name="summary_Display_status_from_other_apps_like_AndroidAPS">Exibir estado de outras apps como AndroidAPS</string>
     <string name="title_External_Status">Estado Externo</string>
