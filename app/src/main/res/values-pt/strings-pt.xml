@@ -307,8 +307,8 @@
     <string name="no_active_alert_exists">Não existem alertas activos</string>
     <string name="active_alert_exists_named">Existem alertas activos com o nome</string>
     <string name="bracket_not_snoozed">(não silenciado)</string>
-    <string name="all_alerts_disabled_until">"Todos os alertas desactivados até que "</string>
-    <string name="low_alerts_disabled_until">"Alertas de Hipo desactivados até "</string>
+    <string name="all_alerts_disabled_until">"Todos os Alertas Desactivados até "</string>
+    <string name="low_alerts_disabled_until">"Alertas de Hipo Desactivados até "</string>
     <string name="high_alerts_disabled_until">"Alertas de Hiper Desativados até "</string>
     <string name="default_snooze">Silêncio Pré-definido</string>
     <string name="until_you_reenable">Até serem re-ativados</string>
