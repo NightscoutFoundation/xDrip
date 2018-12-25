@@ -454,7 +454,7 @@
     <string name="twenty_four_hour_average_line">Linha média de 24 Horas</string>
     <string name="glucose_target_line">Linha Alvo da Glicemia</string>
     <string name="annotations_and_dots">Anotações e Pontos</string>
-    <string name="blood_test_background">Teste de sangue: cor de fundo</string>
+    <string name="blood_test_background">Teste de Sangue: cor de fundo</string>
     <string name="blood_test_foreground">Teste de Sangue: cor</string>
     <string name="treatment_background">Tratamento: Cor de Fundo</string>
     <string name="treatment_foreground">Tratamento: Cor</string>
@@ -850,13 +850,13 @@
     <string name="play_sound_when_ready_for_calibration">Tocar som quando pronto para Calibração</string>
     <string name="receiving_data_from_collector">A Receber Dados do %s Dispositivo BT</string>
     <!-- trend arrow for speak -->
-    <string name="DoubleDown">Descendo Rapidamente</string>
+    <string name="DoubleDown">Descer Rapidamente</string>
     <string name="SingleDown">Descida Rápida</string>
     <string name="FortyFiveDown">Descida Lenta</string>
     <string name="Flat">Estável</string>
     <string name="FortyFiveUp">Subida Lenta</string>
     <string name="SingleUp">Subida Rápida</string>
-    <string name="DoubleUp">Subindo Rapidamente</string>
+    <string name="DoubleUp">Subir Rapidamente</string>
     <string name="Speak_trend_arrow_name">Ler seta de tendência</string>
     <string name="Speak_everything_twice">Falar tudo duas vezes</string>
     <string name="Speech_speed">Velocidade da fala</string>
