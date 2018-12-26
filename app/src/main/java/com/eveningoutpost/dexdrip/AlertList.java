@@ -285,7 +285,7 @@ public class AlertList extends ActivityWithMenu {
                     android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     != PackageManager.PERMISSION_GRANTED) {
                 final Activity activity = this;
-                JoH.show_ok_dialog(activity, "Please Allow Permission", msg, () -> ActivityCompat.requestPermissions(activity,
+                JoH.show_ok_dialog(activity, getApplicationContext().getString(R.string.please_allow_permission), msg, () -> ActivityCompat.requestPermissions(activity,
                         new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_STORAGE));
                 return false;
             }

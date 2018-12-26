@@ -879,7 +879,7 @@ public class EditAlertActivity extends ActivityWithMenu {
                     android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     != PackageManager.PERMISSION_GRANTED) {
                 final Activity activity = this;
-                JoH.show_ok_dialog(activity, "Please Allow Permission", "Need storage permission to access all ringtones", new Runnable() {
+                JoH.show_ok_dialog(activity, getApplicationContext().getString(R.string.please_allow_permission), "Need storage permission to access all ringtones", new Runnable() {
                     @Override
                     public void run() {
                         ActivityCompat.requestPermissions(activity,

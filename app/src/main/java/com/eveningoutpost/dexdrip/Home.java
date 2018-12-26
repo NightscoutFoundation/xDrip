@@ -644,7 +644,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
                 if (((dialog == null) || (!dialog.isShowing()))
                         && (PersistentStore.incrementLong("asked_battery_optimization") < 40)) {
-                    JoH.show_ok_dialog(this, "Please Allow Permission", "xDrip+ needs whitelisting for proper performance", new Runnable() {
+                    JoH.show_ok_dialog(this, getApplicationContext().getString(R.string.please_allow_permission), "xDrip+ needs whitelisting for proper performance", new Runnable() {
 
                         @RequiresApi(api = Build.VERSION_CODES.M)
                         @Override

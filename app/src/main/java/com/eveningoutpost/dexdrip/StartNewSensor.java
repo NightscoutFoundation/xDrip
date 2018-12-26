@@ -79,7 +79,7 @@ public class StartNewSensor extends ActivityWithMenu {
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && DexCollectionType.hasBluetooth()) {
                     if (!LocationHelper.locationPermission(StartNewSensor.this)) {
-                        JoH.show_ok_dialog(activity, "Please Allow Permission", "Location permission needed to use Bluetooth!", new Runnable() {
+                        JoH.show_ok_dialog(activity, getApplicationContext().getString(R.string.please_allow_permission), getApplicationContext().getString(R.string.location_permission_needed_to_use_bluetooth), new Runnable() {
                             @Override
                             public void run() {
                                 activity.requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 0);
@@ -101,9 +101,9 @@ public class StartNewSensor extends ActivityWithMenu {
 
         ucalendar = Calendar.getInstance();
         final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-        builder.setTitle("Did you insert it today?");
-        builder.setMessage("We need to know when the sensor was inserted to improve calculation accuracy.\n\nWas it inserted today?");
-        builder.setPositiveButton("YES, today", new DialogInterface.OnClickListener() {
+        builder.setTitle(getApplicationContext().getString(R.string.did_you_insert_it_today));
+        builder.setMessage(getApplicationContext().getString(R.string.we_need_to_know_when_the_sensor_was_inserted_to_improve_calculation_accuracy__was_it_inserted_today));
+        builder.setPositiveButton(getApplicationContext().getString(R.string.yes_today), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
                 askSesorInsertionTime();
@@ -121,7 +121,7 @@ public class StartNewSensor extends ActivityWithMenu {
                     if (!Home.get_engineering_mode()) {
                         datePickerFragment.setEarliestDate(JoH.tsl() - (30L * 24 * 60 * 60 * 1000)); // 30 days
                     }
-                    datePickerFragment.setTitle("Which day was it inserted?");
+                    datePickerFragment.setTitle(getApplicationContext().getString(R.string.which_day_was_it_inserted));
                     datePickerFragment.setDateCallback(new ProfileAdapter.DatePickerCallbacks() {
                         @Override
                         public void onDateSet(int year, int month, int day) {
@@ -147,7 +147,7 @@ public class StartNewSensor extends ActivityWithMenu {
 
         TimePickerFragment timePickerFragment = new TimePickerFragment();
         timePickerFragment.setTime(calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE));
-        timePickerFragment.setTitle("What time was it inserted?");
+        timePickerFragment.setTitle(getApplicationContext().getString(R.string.what_time_was_it_inserted));
         timePickerFragment.setTimeCallback(new ProfileAdapter.TimePickerCallbacks() {
             @Override
             public void onTimeUpdated(int newmins) {
@@ -177,7 +177,7 @@ public class StartNewSensor extends ActivityWithMenu {
         Sensor.create(startTime);
         UserError.Log.ueh("NEW SENSOR", "Sensor started at " + JoH.dateTimeText(startTime));
 
-        JoH.static_toast_long("NEW SENSOR STARTED");
+        JoH.static_toast_long(xdrip.getAppContext().getString(R.string.new_sensor_started));
 
         startWatchUpdaterService(xdrip.getAppContext(), WatchUpdaterService.ACTION_SYNC_SENSOR, TAG);
 
@@ -201,7 +201,7 @@ public class StartNewSensor extends ActivityWithMenu {
         Log.d(TAG, "Starting sensor time: " + JoH.dateTimeText(ucalendar.getTime().getTime()));
 
         if (new Date().getTime() + 15 * 60000 < startTime) {
-            Toast.makeText(this, "ERROR: SENSOR START TIME IN FUTURE", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getApplicationContext().getString(R.string.error_sensor_start_time_in_future), Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -248,7 +248,7 @@ public class StartNewSensor extends ActivityWithMenu {
               Sensor.create(startTime);
               Log.d("NEW SENSOR", "Sensor started at " + startTime);
 
-              Toast.makeText(getApplicationContext(), "NEW SENSOR STARTED", Toast.LENGTH_LONG).show();
+              Toast.makeText(getApplicationContext(), getApplicationContext().getString(R.string.new_sensor_started), Toast.LENGTH_LONG).show();
               CollectionServiceStarter.newStart(getApplicationContext());
               SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
               Intent intent;
