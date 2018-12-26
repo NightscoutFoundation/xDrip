@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
     <string name="title_activity_bluetooth_scan">Bluetooth Scan</string>
@@ -1145,4 +1145,12 @@
     <string name="choose_data_source">Choose Data Source</string>
     <string name="which_system_do_you_use">Which system do you use?</string>
 
+    <string name="location_permission_needed_to_use_bluetooth">Location permission needed to use Bluetooth!</string>
+    <string name="did_you_insert_it_today">Did you insert it today?</string>
+    <string name="we_need_to_know_when_the_sensor_was_inserted_to_improve_calculation_accuracy__was_it_inserted_today">We need to know when the sensor was inserted to improve calculation accuracy.\n\nWas it inserted today?</string>
+    <string name="yes_today">YES, today</string>
+    <string name="which_day_was_it_inserted">Which day was it inserted?</string>
+    <string name="what_time_was_it_inserted">What time was it inserted?</string>
+    <string name="new_sensor_started">NEW SENSOR STARTED</string>
+    <string name="error_sensor_start_time_in_future">ERROR: SENSOR START TIME IN FUTURE</string>
 </resources>
