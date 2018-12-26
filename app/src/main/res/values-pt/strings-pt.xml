@@ -518,7 +518,7 @@
     <string name="display_ideal_glucose_target_line">Mostrar linha de glicemia ideal</string>
     <string name="display_eight_hour_average_line">Mostrar linha da média de 8 horas</string>
     <string name="display_twenty_four_hour_average_line">Mostrar linha da média de 24 horas</string>
-    <string name="predictive_model_inner_workings">Modelo interno de Previsão</string>
+    <string name="predictive_model_inner_workings">Modelo Interno de Previsão</string>
     <string name="noise_model_inner_workings">Funcionamento do modelo de leituras irregulares (noise)</string>
     <string name="glucose_number_from_filtered">Valores glicémicos Filtrados</string>
     <string name="if_the_phone_has_text_to_speech">Se o telefone tiver capacidade texto-para-voz, o resultado será falado.</string>
@@ -767,7 +767,7 @@
     <string name="need_alternate_language">Se precisar de uma tradução de idioma alternativo dentro de xDrip +</string>
     <string name="chosse_language">Escolher um Idioma específico</string>
     <string name="widget_range_lines">Linhas do Intervalo no Widget</string>
-    <string name="show_range_on_widget">Mostrar linha de valor alto e baixo no widget.</string>
+    <string name="show_range_on_widget">Mostrar linha de hiper e hipo no widget.</string>
     <string name="delayed_but_more_stable">Com atraso mas mais estável quando com ruído (noisy) (não recomendado)</string>
     <string name="show_bolus_wizard_preview">Mostrar Pré-Visualização do Assistente de Bólus</string>
     <string name="display_calculations">Mostrar Cálculos Insulina/Hidratos</string>
