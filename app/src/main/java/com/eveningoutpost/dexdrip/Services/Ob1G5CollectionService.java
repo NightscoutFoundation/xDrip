@@ -49,6 +49,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.StatusItem.Highlight;
 import com.eveningoutpost.dexdrip.UtilityModels.WholeHouse;
 import com.eveningoutpost.dexdrip.ui.helpers.Span;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
+import com.eveningoutpost.dexdrip.utils.framework.WakeLockTrampoline;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.common.collect.Sets;
 import com.polidea.rxandroidble.RxBleClient;
@@ -816,7 +817,8 @@ public class Ob1G5CollectionService extends G5BaseService {
         if (future <= 0) future = 5000;
         UserError.Log.d(TAG, "Scheduling wakeup @ " + JoH.dateTimeText(JoH.tsl() + future) + " (" + info + ")");
         if (pendingIntent == null)
-            pendingIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), 0);
+           //pendingIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), 0);
+            pendingIntent = WakeLockTrampoline.getPendingIntent(this.getClass());
         wakeup_time = JoH.tsl() + future;
         JoH.wakeUpIntent(this, future, pendingIntent);
     }
