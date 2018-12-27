@@ -850,13 +850,13 @@
     <string name="play_sound_when_ready_for_calibration">Tocar som quando pronto para Calibração</string>
     <string name="receiving_data_from_collector">A Receber Dados do %s Dispositivo BT</string>
     <!-- trend arrow for speak -->
-    <string name="DoubleDown">Descer Rapidamente</string>
-    <string name="SingleDown">Descida Rápida</string>
-    <string name="FortyFiveDown">Descida Lenta</string>
+    <string name="DoubleDown">A Descer Rapidamente</string>
+    <string name="SingleDown">A Descer Rápido</string>
+    <string name="FortyFiveDown">A Descer Lento</string>
     <string name="Flat">Estável</string>
-    <string name="FortyFiveUp">Subida Lenta</string>
-    <string name="SingleUp">Subida Rápida</string>
-    <string name="DoubleUp">Subir Rapidamente</string>
+    <string name="FortyFiveUp">A Subir Lento</string>
+    <string name="SingleUp">A Subir Rápido</string>
+    <string name="DoubleUp">A Subir Rapidamente</string>
     <string name="Speak_trend_arrow_name">Ler seta de tendência</string>
     <string name="Speak_everything_twice">Falar tudo duas vezes</string>
     <string name="Speech_speed">Velocidade da fala</string>
