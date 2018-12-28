@@ -5,6 +5,7 @@ import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
+import android.support.annotation.StringRes;
 import android.text.SpannableString;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
@@ -45,7 +46,7 @@ public class MtpConfigure {
         status = msg;
     }
 
-    private static void msg(final int id) {
+    private static void msg(@StringRes final int id) {
         msg(xdrip.gs(id));
     }
 
@@ -54,7 +55,7 @@ public class MtpConfigure {
         error = true;
     }
 
-    private static void err(final int id) {
+    private static void err(@StringRes final int id) {
         err(xdrip.gs(id));
     }
 
