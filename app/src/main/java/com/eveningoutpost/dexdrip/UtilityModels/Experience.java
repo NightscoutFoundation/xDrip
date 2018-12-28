@@ -3,6 +3,7 @@ package com.eveningoutpost.dexdrip.UtilityModels;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.support.annotation.StringRes;
 
 import com.eveningoutpost.dexdrip.BuildConfig;
 import com.eveningoutpost.dexdrip.Home;
@@ -162,7 +163,7 @@ public class Experience {
         return false;
     }
 
-    private static String getString(final int id) {
+    private static String getString(@StringRes final int id) {
         return xdrip.gs(id);
     }
 
