@@ -39,6 +39,9 @@ class TidepoolCallback<T> implements Callback<T> {
             final String msg = name + " was not successful: " + response.code() + " " + response.message();
             UserError.Log.e(TidepoolUploader.TAG, msg);
             status(msg);
+            if (onFailure != null) {
+                onFailure.run();
+            }
         }
     }
 
