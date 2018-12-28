@@ -7,6 +7,7 @@ import android.content.ContextWrapper;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.annotation.StringRes;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
@@ -223,11 +224,11 @@ public class xdrip extends Application {
     }
 
 
-    public static String gs(int id) {
+    public static String gs(@StringRes final int id) {
         return getAppContext().getString(id);
     }
 
-    public static String gs(int id, String... args) {
+    public static String gs(@StringRes final int id, String... args) {
         return getAppContext().getString(id, (Object[]) args);
     }
 
