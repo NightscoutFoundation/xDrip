@@ -40,6 +40,7 @@ import com.eveningoutpost.dexdrip.cgm.medtrum.messages.TimeTx;
 import com.eveningoutpost.dexdrip.utils.BtCallBack;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.DisconnectReceiver;
+import com.eveningoutpost.dexdrip.utils.framework.WakeLockTrampoline;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.polidea.rxandroidble.RxBleClient;
 import com.polidea.rxandroidble.RxBleConnection;
@@ -58,6 +59,8 @@ import static com.eveningoutpost.dexdrip.Models.JoH.msSince;
 import static com.eveningoutpost.dexdrip.Models.JoH.msTill;
 import static com.eveningoutpost.dexdrip.Models.JoH.quietratelimit;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.HOUR_IN_MS;
+import static com.eveningoutpost.dexdrip.UtilityModels.Constants.MEDTRUM_SERVICE_FAILOVER_ID;
+import static com.eveningoutpost.dexdrip.UtilityModels.Constants.MEDTRUM_SERVICE_RETRY_ID;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.MINUTE_IN_MS;
 import static com.eveningoutpost.dexdrip.cgm.medtrum.Const.CGM_CHARACTERISTIC_INDICATE;
 import static com.eveningoutpost.dexdrip.cgm.medtrum.Const.OPCODE_AUTH_REPLY;
@@ -949,8 +952,9 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
         if (shouldServiceRun()) {
             final long retry_in = whenToRetryNext();
             UserError.Log.d(TAG, "setRetryTimer: Restarting in: " + (retry_in / Constants.SECOND_IN_MS) + " seconds");
-            serviceIntent = PendingIntent.getService(this, Constants.MEDTRUM_SERVICE_RETRY_ID,
-                    new Intent(this, this.getClass()), 0);
+            // serviceIntent = PendingIntent.getService(this, MEDTRUM_SERVICE_RETRY_ID,
+            //         new Intent(this, this.getClass()), 0);
+            serviceIntent = WakeLockTrampoline.getPendingIntent(this.getClass(), MEDTRUM_SERVICE_RETRY_ID);
             retry_time = JoH.wakeUpIntent(this, retry_in, serviceIntent);
             wakeup_time = JoH.tsl() + retry_in;
         } else {
@@ -963,8 +967,9 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
             if (quietratelimit("mt-failover-cooldown", 30)) {
                 final long retry_in = Constants.MINUTE_IN_MS * 7;
                 UserError.Log.d(TAG, "setFailOverTimer: Restarting in: " + (retry_in / Constants.SECOND_IN_MS) + " seconds");
-                serviceFailoverIntent = PendingIntent.getService(this, Constants.MEDTRUM_SERVICE_FAILOVER_ID,
-                        new Intent(this, this.getClass()), 0);
+             //   serviceFailoverIntent = PendingIntent.getService(this, MEDTRUM_SERVICE_FAILOVER_ID,
+             //           new Intent(this, this.getClass()), 0);
+                serviceFailoverIntent = WakeLockTrampoline.getPendingIntent(this.getClass(), MEDTRUM_SERVICE_FAILOVER_ID);
                 failover_time = JoH.wakeUpIntent(this, retry_in, serviceFailoverIntent);
             }
         } else {
