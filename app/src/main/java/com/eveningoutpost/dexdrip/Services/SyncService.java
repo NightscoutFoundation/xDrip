@@ -7,9 +7,8 @@ import android.content.Intent;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
-import com.eveningoutpost.dexdrip.UtilityModels.UploaderTask;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
-import com.eveningoutpost.dexdrip.utils.framework.WakeLockTrampoline;
+import com.eveningoutpost.dexdrip.UtilityModels.UploaderTask;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.SYNC_QUEUE_RETRY_ID;
@@ -47,8 +46,7 @@ public class SyncService extends IntentService {
         if (delay == 0) {
             xdrip.getAppContext().startService(new Intent(xdrip.getAppContext(), SyncService.class));
         } else {
-          // final PendingIntent serviceIntent = PendingIntent.getService(xdrip.getAppContext(), SYNC_QUEUE_RETRY_ID, new Intent(xdrip.getAppContext(), SyncService.class), PendingIntent.FLAG_CANCEL_CURRENT);
-            final PendingIntent serviceIntent = WakeLockTrampoline.getPendingIntent(SyncService.class, SYNC_QUEUE_RETRY_ID);
+            final PendingIntent serviceIntent = PendingIntent.getService(xdrip.getAppContext(), SYNC_QUEUE_RETRY_ID, new Intent(xdrip.getAppContext(), SyncService.class), PendingIntent.FLAG_CANCEL_CURRENT);
             JoH.wakeUpIntent(xdrip.getAppContext(), delay, serviceIntent);
         }
     }
