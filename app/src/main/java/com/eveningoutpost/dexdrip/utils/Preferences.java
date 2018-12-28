@@ -68,6 +68,7 @@ import com.eveningoutpost.dexdrip.WidgetUpdateService;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileEditor;
 import com.eveningoutpost.dexdrip.tidepool.TidepoolUploader;
+import com.eveningoutpost.dexdrip.tidepool.UploadChunk;
 import com.eveningoutpost.dexdrip.ui.LockScreenWallPaper;
 import com.eveningoutpost.dexdrip.watch.lefun.LeFunEntry;
 import com.eveningoutpost.dexdrip.wearintegration.Amazfitservice;
@@ -1438,6 +1439,11 @@ public class Preferences extends BasePreferenceActivity {
             final NamedSliderProcessor processor = new BgToSpeech();
             bindPreferenceTitleAppendToIntegerValueFromLogSlider(findPreference("speak_readings_change_time"), processor, "time", false);
             bindPreferenceTitleAppendToIntegerValueFromLogSlider(findPreference("speak_readings_change_threshold"), processor, "threshold", true);
+
+
+            final NamedSliderProcessor tidepoolProcessor = new UploadChunk();
+            bindPreferenceTitleAppendToIntegerValueFromLogSlider(findPreference("tidepool_window_latency"), tidepoolProcessor, "latency", false);
+
 
             wifiRecievers.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override

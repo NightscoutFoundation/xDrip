@@ -266,7 +266,16 @@
                     android:title="Login Password" />
                 <Preference
                     android:key="tidepool_test_login"
-                    android:title="Test Tidepool Login"></Preference>
+                    android:title="Test Tidepool Login" />
+                <SeekBarPreference
+                    android:key="tidepool_window_latency"
+                    android:dependency="cloud_storage_tidepool_enable"
+                    android:title="Data Age Mins"
+                    android:summary=""
+                    android:max="300"
+                    android:min="0"
+                    android:defaultValue="0" />
+             
 
             </PreferenceScreen>
         </PreferenceScreen>
