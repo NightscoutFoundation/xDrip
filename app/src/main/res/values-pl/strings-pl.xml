@@ -40,7 +40,6 @@
     <string name="scan_share2_barcode">Skanowanie kodów kreskowych Share</string>
     <string name="pref_share2_scan_barcode_summary">Lub zeskanować kod kreskowy na odbiorniku share</string>
     <!-- MongoDB Settings -->
-    <string name="pref_summary_mongodb_enabled">Jeśli używasz MongoLab i Azure to powinno być włączone</string>
     <string name="pref_dialog_mongodb_uri">Wprowadź MongoDB URI\"</string>
     <string name="pref_message_mongodb_uri">Zamoeń przykładowe wartości w {} \' swoimi prawdziwymi wartościami</string>
     <string name="pref_default_mongodb_uri">MongoDB: // {user}: {hasło} @ {} .mongolab.com hosta: {11111} / {} baza</string>
@@ -53,7 +52,6 @@
     <!-- API Settings -->
     <string name="pref_title_api">Prześlij API (REST)</string>
     <string name="pref_title_api_enabled">Włączone</string>
-    <string name="pref_summary_api_enabled">REST API stanowi alternatywę dla bezpośredniego przesyłania do MongoDB</string>
     <string name="pref_title_api_url">Głowny Adres URL</string>
     <string name="pref_dialog_api_url">Wprowadź główny adres API URL</string>
     <string name="pref_message_api_url">To tylko główny adres URL, uploader automatycznie dołączy / wpisy na odpowiednim miejscu. API_SECRET na serwerze powinien być taki sam jak yourpassphrase w tym ustawieniu.</string>
