@@ -40,7 +40,6 @@
     <string name="scan_share2_barcode">Skan Delingsstrekkode</string>
     <string name="pref_share2_scan_barcode_summary">Eller skanne strekkoden på mottakeren</string>
     <!-- MongoDB Settings -->
-    <string name="pref_summary_mongodb_enabled">Hvis du bruker MongoLab og Azure dette må være aktivert</string>
     <string name="pref_dialog_mongodb_uri">Skriv MongoDB URI\"</string>
     <string name="pref_message_mongodb_uri">Erstatt eksempelverdier i {}ene med dine riktige verdier</string>
     <string name="pref_title_mongodb_collection">Samlingsnavn</string>
@@ -52,7 +51,6 @@
     <!-- API Settings -->
     <string name="pref_title_api">Nightscout-synkronisering (REST)</string>
     <string name="pref_title_api_enabled">Aktivert</string>
-    <string name="pref_summary_api_enabled">REST API er et alternativ til direkte mongodb-opplasting</string>
     <string name="pref_title_api_url">Base-URL</string>
     <string name="pref_dialog_api_url">Skriv inn Base-URL for API</string>
     <string name="pref_message_api_url">Dette er bare Base-URL, opplaster vil automatisk legge til /oppføringer for POST. API_SECRET på serveren skal samsvare med yourpassphrase i denne innstillingen.</string>
