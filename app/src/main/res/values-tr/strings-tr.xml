@@ -42,7 +42,6 @@
     <string name="pref_share2_scan_barcode_summary">Veya share receiver\'dan barkodu tarayın</string>
     <!-- MongoDB Settings -->
     <string name="pref_title_mongodb">MongoDB</string>
-    <string name="pref_summary_mongodb_enabled">MongoLab ve Azure kullanıyorsanız bu etkinleştirilmelidir</string>
     <string name="pref_title_mongodb_uri">URI</string>
     <string name="pref_dialog_mongodb_uri">MongoDB URI Girin\"</string>
     <string name="pref_message_mongodb_uri">{}\'in İçerisindeki örnek değerleri sizin kendi doğru değerlerinizle değiştirin</string>
@@ -56,7 +55,6 @@
     <!-- API Settings -->
     <string name="pref_title_api">Nightscout Senkronizasyonu (REST-API)</string>
     <string name="pref_title_api_enabled">Etkin</string>
-    <string name="pref_summary_api_enabled">REST API, mongodb yüklemesine doğrudan bir alternatiftir</string>
     <string name="pref_title_api_url">Temel URL</string>
     <string name="pref_dialog_api_url">Temel API URL adresine girin</string>
     <string name="pref_message_api_url">Bu URL sadece, yükleyici POST için otomatik olarak / girdiler ekleyecektir. Sunucudaki API_SECRET, bu ayardaki parolanızla eşleşmelidir.</string>
