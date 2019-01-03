@@ -35,7 +35,6 @@
     <string name="scan_share2_barcode">Scan Share Viivakoodi</string>
     <string name="pref_share2_scan_barcode_summary">Tai viivakoodi osakkeen vastaanotin</string>
     <!-- MongoDB Settings -->
-    <string name="pref_summary_mongodb_enabled">Jos käytät MongoLab ja Azure tämän pitäisi olla käytössä</string>
     <string name="pref_dialog_mongodb_uri">Anna MongoDB URI\"</string>
     <string name="pref_message_mongodb_uri">Korvaa esimerkiksi arvot {} \'s oikeat arvot</string>
     <string name="pref_default_mongodb_uri">MongoDB: // {käyttäjä}: {salasana} @ {isäntä} .mongolab.com: {11111} / {tietokanta}</string>
@@ -48,7 +47,6 @@
     <!-- API Settings -->
     <string name="pref_title_api">API Upload (REST)</string>
     <string name="pref_title_api_enabled">Käytössä</string>
-    <string name="pref_summary_api_enabled">REST API on vaihtoehto suoralle MongoDB upload</string>
     <string name="pref_title_api_url">Perus-URL</string>
     <string name="pref_dialog_api_url">Anna Base API URL</string>
     <string name="pref_message_api_url">Tämä vain pohja URL, lataaja automaattisesti liittää / merkinnät POST. API_SECRET palvelimen pitäisi vastata yourpassphrase tässä asetelmassa.</string>
