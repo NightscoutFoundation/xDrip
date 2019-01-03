@@ -42,7 +42,6 @@
     <string name="pref_share2_scan_barcode_summary">或者在共享接收器上扫描二维码</string>
     <!-- MongoDB Settings -->
     <string name="pref_title_mongodb">MongoDB</string>
-    <string name="pref_summary_mongodb_enabled">如果你正在使用的是 MongoLab 和 Azure, 应该启用此选项</string>
     <string name="pref_title_mongodb_uri">URI</string>
     <string name="pref_dialog_mongodb_uri">输入 MongoDB URI \"</string>
     <string name="pref_message_mongodb_uri">用正确的值替换 {} 中的示例值</string>
@@ -56,7 +55,6 @@
     <!-- API Settings -->
     <string name="pref_title_api">Nightscout 同步设置 (REST-API)</string>
     <string name="pref_title_api_enabled">启用</string>
-    <string name="pref_summary_api_enabled">REST API是直接上传mongodb的替代方法</string>
     <string name="pref_title_api_url">远程网址基本URL</string>
     <string name="pref_dialog_api_url">输入远程网址基本URL和 密钥API </string>
     <string name="pref_message_api_url">这只是基本URL，上传者会自动附加/输入POST。 服务器上的API_SECRET应该与此设置中的密钥匹配.</string>
