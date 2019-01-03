@@ -39,7 +39,6 @@
     <string name="scan_share2_barcode">Skenovat čárový kód na přijímači</string>
     <string name="pref_share2_scan_barcode_summary">Nebo naskenovat čárový kód na přijímači</string>
     <!-- MongoDB Settings -->
-    <string name="pref_summary_mongodb_enabled">Pokud používáte MongoLab a Azure toto by mělo být umožněno</string>
     <string name="pref_dialog_mongodb_uri">Vložte MongoDB URI\"</string>
     <string name="pref_message_mongodb_uri">Přepište příklady {} skutečnými hodnotami. Složené závorky odstraňte.</string>
     <string name="pref_default_mongodb_uri">mongodb://{uzivatel}:{heslo}@{dsXXXXXX}.mongolab.com:{XXXXXXX}/{databaze}</string>
@@ -52,7 +51,6 @@
     <!-- API Settings -->
     <string name="pref_title_api">Nahrávání přes API (REST)</string>
     <string name="pref_title_api_enabled">Povoleno</string>
-    <string name="pref_summary_api_enabled">REST API je alternativou k přímému MongoDB nahrávání</string>
     <string name="pref_title_api_url">Základní URL</string>
     <string name="pref_dialog_api_url">Základní URL serveru</string>
     <string name="pref_message_api_url">Toto je pouze základní adresa. Uploader automaticky přidá na konec / pro nahrání dat. API_SECRET a na serveru musí odpovídat vasapisecret nastavení.</string>
