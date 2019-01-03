@@ -39,7 +39,6 @@
     <string name="scan_share2_barcode">Numériser Partager Barcode</string>
     <string name="pref_share2_scan_barcode_summary">Ou scanner le code-barres sur le récepteur partagé</string>
     <!-- MongoDB Settings -->
-    <string name="pref_summary_mongodb_enabled">Si vous utilisez MongoLab et Azure ceci doit être activé</string>
     <string name="pref_dialog_mongodb_uri">Entrez MongoDB URI\"</string>
     <string name="pref_message_mongodb_uri">Remplacer les valeurs exemples dans {} avec vos valeurs correctes</string>
     <string name="pref_default_mongodb_uri">mongodb://{user}:{password}@ {host}.mongolab.com:{11111}/{base de données}</string>
@@ -52,7 +51,6 @@
     <!-- API Settings -->
     <string name="pref_title_api">Synchronisation Nightscout (REST-API)</string>
     <string name="pref_title_api_enabled">Activée</string>
-    <string name="pref_summary_api_enabled">L\'API REST est une alternative pour diriger le téléchargement mongodb</string>
     <string name="pref_title_api_url">URL de base</string>
     <string name="pref_dialog_api_url">Entrez l\'API URL de base</string>
     <string name="pref_message_api_url">Cela ne l\'URL de base, le téléchargeur ajoutera automatiquement / entrées pour le POST. API_SECRET sur le serveur doit correspondre à yourpassphrase dans ce cadre.</string>
