@@ -41,7 +41,6 @@
     <string name="scan_share2_barcode">스캔 공유 바코드</string>
     <string name="pref_share2_scan_barcode_summary">With share receiver의 바코드를 스캔</string>
     <!-- MongoDB Settings -->
-    <string name="pref_summary_mongodb_enabled">MongoLab과 Azure를 사용하는 경우이 이를 활성화 해야 합니다.</string>
     <string name="pref_dialog_mongodb_uri">입력 MongoDB를 URI\"</string>
     <string name="pref_message_mongodb_uri">올바른 값} {에서의 예를 값을 교체</string>
     <string name="pref_dialog_mongodb_collection">Collection name 입력</string>
@@ -51,7 +50,6 @@
     <!-- API Settings -->
     <string name="pref_title_api">API Upload (REST)</string>
     <string name="pref_title_api_enabled">사용</string>
-    <string name="pref_summary_api_enabled">REST API는 MongoDB에 직접 업로드를 하기 위한 것입니다.</string>
     <string name="pref_dialog_api_url">Base API URL 입력</string>
     <string name="pref_message_api_url">Base URL는 POST하기 위해 자동으로 /를 붙여 줍니다. 서버의 API_SECRET는 세팅의 yourpassphrase와 일치해야합니다.</string>
     <!-- wifi Settings -->
