@@ -65,7 +65,7 @@
     <string name="wifi_recievers_dialog_message">Lista separada por vírgula de ip:port (por exemplo 37.142.132.220:50005,37.142.132.220:50010,mongodb://user:pass@ds053958.mongolab.com:53958/db/collection)</string>
     <string name="wifi_recievers_dialog_title">Introduza os endereços IP e portas de receptores (incluindo endereços MongoDB se necessário)</string>
     <!-- Location Settings -->
-    <string name="location_not_found_title">Localização não está activada</string>
+    <string name="location_not_found_title">Localização Não Está Activada</string>
     <string name="location_not_found_message">Para que a descoberta do Bluetooth funcione em dispositivos mais recentes, a localização tem que ser activada. O xDrip não rastreia a sua localização excepto na função de Mensagem de Emergência</string>
     <string name="location_yes">Activar</string>
     <!-- broadcast settings -->
