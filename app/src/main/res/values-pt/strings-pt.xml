@@ -42,7 +42,6 @@
     <string name="pref_share2_scan_barcode_summary">Ou ler o código de barras no receptor de partilha</string>
     <!-- MongoDB Settings -->
     <string name="pref_title_mongodb">MongoDB</string>
-    <string name="pref_summary_mongodb_enabled">Se utiliza MongoLab e Azure isto deve estar ligado</string>
     <string name="pref_title_mongodb_uri">URL</string>
     <string name="pref_dialog_mongodb_uri">Introduza MongoDB URL\"</string>
     <string name="pref_message_mongodb_uri">Substituir valores exemplo em {} pelos seus valores</string>
@@ -56,7 +55,6 @@
     <!-- API Settings -->
     <string name="pref_title_api">Sincronização Nightscout (REST-API)</string>
     <string name="pref_title_api_enabled">Activado</string>
-    <string name="pref_summary_api_enabled">A API REST é uma alternativa à inserção direta no mongodb</string>
     <string name="pref_title_api_url">URL base</string>
     <string name="pref_dialog_api_url">Introduza URL base da API</string>
     <string name="pref_message_api_url">Isto é apenas o URL base, o uploader acrescentará automaticamente /entries para o POST. O API_SECRET no servidor deverá ser igual à suapalavrapasse nesta definição.</string>
