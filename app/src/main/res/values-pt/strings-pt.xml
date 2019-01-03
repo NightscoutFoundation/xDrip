@@ -106,10 +106,10 @@
     <string name="erase">Eliminar</string>
     <string name="interface_tips_from_start">Todas as dicas de interface serão mostradas desde o início</string>
     <string name="note_button">Botão de Nota</string>
-    <string name="showcase_note_long">O botão de Nota agora pede entrada de voz.\n\nPressione longo para introduzir com o teclado ou alterar opções.</string>
-    <string name="redo_button">Refazer botão</string>
+    <string name="showcase_note_long">O Botão de Nota agora pede entrada de voz.\n\nPressione para introduzir com o teclado ou alterar opções.</string>
+    <string name="redo_button">Botão para Refazer</string>
     <string name="showcase_redo">O botão Refazer pode aplicar acções feitas pelo Simulador de Tratamento, Calibrações e Notas\n\n Após 30 minutos vai esconder-se novamente</string>
-    <string name="undo_button">Botão Desfazer</string>
+    <string name="undo_button">Botão para Desfazer</string>
     <string name="showcase_undo">O botão Desfazer pode cancelar acções do Simulador de Tratamento, Calibrações e Notas\n\nApós 30 minutos vai esconder-se novamente</string>
     <string name="add_note">Adicionar Nota</string>
     <string name="blood_test">Teste com gota de sangue</string>
