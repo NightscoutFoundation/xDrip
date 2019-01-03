@@ -41,7 +41,6 @@
     <string name="scan_share2_barcode">Scanează cod de bare partajat</string>
     <string name="pref_share2_scan_barcode_summary">Sau scanează codul de bare de pe dispozitivul asociat</string>
     <!-- MongoDB Settings -->
-    <string name="pref_summary_mongodb_enabled">Dacă folosești MongoLab și Azure, această opțiune trebuie activată</string>
     <string name="pref_dialog_mongodb_uri">Introdu MongoDB URI\"</string>
     <string name="pref_message_mongodb_uri">Înlocuiește valorile date ca exemplu dintre acolade ({}) cu valorile tale</string>
     <string name="pref_default_mongodb_uri">mongodb://{utilizator}:{parola}@{adresa}.mongolab.com:{11111}/{database}</string>
@@ -54,7 +53,6 @@
     <!-- API Settings -->
     <string name="pref_title_api">Încărcare API (REST)</string>
     <string name="pref_title_api_enabled">Activat</string>
-    <string name="pref_summary_api_enabled">API-ul REST este o soluție de direcționare a încărcării mongodb</string>
     <string name="pref_title_api_url">Adresa URL de bază</string>
     <string name="pref_dialog_api_url">Introdu adresa URL de bază pentru API</string>
     <string name="pref_message_api_url">Aceasta este doar adresa URL de bază. Utilizatorul care încarcă va atașa automat parametrii / pentru POST.  Valoarea API_SECRET de pe server trebuie să fie aceeași cu parola din această setare.</string>
