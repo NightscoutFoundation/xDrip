@@ -42,6 +42,7 @@
     <string name="pref_share2_scan_barcode_summary">Ou ler o código de barras no receptor de partilha</string>
     <!-- MongoDB Settings -->
     <string name="pref_title_mongodb">MongoDB</string>
+    <string name="pref_summary_mongodb_enabled">Carregamento directo da base de dados, não recomendado para Nightscout</string>
     <string name="pref_title_mongodb_uri">URL</string>
     <string name="pref_dialog_mongodb_uri">Introduza MongoDB URL\"</string>
     <string name="pref_message_mongodb_uri">Substituir valores exemplo em {} pelos seus valores</string>
@@ -55,6 +56,7 @@
     <!-- API Settings -->
     <string name="pref_title_api">Sincronização Nightscout (REST-API)</string>
     <string name="pref_title_api_enabled">Activado</string>
+    <string name="pref_summary_api_enabled">A REST API é a maneira padrão para se ligar ao Nightscout</string>
     <string name="pref_title_api_url">URL base</string>
     <string name="pref_dialog_api_url">Introduza URL base da API</string>
     <string name="pref_message_api_url">Isto é apenas o URL base, o uploader acrescentará automaticamente /entries para o POST. O API_SECRET no servidor deverá ser igual à suapalavrapasse nesta definição.</string>
@@ -287,7 +289,7 @@
     <string name="insulin_sensitivity_glucose_drop_per_unit">Sensibilidade à insulina: queda de glicose por Unidade</string>
     <string name="transmitter_battery">bateria do transmissor</string>
     <string name="very_low">MUITO BAIXO</string>
-    <string name="low">baixa</string>
+    <string name="low">hipo</string>
     <string name="space_units">" Unidades"</string>
     <string name="units">unidades</string>
     <string name="carbs">hidratos</string>
@@ -499,7 +501,7 @@
     <string name="create_high_alert">Criar alerta Hiper</string>
     <string name="long_press_an_existing_alert_to_edit">(Pressionar longamente num alerta existente para editar)</string>
     <string name="adding">A adicionar</string>
-    <string name="high">Hiper</string>
+    <string name="high">hiper</string>
     <string name="alert">alerta</string>
     <string name="high_alert">Alerta Hiper</string>
     <string name="low_alert">Alerta Hipo</string>
