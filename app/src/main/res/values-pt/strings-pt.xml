@@ -313,7 +313,7 @@
     <string name="default_snooze">Silêncio Pré-definido</string>
     <string name="until_you_reenable">Até serem re-activados</string>
     <string name="set">Definir</string>
-    <string name="disable_low_alerts">Desactivar alertas de Hipo</string>
+    <string name="disable_low_alerts">Desactivar Alertas de Hipo</string>
     <string name="re_enable_low_alerts">Re-Activar Alertas de Hipo</string>
     <string name="disable_high_alerts">Desactivar Alertas de Hiper</string>
     <string name="re_enable_high_alerts">Re-Activar Alertas de Hiper</string>
