@@ -20,6 +20,10 @@ public class FastStore implements KeyStore {
 
     // we trade substitution flexibility at the expense of some object creation
 
+    private FastStore() {
+        // use getInstance!
+    }
+
     public static FastStore getInstance() {
         return mFastStore;
     }

@@ -11,6 +11,7 @@ import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Prediction;
 import com.eveningoutpost.dexdrip.Models.Sensor;
+import com.eveningoutpost.dexdrip.Models.SensorSanity;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
@@ -1200,7 +1201,7 @@ public class Ob1G5StateMachine {
             // TODO timeInMillisecondsOfLastSuccessfulSensorRead = captureTime;
         }
 
-        if (transmitterData.unchangedRaw()) {
+        if (transmitterData.unchangedRaw() && !SensorSanity.allowTestingWithDeadSensor()) {
             UserError.Log.wtf(TAG, "Raw values are not changing - blocking further processing: " + raw_data + " " + filtered_data);
             return;
         }

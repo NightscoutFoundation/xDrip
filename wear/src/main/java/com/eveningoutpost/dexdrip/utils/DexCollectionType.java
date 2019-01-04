@@ -150,7 +150,7 @@ public enum DexCollectionType {
         return getCollectorServiceClass(getDexCollectionType());
     }
 
-    public static Class<?> getCollectorServiceClass(DexCollectionType type) {
+    public static Class<?> getCollectorServiceClass(final DexCollectionType type) {
         switch (type) {
             case DexcomG5:
                 if (Pref.getBooleanDefaultFalse(Ob1G5CollectionService.OB1G5_PREFS)) {
@@ -161,6 +161,7 @@ public enum DexCollectionType {
             case DexcomShare:
                 return DexShareCollectionService.class;
             case WifiWixel:
+            case Mock:
                 return WifiCollectionService.class;
             case Medtrum:
                 return MedtrumCollectionService.class;

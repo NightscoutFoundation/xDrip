@@ -10,6 +10,9 @@ import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.utils.LogSlider;
+import com.eveningoutpost.dexdrip.utils.NamedSliderProcessor;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -23,12 +26,14 @@ import static com.eveningoutpost.dexdrip.Models.JoH.dateTimeText;
  * This class gets the next time slice of all data to upload
  */
 
-public class UploadChunk {
+public class UploadChunk implements NamedSliderProcessor {
 
     private static final String TAG = "TidepoolUploadChunk";
     private static final String LAST_UPLOAD_END_PREF = "tidepool-last-end";
 
     private static final long MAX_UPLOAD_SIZE = Constants.DAY_IN_MS * 7; // don't change this
+    private static final long DEFAULT_WINDOW_OFFSET = Constants.MINUTE_IN_MS * 15;
+    private static final long MAX_LATENCY_THRESHOLD_MINUTES = 1440; // minutes per day
 
 
     public static String getNext(final Session session) {
@@ -47,11 +52,11 @@ public class UploadChunk {
 
         UserError.Log.uel(TAG, "Syncing data between: " + dateTimeText(start) + " -> " + dateTimeText(end));
         if (end <= start) {
-            UserError.Log.e(TAG, "End is <= start: " + start + " " + end);
+            UserError.Log.e(TAG, "End is <= start: " + dateTimeText(start) + " " + dateTimeText(end));
             return null;
         }
         if (end - start > MAX_UPLOAD_SIZE) {
-            UserError.Log.e(TAG, "More than 24 hours range - rejecting");
+            UserError.Log.e(TAG, "More than max range - rejecting");
             return null;
         }
 
@@ -65,9 +70,19 @@ public class UploadChunk {
         return JoH.defaultGsonInstance().toJson(records);
     }
 
+    private static long getWindowSizePreference() {
+        try {
+            long value = (long) getLatencySliderValue(Pref.getInt("tidepool_window_latency", 0));
+            return Math.max(value * Constants.MINUTE_IN_MS, DEFAULT_WINDOW_OFFSET);
+        } catch (Exception e) {
+            UserError.Log.e(TAG, "Reverting to default of 15 minutes due to Window Size exception: " + e);
+            return DEFAULT_WINDOW_OFFSET; // default
+        }
+    }
 
     private static long maxWindow(final long last_end) {
-        return Math.min(last_end + MAX_UPLOAD_SIZE, JoH.tsl() - Constants.MINUTE_IN_MS * 15);
+        //UserError.Log.d(TAG, "Max window is: " + getWindowSizePreference());
+        return Math.min(last_end + MAX_UPLOAD_SIZE, JoH.tsl() - getWindowSizePreference());
     }
 
     public static long getLastEnd() {
@@ -152,4 +167,16 @@ public class UploadChunk {
 
     }
 
+    @Override
+    public int interpolate(final String name, final int position) {
+        switch (name) {
+            case "latency":
+                return getLatencySliderValue(position);
+        }
+        throw new RuntimeException("name not matched in interpolate");
+    }
+
+    private static int getLatencySliderValue(final int position) {
+        return (int) LogSlider.calc(0, 300, 15, MAX_LATENCY_THRESHOLD_MINUTES, position);
+    }
 }

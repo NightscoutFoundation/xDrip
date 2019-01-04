@@ -16,51 +16,6 @@
             android:key="cloud_data_sync"
             android:summary="@string/options_for_upload"
             android:title="@string/cloud_upload">
-            <PreferenceScreen
-                android:key="cloud_storage_mongo"
-                android:summary="@string/pref_summary_mongodb_enabled"
-                android:title="@string/pref_title_mongodb">
-
-                <SwitchPreference
-                    android:defaultValue="false"
-                    android:key="cloud_storage_mongodb_enable"
-                    android:title="@string/enable_mongo_sync" />
-                <EditTextPreference
-                    android:defaultValue="@string/pref_default_mongodb_uri"
-                    android:dependency="cloud_storage_mongodb_enable"
-                    android:dialogMessage="@string/pref_message_mongodb_uri"
-                    android:dialogTitle="@string/pref_dialog_mongodb_uri"
-                    android:inputType="textUri"
-                    android:key="cloud_storage_mongodb_uri"
-                    android:title="@string/mongo_db_uri" />
-                <EditTextPreference
-                    android:defaultValue="@string/pref_default_mongodb_collection"
-                    android:dependency="cloud_storage_mongodb_enable"
-                    android:dialogMessage="@string/pref_message_mongodb_collection"
-                    android:dialogTitle="@string/pref_dialog_mongodb_collection"
-                    android:key="cloud_storage_mongodb_collection"
-                    android:title="@string/pref_title_mongodb_collection" />
-                <EditTextPreference
-                    android:defaultValue="@string/pref_default_mongodb_device_status_collection"
-                    android:dependency="cloud_storage_mongodb_enable"
-                    android:dialogMessage="@string/pref_message_mongodb_device_status_collection"
-                    android:dialogTitle="@string/pref_dialog_mongodb_device_status_collection"
-                    android:key="cloud_storage_mongodb_device_status_collection"
-                    android:title="@string/pref_title_mongodb_device_status_collection" />
-
-                <CheckBoxPreference
-                    android:defaultValue="true"
-                    android:key="skip_lan_uploads_when_no_lan"
-                    android:summary="@string/skip_local_lan"
-                    android:title="@string/skip_lan_uploads" />
-                
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:key="mongo_load_transmitter_data"
-                    android:summary="@string/mongo_load_transmitter_data_summary"
-                    android:title="@string/mongo_load_transmitter_data_title" />
-
-            </PreferenceScreen>
 
             <PreferenceScreen
                 android:key="cloud_storage_api"
@@ -143,6 +98,51 @@
                     </Preference>
                 </PreferenceScreen>
             </PreferenceScreen>
+                <PreferenceScreen
+                    android:key="cloud_storage_mongo"
+                    android:summary="@string/pref_summary_mongodb_enabled"
+                    android:title="@string/pref_title_mongodb">
+
+                    <SwitchPreference
+                        android:defaultValue="false"
+                        android:key="cloud_storage_mongodb_enable"
+                        android:title="@string/enable_mongo_sync" />
+                    <EditTextPreference
+                        android:defaultValue="@string/pref_default_mongodb_uri"
+                        android:dependency="cloud_storage_mongodb_enable"
+                        android:dialogMessage="@string/pref_message_mongodb_uri"
+                        android:dialogTitle="@string/pref_dialog_mongodb_uri"
+                        android:inputType="textUri"
+                        android:key="cloud_storage_mongodb_uri"
+                        android:title="@string/mongo_db_uri" />
+                    <EditTextPreference
+                        android:defaultValue="@string/pref_default_mongodb_collection"
+                        android:dependency="cloud_storage_mongodb_enable"
+                        android:dialogMessage="@string/pref_message_mongodb_collection"
+                        android:dialogTitle="@string/pref_dialog_mongodb_collection"
+                        android:key="cloud_storage_mongodb_collection"
+                        android:title="@string/pref_title_mongodb_collection" />
+                    <EditTextPreference
+                        android:defaultValue="@string/pref_default_mongodb_device_status_collection"
+                        android:dependency="cloud_storage_mongodb_enable"
+                        android:dialogMessage="@string/pref_message_mongodb_device_status_collection"
+                        android:dialogTitle="@string/pref_dialog_mongodb_device_status_collection"
+                        android:key="cloud_storage_mongodb_device_status_collection"
+                        android:title="@string/pref_title_mongodb_device_status_collection" />
+
+                    <CheckBoxPreference
+                        android:defaultValue="true"
+                        android:key="skip_lan_uploads_when_no_lan"
+                        android:summary="@string/skip_local_lan"
+                        android:title="@string/skip_lan_uploads" />
+
+                    <CheckBoxPreference
+                        android:defaultValue="false"
+                        android:key="mongo_load_transmitter_data"
+                        android:summary="@string/mongo_load_transmitter_data_summary"
+                        android:title="@string/mongo_load_transmitter_data_title" />
+
+                </PreferenceScreen>
 
             <PreferenceScreen
                 android:key="cloud_storage_influxdb"
@@ -266,7 +266,21 @@
                     android:title="Login Password" />
                 <Preference
                     android:key="tidepool_test_login"
-                    android:title="Test Tidepool Login"></Preference>
+                    android:title="Test Tidepool Login" />
+                <SeekBarPreference
+                    android:key="tidepool_window_latency"
+                    android:dependency="cloud_storage_tidepool_enable"
+                    android:title="Data Age Mins"
+                    android:summary=""
+                    android:max="300"
+                    android:min="0"
+                    android:defaultValue="0" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:enabled="false"
+                    android:key="tidepool_dev_servers"
+                    android:summary="If enabled, uploads will go to https://int-app.tidepool.org instead of the regular https://app.tidepool.org/"
+                    android:title="Use Integration (test) servers" />
 
             </PreferenceScreen>
         </PreferenceScreen>

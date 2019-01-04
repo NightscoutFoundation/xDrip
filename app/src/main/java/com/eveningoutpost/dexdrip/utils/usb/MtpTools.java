@@ -216,6 +216,8 @@ public class MtpTools {
                     }
                 }
             }
+        } else {
+            Log.e(TAG,"Output bytes null");
         }
         return -1;
     }

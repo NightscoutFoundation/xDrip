@@ -915,6 +915,11 @@
                     android:summaryOn="@string/battery_optimization_on"
                     android:title="@string/battery_optimization_prompt" />
                 <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="allow_samsung_workaround"
+                    android:summary="Use workarounds to avoid non-standard android behavior of Samsung handsets. Without this collectors usually fail to get data."
+                    android:title="Samsung Workarounds" />
+                <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="excessive_wakelocks"
                     android:summary="@string/older_gratuitous_wakelocks"
