@@ -41,7 +41,6 @@
     <string name="scan_share2_barcode">Avsök en delningsstreckkod</string>
     <string name="pref_share2_scan_barcode_summary">Eller skanna streckkoden med din Share-mottagare</string>
     <!-- MongoDB Settings -->
-    <string name="pref_summary_mongodb_enabled">Om du använder MongoLab och Azure detta ska aktiveras</string>
     <string name="pref_dialog_mongodb_uri">URI till MongoDB\"</string>
     <string name="pref_message_mongodb_uri">Ersätt exempeldatan i {} med riktiga värden</string>
     <string name="pref_default_mongodb_uri">mongodb://{användare}:{lösenord}@{värd}.mongolab.com:{11111}/{databas}</string>
@@ -54,7 +53,6 @@
     <!-- API Settings -->
     <string name="pref_title_api">Synka med Nightscout (REST-API)</string>
     <string name="pref_title_api_enabled">Aktiverat</string>
-    <string name="pref_summary_api_enabled">REST-API är ett alternativ till att ladda upp direktt till mongodb</string>
     <string name="pref_title_api_url">Rotadress</string>
     <string name="pref_dialog_api_url">Ange rotadressen för APIet</string>
     <string name="pref_message_api_url">Detta bara roten/början av adressen, uppladdaren kommer automatiskt att sammanfoga den med /värden for POST-anropet.  API_SECRET på din server bör vara det samms som din lösenordsfras i denna inställning.</string>

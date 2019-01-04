@@ -41,7 +41,6 @@
     <string name="scan_share2_barcode">Skeniraj dijeljeni barkod</string>
     <string name="pref_share2_scan_barcode_summary">Ili skeniraj barkod dijeljenog prijamnika</string>
     <!-- MongoDB Settings -->
-    <string name="pref_summary_mongodb_enabled">Ukoliko koristite MongoLab i Azure ovo bi trebalo uključiti</string>
     <string name="pref_dialog_mongodb_uri">Unesi MongoDB URI\"</string>
     <string name="pref_message_mongodb_uri">Zamijenite vrijednosti iz primjera u {} sa svojim ispravnim vrijednostima</string>
     <string name="pref_default_mongodb_uri">mongodb://{korisnik}:{lozinka}@{host}.mongolab.com:{11111}/{baza}</string>
@@ -54,7 +53,6 @@
     <!-- API Settings -->
     <string name="pref_title_api">Nightscout sinkronizacija (REST-API)</string>
     <string name="pref_title_api_enabled">Omogućeno</string>
-    <string name="pref_summary_api_enabled">REST API je alternativa direktnom mongodb učitavanju</string>
     <string name="pref_title_api_url">Bazični URL</string>
     <string name="pref_dialog_api_url">Unesi bazični API URL</string>
     <string name="pref_message_api_url">Ovo je samo bazični URL, sustav uploada će automatski dodati unose za POST.  API_SECRET na serveru se mora slagati s vašim tajnim ključem iz ove postavke.</string>

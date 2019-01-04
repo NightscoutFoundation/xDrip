@@ -36,7 +36,6 @@
     <string name="scan_share2_barcode">Scan Deel Barcode</string>
     <string name="pref_share2_scan_barcode_summary">Of scan de barcode op het aandeel receiver</string>
     <!-- MongoDB Settings -->
-    <string name="pref_summary_mongodb_enabled">Als u gebruik maakt MongoLab en Azure dit moet worden ingeschakeld</string>
     <string name="pref_dialog_mongodb_uri">Voer MongoDB URI\"</string>
     <string name="pref_message_mongodb_uri">Vervang bijvoorbeeld waarden in {} \'s met uw juiste waarden</string>
     <string name="pref_default_mongodb_uri">MongoDB: // {user}: {password} @ {} gastheer .mongolab.com: {11111} / {databank}</string>
@@ -49,7 +48,6 @@
     <!-- API Settings -->
     <string name="pref_title_api">API uploaden (REST)</string>
     <string name="pref_title_api_enabled">Ingeschakeld</string>
-    <string name="pref_summary_api_enabled">De REST API is een alternatief voor MongoDB upload direct</string>
     <string name="pref_dialog_api_url">Voer Base API URL</string>
     <string name="pref_message_api_url">Dit alleen de basis-URL, zal de uploader automatisch toevoegen / inzendingen voor de POST. API_SECRET op de server moet yourpassphrase wedstrijd in deze instelling.</string>
     <string name="pref_default_api_url">https: // yourpassphrase @ {UW-SITE} .azurewebsites.net / api / v1 /</string>

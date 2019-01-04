@@ -42,7 +42,6 @@
     <string name="pref_share2_scan_barcode_summary">O escanear el código de barras en el receptor de la cuota</string>
     <!-- MongoDB Settings -->
     <string name="pref_title_mongodb">MongoDB</string>
-    <string name="pref_summary_mongodb_enabled">Si está utilizando MongoLab y Azure este debe estar habilitado</string>
     <string name="pref_title_mongodb_uri">URI</string>
     <string name="pref_dialog_mongodb_uri">Introduzca MongoDB URI\"</string>
     <string name="pref_message_mongodb_uri">Reemplazar los valores de ejemplo en {} \'s con sus valores correctos</string>
@@ -56,7 +55,6 @@
     <!-- API Settings -->
     <string name="pref_title_api">Subir API (REST)</string>
     <string name="pref_title_api_enabled">Habilitado</string>
-    <string name="pref_summary_api_enabled">La API REST es una alternativa para dirigir la carga mongodb</string>
     <string name="pref_title_api_url">URL base</string>
     <string name="pref_dialog_api_url">Introduzca Base URL de la API</string>
     <string name="pref_message_api_url">Esto sólo la URL base, el cargador añadirá automáticamente / entradas para el puesto. API_SECRET en el servidor debe coincidir con yourpassphrase en este entorno.</string>

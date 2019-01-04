@@ -42,7 +42,6 @@
     <string name="pref_share2_scan_barcode_summary">Oder Barcode auf dem Share Empfänger scannen</string>
     <!-- MongoDB Settings -->
     <string name="pref_title_mongodb">MongoDB</string>
-    <string name="pref_summary_mongodb_enabled">Bei Nutzung von MongoLab und Azure sollte dies aktiviert sein</string>
     <string name="pref_title_mongodb_uri">URL</string>
     <string name="pref_dialog_mongodb_uri">MongoDB URI eingeben\"</string>
     <string name="pref_message_mongodb_uri">Ersetzen Sie die Werte zwischen {} mit Ihren Werten</string>
@@ -56,7 +55,6 @@
     <!-- API Settings -->
     <string name="pref_title_api">API Upload (REST)</string>
     <string name="pref_title_api_enabled">Aktiviert</string>
-    <string name="pref_summary_api_enabled">Die REST-API ist eine Alternative zur MongoDB</string>
     <string name="pref_title_api_url">Basis URL</string>
     <string name="pref_dialog_api_url">API Basis-URL eingeben</string>
     <string name="pref_message_api_url">Dies ist nur die Basis URL, /entries wird automatisch angefügt. API_SECRET auf dem Server sollte mit yourpassphrase in den Einstellung übereinstimmen.</string>

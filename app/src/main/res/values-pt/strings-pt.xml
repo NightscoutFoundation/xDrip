@@ -42,7 +42,7 @@
     <string name="pref_share2_scan_barcode_summary">Ou ler o código de barras no receptor de partilha</string>
     <!-- MongoDB Settings -->
     <string name="pref_title_mongodb">MongoDB</string>
-    <string name="pref_summary_mongodb_enabled">Se utiliza MongoLab e Azure isto deve estar ligado</string>
+    <string name="pref_summary_mongodb_enabled">Carregamento directo da base de dados, não recomendado para Nightscout</string>
     <string name="pref_title_mongodb_uri">URL</string>
     <string name="pref_dialog_mongodb_uri">Introduza MongoDB URL\"</string>
     <string name="pref_message_mongodb_uri">Substituir valores exemplo em {} pelos seus valores</string>
@@ -56,7 +56,7 @@
     <!-- API Settings -->
     <string name="pref_title_api">Sincronização Nightscout (REST-API)</string>
     <string name="pref_title_api_enabled">Activado</string>
-    <string name="pref_summary_api_enabled">A API REST é uma alternativa à inserção direta no mongodb</string>
+    <string name="pref_summary_api_enabled">A REST API é a maneira padrão para se ligar ao Nightscout</string>
     <string name="pref_title_api_url">URL base</string>
     <string name="pref_dialog_api_url">Introduza URL base da API</string>
     <string name="pref_message_api_url">Isto é apenas o URL base, o uploader acrescentará automaticamente /entries para o POST. O API_SECRET no servidor deverá ser igual à suapalavrapasse nesta definição.</string>
@@ -65,7 +65,7 @@
     <string name="wifi_recievers_dialog_message">Lista separada por vírgula de ip:port (por exemplo 37.142.132.220:50005,37.142.132.220:50010,mongodb://user:pass@ds053958.mongolab.com:53958/db/collection)</string>
     <string name="wifi_recievers_dialog_title">Introduza os endereços IP e portas de receptores (incluindo endereços MongoDB se necessário)</string>
     <!-- Location Settings -->
-    <string name="location_not_found_title">Localização não está activada</string>
+    <string name="location_not_found_title">Localização Não Está Activada</string>
     <string name="location_not_found_message">Para que a descoberta do Bluetooth funcione em dispositivos mais recentes, a localização tem que ser activada. O xDrip não rastreia a sua localização excepto na função de Mensagem de Emergência</string>
     <string name="location_yes">Activar</string>
     <!-- broadcast settings -->
@@ -106,10 +106,10 @@
     <string name="erase">Eliminar</string>
     <string name="interface_tips_from_start">Todas as dicas de interface serão mostradas desde o início</string>
     <string name="note_button">Botão de Nota</string>
-    <string name="showcase_note_long">O botão de Nota agora pede entrada de voz.\n\nPressione longo para introduzir com o teclado ou alterar opções.</string>
-    <string name="redo_button">Refazer botão</string>
+    <string name="showcase_note_long">O Botão de Nota agora pede entrada de voz.\n\nPressione para introduzir com o teclado ou alterar opções.</string>
+    <string name="redo_button">Botão para Refazer</string>
     <string name="showcase_redo">O botão Refazer pode aplicar acções feitas pelo Simulador de Tratamento, Calibrações e Notas\n\n Após 30 minutos vai esconder-se novamente</string>
-    <string name="undo_button">Botão Desfazer</string>
+    <string name="undo_button">Botão para Desfazer</string>
     <string name="showcase_undo">O botão Desfazer pode cancelar acções do Simulador de Tratamento, Calibrações e Notas\n\nApós 30 minutos vai esconder-se novamente</string>
     <string name="add_note">Adicionar Nota</string>
     <string name="blood_test">Teste com gota de sangue</string>
@@ -289,7 +289,7 @@
     <string name="insulin_sensitivity_glucose_drop_per_unit">Sensibilidade à insulina: queda de glicose por Unidade</string>
     <string name="transmitter_battery">bateria do transmissor</string>
     <string name="very_low">MUITO BAIXO</string>
-    <string name="low">baixa</string>
+    <string name="low">hipo</string>
     <string name="space_units">" Unidades"</string>
     <string name="units">unidades</string>
     <string name="carbs">hidratos</string>
@@ -501,7 +501,7 @@
     <string name="create_high_alert">Criar alerta Hiper</string>
     <string name="long_press_an_existing_alert_to_edit">(Pressionar longamente num alerta existente para editar)</string>
     <string name="adding">A adicionar</string>
-    <string name="high">Hiper</string>
+    <string name="high">hiper</string>
     <string name="alert">alerta</string>
     <string name="high_alert">Alerta Hiper</string>
     <string name="low_alert">Alerta Hipo</string>
@@ -518,7 +518,7 @@
     <string name="display_ideal_glucose_target_line">Mostrar linha de glicemia ideal</string>
     <string name="display_eight_hour_average_line">Mostrar linha da média de 8 horas</string>
     <string name="display_twenty_four_hour_average_line">Mostrar linha da média de 24 horas</string>
-    <string name="predictive_model_inner_workings">Modelo interno de Previsão</string>
+    <string name="predictive_model_inner_workings">Modelo Interno de Previsão</string>
     <string name="noise_model_inner_workings">Funcionamento do modelo de leituras irregulares (noise)</string>
     <string name="glucose_number_from_filtered">Valores glicémicos Filtrados</string>
     <string name="if_the_phone_has_text_to_speech">Se o telefone tiver capacidade texto-para-voz, o resultado será falado.</string>
@@ -767,7 +767,7 @@
     <string name="need_alternate_language">Se precisar de uma tradução de idioma alternativo dentro de xDrip +</string>
     <string name="chosse_language">Escolher um Idioma específico</string>
     <string name="widget_range_lines">Linhas do Intervalo no Widget</string>
-    <string name="show_range_on_widget">Mostrar linha de valor alto e baixo no widget.</string>
+    <string name="show_range_on_widget">Mostrar linha de hiper e hipo no widget.</string>
     <string name="delayed_but_more_stable">Com atraso mas mais estável quando com ruído (noisy) (não recomendado)</string>
     <string name="show_bolus_wizard_preview">Mostrar Pré-Visualização do Assistente de Bólus</string>
     <string name="display_calculations">Mostrar Cálculos Insulina/Hidratos</string>
@@ -850,13 +850,13 @@
     <string name="play_sound_when_ready_for_calibration">Tocar som quando pronto para Calibração</string>
     <string name="receiving_data_from_collector">A Receber Dados do %s Dispositivo BT</string>
     <!-- trend arrow for speak -->
-    <string name="DoubleDown">Descer Rapidamente</string>
-    <string name="SingleDown">Descida Rápida</string>
-    <string name="FortyFiveDown">Descida Lenta</string>
+    <string name="DoubleDown">A Descer Rapidamente</string>
+    <string name="SingleDown">A Descer Rápido</string>
+    <string name="FortyFiveDown">A Descer Lento</string>
     <string name="Flat">Estável</string>
-    <string name="FortyFiveUp">Subida Lenta</string>
-    <string name="SingleUp">Subida Rápida</string>
-    <string name="DoubleUp">Subir Rapidamente</string>
+    <string name="FortyFiveUp">A Subir Lento</string>
+    <string name="SingleUp">A Subir Rápido</string>
+    <string name="DoubleUp">A Subir Rapidamente</string>
     <string name="Speak_trend_arrow_name">Ler seta de tendência</string>
     <string name="Speak_everything_twice">Falar tudo duas vezes</string>
     <string name="Speech_speed">Velocidade da fala</string>
