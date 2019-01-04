@@ -691,7 +691,6 @@
     <string name="override_silent_mode_these">Anular el modo silencioso en estas alertas</string>
     <string name="persistent_repeat_max">Repitiendo max cada (minutos)</string>
     <string name="notify_on_low_battery_level">Notificar el nivel de batería baja</string>
-    <string name="collector_battery_alerts">Alertas de batería del colector</string>
     <string name="low_battery_percentage">Porcentaje de bateria baja</string>
     <string name="carb_ratio">Ratio de hidratos</string>
     <string name="insulin_sensitivity">Sensibilidad a la Insulina</string>
@@ -754,7 +753,6 @@
     <string name="reminders">Recordatorios</string>
     <string name="error">error</string>
     <string name="install_text_to_speech_data_question">¿Installar datos de texto a voz?</string>
-    <string name="after_installation_of_languages_you_might_have_to">(Después de la instalación de idiomas podrías tener que presionar \"Reiniciar Colector\" en el estado del sistema.)</string>
     <string name="stop_sensor">Parar Sensor</string>
     <string name="initial_calibration">Calibración inicial</string>
     <string name="calibration_can_not_be_blank">Calibración no puede estar vacia</string>
@@ -880,7 +878,6 @@
     <string name="basal_editor">Editor Basal - Seleccione las horas para ajustar</string>
     <string name="sensor_is_still_warming_up_please_wait">El sensor se está calentando, por favor espere</string>
     <string name="number_wall_config">Configuración número del muro</string>
-    <string name="summary_If_you_plan_to_only_use_a_Wear_collector_and_never_your_phone">Si planeas utilizar solamente un colector Wear y nunca el teléfono.</string>
     <string name="title_Only_use_Wear">Utilizar sólo Wear</string>
     <string name="summary_Also_show_the_filtered_data_on_the_trend">También se muestran los datos filtrados sobre la tendencia</string>
     <string name="title_Smartwatch_Sensors">Sensores de SmartWatch</string>
