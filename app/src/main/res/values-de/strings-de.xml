@@ -976,6 +976,7 @@
     <string name="title_xDrip_Web_Service">xDrip Web-Dienst</string>
     <string name="summary_Accept_connections_from_any_network_instead_of_just_internally">Akzeptiere Verbindungen von jedem Netzwerk anstelle von rein internen nur auf dem Handy. Es gibt Sicherheitsprobleme wenn dies aktiviert wird! Shared Secret wird benötigt wenn eines angelegt wurde.</string>
     <string name="title_Open_Web_Service">Offener Web-Dienst</string>
+    <string name="summary_Shared_Secret_for_open_web_service">Geheimer Schlüssel für offenen Web-Dienst (sollte mit deinem Nightscout API-Schlüssel übereinstimmen)</string>
     <string name="title_xDrip_Web_Service_Secret">xDrip Web-Dienst Secret</string>
     <string name="summary_Display_status_from_other_apps_like_AndroidAPS">Zeige Status von anderen Apps wie z.B. AndroidAPS</string>
     <string name="title_External_Status">Externer Status</string>
@@ -1042,6 +1043,7 @@
     <string name="completed">vollständig</string>
     <string name="next_in">nächste in</string>
     <string name="due">Fällig</string>
+    <string name="due_uppercase">FÄLLIG</string>
     <string name="repeats_every">wiederholt jede</string>
     <string name="next">nächste</string>
     <string name="last">letzter</string>
@@ -1055,6 +1057,7 @@
     <string name="snoozed_reminder_for">Schlummer Erinnerung für</string>
     <string name="id_reference">ID-Referenz</string>
     <string name="reminder_period">Erinnerungszeitraum</string>
+    <string name="hour">Stunde</string>
     <string name="hours">Stunden</string>
     <string name="weeks">Wochen</string>
     <string name="repeat">Wiederhole</string>
@@ -1064,8 +1067,10 @@
     <string name="weekends">Wochenende</string>
     <string name="mega_priority">Mega-Priorität</string>
     <string name="xdrip_reminders">xDrip+ Erinnerungen</string>
+    <string name="button_15_min">15 min</string>
     <string name="button_2_hour">2 Std</string>
     <string name="button_1_day">1 Tag</string>
+    <string name="button_30_min">30 min</string>
     <string name="button_4_hour">4 Std</string>
     <string name="button_2_day">2 Tage</string>
     <string name="button_1_hour">1 Std</string>
@@ -1087,6 +1092,15 @@
     <string name="advanced_mode">Fortgeschrittener Modus</string>
     <string name="reminder_title">Erinnerungs-Titel</string>
     <string name="what_time_of_day_question">Welche Tageszeit?</string>
+    <string name="all_alerts_currently_disabled">ALLE ALARME DERZEIT DEAKTIVIERT</string>
+    <string name="low_and_high_alerts_currently_disabled">NIEDRIGE UND HOHE ALARME DERZEIT DEAKTIVIERT</string>
+    <string name="low_alerts_currently_disabled">NIEDRIGE ALARME DERZEIT DEAKTIVIERT</string>
+    <string name="high_alerts_currently_disabled">HOHE ALARME DERZEIT DEAKTIVIERT</string>
+    <string name="bg_reading_missed">BZ-Werte verpasst</string>
+    <string name="not_connected">Nicht verbunden</string>
+    <string name="no_data">Keine Daten</string>
+    <string name="no_bluetooth">Kein Bluetooth</string>
+    <string name="connection_status">Verbindungsstatus:   </string>
     <string name="please_allow_permission">Bitte erteilen Sie die nötigen Berechtigungen</string>
     <string name="without_location_scan_doesnt_work">Ohne die \"Location\"-Berechtigung wird der Bluetooth-Scan nicht funktionieren</string>
     <string name="without_location_permission_emergency_cannot_get_location">Ohne die \"Location\"-Berechtigung kann die Notfall-SMS keine Orts-Daten mitsenden</string>
