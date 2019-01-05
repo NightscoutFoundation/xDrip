@@ -147,89 +147,7 @@ public class Ob1G5StateMachine {
                                         speakSlowly();
                                         connection.readCharacteristic(Authentication).subscribe(
                                                 readValue -> {
-                                                    PacketShop pkt = classifyPacket(readValue);
-                                                    UserError.Log.d(TAG, "Read from auth request: " + pkt.type + " " + JoH.bytesToHex(readValue));
-
-                                                    switch (pkt.type) {
-                                                        case AuthChallengeRxMessage:
-                                                            // Respond to the challenge request
-                                                            byte[] challengeHash = calculateChallengeHash(((AuthChallengeRxMessage) pkt.msg).challenge);
-                                                            if (d)
-                                                                UserError.Log.d(TAG, "challenge hash" + Arrays.toString(challengeHash));
-                                                            if (challengeHash != null) {
-                                                                if (d)
-                                                                    UserError.Log.d(TAG, "Transmitter trying auth challenge");
-
-                                                                connection.writeCharacteristic(Authentication, nn(new BaseAuthChallengeTxMessage(challengeHash).byteSequence))
-                                                                        .subscribe(
-                                                                                challenge_value -> {
-
-                                                                                    speakSlowly();
-
-                                                                                    connection.readCharacteristic(Authentication)
-                                                                                            //.observeOn(Schedulers.io())
-                                                                                            .subscribe(
-                                                                                                    status_value -> {
-                                                                                                        // interpret authentication response
-                                                                                                        final PacketShop status_packet = classifyPacket(status_value);
-                                                                                                        UserError.Log.d(TAG, status_packet.type + " " + JoH.bytesToHex(status_value));
-                                                                                                        if (status_packet.type == PACKET.AuthStatusRxMessage) {
-                                                                                                            final AuthStatusRxMessage status = (AuthStatusRxMessage) status_packet.msg;
-                                                                                                            if (d)
-                                                                                                                UserError.Log.d(TAG, ("Authenticated: " + status.isAuthenticated() + " " + status.isBonded()));
-                                                                                                            if (status.isAuthenticated()) {
-                                                                                                                if (status.isBonded()) {
-                                                                                                                    parent.msg("Authenticated");
-                                                                                                                    parent.authResult(true);
-                                                                                                                    parent.changeState(Ob1G5CollectionService.STATE.GET_DATA);
-                                                                                                                    throw new OperationSuccess("Authenticated");
-                                                                                                                } else {
-                                                                                                                    //parent.unBond(); // bond must be invalid or not existing // WARN
-                                                                                                                    parent.changeState(Ob1G5CollectionService.STATE.PREBOND);
-                                                                                                                    // TODO what to do here?
-                                                                                                                }
-                                                                                                            } else {
-                                                                                                                parent.msg("Not Authorized! (Wrong TxID?)");
-                                                                                                                UserError.Log.e(TAG, "Authentication failed!!!!");
-                                                                                                                parent.incrementErrors();
-                                                                                                                // TODO? try again?
-                                                                                                            }
-                                                                                                        } else {
-                                                                                                            UserError.Log.e(TAG, "Got unexpected packet when looking for auth status: " + status_packet.type + " " + JoH.bytesToHex(status_value));
-                                                                                                            parent.incrementErrors();
-                                                                                                            // TODO what to do here?
-                                                                                                        }
-
-                                                                                                    }, throwable -> {
-                                                                                                        if (throwable instanceof OperationSuccess) {
-                                                                                                            UserError.Log.d(TAG, "Stopping auth challenge listener due to success");
-                                                                                                        } else {
-                                                                                                            UserError.Log.e(TAG, "Could not read reply to auth challenge: " + throwable);
-                                                                                                            parent.incrementErrors();
-                                                                                                            speakSlowly = true;
-                                                                                                        }
-                                                                                                    });
-                                                                                }, throwable -> {
-                                                                                    UserError.Log.e(TAG, "Could not write auth challenge reply: " + throwable);
-                                                                                    parent.incrementErrors();
-                                                                                });
-
-                                                            } else {
-                                                                UserError.Log.e(TAG, "Could not generate challenge hash! - resetting");
-                                                                parent.changeState(Ob1G5CollectionService.STATE.INIT);
-                                                                parent.incrementErrors();
-                                                                return;
-                                                            }
-
-                                                            break;
-
-                                                        default:
-                                                            UserError.Log.e(TAG, "Unhandled packet type in reply: " + pkt.type + " " + JoH.bytesToHex(readValue));
-                                                            parent.incrementErrors();
-                                                            // TODO what to do here?
-                                                            break;
-                                                    }
-
+                                                    authenticationProcessor(parent, connection, readValue);
                                                 }, throwable -> {
                                                     UserError.Log.e(TAG, "Could not read after AuthRequestTX: " + throwable);
                                                 });
@@ -247,6 +165,7 @@ public class Ob1G5StateMachine {
                 .subscribe(bytes -> {
                     // incoming notifications
                     UserError.Log.e(TAG, "Received Authentication notification bytes: " + JoH.bytesToHex(bytes));
+                    authenticationProcessor(parent, connection, bytes);
 
                 }, throwable -> {
                     if (!(throwable instanceof OperationSuccess)) {
@@ -283,6 +202,91 @@ public class Ob1G5StateMachine {
                     }
                 });
         return true;
+    }
+
+    private static void authenticationProcessor(final Ob1G5CollectionService parent, final RxBleConnection connection, final byte[] readValue) {
+        PacketShop pkt = classifyPacket(readValue);
+        UserError.Log.d(TAG, "Read from auth request: " + pkt.type + " " + JoH.bytesToHex(readValue));
+
+        switch (pkt.type) {
+            case AuthChallengeRxMessage:
+                // Respond to the challenge request
+                byte[] challengeHash = calculateChallengeHash(((AuthChallengeRxMessage) pkt.msg).challenge);
+                if (d)
+                    UserError.Log.d(TAG, "challenge hash" + Arrays.toString(challengeHash));
+                if (challengeHash != null) {
+                    if (d)
+                        UserError.Log.d(TAG, "Transmitter trying auth challenge");
+
+                    connection.writeCharacteristic(Authentication, nn(new BaseAuthChallengeTxMessage(challengeHash).byteSequence))
+                            .subscribe(
+                                    challenge_value -> {
+
+                                        speakSlowly();
+
+                                        connection.readCharacteristic(Authentication)
+                                                //.observeOn(Schedulers.io())
+                                                .subscribe(
+                                                        status_value -> {
+                                                            // interpret authentication response
+                                                            final PacketShop status_packet = classifyPacket(status_value);
+                                                            UserError.Log.d(TAG, status_packet.type + " " + JoH.bytesToHex(status_value));
+                                                            if (status_packet.type == PACKET.AuthStatusRxMessage) {
+                                                                final AuthStatusRxMessage status = (AuthStatusRxMessage) status_packet.msg;
+                                                                if (d)
+                                                                    UserError.Log.d(TAG, ("Authenticated: " + status.isAuthenticated() + " " + status.isBonded()));
+                                                                if (status.isAuthenticated()) {
+                                                                    if (status.isBonded()) {
+                                                                        parent.msg("Authenticated");
+                                                                        parent.authResult(true);
+                                                                        parent.changeState(Ob1G5CollectionService.STATE.GET_DATA);
+                                                                        throw new OperationSuccess("Authenticated");
+                                                                    } else {
+                                                                        //parent.unBond(); // bond must be invalid or not existing // WARN
+                                                                        parent.changeState(Ob1G5CollectionService.STATE.PREBOND);
+                                                                        // TODO what to do here?
+                                                                    }
+                                                                } else {
+                                                                    parent.msg("Not Authorized! (Wrong TxID?)");
+                                                                    UserError.Log.e(TAG, "Authentication failed!!!!");
+                                                                    parent.incrementErrors();
+                                                                    // TODO? try again?
+                                                                }
+                                                            } else {
+                                                                UserError.Log.e(TAG, "Got unexpected packet when looking for auth status: " + status_packet.type + " " + JoH.bytesToHex(status_value));
+                                                                parent.incrementErrors();
+                                                                // TODO what to do here?
+                                                            }
+
+                                                        }, throwable -> {
+                                                            if (throwable instanceof OperationSuccess) {
+                                                                UserError.Log.d(TAG, "Stopping auth challenge listener due to success");
+                                                            } else {
+                                                                UserError.Log.e(TAG, "Could not read reply to auth challenge: " + throwable);
+                                                                parent.incrementErrors();
+                                                                speakSlowly = true;
+                                                            }
+                                                        });
+                                    }, throwable -> {
+                                        UserError.Log.e(TAG, "Could not write auth challenge reply: " + throwable);
+                                        parent.incrementErrors();
+                                    });
+
+                } else {
+                    UserError.Log.e(TAG, "Could not generate challenge hash! - resetting");
+                    parent.changeState(Ob1G5CollectionService.STATE.INIT);
+                    parent.incrementErrors();
+                    return;
+                }
+
+                break;
+
+            default:
+                UserError.Log.e(TAG, "Unhandled packet type in reply: " + pkt.type + " " + JoH.bytesToHex(readValue));
+                parent.incrementErrors();
+                // TODO what to do here?
+                break;
+        }
     }
 
     private static final int SPEAK_SLOWLY_DELAY = 300;
