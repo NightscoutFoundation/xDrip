@@ -62,7 +62,6 @@ import com.crashlytics.android.Crashlytics;
 import com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Dex_Constants;
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
-import com.eveningoutpost.dexdrip.Models.Accuracy;
 import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Models.BgReading;
@@ -96,14 +95,13 @@ import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.PrefsViewImpl;
-import com.eveningoutpost.dexdrip.UtilityModels.PumpStatus;
 import com.eveningoutpost.dexdrip.UtilityModels.SendFeedBack;
 import com.eveningoutpost.dexdrip.UtilityModels.ShotStateStore;
 import com.eveningoutpost.dexdrip.UtilityModels.SourceWizard;
+import com.eveningoutpost.dexdrip.UtilityModels.StatusLine;
 import com.eveningoutpost.dexdrip.UtilityModels.UndoRedo;
 import com.eveningoutpost.dexdrip.UtilityModels.UpdateActivity;
 import com.eveningoutpost.dexdrip.UtilityModels.VoiceCommands;
-import com.eveningoutpost.dexdrip.calibrations.CalibrationAbstract;
 import com.eveningoutpost.dexdrip.calibrations.NativeCalibrationPipe;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.dagger.Injectors;
@@ -115,7 +113,6 @@ import com.eveningoutpost.dexdrip.insulin.pendiq.Pendiq;
 import com.eveningoutpost.dexdrip.languageeditor.LanguageEditor;
 import com.eveningoutpost.dexdrip.profileeditor.DatePickerFragment;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileAdapter;
-import com.eveningoutpost.dexdrip.stats.StatsResult;
 import com.eveningoutpost.dexdrip.ui.BaseShelf;
 import com.eveningoutpost.dexdrip.ui.MicroStatus;
 import com.eveningoutpost.dexdrip.ui.MicroStatusImpl;
@@ -135,7 +132,6 @@ import com.eveningoutpost.dexdrip.utils.LibreTrendGraph;
 import com.eveningoutpost.dexdrip.utils.Preferences;
 import com.eveningoutpost.dexdrip.utils.SdcardImportExport;
 import com.eveningoutpost.dexdrip.wearintegration.Amazfitservice;
-import com.eveningoutpost.dexdrip.wearintegration.ExternalStatusService;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.Target;
@@ -176,8 +172,6 @@ import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.getCol;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.DAY_IN_MS;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.HOUR_IN_MS;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.MINUTE_IN_MS;
-import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.getCalibrationPlugin;
-import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.getCalibrationPluginFromPreferences;
 
 
 public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPermissionsResultCallback {
@@ -2850,171 +2844,12 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         }
 
         if (Pref.getBoolean("extra_status_line", false)) {
-            extraStatusLineText.setText(extraStatusLine());
+            extraStatusLineText.setText(StatusLine.extraStatusLine());
             extraStatusLineText.setVisibility(View.VISIBLE);
         } else {
             extraStatusLineText.setText("");
             extraStatusLineText.setVisibility(View.GONE);
         }
-    }
-
-    // TODO EXTRACT METHOD
-    @NonNull
-    public static String extraStatusLine() {
-
-        final StringBuilder extraline = new StringBuilder();
-        final Calibration lastCalibration = Calibration.lastValid();
-        if (Pref.getBoolean("status_line_calibration_long", false) && lastCalibration != null) {
-            if (extraline.length() != 0) extraline.append(' ');
-            extraline.append("slope = ");
-            extraline.append(String.format("%.2f", lastCalibration.slope));
-            extraline.append(' ');
-            extraline.append("inter = ");
-            extraline.append(String.format("%.2f", lastCalibration.intercept));
-        }
-
-        if (Pref.getBoolean("status_line_calibration_short", false) && lastCalibration != null) {
-            if (extraline.length() != 0) extraline.append(' ');
-            extraline.append("s:");
-            extraline.append(String.format("%.2f", lastCalibration.slope));
-            extraline.append(' ');
-            extraline.append("i:");
-            extraline.append(String.format("%.2f", lastCalibration.intercept));
-        }
-
-        if (Pref.getBoolean("status_line_avg", false)
-                || Pref.getBoolean("status_line_a1c_dcct", false)
-                || Pref.getBoolean("status_line_a1c_ifcc", false)
-                || Pref.getBoolean("status_line_in", false)
-                || Pref.getBoolean("status_line_high", false)
-                || Pref.getBoolean("status_line_low", false)
-                || Pref.getBoolean("status_line_stdev", false)
-                || Pref.getBoolean("status_line_carbs", false)
-                || Pref.getBoolean("status_line_insulin", false)
-                || Pref.getBoolean("status_line_royce_ratio", false)
-                || Pref.getBoolean("status_line_accuracy", false)
-                || Pref.getBoolean("status_line_capture_percentage", false)
-                || Pref.getBoolean("status_line_realtime_capture_percentage", false)
-                || Pref.getBoolean("status_line_pump_reservoir", false)
-                || Pref.getBooleanDefaultFalse("status_line_external_status")) {
-
-            final StatsResult statsResult = new StatsResult(Pref.getInstance(), Pref.getBooleanDefaultFalse("extra_status_stats_24h"));
-
-            if (Pref.getBoolean("status_line_avg", false)) {
-                if (extraline.length() != 0) extraline.append(' ');
-                extraline.append(statsResult.getAverageUnitised());
-            }
-            if (Pref.getBoolean("status_line_a1c_dcct", false)) {
-                if (extraline.length() != 0) extraline.append(' ');
-                extraline.append(statsResult.getA1cDCCT());
-            }
-            if (Pref.getBoolean("status_line_a1c_ifcc", false)) {
-                if (extraline.length() != 0) extraline.append(' ');
-                extraline.append(statsResult.getA1cIFCC());
-            }
-            if (Pref.getBoolean("status_line_in", false)) {
-                if (extraline.length() != 0) extraline.append(' ');
-                extraline.append(statsResult.getInPercentage());
-            }
-            if (Pref.getBoolean("status_line_high", false)) {
-                if (extraline.length() != 0) extraline.append(' ');
-                extraline.append(statsResult.getHighPercentage());
-            }
-            if (Pref.getBoolean("status_line_low", false)) {
-                if (extraline.length() != 0) extraline.append(' ');
-                extraline.append(statsResult.getLowPercentage());
-            }
-            if (Pref.getBoolean("status_line_stdev", false)) {
-                if (extraline.length() != 0) extraline.append(' ');
-                extraline.append(statsResult.getStdevUnitised());
-            }
-            if (Pref.getBoolean("status_line_carbs", false)) {
-                if (extraline.length() != 0) extraline.append(' ');
-                //extraline.append("Carbs: " + statsResult.getTotal_carbs());
-                extraline.append("Carbs:" + Math.round(statsResult.getTotal_carbs()));
-            }
-            if (Pref.getBoolean("status_line_insulin", false)) {
-                if (extraline.length() != 0) extraline.append(' ');
-                extraline.append("U:" + JoH.qs(statsResult.getTotal_insulin(), 2));
-            }
-            if (Pref.getBoolean("status_line_royce_ratio", false)) {
-                if (extraline.length() != 0) extraline.append(' ');
-                extraline.append("C/I:" + JoH.qs(statsResult.getRatio(), 2));
-            }
-            if (Pref.getBoolean("status_line_capture_percentage", false)) {
-                if (extraline.length() != 0) extraline.append(' ');
-                extraline.append(statsResult.getCapturePercentage(false));
-            }
-            if (Pref.getBoolean("status_line_realtime_capture_percentage", false) &&
-                    statsResult.canShowRealtimeCapture()) {
-                if (extraline.length() != 0) extraline.append(' ');
-                extraline.append(statsResult.getRealtimeCapturePercentage(false));
-            }
-            if (Pref.getBoolean("status_line_accuracy", false)) {
-                final long accuracy_period = DAY_IN_MS * 3;
-                if (extraline.length() != 0) extraline.append(' ');
-                final String accuracy_report = Accuracy.evaluateAccuracy(accuracy_period);
-                if ((accuracy_report != null) && (accuracy_report.length() > 0)) {
-                    extraline.append(accuracy_report);
-                } else {
-                    final String accuracy = BloodTest.evaluateAccuracy(accuracy_period);
-                    extraline.append(((accuracy != null) ? " " + accuracy : ""));
-                }
-            }
-
-            if (Pref.getBoolean("status_line_pump_reservoir", false)) {
-                if (extraline.length() != 0) extraline.append(' ');
-                extraline.append(PumpStatus.getBolusIoBString());
-                extraline.append(PumpStatus.getReservoirString());
-                extraline.append(PumpStatus.getBatteryString());
-            }
-
-            if (Pref.getBooleanDefaultFalse("status_line_external_status")) {
-                if (extraline.length() != 0) extraline.append(' ');
-                extraline.append(ExternalStatusService.getLastStatusLine());
-            }
-
-        }
-        if (Pref.getBoolean("extra_status_calibration_plugin", false)) {
-            final CalibrationAbstract plugin = getCalibrationPluginFromPreferences(); // make sure do this only once
-            if (plugin != null) {
-                final CalibrationAbstract.CalibrationData pcalibration = plugin.getCalibrationData();
-                if (extraline.length() > 0) extraline.append("\n"); // not tested on the widget yet
-                if (pcalibration != null)
-                    extraline.append("(" + plugin.getAlgorithmName() + ") s:" + JoH.qs(pcalibration.slope, 2) + " i:" + JoH.qs(pcalibration.intercept, 2));
-                BgReading bgReading = BgReading.last();
-                if (bgReading != null) {
-                    final boolean doMgdl = Pref.getString("units", "mgdl").equals("mgdl");
-                    extraline.append(" \u21D2 " + BgGraphBuilder.unitized_string(plugin.getGlucoseFromSensorValue(bgReading.age_adjusted_raw_value), doMgdl) + " " + BgGraphBuilder.unit(doMgdl));
-                }
-            }
-
-            // If we are using the plugin as the primary then show xdrip original as well
-            if (Pref.getBooleanDefaultFalse("display_glucose_from_plugin") || Pref.getBooleanDefaultFalse("use_pluggable_alg_as_primary")) {
-                final CalibrationAbstract plugin_xdrip = getCalibrationPlugin(PluggableCalibration.Type.xDripOriginal); // make sure do this only once
-                if (plugin_xdrip != null) {
-                    final CalibrationAbstract.CalibrationData pcalibration = plugin_xdrip.getCalibrationData();
-                    if (extraline.length() > 0)
-                        extraline.append("\n"); // not tested on the widget yet
-                    if (pcalibration != null)
-                        extraline.append("(" + plugin_xdrip.getAlgorithmName() + ") s:" + JoH.qs(pcalibration.slope, 2) + " i:" + JoH.qs(pcalibration.intercept, 2));
-                    BgReading bgReading = BgReading.last();
-                    if (bgReading != null) {
-                        final boolean doMgdl = Pref.getString("units", "mgdl").equals("mgdl");
-                        extraline.append(" \u21D2 " + BgGraphBuilder.unitized_string(plugin_xdrip.getGlucoseFromSensorValue(bgReading.age_adjusted_raw_value), doMgdl) + " " + BgGraphBuilder.unit(doMgdl));
-                    }
-                }
-            }
-
-        }
-
-        if (Pref.getBoolean("status_line_time", false)) {
-            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-            if (extraline.length() != 0) extraline.append(' ');
-            extraline.append(sdf.format(new Date()));
-        }
-        return extraline.toString();
-
     }
 
     public static long stale_data_millis() {
