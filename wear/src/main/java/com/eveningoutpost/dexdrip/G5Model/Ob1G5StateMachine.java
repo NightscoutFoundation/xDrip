@@ -229,35 +229,7 @@ public class Ob1G5StateMachine {
                                                 .subscribe(
                                                         status_value -> {
                                                             // interpret authentication response
-                                                            final PacketShop status_packet = classifyPacket(status_value);
-                                                            UserError.Log.d(TAG, status_packet.type + " " + JoH.bytesToHex(status_value));
-                                                            if (status_packet.type == PACKET.AuthStatusRxMessage) {
-                                                                final AuthStatusRxMessage status = (AuthStatusRxMessage) status_packet.msg;
-                                                                if (d)
-                                                                    UserError.Log.d(TAG, ("Authenticated: " + status.isAuthenticated() + " " + status.isBonded()));
-                                                                if (status.isAuthenticated()) {
-                                                                    if (status.isBonded()) {
-                                                                        parent.msg("Authenticated");
-                                                                        parent.authResult(true);
-                                                                        parent.changeState(Ob1G5CollectionService.STATE.GET_DATA);
-                                                                        throw new OperationSuccess("Authenticated");
-                                                                    } else {
-                                                                        //parent.unBond(); // bond must be invalid or not existing // WARN
-                                                                        parent.changeState(Ob1G5CollectionService.STATE.PREBOND);
-                                                                        // TODO what to do here?
-                                                                    }
-                                                                } else {
-                                                                    parent.msg("Not Authorized! (Wrong TxID?)");
-                                                                    UserError.Log.e(TAG, "Authentication failed!!!!");
-                                                                    parent.incrementErrors();
-                                                                    // TODO? try again?
-                                                                }
-                                                            } else {
-                                                                UserError.Log.e(TAG, "Got unexpected packet when looking for auth status: " + status_packet.type + " " + JoH.bytesToHex(status_value));
-                                                                parent.incrementErrors();
-                                                                // TODO what to do here?
-                                                            }
-
+                                                            authenticationProcessor(parent, connection, status_value);
                                                         }, throwable -> {
                                                             if (throwable instanceof OperationSuccess) {
                                                                 UserError.Log.d(TAG, "Stopping auth challenge listener due to success");
@@ -279,6 +251,45 @@ public class Ob1G5StateMachine {
                     return;
                 }
 
+                break;
+
+            case AuthStatusRxMessage:
+                final AuthStatusRxMessage status = (AuthStatusRxMessage) pkt.msg;
+                if (d)
+                    UserError.Log.d(TAG, ("Authenticated: " + status.isAuthenticated() + " " + status.isBonded()));
+                if (status.isAuthenticated()) {
+                    if (status.isBonded()) {
+                        parent.msg("Authenticated");
+                        parent.authResult(true);
+                        parent.changeState(Ob1G5CollectionService.STATE.GET_DATA);
+                        throw new OperationSuccess("Authenticated");
+                    } else {
+                        //parent.unBond(); // bond must be invalid or not existing // WARN
+                        parent.changeState(Ob1G5CollectionService.STATE.PREBOND);
+                        // TODO what to do here?
+                    }
+                } else {
+                    parent.msg("Not Authorized! (Wrong TxID?)");
+                    UserError.Log.e(TAG, "Authentication failed!!!!");
+                    parent.incrementErrors();
+                    // TODO? try again?
+                }
+                break;
+
+            case BondRequestRxMessage:
+                UserError.Log.d(TAG, "Wrote bond request successfully");
+                parent.waitingBondConfirmation = 1; // waiting
+
+                parent.instantCreateBondIfAllowed();
+                UserError.Log.d(TAG, "Sleeping for bond");
+                for (int i = 0; i < 9; i++) {
+                    if (parent.waitingBondConfirmation == 2) {
+                        UserError.Log.d(TAG, "Bond confirmation received - continuing!");
+                        break;
+                    }
+                    threadSleep(1000);
+                }
+                parent.changeState(Ob1G5CollectionService.STATE.BOND);
                 break;
 
             default:
@@ -359,23 +370,8 @@ public class Ob1G5StateMachine {
                                                         .subscribe(
                                                                 status_value -> {
                                                                     UserError.Log.d(TAG, "Got status read after keepalive " + JoH.bytesToHex(status_value));
-
-                                                                    UserError.Log.d(TAG, "Wrote bond request successfully");
-                                                                    parent.waitingBondConfirmation = 1; // waiting
-
-                                                                    parent.instantCreateBondIfAllowed();
-                                                                    UserError.Log.d(TAG, "Sleeping for bond");
-                                                                    for (int i = 0; i < 9; i++) {
-                                                                        if (parent.waitingBondConfirmation == 2) {
-                                                                            UserError.Log.d(TAG, "Bond confirmation received - continuing!");
-                                                                            break;
-                                                                        }
-                                                                        threadSleep(1000);
-                                                                    }
-                                                                    parent.changeState(Ob1G5CollectionService.STATE.BOND);
+                                                                    authenticationProcessor(parent, connection, status_value);
                                                                     throw new OperationSuccess("Bond requested");
-
-//
                                                                 }, throwable -> {
                                                                     UserError.Log.e(TAG, "Throwable when reading characteristic after keepalive: " + throwable);
                                                                 });
@@ -1463,6 +1459,7 @@ public class Ob1G5StateMachine {
         CalibrateRxMessage,
         BackFillRxMessage,
         TransmitterTimeRxMessage,
+        BondRequestRxMessage,
         InvalidRxMessage,
 
     }
@@ -1506,8 +1503,11 @@ public class Ob1G5StateMachine {
                 return new PacketShop(PACKET.BackFillRxMessage, new BackFillRxMessage(packet));
             case TransmitterTimeRxMessage.opcode:
                 return new PacketShop(PACKET.TransmitterTimeRxMessage, new TransmitterTimeRxMessage(packet));
+            case BondRequestTxMessage.opcode:
+                return new PacketShop(PACKET.BondRequestRxMessage, null);
             case InvalidRxMessage.opcode:
                 return new PacketShop(PACKET.InvalidRxMessage, new InvalidRxMessage(packet));
+
         }
         return new PacketShop(PACKET.UNKNOWN, null);
     }
