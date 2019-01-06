@@ -173,8 +173,8 @@
     <string name="low_level_prediction_values">Valores de previsão de Hipo</string>
     <string name="glucose_drop_for_one_unit">Baixa de Glicemia por 1 Uni.</string>
     <string name="xdrip_plus_prediction_settings">Simulação Preditiva xDrip+</string>
-    <string name="settings_for_syncing">Definições para sincronização entre dispositivos móveis</string>
-    <string name="xdrip_plus_sync_settings">Definições de sincronização xDrip+</string>
+    <string name="settings_for_syncing">Definições para Sincronização entre dispositivos móveis</string>
+    <string name="xdrip_plus_sync_settings">Definições de Sincronização xDrip+</string>
     <string name="xdrip_plus_update_settings">Definições de Actualização xDrip+</string>
     <string name="automatic_update_check">Verificar actualização automaticamente</string>
     <string name="update_channel">Canal de Actualização</string>
@@ -197,7 +197,7 @@
     <string name="forecasted_low_alert">Alerta de previsão de Hipo</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Extrapolar dados para tentar prever Hipos</string>
     <string name="alarm_at_forecasted_low_mins">Alarme para Previsões de Baixa em mins</string>
-    <string name="other_xdrip_plus_alerts">Outros alertas xDrip+</string>
+    <string name="other_xdrip_plus_alerts">Outros Alertas xDrip+</string>
     <string name="xdrip_plus_display_settings">Definições de Visualização xDrip+</string>
     <string name="display_customisations">Personalizações de visualização</string>
     <string name="insulin_carb_ratios_etc_for_models">Insulina, rácios de Hidratos etc para modelos</string>
