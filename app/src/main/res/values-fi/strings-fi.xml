@@ -64,13 +64,13 @@
     <string name="title_activity_share_test">Share koe</string>
     <!-- pebble settings -->
     <string name="pref_pebble_trend_watchface">Käytä Pebblen kellotaulua</string>
-    <string name="pref_summary_pebble_trend_watchface">Käytä / asentaa Pebble Trend Watchface (kokeellinen)</string>
-    <string name="pref_pebble_display_trend">Näyttö Trend</string>
-    <string name="pref_summary_display_trend">Näytä BG trendi on xDrip Pebble kellotaulua.</string>
-    <string name="pref_pebble_display_high_line">Näyttö High Line</string>
-    <string name="pref_pebble_display_low_line">Näyttö Low Line</string>
+    <string name="pref_summary_pebble_trend_watchface">Käytä / asenna Pebble-kellotaulu (kokeellinen ominaisuus)</string>
+    <string name="pref_pebble_display_trend">Näytä trendi</string>
+    <string name="pref_summary_display_trend">Näytä verensokeritrendi Pebble kellotaulussa</string>
+    <string name="pref_pebble_display_high_line">Näytä korkea linja</string>
+    <string name="pref_pebble_display_low_line">Näytä matala linja</string>
     <!-- Amazfit Settings -->
-    <string name="toast_crash">Jokin meni pieleen :( raportti on lähetetty auttaa korjaamaan ongelman.</string>
+    <string name="toast_crash">Jokin meni pieleen :( raportti on lähetetty ja tutkimme ongelmaa.</string>
     <string name="taskerConfigInstruction">Napsauta Tick kuvaketta täällä vahvista. Sinun ei tarvitse muuttaa asetuksia merkkijonon.</string>
     <string name="add_widget">Lisää widget</string>
     <string name="speaktreatment">Puhu hoito</string>
@@ -109,7 +109,7 @@
     <string name="persistent_high_for_greater_than">Pysyvät Korkealla&gt; </string>
     <string name="space_mins">" Min"</string>
     <string name="till">asti</string>
-    <string name="low_predicted">Low ennusti</string>
+    <string name="low_predicted">Matala ennustettu</string>
     <string name="in">sisään</string>
     <string name="yes_enter_setup_mode">Kyllä asetustilaan</string>
     <string name="nokeep_parakeet_as_it_is">Ei pidä Parakeet kun se on</string>
