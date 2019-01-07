@@ -43,7 +43,7 @@ import static com.eveningoutpost.dexdrip.Services.JamBaseBluetoothSequencer.Base
 public abstract class JamBaseBluetoothSequencer extends JamBaseBluetoothService implements BtCallBack {
 
     private static final HashMap<UUID, String> mapToName = new HashMap<>();
-    protected final RxBleClient rxBleClient = RxBleProvider.getSingleton();
+    protected final RxBleClient rxBleClient = RxBleProvider.getSingleton(this.getClass().getCanonicalName());
     private volatile String myid;
     protected volatile Inst I;
 
