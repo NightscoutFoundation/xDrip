@@ -115,7 +115,7 @@
     <string name="blood_test">Teste com gota de sangue</string>
     <string name="share">Partilhar</string>
     <string name="title_activity_profile_editor">Editor de Perfil de Tratamento</string>
-    <string name="first_use_menu_to_scan">Utilize o menu para pesquisar o seu dispositivo Bluetooth ou altere a Origem de Dados nas Definições!</string>
+    <string name="first_use_menu_to_scan">Utilize o menu para pesquisar o seu dispositivo Bluetooth ou altere a Fonte de Dados nas Definições!</string>
     <string name="first_configure_ip_address">Configure o IP do seu leitor Wifi Wixel ou URL do Parakeet</string>
     <string name="now_start_your_sensor">Agora inicie o seu sensor ou verifique as Definições</string>
     <string name="please_wait_while_sensor_warms_up">Por favor aguarde enquanto o sensor inicializa! (</string>
@@ -212,7 +212,7 @@
     <string name="calibration_data_table">Tabela de Calibração</string>
     <string name="bg_data_table">Tabela de Glicemia</string>
     <string name="cannot_calibrate_right_now">Impossível Calibrar agora</string>
-    <string name="hardware_data_source">Hardware Origem de Dados</string>
+    <string name="hardware_data_source">Hardware Fonte de Dados</string>
     <string name="enter_ten_character_dexcom_receiver_serial">Introduza 10 caracteres do número de série do Dexcom Receiver</string>
     <string name="dexcom_transmitter_id">ID do Transmissor Dexcom</string>
     <string name="run_collector_in_foreground">Executar Dispositivo BT em primeiro plano</string>
@@ -221,7 +221,7 @@
     <string name="extra_tags_for_logging">Etiquetas extra para registo</string>
     <string name="extra_tags_dialog_message">As etiquetas inseridas aqui serão registadas no xDrip. O formato é etiqueta: nível. Nível pode ser v,d,i. Por exemplo bgreading:i,DexCollectionService:v. Estas etiquetas serão registadas com baixa prioridade ao Erro e lista de eventos.</string>
     <string name="extra_tags_dialog_title">Introduza mais etiquetas para serem registadas</string>
-    <string name="data_source_settings">Definições da Origem de Dados</string>
+    <string name="data_source_settings">Definições da Fonte de Dados</string>
     <string name="smart_watch_features">Funções Smart Watch</string>
     <string name="wear_integration">Integração Wear</string>
     <string name="send_data_to_android_wear_watch">Enviar dados para Android Wear Watchface.</string>
@@ -675,7 +675,7 @@
     <string name="unbond_g5_before_read">Desagregar G5 antes de cada leitura</string>
     <string name="g5_remove_before_read">Isto removerá o G5 da lista de dispositivos emparelhados do seu dispositivo e tentará uma ligação e autenticação completa a cada tentativa de leitura.</string>
     <string name="g5_experimental_mode">Modo experimental o qual não usa dados brutos</string>
-    <string name="use_calibrated_data">Utilizar dados calibrados como origem</string>
+    <string name="use_calibrated_data">Utilizar dados calibrados como fonte</string>
     <string name="data_sync">Sincronizar Dados</string>
     <string name="options_for_upload">Configurações de envio para Nightscout, MongDB or Dexcom Share</string>
     <string name="cloud_upload">Envio para a Cloud</string>
@@ -884,7 +884,7 @@
     <string name="fitbit">Fitbit</string>
     <string name="enable_local_web_server_feature">Activar função servidor local web para Garmin watchface?</string>
     <string name="enable_local_web_server_feature_fitbit">Activar função servidor local web para Fitbit watchface?</string>
-    <string name="set_data_source_to">Definir Origem de Dados para: %s ?</string>
+    <string name="set_data_source_to">Definir Fonte de Dados para: %s ?</string>
     <string name="are_you_sure">Tem a certeza?</string>
     <string name="g4_share_receiver">Receptor G4 Share</string>
     <string name="bluetooth_wixel">Bluetooth Wixel</string>
@@ -901,7 +901,7 @@
     <string name="androidaps">AndroidAPS</string>
     <string name="androidwear">Android Wear OS</string>
     <string name="librealarm">LibreAlarm</string>
-    <string name="use_librealarm">Utilizar app LibreAlarm como origem de dados?</string>
+    <string name="use_librealarm">Utilizar app LibreAlarm como fonte de dados?</string>
     <string name="noise_blocking">Bloqueio de Leituras Irregulares (Noise)</string>
     <string name="level_at_which_noisy_data_should_not_be_broadcast">Nível na quais leituras irregulares não são difundidas já que poderiam enganar as apps receptoras</string>
     <string name="low_parakeet_battery">Parakeet bateria fraca</string>
