@@ -11,10 +11,10 @@
     <string name="error_bluetooth_not_supported">Virhe: Bluetooth ei tue tätä laitetta</string>
     <string name="unknown_device">Tunnistamaton laite</string>
     <string name="connecting_to_device">Liittäminen laitteeseen</string>
-    <string name="title_activity_calculated_data_table">Laskettu Data Table</string>
-    <string name="title_activity_start_new_sensor">Aloita uusi Sensor</string>
-    <string name="title_activity_stop_sensor">Lopeta Sensor</string>
-    <string name="title_activity_nav_drawer">Nav Laatikon</string>
+    <string name="title_activity_calculated_data_table">Laskettu tietotaulukko</string>
+    <string name="title_activity_start_new_sensor">Aloita uusi sensori</string>
+    <string name="title_activity_stop_sensor">Lopeta sensori</string>
+    <string name="title_activity_nav_drawer">Navigaatiopaneeli</string>
     <string name="navigation_drawer_open">Open navigointipaneeli</string>
     <string name="navigation_drawer_close">Close navigointipaneeli</string>
     <string name="title_activity_calibration_check_in">Kalibrointi Activity</string>
