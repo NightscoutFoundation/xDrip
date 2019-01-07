@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.databinding.ObservableArrayList;
 import android.databinding.ObservableList;
+import android.support.annotation.StringRes;
 import android.view.View;
 
 import com.eveningoutpost.dexdrip.BR;
@@ -35,7 +36,7 @@ public class SourceWizard {
     private AlertDialog dialog;
     private Activity activity;
     // Create the dialog decision tree
-    private Tree<Item> root = new Tree<>(new Item("Choose Data Source", "Which system do you use?"));
+    private Tree<Item> root = new Tree<>(new Item(gs(R.string.choose_data_source), gs(R.string.which_system_do_you_use)));
 
     {
         Tree<Item> g5g6 = root.addChild(new Item("G4, G5 & G6", gs(R.string.which_type_of_device), R.drawable.g5_icon));
@@ -64,7 +65,7 @@ public class SourceWizard {
         }
         Tree<Item> other = root.addChild(new Item(gs(R.string.other), gs(R.string.which_type_of_device), R.drawable.wikimedia_question_mark));
         other.addChild(new Item("640G / 670G", DexCollectionType.NSEmulator, R.drawable.mm600_series));
-        other.addChild(new Item("Medtrum A6", DexCollectionType.Medtrum, R.drawable.a6_icon));
+        other.addChild(new Item("Medtrum A6 / S7", DexCollectionType.Medtrum, R.drawable.a6_icon));
         //
         other.addChild(new Item("EverSense", DexCollectionType.NSEmulator, R.drawable.wikimedia_eversense_icon_pbroks13));
     }
@@ -102,7 +103,7 @@ public class SourceWizard {
         return node.data.name.equals(name);
     }
 
-    private static String gs(int id) {
+    private static String gs(@StringRes final int id) {
         return xdrip.getAppContext().getString(id);
     }
 

@@ -1142,5 +1142,7 @@
     <string name="please_allow_permission">Please Allow Permission</string>
     <string name="without_location_scan_doesnt_work">Without Location permission Android Bluetooth scan doesn\'t work</string>
     <string name="without_location_permission_emergency_cannot_get_location">Without Location permission emergency messages cannot use location data</string>
+    <string name="choose_data_source">Choose Data Source</string>
+    <string name="which_system_do_you_use">Which system do you use?</string>
 
 </resources>
