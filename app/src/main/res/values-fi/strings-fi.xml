@@ -37,33 +37,33 @@
     <!-- MongoDB Settings -->
     <string name="pref_dialog_mongodb_uri">Anna MongoDB URI\"</string>
     <string name="pref_message_mongodb_uri">Korvaa {} sisällä oleva esimerkki oikeilla arvoilla</string>
-    <string name="pref_default_mongodb_uri">MongoDB: // {käyttäjä}: {salasana} @ {isäntä} .mongolab.com: {11111} / {tietokanta}</string>
-    <string name="pref_title_mongodb_collection">Kokoelman nimi</string>
+    <string name="pref_default_mongodb_uri">mongodb://{käyttäjä}:{salasana}@{host}.mlab.com:{11111}/{tietokanta}</string>
+    <string name="pref_title_mongodb_collection">Kokoelman nimi (collection)</string>
     <string name="pref_dialog_mongodb_collection">Anna kokoelman nimi</string>
-    <string name="pref_message_mongodb_collection">Tämä on nimi kokoelman jossa CGM tiedot tallennetaan</string>
-    <string name="pref_title_mongodb_device_status_collection">Laitteen tila kokoelman nimi</string>
-    <string name="pref_dialog_mongodb_device_status_collection">Anna Laitteen tila kokoelman nimi\"</string>
-    <string name="pref_message_mongodb_device_status_collection">Tämä on nimi kokoelman, jossa akku ja toinen laite tiedot tallennetaan</string>
+    <string name="pref_message_mongodb_collection">Sensoritiedot sisältävän kokoelma nimi</string>
+    <string name="pref_title_mongodb_device_status_collection">Laitteiden tilan sisältävän kokoelman nimi</string>
+    <string name="pref_dialog_mongodb_device_status_collection">Anna laitteiden tilan sisältävän kokoelman nimi\"</string>
+    <string name="pref_message_mongodb_device_status_collection">Laitteiden tilan (akun varaus jne) sisältävän kokoelman nimi</string>
     <!-- API Settings -->
-    <string name="pref_title_api">API Upload (REST)</string>
+    <string name="pref_title_api">Nightscout synkronointi (REST-API)</string>
     <string name="pref_title_api_enabled">Käytössä</string>
     <string name="pref_title_api_url">Perus-URL</string>
-    <string name="pref_dialog_api_url">Anna Base API URL</string>
-    <string name="pref_message_api_url">Tämä vain pohja URL, lataaja automaattisesti liittää / merkinnät POST. API_SECRET palvelimen pitäisi vastata yourpassphrase tässä asetelmassa.</string>
-    <string name="pref_default_api_url">https: // yourpassphrase @ {YOUR paikalla} .azurewebsites.net / api / v1 /</string>
+    <string name="pref_dialog_api_url">Anna API URL</string>
+    <string name="pref_message_api_url">Kirjoita vain Nightscoutin perusosoite ilman /entries -loppua. Laita API_SECRET kohtaan sama arvo kuin minkä asetit Nightscoutissa.</string>
+    <string name="pref_default_api_url">https://API_SECRET@SIVUSTONNIMI.azurewebsites.net/api/v1/</string>
     <!-- wifi Settings -->
     <string name="wifi_recievers_dialog_message">Pilkuilla erotettu luettelo ip: portti (esimerkiksi 37.142.132.220:50005,37.142.132.220:50010,mongodb://user:pass@ds053958.mongolab.com:53958/db/collection)</string>
-    <string name="wifi_recievers_dialog_title">Anna IP-osoitteet ja satamissa vastaanottimet (mukaan lukien MongoDB osoitteet tarvittaessa)</string>
+    <string name="wifi_recievers_dialog_title">Anna IP-osoitteet ja vastaanottimien portit (mukaan lukien MongoDB osoitteet tarvittaessa)</string>
     <!-- Location Settings -->
     <string name="location_not_found_title">Sijainti ei ole käytössä</string>
-    <string name="location_not_found_message">Bluetooth-löytö toimimaan uudemmissa laitteissa, sijainti on oltava käytössä. xDrip ei seurata sijainti ja se voidaan poistaa käytöstä, kun pariliitoksen muodostaminen onnistuu.</string>
-    <string name="location_yes">Mahdollistaa</string>
+    <string name="location_not_found_message">Käyttääksesi Bluetooth-laitteita xDripin kanssa, tulee sinun laittaa puhelimen paikannuspalvelu päälle. xDrip ei seuraa sijaintiasi, ellet käytä valinnaista hätäviesti ominaisuutta</string>
+    <string name="location_yes">Käytä</string>
     <!-- broadcast settings -->
-    <string name="pref_title_broadcast_enabled">Broadcast paikallisesti</string>
-    <string name="pref_summary_broadcast_enabled">Ota paikallinen broadcast tietojen joten muut sovellukset (esim. Nightwatch) voi kuunnella uusista arvoista</string>
-    <string name="title_activity_share_test">Jaa Test</string>
+    <string name="pref_title_broadcast_enabled">Kuuluta paikallisesti</string>
+    <string name="pref_summary_broadcast_enabled">Ota käyttöön paikallinen tietojen kuulutus muita ohjelmistoja kuten NightWatchia varten</string>
+    <string name="title_activity_share_test">Share koe</string>
     <!-- pebble settings -->
-    <string name="pref_pebble_trend_watchface">Käytä Pebble Trend Watchface</string>
+    <string name="pref_pebble_trend_watchface">Käytä Pebblen kellotaulua</string>
     <string name="pref_summary_pebble_trend_watchface">Käytä / asentaa Pebble Trend Watchface (kokeellinen)</string>
     <string name="pref_pebble_display_trend">Näyttö Trend</string>
     <string name="pref_summary_display_trend">Näytä BG trendi on xDrip Pebble kellotaulua.</string>
