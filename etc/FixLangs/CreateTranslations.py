@@ -15,10 +15,31 @@
 import sys
 import os
 
+def AddImport(file_name):
+    import_str = "import static com.eveningoutpost.dexdrip.xdrip.gs;\n"
+    with open(file_name) as f:
+        lines = f.readlines()
+    
+    # The code below assumes that imports have already been sorted.
+    replaced = False
+    with open(file_name, "w") as f:
+        for line in lines:
+            if import_str == line:
+                continue;
+            if import_str > line or  line.startswith("package") or replaced:
+                f.write(line)
+                continue
+                
+            f.write(import_str)
+            replaced = True
+            f.write(line)
+    
+     
+
 def ReplaceString(file_name, id, string):
     content = open(file_name).read()
     full_string = '"%s"' %string
-    new_string = 'xdrip.gs(R.string.%s)' % id
+    new_string = 'gs(R.string.%s)' % id
     print('replacing ', full_string, new_string)
     if full_string in content:
         print('yeeeeeeeee')
@@ -46,6 +67,7 @@ def FindFileContaingString(id, string):
             continue
         print(file)
         ReplaceString(file, id, string)
+        AddImport(file)
 
 
 def ReadFile(file_name):
