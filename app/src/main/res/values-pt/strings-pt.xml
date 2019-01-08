@@ -13,7 +13,7 @@
     <string name="error_bluetooth_not_supported">Erro: Bluetooth não é suportado por este dispositivo</string>
     <string name="unknown_device">Dispositivo não reconhecido</string>
     <string name="connecting_to_device">A estabelecer ligação ao dispositivo</string>
-    <string name="title_activity_raw_data_table">Tabela de dados em bruto</string>
+    <string name="title_activity_raw_data_table">Tabela de Dados em Bruto</string>
     <string name="title_activity_calculated_data_table">Tabela de Dados Calculados</string>
     <string name="title_activity_start_new_sensor">Iniciar Novo Sensor</string>
     <string name="title_activity_new_sensor_location">Localização de Novo Sensor</string>
