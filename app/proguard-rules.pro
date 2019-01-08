@@ -107,6 +107,12 @@
    public static ** nanoStatus();
 }
 
+-keep @com.google.gson.annotations.Expose public class *
+
+-keepclassmembers public class * {
+    @com.google.gson.annotations.Expose *;
+}
+
 -dontnote rx.internal.util.PlatformDependent
 -dontnote rx.**
 -dontnote **rx.Observable.**
