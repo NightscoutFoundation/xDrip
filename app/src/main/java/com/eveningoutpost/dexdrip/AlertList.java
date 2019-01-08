@@ -30,6 +30,7 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
+import com.eveningoutpost.dexdrip.xdrip;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -285,7 +286,7 @@ public class AlertList extends ActivityWithMenu {
                     android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     != PackageManager.PERMISSION_GRANTED) {
                 final Activity activity = this;
-                JoH.show_ok_dialog(activity, "Please Allow Permission", msg, () -> ActivityCompat.requestPermissions(activity,
+                JoH.show_ok_dialog(activity, xdrip.gs(R.string.please_allow_permission), msg, () -> ActivityCompat.requestPermissions(activity,
                         new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_STORAGE));
                 return false;
             }

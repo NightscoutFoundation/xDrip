@@ -23,6 +23,7 @@ import com.eveningoutpost.dexdrip.BaseAppCompatActivity;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.xdrip;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -63,7 +64,7 @@ public class InstallPebbleWatchFace extends BaseAppCompatActivity {
                     Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     != PackageManager.PERMISSION_GRANTED) {
                 final Activity activity = this;
-                JoH.show_ok_dialog(activity, "Please Allow Permission", "Need storage permission to install watchface", new Runnable() {
+                JoH.show_ok_dialog(activity, xdrip.gs(R.string.please_allow_permission), "Need storage permission to install watchface", new Runnable() {
                     @Override
                     public void run() {
                         ActivityCompat.requestPermissions(activity,

@@ -18,7 +18,7 @@ import os
 def ReplaceString(file_name, id, string):
     content = open(file_name).read()
     full_string = '"%s"' %string
-    new_string = 'getApplicationContext().getString(R.string.%s)' % id
+    new_string = 'xdrip.gs(R.string.%s)' % id
     print('replacing ', full_string, new_string)
     if full_string in content:
         print('yeeeeeeeee')

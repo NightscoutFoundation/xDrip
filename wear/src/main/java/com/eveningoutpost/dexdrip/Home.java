@@ -23,6 +23,7 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
+import com.eveningoutpost.dexdrip.xdrip;
 import com.ustwo.clockwise.common.WatchMode;
 
 public class Home extends BaseWatchFace {
@@ -391,7 +392,7 @@ public class Home extends BaseWatchFace {
                 Log.d(TAG, "Requesting ignore battery optimization");
 
                 // if (PersistentStore.incrementLong("asked_battery_optimization") < 40) {
-                // JoH.show_ok_dialog(this, "Please Allow Permission", "xDrip+ needs whitelisting for proper performance", new Runnable() {
+                // JoH.show_ok_dialog(this, xdrip.gs(R.string.please_allow_permission), "xDrip+ needs whitelisting for proper performance", new Runnable() {
 
                 //     @Override
                 //    public void run() {

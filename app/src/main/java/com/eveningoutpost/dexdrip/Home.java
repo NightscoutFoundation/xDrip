@@ -133,6 +133,7 @@ import com.eveningoutpost.dexdrip.utils.Preferences;
 import com.eveningoutpost.dexdrip.utils.SdcardImportExport;
 import com.eveningoutpost.dexdrip.wearintegration.Amazfitservice;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
+import com.eveningoutpost.dexdrip.xdrip;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.Target;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
@@ -638,7 +639,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
                 if (((dialog == null) || (!dialog.isShowing()))
                         && (PersistentStore.incrementLong("asked_battery_optimization") < 40)) {
-                    JoH.show_ok_dialog(this, "Please Allow Permission", "xDrip+ needs whitelisting for proper performance", new Runnable() {
+                    JoH.show_ok_dialog(this, xdrip.gs(R.string.please_allow_permission), "xDrip+ needs whitelisting for proper performance", new Runnable() {
 
                         @RequiresApi(api = Build.VERSION_CODES.M)
                         @Override
