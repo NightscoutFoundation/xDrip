@@ -13,7 +13,7 @@
     <string name="error_bluetooth_not_supported">Erro: Bluetooth não é suportado por este dispositivo</string>
     <string name="unknown_device">Dispositivo não reconhecido</string>
     <string name="connecting_to_device">A estabelecer ligação ao dispositivo</string>
-    <string name="title_activity_raw_data_table">Tabela de dados em bruto</string>
+    <string name="title_activity_raw_data_table">Tabela de Dados em Bruto</string>
     <string name="title_activity_calculated_data_table">Tabela de Dados Calculados</string>
     <string name="title_activity_start_new_sensor">Iniciar Novo Sensor</string>
     <string name="title_activity_new_sensor_location">Localização de Novo Sensor</string>
@@ -44,7 +44,7 @@
     <string name="pref_title_mongodb">MongoDB</string>
     <string name="pref_summary_mongodb_enabled">Carregamento directo da base de dados, não recomendado para Nightscout</string>
     <string name="pref_title_mongodb_uri">URL</string>
-    <string name="pref_dialog_mongodb_uri">Introduza MongoDB URL\"</string>
+    <string name="pref_dialog_mongodb_uri">Introduzir MongoDB URL\"</string>
     <string name="pref_message_mongodb_uri">Substituir valores exemplo em {} pelos seus valores</string>
     <string name="pref_default_mongodb_uri">mongodb://{utilizador}:{palavra-passe}@{host}.mongolab.com:{11111}/{base-de-dados}</string>
     <string name="pref_title_mongodb_collection">Nome da colecção</string>
@@ -58,7 +58,7 @@
     <string name="pref_title_api_enabled">Activado</string>
     <string name="pref_summary_api_enabled">A REST API é a maneira padrão para se ligar ao Nightscout</string>
     <string name="pref_title_api_url">URL base</string>
-    <string name="pref_dialog_api_url">Introduza URL base da API</string>
+    <string name="pref_dialog_api_url">Introduzir URL Base da API</string>
     <string name="pref_message_api_url">Isto é apenas o URL base, o uploader acrescentará automaticamente /entries para o POST. O API_SECRET no servidor deverá ser igual à suapalavrapasse nesta definição.</string>
     <string name="pref_default_api_url">https://suapalavrapasse@{SEU-SITE}.azurewebsites.net/api/v1/</string>
     <!-- wifi Settings -->
@@ -115,7 +115,7 @@
     <string name="blood_test">Teste com gota de sangue</string>
     <string name="share">Partilhar</string>
     <string name="title_activity_profile_editor">Editor de Perfil de Tratamento</string>
-    <string name="first_use_menu_to_scan">Utilize o menu para pesquisar o seu dispositivo Bluetooth ou altere a Origem de Dados nas Definições!</string>
+    <string name="first_use_menu_to_scan">Utilize o menu para pesquisar o seu dispositivo Bluetooth ou altere a Fonte de Dados nas Definições!</string>
     <string name="first_configure_ip_address">Configure o IP do seu leitor Wifi Wixel ou URL do Parakeet</string>
     <string name="now_start_your_sensor">Agora inicie o seu sensor ou verifique as Definições</string>
     <string name="please_wait_while_sensor_warms_up">Por favor aguarde enquanto o sensor inicializa! (</string>
@@ -173,8 +173,8 @@
     <string name="low_level_prediction_values">Valores de previsão de Hipo</string>
     <string name="glucose_drop_for_one_unit">Baixa de Glicemia por 1 Uni.</string>
     <string name="xdrip_plus_prediction_settings">Simulação Preditiva xDrip+</string>
-    <string name="settings_for_syncing">Definições para sincronização entre dispositivos móveis</string>
-    <string name="xdrip_plus_sync_settings">Definições de sincronização xDrip+</string>
+    <string name="settings_for_syncing">Definições para Sincronização entre dispositivos móveis</string>
+    <string name="xdrip_plus_sync_settings">Definições de Sincronização xDrip+</string>
     <string name="xdrip_plus_update_settings">Definições de Actualização xDrip+</string>
     <string name="automatic_update_check">Verificar actualização automaticamente</string>
     <string name="update_channel">Canal de Actualização</string>
@@ -197,7 +197,7 @@
     <string name="forecasted_low_alert">Alerta de previsão de Hipo</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Extrapolar dados para tentar prever Hipos</string>
     <string name="alarm_at_forecasted_low_mins">Alarme para Previsões de Baixa em mins</string>
-    <string name="other_xdrip_plus_alerts">Outros alertas xDrip+</string>
+    <string name="other_xdrip_plus_alerts">Outros Alertas xDrip+</string>
     <string name="xdrip_plus_display_settings">Definições de Visualização xDrip+</string>
     <string name="display_customisations">Personalizações de visualização</string>
     <string name="insulin_carb_ratios_etc_for_models">Insulina, rácios de Hidratos etc para modelos</string>
@@ -212,7 +212,7 @@
     <string name="calibration_data_table">Tabela de Calibração</string>
     <string name="bg_data_table">Tabela de Glicemia</string>
     <string name="cannot_calibrate_right_now">Impossível Calibrar agora</string>
-    <string name="hardware_data_source">Hardware Origem de Dados</string>
+    <string name="hardware_data_source">Hardware Fonte de Dados</string>
     <string name="enter_ten_character_dexcom_receiver_serial">Introduza 10 caracteres do número de série do Dexcom Receiver</string>
     <string name="dexcom_transmitter_id">ID do Transmissor Dexcom</string>
     <string name="run_collector_in_foreground">Executar Dispositivo BT em primeiro plano</string>
@@ -221,7 +221,7 @@
     <string name="extra_tags_for_logging">Etiquetas extra para registo</string>
     <string name="extra_tags_dialog_message">As etiquetas inseridas aqui serão registadas no xDrip. O formato é etiqueta: nível. Nível pode ser v,d,i. Por exemplo bgreading:i,DexCollectionService:v. Estas etiquetas serão registadas com baixa prioridade ao Erro e lista de eventos.</string>
     <string name="extra_tags_dialog_title">Introduza mais etiquetas para serem registadas</string>
-    <string name="data_source_settings">Definições da Origem de Dados</string>
+    <string name="data_source_settings">Definições da Fonte de Dados</string>
     <string name="smart_watch_features">Funções Smart Watch</string>
     <string name="wear_integration">Integração Wear</string>
     <string name="send_data_to_android_wear_watch">Enviar dados para Android Wear Watchface.</string>
@@ -313,7 +313,7 @@
     <string name="default_snooze">Silêncio Pré-definido</string>
     <string name="until_you_reenable">Até serem re-activados</string>
     <string name="set">Definir</string>
-    <string name="disable_low_alerts">Desactivar alertas de Hipo</string>
+    <string name="disable_low_alerts">Desactivar Alertas de Hipo</string>
     <string name="re_enable_low_alerts">Re-Activar Alertas de Hipo</string>
     <string name="disable_high_alerts">Desactivar Alertas de Hiper</string>
     <string name="re_enable_high_alerts">Re-Activar Alertas de Hiper</string>
@@ -675,7 +675,7 @@
     <string name="unbond_g5_before_read">Desagregar G5 antes de cada leitura</string>
     <string name="g5_remove_before_read">Isto removerá o G5 da lista de dispositivos emparelhados do seu dispositivo e tentará uma ligação e autenticação completa a cada tentativa de leitura.</string>
     <string name="g5_experimental_mode">Modo experimental o qual não usa dados brutos</string>
-    <string name="use_calibrated_data">Utilizar dados calibrados como origem</string>
+    <string name="use_calibrated_data">Utilizar dados calibrados como fonte</string>
     <string name="data_sync">Sincronizar Dados</string>
     <string name="options_for_upload">Configurações de envio para Nightscout, MongDB or Dexcom Share</string>
     <string name="cloud_upload">Envio para a Cloud</string>
@@ -884,7 +884,7 @@
     <string name="fitbit">Fitbit</string>
     <string name="enable_local_web_server_feature">Activar função servidor local web para Garmin watchface?</string>
     <string name="enable_local_web_server_feature_fitbit">Activar função servidor local web para Fitbit watchface?</string>
-    <string name="set_data_source_to">Definir Origem de Dados para: %s ?</string>
+    <string name="set_data_source_to">Definir Fonte de Dados para: %s ?</string>
     <string name="are_you_sure">Tem a certeza?</string>
     <string name="g4_share_receiver">Receptor G4 Share</string>
     <string name="bluetooth_wixel">Bluetooth Wixel</string>
@@ -901,7 +901,7 @@
     <string name="androidaps">AndroidAPS</string>
     <string name="androidwear">Android Wear OS</string>
     <string name="librealarm">LibreAlarm</string>
-    <string name="use_librealarm">Utilizar app LibreAlarm como origem de dados?</string>
+    <string name="use_librealarm">Utilizar app LibreAlarm como fonte de dados?</string>
     <string name="noise_blocking">Bloqueio de Leituras Irregulares (Noise)</string>
     <string name="level_at_which_noisy_data_should_not_be_broadcast">Nível na quais leituras irregulares não são difundidas já que poderiam enganar as apps receptoras</string>
     <string name="low_parakeet_battery">Parakeet bateria fraca</string>
@@ -1105,4 +1105,6 @@
     <string name="please_allow_permission">Permita Autorização</string>
     <string name="without_location_scan_doesnt_work">Sem a permissão de Localização a pesquisa do Android Bluetooth não funciona</string>
     <string name="without_location_permission_emergency_cannot_get_location">Sem permissão de Localização as mensagens de emergência não podem usar dados de localização</string>
+    <string name="choose_data_source">Escolher Fonte de Dados</string>
+    <string name="which_system_do_you_use">Qual o sistema que utiliza?</string>
 </resources>
