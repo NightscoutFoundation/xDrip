@@ -888,6 +888,12 @@ public class Preferences extends BasePreferenceActivity {
                 return false;
             });
 
+            final Preference tidePoolType = findPreference("tidepool_dev_servers");
+            tidePoolType.setOnPreferenceChangeListener((preference, newValue) -> {
+                    TidepoolUploader.resetInstance();
+                    return true;
+            });
+
             final Preference scanShare = findPreference("scan_share2_barcode");
             final EditTextPreference transmitterId = (EditTextPreference) findPreference("dex_txid");
            // final Preference closeGatt = findPreference("close_gatt_on_ble_disconnect");

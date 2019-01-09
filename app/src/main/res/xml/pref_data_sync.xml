@@ -277,7 +277,6 @@
                     android:defaultValue="0" />
                 <CheckBoxPreference
                     android:defaultValue="true"
-                    android:enabled="false"
                     android:key="tidepool_dev_servers"
                     android:summary="If enabled, uploads will go to https://int-app.tidepool.org instead of the regular https://app.tidepool.org/"
                     android:title="Use Integration (test) servers" />
