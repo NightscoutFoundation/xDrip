@@ -131,6 +131,7 @@ android {
         buildConfigField "int", "buildVersion", generateVersionNumberString()
         buildConfigField "String", "buildUUID", generateRandomUUID()
         buildConfigField "long", "buildTimestamp", generateTimestamp()
+        buildConfigField "int", "targetSDK", targetSdkVersion.mApiLevel.toString()
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
