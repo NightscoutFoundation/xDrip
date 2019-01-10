@@ -3,22 +3,22 @@
 <resources>
     <string name="title_activity_bluetooth_scan">Skanowanie Bluetooth</string>
     <string name="connected">Połączony</string>
-    <string name="disconnected">Niepołączony</string>
-    <string name="menu_scan">Skanować</string>
-    <string name="menu_stop">Zatrzymaj się</string>
-    <string name="menu_refresh">Odświeżać</string>
-    <string name="menu_export_database">Eksport bazy danych</string>
+    <string name="disconnected">Rozłączony</string>
+    <string name="menu_scan">Skanuj</string>
+    <string name="menu_stop">Zatrzymaj</string>
+    <string name="menu_refresh">Odśwież</string>
+    <string name="menu_export_database">Eksportuj bazę danych</string>
     <string name="menu_export_csv_sidiary">Eksport CSV (format SiDiary)</string>
-    <string name="menu_import_db">Importowanie bazy danych</string>
-    <string name="error_bluetooth_not_supported">Błąd: Bluetooth nie jest obsługiwany przez to urządzenie</string>
-    <string name="unknown_device">Nierozpoznany Device</string>
+    <string name="menu_import_db">Importuj bazę danych</string>
+    <string name="error_bluetooth_not_supported">Błąd: Bluetooth nie jest obsługiwany przez to urządzenie.</string>
+    <string name="unknown_device">Nierozpoznane urządzenie</string>
     <string name="connecting_to_device">Łączenie z urządzeniem</string>
     <string name="title_activity_raw_data_table">Tabela Raw Data</string>
     <string name="title_activity_calculated_data_table">Tabela danych z Obliczeniami</string>
     <string name="title_activity_start_new_sensor">Uruchom nowy czujnik</string>
-    <string name="title_activity_new_sensor_location">Nowy Lokalizacja czujnika</string>
+    <string name="title_activity_new_sensor_location">Nowa lokalizacja czujnika</string>
     <string name="title_activity_stop_sensor">Zatrzymaj Sensor</string>
-    <string name="title_activity_nav_drawer">Nav szuflady</string>
+    <string name="title_activity_nav_drawer">Rysuj Nav</string>
     <string name="navigation_drawer_open">Otwórz panel nawigacji</string>
     <string name="navigation_drawer_close">Zamknij panel nawigacji</string>
     <string name="title_activity_calibration_check_in">Aktywna Kalibracja</string>
@@ -29,7 +29,7 @@
     <string name="cancel">Anuluj</string>
     <string name="no">Nie</string>
     <string name="pref_sensor_location_dont_ask_again"> Nie pytaj ponownie.</string>
-    <string name="title_activity_error">"Błąd i Event List"</string>
+    <string name="title_activity_error">"Błąd aktywności.</string>
     <string name="title_activity_main">Główna aktywność</string>
     <string name="title_activity_fake_numbers">Fałszywe Numery</string>
     <string name="title_activity_double_calibration">Podwójna kalibracja</string>
@@ -41,7 +41,7 @@
     <string name="pref_share2_scan_barcode_summary">Lub zeskanować kod kreskowy na odbiorniku share</string>
     <!-- MongoDB Settings -->
     <string name="pref_dialog_mongodb_uri">Wprowadź MongoDB URI\"</string>
-    <string name="pref_message_mongodb_uri">Zamoeń przykładowe wartości w {} \' swoimi prawdziwymi wartościami</string>
+    <string name="pref_message_mongodb_uri">Zamień przykładowe wartości w {} \' swoimi prawdziwymi danymi</string>
     <string name="pref_default_mongodb_uri">MongoDB: // {user}: {hasło} @ {} .mongolab.com hosta: {11111} / {} baza</string>
     <string name="pref_title_mongodb_collection">Nazwa kolekcji</string>
     <string name="pref_dialog_mongodb_collection">Wpisz nazwę kolekcji</string>
@@ -77,19 +77,19 @@
     <!-- Amazfit Settings -->
     <string name="toast_crash">Coś poszło nie tak :( raport został wysłany, aby pomóc rozwiązać problem.</string>
     <string name="taskerConfigInstruction">Wystarczy kliknąć ikonę Tick tutaj, aby potwierdzić. Nie ma potrzeby, aby zmienić ciąg konfiguracji.</string>
-    <string name="taskerConfiguration">Tasker Konfiguracja</string>
+    <string name="taskerConfiguration">Konfiguracja zadania</string>
     <string name="add_widget">Dodaj widget</string>
     <string name="title_activity_alert_list">Lista alarmów</string>
     <string name="speaktreatment">Mów leczenie</string>
     <string name="title_activity_update">Doatępna jest nowa aktualizacja xDrip+</string>
     <string name="title_activity_display_qrcode">Udostepnij ustawienia poprzez kod QR</string>
-    <string name="title_activity_send_feed_back">Wyślij odpowiedź do Jamorham</string>
-    <string name="title_activity_maps">Mapa Parakeet</string>
+    <string name="title_activity_send_feed_back">Wyślij feedback do autora.</string>
+    <string name="title_activity_maps">Mapy</string>
     <string name="title_activity_display_preferences">Pokaż Preferencje</string>
-    <string name="export_submenu">Funkcje importu / eksportu</string>
+    <string name="export_submenu">import/eksport</string>
     <string name="action_resend_to_watch">Wyślij ponownie poziom glukozy do zegarka</string>
     <string name="action_open_watch_setting">Otwórz Ustawienia na Wear</string>
-    <string name="erase">Wymazać</string>
+    <string name="erase">Wyczyść</string>
     <string name="interface_tips_from_start">Wszystkie podpowiedzi pokaż znowu od początku</string>
     <string name="note_button">Notatka Przycisk</string>
     <string name="showcase_note_long">Przycisk Uwaga prosi teraz do wprowadzania głosowego.\n\nDługie naciśnięcie na nim, aby wejść w opcje klawiatury lub zmienić.</string>
@@ -98,7 +98,7 @@
     <string name="undo_button">Przycisk Cofnij</string>
     <string name="showcase_undo">Przycisk Cofnij służy do wycofania wprowadzonych danych dotyczących Leczenia Symulacji, kalibracji i notatek\n\nPo 30 minutach będzie ukryty</string>
     <string name="add_note">Dodaj notatkę</string>
-    <string name="title_activity_profile_editor">Edytor profil leczenia</string>
+    <string name="title_activity_profile_editor">Edytor profilu leczenia</string>
     <string name="first_use_menu_to_scan">Najpierw użyj menu do skanowania urządzenia BT lub zmień źródło danych w ustawieniach!</string>
     <string name="first_configure_ip_address">Najpierw skonfiguruj IP adress Wixel-wifi lub URL Parakeet</string>
     <string name="now_start_your_sensor">Teraz uruchom czujnik lub sprawdz ustawienia</string>
@@ -122,7 +122,7 @@
     <string name="nokeep_parakeet_as_it_is">Nie zmieniaj stanu Parakeet</string>
     <string name="are_you_sure_you_want_switch_parakeet_to_setup">Czy na pewno chcesz, aby przełączyć do trybu serwisowego?\n\nNormalnie ta opcja służy do konfiguracji nadajnika poprzez wysyłanie kolejnych wiadomości tekstowych do Parakeet itp.</string>
     <string name="split_delete_or_do_nothing">Split, usunąć lub zrobić nic</string>
-    <string name="split_this_block_in_two">Podzielona ten blok na dwie części</string>
+    <string name="split_this_block_in_two">Podziel ten blok na dwie części</string>
     <string name="delete_this_time_block">Usuń ten blok czasowy</string>
     <string name="cancel_do_nothing">Anuluj - nic nie rób</string>
     <string name="added">Dodany</string>
@@ -201,7 +201,7 @@
     <string name="data_source_settings">Ustawienia źródła danych</string>
     <string name="smart_watch_features">Inteligentne funkcje zegarka</string>
     <string name="wear_integration">Integracja z Android Wear</string>
-    <string name="send_data_to_android_wear_watch">Wysyłanie danych do Android Wear Watchface.</string>
+    <string name="send_data_to_android_wear_watch">Wysyłanie danych do Android Wear.</string>
     <string name="android_wear_integration">Integracja z Android Wear</string>
     <string name="pebble_integration">Integracja z Pebble</string>
     <string name="send_data_to_pebble_watchface">Wysyłanie danych do Pebble Watchface.</string>
@@ -214,7 +214,7 @@
     <string name="history">Historia</string>
     <string name="statistics">Statystyka</string>
     <string name="snooze_alert">Wycisz Alarm</string>
-    <string name="less_common_settings">Mniej istotne ustawienia</string>
+    <string name="less_common_settings">Szczegółowe ustawienia</string>
     <string name="view_recent_errors_warnings">Najnowsze Błędy / ostrzeżenia</string>
     <string name="other_settings">Inne ustawienia</string>
     <string name="older_gratuitous_wakelocks">Starsze wakelocks które mogą rozładowywać baterię, ale mogą być potrzebne do NightWatch lub Android Wear</string>
@@ -223,7 +223,7 @@
     <string name="extra_status_line">Dodatkowa linia statusu</string>
     <string name="dexcom_share_server_upload">Dexcom Share Server Prześlij dane</string>
     <string name="upload_data_to_dex_servers">Prześlij dane do serwerów Dexcom, dzięki czemu można korzystać z aplikacji Dexcom</string>
-    <string name="manage_followers">Zarządzaj Następni</string>
+    <string name="manage_followers">Zarządzaj odbiorcami</string>
     <string name="manage_existing_followers">Zarządzaj dotychczasowymi odbiorcami i zapraszaj nowych.</string>
     <string name="glucose_calibration_and_other_alerts">Glukoza, Kalibracja i inne alarmy</string>
     <string name="alert_volume_profile">Głośnosc alertow, profil</string>
@@ -245,7 +245,7 @@
     <string name="everyday">Codziennie</string>
     <string name="insulin_sensitivity_glucose_drop_per_unit">Insulina Czułość: spadek glukozy na 1 jednostkę insuliny</string>
     <string name="transmitter_battery">Bateria nadajnika</string>
-    <string name="very_low">BARDZO NISKIE</string>
+    <string name="very_low">BARDZO NISKI!</string>
     <string name="low">Niski</string>
     <string name="space_units">" Jednostki"</string>
     <string name="units">jednostki</string>
@@ -286,7 +286,7 @@
     <string name="delete_any_settings_on_sdcard">Usuń wszystkie ustawienia z karty SD</string>
     <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[Za pomocą kodów QR przenieść ustawienia. Ustawienia-&gt; funkcja Auto Konfiguracji]]></string>
     <string name="xdrip_plus_security_key_settings_only">tylko xDrip Plus Ustawienia zabezpieczeń klucza</string>
-    <string name="show_general_and_collection_settings">Wyswietl ustawienia ogólne i collection</string>
+    <string name="show_general_and_collection_settings">Wyswietl ustawienia ogólne i kolekcje</string>
     <string name="copy_all_settings">Kopiowanie wszystkich ustawień</string>
     <string name="sensor_is_ready_please_enter_double_calibration">Czujnik jest gotowy, wprowadź podwójną kalibracje</string>
     <string name="in_order_to_get_started_please_perform_two_finger">Aby rozpocząć, należy wykonać dwa pomiary stężenia glukozy (dwa kłucia) i wprowadzić wartości tutaj!</string>
@@ -327,7 +327,7 @@
     <string name="loaded_preferences_restarting">Załadowane Preferencje! - Ponowne uruchomienie</string>
     <string name="could_not_load_preferences_check_pers">Nie udało się załadować ustawień - sprawdź uprawnienia lub plik?</string>
     <string name="external_storage_not_writable">Pamięć zewnętrzna jest w trybie read-only</string>
-    <string name="successfully_deleted">Pomyślnie usunięty</string>
+    <string name="successfully_deleted">Pomyślnie usunięto</string>
     <string name="deletion_problem">Usuwanie problemu</string>
     <string name="sdcard_not_writable_cannot_save">Karta SD nie zapisuje - nie można zapisać</string>
     <string name="sdcard_not_readable">Nie mogę odczytać karty sd</string>
@@ -335,7 +335,7 @@
     <string name="warning_settings_from_xdrip_and_plus_exist">Ustawienia ostrzegawcze z xDrip i xDrip+ istnieją - uruchamiam xDrip+</string>
     <string name="new_version_date_colon">"Nowa Wersja data: "</string>
     <string name="old_version_date_colon">"Data starej wersji: "</string>
-    <string name="speak_your_note_text">Wypowiadaj swoją notatkę tekstową</string>
+    <string name="speak_your_note_text">Nagraj notatkę</string>
     <string name="alarm_if_above_high_value">Alarm w przypadku przekroczenia high value</string>
     <string name="for_longer_than_minutes">dłuższych niż (minuty)</string>
     <string name="choose_sound_used_for_persistent_high_alarm">Wybierz dźwięk alarmu używany przy utrzymującym się wysokim poziomie.</string>
@@ -446,7 +446,7 @@
     <string name="test_alert">Testowy alarm</string>
     <string name="save_alert">zapisać alarm</string>
     <string name="remove_alert">usunięcie wpisu</string>
-    <string name="snooze_alert_before_it_fires">uspij alarm zanim bedzie aktywny</string>
+    <string name="snooze_alert_before_it_fires">uśpij alarm zanim będzie aktywny</string>
     <string name="create_low_alert">Ustaw ostrzeżenie o niskim poziomie</string>
     <string name="create_high_alert">Ustaw ostrzeżenie o wysokim poziomie</string>
     <string name="long_press_an_existing_alert_to_edit">(Długie naciśnięcie - edytuj istniejący alert)</string>
@@ -472,5 +472,21 @@
     <string name="glucose_number_from_filtered">Numer Glukoza z filtrowanego</string>
     <string name="if_the_phone_has_text_to_speech">Jeśli telefon posiada funkcje zamiany tekstu na mowe to będzie mówić każdy nowy odczyt.</string>
     <string name="upload_logs">Dodaj Dzienniki</string>
+    <string name="emergency_message_feature">Funkcja alarmowych wiadomości</string>
+    <string name="text_messages_can_be_sent_with_your_location_if_you_do_not_respond_to_alarms_this_feature_is_experimental_and_may_not_be_reliable">Jeśli nie zareagujesz na alarm to zostanie wysłana wiadomość tekstowa z twoją lokalizacją do zdefiniowanych przez ciebie kontaktów. Funkcja eksperymentalna i nie można na niej polegać.</string>
+    <string name="your_name">Twoje imię</string>
+    <string name="did_not_acknowledge_a_low_glucose_alert">%s nie potwierdził/-a ostrzeżenia o niskim stężeniu glukozy %s</string>
+    <string name="did_not_acknowledge_a_high_glucose_alert">%s nie potwierdził/-a ostrzeżenia o wysokim stężeniu glukozy %s</string>
+    <string name="is_requesting_assistance">%s wzywa pomoc</string>
+    <string name="is_testing_the_assistance_request_feature">%s testuje funkcje prośby o pomoc</string>
+    <string name="emergency_message_near_format_string">%s blisko %s %s %s %s</string>
+    <string name="choose_when_to_send_messages">Wybierz kiedy wysłać wiadomości:</string>
+    <string name="low_alert_not_acknowledged">Potwierdzono niskie stężenie glukozy.</string>
+    <string name="high_alert_not_acknowledged">Potwierdzono wysokie stężenie glukozy.</string>
+    <string name="device_inactivity">Nieaktywność urządzenia</string>
+    <string name="test_message_sending">Test wysyłania wiadomości</string>
+    <string name="d_selected_contacts_for_text_messages_format">%d wybrane kontakty do wysyłania wiadomości</string>
+    <string name="select_device">Wybierz urządzenie</string>
+    <string name="detect_car_audio">Wykryj audio samochodu</string>
     <!-- trend arrow for speak -->
 </resources>
