@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.util.SparseArray;
 
+import com.eveningoutpost.dexdrip.BuildConfig;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
@@ -39,6 +40,7 @@ public class WakeLockTrampoline extends BroadcastReceiver {
      * The framework only releases the wakelock when onReceive returns.
      */
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     public void onReceive(final Context context, final Intent broadcastIntent) {
         JoH.getWakeLock(TAG, 1000); // deliberately not released
@@ -59,6 +61,7 @@ public class WakeLockTrampoline extends BroadcastReceiver {
         ComponentName startResult;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+                && BuildConfig.targetSDK >= Build.VERSION_CODES.N
                 && ForegroundServiceStarter.shouldRunCollectorInForeground()) {
             try {
                 UserError.Log.d(TAG, String.format("Starting oreo foreground service: %s", serviceIntent.getComponent().getClassName()));

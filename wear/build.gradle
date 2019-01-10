@@ -105,6 +105,7 @@ android {
         buildConfigField "int", "buildVersion", generateVersionNumberString()
         buildConfigField "String", "buildUUID", generateRandomUUID()
         buildConfigField "long", "buildTimestamp", generateTimestamp()
+        buildConfigField "int", "targetSDK", targetSdkVersion.mApiLevel.toString()
 
         applicationId = "com.eveningoutpost.dexdrip"
         resValue "string", "label_xdrip", "XDrip"
