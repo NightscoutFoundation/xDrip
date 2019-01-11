@@ -23,17 +23,57 @@
     <string name="title_activity_double_calibration">כיול התחלתי</string>
     <string name="title_activity_calibration_override">החלף כיול</string>
     <string name="pref_header_cloud_storage">אחסון בענן</string>
+    <string name="auto_configure_title">הגדרה אוטומטית</string>
+    <string name="prefs_auto_config_summary">הגדרה אוטומטית באמצעות ברקוד.</string>
+    <string name="scan_share2_barcode">סרוק ברקוד עבור share</string>
+    <string name="pref_share2_scan_barcode_summary">או סרוק את הברקוד שעל מקלט הshare</string>
     <!-- MongoDB Settings -->
+    <string name="pref_summary_mongodb_enabled">העלאה ישירה לענן, לא מומלץ עבור ניטסקוט</string>
+    <string name="pref_message_mongodb_uri">החלף את ערכי הדוגמה שבסוגרים {} עם הערכים של החשבון שלך</string>
+    <string name="pref_title_mongodb_collection">שם collection</string>
+    <string name="pref_message_mongodb_collection">זהו שמו של הcollection שבו הנתונים של מד הסוכר הרציף ישמרו</string>
     <!-- API Settings -->
+    <string name="pref_title_api">סינכרון לניטסקוט (rest api)</string>
+    <string name="pref_title_api_enabled">מופעל</string>
+    <string name="pref_summary_api_enabled">rest api הוא הדרך הסטנדרטית להתחבר לניטסקוט</string>
     <!-- wifi Settings -->
     <!-- Location Settings -->
+    <string name="location_not_found_title">מיקום אינו מופעל</string>
+    <string name="location_not_found_message">בכדי שסריקת בלוטוס תעבוד יש לאפשר מיקום. xdrip לא עוקב אחר המיקום שלך חוץ מבמקרה שבו הפעלת את התכונה של הודעות חירום</string>
+    <string name="location_yes">אפשר</string>
     <!-- broadcast settings -->
     <!-- pebble settings -->
+    <string name="pref_pebble_display_trend">הצג מגמה</string>
+    <string name="pref_pebble_display_high_line">הצג קו גבוה</string>
+    <string name="pref_pebble_display_low_line">הצג קו נמוך</string>
     <!-- Amazfit Settings -->
+    <string name="pref_amazfit_enable">אפשר</string>
+    <string name="pref_amazfit_alarm_enable">אפשר</string>
+    <string name="title_activity_alert_list">רשימת ההתראות</string>
+    <string name="title_activity_update">קיים עדכון גרסא לxdrip+</string>
+    <string name="title_activity_send_feed_back">שלח פידבק לjamorham</string>
+    <string name="export_submenu">ייבוא ויצוא של הגדרות ונתונים</string>
+    <string name="undo_button">לחצן ביטול</string>
+    <string name="showcase_undo">לחצן הביטול יכול לאפשר מחיקה של סימלצית טיפול, כיולים והערות
+
+אחרי 30 דקות הוא יוסתר שוב</string>
+    <string name="add_note">הוסף הערה</string>
+    <string name="now_start_your_sensor">התחל את הסנסור או בדוק את ההגדרות</string>
+    <string name="please_wait_while_sensor_warms_up">אנא המתן עד שהסנסור יתחמם! (</string>
+    <string name="minutes_with_bracket">" דקות)"</string>
+    <string name="please_wait_need_two_readings_first">אנא המתן, יש צורך ב2 קריאות מהמשדר.</string>
+    <string name="please_enter_two_calibrations_to_get_started">אנא הזן שתי כיולים בשביל להתחיל!</string>
+    <string name="now_choose_start_sensor_in_settings">כעת בחר \'התחל סנסור\' מההגדרות</string>
+    <string name="space_mins">" דקות"</string>
+    <string name="low_predicted">סוכר נמוך צפוי</string>
     <string name="signal_missed">אין קליטה</string>
     <string name="minutes_ago">{0, choice,0# לפני {0, number, integer} דקות |1# לפני דקה|1&lt; לפני {0, number, integer} דקות }</string>
     <string name="space_minutes_ago">" דקות"</string>
     <string name="space_minute_ago">" דקה"</string>
+    <string name="show_libre_trend">הראה מגמת הליברה</string>
+    <string name="libre_15_minutes_graph">גרף 15 דקות של הליברה</string>
+    <string name="libre_last_x_minutes_graph">גרף d% דקות אחרונות של הליברה</string>
+    <string name="check_for_updated_version">בדוק האם יש גרסא חדשה</string>
     <string name="send_feedback_to_developer">שלח פידבק למפתח</string>
     <string name="home_screen">מסך הבית</string>
     <string name="calibration_graph">גרף כיולים</string>
@@ -42,12 +82,18 @@
     <string name="general_settings">הגדרות כלליות</string>
     <string name="high_value">ערך גבוה</string>
     <string name="low_value">ערך נמוך</string>
+    <string name="end_user_license_agreement">הסכם משתמש קצה</string>
     <string name="save">שמור</string>
     <string name="view_important_warning">צפה באזהרות חשובות</string>
+    <string name="view_google_licenses">הצג רשיונות של מוצרי גוגל</string>
     <string name="not_for_medical_use">לא לשימוש רפואי - כלי למחקר בלבד</string>
+    <string name="deel_settings_for_algs">הגדרות מתקדמות של האלגוריתמים</string>
+    <string name="xdrip_plus_sync_settings">הגדרות סינכרון של xdrip+</string>
+    <string name="xdrip_plus_update_settings">הגדרות עדכון של xdrip+</string>
     <string name="update_channel">ערוץ עדכון</string>
     <string name="send_crash_errors_to_developer">שלח התראות על התרסקות למפתח</string>
     <string name="automatic_crash_reporting">דיווח אוטומטי על התרסקויות</string>
+    <string name="copying_settings">מעתיק הגדרות</string>
     <string name="load_save_settings_to_sdcard">שמור / טען הגדרות לכרטיס זכרןו</string>
     <string name="alarms_and_alerts">התראות ואזעקות</string>
     <string name="alerts_and_notifications">התראות ו</string>
@@ -79,12 +125,14 @@
     <string name="view_recent_errors_warnings">ראה אזהרות/שגיאות אחרות</string>
     <string name="other_settings">הגדרות אחרות</string>
     <string name="speak_readings">הקרא קריאות</string>
+    <string name="extra_status_line">שורת סטטוס נוספת</string>
     <string name="glucose_calibration_and_other_alerts">סוכר, כיולים והתראות אחרות</string>
     <string name="alert_volume_profile">פרופיל עוצמת ההתראות</string>
     <string name="smart_alerting">התראות חכמות</string>
     <string name="dont_alarm_during_phone_calls">אל תתריע בזמן שיחות טלפון</string>
     <string name="start_snoozed">התחל מושתק</string>
     <string name="reset">אתחל</string>
+    <string name="space_units">" יחידות"</string>
     <string name="units">יחידות</string>
     <string name="carbs">פחמימות</string>
     <string name="when">כאשר</string>
@@ -154,7 +202,10 @@
     <string name="parakeet_battery">Parakeet בטריית</string>
     <string name="rewrite_history">שכתב את ההיסטוריה</string>
     <string name="short_speak_readings_shortcut">Show a shortcut in the â˜° menu to toggle Speak Readings</string>
+    <string name="user">שם משתמש</string>
+    <string name="password">סיסמא</string>
     <string name="shortcut_to_bg_alerts">קיצור דרך להתראות על רמת סוכר</string>
+    <string name="hours_between_calibrations">שעות בין כיולים</string>
     <string name="bg_falling_fast">סוכר נופל מהר</string>
     <string name="bg_rising_fast">סוכר עולה מהר</string>
     <string name="falling_threshold">ערך סף בירידה</string>
@@ -174,6 +225,9 @@
     <string name="confirm_remote_snooze">אשר השתקה מרחוק</string>
     <string name="are_you_sure_you_wish_to_snooze_all_other_devices_in_your_sync_group">האם אתה בטוח שברצונך להשתיק את כל המכשירים בקבוצת הסינכרון שלך?</string>
     <string name="yes_send_it">כן, שלח השתקה!</string>
+    <string name="play_sound">השמע צליל</string>
+    <string name="blukon">בלוקון</string>
+    <string name="tomato">מיומיו</string>
     <string name="stop_sensor">עצור סנסור</string>
     <string name="initial_calibration">כיול התחלתי</string>
     <string name="note_search">חיפוש הערה</string>
@@ -192,6 +246,9 @@
     <string name="play_sound_when_ready_for_calibration">השמע קול כשמוכן לכיול</string>
     <string name="receiving_data_from_collector">מקבל קריאות מקורא %s</string>
     <!-- trend arrow for speak -->
+    <string name="offical_msg">האפליקציה הרשמית</string>
+    <string name="yes">כן</string>
+    <string name="are_you_sure">אתה בטוח?</string>
     <string name="summary_Shared_Secret_for_open_web_service">Shared Secret for open web service (should match your Nightcout API secret)</string>
     <string name="all_alerts_currently_disabled">כל ההתראות מושבתות כעת</string>
     <string name="low_and_high_alerts_currently_disabled">התראות נמוכות וגבוהות מושבתות כעת</string>
