@@ -69,6 +69,9 @@
     <string name="export_submenu">ייבוא ויצוא של הגדרות ונתונים</string>
     <string name="erase">מחק</string>
     <string name="redo_button">לחצן בצע שוב</string>
+    <string name="showcase_redo">לחצן הבצע-שוב יכול לאפשר הוספה של סימלצית טיפול, כיולים והערות
+
+אחרי 30 דקות הוא יוסתר שוב</string>
     <string name="undo_button">לחצן ביטול</string>
     <string name="showcase_undo">לחצן הביטול יכול לאפשר מחיקה של סימלצית טיפול, כיולים והערות
 
@@ -242,6 +245,7 @@
     <string name="rewrite_history">שכתב את ההיסטוריה</string>
     <string name="short_speak_readings_shortcut">Show a shortcut in the â˜° menu to toggle Speak Readings</string>
     <string name="received_readings_percentage">אחוז הקריאות שהתקבלו מהסנסור</string>
+    <string name="allow_sensor_scanning">אפשר סריקה של סנסורים כאשר האפליקציה פתוחה. שים לב, זה עלול להרוס את הסנסור. בדוק שעובד על סנסור שעומד להסתיים. מומלץ לעבור למצב טיסה לפני הסריקה. ראה הוזהרת!</string>
     <string name="user">שם משתמש</string>
     <string name="password">סיסמא</string>
     <string name="shortcut_to_bg_alerts">קיצור דרך להתראות על רמת סוכר</string>
@@ -265,6 +269,7 @@
     <string name="confirm_remote_snooze">אשר השתקה מרחוק</string>
     <string name="are_you_sure_you_wish_to_snooze_all_other_devices_in_your_sync_group">האם אתה בטוח שברצונך להשתיק את כל המכשירים בקבוצת הסינכרון שלך?</string>
     <string name="yes_send_it">כן, שלח השתקה!</string>
+    <string name="detect_motion_types">השתמש בחישנים לזיהוי סוג התנועה</string>
     <string name="play_sound">השמע צליל</string>
     <string name="blukon">בלוקון</string>
     <string name="tomato">מיומיו</string>
