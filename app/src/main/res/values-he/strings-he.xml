@@ -8,17 +8,23 @@
     <string name="menu_stop">עצור</string>
     <string name="menu_refresh">רענן</string>
     <string name="menu_export_database">יצא את בסיס הנתונים</string>
+    <string name="menu_export_csv_sidiary">ייצוא CSV (בפורמט SiDiary)</string>
     <string name="menu_import_db">יבא את בסיס הנתונים</string>
     <string name="error_bluetooth_not_supported">שגיאה: bluetooth לא נתמך על ידי מכשיר זה.</string>
     <string name="unknown_device">התקן לא מזוהה</string>
     <string name="connecting_to_device">מתחבר להתקן</string>
+    <string name="title_activity_raw_data_table">טבלאת ערכי סוכר</string>
+    <string name="title_activity_calculated_data_table">טבלת נתונים מחושבים</string>
     <string name="title_activity_start_new_sensor">התחל סנסור חדש</string>
     <string name="title_activity_new_sensor_location">מיקום הסנסור החדש</string>
     <string name="title_activity_stop_sensor">הפסק סנסור</string>
     <string name="snooze">השתק</string>
+    <string name="snooze_hint">השתק התראה ל-x דקות</string>
+    <string name="ok">אישור</string>
     <string name="cancel">בטל</string>
     <string name="no">לא</string>
     <string name="pref_sensor_location_dont_ask_again">אל תשאל את זה שוב</string>
+    <string name="title_activity_error">"רשימת אירועים ובעיות"</string>
     <string name="title_activity_edit_alert">ערוך התראה</string>
     <string name="title_activity_double_calibration">כיול התחלתי</string>
     <string name="title_activity_calibration_override">החלף כיול</string>
@@ -31,17 +37,24 @@
     <string name="pref_summary_mongodb_enabled">העלאה ישירה לענן, לא מומלץ עבור ניטסקוט</string>
     <string name="pref_message_mongodb_uri">החלף את ערכי הדוגמה שבסוגרים {} עם הערכים של החשבון שלך</string>
     <string name="pref_title_mongodb_collection">שם collection</string>
+    <string name="pref_dialog_mongodb_collection">הזן שם collection</string>
     <string name="pref_message_mongodb_collection">זהו שמו של הcollection שבו הנתונים של מד הסוכר הרציף ישמרו</string>
+    <string name="pref_message_mongodb_device_status_collection">זהו שם הcollection שבו מצב הבטריה ומידע אחר על ההתקן ישמרו</string>
     <!-- API Settings -->
     <string name="pref_title_api">סינכרון לניטסקוט (rest api)</string>
     <string name="pref_title_api_enabled">מופעל</string>
     <string name="pref_summary_api_enabled">rest api הוא הדרך הסטנדרטית להתחבר לניטסקוט</string>
+    <string name="pref_title_api_url">כתובת URL בסיסית</string>
+    <string name="pref_default_api_url">https://yourpassphrase@{YOUR-SITE}.azurewebsites.net/api/v1/</string>
     <!-- wifi Settings -->
+    <string name="wifi_recievers_dialog_message">רשימה של כתובת ופורט מופרדת בפסיקים (ip:port)
+ (לדוגמא 37.142.132.220:50005,37.142.132.220:50010,mongodb://user:pass@ds053958.mongolab.com:53958/db/collection)</string>
     <!-- Location Settings -->
     <string name="location_not_found_title">מיקום אינו מופעל</string>
     <string name="location_not_found_message">בכדי שסריקת בלוטוס תעבוד יש לאפשר מיקום. xdrip לא עוקב אחר המיקום שלך חוץ מבמקרה שבו הפעלת את התכונה של הודעות חירום</string>
     <string name="location_yes">אפשר</string>
     <!-- broadcast settings -->
+    <string name="title_activity_share_test">בדיקת share</string>
     <!-- pebble settings -->
     <string name="pref_pebble_display_trend">הצג מגמה</string>
     <string name="pref_pebble_display_high_line">הצג קו גבוה</string>
@@ -52,7 +65,10 @@
     <string name="title_activity_alert_list">רשימת ההתראות</string>
     <string name="title_activity_update">קיים עדכון גרסא לxdrip+</string>
     <string name="title_activity_send_feed_back">שלח פידבק לjamorham</string>
+    <string name="title_activity_display_preferences">הגדרות תצוגה</string>
     <string name="export_submenu">ייבוא ויצוא של הגדרות ונתונים</string>
+    <string name="erase">מחק</string>
+    <string name="redo_button">לחצן בצע שוב</string>
     <string name="undo_button">לחצן ביטול</string>
     <string name="showcase_undo">לחצן הביטול יכול לאפשר מחיקה של סימלצית טיפול, כיולים והערות
 
@@ -66,16 +82,19 @@
     <string name="now_choose_start_sensor_in_settings">כעת בחר \'התחל סנסור\' מההגדרות</string>
     <string name="space_mins">" דקות"</string>
     <string name="low_predicted">סוכר נמוך צפוי</string>
+    <string name="checking_for_update">מחפש עדכונים..</string>
     <string name="signal_missed">אין קליטה</string>
     <string name="minutes_ago">{0, choice,0# לפני {0, number, integer} דקות |1# לפני דקה|1&lt; לפני {0, number, integer} דקות }</string>
     <string name="space_minutes_ago">" דקות"</string>
     <string name="space_minute_ago">" דקה"</string>
+    <string name="view_events_log">הצג יומן אירועים</string>
     <string name="show_libre_trend">הראה מגמת הליברה</string>
     <string name="libre_15_minutes_graph">גרף 15 דקות של הליברה</string>
     <string name="libre_last_x_minutes_graph">גרף d% דקות אחרונות של הליברה</string>
     <string name="check_for_updated_version">בדוק האם יש גרסא חדשה</string>
     <string name="send_feedback_to_developer">שלח פידבק למפתח</string>
     <string name="home_screen">מסך הבית</string>
+    <string name="event_logs">יומן אירועים</string>
     <string name="calibration_graph">גרף כיולים</string>
     <string name="glucose_units">יחידות סוכר</string>
     <string name="mmol_or_mgdl_high_and_low">mmol/l או mg/dl גבוה ונמוך</string>
@@ -132,10 +151,25 @@
     <string name="dont_alarm_during_phone_calls">אל תתריע בזמן שיחות טלפון</string>
     <string name="start_snoozed">התחל מושתק</string>
     <string name="reset">אתחל</string>
+    <string name="xdrip_plus_color_settings">xDrip+ הגדרות צבע</string>
+    <string name="glucose_values_and_lines">ערכי סוכר וקוים</string>
+    <string name="default_color_selected">נבחר צבע ברירת מחדל</string>
+    <string name="xdrip_plus_extra_settings">הגדרות נוספות</string>
+    <string name="everyday">כל יום</string>
+    <string name="transmitter_battery">בטרית המשדר</string>
+    <string name="very_low">נמוך מאוד</string>
+    <string name="low">נמוך</string>
     <string name="space_units">" יחידות"</string>
     <string name="units">יחידות</string>
     <string name="carbs">פחמימות</string>
     <string name="when">כאשר</string>
+    <string name="speech_recognition_is_not_supported">זיהוי דיבור אינו נתמך</string>
+    <string name="treatment_note">הערה על טיפול</string>
+    <string name="could_not_export_database">יצוא מסד הנתונים נכשל :(</string>
+    <string name="exported_to">"ייצא אל "</string>
+    <string name="default_to_voice_input_next_time">ברירת מחדל תהיה זהוי קולי בפעם הבאה</string>
+    <string name="entering_a_calibration_now_will_override_your_previously_entered_calibration">הזנת כיול עכשיו תחליף את כיול שהוזן קודם לכן.</string>
+    <string name="enter_blood_glucose_value">הזן ערך סוכר</string>
     <string name="no_active_alert_exists">אין התראה פעילה</string>
     <string name="active_alert_exists_named">קיימת התראה פעילה בשם</string>
     <string name="bracket_not_snoozed">(לא מושתק)</string>
@@ -158,6 +192,10 @@
     <string name="save_all_settings_to_sdcard">שמור את כל ההגדרות לכרטיס הזכרון</string>
     <string name="load_all_settings_from_sdcard">טען את כל ההגדרות מכרטיס הזכרון</string>
     <string name="delete_any_settings_on_sdcard">מחק את כל ההגדרות על כרטיס הזיכרון</string>
+    <string name="sensor_is_ready_please_enter_double_calibration">הסנסור מוכן, אנא הזן כיול ראשוני</string>
+    <string name="glucose_history">היסטורית הסוכר</string>
+    <string name="import_database">ייבא את בסיס הנתונים</string>
+    <string name="sensor_table">טבלאת הסנסורים</string>
     <string name="new_version_date_colon">"תאריך הגרסא החדשה: "</string>
     <string name="old_version_date_colon">"תאריך הגרסא הישנה: "</string>
     <string name="show_datatables">הצג טבלאות</string>
@@ -169,6 +207,7 @@
     <string name="low_percentage">אחוז הנמוכים</string>
     <string name="the_current_time">הזמן הנוכחי.</string>
     <string name="time">זמן</string>
+    <string name="store_sensor_location_to_help">שמור את מיקום הסנסור בכדי לאפשר שיפורים לאלגוריתם</string>
     <string name="start_sensor">התחל סנסור</string>
     <string name="revert_to_default">חזור לערכי ברירת המחדל</string>
     <string name="filtered_values">ערכים מפולטרים</string>
@@ -202,6 +241,7 @@
     <string name="parakeet_battery">Parakeet בטריית</string>
     <string name="rewrite_history">שכתב את ההיסטוריה</string>
     <string name="short_speak_readings_shortcut">Show a shortcut in the â˜° menu to toggle Speak Readings</string>
+    <string name="received_readings_percentage">אחוז הקריאות שהתקבלו מהסנסור</string>
     <string name="user">שם משתמש</string>
     <string name="password">סיסמא</string>
     <string name="shortcut_to_bg_alerts">קיצור דרך להתראות על רמת סוכר</string>
@@ -250,6 +290,7 @@
     <string name="yes">כן</string>
     <string name="are_you_sure">אתה בטוח?</string>
     <string name="summary_Shared_Secret_for_open_web_service">Shared Secret for open web service (should match your Nightcout API secret)</string>
+    <string name="summary_allow_testing_with_dead_sensor">אפשר בדיקות עם סנסור שיצא משימוש</string>
     <string name="all_alerts_currently_disabled">כל ההתראות מושבתות כעת</string>
     <string name="low_and_high_alerts_currently_disabled">התראות נמוכות וגבוהות מושבתות כעת</string>
     <string name="low_alerts_currently_disabled">התראות נמוכות מושבתות כעת</string>
