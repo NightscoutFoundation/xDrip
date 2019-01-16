@@ -523,8 +523,8 @@
     <string name="glucose_number_from_filtered">Valores glicémicos Filtrados</string>
     <string name="if_the_phone_has_text_to_speech">Se o telefone tiver capacidade texto-para-voz, o resultado será falado.</string>
     <string name="upload_logs">Enviar Registos</string>
-    <string name="short_off_text_for_switches">Desligado</string>
-    <string name="short_on_text_for_switches">Ligado</string>
+    <string name="short_off_text_for_switches">DES</string>
+    <string name="short_on_text_for_switches">LIG</string>
     <string name="install_pebble_apps">Instalar Apps Pebble</string>
     <string name="sliding_24_hour_window_summary">Utilizar últimas 24 horas em vez da meia-noite para estatísticas.</string>
     <string name="sliding_24_hour_window">Janela Deslizante</string>
@@ -569,7 +569,7 @@
     <string name="battery_optimization_prompt">Comando para Optimização de Bateria</string>
     <string name="advanced_bluetooth_settings">Configurações Avançadas do Bluetooth</string>
     <string name="bluetooth_settings">Definições do Bluetooth</string>
-    <string name="auto_turn_on_bluetooth">Ativar automaticamente o Bluetooth se estiver desligado quando tentarmos ligar a um dispositivo Bluetooth</string>
+    <string name="auto_turn_on_bluetooth">Activar automaticamente o Bluetooth se estiver desligado quando tentarmos ligar a um dispositivo Bluetooth</string>
     <string name="turn_bluetooth_on">Ligar Bluetooth</string>
     <string name="reset_bluetooth">Efetuar reset ao Bluetooth desligando e voltando a ligar se não receber dados em 20 minutos</string>
     <string name="bluetooth_watchdog">Vigilante Bluetooth</string>
