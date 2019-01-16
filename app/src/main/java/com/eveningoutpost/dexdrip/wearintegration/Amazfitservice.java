@@ -11,6 +11,7 @@ import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
+import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
@@ -20,6 +21,7 @@ import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
@@ -41,6 +43,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.content.IntentFilter;
 
 import com.eveningoutpost.dexdrip.BestGlucose;
 import com.eveningoutpost.dexdrip.Models.HeartRate;
@@ -83,6 +86,8 @@ public class Amazfitservice extends Service {
     private StepCounter stepcounter;
     private SharedPreferences prefs;
 
+
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -99,7 +104,6 @@ public class Amazfitservice extends Service {
             }
 
         });
-
 
         transporter.addDataListener(new Transporter.DataListener() {
             @Override
@@ -148,6 +152,11 @@ public class Amazfitservice extends Service {
 
                 }
 
+                if (item.getAction().equals("Amazfit_Treatmentsdata")) {
+                    DataBundle databundle = item.getData();
+                    Treatments.create(databundle.getDouble("carbs"),databundle.getDouble("insulin"),databundle.getLong("timestamp"));
+
+                }
             }
 
 
@@ -293,7 +302,6 @@ public class Amazfitservice extends Service {
         final String age_problem = (Pref.getBooleanDefaultFalse("nfc_age_problem") ? " \u26A0\u26A0\u26A0" : "");
         final double expires = JoH.tolerantParseDouble(prefs.getString("nfc_expiry_days", "14.5")) - ((double) sensor_age) / 1440;
         BestGlucose.DisplayGlucose dg = BestGlucose.getDisplayGlucose();
-
         try {
             // Extract data from JSON
 

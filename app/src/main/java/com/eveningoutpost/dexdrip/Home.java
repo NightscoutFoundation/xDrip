@@ -3543,7 +3543,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                     Amazfitservice.start("xDrip_synced_SGV_data");
                 }
                 WatchUpdaterService.startServiceAndResendData(0);
-                if(Pref.getBoolean("pref_amazfit_enable_key", true)) JoH.startService(Amazfitservice.class);
+
                 break;
             case R.id.action_open_watch_settings:
                 startService(new Intent(this, WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_OPEN_SETTINGS));
