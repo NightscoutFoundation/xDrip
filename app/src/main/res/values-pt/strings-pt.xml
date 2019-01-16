@@ -524,7 +524,7 @@
     <string name="if_the_phone_has_text_to_speech">Se o telefone tiver capacidade texto-para-voz, o resultado será falado.</string>
     <string name="upload_logs">Enviar Registos</string>
     <string name="short_off_text_for_switches">DES</string>
-    <string name="short_on_text_for_switches">LIG</string>
+    <string name="short_on_text_for_switches">LIG.</string>
     <string name="install_pebble_apps">Instalar Apps Pebble</string>
     <string name="sliding_24_hour_window_summary">Utilizar últimas 24 horas em vez da meia-noite para estatísticas.</string>
     <string name="sliding_24_hour_window">Janela Deslizante</string>
