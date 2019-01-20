@@ -25,8 +25,6 @@ import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.ustwo.clockwise.common.WatchMode;
 
-import static com.eveningoutpost.dexdrip.xdrip.gs;
-
 public class Home extends BaseWatchFace {
     //KS the following were copied from app/home
     private static Context context;//KS
