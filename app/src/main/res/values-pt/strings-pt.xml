@@ -1102,9 +1102,9 @@
     <string name="no_data">Sem dados</string>
     <string name="no_bluetooth">Sem Bluetooth</string>
     <string name="connection_status">Estado da Ligação:   </string>
-    <string name="please_allow_permission">Permita Autorização</string>
     <string name="without_location_scan_doesnt_work">Sem a permissão de Localização a pesquisa do Android Bluetooth não funciona</string>
     <string name="without_location_permission_emergency_cannot_get_location">Sem permissão de Localização as mensagens de emergência não podem usar dados de localização</string>
     <string name="choose_data_source">Escolher Fonte de Dados</string>
     <string name="which_system_do_you_use">Qual o sistema que utiliza?</string>
+    <string name="please_allow_permission">Permita Autorização</string>
 </resources>
