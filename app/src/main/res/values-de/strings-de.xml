@@ -1102,9 +1102,9 @@
     <string name="no_data">Keine Daten</string>
     <string name="no_bluetooth">Kein Bluetooth</string>
     <string name="connection_status">Verbindungsstatus:   </string>
-    <string name="please_allow_permission">Bitte erteilen Sie die nötigen Berechtigungen</string>
     <string name="without_location_scan_doesnt_work">Ohne die \"Location\"-Berechtigung wird der Bluetooth-Scan nicht funktionieren</string>
     <string name="without_location_permission_emergency_cannot_get_location">Ohne die \"Location\"-Berechtigung kann die Notfall-SMS keine Orts-Daten mitsenden</string>
     <string name="choose_data_source">Wähle Datenquelle</string>
     <string name="which_system_do_you_use">Welches System verwendest Du?</string>
+    <string name="please_allow_permission">Bitte erteilen Sie die nötigen Berechtigungen</string>
 </resources>
