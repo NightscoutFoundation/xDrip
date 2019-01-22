@@ -1175,6 +1175,7 @@ public class Preferences extends BasePreferenceActivity {
             if (collectionType != DexCollectionType.Medtrum) {
                 try {
                     collectionCategory.removePreference(findPreference("medtrum_use_native"));
+                    collectionCategory.removePreference(findPreference("medtrum_a_hex"));
                 } catch (Exception e) {
                     //
                 }

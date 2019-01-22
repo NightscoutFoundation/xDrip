@@ -93,6 +93,14 @@
             android:defaultValue="true"
             android:summary="Use transmitter calibration instead of xDrip for primary"
             android:title="Medtrum Native" />
+        <EditTextPreference
+            android:defaultValue=""
+            android:inputType="textNoSuggestions|textVisiblePassword|textCapCharacters"
+            android:key="medtrum_a_hex"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:summary="Hex diagnostic test value"
+            android:title="Medtrum Debug" />
 
         <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
             android:key="xdrip_plus_g5_extra_settings"
@@ -142,7 +150,7 @@
                 android:title="Fallback to xDrip"
                 />
             <CheckBoxPreference
-                android:defaultValue="false"
+                android:defaultValue="true"
                 android:dependency="use_ob1_g5_collector_service"
                 android:key="ob1_minimize_scanning"
                 android:summary="Use heuristics to minimize bluetooth scanning + save power"

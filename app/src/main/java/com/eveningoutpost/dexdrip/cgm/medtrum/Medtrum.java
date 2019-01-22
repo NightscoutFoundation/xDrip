@@ -33,6 +33,8 @@ public class Medtrum {
     private static final String PENDING_CALIBRATION_TIMESTAMP = "medtrum-pending-calibration-timestamp";
     private static final String PENDING_CALIBRATION_GLUCOSE = "medtrum-pending-calibration-glucose";
     private static final String VERSION_STORE = "medtrum-tx-version-";
+    public static final String PREF_AHEX = "medtrum_a_hex";
+
 
     @Getter
     private static AnnexARx lastAdvertAnnex = null;
