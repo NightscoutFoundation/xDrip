@@ -56,6 +56,7 @@ import java.util.Date;
 import java.util.List;
 
 import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
+import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 public class EditAlertActivity extends ActivityWithMenu {
     //public static String menu_name = "Edit Alert";
@@ -879,7 +880,7 @@ public class EditAlertActivity extends ActivityWithMenu {
                     android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     != PackageManager.PERMISSION_GRANTED) {
                 final Activity activity = this;
-                JoH.show_ok_dialog(activity, "Please Allow Permission", "Need storage permission to access all ringtones", new Runnable() {
+                JoH.show_ok_dialog(activity, gs(R.string.please_allow_permission), gs(R.string.need_storage_permission_to_access_all_ringtones), new Runnable() {
                     @Override
                     public void run() {
                         ActivityCompat.requestPermissions(activity,
