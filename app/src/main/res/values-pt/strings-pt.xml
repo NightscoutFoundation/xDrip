@@ -1107,4 +1107,17 @@
     <string name="choose_data_source">Escolher Fonte de Dados</string>
     <string name="which_system_do_you_use">Qual o sistema que utiliza?</string>
     <string name="please_allow_permission">Permita Autorização</string>
+    <string name="location_permission_needed_to_use_bluetooth">Requer permissão de Localização para usar o Bluetooth!</string>
+    <string name="did_you_insert_it_today">Foi colocado hoje?</string>
+    <string name="we_need_to_know_when_the_sensor_was_inserted_to_improve_calculation_accuracy__was_it_inserted_today">Precisamos saber quando o sensor foi colocado para melhorar a precisão do cálculo.\n\nFoi colocado hoje?</string>
+    <string name="yes_today">SIM, hoje</string>
+    <string name="which_day_was_it_inserted">Em que dia foi colocado?</string>
+    <string name="what_time_was_it_inserted">A que horas foi colocado?</string>
+    <string name="new_sensor_started">NOVO SENSOR INICIADO</string>
+    <string name="error_sensor_start_time_in_future">ERRO: TEMPO DE INÍCIO DO SENSOR NO FUTURO</string>
+    <string name="not_today">Hoje não</string>
+    <string name="need_permission_to_access_audio_files">Requer permissão para acesso ficheiros áudio</string>
+    <string name="need_contacts_permission_to_select_message_recipients">Requer permissão de contactos para seleccionar destinatários da mensagem</string>
+    <string name="need_storage_permission_to_access_all_ringtones">Requer permissão de armazenamento para aceder a todos os toques</string>
+    <string name="xdrip_needs_whitelisting_for_proper_performance">xDrip+ requer lista de permissões para desempenho adequado</string>
 </resources>
