@@ -66,6 +66,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.pebble.watchface.InstallPebbleTr
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.watchface.InstallPebbleWatchFace;
 import com.eveningoutpost.dexdrip.WidgetUpdateService;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
+import com.eveningoutpost.dexdrip.cgm.nsfollow.NightscoutFollow;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileEditor;
 import com.eveningoutpost.dexdrip.tidepool.TidepoolUploader;
 import com.eveningoutpost.dexdrip.tidepool.UploadChunk;
@@ -894,6 +895,16 @@ public class Preferences extends BasePreferenceActivity {
                     return true;
             });
 
+            try {
+                final Preference nsFollowUrl = findPreference("nsfollow_url");
+                nsFollowUrl.setOnPreferenceChangeListener((preference, newValue) -> {
+                    NightscoutFollow.resetInstance();
+                    return true;
+                });
+            } catch (Exception e) {
+                //
+            }
+
             final Preference scanShare = findPreference("scan_share2_barcode");
             final EditTextPreference transmitterId = (EditTextPreference) findPreference("dex_txid");
            // final Preference closeGatt = findPreference("close_gatt_on_ble_disconnect");
@@ -1176,6 +1187,14 @@ public class Preferences extends BasePreferenceActivity {
                 try {
                     collectionCategory.removePreference(findPreference("medtrum_use_native"));
                     collectionCategory.removePreference(findPreference("medtrum_a_hex"));
+                } catch (Exception e) {
+                    //
+                }
+            }
+
+            if (collectionType != DexCollectionType.NSFollow) {
+                try {
+                    collectionCategory.removePreference(findPreference("nsfollow_url"));
                 } catch (Exception e) {
                     //
                 }

@@ -101,6 +101,14 @@
             android:singleLine="true"
             android:summary="Hex diagnostic test value"
             android:title="Medtrum Debug" />
+        <EditTextPreference
+            android:defaultValue=""
+            android:inputType="textNoSuggestions|textVisiblePassword"
+            android:key="nsfollow_url"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:summary="Web address for following"
+            android:title="Nightscout Follow" />
 
         <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
             android:key="xdrip_plus_g5_extra_settings"
@@ -150,7 +158,7 @@
                 android:title="Fallback to xDrip"
                 />
             <CheckBoxPreference
-                android:defaultValue="true"
+                android:defaultValue="false"
                 android:dependency="use_ob1_g5_collector_service"
                 android:key="ob1_minimize_scanning"
                 android:summary="Use heuristics to minimize bluetooth scanning + save power"
