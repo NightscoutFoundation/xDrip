@@ -349,4 +349,6 @@
     <string name="no_bluetooth">אין bluetooth</string>
     <string name="connection_status">   מצב החיבור:  </string>
     <string name="please_allow_permission">אנא תן הרשאה</string>
+    <string name="location_permission_needed_to_use_bluetooth">דרושה הרשאה למיקום כדי לאפשר בלוטוס!</string>
+    <string name="need_permission_to_access_audio_files">דרושה הרשאה כדי לגשת לקבצי קול</string>
 </resources>
