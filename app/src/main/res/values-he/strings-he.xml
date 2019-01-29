@@ -300,6 +300,7 @@
     <string name="play_sound">השמע צליל</string>
     <string name="blukon">בלוקון</string>
     <string name="tomato">מיומיו</string>
+    <string name="reminders">תזכורות</string>
     <string name="stop_sensor">עצור סנסור</string>
     <string name="initial_calibration">כיול התחלתי</string>
     <string name="note_search">חיפוש הערה</string>
@@ -328,9 +329,12 @@
     <string name="summary_Shared_Secret_for_open_web_service">Shared Secret for open web service (should match your Nightcout API secret)</string>
     <string name="summary_write_Battery_Information_for_additional_analytic">רשום את האינפורמציה של הבטריה לצורך ניתוח נוסף. בבקשה השתמש במידע זה רק אם תתבקש לכך על ידי אחד המפתחים!</string>
     <string name="summary_allow_testing_with_dead_sensor">אפשר בדיקות עם סנסור שיצא משימוש</string>
+    <string name="title_You_have_no_reminders_yet">אין לך תזכורות עדיין</string>
+    <string name="message_reminders_explanation">התזכורות יכולות לשמש לפעולות כגון החלפת מיקום של משאבה או כל פעולה אחרת. \n\n הם יכולים להיות מחזורים, להיות מכוונים לזמנים שונים. ניתן להשתיק אותם, לדחות או לקבוע לתאריך אחר. \n\n\ לחץ על כפתור ה+ בכדי להוסיף תזכורת.</string>
     <string name="Please_Allow_Permission">אנא תן הרשאה</string>
     <string name="need_storage_permission">דרושה הרשאה לאחסון כדי לגשת לקבצי הרינגטונים</string>
     <string name="cannot_chose_file">אין אפשרות לבחור קובץ בלי הרשאה לאחסון</string>
+    <string name="xdrip_reminders">תזכורות של xdrip+</string>
     <string name="button_15_min">15 דקות</string>
     <string name="button_2_hour">שעתיים</string>
     <string name="button_1_day">יום אחד</string>
