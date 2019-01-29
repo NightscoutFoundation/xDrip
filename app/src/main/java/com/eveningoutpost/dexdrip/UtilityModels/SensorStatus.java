@@ -21,9 +21,9 @@ public class SensorStatus {
             DateFormat df = new SimpleDateFormat();
             sensor_status.append(df.format(date));
             sensor_status.append(" (");
-            sensor_status.append((tsl() - sensor.started_at) / (1000 * 60 * 60 * 24));
+            sensor_status.append((tsl() - sensor.started_at) / Constants.DAY_IN_MS);
             sensor_status.append("d ");
-            sensor_status.append(((tsl() - sensor.started_at) % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            sensor_status.append(((tsl() - sensor.started_at) % Constants.DAY_IN_MS) / Constants.HOUR_IN_MS);
             sensor_status.append("h)");
         } else {
             sensor_status.append("not available");
