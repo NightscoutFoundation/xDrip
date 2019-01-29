@@ -199,6 +199,8 @@
     <string name="glucose_history">היסטורית הסוכר</string>
     <string name="import_database">ייבא את בסיס הנתונים</string>
     <string name="sensor_table">טבלאת הסנסורים</string>
+    <string name="please_enter_your_question_or_comments_here">אנא רשום את השאלות או הערות שלך כאן. n\n\ אם תספק דואר אלקטרוני יכול להיות שתקבל תשובה n\n\</string>
+    <string name="please_indicate_what_you_think_of_the_app_generally">אנא ציין מה אתה חושב על האפליקציה באופן כללי</string>
     <string name="new_version_date_colon">"תאריך הגרסא החדשה: "</string>
     <string name="old_version_date_colon">"תאריך הגרסא הישנה: "</string>
     <string name="displays_the_high_line">הצג את הקו הגבוה</string>
@@ -314,8 +316,14 @@
     <string name="offical_msg">האפליקציה הרשמית</string>
     <string name="yes">כן</string>
     <string name="are_you_sure">אתה בטוח?</string>
+    <string name="is_your_typical_glucose_value">האם ערך אופיני של הסוכר שלך הוא 100(mg/dl) או 5.5 (mmol/L) אנא בחר למטה</string>
+    <string name="please_enter_printed_calibration_code">אנא הזן את קוד הכיול המודפס, 4 ספרות, לדוגמא: 5678</string>
+    <string name="please_confirm_to_cancel_the_alert">אנא אשר את השתקת ההתראה</string>
+    <string name="sensor_is_still_warming_up_please_wait">הסנסור עדין מתחמם, אנא המתן</string>
     <string name="summary_Shared_Secret_for_open_web_service">Shared Secret for open web service (should match your Nightcout API secret)</string>
+    <string name="summary_write_Battery_Information_for_additional_analytic">רשום את האינפורמציה של הבטריה לצורך ניתוח נוסף. בבקשה השתמש במידע זה רק אם תתבקש לכך על ידי אחד המפתחים!</string>
     <string name="summary_allow_testing_with_dead_sensor">אפשר בדיקות עם סנסור שיצא משימוש</string>
+    <string name="Please_Allow_Permission">אנא תן הרשאה</string>
     <string name="button_15_min">15 דקות</string>
     <string name="button_2_hour">שעתיים</string>
     <string name="button_1_day">יום אחד</string>
@@ -340,4 +348,5 @@
     <string name="no_data">אין נתונים</string>
     <string name="no_bluetooth">אין bluetooth</string>
     <string name="connection_status">   מצב החיבור:  </string>
+    <string name="please_allow_permission">אנא תן הרשאה</string>
 </resources>
