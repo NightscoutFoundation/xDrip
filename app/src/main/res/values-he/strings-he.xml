@@ -45,6 +45,7 @@
     <string name="pref_title_api_enabled">מופעל</string>
     <string name="pref_summary_api_enabled">rest api הוא הדרך הסטנדרטית להתחבר לניטסקוט</string>
     <string name="pref_title_api_url">כתובת URL בסיסית</string>
+    <string name="pref_dialog_api_url">הזן כתובת URL בסיסית</string>
     <string name="pref_default_api_url">https://yourpassphrase@{YOUR-SITE}.azurewebsites.net/api/v1/</string>
     <!-- wifi Settings -->
     <string name="wifi_recievers_dialog_message">רשימה של כתובת ופורט מופרדת בפסיקים (ip:port)
@@ -325,6 +326,7 @@
     <string name="is_your_typical_glucose_value">האם ערך אופיני של הסוכר שלך הוא 100(mg/dl) או 5.5 (mmol/L) אנא בחר למטה</string>
     <string name="please_enter_printed_calibration_code">אנא הזן את קוד הכיול המודפס, 4 ספרות, לדוגמא: 5678</string>
     <string name="please_confirm_to_cancel_the_alert">אנא אשר את השתקת ההתראה</string>
+    <string name="yes_cancel">כן, בטל.</string>
     <string name="emergency_messages">הודעות בחירום</string>
     <string name="sensor_is_still_warming_up_please_wait">הסנסור עדין מתחמם, אנא המתן</string>
     <string name="summary_Shared_Secret_for_open_web_service">Shared Secret for open web service (should match your Nightcout API secret)</string>
@@ -365,6 +367,11 @@
     <string name="location_permission_needed_to_use_bluetooth">דרושה הרשאה למיקום כדי לאפשר בלוטוס!</string>
     <string name="did_you_insert_it_today">האם החלפת אותו היום?</string>
     <string name="yes_today">כן, היום</string>
+    <string name="which_day_was_it_inserted">באיזה יום הסנסור הוחלף?</string>
+    <string name="what_time_was_it_inserted">באיזה שעה הסנסור הוחלף?</string>
+    <string name="new_sensor_started">סנסור חדש הותחל</string>
+    <string name="error_sensor_start_time_in_future">שגיאה: שעת ההתחלה של החיישן בעתיד</string>
     <string name="not_today">. לא היום</string>
     <string name="need_permission_to_access_audio_files">דרושה הרשאה לאחסון כדי לגשת לקבצי קול</string>
+    <string name="xdrip_needs_whitelisting_for_proper_performance">xDrip + צריך להיות מחוץ לאופטימזציה של הסוללה בכדי לפעול נכון</string>
 </resources>
