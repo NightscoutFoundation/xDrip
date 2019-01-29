@@ -363,5 +363,8 @@
     <string name="without_location_scan_doesnt_work">בלי הרשאה למיקום אנדרואיד לא מאפשר סריקת בלוטוס</string>
     <string name="please_allow_permission">אנא תן הרשאה</string>
     <string name="location_permission_needed_to_use_bluetooth">דרושה הרשאה למיקום כדי לאפשר בלוטוס!</string>
+    <string name="did_you_insert_it_today">האם החלפת אותו היום?</string>
+    <string name="yes_today">כן, היום</string>
+    <string name="not_today">. לא היום</string>
     <string name="need_permission_to_access_audio_files">דרושה הרשאה לאחסון כדי לגשת לקבצי קול</string>
 </resources>
