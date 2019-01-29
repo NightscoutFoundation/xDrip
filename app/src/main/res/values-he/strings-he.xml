@@ -116,7 +116,6 @@
     <string name="send_crash_errors_to_developer">שלח התראות על התרסקות למפתח</string>
     <string name="automatic_crash_reporting">דיווח אוטומטי על התרסקויות</string>
     <string name="copying_settings">מעתיק הגדרות</string>
-    <string name="load_save_settings_to_sdcard">שמור / טען הגדרות לכרטיס זכרןו</string>
     <string name="alarms_and_alerts">התראות ואזעקות</string>
     <string name="alerts_and_notifications">התראות ו</string>
     <string name="glucose_level_alerts_list">רשימת התראות על רמת סוכר</string>
