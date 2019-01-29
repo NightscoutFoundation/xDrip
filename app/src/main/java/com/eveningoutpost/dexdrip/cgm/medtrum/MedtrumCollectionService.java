@@ -106,7 +106,7 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
     private static final long MINIMUM_RECORD_INTERVAL = 280000; // A6 gives records every 2 minutes but we want per 5 minutes as standard
     private static final long MAX_RETRY_BACKOFF_MS = 60000; // sleep for max ms if we have had no signal
     private static final int LISTEN_STASIS_SECONDS = 7200; // max time to be in listen state
-    private static String address = "";
+    private volatile static String address = "";
     private static long serial;
 
     public static volatile String lastState = "Not running";
@@ -390,7 +390,8 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
     private synchronized void connect_to_device(boolean auto) {
         if (state == CONNECT) {
             // TODO check mac
-            if (address != null) {
+            //UserError.Log.d(TAG, "Address length: " + address.length());
+            if (address != null && address.length() > 6) {
                 status("Connecting");
 
                 stopConnect();
@@ -489,7 +490,7 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
                 } else {
                     errorStatus("AUTHENTICATION FAILED!");
                     if (JoH.ratelimit("medtrum-auth-fail", 600)) {
-                        UserError.Log.wtf(TAG, "Auth packet failure: " + authrx.toS());
+                        UserError.Log.wtf(TAG, "Auth packet failure: " + serial + authrx.toS());
                     }
                 }
                 changeState(state.next());
