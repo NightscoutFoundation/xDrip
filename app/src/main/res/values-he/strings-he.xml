@@ -325,6 +325,7 @@
     <string name="is_your_typical_glucose_value">האם ערך אופיני של הסוכר שלך הוא 100(mg/dl) או 5.5 (mmol/L) אנא בחר למטה</string>
     <string name="please_enter_printed_calibration_code">אנא הזן את קוד הכיול המודפס, 4 ספרות, לדוגמא: 5678</string>
     <string name="please_confirm_to_cancel_the_alert">אנא אשר את השתקת ההתראה</string>
+    <string name="emergency_messages">הודעות בחירום</string>
     <string name="sensor_is_still_warming_up_please_wait">הסנסור עדין מתחמם, אנא המתן</string>
     <string name="summary_Shared_Secret_for_open_web_service">Shared Secret for open web service (should match your Nightcout API secret)</string>
     <string name="summary_write_Battery_Information_for_additional_analytic">רשום את האינפורמציה של הבטריה לצורך ניתוח נוסף. בבקשה השתמש במידע זה רק אם תתבקש לכך על ידי אחד המפתחים!</string>
