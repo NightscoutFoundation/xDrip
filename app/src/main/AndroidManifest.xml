@@ -638,6 +638,7 @@
             android:enabled="true"
             android:exported="true" />
         <service android:name=".watch.lefun.LeFunService" />
+        <service android:name=".cgm.nsfollow.NightscoutFollowService" />
 
         <activity
             android:name=".EventLogActivity"
