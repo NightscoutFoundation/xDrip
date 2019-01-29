@@ -43,6 +43,8 @@ public class Constants {
     public static final int DESERT_MASTER_UNREACHABLE = 1017;
     public static final int LEFUN_SERVICE_RETRY_ID = 1018;
     //public static final int LEFUN_SERVICE_FAILOVER_ID = 1019;
+    public static final int NSFOLLOW_SERVICE_FAILOVER_ID = 1020;
+    public static final int NSFOLLOW_SERVICE_RETRY_ID = 1021;
 
     static final int NIGHTSCOUT_ERROR_NOTIFICATION_ID = 2001;
 

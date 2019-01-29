@@ -15,6 +15,7 @@
         <item>LibreAlarm</item>
         <item>640G / EverSense</item>
         <item>Medtrum A6</item>
+        <item>Nightscout Follower</item>
         <item>Disable Collection</item>
     </string-array>
 
@@ -33,6 +34,7 @@
         <item>LibreAlarm</item>
         <item>NSEmulator</item>
         <item>Medtrum</item>
+        <item>NSFollower</item>
         <item>Disabled</item>
     </string-array>
 
