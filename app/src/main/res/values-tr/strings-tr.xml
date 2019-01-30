@@ -42,6 +42,7 @@
     <string name="pref_share2_scan_barcode_summary">Veya share receiver\'dan barkodu tarayın</string>
     <!-- MongoDB Settings -->
     <string name="pref_title_mongodb">MongoDB</string>
+    <string name="pref_summary_mongodb_enabled">Doğrudan veritabanı yükleme, Nightscout için önerilmez</string>
     <string name="pref_title_mongodb_uri">URI</string>
     <string name="pref_dialog_mongodb_uri">MongoDB URI Girin\"</string>
     <string name="pref_message_mongodb_uri">{}\'in İçerisindeki örnek değerleri sizin kendi doğru değerlerinizle değiştirin</string>
@@ -55,6 +56,7 @@
     <!-- API Settings -->
     <string name="pref_title_api">Nightscout Senkronizasyonu (REST-API)</string>
     <string name="pref_title_api_enabled">Etkin</string>
+    <string name="pref_summary_api_enabled">REST API, Nightscout\'a bağlanmanın standart yoludur</string>
     <string name="pref_title_api_url">Temel URL</string>
     <string name="pref_dialog_api_url">Temel API URL adresine girin</string>
     <string name="pref_message_api_url">Bu URL sadece, yükleyici POST için otomatik olarak / girdiler ekleyecektir. Sunucudaki API_SECRET, bu ayardaki parolanızla eşleşmelidir.</string>
@@ -142,6 +144,7 @@
     <string name="added">Eklendi</string>
     <string name="checking_for_update">Güncellemeler kontrol ediliyor..</string>
     <string name="signal_missed">Sinyal Yok</string>
+    <string name="minutes_ago">{0, choice,0#{0, number, integer} Dakika önce|1#{0, number, integer} Dakika önce|1&lt;{0, number, integer} Dakika önce}</string>
     <string name="space_minutes_ago">" Dakika önce"</string>
     <string name="space_minute_ago">" Dakika önce"</string>
     <string name="show_parakeet_map">Parakeet haritasını göster</string>
@@ -256,6 +259,7 @@
     <string name="less_common_settings">Gelişmiş ayarlar</string>
     <string name="view_recent_errors_warnings">Enson Hataları/Uyarıları Görüntüle</string>
     <string name="other_settings">Diğer Ayarlar</string>
+    <string name="older_gratuitous_wakelocks">Nightwatch veya Android Wear için ihtiyaç duyulabilecek daha fazla Older gratuitous wakelocks, daha yüksek pil tüketimine neden olur</string>
     <string name="use_excessive_wakelocks">Aşırı Wakelocks Kullan</string>
     <string name="speak_readings">Değerleri Oku</string>
     <string name="extra_status_line">Ek durum satırı</string>
@@ -391,6 +395,7 @@
     <string name="parakeet_related_alerts">Parakeet ile ilgili uyarılar</string>
     <string name="raise_parakeet_notification_silently_when_charging">Şarj ederken parakeet bildirimini sessize al</string>
     <string name="silent_alert_when_charging">Şarj olurken sessiz uyarı</string>
+    <string name="alerts_start_out_snoozed_and_must_persist_for_a_while">Uyarılar sessizce başlar ve bir süre sonra etkinleştir</string>
     <string name="alarms_silenced_during_telephone_calls">Telefon görüşmeleri sırasında uyarıları sustur</string>
     <string name="suppress_alerts_if_missed_readings">Kaçırılan okumalar varsa Uyarıları bastır</string>
     <string name="bad_noisy_value_alerts">Kötü (gürültülü) Değer Uyarıları</string>
@@ -467,6 +472,7 @@
     <string name="show_graph_target_line">Grafik hedef çizgilerini göster</string>
     <string name="show_graph_recent_average">Grafikte ortalamaları göster</string>
     <string name="show_graph_total_average">Grafikte mutlak ortalamaları göster</string>
+    <string name="show_momentum_working_curve">Momentum çalışma eğrisini göster</string>
     <string name="show_noise_workings">Gürültü azaltmayı göster</string>
     <string name="parakeet_and_extra_features">Parakeet ve Ekstra test özellikler</string>
     <string name="insulin_duration_hours">İnsülin süresi saat cinsinden</string>
@@ -478,6 +484,7 @@
     <string name="alert_name_colon">Uyarı adı:</string>
     <string name="threshold_colon">Eşik değeri:</string>
     <string name="default_snooze_colon">Varsayılan Erteleme:</string>
+    <string name="re_raise_every_x_minutes_if_unaknowledged">Onaylanmadıysa \n her x dakikada bir \n yeniden yükselt:</string>
     <string name="alert_tone_colon">Uyarı Tonu:</string>
     <string name="choose_file">Dosyayı seçin</string>
     <string name="select_time_for_alert_colon">Uyarı için saati seçin:</string>
@@ -502,6 +509,7 @@
     <string name="xbridge_battery">xBridge pili</string>
     <string name="limitter_battery">Libre pil</string>
     <string name="parakeet_battery">Parakeet pil</string>
+    <string name="after_calibration_rewrite_history">Kalibrasyondan sonra, yeni kalibrasyonu düzeltmek için son ham grafiği ayarla</string>
     <string name="rewrite_history">Geçmişi Yenile</string>
     <string name="grid_time_lines_visible">Zaman ızgara çizgileri görünür</string>
     <string name="grid_glucose_lines_visible">Glikoz ızgara çizgilerini görünür yap</string>
@@ -548,6 +556,7 @@
     <string name="interapp_settings">Inter-app ayarları</string>
     <string name="use_plugins_for_brodcast">Yayınlanan değer için gürültü düzeltme ve eklentileri vb. (Etkinleştirilmişse) kullanın</string>
     <string name="send_display_glucose">Ekran gösterilen Glikoz Değerini Gönder</string>
+    <string name="send_broadcasts_old_permission_model">Eski hak modeline dikkate almadan yayın gönder</string>
     <string name="process_nsclient_treatments">NSClient uygulamasından alınan tedavi verileri</string>
     <string name="accept_treatments">Tedaviyi kabul et</string>
     <string name="process_broadcasted_calibrations">Diğer uygulamalardan alınan kalibrasyon verilerini kullan</string>
@@ -567,12 +576,16 @@
     <string name="reset_bluetooth_g5">Bluetooth\'u, G5 veri kaynağının çalışmaya devam etmesini sağlayacak şekilde kapatıp açarak sıfırlayın. Bu olmadan G5 toplayıcı başarısız olabilir.</string>
     <string name="g5_bluetooth_watchdog">G5 Bluetooth Watchdog</string>
     <string name="close_gatt">Bluetooth watchdog sık sık etkinleşirse, yardımcı olup olmadığını görmek için bu seçeneğin işaretini kaldırabilirsiniz</string>
+    <string name="older_bluetooth_wakelocks">Eski bluetooth wakelocks,ekstra pil kullanımına neden olabilir ancak bluetooth veri toplaması için de gerekli olabilir</string>
+    <string name="reset_bluetooth_on_off">Birkaç dakikada bir kapatıp açarak Bluetooth\'u sıfırlayın! Sadece test ediyorsanız seçin. Bluetooth oynamak başka bir şeyi etkileyebilir.</string>
     <string name="constantly_reset_bluetooth">Bluetooth\'u sıkca sıfırla</string>
     <string name="experimental_transmitter_fpv_uav">\@FPV-UAV\'dan \'Transmiter\' cihazı için deneysel destek - sadece test</string>
     <string name="transmitter_pl_support">Transmiter (PL) desteği</string>
     <string name="experimental_rdfuino_support">Tomasz Stachowicz\'den rfduino için deneysel destek</string>
     <string name="rfduino_support">RFDUINO desteği</string>
+    <string name="repeatedly_restart_collection_service">Herhangi bir eksik veri ipucu toplama servisini tekrar tekrar başlat. Yalnızca veri kaybı alıyorsanız etkinleştirin.</string>
     <string name="aggressive_service_restarts">Agresif servis yeniden başlatılıyor</string>
+    <string name="predictive_readings_old">Eski yöntem - Tavsiye edilmez! Geçmiş birkaç değere dayanarak her dakika okumayı tahmin etmeye çalışır.</string>
     <string name="use_external_blukon_algorithm_summary">Harici libre algoritması kullan. (bluecon/NFC/LibreAlarm)</string>
     <string name="display_predictive_values">Tahmini Değerleri Göster</string>
     <string name="use_external_blukon_algorithm">Harici libre algoritması.</string>
@@ -615,10 +628,14 @@
     <string name="realtime_capture_percentage">Gerçek zamanlı paket yakalama yüzdesi</string>
     <string name="show_calibration_accuracy">Son 3 güne ait kalibrasyon doğruluğu değerlendirmesini göster</string>
     <string name="accuracy_evaluation">Doğruluk değerlendirme</string>
+    <string name="show_extra_status_on_widget">Ayrıca grafik bileşende ekstra durum satırını göster</string>
+    <string name="show_long_calibration_data">Eğim ve kesişim şeklini uzun biçimde göster.</string>
+    <string name="show_short_calibration_data">Eğim ve kesişim şeklini kısa biçimde göster.</string>
     <string name="show_plugin_data">Aktif eklentiden eğim ve glikoz verisini göster</string>
     <string name="calibration_plugin">Kalibrasyon eklentisi</string>
     <string name="advanced_calibration">Gelişmiş Kalibrasyon</string>
     <string name="extra_calibration_options">Kalibrasyonlarla ilgili ek seçenekler</string>
+    <string name="choose_use_treament_bg">Tedavi girişinde KŞ değeri ile kalibre edilip edilmeyeceğini seçin</string>
     <string name="usw_treatment_bg">Tedavi KŞ değerlerini kullan</string>
     <string name="experimental_calibration_plugin">Deneysel ikincil kalibrasyon eklentisi</string>
     <string name="show_plugin_results_on_graph">Ana grafikteki eklentiden glikoz sonuçlarını göster</string>
@@ -700,7 +717,10 @@
     <string name="minimum_value">Hedef alanınızın alt sınırı.</string>
     <string name="volume_buttons_snooze">Ses artırma veya azaltma düğmesine basıldığında, uygulama aktif bir alarmı erteleyecektir</string>
     <string name="buttons_silence_alarms">Uyarıları sessize almak için düğmeler</string>
+    <string name="create_shortcut">Ana navigasyondan kş seviye ekranına kısayol oluştur</string>
     <string name="shortcut_to_bg_alerts">Kısayol Kan Şekeri düzeyi uyarıları</string>
+    <string name="suppress_alerts_missed_readings">Önceden tanımlanmış cevapsız okumalar süresinden sonra ertelenen ve aktif uyarıları bastır</string>
+    <string name="suppress_alerts_after">Ertelenmiş ve aktif alarmları .. dakika sonraya bastır (en az 10)</string>
     <string name="alert_calibration_request">Kalibrasyon istendiğinde uyar</string>
     <string name="calibrations_request_time_time_difference">Kalibrasyon istekleri arasında kaç saat var</string>
     <string name="hours_between_calibrations">Kalibrasyonlar arasındaki saatler</string>
@@ -993,14 +1013,28 @@
     <string name="summary_allow_testing_with_dead_sensor">ölü sensörle test yapılmasına izin ver</string>
     <string name="title_NOT_FOR_PRODUCTION_USE">NORMAL KULLANIM İÇİN DEĞİLDİR</string>
     <string name="title_You_have_no_reminders_yet">Henüz hatırlatıcınız yok</string>
+    <string name="message_reminders_explanation">Hatırlatıcılar, pompa set değişikliklerini veya başka herhangi bir şey için kullanılabilir.\n\nTekrarlayabilir, çeşitli zaman aralıkları için ayarlanabilir. Ertele, ertelenenler, yeniden planlananlar vb.\n\nBir hatırlatıcı eklemek için + düğmesine basın.</string>
     <string name="title_swipe_reminder">Sola veya sağa kaydırın</string>
+    <string name="message_swipe_explanation">\u2190 Bir hatırlatıcıyı geciktirmek veya ertelemek için SOL\'a kaydırın\n\n\n2192 Bir sonraki zamanı hatırlatmak için SAĞ\'a kaydırın\n\nBaşlığa veya zamana dokunmak, düzenlemeye izin verir. Diğer parametreleri düzenlemek için başlığı uzun basın.</string>
+    <string name="title_reminder_snooze_undo">Hatırlatma Erteleme Paneli - Geri al</string>
+    <string name="message_snooze_explanaition_undo">Geri Al düğmesi, hatırlatıcıyı, kaydırılmadan önceki haliyle geri yükler.</string>
+    <string name="title_snooze_trash">Hatırlatma Erteleme Paneli - Çöp</string>
+    <string name="message_snooze_trash">Çöp Kutusu düğmesi kaydırılmış hatırlatıcıyı kalıcı olarak siler!</string>
+    <string name="title_snooze_hide">Hatırlatıcı Erteleme Paneli - Gizle</string>
+    <string name="message_snooze_hide">Gizle düğmesi erteleme panelini gizler</string>
+    <string name="title_snooze_times">Reminder Snooze Panel - Zamanları</string>
+    <string name="message_snooze_times">Çeşitli düğmeler hızlı bir şekilde standart erteleme süresini başka bir erteleme süresine değiştirir.</string>
     <string name="title_which_day">Hangi gün?</string>
     <string name="title_what_time_day">Günün hangi saati?</string>
+    <string name="reminder_due">Hatırlatma</string>
     <string name="title_add_reminder">Hatırlatıcıyı ekle</string>
     <string name="title_edit_reminder">Hatırlatıcıyı Düzenle</string>
     <string name="alternate_between_titles">farklı başlıklar arasında geçiş yap</string>
     <string name="always_use_same_title">her zaman aynı başlığı kullan</string>
+    <string name="reminder_will">Hatırlatılacak</string>
     <string name="sound_once">bir kez ses</string>
+    <string name="alert_until_dismissed">görevden alınana kadar uyar</string>
+    <string name="and_then_repeat">ve sonra her birini tekrarla</string>
     <string name="will_not_repeat">bundan sonra tekrarı olmaz</string>
     <string name="Please_Allow_Permission">Lütfen Gerekli İzini Verin</string>
     <string name="need_storage_permission">Tüm zil seslerine erişmek için depolama iznine ihtiyacınız var</string>
@@ -1009,6 +1043,7 @@
     <string name="snoozed_for">ertelendi</string>
     <string name="postponed_for">için ertelendi</string>
     <string name="completed">tamamlandı</string>
+    <string name="next_in">bir sonraki</string>
     <string name="due">Bitiş</string>
     <string name="due_uppercase">BİTİŞ</string>
     <string name="repeats_every">herşeyi tekrarlar</string>
@@ -1040,7 +1075,7 @@
     <string name="button_30_min">30 dk</string>
     <string name="button_4_hour">4 Saat</string>
     <string name="button_2_day">2 Gün</string>
-    <string name="button_1_hour">1Saat</string>
+    <string name="button_1_hour">1 Saat</string>
     <string name="button_8_hour">8 Saat</string>
     <string name="button_1_week">1 hafta</string>
     <string name="unit_second">saniye</string>
@@ -1068,7 +1103,22 @@
     <string name="no_data">Veri bulunamadı</string>
     <string name="no_bluetooth">Bluetooth bulunamadı</string>
     <string name="connection_status">Bağlantı Durumu:   </string>
-    <string name="please_allow_permission">Lütfen Gerekli İzini Ver</string>
     <string name="without_location_scan_doesnt_work">Konum izni olmadan, Android Bluetooth taraması çalışmıyacaktır</string>
     <string name="without_location_permission_emergency_cannot_get_location">Konum izni olmadan, acil durum mesajları konum verilerini kullanamaz</string>
+    <string name="choose_data_source">Veri Kaynağı Seçin</string>
+    <string name="which_system_do_you_use">Hangi sistemi kullanıyorsunuz?</string>
+    <string name="please_allow_permission">Lütfen Gerekli İzini Ver</string>
+    <string name="location_permission_needed_to_use_bluetooth">Bluetooth kullanmak için konum izni gerekiyor!</string>
+    <string name="did_you_insert_it_today">Bugün mü yerleştirdiniz?</string>
+    <string name="we_need_to_know_when_the_sensor_was_inserted_to_improve_calculation_accuracy__was_it_inserted_today">Hesaplamanın doğruluğunu artırabilmek için sensörün ne zaman yerleştirildiğini bilmemiz gerekir.\n\nBu gün mü yerleştirildi?</string>
+    <string name="yes_today">Evet, bugün</string>
+    <string name="which_day_was_it_inserted">Hangi gün yerleştirildi?</string>
+    <string name="what_time_was_it_inserted">Saat kaçta yerleştirildi?</string>
+    <string name="new_sensor_started">YENİ SENSÖR BAŞLADI</string>
+    <string name="error_sensor_start_time_in_future">HATA: GELECEKTE SENSÖR BAŞLATMA ZAMANI</string>
+    <string name="not_today">Bugün değil</string>
+    <string name="need_permission_to_access_audio_files">Ses dosyalarına erişmek için izne, yetkiye ihtiyacınız var</string>
+    <string name="need_contacts_permission_to_select_message_recipients">Mesaj alıcılarını seçmek için irtibat, kontak izinlerine ihtiyacınız var</string>
+    <string name="need_storage_permission_to_access_all_ringtones">Tüm zil seslerine erişmek için depolama iznine, yetkisine ihtiyacınız var</string>
+    <string name="xdrip_needs_whitelisting_for_proper_performance">xDrip+ uygun performans için beyaz listelemeye (Whitelisting) ihtiyaç duyuyor</string>
 </resources>
