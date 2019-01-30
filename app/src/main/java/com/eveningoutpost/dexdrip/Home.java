@@ -172,7 +172,6 @@ import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.getCol;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.DAY_IN_MS;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.HOUR_IN_MS;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.MINUTE_IN_MS;
-
 import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPermissionsResultCallback {
@@ -350,7 +349,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         }
 
 
-        nanoStatus = new NanoStatus("collector",1000);
+        nanoStatus = new NanoStatus("collector", 1000);
 
         set_is_follower();
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
@@ -612,7 +611,6 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
 
         currentBgValueText.setText(""); // clear any design prototyping default
-
 
 
     }
@@ -1044,6 +1042,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                         builder.setPositiveButton("Calibrate", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
+                                // TODO time should be absolute not relative!?!?
                                 final long time_since = JoH.msSince(bt.timestamp);
                                 Home.startHomeWithExtra(xdrip.getAppContext(), Home.BLUETOOTH_METER_CALIBRATION, BgGraphBuilder.unitized_string_static(bt.mgdl), Long.toString(time_since));
                                 bt.addState(BloodTest.STATE_CALIBRATION);
@@ -1063,7 +1062,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                                     public void onClick(DialogInterface dialog, int which) {
                                         dialog.dismiss();
                                         bt.removeState(BloodTest.STATE_VALID);
-                                        NativeCalibrationPipe.removePendingCalibration((int)bt.mgdl);
+                                        NativeCalibrationPipe.removePendingCalibration((int) bt.mgdl);
                                         GcmActivity.syncBloodTests();
                                         if (Home.get_show_wear_treatments())
                                             BloodTest.pushBloodTestSyncToWatch(bt, false);
@@ -1375,17 +1374,17 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             thisuuid = (end > 0 ? allWords.substring(0, end) : "");
             allWords = allWords.substring(end + 6, allWords.length());
         }
-        byte[] RTL_BYTES = {(byte)0xE2, (byte)0x80, (byte)0x8f}; // See https://stackoverflow.com/questions/21470476/why-is-e2808f-being-added-to-my-youtube-embed-code
-       
+        byte[] RTL_BYTES = {(byte) 0xE2, (byte) 0x80, (byte) 0x8f}; // See https://stackoverflow.com/questions/21470476/why-is-e2808f-being-added-to-my-youtube-embed-code
+
         allWords = allWords.trim();
         allWords = allWords.replaceAll(":", "."); // fix real times
         allWords = allWords.replaceAll("(\\d)([a-zA-Z])", "$1 $2"); // fix like 22mm
         allWords = allWords.replaceAll("([0-9]\\.[0-9])([0-9][0-9])", "$1 $2"); // fix multi number order like blood 3.622 grams
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            allWords = allWords.replaceAll(new String(RTL_BYTES, StandardCharsets.UTF_8),"");
+            allWords = allWords.replaceAll(new String(RTL_BYTES, StandardCharsets.UTF_8), "");
         }
         allWords = allWords.toLowerCase();
-        
+
         Log.d(TAG, "Processing speech input allWords second: " + allWords + " UUID: " + thisuuid);
 
         if (allWords.contentEquals("delete last treatment")
@@ -1400,8 +1399,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         } else if (allWords.contentEquals("delete all glucose data")) {
             deleteAllBG(null);
             LibreAlarmReceiver.clearSensorStats();
-        }
-        else if (allWords.contentEquals("test trend arrow")) {
+        } else if (allWords.contentEquals("test trend arrow")) {
             testGraphicalTrendArrow();
         } else {
             VoiceCommands.processVoiceCommand(allWords, this);
@@ -1880,13 +1878,13 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         firstRunDialogs(checkedeula);
 
         Inevitable.task("home-resume-bg", 2000, new Runnable() {
-                    @Override
-                    public void run() {
-                        EmergencyAssistActivity.checkPermissionRemoved();
-                        NightscoutUploader.launchDownloadRest();
-                        Pendiq.immortality(); // Experimental testing phase
-                    }
-                });
+            @Override
+            public void run() {
+                EmergencyAssistActivity.checkPermissionRemoved();
+                NightscoutUploader.launchDownloadRest();
+                Pendiq.immortality(); // Experimental testing phase
+            }
+        });
 
     }
 
@@ -2323,7 +2321,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         }
         if (isWifiWixel || isWifiBluetoothWixel || isWifiandBTLibre || isWifiLibre || collector.equals(DexCollectionType.Mock)) {
             updateCurrentBgInfoForWifiWixel(collector, notificationText);
-        } else if (is_follower || collector.equals(DexCollectionType.NSEmulator)) {
+        } else if (is_follower || collector.equals(DexCollectionType.NSEmulator) || collector.equals(DexCollectionType.NSFollow)) {
             displayCurrentInfo();
             Inevitable.task("home-notifications-start", 5000, Notifications::start);
         } else if (!alreadyDisplayedBgInfoCommon && (DexCollectionType.getDexCollectionType() == DexCollectionType.LibreAlarm || collector == DexCollectionType.Medtrum)) {
@@ -2393,9 +2391,9 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
             double low_predicted_alarm_minutes;
 
-                low_predicted_alarm_minutes = JoH.tolerantParseDouble(Pref.getString("low_predict_alarm_level", "50"), 50d);
+            low_predicted_alarm_minutes = JoH.tolerantParseDouble(Pref.getString("low_predict_alarm_level", "50"), 50d);
 
-                // TODO use tsl()
+            // TODO use tsl()
 
             final double now = JoH.ts();
             final double predicted_low_in_mins = (BgGraphBuilder.low_occurs_at - now) / 60000;
@@ -2589,7 +2587,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                         }
                     }
                 } else {
-                    UserError.Log.d(TAG,"NOT ENOUGH CALCULATED READINGS: "+calculatedBgReadingsCount);
+                    UserError.Log.d(TAG, "NOT ENOUGH CALCULATED READINGS: " + calculatedBgReadingsCount);
                     if (!BgReading.isDataSuitableForDoubleCalibration() && (!Ob1G5CollectionService.usingNativeMode() || Ob1G5CollectionService.fallbackToXdripAlgorithm())) {
                         notificationText.setText(R.string.please_wait_need_two_readings_first);
                         showInitialStatusHelper();
@@ -2937,7 +2935,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         if ((!small_width) || (notificationText.length() > 0)) notificationText.append("\n");
         if (!small_width) {
             final String fmt = getString(R.string.minutes_ago);
-            notificationText.append(MessageFormat.format(fmt,minutes));
+            notificationText.append(MessageFormat.format(fmt, minutes));
         } else {
             // small screen
             notificationText.append(minutes + getString(R.string.space_mins));
@@ -2993,10 +2991,10 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     // Since this text has high visabilty, I'm doing it. Will not be done in other places.
     private void HebrewAppendDisplayData() {
         // Do the append for the hebrew language
-         String original_text = notificationText.getText().toString();
+        String original_text = notificationText.getText().toString();
         Log.d(TAG, "original_text = " + HexDump.dumpHexString(original_text.getBytes()));
-        if(original_text.length() >=1 && original_text.charAt(0) == 0x0a) {
-            Log.d(TAG,"removing first and appending " + display_delta);
+        if (original_text.length() >= 1 && original_text.charAt(0) == 0x0a) {
+            Log.d(TAG, "removing first and appending " + display_delta);
             notificationText.setText(display_delta + "  " + original_text.substring(1));
         } else {
             notificationText.setText(display_delta + "  " + original_text);
@@ -3005,11 +3003,11 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
     private void addDisplayDelta() {
         if (BgGraphBuilder.isXLargeTablet(getApplicationContext())) {
-            if(Locale.getDefault().getLanguage() == "iw") {
+            if (Locale.getDefault().getLanguage() == "iw") {
                 HebrewAppendDisplayData();
             } else {
-               notificationText.append("  ");
-               notificationText.append(display_delta);
+                notificationText.append("  ");
+                notificationText.append(display_delta);
             }
         } else {
             notificationText.append("\n");
@@ -3038,7 +3036,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             menu.removeItem(R.id.action_sync_watch_db);//KS
         }
         if (!Pref.getBoolean("wear_sync", false) && !Pref.getBoolean("pref_amazfit_enable_key", false)) {
-            menu.removeItem(R.id.action_resend_last_bg); }
+            menu.removeItem(R.id.action_resend_last_bg);
+        }
 
         //speak readings
         MenuItem menuItem = menu.findItem(R.id.action_toggle_speakreadings);
@@ -3394,7 +3393,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         switch (item.getItemId()) {
             case R.id.action_resend_last_bg:
                 WatchUpdaterService.startServiceAndResendData(0);
-                if(Pref.getBoolean("pref_amazfit_enable_key", true)) JoH.startService(Amazfitservice.class);
+                if (Pref.getBoolean("pref_amazfit_enable_key", true))
+                    JoH.startService(Amazfitservice.class);
                 break;
             case R.id.action_open_watch_settings:
                 startService(new Intent(this, WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_OPEN_SETTINGS));
