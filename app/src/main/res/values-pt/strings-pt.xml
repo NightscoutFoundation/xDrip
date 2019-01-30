@@ -35,7 +35,7 @@
     <string name="title_activity_edit_alert">Editar Alerta</string>
     <string name="title_activity_double_calibration">Calibração Inicial</string>
     <string name="title_activity_calibration_override">Substituir Calibração</string>
-    <string name="pref_header_cloud_storage">Armazenamento na Nuvem</string>
+    <string name="pref_header_cloud_storage">Armazenamento na Cloud</string>
     <string name="auto_configure_title">Configurar Automaticamente</string>
     <string name="prefs_auto_config_summary">Configuração Automática utilizando código de barras.</string>
     <string name="scan_share2_barcode">Ler Código de Barras de Partilha</string>
@@ -523,8 +523,8 @@
     <string name="glucose_number_from_filtered">Valores glicémicos Filtrados</string>
     <string name="if_the_phone_has_text_to_speech">Se o telefone tiver capacidade texto-para-voz, o resultado será falado.</string>
     <string name="upload_logs">Enviar Registos</string>
-    <string name="short_off_text_for_switches">Desligado</string>
-    <string name="short_on_text_for_switches">Ligado</string>
+    <string name="short_off_text_for_switches">DESL.</string>
+    <string name="short_on_text_for_switches">LIG.</string>
     <string name="install_pebble_apps">Instalar Apps Pebble</string>
     <string name="sliding_24_hour_window_summary">Utilizar últimas 24 horas em vez da meia-noite para estatísticas.</string>
     <string name="sliding_24_hour_window">Janela Deslizante</string>
@@ -569,7 +569,7 @@
     <string name="battery_optimization_prompt">Comando para Optimização de Bateria</string>
     <string name="advanced_bluetooth_settings">Configurações Avançadas do Bluetooth</string>
     <string name="bluetooth_settings">Definições do Bluetooth</string>
-    <string name="auto_turn_on_bluetooth">Ativar automaticamente o Bluetooth se estiver desligado quando tentarmos ligar a um dispositivo Bluetooth</string>
+    <string name="auto_turn_on_bluetooth">Activar automaticamente o Bluetooth se estiver desligado quando tentarmos ligar a um dispositivo Bluetooth</string>
     <string name="turn_bluetooth_on">Ligar Bluetooth</string>
     <string name="reset_bluetooth">Efetuar reset ao Bluetooth desligando e voltando a ligar se não receber dados em 20 minutos</string>
     <string name="bluetooth_watchdog">Vigilante Bluetooth</string>
@@ -684,7 +684,7 @@
     <string name="skip_local_lan">Para servidores locais com endereços 192.168.x.x, não fazer uploads quando não há nenhuma conectividade de rede local.</string>
     <string name="skip_lan_uploads">Ignorar envios na LAN</string>
     <string name="mongo_load_transmitter_data_title">Enviar dados dos transmissores Libre</string>
-    <string name="mongo_load_transmitter_data_summary">Permitir que mais de um xDrip se ligue a dispositivos Bluetooth e armazene os dados recebidos na nuvem. Isto deve permitir cobertura em toda a casa para libre com miaomiao ou para 2 pais usando o mesmo dispositivo BT.</string>
+    <string name="mongo_load_transmitter_data_summary">Permitir que mais de um xDrip se ligue a dispositivos Bluetooth e armazene os dados recebidos na Cloud. Isto deve permitir cobertura em toda a casa para libre com miaomiao ou para 2 pais usando o mesmo dispositivo BT.</string>
     <string name="influxdb_sync">Activar sincronização InfluxDB</string>
     <string name="influxdb_uri">InfluxDB URL</string>
     <string name="influxdb_database_name">Base de Dados InfluxDB</string>
@@ -1102,9 +1102,22 @@
     <string name="no_data">Sem dados</string>
     <string name="no_bluetooth">Sem Bluetooth</string>
     <string name="connection_status">Estado da Ligação:   </string>
-    <string name="please_allow_permission">Permita Autorização</string>
     <string name="without_location_scan_doesnt_work">Sem a permissão de Localização a pesquisa do Android Bluetooth não funciona</string>
     <string name="without_location_permission_emergency_cannot_get_location">Sem permissão de Localização as mensagens de emergência não podem usar dados de localização</string>
     <string name="choose_data_source">Escolher Fonte de Dados</string>
     <string name="which_system_do_you_use">Qual o sistema que utiliza?</string>
+    <string name="please_allow_permission">Permita Autorização</string>
+    <string name="location_permission_needed_to_use_bluetooth">Requer permissão de Localização para usar o Bluetooth!</string>
+    <string name="did_you_insert_it_today">Foi colocado hoje?</string>
+    <string name="we_need_to_know_when_the_sensor_was_inserted_to_improve_calculation_accuracy__was_it_inserted_today">Precisamos saber quando o sensor foi colocado para melhorar a precisão do cálculo.\n\nFoi colocado hoje?</string>
+    <string name="yes_today">SIM, hoje</string>
+    <string name="which_day_was_it_inserted">Em que dia foi colocado?</string>
+    <string name="what_time_was_it_inserted">A que horas foi colocado?</string>
+    <string name="new_sensor_started">NOVO SENSOR INICIADO</string>
+    <string name="error_sensor_start_time_in_future">ERRO: TEMPO DE INÍCIO DO SENSOR NO FUTURO</string>
+    <string name="not_today">Hoje não</string>
+    <string name="need_permission_to_access_audio_files">Requer permissão para acesso ficheiros áudio</string>
+    <string name="need_contacts_permission_to_select_message_recipients">Requer permissão de contactos para seleccionar destinatários da mensagem</string>
+    <string name="need_storage_permission_to_access_all_ringtones">Requer permissão de armazenamento para aceder a todos os toques</string>
+    <string name="xdrip_needs_whitelisting_for_proper_performance">xDrip+ requer lista de permissões para desempenho adequado</string>
 </resources>

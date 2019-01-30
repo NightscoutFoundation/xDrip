@@ -793,6 +793,7 @@
     <string name="only_accept_same_network">Nur akzeptieren, wenn das entfernte WLAN-Netzwerk mit demselben Buchstaben beginnt wie unseres oder die beiden sich sehr ähneln.</string>
     <string name="wifi_name_must_match">WLAN-Name muss übereinstimmen</string>
     <string name="confirm_remote_snooze">Bestätige Remote-Snooze</string>
+    <string name="are_you_sure_you_wish_to_snooze_all_other_devices_in_your_sync_group">Sind Sie sicher, dass Sie alle anderen Geräte in Ihrer Synchronisierungsgruppe schlummern (snooze) möchten?</string>
     <string name="yes_send_it">JA, senden!</string>
     <string name="movement_detection_and_vehicle_mode">Bewegungserkennung und Fahrzeugmodus</string>
     <string name="xdrip_motion_tracking">xDrip+ Bewegungserkennung</string>
@@ -1101,9 +1102,9 @@
     <string name="no_data">Keine Daten</string>
     <string name="no_bluetooth">Kein Bluetooth</string>
     <string name="connection_status">Verbindungsstatus:   </string>
-    <string name="please_allow_permission">Bitte erteilen Sie die nötigen Berechtigungen</string>
     <string name="without_location_scan_doesnt_work">Ohne die \"Location\"-Berechtigung wird der Bluetooth-Scan nicht funktionieren</string>
     <string name="without_location_permission_emergency_cannot_get_location">Ohne die \"Location\"-Berechtigung kann die Notfall-SMS keine Orts-Daten mitsenden</string>
     <string name="choose_data_source">Wähle Datenquelle</string>
     <string name="which_system_do_you_use">Welches System verwendest Du?</string>
+    <string name="please_allow_permission">Bitte erteilen Sie die nötigen Berechtigungen</string>
 </resources>
