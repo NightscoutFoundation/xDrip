@@ -42,6 +42,7 @@ import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.Services.G5CollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.UtilityModels.SensorStatus;
 import com.eveningoutpost.dexdrip.databinding.ActivitySystemStatusBinding;
 import com.eveningoutpost.dexdrip.ui.MicroStatus;
 import com.eveningoutpost.dexdrip.ui.MicroStatusImpl;
@@ -276,22 +277,7 @@ public class SystemStatusFragment extends Fragment {
 
 
     private void setSensorStatus() {
-        StringBuilder sensor_status = new StringBuilder();
-        if (Sensor.isActive()) {
-            Sensor sens = Sensor.currentSensor();
-            Date date = new Date(sens.started_at);
-            DateFormat df = new SimpleDateFormat();
-            sensor_status.append(df.format(date));
-            sensor_status.append(" (");
-            sensor_status.append((System.currentTimeMillis() - sens.started_at) / (1000 * 60 * 60 * 24));
-            sensor_status.append("d ");
-            sensor_status.append(((System.currentTimeMillis() - sens.started_at) % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            sensor_status.append("h)");
-        } else {
-            sensor_status.append("not available");
-        }
-        sensor_status_view.setText(sensor_status.toString());
-
+        sensor_status_view.setText(SensorStatus.status());
     }
 
 
