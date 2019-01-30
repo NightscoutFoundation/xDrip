@@ -28,7 +28,7 @@ On some Android Wear watches, it is possible for the G5 or G6 to talk directly t
 
 The app contains sophisticated charting, customization and data entry features as well as a predictive simulation model.
 
-Instant two-way synchronization is possible by linking follower handsets, data can also be uploaded and downloaded to a Nightscout web service or uploaded directly to MongoDB or InfluxDB.
+Instant two-way synchronization is possible by linking follower handsets, data can also be uploaded and downloaded to a Nightscout web service or uploaded directly to Tidepool, MongoDB or InfluxDB.
 
 Customization allows for different options to configure alarms, vocalize readings, change the display preferences etc. International users can update translations from within the app too.
 
