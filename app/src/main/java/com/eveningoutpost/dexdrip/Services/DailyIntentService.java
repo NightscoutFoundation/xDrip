@@ -1,6 +1,9 @@
 package com.eveningoutpost.dexdrip.Services;
 
+import android.app.AlarmManager;
 import android.app.IntentService;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.os.PowerManager;
 
@@ -8,8 +11,8 @@ import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.DesertSync;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.StepCounter;
 import com.eveningoutpost.dexdrip.Models.RollCall;
+import com.eveningoutpost.dexdrip.Models.StepCounter;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
@@ -20,24 +23,41 @@ import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
 import com.eveningoutpost.dexdrip.utils.DatabaseUtil;
 import com.eveningoutpost.dexdrip.utils.Telemetry;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
+import com.eveningoutpost.dexdrip.xdrip;
 
 import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
 import static com.eveningoutpost.dexdrip.UtilityModels.UpdateActivity.checkForAnUpdate;
 
 public class DailyIntentService extends IntentService {
     private final static String TAG = DailyIntentService.class.getSimpleName();
-    //private SharedPreferences mPrefs;
-    // DAILY TASKS CAN GO IN HERE!
 
     public DailyIntentService() {
         super("DailyIntentService");
     }
 
+    // TODO this used to be an IntentService but that is being depreciated
+
     @Override
     protected void onHandleIntent(Intent intent) {
-        // TODO background thread
+        UserError.Log.wtf(TAG, "CALLED VIA INTENT - cancelling");
+        cancelSelf();
+    }
+
+    // if we have alarm manager hangovers from previous scheduling methodology then cancel it
+    private void cancelSelf() {
+        try {
+            final PendingIntent pi = PendingIntent.getService(xdrip.getAppContext(), 0, new Intent(this, DailyIntentService.class), PendingIntent.FLAG_UPDATE_CURRENT);
+            final AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+            am.cancel(pi);
+        } catch (Exception e) {
+            UserError.Log.wtf(TAG, "Crash in cancelSelf() " + e);
+        }
+    }
+
+    public static synchronized void work() {
         final PowerManager.WakeLock wl = JoH.getWakeLock("DailyIntentService", 120000);
         try {
+            UserError.Log.ueh(TAG, "DailyIntent Service work called");
             if (JoH.pratelimit("daily-intent-service", 60000)) {
                 Log.i(TAG, "DailyIntentService onHandleIntent Starting");
                 Long start = JoH.tsl();
@@ -45,16 +65,16 @@ public class DailyIntentService extends IntentService {
                 // @TecMunky -- save database before pruning - allows daily capture of database
                 if (Pref.getBooleanDefaultFalse("save_db_ondemand")) {
                     try {
-                        String export = DatabaseUtil.saveSql(getBaseContext(), "daily");
+                        String export = DatabaseUtil.saveSql(xdrip.getAppContext(), "daily");
                     } catch (Exception e) {
                         Log.e(TAG, "DailyIntentService exception on Daily Save Database - ", e);
                     }
                 }
 
                 // prune old database records
-                //mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
                 try {
-                    startWatchUpdaterService(this, WatchUpdaterService.ACTION_SYNC_DB, TAG);
+                    startWatchUpdaterService(xdrip.getAppContext(), WatchUpdaterService.ACTION_SYNC_DB, TAG);
                 } catch (Exception e) {
                     Log.e(TAG, "DailyIntentService exception on watch clear DB ", e);
                 }
@@ -67,12 +87,12 @@ public class DailyIntentService extends IntentService {
                     BgSendQueue.cleanQueue(); // no longer used
 
                 } catch (Exception e) {
-                    Log.d(TAG, "DailyIntentService exception on BgSendQueue "+ e);
+                    Log.d(TAG, "DailyIntentService exception on BgSendQueue " + e);
                 }
                 try {
                     CalibrationSendQueue.cleanQueue();
                 } catch (Exception e) {
-                    Log.d(TAG, "DailyIntentService exception on CalibrationSendQueue "+ e);
+                    Log.d(TAG, "DailyIntentService exception on CalibrationSendQueue " + e);
                 }
                 try {
                     UploaderQueue.cleanQueue();
@@ -91,7 +111,7 @@ public class DailyIntentService extends IntentService {
                         BgReading.cleanup(bg_retention_days);
                     }
                 } catch (Exception e) {
-                    Log.e(TAG,"DailyIntentService exception on BgReadings cleanup ",e);
+                    Log.e(TAG, "DailyIntentService exception on BgReadings cleanup ", e);
                 }
 
                 try {
@@ -100,7 +120,7 @@ public class DailyIntentService extends IntentService {
                     Log.e(TAG, "DailyIntentService exception on BluetoothGlucoseMeter");
                 }
                 try {
-                    checkForAnUpdate(getApplicationContext());
+                    checkForAnUpdate(xdrip.getAppContext());
                 } catch (Exception e) {
                     Log.e(TAG, "DailyIntentService exception on checkForAnUpdate ", e);
                 }
@@ -112,7 +132,7 @@ public class DailyIntentService extends IntentService {
                 try {
                     DesertSync.cleanup();
                 } catch (Exception e) {
-                    Log.e(TAG,"Exception cleaning up DesertSync");
+                    Log.e(TAG, "Exception cleaning up DesertSync");
                 }
                 try {
                     Telemetry.sendFirmwareReport();
