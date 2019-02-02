@@ -169,6 +169,7 @@ public class AlertPlayer {
             mediaPlayer.release();
             mediaPlayer = null;
         }
+        revertCurrentVolume(ctx, streamType);
     }
 
     // only do something if an alert is active - only call from interactive
@@ -292,7 +293,7 @@ public class AlertPlayer {
         return false;
     }
 
-    private synchronized void playFile(final Context ctx, String fileName, float volumeFrac, boolean forceSpeaker) {
+    private synchronized void playFile(final Context ctx, String fileName, float volumeFrac, boolean forceSpeaker, boolean overrideSilentMode) {
         Log.i(TAG, "playFile: called fileName = " + fileName);
 
         if (mediaPlayer != null) {
@@ -319,13 +320,12 @@ public class AlertPlayer {
             return;
         }
 
-        int streamType = forceSpeaker ? AudioManager.STREAM_ALARM : AudioManager.STREAM_MUSIC;
+        streamType = forceSpeaker ? AudioManager.STREAM_ALARM : AudioManager.STREAM_MUSIC;
 
         try {
             mediaPlayer.setAudioStreamType(streamType);
             mediaPlayer.setOnPreparedListener(mp -> {
-                Log.i(TAG, "playFile: calling mediaPlayer.start() ");
-                adjustCurrentVolumeForAlert(ctx, streamType, volumeFrac);
+                adjustCurrentVolumeForAlert(ctx, streamType, volumeFrac, overrideSilentMode);
                 mediaPlayer.start();
             });
 
@@ -345,14 +345,14 @@ public class AlertPlayer {
         }
     }
 
-    private void adjustCurrentVolumeForAlert(Context ctx, int streamType, float volumeFrac) {
+    private void adjustCurrentVolumeForAlert(Context ctx, int streamType, float volumeFrac, boolean overrideSilentMode) {
         AudioManager manager = (AudioManager) ctx.getSystemService(Context.AUDIO_SERVICE);
         int maxVolume = manager.getStreamMaxVolume(streamType);
         volumeBeforeAlert = manager.getStreamVolume(streamType);
         volumeForThisAlert = (int) (maxVolume * volumeFrac);
         Log.i(TAG, "before playing volumeBeforeAlert " + volumeBeforeAlert + " volumeForThisAlert " + volumeForThisAlert);
         try {
-            if (volumeBeforeAlert <= 0) {
+            if (volumeBeforeAlert <= 0 && overrideSilentMode) {
                 manager.setStreamVolume(streamType, volumeForThisAlert, 0);
             }
         } catch (SecurityException e) {
@@ -479,7 +479,7 @@ public class AlertPlayer {
                 boolean forceSpeaker = alert.force_speaker;
                 if (notSilencedDueToCall()) {
                     if (overrideSilent || isLoudPhone(context)) {
-                        playFile(context, alert.mp3_file, volumeFrac, forceSpeaker);
+                        playFile(context, alert.mp3_file, volumeFrac, forceSpeaker, overrideSilent);
                     }
                 } else {
                     Log.i(TAG, "Silenced Alert Noise due to ongoing call");
