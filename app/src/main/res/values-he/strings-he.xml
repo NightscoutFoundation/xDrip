@@ -96,7 +96,7 @@
     <string name="view_events_log">הצג יומן אירועים</string>
     <string name="show_libre_trend">הראה מגמת הליברה</string>
     <string name="libre_15_minutes_graph">גרף 15 דקות של הליברה</string>
-    <string name="libre_last_x_minutes_graph">גרף d% דקות אחרונות של הליברה</string>
+    <string name="libre_last_x_minutes_graph">גרף %d דקות אחרונות של הליברה</string>
     <string name="check_for_updated_version">בדוק האם יש גרסא חדשה</string>
     <string name="send_feedback_to_developer">שלח פידבק למפתח</string>
     <string name="home_screen">מסך הבית</string>
