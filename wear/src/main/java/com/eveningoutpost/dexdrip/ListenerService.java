@@ -1109,7 +1109,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                     }
                     messageIntent.putExtra("data", dataMap.toBundle());
                     LocalBroadcastManager.getInstance(this).sendBroadcast(messageIntent);
-                    if (!mPrefs.getBoolean("enable_wearG5", false)) {
+                    if (!mPrefs.getBoolean("enable_wearG5", false) || !mPrefs.getBoolean("force_wearG5", false)) {
                         Inevitable.task("sync-all-data", 2000, () -> ListenerService.SendData(context, ListenerService.SYNC_ALL_DATA, null));
                     }
                 } else if (path.equals(WEARABLE_TREATMENT_PAYLOAD)) {
