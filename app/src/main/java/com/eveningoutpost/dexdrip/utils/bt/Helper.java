@@ -3,11 +3,15 @@ package com.eveningoutpost.dexdrip.utils.bt;
 import android.bluetooth.BluetoothDevice;
 import android.util.SparseArray;
 
+import java.util.HashMap;
+import java.util.UUID;
+
 // jamorham
 
 public class Helper {
 
     private static final SparseArray<String> statusToName = new SparseArray<>();
+    private static final HashMap<String, String> characteristicToName = new HashMap<>();
 
     /* Reproduced from framework BluetoothGatt.java instead of referencing directly for lower api compat */
     /**
@@ -97,7 +101,7 @@ public class Helper {
     public static final int GATT_CONN_TERMINATE_PEER_USER = 0x13;   /*  HCI_ERR_PEER_USER 0x13 connection terminate by peer user  */
     private static final int GATT_CONN_TERMINATE_LOCAL_HOST = 0x16; /*     HCI_ERR_CONN_CAUSE_LOCAL_HOST   /* 0x16 connectionterminated by local host  */
     // private static final int GATT_CONN_FAIL_ESTABLISH            HCI_ERR_CONN_FAILED_ESTABLISHMENT/* 0x03E connection fail to establish  */
-    private static final int GATT_CONN_LMP_TIMEOUT  = 0x22;       /* HCI_ERR_LMP_RESPONSE_TIMEOUT     /* 0x22 connection fail for LMP response tout */
+    private static final int GATT_CONN_LMP_TIMEOUT = 0x22;       /* HCI_ERR_LMP_RESPONSE_TIMEOUT     /* 0x22 connection fail for LMP response tout */
     // private static final int GATT_CONN_CANCEL                    L2CAP_CONN_CANCEL                /* 0x0100 L2CAP connection cancelled  */
 
     private static final int HCI_ERR_UNDEFINED_0x31 = 0x31;
@@ -114,6 +118,20 @@ public class Helper {
     private static final int HCI_ERR_DIRECTED_ADVERTISING_TIMEOUT = 0x3C;
     private static final int HCI_ERR_CONN_TOUT_DUE_TO_MIC_FAILURE = 0x3D;
     private static final int HCI_ERR_CONN_FAILED_ESTABLISHMENT = 0x3E;
+
+
+    // common characteristics
+
+    public static final UUID INFO_SYSTEM_ID = UUID.fromString("00002a23-0000-1000-8000-00805f9b34fb");
+    public static final UUID INFO_MODEL_NUMBER = UUID.fromString("00002a24-0000-1000-8000-00805f9b34fb");
+    public static final UUID INFO_SERIAL_NUMBER = UUID.fromString("00002a25-0000-1000-8000-00805f9b34fb");
+    public static final UUID INFO_FIRMWARE_VERSION = UUID.fromString("00002a26-0000-1000-8000-00805f9b34fb");
+    public static final UUID INFO_HARDWARE_VERSION = UUID.fromString("00002a27-0000-1000-8000-00805f9b34fb");
+    public static final UUID INFO_SOFTWARE_VERSION = UUID.fromString("00002a28-0000-1000-8000-00805f9b34fb");
+    public static final UUID INFO_MANUFACTURER = UUID.fromString("00002a29-0000-1000-8000-00805f9b34fb");
+    public static final UUID INFO_REGULATORY_ID = UUID.fromString("00002a2a-0000-1000-8000-00805f9b34fb");
+    public static final UUID INFO_PNP_ID = UUID.fromString("00002a50-0000-1000-8000-00805f9b34fb");
+
 
     static {
         statusToName.put(GATT_SUCCESS, "Gatt Success");
@@ -132,15 +150,32 @@ public class Helper {
         statusToName.put(GATT_CONN_TERMINATE_LOCAL_HOST, "Connection terminated by local host");
         statusToName.put(HCI_ERR_UNACCEPT_CONN_INTERVAL, "HCI Unacceptable connection interval??");
         statusToName.put(GATT_CONN_LMP_TIMEOUT, "Link manager protocol timeout");
+
+
+        characteristicToName.put(INFO_SYSTEM_ID.toString(), "System ID");
+        characteristicToName.put(INFO_MODEL_NUMBER.toString(), "Model");
+        characteristicToName.put(INFO_SERIAL_NUMBER.toString(), "Serial");
+        characteristicToName.put(INFO_FIRMWARE_VERSION.toString(), "Firmware");
+        characteristicToName.put(INFO_HARDWARE_VERSION.toString(), "Hardware");
+        characteristicToName.put(INFO_SOFTWARE_VERSION.toString(), "Software");
+        characteristicToName.put(INFO_MANUFACTURER.toString(), "Manufacturer");
+        characteristicToName.put(INFO_REGULATORY_ID.toString(), "Regulatory ID");
+        characteristicToName.put(INFO_PNP_ID.toString(), "PNP ID");
+
     }
 
     // feels like the framework should be providing this for us already!
-    public static String getStatusName(int status) {
+    public static String getStatusName(final int status) {
         if (statusToName.indexOfKey(status) > -1) {
             return statusToName.get(status);
         } else {
             return "Unknown status: " + status;
         }
+    }
+
+    public static String getCharactersticName(final String hunt) {
+        final String result = characteristicToName.get(hunt);
+        return result != null ? result : "Unknown";
     }
 
     // TODO i18n
