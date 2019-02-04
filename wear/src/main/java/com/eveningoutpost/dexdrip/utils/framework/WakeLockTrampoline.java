@@ -58,6 +58,9 @@ public class WakeLockTrampoline extends BroadcastReceiver {
         }
 
         final Intent serviceIntent = new Intent(context, serviceClass);
+        final String function = broadcastIntent.getStringExtra("function");
+        if (function != null) serviceIntent.putExtra("function", function);
+
         ComponentName startResult;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
@@ -76,17 +79,23 @@ public class WakeLockTrampoline extends BroadcastReceiver {
 
     }
 
+    // wrap a service in a broadcast trampoline
     public static PendingIntent getPendingIntent(final Class serviceClass) {
         return getPendingIntent(serviceClass, 0);
     }
 
     // wrap a service in a broadcast trampoline
-    public static synchronized PendingIntent getPendingIntent(final Class serviceClass, final int id) {
+    public static PendingIntent getPendingIntent(final Class serviceClass, final int id) {
+        return getPendingIntent(serviceClass, id, null);
+    }
+
+    // wrap a service in a broadcast trampoline
+    public static synchronized PendingIntent getPendingIntent(final Class serviceClass, final int id, final String function) {
         final String name = serviceClass.getCanonicalName();
         final int scheduleId = name.hashCode() + id;
 
         final Intent intent = new Intent(xdrip.getAppContext(), WakeLockTrampoline.class).putExtra(SERVICE_PARAMETER, name);
-
+        if (function != null) intent.putExtra("function",function);
         cache.put(name, serviceClass);
 
         if (D)
