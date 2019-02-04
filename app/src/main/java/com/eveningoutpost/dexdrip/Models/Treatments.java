@@ -505,6 +505,16 @@ public class Treatments extends Model {
                 .execute();
     }
 
+    public static List<Treatments> latestForGraph(final int number, final long startTime, final long endTime) {
+        fixUpTable();
+        return new Select()
+                .from(Treatments.class)
+                .where("timestamp >= ? and timestamp <= ?", startTime, endTime)
+                .orderBy("timestamp asc")
+                .limit(number)
+                .execute();
+    }
+
     public static long getTimeStampWithOffset(double offset) {
         //  optimisation instead of creating a new date each time?
         return (long) (new Date().getTime() - offset);
@@ -982,6 +992,13 @@ public class Treatments extends Model {
 
     public boolean isEventTypeDefault() {
         return eventType == null || eventType.equalsIgnoreCase(DEFAULT_EVENT_TYPE);
+    }
+
+    public static boolean matchUUID(final List<Treatments> treatments, final String uuid) {
+        for (final Treatments treatment : treatments) {
+            if (treatment.uuid.equalsIgnoreCase(uuid)) return true;
+        }
+        return false;
     }
 
     public String toS() {
