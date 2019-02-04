@@ -1,14 +1,18 @@
 package com.eveningoutpost.dexdrip.Services;
 
 import android.app.PendingIntent;
+import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattService;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.RxBleProvider;
 import com.eveningoutpost.dexdrip.utils.BtCallBack;
 import com.eveningoutpost.dexdrip.utils.DisconnectReceiver;
+import com.eveningoutpost.dexdrip.utils.time.SlidingWindowConstraint;
 import com.polidea.rxandroidble.RxBleClient;
 import com.polidea.rxandroidble.RxBleConnection;
 import com.polidea.rxandroidble.RxBleDevice;
@@ -65,7 +69,11 @@ public abstract class JamBaseBluetoothSequencer extends JamBaseBluetoothService 
 
         private static final ConcurrentHashMap<String, Inst> singletons = new ConcurrentHashMap<>();
 
+
         private final ConcurrentLinkedQueue<QueueItem> write_queue = new ConcurrentLinkedQueue<>();
+
+        public final ConcurrentHashMap<UUID, Object> characteristics = new ConcurrentHashMap<>();
+
         public volatile Subscription scanSubscription;
         public volatile Subscription connectionSubscription;
         public volatile Subscription stateSubscription;
@@ -82,8 +90,18 @@ public abstract class JamBaseBluetoothSequencer extends JamBaseBluetoothService 
         public volatile String state;
         public volatile UUID queue_write_characterstic;
         public volatile long lastProcessedIncomingData = -1;
+        public volatile int backgroundStepDelay = 100;
+        public volatile int connectTimeoutMinutes = 7;
+
+        public volatile boolean playSounds = false;
+        public volatile boolean autoConnect = false;
+        public volatile boolean autoReConnect = false;
+        public volatile boolean retry133 = true;
+        public volatile boolean discoverOnce = false;
+        public volatile boolean resetWhenAlreadyConnected = false;
 
         public PendingIntent serviceIntent;
+        public SlidingWindowConstraint reconnectConstraint;
         private PendingIntent serviceFailoverIntent;
         public long retry_time;
         public long retry_backoff;
@@ -166,8 +184,8 @@ public abstract class JamBaseBluetoothSequencer extends JamBaseBluetoothService 
         }
         UserError.Log.d(TAG, "Trying connect: " + address);
         // Attempt to establish a connection
-        I.connectionSubscription = I.bleDevice.establishConnection(false)
-                .timeout(7, TimeUnit.MINUTES)
+        I.connectionSubscription = I.bleDevice.establishConnection(I.autoConnect)
+                .timeout(I.connectTimeoutMinutes, TimeUnit.MINUTES)
                 // .flatMap(RxBleConnection::discoverServices)
                 // .observeOn(AndroidSchedulers.mainThread())
                 // .doOnUnsubscribe(this::clearSubscription)
@@ -211,6 +229,9 @@ public abstract class JamBaseBluetoothSequencer extends JamBaseBluetoothService 
         I.lastConnected = JoH.tsl();
         UserError.Log.d(TAG, "Initial connection going for service discovery");
         changeState(DISCOVER);
+        if ((I.playSounds && (JoH.ratelimit("sequencer_connect_sound", 3)))) {
+            JoH.playResourceAudio(R.raw.bt_meter_connect);
+        }
     }
 
     private void onConnectionFailure(Throwable throwable) {
@@ -219,6 +240,22 @@ public abstract class JamBaseBluetoothSequencer extends JamBaseBluetoothService 
             UserError.Log.d(TAG, "Already connected - advancing to next stage");
             I.isConnected = true;
             changeState(mState.next());
+        } else if (throwable instanceof BleDisconnectedException) {
+            if (((BleDisconnectedException) throwable).state == 133) {
+                if (I.retry133) {
+                    if (JoH.ratelimit(TAG + "133recon", 60)) {
+                        if (I.state.equals(CONNECT_NOW)) {
+                            UserError.Log.d(TAG, "Automatically retrying connection");
+                            Inevitable.task(TAG + "133recon", 3000, new Runnable() {
+                                @Override
+                                public void run() {
+                                    changeState(CONNECT_NOW);
+                                }
+                            });
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -280,18 +317,28 @@ public abstract class JamBaseBluetoothSequencer extends JamBaseBluetoothService 
 
     public synchronized void discover_services() {
         //  if (state == DISCOVER) {
-        if (I.connection != null) {
-            UserError.Log.d(TAG, "Discovering services");
-            stopDiscover();
-            I.discoverSubscription = I.connection.discoverServices(10, TimeUnit.SECONDS).subscribe(this::onServicesDiscovered, this::onDiscoverFailed);
+        if (I.discoverOnce && I.isDiscoveryComplete) {
+            UserError.Log.d(TAG, "Skipping service discovery as already completed");
+            changeNextState();
         } else {
-            UserError.Log.e(TAG, "No connection when in DISCOVER state - reset");
-            //  changeState(INIT);
+            if (I.connection != null) {
+                UserError.Log.d(TAG, "Discovering services");
+                stopDiscover();
+                I.discoverSubscription = I.connection.discoverServices(10, TimeUnit.SECONDS).subscribe(this::onServicesDiscovered, this::onDiscoverFailed);
+            } else {
+                UserError.Log.e(TAG, "No connection when in DISCOVER state - reset");
+                // These are normally just ghosts that get here, not really connected
+                if (I.resetWhenAlreadyConnected) {
+                    if (JoH.ratelimit("jam-sequencer-reset", 10)) {
+                        changeState(CLOSE);
+                    }
+                }
 
+            }
+            //} else {
+            //     UserError.Log.wtf(TAG, "Attempt to discover when not in DISCOVER state");
+            //  }
         }
-        //} else {
-        //     UserError.Log.wtf(TAG, "Attempt to discover when not in DISCOVER state");
-        //  }
     }
 
     protected synchronized void stopDiscover() {
@@ -303,7 +350,12 @@ public abstract class JamBaseBluetoothSequencer extends JamBaseBluetoothService 
 
     protected void onServicesDiscovered(RxBleDeviceServices services) {
         UserError.Log.d(TAG, "Services discovered okay in base sequencer");
-        changeState(mState.next());
+        final Object obj = new Object();
+        for (BluetoothGattService service : services.getBluetoothGattServices()) {
+            for (BluetoothGattCharacteristic characteristic : service.getCharacteristics()) {
+                I.characteristics.put(characteristic.getUuid(), obj);
+            }
+        }
     }
 
     protected void onDiscoverFailed(Throwable throwable) {
@@ -373,9 +425,13 @@ public abstract class JamBaseBluetoothSequencer extends JamBaseBluetoothService 
             } else {
                 UserError.Log.d(TAG, "Changing state from: " + state.toUpperCase() + " to " + new_state.toUpperCase());
                 I.state = new_state;
-                background_automata();
+                background_automata(I.backgroundStepDelay);
             }
         }
+    }
+
+    public void changeNextState() {
+        changeState(mState.next());
     }
 
 
@@ -427,6 +483,22 @@ public abstract class JamBaseBluetoothSequencer extends JamBaseBluetoothService 
                     stopConnect(I.address);
                     changeState(CLOSED);
                     break;
+
+                case CLOSED:
+                    if (I.autoReConnect) {
+                        // TODO use sliding window constraint
+                        if (I.reconnectConstraint != null) {
+                            if (I.reconnectConstraint.checkAndAddIfAcceptable(1)) {
+                                UserError.Log.d(TAG, "Attempting auto-reconnect");
+                                changeState(CONNECT_NOW);
+                            } else {
+                                UserError.Log.d(TAG, "Not attempting auto-reconnect due to constraint");
+                            }
+                        } else {
+                            UserError.Log.e(TAG, "No reconnectConstraint is null");
+                        }
+
+                    }
 
                 default:
                     return false;
@@ -684,5 +756,6 @@ public abstract class JamBaseBluetoothSequencer extends JamBaseBluetoothService 
         final String result = mapToName.get(uuid);
         return result != null ? result : "Unknown uuid: " + uuid.toString();
     }
+
 
 }

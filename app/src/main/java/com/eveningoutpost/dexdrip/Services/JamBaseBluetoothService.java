@@ -123,13 +123,13 @@ public abstract class JamBaseBluetoothService extends Service {
         }
     }
 
-    private static class GattRefreshOperation implements RxBleCustomOperation<Void> {
+    protected static class GattRefreshOperation implements RxBleCustomOperation<Void> {
         private long delay_ms = 500;
 
         GattRefreshOperation() {
         }
 
-        GattRefreshOperation(long delay_ms) {
+        public GattRefreshOperation(long delay_ms) {
             this.delay_ms = delay_ms;
         }
 
