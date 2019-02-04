@@ -15,7 +15,6 @@ import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 
-import com.eveningoutpost.dexdrip.EditAlertActivity;
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
@@ -37,7 +36,6 @@ import java.io.IOException;
 import java.util.Date;
 
 import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
-import static com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer.getAlertPlayerStreamType;
 
 // A helper class to create the mediaplayer on the UI thread.
 // This is needed in order for the callbackst to work.
@@ -81,17 +79,11 @@ class MediaPlayerCreaterHelper {
             synchronized(creationThreadLock) {
                 // TODO thread deadlock possible here?
                 while(mplayerCreated_ == false) {
-                   
-                        creationThreadLock.wait(30 * Constants.SECOND_IN_MS);
+                    creationThreadLock.wait(30 * Constants.SECOND_IN_MS);
                 }
             } 
         }catch (InterruptedException e){
              Log.e(TAG, "Cought exception", e);
-        }
-        try {
-            mediaPlayer_.setAudioStreamType(getAlertPlayerStreamType());
-        } catch (Exception e) {
-            UserError.Log.e(TAG, "Set mediaplayer stream type: " + e);
         }
         return mediaPlayer_;
     }
@@ -120,6 +112,7 @@ public class AlertPlayer {
     final static int MAX_VIBRATING_MINUTES = 2;
     final static int MAX_ASCENDING_MINUTES = 5;
 
+    public int streamType = AudioManager.STREAM_MUSIC;
 
     public static synchronized AlertPlayer getPlayer() {
         if(alertPlayerInstance == null) {
@@ -151,7 +144,7 @@ public class AlertPlayer {
         long nextAlertTime = newAlert.getNextAlertTime(ctx);
 
         ActiveBgAlert.Create(newAlert.uuid, start_snoozed, nextAlertTime);
-        if (!start_snoozed) VibrateNotifyMakeNoise(ctx, newAlert, bgValue, newAlert.override_silent_mode, 0);
+        if (!start_snoozed) VibrateNotifyMakeNoise(ctx, newAlert, bgValue, 0);
         AlertTracker.evaluate();
     }
 
@@ -176,7 +169,7 @@ public class AlertPlayer {
             mediaPlayer.release();
             mediaPlayer = null;
         }
-        revertCurrentVolume(ctx);
+        revertCurrentVolume(ctx, streamType);
     }
 
     // only do something if an alert is active - only call from interactive
@@ -227,7 +220,7 @@ public class AlertPlayer {
         if (from_interactive) GcmActivity.sendSnoozeToRemote();
     }
 
-    public synchronized  void PreSnooze(Context ctx, String uuid, int repeatTime) {
+    public synchronized void PreSnooze(Context ctx, String uuid, int repeatTime) {
         Log.i(TAG, "PreSnooze called repeatTime = "+ repeatTime);
         stopAlert(ctx, true, false);
         ActiveBgAlert.Create(uuid, true, new Date().getTime() + repeatTime * 60000);
@@ -238,14 +231,6 @@ public class AlertPlayer {
         }
         activeBgAlert.snooze(repeatTime);
     }
-
-    public static int getAlertPlayerStreamType() {
-       // return AudioManager.STREAM_ALARM;
-        // FUTURE this could be from preference setting or follow override silent boolean
-        // FUTURE audio attributes can be supported in later android versions
-        return AudioManager.STREAM_MUSIC;
-    }
-
 
     // Check the state and alrarm if needed
     public void ClockTick(Context ctx, boolean trendingToAlertEnd, String bgValue)
@@ -273,7 +258,7 @@ public class AlertPlayer {
             long nextAlertTime = alert.getNextAlertTime(ctx);
             activeBgAlert.updateNextAlertAt(nextAlertTime);
             
-            VibrateNotifyMakeNoise(ctx, alert, bgValue, alert.override_silent_mode, minutesFromStartPlaying);
+            VibrateNotifyMakeNoise(ctx, alert, bgValue, minutesFromStartPlaying);
             AlertTracker.evaluate();
         }
 
@@ -308,11 +293,11 @@ public class AlertPlayer {
         return false;
     }
 
-    private synchronized void PlayFile(final Context ctx, String FileName, float VolumeFrac) {
-        Log.i(TAG, "PlayFile: called FileName = " + FileName);
+    private synchronized void playFile(final Context ctx, String fileName, float volumeFrac, boolean forceSpeaker, boolean overrideSilentMode) {
+        Log.i(TAG, "playFile: called fileName = " + fileName);
 
-        if(mediaPlayer != null) {
-            Log.i(TAG, "ERROR, PlayFile:going to leak a mediaplayer !!!");
+        if (mediaPlayer != null) {
+            Log.i(TAG, "ERROR, playFile:going to leak a mediaplayer !!!");
             mediaPlayer.release();
             mediaPlayer = null;
         }
@@ -324,8 +309,8 @@ public class AlertPlayer {
         }
         
         boolean setDataSourceSucceeded = false;
-        if(FileName != null && FileName.length() > 0) {
-            setDataSourceSucceeded = setMediaDataSource(ctx, mediaPlayer, Uri.parse(FileName));
+        if(fileName != null && fileName.length() > 0) {
+            setDataSourceSucceeded = setMediaDataSource(ctx, mediaPlayer, Uri.parse(fileName));
         }
         if (setDataSourceSucceeded == false) {
             setDataSourceSucceeded = setMediaDataSource(ctx, mediaPlayer, R.raw.default_alert);
@@ -334,62 +319,59 @@ public class AlertPlayer {
             Log.e(TAG, "setMediaDataSource failed");
             return;
         }
-            
+
+        streamType = forceSpeaker ? AudioManager.STREAM_ALARM : AudioManager.STREAM_MUSIC;
+
         try {
-            mediaPlayer.prepare();
-        } catch (IllegalStateException | IOException e) {
-            Log.e(TAG, "Caught exception preparing mediaPlayer", e);
-            return;
-        } catch (NullPointerException e) {
-            Log.e(TAG,"Possible deep error in mediaPlayer", e);
-        }
-
-        if (mediaPlayer != null) {
-            AudioManager manager = (AudioManager) ctx.getSystemService(Context.AUDIO_SERVICE);
-            int maxVolume = manager.getStreamMaxVolume(getAlertPlayerStreamType());
-            volumeBeforeAlert = manager.getStreamVolume(getAlertPlayerStreamType());
-            volumeForThisAlert = (int) (maxVolume * VolumeFrac);
-
-            Log.i(TAG, "before playing volumeBeforeAlert " + volumeBeforeAlert + " volumeForThisAlert " + volumeForThisAlert);
-            try {
-                manager.setStreamVolume(getAlertPlayerStreamType(), volumeForThisAlert, 0);
-            } catch (SecurityException e) {
-                if (JoH.ratelimit("sound volume error", 12000)) {
-                    UserError.Log.wtf(TAG, "This device does not allow us to modify the sound volume");
-                }
-            }
-            try {
-                mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                    @Override
-                    public void onCompletion(MediaPlayer mp) {
-                        Log.i(TAG, "PlayFile: onCompletion called (finished playing) ");
-                        revertCurrentVolume(ctx);
-                    }
-                });
-                Log.i(TAG, "PlayFile: calling mediaPlayer.start() ");
+            mediaPlayer.setAudioStreamType(streamType);
+            mediaPlayer.setOnPreparedListener(mp -> {
+                adjustCurrentVolumeForAlert(ctx, streamType, volumeFrac, overrideSilentMode);
                 mediaPlayer.start();
-            } catch (NullPointerException e) {
-                Log.wtf(TAG, "Playfile: Concurrency related null pointer exception: " + e.toString());
-            } catch (IllegalStateException e) {
-                Log.wtf(TAG, "Playfile: Concurrency related illegal state exception: " + e.toString());
-            }
+            });
 
-        } else {
-            // TODO, what should we do here???
-            Log.wtf(TAG, "PlayFile: Starting an alert failed, what should we do !!!");
+            mediaPlayer.setOnCompletionListener(mp -> {
+                Log.i(TAG, "playFile: onCompletion called (finished playing) ");
+                mediaPlayer.stop();
+                mediaPlayer.release();
+                mediaPlayer = null;
+                revertCurrentVolume(ctx, streamType);
+            });
+
+            mediaPlayer.prepareAsync();
+        } catch (NullPointerException e) {
+            Log.wtf(TAG, "Playfile: Concurrency related null pointer exception: " + e.toString());
+        } catch (IllegalStateException e) {
+            Log.wtf(TAG, "Playfile: Concurrency related illegal state exception: " + e.toString());
         }
     }
 
-    private synchronized void revertCurrentVolume(final Context ctx) {
+    private void adjustCurrentVolumeForAlert(Context ctx, int streamType, float volumeFrac, boolean overrideSilentMode) {
         AudioManager manager = (AudioManager) ctx.getSystemService(Context.AUDIO_SERVICE);
-        int currentVolume = manager.getStreamVolume(getAlertPlayerStreamType());
+        int maxVolume = manager.getStreamMaxVolume(streamType);
+        volumeBeforeAlert = manager.getStreamVolume(streamType);
+        volumeForThisAlert = (int) (maxVolume * volumeFrac);
+        Log.i(TAG, "before playing volumeBeforeAlert " + volumeBeforeAlert + " volumeForThisAlert " + volumeForThisAlert);
+        try {
+            if (volumeBeforeAlert <= 0 && overrideSilentMode) {
+                manager.setStreamVolume(streamType, volumeForThisAlert, 0);
+            }
+        } catch (SecurityException e) {
+            if (JoH.ratelimit("sound volume error", 12000)) {
+                UserError.Log.wtf(TAG, "This device does not allow us to modify the sound volume");
+            }
+        }
+    }
+
+    private synchronized void revertCurrentVolume(final Context ctx, final int streamType) {
+        AudioManager manager = (AudioManager) ctx.getSystemService(Context.AUDIO_SERVICE);
+        int currentVolume = manager.getStreamVolume(streamType);
         Log.i(TAG, "revertCurrentVolume volumeBeforeAlert " + volumeBeforeAlert + " volumeForThisAlert " + volumeForThisAlert
                 + " currentVolume " + currentVolume);
         if (volumeForThisAlert == currentVolume && (volumeBeforeAlert != -1) && (volumeForThisAlert != -1)) {
             // If the user has changed the volume, don't change it again.
 
             try {
-                manager.setStreamVolume(getAlertPlayerStreamType(), volumeBeforeAlert, 0);
+                manager.setStreamVolume(streamType, volumeBeforeAlert, 0);
             } catch (SecurityException e) {
                 if (JoH.ratelimit("sound volume error", 12000)) {
                     UserError.Log.wtf(TAG, "This device does not allow us to modify the sound volume");
@@ -451,7 +433,7 @@ public class AlertPlayer {
         return !(Pref.getBooleanDefaultFalse("no_alarms_during_calls") && (JoH.isOngoingCall()));
     }
 
-    private void VibrateNotifyMakeNoise(Context context, AlertType alert, String bgValue, Boolean overrideSilent, int minsFromStartPlaying) {
+    private void VibrateNotifyMakeNoise(Context context, AlertType alert, String bgValue, int minsFromStartPlaying) {
         Log.d(TAG, "VibrateNotifyMakeNoise called minsFromStartedPlaying = " + minsFromStartPlaying);
         Log.d("ALARM", "setting vibrate alarm");
         int profile = getAlertProfile(context);
@@ -478,6 +460,7 @@ public class AlertPlayer {
                 .setSmallIcon(R.drawable.ic_action_communication_invert_colors_on)
                 .setContentTitle(title)
                 .setContentText(content)
+                //.addAction(R.drawable.ic_action_communication_invert_colors_on, "SNOOZE", notificationIntent(context, intent))
                 .setContentIntent(notificationIntent(context, intent))
                 .setLocalOnly(localOnly)
                 .setPriority(Pref.getBooleanDefaultFalse("high_priority_notifications") ? Notification.PRIORITY_MAX : Notification.PRIORITY_HIGH)
@@ -492,15 +475,11 @@ public class AlertPlayer {
                     volumeFrac = (float) 0.7;
                 }
                 Log.d(TAG, "VibrateNotifyMakeNoise volumeFrac = " + volumeFrac);
-                boolean isRingTone = EditAlertActivity.isPathRingtone(context, alert.mp3_file);
-
+                boolean overrideSilent = alert.override_silent_mode;
+                boolean forceSpeaker = alert.force_speaker;
                 if (notSilencedDueToCall()) {
-                    if (isRingTone && !overrideSilent) {
-                        builder.setSound(Uri.parse(alert.mp3_file));
-                    } else {
-                        if (overrideSilent || isLoudPhone(context)) {
-                            PlayFile(context, alert.mp3_file, volumeFrac);
-                        }
+                    if (overrideSilent || isLoudPhone(context)) {
+                        playFile(context, alert.mp3_file, volumeFrac, forceSpeaker, overrideSilent);
                     }
                 } else {
                     Log.i(TAG, "Silenced Alert Noise due to ongoing call");

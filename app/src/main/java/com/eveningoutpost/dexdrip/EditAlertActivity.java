@@ -96,6 +96,7 @@ public class EditAlertActivity extends ActivityWithMenu {
     private LinearLayout layoutSilentModeWarning;
     private TextView viewAlertOverrideText;
     private CheckBox checkboxOverrideSilent;
+    private CheckBox checkboxForceSpeaker;
     private boolean doMgdl;
 
     private String uuid;
@@ -172,6 +173,7 @@ public class EditAlertActivity extends ActivityWithMenu {
         layoutSilentModeWarning = (LinearLayout) findViewById(R.id.layout_silent_mode_warning);
         viewAlertOverrideText = (TextView) findViewById(R.id.view_alert_override_silent);
         checkboxOverrideSilent = (CheckBox) findViewById(R.id.check_override_silent);
+        checkboxForceSpeaker = (CheckBox) findViewById(R.id.check_force_speaker);
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         addListenerOnButtons();
 
@@ -226,6 +228,7 @@ public class EditAlertActivity extends ActivityWithMenu {
             checkboxVibrate.setChecked(true);
             checkboxDisabled.setChecked(false);
             checkboxOverrideSilent.setChecked(true);
+            checkboxForceSpeaker.setChecked(true);
 
             audioPath = "";
             alertMp3File.setText(shortPath(audioPath));
@@ -258,6 +261,7 @@ public class EditAlertActivity extends ActivityWithMenu {
             checkboxVibrate.setChecked(alertType.vibrate);
             checkboxDisabled.setChecked(!alertType.active);
             checkboxOverrideSilent.setChecked(alertType.override_silent_mode);
+            checkboxForceSpeaker.setChecked(alertType.force_speaker);
             defaultSnooze = alertType.default_snooze;
             if(defaultSnooze == 0) {
                 SnoozeActivity.getDefaultSnooze(above);
@@ -281,6 +285,7 @@ public class EditAlertActivity extends ActivityWithMenu {
                 checkboxAllDay.setEnabled(false);
                 checkboxVibrate.setEnabled(false);
                 checkboxOverrideSilent.setEnabled(false);
+                checkboxForceSpeaker.setEnabled(false);
                 reraise.setEnabled(false);
             }
         }
@@ -538,12 +543,13 @@ public class EditAlertActivity extends ActivityWithMenu {
                 boolean vibrate = checkboxVibrate.isChecked();
                 
                 boolean overrideSilentMode = checkboxOverrideSilent.isChecked();
+                boolean forceSpeaker = checkboxForceSpeaker.isChecked();
 
                 String mp3_file = audioPath;
                 if (uuid != null) {
-                    AlertType.update_alert(uuid, alertText.getText().toString(), above, threshold, allDay, alertReraise, mp3_file, timeStart, timeEnd, overrideSilentMode, defaultSnooze, vibrate, !disabled);
+                    AlertType.update_alert(uuid, alertText.getText().toString(), above, threshold, allDay, alertReraise, mp3_file, timeStart, timeEnd, overrideSilentMode, forceSpeaker, defaultSnooze, vibrate, !disabled);
                 }  else {
-                    AlertType.add_alert(null, alertText.getText().toString(), above, threshold, allDay, alertReraise, mp3_file, timeStart, timeEnd, overrideSilentMode, defaultSnooze, vibrate, !disabled);
+                    AlertType.add_alert(null, alertText.getText().toString(), above, threshold, allDay, alertReraise, mp3_file, timeStart, timeEnd, overrideSilentMode, forceSpeaker, defaultSnooze, vibrate, !disabled);
                 }
 
                 startWatchUpdaterService(mContext, WatchUpdaterService.ACTION_SYNC_ALERTTYPE, TAG);
@@ -766,17 +772,11 @@ public class EditAlertActivity extends ActivityWithMenu {
     }
 
     public static boolean isPathRingtone(Context context, String path) {
-        if(path == null) {
-            return false;
-        }
-        if(path.length() == 0) {
+        if (path == null || path.isEmpty()) {
             return false;
         }
         Ringtone ringtone = RingtoneManager.getRingtone(context, Uri.parse(path));
-        if(ringtone == null) {
-            return false;
-        }
-        return true;
+        return ringtone != null;
     }
 
     public String shortPath(String path) {
@@ -928,6 +928,7 @@ public class EditAlertActivity extends ActivityWithMenu {
         }
         boolean vibrate = checkboxVibrate.isChecked();
         boolean overrideSilentMode = checkboxOverrideSilent.isChecked();
+        boolean forceSpeaker = checkboxForceSpeaker.isChecked();
         String mp3_file = audioPath;
         try {
             int defaultSnooze = safeGetDefaultSnooze();
@@ -940,7 +941,7 @@ public class EditAlertActivity extends ActivityWithMenu {
                 JoH.static_toast_long("Volume Profile is set to silent!");
             }
 
-            AlertType.testAlert(alertText.getText().toString(), above, threshold, allDay, 1, mp3_file, timeStart, timeEnd, overrideSilentMode, defaultSnooze, vibrate, mContext);
+            AlertType.testAlert(alertText.getText().toString(), above, threshold, allDay, 1, mp3_file, timeStart, timeEnd, overrideSilentMode, forceSpeaker, defaultSnooze, vibrate, mContext);
         } catch (NullPointerException e) {
             JoH.static_toast_long("Snooze value is not a number - cannot test");
         }
