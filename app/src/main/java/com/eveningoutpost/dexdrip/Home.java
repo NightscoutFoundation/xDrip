@@ -109,6 +109,7 @@ import com.eveningoutpost.dexdrip.databinding.ActivityHomeBinding;
 import com.eveningoutpost.dexdrip.databinding.ActivityHomeShelfSettingsBinding;
 import com.eveningoutpost.dexdrip.databinding.PopupInitialStatusHelperBinding;
 import com.eveningoutpost.dexdrip.eassist.EmergencyAssistActivity;
+import com.eveningoutpost.dexdrip.insulin.inpen.InPenEntry;
 import com.eveningoutpost.dexdrip.insulin.pendiq.Pendiq;
 import com.eveningoutpost.dexdrip.languageeditor.LanguageEditor;
 import com.eveningoutpost.dexdrip.profileeditor.DatePickerFragment;
@@ -1024,6 +1025,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                         NumberGraphic.testNotification("123");
                     }
                 });
+            } else if (bundle.getString("inpen-reset") != null) {
+                InPenEntry.startWithReset();
             } else if (bundle.getString(Home.BLOOD_TEST_ACTION) != null) {
                 Log.d(TAG, "BLOOD_TEST_ACTION");
                 final AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -1880,6 +1883,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         Inevitable.task("home-resume-bg", 2000, new Runnable() {
             @Override
             public void run() {
+                InPenEntry.startIfEnabled();
                 EmergencyAssistActivity.checkPermissionRemoved();
                 NightscoutUploader.launchDownloadRest();
                 Pendiq.immortality(); // Experimental testing phase

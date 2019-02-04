@@ -67,6 +67,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.pebble.watchface.InstallPebbleWa
 import com.eveningoutpost.dexdrip.WidgetUpdateService;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.cgm.nsfollow.NightscoutFollow;
+import com.eveningoutpost.dexdrip.insulin.inpen.InPenEntry;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileEditor;
 import com.eveningoutpost.dexdrip.tidepool.TidepoolUploader;
 import com.eveningoutpost.dexdrip.tidepool.UploadChunk;
@@ -517,7 +518,7 @@ public class Preferences extends BasePreferenceActivity {
                 do_update = true;
             }
 
-            preference.setTitle(preference.getTitle().toString().replaceAll("  \\([a-z0-9A-Z]+\\)$", "") + "  (" + value.toString() + ")");
+            preference.setTitle(preference.getTitle().toString().replaceAll("  \\([a-z0-9A-Z.]+\\)$", "") + "  (" + value.toString() + ")");
             if (do_update) {
                 preference.getEditor().putString(preference.getKey(), (String)value).apply(); // update prefs now
             }
@@ -895,8 +896,8 @@ public class Preferences extends BasePreferenceActivity {
                     return true;
             });
 
+            final Preference nsFollowUrl = findPreference("nsfollow_url");
             try {
-                final Preference nsFollowUrl = findPreference("nsfollow_url");
                 nsFollowUrl.setOnPreferenceChangeListener((preference, newValue) -> {
                     NightscoutFollow.resetInstance();
                     return true;
@@ -904,6 +905,18 @@ public class Preferences extends BasePreferenceActivity {
             } catch (Exception e) {
                 //
             }
+
+            final Preference inpen_enabled = findPreference("inpen_enabled");
+            try {
+                inpen_enabled.setOnPreferenceChangeListener((preference, newValue) -> {
+                    InPenEntry.startWithRefresh();
+                    return true;
+                });
+            } catch (Exception e) {
+                //
+            }
+
+
 
             final Preference scanShare = findPreference("scan_share2_barcode");
             final EditTextPreference transmitterId = (EditTextPreference) findPreference("dex_txid");
@@ -1194,7 +1207,7 @@ public class Preferences extends BasePreferenceActivity {
 
             if (collectionType != DexCollectionType.NSFollow) {
                 try {
-                    collectionCategory.removePreference(findPreference("nsfollow_url"));
+                    collectionCategory.removePreference(nsFollowUrl);
                 } catch (Exception e) {
                     //
                 }
@@ -1483,6 +1496,13 @@ public class Preferences extends BasePreferenceActivity {
             bindPreferenceTitleAppendToStringValue(findPreference("retention_days_bg_reading"));
 
             bindPreferenceTitleAppendToStringValue(findPreference("pendiq_pin"));
+
+            try {
+                bindPreferenceTitleAppendToStringValue(findPreference("inpen_prime_units"));
+                bindPreferenceTitleAppendToStringValue(findPreference("inpen_prime_minutes"));
+            } catch (Exception e) {
+                //
+            }
 
             // Pebble Trend -- START
 
@@ -1799,7 +1819,13 @@ public class Preferences extends BasePreferenceActivity {
 
                     if (collectionType == DexCollectionType.DexcomG5) {
                         collectionCategory.addPreference(transmitterId);
+                        // TODO add debug menu
                     }
+
+                    if (collectionType == DexCollectionType.NSFollow) {
+                        collectionCategory.addPreference(nsFollowUrl);
+                    }
+
 
                     String stringValue = newValue.toString();
                     if (preference instanceof ListPreference) {
