@@ -112,6 +112,7 @@ import static com.eveningoutpost.dexdrip.utils.bt.Helper.getCharactersticName;
 public class InPenService extends JamBaseBluetoothSequencer {
 
     private static final boolean D = false;
+    private static final int MAX_BACKLOG = 80;
     private final ConcurrentLinkedQueue<byte[]> records = new ConcurrentLinkedQueue<>();
 
     private static TimeRx currentPenTime = null; // TODO hashmap for multiple pens?
@@ -560,11 +561,18 @@ public class InPenService extends JamBaseBluetoothSequencer {
 
         }
         final long highest = PenData.getHighestIndex(I.address);
-        final int firstIndex = highest > 0 ? (int) highest + 1 : 1;
+        int firstIndex = highest > 0 ? (int) highest + 1 : 1;
         if (firstIndex > lastIndex) {
             UserError.Log.e(TAG, "First index is greater than last index: " + firstIndex + " " + lastIndex);
             return;
         }
+
+        final int count = lastIndex - firstIndex;
+        if (count > MAX_BACKLOG) {
+            firstIndex = lastIndex - MAX_BACKLOG;
+            UserError.Log.d(TAG, "Restricting first index to: " + firstIndex);
+        }
+
         getRecords(firstIndex, lastIndex);
     }
 
@@ -840,6 +848,8 @@ public class InPenService extends JamBaseBluetoothSequencer {
         if (lastReceivedData != -1) {
             l.add(new StatusItem("Last Connected", dateTimeText(lastReceivedData)));
         }
+
+        // TODO remaining records!
 
         if (lastPenData != null) {
             l.add(new StatusItem("Last record", lastPenData.brief(), gotAll ? GOOD : NORMAL));

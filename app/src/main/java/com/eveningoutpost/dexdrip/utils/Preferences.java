@@ -1,6 +1,7 @@
 package com.eveningoutpost.dexdrip.utils;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
@@ -909,6 +910,9 @@ public class Preferences extends BasePreferenceActivity {
             final Preference inpen_enabled = findPreference("inpen_enabled");
             try {
                 inpen_enabled.setOnPreferenceChangeListener((preference, newValue) -> {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && (boolean) newValue) {
+                        LocationHelper.requestLocationForBluetooth((Activity) preference.getContext()); // double check!
+                    }
                     InPenEntry.startWithRefresh();
                     return true;
                 });

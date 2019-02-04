@@ -1,6 +1,8 @@
 package com.eveningoutpost.dexdrip.insulin.inpen;
 
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.utils.BtCallBack;
 import com.eveningoutpost.dexdrip.utils.bt.ScanMeister;
 
@@ -30,11 +32,15 @@ public class FindNearby implements BtCallBack {
                 UserError.Log.e(TAG, "Found! " + mac);
                 InPen.setMac(mac);
                 InPenEntry.startWithRefresh();
+                if (JoH.ratelimit("found-inpen-first-time",86000)) {
+                    JoH.playResourceAudio(R.raw.labbed_musical_chime);
+                }
                 break;
 
             case ScanMeister.SCAN_FAILED_CALLBACK:
             case ScanMeister.SCAN_TIMEOUT_CALLBACK:
                 UserError.Log.d(TAG, "Scan callback: " + status);
+                JoH.static_toast_long(status);
                 break;
 
         }
