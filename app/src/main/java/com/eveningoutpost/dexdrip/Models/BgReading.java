@@ -1143,6 +1143,7 @@ public class BgReading extends Model implements ShareUploadableBg {
     }
 
     public static final double SPECIAL_G5_PLACEHOLDER = -0.1597;
+    public static final double SPECIAL_FOLLOWER_PLACEHOLDER = -0.1486;
 
     public static BgReading bgReadingInsertFromG5(double calculated_value, long timestamp) {
         return bgReadingInsertFromG5(calculated_value, timestamp, null);

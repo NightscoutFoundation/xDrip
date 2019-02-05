@@ -9,6 +9,8 @@ import com.eveningoutpost.dexdrip.cgm.nsfollow.messages.Entry;
 
 import java.util.List;
 
+import static com.eveningoutpost.dexdrip.Models.BgReading.SPECIAL_FOLLOWER_PLACEHOLDER;
+
 /**
  * jamorham
  *
@@ -40,7 +42,7 @@ public class EntryProcessor {
                             final BgReading bg = new BgReading();
                             bg.timestamp = recordTimestamp;
                             bg.calculated_value = entry.sgv;
-                            bg.raw_data = entry.unfiltered;
+                            bg.raw_data = entry.unfiltered != 0 ? entry.unfiltered : SPECIAL_FOLLOWER_PLACEHOLDER;
                             bg.filtered_data = entry.filtered;
                             bg.noise = entry.noise + "";
                             // TODO need to handle slope??
