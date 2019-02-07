@@ -41,6 +41,11 @@ There is another option `no_empty=Y` which you can use so that an empty data set
 
 There is another option `all_data=Y` which you can use to get data additionally from the previous sensor session.
 
+There is another option `sensor=Y` which you can use to get data about sensor age
+
+There is another option `collector=Y` which you can use to get alert messages from the collector. Nothing will be returned if the message is empty.
+
+
 You can also access the tasker endpoint by appending a query parameter
 
     http://127.0.0.1:17580/sgv.json?tasker=osnooze

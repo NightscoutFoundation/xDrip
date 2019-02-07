@@ -1,6 +1,7 @@
 package com.eveningoutpost.dexdrip.utils;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
@@ -66,6 +67,8 @@ import com.eveningoutpost.dexdrip.UtilityModels.pebble.watchface.InstallPebbleTr
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.watchface.InstallPebbleWatchFace;
 import com.eveningoutpost.dexdrip.WidgetUpdateService;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
+import com.eveningoutpost.dexdrip.cgm.nsfollow.NightscoutFollow;
+import com.eveningoutpost.dexdrip.insulin.inpen.InPenEntry;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileEditor;
 import com.eveningoutpost.dexdrip.tidepool.TidepoolUploader;
 import com.eveningoutpost.dexdrip.tidepool.UploadChunk;
@@ -516,7 +519,7 @@ public class Preferences extends BasePreferenceActivity {
                 do_update = true;
             }
 
-            preference.setTitle(preference.getTitle().toString().replaceAll("  \\([a-z0-9A-Z]+\\)$", "") + "  (" + value.toString() + ")");
+            preference.setTitle(preference.getTitle().toString().replaceAll("  \\([a-z0-9A-Z.]+\\)$", "") + "  (" + value.toString() + ")");
             if (do_update) {
                 preference.getEditor().putString(preference.getKey(), (String)value).apply(); // update prefs now
             }
@@ -894,6 +897,31 @@ public class Preferences extends BasePreferenceActivity {
                     return true;
             });
 
+            final Preference nsFollowUrl = findPreference("nsfollow_url");
+            try {
+                nsFollowUrl.setOnPreferenceChangeListener((preference, newValue) -> {
+                    NightscoutFollow.resetInstance();
+                    return true;
+                });
+            } catch (Exception e) {
+                //
+            }
+
+            final Preference inpen_enabled = findPreference("inpen_enabled");
+            try {
+                inpen_enabled.setOnPreferenceChangeListener((preference, newValue) -> {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && (boolean) newValue) {
+                        LocationHelper.requestLocationForBluetooth((Activity) preference.getContext()); // double check!
+                    }
+                    InPenEntry.startWithRefresh();
+                    return true;
+                });
+            } catch (Exception e) {
+                //
+            }
+
+
+
             final Preference scanShare = findPreference("scan_share2_barcode");
             final EditTextPreference transmitterId = (EditTextPreference) findPreference("dex_txid");
            // final Preference closeGatt = findPreference("close_gatt_on_ble_disconnect");
@@ -1175,6 +1203,15 @@ public class Preferences extends BasePreferenceActivity {
             if (collectionType != DexCollectionType.Medtrum) {
                 try {
                     collectionCategory.removePreference(findPreference("medtrum_use_native"));
+                    collectionCategory.removePreference(findPreference("medtrum_a_hex"));
+                } catch (Exception e) {
+                    //
+                }
+            }
+
+            if (collectionType != DexCollectionType.NSFollow) {
+                try {
+                    collectionCategory.removePreference(nsFollowUrl);
                 } catch (Exception e) {
                     //
                 }
@@ -1463,6 +1500,13 @@ public class Preferences extends BasePreferenceActivity {
             bindPreferenceTitleAppendToStringValue(findPreference("retention_days_bg_reading"));
 
             bindPreferenceTitleAppendToStringValue(findPreference("pendiq_pin"));
+
+            try {
+                bindPreferenceTitleAppendToStringValue(findPreference("inpen_prime_units"));
+                bindPreferenceTitleAppendToStringValue(findPreference("inpen_prime_minutes"));
+            } catch (Exception e) {
+                //
+            }
 
             // Pebble Trend -- START
 
@@ -1779,7 +1823,13 @@ public class Preferences extends BasePreferenceActivity {
 
                     if (collectionType == DexCollectionType.DexcomG5) {
                         collectionCategory.addPreference(transmitterId);
+                        // TODO add debug menu
                     }
+
+                    if (collectionType == DexCollectionType.NSFollow) {
+                        collectionCategory.addPreference(nsFollowUrl);
+                    }
+
 
                     String stringValue = newValue.toString();
                     if (preference instanceof ListPreference) {

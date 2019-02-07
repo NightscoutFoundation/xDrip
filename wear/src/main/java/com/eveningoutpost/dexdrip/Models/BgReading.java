@@ -428,6 +428,10 @@ public class BgReading extends Model implements ShareUploadableBg {
     }
 
 
+    public static BgReading getForPreciseTimestamp(long timestamp, long precision) {
+        return getForPreciseTimestamp(timestamp, precision, true);
+    }
+
 
     public static BgReading getForPreciseTimestamp(long timestamp, double precision) {
         return getForPreciseTimestamp(timestamp, precision, true);
@@ -523,14 +527,20 @@ public class BgReading extends Model implements ShareUploadableBg {
                 //context.startService(new Intent(context, Notifications.class));
                 // allow this instead to be fired inside handleNewBgReading when noise will have been injected already
             }
-            bgReading.injectNoise(true); // Add noise parameter for nightscout
-            bgReading.injectDisplayGlucose(BestGlucose.getDisplayGlucose()); // Add display glucose for nightscout
-            BgSendQueue.handleNewBgReading(bgReading, "create", context, Home.get_follower(), quick);
+
+            bgReading.postProcess(quick);
+
         }
 
         Log.i("BG GSON: ", bgReading.toS());
 
         return bgReading;
+    }
+
+    public void postProcess(final boolean quick) {
+        injectNoise(true); // Add noise parameter for nightscout
+        injectDisplayGlucose(BestGlucose.getDisplayGlucose()); // Add display glucose for nightscout
+        BgSendQueue.handleNewBgReading(this, "create", xdrip.getAppContext(), Home.get_follower(), quick);
     }
 
     public static BgReading createFromRawNoSave(Sensor sensor, Calibration calibration, double raw_data, double filtered_data, long timestamp) {
@@ -1133,6 +1143,7 @@ public class BgReading extends Model implements ShareUploadableBg {
     }
 
     public static final double SPECIAL_G5_PLACEHOLDER = -0.1597;
+    public static final double SPECIAL_FOLLOWER_PLACEHOLDER = -0.1486;
 
     public static BgReading bgReadingInsertFromG5(double calculated_value, long timestamp) {
         return bgReadingInsertFromG5(calculated_value, timestamp, null);

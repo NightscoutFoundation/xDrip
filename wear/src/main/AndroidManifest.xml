@@ -227,6 +227,7 @@
                 <action android:name="android.bluetooth.device.action.ACL_DISCONNECTED" />
             </intent-filter>
         </receiver>
+        <receiver android:name=".utils.framework.WakeLockTrampoline" />
 
         <meta-data
             android:name="io.fabric.ApiKey"

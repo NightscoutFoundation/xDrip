@@ -11,6 +11,7 @@ import com.eveningoutpost.dexdrip.utils.BtCallBack;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.polidea.rxandroidble.RxBleClient;
 import com.polidea.rxandroidble.exceptions.BleScanException;
+import com.polidea.rxandroidble.scan.ScanFilter;
 import com.polidea.rxandroidble.scan.ScanResult;
 import com.polidea.rxandroidble.scan.ScanSettings;
 
@@ -36,16 +37,18 @@ import static com.eveningoutpost.dexdrip.Models.JoH.ratelimit;
 public class ScanMeister {
 
     private static final String TAG = ScanMeister.class.getSimpleName();
-    private static final String STOP_SCAN_TASK_ID = "stop_meister_scan";
+    protected static final String STOP_SCAN_TASK_ID = "stop_meister_scan";
     private static final int DEFAULT_SCAN_SECONDS = 30;
-    protected static final int MINIMUM_RSSI = -97; // ignore all quieter than this
-    private static volatile Subscription scanSubscription;
-    private final RxBleClient rxBleClient = RxBleProvider.getSingleton();
+    protected static final int MINIMUM_RSSI = -1000; // -97; // ignore all quieter than this
+    // TODO can this be static if we want to support multiple scanners?????
+    protected static volatile Subscription scanSubscription;
+    protected final RxBleClient rxBleClient = RxBleProvider.getSingleton();
     private final ConcurrentHashMap<String, BtCallBack> callbacks = new ConcurrentHashMap<>();
     private final PowerManager.WakeLock wl = JoH.getWakeLock("jam-bluetooth-meister", 1000);
-    private int scanSeconds = DEFAULT_SCAN_SECONDS;
+    protected int scanSeconds = DEFAULT_SCAN_SECONDS;
     protected volatile String address;
     protected volatile List<String> name;
+    protected boolean wideSearch = false;
     private static String lastFailureReason = "";
 
     public static final String SCAN_TIMEOUT_CALLBACK = "SCAN_TIMEOUT";
@@ -73,6 +76,11 @@ public class ScanMeister {
             this.name = new ArrayList<>();
         }
         this.name.add(name);
+        return this;
+    }
+
+    public ScanMeister allowWide() {
+        this.wideSearch = true;
         return this;
     }
 
@@ -106,16 +114,19 @@ public class ScanMeister {
         extendWakeLock((scanSeconds + 1) * Constants.SECOND_IN_MS);
         stopScan("Scan start");
         UserError.Log.d(TAG, "startScan called: hunting: " + address + " " + name);
+
+        final ScanFilter.Builder builder = new ScanFilter.Builder();
+        if (address != null) {
+            builder.setDeviceAddress(address);
+        }
+        // TODO scanning by name doesn't build a filter
+        final ScanFilter filter = builder.build();
+
         scanSubscription = rxBleClient.scanBleDevices(
                 new ScanSettings.Builder()
-
                         .setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES)
                         .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
-                        .build()//,  //new ScanFilter.Builder()
-                //
-                // add custom filters if needed
-                //  .build()
-        )
+                        .build(), filter)
                 .timeout(scanSeconds, TimeUnit.SECONDS) // is unreliable
                 .subscribeOn(Schedulers.io())
                 .subscribe(this::onScanResult, this::onScanFailure);
@@ -127,7 +138,7 @@ public class ScanMeister {
         stopScan("Scan stop");
     }
 
-    private void stopScanWithTimeoutCallback() {
+    protected void stopScanWithTimeoutCallback() {
         stopScan("Stop with Timeout");
         processCallBacks(address, SCAN_TIMEOUT_CALLBACK);
     }
@@ -146,7 +157,7 @@ public class ScanMeister {
     // Successful result from our bluetooth scan
     protected synchronized void onScanResult(ScanResult bleScanResult) {
 
-        if (address == null && name == null) {
+        if (!wideSearch && address == null && name == null) {
             UserError.Log.d(TAG, "Address has been set to null, stopping scan.");
             stopScan("Address nulled");
             return;
@@ -210,7 +221,7 @@ public class ScanMeister {
     }
 
 
-    private synchronized void extendWakeLock(long ms) {
+    protected synchronized void extendWakeLock(long ms) {
         JoH.releaseWakeLock(wl); // lets not get too messy
         wl.acquire(ms);
     }

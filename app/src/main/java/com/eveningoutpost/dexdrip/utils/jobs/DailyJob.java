@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
-//import com.eveningoutpost.dexdrip.Services.DailyIntentService;
+import com.eveningoutpost.dexdrip.Services.DailyIntentService;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.evernote.android.job.Job;
 import com.evernote.android.job.JobRequest;
@@ -26,7 +26,7 @@ public class DailyJob extends Job {
     @NonNull
     protected Result onRunJob(@NonNull Job.Params params) {
         final long startTime = JoH.tsl();
-        //DailyIntentService.work();
+        DailyIntentService.work();
         UserError.Log.uel(TAG, JoH.dateTimeText(JoH.tsl()) + " Job Ran - finished, duration: " + JoH.niceTimeScalar(JoH.msSince(startTime)));
         return Result.SUCCESS;
     }

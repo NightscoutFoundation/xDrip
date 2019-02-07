@@ -1100,7 +1100,7 @@
     <string name="no_data">没有数据</string>
     <string name="no_bluetooth">无蓝牙</string>
     <string name="connection_status">连接状态:   </string>
-    <string name="please_allow_permission">请允许使用权限</string>
     <string name="without_location_scan_doesnt_work">没有放开位置权限，Xdrip的蓝牙扫描不起作用</string>
     <string name="without_location_permission_emergency_cannot_get_location">没有放开位置权限，紧急消息不能使用位置数据</string>
+    <string name="please_allow_permission">请允许使用权限</string>
 </resources>

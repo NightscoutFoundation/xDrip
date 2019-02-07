@@ -953,6 +953,65 @@
 
         <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
             android:icon="@drawable/ic_mode_edit_grey_600_48dp"
+            android:key="inpen_screen"
+            android:summary="Downloading dosages"
+            android:title="InPen Insulin Pen">
+            <SwitchPreference
+                android:defaultValue="false"
+                android:key="inpen_enabled"
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
+                android:title="InPen Support" />
+
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="inpen_detect_priming"
+                android:summary="Detect and exclude priming doses"
+                android:title="Detect priming" />
+
+            <EditTextPreference
+                android:defaultValue="2.0"
+                android:inputType="numberPassword|textVisiblePassword"
+                android:key="inpen_prime_units"
+                android:maxLength="4"
+                android:title="Priming Units" />
+
+            <EditTextPreference
+                android:defaultValue="2"
+                android:inputType="numberPassword|textVisiblePassword"
+                android:key="inpen_prime_minutes"
+                android:maxLength="3"
+                android:title="Priming Time Window" />
+
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="inpen_orphan_primes_ignored"
+                android:summary="Primes with no following dose are ignored if checked. Uncheck to treat as doses"
+                android:title="Ignore Orphan primes" />
+
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="inpen_sounds"
+                android:summary="Use sounds to indicate data transfer with the pen"
+                android:title="Play Sounds" />
+
+            <Preference
+                android:key="inpen_reset"
+                android:summary="Reset and search for a new pen in pairing mode"
+                android:title="Find New Pen">
+            <intent
+                android:action="android.intent.action.MAIN"
+                android:targetClass="com.eveningoutpost.dexdrip.Home"
+                android:targetPackage="@string/local_target_package">
+                <extra
+                    android:name="inpen-reset"
+                    android:value="inpen-reset" />
+            </intent>
+            </Preference>
+        </PreferenceScreen>
+
+        <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+            android:icon="@drawable/ic_mode_edit_grey_600_48dp"
             android:key="pendiq_screen"
             android:summary="Reading and writing dosages"
             android:title="Pendiq 2.0 Insulin Pen">

@@ -993,7 +993,7 @@
     <string name="no_data">No hay datos</string>
     <string name="no_bluetooth">No hay Bluetooth</string>
     <string name="connection_status">Estado de la conexión:   </string>
-    <string name="please_allow_permission">Por favor, concede permiso</string>
     <string name="without_location_scan_doesnt_work">Sin el permiso de ubicación el escaneo Bluetooth de Android no funciona</string>
     <string name="without_location_permission_emergency_cannot_get_location">Sin permiso de ubicación los mensajes de emergencia no pueden utilizar datos de ubicación</string>
+    <string name="please_allow_permission">Por favor, concede permiso</string>
 </resources>

@@ -31,9 +31,12 @@ public class XDripJobCreator implements JobCreator {
 /*
             case CloudSyncJob.TAG:
                 return new CloudSyncJob();
+
+*/
+
             case DailyJob.TAG:
                 return new DailyJob();
-*/
+
             default:
                 UserError.Log.wtf(TAG, "Failed to match Job: " + tag + " requesting cancellation");
                 try {

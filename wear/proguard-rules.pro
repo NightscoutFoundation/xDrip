@@ -107,3 +107,5 @@
    public static boolean isCollecting();
    public static ** nanoStatus();
 }
+-keep class com.google.android.gms.measurement.AppMeasurement { *; }
+-keep class com.google.android.gms.measurement.AppMeasurement$OnEventListener { *; }

@@ -6,7 +6,9 @@ import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.DateUtil;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.UtilityModels.NanoStatus;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.UtilityModels.SensorStatus;
 import com.eveningoutpost.dexdrip.dagger.Singleton;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
@@ -44,6 +46,8 @@ public class WebServiceSgv extends BaseWebService {
         int heart_result_code = 0; // result code for any heart cgi parameters, 200 = good
         int tasker_result_code = 0; // result code for any heart cgi parameters, 200 = good
         int units_indicator = 1; // show the units we are using
+        String collector_status_string = null; // result of collector status
+        String sensor_status_string = null; // result of collector status
         boolean brief = false; // whether to cut out portions of the data
 
         final Map<String, String> cgi = getQueryParameters(query);
@@ -80,6 +84,16 @@ public class WebServiceSgv extends BaseWebService {
             // forward steps request to heart route
             final WebResponse tasker_reply_wr = ((RouteFinder) Singleton.get("RouteFinder")).handleRoute("tasker/" + cgi.get("tasker")); // send single word command to tasker, eg snooze or osnooze
             tasker_result_code = tasker_reply_wr.resultCode;
+        }
+
+        if (cgi.containsKey("collector")) {
+            UserError.Log.d(TAG,"Received collector status request");
+            collector_status_string = NanoStatus.nanoStatus("collector");
+        }
+
+        if (cgi.containsKey("sensor")) {
+            UserError.Log.d(TAG,"Received sensor status request");
+            sensor_status_string = SensorStatus.status();
         }
 
         if (cgi.containsKey("brief_mode")) {
@@ -154,6 +168,20 @@ public class WebServiceSgv extends BaseWebService {
                     if (tasker_result_code > 0) {
                         item.put("tasker_result", tasker_result_code);
                         tasker_result_code = 0;
+                    }
+
+                    // emit nano-status string if present
+                    if (collector_status_string != null) {
+                        item.put("collector_status", collector_status_string);
+                        collector_status_string = null;
+                    }
+
+                    // TODO uploader battery
+
+                    // emit sensor status/age message if present
+                    if (sensor_status_string != null) {
+                        item.put("sensor_status", sensor_status_string);
+                        sensor_status_string = null;
                     }
 
                     reply.put(item);
