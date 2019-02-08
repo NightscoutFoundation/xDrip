@@ -313,7 +313,7 @@
     <string name="forget_device">שכח התקן</string>
     <string name="delete_future_data">מחק ערכים מהעתיד</string>
     <string name="show_only_untranslated">הראה רק מה שלא תורגם</string>
-    <string name="collecting_initial_readings"> התחלתייםאוסף נתונים</string>
+    <string name="collecting_initial_readings">אוסף קריאות ראשוניות</string>
     <string name="data_collector_running">אוסף נתונים</string>
     <string name="received_some_recent_data">התקבלו קריאות לאחרונה</string>
     <string name="received_enough_good_data_to_calibrate">התקבלו מספיק קריאות לכיול</string>
