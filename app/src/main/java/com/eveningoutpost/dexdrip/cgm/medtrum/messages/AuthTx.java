@@ -14,7 +14,7 @@ public class AuthTx extends BaseMessage {
     final byte opcode = OPCODE_AUTH_REQST; // 0x05
     final int length = 10;
 
-    public AuthTx(long serial) {
+    public AuthTx(final long serial) {
         init(opcode, length, true);
 
         byte[] aBytes = null;
@@ -23,13 +23,18 @@ public class AuthTx extends BaseMessage {
         } catch (Exception e) {
             //
         }
-        final boolean active = aBytes != null && aBytes.length == 4;
+        boolean active = aBytes != null && aBytes.length == 4;
+        if (Medtrum.getVersion(serial) > 186) {
+            active = true;
+            aBytes = null;
+        }
+
         data.put(active ? (byte) 0xC9 : (byte) 0x02);
         data.putInt(0);
-        if (active) {
+        if (active && aBytes != null) {
             data.put(aBytes);
         } else {
-            data.putInt((int) Crypt.doubleSchrage(serial));
+            data.putInt((int) (active ? Crypt.doubleSchrageSbox(serial) : Crypt.doubleSchrage(serial)));
         }
     }
 }
