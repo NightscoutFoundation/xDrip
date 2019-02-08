@@ -108,7 +108,15 @@
             android:maxLines="1"
             android:singleLine="true"
             android:summary="Web address for following"
-            android:title="Nightscout Follow" />
+            android:title="Nightscout Follow URL" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="nsfollow_download_treatments"
+            android:summary="Also download treatments from Nightscout as follower"
+            android:title="Download Treatments"
+            />
+
+
 
         <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
             android:key="xdrip_plus_g5_extra_settings"

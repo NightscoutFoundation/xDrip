@@ -897,6 +897,7 @@ public class Preferences extends BasePreferenceActivity {
                     return true;
             });
 
+            final Preference nsFollowDownload = findPreference("nsfollow_download_treatments");
             final Preference nsFollowUrl = findPreference("nsfollow_url");
             try {
                 nsFollowUrl.setOnPreferenceChangeListener((preference, newValue) -> {
@@ -1212,6 +1213,7 @@ public class Preferences extends BasePreferenceActivity {
             if (collectionType != DexCollectionType.NSFollow) {
                 try {
                     collectionCategory.removePreference(nsFollowUrl);
+                    collectionCategory.removePreference(nsFollowDownload);
                 } catch (Exception e) {
                     //
                 }
@@ -1828,6 +1830,7 @@ public class Preferences extends BasePreferenceActivity {
 
                     if (collectionType == DexCollectionType.NSFollow) {
                         collectionCategory.addPreference(nsFollowUrl);
+                        collectionCategory.addPreference(nsFollowDownload);
                     }
 
 

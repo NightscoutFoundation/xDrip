@@ -4,6 +4,7 @@ import com.eveningoutpost.dexdrip.BuildConfig;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.UtilityModels.NightscoutTreatments;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.cgm.nsfollow.messages.Entry;
 import com.eveningoutpost.dexdrip.cgm.nsfollow.utils.NightscoutUrl;
@@ -12,6 +13,7 @@ import com.eveningoutpost.dexdrip.tidepool.InfoInterceptor;
 import java.util.List;
 
 import okhttp3.OkHttpClient;
+import okhttp3.ResponseBody;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Retrofit;
@@ -49,6 +51,10 @@ public class NightscoutFollow {
 
         @GET("/api/v1/entries.json")
         Call<List<Entry>> getEntries(@Header("api-secret") String secret, @Query("rr") String rr);
+
+        @GET("/api/v1/treatments")
+        Call<ResponseBody> getTreatments(@Header("api-secret") String secret);
+
     }
 
     private static Nightscout getService() {
@@ -64,24 +70,48 @@ public class NightscoutFollow {
 
     public static void work(final boolean live) {
         msg("Connecting to Nightscout");
-        final Session session = new Session();
+
         final String urlString = getUrl();
+
+        final Session session = new Session();
         session.url = new NightscoutUrl(urlString);
 
-        session.callback = new NightscoutCallback<List<Entry>>("NS entries download", session, () -> {
+        // set up processing callback for entries
+        session.entriesCallback = new NightscoutCallback<List<Entry>>("NS entries download", session, () -> {
             // process data
             EntryProcessor.processEntries(session.entries, live);
             NightscoutFollowService.scheduleWakeUp();
             msg("");
         })
-                .setOnFailure(() -> msg(session.callback.getStatus()));
+                .setOnFailure(() -> msg(session.entriesCallback.getStatus()));
+
+        // set up processing callback for treatments
+        session.treatmentsCallback = new NightscoutCallback<ResponseBody>("NS treatments download", session, () -> {
+            // process data
+            try {
+                NightscoutTreatments.processTreatmentResponse(session.treatments.string());
+            } catch (Exception e) {
+                msg("Treatments: " + e);
+            }
+        })
+                .setOnFailure(() -> msg(session.treatmentsCallback.getStatus()));
 
         if (!emptyString(urlString)) {
             try {
-                getService().getEntries(session.url.getHashedSecret(), JoH.tsl() + "").enqueue(session.callback);
+                getService().getEntries(session.url.getHashedSecret(), JoH.tsl() + "").enqueue(session.entriesCallback);
             } catch (Exception e) {
-                UserError.Log.e(TAG, "Exception in work() " + e);
-                msg("Nightscout follow error: " + e);
+                UserError.Log.e(TAG, "Exception in entries work() " + e);
+                msg("Nightscout follow entries error: " + e);
+            }
+            if (treatmentDownloadEnabled()) {
+                if (JoH.ratelimit("nsfollow-treatment-download", 60)) {
+                    try {
+                        getService().getTreatments(session.url.getHashedSecret()).enqueue(session.treatmentsCallback);
+                    } catch (Exception e) {
+                        UserError.Log.e(TAG, "Exception in treatments work() " + e);
+                        msg("Nightscout follow treatments error: " + e);
+                    }
+                }
             }
         } else {
             msg("Please define Nightscout follow URL");
@@ -90,6 +120,10 @@ public class NightscoutFollow {
 
     private static String getUrl() {
         return Pref.getString("nsfollow_url", "");
+    }
+
+    private static boolean treatmentDownloadEnabled() {
+        return Pref.getBooleanDefaultFalse("nsfollow_download_treatments");
     }
 
     // TODO make reusable
