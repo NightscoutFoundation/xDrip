@@ -15,6 +15,7 @@ public class WearSyncBooleans {
     static {
         booleansToSync.add("use_wear_heartrate");
         booleansToSync.add("engineering_mode");
+        booleansToSync.add("allow_testing_with_dead_sensor");
         booleansToSync.add("ob1_g5_use_transmitter_alg");
         booleansToSync.add("ob1_g5_use_insufficiently_calibrated");
         booleansToSync.add("ob1_g5_use_errored_data");
@@ -30,6 +31,7 @@ public class WearSyncBooleans {
         booleansToSync.add("using_g6");
         booleansToSync.add("show_g_prediction");
         booleansToSync.add("enable_crashlytics");
+        booleansToSync.add("ob1_ultra_power_save");
     }
 
 
