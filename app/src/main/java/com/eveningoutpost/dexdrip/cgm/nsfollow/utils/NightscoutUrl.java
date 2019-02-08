@@ -29,8 +29,23 @@ public class NightscoutUrl {
 
     public URI getURI() {
         if (uri == null) {
+            if (url == null) return null;
             try {
-                uri = new URI(url);
+                // auto fix missing api strings
+                String this_url = url.trim();
+                if (!this_url.contains("/api/")) {
+                    if (!this_url.endsWith("/")) {
+                        this_url += "/";
+                    }
+                    this_url += "api/v1/";
+                } else {
+                    if (!this_url.endsWith("/")) {
+                        this_url += "/";
+                    }
+                }
+
+                uri = new URI(this_url);
+
             } catch (URISyntaxException e) {
                 return null;
             }
