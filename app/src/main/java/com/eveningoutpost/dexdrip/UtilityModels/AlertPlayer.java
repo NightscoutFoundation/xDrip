@@ -165,8 +165,16 @@ public class AlertPlayer {
             notificationDismiss(ctx);
         }
         if (mediaPlayer != null) {
-            mediaPlayer.stop();
-            mediaPlayer.release();
+            try {
+                mediaPlayer.stop();
+            } catch (IllegalStateException e) {
+                UserError.Log.e(TAG, "Exception when stopping media player: " + e);
+            }
+            try {
+                mediaPlayer.release();
+            } catch (IllegalStateException e) {
+                UserError.Log.e(TAG, "Exception releasing media player: " + e);
+            }
             mediaPlayer = null;
         }
         revertCurrentVolume(ctx, streamType);
