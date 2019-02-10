@@ -4,10 +4,12 @@ import com.eveningoutpost.dexdrip.BuildConfig;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.NightscoutTreatments;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.cgm.nsfollow.messages.Entry;
 import com.eveningoutpost.dexdrip.cgm.nsfollow.utils.NightscoutUrl;
+import com.eveningoutpost.dexdrip.evaluators.MissedReadingsEstimator;
 import com.eveningoutpost.dexdrip.tidepool.InfoInterceptor;
 
 import java.util.List;
@@ -24,6 +26,7 @@ import retrofit2.http.Headers;
 import retrofit2.http.Query;
 
 import static com.eveningoutpost.dexdrip.Models.JoH.emptyString;
+import static com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder.DEXCOM_PERIOD;
 import static com.eveningoutpost.dexdrip.UtilityModels.OkHttpWrapper.enableTls12OnPreLollipop;
 import static com.eveningoutpost.dexdrip.cgm.nsfollow.NightscoutFollowService.msg;
 
@@ -50,7 +53,7 @@ public class NightscoutFollow {
         })
 
         @GET("/api/v1/entries.json")
-        Call<List<Entry>> getEntries(@Header("api-secret") String secret, @Query("rr") String rr);
+        Call<List<Entry>> getEntries(@Header("api-secret") String secret, @Query("count") int count, @Query("rr") String rr);
 
         @GET("/api/v1/treatments")
         Call<ResponseBody> getTreatments(@Header("api-secret") String secret);
@@ -98,7 +101,10 @@ public class NightscoutFollow {
 
         if (!emptyString(urlString)) {
             try {
-                getService().getEntries(session.url.getHashedSecret(), JoH.tsl() + "").enqueue(session.entriesCallback);
+                int count = Math.min(MissedReadingsEstimator.estimate() + 1, (int) (Constants.DAY_IN_MS / DEXCOM_PERIOD));
+                UserError.Log.d(TAG, "Estimating missed readings as: " + count);
+                count = Math.max(10, count); // pep up with a view to potential period mismatches - might be excessive
+                getService().getEntries(session.url.getHashedSecret(), count, JoH.tsl() + "").enqueue(session.entriesCallback);
             } catch (Exception e) {
                 UserError.Log.e(TAG, "Exception in entries work() " + e);
                 msg("Nightscout follow entries error: " + e);
