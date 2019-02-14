@@ -233,76 +233,76 @@
         </PreferenceScreen>
 
         <PreferenceScreen
-            android:title="Lefun Band">
+            android:title="@string/title_lefun_band">
             <SwitchPreference
                 android:switchTextOff="@string/short_off_text_for_switches"
                 android:switchTextOn="@string/short_on_text_for_switches"
                 android:defaultValue="false"
                 android:key="lefun_enabled"
-                android:summary="Sync Data with LeFun fitness bands"
-                android:title="Use LeFun Band" />
+                android:summary="@string/summary_lefun_enable"
+                android:title="@string/title_lefun_enable" />
             <EditTextPreference
                 android:key="lefun_mac"
-                android:title="Mac address"/>
+                android:title="@string/title_lefun_mac"/>
             <SwitchPreference
                 android:switchTextOff="@string/short_off_text_for_switches"
                 android:switchTextOn="@string/short_on_text_for_switches"
                 android:defaultValue="true"
                 android:dependency="lefun_enabled"
                 android:key="lefun_send_readings"
-                android:summary="Appropriate the watch date to represent glucose values. Better with mmol/l - see documentation"
-                android:title="Send Readings" />
+                android:summary="@string/summary_lefun_send_readings"
+                android:title="@string/title_lefun_send_readings" />
             <SwitchPreference
                 android:defaultValue="true"
                 android:dependency="lefun_enabled"
                 android:key="lefun_send_alarms"
-                android:summary="Send notifications to the band for glucose alarms"
-                android:title="Send Alarms" />
+                android:summary="@string/summary_lefun_send_alarms"
+                android:title="@string/title_lefun_send_alarms" />
             <CheckBoxPreference
                 android:key="lefun_option_shake_snoozes"
                 android:dependency="lefun_send_alarms"
                 android:defaultValue="true"
-                android:title="Shake to Snooze" />
+                android:title="@string/title_lefun_option_shake_snoozes" />
 
-            <PreferenceScreen android:title="Lefun Screens / Features">
+            <PreferenceScreen android:title="@string/title_lefun_screens_features">
 
-                <PreferenceCategory android:title="Features">
+                <PreferenceCategory android:title="@string/title_features">
                     <CheckBoxPreference
                         android:defaultValue="true"
                         android:key="lefun_feature_lift_to_wake"
-                        android:title="Lift to Wake" />
+                        android:title="@string/title_lefun_feature_lift_to_wak" />
                     <CheckBoxPreference
                         android:key="lefun_feature_anti_lost"
-                        android:title="Disconnect Alert" />
+                        android:title="@string/title_lefun_feature_anti_lost" />
                     <CheckBoxPreference
                         android:key="lefun_locale_12_hour"
                         android:defaultValue="true"
-                        android:title="Use 12 Hour Clock"/>
+                        android:title="@string/title_lefun_locale_12_hour"/>
                 </PreferenceCategory>
 
-                <PreferenceCategory android:title="Screens">
+                <PreferenceCategory android:title="@string/title_screens">
                 <CheckBoxPreference
                     android:key="lefun_screen_step_counter"
-                    android:title="Show Step Counter" />
+                    android:title="@string/title_lefun_screen_step_counter" />
                 <CheckBoxPreference
                     android:key="lefun_screen_step_distance"
-                    android:title="Show Step Distance" />
+                    android:title="@string/title_lefun_screen_step_distance" />
                 <CheckBoxPreference
                     android:key="lefun_screen_step_calories"
-                    android:title="Show Step Calories" />
+                    android:title="@string/title_lefun_screen_step_calories" />
                 <CheckBoxPreference
                     android:key="lefun_screen_heart_rate"
-                    android:title="Show Heart Rate" />
+                    android:title="@string/title_lefun_screen_heart_rate" />
                 <CheckBoxPreference
                     android:key="lefun_screen_heart_pressure"
-                    android:title="Show Heart Pressure" />
+                    android:title="@string/title_lefun_screen_heart_pressure" />
                 <CheckBoxPreference
                     android:key="lefun_screen_find_phone"
-                    android:title="Show Find Phone / Snooze" />
+                    android:title="@string/title_lefun_screen_find_phone" />
 
                 <CheckBoxPreference
                     android:key="lefun_screen_mac_address"
-                    android:title="Show MAC Address" />
+                    android:title="@string/title_lefun_screen_mac_address" />
                 </PreferenceCategory>
 
             </PreferenceScreen>
@@ -917,8 +917,8 @@
                 <CheckBoxPreference
                     android:defaultValue="true"
                     android:key="allow_samsung_workaround"
-                    android:summary="Use workarounds to avoid non-standard android behavior of Samsung handsets. Without this collectors usually fail to get data."
-                    android:title="Samsung Workarounds" />
+                    android:summary="@string/summary_allow_samsung_workaround"
+                    android:title="@string/title_allow_samsung_workaround" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="excessive_wakelocks"

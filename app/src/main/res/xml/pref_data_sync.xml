@@ -31,8 +31,8 @@
                     android:defaultValue="true"
                     android:dependency="cloud_storage_api_enable"
                     android:key="cloud_storage_api_use_mobile"
-                    android:summary="Upload even when using mobile data"
-                    android:title="Use mobile data" />
+                    android:summary="@string/upload_even_when_using_mobile_data"
+                    android:title="@string/use_mobile_data" />
                 <SwitchPreference
                     android:dependency="cloud_storage_api_enable"
                     android:key="cloud_storage_api_use_best_glucose"
@@ -51,18 +51,18 @@
                     android:defaultValue="true"
                     android:dependency="cloud_storage_api_enable"
                     android:key="cloud_storage_api_download_enable"
-                    android:summary="Also try to download data from Nightscout"
-                    android:title="Download data" />
+                    android:summary="@string/summary_cloud_storage_api_download_enable"
+                    android:title="@string/title_cloud_storage_api_download_enable" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="cloud_storage_api_download_enable"
                     android:key="bluetooth_meter_for_calibrations_auto"
-                    android:summary="Calibrate using new blood glucose readings if the conditions appear right to do so without asking confirmation (experimental)"
-                    android:title="Automatic Calibration" />
+                    android:summary="@string/summary_bluetooth_meter_for_calibrations_auto"
+                    android:title="@string/title_bluetooth_meter_for_calibrations_auto" />
                 <PreferenceScreen
                     android:key="rest_api_extra_options"
                     android:summary=""
-                    android:title="Extra Options">
+                    android:title="@string/title_rest_api_extra_options">
                     <CheckBoxPreference
                         android:defaultValue="true"
                         android:key="skip_lan_uploads_when_no_lan"
@@ -71,26 +71,26 @@
                     <CheckBoxPreference
                         android:defaultValue="true"
                         android:key="send_bridge_battery_to_nightscout"
-                        android:summary="Send your bridge battery level to Nightscout. Uncheck if your battery sensor is broken."
-                        android:title="Upload bridge battery" />
+                        android:summary="@string/summary_send_bridge_battery_to_nightscout"
+                        android:title="@string/title_send_bridge_battery_to_nightscout" />
                     <CheckBoxPreference
                         android:defaultValue="true"
                         android:key="send_treatments_to_nightscout"
-                        android:summary="Send treatment data to Nightscout. Uncheck if your careportal is broken."
-                        android:title="Upload treatments" />
+                        android:summary="@string/summary_send_treatments_to_nightscout"
+                        android:title="@string/title_send_treatments_to_nightscout" />
                     <CheckBoxPreference
                         android:defaultValue="true"
                         android:key="warn_nightscout_failures"
-                        android:summary="Display and sound a notification if Nightscout upload is failing."
-                        android:title="Alert on failures" />
+                        android:summary="@string/summary_warn_nightscout_failures"
+                        android:title="@string/title_warn_nightscout_failures" />
                     <CheckBoxPreference
                         android:defaultValue="false"
                         android:key="nightscout_device_append_source_info"
-                        android:summary="For G5, sends collector type (e.g. OB1) and reading backfill status (for native) to Nightscout."
-                        android:title="Append source info to device name" />
+                        android:summary="@string/summary_nightscout_device_append_source_info"
+                        android:title="@string/title_nightscout_device_append_source_info" />
                     <Preference
-                        android:summary="Tap to send historical data to Nightscout"
-                        android:title="Back-fill data">
+                        android:summary="@string/summary_tap_to_send_historical_data"
+                        android:title="@string/title_back_fill_data">
                         <intent
                             android:action="android.intent.action.MAIN"
                             android:targetClass="com.eveningoutpost.dexdrip.NightscoutBackfillActivity"
@@ -245,32 +245,32 @@
             </PreferenceScreen>
             <PreferenceScreen
                 android:key="tidepool_upload_screen"
-                android:summary="Upload data to the Tidepool service"
-                android:title="Tidepool">
+                android:summary="@string/summary_tidepool_upload_screen"
+                android:title="@string/title_tidepool">
 
                 <SwitchPreference
                     android:switchTextOff="@string/short_off_text_for_switches"
                     android:switchTextOn="@string/short_on_text_for_switches"
                     android:defaultValue="false"
                     android:key="cloud_storage_tidepool_enable"
-                    android:title="Sync to Tidepool" />
+                    android:title="@string/title_sync_to_tidepool" />
 
                 <EditTextPreference
                     android:key="tidepool_username"
-                    android:summary="Your Tidepool login user name, normally your email address"
-                    android:title="Login User Name" />
+                    android:summary="@string/summary_tidepool_username"
+                    android:title="@string/title_tidepool_username" />
                 <EditTextPreference
                     android:inputType="textPassword"
                     android:key="tidepool_password"
-                    android:summary="Your Tidepool login password"
-                    android:title="Login Password" />
+                    android:summary="@string/summary_tidepool_password"
+                    android:title="@string/title_tidepool_password" />
                 <Preference
                     android:key="tidepool_test_login"
-                    android:title="Test Tidepool Login" />
+                    android:title="@string/title_tidepool_test_login" />
                 <SeekBarPreference
                     android:key="tidepool_window_latency"
                     android:dependency="cloud_storage_tidepool_enable"
-                    android:title="Data Age Mins"
+                    android:title="@string/title_tidepool_window_latency"
                     android:summary=""
                     android:max="300"
                     android:min="0"
@@ -278,8 +278,8 @@
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="tidepool_dev_servers"
-                    android:summary="If enabled, uploads will go to https://int-app.tidepool.org instead of the regular https://app.tidepool.org/"
-                    android:title="Use Integration (test) servers" />
+                    android:summary="@string/summary_tidepool_dev_servers"
+                    android:title="@string/title_tidepool_dev_servers" />
 
             </PreferenceScreen>
         </PreferenceScreen>
