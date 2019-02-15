@@ -1354,7 +1354,6 @@
     <string name="load_more">load more</string>
     <string name="searching">searching...</string>
     <string name="collecting">collecting...</string>
-    <string name="carbs">carbs</string>
     <string name="insulin">insulin</string>
     <string name="nothing_found">nothing found</string>
 </resources>
