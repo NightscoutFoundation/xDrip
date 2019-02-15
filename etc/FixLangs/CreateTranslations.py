@@ -76,6 +76,10 @@ def ReadFile(file_name):
     # you may also want to remove whitespace characters like `\n` at the end of each line
     content = [x.strip() for x in content] 
     for line in content:
+        if line.strip() == '':
+            continue
+        if line.startswith("#"):
+            continue            
         if line.startswith('"') and line.endswith('"'):
             line = line[1:-1]
         
@@ -87,8 +91,12 @@ def ReadFile(file_name):
         header = header.replace('?','')
         header = header.replace('.','')
         header = header.replace('+','')
+        header = header.replace('-','')
+        header = header.replace('(','')
+        header = header.replace(')','')
+        header = header.replace("'",'')
         
-        print ('<string name="',header,'">', line,'</string>', sep='')
+        print ('    <string name="',header,'">', line,'</string>', sep='')
         
         FindFileContaingString(header, line)
         
