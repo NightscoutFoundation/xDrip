@@ -1350,4 +1350,11 @@
     <string name="title_full_screen_mode">Full Screen mode</string>
     <string name="title_colors_for_printing">Colors for printing</string>
     <string name="title_share_save_this_screen">Share / Save this screen</string>
+    <string name="search_phrase">search phrase</string>
+    <string name="load_more">load more</string>
+    <string name="searching">searching...</string>
+    <string name="collecting">collecting...</string>
+    <string name="carbs">carbs</string>
+    <string name="insulin">insulin</string>
+    <string name="nothing_found">nothing found</string>
 </resources>
