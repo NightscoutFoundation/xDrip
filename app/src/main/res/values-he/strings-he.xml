@@ -322,7 +322,9 @@
     <!-- trend arrow for speak -->
     <string name="offical_msg">האפליקציה הרשמית</string>
     <string name="yes">כן</string>
+    <string name="set_data_source_to">קבע את סוג הסנסור ל%s ?</string>
     <string name="are_you_sure">אתה בטוח?</string>
+    <string name="other">אחר</string>
     <string name="is_your_typical_glucose_value">האם ערך אופיני של הסוכר שלך הוא 100(mg/dl) או 5.5 (mmol/L) אנא בחר למטה</string>
     <string name="please_enter_printed_calibration_code">אנא הזן את קוד הכיול המודפס, 4 ספרות, לדוגמא: 5678</string>
     <string name="please_confirm_to_cancel_the_alert">אנא אשר את השתקת ההתראה</string>
@@ -364,6 +366,7 @@
     <string name="connection_status">   מצב החיבור:  </string>
     <string name="without_location_scan_doesnt_work">בלי הרשאה למיקום אנדרואיד לא מאפשר סריקת בלוטוס</string>
     <string name="choose_data_source">בחר את סוג הסנסור</string>
+    <string name="which_system_do_you_use">באיזה מערכת אתה משתמש?</string>
     <string name="please_allow_permission">אנא תן הרשאה</string>
     <string name="location_permission_needed_to_use_bluetooth">דרושה הרשאה למיקום כדי לאפשר בלוטוס!</string>
     <string name="did_you_insert_it_today">האם החלפת אותו היום?</string>
