@@ -461,6 +461,7 @@
     <string name="help_the_community">Help the community</string>
     <string name="double_tap_or_pinch_to_zoom">Double tap or pinch to zoom.</string>
     <string name="start_sensor">Start Sensor</string>
+    <string name="do_not_hit_start_sensor_unless_the_sensor_is_already_embedded_and_the_transmitter_is_connected">Do not hit start sensor unless the sensor is already embedded and the transmitter is connected.\n\n</string>
     <string name="debug_and_other_misc_options">Debug and other misc options</string>
     <string name="low_glucose_values">Low Glucose Values</string>
     <string name="revert_to_default">Revert to Default</string>
@@ -858,6 +859,7 @@
     <string name="install_text_to_speech_data_question">Install Text-To-Speech Data?</string>
     <string name="after_installation_of_languages_you_might_have_to">(After installation of languages you might have to press \"Restart Collector\" in System Status.)</string>
     <string name="stop_sensor">Stop Sensor</string>
+    <string name="dont_stop_just_reset_all_calibrations">Don't stop, just Reset all Calibrations</string>
     <string name="initial_calibration">Initial Calibration</string>
     <string name="calibration_can_not_be_blank">Calibration can not be blank</string>
     <string name="invalid_calibration_number">Invalid calibration number!</string>
