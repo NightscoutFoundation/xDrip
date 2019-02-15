@@ -16,6 +16,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
+import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 public class StopSensor extends ActivityWithMenu {
    public Button button;
@@ -73,8 +74,8 @@ public class StopSensor extends ActivityWithMenu {
     public void resetAllCalibrations(View v) {
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Are you sure?");
-        builder.setMessage("Do you want to delete and reset the calibrations for this sensor?");
+        builder.setTitle(gs(R.string.are_you_sure));
+        builder.setMessage(gs(R.string.do_you_want_to_delete_and_reset_the_calibrations_for_this_sensor));
 
         builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
