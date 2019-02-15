@@ -693,8 +693,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     private void checkBadSettings() {
         if (Pref.getBoolean("predictive_bg", false)) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("Settings Issue!");
-            builder.setMessage("You have an old experimental glucose prediction setting enabled.\n\nThis is NOT RECOMMENDED and could mess things up badly.\n\nShall I disable this for you?");
+            builder.setTitle(gs(R.string.settings_issue));
+            builder.setMessage(gs(R.string.you_have_an_old_experimental_glucose_prediction_setting_enabled__this_is_not_recommended_and_could_mess_things_up_badly__shall_i_disable_this_for_you));
 
             builder.setPositiveButton("YES, Please", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
@@ -748,9 +748,9 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             } else {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle("Use " + JoH.qs(glucosenumber, 1) + " for Calibration?");
-                builder.setMessage("Do you want to use this synced finger-stick blood glucose result to calibrate with?\n\n(you can change when this dialog is displayed in Settings)");
+                builder.setMessage(gs(R.string.do_you_want_to_use_this_synced_fingerstick_blood_glucose_result_to_calibrate_with__you_can_change_when_this_dialog_is_displayed_in_settings));
 
-                builder.setPositiveButton("YES, Calibrate", new DialogInterface.OnClickListener() {
+                builder.setPositiveButton(gs(R.string.yes_calibrate), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         calintent.putExtra("note_only", "false");
                         calintent.putExtra("from_interactive", "true");
@@ -795,10 +795,10 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             final String calibration_type = Pref.getString("treatment_fingerstick_calibration_usage", "ask");
             if (calibration_type.equals("ask")) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("Use BG for Calibration?");
-                builder.setMessage("Do you want to use this entered finger-stick blood glucose test to calibrate with?\n\n(you can change when this dialog is displayed in Settings)");
+                builder.setTitle(gs(R.string.use_bg_for_calibration));
+                builder.setMessage(gs(R.string.do_you_want_to_use_this_entered_fingerstick_blood_glucose_test_to_calibrate_with__you_can_change_when_this_dialog_is_displayed_in_settings));
 
-                builder.setPositiveButton("YES, Calibrate", new DialogInterface.OnClickListener() {
+                builder.setPositiveButton(gs(R.string.yes_calibrate), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         calintent.putExtra("note_only", "false");
                         calintent.putExtra("from_interactive", "true");
@@ -828,10 +828,10 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                         && (DexCollectionType.getDexCollectionType() != DexCollectionType.Follower)
                         && (JoH.pratelimit("ask_about_auto_calibration", 86400 * 30))) {
                     final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                    builder.setTitle("Enable automatic calibration");
-                    builder.setMessage("Entered blood tests which occur during flat trend periods can automatically be used to recalibrate after 20 minutes. This should provide the most accurate method to calibrate with.\n\nDo you want to enable this feature?");
+                    builder.setTitle(gs(R.string.enable_automatic_calibration));
+                    builder.setMessage(gs(R.string.entered_blood_tests_which_occur_during_flat_trend_periods_can_automatically_be_used_to_recalibrate_after_20_minutes_this_should_provide_the_most_accurate_method_to_calibrate_with__do_you_want_to_enable_this_feature));
 
-                    builder.setPositiveButton("YES, enable", new DialogInterface.OnClickListener() {
+                    builder.setPositiveButton(gs(R.string.yes_enable), new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             Pref.setBoolean("bluetooth_meter_for_calibrations_auto", true);
                             JoH.static_toast_long("Automated calibration enabled");
@@ -1030,19 +1030,19 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             } else if (bundle.getString(Home.BLOOD_TEST_ACTION) != null) {
                 Log.d(TAG, "BLOOD_TEST_ACTION");
                 final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("Blood Test Action");
-                builder.setMessage("What would you like to do?");
+                builder.setTitle(gs(R.string.blood_test_action));
+                builder.setMessage(gs(R.string.what_would_you_like_to_do));
                 final String bt_uuid = bundle.getString(Home.BLOOD_TEST_ACTION + "2");
                 if (bt_uuid != null) {
                     final BloodTest bt = BloodTest.byUUID(bt_uuid);
                     if (bt != null) {
-                        builder.setNeutralButton("Nothing", new DialogInterface.OnClickListener() {
+                        builder.setNeutralButton(gs(R.string.nothing), new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
                             }
                         });
 
-                        builder.setPositiveButton("Calibrate", new DialogInterface.OnClickListener() {
+                        builder.setPositiveButton(gs(R.string.calibrate), new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
                                 // TODO time should be absolute not relative!?!?
@@ -1059,9 +1059,9 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
                                 final AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
-                                builder.setTitle("Confirm Delete");
-                                builder.setMessage("Are you sure you want to delete this Blood Test result?");
-                                builder.setPositiveButton("Yes, Delete", new DialogInterface.OnClickListener() {
+                                builder.setTitle(gs(R.string.confirm_delete));
+                                builder.setMessage(gs(R.string.are_you_sure_you_want_to_delete_this_blood_test_result));
+                                builder.setPositiveButton(gs(R.string.yes_delete), new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
                                         dialog.dismiss();
                                         bt.removeState(BloodTest.STATE_VALID);
@@ -1070,7 +1070,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                                         if (Home.get_show_wear_treatments())
                                             BloodTest.pushBloodTestSyncToWatch(bt, false);
                                         staticRefreshBGCharts();
-                                        JoH.static_toast_short("Deleted!");
+                                        JoH.static_toast_short(gs(R.string.deleted));
                                     }
                                 });
                                 builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -1899,23 +1899,23 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 if (Pref.getLong("wifi_warning_never", 0) == 0) {
                     if (!JoH.isMobileDataOrEthernetConnected()) {
                         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                        builder.setTitle("WiFi Sleep Policy Issue");
-                        builder.setMessage("Your WiFi is set to sleep when the phone screen is off.\n\nThis may cause problems if you don't have cellular data or have devices on your local network.\n\nWould you like to go to the settings page to set:\n\nAlways Keep WiFi on during Sleep?");
+                        builder.setTitle(gs(R.string.wifi_sleep_policy_issue));
+                        builder.setMessage(gs(R.string.your_wifi_is_set_to_sleep_when_the_phone_screen_is_off__this_may_cause_problems_if_you_dont_have_cellular_data_or_have_devices_on_your_local_network__would_you_like_to_go_to_the_settings_page_to_set__always_keep_wifi_on_during_sleep));
 
-                        builder.setNeutralButton("Maybe Later", new DialogInterface.OnClickListener() {
+                        builder.setNeutralButton(gs(R.string.maybe_later), new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
                             }
                         });
 
-                        builder.setPositiveButton("YES, Do it", new DialogInterface.OnClickListener() {
+                        builder.setPositiveButton(gs(R.string.yes_do_it), new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
-                                toast("Recommend that you change WiFi to always be on during sleep");
+                                toast(gs(R.string.recommend_that_you_change_wifi_to_always_be_on_during_sleep));
                                 try {
                                     startActivity(new Intent(Settings.ACTION_WIFI_IP_SETTINGS));
                                 } catch (ActivityNotFoundException e) {
-                                    JoH.static_toast_long("Ooops this device doesn't seem to have a wifi settings page!");
+                                    JoH.static_toast_long(gs(R.string.ooops_this_device_doesnt_seem_to_have_a_wifi_settings_page));
                                 }
 
                             }
@@ -2493,14 +2493,14 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 if (!Experience.gotData() && Experience.backupAvailable() && JoH.ratelimit("restore-backup-prompt", 10)) {
                     final AlertDialog.Builder builder = new AlertDialog.Builder(this);
                     final Context context = this;
-                    builder.setTitle("Restore Backup?");
-                    builder.setMessage("Do you want to restore the backup file: " + Pref.getString("last-saved-database-zip", "ERROR").replaceFirst("^.*/", ""));
+                    builder.setTitle(gs(R.string.restore_backup));
+                    builder.setMessage(gs(R.string.do_you_want_to_restore_the_backup_file_) + Pref.getString("last-saved-database-zip", "ERROR").replaceFirst("^.*/", ""));
                     builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();
                         }
                     });
-                    builder.setPositiveButton("Restore", new DialogInterface.OnClickListener() {
+                    builder.setPositiveButton(gs(R.string.restore), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();
@@ -2515,7 +2515,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                         final Context context = this;
                         builder.setTitle(getString(R.string.start_sensor) + "?");
                         builder.setMessage("Data Source is set to: " + DexCollectionType.getDexCollectionType().toString() + "\n\nDo you want to change settings or start sensor?");
-                        builder.setNegativeButton("Change settings", new DialogInterface.OnClickListener() {
+                        builder.setNegativeButton(gs(R.string.change_settings), new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
                                 startActivity(new Intent(context, Preferences.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
@@ -2652,15 +2652,15 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         if (JoH.ratelimit("calibrate-sensor_prompt", 10)) {
             final AlertDialog.Builder builder = new AlertDialog.Builder(this);
             final Context context = this;
-            builder.setTitle("Calibrate Sensor?");
-            builder.setMessage("We have some readings!\n\nNext we need the first calibration blood test.\n\nReady to calibrate now?");
+            builder.setTitle(gs(R.string.calibrate_sensor));
+            builder.setMessage(gs(R.string.we_have_some_readings__next_we_need_the_first_calibration_blood_test__ready_to_calibrate_now));
             builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
                     helper_dialog = null;
                 }
             });
-            builder.setPositiveButton("Calibrate", new DialogInterface.OnClickListener() {
+            builder.setPositiveButton(gs(R.string.calibrate), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
@@ -3303,14 +3303,14 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 public void onClick(DialogInterface dialog, int whichButton) {
                     // are you sure?
                     final AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
-                    builder.setTitle("Confirm Delete");
-                    builder.setMessage("Are you sure you want to delete this Treatment?");
-                    builder.setPositiveButton("Yes, Delete", new DialogInterface.OnClickListener() {
+                    builder.setTitle(gs(R.string.confirm_delete));
+                    builder.setMessage(gs(R.string.are_you_sure_you_want_to_delete_this_treatment));
+                    builder.setPositiveButton(gs(R.string.yes_delete), new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();
                             Treatments.delete_by_timestamp(timestamp, (int) (2.5 * MINUTE_IN_MS), true); // 2.5 min resolution
                             staticRefreshBGCharts();
-                            JoH.static_toast_short("Deleted!");
+                            JoH.static_toast_short(gs(R.string.deleted));
                         }
                     });
                     builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
