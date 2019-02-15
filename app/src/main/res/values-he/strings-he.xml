@@ -363,9 +363,11 @@
     <string name="no_bluetooth">אין bluetooth</string>
     <string name="connection_status">   מצב החיבור:  </string>
     <string name="without_location_scan_doesnt_work">בלי הרשאה למיקום אנדרואיד לא מאפשר סריקת בלוטוס</string>
+    <string name="choose_data_source">בחר את סוג הסנסור</string>
     <string name="please_allow_permission">אנא תן הרשאה</string>
     <string name="location_permission_needed_to_use_bluetooth">דרושה הרשאה למיקום כדי לאפשר בלוטוס!</string>
     <string name="did_you_insert_it_today">האם החלפת אותו היום?</string>
+    <string name="we_need_to_know_when_the_sensor_was_inserted_to_improve_calculation_accuracy__was_it_inserted_today">לדיוק מירבי אנחנו צריכם לדעת מתי הסנסור הוכנס.\n\n האם הוא הוכנס היום?</string>
     <string name="yes_today">כן, היום</string>
     <string name="which_day_was_it_inserted">באיזה יום הסנסור הוחלף?</string>
     <string name="what_time_was_it_inserted">באיזה שעה הסנסור הוחלף?</string>
