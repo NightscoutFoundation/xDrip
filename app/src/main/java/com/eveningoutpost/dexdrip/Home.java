@@ -312,7 +312,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         mActivity = this;
 
         if (!xdrip.checkAppContext(getApplicationContext())) {
-            toast("Unusual internal context problem - please report");
+            toast(gs(R.string.unusual_internal_context_problem__please_report));
             Log.wtf(TAG, "xdrip.checkAppContext FAILED!");
             try {
                 xdrip.initCrashlytics(getApplicationContext());
@@ -326,13 +326,13 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 // not much to do
             }
             if (!xdrip.checkAppContext(getApplicationContext())) {
-                toast("Cannot start - please report context problem");
+                toast(gs(R.string.cannot_start__please_report_context_problem));
                 finish();
             }
         }
 
         if (Build.VERSION.SDK_INT < 17) {
-            JoH.static_toast_long("xDrip+ will not work below Android version 4.2");
+            JoH.static_toast_long(gs(R.string.xdrip_will_not_work_below_android_version_42));
             finish();
         }
 
@@ -660,7 +660,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                         }
                     });
                 } else {
-                    JoH.static_toast_long("This app needs battery optimization whitelisting or it will not work well. Please reset app preferences");
+                    JoH.static_toast_long(gs(R.string.this_app_needs_battery_optimization_whitelisting_or_it_will_not_work_well_please_reset_app_preferences));
                 }
                 return false;
             }
@@ -696,11 +696,11 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             builder.setTitle(gs(R.string.settings_issue));
             builder.setMessage(gs(R.string.you_have_an_old_experimental_glucose_prediction_setting_enabled__this_is_not_recommended_and_could_mess_things_up_badly__shall_i_disable_this_for_you));
 
-            builder.setPositiveButton("YES, Please", new DialogInterface.OnClickListener() {
+            builder.setPositiveButton(gs(R.string.yes_please), new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
                     Pref.setBoolean("predictive_bg", false);
-                    toast("Setting disabled :)");
+                    toast(gs(R.string.setting_disabled_));
                 }
             });
 
@@ -724,7 +724,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         if (glucosenumber > 0) {
 
             if (timeoffset < 0) {
-                toaststaticnext("Got calibration in the future - cannot process!");
+                toaststaticnext(gs(R.string.got_calibration_in_the_future__cannot_process));
                 return;
             }
 
@@ -778,7 +778,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         if (glucosenumber > 0) {
 
             if (timeoffset < 0) {
-                toaststaticnext("Got calibration in the future - cannot process!");
+                toaststaticnext(gs(R.string.got_calibration_in_the_future__cannot_process));
                 return;
             }
 
@@ -834,7 +834,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                     builder.setPositiveButton(gs(R.string.yes_enable), new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             Pref.setBoolean("bluetooth_meter_for_calibrations_auto", true);
-                            JoH.static_toast_long("Automated calibration enabled");
+                            JoH.static_toast_long(gs(R.string.automated_calibration_enabled));
                             dialog.dismiss();
                         }
                     });
@@ -892,7 +892,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
     private void cancelTreatment() {
         hideAllTreatmentButtons();
-        WatchUpdaterService.sendWearToast("Treatment cancelled", Toast.LENGTH_SHORT);
+        WatchUpdaterService.sendWearToast(gs(R.string.treatment_cancelled), Toast.LENGTH_SHORT);
     }
 
     private void processAndApproveTreatment() {
@@ -908,11 +908,11 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             Log.d(TAG, "Watch Keypad timestamp is: " + JoH.dateTimeText(treatment_timestamp) + " Original offset: " + JoH.qs(thistimeoffset) + " New: " + JoH.qs(mytimeoffset));
             if ((mytimeoffset > (DAY_IN_MS * 3)) || (mytimeoffset < -HOUR_IN_MS * 3)) {
                 Log.e(TAG, "Treatment timestamp out of range: " + mytimeoffset);
-                JoH.static_toast_long("Treatment time wrong");
-                WatchUpdaterService.sendWearLocalToast("Treatment error", Toast.LENGTH_LONG);
+                JoH.static_toast_long(gs(R.string.treatment_time_wrong));
+                WatchUpdaterService.sendWearLocalToast(gs(R.string.treatment_error), Toast.LENGTH_LONG);
             } else {
-                JoH.static_toast_long("Treatment processed");
-                WatchUpdaterService.sendWearLocalToast("Treatment processed", Toast.LENGTH_LONG);
+                JoH.static_toast_long(gs(R.string.treatment_processed));
+                WatchUpdaterService.sendWearLocalToast(gs(R.string.treatment_processed), Toast.LENGTH_LONG);
                 long time = Treatments.getTimeStampWithOffset(mytimeoffset);
                 // sanity check timestamp
                 final Treatments exists = Treatments.byTimestamp(time);
@@ -925,7 +925,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 }
             }
         } else {
-            WatchUpdaterService.sendWearToast("Treatment processed", Toast.LENGTH_LONG);
+            WatchUpdaterService.sendWearToast(gs(R.string.treatment_processed), Toast.LENGTH_LONG);
             Treatments.create(thiscarbsnumber, thisinsulinnumber, Treatments.getTimeStampWithOffset(mytimeoffset));
             Pendiq.handleTreatment(thisinsulinnumber);
         }
@@ -972,7 +972,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 } catch (NullPointerException e) {
                     Log.d(TAG, "Got null point exception during CREATE_TREATMENT_NOTE Intent");
                 } catch (NumberFormatException e) {
-                    JoH.static_toast_long("Number error: " + e);
+                    JoH.static_toast_long(gs(R.string.number_error_) + e);
                 }
             } else if (bundle.getString(Home.HOME_FULL_WAKEUP) != null) {
                 if (!JoH.isScreenOn()) {
@@ -1010,7 +1010,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                             JoH.tolerantParseDouble(bundle.getString(Home.BLUETOOTH_METER_CALIBRATION + "2"), -1d),
                             bundle.getString(Home.BLUETOOTH_METER_CALIBRATION + "3") != null && bundle.getString(Home.BLUETOOTH_METER_CALIBRATION + "3").equals("auto"));
                 } catch (NumberFormatException e) {
-                    JoH.static_toast_long("Number error: " + e);
+                    JoH.static_toast_long(gs(R.string.number_error_) + e);
                 }
             } else if (bundle.getString(Home.ACTIVITY_SHOWCASE_INFO) != null) {
                 showcasemenu(SHOWCASE_MOTION_DETECTION);
@@ -1018,10 +1018,10 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 CompatibleApps.showChoiceDialog(this, bundle.getParcelable("choice-intentx"));
             } else if (bundle.getString("numberIconTest") != null) {
 
-                JoH.show_ok_dialog(this, "Prepare to test!", "After you click OK, look for a number icon in the notification area.\nIf you see 123 then the test has succeeded.\n\nOn some phones this test will crash the phone.\n\nAfter 30 seconds we will shut off the notification. If your phone does not recover after this then hold the power button to reboot it.", new Runnable() {
+                JoH.show_ok_dialog(this, gs(R.string.prepare_to_test), gs(R.string.after_you_click_ok_look_for_a_number_icon_in_the_notification_area_if_you_see_123_then_the_test_has_succeeded__on_some_phones_this_test_will_crash_the_phone__after_30_seconds_we_will_shut_off_the_notification_if_your_phone_does_not_recover_after_this_then_hold_the_power_button_to_reboot_it), new Runnable() {
                     @Override
                     public void run() {
-                        JoH.static_toast_long("Running test with number: 123");
+                        JoH.static_toast_long(gs(R.string.running_test_with_number_123));
                         NumberGraphic.testNotification("123");
                     }
                 });
@@ -1154,7 +1154,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 (btnInsulinDose.getVisibility() == View.INVISIBLE)) {
             hideAllTreatmentButtons(); // we clear values here also
             //send toast to wear - closes the confirmation activity on the watch
-            WatchUpdaterService.sendWearToast("Treatment processed", Toast.LENGTH_LONG);
+            WatchUpdaterService.sendWearToast(gs(R.string.treatment_processed), Toast.LENGTH_LONG);
             return true;
         } else {
             return false;
@@ -3343,12 +3343,12 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
     public void doBackFillBroadcast(MenuItem myitem) {
         GcmActivity.syncBGTable2();
-        toast("Starting sync to other devices");
+        toast(gs(R.string.starting_sync_to_other_devices));
     }
 
     public void deleteAllBG(MenuItem myitem) {
         BgReading.deleteALL();
-        toast("Deleting ALL BG readings!");
+        toast(gs(R.string.deleting_all_bg_readings));
         staticRefreshBGCharts();
     }
 
@@ -3501,7 +3501,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                                 Pref.setLong("sidiary_last_exportdate", System.currentTimeMillis());
                                 snackBar(R.string.share, getString(R.string.exported_to) + filename, makeSnackBarUriLauncher(Uri.fromFile(new File(filename)), "Share database..."), Home.this);
                             } else {
-                                Toast.makeText(Home.this, "Could not export CSV :(", Toast.LENGTH_LONG).show();
+                                Toast.makeText(Home.this, gs(R.string.could_not_export_csv_), Toast.LENGTH_LONG).show();
                             }
                         }
                     }.execute();

@@ -38,7 +38,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
-
+import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 public class SystemStatus extends ActivityWithMenu {
     private static final int SMALL_SCREEN_WIDTH = 300;
@@ -345,7 +345,7 @@ public class SystemStatus extends ActivityWithMenu {
         restart_collection_service.setOnClickListener(new View.OnClickListener() {
             public void onClick(final View v) {
                 v.setEnabled(false);
-                JoH.static_toast_short("Restarting Collector!");
+                JoH.static_toast_short(gs(R.string.restarting_collector));
                 v.setAlpha(0.2f);
                 CollectionServiceStarter.restartCollectionService(getApplicationContext());
                 set_current_values();
