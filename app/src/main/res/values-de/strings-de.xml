@@ -152,7 +152,7 @@
     <string name="view_events_log">Log anzeigen</string>
     <string name="show_libre_trend">Libre-Trend anzeigen</string>
     <string name="libre_15_minutes_graph">Libre 15 Minuten Kurve</string>
-    <string name="libre_last_x_minutes_graph">Libre letzten %d Minuten Kurve</string>
+    <string name="libre_last_x_minutes_graph">Libre-Kurve der letzten %d Minuten</string>
     <string name="share_config_via_qr_code">Einstellungen per QR-Code senden</string>
     <string name="check_for_updated_version">Auf Aktualisierung prüfen</string>
     <string name="send_feedback_to_developer">Feedback an Entwickler senden</string>
