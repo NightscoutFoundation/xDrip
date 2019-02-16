@@ -25,6 +25,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.ui.helpers.Span;
 import com.eveningoutpost.dexdrip.utils.framework.WakeLockTrampoline;
+import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ import java.util.List;
 import static com.eveningoutpost.dexdrip.GcmListenerSvc.lastMessageReceived;
 import static com.eveningoutpost.dexdrip.UtilityModels.StatusItem.Highlight.BAD;
 import static com.eveningoutpost.dexdrip.UtilityModels.StatusItem.Highlight.NOTICE;
+import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 public class DoNothingService extends Service {
     private final static String TAG = DoNothingService.class.getSimpleName();
@@ -242,7 +244,7 @@ public class DoNothingService extends Service {
                     return Span.join(true, remoteStatus, pingStatus, lastBgStatus);
                 }
             } else {
-                return Span.join(true, pingStatus, new SpannableString("No data received from master yet"));
+                return Span.join(true, pingStatus, new SpannableString(gs(R.string.no_data_received_from_master_yet)));
             }
         } else {
             return Span.join(true, pingStatus);

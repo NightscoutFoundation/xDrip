@@ -60,7 +60,7 @@ public class StopSensor extends ActivityWithMenu {
         Inevitable.task("stop-sensor",1000, Sensor::stopSensor);
         AlertPlayer.getPlayer().stopAlert(xdrip.getAppContext(), true, false);
 
-        JoH.static_toast_long("Sensor stopped");
+        JoH.static_toast_long(gs(R.string.sensor_stopped));
         JoH.clearCache();
         LibreAlarmReceiver.clearSensorStats();
         PluggableCalibration.invalidateAllCaches();

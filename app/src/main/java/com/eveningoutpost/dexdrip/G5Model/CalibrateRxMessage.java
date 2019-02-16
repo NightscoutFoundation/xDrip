@@ -1,7 +1,9 @@
 package com.eveningoutpost.dexdrip.G5Model;
 
+import com.eveningoutpost.dexdrip.R;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 // created by jamorham
 
@@ -45,7 +47,7 @@ public class CalibrateRxMessage extends BaseMessage {
             case (byte) 0x08:
                 return "Rejected";
             case (byte) 0x0B:
-                return "Sensor stopped";
+                return gs(R.string.sensor_stopped);
             case (byte) 0x0D:
                 return "Duplicate";
             case (byte) 0x0E:
