@@ -1392,7 +1392,7 @@
     <string name="relative_sd_cv">Relative SD (CV):</string>
     <string name="important_warning">Important Warning!</string>
     <string name="i_agree">I AGREE</string>
-    string name="location_permission_needed_to_use_bluetooth">Location permission needed to use Bluetooth!</string>
+    <string name="location_permission_needed_to_use_bluetooth">Location permission needed to use Bluetooth!</string>
     <string name="did_you_insert_it_today">Did you insert it today?</string>
     <string name="we_need_to_know_when_the_sensor_was_inserted_to_improve_calculation_accuracy__was_it_inserted_today">We need to know when the sensor was inserted to improve calculation accuracy.\n\nWas it inserted today?</string>
     <string name="yes_today">YES, today</string>
@@ -1417,7 +1417,7 @@
     <string name="librealarm_app_using_sony_smartwatch">LibreAlarm App: using Sony Smartwatch</string>
     <string name="__data_source_disabled">\n DATA SOURCE DISABLED</string>
     <string name="data_source_is_set_to_">Data Source is set to: </string>
-    string name="__do_you_want_to_change_settings_or_start_sensor">\n\nDo you want to change settings or start sensor?</string>
+    <string name="__do_you_want_to_change_settings_or_start_sensor">\n\nDo you want to change settings or start sensor?</string>
     <string name="change_settings">Change settings</string>
     <string name="do_you_want_to_delete_and_reset_the_calibrations_for_this_sensor">Do you want to delete and reset the calibrations for this sensor?</string>
     <string name="you_have_an_old_experimental_glucose_prediction_setting_enabled__this_is_not_recommended_and_could_mess_things_up_badly__shall_i_disable_this_for_you">You have an old experimental glucose prediction setting enabled.\n\nThis is NOT RECOMMENDED and could mess things up badly.\n\nShall I disable this for you?</string>
@@ -1498,5 +1498,5 @@
     <string name="cancelled">Cancelled!</string>
     <string name="no_sensor_found">No sensor found</string>
     <string name="checksum_failed__retrying">Checksum failed - retrying</string>
-
+    <string name="scanning">Scanning</string>
 </resources>

@@ -59,10 +59,12 @@ def FindFileContaingString(id, string):
     arr = []
     for d,r,f in os.walk("..\\..\\"):
         for file in f:
-            if file.endswith("java") and "generated" not in file and not "PebbleDisplay" in file:
+            if file.endswith("java") and "generated" not in file and not "PebbleDisplay" in file :
                 arr.append(os.path.join(d,file))
             
     for file in arr:
+        if file.startswith("..\\..\\wear"):
+            continue
         if not FileContainsString(file, string): 
             continue
         print(file)
