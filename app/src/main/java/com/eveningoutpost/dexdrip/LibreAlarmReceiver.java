@@ -34,6 +34,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.LIBRE_MULTIPLIER;
+import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 /**
  * Created by jamorham on 04/09/2016.
@@ -155,7 +156,7 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
                                     Log.d(TAG, "At End: Oldest : " + JoH.dateTimeText(oldest_cmp) + " Newest : " + JoH.dateTimeText(newest_cmp));
                                 } catch (Exception e) {
                                     Log.wtf(TAG, "Could not process data structure from LibreAlarm: " + e.toString());
-                                    JoH.static_toast_long("LibreAlarm data format appears incompatible!? protocol changed or no data?");
+                                    JoH.static_toast_long(gs(R.string.librealarm_data_format_appears_incompatible_protocol_changed_or_no_data));
                                 }
                                 break;
 
@@ -179,8 +180,8 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
 
         if(Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
         	if(object.data.raw_data == null) {
-        		Log.e(TAG, "Please update LibreAlarm to use OOP algorithm");
-        		JoH.static_toast_long("Please update LibreAlarm to use OOP algorithm");
+        		Log.e(TAG, gs(R.string.please_update_librealarm_to_use_oop_algorithm));
+        		JoH.static_toast_long(gs(R.string.please_update_librealarm_to_use_oop_algorithm));
         		return;
         	}
         	LibreOOPAlgorithm.SendData(object.data.raw_data, CaptureDateTime);
@@ -204,12 +205,12 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
                 Log.d(TAG, "Sensor age advanced to: " + thisSensorAge);
             } else if (thisSensorAge == sensorAge) {
                 Log.wtf(TAG, "Sensor age has not advanced: " + sensorAge);
-                JoH.static_toast_long("Sensor clock has not advanced!");
+                JoH.static_toast_long(gs(R.string.sensor_clock_has_not_advanced));
                 Pref.setBoolean("nfc_age_problem", true);
                 return; // do not try to insert again
             } else {
                 Log.wtf(TAG, "Sensor age has gone backwards!!! " + sensorAge);
-                JoH.static_toast_long("Sensor age has gone backwards!!");
+                JoH.static_toast_long(gs(R.string.sensor_age_has_gone_backwards));
                 sensorAge = thisSensorAge;
                 Pref.setInt("nfc_sensor_age", (int) sensorAge);
                 Pref.setBoolean("nfc_age_problem", true);

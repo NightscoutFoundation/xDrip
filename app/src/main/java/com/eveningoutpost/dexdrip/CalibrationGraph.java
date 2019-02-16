@@ -34,7 +34,7 @@ import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.LineChartView;
 
 import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.getCalibrationPluginFromPreferences;
-
+import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 public class CalibrationGraph extends ActivityWithMenu {
     //public static String menu_name = "Calibration Graph";
@@ -271,7 +271,7 @@ public class CalibrationGraph extends ActivityWithMenu {
                             CalibrationSendQueue.addToQueue(calibration, getApplicationContext());
                             recreate();
                         } else {
-                            JoH.static_toast_long("Input not found! Cancelled!");
+                            JoH.static_toast_long(gs(R.string.input_not_found_cancelled));
                         }
                     }
                 })
@@ -279,7 +279,7 @@ public class CalibrationGraph extends ActivityWithMenu {
 
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        JoH.static_toast_long("Cancelled!");
+                        JoH.static_toast_long(gs(R.string.cancelled));
                     }
                 })
                 .show();
@@ -304,7 +304,7 @@ public class CalibrationGraph extends ActivityWithMenu {
                             CalibrationSendQueue.addToQueue(calibration, getApplicationContext());
                             recreate();
                         } else {
-                            JoH.static_toast_long("Input not found! Cancelled!");
+                            JoH.static_toast_long(gs(R.string.input_not_found_cancelled));
                         }
                     }
                 })
@@ -312,7 +312,7 @@ public class CalibrationGraph extends ActivityWithMenu {
 
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        JoH.static_toast_long("Cancelled!");
+                        JoH.static_toast_long(gs(R.string.cancelled));
                     }
                 })
                 .show();

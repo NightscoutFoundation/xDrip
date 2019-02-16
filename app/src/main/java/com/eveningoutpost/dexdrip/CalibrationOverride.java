@@ -21,7 +21,7 @@ import com.eveningoutpost.dexdrip.calibrations.NativeCalibrationPipe;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
-
+import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 public class CalibrationOverride extends ActivityWithMenu {
     Button button;
@@ -83,7 +83,7 @@ public class CalibrationOverride extends ActivityWithMenu {
                             startActivity(tableIntent);
                             finish();
                         } catch (NumberFormatException e) {
-                            value.setError("Number error: " + e);
+                            value.setError(gs(R.string.number_error_) + e);
                         }
                     } else {
                         value.setError("Calibration Can Not be blank");
