@@ -186,7 +186,7 @@ public class NFCReaderX {
                         context.startActivity(new Intent(context, NFCScanningX.class));
                     } else {
                         NFCReaderX.vibrate(context, 0);
-                        JoH.static_toast_short("Scanning");
+                        JoH.static_toast_short(gs(R.string.scanning));
                     }
                     if (d)
                         Log.d(TAG, "NFC tag discovered - going to read data");
