@@ -1137,7 +1137,7 @@
     <string name="not_connected">Not Connected</string>
     <string name="no_data">No data</string>
     <string name="no_bluetooth">No bluetooth</string>
-    <string name="connection_status">Connection Status:   </string>
+    <string name="connection_status_long">Connection Status:   </string>
 
     <string name="without_location_scan_doesnt_work">Without Location permission Android Bluetooth scan doesn\'t work</string>
     <string name="without_location_permission_emergency_cannot_get_location">Without Location permission emergency messages cannot use location data</string>
@@ -1356,4 +1356,40 @@
     <string name="collecting">collecting...</string>
     <string name="insulin">insulin</string>
     <string name="nothing_found">nothing found</string>
+    <string name="do_not_hit_start_long">Do not hit start sensor unless the sensor is already embedded and the transmitter is connected.</string>
+    <string name="calibration_graph_no_calibration">calibration graph (no calibration)</string>
+    <string name="calibration_plugin_header">calibration plugin header</string>
+    <string name="usb_device_was_not_recognized">USB-Device was not recognized</string>
+    <string name="followers_name">Followers Name:</string>
+    <string name="your_display_name">Your display name:</string>
+    <string name="followers_email">Followers Email:</string>
+    <string name="send_invite">Send Invite</string>
+    <string name="description_sensor_location">In the future xDrip would like to send anonymous sensor data to the developers to improve the calibration algorithm... If you decide to opt-in, you will be asked to confirm before each data transfer. Data will never be sent without your permission. To help us understand and fine-tune the calibration we would like to know where this sensor has been placed. Press the back button to cancel.</string>
+    <string name="save_sensor_location">Save sensor location</string>
+    <string name="alerts">Alerts</string>
+    <string name="use_internal_downloader">Use internal downloader</string>
+    <string name="title">Title</string>
+    <string name="summary">Summary</string>
+    <string name="auto_refresh">Auto refresh</string>
+    <string name="set_up_desert_sync_follower">Set up Desert Sync follower</string>
+    <string name="version">Version:</string>
+    <string name="sensor_start">Sensor Start:</string>
+    <string name="plug_in_your_dexcom_reciever">Plug in your dexcom reciever then hit this button and cross your fingers!</string>
+    <string name="check_in_dexcom_calibrations">Check in Dexcom calibrations</string>
+    <string name="progress">progress</string>
+    <string name="bluetooth_device">Bluetooth Device:   </string>
+    <string name="transmitter_battery_status">Transmitter Battery:  </string>
+    <string name="top">Top</string>
+    <string name="connect_device_usb_otg">Please connect your device via USB OTG cable.</string>
+    <string name="connection_status">Connection Status:</string>
+    <string name="range_in_high_low">Range: (in/high/low)</string>
+    <string name="absolute_s">Absolute #s:</string>
+    <string name="median_bg">Median BG:</string>
+    <string name="mean_bg">Mean BG:</string>
+    <string name="hba1c_est">HbA1c est.:</string>
+    <string name="stddev">StdDev:</string>
+    <string name="relative_sd_cv">Relative SD (CV):</string>
+    <string name="important_warning">Important Warning!</string>
+    <string name="i_agree">I AGREE</string>
+
 </resources>

@@ -233,5 +233,6 @@
     <string name="title_use_black_divider">Match Divider</string>
     <string name="summary_has_demigod_mode">Running on a patched rom giving us full control</string>
     <string name="title_has_demigod_mode">DemiGod Mode</string>
+    <string name="xdrip_scanning_nfc">xDrip+ Scanning NFC</string>
 
 </resources>

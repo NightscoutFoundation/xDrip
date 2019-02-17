@@ -26,7 +26,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="5dp"
-                    android:text="Range:\n(in/high/low)"
+                    android:text="@string/range_in_high_low"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
 
                 <TextView
@@ -49,7 +49,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="5dp"
-                    android:text="Absolute #s:"
+                    android:text="@string/absolute_s"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
 
                 <TextView
@@ -73,7 +73,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="5dp"
-                    android:text="Median BG: "
+                    android:text="@string/median_bg"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
 
                 <TextView
@@ -97,7 +97,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="5dp"
-                    android:text="Mean BG: "
+                    android:text="@string/mean_bg"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
 
                 <TextView
@@ -121,7 +121,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="5dp"
-                    android:text="HbA1c est.: "
+                    android:text="@string/hba1c_est"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
 
                 <TextView
@@ -145,7 +145,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="5dp"
-                    android:text="StdDev: "
+                    android:text="@string/stddev"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
 
                 <TextView
@@ -168,7 +168,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="5dp"
-                    android:text="Relative SD (CV): "
+                    android:text="@string/relative_sd_cv"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
                 <TextView
                     android:id="@+id/textView_coefficient_of_variation"
