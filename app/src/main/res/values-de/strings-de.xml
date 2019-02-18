@@ -871,7 +871,6 @@
     <string name="bluereader_turnoff">Sicherheitsauschaltung</string>
     <string name="blueReader_turnoffvalue">Wert in %</string>
     <string name="blueReader_turnoffvalue_sum">unter dem der Bluereader ausgeschaltet wird</string>
-    <string name="days">Tage rest</string>
     <string name="bluereaderoff">blueReader wird ausgeschaltet, da die Batterie folgenden Wert unterschreitet: </string>
     <string name="bluereader_position">Bitte Positionierung des BlueReaders auf dem Sensor prüfen!</string>
     <string name="bluereaderuglystate">Der blueReader hat sich aufgehängt! Er wird nun ausgeschaltet. Bitte schalte ihn in ein paar Sekunden wieder ein (Taste nur kurz drücken). Danach sollte der blueReader wieder funktionieren!</string>
