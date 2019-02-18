@@ -905,7 +905,7 @@
     <string name="bluereader_turnoff">Safety switch off</string>
     <string name="blueReader_turnoffvalue">Value in %</string>
     <string name="blueReader_turnoffvalue_sum">where the Bluereader will be turned off</string>
-    <string name="days">days rest</string>
+    <string name="days">days</string>
     <string name="bluereaderoff">blueReader will be turn off, as the battery is lower then </string>
     <string name="bluereader_position">check position of blueReader on the sensor, as it was not able to read!</string>
     <string name="bluereaderuglystate">The blueReader was found in an ugly state! It will be now turn off now, and you turn it back to on (short press of the button). After that the blueReader should work as expectet!</string>
