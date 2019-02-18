@@ -1070,6 +1070,10 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
     ////
     public static void doAlert(final Reminder reminder) {
         final PowerManager.WakeLock wl = JoH.getWakeLock("reminder-alert-wakeup", 20000);
+        if (JoH.isOngoingCall()) {
+            UserError.Log.uel(TAG, "Not alerting due to ongoing call");
+            return;
+        }
         Log.d(TAG, "Scheduling alert reminder in 10 seconds time");
         // avoid conflicts with other notification alerts in first 10 seconds
 
