@@ -797,7 +797,6 @@
     <string name="bluereader_turnoff">Apagado de seguridad</string>
     <string name="blueReader_turnoffvalue">Valor en %</string>
     <string name="blueReader_turnoffvalue_sum">donde se apagará el Bluereader</string>
-    <string name="days">días restantes</string>
     <string name="bluereaderoff">blueReader se apagará, como la batería es más baja entonces </string>
     <string name="bluereader_position">verifica la posición del blueReader en el sensor, ¡ya que no se pudo leer!</string>
     <string name="bluereaderuglystate">El blueReader fué encontrador en estado penoso! Se debe apagar ahora y debes volver a encenderlo (presiona brevemente el botón). Después de eso el BlueReader debería funcionar como se espera!</string>
