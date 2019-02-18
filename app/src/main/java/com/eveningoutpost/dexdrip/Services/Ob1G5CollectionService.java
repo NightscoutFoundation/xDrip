@@ -471,7 +471,12 @@ public class Ob1G5CollectionService extends G5BaseService {
                             .setDeviceAddress(historicalTransmitterMAC)
                             .build();
                 } else {
-                    filter = new ScanFilter.Builder().build();
+                    final String localTransmitterID = transmitterID;
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && localTransmitterID != null && localTransmitterID.length() > 4) {
+                        filter = new ScanFilter.Builder().setDeviceName(getTransmitterBluetoothName()).build();
+                    } else {
+                        filter = new ScanFilter.Builder().build();
+                    }
                 }
 
 
@@ -653,7 +658,7 @@ public class Ob1G5CollectionService extends G5BaseService {
     }
 
     private String getTransmitterBluetoothName() {
-        final String transmitterIdLastTwo = Extensions.lastTwoCharactersOfString(transmitterID);
+        final String transmitterIdLastTwo = getLastTwoCharacters(transmitterID);
         // todo check for bad config
         return "Dexcom" + transmitterIdLastTwo;
     }
