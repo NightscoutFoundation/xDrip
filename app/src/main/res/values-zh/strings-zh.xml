@@ -869,7 +869,6 @@
     <string name="bluereader_turnoff">安全关断</string>
     <string name="blueReader_turnoffvalue">值 (%)</string>
     <string name="blueReader_turnoffvalue_sum">蓝牙将会关掉的地方</string>
-    <string name="days">剩余天数</string>
     <string name="bluereaderoff">蓝牙将关闭, 因为电池电量是低的, 然后 </string>
     <string name="bluereader_position">检查传感器上的 blueReader 位置, 因为无法读取到数据!</string>
     <string name="bluereaderuglystate">The blueReader was found in an ugly state! It will be now turn off now, and you turn it back to on (short press of the button). After that the blueReader should work as expectet!</string>
