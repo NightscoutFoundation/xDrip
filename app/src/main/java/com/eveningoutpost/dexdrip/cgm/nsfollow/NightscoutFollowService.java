@@ -13,6 +13,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.cgm.nsfollow.utils.Anticipate;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
+import com.eveningoutpost.dexdrip.utils.framework.BuggySamsung;
 import com.eveningoutpost.dexdrip.utils.framework.ForegroundService;
 import com.eveningoutpost.dexdrip.utils.framework.WakeLockTrampoline;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -38,7 +39,18 @@ public class NightscoutFollowService extends ForegroundService {
 
     protected static volatile String lastState = "";
 
+    private static BuggySamsung buggySamsung;
+    private static volatile long wakeup_time = 0;
+
     private BgReading lastBg;
+
+    private void buggySamsungCheck() {
+        if (buggySamsung == null) {
+            buggySamsung = new BuggySamsung(TAG);
+        }
+        buggySamsung.evaluate(wakeup_time);
+        wakeup_time = 0;
+    }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -54,7 +66,7 @@ public class NightscoutFollowService extends ForegroundService {
                 stopSelf();
                 return START_NOT_STICKY;
             }
-            // Check jitter TODO
+           buggySamsungCheck();
 
             // Check current
             lastBg = BgReading.lastNoSenssor();
@@ -80,6 +92,7 @@ public class NightscoutFollowService extends ForegroundService {
 
         final long grace = Constants.SECOND_IN_MS * 10;
         final long next = Anticipate.next(JoH.tsl(), last, SAMPLE_PERIOD, grace) + grace;
+        wakeup_time = next;
         UserError.Log.d(TAG, "Anticipate next: " + JoH.dateTimeText(next) + "  last: " + JoH.dateTimeText(last));
 
         JoH.wakeUpIntent(xdrip.getAppContext(), JoH.msTill(next), WakeLockTrampoline.getPendingIntent(NightscoutFollowService.class, Constants.NSFOLLOW_SERVICE_FAILOVER_ID));
