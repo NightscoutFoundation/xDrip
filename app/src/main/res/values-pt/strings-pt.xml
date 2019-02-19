@@ -871,6 +871,7 @@
     <string name="bluereader_turnoff">Desligar Segurança</string>
     <string name="blueReader_turnoffvalue">Valor em %</string>
     <string name="blueReader_turnoffvalue_sum">onde o Bluereader será desligado</string>
+    <string name="days">dias</string>
     <string name="bluereaderoff">blueReader será desligado, quando a bateria inferior a </string>
     <string name="bluereader_position">verificar a posição do blueReader no sensor, como não foi capaz de ler!</string>
     <string name="bluereaderuglystate">O blueReader foi detetado em estado incorrecto! Será desligado de imediato, poderá ligar de novo (breve pressão do botão). Após isso o blueReader deverá funcionar como esperado!</string>
