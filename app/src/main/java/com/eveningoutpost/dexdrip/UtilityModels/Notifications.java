@@ -594,7 +594,7 @@ public class Notifications extends IntentService {
         } else {
             b = new Notification.Builder(mContext);
         }
-        b.setOngoing(true); // TODO CHECK THIS!!
+        b.setOngoing(Pref.getBoolean("use_proper_ongoing", true));
       
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             b.setVisibility(Pref.getBooleanDefaultFalse("public_notifications") ? Notification.VISIBILITY_PUBLIC : Notification.VISIBILITY_PRIVATE);
@@ -979,7 +979,7 @@ public class Notifications extends IntentService {
             mBuilder.setVibrate(vibratePattern);
             mBuilder.setLights(0xff00ff00, 300, 1000);
             if (AlertPlayer.notSilencedDueToCall()) {
-                if (otherAlertsOverrideSilent) {
+                if (otherAlertsOverrideSilent && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     mBuilder.setSound(Uri.parse(otherAlertsSound), AudioAttributes.USAGE_ALARM);
                 } else {
                     mBuilder.setSound(Uri.parse(otherAlertsSound));

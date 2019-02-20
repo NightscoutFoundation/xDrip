@@ -930,7 +930,12 @@
                     android:key="predictive_bg"
                     android:summary="@string/predictive_readings_old"
                     android:title="@string/display_predictive_values" />
-
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:dependency="engineering_mode"
+                    android:key="use_proper_ongoing"
+                    android:summary="Use proper ongoing notification. Disabling this causes collector problems on Android 8+"
+                    android:title="Proper ongoing" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="external_blukon_algorithm"
