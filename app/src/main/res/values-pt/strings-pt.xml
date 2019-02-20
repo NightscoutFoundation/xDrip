@@ -1172,6 +1172,8 @@
     <string name="title_show_medtrum_secondary">Medtrum Secundário</string>
     <string name="title_public_notifications">Notificações Públicas</string>
     <string name="title_pick_numberwall_start">Ligar</string>
+    <string name="title_show_home_on_boot">Mostrar xDrip no Arranque</string>
+    <string name="title_plus_accept_follower_actions">Aceitar acções do seguidor</string>
     <string name="title_inpen_sounds">Reproduzir Sons</string>
     <string name="summary_play_sound_for_initial_calibration">Emitir somm quando Calibração inicial é necessária</string>
     <string name="category_noisy_readings">Leituras com Ruído</string>
