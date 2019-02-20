@@ -2,13 +2,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:xdrip="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/menu_searchnote"
-        android:title="SEARCH"
+        android:title="@string/note_search_button"
         android:checkable="false"
         android:orderInCategory="1"
         android:showAsAction="ifRoom|withText"/>
     <item android:id="@+id/menu_allnote"
         android:checkable="false"
-        android:title="ALL"
+        android:title="@string/all_note_button"
         android:orderInCategory="100"
         android:showAsAction="ifRoom|withText"/>
 </menu>

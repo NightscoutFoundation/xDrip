@@ -13,7 +13,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Followers Name:"
+            android:text="@string/followers_name"
             android:labelFor="@+id/followerNameField"/>
         <EditText
             android:layout_width="0dp"
@@ -28,7 +28,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Your display name:"
+            android:text="@string/your_display_name"
             android:labelFor="@+id/followerDisplayNameField"/>
         <EditText
             android:layout_width="0dp"
@@ -43,7 +43,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Followers Email:"
+            android:text="@string/followers_email"
             android:labelFor="@+id/followerEmailField"/>
         <EditText
             android:layout_width="0dp"
@@ -59,13 +59,13 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:text="Cancel"
+            android:text="@string/cancel"
             android:id="@+id/cancelButton"/>
         <Button
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:text="Send Invite"
+            android:text="@string/send_invite"
             android:id="@+id/saveButton"/>
     </LinearLayout>
 </LinearLayout>

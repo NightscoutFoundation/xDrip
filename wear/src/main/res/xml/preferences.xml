@@ -56,8 +56,8 @@
                 android:defaultValue="false"
                 android:dependency="enable_wearG5"
                 android:key="always-on-screen"
-                android:summary="Force screen always on prior to BT scanning"
-                android:title="Force Screen Always-on" />
+                android:summary="@string/summary_always_on_screen"
+                android:title="@string/title_always_on_screen" />
         </PreferenceScreen>
         <CheckBoxPreference
             android:defaultValue="false"
@@ -75,8 +75,8 @@
             android:defaultValue="false"
             android:dependency="bg_notifications"
             android:key="alert_use_sounds"
-            android:summary="Use watch speaker if it has one to play alert sound"
-            android:title="Play Sound" />
+            android:summary="@string/sumary_alert_use_sounds"
+            android:title="@string/title_alert_use_sounds" />
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -87,8 +87,8 @@
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="dark"
-            android:summary="Dark theme"
-            android:title="Dark" />
+            android:summary="@string/summary_dark"
+            android:title="@string/title_dark" />
 
         <!-- TODO: reenable raw
         <CheckBoxPreference android:title="Show Raw"
@@ -161,8 +161,8 @@
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="showHeartRate"
-            android:summary="Show last BPM"
-            android:title="Heart Rate"
+            android:summary="@string/summary_showHeartRate"
+            android:title="@string/title_showHeartRate"
             app:wear_iconOff="@drawable/settings_off"
             app:wear_iconOn="@drawable/settings_on" />
         <CheckBoxPreference
@@ -250,19 +250,19 @@
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="use_low_bit_mode"
-            android:summary="Always use low color ambient mode"
-            android:title="Low color" />
+            android:summary="@string/summary_use_low_bit_mode"
+            android:title="@string/title_use_low_bit_mode" />
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="use_black_divider"
-            android:summary="Divider matches background"
-            android:title="Match Divider" />
+            android:summary="@string/summary_use_black_divider"
+            android:title="@string/title_use_black_divider" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="has_demigod_mode"
             android:enabled="false"
-            android:summary="Running on a patched rom giving us full control"
-            android:title="DemiGod Mode" />
+            android:summary="@string/summary_has_demigod_mode"
+            android:title="@string/title_has_demigod_mode" />
 
 
     </PreferenceCategory>

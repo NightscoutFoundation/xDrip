@@ -219,5 +219,20 @@
     <string name="bluereader_position">check position of blueReader on the sensor, as it was not able to read!</string>
     <string name="bluereaderuglystate">The blueReader was found in an ugly state! It will be now turn off now, and you turn it back to on (short press of the button). After that the blueReader should work as expectet!</string>
     <string name="xdrip_software_changed_format">xDrip WATCH software version changed from: %s to %s</string>
+    <string name="summary_always_on_screen">Force screen always on prior to BT scanning</string>
+    <string name="title_always_on_screen">Force Screen Always-on</string>
+    <string name="sumary_alert_use_sounds">Use watch speaker if it has one to play alert sound</string>
+    <string name="title_alert_use_sounds">Play Sound</string>
+    <string name="summary_dark">Dark theme</string>
+    <string name="title_dark">Dark</string>
+    <string name="summary_showHeartRate">Show last BPM</string>
+    <string name="title_showHeartRate">Heart Rate</string>
+    <string name="summary_use_low_bit_mode">Always use low color ambient mode</string>
+    <string name="title_use_low_bit_mode">Low color</string>
+    <string name="summary_use_black_divider">Divider matches background</string>
+    <string name="title_use_black_divider">Match Divider</string>
+    <string name="summary_has_demigod_mode">Running on a patched rom giving us full control</string>
+    <string name="title_has_demigod_mode">DemiGod Mode</string>
+    <string name="xdrip_scanning_nfc">xDrip+ Scanning NFC</string>
 
 </resources>
