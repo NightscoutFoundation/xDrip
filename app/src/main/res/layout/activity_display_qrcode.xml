@@ -57,7 +57,7 @@
                     android:layout_marginTop="28dp"
                     android:layout_weight="1"
                     android:onClick="desertSyncSettings"
-                    android:text="Set up Desert Sync follower" />
+                    android:text="@string/set_up_desert_sync_follower" />
 
                 <Button
                     android:id="@+id/button"

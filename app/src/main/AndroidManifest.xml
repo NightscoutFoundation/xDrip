@@ -178,7 +178,7 @@
         <activity
             android:name=".NoteSearch"
             android:configChanges="orientation|screenSize"
-            android:label="Note Search" />
+            android:label="@string/note_search" />
 
         <receiver android:name=".AutoStart">
             <intent-filter>

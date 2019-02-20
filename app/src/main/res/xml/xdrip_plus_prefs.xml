@@ -191,7 +191,7 @@
 
                 <PreferenceCategory
                     android:key="xdrip_plus_display_colorset8"
-                    android:title="Plugins and Features">
+                    android:title="@string/title_plugins_and_features">
 
                 <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
                     android:defaultValue="#8a6b4c33"
@@ -221,33 +221,33 @@
                 <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
                     android:defaultValue="#2B212FDE"
                     android:key="color_heart_rate1"
-                    android:title="Heart rate monitor"
+                    android:title="@string/title_color_heart_rate1"
                     app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
                     app:colorpicker_selectNoneButtonText="@string/revert_to_default"
                     app:colorpicker_showHex="false" />
                 </PreferenceCategory>
                 <PreferenceCategory
                     android:key="xdrip_plus_display_colorset12"
-                    android:title="Insulin Colors">
+                    android:title="@string/title_insulin_colors">
 
                     <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
                         android:defaultValue="#D33172DE"
                         android:key="color_basal_tbr"
-                        android:title="Basal TBR"
+                        android:title="@string/title_color_basal_tbr"
                         app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
                         app:colorpicker_selectNoneButtonText="@string/revert_to_default"
                         app:colorpicker_showHex="true" />
                     <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
                         android:defaultValue="#D4DED843"
                         android:key="color_smb_icon"
-                        android:title="SMB Icon"
+                        android:title="@string/title_color_smb_icon"
                         app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
                         app:colorpicker_selectNoneButtonText="@string/revert_to_default"
                         app:colorpicker_showHex="false" />
                     <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
                         android:defaultValue="#D6597FCC"
                         android:key="color_smb_line"
-                        android:title="SMB Line"
+                        android:title="@string/title_color_smb_line"
                         app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
                         app:colorpicker_selectNoneButtonText="@string/revert_to_default"
                         app:colorpicker_showHex="false" />
@@ -323,8 +323,8 @@
             <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
                 android:icon="@drawable/ic_chart_areaspline_grey600_48dp"
                 android:key="xdrip_plus_graph_display_settings"
-                android:summary="Adjust chart items"
-                android:title="Graph Settings">
+                android:summary="@string/summary_xdrip_plus_graph_display_settings"
+                android:title="@string/title_xdrip_plus_graph_display_settings">
 
 
             <CheckBoxPreference
@@ -360,8 +360,8 @@
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:key="show_basal_line"
-                android:summary="Show TBR information from external status"
-                android:title="Show Basal TBR" />
+                android:summary="@string/summary_show_basal_line"
+                android:title="@string/title_show_basal_line" />
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:key="show_target_line"
@@ -385,18 +385,18 @@
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:key="show_g_prediction"
-                android:summary="Show G6 predictive glucose dots"
-                android:title="G6 Prediction" />
+                android:summary="@string/summary_show_g_prediction"
+                android:title="@string/title_show_g_prediction" />
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:key="show_smb_icons"
-                android:summary="Declutter graph with treatment icons for small boluses"
-                android:title="Show micro bolus icons" />
+                android:summary="@string/summary_show_smb_icons"
+                android:title="@string/title_show_smb_icons" />
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:key="show_medtrum_secondary"
-                android:summary="Show alternate glucose dots"
-                android:title="Medtrum Secondary" />
+                android:summary="@string/summary_show_medtrum_secondary"
+                android:title="@string/title_show_medtrum_secondary" />
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:key="show_momentum_working_line"
@@ -409,7 +409,8 @@
                 android:title="@string/show_noise_workings" />
             <CheckBoxPreference
                 android:key="illustrate_backfilled_data"
-                android:summary="Indicate backfilled data on chart" />
+                android:title="@string/title_illustrate_backfilled_data"
+                android:summary="@string/summary_illustrate_backfilled_data" />
 
             </PreferenceScreen>
 
@@ -432,13 +433,13 @@
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:key="high_priority_notifications"
-                android:summary="Show notifications and graph at the top (also useful on lockscreen)"
-                android:title="High Priority Notifications" />
+                android:summary="@string/summary_high_priority_notifications"
+                android:title="@string/title_high_priority_notifications" />
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:key="public_notifications"
-                android:summary="Show notification content on secure lockscreen"
-                android:title="Public Notifications" />
+                android:summary="@string/summary_public_notifications"
+                android:title="@string/title_public_notifications" />
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:key="plus_extra_features"
@@ -452,11 +453,11 @@
             <PreferenceScreen
                 xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:key="xdrip_plus_number_wall"
-                android:title="Number Wall on Lock Screen">
+                android:title="@string/title_xdrip_plus_number_wall">
             <Preference
                 android:key="do_number_wall_configuration"
-                android:summary="Adjust and preview wall layout"
-                android:title="Configure Number Wall">
+                android:summary="@string/summary_do_number_wall_configuration"
+                android:title="@string/title_do_number_wall_configuration">
                 <intent
                     android:action="android.intent.action.MAIN"
                     android:targetClass="com.eveningoutpost.dexdrip.ui.activities.NumberWallPreview"
@@ -466,28 +467,28 @@
                 <SwitchPreference
                     android:defaultValue="false"
                     android:key="number_wall_on_lockscreen"
-                    android:summary="Show on lock-screen. Android 7 and above only!"
+                    android:summary="@string/summary_number_wall_on_lockscreen"
                     android:switchTextOff="@string/short_off_text_for_switches"
                     android:switchTextOn="@string/short_on_text_for_switches"
-                    android:title="Use on Lock screen" />
+                    android:title="@string/title_number_wall_on_lockscreen" />
                 <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
                     android:defaultValue="#FFEEEEEE"
                     android:key="color_number_wall"
-                    android:title="Wall Text Color"
+                    android:title="@string/title_color_number_wall"
                     app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
                     app:colorpicker_selectNoneButtonText="@string/revert_to_default"
                     app:colorpicker_showHex="false" />
                 <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
                     android:defaultValue="#FF000000"
                     android:key="color_number_wall_shadow"
-                    android:title="Wall Shadow Color"
+                    android:title="@string/title_color_number_wall_shadow"
                     app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
                     app:colorpicker_selectNoneButtonText="@string/revert_to_default"
                     app:colorpicker_showHex="false" />
                 <Preference
                     android:key="pick_numberwall_start"
-                    android:summary="Chose time to start showing"
-                    android:title="Turn On">
+                    android:summary="@string/summary_pick_numberwall_start"
+                    android:title="@string/title_pick_numberwall_start">
                     <intent
                         android:action="android.intent.action.MAIN"
                         android:targetClass="com.eveningoutpost.dexdrip.ui.activities.TimePickerPrefActivity"
@@ -499,8 +500,8 @@
                 </Preference>
                 <Preference
                     android:key="pick_numberwall_stop"
-                    android:summary="Chose time to stop - set to same as start for always on"
-                    android:title="Turn Off Time">
+                    android:summary="@string/summary_pick_numberwall_stop"
+                    android:title="@string/title_pick_numberwall_stop">
                     <intent
                         android:action="android.intent.action.MAIN"
                         android:targetClass="com.eveningoutpost.dexdrip.ui.activities.TimePickerPrefActivity"
@@ -515,11 +516,11 @@
 
             <PreferenceScreen
                 android:key="xdrip_plus_number_icon"
-                android:title="Number Icon in Notification Area">
+                android:title="@string/title_xdrip_plus_number_icon">
                 <Preference
                     android:key="do_number_icon_test"
-                    android:summary="Number icons crash some phones! Tap to run the test before enabling the feature!"
-                    android:title="Run Number Icon Test">
+                    android:summary="@string/summary_do_number_icon_test"
+                    android:title="@string/title_do_number_icon_test">
                     <intent
                         android:action="android.intent.action.MAIN"
                         android:targetClass="com.eveningoutpost.dexdrip.Home"
@@ -532,42 +533,42 @@
                 <SwitchPreference
                     android:defaultValue="false"
                     android:key="number_icon_tested"
-                    android:summary="When you have confirmed your device can display a number icon"
+                    android:summary="@string/summary_number_icon_tested"
                     android:switchTextOff="@string/short_off_text_for_switches"
                     android:switchTextOn="@string/short_on_text_for_switches"
-                    android:title="Number Icon tested" />
+                    android:title="@string/title_number_icon_tested" />
                 <SwitchPreference
                     android:defaultValue="false"
                     android:dependency="number_icon_tested"
                     android:key="use_number_icon"
-                    android:summary="Shows the current glucose number as an icon for the notification bar and lock screen"
+                    android:summary="@string/summary_use_number_icon"
                     android:switchTextOff="@string/short_off_text_for_switches"
                     android:switchTextOn="@string/short_on_text_for_switches"
-                    android:title="Show Small Number Icon" />
+                    android:title="@string/title_use_number_icon" />
                 <SwitchPreference
                     android:defaultValue="false"
                     android:dependency="number_icon_tested"
                     android:key="use_number_icon_large"
-                    android:summary="Shows a larger icon in the notification area only visible when opened"
+                    android:summary="@string/summary_use_number_icon_large"
                     android:switchTextOff="@string/short_off_text_for_switches"
                     android:switchTextOn="@string/short_on_text_for_switches"
-                    android:title="Use Large Number Icon" />
+                    android:title="@string/title_use_number_icon_large" />
                 <SwitchPreference
                     android:defaultValue="false"
                     android:dependency="use_number_icon_large"
                     android:key="number_icon_large_arrow"
-                    android:summary="Shows the trend arrow in the large icon"
+                    android:summary="@string/summary_number_icon_large_arrow"
                     android:switchTextOff="@string/short_off_text_for_switches"
                     android:switchTextOn="@string/short_on_text_for_switches"
-                    android:title="Show Arrow in Large Icon" />
+                    android:title="@string/title_number_icon_large_arrow" />
             </PreferenceScreen>
             <SwitchPreference
                 android:defaultValue="false"
                 android:key="show_home_on_boot"
-                android:summary="Bring up xDrip screen automatically after device boots"
+                android:summary="@string/summary_show_home_on_boot"
                 android:switchTextOff="@string/short_off_text_for_switches"
                 android:switchTextOn="@string/short_on_text_for_switches"
-                android:title="Show xDrip on Boot" />
+                android:title="@string/title_show_home_on_boot" />
 
         </PreferenceCategory>
     </PreferenceScreen>
@@ -623,7 +624,7 @@
         </PreferenceCategory>
         <PreferenceCategory
             android:key="title_I_understandb"
-            android:title="EULA">
+            android:title="@string/eula">
             <Preference
                 android:key="I_understandb"
                 android:summary="@string/not_for_medical_use"
@@ -709,16 +710,16 @@
                 android:defaultValue="true"
                 android:dependency="plus_follow_master"
                 android:key="plus_accept_follower_actions"
-                android:summary="Treatments and Calibrations from followers will be accepted"
-                android:title="Accept follower actions" />
+                android:summary="@string/summary_plus_accept_follower_actions"
+                android:title="@string/title_plus_accept_follower_actions" />
             <SwitchPreference
                 android:defaultValue="false"
                 android:dependency="plus_follow_master"
                 android:switchTextOff="@string/short_off_text_for_switches"
                 android:switchTextOn="@string/short_on_text_for_switches"
                 android:key="plus_whole_house"
-                android:summary="Participate in a Whole House Network"
-                android:title="Whole House" />
+                android:summary="@string/summary_plus_whole_house"
+                android:title="@string/title_plus_whole_house" />
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:dependency="plus_follow_master"
@@ -754,27 +755,27 @@
             </PreferenceScreen>
             <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
                 android:key="xdrip_plus_desert_sync_settings"
-                android:summary="Off-Grid following"
+                android:summary="@string/summary_xdrip_plus_desert_sync_settings"
                 android:icon="@drawable/desert_sync"
-                android:title="Desert Sync">
+                android:title="@string/title_xdrip_plus_desert_sync_settings">
                 <SwitchPreference
                     android:defaultValue="false"
                     android:key="desert_sync_enabled"
-                    android:summary="Enabled local non-internet sync facilities"
+                    android:summary="@string/summary_desert_sync_enabled"
                     android:switchTextOff="@string/short_off_text_for_switches"
                     android:switchTextOn="@string/short_on_text_for_switches"
-                    android:title="Desert Sync" />
+                    android:title="@string/title_desert_sync_enabled" />
                 <EditTextPreference
                     android:defaultValue=""
                     android:dependency="desert_sync_enabled"
                     android:key="desert_sync_master_ip"
                     android:maxLength="15"
-                    android:title="Master IP address" />
+                    android:title="@string/title_desert_sync_master_ip" />
                 <Preference
                     android:key="send_sync_show_qr"
                     android:dependency="desert_sync_enabled"
-                    android:summary="Barcode for followers to scan to auto-configure them"
-                    android:title="Show QR Code">
+                    android:summary="@string/summary_send_sync_show_qr"
+                    android:title="@string/title_send_sync_show_qr">
                     <intent
                         android:action="xdrip_plus_desert_sync_qr"
                         android:targetClass="com.eveningoutpost.dexdrip.utils.DisplayQRCode"
@@ -783,8 +784,8 @@
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="desert_use_https"
-                    android:summary="Add another layer of encryption for shared networks, eg public wifi"
-                    android:title="Use HTTPS" />
+                    android:summary="@string/summary_desert_use_https"
+                    android:title="@string/title_desert_use_https" />
 
             </PreferenceScreen>
             <CheckBoxPreference
@@ -949,56 +950,56 @@
     </PreferenceCategory>
     <PreferenceCategory
         android:key="xdrip_plus_experimental"
-        android:title="Experimental Section">
+        android:title="@string/title_xdrip_plus_experimental">
 
         <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
             android:icon="@drawable/ic_mode_edit_grey_600_48dp"
             android:key="inpen_screen"
-            android:summary="Downloading dosages"
-            android:title="InPen Insulin Pen">
+            android:summary="@string/summary_inpen_screen"
+            android:title="@string/title_inpen_screen">
             <SwitchPreference
                 android:defaultValue="false"
                 android:key="inpen_enabled"
                 android:switchTextOff="@string/short_off_text_for_switches"
                 android:switchTextOn="@string/short_on_text_for_switches"
-                android:title="InPen Support" />
+                android:title="@string/title_inpen_enabled" />
 
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:key="inpen_detect_priming"
-                android:summary="Detect and exclude priming doses"
-                android:title="Detect priming" />
+                android:summary="@string/summary_inpen_detect_priming"
+                android:title="@string/title_inpen_detect_priming" />
 
             <EditTextPreference
                 android:defaultValue="2.0"
                 android:inputType="numberPassword|textVisiblePassword"
                 android:key="inpen_prime_units"
                 android:maxLength="4"
-                android:title="Priming Units" />
+                android:title="@string/title_inpen_prime_units" />
 
             <EditTextPreference
                 android:defaultValue="2"
                 android:inputType="numberPassword|textVisiblePassword"
                 android:key="inpen_prime_minutes"
                 android:maxLength="3"
-                android:title="Priming Time Window" />
+                android:title="@string/title_inpen_prime_minutes" />
 
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:key="inpen_orphan_primes_ignored"
-                android:summary="Primes with no following dose are ignored if checked. Uncheck to treat as doses"
-                android:title="Ignore Orphan primes" />
+                android:summary="@string/summary_inpen_orphan_primes_ignored"
+                android:title="@string/title_inpen_orphan_primes_ignored" />
 
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:key="inpen_sounds"
-                android:summary="Use sounds to indicate data transfer with the pen"
-                android:title="Play Sounds" />
+                android:summary="@string/summary_inpen_sounds"
+                android:title="@string/title_inpen_sounds" />
 
             <Preference
                 android:key="inpen_reset"
-                android:summary="Reset and search for a new pen in pairing mode"
-                android:title="Find New Pen">
+                android:summary="@string/summary_inpen_reset"
+                android:title="@string/title_inpen_reset">
             <intent
                 android:action="android.intent.action.MAIN"
                 android:targetClass="com.eveningoutpost.dexdrip.Home"
@@ -1013,23 +1014,23 @@
         <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
             android:icon="@drawable/ic_mode_edit_grey_600_48dp"
             android:key="pendiq_screen"
-            android:summary="Reading and writing dosages"
-            android:title="Pendiq 2.0 Insulin Pen">
+            android:summary="@string/summary_pendiq_screen"
+            android:title="@string/title_pendiq_screen">
             <SwitchPreference
                 android:defaultValue="false"
                 android:key="use_pendiq"
                 android:switchTextOff="@string/short_off_text_for_switches"
                 android:switchTextOn="@string/short_on_text_for_switches"
-                android:title="Pendiq 2.0 Support" />
+                android:title="@string/title_use_pendiq" />
 
             <SwitchPreference
                 android:defaultValue="false"
                 android:dependency="use_pendiq"
                 android:key="pendiq_send_treatments"
-                android:summary="Prepare the pen with entered treatment insulin units. You must always double check this."
+                android:summary="@string/summary_pendiq_send_treatments"
                 android:switchTextOff="@string/short_off_text_for_switches"
                 android:switchTextOn="@string/short_on_text_for_switches"
-                android:title="Send Treatments to Pen" />
+                android:title="@string/title_pendiq_send_treatments" />
 
             <EditTextPreference
                 android:defaultValue="@string/zero_zero_zero_zero"
@@ -1037,7 +1038,7 @@
                 android:inputType="numberPassword|textVisiblePassword"
                 android:key="pendiq_pin"
                 android:maxLength="4"
-                android:title="Pen Pin Code" />
+                android:title="@string/title_pendiq_pin" />
 
 
         </PreferenceScreen>
