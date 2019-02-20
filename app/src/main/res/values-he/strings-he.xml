@@ -364,7 +364,6 @@
     <string name="not_connected">לא מחובר</string>
     <string name="no_data">אין נתונים</string>
     <string name="no_bluetooth">אין bluetooth</string>
-    <string name="connection_status">   מצב החיבור:  </string>
     <string name="without_location_scan_doesnt_work">בלי הרשאה למיקום אנדרואיד לא מאפשר סריקת בלוטוס</string>
     <string name="choose_data_source">בחר את סוג הסנסור</string>
     <string name="which_system_do_you_use">באיזה מערכת אתה משתמש?</string>
