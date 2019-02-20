@@ -1101,7 +1101,6 @@
     <string name="not_connected">Bağlı değil</string>
     <string name="no_data">Veri bulunamadı</string>
     <string name="no_bluetooth">Bluetooth bulunamadı</string>
-    <string name="connection_status">Bağlantı Durumu:   </string>
     <string name="without_location_scan_doesnt_work">Konum izni olmadan, Android Bluetooth taraması çalışmıyacaktır</string>
     <string name="without_location_permission_emergency_cannot_get_location">Konum izni olmadan, acil durum mesajları konum verilerini kullanamaz</string>
     <string name="choose_data_source">Veri Kaynağı Seçin</string>
