@@ -43,7 +43,7 @@
     <!-- API Settings -->
     <string name="pref_title_api">סינכרון לניטסקוט (rest api)</string>
     <string name="pref_title_api_enabled">מופעל</string>
-    <string name="pref_summary_api_enabled">rest api הוא הדרך הסטנדרטית להתחבר לניטסקוט</string>
+    <string name="pref_summary_api_enabled">הוא הדרך הסטנדרטית להתחבר לניטסקוט rest api</string>
     <string name="pref_title_api_url">כתובת URL בסיסית</string>
     <string name="pref_dialog_api_url">הזן כתובת URL בסיסית</string>
     <string name="pref_default_api_url">https://yourpassphrase@{YOUR-SITE}.azurewebsites.net/api/v1/</string>
@@ -407,6 +407,7 @@
     <string name="not_today">לא היום</string>
     <string name="need_permission_to_access_audio_files">דרושה הרשאה לאחסון כדי לגשת לקבצי קול</string>
     <string name="xdrip_needs_whitelisting_for_proper_performance">xDrip + צריך להיות מחוץ לאופטימזציה של הסוללה בכדי לפעול נכון</string>
+    <string name="use_mobile_data">השתמש בחבילת גלישה</string>
     <string name="important_warning">אזהרה חשובה!</string>
     <string name="i_agree">אני מסכים</string>
 </resources>
