@@ -1100,7 +1100,6 @@
     <string name="not_connected">Nicht verbunden</string>
     <string name="no_data">Keine Daten</string>
     <string name="no_bluetooth">Kein Bluetooth</string>
-    <string name="connection_status">Verbindungsstatus:   </string>
     <string name="without_location_scan_doesnt_work">Ohne die \"Location\"-Berechtigung wird der Bluetooth-Scan nicht funktionieren</string>
     <string name="without_location_permission_emergency_cannot_get_location">Ohne die \"Location\"-Berechtigung kann die Notfall-SMS keine Orts-Daten mitsenden</string>
     <string name="force_speaker_colon">Lautsprecher erzwingen</string>
