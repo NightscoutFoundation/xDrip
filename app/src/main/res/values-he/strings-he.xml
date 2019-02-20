@@ -203,7 +203,8 @@
     <string name="glucose_history">היסטורית הסוכר</string>
     <string name="import_database">ייבא את בסיס הנתונים</string>
     <string name="sensor_table">טבלאת הסנסורים</string>
-    <string name="please_enter_your_question_or_comments_here">אנא רשום את השאלות או הערות שלך כאן. n\n\ אם תספק דואר אלקטרוני יכול להיות שתקבל תשובה n\n\</string>
+    <string name="please_enter_your_question_or_comments_here">אנא רשום את השאלות או הערות שלך כאן. /n/n אם תספק דואר אלקטרוני יכול להיות שתקבל תשובה /n/n</string>
+    <string name="optional_contact_info_here_eg_email">אופציונלי - פרטים ליצירת קשר כגון email</string>
     <string name="please_indicate_what_you_think_of_the_app_generally">אנא ציין מה אתה חושב על האפליקציה באופן כללי</string>
     <string name="could_not_write_to_sdcard_check_perms">כתיבה לכרטיס זכרון נכשלה - בדוק את ההרשאות?</string>
     <string name="new_version_date_colon">"תאריך הגרסא החדשה: "</string>
