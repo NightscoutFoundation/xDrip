@@ -32,6 +32,7 @@ import static com.eveningoutpost.dexdrip.ui.helpers.UiHelper.convertDpToPixel;
 
 public class SourceWizard {
     @SuppressLint("StaticFieldLeak")
+    private static final String TAG = "SourceWizard";
     private static volatile SourceWizard sw;
     private AlertDialog dialog;
     private Activity activity;
@@ -54,7 +55,6 @@ public class SourceWizard {
             }
             g5g6.addChild(new Item("G5", DexCollectionType.DexcomG5, R.drawable.g5_icon));
             g5g6.addChild(new Item("G6", DexCollectionType.DexcomG6, R.drawable.g6_icon));
-
         }
 
         Tree<Item> libre = root.addChild(new Item("Libre", "What type of Libre bridge device do you use?", R.drawable.libre_icon_image));
@@ -64,11 +64,13 @@ public class SourceWizard {
 
         }
         Tree<Item> other = root.addChild(new Item(gs(R.string.other), gs(R.string.which_type_of_device), R.drawable.wikimedia_question_mark));
-        other.addChild(new Item("640G / 670G", DexCollectionType.NSEmulator, R.drawable.mm600_series));
-        other.addChild(new Item("Medtrum A6 / S7", DexCollectionType.Medtrum, R.drawable.a6_icon));
-        other.addChild(new Item("Nightscout Follower", DexCollectionType.NSFollow, R.drawable.nsfollow_icon));
-        //
-        other.addChild(new Item("EverSense", DexCollectionType.NSEmulator, R.drawable.wikimedia_eversense_icon_pbroks13));
+        {
+            other.addChild(new Item("640G / 670G", DexCollectionType.NSEmulator, R.drawable.mm600_series));
+            other.addChild(new Item("Medtrum A6 / S7", DexCollectionType.Medtrum, R.drawable.a6_icon));
+            other.addChild(new Item("Nightscout Follower", DexCollectionType.NSFollow, R.drawable.nsfollow_icon));
+            //
+            other.addChild(new Item("EverSense", DexCollectionType.NSEmulator, R.drawable.wikimedia_eversense_icon_pbroks13));
+        }
     }
 
 
@@ -165,7 +167,7 @@ public class SourceWizard {
         try {
             dialog.show();
         } catch (Exception e) {
-            UserError.Log.e("SourceWizard", "Exception when trying to show source wizard: " + e);
+            UserError.Log.e(TAG, "Exception when trying to show source wizard: " + e);
         }
     }
 
@@ -180,6 +182,7 @@ public class SourceWizard {
         public String name;
         public int resource;
         String description;
+        DexCollectionType type;
 
         Item(String name, String description) {
             this(name, description, 0);
@@ -199,6 +202,7 @@ public class SourceWizard {
             this.name = name;
             this.description = "^" + type.name();
             this.resource = resource;
+            this.type = type;
         }
 
         public void onClick(View v) {
@@ -213,13 +217,13 @@ public class SourceWizard {
             return convertDpToPixel(size);
         }
 
-        public boolean isCollectionType() {
+        boolean isCollectionType() {
             return this.description.startsWith("^");
         }
 
         public DexCollectionType getCollectionType() {
             if (isCollectionType()) {
-                return DexCollectionType.getType(this.description.substring(1));
+                return type;
             } else {
                 return null;
             }
