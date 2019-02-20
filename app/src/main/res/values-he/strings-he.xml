@@ -291,8 +291,10 @@
     <string name="short_speak_readings_shortcut">Show a shortcut in the â˜° menu to toggle Speak Readings</string>
     <string name="bluetooth_settings">הגדרות Bluetooth</string>
     <string name="auto_turn_on_bluetooth">הפעלה אוטומטית של הבלוטוס כאשר ננסה להתחבר להתקן בלוטוס</string>
+    <string name="todays_average_value">הערך הממוצע של היום.</string>
     <string name="received_readings_percentage">אחוז הקריאות שהתקבלו מהסנסור</string>
     <string name="allow_sensor_scanning">אפשר סריקה של סנסורים כאשר האפליקציה פתוחה. שים לב, זה עלול להרוס את הסנסור. בדוק שעובד על סנסור שעומד להסתיים. מומלץ לעבור למצב טיסה לפני הסריקה. ראה הוזהרת!</string>
+    <string name="g5_debug_settings">הגדרות דיבאג של G5/G6</string>
     <string name="cloud_upload">העלאה לענן</string>
     <string name="user">שם משתמש</string>
     <string name="password">סיסמא</string>
@@ -357,9 +359,15 @@
     <string name="summary_allow_testing_with_dead_sensor">אפשר בדיקות עם סנסור שיצא משימוש</string>
     <string name="title_You_have_no_reminders_yet">אין לך תזכורות עדיין</string>
     <string name="message_reminders_explanation">התזכורות יכולות לשמש לפעולות כגון החלפת מיקום של משאבה או כל פעולה אחרת. \n\n הם יכולים להיות מחזורים, להיות מכוונים לזמנים שונים. ניתן להשתיק אותם, לדחות או לקבוע לתאריך אחר. \n\n\ לחץ על כפתור ה+ בכדי להוסיף תזכורת.</string>
+    <string name="title_which_day">איזה יום?</string>
+    <string name="title_what_time_day">איזה שעה ביום?</string>
     <string name="Please_Allow_Permission">אנא תן הרשאה</string>
     <string name="need_storage_permission">דרושה הרשאה לאחסון כדי לגשת לקבצי הרינגטונים</string>
     <string name="cannot_chose_file">אין אפשרות לבחור קובץ בלי הרשאה לאחסון</string>
+    <string name="hour">שעה</string>
+    <string name="hours">שעות</string>
+    <string name="weekdays">ימי השבוע</string>
+    <string name="weekends">בסופי השבוע</string>
     <string name="xdrip_reminders">תזכורות של xdrip+</string>
     <string name="button_15_min">15 דקות</string>
     <string name="button_2_hour">שעתיים</string>
@@ -399,4 +407,6 @@
     <string name="not_today">לא היום</string>
     <string name="need_permission_to_access_audio_files">דרושה הרשאה לאחסון כדי לגשת לקבצי קול</string>
     <string name="xdrip_needs_whitelisting_for_proper_performance">xDrip + צריך להיות מחוץ לאופטימזציה של הסוללה בכדי לפעול נכון</string>
+    <string name="important_warning">אזהרה חשובה!</string>
+    <string name="i_agree">אני מסכים</string>
 </resources>
