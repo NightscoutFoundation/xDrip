@@ -1130,6 +1130,8 @@
     <string name="title_send_treatments_to_nightscout">Enviar tratamentos</string>
     <string name="title_warn_nightscout_failures">Alerta em falhas</string>
     <string name="title_sync_to_tidepool">Sincronizar para Tidepool</string>
+    <string name="title_tidepool_username">Nome de Utilizador</string>
+    <string name="summary_tidepool_password">Palavra-passe do Tidepool</string>
     <string name="title_tidepool_password">Palavra-passe</string>
     <string name="title_tidepool_test_login">Testar Login no Tidepool</string>
     <string name="title_tidepool">Tidepool</string>
@@ -1142,8 +1144,10 @@
     <string name="title_lefun_mac">Endereço MAC</string>
     <string name="title_lefun_send_readings">Enviar Leituras</string>
     <string name="title_lefun_send_alarms">Enviar Alarmes</string>
+    <string name="title_lefun_option_shake_snoozes">Agitar para Silenciar</string>
     <string name="title_features">Funções</string>
     <string name="title_lefun_feature_lift_to_wak">Levantar para Activar</string>
+    <string name="title_screens">Ecrãs</string>
     <string name="title_lefun_screen_step_counter">Mostrar Contador de Passos</string>
     <string name="title_lefun_screen_step_distance">Mostrar Distância do Passo</string>
     <string name="title_lefun_screen_step_calories">Mostrar Calorias de Passo</string>
@@ -1151,11 +1155,14 @@
     <string name="title_lefun_screen_heart_pressure">Mostrar a Pressão do Coração</string>
     <string name="title_lefun_screen_find_phone">Mostrar Procurar Telefone / Silêncio</string>
     <string name="title_lefun_screen_mac_address">Mostrar Endereço MAC</string>
+    <string name="title_allow_samsung_workaround">Soluções Alternativas Samsung</string>
     <string name="title_medtrum_use_native">Nativo Medtrum</string>
     <string name="title_medtrum_a_hex">Depuração de Medtrum</string>
+    <string name="title_nsfollow_url">URL Nightscout</string>
     <string name="title_nsfollow_download_treatments">Descarregar Tratamentos</string>
     <string name="title_ob1_g5_use_transmitter_alg">Algoritmo Nativo</string>
     <string name="title_ob1_g5_restart_sensor">Reiniciar Sensor</string>
+    <string name="title_ob1_g5_use_insufficiently_calibrated">Continuar sem calibrações</string>
     <string name="summary_using_g6">A utilizar um Sensor G6</string>
     <string name="title_using_g6">Suporte G6</string>
     <string name="title_g5g6_battery_options">Opções de bateria G5/G6</string>
