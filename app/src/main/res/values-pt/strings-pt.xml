@@ -573,7 +573,7 @@
     <string name="turn_bluetooth_on">Ligar Bluetooth</string>
     <string name="reset_bluetooth">Efetuar reset ao Bluetooth desligando e voltando a ligar se não receber dados em 20 minutos</string>
     <string name="bluetooth_watchdog">Vigilante Bluetooth</string>
-    <string name="reset_bluetooth_g5">Efetuar reset ao Bluetooth desligando e voltando a ligar como forma de manter a recolha de dados do G5. Sem isto o coletor G5 pode falhar.</string>
+    <string name="reset_bluetooth_g5">Reinicar Bluetooth desligando e voltando a ligar como forma de manter a recolha de dados do G5. Sem isto o dispositivo G5 pode falhar.</string>
     <string name="g5_bluetooth_watchdog">Vigilante Bluetooth G5</string>
     <string name="close_gatt">Se o bluetooth reativa muitas vezes, então tente desmarcar esta opção para ver se ajuda</string>
     <string name="older_bluetooth_wakelocks">Antigos bluetooth wakelocks que podem drenar bateria extra, mas podem ser necessários para a recepção bluetooth</string>
@@ -845,7 +845,7 @@
     <string name="delete_future_data">Apagar Dados Futuros</string>
     <string name="show_only_untranslated">Mostrar apenas o não-traduzido</string>
     <string name="collecting_initial_readings">A recolher Leituras Iniciais</string>
-    <string name="data_collector_running">Dados Dispositivo BT em execução</string>
+    <string name="data_collector_running">Dados Dispositivo BT em Execução</string>
     <string name="received_some_recent_data">Alguns Dados Recebidos Recentemente</string>
     <string name="received_enough_good_data_to_calibrate">Recebidos Bons Dados Suficientes para Calibrar</string>
     <string name="play_sound_when_ready_for_calibration">Tocar som quando pronto para Calibração</string>
@@ -1172,7 +1172,7 @@
     <string name="title_lefun_screen_heart_pressure">Mostrar a Pressão do Coração</string>
     <string name="title_lefun_screen_find_phone">Mostrar Procurar Telefone / Silêncio</string>
     <string name="title_lefun_screen_mac_address">Mostrar Endereço MAC</string>
-    <string name="summary_allow_samsung_workaround">Use alternativas para evitar comportamentos anormais de dispositivos Samsung, caso contrário a colheita de dados poderá falhar.</string>
+    <string name="summary_allow_samsung_workaround">Usar alternativas para evitar comportamentos anormais de dispositivos Samsung, caso contrário a recolha de dados poderá falhar.</string>
     <string name="title_allow_samsung_workaround">Soluções Alternativas Samsung</string>
     <string name="summary_medtrum_use_native">Usar calibração de transmissor em vez da do xDrip, como principal</string>
     <string name="title_medtrum_use_native">Nativo Medtrum</string>
@@ -1182,9 +1182,9 @@
     <string name="title_nsfollow_url">URL Nightscout</string>
     <string name="summary_nsfollow_download_treatments">Descarregar também tratamentos a partir da Nightscout como seguidor</string>
     <string name="title_nsfollow_download_treatments">Descarregar Tratamentos</string>
-    <string name="title_ob1_options">Configurações do Coleccionador G5/G6</string>
+    <string name="title_ob1_options">Configurações do Dispositivo G5/G6</string>
     <string name="summary_use_ob1_g5_collector_service">Reescrita completa, deverá funcionar em Android 4.4-9, suporta o modo nativo e não só</string>
-    <string name="title_use_ob1_g5_collector_service">Usar Coleccionador OB1</string>
+    <string name="title_use_ob1_g5_collector_service">Usar Dispositivo OB1</string>
     <string name="summary_ob1_g5_use_transmitter_alg">Usar o algoritmo interno do transmissor para calcular os valores que glicemia, quando possível.</string>
     <string name="title_ob1_g5_use_transmitter_alg">Algoritmo Nativo</string>
     <string name="summary_ob1_g5_restart_sensor">Reiniciar o sensor automaticamente o sensor quando ele pára</string>
@@ -1195,7 +1195,7 @@
     <string name="summary_using_g6">A utilizar um Sensor G6</string>
     <string name="title_using_g6">Suporte G6</string>
     <string name="title_ob1_g5_allow_resetbond">Permitir desagregação OB1</string>
-    <string name="title_old_g5_options">Configurações Antigas do Coleccionador G5</string>
+    <string name="title_old_g5_options">Configurações Antigas do Dispositivo G5</string>
     <string name="title_g5g6_battery_options">Opções de bateria G5/G6</string>
     <string name="title_g5_battery_warning_level">Ajustar o nível de alerta da bateria</string>
     <string name="title_plugins_and_features">Plugins e Funções</string>
@@ -1260,4 +1260,5 @@
     <string name="hba1c_est">HbA1c est.:</string>
     <string name="important_warning">Aviso Importante!</string>
     <string name="i_agree">CONCORDO</string>
+    <string name="restarting_collector">Reiniciar Dispositivo BT!</string>
 </resources>
