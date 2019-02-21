@@ -1154,7 +1154,7 @@
     <string name="delete_all_bg_readings">Eliminar Todas as leituras da Glicemia</string>
     <string name="debugging_test_feature">Função de teste de Depuração</string>
     <string name="sync_treatments">Sincronizar Tratamentos</string>
-    <string name="return_to_home_screen">Voltar ai Ecrã Inicial</string>
+    <string name="return_to_home_screen">Voltar ao Ecrã Inicial</string>
     <string name="title_lefun_band">LeFun Band</string>
     <string name="title_lefun_enable">Usar LeFun Band</string>
     <string name="title_lefun_mac">Endereço MAC</string>
@@ -1230,6 +1230,7 @@
     <string name="title_desert_use_https">Usar HTTPS</string>
     <string name="title_xdrip_plus_experimental">Secção Experimental</string>
     <string name="summary_inpen_screen">A Descarregar as Dosagens</string>
+    <string name="title_inpen_screen">Caneta InPen Insulin</string>
     <string name="title_inpen_sounds">Reproduzir Sons</string>
     <string name="title_inpen_reset">Procurar Nova Pen</string>
     <string name="title_pendiq_screen">Pendiq 2.0 Insulin Pen</string>
@@ -1245,6 +1246,7 @@
     <string name="note_search_button">PESQUISA</string>
     <string name="all_note_button">TUDO</string>
     <string name="title_full_screen_mode">Modo de Ecrã Completo</string>
+    <string name="title_share_save_this_screen">Partilhar / Guardar este Ecrã</string>
     <string name="load_more">carregar mais</string>
     <string name="searching">A procurar...</string>
     <string name="collecting">a recolher...</string>
@@ -1281,6 +1283,7 @@
     <string name="xbridge_compatible">xBridge compatível</string>
     <string name="classic_simple">Clássico Simples</string>
     <string name="libre">Libre</string>
+    <string name="librealarm_app_using_sony_smartwatch">App LibreAlarm: a utilizar Sony Smartwatch </string>
     <string name="__data_source_disabled">\n FONTE DE DADOS DESACTIVADA</string>
     <string name="data_source_is_set_to_">Fonte de Dados definida para: </string>
     <string name="change_settings">Alterar Definições</string>
