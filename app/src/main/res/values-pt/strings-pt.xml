@@ -1222,7 +1222,12 @@
     <string name="title_high_priority_notifications">Notificações de Alta Prioridade</string>
     <string name="title_public_notifications">Notificações Públicas</string>
     <string name="title_number_wall_on_lockscreen">Usar no Ecrã de Bloqueio</string>
+    <string name="summary_pick_numberwall_start">Escolher hora para começar a mostrar</string>
     <string name="title_pick_numberwall_start">Ligar</string>
+    <string name="summary_pick_numberwall_stop">Escolher hora para parar - definir a mesma como iniciar sempre ligado</string>
+    <string name="title_use_number_icon_large">Utilizar ícone de Número Grande</string>
+    <string name="summary_number_icon_large_arrow">Mostra Seta de Tendência em Ícone Grande</string>
+    <string name="title_number_icon_large_arrow">Mostrar Seta em Ícone Grande</string>
     <string name="summary_show_home_on_boot">Abrir Automaticamente o Ecrã do xDrip após Arranque do Dispositivo.</string>
     <string name="title_show_home_on_boot">Mostrar xDrip no Arranque</string>
     <string name="eula">Condições de Utilização</string>
@@ -1238,12 +1243,14 @@
     <string name="title_inpen_enabled">Suporte InPen</string>
     <string name="title_inpen_sounds">Reproduzir Sons</string>
     <string name="title_inpen_reset">Procurar Nova Pen</string>
+    <string name="summary_pendiq_screen">Leitura e Escrita de Dosagens</string>
     <string name="title_pendiq_screen">Pendiq 2.0 Insulin Pen</string>
     <string name="title_use_pendiq">Suporte Pendiq 2.0</string>
     <string name="title_pendiq_send_treatments">Enviar Tratamentos para Pen</string>
     <string name="title_pendiq_pin">Código PIN Pen</string>
     <string name="summary_use_notification_channels">Usar o recurso de canal notificação Android 8+</string>
     <string name="title_use_notification_channels">Canais de Notificação</string>
+    <string name="title_ongoing_notification_channel">Utilizar Canal de Notificação em Curso</string>
     <string name="summary_play_sound_for_initial_calibration">Emitir somm quando Calibração inicial é necessária</string>
     <string name="title_play_sound_for_initial_calibration">Alerta Inicial</string>
     <string name="category_noisy_readings">Leituras com Ruído</string>
@@ -1288,10 +1295,13 @@
     <string name="important_warning">Aviso Importante!</string>
     <string name="i_agree">CONCORDO</string>
     <string name="backup_detected">Copia de Segurança Detectada</string>
+    <string name="it_looks_like_you_maybe_have_a_settings_backup_shall_we_try_to_restore_it">Parece Ter Cópia de Segurança de Configurações, Vamos Tentar Restaurá-la?</string>
     <string name="restore_settings">Restaurar Definições</string>
+    <string name="what_type_of_g4_bridge_device_do_you_use">Que Tipo de Dispositivo de Ponte G4?</string>
     <string name="xbridge_compatible">xBridge compatível</string>
     <string name="classic_simple">Clássico Simples</string>
     <string name="libre">Libre</string>
+    <string name="what_type_of_libre_bridge_device_do_you_use">Que Tipo de Dispositivo de Ponte Libre?</string>
     <string name="bluetooth_bridge_device_blucon_limitter_bluereader_tomato_etc">Dispositivo Ponte Bluetooth: Blucon, Bluereader, LimiTTer, Tomato etc</string>
     <string name="librealarm_app_using_sony_smartwatch">App LibreAlarm: a utilizar Sony Smartwatch </string>
     <string name="__data_source_disabled">\n FONTE DE DADOS DESACTIVADA</string>
@@ -1299,6 +1309,7 @@
     <string name="__do_you_want_to_change_settings_or_start_sensor">\n\nAlterar as Configurações ou Iniciar Sensor?</string>
     <string name="change_settings">Alterar Definições</string>
     <string name="do_you_want_to_delete_and_reset_the_calibrations_for_this_sensor">Eliminar e Reiniciar as Calibrações para este Sensor?</string>
+    <string name="settings_issue">Problema de Configurações!</string>
     <string name="use_bg_for_calibration">Utilizar Glicemia para Calibração?</string>
     <string name="yes_calibrate">SIM, Calibrar</string>
     <string name="enable_automatic_calibration">Activar Calibração Automática</string>
@@ -1313,6 +1324,7 @@
     <string name="maybe_later">Talvez Mais Tarde</string>
     <string name="yes_do_it">SIM, Avançar</string>
     <string name="restore_backup">Restaurar Cópia de Segurança?</string>
+    <string name="do_you_want_to_restore_the_backup_file_">Restaurar o ficheiro de cópia de segurança: </string>
     <string name="restore">Restaurar</string>
     <string name="calibrate_sensor">Calibrar Sensor?</string>
     <string name="calibrate">Calibrar</string>
@@ -1334,6 +1346,7 @@
     <string name="starting_sync_to_other_devices">A Iniciar a Sincronização com Outros Dispositivos</string>
     <string name="deleting_all_bg_readings">Eliminar Todas as leituras da Glicemia!</string>
     <string name="could_not_export_csv_">Não Foi Possível exportar CSV :(</string>
+    <string name="librealarm_data_format_appears_incompatible_protocol_changed_or_no_data">Formato de Dados LibreAlarm afigura incompatível!? Protocolo alterado ou sem Dados?</string>
     <string name="please_update_librealarm_to_use_oop_algorithm">Actualize LibreAlarm para Utilizar Algoritmo OOP</string>
     <string name="sensor_clock_has_not_advanced">Relógio do Sensor Não Avançou!</string>
     <string name="sensor_age_has_gone_backwards">A Idade do Sensor foi para trás!!</string>
@@ -1341,6 +1354,8 @@
     <string name="nfc_is_not_enabled">NFC Está Desligado</string>
     <string name="phone_nfc_is_having_problems">NFC do Telefone está com Problemas!</string>
     <string name="not_so_quickly_wait_60_seconds">Não tão rápido, aguarde 60 segundos</string>
+    <string name="nfc_read_timeout">Tempo leitura NFC expirou</string>
+    <string name="nfc_invalid_data__try_again">Dados inválidos NFC - tente novamente</string>
     <string name="nfc_invalid_data">Dados Inválidos do NFC</string>
     <string name="scanned_ok">OK Verificado!</string>
     <string name="nfc_io_error">Erro NFC IO</string>
