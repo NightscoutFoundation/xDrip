@@ -869,7 +869,6 @@
     <string name="bluereader_turnoff">安全关断</string>
     <string name="blueReader_turnoffvalue">值 (%)</string>
     <string name="blueReader_turnoffvalue_sum">蓝牙将会关掉的地方</string>
-    <string name="days">剩余天数</string>
     <string name="bluereaderoff">蓝牙将关闭, 因为电池电量是低的, 然后 </string>
     <string name="bluereader_position">检查传感器上的 blueReader 位置, 因为无法读取到数据!</string>
     <string name="bluereaderuglystate">The blueReader was found in an ugly state! It will be now turn off now, and you turn it back to on (short press of the button). After that the blueReader should work as expectet!</string>
@@ -1099,7 +1098,6 @@
     <string name="not_connected">未连接</string>
     <string name="no_data">没有数据</string>
     <string name="no_bluetooth">无蓝牙</string>
-    <string name="connection_status">连接状态:   </string>
     <string name="without_location_scan_doesnt_work">没有放开位置权限，Xdrip的蓝牙扫描不起作用</string>
     <string name="without_location_permission_emergency_cannot_get_location">没有放开位置权限，紧急消息不能使用位置数据</string>
     <string name="please_allow_permission">请允许使用权限</string>
