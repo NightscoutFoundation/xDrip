@@ -256,7 +256,7 @@
     <string name="history">Histórico</string>
     <string name="statistics">Estatísticas</string>
     <string name="snooze_alert">Silenciar Alerta</string>
-    <string name="less_common_settings">Definições menos comuns</string>
+    <string name="less_common_settings">Definições Menos Comuns</string>
     <string name="view_recent_errors_warnings">Ver Erros/Avisos Recentes</string>
     <string name="other_settings">Outras Definições</string>
     <string name="older_gratuitous_wakelocks">Outros Wakelocks que podem fazer perder muita bateria mas podem ser necessários pelo NightWatch ou Android Wear</string>
