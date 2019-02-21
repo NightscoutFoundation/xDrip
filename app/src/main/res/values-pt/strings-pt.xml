@@ -1157,6 +1157,7 @@
     <string name="sync_treatments">Sincronizar Tratamentos</string>
     <string name="return_to_home_screen">Voltar ao Ecrã Inicial</string>
     <string name="title_lefun_band">LeFun Band</string>
+    <string name="summary_lefun_enable">Sincronizar Dados com Banda de Fitness LeFun</string>
     <string name="title_lefun_enable">Usar LeFun Band</string>
     <string name="title_lefun_mac">Endereço MAC</string>
     <string name="title_lefun_send_readings">Enviar Leituras</string>
@@ -1215,6 +1216,7 @@
     <string name="summary_xdrip_plus_graph_display_settings">Ajustar Itens do Gráfico</string>
     <string name="title_xdrip_plus_graph_display_settings">Configurações Gráfico</string>
     <string name="title_show_basal_line">Mostrar TBR Basal</string>
+    <string name="summary_show_g_prediction">Mostrar Pontos da Previsão da Glicemia do G6</string>
     <string name="title_show_g_prediction">Previsão G6</string>
     <string name="title_show_smb_icons">Mostrar ícones micro-bolus</string>
     <string name="title_show_medtrum_secondary">Medtrum Secundário</string>
@@ -1225,6 +1227,7 @@
     <string name="summary_pick_numberwall_start">Escolher hora para começar a mostrar</string>
     <string name="title_pick_numberwall_start">Ligar</string>
     <string name="summary_pick_numberwall_stop">Escolher hora para parar - definir a mesma como iniciar sempre ligado</string>
+    <string name="title_use_number_icon">Mostrar Ícone de Número Pequeno</string>
     <string name="title_use_number_icon_large">Utilizar ícone de Número Grande</string>
     <string name="summary_number_icon_large_arrow">Mostra Seta de Tendência em Ícone Grande</string>
     <string name="title_number_icon_large_arrow">Mostrar Seta em Ícone Grande</string>
@@ -1232,6 +1235,7 @@
     <string name="title_show_home_on_boot">Mostrar xDrip no Arranque</string>
     <string name="eula">Condições de Utilização</string>
     <string name="title_plus_accept_follower_actions">Aceitar acções do seguidor</string>
+    <string name="title_xdrip_plus_desert_sync_settings">Desert Sync</string>
     <string name="title_desert_sync_enabled">Desert Sync</string>
     <string name="title_desert_sync_master_ip">Endereço IP do Mestre</string>
     <string name="summary_send_sync_show_qr">Código de Barras para Auto-Configuração dos Seguidores </string>
