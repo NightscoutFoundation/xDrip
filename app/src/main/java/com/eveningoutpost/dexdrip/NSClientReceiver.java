@@ -22,6 +22,7 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.UUID;
+import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 
 /**
@@ -119,7 +120,7 @@ public class NSClientReceiver extends BroadcastReceiver {
                     if (glucose_number > 0) {
 
                         if (timeoffset < 0) {
-                            Home.toaststaticnext("Got calibration in the future - cannot process!");
+                            Home.toaststaticnext(gs(R.string.got_calibration_in_the_future__cannot_process));
                             break;
                         }
 

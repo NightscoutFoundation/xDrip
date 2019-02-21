@@ -21,6 +21,7 @@ import com.eveningoutpost.dexdrip.profileeditor.ProfileAdapter;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
+import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 /**
  * Created by jamorham on 23/05/2017.
@@ -64,7 +65,7 @@ public class NightscoutBackfillActivity extends AppCompatActivity implements Nav
         mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), "Nightscout Backfill", this);
 
         if (JoH.msSince(locked) < Constants.HOUR_IN_MS) {
-            JoH.static_toast_long("Still processing previous back-fill request!");
+            JoH.static_toast_long(gs(R.string.still_processing_previous_backfill_request));
             finish();
         }
     }
@@ -97,7 +98,7 @@ public class NightscoutBackfillActivity extends AppCompatActivity implements Nav
     public synchronized void backfillRun(View v) {
         locked = JoH.tsl();
         doitButton.setVisibility(View.INVISIBLE);
-        JoH.static_toast_long("Please wait..");
+        JoH.static_toast_long(gs(R.string.please_wait));
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -126,7 +127,7 @@ public class NightscoutBackfillActivity extends AppCompatActivity implements Nav
                         SyncService.startSyncService(500);
                         locked = 0; // clear lock
                     } else {
-                        JoH.static_toast_long("Didn't find any glucose readings in that time period");
+                        JoH.static_toast_long(gs(R.string.didnt_find_any_glucose_readings_in_that_time_period));
                     }
                 } finally {
                     JoH.releaseWakeLock(wl);
