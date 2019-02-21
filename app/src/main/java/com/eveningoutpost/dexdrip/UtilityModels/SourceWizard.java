@@ -30,6 +30,7 @@ import static com.eveningoutpost.dexdrip.ui.helpers.UiHelper.convertDpToPixel;
  *
  */
 
+import static com.eveningoutpost.dexdrip.xdrip.gs;
 public class SourceWizard {
     @SuppressLint("StaticFieldLeak")
     private static final String TAG = "SourceWizard";
@@ -42,12 +43,12 @@ public class SourceWizard {
     {
         Tree<Item> g5g6 = root.addChild(new Item("G4, G5 & G6", gs(R.string.which_type_of_device), R.drawable.g5_icon));
         {
-            Tree<Item> g4 = g5g6.addChild(new Item("G4", "What type of G4 bridge device do you use?", R.drawable.g4_icon));
+            Tree<Item> g4 = g5g6.addChild(new Item("G4", gs(R.string.what_type_of_g4_bridge_device_do_you_use), R.drawable.g4_icon));
             {
                 Tree<Item> wixel = g4.addChild(new Item(gs(R.string.bluetooth_wixel), gs(R.string.which_software_is_the_wixel_running), R.drawable.wixel_icon));
                 {
-                    wixel.addChild(new Item("xBridge compatible", DexCollectionType.DexbridgeWixel, R.drawable.wixel_icon));
-                    wixel.addChild(new Item("Classic simple", DexCollectionType.BluetoothWixel, R.drawable.wixel_icon));
+                    wixel.addChild(new Item(gs(R.string.xbridge_compatible), DexCollectionType.DexbridgeWixel, R.drawable.wixel_icon));
+                    wixel.addChild(new Item(gs(R.string.classic_simple), DexCollectionType.BluetoothWixel, R.drawable.wixel_icon));
                 }
 
                 g4.addChild(new Item(gs(R.string.g4_share_receiver), DexCollectionType.DexcomShare, R.drawable.g4_share_icon));
@@ -57,10 +58,10 @@ public class SourceWizard {
             g5g6.addChild(new Item("G6", DexCollectionType.DexcomG6, R.drawable.g6_icon));
         }
 
-        Tree<Item> libre = root.addChild(new Item("Libre", "What type of Libre bridge device do you use?", R.drawable.libre_icon_image));
+        Tree<Item> libre = root.addChild(new Item(gs(R.string.libre), gs(R.string.what_type_of_libre_bridge_device_do_you_use), R.drawable.libre_icon_image));
         {
-            libre.addChild(new Item("Bluetooth Bridge device: Blucon, LimiTTer, Bluereader, Tomato etc", DexCollectionType.LimiTTer, R.drawable.bluereader_icon));
-            libre.addChild(new Item("LibreAlarm App: using Sony Smartwatch", DexCollectionType.LibreAlarm, R.drawable.ic_watch_grey600_48dp));
+            libre.addChild(new Item(gs(R.string.bluetooth_bridge_device_blucon_limitter_bluereader_tomato_etc), DexCollectionType.LimiTTer, R.drawable.bluereader_icon));
+            libre.addChild(new Item(gs(R.string.librealarm_app_using_sony_smartwatch), DexCollectionType.LibreAlarm, R.drawable.ic_watch_grey600_48dp));
 
         }
         Tree<Item> other = root.addChild(new Item(gs(R.string.other), gs(R.string.which_type_of_device), R.drawable.wikimedia_question_mark));

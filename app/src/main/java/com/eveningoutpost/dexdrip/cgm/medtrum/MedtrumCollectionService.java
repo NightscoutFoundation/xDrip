@@ -16,6 +16,7 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Prediction;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.JamBaseBluetoothService;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
@@ -89,6 +90,7 @@ import static com.eveningoutpost.dexdrip.cgm.medtrum.SensorState.NotCalibrated;
 import static com.eveningoutpost.dexdrip.cgm.medtrum.SensorState.Ok;
 import static com.eveningoutpost.dexdrip.cgm.medtrum.TimeKeeper.timeStampFromTickCounter;
 
+import static com.eveningoutpost.dexdrip.xdrip.gs;
 /**
  *
  * jamorham
@@ -283,7 +285,7 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
     }
 
     private void scan_for_device() {
-        status("Scanning");
+        status(gs(R.string.scanning));
         UserError.Log.d(TAG, "Scanning for device");
         scanner.setAddress(address).scan();
     }

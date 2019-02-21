@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 // From LibreAlarm et al
 
@@ -100,16 +101,16 @@ public class NFCReaderX {
         try {
             if (mNfcAdapter == null) {
 
-                JoH.static_toast_long("Phone has no NFC reader");
+                JoH.static_toast_long(gs(R.string.phone_has_no_nfc_reader));
                 //finish();
                 return;
 
             } else if (!mNfcAdapter.isEnabled()) {
-                JoH.static_toast_long("NFC is not enabled");
+                JoH.static_toast_long(gs(R.string.nfc_is_not_enabled));
                 return;
             }
         } catch (NullPointerException e) {
-            JoH.static_toast_long("Phone NFC is having problems!");
+            JoH.static_toast_long(gs(R.string.phone_nfc_is_having_problems));
             return;
         }
 
@@ -185,7 +186,7 @@ public class NFCReaderX {
                         context.startActivity(new Intent(context, NFCScanningX.class));
                     } else {
                         NFCReaderX.vibrate(context, 0);
-                        JoH.static_toast_short("Scanning");
+                        JoH.static_toast_short(gs(R.string.scanning));
                     }
                     if (d)
                         Log.d(TAG, "NFC tag discovered - going to read data");
@@ -193,7 +194,7 @@ public class NFCReaderX {
                 } else {
                     if (JoH.tsl() - last_tag_discovered > 5000) {
                         vibrate(context, 4);
-                        JoH.static_toast_short("Not so quickly, wait 60 seconds");
+                        JoH.static_toast_short(gs(R.string.not_so_quickly_wait_60_seconds));
                     }
                 }
             } else {
@@ -334,7 +335,7 @@ public class NFCReaderX {
                                     } catch (IOException e) {
                                         if ((System.currentTimeMillis() > time + 2000)) {
                                             Log.e(TAG, "tag diagnostic read timeout");
-                                            JoH.static_toast_short("NFC diag timeout");
+                                            JoH.static_toast_short(gs(R.string.nfc_diag_timeout));
                                             vibrate(context, 3);
                                             return null;
                                         }
@@ -373,7 +374,7 @@ public class NFCReaderX {
                                     } catch (IOException e) {
                                         if ((System.currentTimeMillis() > time + 2000)) {
                                             Log.e(TAG, "tag read timeout");
-                                            JoH.static_toast_short("NFC read timeout");
+                                            JoH.static_toast_short(gs(R.string.nfc_read_timeout));
                                             vibrate(context, 3);
                                             return null;
                                         }
@@ -387,11 +388,11 @@ public class NFCReaderX {
                                     Log.d(TAG, HexDump.dumpHexString(replyBlock, 0, replyBlock.length));
                                 if (replyBlock.length != correct_reply_size) {
                                     Log.e(TAG, "Incorrect block size: " + replyBlock.length + " vs " + correct_reply_size);
-                                    JoH.static_toast_short("NFC invalid data - try again");
+                                    JoH.static_toast_short(gs(R.string.nfc_invalid_data__try_again));
                                     if (!addressed) {
                                         if (PersistentStore.incrementLong("nfc-address-failures") > 2) {
                                             Pref.setBoolean("use_nfc_any_tag", false);
-                                            JoH.static_toast_short("Turned off any-tag feature");
+                                            JoH.static_toast_short(gs(R.string.turned_off_anytag_feature));
                                         }
                                     }
                                     vibrate(context, 3);
@@ -420,7 +421,7 @@ public class NFCReaderX {
                                     } catch (IOException e) {
                                         if ((System.currentTimeMillis() > time + 2000)) {
                                             Log.e(TAG, "tag read timeout");
-                                            JoH.static_toast_short("NFC read timeout");
+                                            JoH.static_toast_short(gs(R.string.nfc_read_timeout));
                                             vibrate(context, 3);
                                             return null;
                                         }
@@ -431,7 +432,7 @@ public class NFCReaderX {
                                     Log.d(TAG, HexDump.dumpHexString(oneBlock, 0, oneBlock.length));
                                 if (oneBlock.length != correct_reply_size) {
                                     Log.e(TAG, "Incorrect block size: " + oneBlock.length + " vs " + correct_reply_size);
-                                    JoH.static_toast_short("NFC invalid data");
+                                    JoH.static_toast_short(gs(R.string.nfc_invalid_data));
                                     vibrate(context, 3);
                                     return null;
                                 }
@@ -444,11 +445,11 @@ public class NFCReaderX {
                         succeeded = true;
                         used_nfc_successfully = true;
                         vibrate(context, 1);
-                        JoH.static_toast_short("Scanned OK!");
+                        JoH.static_toast_short(gs(R.string.scanned_ok));
                         PersistentStore.setLongZeroIfSet("nfc-address-failures");
 
                     } catch (IOException e) {
-                        JoH.static_toast_short("NFC IO Error");
+                        JoH.static_toast_short(gs(R.string.nfc_io_error));
                         vibrate(context, 3);
                     } catch (Exception e) {
                         Log.i(TAG, "Got exception reading nfc in background: " + e.toString());
@@ -458,7 +459,7 @@ public class NFCReaderX {
                             nfcvTag.close();
                         } catch (Exception e) {
                             Log.e(TAG, "Error closing tag!");
-                            JoH.static_toast_short("NFC Error");
+                            JoH.static_toast_short(gs(R.string.nfc_error));
                             vibrate(context, 3);
                         }
                     }

@@ -52,6 +52,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 /**
  * Created by jamorham on 11/01/16.
@@ -917,7 +918,7 @@ public class GcmActivity extends FauxActivity {
                                                     SdcardImportExport.forceGMSreset();
                                                 }
                                             });
-                                            builder.setNeutralButton("Maybe Later", new DialogInterface.OnClickListener() {
+                                            builder.setNeutralButton(gs(R.string.maybe_later), new DialogInterface.OnClickListener() {
                                                 public void onClick(DialogInterface dialog, int which) {
                                                     dialog.dismiss();
                                                 }

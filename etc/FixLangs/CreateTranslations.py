@@ -59,10 +59,12 @@ def FindFileContaingString(id, string):
     arr = []
     for d,r,f in os.walk("..\\..\\"):
         for file in f:
-            if file.endswith("java") and "generated" not in file and not "PebbleDisplay" in file:
+            if file.endswith("java") and "generated" not in file and not "PebbleDisplay" in file :
                 arr.append(os.path.join(d,file))
             
     for file in arr:
+        if file.startswith("..\\..\\wear"):
+            continue
         if not FileContainsString(file, string): 
             continue
         print(file)
@@ -76,6 +78,10 @@ def ReadFile(file_name):
     # you may also want to remove whitespace characters like `\n` at the end of each line
     content = [x.strip() for x in content] 
     for line in content:
+        if line.strip() == '':
+            continue
+        if line.startswith("#"):
+            continue            
         if line.startswith('"') and line.endswith('"'):
             line = line[1:-1]
         
@@ -87,8 +93,12 @@ def ReadFile(file_name):
         header = header.replace('?','')
         header = header.replace('.','')
         header = header.replace('+','')
+        header = header.replace('-','')
+        header = header.replace('(','')
+        header = header.replace(')','')
+        header = header.replace("'",'')
         
-        print ('<string name="',header,'">', line,'</string>', sep='')
+        print ('    <string name="',header,'">', line,'</string>', sep='')
         
         FindFileContaingString(header, line)
         
