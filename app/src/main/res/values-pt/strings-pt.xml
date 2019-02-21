@@ -1221,6 +1221,7 @@
     <string name="title_public_notifications">Notificações Públicas</string>
     <string name="title_number_wall_on_lockscreen">Usar no Ecrã de Bloqueio</string>
     <string name="title_pick_numberwall_start">Ligar</string>
+    <string name="summary_show_home_on_boot">Abrir Automaticamente o Ecrã do xDrip após Arranque do Dispositivo.</string>
     <string name="title_show_home_on_boot">Mostrar xDrip no Arranque</string>
     <string name="eula">Condições de Utilização</string>
     <string name="title_plus_accept_follower_actions">Aceitar acções do seguidor</string>
@@ -1246,6 +1247,7 @@
     <string name="title_full_screen_mode">Modo de Ecrã Completo</string>
     <string name="load_more">carregar mais</string>
     <string name="searching">A procurar...</string>
+    <string name="collecting">a recolher...</string>
     <string name="insulin">insulina</string>
     <string name="nothing_found">sem resultados</string>
     <string name="calibration_graph_no_calibration">gráfico de calibração (sem calibração)</string>
@@ -1263,6 +1265,7 @@
     <string name="auto_refresh">Actualizar auto.</string>
     <string name="version">Versão:</string>
     <string name="sensor_start">Início Sensor:</string>
+    <string name="check_in_dexcom_calibrations">Verificar Calibrações em Dexcom</string>
     <string name="progress">progresso</string>
     <string name="bluetooth_device">Dispositivo Bluetooth:   </string>
     <string name="transmitter_battery_status">Bateria do Transmissor:  </string>
@@ -1273,11 +1276,18 @@
     <string name="hba1c_est">HbA1c est.:</string>
     <string name="important_warning">Aviso Importante!</string>
     <string name="i_agree">CONCORDO</string>
+    <string name="backup_detected">Copia de Segurança Detectada</string>
     <string name="restore_settings">Restaurar Definições</string>
+    <string name="xbridge_compatible">xBridge compatível</string>
     <string name="classic_simple">Clássico Simples</string>
     <string name="libre">Libre</string>
     <string name="__data_source_disabled">\n FONTE DE DADOS DESACTIVADA</string>
+    <string name="data_source_is_set_to_">Fonte de Dados definida para: </string>
+    <string name="change_settings">Alterar Definições</string>
+    <string name="do_you_want_to_delete_and_reset_the_calibrations_for_this_sensor">Eliminar e Reiniciar as Calibrações para este Sensor?</string>
+    <string name="use_bg_for_calibration">Utilizar Glicemia para Calibração?</string>
     <string name="yes_calibrate">SIM, Calibrar</string>
+    <string name="enable_automatic_calibration">Activar Calibração Automática</string>
     <string name="yes_enable">SIM, activar</string>
     <string name="blood_test_action">Acção de Teste de Sangue</string>
     <string name="what_would_you_like_to_do">O que gostaria de fazer?</string>
