@@ -152,7 +152,7 @@
     <string name="view_events_log">Log anzeigen</string>
     <string name="show_libre_trend">Libre-Trend anzeigen</string>
     <string name="libre_15_minutes_graph">Libre 15 Minuten Kurve</string>
-    <string name="libre_last_x_minutes_graph">Libre letzten %d Minuten Kurve</string>
+    <string name="libre_last_x_minutes_graph">Libre-Kurve der letzten %d Minuten</string>
     <string name="share_config_via_qr_code">Einstellungen per QR-Code senden</string>
     <string name="check_for_updated_version">Auf Aktualisierung prüfen</string>
     <string name="send_feedback_to_developer">Feedback an Entwickler senden</string>
@@ -871,7 +871,6 @@
     <string name="bluereader_turnoff">Sicherheitsauschaltung</string>
     <string name="blueReader_turnoffvalue">Wert in %</string>
     <string name="blueReader_turnoffvalue_sum">unter dem der Bluereader ausgeschaltet wird</string>
-    <string name="days">Tage rest</string>
     <string name="bluereaderoff">blueReader wird ausgeschaltet, da die Batterie folgenden Wert unterschreitet: </string>
     <string name="bluereader_position">Bitte Positionierung des BlueReaders auf dem Sensor prüfen!</string>
     <string name="bluereaderuglystate">Der blueReader hat sich aufgehängt! Er wird nun ausgeschaltet. Bitte schalte ihn in ein paar Sekunden wieder ein (Taste nur kurz drücken). Danach sollte der blueReader wieder funktionieren!</string>
@@ -1101,10 +1100,23 @@
     <string name="not_connected">Nicht verbunden</string>
     <string name="no_data">Keine Daten</string>
     <string name="no_bluetooth">Kein Bluetooth</string>
-    <string name="connection_status">Verbindungsstatus:   </string>
     <string name="without_location_scan_doesnt_work">Ohne die \"Location\"-Berechtigung wird der Bluetooth-Scan nicht funktionieren</string>
     <string name="without_location_permission_emergency_cannot_get_location">Ohne die \"Location\"-Berechtigung kann die Notfall-SMS keine Orts-Daten mitsenden</string>
+    <string name="force_speaker_colon">Lautsprecher erzwingen</string>
     <string name="choose_data_source">Wähle Datenquelle</string>
     <string name="which_system_do_you_use">Welches System verwendest Du?</string>
     <string name="please_allow_permission">Bitte erteilen Sie die nötigen Berechtigungen</string>
+    <string name="location_permission_needed_to_use_bluetooth">Standort-Berechtigung wird benötigt, damit Bluetooth funktioniert!</string>
+    <string name="did_you_insert_it_today">Hast Du ihn heute gesetzt?</string>
+    <string name="we_need_to_know_when_the_sensor_was_inserted_to_improve_calculation_accuracy__was_it_inserted_today">Wir müssen wissen, wann der Sensor gesetzt wurde, um die Berechnunggenauigkeit zu verbessern.\n\nWurde er heute gesetzt?</string>
+    <string name="yes_today">JA, heute</string>
+    <string name="which_day_was_it_inserted">An welchem Tag wurde er gesetzt?</string>
+    <string name="what_time_was_it_inserted">Zu welcher Uhrzeit wurde er gesetzt?</string>
+    <string name="new_sensor_started">NEUER SENSOR GESTARTET</string>
+    <string name="error_sensor_start_time_in_future">FEHLER: SENSOR-STARTZEIT IST IN DER ZUKUNFT</string>
+    <string name="not_today">Nicht heute</string>
+    <string name="need_permission_to_access_audio_files">Benötige Berechtigung um auf Audio-Dateien zugreifen zu können</string>
+    <string name="need_contacts_permission_to_select_message_recipients">Benötige Kontakte-Berechtigung um Nachrichtenempfänger auswählen zu können</string>
+    <string name="need_storage_permission_to_access_all_ringtones">Benötige Speichermedium-Berechtigung um auf alle Klingeltöne zugreifen zu können</string>
+    <string name="xdrip_needs_whitelisting_for_proper_performance">xDrip+ benötigt die Eintragung auf der \"Withelist\" damit es gut funktioniert</string>
 </resources>

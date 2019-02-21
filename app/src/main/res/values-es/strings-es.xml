@@ -797,7 +797,6 @@
     <string name="bluereader_turnoff">Apagado de seguridad</string>
     <string name="blueReader_turnoffvalue">Valor en %</string>
     <string name="blueReader_turnoffvalue_sum">donde se apagará el Bluereader</string>
-    <string name="days">días restantes</string>
     <string name="bluereaderoff">blueReader se apagará, como la batería es más baja entonces </string>
     <string name="bluereader_position">verifica la posición del blueReader en el sensor, ¡ya que no se pudo leer!</string>
     <string name="bluereaderuglystate">El blueReader fué encontrador en estado penoso! Se debe apagar ahora y debes volver a encenderlo (presiona brevemente el botón). Después de eso el BlueReader debería funcionar como se espera!</string>
@@ -992,7 +991,6 @@
     <string name="not_connected">No Conectado</string>
     <string name="no_data">No hay datos</string>
     <string name="no_bluetooth">No hay Bluetooth</string>
-    <string name="connection_status">Estado de la conexión:   </string>
     <string name="without_location_scan_doesnt_work">Sin el permiso de ubicación el escaneo Bluetooth de Android no funciona</string>
     <string name="without_location_permission_emergency_cannot_get_location">Sin permiso de ubicación los mensajes de emergencia no pueden utilizar datos de ubicación</string>
     <string name="please_allow_permission">Por favor, concede permiso</string>

@@ -872,7 +872,6 @@
     <string name="bluereader_turnoff">Emniyet şalteri</string>
     <string name="blueReader_turnoffvalue">Değer %</string>
     <string name="blueReader_turnoffvalue_sum">bluereader nerede kapatılacak</string>
-    <string name="days">dinlenme günü</string>
     <string name="bluereaderoff">pil daha düşük olduğunda, blueReader kapanacaktır </string>
     <string name="bluereader_position">okunamadığından dolayı blueReader\'ın sensör üzerindeki konumunu kontrol edin!</string>
     <string name="bluereaderuglystate">BlueReader ugly state bulundu! O şimdi kapatılacak ve siz onu tekrar açacaksınız (tuşa kısa basın). Bundan sonra blueReader beklenildiği gibi çalışmalıdır!</string>
@@ -1102,7 +1101,6 @@
     <string name="not_connected">Bağlı değil</string>
     <string name="no_data">Veri bulunamadı</string>
     <string name="no_bluetooth">Bluetooth bulunamadı</string>
-    <string name="connection_status">Bağlantı Durumu:   </string>
     <string name="without_location_scan_doesnt_work">Konum izni olmadan, Android Bluetooth taraması çalışmıyacaktır</string>
     <string name="without_location_permission_emergency_cannot_get_location">Konum izni olmadan, acil durum mesajları konum verilerini kullanamaz</string>
     <string name="choose_data_source">Veri Kaynağı Seçin</string>
