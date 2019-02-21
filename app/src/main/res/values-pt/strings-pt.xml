@@ -1200,7 +1200,8 @@
     <string name="title_using_g6">Suporte G6</string>
     <string name="summary_ob1_g5_allow_resetbond">O Dispostivo OB1 pode desagregar se acha que a encripatação falhou. Se tiver problemas com ele, desemparelhe e depois desactive esta opção. Se perder totalmente a ligação, certifique-se de que isto está activado.</string>
     <string name="title_ob1_g5_allow_resetbond">Permitir desagregação OB1</string>
-    <string name="summary_ob1_initiate_bonding_flag">O Dispositivo OB1 pode iniciar a agregação.</string>
+    <string name="summary_ob1_initiate_bonding_flag">O Dispositivo OB1 pode iniciar agregação.</string>
+    <string name="title_ob1_initiate_bonding_flag">Permitir OB1 iniciar agregação</string>
     <string name="title_old_g5_options">Configurações Antigas do Dispositivo G5</string>
     <string name="title_g5g6_battery_options">Opções de bateria G5/G6</string>
     <string name="title_g5_battery_warning_level">Ajustar o nível de alerta da bateria</string>
@@ -1230,7 +1231,8 @@
     <string name="title_desert_use_https">Usar HTTPS</string>
     <string name="title_xdrip_plus_experimental">Secção Experimental</string>
     <string name="summary_inpen_screen">A Descarregar as Dosagens</string>
-    <string name="title_inpen_screen">Caneta InPen Insulin</string>
+    <string name="title_inpen_screen">Caneta Insulina InPen</string>
+    <string name="title_inpen_enabled">Suporte InPen</string>
     <string name="title_inpen_sounds">Reproduzir Sons</string>
     <string name="title_inpen_reset">Procurar Nova Pen</string>
     <string name="title_pendiq_screen">Pendiq 2.0 Insulin Pen</string>
