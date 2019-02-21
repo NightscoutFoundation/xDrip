@@ -1150,7 +1150,9 @@
     <string name="show_help">Mostrar Ajuda</string>
     <string name="load_save_settings_on_sdcard">Carregar / Guardar Definições no Cartão SD</string>
     <string name="delete_all_bg_readings">Eliminar Todas as leituras da Glicemia</string>
+    <string name="debugging_test_feature">Função de teste de Depuração</string>
     <string name="sync_treatments">Sincronizar Tratamentos</string>
+    <string name="return_to_home_screen">Voltar ai Ecrã Inicial</string>
     <string name="title_lefun_band">LeFun Band</string>
     <string name="title_lefun_enable">Usar LeFun Band</string>
     <string name="title_lefun_mac">Endereço MAC</string>
