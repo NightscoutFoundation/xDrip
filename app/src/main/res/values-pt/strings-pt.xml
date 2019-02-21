@@ -1148,6 +1148,7 @@
     <string name="title_tidepool_password">Palavra-passe</string>
     <string name="title_tidepool_test_login">Testar Login no Tidepool</string>
     <string name="title_tidepool_window_latency">Dados Idade Minutos</string>
+    <string name="title_tidepool_dev_servers">Utilizar servidores de integração (teste)</string>
     <string name="title_tidepool">Tidepool</string>
     <string name="show_help">Mostrar Ajuda</string>
     <string name="load_save_settings_on_sdcard">Carregar / Guardar Definições no Cartão SD</string>
@@ -1285,6 +1286,7 @@
     <string name="xbridge_compatible">xBridge compatível</string>
     <string name="classic_simple">Clássico Simples</string>
     <string name="libre">Libre</string>
+    <string name="bluetooth_bridge_device_blucon_limitter_bluereader_tomato_etc">Dispositivo Ponte Bluetooth: Blucon, Bluereader, LimiTTer, Tomato etc</string>
     <string name="librealarm_app_using_sony_smartwatch">App LibreAlarm: a utilizar Sony Smartwatch </string>
     <string name="__data_source_disabled">\n FONTE DE DADOS DESACTIVADA</string>
     <string name="data_source_is_set_to_">Fonte de Dados definida para: </string>
