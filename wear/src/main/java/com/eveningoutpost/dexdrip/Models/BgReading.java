@@ -20,6 +20,7 @@ import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.EGVRecord;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.SensorRecord;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.Services.SyncService;
 import com.eveningoutpost.dexdrip.ShareModels.ShareUploadableBg;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
@@ -1961,7 +1962,10 @@ public class BgReading extends Model implements ShareUploadableBg {
         }
 
         Boolean bg_unclear_readings_alerts = prefs.getBoolean("bg_unclear_readings_alerts", false);
-        if (!bg_unclear_readings_alerts || (!DexCollectionType.hasFiltered())) {
+        if (!bg_unclear_readings_alerts
+                || !DexCollectionType.hasFiltered()
+                || Ob1G5CollectionService.usingG6()
+                || Ob1G5CollectionService.usingNativeMode()) {
             Log.d(TAG_ALERT, "getUnclearReading returned false since feature is disabled");
             UserNotification.DeleteNotificationByType("bg_unclear_readings_alert");
             return false;
