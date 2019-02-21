@@ -1268,6 +1268,7 @@
     <string name="title">Título</string>
     <string name="summary">Resumo</string>
     <string name="auto_refresh">Actualizar auto.</string>
+    <string name="set_up_desert_sync_follower">Configurar seguidor Desert Sync</string>
     <string name="version">Versão:</string>
     <string name="sensor_start">Início Sensor:</string>
     <string name="check_in_dexcom_calibrations">Verificar Calibrações em Dexcom</string>
@@ -1290,6 +1291,7 @@
     <string name="librealarm_app_using_sony_smartwatch">App LibreAlarm: a utilizar Sony Smartwatch </string>
     <string name="__data_source_disabled">\n FONTE DE DADOS DESACTIVADA</string>
     <string name="data_source_is_set_to_">Fonte de Dados definida para: </string>
+    <string name="__do_you_want_to_change_settings_or_start_sensor">\n\nAlterar as Configurações ou Iniciar Sensor?</string>
     <string name="change_settings">Alterar Definições</string>
     <string name="do_you_want_to_delete_and_reset_the_calibrations_for_this_sensor">Eliminar e Reiniciar as Calibrações para este Sensor?</string>
     <string name="use_bg_for_calibration">Utilizar Glicemia para Calibração?</string>
@@ -1302,6 +1304,7 @@
     <string name="are_you_sure_you_want_to_delete_this_blood_test_result">Tem Certeza que Deseja Apagar este Teste de Sangue?</string>
     <string name="yes_delete">Sim, Eliminar</string>
     <string name="deleted">Eliminado!</string>
+    <string name="wifi_sleep_policy_issue">Problema com a Política de Suspensão WiFi</string>
     <string name="maybe_later">Talvez Mais Tarde</string>
     <string name="yes_do_it">SIM, Avançar</string>
     <string name="restore_backup">Restaurar Cópia de Segurança?</string>
@@ -1310,9 +1313,11 @@
     <string name="calibrate">Calibrar</string>
     <string name="confirm_delete">Confirmar Eliminação</string>
     <string name="are_you_sure_you_want_to_delete_this_treatment">Tem Certeza que Deseja Apagar Este Tratamento?</string>
+    <string name="no_data_received_from_master_yet">Ainda sem Dados Recebidos do Mestre</string>
     <string name="last_from_master_">Último do Mestre: </string>
     <string name="prepare_to_test">Prepare para Testar!</string>
     <string name="running_test_with_number_123">A executar teste com número: 123</string>
+    <string name="xdrip_will_not_work_below_android_version_42">xDrip+ não funcionará em versões inferiores a Android 4.2</string>
     <string name="setting_disabled_">Configuração desactivada :)</string>
     <string name="yes_please">SIM, Por Favor</string>
     <string name="automated_calibration_enabled">Calibração Automatizada Activada</string>
