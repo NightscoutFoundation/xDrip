@@ -549,6 +549,11 @@
             android:label="@string/title_activity_maps"
             android:noHistory="true" />
 
+                <activity
+                    android:name=".profileeditor.BasalProfileEditor"
+                    android:configChanges="orientation|keyboardHidden"
+                    android:label="@string/basal_editor"
+                    android:screenOrientation="landscape" />
         <service
             android:name=".Services.DoNothingService"
             android:enabled="true"
