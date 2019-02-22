@@ -42,7 +42,6 @@ import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
 class MediaPlayerCreaterHelper {
     
     private final static String TAG = AlertPlayer.class.getSimpleName();
-
     private final Object creationThreadLock = new Object();
     private volatile boolean mplayerCreated_ = false;
     private volatile MediaPlayer mediaPlayer_ = null;
@@ -99,6 +98,7 @@ public class AlertPlayer {
 
     private final static String TAG = AlertPlayer.class.getSimpleName();
     private volatile MediaPlayer mediaPlayer;
+    private final AudioManager manager = (AudioManager)xdrip.getAppContext().getSystemService(Context.AUDIO_SERVICE);
     volatile int volumeBeforeAlert = -1;
     volatile int volumeForThisAlert = -1;
 
@@ -177,7 +177,7 @@ public class AlertPlayer {
             }
             mediaPlayer = null;
         }
-        revertCurrentVolume(ctx, streamType);
+        revertCurrentVolume(streamType);
     }
 
     // only do something if an alert is active - only call from interactive
@@ -301,30 +301,38 @@ public class AlertPlayer {
         return false;
     }
 
-    private synchronized void playFile(final Context ctx, String fileName, float volumeFrac, boolean forceSpeaker, boolean overrideSilentMode) {
+    private synchronized void playFile(final Context ctx, final String fileName, final float volumeFrac, final boolean forceSpeaker, final boolean overrideSilentMode) {
         Log.i(TAG, "playFile: called fileName = " + fileName);
+        if (volumeFrac <= 0) {
+            UserError.Log.e(TAG, "Not playing file " + fileName + " as requested volume is " + volumeFrac);
+            return;
+        }
 
         if (mediaPlayer != null) {
             Log.i(TAG, "ERROR, playFile:going to leak a mediaplayer !!!");
-            mediaPlayer.release();
+            try {
+                mediaPlayer.release();
+            } catch (IllegalStateException e) {
+                //
+            }
             mediaPlayer = null;
         }
-        
+
         mediaPlayer = new MediaPlayerCreaterHelper().createMediaPlayer(ctx);
-        if(mediaPlayer == null) {
+        if (mediaPlayer == null) {
             Log.wtf(TAG, "MediaPlayerCreaterHelper().createMediaPlayer failed !!");
             return;
         }
-        
+
         boolean setDataSourceSucceeded = false;
-        if(fileName != null && fileName.length() > 0) {
+        if (fileName != null && fileName.length() > 0) {
             setDataSourceSucceeded = setMediaDataSource(ctx, mediaPlayer, Uri.parse(fileName));
         }
-        if (setDataSourceSucceeded == false) {
+        if (!setDataSourceSucceeded) {
             setDataSourceSucceeded = setMediaDataSource(ctx, mediaPlayer, R.raw.default_alert);
         }
-        if(setDataSourceSucceeded == false) {
-            Log.e(TAG, "setMediaDataSource failed");
+        if (!setDataSourceSucceeded) {
+            Log.wtf(TAG, "setMediaDataSource failed - cannot play!");
             return;
         }
 
@@ -333,16 +341,24 @@ public class AlertPlayer {
         try {
             mediaPlayer.setAudioStreamType(streamType);
             mediaPlayer.setOnPreparedListener(mp -> {
-                adjustCurrentVolumeForAlert(ctx, streamType, volumeFrac, overrideSilentMode);
+                adjustCurrentVolumeForAlert(streamType, volumeFrac, overrideSilentMode);
                 mediaPlayer.start();
             });
 
             mediaPlayer.setOnCompletionListener(mp -> {
                 Log.i(TAG, "playFile: onCompletion called (finished playing) ");
-                mediaPlayer.stop();
-                mediaPlayer.release();
+                try {
+                    mediaPlayer.stop();
+                } catch (IllegalStateException e) {
+                    //
+                }
+                try {
+                    mediaPlayer.release();
+                } catch (IllegalStateException e) {
+                    //
+                }
                 mediaPlayer = null;
-                revertCurrentVolume(ctx, streamType);
+                revertCurrentVolume(streamType);
             });
 
             mediaPlayer.prepareAsync();
@@ -353,43 +369,67 @@ public class AlertPlayer {
         }
     }
 
-    private void adjustCurrentVolumeForAlert(Context ctx, int streamType, float volumeFrac, boolean overrideSilentMode) {
-        AudioManager manager = (AudioManager) ctx.getSystemService(Context.AUDIO_SERVICE);
-        int maxVolume = manager.getStreamMaxVolume(streamType);
-        volumeBeforeAlert = manager.getStreamVolume(streamType);
+    private synchronized void adjustCurrentVolumeForAlert(final int streamType, final float volumeFrac, final boolean overrideSilentMode) {
+        final int maxVolume = getMaxVolume(streamType);
+        if (maxVolume < 0) {
+            UserError.Log.wtf(TAG, "Cannot get max volume to adjust current volume!");
+            return;
+        }
+        volumeBeforeAlert = getVolume(streamType);
         volumeForThisAlert = (int) (maxVolume * volumeFrac);
-        Log.i(TAG, "before playing volumeBeforeAlert " + volumeBeforeAlert + " volumeForThisAlert " + volumeForThisAlert);
+        Log.d(TAG, "before playing volumeBeforeAlert " + volumeBeforeAlert + " volumeForThisAlert " + volumeForThisAlert);
+        // adjust volume if we are allowed and it needs adjusting
+        if (volumeForThisAlert != 0
+                && (volumeBeforeAlert <= 0 && overrideSilentMode)
+                || (volumeBeforeAlert > 0 && volumeBeforeAlert != volumeForThisAlert)) {
+
+            setVolume(streamType, volumeForThisAlert);
+        }
+    }
+
+    private synchronized void revertCurrentVolume(final int streamType) {
+        final int currentVolume = getVolume(streamType);
+        Log.d(TAG, "revertCurrentVolume volumeBeforeAlert " + volumeBeforeAlert + " volumeForThisAlert " + volumeForThisAlert
+                + " currentVolume " + currentVolume);
+        if (volumeForThisAlert == currentVolume && volumeBeforeAlert != -1 && volumeForThisAlert != -1) {
+            // If the user has changed the volume, don't change it again.
+            setVolume(streamType, volumeBeforeAlert);
+        }
+        volumeBeforeAlert = -1;
+        volumeForThisAlert = -1;
+    }
+
+    private int getVolume(final int streamType) {
         try {
-            if (volumeBeforeAlert <= 0 && overrideSilentMode) {
-                manager.setStreamVolume(streamType, volumeForThisAlert, 0);
-            }
+            return manager.getStreamVolume(streamType);
+        } catch (Exception e) {
+            UserError.Log.wtf(TAG, "Exception getting volume: " + e);
+            return -1;
+        }
+    }
+
+    private int getMaxVolume(final int streamType) {
+        try {
+            return manager.getStreamMaxVolume(streamType);
+        } catch (Exception e) {
+            UserError.Log.wtf(TAG, "Exception getting max volume: " + e);
+            return -1;
+        }
+    }
+
+    private void setVolume(final int streamType, final int volume) {
+        if (manager == null) {
+            UserError.Log.e(TAG, "AudioManager was null when doing setVolume!");
+            return;
+        }
+        try {
+            manager.setStreamVolume(streamType, volume, 0);
+            Log.d(TAG, "Adjusted volume to: " + volume);
         } catch (SecurityException e) {
             if (JoH.ratelimit("sound volume error", 12000)) {
                 UserError.Log.wtf(TAG, "This device does not allow us to modify the sound volume");
             }
         }
-    }
-
-    private synchronized void revertCurrentVolume(final Context ctx, final int streamType) {
-        AudioManager manager = (AudioManager) ctx.getSystemService(Context.AUDIO_SERVICE);
-        int currentVolume = manager.getStreamVolume(streamType);
-        Log.i(TAG, "revertCurrentVolume volumeBeforeAlert " + volumeBeforeAlert + " volumeForThisAlert " + volumeForThisAlert
-                + " currentVolume " + currentVolume);
-        if (volumeForThisAlert == currentVolume && (volumeBeforeAlert != -1) && (volumeForThisAlert != -1)) {
-            // If the user has changed the volume, don't change it again.
-
-            try {
-                manager.setStreamVolume(streamType, volumeBeforeAlert, 0);
-            } catch (SecurityException e) {
-                if (JoH.ratelimit("sound volume error", 12000)) {
-                    UserError.Log.wtf(TAG, "This device does not allow us to modify the sound volume");
-                }
-            }
-
-        }
-        volumeBeforeAlert = -1;
-        volumeForThisAlert = -1;
-
     }
 
     private PendingIntent notificationIntent(Context ctx, Intent intent){
