@@ -234,5 +234,35 @@
     <string name="summary_has_demigod_mode">Running on a patched rom giving us full control</string>
     <string name="title_has_demigod_mode">DemiGod Mode</string>
     <string name="xdrip_scanning_nfc">xDrip+ Scanning NFC</string>
+    <string name="still_processing_previous_backfill_request">Still processing previous back-fill request!</string>
+    <string name="please_wait">Please wait..</string>
+    <string name="didnt_find_any_glucose_readings_in_that_time_period">Didn't find any glucose readings in that time period</string>
+    <string name="got_calibration_in_the_future__cannot_process">Got calibration in the future - cannot process!</string>
+    <string name="remote_snooze">Remote snooze..</string>
+    <string name="sensor_stopped">Sensor stopped</string>
+    <string name="restarting_collector">Restarting Collector!</string>
+    <string name="follower_deleted_succesfully">Follower deleted succesfully</string>
+    <string name="failed_to_delete_follower">Failed to delete follower</string>
+    <string name="input_not_found_cancelled">Input not found! Cancelled!</string>
+    <string name="cancelled">Cancelled!</string>
+    <string name="no_sensor_found">No sensor found</string>
+    <string name="checksum_failed__retrying">Checksum failed - retrying</string>
+    <string name="scanning">Scanning</string>
+    <string name="librealarm_data_format_appears_incompatible_protocol_changed_or_no_data">LibreAlarm data format appears incompatible!? protocol changed or no data?</string>
+    <string name="please_update_librealarm_to_use_oop_algorithm">Please update LibreAlarm to use OOP algorithm</string>
+    <string name="sensor_clock_has_not_advanced">Sensor clock has not advanced!</string>
+    <string name="sensor_age_has_gone_backwards">Sensor age has gone backwards!!</string>
+    <string name="phone_has_no_nfc_reader">Phone has no NFC reader</string>
+    <string name="nfc_is_not_enabled">NFC is not enabled</string>
+    <string name="phone_nfc_is_having_problems">Phone NFC is having problems!</string>
+    <string name="not_so_quickly_wait_60_seconds">Not so quickly, wait 60 seconds</string>
+    <string name="nfc_diag_timeout">NFC diag timeout</string>
+    <string name="nfc_read_timeout">NFC read timeout</string>
+    <string name="nfc_invalid_data__try_again">NFC invalid data - try again</string>
+    <string name="turned_off_anytag_feature">Turned off any-tag feature</string>
+    <string name="nfc_invalid_data">NFC invalid data</string>
+    <string name="scanned_ok">Scanned OK!</string>
+    <string name="nfc_io_error">NFC IO Error</string>
+    <string name="nfc_error">NFC Error</string>
 
 </resources>
