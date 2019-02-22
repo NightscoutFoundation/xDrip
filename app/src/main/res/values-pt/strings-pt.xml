@@ -73,7 +73,7 @@
     <string name="pref_summary_broadcast_enabled">Ligar transmissão local de dados para que outras aplicações (ex. NightWatch), possam ler novos valores</string>
     <string name="title_activity_share_test">Partilhar Teste</string>
     <!-- pebble settings -->
-    <string name="pref_pebble_trend_watchface">Utilizar Pebble Trend Watchface</string>
+    <string name="pref_pebble_trend_watchface">Usar Pebble Trend Watchface</string>
     <string name="pref_summary_pebble_trend_watchface">Utilizar/instalar Pebble Trend Watchface (experimental)</string>
     <string name="pref_pebble_display_trend">Mostrar Tendência</string>
     <string name="pref_summary_display_trend">Mostrar a tendência glicemica na Watchface xDrip do Pebble.</string>
@@ -243,7 +243,7 @@
     <string name="pref_summary_wear_logs_prefix">Prefixo para entradas de diário do Wear</string>
     <string name="pref_show_treatments">Mostrar Tratamentos</string>
     <string name="pref_summary_show_treatments">Mostrar pontos de Tratamento no gráfico</string>
-    <string name="pref_use_wear_health">Utilizar Dados de Saúde do Wear</string>
+    <string name="pref_use_wear_health">Usar Dados de Saúde do Wear</string>
     <string name="pref_summary_use_wear_health">Receber e mostrar contador de passos e ritmo cardíaco quando disponível</string>
     <string name="pebble_integration">Integração Pebble</string>
     <string name="send_data_to_pebble_watchface">Enviar dados para o Pebble Watchface.</string>
@@ -260,7 +260,7 @@
     <string name="view_recent_errors_warnings">Ver Erros/Avisos Recentes</string>
     <string name="other_settings">Outras Definições</string>
     <string name="older_gratuitous_wakelocks">Outros Wakelocks que podem fazer perder muita bateria mas podem ser necessários pelo NightWatch ou Android Wear</string>
-    <string name="use_excessive_wakelocks">Utilizar Wakelocks excessivos</string>
+    <string name="use_excessive_wakelocks">Usar Wakelocks Excessivos</string>
     <string name="speak_readings">Falar Leituras</string>
     <string name="extra_status_line">Linha Extra de Estado</string>
     <string name="dexcom_share_server_upload">Envio de dados para servidor de partilha Dexcom</string>
@@ -329,7 +329,7 @@
     <string name="save_all_settings_to_sdcard">Guardar todas as Definições no Cartão SD</string>
     <string name="load_all_settings_from_sdcard">Carregar todas as Definições do Cartão SD</string>
     <string name="delete_any_settings_on_sdcard">Apagar todas as definições do Cartão SD</string>
-    <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[Utilizar códigos QR para transferir definições em Definições->Configurar Automaticamente]]></string>
+    <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[Usar códigos QR para transferir definições em Definições->Configurar Automaticamente]]></string>
     <string name="xdrip_plus_security_key_settings_only">Apenas definições de Chave de Segurança xDrip+</string>
     <string name="show_general_and_collection_settings">Mostrar Definições Gerais e de Colecção</string>
     <string name="copy_all_settings">Copiar todas as Definições</string>
@@ -362,7 +362,7 @@
     <string name="sync_parakeet_geolocation">Sincronizar GeoLocalização Parakeet</string>
     <string name="disable_all_sync_features">Desativar todas as sincronizações</string>
     <string name="temporary_work_around_disable_all_sync_detail">Alternativa temporária opcional, pára por completo toda a sincronização. Pode necessitar de reiniciar após ser ligado novamente. Use com cuidado!</string>
-    <string name="automatic_updates_crash_reports_and_feedback">Actualizações automáticas, Relatórios de Erro e envio de Opiniões para os Programadores</string>
+    <string name="automatic_updates_crash_reports_and_feedback">Actualizações Automáticas, Relatórios de Erro e Envio de Opiniões para os Programadores</string>
     <string name="crowd_sourced_translation">Traduções comunitárias</string>
     <string name="please_enter_your_question_or_comments_here">Por favor introduza a sua questão ou comentários..\n\nSe facultar o seu email poderá receber resposta.\n\n</string>
     <string name="optional_contact_info_here_eg_email">Informações de contacto opcionais, ex: email</string>
@@ -795,7 +795,7 @@
     <string name="confirm_remote_snooze">Confirmar Silêncio Remoto</string>
     <string name="are_you_sure_you_wish_to_snooze_all_other_devices_in_your_sync_group">Tem certeza que quer silenciar todos os outros dispositivos no grupo de sincronismo?</string>
     <string name="yes_send_it">SIM, enviar!</string>
-    <string name="movement_detection_and_vehicle_mode">Detecção de movimento e modo veículo</string>
+    <string name="movement_detection_and_vehicle_mode">Detecção de Movimento e Modo Veículo</string>
     <string name="xdrip_motion_tracking">xDrip+ Detecção de Movimento</string>
     <string name="detect_motion_types">Utilizar sensores para detectar tipos de movimento</string>
     <string name="enable_motion_tracking">Activar Detecção de Movimento</string>
