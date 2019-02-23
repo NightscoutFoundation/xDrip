@@ -82,9 +82,6 @@
     <string name="pref_amazfit_enable_summary">启用 Amazfit 数据支持</string>
     <string name="pref_amazfit_enable">启用</string>
     <string name="pref_amazfit_tile">Amazfit 服务</string>
-    <string name="pref_amazfit_alarm_enable_summary">向 Smartwatch 发送警报，并且使手机静音</string>
-    <string name="pref_amazfit_alarm_enable">启用</string>
-    <string name="pref_amazfit_alarm_tile">手表报警</string>
     <string name="toast_crash">发生了错误 :(一个错误报告被发送以修复这个问题.</string>
     <string name="taskerConfigInstruction">只需点击此处的Tick图标进行确认。 您不需要更改配置字符串.</string>
     <string name="taskerConfiguration">任务配置器</string>
@@ -272,7 +269,6 @@
     <string name="start_snoozed">开始延后</string>
     <string name="adjust_all_by_a_factor">调整所有因素</string>
     <string name="reset">重置</string>
-    <string name="pebble_and_android_wear_options">Pebble手表 和 Android Wear 选项</string>
     <string name="customize_colours">自定义颜色</string>
     <string name="xdrip_plus_color_settings">xDrip+ 颜色设置</string>
     <string name="glucose_values_and_lines">血糖值和线</string>
