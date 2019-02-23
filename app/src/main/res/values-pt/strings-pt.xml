@@ -1270,6 +1270,7 @@
     <string name="collecting">a recolher...</string>
     <string name="insulin">insulina</string>
     <string name="nothing_found">sem resultados</string>
+    <string name="do_not_hit_start_long">Não pressione em Iniciar Sensor a menos que o sensor já esteja incorporado e o transmissor conectado.</string>
     <string name="calibration_graph_no_calibration">gráfico de calibração (sem calibração)</string>
     <string name="calibration_plugin_header">Cabeçalho do Plugin de Calibração</string>
     <string name="usb_device_was_not_recognized">Dispositivo USB não foi reconhecido</string>
@@ -1338,6 +1339,8 @@
     <string name="last_from_master_">Último do Mestre: </string>
     <string name="prepare_to_test">Prepare para Testar!</string>
     <string name="running_test_with_number_123">A executar teste com número: 123</string>
+    <string name="unusual_internal_context_problem__please_report">Problema de contexto interno incomum - reporte-o</string>
+    <string name="cannot_start__please_report_context_problem">Não pode iniciar - reporte o problema de contexto</string>
     <string name="xdrip_will_not_work_below_android_version_42">xDrip+ não funcionará em versões inferiores a Android 4.2</string>
     <string name="setting_disabled_">Configuração desactivada :)</string>
     <string name="yes_please">SIM, Por Favor</string>
@@ -1373,6 +1376,7 @@
     <string name="restarting_collector">Reiniciar Dispositivo BT!</string>
     <string name="follower_deleted_succesfully">Seguidor eliminado com sucesso</string>
     <string name="failed_to_delete_follower">Falha ao remover seguidor</string>
+    <string name="input_not_found_cancelled">Entrada não encontrada! Cancelado!</string>
     <string name="cancelled">Cancelado!</string>
     <string name="no_sensor_found">Sensor Não Encontrado</string>
     <string name="checksum_failed__retrying">Falha na Verificação - a tentar novamente</string>
