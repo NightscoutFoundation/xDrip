@@ -47,6 +47,7 @@ import com.eveningoutpost.dexdrip.evaluators.PersistentHigh;
 import com.eveningoutpost.dexdrip.ui.NumberGraphic;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.PowerStateReceiver;
+import com.eveningoutpost.dexdrip.wearintegration.Amazfitservice;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.Date;
@@ -990,6 +991,11 @@ public class Notifications extends IntentService {
             //Log.d(TAG, "Notify");
             Log.ueh("Other Alert",message);
             mNotifyMgr.notify(notificatioId, XdripNotificationCompat.build(mBuilder));
+
+            if (Pref.getBooleanDefaultFalse("pref_amazfit_enable_key")
+                    && Pref.getBooleanDefaultFalse("pref_amazfit_other_alert_enable_key")) {
+                Amazfitservice.start("xDrip_Otheralert", message, 30);
+            }
         }
     }
 

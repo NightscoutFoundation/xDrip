@@ -216,20 +216,84 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:title="@string/amazfit_sync_service">
-            <SwitchPreference
+            <CheckBoxPreference
                 android:defaultValue="false"
                 android:disableDependentsState="false"
                 android:key="pref_amazfit_enable_key"
                 android:summary="@string/pref_amazfit_enable_summary"
                 android:title="@string/pref_amazfit_tile" />
-            <SwitchPreference
+            <CheckBoxPreference
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:defaultValue="false"
                 android:dependency="pref_amazfit_enable_key"
-                android:key="pref_amazfit_alarm_enable_key"
-                android:summary="@string/pref_amazfit_alarm_enable_summary"
-                android:title="@string/pref_amazfit_alarm_tile" />
+                android:key="pref_amazfit_BG_alert_enable_key"
+                android:summary="@string/pref_amazfit_BG_alert_enable_summary"
+                android:title="@string/pref_amazfit_BG_alert_title" />
+            <CheckBoxPreference
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:defaultValue="false"
+                android:dependency="pref_amazfit_enable_key"
+                android:key="pref_amazfit_other_alert_enable_key"
+                android:summary="@string/pref_amazfit_other_alert_enable_summary"
+                android:title="@string/pref_amazfit_other_alert_title" />
+            <PreferenceCategory
+                android:key="Amazfit_Watchface"
+                android:title="@string/pref_amazfit_watchface_settings">
+                <CheckBoxPreference
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:defaultValue="false"
+                    android:dependency="pref_amazfit_enable_key"
+                    android:key="pref_amazfit_watchface_graph"
+                    android:summary="@string/pref_amazfit_watchface_graph_enable_summary"
+                    android:title="@string/pref_amazfit_watchface_graph_title" />
+                <CheckBoxPreference
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:defaultValue="false"
+                    android:dependency="pref_amazfit_watchface_graph"
+                    android:key="pref_amazfit_watchface_graph_dots"
+                    android:summary="@string/pref_amazfit_watchface_graph_dots_summary"
+                    android:title="@string/pref_amazfit_watchface_graph_dots_title" />
+                <EditTextPreference
+                    android:defaultValue="4"
+                    android:dependency="pref_amazfit_watchface_graph"
+                    android:digits="0123456789"
+                    android:inputType="number"
+                    android:key="amazfit_watchface_graph_hours"
+                    android:summary="@string/pref_amazfit_widget_graph_hours_summary"
+                    android:title="@string/pref_amazfit_watchface_graph_hours_title" />
+            </PreferenceCategory>
+            <PreferenceCategory
+                android:key="Amazfit_Widget"
+                android:title="@string/pref_amazfit_widget_settings">
+                <CheckBoxPreference
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:defaultValue="false"
+                    android:dependency="pref_amazfit_enable_key"
+                    android:key="pref_amazfit_widget_graph"
+                    android:summary="@string/pref_amazfit_widget_graph_enable_summary"
+                    android:title="@string/pref_amazfit_widget_graph_title" />
+                <CheckBoxPreference
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:defaultValue="false"
+                    android:dependency="pref_amazfit_widget_graph"
+                    android:key="pref_amazfit_widget_graph_dots"
+                    android:summary="@string/pref_amazfit_widget_graph_dots_summary"
+                    android:title="@string/pref_amazfit_widget_graph_dots_title" />
+                <EditTextPreference
+                    android:defaultValue="4"
+                    android:dependency="pref_amazfit_widget_graph"
+                    android:digits="0123456789"
+                    android:inputType="number"
+                    android:key="amazfit_widget_graph_hours"
+                    android:summary="@string/pref_amazfit_widget_graph_hours_summary"
+                    android:title="@string/pref_amazfit_widget_graph_hours_title" />
+            </PreferenceCategory>
         </PreferenceScreen>
 
         <PreferenceScreen

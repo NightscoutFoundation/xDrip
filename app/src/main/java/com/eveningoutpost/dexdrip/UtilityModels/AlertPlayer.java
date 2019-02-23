@@ -29,6 +29,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleWatchSync;
 import com.eveningoutpost.dexdrip.eassist.AlertTracker;
 import com.eveningoutpost.dexdrip.watch.lefun.LeFun;
 import com.eveningoutpost.dexdrip.watch.lefun.LeFunEntry;
+import com.eveningoutpost.dexdrip.wearintegration.Amazfitservice;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.eveningoutpost.dexdrip.xdrip;
 
@@ -199,8 +200,14 @@ public class AlertPlayer {
     //  default signature for user initiated interactive snoozes only
     public synchronized void Snooze(Context ctx, int repeatTime) {
         Snooze(ctx, repeatTime, true);
+
         if (Pref.getBooleanDefaultFalse("bg_notifications_watch") ) {
             startWatchUpdaterService(ctx, WatchUpdaterService.ACTION_SNOOZE_ALERT, TAG, "repeatTime", "" + repeatTime);
+        }
+        if (Pref.getBooleanDefaultFalse("pref_amazfit_enable_key")
+                && Pref.getBooleanDefaultFalse("pref_amazfit_BG_alert_enable_key")) {
+            Amazfitservice.start("xDrip_AlarmCancel");
+
         }
     }
 
@@ -555,6 +562,12 @@ public class AlertPlayer {
             if (JoH.ratelimit("pebble_vibe_start", 59)) {
                 JoH.startService(PebbleWatchSync.class);
             }
+        }
+
+        //send alert to amazfit
+        if (Pref.getBooleanDefaultFalse("pref_amazfit_enable_key")
+                && Pref.getBooleanDefaultFalse("pref_amazfit_BG_alert_enable_key")) {
+            Amazfitservice.start("xDrip_Alarm", alert.name, alert.default_snooze);
         }
 
         if (LeFunEntry.areAlertsEnabled() && ActiveBgAlert.currentlyAlerting()) {
