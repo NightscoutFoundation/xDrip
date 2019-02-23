@@ -62,7 +62,6 @@
     <string name="pref_pebble_display_low_line">הצג קו נמוך</string>
     <!-- Amazfit Settings -->
     <string name="pref_amazfit_enable">אפשר</string>
-    <string name="pref_amazfit_alarm_enable">אפשר</string>
     <string name="title_activity_alert_list">רשימת ההתראות</string>
     <string name="title_activity_update">קיים עדכון גרסא לxdrip+</string>
     <string name="title_activity_send_feed_back">שלח פידבק לjamorham</string>
