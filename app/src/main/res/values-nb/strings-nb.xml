@@ -254,7 +254,6 @@
     <string name="start_snoozed">Start Utsatt</string>
     <string name="adjust_all_by_a_factor">Juster alle med en faktor</string>
     <string name="reset">Tilbakestill</string>
-    <string name="pebble_and_android_wear_options">Pebble og Android Wear alternativer</string>
     <string name="customize_colours">Tilpass farger</string>
     <string name="xdrip_plus_color_settings">xDrip+ fargeinnstillinger</string>
     <string name="glucose_values_and_lines">Glukoseverdier og linjer</string>
