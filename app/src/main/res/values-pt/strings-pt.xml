@@ -85,11 +85,15 @@
     <string name="pref_amazfit_enable">Activar</string>
     <string name="pref_amazfit_tile">Serviço Amazfit</string>
     <string name="pref_amazfit_BG_alert_enable">Activar</string>
+    <string name="pref_amazfit_BG_alert_title">Alertas Glicemia</string>
     <string name="pref_amazfit_other_alert_enable">Activar</string>
     <string name="pref_amazfit_other_alert_title">Outros Alertas</string>
+    <string name="pref_amazfit_watchface_graph_dots_title">Pontos Gráficos Watchface</string>
     <string name="pref_amazfit_watchface_graph_enable">Activar</string>
+    <string name="pref_amazfit_watchface_graph_title">Gráfico Watchface</string>
     <string name="pref_amazfit_watchface_graph_hours_title">Gráfico Watchface</string>
     <string name="pref_amazfit_widget_graph_hours_title">Gráfico do Widget</string>
+    <string name="pref_amazfit_widget_graph_dots_title">Pontos Gráficos do Widget</string>
     <string name="pref_amazfit_widget_graph_enable">Activar</string>
     <string name="pref_amazfit_widget_graph_title">Gráfico do Widget</string>
     <string name="pref_amazfit_widget_graph_enable_summary">Mostrar Gráfico no Widget</string>
