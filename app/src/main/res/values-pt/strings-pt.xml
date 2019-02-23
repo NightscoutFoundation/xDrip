@@ -84,6 +84,15 @@
     <string name="pref_amazfit_enable_summary">Activar o suporte de dados do Amazfit</string>
     <string name="pref_amazfit_enable">Activar</string>
     <string name="pref_amazfit_tile">Serviço Amazfit</string>
+    <string name="pref_amazfit_BG_alert_enable">Activar</string>
+    <string name="pref_amazfit_other_alert_enable">Activar</string>
+    <string name="pref_amazfit_other_alert_title">Outros Alertas</string>
+    <string name="pref_amazfit_watchface_graph_enable">Activar</string>
+    <string name="pref_amazfit_watchface_graph_hours_title">Gráfico Watchface</string>
+    <string name="pref_amazfit_widget_graph_hours_title">Gráfico do Widget</string>
+    <string name="pref_amazfit_widget_graph_enable">Activar</string>
+    <string name="pref_amazfit_widget_graph_title">Gráfico do Widget</string>
+    <string name="pref_amazfit_widget_graph_enable_summary">Mostrar Gráfico no Widget</string>
     <string name="toast_crash">Aconteceu um erro :( foi enviado um relatório para ajudar a corrigir o problema.</string>
     <string name="taskerConfigInstruction">Clique no ícone de Visto para confirmar. Não deve ser necessário alterar o valor de definição.</string>
     <string name="taskerConfiguration">Configuração Tasker</string>
