@@ -84,9 +84,6 @@
     <string name="pref_amazfit_enable_summary">Activar o suporte de dados do Amazfit</string>
     <string name="pref_amazfit_enable">Activar</string>
     <string name="pref_amazfit_tile">Serviço Amazfit</string>
-    <string name="pref_amazfit_alarm_enable_summary">Envia alarmes para Smartwatch e silencia o telefone</string>
-    <string name="pref_amazfit_alarm_enable">Activar</string>
-    <string name="pref_amazfit_alarm_tile">Alarme do Relógio</string>
     <string name="toast_crash">Aconteceu um erro :( foi enviado um relatório para ajudar a corrigir o problema.</string>
     <string name="taskerConfigInstruction">Clique no ícone de Visto para confirmar. Não deve ser necessário alterar o valor de definição.</string>
     <string name="taskerConfiguration">Configuração Tasker</string>
@@ -274,7 +271,6 @@
     <string name="start_snoozed">Iniciar Silenciado</string>
     <string name="adjust_all_by_a_factor">Ajustar todos por um factor</string>
     <string name="reset">Reiniciar</string>
-    <string name="pebble_and_android_wear_options">Opções Pebble e Android Wear</string>
     <string name="customize_colours">Personalizar Cores</string>
     <string name="xdrip_plus_color_settings">Definições de Cores xDrip+</string>
     <string name="glucose_values_and_lines">Valores de Glicemia e Linhas</string>
