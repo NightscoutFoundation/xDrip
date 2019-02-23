@@ -227,7 +227,6 @@
     <string name="start_snoozed">스누즈 시작</string>
     <string name="adjust_all_by_a_factor">인자(factor)로 모두 조절</string>
     <string name="reset">리셋</string>
-    <string name="pebble_and_android_wear_options">Pebble &amp; Android Wear 옵션</string>
     <string name="customize_colours">색상 사용자 정의</string>
     <string name="xdrip_plus_color_settings">xDrip+ 색상 세팅</string>
     <string name="glucose_values_and_lines">혈당 수치 및 선</string>
