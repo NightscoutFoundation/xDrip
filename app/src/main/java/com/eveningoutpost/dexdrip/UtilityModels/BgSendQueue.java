@@ -106,8 +106,12 @@ public class BgSendQueue extends Model {
         handleNewBgReading(bgReading, operation_type, context, is_follower, false);
     }
 
+    public static void handleNewBgReading(BgReading bgReading, String operation_type, Context context, boolean is_follower, boolean quick) {
+        handleNewBgReading(bgReading, operation_type, context, is_follower, quick, quick);
+    }
+
     // TODO extract to non depreciated class
-    public static void handleNewBgReading(final BgReading bgReading, String operation_type, Context context, boolean is_follower, boolean quick) {
+    public static void handleNewBgReading(final BgReading bgReading, String operation_type, Context context, boolean is_follower, boolean quick, boolean quickui) {
         if (bgReading == null) {
             UserError.Log.wtf("BgSendQueue", "handleNewBgReading called with null bgReading!");
             return;
@@ -121,7 +125,7 @@ public class BgSendQueue extends Model {
             //}
 
             // all this other UI stuff probably shouldn't be here but in lieu of a better method we keep with it..
-            if (!quick) {
+            if (!quickui) {
                 if (Home.activityVisible) {
                     context.sendBroadcast(new Intent(Intents.ACTION_NEW_BG_ESTIMATE_NO_DATA));
                 }

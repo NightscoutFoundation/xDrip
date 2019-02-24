@@ -124,8 +124,8 @@ public class NewDataObserver {
     // share uploader
     private static void uploadToShare(BgReading bgReading, boolean is_follower) {
         if ((!is_follower) && (Pref.getBooleanDefaultFalse("share_upload"))) {
-            if (JoH.ratelimit("sending-to-share-upload", 10)) {
-                UserError.Log.d("ShareRest", "About to call ShareRest!!");
+            if (JoH.ratelimit("sending-to-share-upload", 10) || Home.get_enable_wear()) {
+                UserError.Log.d("ShareRest", "About to call ShareRest!! " + JoH.dateTimeText(bgReading.timestamp) + " BG: " + bgReading.calculated_value);
                 String receiverSn = Pref.getString("share_key", "SM00000000").toUpperCase();
                 BgUploader bgUploader = new BgUploader(xdrip.getAppContext());
                 bgUploader.upload(new ShareUploadPayload(receiverSn, bgReading));
