@@ -79,7 +79,7 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
                 if ((gd.realDate < oldest) || (oldest == -1)) oldest = gd.realDate;
                 if ((gd.realDate > newest) || (newest == -1)) newest = gd.realDate;
 
-                if (BgReading.getForPreciseTimestamp(gd.realDate, segmentation_timeslice) == null) {
+                if (BgReading.getForPreciseTimestamp(gd.realDate, segmentation_timeslice, false) == null) {
                     Log.d(TAG, "Creating bgreading at: " + JoH.dateTimeText(gd.realDate));
                     BgReading.create(converted, converted, xdrip.getAppContext(), gd.realDate, quick); // quick lite insert
                 } else {
