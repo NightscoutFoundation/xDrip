@@ -205,6 +205,9 @@
     <string name="glucose_history">היסטורית הסוכר</string>
     <string name="import_database">ייבא את בסיס הנתונים</string>
     <string name="sensor_table">טבלאת הסנסורים</string>
+    <string name="bg_readings_table">טבלאת ערכי סוכר</string>
+    <string name="long_press_to_split_or_delete">לחיצה ארוכה לפצל או לבטל</string>
+    <string name="get_notified_of_new_apk_releases">קבל הודעות על גרסאות חדשות</string>
     <string name="choose_stable_beta_or_alpha_releases">בחר בגרסה יציבה, בטא או אלפא</string>
     <string name="be_master_for_followers">היה מאסטר עבור העוקבים</string>
     <string name="this_device_will_send_data_to_followers">התקן זה ישלח מידע לעוקבים</string>
@@ -292,6 +295,7 @@
     <string name="auto_turn_on_bluetooth">הפעלה אוטומטית של הבלוטוס כאשר ננסה להתחבר להתקן בלוטוס</string>
     <string name="todays_average_value">הערך הממוצע של היום.</string>
     <string name="received_readings_percentage">אחוז הקריאות שהתקבלו מהסנסור</string>
+    <string name="received_realtime_readings_percentage">אחוז קריאות הסנסור שהתקבלו בזמן אמת (לא הושלמו מאוחר יותר). G5 אלגוריתם מקורי בלבד</string>
     <string name="allow_sensor_scanning">אפשר סריקה של סנסורים כאשר האפליקציה פתוחה. שים לב, זה עלול להרוס את הסנסור. בדוק שעובד על סנסור שעומד להסתיים. מומלץ לעבור למצב טיסה לפני הסריקה. ראה הוזהרת!</string>
     <string name="g5_debug_settings">הגדרות דיבאג של G5/G6</string>
     <string name="cloud_upload">העלאה לענן</string>
@@ -324,6 +328,7 @@
     <string name="tomato">מיומיו</string>
     <string name="reminders">תזכורות</string>
     <string name="stop_sensor">עצור סנסור</string>
+    <string name="dont_stop_just_reset_all_calibrations">אל תעצור, רק אפס את כל הכיולים</string>
     <string name="initial_calibration">כיול התחלתי</string>
     <string name="note_search">חיפוש הערה</string>
     <string name="bluetooth_scan">Bluetooth סריקת</string>
@@ -341,6 +346,7 @@
     <string name="play_sound_when_ready_for_calibration">השמע קול כשמוכן לכיול</string>
     <string name="receiving_data_from_collector">מקבל קריאות מקורא %s</string>
     <!-- trend arrow for speak -->
+    <string name="bluereader_position">בדוק את המיקום של הbluereader על הסנסור, כי הוא לא הצליח לקרוא!</string>
     <string name="offical_msg">האפליקציה הרשמית</string>
     <string name="yes">כן</string>
     <string name="set_data_source_to">קבע את סוג הסנסור ל%s ?</string>
@@ -407,6 +413,13 @@
     <string name="need_permission_to_access_audio_files">דרושה הרשאה לאחסון כדי לגשת לקבצי קול</string>
     <string name="xdrip_needs_whitelisting_for_proper_performance">xDrip + צריך להיות מחוץ לאופטימזציה של הסוללה בכדי לפעול נכון</string>
     <string name="use_mobile_data">השתמש בחבילת גלישה</string>
+    <string name="summary_ob1_g5_restart_sensor">הפעל את הסנסור בצורה אוטומטית כאשר הוא מפסיק</string>
+    <string name="do_not_hit_start_long">אל תלחץ התחל סנסור עד שהסנסור לא מוכנס והמשדר מחובר.</string>
+    <string name="description_sensor_location">בעתיד xdrip ישלח נתונים אנונימים למפתחים בשביל לשפר את דיוק אלגוריתם הכיול... אם תחליט להצטרף תתבקש לאשר כל שליחה של נתונים. לעולם לא ישלח מידע בלי רשותך. בכדי לעזור לנו להבין ולשפר את אלגוריתם הכיול נרצה לדעת איפה הסנסור ממוקם. לחץ על כפתור החזרה בשביל לבטל.</string>
     <string name="important_warning">אזהרה חשובה!</string>
     <string name="i_agree">אני מסכים</string>
+    <string name="__do_you_want_to_change_settings_or_start_sensor">\n\n אתה רוצה לשנות הגדרות או להתחיל את הסנסור?</string>
+    <string name="sensor_clock_has_not_advanced">השעון הפנימי של הסנסור לא התקדם!</string>
+    <string name="sensor_stopped">הסנסור נעצר</string>
+    <string name="no_sensor_found">הסנסור לא נמצא</string>
 </resources>
