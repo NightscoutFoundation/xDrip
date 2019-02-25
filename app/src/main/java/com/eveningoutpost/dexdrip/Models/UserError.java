@@ -113,16 +113,6 @@ public class UserError extends Model {
        new Cleanup().execute(deletable());
     }
 
-    public static void cleanup(long timestamp) {
-        List<UserError> userErrors = new Select()
-                .from(UserError.class)
-                .where("timestamp < ?", timestamp)
-                .orderBy("timestamp desc")
-                .execute();
-        if (userErrors != null) Log.d(TAG, "cleanup UserError size=" + userErrors.size());
-        new Cleanup().execute(userErrors);
-    }
-
     public static List<UserError> all() {
         return new Select()
                 .from(UserError.class)
