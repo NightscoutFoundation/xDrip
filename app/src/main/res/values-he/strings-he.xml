@@ -17,7 +17,7 @@
     <string name="title_activity_calculated_data_table">טבלת נתונים מחושבים</string>
     <string name="title_activity_start_new_sensor">התחל סנסור חדש</string>
     <string name="title_activity_new_sensor_location">מיקום הסנסור החדש</string>
-    <string name="title_activity_stop_sensor">הפסק סנסור</string>
+    <string name="title_activity_stop_sensor">עצור סנסור</string>
     <string name="snooze">השתק</string>
     <string name="snooze_hint">השתק התראה ל-x דקות</string>
     <string name="ok">אישור</string>
