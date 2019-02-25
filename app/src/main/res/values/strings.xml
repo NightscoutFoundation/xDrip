@@ -876,7 +876,7 @@
     <string name="install_text_to_speech_data_question">Install Text-To-Speech Data?</string>
     <string name="after_installation_of_languages_you_might_have_to">(After installation of languages you might have to press \"Restart Collector\" in System Status.)</string>
     <string name="stop_sensor">Stop Sensor</string>
-    <string name="dont_stop_just_reset_all_calibrations">Don't stop, just Reset all Calibrations</string>
+    <string name="dont_stop_just_reset_all_calibrations">Don\'t stop, just Reset all Calibrations</string>
     <string name="initial_calibration">Initial Calibration</string>
     <string name="calibration_can_not_be_blank">Calibration can not be blank</string>
     <string name="invalid_calibration_number">Invalid calibration number!</string>
@@ -1441,11 +1441,11 @@
     <string name="yes_delete">Yes, Delete</string>
     <string name="deleted">Deleted!</string>
     <string name="wifi_sleep_policy_issue">WiFi Sleep Policy Issue</string>
-    <string name="your_wifi_is_set_to_sleep_when_the_phone_screen_is_off__this_may_cause_problems_if_you_dont_have_cellular_data_or_have_devices_on_your_local_network__would_you_like_to_go_to_the_settings_page_to_set__always_keep_wifi_on_during_sleep">Your WiFi is set to sleep when the phone screen is off.\n\nThis may cause problems if you don't have cellular data or have devices on your local network.\n\nWould you like to go to the settings page to set:\n\nAlways Keep WiFi on during Sleep?</string>
+    <string name="your_wifi_is_set_to_sleep_when_the_phone_screen_is_off__this_may_cause_problems_if_you_dont_have_cellular_data_or_have_devices_on_your_local_network__would_you_like_to_go_to_the_settings_page_to_set__always_keep_wifi_on_during_sleep">Your WiFi is set to sleep when the phone screen is off.\n\nThis may cause problems if you don\'t have cellular data or have devices on your local network.\n\nWould you like to go to the settings page to set:\n\nAlways Keep WiFi on during Sleep?</string>
     <string name="maybe_later">Maybe Later</string>
     <string name="yes_do_it">YES, Do it</string>
     <string name="recommend_that_you_change_wifi_to_always_be_on_during_sleep">Recommend that you change WiFi to always be on during sleep</string>
-    <string name="ooops_this_device_doesnt_seem_to_have_a_wifi_settings_page">Ooops this device doesn't seem to have a wifi settings page!</string>
+    <string name="ooops_this_device_doesnt_seem_to_have_a_wifi_settings_page">Ooops this device doesn\'t seem to have a wifi settings page!</string>
     <string name="restore_backup">Restore Backup?</string>
     <string name="do_you_want_to_restore_the_backup_file_">Do you want to restore the backup file: </string>
     <string name="restore">Restore</string>
@@ -1492,7 +1492,7 @@
     <string name="nfc_error">NFC Error</string>
     <string name="still_processing_previous_backfill_request">Still processing previous back-fill request!</string>
     <string name="please_wait">Please wait..</string>
-    <string name="didnt_find_any_glucose_readings_in_that_time_period">Didn't find any glucose readings in that time period</string>
+    <string name="didnt_find_any_glucose_readings_in_that_time_period">Didn\'t find any glucose readings in that time period</string>
     <string name="got_calibration_in_the_future__cannot_process">Got calibration in the future - cannot process!</string>
     <string name="remote_snooze">Remote snooze..</string>
     <string name="sensor_stopped">Sensor stopped</string>
