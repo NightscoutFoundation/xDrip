@@ -106,12 +106,8 @@ public class BgSendQueue extends Model {
         handleNewBgReading(bgReading, operation_type, context, is_follower, false);
     }
 
-    public static void handleNewBgReading(BgReading bgReading, String operation_type, Context context, boolean is_follower, boolean quick) {
-        handleNewBgReading(bgReading, operation_type, context, is_follower, quick, quick);
-    }
-
     // TODO extract to non depreciated class
-    public static void handleNewBgReading(final BgReading bgReading, String operation_type, Context context, boolean is_follower, boolean quick, boolean quickui) {
+    public static void handleNewBgReading(final BgReading bgReading, String operation_type, Context context, boolean is_follower, boolean quick) {
         if (bgReading == null) {
             UserError.Log.wtf("BgSendQueue", "handleNewBgReading called with null bgReading!");
             return;
@@ -125,7 +121,7 @@ public class BgSendQueue extends Model {
             //}
 
             // all this other UI stuff probably shouldn't be here but in lieu of a better method we keep with it..
-            if (!quickui) {
+            if (!quick) {
                 if (Home.activityVisible) {
                     context.sendBroadcast(new Intent(Intents.ACTION_NEW_BG_ESTIMATE_NO_DATA));
                 }
@@ -146,10 +142,7 @@ public class BgSendQueue extends Model {
                     JoH.getWakeLock("broadcstNightWatch", 3000);
                 }
 
-
-            if (!quick) {
-                NewDataObserver.newBgReading(bgReading, is_follower);
-            }
+            NewDataObserver.newBgReading(bgReading, is_follower, quick);
 
             if ((!is_follower) && (Pref.getBoolean("plus_follow_master", false))) {
                 if (Pref.getBoolean("display_glucose_from_plugin", false))

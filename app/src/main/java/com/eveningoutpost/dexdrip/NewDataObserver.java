@@ -38,18 +38,20 @@ public class NewDataObserver {
     // TODO move appropriate functions in to their responsible classes
 
     // when we receive new glucose reading we want to propagate
-    public static void newBgReading(BgReading bgReading, boolean is_follower) {
+    public static void newBgReading(BgReading bgReading, boolean is_follower, boolean quick) {
 
-        sendToPebble();
-        sendToWear();
-        sendToAmazfit();
-        sendToLeFun();
-        Notifications.start();
-        uploadToShare(bgReading, is_follower);
-        textToSpeech(bgReading, null);
-        LibreBlock.UpdateBgVal(bgReading.timestamp, bgReading.calculated_value);
-        LockScreenWallPaper.setIfEnabled();
-        TidepoolEntry.newData();
+        if (!quick) {
+            sendToPebble();
+            sendToWear();
+            sendToAmazfit();
+            sendToLeFun();
+            Notifications.start();
+            textToSpeech(bgReading, null);
+            LibreBlock.UpdateBgVal(bgReading.timestamp, bgReading.calculated_value);
+            LockScreenWallPaper.setIfEnabled();
+            TidepoolEntry.newData();
+        }
+        uploadToShare(bgReading, is_follower, quick);
 
     }
 
@@ -122,9 +124,9 @@ public class NewDataObserver {
     }
 
     // share uploader
-    private static void uploadToShare(BgReading bgReading, boolean is_follower) {
+    private static void uploadToShare(BgReading bgReading, boolean is_follower, boolean quick) {
         if ((!is_follower) && (Pref.getBooleanDefaultFalse("share_upload"))) {
-            if (JoH.ratelimit("sending-to-share-upload", 10) || Home.get_enable_wear()) {
+            if (JoH.ratelimit("sending-to-share-upload", 10) || quick) {
                 UserError.Log.d("ShareRest", "About to call ShareRest!! " + JoH.dateTimeText(bgReading.timestamp) + " BG: " + bgReading.calculated_value);
                 String receiverSn = Pref.getString("share_key", "SM00000000").toUpperCase();
                 BgUploader bgUploader = new BgUploader(xdrip.getAppContext());

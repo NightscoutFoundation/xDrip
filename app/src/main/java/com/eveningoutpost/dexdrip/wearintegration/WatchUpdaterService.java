@@ -413,7 +413,7 @@ public class WatchUpdaterService extends WearableListenerService implements
                                     Log.d(TAG, "Saving new synced pre-calculated bg-reading: " + JoH.dateTimeText(bgData.timestamp) + " last entry: " + (idx == count) + " " + BgGraphBuilder.unitized_string_static(bgData.calculated_value));
                                     bgData.sensor = current_sensor;
                                     bgData.save();
-                                    BgSendQueue.handleNewBgReading(bgData, "create", xdrip.getAppContext(), Home.get_follower(), false, idx != count);
+                                    BgSendQueue.handleNewBgReading(bgData, "create", xdrip.getAppContext(), Home.get_follower(), idx != count);
                                 } else {
                                     Log.d(TAG, "BgReading for timestamp already exists: " + JoH.dateTimeText(bgData.timestamp));
                                 }
