@@ -1164,6 +1164,7 @@
     <string name="delete_all_bg_readings">Eliminar Todas as leituras da Glicemia</string>
     <string name="debugging_test_feature">Função de teste de Depuração</string>
     <string name="sync_treatments">Sincronizar Tratamentos</string>
+    <string name="view_old_error_log">Ver Registo de Erro antigo</string>
     <string name="return_to_home_screen">Voltar ao Ecrã Inicial</string>
     <string name="title_lefun_band">LeFun Band</string>
     <string name="summary_lefun_enable">Sincronizar Dados com Banda de Fitness LeFun</string>
