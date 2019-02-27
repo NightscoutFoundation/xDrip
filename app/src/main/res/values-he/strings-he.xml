@@ -360,7 +360,6 @@
     <string name="emergency_messages">הודעות בחירום</string>
     <string name="sensor_is_still_warming_up_please_wait">הסנסור עדין מתחמם, אנא המתן</string>
     <string name="summary_Shared_Secret_for_open_web_service">Shared Secret for open web service (should match your Nightcout API secret)</string>
-    <string name="summary_Scan_before_connecting_on_xBridge_and_Libre_bluetooth">בצע סריקת בלוטוס לפני התחברות בליברה ובxBridge</string>
     <string name="summary_write_Battery_Information_for_additional_analytic">רשום את האינפורמציה של הבטריה לצורך ניתוח נוסף. בבקשה השתמש במידע זה רק אם תתבקש לכך על ידי אחד המפתחים!</string>
     <string name="summary_allow_testing_with_dead_sensor">אפשר בדיקות עם סנסור שיצא משימוש</string>
     <string name="title_You_have_no_reminders_yet">אין לך תזכורות עדיין</string>
