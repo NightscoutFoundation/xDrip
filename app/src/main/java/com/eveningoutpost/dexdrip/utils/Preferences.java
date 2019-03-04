@@ -10,6 +10,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -27,11 +28,18 @@ import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.preference.RingtonePreference;
 import android.preference.SwitchPreference;
+import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.text.InputFilter;
 import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.BaseAdapter;
 import android.widget.Toast;
 
+import com.bytehamster.lib.preferencesearch.SearchConfiguration;
+import com.bytehamster.lib.preferencesearch.SearchPreferenceResult;
+import com.bytehamster.lib.preferencesearch.SearchPreferenceResultListener;
 import com.eveningoutpost.dexdrip.BasePreferenceActivity;
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
@@ -87,6 +95,7 @@ import net.tribe7.common.base.Joiner;
 
 import java.net.URI;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -101,10 +110,10 @@ import java.util.Map;
  * href="http://developer.android.com/guide/topics/ui/settings.html">Settings
  * API Guide</a> for more information on developing a Settings UI.
  */
-public class Preferences extends BasePreferenceActivity {
+public class Preferences extends BasePreferenceActivity implements SearchPreferenceResultListener {
     private static final String TAG = "jamorham PREFS";
     private static byte[] staticKey;
-    private AllPrefsFragment preferenceFragment;
+    private volatile AllPrefsFragment preferenceFragment;
 
     private static Preference units_pref;
     private static String static_units;
@@ -124,6 +133,41 @@ public class Preferences extends BasePreferenceActivity {
         pFragment = this.preferenceFragment;
         getFragmentManager().beginTransaction().replace(android.R.id.content,
                 this.preferenceFragment).commit();
+    }
+
+    public static List<String> getAllPreferenceKeys(final PreferenceGroup parent) {
+        final List<Preference> source = getAllPreferences(parent);
+        final List<String> results = new ArrayList<>(source.size());
+        for (final Preference preference : source) {
+            results.add(preference.getKey());
+        }
+        return results;
+    }
+
+    public static List<Preference> getAllPreferences(final PreferenceGroup parent) {
+        final int preferenceCount = parent.getPreferenceCount();
+        final List<Preference> results = new ArrayList<>(preferenceCount);
+        for (int i = 0; i < preferenceCount; i++) {
+            final Preference preference = parent.getPreference(i);
+            results.add(preference);
+            if (preference instanceof PreferenceGroup) {
+                // recurse
+                results.addAll(getAllPreferences((PreferenceGroup)preference));
+            }
+        }
+        return results;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    @Override
+    public void onSearchResultClicked(@NonNull SearchPreferenceResult searchPreferenceResult) {
+        try {
+            searchPreferenceResult.closeSearchPage(this);
+            searchPreferenceResult.highlight(this.preferenceFragment, Color.YELLOW);
+        } catch (RuntimeException e) {
+            Log.wtf(TAG, "Got error trying to highlight search results: " + e);
+            JoH.static_toast_long("" + e);
+        }
     }
 
 
@@ -324,6 +368,22 @@ public class Preferences extends BasePreferenceActivity {
         }
 
     }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            getMenuInflater().inflate(R.menu.menu_preferences, menu);
+        }
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    public void showSearch(MenuItem item) {
+        if (JoH.ratelimit("preference-search-button",1)) {
+            this.preferenceFragment.showSearchFragment();
+        }
+    }
+
 
     @Override
     protected void onResume()
@@ -661,6 +721,7 @@ public class Preferences extends BasePreferenceActivity {
     public static class AllPrefsFragment extends PreferenceFragment {
 
         SharedPreferences prefs;
+        SearchConfiguration searchConfiguration;
 
         public LockScreenWallPaper.PrefListener lockListener = new LockScreenWallPaper.PrefListener();
 
@@ -1882,8 +1943,30 @@ public class Preferences extends BasePreferenceActivity {
                     return true;
                 }
             });
+
         }
 
+        private void showSearchFragment() {
+            // lazy instantiation
+            if (searchConfiguration == null) {
+                try {
+                    searchConfiguration = new SearchConfiguration(getActivity());
+                    searchConfiguration.setBreadcrumbsEnabled(true);
+
+                    searchConfiguration.getKeysList().addAll(getAllPreferenceKeys(this.getPreferenceScreen()));
+                    searchConfiguration.index(R.xml.pref_general);
+                    searchConfiguration.index(R.xml.pref_notifications);
+                    searchConfiguration.index(R.xml.pref_data_source);
+                    searchConfiguration.index(R.xml.pref_data_sync);
+                    searchConfiguration.index(R.xml.pref_advanced_settings);
+                    searchConfiguration.index(R.xml.xdrip_plus_prefs);
+                } catch (NullPointerException e) {
+                    Log.e(TAG, "Cannot find searchPreference item: " + e);
+                }
+            }
+            searchConfiguration.showSearchFragment();
+
+        }
 
 
         // all this boiler plate for a dynamic interface seems excessive and boring, I would love to know a helper library to simplify this
