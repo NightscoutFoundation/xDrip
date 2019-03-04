@@ -945,12 +945,7 @@
                 android:key="disable_battery_warning"
                 android:summary="@string/disable_log_transmitter_battery_warning"
                 android:title="@string/disable_battery_warning" />
-            <CheckBoxPreference
-                android:defaultValue="false"
-                android:dependency="engineering_mode"
-                android:key="engineering_mode"
-                android:summary="@string/allow_unsafe_settings"
-                android:title="@string/engineering_mode" />
+
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:key="save_db_ondemand"
@@ -972,6 +967,12 @@
                     android:key="run_service_in_foreground"
                     android:summary="@string/shows_a_persistent_notification"
                     android:title="@string/run_collector_in_foreground" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:dependency="engineering_mode"
+                    android:key="engineering_mode"
+                    android:summary="@string/allow_unsafe_settings"
+                    android:title="@string/engineering_mode" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="requested_ignore_battery_optimizations_new"
