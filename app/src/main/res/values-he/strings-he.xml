@@ -387,6 +387,7 @@
     <string name="summary_allow_testing_with_dead_sensor">אפשר בדיקות עם סנסור שיצא משימוש</string>
     <string name="title_You_have_no_reminders_yet">אין לך תזכורות עדיין</string>
     <string name="message_reminders_explanation">התזכורות יכולות לשמש לפעולות כגון החלפת מיקום של משאבה או כל פעולה אחרת. \n\n הם יכולים להיות מחזורים, להיות מכוונים לזמנים שונים. ניתן להשתיק אותם, לדחות או לקבוע לתאריך אחר. \n\n\ לחץ על כפתור ה+ בכדי להוסיף תזכורת.</string>
+    <string name="message_snooze_explanaition_undo">לחצן הבטל משחזר את התזכורת לכפי שהיתה לפני שהוחלקה.</string>
     <string name="title_which_day">איזה יום?</string>
     <string name="title_what_time_day">איזה שעה ביום?</string>
     <string name="Please_Allow_Permission">אנא תן הרשאה</string>
