@@ -33,6 +33,8 @@ import static com.eveningoutpost.dexdrip.Models.JoH.ratelimit;
 
 // Stand alone bluetooth scanner using BtCallBack
 
+// TODO report missing location services via toast????
+
 @NoArgsConstructor
 public class ScanMeister {
 
@@ -117,7 +119,11 @@ public class ScanMeister {
 
         final ScanFilter.Builder builder = new ScanFilter.Builder();
         if (address != null) {
-            builder.setDeviceAddress(address);
+            try {
+                builder.setDeviceAddress(address);
+            } catch (IllegalArgumentException e) {
+                UserError.Log.wtf(TAG, "Invalid bluetooth address: " + address);
+            }
         }
         // TODO scanning by name doesn't build a filter
         final ScanFilter filter = builder.build();
