@@ -752,6 +752,24 @@
                     android:key="remote_snoozes_wifi_match"
                     android:summary="@string/only_accept_same_network"
                     android:title="@string/wifi_name_must_match" />
+                <PreferenceCategory
+                    android:key="xdrip_plus_snooze_broadcast"
+                    android:title="Local Broadcast">
+                    <SwitchPreference
+                        android:defaultValue="false"
+                        android:switchTextOff="@string/short_off_text_for_switches"
+                        android:switchTextOn="@string/short_on_text_for_switches"
+                        android:key="broadcast_snooze"
+                        android:summary="Send snoozes to other apps on this handset"
+                        android:title="Local Broadcast" />
+                    <SwitchPreference
+                        android:defaultValue="false"
+                        android:switchTextOff="@string/short_off_text_for_switches"
+                        android:switchTextOn="@string/short_on_text_for_switches"
+                        android:key="accept_broadcast_snooze"
+                        android:summary="Accept snoozes from other apps on this handset"
+                        android:title="Accept Local Broadcast" />
+                </PreferenceCategory>
             </PreferenceScreen>
             <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
                 android:key="xdrip_plus_desert_sync_settings"

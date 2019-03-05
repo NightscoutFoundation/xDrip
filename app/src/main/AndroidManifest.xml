@@ -455,6 +455,11 @@
                 <action android:name="com.eveningoutpost.dexdrip.NS_EMULATOR" />
             </intent-filter>
         </receiver>
+        <receiver android:name=".UtilityModels.BroadcastSnoozeReceiver">
+            <intent-filter>
+                <action android:name="com.eveningoutpost.dexdrip.Snooze" />
+            </intent-filter>
+        </receiver>
         <receiver
             android:name=".localeTasker.receiver.FireReceiver"
             android:exported="true">
