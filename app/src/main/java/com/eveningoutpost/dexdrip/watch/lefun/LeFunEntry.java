@@ -20,6 +20,10 @@ public class LeFunEntry {
         return isEnabled() && Pref.getBooleanDefaultFalse("lefun_send_alarms");
     }
 
+    public static boolean areCallAlertsEnabled() {
+        return isEnabled() && Pref.getBooleanDefaultFalse("lefun_option_call_notifications");
+    }
+
     public static void initialStartIfEnabled() {
         if (isEnabled()) {
             Inevitable.task("le-full-initial-start", 500, new Runnable() {
