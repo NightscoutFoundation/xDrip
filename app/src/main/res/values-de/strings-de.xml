@@ -84,6 +84,7 @@
     <string name="pref_amazfit_enable_summary">Aktivieren der Amazfit-Datenunterstützung</string>
     <string name="pref_amazfit_enable">Aktivieren</string>
     <string name="pref_amazfit_tile">Amazfit Dienst</string>
+
     <string name="pref_amazfit_alarm_enable_summary">Sendet Alarme an SmartWatch, und stellt das Telefon stumm</string>
     <string name="pref_amazfit_alarm_enable">Aktivieren</string>
     <string name="pref_amazfit_alarm_tile">Uhr Alarm</string>
@@ -95,6 +96,7 @@
     <string name="pref_amazfit_other_alert_title">Weitere Alarme</string>
     <string name="pref_amazfit_widget_graph_hours_title">Widget Grafik</string>
     <string name="pref_amazfit_widget_graph_hours_summary">Wieviele Stunden sollen in der Grafik dargestellt werden</string>
+
     <string name="toast_crash">Da ist etwas schief gegangen :( Ein Bericht über das Problem wurde an die Entwickler versendet.</string>
     <string name="taskerConfigInstruction">Einfach mit einem Klick auf den Haken bestätigen. Die Konfigurationszeile muss nicht geändert werden.</string>
     <string name="taskerConfiguration">Tasker-Konfiguration</string>
@@ -282,7 +284,6 @@
     <string name="start_snoozed">Start im Schlummer-Modus</string>
     <string name="adjust_all_by_a_factor">Mit globalem Faktor anpassen</string>
     <string name="reset">Zurücksetzen</string>
-    <string name="pebble_and_android_wear_options">Pebble und Android Wear Optionen</string>
     <string name="customize_colours">Farben anpassen</string>
     <string name="xdrip_plus_color_settings">xDrip+ Farbeinstellungen</string>
     <string name="glucose_values_and_lines">Grenzwerte und Linien</string>

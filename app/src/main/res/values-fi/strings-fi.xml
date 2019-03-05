@@ -220,7 +220,6 @@
     <string name="start_snoozed">Start torkutettuja</string>
     <string name="adjust_all_by_a_factor">Säädä kaikki kertoimella</string>
     <string name="reset">Asettaa uudelleen</string>
-    <string name="pebble_and_android_wear_options">Pebble ja Android Wear vaihtoehtoja</string>
     <string name="customize_colours">Muokkaa Colours</string>
     <string name="xdrip_plus_color_settings">xDrip+ Väriasetukset</string>
     <string name="glucose_values_and_lines">Glukoosi arvot ja Lines</string>

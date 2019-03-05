@@ -240,7 +240,6 @@
     <string name="dont_alarm_during_phone_calls">Allarme disattivato durante le chiamate</string>
     <string name="start_snoozed">Inizio Ritardato</string>
     <string name="adjust_all_by_a_factor">Regola tutto attraverso un fattore</string>
-    <string name="pebble_and_android_wear_options">Opzioni Pebble e Android Wear</string>
     <string name="customize_colours">Personalizzazione Colori</string>
     <string name="xdrip_plus_color_settings">xDrip+ Impostazioni colore</string>
     <string name="glucose_values_and_lines">Valori di glucosio e linee</string>

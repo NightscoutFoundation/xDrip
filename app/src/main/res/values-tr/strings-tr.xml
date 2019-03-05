@@ -84,9 +84,6 @@
     <string name="pref_amazfit_enable_summary">Amazfit veri desteğini etkinleştir</string>
     <string name="pref_amazfit_enable">Etkinleştir</string>
     <string name="pref_amazfit_tile">Amazfit Servisi</string>
-    <string name="pref_amazfit_alarm_enable_summary">Alarmları Smartwatch\'a gönderir ve telefonu sesize alır</string>
-    <string name="pref_amazfit_alarm_enable">Etkinleştir</string>
-    <string name="pref_amazfit_alarm_tile">Kol Saati Alarmı</string>
     <string name="toast_crash">Bir şeyler ters gitti :( sorunun giderilebilmesi için bir rapor gönderildi.</string>
     <string name="taskerConfigInstruction">Onaylamak için Onay simgesini tıklamanız yeterlidir. Yapılandırma dizesini değiştirmenize gerek yok.</string>
     <string name="taskerConfiguration">Tasker yapılandırması</string>
@@ -274,7 +271,6 @@
     <string name="start_snoozed">Ertelemeyi başlat</string>
     <string name="adjust_all_by_a_factor">Tümünü bir faktörle ayarlayın</string>
     <string name="reset">Sıfırla</string>
-    <string name="pebble_and_android_wear_options">Pebble ve Android Wear seçenekleri</string>
     <string name="customize_colours">Renkleri özelleştir</string>
     <string name="xdrip_plus_color_settings">xDrip+ Renk Ayarları</string>
     <string name="glucose_values_and_lines">Glikoz değerleri ve çizgiler</string>

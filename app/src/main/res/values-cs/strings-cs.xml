@@ -78,9 +78,6 @@
     <string name="pref_amazfit_enable_summary">Povolit podporu AmazFit</string>
     <string name="pref_amazfit_enable">Povolit</string>
     <string name="pref_amazfit_tile">Služba AmazFit</string>
-    <string name="pref_amazfit_alarm_enable_summary">Odesílat alarmy do hodinek a ztišovat telefon</string>
-    <string name="pref_amazfit_alarm_enable">Povolit</string>
-    <string name="pref_amazfit_alarm_tile">Alarm na hodinkách</string>
     <string name="toast_crash">Něco je špatně :( Hlášení o tom bylo odesláno</string>
     <string name="taskerConfigInstruction">Kliknout na Tick ikonu pro potvrzení. Není potřeba měnit konfigurační řetězec.</string>
     <string name="taskerConfiguration">Konfigurace Taskeru</string>
@@ -265,7 +262,6 @@
     <string name="start_snoozed">Začátek Odloženo</string>
     <string name="adjust_all_by_a_factor">Upravit všechny faktorem</string>
     <string name="reset">Resetovat</string>
-    <string name="pebble_and_android_wear_options">Volby pro Pebble a Android Wear</string>
     <string name="customize_colours">Přizpůsobit barvy</string>
     <string name="xdrip_plus_color_settings">xDrip+ Nastavení barev</string>
     <string name="glucose_values_and_lines">Hodnoty a čáry glykémií</string>
