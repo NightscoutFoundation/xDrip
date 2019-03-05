@@ -327,6 +327,12 @@
                 android:dependency="lefun_send_alarms"
                 android:defaultValue="true"
                 android:title="@string/title_lefun_option_shake_snoozes" />
+            <CheckBoxPreference
+                android:key="lefun_option_call_notifications"
+                android:dependency="lefun_enabled"
+                android:defaultValue="false"
+                android:summary="Send call notifications to the band (Android 6+)"
+                android:title="Send Calls" />
 
             <PreferenceScreen android:title="@string/title_lefun_screens_features">
 

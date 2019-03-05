@@ -81,6 +81,7 @@ import com.eveningoutpost.dexdrip.profileeditor.ProfileEditor;
 import com.eveningoutpost.dexdrip.tidepool.TidepoolUploader;
 import com.eveningoutpost.dexdrip.tidepool.UploadChunk;
 import com.eveningoutpost.dexdrip.ui.LockScreenWallPaper;
+import com.eveningoutpost.dexdrip.utils.framework.IncomingCallsReceiver;
 import com.eveningoutpost.dexdrip.watch.lefun.LeFunEntry;
 import com.eveningoutpost.dexdrip.wearintegration.Amazfitservice;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
@@ -846,6 +847,17 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 SdcardImportExport.hardReset();
                 return true;
             });
+
+            try {
+                final Activity activity = this.getActivity();
+                findPreference("lefun_option_call_notifications").setOnPreferenceChangeListener((preference, newValue) -> {
+                    prefs.edit().putBoolean("lefun_option_call_notifications", (Boolean) newValue).apply();
+                    IncomingCallsReceiver.checkPermission(activity);
+                    return true;
+                });
+            } catch (Exception e) {
+                //
+            }
 
             findPreference("use_ob1_g5_collector_service").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
