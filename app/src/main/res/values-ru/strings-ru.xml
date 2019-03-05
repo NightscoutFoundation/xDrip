@@ -244,7 +244,6 @@
     <string name="start_snoozed">Start Отложено</string>
     <string name="adjust_all_by_a_factor">Отрегулировать все на коэффициент</string>
     <string name="reset">Сброс</string>
-    <string name="pebble_and_android_wear_options">Галька и Android опции Wear</string>
     <string name="customize_colours">Настройка Цвета</string>
     <string name="xdrip_plus_color_settings">xDrip+ Настройки цвета</string>
     <string name="glucose_values_and_lines">Глюкоза ценности и линии</string>

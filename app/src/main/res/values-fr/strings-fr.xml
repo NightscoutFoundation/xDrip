@@ -231,7 +231,6 @@
     <string name="start_snoozed">Démarrer silencieusement</string>
     <string name="adjust_all_by_a_factor">Ajustez tous par un facteur</string>
     <string name="reset">Réinitialiser</string>
-    <string name="pebble_and_android_wear_options">Options Pebble et Android Wear</string>
     <string name="customize_colours">Personnaliser les couleurs</string>
     <string name="xdrip_plus_color_settings">xDrip+ Couleurs</string>
     <string name="glucose_values_and_lines">Valeurs et lignes de glucose</string>
