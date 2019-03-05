@@ -15,8 +15,12 @@ public class LeFun {
 
     private static final String PREF_LEFUN_MAC = "lefun_mac";
 
-    // convert multi-line text to string for display constraints
     public static void sendAlert(final String... lines) {
+        sendAlert(false, lines);
+    }
+
+    // convert multi-line text to string for display constraints
+    public static void sendAlert(boolean isCall, final String... lines) {
 
         final int width = ModelFeatures.getScreenWidth();
 
@@ -38,7 +42,9 @@ public class LeFun {
         final int trailing_space = resultRaw.lastIndexOf(' ');
         final String resultString = trailing_space >= width ? result.toString().substring(0, trailing_space) : resultRaw;
 
-        Inevitable.task("lefun-send-alert-debounce", 3000, () -> JoH.startService(LeFunService.class, "function", "message", "message", resultString));
+        Inevitable.task("lefun-send-alert-debounce", isCall ? 300 : 3000, () -> JoH.startService(LeFunService.class, "function", "message",
+                "message", resultString,
+                "message_type", isCall ? "call" : "glucose"));
     }
 
     public static void showLatestBG() {
