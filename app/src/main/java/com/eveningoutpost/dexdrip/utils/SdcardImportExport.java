@@ -34,6 +34,7 @@ import java.util.List;
 import static com.eveningoutpost.dexdrip.utils.FileUtils.getExternalDir;
 
 
+import static com.eveningoutpost.dexdrip.xdrip.gs;
 public class SdcardImportExport extends BaseAppCompatActivity {
 
     private final static String TAG = "jamorham sdcard";
@@ -258,15 +259,15 @@ public class SdcardImportExport extends BaseAppCompatActivity {
             Log.e(TAG, "Found: " + results.size() + " backup files");
 
             final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-            builder.setTitle("Backup detected");
-            builder.setMessage("It looks like you maybe have a settings backup, shall we try to restore it?");
+            builder.setTitle(gs(R.string.backup_detected));
+            builder.setMessage(gs(R.string.it_looks_like_you_maybe_have_a_settings_backup_shall_we_try_to_restore_it));
 
             builder.setNegativeButton("No", (dialog, which) -> {
                 backupDismissed = true;
                 dialog.dismiss();
             });
 
-            builder.setPositiveButton("Restore Settings", (dialog, which) -> {
+            builder.setPositiveButton(gs(R.string.restore_settings), (dialog, which) -> {
                 if (checkPermissions(activity, true, TRIGGER_RESTORE_PERMISSIONS_REQUEST_STORAGE)) {
                     // one entry do it!
                     restoreSettingsNow(activity);

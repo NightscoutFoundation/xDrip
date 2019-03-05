@@ -1609,7 +1609,7 @@ public class JoH {
         return bd.doubleValue();
     }
 
-    public static double roundFloat(final float value, int places) {
+    public static float roundFloat(final float value, int places) {
         if (places < 0) throw new IllegalArgumentException("Invalid decimal places");
         BigDecimal bd = new BigDecimal(value);
         bd = bd.setScale(places, RoundingMode.HALF_UP);

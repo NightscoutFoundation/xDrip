@@ -23,6 +23,7 @@ public abstract class G5BaseService extends Service {
     private final PowerManager.WakeLock wl = JoH.getWakeLock("g5-base-bt", 100);
 
     public static final int G6_SCALING = 34;
+    public static final double G6_REV2_SCALING = 0.0001;
 
     public static final String G5_FIRMWARE_MARKER = "g5-firmware-";
 
@@ -181,6 +182,7 @@ public abstract class G5BaseService extends Service {
         Pref.setBoolean("use_ob1_g5_collector_service", true);
         Pref.setBoolean("ob1_g5_use_transmitter_alg", true);
         Pref.setBoolean("ob1_g5_fallback_to_xdrip", false);
+        Pref.setBoolean("display_glucose_from_plugin", false);
         setG6bareBones();
     }
 
@@ -188,4 +190,8 @@ public abstract class G5BaseService extends Service {
         hardResetTransmitterNow = true;
     }
 
+    public static String getLastTwoCharacters(final String txid) {
+        if (txid == null) return "NULL";
+        return txid.length() > 3 ? txid.substring(txid.length() - 2) : "ERR-" + txid;
+    }
 }

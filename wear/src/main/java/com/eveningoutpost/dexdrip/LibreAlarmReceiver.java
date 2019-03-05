@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 
+import com.eveningoutpost.dexdrip.Models.SensorSanity;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.Models.BgReading;
@@ -196,7 +197,7 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
             Collections.sort(mTrend);
             final long thisSensorAge = mTrend.get(mTrend.size() - 1).sensorTime;
             sensorAge = Pref.getInt("nfc_sensor_age", 0);
-            if (thisSensorAge > sensorAge) {
+            if (thisSensorAge > sensorAge || SensorSanity.allowTestingWithDeadSensor()) {
                 sensorAge = thisSensorAge;
                 Pref.setInt("nfc_sensor_age", (int) sensorAge);
                 Pref.setBoolean("nfc_age_problem", false);

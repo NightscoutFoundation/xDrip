@@ -52,7 +52,7 @@
                 android:layout_marginTop="30dp" />
 
             <Button
-                android:text="Don't stop, just Reset all Calibrations"
+                android:text="@string/dont_stop_just_reset_all_calibrations"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:onClick="resetAllCalibrations"

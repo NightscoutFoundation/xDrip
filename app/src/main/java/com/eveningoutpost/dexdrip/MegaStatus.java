@@ -46,6 +46,9 @@ import com.eveningoutpost.dexdrip.UtilityModels.ShotStateStore;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
 import com.eveningoutpost.dexdrip.cgm.medtrum.MedtrumCollectionService;
+import com.eveningoutpost.dexdrip.insulin.inpen.InPen;
+import com.eveningoutpost.dexdrip.insulin.inpen.InPenEntry;
+import com.eveningoutpost.dexdrip.insulin.inpen.InPenService;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.watch.lefun.LeFunEntry;
@@ -61,6 +64,7 @@ import java.util.List;
 import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.DexcomG5;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.Medtrum;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.isLibreOOPAlgorithm;
 
 public class MegaStatus extends ActivityWithMenu {
 
@@ -105,6 +109,7 @@ public class MegaStatus extends ActivityWithMenu {
     private static final String XDRIP_PLUS_SYNC = "Followers";
     private static final String UPLOADERS = "Uploaders";
     private static final String LEFUN_STATUS = "Lefun";
+    private static final String INPEN_STATUS = "InPen";
 
     public static PendingIntent getStatusPendingIntent(String section_name) {
         final Intent intent = new Intent(xdrip.getAppContext(), MegaStatus.class);
@@ -113,6 +118,8 @@ public class MegaStatus extends ActivityWithMenu {
     }
 
     private void populateSectionList() {
+
+        // TODO extract descriptions to resource strings
 
         if (sectionList.isEmpty()) {
 
@@ -135,6 +142,9 @@ public class MegaStatus extends ActivityWithMenu {
             }
             if (DexCollectionType.hasWifi()) {
                 addAsection(IP_COLLECTOR, dexCollectionType == DexCollectionType.Mock ? "FAKE / MOCK DATA SOURCE" : "Wifi Wixel / Parakeet Status");
+            }
+            if (InPenEntry.isEnabled()) {
+                addAsection(INPEN_STATUS,"InPen Status");
             }
             if (Home.get_master_or_follower()) {
                 addAsection(XDRIP_PLUS_SYNC, "xDrip+ Sync Group");
@@ -192,6 +202,10 @@ public class MegaStatus extends ActivityWithMenu {
                 break;
             case LEFUN_STATUS:
                 la.addRows(LeFunService.megaStatus());
+                break;
+            case INPEN_STATUS:
+                la.addRows(InPenService.megaStatus());
+                break;
         }
         la.changed();
     }

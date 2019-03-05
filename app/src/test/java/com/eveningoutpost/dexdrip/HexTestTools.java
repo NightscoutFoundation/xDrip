@@ -2,7 +2,7 @@ package com.eveningoutpost.dexdrip;
 
 public class HexTestTools {
 
-    private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
+    private final static char[] hexArray = "0123456789ABCDEF" .toCharArray();
 
     public static String bytesToHex(byte[] bytes) {
         if (bytes == null) return "<empty>";
@@ -36,7 +36,24 @@ public class HexTestTools {
     }
 
     public static byte[] toTwoBytes(final int value) {
-        return new byte[] { (byte)(value >> 8), (byte)value};
+        return new byte[]{(byte) (value >> 8), (byte) value};
     }
 
+    public static String reverseString(final String string) {
+        final StringBuilder sb = new StringBuilder();
+        sb.append(string);
+        return sb.reverse().toString();
+    }
+
+    public static String leftPadWithZeros(final String string, final int padTo) {
+        final StringBuilder sb = new StringBuilder(string);
+        while (sb.length() < padTo) {
+            sb.insert(0, "0");
+        }
+        return sb.toString();
+    }
+
+    public static String intToPaddedBinary(final int i) {
+        return leftPadWithZeros(Integer.toBinaryString(i), 32);
+    }
 }

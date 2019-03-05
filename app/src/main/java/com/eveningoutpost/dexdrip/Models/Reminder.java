@@ -1,8 +1,6 @@
 package com.eveningoutpost.dexdrip.Models;
 
-import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
 import android.provider.BaseColumns;
 
 import com.activeandroid.Model;
@@ -11,11 +9,8 @@ import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 import com.activeandroid.util.SQLiteUtils;
 import com.eveningoutpost.dexdrip.Reminders;
-import com.eveningoutpost.dexdrip.Services.MissedReadingService;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
-import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
-import com.eveningoutpost.dexdrip.xdrip;
 import com.google.gson.annotations.Expose;
 
 import java.util.Calendar;
@@ -292,7 +287,7 @@ public class Reminder extends Model {
     public static synchronized void processAnyDueReminders() {
         if (JoH.quietratelimit("reminder_due_check", 10)) {
             if (!Pref.getBooleanDefaultFalse(REMINDERS_ALL_DISABLED)
-            && (!Pref.getBooleanDefaultFalse(REMINDERS_NIGHT_DISABLED) || !isNight())){
+                    && (!Pref.getBooleanDefaultFalse(REMINDERS_NIGHT_DISABLED) || !isNight())) {
                 final Reminder due_reminder = getNextActiveReminder();
                 if (due_reminder != null) {
                     UserError.Log.d(TAG, "Found due reminder! " + due_reminder.title);
@@ -304,9 +299,9 @@ public class Reminder extends Model {
                     // temporary testing logic
                     final int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
                     if (hour == 10) {
-                        if (JoH.pratelimit("restart-reminders",7200)) {
-                            UserError.Log.d(TAG,"Re-enabling reminders as its morning time");
-                           Pref.setBoolean(REMINDERS_ALL_DISABLED,false);
+                        if (JoH.pratelimit("restart-reminders", 7200)) {
+                            UserError.Log.d(TAG, "Re-enabling reminders as its morning time");
+                            Pref.setBoolean(REMINDERS_ALL_DISABLED, false);
                         }
                     }
                 }
@@ -339,7 +334,7 @@ public class Reminder extends Model {
 
     public synchronized static void firstInit(Context context) {
         fixUpTable(schema);
-        Inevitable.task("reminders-first-init", 2000, new Runnable() {
+      /*  Inevitable.task("reminders-first-init", 2000, new Runnable() {
             @Override
             public void run() {
                 try {
@@ -348,15 +343,17 @@ public class Reminder extends Model {
                             .where("enabled = ?", true)
                             .executeSingle();
                     if (reminder != null) {
-                        PendingIntent serviceIntent = PendingIntent.getService(xdrip.getAppContext(), 0, new Intent(xdrip.getAppContext(), MissedReadingService.class), PendingIntent.FLAG_UPDATE_CURRENT);
-                        JoH.wakeUpIntent(xdrip.getAppContext(), Constants.MINUTE_IN_MS, serviceIntent);
-                        UserError.Log.ueh(TAG, "Starting missed readings service");
+                        // PendingIntent serviceIntent = PendingIntent.getService(xdrip.getAppContext(), 0, new Intent(xdrip.getAppContext(), MissedReadingService.class), PendingIntent.FLAG_UPDATE_CURRENT);
+                        // PendingIntent serviceIntent = WakeLockTrampoline.getPendingIntent(MissedReadingService.class);
+                        //  JoH.wakeUpIntent(xdrip.getAppContext(), Constants.MINUTE_IN_MS, serviceIntent);
+                        //  UserError.Log.ueh(TAG, "Starting missed readings service");
                     }
                 } catch (NullPointerException e) {
                     UserError.Log.wtf(TAG, "Got nasty initial concurrency exception: " + e);
                 }
             }
         });
+        */
     }
 
     public static Reminder byid(long id) {

@@ -327,6 +327,37 @@
                     <LinearLayout
                         android:orientation="horizontal"
                         android:layout_width="fill_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical"
+                        android:paddingTop="20dp"
+                        >
+
+                        <TextView
+                            android:id="@+id/view_alert_force_speaker"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/force_speaker_colon"
+                            android:textSize="15sp"
+                            android:gravity="left"
+                            android:layout_centerVertical="true"
+                            android:layout_weight="1"
+                            />
+
+                        <CheckBox
+                            android:id="@+id/check_force_speaker"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=""
+                            android:textSize="15sp"
+                            android:gravity="right"
+                            android:layout_centerVertical="true"
+                            android:layout_weight="0" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center_vertical"
                         android:paddingTop="10dp">

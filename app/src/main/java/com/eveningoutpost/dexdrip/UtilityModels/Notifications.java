@@ -47,6 +47,7 @@ import com.eveningoutpost.dexdrip.evaluators.PersistentHigh;
 import com.eveningoutpost.dexdrip.ui.NumberGraphic;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.PowerStateReceiver;
+import com.eveningoutpost.dexdrip.wearintegration.Amazfitservice;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.Date;
@@ -594,7 +595,7 @@ public class Notifications extends IntentService {
         } else {
             b = new Notification.Builder(mContext);
         }
-        b.setOngoing(true); // TODO CHECK THIS!!
+        b.setOngoing(Pref.getBoolean("use_proper_ongoing", true));
       
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             b.setVisibility(Pref.getBooleanDefaultFalse("public_notifications") ? Notification.VISIBILITY_PUBLIC : Notification.VISIBILITY_PRIVATE);
@@ -979,7 +980,7 @@ public class Notifications extends IntentService {
             mBuilder.setVibrate(vibratePattern);
             mBuilder.setLights(0xff00ff00, 300, 1000);
             if (AlertPlayer.notSilencedDueToCall()) {
-                if (otherAlertsOverrideSilent) {
+                if (otherAlertsOverrideSilent && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     mBuilder.setSound(Uri.parse(otherAlertsSound), AudioAttributes.USAGE_ALARM);
                 } else {
                     mBuilder.setSound(Uri.parse(otherAlertsSound));
@@ -990,6 +991,11 @@ public class Notifications extends IntentService {
             //Log.d(TAG, "Notify");
             Log.ueh("Other Alert",message);
             mNotifyMgr.notify(notificatioId, XdripNotificationCompat.build(mBuilder));
+
+            if (Pref.getBooleanDefaultFalse("pref_amazfit_enable_key")
+                    && Pref.getBooleanDefaultFalse("pref_amazfit_other_alert_enable_key")) {
+                Amazfitservice.start("xDrip_Otheralert", message, 30);
+            }
         }
     }
 

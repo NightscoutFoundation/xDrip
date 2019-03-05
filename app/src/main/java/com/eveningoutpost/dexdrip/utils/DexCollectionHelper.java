@@ -70,6 +70,21 @@ public class DexCollectionHelper {
                 break;
 
 
+            case NSFollow:
+                textSettingDialog(activity,
+                        "nsfollow_url", "Nightscout Follow URL",
+                        "Web address for following",
+                        InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD,
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                Home.staticRefreshBGCharts();
+                                CollectionServiceStarter.restartCollectionServiceBackground();
+                            }
+                        });
+                break;
+
+
             case LimiTTer:
                 bluetoothScanIfNeeded();
                 break;
@@ -82,14 +97,17 @@ public class DexCollectionHelper {
                 bluetoothScanIfNeeded();
                 break;
 
+            case Medtrum:
+                bluetoothScanIfNeeded();
+                break;
 
-                // TODO G4 Share Receiver
+            // TODO G4 Share Receiver
 
-                // TODO Parakeet / Wifi ??
+            // TODO Parakeet / Wifi ??
 
-                // TODO Bluetooth devices without active device -> bluetooth scan
+            // TODO Bluetooth devices without active device -> bluetooth scan
 
-                // TODO Helper apps not installed? Prompt for installation
+            // TODO Helper apps not installed? Prompt for installation
 
         }
 

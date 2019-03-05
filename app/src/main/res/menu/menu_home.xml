@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/showhelp"
-        android:title="Show Help"
+        android:title="@string/show_help"
         android:checkable="false"
         android:orderInCategory="1"
         android:visible="false"
@@ -48,7 +48,7 @@
         android:showAsAction="never"/>
 
     <item android:id="@+id/importsettings"
-        android:title="Load / Save Settings on sdcard"
+        android:title="@string/load_save_settings_on_sdcard"
         android:checkable="false"
         android:onClick="settingsSDcardExport"
         android:visible="true"
@@ -90,7 +90,7 @@
 
 
     <item android:id="@+id/deleteAllBG"
-        android:title="Delete All BG readings"
+        android:title="@string/delete_all_bg_readings"
         android:checkable="false"
         android:orderInCategory="1"
         android:onClick="deleteAllBG"
@@ -98,7 +98,7 @@
         android:showAsAction="never"/>
 
     <item android:id="@+id/testFeature"
-        android:title="Debugging test feature"
+        android:title="@string/debugging_test_feature"
         android:checkable="false"
         android:orderInCategory="1"
         android:onClick="testFeature"
@@ -130,7 +130,7 @@
         android:showAsAction="never"/>
     
     <item android:id="@+id/synctreatments"
-        android:title="Sync Treatments"
+        android:title="@string/sync_treatments"
         android:checkable="false"
         android:orderInCategory="1"
         android:visible="false"
@@ -145,7 +145,7 @@
         android:showAsAction="never"/>
 
     <item android:id="@+id/sendbackfill"
-        android:title="Send BG readings to backfill"
+        android:title="@string/send_bg_readings_to_backfill"
         android:checkable="false"
         android:orderInCategory="1"
         android:onClick="doBackFillBroadcast"

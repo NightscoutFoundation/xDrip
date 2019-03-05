@@ -58,6 +58,7 @@ import lecho.lib.hellocharts.util.ChartUtils;
 
 import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
 import static com.eveningoutpost.dexdrip.cgm.medtrum.Medtrum.getDeviceInfoStringFromLegacy;
+import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 @TargetApi(android.os.Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class BluetoothScan extends ListActivityWithMenu {
@@ -158,7 +159,7 @@ public class BluetoothScan extends ListActivityWithMenu {
 
     private boolean doScan() {
         BluetoothManager bluetooth_manager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-        Toast.makeText(this, "Scanning", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, gs(R.string.scanning), Toast.LENGTH_LONG).show();
         if (bluetooth_manager == null) {
             Toast.makeText(this, "This device does not seem to support bluetooth", Toast.LENGTH_LONG).show();
             return true;

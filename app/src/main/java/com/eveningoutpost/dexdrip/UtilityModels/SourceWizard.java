@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.databinding.ObservableArrayList;
 import android.databinding.ObservableList;
+import android.support.annotation.StringRes;
 import android.view.View;
 
 import com.eveningoutpost.dexdrip.BR;
@@ -29,23 +30,25 @@ import static com.eveningoutpost.dexdrip.ui.helpers.UiHelper.convertDpToPixel;
  *
  */
 
+import static com.eveningoutpost.dexdrip.xdrip.gs;
 public class SourceWizard {
     @SuppressLint("StaticFieldLeak")
+    private static final String TAG = "SourceWizard";
     private static volatile SourceWizard sw;
     private AlertDialog dialog;
     private Activity activity;
     // Create the dialog decision tree
-    private Tree<Item> root = new Tree<>(new Item("Choose Data Source", "Which system do you use?"));
+    private Tree<Item> root = new Tree<>(new Item(gs(R.string.choose_data_source), gs(R.string.which_system_do_you_use)));
 
     {
         Tree<Item> g5g6 = root.addChild(new Item("G4, G5 & G6", gs(R.string.which_type_of_device), R.drawable.g5_icon));
         {
-            Tree<Item> g4 = g5g6.addChild(new Item("G4", "What type of G4 bridge device do you use?", R.drawable.g4_icon));
+            Tree<Item> g4 = g5g6.addChild(new Item("G4", gs(R.string.what_type_of_g4_bridge_device_do_you_use), R.drawable.g4_icon));
             {
                 Tree<Item> wixel = g4.addChild(new Item(gs(R.string.bluetooth_wixel), gs(R.string.which_software_is_the_wixel_running), R.drawable.wixel_icon));
                 {
-                    wixel.addChild(new Item("xBridge compatible", DexCollectionType.DexbridgeWixel, R.drawable.wixel_icon));
-                    wixel.addChild(new Item("Classic simple", DexCollectionType.BluetoothWixel, R.drawable.wixel_icon));
+                    wixel.addChild(new Item(gs(R.string.xbridge_compatible), DexCollectionType.DexbridgeWixel, R.drawable.wixel_icon));
+                    wixel.addChild(new Item(gs(R.string.classic_simple), DexCollectionType.BluetoothWixel, R.drawable.wixel_icon));
                 }
 
                 g4.addChild(new Item(gs(R.string.g4_share_receiver), DexCollectionType.DexcomShare, R.drawable.g4_share_icon));
@@ -53,20 +56,22 @@ public class SourceWizard {
             }
             g5g6.addChild(new Item("G5", DexCollectionType.DexcomG5, R.drawable.g5_icon));
             g5g6.addChild(new Item("G6", DexCollectionType.DexcomG6, R.drawable.g6_icon));
-
         }
 
-        Tree<Item> libre = root.addChild(new Item("Libre", "What type of Libre bridge device do you use?", R.drawable.libre_icon_image));
+        Tree<Item> libre = root.addChild(new Item(gs(R.string.libre), gs(R.string.what_type_of_libre_bridge_device_do_you_use), R.drawable.libre_icon_image));
         {
-            libre.addChild(new Item("Bluetooth Bridge device: Blucon, LimiTTer, Bluereader, Tomato etc", DexCollectionType.LimiTTer, R.drawable.bluereader_icon));
-            libre.addChild(new Item("LibreAlarm App: using Sony Smartwatch", DexCollectionType.LibreAlarm, R.drawable.ic_watch_grey600_48dp));
+            libre.addChild(new Item(gs(R.string.bluetooth_bridge_device_blucon_limitter_bluereader_tomato_etc), DexCollectionType.LimiTTer, R.drawable.bluereader_icon));
+            libre.addChild(new Item(gs(R.string.librealarm_app_using_sony_smartwatch), DexCollectionType.LibreAlarm, R.drawable.ic_watch_grey600_48dp));
 
         }
         Tree<Item> other = root.addChild(new Item(gs(R.string.other), gs(R.string.which_type_of_device), R.drawable.wikimedia_question_mark));
-        other.addChild(new Item("640G / 670G", DexCollectionType.NSEmulator, R.drawable.mm600_series));
-        other.addChild(new Item("Medtrum A6", DexCollectionType.Medtrum, R.drawable.a6_icon));
-        //
-        other.addChild(new Item("EverSense", DexCollectionType.NSEmulator, R.drawable.wikimedia_eversense_icon_pbroks13));
+        {
+            other.addChild(new Item("640G / 670G", DexCollectionType.NSEmulator, R.drawable.mm600_series));
+            other.addChild(new Item("Medtrum A6 / S7", DexCollectionType.Medtrum, R.drawable.a6_icon));
+            other.addChild(new Item("Nightscout Follower", DexCollectionType.NSFollow, R.drawable.nsfollow_icon));
+            //
+            other.addChild(new Item("EverSense", DexCollectionType.NSEmulator, R.drawable.wikimedia_eversense_icon_pbroks13));
+        }
     }
 
 
@@ -102,7 +107,7 @@ public class SourceWizard {
         return node.data.name.equals(name);
     }
 
-    private static String gs(int id) {
+    private static String gs(@StringRes final int id) {
         return xdrip.getAppContext().getString(id);
     }
 
@@ -163,7 +168,7 @@ public class SourceWizard {
         try {
             dialog.show();
         } catch (Exception e) {
-            UserError.Log.e("SourceWizard", "Exception when trying to show source wizard: " + e);
+            UserError.Log.e(TAG, "Exception when trying to show source wizard: " + e);
         }
     }
 
@@ -178,6 +183,7 @@ public class SourceWizard {
         public String name;
         public int resource;
         String description;
+        DexCollectionType type;
 
         Item(String name, String description) {
             this(name, description, 0);
@@ -197,6 +203,7 @@ public class SourceWizard {
             this.name = name;
             this.description = "^" + type.name();
             this.resource = resource;
+            this.type = type;
         }
 
         public void onClick(View v) {
@@ -211,13 +218,13 @@ public class SourceWizard {
             return convertDpToPixel(size);
         }
 
-        public boolean isCollectionType() {
+        boolean isCollectionType() {
             return this.description.startsWith("^");
         }
 
         public DexCollectionType getCollectionType() {
             if (isCollectionType()) {
-                return DexCollectionType.getType(this.description.substring(1));
+                return type;
             } else {
                 return null;
             }

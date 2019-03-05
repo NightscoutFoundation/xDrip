@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.util.SparseArray;
 
+import com.eveningoutpost.dexdrip.BuildConfig;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
@@ -39,6 +40,7 @@ public class WakeLockTrampoline extends BroadcastReceiver {
      * The framework only releases the wakelock when onReceive returns.
      */
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     public void onReceive(final Context context, final Intent broadcastIntent) {
         JoH.getWakeLock(TAG, 1000); // deliberately not released
@@ -56,9 +58,13 @@ public class WakeLockTrampoline extends BroadcastReceiver {
         }
 
         final Intent serviceIntent = new Intent(context, serviceClass);
+        final String function = broadcastIntent.getStringExtra("function");
+        if (function != null) serviceIntent.putExtra("function", function);
+
         ComponentName startResult;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+                && BuildConfig.targetSDK >= Build.VERSION_CODES.N
                 && ForegroundServiceStarter.shouldRunCollectorInForeground()) {
             try {
                 UserError.Log.d(TAG, String.format("Starting oreo foreground service: %s", serviceIntent.getComponent().getClassName()));
@@ -73,17 +79,23 @@ public class WakeLockTrampoline extends BroadcastReceiver {
 
     }
 
+    // wrap a service in a broadcast trampoline
     public static PendingIntent getPendingIntent(final Class serviceClass) {
         return getPendingIntent(serviceClass, 0);
     }
 
     // wrap a service in a broadcast trampoline
-    public static synchronized PendingIntent getPendingIntent(final Class serviceClass, final int id) {
+    public static PendingIntent getPendingIntent(final Class serviceClass, final int id) {
+        return getPendingIntent(serviceClass, id, null);
+    }
+
+    // wrap a service in a broadcast trampoline
+    public static synchronized PendingIntent getPendingIntent(final Class serviceClass, final int id, final String function) {
         final String name = serviceClass.getCanonicalName();
         final int scheduleId = name.hashCode() + id;
 
         final Intent intent = new Intent(xdrip.getAppContext(), WakeLockTrampoline.class).putExtra(SERVICE_PARAMETER, name);
-
+        if (function != null) intent.putExtra("function",function);
         cache.put(name, serviceClass);
 
         if (D)

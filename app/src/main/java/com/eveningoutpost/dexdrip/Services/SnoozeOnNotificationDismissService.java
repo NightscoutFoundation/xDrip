@@ -2,21 +2,21 @@ package com.eveningoutpost.dexdrip.Services;
 
 import android.app.IntentService;
 import android.content.Intent;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
+import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
-
-import com.eveningoutpost.dexdrip.Home;
-import com.eveningoutpost.dexdrip.SnoozeActivity;
-import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
-import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Models.UserNotification;
+import com.eveningoutpost.dexdrip.SnoozeActivity;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.wearintegration.Amazfitservice;
 import com.eveningoutpost.dexdrip.xdrip;
 
 /**
@@ -88,5 +88,10 @@ public class SnoozeOnNotificationDismissService extends IntentService {
         long snoozeMinutes = MissedReadingService.getOtherAlertSnoozeMinutes(prefs, alertType);
         Log.i(TAG, "snoozeOtherAlert calling snooze alert alert = " + alertType + " snoozeMinutes = " + snoozeMinutes);
         UserNotification.snoozeAlert(alertType, snoozeMinutes);
+
+        if (Pref.getBooleanDefaultFalse("pref_amazfit_enable_key")
+                && Pref.getBooleanDefaultFalse("pref_amazfit_BG_alert_enable_key")) {
+            Amazfitservice.start("xDrip_AlarmCancel");
+        }
     }
 }

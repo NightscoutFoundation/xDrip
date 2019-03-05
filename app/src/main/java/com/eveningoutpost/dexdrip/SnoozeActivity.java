@@ -29,6 +29,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 
+import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 public class SnoozeActivity extends ActivityWithMenu {
     //public static String menu_name = "Snooze Alert";
@@ -377,7 +378,7 @@ public class SnoozeActivity extends ActivityWithMenu {
     }
 
     public void setSendRemoteSnoozeOnClick(View v) {
-        JoH.static_toast_short("Remote snooze..");
+        JoH.static_toast_short(gs(R.string.remote_snooze));
         AlertPlayer.getPlayer().Snooze(xdrip.getAppContext(), -1);
     }
 

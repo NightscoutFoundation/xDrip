@@ -79,7 +79,7 @@
                     android:gravity="left|top"
                     android:paddingEnd="10dp"
                     android:paddingStart="10dp"
-                    android:text="Alerts"
+                    android:text="@string/alerts"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:textColor="#C30909" />
 

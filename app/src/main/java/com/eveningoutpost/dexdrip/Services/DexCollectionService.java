@@ -83,9 +83,11 @@ import java.util.Set;
 import java.util.UUID;
 
 import static android.bluetooth.BluetoothDevice.TRANSPORT_LE;
-import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.getStatusName;
 import static com.eveningoutpost.dexdrip.Models.JoH.convertPinToBytes;
 import static com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder.DEXCOM_PERIOD;
+import static com.eveningoutpost.dexdrip.utils.bt.Helper.getStatusName;
+import static com.eveningoutpost.dexdrip.xdrip.gs;
+
 
 @TargetApi(Build.VERSION_CODES.KITKAT)
 public class DexCollectionService extends Service implements BtCallBack {
@@ -1276,7 +1278,7 @@ public class DexCollectionService extends Service implements BtCallBack {
                 try {
                     if (mBluetoothAdapter.isEnabled() && mBluetoothAdapter.getRemoteDevice(deviceAddress) != null) {
                         if (useScanning()) {
-                            status("Scanning" + (Home.get_engineering_mode() ? ": " + deviceAddress : ""));
+                            status(gs(R.string.scanning) + (Home.get_engineering_mode() ? ": " + deviceAddress : ""));
                             scanMeister.setAddress(deviceAddress).addCallBack(this, TAG).scan();
                         } else {
                             status("Connecting" + (Home.get_engineering_mode() ? ": " + deviceAddress : ""));

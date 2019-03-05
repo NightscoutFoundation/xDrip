@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/basalPlus"
+        android:checkable="false"
+        android:icon="@drawable/up_arrow_circle"
+        android:onClick="basalEditPlus"
+        android:orderInCategory="1"
+        android:title="+"
+        android:visible="true"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/basalMinus"
+        android:checkable="false"
+        android:icon="@drawable/down_arrow_circle"
+        android:onClick="basalEditMinus"
+        android:orderInCategory="1"
+        android:title="-"
+        android:visible="true"
+        app:showAsAction="always" />
+
+</menu>

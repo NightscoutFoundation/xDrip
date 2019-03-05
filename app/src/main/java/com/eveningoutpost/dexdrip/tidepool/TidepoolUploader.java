@@ -6,6 +6,7 @@ import com.eveningoutpost.dexdrip.BuildConfig;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.store.FastStore;
 
 import java.util.List;
@@ -44,7 +45,8 @@ public class TidepoolUploader {
     private static final boolean REPEAT = false;
 
     private static Retrofit retrofit;
-    private static final String BASE_URL = "https://int-api.tidepool.org";
+    private static final String INTEGRATION_BASE_URL = "https://int-api.tidepool.org";
+    private static final String PRODUCTION_BASE_URL = "https://api.tidepool.org";
     private static final String SESSION_TOKEN_HEADER = "x-tidepool-session-token";
 
     private static PowerManager.WakeLock wl;
@@ -100,12 +102,17 @@ public class TidepoolUploader {
                     .build();
 
             retrofit = new retrofit2.Retrofit.Builder()
-                    .baseUrl(BASE_URL)
+                    .baseUrl(Pref.getBooleanDefaultFalse("tidepool_dev_servers") ? INTEGRATION_BASE_URL : PRODUCTION_BASE_URL)
                     .client(client)
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
         }
         return retrofit;
+    }
+
+    public static void resetInstance() {
+        retrofit = null;
+        UserError.Log.d(TAG, "Instance reset");
     }
 
     public static void doLoginFromUi() {

@@ -17,6 +17,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.store.FastStore;
 import com.eveningoutpost.dexdrip.store.KeyStore;
+import com.eveningoutpost.dexdrip.utils.framework.WakeLockTrampoline;
 import com.eveningoutpost.dexdrip.watch.lefun.messages.BaseRx;
 import com.eveningoutpost.dexdrip.watch.lefun.messages.BaseTx;
 import com.eveningoutpost.dexdrip.watch.lefun.messages.RxFind;
@@ -471,8 +472,9 @@ public class LeFunService extends JamBaseBluetoothSequencer {
         if (shouldServiceRun()) {
             final long retry_in = whenToRetryNext();
             UserError.Log.d(TAG, "setRetryTimer: Restarting in: " + (retry_in / Constants.SECOND_IN_MS) + " seconds");
-            I.serviceIntent = PendingIntent.getService(xdrip.getAppContext(), Constants.LEFUN_SERVICE_RETRY_ID,
-                    new Intent(xdrip.getAppContext(), this.getClass()), 0);
+            I.serviceIntent = WakeLockTrampoline.getPendingIntent(this.getClass(), Constants.LEFUN_SERVICE_RETRY_ID);
+            //PendingIntent.getService(xdrip.getAppContext(), Constants.LEFUN_SERVICE_RETRY_ID,
+            //        new Intent(xdrip.getAppContext(), this.getClass()), 0);
             I.retry_time = JoH.wakeUpIntent(xdrip.getAppContext(), retry_in, I.serviceIntent);
             I.wakeup_time = JoH.tsl() + retry_in;
         } else {
