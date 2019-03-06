@@ -157,7 +157,7 @@ public class NightscoutTreatments {
                                 pushTreatmentSyncToWatch(t, true);
                             new_data = true;
                         } else {
-                            UserError.Log.e(TAG, "Skipping treatment as it appears identical to one we already have: " + JoH.dateTimeText(timestamp) + " " + insulin + " " + carbs + " " + notes);
+                            UserError.Log.d(TAG, "Skipping treatment as it appears identical to one we already have: " + JoH.dateTimeText(timestamp) + " " + insulin + " " + carbs + " " + notes);
                         }
                     } else {
                         if (existing != null) {
