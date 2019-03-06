@@ -44,6 +44,7 @@ public class IdempotentMigrations {
         DesertSync.updateDB();
         PenData.updateDB();
 //        BgReadingArchive.updateDB();
+        AlertType.fixUpTable();
         JoH.clearCache();
 
         IncompatibleApps.notifyAboutIncompatibleApps();
