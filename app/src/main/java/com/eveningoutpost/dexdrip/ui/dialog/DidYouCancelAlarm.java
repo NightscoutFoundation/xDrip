@@ -12,7 +12,7 @@ import com.eveningoutpost.dexdrip.R;
 
 public class DidYouCancelAlarm {
 
-    public static void dialog(final Activity activity, Runnable runnable) {
+    public static synchronized void dialog(final Activity activity, Runnable runnable) {
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle(R.string.cancel_alarm);
