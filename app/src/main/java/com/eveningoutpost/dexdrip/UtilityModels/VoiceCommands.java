@@ -16,6 +16,7 @@ import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.Services.G5BaseService;
 import com.eveningoutpost.dexdrip.cgm.medtrum.MedtrumCollectionService;
+import com.eveningoutpost.dexdrip.ui.activities.DatabaseAdmin;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.SdcardImportExport;
 
@@ -136,6 +137,9 @@ public class VoiceCommands {
                 break;
             case "start usb configuration":
                 JoH.startActivity(MtpConfigureActivity.class);
+                break;
+            case "database administration":
+                JoH.startActivity(DatabaseAdmin.class);
                 break;
         }
 

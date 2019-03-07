@@ -91,6 +91,8 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.zip.CRC32;
 import java.util.zip.Checksum;
 import java.util.zip.Deflater;
@@ -225,6 +227,16 @@ public class JoH {
             Log.e(TAG, "Exception processing hexString: " + e);
             return null;
         }
+    }
+
+    public static <K, V extends Comparable<? super V>> SortedSet<Map.Entry<K, V>> mapSortedByValue(Map<K, V> map, boolean descending) {
+        final SortedSet<Map.Entry<K, V>> sortedSet = new TreeSet<>((value1, value2) -> {
+            int result = descending ? value2.getValue().compareTo(value1.getValue())
+                    : value1.getValue().compareTo(value2.getValue());
+            return result != 0 ? result : 1;
+        });
+        sortedSet.addAll(map.entrySet());
+        return sortedSet;
     }
 
 

@@ -676,6 +676,8 @@
             android:exported="true"
             android:label="@string/number_wall_config" />
         <activity android:name=".ui.activities.TimePickerPrefActivity"></activity>
+        <activity android:name=".ui.activities.DatabaseAdmin"
+            android:label="Database Admin"/>
     </application>
 
 </manifest>
