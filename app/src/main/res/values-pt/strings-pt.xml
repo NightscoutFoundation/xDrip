@@ -219,7 +219,7 @@
     <string name="other_xdrip_plus_alerts">Outros Alertas xDrip+</string>
     <string name="xdrip_plus_display_settings">Definições de Visualização xDrip+</string>
     <string name="display_customisations">Personalizações de visualização</string>
-    <string name="insulin_carb_ratios_etc_for_models">Insulina, rácios de Hidratos etc para modelos</string>
+    <string name="insulin_carb_ratios_etc_for_models">Insulina, Rácios de Hidratos etc para modelos</string>
     <string name="grams_of_carbohydrate_one_unit_covers">Gramas de Hidratos que cobre 1 Uni.</string>
     <string name="linear_model_carbs_absorbed_per_hour">Modelo linear de absorção de Hidratos por hora</string>
     <string name="carb_absorption_rate">Taxa de Absorção de Hidratos</string>
