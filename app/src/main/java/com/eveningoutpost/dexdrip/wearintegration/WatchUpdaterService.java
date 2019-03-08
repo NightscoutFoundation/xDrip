@@ -896,15 +896,11 @@ public class WatchUpdaterService extends WearableListenerService implements
     }
 
     public static void startSelf() {
-        // TODO replace with inevitable task
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                if (JoH.ratelimit("start-wear", 5)) {
-                    startServiceAndResendData(0);
-                }
+        Inevitable.task("wear-startself", 2000, () -> {
+            if (JoH.ratelimit("start-wear", 5)) {
+                startServiceAndResendData(0);
             }
-        }).start();
+        });
     }
 
     public static void startServiceAndResendData(long since) {
