@@ -1,6 +1,5 @@
 package com.eveningoutpost.dexdrip.utils;
 
-import com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine;
 import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.Services.DexShareCollectionService;
 import com.eveningoutpost.dexdrip.Services.DoNothingService;
@@ -69,8 +68,8 @@ public enum DexCollectionType {
 
         Collections.addAll(usesBluetooth, BluetoothWixel, DexcomShare, DexbridgeWixel, LimiTTer, WifiBlueToothWixel, DexcomG5, WifiDexBridgeWixel, LimiTTerWifi, Medtrum);
         Collections.addAll(usesBtWixel, BluetoothWixel, LimiTTer, WifiBlueToothWixel, LimiTTerWifi); // Name is misleading here, should probably be using dexcollectionservice
-        Collections.addAll(usesWifi, WifiBlueToothWixel,WifiWixel,WifiDexBridgeWixel, Mock, LimiTTerWifi, LibreWifi);
-        Collections.addAll(usesXbridge, DexbridgeWixel,WifiDexBridgeWixel);
+        Collections.addAll(usesWifi, WifiBlueToothWixel, WifiWixel, WifiDexBridgeWixel, Mock, LimiTTerWifi, LibreWifi);
+        Collections.addAll(usesXbridge, DexbridgeWixel, WifiDexBridgeWixel);
         Collections.addAll(usesFiltered, DexbridgeWixel, WifiDexBridgeWixel, DexcomG5, WifiWixel, Follower, Mock); // Bluetooth and Wifi+Bluetooth need dynamic mode
         Collections.addAll(usesLibre, LimiTTer, LibreAlarm, LimiTTerWifi, LibreWifi);
         Collections.addAll(usesBattery, BluetoothWixel, DexbridgeWixel, WifiBlueToothWixel, WifiDexBridgeWixel, Follower, LimiTTer, LibreAlarm, LimiTTerWifi, LibreWifi); // parakeet separate
@@ -104,7 +103,9 @@ public enum DexCollectionType {
         return usesBluetooth.contains(getDexCollectionType());
     }
 
-    public static boolean hasBtWixel() { return usesBtWixel.contains(getDexCollectionType()); }
+    public static boolean hasBtWixel() {
+        return usesBtWixel.contains(getDexCollectionType());
+    }
 
     public static boolean hasXbridgeWixel() {
         return usesXbridge.contains(getDexCollectionType());
@@ -114,38 +115,52 @@ public enum DexCollectionType {
         return usesWifi.contains(getDexCollectionType());
     }
 
-    public static boolean hasLibre() { return usesLibre.contains(getDexCollectionType()); }
+    public static boolean hasLibre() {
+        return usesLibre.contains(getDexCollectionType());
+    }
 
-    public static boolean hasLibre(DexCollectionType t) { return usesLibre.contains(t); }
+    public static boolean hasLibre(DexCollectionType t) {
+        return usesLibre.contains(t);
+    }
 
-    public static boolean hasBattery() { return usesBattery.contains(getDexCollectionType()); }
+    public static boolean hasBattery() {
+        return usesBattery.contains(getDexCollectionType());
+    }
 
     public static boolean hasSensor() {
         return getDexCollectionType() != DexCollectionType.Manual;
     }
 
-    public static boolean hasDexcomRaw() { return hasDexcomRaw(getDexCollectionType()); }
+    public static boolean hasDexcomRaw() {
+        return hasDexcomRaw(getDexCollectionType());
+    }
 
-    public static boolean usesDexCollectionService(DexCollectionType type) { return usesBtWixel.contains(type) || usesXbridge.contains(type) || type.equals(LimiTTer);}
+    public static boolean usesDexCollectionService(DexCollectionType type) {
+        return usesBtWixel.contains(type) || usesXbridge.contains(type) || type.equals(LimiTTer);
+    }
 
-    public static boolean usesClassicTransmitterBattery() { return usesTransmitterBattery.contains(getDexCollectionType()); }
+    public static boolean usesClassicTransmitterBattery() {
+        return usesTransmitterBattery.contains(getDexCollectionType());
+    }
 
     public static boolean hasDexcomRaw(DexCollectionType type) {
         return usesDexcomRaw.contains(type);
     }
 
-    public static boolean isFlakey() { return getDexCollectionType() == DexCollectionType.DexcomG5; }
+    public static boolean isFlakey() {
+        return getDexCollectionType() == DexCollectionType.DexcomG5;
+    }
 
     public static boolean hasFiltered() {
         return does_have_filtered || usesFiltered.contains(getDexCollectionType());
     }
-    
+
     public static boolean isLibreOOPAlgorithm(DexCollectionType collector) {
-    	if(collector == null) {
-    		collector = DexCollectionType.getDexCollectionType();
-    	}
-        return hasLibre(collector) && 
-               Pref.getBooleanDefaultFalse("external_blukon_algorithm");
+        if (collector == null) {
+            collector = DexCollectionType.getDexCollectionType();
+        }
+        return hasLibre(collector) &&
+                Pref.getBooleanDefaultFalse("external_blukon_algorithm");
     }
 
     public static Class<?> getCollectorServiceClass() {
@@ -181,7 +196,7 @@ public enum DexCollectionType {
     public static Boolean getServiceRunningState() {
         final Boolean result = getPhoneServiceRunningState();
         // if phone running don't bother checking wear
-        if ((result !=null) && result) return true;
+        if ((result != null) && result) return true;
         return getWatchServiceRunningState();
     }
 
