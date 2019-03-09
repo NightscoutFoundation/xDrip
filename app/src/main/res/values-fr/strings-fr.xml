@@ -5,74 +5,81 @@
     <string name="connected">Connecté</string>
     <string name="disconnected">Déconnecté</string>
     <string name="menu_scan">Balayage</string>
-    <string name="menu_stop">Arrêtez</string>
+    <string name="menu_stop">Arrêter</string>
     <string name="menu_refresh">Rafraîchir</string>
     <string name="menu_export_database">Exporter la base de données</string>
     <string name="menu_export_csv_sidiary">Exporter en CSV (format SiDiary)</string>
     <string name="menu_import_db">Importer la base de données</string>
-    <string name="error_bluetooth_not_supported">Erreur: Bluetooth pas pris en charge par ce dispositif</string>
+    <string name="error_bluetooth_not_supported">Erreur: Bluetooth n\'est pas pris en charge par ce dispositif</string>
     <string name="unknown_device">Dispositif non reconnu</string>
     <string name="connecting_to_device">Connection au périphérique</string>
-    <string name="title_activity_raw_data_table">Tableau de données brut</string>
-    <string name="title_activity_calculated_data_table">Table de données calculé</string>
+    <string name="title_activity_raw_data_table">Tableau de données brutes</string>
+    <string name="title_activity_calculated_data_table">Table de données calculées</string>
     <string name="title_activity_start_new_sensor">Lancer un nouveau capteur</string>
     <string name="title_activity_new_sensor_location">Localisation du nouveau capteur</string>
     <string name="title_activity_stop_sensor">Arrêt du capteur</string>
-    <string name="navigation_drawer_open">Ouvrez la fenêtre de navigation</string>
+    <string name="navigation_drawer_open">Ouvrir la fenêtre de navigation</string>
     <string name="navigation_drawer_close">Fermer la fenêtre de navigation</string>
     <string name="title_activity_calibration_check_in">Activité de Calibration</string>
-    <string name="title_activity_usb_connected">Activité Usb Connecté</string>
-    <string name="snooze">Roupillon</string>
+    <string name="title_activity_usb_connected">Activité USB Connecté</string>
+    <string name="snooze">Snooze</string>
     <string name="snooze_hint">Arrêter l\'alerte pendant x minutes</string>
     <string name="ok">D\'accord</string>
     <string name="cancel">Annuler</string>
     <string name="no">Non</string>
     <string name="pref_sensor_location_dont_ask_again"> Ne pas me demander à nouveau</string>
-    <string name="title_activity_error">"Liste des événements et erreurs"</string>
+    <string name="title_activity_error">"Événements et erreurs"</string>
     <string name="title_activity_main">Activité principale</string>
-    <string name="title_activity_fake_numbers">Faux nombres</string>
+    <string name="title_activity_fake_numbers">Nombres fictifs</string>
     <string name="title_activity_edit_alert">Modifier l\'alerte</string>
     <string name="title_activity_double_calibration">Calibration initiale</string>
     <string name="pref_header_cloud_storage">Stockage Cloud</string>
     <string name="auto_configure_title">Configuration automatique</string>
-    <string name="prefs_auto_config_summary">Configuration automatique en utilisant un code  barres.</string>
-    <string name="scan_share2_barcode">Numériser Partager Barcode</string>
-    <string name="pref_share2_scan_barcode_summary">Ou scanner le code-barres sur le récepteur partagé</string>
+    <string name="prefs_auto_config_summary">Configuration automatique avec code-barres.</string>
+    <string name="scan_share2_barcode">Scan code-barres Share</string>
+    <string name="pref_share2_scan_barcode_summary">Ou scanner le code-barres sur le récepteur Share</string>
+
     <!-- MongoDB Settings -->
-    <string name="pref_dialog_mongodb_uri">Entrez MongoDB URI\"</string>
-    <string name="pref_message_mongodb_uri">Remplacer les valeurs exemples dans {} avec vos valeurs correctes</string>
-    <string name="pref_default_mongodb_uri">mongodb://{user}:{password}@ {host}.mongolab.com:{11111}/{base de données}</string>
+    <string name="pref_dialog_mongodb_uri">Entrez l\'URL MongoDB\"</string>
+    <string name="pref_message_mongodb_uri">Remplacez les valeurs entre accolades ({}) avec vos informations</string>
+    <string name="pref_default_mongodb_uri">mongodb://{utilisateur}:{motdepasse}@ {hôte}.mongolab.com:{11111}/{base de données}</string>
     <string name="pref_title_mongodb_collection">Nom de la Collection</string>
     <string name="pref_dialog_mongodb_collection">Entrez le nom de Collection</string>
-    <string name="pref_message_mongodb_collection">Ceci est le nom de la collection où les données CGM seront stockées</string>
+    <string name="pref_message_mongodb_collection">Ceci est le nom de la collection où les données MGC seront enregistrées</string>
     <string name="pref_title_mongodb_device_status_collection">Nom de la Collection d\'état du périphérique</string>
     <string name="pref_dialog_mongodb_device_status_collection">Entrez le nom de la Collection du périphérique\"</string>
-    <string name="pref_message_mongodb_device_status_collection">Ceci est le nom de la collection, où la batterie et d\'autres données du périphérique seront stockées</string>
+    <string name="pref_message_mongodb_device_status_collection">Ceci est le nom de la collection où les données sur la batterie et le périphérique seront enregistrées</string>
+
     <!-- API Settings -->
     <string name="pref_title_api">Synchronisation Nightscout (REST-API)</string>
     <string name="pref_title_api_enabled">Activée</string>
     <string name="pref_title_api_url">URL de base</string>
-    <string name="pref_dialog_api_url">Entrez l\'API URL de base</string>
-    <string name="pref_message_api_url">Cela ne l\'URL de base, le téléchargeur ajoutera automatiquement / entrées pour le POST. API_SECRET sur le serveur doit correspondre à yourpassphrase dans ce cadre.</string>
-    <string name="pref_default_api_url">https://yourpassphrase@{VOTRE-SITE}. azurewebsites.net/api/v1/</string>
+    <string name="pref_dialog_api_url">Entrez l\'URL de l'API base</string>
+    <string name="pref_message_api_url">Ceci n\'est que l\'URL de base, le téléverseur ajoutera automatiquement /entries pour le POST. API_SECRET sur le serveur doit correspondre à votrephrasesecrète dans ce réglage.</string>
+    <string name="pref_default_api_url">https://votrephrasesecrète@{VOTRE-SITE}.azurewebsites.net/api/v1/</string>
+
     <!-- wifi Settings -->
-    <string name="wifi_recievers_dialog_message">Comma liste des ip séparés: port (par exemple 37.142.132.220:50005,37.142.132.220:50010,mongodb://user:pass@ds053958.mongolab.com:53958/db/collection)</string>
-    <string name="wifi_recievers_dialog_title">Entrez les adresses et les ports de récepteurs IP (y compris les adresses MongoDB si nécessaire)</string>
+    <string name="wifi_recievers_dialog_message">Liste des ip séparés par des virgules: port (par exemple 37.142.132.220:50005,37.142.132.220:50010,mongodb://utilisateur:motdepasse@ds053958.mongolab.com:53958/db/collection)</string>
+    <string name="wifi_recievers_dialog_title">Entrez les adresses IP et les ports de récepteurs (y compris les adresses MongoDB si nécessaire)</string>
+
     <!-- Location Settings -->
     <string name="location_not_found_title">La localisation n\'est pas activée</string>
-    <string name="location_not_found_message">Afin que la découverte Bluetooth puisse marcher sur les nouveaux appareils, la localisation doit être activée. xDrip ne détecte pas votre emplacement et il peut être désactivé après que l\'appariement soit réussi.</string>
+    <string name="location_not_found_message">Afin que la découverte Bluetooth fonctionne sur les appareils récents, la localisation doit être activée. xDrip ne détecte pas votre emplacement à sauf lorsque la fonctionnalité optionelle Message d\'Urgence est activée</string>
     <string name="location_yes">Activer</string>
+
     <!-- broadcast settings -->
     <string name="pref_title_broadcast_enabled">Diffusion locale</string>
     <string name="pref_summary_broadcast_enabled">Activer la diffusion locale de données pour que d\'autres applications (par exemple NightWatch) puisse écouter les nouvelles valeurs</string>
-    <string name="title_activity_share_test">Partager le test</string>
+    <string name="title_activity_share_test">Test Share</string>
+
     <!-- pebble settings -->
-    <string name="pref_pebble_trend_watchface">Utiliser le Cadran Pebble Tendances</string>
+    <string name="pref_pebble_trend_watchface">Utiliser le cadran Pebble Tendances</string>
     <string name="pref_summary_pebble_trend_watchface">Utilisez/installez le Cadran Pebble Tendances (expérimental)</string>
     <string name="pref_pebble_display_trend">Afficher la Tendance</string>
-    <string name="pref_summary_display_trend">Afficher la tendance de glucose sur le cadran de la montre Pebble xDrip.</string>
-    <string name="pref_pebble_display_high_line">Afficher la ligne Haute</string>
-    <string name="pref_pebble_display_low_line">Afficher la ligne Basse</string>
+    <string name="pref_summary_display_trend">Afficher la tendance de glucose sur le cadran xDrip de la montre Pebble.</string>
+    <string name="pref_pebble_display_high_line">Afficher la limite élevée</string>
+    <string name="pref_pebble_display_low_line">Afficher la limite basse</string>
+    
     <!-- Amazfit Settings -->
     <string name="toast_crash">Quelque chose a mal tourné :( un rapport a été envoyé pour aider à résoudre le problème.</string>
     <string name="taskerConfigInstruction">Il suffit de cliquer sur l\'icône Cocher ici pour confirmer. Vous ne devriez pas avoir besoin de changer la chaîne de configuration.</string>
