@@ -634,8 +634,8 @@
     <string name="choose_use_treament_bg">Wähle aus, ob der Blutzucker im Behandlungseintrag zum Kalibrieren benutzt werden soll.</string>
     <string name="usw_treatment_bg">Benutze Behandlungsblutzuckerwerte</string>
     <string name="experimental_calibration_plugin">Experimentelle sekundäre Kalibrierungsplugins</string>
-    <string name="show_plugin_results_on_graph">Zeige Glukoseergebnisse vom Plugin auf dem Hauptgraphen.</string>
-    <string name="plugin_plot_on_graph">Plugin auf dem Graphen darstellen</string>
+    <string name="show_plugin_results_on_graph">Zeige Glukoseergebnisse vom Plugin auf dem Hauptdiagramm</string>
+    <string name="plugin_plot_on_graph">Plugin auf Diagramm darstellen</string>
     <string name="use_plugin_glucose">Benutze Pluginglukose</string>
     <string name="main_glucose_plugin">Der angezeigte Hauptglukosewert kommt vom Plugin!</string>
     <string name="plugin_override_all">Plugin überschreibt ALLES</string>
