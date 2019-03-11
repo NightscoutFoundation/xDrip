@@ -661,7 +661,6 @@
     <string name="minimum_value">Máximo valor considerado en rango</string>
     <string name="volume_buttons_snooze">Al presionar el botón de subir o bajar el volumen se apaga una alarma activa cuando estás dentro de la aplicación</string>
     <string name="buttons_silence_alarms">Botones silencian alarmas</string>
-    <string name="create_shortcut">Crea un acceso directo desde la pantalla principal a la pantalla de nivel de glucosa</string>
     <string name="shortcut_to_bg_alerts">Acceso directo a las alertas de nivel de glucosa</string>
     <string name="alert_calibration_request">Alerta cuando se requiera calibración</string>
     <string name="calibrations_request_time_time_difference">Cuántas horas entre las solicitudes de calibración</string>
