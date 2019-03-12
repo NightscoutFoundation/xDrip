@@ -767,6 +767,16 @@ public class JoH {
         }
     }
 
+    public static long tolerantParseLong(final String str, final long def) {
+        if (str == null) return def;
+        try {
+            return Long.parseLong(str);
+        } catch (NumberFormatException e) {
+            return def;
+        }
+    }
+
+
     public static String getRFC822String(long timestamp) {
         final SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
         return dateFormat.format(new Date(timestamp));
