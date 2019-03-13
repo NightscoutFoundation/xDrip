@@ -39,6 +39,7 @@
     <string name="scan_share2_barcode">Numériser Partager Barcode</string>
     <string name="pref_share2_scan_barcode_summary">Ou scanner le code-barres sur le récepteur partagé</string>
     <!-- MongoDB Settings -->
+    <string name="pref_summary_mongodb_enabled">Téléchargement direct de la base de données, non recommandé pour Nightscout</string>
     <string name="pref_dialog_mongodb_uri">Entrez MongoDB URI\"</string>
     <string name="pref_message_mongodb_uri">Remplacer les valeurs exemples dans {} avec vos valeurs correctes</string>
     <string name="pref_default_mongodb_uri">mongodb://{user}:{password}@ {host}.mongolab.com:{11111}/{base de données}</string>
@@ -51,6 +52,7 @@
     <!-- API Settings -->
     <string name="pref_title_api">Synchronisation Nightscout (REST-API)</string>
     <string name="pref_title_api_enabled">Activée</string>
+    <string name="pref_summary_api_enabled">L\'API REST est le moyen standard de se connecter à Nightscout</string>
     <string name="pref_title_api_url">URL de base</string>
     <string name="pref_dialog_api_url">Entrez l\'API URL de base</string>
     <string name="pref_message_api_url">Cela ne l\'URL de base, le téléchargeur ajoutera automatiquement / entrées pour le POST. API_SECRET sur le serveur doit correspondre à yourpassphrase dans ce cadre.</string>
@@ -74,6 +76,15 @@
     <string name="pref_pebble_display_high_line">Afficher la ligne Haute</string>
     <string name="pref_pebble_display_low_line">Afficher la ligne Basse</string>
     <!-- Amazfit Settings -->
+    <string name="pref_amazfit_BG_alert_enable_summary">Envoie des alertes de glycémie sur montre intelligente</string>
+    <string name="pref_amazfit_BG_alert_enable">Activer</string>
+    <string name="pref_amazfit_BG_alert_title">Alertes de glycémie</string>
+    <string name="pref_amazfit_other_alert_enable_summary">Envoie d\'autres alertes à la montre intelligente</string>
+    <string name="pref_amazfit_other_alert_enable">Activer</string>
+    <string name="pref_amazfit_other_alert_title">Autres alertes</string>
+    <string name="pref_amazfit_watchface_graph_dots_title">Points de graphique du cadran</string>
+    <string name="pref_amazfit_watchface_graph_dots_summary">Affiche des minuscules points au lieu de petits points</string>
+    <string name="pref_amazfit_watchface_graph_enable">Activer</string>
     <string name="toast_crash">Quelque chose a mal tourné :( un rapport a été envoyé pour aider à résoudre le problème.</string>
     <string name="taskerConfigInstruction">Il suffit de cliquer sur l\'icône Cocher ici pour confirmer. Vous ne devriez pas avoir besoin de changer la chaîne de configuration.</string>
     <string name="taskerConfiguration">Configuration Tasker</string>
