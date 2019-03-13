@@ -7,6 +7,7 @@ import android.os.Build;
 
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.UtilityModels.BridgeBattery;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.UtilityModels.desertsync.RouteTools;
@@ -54,7 +55,9 @@ public class RollCall {
     @Expose
     String mhint;
     @Expose
-    int battery;
+    int battery = -1;
+    @Expose
+    int bridge_battery = -1;
 
     // not set by instantiation
     @Expose
@@ -94,11 +97,21 @@ public class RollCall {
                 //
             }
         }
+    }
+
+    // populate with values from this device
+    public RollCall populate() {
         this.battery = getBatteryLevel();
+        this.bridge_battery = BridgeBattery.getBestBridgeBattery();
+        return this;
     }
 
     private boolean batteryValid() {
         return battery != -1;
+    }
+
+    private boolean bridgeBatteryValid() {
+        return bridge_battery != -1;
     }
 
     private static String wifiString() {
@@ -277,7 +290,8 @@ public class RollCall {
         final List<StatusItem> lf = new ArrayList<>();
         for (Map.Entry entry : indexed.entrySet()) {
             final RollCall rc = (RollCall) entry.getValue();
-            lf.add(new StatusItem(rc.role + (desert_sync ? rc.getRemoteWifiIndicate(our_wifi_ssid) : "") + (engineering ? ("\n" + JoH.niceTimeSince(rc.last_seen) + " ago") : ""), rc.bestName() + (desert_sync ? rc.getRemoteIpStatus() : "") + (engineering && rc.batteryValid() ? ("\n" + rc.battery + "%") : "")));
+            // TODO refactor with stringbuilder
+            lf.add(new StatusItem(rc.role + (desert_sync ? rc.getRemoteWifiIndicate(our_wifi_ssid) : "") + (engineering ? ("\n" + JoH.niceTimeSince(rc.last_seen) + " ago") : ""), rc.bestName() + (desert_sync ? rc.getRemoteIpStatus() : "") + (engineering && rc.batteryValid() ? ("\n" + rc.battery + "%") : "") + (engineering && rc.bridgeBatteryValid() ? ("\n" + rc.bridge_battery+"%") : "")));
         }
 
         Collections.sort(lf, new Comparator<StatusItem>() {
