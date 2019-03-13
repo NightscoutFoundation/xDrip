@@ -488,7 +488,14 @@ public class GcmListenerSvc extends JamListenerSvc {
                 } else if (action.equals("bfr")) {
                     if (Pref.getBooleanDefaultFalse("plus_follow_master")) {
                         Log.i(TAG, "Processing backfill location request as we are master");
-                        GcmActivity.syncBGTable2();
+                        final long remoteRecent = JoH.tolerantParseLong(payload, 0);
+                        final BgReading bgReading = BgReading.last();
+                        if (bgReading != null && bgReading.timestamp > remoteRecent) {
+                            GcmActivity.syncBGTable2();
+                        } else {
+                            // TODO reduce logging priority
+                            UserError.Log.e(TAG, "We do not have any more recent data to offer than: " + bgReading != null ? JoH.dateTimeText(bgReading.timestamp) : "no data");
+                        }
                     }
                 } else if (action.equals("sensorupdate")) {
                     Log.i(TAG, "Received sensorupdate packet(s)");
