@@ -193,38 +193,38 @@
                     android:key="xdrip_plus_display_colorset8"
                     android:title="@string/title_plugins_and_features">
 
-                <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
-                    android:defaultValue="#8a6b4c33"
-                    android:dependency="plugin_plot_on_graph"
-                    android:key="color_secondary_glucose_value"
-                    android:title="@string/secondary_plugin_glucose_value"
-                    app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
-                    app:colorpicker_selectNoneButtonText="@string/revert_to_default"
-                    app:colorpicker_showHex="false" />
+                    <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
+                        android:defaultValue="#8a6b4c33"
+                        android:dependency="plugin_plot_on_graph"
+                        android:key="color_secondary_glucose_value"
+                        android:title="@string/secondary_plugin_glucose_value"
+                        app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
+                        app:colorpicker_selectNoneButtonText="@string/revert_to_default"
+                        app:colorpicker_showHex="false" />
 
-                <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
-                    android:defaultValue="#3e29937b"
-                    android:key="color_step_counter1"
-                    android:title="@string/step_counter_1st_color"
-                    app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
-                    app:colorpicker_selectNoneButtonText="@string/revert_to_default"
-                    app:colorpicker_showHex="false" />
+                    <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
+                        android:defaultValue="#3e29937b"
+                        android:key="color_step_counter1"
+                        android:title="@string/step_counter_1st_color"
+                        app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
+                        app:colorpicker_selectNoneButtonText="@string/revert_to_default"
+                        app:colorpicker_showHex="false" />
 
-                <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
-                    android:defaultValue="#3c72c3c0"
-                    android:key="color_step_counter2"
-                    android:title="@string/step_counter_2nd_color"
-                    app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
-                    app:colorpicker_selectNoneButtonText="@string/revert_to_default"
-                    app:colorpicker_showHex="false" />
+                    <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
+                        android:defaultValue="#3c72c3c0"
+                        android:key="color_step_counter2"
+                        android:title="@string/step_counter_2nd_color"
+                        app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
+                        app:colorpicker_selectNoneButtonText="@string/revert_to_default"
+                        app:colorpicker_showHex="false" />
 
-                <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
-                    android:defaultValue="#2B212FDE"
-                    android:key="color_heart_rate1"
-                    android:title="@string/title_color_heart_rate1"
-                    app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
-                    app:colorpicker_selectNoneButtonText="@string/revert_to_default"
-                    app:colorpicker_showHex="false" />
+                    <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
+                        android:defaultValue="#2B212FDE"
+                        android:key="color_heart_rate1"
+                        android:title="@string/title_color_heart_rate1"
+                        app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
+                        app:colorpicker_selectNoneButtonText="@string/revert_to_default"
+                        app:colorpicker_showHex="false" />
                 </PreferenceCategory>
                 <PreferenceCategory
                     android:key="xdrip_plus_display_colorset12"
@@ -327,91 +327,95 @@
                 android:title="@string/title_xdrip_plus_graph_display_settings">
 
 
-            <CheckBoxPreference
-                android:defaultValue="true"
-                android:key="rewrite_history"
-                android:summary="@string/after_calibration_rewrite_history"
-                android:title="@string/rewrite_history" />
-            <CheckBoxPreference
-                android:defaultValue="false"
-                android:key="widget_range_lines"
-                android:summary="@string/show_range_on_widget"
-                android:title="@string/widget_range_lines" />
-            <CheckBoxPreference
-                android:defaultValue="true"
-                android:key="show_graph_grid_time"
-                android:summary="@string/grid_time_lines_visible"
-                android:title="@string/show_graph_time_lines" />
-            <CheckBoxPreference
-                android:defaultValue="true"
-                android:key="show_graph_grid_glucose"
-                android:summary="@string/grid_glucose_lines_visible"
-                android:title="@string/show_graph_glucose_lines" />
-            <CheckBoxPreference
-                android:defaultValue="true"
-                android:key="show_filtered_curve"
-                android:summary="@string/useful_for_noise_and_missed_readings"
-                android:title="@string/display_filtered_plot" />
-            <CheckBoxPreference
-                android:defaultValue="true"
-                android:key="show_raw_plot"
-                android:summary="@string/the_standard_xdrip_calculated_value"
-                android:title="@string/display_raw_plot_data" />
-            <CheckBoxPreference
-                android:defaultValue="true"
-                android:key="show_basal_line"
-                android:summary="@string/summary_show_basal_line"
-                android:title="@string/title_show_basal_line" />
-            <CheckBoxPreference
-                android:defaultValue="false"
-                android:key="show_target_line"
-                android:summary="@string/display_ideal_glucose_target_line"
-                android:title="@string/show_graph_target_line" />
-            <CheckBoxPreference
-                android:defaultValue="true"
-                android:key="show_recent_average_line"
-                android:summary="@string/display_eight_hour_average_line"
-                android:title="@string/show_graph_recent_average" />
-            <CheckBoxPreference
-                android:defaultValue="false"
-                android:key="show_full_average_line"
-                android:summary="@string/display_twenty_four_hour_average_line"
-                android:title="@string/show_graph_total_average" />
-            <CheckBoxPreference
-                android:defaultValue="false"
-                android:key="show_libre_trend_line"
-                android:summary=""
-                android:title="@string/show_libre_trend" />
-            <CheckBoxPreference
-                android:defaultValue="false"
-                android:key="show_g_prediction"
-                android:summary="@string/summary_show_g_prediction"
-                android:title="@string/title_show_g_prediction" />
-            <CheckBoxPreference
-                android:defaultValue="true"
-                android:key="show_smb_icons"
-                android:summary="@string/summary_show_smb_icons"
-                android:title="@string/title_show_smb_icons" />
-            <CheckBoxPreference
-                android:defaultValue="true"
-                android:key="show_medtrum_secondary"
-                android:summary="@string/summary_show_medtrum_secondary"
-                android:title="@string/title_show_medtrum_secondary" />
-            <CheckBoxPreference
-                android:defaultValue="false"
-                android:key="show_momentum_working_line"
-                android:summary="@string/predictive_model_inner_workings"
-                android:title="@string/show_momentum_working_curve" />
-            <CheckBoxPreference
-                android:defaultValue="false"
-                android:key="show_noise_workings"
-                android:summary="@string/noise_model_inner_workings"
-                android:title="@string/show_noise_workings" />
-            <CheckBoxPreference
-                android:key="illustrate_backfilled_data"
-                android:title="@string/title_illustrate_backfilled_data"
-                android:summary="@string/summary_illustrate_backfilled_data" />
-
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="rewrite_history"
+                    android:summary="@string/after_calibration_rewrite_history"
+                    android:title="@string/rewrite_history" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="widget_range_lines"
+                    android:summary="@string/show_range_on_widget"
+                    android:title="@string/widget_range_lines" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="show_graph_grid_time"
+                    android:summary="@string/grid_time_lines_visible"
+                    android:title="@string/show_graph_time_lines" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="show_graph_grid_glucose"
+                    android:summary="@string/grid_glucose_lines_visible"
+                    android:title="@string/show_graph_glucose_lines" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="show_filtered_curve"
+                    android:summary="@string/useful_for_noise_and_missed_readings"
+                    android:title="@string/display_filtered_plot" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="show_raw_plot"
+                    android:summary="@string/the_standard_xdrip_calculated_value"
+                    android:title="@string/display_raw_plot_data" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="show_basal_line"
+                    android:summary="@string/summary_show_basal_line"
+                    android:title="@string/title_show_basal_line" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="show_target_line"
+                    android:summary="@string/display_ideal_glucose_target_line"
+                    android:title="@string/show_graph_target_line" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="show_recent_average_line"
+                    android:summary="@string/display_eight_hour_average_line"
+                    android:title="@string/show_graph_recent_average" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="show_full_average_line"
+                    android:summary="@string/display_twenty_four_hour_average_line"
+                    android:title="@string/show_graph_total_average" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="show_libre_trend_line"
+                    android:summary=""
+                    android:title="@string/show_libre_trend" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="show_g_prediction"
+                    android:summary="@string/summary_show_g_prediction"
+                    android:title="@string/title_show_g_prediction" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="show_smb_icons"
+                    android:summary="@string/summary_show_smb_icons"
+                    android:title="@string/title_show_smb_icons" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="show_medtrum_secondary"
+                    android:summary="@string/summary_show_medtrum_secondary"
+                    android:title="@string/title_show_medtrum_secondary" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="show_momentum_working_line"
+                    android:summary="@string/predictive_model_inner_workings"
+                    android:title="@string/show_momentum_working_curve" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="show_noise_workings"
+                    android:summary="@string/noise_model_inner_workings"
+                    android:title="@string/show_noise_workings" />
+                <CheckBoxPreference
+                    android:key="illustrate_backfilled_data"
+                    android:summary="@string/summary_illustrate_backfilled_data"
+                    android:title="@string/title_illustrate_backfilled_data" />
+                <CheckBoxPreference
+                    android:dependency="engineering_mode"
+                    android:key="illustrate_remote_data"
+                    android:summary="Show data received remotely (diagnostic only)"
+                    android:title="Illustrate remote data" />
             </PreferenceScreen>
 
             <CheckBoxPreference
@@ -450,20 +454,18 @@
                 android:key="plus_show_reminders"
                 android:summary="@string/show_reminder_features"
                 android:title="@string/enable_reminder_features" />
-            <PreferenceScreen
-                xmlns:app="http://schemas.android.com/apk/res-auto"
+            <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:key="xdrip_plus_number_wall"
                 android:title="@string/title_xdrip_plus_number_wall">
-            <Preference
-                android:key="do_number_wall_configuration"
-                android:summary="@string/summary_do_number_wall_configuration"
-                android:title="@string/title_do_number_wall_configuration">
-                <intent
-                    android:action="android.intent.action.MAIN"
-                    android:targetClass="com.eveningoutpost.dexdrip.ui.activities.NumberWallPreview"
-                    android:targetPackage="@string/local_target_package">
-                </intent>
-            </Preference>
+                <Preference
+                    android:key="do_number_wall_configuration"
+                    android:summary="@string/summary_do_number_wall_configuration"
+                    android:title="@string/title_do_number_wall_configuration">
+                    <intent
+                        android:action="android.intent.action.MAIN"
+                        android:targetClass="com.eveningoutpost.dexdrip.ui.activities.NumberWallPreview"
+                        android:targetPackage="@string/local_target_package"></intent>
+                </Preference>
                 <SwitchPreference
                     android:defaultValue="false"
                     android:key="number_wall_on_lockscreen"
@@ -715,10 +717,10 @@
             <SwitchPreference
                 android:defaultValue="false"
                 android:dependency="plus_follow_master"
-                android:switchTextOff="@string/short_off_text_for_switches"
-                android:switchTextOn="@string/short_on_text_for_switches"
                 android:key="plus_whole_house"
                 android:summary="@string/summary_plus_whole_house"
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
                 android:title="@string/title_plus_whole_house" />
             <CheckBoxPreference
                 android:defaultValue="true"
@@ -757,24 +759,24 @@
                     android:title="Local Broadcast">
                     <SwitchPreference
                         android:defaultValue="false"
-                        android:switchTextOff="@string/short_off_text_for_switches"
-                        android:switchTextOn="@string/short_on_text_for_switches"
                         android:key="broadcast_snooze"
                         android:summary="Send snoozes to other apps on this handset"
+                        android:switchTextOff="@string/short_off_text_for_switches"
+                        android:switchTextOn="@string/short_on_text_for_switches"
                         android:title="Local Broadcast" />
                     <SwitchPreference
                         android:defaultValue="false"
-                        android:switchTextOff="@string/short_off_text_for_switches"
-                        android:switchTextOn="@string/short_on_text_for_switches"
                         android:key="accept_broadcast_snooze"
                         android:summary="Accept snoozes from other apps on this handset"
+                        android:switchTextOff="@string/short_off_text_for_switches"
+                        android:switchTextOn="@string/short_on_text_for_switches"
                         android:title="Accept Local Broadcast" />
                 </PreferenceCategory>
             </PreferenceScreen>
             <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+                android:icon="@drawable/desert_sync"
                 android:key="xdrip_plus_desert_sync_settings"
                 android:summary="@string/summary_xdrip_plus_desert_sync_settings"
-                android:icon="@drawable/desert_sync"
                 android:title="@string/title_xdrip_plus_desert_sync_settings">
                 <SwitchPreference
                     android:defaultValue="false"
@@ -790,8 +792,8 @@
                     android:maxLength="15"
                     android:title="@string/title_desert_sync_master_ip" />
                 <Preference
-                    android:key="send_sync_show_qr"
                     android:dependency="desert_sync_enabled"
+                    android:key="send_sync_show_qr"
                     android:summary="@string/summary_send_sync_show_qr"
                     android:title="@string/title_send_sync_show_qr">
                     <intent
@@ -883,8 +885,8 @@
             android:defaultValue="false"
             android:dependency="vehicle_mode_enabled"
             android:key="speak_readings_in_vehicle_mode"
-            android:title="@string/speak_readings"
-            android:summary="@string/enable_speak_readings_when_in_vehicle"/>
+            android:summary="@string/enable_speak_readings_when_in_vehicle"
+            android:title="@string/speak_readings" />
         <CheckBoxPreference
             android:defaultValue="true"
             android:dependency="vehicle_mode_enabled"
@@ -1018,14 +1020,14 @@
                 android:key="inpen_reset"
                 android:summary="@string/summary_inpen_reset"
                 android:title="@string/title_inpen_reset">
-            <intent
-                android:action="android.intent.action.MAIN"
-                android:targetClass="com.eveningoutpost.dexdrip.Home"
-                android:targetPackage="@string/local_target_package">
-                <extra
-                    android:name="inpen-reset"
-                    android:value="inpen-reset" />
-            </intent>
+                <intent
+                    android:action="android.intent.action.MAIN"
+                    android:targetClass="com.eveningoutpost.dexdrip.Home"
+                    android:targetPackage="@string/local_target_package">
+                    <extra
+                        android:name="inpen-reset"
+                        android:value="inpen-reset" />
+                </intent>
             </Preference>
         </PreferenceScreen>
 

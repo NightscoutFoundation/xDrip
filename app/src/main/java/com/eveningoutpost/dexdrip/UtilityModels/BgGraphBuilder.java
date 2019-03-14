@@ -115,8 +115,8 @@ public class BgGraphBuilder {
     private final List<Treatments> treatments;
     private final static boolean d = false; // debug flag, could be read from preferences
 
-    public Context context;
-    public SharedPreferences prefs;
+    private Context context;
+    private SharedPreferences prefs;
     public double highMark;
     public double lowMark;
     public double defaultMinY;
@@ -139,6 +139,7 @@ public class BgGraphBuilder {
     private final List<BloodTest> bloodtests;
     private final List<PointValue> inRangeValues = new ArrayList<>();
     private final List<PointValue> backfillValues = new ArrayList<>();
+    private final List<PointValue> remoteValues = new ArrayList<>();
     private final List<PointValue> highValues = new ArrayList<PointValue>();
     private final List<PointValue> lowValues = new ArrayList<PointValue>();
     private final List<PointValue> pluginValues = new ArrayList<PointValue>();
@@ -176,8 +177,11 @@ public class BgGraphBuilder {
     public BgGraphBuilder(Context context, long start, long end) {
         this(context, start, end, NUM_VALUES, true);
     }
-
     public BgGraphBuilder(Context context, long start, long end, int numValues, boolean show_prediction) {
+        this(context,start,end,numValues,show_prediction,false);
+    }
+
+    public BgGraphBuilder(Context context, long start, long end, int numValues, boolean show_prediction, final boolean useArchive) {
         // swap argument order if needed
         if (start > end) {
             long temp = end;
@@ -693,7 +697,8 @@ public class BgGraphBuilder {
             }
             lines.add(rawInterpretedLine());
 
-            lines.add(backFillValuesLine());
+            lines.add(remoteValuesLine()); // TODO conditional ?
+            lines.add(backFillValuesLine()); // TODO conditional ?
             lines.add(inRangeValuesLine());
             lines.add(lowValuesLine());
             lines.add(highValuesLine());
@@ -762,6 +767,15 @@ public class BgGraphBuilder {
         line.setColor(Color.parseColor("#55338833"));
         line.setHasLines(false);
         line.setPointRadius(pointSize + 3);
+        line.setHasPoints(true);
+        return line;
+    }
+
+    private Line remoteValuesLine() {
+        final Line line = new Line(remoteValues);
+        line.setColor(Color.parseColor("#55333388"));
+        line.setHasLines(false);
+        line.setPointRadius(pointSize + 4);
         line.setHasPoints(true);
         return line;
     }
@@ -1032,6 +1046,7 @@ public class BgGraphBuilder {
             lowValues.clear();
             inRangeValues.clear();
             backfillValues.clear();
+           remoteValues.clear();
             calibrationValues.clear();
             bloodTestValues.clear();
             pluginValues.clear();
@@ -1145,6 +1160,7 @@ public class BgGraphBuilder {
             final boolean show_plugin = prefs.getBoolean("plugin_plot_on_graph", false);
             final boolean glucose_from_plugin = prefs.getBoolean("display_glucose_from_plugin", false);
             final boolean illustrate_backfilled_data = prefs.getBoolean("illustrate_backfilled_data", false);
+            final boolean illustrate_remote_data = prefs.getBoolean("illustrate_remote_data", false);
 
             if ((Home.get_follower()) && (bgReadings.size() < 3)) {
                 GcmActivity.requestBGsync();
@@ -1215,6 +1231,9 @@ public class BgGraphBuilder {
 
                 if (illustrate_backfilled_data && bgReading.calculated_value > 13 && bgReading.calculated_value < 400 && bgReading.isBackfilled()) {
                     backfillValues.add(bgReadingToPoint(bgReading));
+                }
+                if (illustrate_remote_data && bgReading.calculated_value > 13 && bgReading.calculated_value < 400 && bgReading.isRemote()) {
+                    remoteValues.add(bgReadingToPoint(bgReading));
                 }
 
                 avg2counter++;
