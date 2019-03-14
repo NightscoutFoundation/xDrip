@@ -353,6 +353,12 @@
                     android:summary="@string/useful_for_noise_and_missed_readings"
                     android:title="@string/display_filtered_plot" />
                 <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:dependency="show_filtered_curve"
+                    android:key="show_pseudo_filtered"
+                    android:summary="Make filtered data as needed"
+                    android:title="Create missing filtered" />
+                <CheckBoxPreference
                     android:defaultValue="true"
                     android:key="show_raw_plot"
                     android:summary="@string/the_standard_xdrip_calculated_value"

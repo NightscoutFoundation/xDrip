@@ -43,6 +43,7 @@ import com.eveningoutpost.dexdrip.ui.helpers.BitmapLoader;
 import com.eveningoutpost.dexdrip.ui.helpers.ColorUtil;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.LibreTrendGraph;
+import com.eveningoutpost.dexdrip.utils.math.RollingAverage;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.android.gms.location.DetectedActivity;
 import com.rits.cloning.Cloner;
@@ -140,8 +141,8 @@ public class BgGraphBuilder {
     private final List<PointValue> inRangeValues = new ArrayList<>();
     private final List<PointValue> backfillValues = new ArrayList<>();
     private final List<PointValue> remoteValues = new ArrayList<>();
-    private final List<PointValue> highValues = new ArrayList<PointValue>();
-    private final List<PointValue> lowValues = new ArrayList<PointValue>();
+    private final List<PointValue> highValues = new ArrayList<>();
+    private final List<PointValue> lowValues = new ArrayList<>();
     private final List<PointValue> pluginValues = new ArrayList<PointValue>();
     private final List<PointValue> rawInterpretedValues = new ArrayList<PointValue>();
     private final List<PointValue> filteredValues = new ArrayList<PointValue>();
@@ -1055,6 +1056,12 @@ public class BgGraphBuilder {
 
             final double bgScale = bgScale();
             final double now = JoH.ts();
+
+            final boolean show_pseudo_filtered = prefs.getBoolean("show_pseudo_filtered", false);
+            final RollingAverage rollingAverage = show_pseudo_filtered ? new RollingAverage(2) : null;
+            final long rollingOffset = show_pseudo_filtered ? (long) (rollingAverage.getPeak() * DEXCOM_PERIOD) : 0;
+
+
             long highest_bgreading_timestamp = -1; // most recent bgreading timestamp we have
             double trend_start_working = now - (1000 * 60 * 12); // 10 minutes // TODO MAKE PREFERENCE?
             if (bgReadings.size() > 0) {
@@ -1210,6 +1217,12 @@ public class BgGraphBuilder {
 
                 if ((show_filtered) && (bgReading.filtered_calculated_value > 0) && (bgReading.filtered_calculated_value != bgReading.calculated_value)) {
                     filteredValues.add(new PointValue((float) ((bgReading.timestamp - timeshift) / FUZZER), (float) unitized(bgReading.filtered_calculated_value)));
+                } else if (show_pseudo_filtered) {
+                    // TODO differentiate between filtered and pseudo-filtered when both may be in play at different times
+                    final double rollingValue = rollingAverage.put(bgReading.calculated_value);
+                    if (rollingAverage.reachedPeak()) {
+                        filteredValues.add(new PointValue((float) ((bgReading.timestamp + rollingOffset) / FUZZER), (float) unitized(rollingValue)));
+                    }
                 }
                 if ((interpret_raw && (bgReading.raw_calculated > 0))) {
                     rawInterpretedValues.add(new PointValue((float) (bgReading.timestamp / FUZZER), (float) unitized(bgReading.raw_calculated)));
