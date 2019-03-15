@@ -111,7 +111,7 @@ public class RollCall {
     }
 
     private boolean bridgeBatteryValid() {
-        return bridge_battery != -1;
+        return bridge_battery > 0;
     }
 
     private static String wifiString() {
@@ -291,7 +291,7 @@ public class RollCall {
         for (Map.Entry entry : indexed.entrySet()) {
             final RollCall rc = (RollCall) entry.getValue();
             // TODO refactor with stringbuilder
-            lf.add(new StatusItem(rc.role + (desert_sync ? rc.getRemoteWifiIndicate(our_wifi_ssid) : "") + (engineering ? ("\n" + JoH.niceTimeSince(rc.last_seen) + " ago") : ""), rc.bestName() + (desert_sync ? rc.getRemoteIpStatus() : "") + (engineering && rc.batteryValid() ? ("\n" + rc.battery + "%") : "") + (engineering && rc.bridgeBatteryValid() ? ("\n" + rc.bridge_battery+"%") : "")));
+            lf.add(new StatusItem(rc.role + (desert_sync ? rc.getRemoteWifiIndicate(our_wifi_ssid) : "") + (engineering ? ("\n" + JoH.niceTimeSince(rc.last_seen) + " ago") : ""), rc.bestName() + (desert_sync ? rc.getRemoteIpStatus() : "") + (engineering && rc.batteryValid() ? ("\n" + rc.battery + "%") : "") + (engineering && rc.bridgeBatteryValid() ? (" " + rc.bridge_battery+"%") : "")));
         }
 
         Collections.sort(lf, new Comparator<StatusItem>() {
