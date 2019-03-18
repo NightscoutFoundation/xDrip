@@ -494,7 +494,7 @@ public class GcmListenerSvc extends JamListenerSvc {
                             GcmActivity.syncBGTable2();
                         } else {
                             // TODO reduce logging priority
-                            UserError.Log.e(TAG, "We do not have any more recent data to offer than: " + bgReading != null ? JoH.dateTimeText(bgReading.timestamp) : "no data");
+                            UserError.Log.e(TAG, "We do not have any more recent data to offer than: " + (bgReading != null ? JoH.dateTimeText(bgReading.timestamp) : "no data"));
                         }
                     }
                 } else if (action.equals("sensorupdate")) {
