@@ -13,12 +13,10 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AlertDialog;
 
 import com.eveningoutpost.dexdrip.BuildConfig;
-import com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.G5BaseService;
-import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.webservices.XdripWebService;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -33,6 +31,8 @@ import static com.eveningoutpost.dexdrip.UtilityModels.Constants.COMPATIBLE_BASE
  */
 
 public class CompatibleApps extends BroadcastReceiver {
+
+    public static final String EXTERNAL_ALG_PACKAGES = "EXTERNAL_ALG_PACKAGES";
 
     private static final String NOTIFY_MARKER = "-NOTIFY";
     private static final int RENOTIFY_TIME = 86400 * 30;
@@ -97,8 +97,11 @@ public class CompatibleApps extends BroadcastReceiver {
 
         if (!Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
             final String[] oop_package_names = {"info.nightscout.deeplearning", "com.hg4.oopalgorithm.oopalgorithm", "org.andesite.lucky8"};
+            final StringBuilder sb = new StringBuilder();
             for (String package_name_o : oop_package_names) {
                 if (InstalledApps.checkPackageExists(context, package_name_o)) {
+                    if (sb.length() > 0) sb.append(",");
+                    sb.append(package_name_o);
                     if (JoH.pratelimit(package_name_o + NOTIFY_MARKER, RENOTIFY_TIME)) {
                         final String short_package = package_name_o.substring(package_name_o.lastIndexOf(".") + 1).toUpperCase();
                         id = notify(gs(R.string.external_calibration_app),
@@ -106,6 +109,9 @@ public class CompatibleApps extends BroadcastReceiver {
                                 id, Feature.ENABLE_OOP);
                     }
                 }
+            }
+            if (sb.length() > 0) {
+                PersistentStore.setString(EXTERNAL_ALG_PACKAGES, sb.toString());
             }
         }
 
