@@ -750,13 +750,16 @@ public class Ob1G5CollectionService extends G5BaseService {
 
         final Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
         if (pairedDevices.size() > 0) {
-            for (BluetoothDevice device : pairedDevices) {
+            for (final BluetoothDevice device : pairedDevices) {
                 if (device.getAddress() != null) {
                     if (device.getAddress().equals(transmitterMAC)) {
                         try {
+
                             UserError.Log.e(TAG, "removingBond: " + transmitterMAC);
-                            Method m = device.getClass().getMethod("removeBond", (Class[]) null);
+                            final Method m = device.getClass().getMethod("removeBond", (Class[]) null);
                             m.invoke(device, (Object[]) null);
+                            // TODO interpret boolean response
+                            break;
 
                         } catch (Exception e) {
                             UserError.Log.e(TAG, e.getMessage(), e);
@@ -1487,7 +1490,7 @@ public class Ob1G5CollectionService extends G5BaseService {
 
 
     private boolean getInitiateBondingFlag() {
-        return Pref.getBooleanDefaultFalse("ob1_initiate_bonding_flag");
+        return Pref.getBoolean("ob1_initiate_bonding_flag", true);
     }
 
 
