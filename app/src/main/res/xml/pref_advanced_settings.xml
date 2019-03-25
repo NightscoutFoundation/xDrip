@@ -776,6 +776,11 @@
                     android:summary="@string/summary_Enable_to_allow_variable_slopes_with_Libre_collection_methods"
                     android:title="@string/title_Non_fixed_Libre_slopes" />
                 <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="detect_libre_sn_changes"
+                    android:summary="Automatically stop if Libre serial changes unexpectedly"
+                    android:title="Check Libre Serial" />
+                <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="bypass_calibration_quality_check"
                     android:summary="@string/summary_Allow_initial_calibration_no_good_enough_data"
