@@ -166,8 +166,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/reminderRepeatcheckBox"
-
-
             android:checked="true"
             android:text="@string/weekdays" />
 
@@ -182,11 +180,31 @@
             android:text="@string/weekends" />
 
         <CheckBox
-            android:id="@+id/highPriorityCheckbox"
+            android:id="@+id/homeOnlyCheckbox"
             android:layout_marginLeft="10dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/reminderRepeatcheckBox"
+            android:layout_toEndOf="@+id/weekEndsCheckbox"
+            android:checked="false"
+            android:text="At Home Only"/>
+
+        <CheckBox
+            android:id="@+id/speakCheckbox"
+            android:layout_marginLeft="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/weekEndsCheckbox"
+            android:layout_toLeftOf="@+id/homeOnlyCheckbox"
+            android:checked="false"
+            android:text="Speak"/>
+
+        <CheckBox
+            android:id="@+id/highPriorityCheckbox"
+            android:layout_marginLeft="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/homeOnlyCheckbox"
             android:layout_toEndOf="@+id/weekEndsCheckbox"
             android:checked="false"
             android:text="@string/mega_priority" />
