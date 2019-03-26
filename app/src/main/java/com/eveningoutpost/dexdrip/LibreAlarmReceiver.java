@@ -46,7 +46,7 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
     private static final boolean debug = false;
     private static final boolean d = true;
     private static final boolean use_raw_ = true;
-    private static final double segmentation_timeslice = Constants.MINUTE_IN_MS * 4.5;
+    private static final long segmentation_timeslice = (long)(Constants.MINUTE_IN_MS * 4.5);
     private static SharedPreferences prefs;
     private static long oldest = -1;
     private static long newest = -1;
