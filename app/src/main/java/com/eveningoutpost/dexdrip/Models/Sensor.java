@@ -5,6 +5,7 @@ import android.provider.BaseColumns;
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
+import com.activeandroid.query.Delete;
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
@@ -268,6 +269,11 @@ public class Sensor extends Model {
             Home.toaststaticnext("Error on Sensor sync.");
             return null;
         }
+    }
+
+
+    public static void deleteAllSensors() {
+        new Delete().from(Sensor.class);
     }
 
 }
