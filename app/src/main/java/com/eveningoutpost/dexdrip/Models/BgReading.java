@@ -428,17 +428,11 @@ public class BgReading extends Model implements ShareUploadableBg {
         return null;
     }
 
-
     public static BgReading getForPreciseTimestamp(long timestamp, long precision) {
         return getForPreciseTimestamp(timestamp, precision, true);
     }
 
-
-    public static BgReading getForPreciseTimestamp(long timestamp, double precision) {
-        return getForPreciseTimestamp(timestamp, precision, true);
-    }
-
-    static BgReading getForPreciseTimestamp(long timestamp, double precision, boolean lock_to_sensor) {
+    public static BgReading getForPreciseTimestamp(long timestamp, long precision, boolean lock_to_sensor) {
         final Sensor sensor = Sensor.currentSensor();
         if ((sensor != null) || !lock_to_sensor) {
             final BgReading bgReading = new Select()
