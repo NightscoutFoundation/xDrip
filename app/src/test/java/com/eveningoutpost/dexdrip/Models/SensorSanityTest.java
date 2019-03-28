@@ -50,6 +50,7 @@ public class SensorSanityTest extends RobolectricTestWithConfig {
         final String[] testSerials = {"12345678", "12345678", "", "12345678", "12345678", "12345679", "", "12345679", "12345679", "12345680", "12345680", "12345680", "12345680", "12345680"};
 
         Sensor.deleteAllSensors();
+        JoH.clearCache();
         // everything null
         sensorCheck("all null check ", null, false, true);
 

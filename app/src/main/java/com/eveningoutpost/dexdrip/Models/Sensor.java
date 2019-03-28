@@ -273,7 +273,7 @@ public class Sensor extends Model {
 
 
     public static void deleteAllSensors() {
-        new Delete().from(Sensor.class);
+        new Delete().from(Sensor.class).execute();
     }
 
 }
