@@ -229,7 +229,7 @@
     <string name="be_master_for_followers">היה מאסטר עבור העוקבים</string>
     <string name="this_device_will_send_data_to_followers">התקן זה ישלח מידע לעוקבים</string>
     <string name="disable_all_sync_features">השבת את כל אפשרויות הסינכרון</string>
-    <string name="please_enter_your_question_or_comments_here">אנא רשום את השאלות או הערות שלך כאן. /n/n אם תספק דואר אלקטרוני יכול להיות שתקבל תשובה /n/n</string>
+    <string name="please_enter_your_question_or_comments_here">אנא רשום את השאלות או הערות שלך כאן. \n\n אם תספק דואר אלקטרוני יכול להיות שתקבל תשובה \n\n</string>
     <string name="optional_contact_info_here_eg_email">אופציונלי - פרטים ליצירת קשר כגון email</string>
     <string name="send_message">שלח הודעה</string>
     <string name="please_indicate_what_you_think_of_the_app_generally">אנא ציין מה אתה חושב על האפליקציה באופן כללי</string>
@@ -386,6 +386,7 @@
     <string name="are_you_sure">אתה בטוח?</string>
     <string name="other">אחר</string>
     <string name="start_source_setup_wizard">התחל אשף בחירת סנסור</string>
+    <string name="enter_your_transmitter_id_exactly">הזן את מספר המשדר בדיוק כפי שהוא מודפס על הקופסא או המשדר עצמו</string>
     <string name="librealarm">LibreAlarm</string>
     <string name="use_librealarm">השתמש בLibreAlarm בתור מקור הנתונים?</string>
     <string name="noise_blocking">חסימת רעשים</string>

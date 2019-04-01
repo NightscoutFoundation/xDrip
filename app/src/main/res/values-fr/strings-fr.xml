@@ -18,6 +18,7 @@
     <string name="title_activity_start_new_sensor">Lancer un nouveau capteur</string>
     <string name="title_activity_new_sensor_location">Localisation du nouveau capteur</string>
     <string name="title_activity_stop_sensor">Arrêt du capteur</string>
+    <string name="title_activity_nav_drawer">Menu de Navigation</string>
     <string name="navigation_drawer_open">Ouvrez la fenêtre de navigation</string>
     <string name="navigation_drawer_close">Fermer la fenêtre de navigation</string>
     <string name="title_activity_calibration_check_in">Activité de Calibration</string>
@@ -33,12 +34,16 @@
     <string name="title_activity_fake_numbers">Faux nombres</string>
     <string name="title_activity_edit_alert">Modifier l\'alerte</string>
     <string name="title_activity_double_calibration">Calibration initiale</string>
+    <string name="title_activity_calibration_override">Override de calibration</string>
     <string name="pref_header_cloud_storage">Stockage Cloud</string>
     <string name="auto_configure_title">Configuration automatique</string>
     <string name="prefs_auto_config_summary">Configuration automatique en utilisant un code  barres.</string>
     <string name="scan_share2_barcode">Numériser Partager Barcode</string>
     <string name="pref_share2_scan_barcode_summary">Ou scanner le code-barres sur le récepteur partagé</string>
     <!-- MongoDB Settings -->
+    <string name="pref_title_mongodb">MongoDB</string>
+    <string name="pref_summary_mongodb_enabled">Téléchargement direct de la base de données, non recommandé pour Nightscout</string>
+    <string name="pref_title_mongodb_uri">URI</string>
     <string name="pref_dialog_mongodb_uri">Entrez MongoDB URI\"</string>
     <string name="pref_message_mongodb_uri">Remplacer les valeurs exemples dans {} avec vos valeurs correctes</string>
     <string name="pref_default_mongodb_uri">mongodb://{user}:{password}@ {host}.mongolab.com:{11111}/{base de données}</string>
@@ -51,6 +56,7 @@
     <!-- API Settings -->
     <string name="pref_title_api">Synchronisation Nightscout (REST-API)</string>
     <string name="pref_title_api_enabled">Activée</string>
+    <string name="pref_summary_api_enabled">L\'API REST est le moyen standard de se connecter à Nightscout</string>
     <string name="pref_title_api_url">URL de base</string>
     <string name="pref_dialog_api_url">Entrez l\'API URL de base</string>
     <string name="pref_message_api_url">Cela ne l\'URL de base, le téléchargeur ajoutera automatiquement / entrées pour le POST. API_SECRET sur le serveur doit correspondre à yourpassphrase dans ce cadre.</string>
@@ -74,9 +80,33 @@
     <string name="pref_pebble_display_high_line">Afficher la ligne Haute</string>
     <string name="pref_pebble_display_low_line">Afficher la ligne Basse</string>
     <!-- Amazfit Settings -->
+    <string name="amazfit_sync_service">Service de synchronisation AmazFit</string>
+    <string name="pref_amazfit_enable_summary">Activer le support de données Amazfit</string>
+    <string name="pref_amazfit_enable">Activer</string>
+    <string name="pref_amazfit_tile">Service Amazfit</string>
+    <string name="pref_amazfit_BG_alert_enable_summary">Envoie des alertes de glycémie sur montre intelligente</string>
+    <string name="pref_amazfit_BG_alert_enable">Activer</string>
+    <string name="pref_amazfit_BG_alert_title">Alertes de glycémie</string>
+    <string name="pref_amazfit_other_alert_enable_summary">Envoie d\'autres alertes à la montre intelligente</string>
+    <string name="pref_amazfit_other_alert_enable">Activer</string>
+    <string name="pref_amazfit_other_alert_title">Autres alertes</string>
+    <string name="pref_amazfit_watchface_graph_dots_title">Points de graphique du cadran</string>
+    <string name="pref_amazfit_watchface_graph_dots_summary">Affiche des minuscules points au lieu de petits points</string>
+    <string name="pref_amazfit_watchface_graph_enable">Activer</string>
+    <string name="pref_amazfit_watchface_graph_title">Graphique de cadran</string>
+    <string name="pref_amazfit_watchface_graph_enable_summary">Affiche le graphique en arrière-plan du cadran</string>
+    <string name="pref_amazfit_watchface_graph_hours_title">Graphique de cadran</string>
+    <string name="pref_amazfit_watchface_graph_hours_summary">définir combien d\'heures dans le graphique</string>
+    <string name="pref_amazfit_widget_graph_hours_title">Graphique du widget</string>
+    <string name="pref_amazfit_widget_graph_hours_summary">définir combien d\'heures dans le graphique</string>
+    <string name="pref_amazfit_widget_graph_dots_title">Points sur le graphique du widget</string>
+    <string name="pref_amazfit_widget_graph_dots_summary">Affiche des minuscules points au lieu de petits points</string>
+    <string name="pref_amazfit_widget_graph_enable">Activer</string>
+    <string name="pref_amazfit_widget_graph_title">Graphique du widget</string>
     <string name="toast_crash">Quelque chose a mal tourné :( un rapport a été envoyé pour aider à résoudre le problème.</string>
     <string name="taskerConfigInstruction">Il suffit de cliquer sur l\'icône Cocher ici pour confirmer. Vous ne devriez pas avoir besoin de changer la chaîne de configuration.</string>
     <string name="taskerConfiguration">Configuration Tasker</string>
+    <string name="finish_preferences_activity">finish_preferences_activity</string>
     <string name="add_widget">Ajouter un widget</string>
     <string name="title_activity_alert_list">Liste d\'alerte</string>
     <string name="speaktreatment">Enoncer le traitement</string>
@@ -98,11 +128,14 @@
     <string name="undo_button">Bouton Annuler</string>
     <string name="showcase_undo">Le bouton Annuler peut revenir en arrière à travers les simulations de Traitement, l\'Étalonnages et les Notes\n\nAu bout de 30 minutes, il va disparaitre à nouveau</string>
     <string name="add_note">Ajouter une note</string>
+    <string name="blood_test">Glycémie</string>
+    <string name="share">Partager</string>
     <string name="title_activity_profile_editor">Editeur de profil de traitement</string>
     <string name="first_use_menu_to_scan">Tout d\'abord utiliser le menu pour scanner votre appareil BT ou modifier la source de données dans les paramètres!</string>
     <string name="first_configure_ip_address">Tout d\'abord configurer l\'adresse IP de votre lecteur wixel ou l\'url Parakeet</string>
     <string name="now_start_your_sensor">Maintenant, démarrez votre capteur ou vérifier les paramètres</string>
     <string name="please_wait_while_sensor_warms_up">S\'il vous plaît patienter pendant que le capteur se réchauffe! (</string>
+    <string name="minutes_with_bracket">" minutes)"</string>
     <string name="possible_bad_calibration">Possible mauvaise pente d\'étalonnage, allez boire un verre, lavez-vous les mains, puis recalibrez dans quelques temps!</string>
     <string name="please_wait_need_two_readings_first">Attendez s\'il vous plaît, besoin de 2 lectures supplémentaires de l\'émetteur.</string>
     <string name="please_enter_two_calibrations_to_get_started">S\'il vous plaît effectuez deux étalonnages pour commencer!</string>
@@ -133,6 +166,7 @@
     <string name="show_parakeet_map">Afficher la carte Parakeet</string>
     <string name="switch_parakeet_to_setup_mode">Mettre Parakeet en mode de configuration</string>
     <string name="view_events_log">Afficher le journal d\'événements</string>
+    <string name="show_libre_trend">Voir la tendance du capteur libre</string>
     <string name="share_config_via_qr_code">Partager la config via le code QR</string>
     <string name="check_for_updated_version">Vérifiez les mises à jour</string>
     <string name="send_feedback_to_developer">Envoyer des messages au développeur</string>
