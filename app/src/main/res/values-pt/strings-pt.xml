@@ -610,7 +610,7 @@
     <string name="use_external_blukon_algorithm">Algoritmo Externo para o Libre.</string>
     <string name="calibrate_external_libre_algorithm_summary">Aplica métodos de calibração xDrip em dados OOP.</string>
     <string name="calibrate_external_libre_algorithm_title">Algoritmo de Calibração OOP.</string>
-    <string name="libre_use_smoothed_data_summary">Use a média de 5 pontos para obter dados do Libre mais suaves.</string>
+    <string name="libre_use_smoothed_data_summary">Usa a média de 5 pontos para obter dados do Libre mais suaves.</string>
     <string name="libre_use_smoothed_data_title">Dados do Libre suave.</string>
     <string name="retrieve_blukon_history_title">Recuperar histórico do Libre</string>
     <string name="retrieve_blukon_history_summary">Recuperar as leituras perdidas do Blucon ao ligar-se novamente ao sensor.</string>
