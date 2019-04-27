@@ -779,7 +779,7 @@
     <string name="step_counter_1st_color">Contador Passos 1ª Cor</string>
     <string name="step_counter_2nd_color">Contador Passos 2ª Cor</string>
     <string name="flair_colors">Cores Elegantes</string>
-    <string name="use_flair_colors">Utilizar Cores Elegantes</string>
+    <string name="use_flair_colors">Usar Cores Elegantes</string>
     <string name="upper_title_bar_flair">Barra de Título Superior Elegante</string>
     <string name="lower_button_bar_falir">Barra de Botões Inferior Elegante</string>
     <string name="force_english_text">Forçar Texto em Inglês</string>
@@ -1223,7 +1223,7 @@
     <string name="title_ob1_g5_restart_sensor">Reiniciar Sensor</string>
     <string name="summary_ob1_g5_preemptive_restart">Por precaução recomeçar o sensor antes do fim da sessão ao 6º dia de 9, para evitar o tempo de adaptação</string>
     <string name="title_ob1_g5_preemptive_restart">Reinícios Preventivos</string>
-    <string name="summary_ob1_g5_use_insufficiently_calibrated">Continuar a utilizar os dados mesmo que não existam boas calibrações suficientes (Experimental!)</string>
+    <string name="summary_ob1_g5_use_insufficiently_calibrated">Continuar a usar os dados mesmo que não existam boas calibrações suficientes (Experimental!)</string>
     <string name="title_ob1_g5_use_insufficiently_calibrated">Continuar sem calibrações</string>
     <string name="summary_ob1_g5_fallback_to_xdrip">Reverter para o algoritmo xDrip se o G5 não fornecer dados de glicose (potencialmente arriscado!)</string>
     <string name="title_ob1_g5_fallback_to_xdrip">Retorno para xDrip</string>
