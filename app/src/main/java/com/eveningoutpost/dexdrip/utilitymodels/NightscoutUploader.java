@@ -342,6 +342,45 @@ public class NightscoutUploader {
             return baseURI;
         }
     }
+
+    // return value tells if new data was found
+    private boolean downloadTreatments(final NightscoutService nightscoutService, final String hashedSecret, String baseURI, URI uri) throws Exception{
+        final Response<ResponseBody> r;
+        boolean new_data = false;
+        final String LAST_MODIFIED_KEY = LAST_SUCCESS_TREATMENT_DOWNLOAD + CipherUtils.getMD5(uri.toString()); // per uri marker
+        String last_modified_string = PersistentStore.getString(LAST_MODIFIED_KEY);
+        if (last_modified_string.equals("")) last_modified_string = JoH.getRFC822String(0);
+        final long request_start = JoH.tsl();
+        r = nightscoutService.downloadTreatments(hashedSecret, last_modified_string).execute();
+
+        if ((r != null) && (r.raw().networkResponse().code() == HttpURLConnection.HTTP_NOT_MODIFIED)) {
+            Log.d(TAG, "Treatments on " + uri.getHost() + ":" + uri.getPort() + " not modified since: " + last_modified_string);
+            return false; // skip further processing of this url
+        }
+
+        if ((r != null) && (r.isSuccessful())) {
+
+            last_modified_string = r.raw().header("Last-Modified", JoH.getRFC822String(request_start));
+            final String this_etag = r.raw().header("Etag", "");
+            if (this_etag.length() > 0) {
+                // older versions of nightscout don't support if-modified-since so check the etag for duplication
+                if (this_etag.equals(PersistentStore.getString(ETAG + LAST_MODIFIED_KEY))) {
+                    Log.d(TAG, "Skipping Treatments on " + uri.getHost() + ":" + uri.getPort() + " due to etag duplicate: " + this_etag);
+                    return false;
+                }
+                PersistentStore.setString(ETAG + LAST_MODIFIED_KEY, this_etag);
+            }
+            final String response = r.body().string();
+            if (d) Log.d(TAG, "Response: " + response);
+
+            new_data = NightscoutTreatments.processTreatmentResponse(response);
+            PersistentStore.setString(LAST_MODIFIED_KEY, last_modified_string);
+            checkGzipSupport(r);
+        } else {
+            Log.d(TAG, "Failed to get treatments from: " + baseURI);
+        }
+        return new_data;
+    }
     
     private synchronized boolean doRESTtreatmentDownload(SharedPreferences prefs) {
         final String baseURLSettings = prefs.getString("cloud_storage_api_base", "");
@@ -401,31 +440,8 @@ public class NightscoutUploader {
                     final Response<ResponseBody> r;
                     if (hashedSecret != null) {
                         doStatusUpdate(nightscoutService, retrofit.baseUrl().url().toString(), hashedSecret); // update status if needed
-                        final String LAST_MODIFIED_KEY = LAST_SUCCESS_TREATMENT_DOWNLOAD + CipherUtils.getMD5(uri.toString()); // per uri marker
-                        String last_modified_string = PersistentStore.getString(LAST_MODIFIED_KEY);
-                        if (last_modified_string.equals("")) last_modified_string = JoH.getRFC822String(0);
-                        final long request_start = JoH.tsl();
-                        r = nightscoutService.downloadTreatments(hashedSecret, last_modified_string).execute();
+                        downloadTreatments(nightscoutService, hashedSecret, baseURI, uri);
 
-                        if ((r != null) && (r.raw().networkResponse().code() == HttpURLConnection.HTTP_NOT_MODIFIED)) {
-                            Log.d(TAG, "Treatments on " + uri.getHost() + ":" + uri.getPort() + " not modified since: " + last_modified_string);
-                            continue; // skip further processing of this url
-                        }
-
-                        if ((r != null) && (r.isSuccessful())) {
-
-                            last_modified_string = r.raw().header("Last-Modified", JoH.getRFC822String(request_start));
-                            final String this_etag = r.raw().header("Etag", "");
-                            if (this_etag.length() > 0) {
-                                // older versions of nightscout don't support if-modified-since so check the etag for duplication
-                                if (this_etag.equals(PersistentStore.getString(ETAG + LAST_MODIFIED_KEY))) {
-                                    Log.d(TAG, "Skipping Treatments on " + uri.getHost() + ":" + uri.getPort() + " due to etag duplicate: " + this_etag);
-                                    continue;
-                                }
-                                PersistentStore.setString(ETAG + LAST_MODIFIED_KEY, this_etag);
-                            }
-                            final String response = r.body().string();
-                            if (d) Log.d(TAG, "Response: " + response);
 
                             new_data = NightscoutTreatments.processTreatmentResponse(response);
                             PersistentStore.setString(LAST_MODIFIED_KEY, last_modified_string);
@@ -435,8 +451,11 @@ public class NightscoutUploader {
                         }
 
                     } else {
-                        Log.d(TAG, "Old api version not supported");
+                        Log.d(TAG, "hashedSecret is null");
                     }
+                    
+                } else {
+                    Log.d(TAG, "Old api version not supported");
                 }
 
 
