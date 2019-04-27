@@ -254,10 +254,15 @@ public class NightscoutTreatments {
 
         NSBasal ns_basal = NSBasal.createEfficientRecord(timestamp, rate, duration);
         if(ns_basal != null) {
-            Log.e(TAG, "created two instances, here is the data" + ns_basal.toS());
+            Log.e(TAG, "created an instances, here is the data" + ns_basal.toS());
         } else {
             return false;
         }
         return true;
     }
+    
+    public static boolean processDeviceStatusResponse(final String response) throws Exception {
+        return false; //???
+    }
+    
 }
