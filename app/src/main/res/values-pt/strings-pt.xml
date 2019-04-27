@@ -980,7 +980,7 @@
     <string name="sensor_is_still_warming_up_please_wait">Sensor ainda está em preparação, por favor espere</string>
     <string name="number_wall_config">Configuração Number Wall</string>
     <string name="summary_If_you_plan_to_only_use_a_Wear_collector_and_never_your_phone">Se planeia usar Wear como receptor e nunca o telemóvel.</string>
-    <string name="title_Only_use_Wear">Uitlizar apenas Wear</string>
+    <string name="title_Only_use_Wear">Usar apenas Wear</string>
     <string name="summary_Also_show_the_filtered_data_on_the_trend">Mostrar também os dados filtrados na tendência</string>
     <string name="summary_Show_Bolus_Wizard_Preview_Insulin_value_on_watch_when_appropriate">Mostrar valor Insulina na Pré-Visualização Assistente de Bólus quando apropriado no relógio</string>
     <string name="title_Display_BWP_Insulin">Mostrar Insulina Pré-VAB</string>
