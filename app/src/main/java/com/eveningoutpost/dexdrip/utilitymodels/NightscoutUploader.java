@@ -417,7 +417,7 @@ public class NightscoutUploader {
             final String response = r.body().string();
             if (true) Log.d(TAG, "Response: " + response);
 
-            new_data = NightscoutTreatments.processDeviceStatusResponse(response);
+            new_data = NightscoutStatus.processDeviceStatusResponse(response);
             PersistentStore.setString(LAST_MODIFIED_KEY, last_modified_string);
         } else {
             Log.d(TAG, "Failed to get treatments from: " + baseURI);
