@@ -259,8 +259,4 @@ public class NightscoutTreatments {
         return true;
     }
     
-    public static boolean processDeviceStatusResponse(final String response) throws Exception {
-        return false; //???
-    }
-    
 }
