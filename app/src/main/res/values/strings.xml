@@ -687,6 +687,8 @@
     <string name="show_extra_status_on_widget">Also show the extra status line on the widget</string>
     <string name="show_long_calibration_data">Show slope and intercept in long form.</string>
     <string name="show_short_calibration_data">Show slope and intercept in short form.</string>
+    <string name="title_status_line_openaps">openaps looping params</string>
+    <string name="summary_status_line_openaps">Show last loop time, basal, iob and cob</string>
     <string name="show_plugin_data">Show slope and glucose data from the active plugin</string>
     <string name="calibration_plugin">Calibration Plugin</string>
     <string name="advanced_calibration">Advanced Calibration</string>
