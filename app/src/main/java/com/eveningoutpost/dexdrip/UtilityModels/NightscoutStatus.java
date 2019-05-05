@@ -297,10 +297,12 @@ public class NightscoutStatus {
     public static boolean processDeviceStatusResponse(final String response) throws Exception {
         boolean new_data = false;
 
+        Log.e(TAG, "Starting processDeviceStatusResponse " + response);
         String last_modified_string = PersistentStore.getString(NS_STATUS_KEY);
         OApsStatus curentStatus = OApsStatus.fromJson(last_modified_string);
-
-        Log.e(TAG, "Starting processDeviceStatusResponse " + response);
+        if (curentStatus == null) {
+            curentStatus = new OApsStatus();
+        }
 
         final JSONArray jsonArray = new JSONArray(response);
         for (int i = 0; i < jsonArray.length(); i++) {
@@ -309,12 +311,27 @@ public class NightscoutStatus {
             if (oApsStatus == null) {
                 continue;
             }
-            Log.e(TAG, "oApsStatus = " + oApsStatus.toS());
+            Log.e(TAG, "oApsStatus = " + oApsStatus.toJson());
             new_data |= UpdateCurrentStatus(curentStatus, oApsStatus);
+        }
+        if(new_data) {
+            Log.e("xxx", "seting status status = " + curentStatus.toJson()); // remove
+            PersistentStore.setString(NS_STATUS_KEY, curentStatus.toJson());
         }
         return new_data;
     }
 
+    public static OApsStatus getLatestStatus() {
+        String last_modified_string = PersistentStore.getString(NS_STATUS_KEY);
+        Log.e("xxx", "returning status last_modified_string = " + last_modified_string);
+        if(last_modified_string == null || last_modified_string.length() == 0) {
+            return null;
+        }
+        OApsStatus curentStatus = OApsStatus.fromJson(last_modified_string);
+        Log.e("xxx", "returning status = " + curentStatus.toJson());
+        return curentStatus;
+    }
+    
     // This is a version that returns null instead of throwing.
     static JSONObject getJSONObjectNull(JSONObject jo, String name) {
         JSONObject ret = null;
@@ -407,7 +424,7 @@ class OApsStatus {
         return JoH.defaultGsonInstance().fromJson(json, OApsStatus.class);
     }
 
-    String toS() {
+    String toJson() {
         return JoH.defaultGsonInstance().toJson(this);
     }
 }
