@@ -21,6 +21,7 @@ import com.eveningoutpost.dexdrip.Models.BloodTest;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.DesertSync;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.NSBasal;
 import com.eveningoutpost.dexdrip.Models.RollCall;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
@@ -31,6 +32,7 @@ import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.NanoStatus;
+import com.eveningoutpost.dexdrip.UtilityModels.NightscoutStatus;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.PumpStatus;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
@@ -552,7 +554,16 @@ public class GcmListenerSvc extends JamListenerSvc {
                             UserError.Log.wtf(TAG, "Exception processing rsom timestamp");
                         }
                     }
-
+                } if (action.equals("nsBasal")) {
+                    if (Home.get_follower()) {
+                        Log.i(TAG, "Received ns basal update");
+                        NSBasal.addFromJson(payload);
+                    }
+                } if (action.equals("oapsStatus")) {
+                    if (Home.get_follower()) {
+                        Log.i(TAG, "Received oapsStatus update");
+                        NightscoutStatus.addFromJson(payload);
+                    }
                 } else {
                     Log.e(TAG, "Received message action we don't know about: " + action);
                 }

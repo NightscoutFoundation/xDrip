@@ -6,6 +6,7 @@ import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Delete;
 import com.activeandroid.query.Select;
+import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.wearintegration.ExternalStatusService;
@@ -13,6 +14,8 @@ import com.google.gson.annotations.Expose;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.json.JSONObject;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -95,6 +98,9 @@ public class NSBasal extends PlusModel {
 
 
     public String toS() {
+       return toJson(); 
+    }
+    public String toJson() {
         return JoH.defaultGsonInstance().toJson(this);
     }
 
@@ -117,6 +123,7 @@ public class NSBasal extends PlusModel {
             updateDB();
             return null;
         }
+        GcmActivity.pushNsBasal(fresh);
         return fresh;
 
     }
@@ -134,7 +141,27 @@ public class NSBasal extends PlusModel {
         }
     }
     
-    
+    public static void addFromJson(String json) {
+        if (json == null) {
+            return;
+        }
+        NSBasal fresh;
+        try {
+            fresh = JoH.defaultGsonInstance().fromJson(json, NSBasal.class);
+        } catch (Exception e) {
+            Log.e(TAG, "Got exception processing json msg: " + e );
+            return;
+        }
+        try {
+            fresh.save();
+        } catch (android.database.sqlite.SQLiteException e) {
+            Log.e(TAG, "Error in NSBasal createFromJson");
+            updateDB();
+            return;
+        }
+        Log.e(TAG, "Successfuly created NSBasal value " + json);
+    }
+
     // static methods
 /*
     public static NSBasal createEfficientRecord(long created_at, double rate) {

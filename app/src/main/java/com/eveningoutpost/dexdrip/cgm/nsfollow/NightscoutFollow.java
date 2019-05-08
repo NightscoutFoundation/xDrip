@@ -130,6 +130,7 @@ public class NightscoutFollow {
 
     private static boolean treatmentDownloadEnabled() {
         return Pref.getBooleanDefaultFalse("nsfollow_download_treatments");
+        //???
     }
 
     // TODO make reusable

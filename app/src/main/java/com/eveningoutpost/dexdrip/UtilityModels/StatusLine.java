@@ -71,52 +71,8 @@ public class StatusLine {
         }
         
         if(Pref.getBoolean("status_line_openaps", false)) {
-            OApsStatus curentStatus = NightscoutStatus.getLatestStatus();
-            if(curentStatus != null) {
-                Log.e("xxx", "inside curentStatus");
-                append(sb, "OAPS: ");
-                long lastLoopAgo =  Math.round((JoH.tsl() - curentStatus.lastLoopMoment) / 60000.0);
-                if (lastLoopAgo > 24 * 60) {
-                    sb.append("Not Looping");
-                } else {
-                    sb.append(lastLoopAgo + "min");
-                    sb.append(' ');
-                    sb.append("iob:");
-                    double iobAgo =  Math.round((JoH.tsl() - curentStatus.iobTime) / 60000.0);
-                    if(iobAgo < 60) {
-                        sb.append(String.format("%.2f", curentStatus.iob));
-                    } else {
-                        sb.append("--");
-                    }
-                    sb.append(' ');
-                    sb.append("cob:");
-                    double cobAgo =  Math.round((JoH.tsl() - curentStatus.cobTime) / 60000.0);
-                    if(cobAgo < 60) {
-                        sb.append(String.format("%.2f", curentStatus.cob));
-                    } else {
-                        sb.append("--");
-                    }
-                    NSBasal nSBasal = NSBasal.last();
-                    Log.e("xxxx", "basal data" + nSBasal.toS());
-                    if(nSBasal != null) {
-                        sb.append(' ');
-                        sb.append("basal:");
-                        // duration is in minutes
-                        double basalAgo =  Math.round(((double)JoH.tsl() - (double)nSBasal.created_at) / 60000.0 - nSBasal.duration);
-                        // basalAgo is where this basal would end.
-                        Log.e("xxxx", "basal ago " + basalAgo);
-                        if(basalAgo < 0) {
-                            // Basal stops if no basal was given.
-                            // Todo upload NS default basal profile.
-                            sb.append(String.format("%.2f", nSBasal.rate));
-                        } else {
-                            sb.append("--");
-                        }
-                    }
-                }
-            } else {
-                 append(sb, "OAPS: never looped");
-            }
+            AddOAPSStatus(sb);
+
         }
 
 
@@ -238,6 +194,56 @@ public class StatusLine {
         }
         return sb.toString();
 
+    }
+    
+    private static void AddOAPSStatus(final StringBuilder sb) {
+        OApsStatus curentStatus = NightscoutStatus.getLatestStatus();
+        if(curentStatus != null) {
+            Log.e("xxx", "inside curentStatus");
+            append(sb, "OAPS: ");
+            long lastLoopAgo =  Math.round((JoH.tsl() - curentStatus.lastLoopMoment) / 60000.0);
+            if (lastLoopAgo > 24 * 60) {
+                sb.append("Not Looping");
+            } else {
+                sb.append(lastLoopAgo + "min");
+                sb.append(' ');
+                sb.append("iob:");
+                double iobAgo =  Math.round((JoH.tsl() - curentStatus.iobTime) / 60000.0);
+                if(iobAgo < 60) {
+                    sb.append(String.format("%.2f", curentStatus.iob));
+                } else {
+                    sb.append("--");
+                }
+                sb.append(' ');
+                sb.append("cob:");
+                double cobAgo =  Math.round((JoH.tsl() - curentStatus.cobTime) / 60000.0);
+                if(cobAgo < 60) {
+                    sb.append(String.format("%.2f", curentStatus.cob));
+                } else {
+                    sb.append("--");
+                }
+                NSBasal nSBasal = NSBasal.last();
+                
+                if(nSBasal != null) {
+                    Log.e("xxxx", "basal data" + nSBasal.toS());
+                    sb.append(' ');
+                    sb.append("basal:");
+                    // duration is in minutes
+                    double basalAgo =  Math.round(((double)JoH.tsl() - (double)nSBasal.created_at) / 60000.0 - nSBasal.duration);
+                    // basalAgo is where this basal would end.
+                    Log.e("xxxx", "basal ago " + basalAgo);
+                    if(basalAgo < 0) {
+                        // Basal stops if no basal was given.
+                        // Todo upload NS default basal profile.
+                        sb.append(String.format("%.2f", nSBasal.rate));
+                    } else {
+                        sb.append("--");
+                    }
+                }
+            }
+        } else {
+             append(sb, "OAPS: never looped");
+        }
     }
 
     private static void append(final StringBuilder sb, final String value) {
