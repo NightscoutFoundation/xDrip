@@ -15,6 +15,7 @@ import com.eveningoutpost.dexdrip.Models.Libre2RawValue;
 import com.eveningoutpost.dexdrip.Models.Libre2Sensor;
 import com.eveningoutpost.dexdrip.Models.LibreBlock;
 import com.eveningoutpost.dexdrip.Models.LibreData;
+import com.eveningoutpost.dexdrip.Models.NSBasal;
 import com.eveningoutpost.dexdrip.Models.PenData;
 import com.eveningoutpost.dexdrip.Models.Prediction;
 import com.eveningoutpost.dexdrip.Models.UserNotification;
@@ -56,6 +57,7 @@ public class IdempotentMigrations {
         AlertType.fixUpTable();
         UserNotification.updateDB();
         JoH.clearCache();
+        NSBasal.updateDB();
         IncompatibleApps.notifyAboutIncompatibleApps();
         CompatibleApps.notifyAboutCompatibleApps();
 
