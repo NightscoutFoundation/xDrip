@@ -38,6 +38,7 @@ import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.utilitymodels.PumpStatus;
 import com.eveningoutpost.dexdrip.utilitymodels.StatusItem;
 import com.eveningoutpost.dexdrip.utilitymodels.WholeHouse;
+import com.eveningoutpost.dexdrip.models.NSBasal;
 import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
 import com.eveningoutpost.dexdrip.utils.Preferences;
@@ -562,6 +563,16 @@ public class GcmListenerSvc extends JamListenerSvc {
                     }
                 } else if (action.equals("libreBlock") || action.equals("libreBlck")) {
                     HandleLibreBlock(payload);
+                } if (action.equals("nsBasal")) {
+                    if (Home.get_follower()) {
+                        Log.i(TAG, "Received ns basal update");
+                        NSBasal.addFromJson(payload);
+                    }
+                } if (action.equals("oapsStatus")) {
+                    if (Home.get_follower()) {
+                        Log.i(TAG, "Received oapsStatus update");
+                        NightscoutStatus.addFromJson(payload);
+                    }
                 } else {
                     Log.e(TAG, "Received message action we don't know about: " + action);
                 }
