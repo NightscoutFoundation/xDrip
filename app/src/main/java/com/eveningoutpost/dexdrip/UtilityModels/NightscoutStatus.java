@@ -1,7 +1,9 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Models.DateUtil;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.NSBasal;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
@@ -317,6 +319,7 @@ public class NightscoutStatus {
         if(new_data) {
             Log.e("xxx", "seting status status = " + curentStatus.toJson()); // remove
             PersistentStore.setString(NS_STATUS_KEY, curentStatus.toJson());
+            GcmActivity.pushNsStatus(curentStatus.toJson());
         }
         return new_data;
     }
@@ -332,6 +335,20 @@ public class NightscoutStatus {
         return curentStatus;
     }
     
+    public static void addFromJson(String json) {
+        if (json == null) {
+            return;
+        }
+        // Actually the follownig line was enough, but we are doing some sanity checks.
+        //PersistentStore.setString(NS_STATUS_KEY, json);
+        OApsStatus curentStatus = OApsStatus.fromJson(json);
+        if (curentStatus == null) {
+            return;
+        }
+        Log.e("xxx", "seting status status = " + curentStatus.toJson()); // remove
+        PersistentStore.setString(NS_STATUS_KEY, curentStatus.toJson());
+    }
+
     // This is a version that returns null instead of throwing.
     static JSONObject getJSONObjectNull(JSONObject jo, String name) {
         JSONObject ret = null;
@@ -352,9 +369,10 @@ public class NightscoutStatus {
         try {
             ret = jo.getString(name);
         } catch (JSONException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            Log.e(TAG, "exception message is" + e.getMessage());
+            if(!e.getMessage().startsWith("No value for")) {
+                e.printStackTrace();
+                Log.e(TAG, "getJSONStringNull exception" + e);
+            }
             return null;
         }
         return ret;
@@ -366,9 +384,10 @@ public class NightscoutStatus {
         try {
             ret = jo.getDouble(name);
         } catch (JSONException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            Log.e(TAG, "exception message is" + e.getMessage());
+            if(!e.getMessage().startsWith("No value for")) {
+                e.printStackTrace();
+                Log.e(TAG, "getJSONSDoubleOrZero exception" + e);
+            }
             return 0;
         }
         return ret;
@@ -380,9 +399,10 @@ public class NightscoutStatus {
         try {
             ret = jo.getBoolean(name);
         } catch (JSONException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            Log.e(TAG, "exception message is" + e.getMessage());
+            if(!e.getMessage().startsWith("No value for")) {
+                e.printStackTrace();
+                Log.e(TAG, "getJSONBooleanFalse exception" + e);
+            }
             return false;
         }
         return ret;
@@ -421,7 +441,12 @@ class OApsStatus {
         if (json == null) {
             return new OApsStatus();
         }
-        return JoH.defaultGsonInstance().fromJson(json, OApsStatus.class);
+        try {
+            return JoH.defaultGsonInstance().fromJson(json, OApsStatus.class);
+        } catch (Exception e) {
+            Log.e("NightscoutStatus", "OApsStatus Got exception processing json msg: " + e );
+            return null;
+        }
     }
 
     String toJson() {
