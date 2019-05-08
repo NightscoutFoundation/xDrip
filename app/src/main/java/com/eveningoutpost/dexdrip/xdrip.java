@@ -24,6 +24,7 @@ import com.eveningoutpost.dexdrip.utilitymodels.IdempotentMigrations;
 import com.eveningoutpost.dexdrip.utilitymodels.PlusAsyncExecutor;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.utilitymodels.VersionTracker;
+import com.eveningoutpost.dexdrip.UtilityModels.NightscoutStatus;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.utils.AppCenterCrashReporting;
 import com.eveningoutpost.dexdrip.utils.NewRelicCrashReporting;
@@ -78,6 +79,7 @@ public class xdrip extends Application {
         xdrip.context = getApplicationContext();
         super.onCreate();
         JodaTimeAndroid.init(this);
+        NightscoutStatus.test();
         try {
             if (PreferenceManager.getDefaultSharedPreferences(xdrip.context).getBoolean("enable_crashlytics", true)) {
                 //NewRelicCrashReporting.start();
