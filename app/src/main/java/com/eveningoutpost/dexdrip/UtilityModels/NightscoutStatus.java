@@ -353,11 +353,12 @@ public class NightscoutStatus {
     static JSONObject getJSONObjectNull(JSONObject jo, String name) {
         JSONObject ret = null;
         try {
+            if(!jo.has(name)) {
+                return null;
+            }
             ret = jo.getJSONObject(name);
         } catch (JSONException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            Log.e(TAG, "exception message is" + e.getMessage());
+            Log.e(TAG, "getJSONObjectNull exception", e);
             return null;
         }
         return ret;
@@ -367,12 +368,12 @@ public class NightscoutStatus {
     static String getJSONStringNull(JSONObject jo, String name) {
         String ret = null;
         try {
+            if(!jo.has(name)) {
+                return null;
+            }
             ret = jo.getString(name);
         } catch (JSONException e) {
-            if(!e.getMessage().startsWith("No value for")) {
-                e.printStackTrace();
-                Log.e(TAG, "getJSONStringNull exception" + e);
-            }
+            Log.e(TAG, "getJSONStringNull exception", e);
             return null;
         }
         return ret;
@@ -380,14 +381,15 @@ public class NightscoutStatus {
 
     // This is a version that returns null instead of throwing.
     static double getJSONSDoubleOrZero(JSONObject jo, String name) {
+        
         double ret = 0;
         try {
+            if(!jo.has(name)) {
+                return 0;
+            }
             ret = jo.getDouble(name);
         } catch (JSONException e) {
-            if(!e.getMessage().startsWith("No value for")) {
-                e.printStackTrace();
-                Log.e(TAG, "getJSONSDoubleOrZero exception" + e);
-            }
+            Log.e(TAG, "getJSONSDoubleOrZero exception", e);
             return 0;
         }
         return ret;
@@ -397,12 +399,12 @@ public class NightscoutStatus {
     static boolean getJSONBooleanFalse(JSONObject jo, String name) {
         boolean ret = false;
         try {
+            if(!jo.has(name)) {
+                return false;
+            }
             ret = jo.getBoolean(name);
         } catch (JSONException e) {
-            if(!e.getMessage().startsWith("No value for")) {
-                e.printStackTrace();
-                Log.e(TAG, "getJSONBooleanFalse exception" + e);
-            }
+            Log.e(TAG, "getJSONBooleanFalse exception", e);
             return false;
         }
         return ret;
