@@ -565,12 +565,12 @@ public class GcmListenerSvc extends JamListenerSvc {
                     }
                 } else if (action.equals("libreBlock")) {
                     HandleLibreBlock(payload);
-                } if (action.equals("nsBasal")) {
+                } else if (action.equals("nsBasal")) {
                     if (Home.get_follower()) {
-                        Log.i(TAG, "Received ns basal update");
+                        Log.e(TAG, "Received ns basal update");
                         NSBasal.addFromJson(payload);
                     }
-                } if (action.equals("oapsStatus")) {
+                } else if (action.equals("oapsStatus")) {
                     if (Home.get_follower()) {
                         Log.i(TAG, "Received oapsStatus update");
                         NightscoutStatus.addFromJson(payload);
