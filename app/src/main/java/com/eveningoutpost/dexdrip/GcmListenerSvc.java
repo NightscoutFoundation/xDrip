@@ -554,12 +554,12 @@ public class GcmListenerSvc extends JamListenerSvc {
                             UserError.Log.wtf(TAG, "Exception processing rsom timestamp");
                         }
                     }
-                } if (action.equals("nsBasal")) {
+                } else if (action.equals("nsBasal")) {
                     if (Home.get_follower()) {
-                        Log.i(TAG, "Received ns basal update");
+                        Log.e(TAG, "Received ns basal update");
                         NSBasal.addFromJson(payload);
                     }
-                } if (action.equals("oapsStatus")) {
+                } else if (action.equals("oapsStatus")) {
                     if (Home.get_follower()) {
                         Log.i(TAG, "Received oapsStatus update");
                         NightscoutStatus.addFromJson(payload);
