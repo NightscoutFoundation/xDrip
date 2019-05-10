@@ -104,11 +104,43 @@ public class NSBasal extends PlusModel {
         return JoH.defaultGsonInstance().toJson(this);
     }
 
+    
+    public static NSBasal getForTimestamp(double timestamp) {
+        NSBasal nsBasal = null;
+        try {
+            nsBasal = new Select()
+                .from(NSBasal.class)
+                .where("created_at =? ", timestamp )
+                .executeSingle();
+        } catch (android.database.sqlite.SQLiteException e) {
+            Log.e(TAG, "Error in NSBasal getForTimestamp");
+            updateDB();
+            return null;
+        }
+        Log.d(TAG, "getForTimestamp: returning " + nsBasal);
+        return nsBasal;
+    }
+
     // created_at is in ms.
     // rate is in units/hour
     // duration is in ms
     public static NSBasal createEfficientRecord(long created_at, double rate, long duration) {
-
+        long start = JoH.tsl();
+        NSBasal old = getForTimestamp(created_at);
+        Log.e(TAG, "getForTimestamp took" + (JoH.tsl() - start) + " ms");
+        if(old != null) {
+            // Is there a change in any of the values?
+            if(old.duration == duration && old.rate == rate) {
+                // This is a duplicate object, nothing to do.
+                return null;
+            }
+            // update object and return it
+            old.duration = duration;
+            old.rate = rate;
+            old.save();
+            return old;
+        }
+        
         final NSBasal fresh = NSBasal.builder()
                 .created_at(created_at)
                 .rate(rate)
