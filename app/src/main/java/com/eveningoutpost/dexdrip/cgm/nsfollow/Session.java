@@ -20,6 +20,7 @@ public class Session {
     public NightscoutUrl url;
     public BaseCallback<List<Entry>> entriesCallback;
     public BaseCallback<ResponseBody> treatmentsCallback;
+    public BaseCallback<ResponseBody> deviceStausCallback;
 
 
     // most recent set of entries
