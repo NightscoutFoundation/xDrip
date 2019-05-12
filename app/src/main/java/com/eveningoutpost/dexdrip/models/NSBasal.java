@@ -127,7 +127,7 @@ public class NSBasal extends PlusModel {
     public static NSBasal createEfficientRecord(long created_at, double rate, long duration) {
         long start = JoH.tsl();
         NSBasal old = getForTimestamp(created_at);
-        Log.e(TAG, "getForTimestamp took" + (JoH.tsl() - start) + " ms");
+        //Log.e(TAG, "getForTimestamp took" + (JoH.tsl() - start) + " ms");
         if(old != null) {
             // Is there a change in any of the values?
             if(old.duration == duration && old.rate == rate) {
