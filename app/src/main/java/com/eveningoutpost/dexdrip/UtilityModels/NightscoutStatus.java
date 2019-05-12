@@ -229,7 +229,6 @@ public class NightscoutStatus {
         JSONObject enacted_json = getJSONObjectNull(openaps, "enacted");
 
         if (enacted_json != null) {
-            Log.e("TAG", "in first if");
             String enacted_timestamp = getJSONStringNull(enacted_json, "timestamp");
             if (enacted_timestamp != null && enacted_timestamp.length() > 0) {
                 enacted_time = DateUtil.tolerantFromISODateString(enacted_timestamp).getTime();
@@ -237,7 +236,6 @@ public class NightscoutStatus {
         }
         JSONObject suggested_json = getJSONObjectNull(openaps, "suggested");
         if (suggested_json != null) {
-            Log.e("TAG", "in first if");
             String suggested_timestamp = getJSONStringNull(suggested_json, "timestamp");
             if (suggested_timestamp != null && suggested_timestamp.length() > 0) {
                 suggested_time = DateUtil.tolerantFromISODateString(suggested_timestamp).getTime();
@@ -248,7 +246,6 @@ public class NightscoutStatus {
         JSONObject iob_json = getJSONObjectNull(openaps, "iob");
 
         if (iob_json != null) {
-            Log.e("TAG", "in first if");
             oApsStatus.iob = getJSONSDoubleOrZero(iob_json, "iob");
             String iobTimeString = getJSONStringNull(iob_json, "timestamp");
             if (iobTimeString != null) {
@@ -313,7 +310,7 @@ public class NightscoutStatus {
             if (oApsStatus == null) {
                 continue;
             }
-            Log.e(TAG, "oApsStatus = " + oApsStatus.toJson());
+            //Log.e(TAG, "oApsStatus = " + oApsStatus.toJson());
             new_data |= UpdateCurrentStatus(curentStatus, oApsStatus);
         }
         if(new_data) {
@@ -326,13 +323,11 @@ public class NightscoutStatus {
 
     public static OApsStatus getLatestStatus() {
         String last_modified_string = PersistentStore.getString(NS_STATUS_KEY);
-        Log.e("xxx", "returning status last_modified_string = " + last_modified_string);
         if(last_modified_string == null || last_modified_string.length() == 0) {
             return null;
         }
         OApsStatus curentStatus = OApsStatus.fromJson(last_modified_string);
-        Log.e("xxx", "returning status = " + curentStatus.toJson());
-        return curentStatus;
+        //Log.e("xxx", "returning status = " + curentStatus.toJson());        return curentStatus;
     }
     
     public static void addFromJson(String json) {
