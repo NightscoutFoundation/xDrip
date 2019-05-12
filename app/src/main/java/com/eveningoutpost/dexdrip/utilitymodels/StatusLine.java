@@ -199,7 +199,6 @@ public class StatusLine {
     private static void AddOAPSStatus(final StringBuilder sb) {
         OApsStatus curentStatus = NightscoutStatus.getLatestStatus();
         if(curentStatus != null) {
-            Log.e("xxx", "inside curentStatus");
             append(sb, "OAPS: ");
             long lastLoopAgo =  Math.round((JoH.tsl() - curentStatus.lastLoopMoment) / 60000.0);
             if (lastLoopAgo > 24 * 60) {
@@ -231,7 +230,7 @@ public class StatusLine {
                     // duration is in minutes
                     double basalAgo =  Math.round(((double)JoH.tsl() - (double)nSBasal.created_at) / 60000.0 - nSBasal.duration);
                     // basalAgo is where this basal would end.
-                    Log.e("xxxx", "basal ago " + basalAgo);
+                    //Log.e("xxxx", "basal ago " + basalAgo);
                     if(basalAgo < 0) {
                         // Basal stops if no basal was given.
                         // Todo upload NS default basal profile.
