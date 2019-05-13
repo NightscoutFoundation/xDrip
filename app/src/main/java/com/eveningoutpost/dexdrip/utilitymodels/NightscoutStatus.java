@@ -327,7 +327,8 @@ public class NightscoutStatus {
             return null;
         }
         OApsStatus curentStatus = OApsStatus.fromJson(last_modified_string);
-        //Log.e("xxx", "returning status = " + curentStatus.toJson());        return curentStatus;
+        //Log.e("xxx", "returning status = " + curentStatus.toJson());
+        return curentStatus;
     }
     
     public static void addFromJson(String json) {
