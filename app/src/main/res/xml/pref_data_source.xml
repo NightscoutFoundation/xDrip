@@ -116,6 +116,24 @@
             android:title="@string/title_nsfollow_download_treatments"
             />
 
+        <EditTextPreference
+            android:defaultValue=""
+            android:inputType="textNoSuggestions|textVisiblePassword"
+            android:key="shfollow_user"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:summary="Login username for Dex Share Following"
+            android:title="Share Username" />
+        <EditTextPreference
+            android:defaultValue=""
+            android:inputType="textNoSuggestions|textVisiblePassword"
+            android:key="shfollow_pass"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:summary="Login password for Dex Share Following"
+            android:title="Share Password" />
+
+
 
 
         <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
