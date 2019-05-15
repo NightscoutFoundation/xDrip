@@ -1506,4 +1506,7 @@
     <string name="no_sensor_found">No sensor found</string>
     <string name="checksum_failed__retrying">Checksum failed - retrying</string>
     <string name="scanning">Scanning</string>
+    <string name="authentication_failed_wrong_password">Authentication Failed. Wrong password?</string>
+    <string name="share_login_data_isnt_valid">Share Login data isn\'t valid - check username / password</string>
+    <string name="connectivity_problem_reaching_share_servers">Connectivity problem reaching Share servers</string>
 </resources>
