@@ -26,6 +26,7 @@ import com.eveningoutpost.dexdrip.xdrip;
 
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.Medtrum;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.NSFollow;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.SHFollow;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getCollectorServiceClass;
 
 /**
@@ -221,6 +222,7 @@ public class CollectionServiceStarter {
         stopG5Service();
         JoH.stopService(getCollectorServiceClass(Medtrum));
         JoH.stopService(getCollectorServiceClass(NSFollow));
+        JoH.stopService(getCollectorServiceClass(SHFollow));
     }
 
     private void start(Context context, String collection_method) {
@@ -322,7 +324,8 @@ public class CollectionServiceStarter {
 
             startFollowerThread();
         } else {
-            if (DexCollectionType.hasBluetooth() || DexCollectionType.getDexCollectionType() == NSFollow) {
+            // TODO newer item startups should be consolidated in to a DexCollectionType has set to avoid duplicating logic
+            if (DexCollectionType.hasBluetooth() || DexCollectionType.getDexCollectionType() == NSFollow || DexCollectionType.getDexCollectionType() == SHFollow) {
                 Log.d(TAG, "Starting service based on collector lookup");
                 startServiceCompat(new Intent(context, DexCollectionType.getCollectorServiceClass()));
             }
