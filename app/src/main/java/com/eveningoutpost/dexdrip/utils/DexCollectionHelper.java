@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.text.InputType;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -17,6 +18,7 @@ import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.cgm.sharefollow.ShareFollowService;
 import com.eveningoutpost.dexdrip.xdrip;
 
 /**
@@ -84,6 +86,36 @@ public class DexCollectionHelper {
                         });
                 break;
 
+            case SHFollow:
+                textSettingDialog(activity,
+                        "shfollow_user", "Dex Share Username",
+                        "Enter Share Follower Username",
+                        InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD,
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                textSettingDialog(activity,
+                                        "shfollow_pass", "Dex Share Password",
+                                        "Enter Share Follower Password",
+                                        InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD,
+                                        new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                booleanSettingDialog(activity,
+                                                        "dex_share_us_acct", "Select Servers", "My account is on USA servers", "Select whether using USA or rest-of-world account", new Runnable() {
+                                                            @Override
+                                                            public void run() {
+                                                                Home.staticRefreshBGCharts();
+                                                                ShareFollowService.resetInstanceAndInvalidateSession();
+                                                                CollectionServiceStarter.restartCollectionServiceBackground();
+                                                            }
+                                                        });
+                                            }
+                                        });
+                            }
+                        });
+                break;
+
 
             case LimiTTer:
                 bluetoothScanIfNeeded();
@@ -119,6 +151,48 @@ public class DexCollectionHelper {
             xdrip.getAppContext().startActivity(new Intent(xdrip.getAppContext(), BluetoothScan.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
         }
     }
+
+
+    // TODO this can move to its own utility class
+    public static void booleanSettingDialog(Activity activity, String setting, String title, String checkboxText, String message, final Runnable postRun) {
+        final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity);
+
+        final View dialogView = activity.getLayoutInflater().inflate(R.layout.dialog_checkbox, null);
+        dialogBuilder.setView(dialogView);
+
+        final CheckBox cb = (CheckBox) dialogView.findViewById(R.id.dialogCheckbox);
+        cb.setText(checkboxText);
+        cb.setChecked(Pref.getBooleanDefaultFalse(setting));
+
+        final TextView tv = (TextView) dialogView.findViewById(R.id.dialogCheckboxTextView);
+        dialogBuilder.setTitle(title);
+        tv.setText(message);
+        dialogBuilder.setPositiveButton(R.string.done, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                Pref.setBoolean(setting, cb.isChecked());
+                if (postRun != null) postRun.run();
+            }
+        });
+        dialogBuilder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                if (postRun != null) postRun.run();
+            }
+        });
+
+        try {
+            if (isDialogShowing()) dialog.dismiss();
+        } catch (Exception e) {
+            //
+        }
+
+        dialog = dialogBuilder.create();
+        try {
+            dialog.show();
+        } catch (Exception e) {
+            UserError.Log.e(TAG, "Could not show dialog: " + e);
+        }
+    }
+
 
     // TODO this can move to its own utility class
     public static void textSettingDialog(Activity activity, String setting, String title, String message, int input_type, final Runnable postRun) {
