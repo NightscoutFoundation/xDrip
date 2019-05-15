@@ -9,6 +9,7 @@ import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.SensorSendQueue;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -122,6 +123,22 @@ public class Sensor extends Model {
                 .create();
         Log.d("SENSOR", "Sensor toS uuid=" + this.uuid + " started_at=" + this.started_at + " active=" + this.isActive() + " battery=" + this.latest_battery_level + " location=" + this.sensor_location + " stopped_at=" + this.stopped_at);
         return gson.toJson(this);
+    }
+
+    public static Sensor lastStopped() {
+        Sensor sensor = new Select()
+                .from(Sensor.class)
+                .where("started_at != 0")
+                .where("stopped_at != 0")
+                .orderBy("_ID desc")
+                .limit(1)
+                .executeSingle();
+        return sensor;
+    }
+
+    public static boolean stoppedRecently() {
+        final Sensor last = lastStopped();
+        return last != null && last.stopped_at < JoH.tsl() && (JoH.msSince(last.stopped_at) < (Constants.HOUR_IN_MS * 2));
     }
 
     public static Sensor currentSensor() {
