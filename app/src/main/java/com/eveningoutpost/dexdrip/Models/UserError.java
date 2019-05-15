@@ -3,9 +3,11 @@ package com.eveningoutpost.dexdrip.Models;
 import android.os.AsyncTask;
 import android.provider.BaseColumns;
 
+import com.activeandroid.Cache;
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
+import com.activeandroid.query.Delete;
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
@@ -113,6 +115,7 @@ public class UserError extends Model {
        new Cleanup().execute(deletable());
     }
 
+    // used in unit testing
     public static void cleanup(long timestamp) {
         List<UserError> userErrors = new Select()
                 .from(UserError.class)
@@ -122,6 +125,22 @@ public class UserError extends Model {
         if (userErrors != null) Log.d(TAG, "cleanup UserError size=" + userErrors.size());
         new Cleanup().execute(userErrors);
     }
+
+    public static void cleanupByTimeAndClause(final long timestamp, final String clause) {
+        new Delete().from(UserError.class)
+                .where("timestamp < ?", timestamp)
+                .where(clause)
+                .execute();
+    }
+
+    public synchronized static void cleanupRaw() {
+        final long timestamp = JoH.tsl();
+        cleanupByTimeAndClause(timestamp - Constants.DAY_IN_MS, "severity < 3");
+        cleanupByTimeAndClause(timestamp - Constants.DAY_IN_MS * 3, "severity = 3");
+        cleanupByTimeAndClause(timestamp - Constants.DAY_IN_MS * 7, "severity > 3");
+        Cache.clear();
+    }
+
 
     public static List<UserError> all() {
         return new Select()
@@ -384,8 +403,8 @@ public class UserError extends Model {
             Log.e(TAG, "Unknown level for tag " + tag + " please use d v or i");
         }
         
-        static boolean shouldLogTag(String tag, int level) {
-            Integer levelForTag = extraTags.get(tag.toLowerCase());
+        static boolean shouldLogTag(final String tag, final int level) {
+            final Integer levelForTag = extraTags.get(tag != null ? tag.toLowerCase() : "");
             return levelForTag != null && level >= levelForTag;
         }
         
