@@ -1,5 +1,7 @@
 package com.eveningoutpost.dexdrip.cgm.sharefollow;
 
+import android.os.PowerManager;
+
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.R;
@@ -27,6 +29,8 @@ public class ShareFollowDownload extends RetrofitBase {
 
     private static final String TAG = "ShareFollowDL";
     private static final boolean D = false;
+
+    private static PowerManager.WakeLock wl;
 
     private String login;
     private String password;
@@ -72,6 +76,7 @@ public class ShareFollowDownload extends RetrofitBase {
     private boolean loginAndGetData() {
         if (!session.sessionIdValid()) {
             if (JoH.tsl() > loginBlockedTill) {
+                extendWakeLock(30000);
                 getService().getSessionId(new ShareAuthenticationBody(password, login))
                         .enqueue(new ShareFollowCallback<String>("Login", session, this::getData)
                                 .setOnFailure(this::handleLoginFailure));
@@ -94,6 +99,7 @@ public class ShareFollowDownload extends RetrofitBase {
             loginBackoff += Constants.MINUTE_IN_MS;
             loginBlockedTill = JoH.tsl() + loginBackoff;
         }
+        releaseWakeLock();
     }
 
     // Get data from service
@@ -101,6 +107,7 @@ public class ShareFollowDownload extends RetrofitBase {
         loginBackoff = 0; // reset backoff timer due to login success
         try {
             if (session.sessionId != null) {
+                extendWakeLock(30000);
                 getService().getGlucoseRecords(getDataQueryParameters(session.sessionId))
                         .enqueue(new ShareFollowCallback<List<ShareGlucoseRecord>>("Get Share Data", session,
                                 this::backgroundProcessGlucoseResults).setOnFailure(this::handleGetDataFailure));
@@ -111,6 +118,7 @@ public class ShareFollowDownload extends RetrofitBase {
             return true;
         } catch (Exception e) {
             UserError.Log.e(TAG, "Got exception in getData() " + e);
+            releaseWakeLock();
             return false;
         }
     }
@@ -123,12 +131,15 @@ public class ShareFollowDownload extends RetrofitBase {
             session.invalidateSessionId(); // could be due to invalid session handle so reset that
             msg("Share get data error: " + session.getErrorString() + " code: " + session.getLastResponseCode());
         }
+        releaseWakeLock();
     }
 
     private void backgroundProcessGlucoseResults() {
         Inevitable.task("proc-share-follow", 100, this::processGlucoseResults);
+        releaseWakeLock(); // handover to inevitable
     }
 
+    // don't call this directly unless you are also handling the wakelock release
     private void processGlucoseResults() {
         if (session.results != null) {
             UserError.Log.d(TAG, "Success get data");
@@ -138,7 +149,6 @@ public class ShareFollowDownload extends RetrofitBase {
         } else {
             UserError.Log.d(TAG, "Nothing to process");
         }
-
     }
 
     private DexcomShareInterface getService() {
@@ -169,5 +179,22 @@ public class ShareFollowDownload extends RetrofitBase {
         status = msg != null ? JoH.hourMinuteString() + ": " + msg : null;
         if (msg != null) UserError.Log.d(TAG, "Setting message: " + status);
     }
+
+    private static synchronized void extendWakeLock(final long ms) {
+        if (wl == null) {
+            if (D) UserError.Log.d(TAG,"Creating wakelock");
+            wl = JoH.getWakeLock("SHFollow-download", (int) ms);
+        } else {
+            JoH.releaseWakeLock(wl); // lets not get too messy
+            wl.acquire(ms);
+            if (D) UserError.Log.d(TAG,"Extending wakelock");
+        }
+    }
+
+    protected static synchronized void releaseWakeLock() {
+        if (D) UserError.Log.d(TAG, "Releasing wakelock");
+        JoH.releaseWakeLock(wl);
+    }
+
 
 }
