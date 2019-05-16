@@ -75,6 +75,7 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import lombok.Setter;
 import rx.Observable;
 import rx.Scheduler;
 import rx.Subscription;
@@ -83,6 +84,7 @@ import rx.schedulers.Schedulers;
 import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.getUUIDName;
 import static com.eveningoutpost.dexdrip.G5Model.CalibrationState.Ok;
 import static com.eveningoutpost.dexdrip.G5Model.CalibrationState.Unknown;
+import static com.eveningoutpost.dexdrip.G5Model.G6CalibrationParameters.getCurrentSensorCode;
 import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.CLOSED_OK_TEXT;
 import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.evaluateG6Settings;
 import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.pendingCalibration;
@@ -167,6 +169,7 @@ public class Ob1G5CollectionService extends G5BaseService {
     public static volatile long lastUsableGlucosePacketTime = 0;
     private static volatile String static_connection_state = null;
     private static long static_last_connected = 0;
+    @Setter
     private static long last_transmitter_timestamp = 0;
     private static long lastStateUpdated = 0;
     private static long wakeup_time = 0;
@@ -1810,6 +1813,12 @@ public class Ob1G5CollectionService extends G5BaseService {
                 l.add(new StatusItem("Watch got Glucose", JoH.niceTimeSince(static_last_timestamp_watch) + " ago"));
             }
         }
+        final String sensorCode = getCurrentSensorCode();
+        if (sensorCode != null) {
+            if (usingG6()) {
+                l.add(new StatusItem("Calibration Code", sensorCode));
+            }
+        }
 
         // firmware details
         final VersionRequestRxMessage vr = Ob1G5StateMachine.getFirmwareDetails(tx_id);
@@ -1859,7 +1868,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                 if (!battery_status.equals("OK"))
                     l.add(new StatusItem("Transmitter Status", battery_status, BAD));
             }
-            l.add(new StatusItem("Transmitter Days", bt.runtime + ((last_transmitter_timestamp > 0) ? " / " + JoH.qs((double) last_transmitter_timestamp / 86400, 1) : "")));
+            l.add(new StatusItem("Transmitter Days", ((bt.runtime > -1) ? bt.runtime : "") + ((last_transmitter_timestamp > 0) ? " / " + JoH.qs((double) last_transmitter_timestamp / 86400, 1) : "")));
             l.add(new StatusItem("Voltage A", bt.voltagea, bt.voltagea < LOW_BATTERY_WARNING_LEVEL ? BAD : NORMAL));
             l.add(new StatusItem("Voltage B", bt.voltageb, bt.voltageb < (LOW_BATTERY_WARNING_LEVEL - 10) ? BAD : NORMAL));
             l.add(new StatusItem("Resistance", bt.resist, bt.resist > 1400 ? BAD : (bt.resist > 1000 ? NOTICE : (bt.resist > 750 ? NORMAL : Highlight.GOOD))));

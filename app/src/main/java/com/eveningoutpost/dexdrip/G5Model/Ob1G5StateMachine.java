@@ -1184,6 +1184,7 @@ public class Ob1G5StateMachine {
 
         UserError.Log.d(TAG, "SUCCESS!! unfiltered: " + sensorRx.unfiltered + " filtered: " + sensorRx.filtered + " timestamp: " + sensorRx.timestamp + " " + JoH.qs((double) sensorRx.timestamp / 86400, 1) + " days :: (" + sensorRx.status + ")");
         DexTimeKeeper.updateAge(getTransmitterID(), sensorRx.timestamp);
+        Ob1G5CollectionService.setLast_transmitter_timestamp(sensorRx.timestamp);
         if (sensorRx.unfiltered == 0) {
             UserError.Log.e(TAG, "Transmitter sent raw sensor value of 0 !! This isn't good. " + JoH.hourMinuteString());
         } else {
