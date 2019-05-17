@@ -345,6 +345,8 @@
     <string name="suppress_alerts_missed_readings">התעלם מהתראות מושתקות או פעילות אחרי זמן מוגדר של העדר קליטה</string>
     <string name="suppress_alerts_after">התעלם מהתראות פעילות או מושתקות אחרי .. דקות (לפחות 10)</string>
     <string name="hours_between_calibrations">שעות בין כיולים</string>
+    <string name="alert_snooze">זמן להשתקת ההתראה</string>
+    <string name="alert_minutes_reraise">מספר הדקות לפני הפעלה חוזרת של ההתראה אחרי שהושתקה.</string>
     <string name="bg_falling_fast">סוכר נופל מהר</string>
     <string name="bg_rising_fast">סוכר עולה מהר</string>
     <string name="falling_threshold">ערך סף בירידה</string>
