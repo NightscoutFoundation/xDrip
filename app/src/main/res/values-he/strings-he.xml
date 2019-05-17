@@ -347,6 +347,10 @@
     <string name="hours_between_calibrations">שעות בין כיולים</string>
     <string name="alert_snooze">זמן להשתקת ההתראה</string>
     <string name="alert_minutes_reraise">מספר הדקות לפני הפעלה חוזרת של ההתראה אחרי שהושתקה.</string>
+    <string name="reraise_before_snooze">השמע את ההתראה שוב לפני זמן ההשתקה</string>
+    <string name="reraise_not_snoozed_sooner">השמע את ההתראה שוב לפני זמן ההשתקה</string>
+    <string name="alert_reraise_time">זמן להפעלה מחדש של ההתראה</string>
+    <string name="alert_seconds_reraise">מספר השניות שצריכות לעבור לפני שההתראה מופעלת מחדש.</string>
     <string name="bg_falling_fast">סוכר נופל מהר</string>
     <string name="bg_rising_fast">סוכר עולה מהר</string>
     <string name="falling_threshold">ערך סף בירידה</string>
@@ -406,6 +410,7 @@
     <string name="is_your_typical_glucose_value">האם ערך אופיני של הסוכר שלך הוא 100(mg/dl) או 5.5 (mmol/L) אנא בחר למטה</string>
     <string name="settings_updated_to_mmol">ההגדרות שונו לmmol/L</string>
     <string name="please_enter_printed_calibration_code">אנא הזן את קוד הכיול המודפס, 4 ספרות, לדוגמא: 5678</string>
+    <string name="cancel_alarm">לבטל התראה?</string>
     <string name="please_confirm_to_cancel_the_alert">אנא אשר את השתקת ההתראה</string>
     <string name="yes_cancel">כן, בטל.</string>
     <string name="emergency_messages">הודעות בחירום</string>
