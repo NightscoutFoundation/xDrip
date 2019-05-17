@@ -49,8 +49,8 @@
     <string name="pref_dialog_api_url">הזן כתובת URL בסיסית</string>
     <string name="pref_default_api_url">https://yourpassphrase@{YOUR-SITE}.azurewebsites.net/api/v1/</string>
     <!-- wifi Settings -->
-    <string name="wifi_recievers_dialog_message">רשימה של כתובת ופורט מופרדת בפסיקים (ip:port)
- (לדוגמא 37.142.132.220:50005,37.142.132.220:50010,mongodb://user:pass@ds053958.mongolab.com:53958/db/collection)</string>
+    <string name="wifi_recievers_dialog_message">"רשימה של כתובת ופורט מופרדת בפסיקים (ip:port)
+ (לדוגמא 37.142.132.220:50005,37.142.132.220:50010,mongodb://user:pass@ds053958.mongolab.com:53958/db/collection)"</string>
     <string name="wifi_recievers_dialog_title">הזן כתובות ip ו-port של הקולטים (כולל כתובת של mongodb אם יש צורך)</string>
     <!-- Location Settings -->
     <string name="location_not_found_title">מיקום אינו מופעל</string>
@@ -74,13 +74,13 @@
     <string name="action_open_watch_setting">פתח את ההגדרות על wear</string>
     <string name="erase">מחק</string>
     <string name="redo_button">לחצן בצע שוב</string>
-    <string name="showcase_redo">לחצן הבצע-שוב יכול לאפשר הוספה של סימלצית טיפול, כיולים והערות
+    <string name="showcase_redo">"לחצן הבצע-שוב יכול לאפשר הוספה של סימלצית טיפול, כיולים והערות
 
-אחרי 30 דקות הוא יוסתר שוב</string>
+אחרי 30 דקות הוא יוסתר שוב"</string>
     <string name="undo_button">לחצן ביטול</string>
-    <string name="showcase_undo">לחצן הביטול יכול לאפשר מחיקה של סימלצית טיפול, כיולים והערות
+    <string name="showcase_undo">"לחצן הביטול יכול לאפשר מחיקה של סימלצית טיפול, כיולים והערות
 
-אחרי 30 דקות הוא יוסתר שוב</string>
+אחרי 30 דקות הוא יוסתר שוב"</string>
     <string name="add_note">הוסף הערה</string>
     <string name="first_use_menu_to_scan">השתמש בתפריט בכדי לבצע סריקת בלוטוס של ההתקן שלך, או שנה את מקור הנתונים בהגדרות!</string>
     <string name="first_configure_ip_address">הגדר את כתובות הwifi של הwixel או הליברה או הparakeet url</string>
