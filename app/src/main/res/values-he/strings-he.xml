@@ -247,6 +247,7 @@
     <string name="warning_settings_from_xdrip_and_plus_exist">אזהרה: קימות הגדרות של xdrip ושל xdrip+. טוען את ההגדרות של xdrip+</string>
     <string name="new_version_date_colon">"תאריך הגרסא החדשה: "</string>
     <string name="old_version_date_colon">"תאריך הגרסא הישנה: "</string>
+    <string name="alerts_start_out_snoozed_and_must_persist_for_a_while">ההתראה מתחילה מושתקת וצריכה להמשך זמן מה בשביל להתחיל לפעול</string>
     <string name="keep_snoozing_if_glucose_is_heading_in_right_direction">השבת את ההתראות כל עוד הסוכר מתקדם בכיוון הרצוי</string>
     <string name="dont_alert_if_glucose_in_right_direction">אל תתריע כל עוד הסוכר מתקדם בכיוון הרצוי</string>
     <string name="displays_the_high_line">הצג את הקו הגבוה</string>
@@ -331,6 +332,7 @@
     <string name="received_realtime_readings_percentage">אחוז קריאות הסנסור שהתקבלו בזמן אמת (לא הושלמו מאוחר יותר). G5 אלגוריתם מקורי בלבד</string>
     <string name="allow_sensor_scanning">אפשר סריקה של סנסורים כאשר האפליקציה פתוחה. שים לב, זה עלול להרוס את הסנסור. בדוק שעובד על סנסור שעומד להסתיים. מומלץ לעבור למצב טיסה לפני הסריקה. ראה הוזהרת!</string>
     <string name="use_multi_block">השתמש בשיטת קריאה multi-block המהירה יותר</string>
+    <string name="transmitter_id">מספר המשדר של הדקסקום, לדוגמה 12AB3</string>
     <string name="advanced_g5_settings">הגדרות G5 מתקדמות עבור מצבים נדירים</string>
     <string name="g5_debug_settings">הגדרות דיבאג של G5/G6</string>
     <string name="use_calibrated_data">השתמש בנתונים המכוילים כמקור</string>
@@ -340,6 +342,8 @@
     <string name="user">שם משתמש</string>
     <string name="password">סיסמא</string>
     <string name="shortcut_to_bg_alerts">קיצור דרך להתראות על רמת סוכר</string>
+    <string name="suppress_alerts_missed_readings">התעלם מהתראות מושתקות או פעילות אחרי זמן מוגדר של העדר קליטה</string>
+    <string name="suppress_alerts_after">התעלם מהתראות פעילות או מושתקות אחרי .. דקות (לפחות 10)</string>
     <string name="hours_between_calibrations">שעות בין כיולים</string>
     <string name="bg_falling_fast">סוכר נופל מהר</string>
     <string name="bg_rising_fast">סוכר עולה מהר</string>
