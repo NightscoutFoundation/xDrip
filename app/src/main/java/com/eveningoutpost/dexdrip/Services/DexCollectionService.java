@@ -674,9 +674,11 @@ public class DexCollectionService extends Service implements BtCallBack {
                 final byte[] data = characteristic.getValue();
 
                 if (data != null && data.length > 0) {
+                    final String hexdump = HexDump.dumpHexString(data);
+                    Log.i(TAG, "onCharacteristicChanged entered " + hexdump);
                     setSerialDataToTransmitterRawData(data, data.length);
 
-                    final String hexdump = HexDump.dumpHexString(data);
+                    
                     //if (!hexdump.contains("0x00000000 00      ")) {
                     if (data.length > 1 || data[0] != 0x00) {
                         static_last_hexdump = hexdump;

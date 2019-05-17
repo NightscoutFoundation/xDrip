@@ -13,6 +13,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Vector;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
 /**
  * Created by Tzachi Dar on 7.3.2018.
@@ -31,11 +32,14 @@ public class Tomato {
 
     
     static volatile TOMATO_STATES s_state;
+    static volatile int s_count = 0;
+    
     
     private static volatile long s_lastReceiveTimestamp;
     private static volatile byte[] s_full_data = null;
     private static volatile int s_acumulatedSize = 0;
     private static volatile boolean s_recviedEnoughData;
+    private static volatile Vector<Byte> lastCommand = new Vector<Byte>();
 
 
     public static boolean isTomato() {
@@ -45,6 +49,19 @@ public class Tomato {
         }
 
         return activeBluetoothDevice.name.contentEquals("miaomiao");
+    }
+    
+    private static ByteBuffer CreateCommand(byte[]in) {
+        
+        ByteBuffer newFreqMessage = ByteBuffer.allocate(in.length + 3);    
+        newFreqMessage.put(0, (byte) 0x03);    
+        newFreqMessage.put(1, (byte) 0x01);
+        newFreqMessage.put(2, (byte) in.length);
+        for(int i=0; i < in.length ;i++) {
+            newFreqMessage.put(3+i, in[i]);
+        }
+        return newFreqMessage;
+        
     }
 
     public static BridgeResponse decodeTomatoPacket(byte[] buffer, int len) {
@@ -56,13 +73,86 @@ public class Tomato {
             Log.e(TAG, "Recieved a buffer after " + (now - s_lastReceiveTimestamp) / 1000 +  " seconds, starting again. "+
             "already acumulated " + s_acumulatedSize + " bytes.");
             s_state = TOMATO_STATES.REQUEST_DATA_SENT;
+            s_count = 0;
         }
         
         s_lastReceiveTimestamp = now;
         if (buffer == null) {
             Log.e(TAG, "null buffer passed to decodeTomatoPacket");
             return reply;
-        } 
+        }
+        
+        
+
+        Log.e(TAG, "recieved data s_count " + s_count + " last command len = "  + lastCommand.size());
+        
+        // Add the data to the buffer:
+        for (byte b : buffer) {
+            lastCommand.add(b);
+        }
+
+        byte []xxx = new byte[lastCommand.size()];
+        int i=0;
+        for(byte b: lastCommand) {
+            xxx[i] = b;
+            i++;
+        }
+        Log.e(TAG, "lastCommand size = " + lastCommand.size() +  HexDump.dumpHexString(xxx));
+        if(lastCommand.size() < 3) {
+            Log.e(TAG, "Not enough data for header - returning");
+            return reply;
+        }
+        //Log.e(TAG, "lastCommand lastCommand.get(3) = " + lastCommand.get(3) );
+        if(lastCommand.get(3) > lastCommand.size() - 4) {
+            //Log.e(TAG, "Not enough data returning");
+            return reply;
+        } else {
+            //Log.e(TAG, "Got enough for command, reseting");
+            lastCommand = new Vector<Byte>();
+        }
+
+
+
+        ByteBuffer res = null;
+        switch (s_count) {
+        case 0:
+            byte tmp1[]  = {1, 00 };//{ 04, 03, 03, (byte)0xa1, 07};
+            res = CreateCommand(tmp1);
+            break;
+        case 1:
+            byte tmp3[]  = {2, 2, 1, 0xD};//{ 02, (byte)0xa1 ,07}; 04020A2B
+            res = CreateCommand(tmp3);
+            break;
+        
+         
+        case 2:
+            byte tmp4[]  = {04, 0x02, 0x0A, 0x2B};//{ 03, (byte)0xa1, 07};
+            res = CreateCommand(tmp4);
+            break;
+
+        case 3:
+            byte tmp5[]  = { 4, 3, 2, (byte)0xa1, 7};//{ 03, (byte)0xa1, 07};
+            res = CreateCommand(tmp5);
+            break;
+
+		default:
+         // we need to read 43 blocks. Meanwhile only reading 14 * 3 blocks.
+         // this will be from 4 to 17
+            Log.e(TAG, "reading block number " + ((s_count -4) * 3));
+            byte tmp6[]  = {  0x04, 0x04, 0x02, 0x23, (byte)((s_count -4) * 3) , 2};//{ 03, (byte)0xa1, 07};
+            res = CreateCommand(tmp6);
+            break;
+            
+        }
+        s_count++;
+        if(s_count == 18) {
+            s_count = 0;
+        }
+        if(res !=null){
+            reply.add(res);
+        }
+        return reply;
+        /*
         if (s_state == TOMATO_STATES.REQUEST_DATA_SENT) {
             if(buffer.length == 1 && buffer[0] == 0x32) {
                 Log.e(TAG, "returning allow sensor confirm");
@@ -131,10 +221,11 @@ public class Tomato {
 
             return reply;
         }
+        */
         
-        Log.wtf(TAG, "Very strange, In an unexpected state " + s_state);
+        //Log.wtf(TAG, "Very strange, In an unexpected state " + s_state);
         
-        return reply;
+        //return reply;
     }
     
     static void addData(byte[] buffer) {
@@ -219,17 +310,22 @@ public class Tomato {
         ArrayList<ByteBuffer> ret = new ArrayList<>();
 
         s_state = TOMATO_STATES.REQUEST_DATA_SENT;
+        s_count = 0;
         
         // Make tomato send data every 5 minutes
-        ByteBuffer newFreqMessage = ByteBuffer.allocate(2);    
-        newFreqMessage.put(0, (byte) 0xD1);    
-        newFreqMessage.put(1, (byte) 0x05);    
+        ByteBuffer newFreqMessage = ByteBuffer.allocate(6);    
+        newFreqMessage.put(0, (byte) 0x03);    
+        newFreqMessage.put(1, (byte) 0x01);
+        newFreqMessage.put(2, (byte) 0x02); 
+        newFreqMessage.put(3, (byte) 0x02); 
+        newFreqMessage.put(4, (byte) 0x01); 
+        newFreqMessage.put(5, (byte) 0x0d); 
         ret.add(newFreqMessage);
 
         //command to start reading
-        ByteBuffer ackMessage = ByteBuffer.allocate(1);
-        ackMessage.put(0, (byte) 0xF0);
-        ret.add(ackMessage);
+        //ByteBuffer ackMessage = ByteBuffer.allocate(1);
+        //ackMessage.put(0, (byte) 0xF0);
+        //ret.add(ackMessage);
         return ret;
     }
 }
