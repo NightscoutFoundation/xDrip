@@ -102,7 +102,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On
@@ -134,7 +134,8 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
 
 
     private void refreshFragments() {
-        this.preferenceFragment = new AllPrefsFragment(this);
+        this.preferenceFragment = new AllPrefsFragment();
+        this.preferenceFragment.setParent(this);
         pFragment = this.preferenceFragment;
         getFragmentManager().beginTransaction().replace(android.R.id.content,
                 this.preferenceFragment).commit();
@@ -723,10 +724,11 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
     }
 
 
-    @RequiredArgsConstructor
+
     public static class AllPrefsFragment extends PreferenceFragment {
 
-        final Preferences parent;
+        @Setter
+        Preferences parent;
         SharedPreferences prefs;
         SearchConfiguration searchConfiguration;
 
@@ -2000,7 +2002,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                                 JoH.runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        parent.refreshFragments();
+                                        if (parent != null) parent.refreshFragments();
                                     }
                                 });
                             } catch (Exception e) {
