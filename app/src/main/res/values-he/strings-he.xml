@@ -18,6 +18,7 @@
     <string name="title_activity_start_new_sensor">התחל סנסור חדש</string>
     <string name="title_activity_new_sensor_location">מיקום הסנסור החדש</string>
     <string name="title_activity_stop_sensor">עצור סנסור</string>
+    <string name="title_activity_nav_drawer">מגירת יישומים</string>
     <string name="snooze">השתק</string>
     <string name="snooze_hint">השתק התראה ל-x דקות</string>
     <string name="ok">אישור</string>
@@ -102,10 +103,13 @@
     <string name="minutes_ago">{0, choice,0# לפני {0, number, integer} דקות |1# לפני דקה|1&lt; לפני {0, number, integer} דקות }</string>
     <string name="space_minutes_ago">" דקות"</string>
     <string name="space_minute_ago">" דקה"</string>
+    <string name="show_parakeet_map">הראה מפה של הparakeet</string>
+    <string name="switch_parakeet_to_setup_mode">העבר את הparakeet למצב הגדרות</string>
     <string name="view_events_log">הצג יומן אירועים</string>
     <string name="show_libre_trend">הראה מגמת הליברה</string>
     <string name="libre_15_minutes_graph">גרף 15 דקות של הליברה</string>
     <string name="libre_last_x_minutes_graph">גרף %d דקות אחרונות של הליברה</string>
+    <string name="share_config_via_qr_code">שיתוף הגדרות באמצעות QR קוד</string>
     <string name="check_for_updated_version">בדוק האם יש גרסא חדשה</string>
     <string name="send_feedback_to_developer">שלח פידבק למפתח</string>
     <string name="home_screen">מסך הבית</string>
@@ -151,6 +155,7 @@
     <string name="bg_data_table">טבלאת ערכי סוכר</string>
     <string name="cannot_calibrate_right_now">לא ניתן לכייל עכשיו</string>
     <string name="hardware_data_source">חומרה של מקור הנתונים</string>
+    <string name="dexcom_transmitter_id">מספר משדר דקסקום</string>
     <string name="list_of_receivers">רשימת הקולטים</string>
     <string name="data_source_settings">הגדרות של מקור הנתונים</string>
     <string name="special_value">ערך מיוחד</string>
@@ -185,6 +190,7 @@
     <string name="could_not_export_database">יצוא מסד הנתונים נכשל :(</string>
     <string name="exported_to">"ייצא אל "</string>
     <string name="default_to_voice_input_next_time">ברירת מחדל תהיה זהוי קולי בפעם הבאה</string>
+    <string name="done">בוצע</string>
     <string name="entering_a_calibration_now_will_override_your_previously_entered_calibration">הזנת כיול עכשיו תחליף את הכיול שהוזן קודם לכן.</string>
     <string name="enter_blood_glucose_value">הזן ערך סוכר</string>
     <string name="no_active_alert_exists">אין התראה פעילה</string>
@@ -229,6 +235,7 @@
     <string name="be_master_for_followers">היה מאסטר עבור העוקבים</string>
     <string name="this_device_will_send_data_to_followers">התקן זה ישלח מידע לעוקבים</string>
     <string name="disable_all_sync_features">השבת את כל אפשרויות הסינכרון</string>
+    <string name="crowd_sourced_translation">תרגום המונים</string>
     <string name="please_enter_your_question_or_comments_here">אנא רשום את השאלות או הערות שלך כאן. \n\n אם תספק דואר אלקטרוני יכול להיות שתקבל תשובה \n\n</string>
     <string name="optional_contact_info_here_eg_email">אופציונלי - פרטים ליצירת קשר כגון email</string>
     <string name="send_message">שלח הודעה</string>
