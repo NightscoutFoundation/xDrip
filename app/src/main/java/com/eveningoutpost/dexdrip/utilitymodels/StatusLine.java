@@ -70,12 +70,6 @@ public class StatusLine {
             sb.append(String.format("%.2f", lastCalibration.intercept));
         }
         
-        if(Pref.getBoolean("status_line_openaps", false)) {
-            AddOAPSStatus(sb);
-
-        }
-
-
         if (Pref.getBoolean("status_line_avg", false)
                 || Pref.getBoolean("status_line_a1c_dcct", false)
                 || Pref.getBoolean("status_line_a1c_ifcc", false)
@@ -192,6 +186,10 @@ public class StatusLine {
             SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
             append(sb, sdf.format(new Date()));
         }
+        if(Pref.getBoolean("status_line_openaps", false)) {
+            AddOAPSStatus(sb);
+        }
+
         return sb.toString();
 
     }
@@ -199,7 +197,7 @@ public class StatusLine {
     private static void AddOAPSStatus(final StringBuilder sb) {
         OApsStatus curentStatus = NightscoutStatus.getLatestStatus();
         if(curentStatus != null) {
-            append(sb, "OAPS: ");
+            append(sb, "\nOAPS: ");
             long lastLoopAgo =  Math.round((JoH.tsl() - curentStatus.lastLoopMoment) / 60000.0);
             if (lastLoopAgo > 24 * 60) {
                 sb.append("Not Looping");
