@@ -1470,4 +1470,7 @@
     <string name="no_sensor_found">Sensor Não Encontrado</string>
     <string name="checksum_failed__retrying">Falha na Verificação - a tentar novamente</string>
     <string name="scanning">A Procurar</string>
+    <string name="authentication_failed_wrong_password">Autenticação falhou. Palavra-passe inválida?</string>
+    <string name="share_login_data_isnt_valid">Dados Login Partilhado não são válidos - verifique utilizador / palavra-passe</string>
+    <string name="connectivity_problem_reaching_share_servers">Problema de ligação ao alcançar servidores de Partilha</string>
 </resources>
