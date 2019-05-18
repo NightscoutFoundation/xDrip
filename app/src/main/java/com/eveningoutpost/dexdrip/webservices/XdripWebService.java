@@ -312,6 +312,7 @@ public class XdripWebService implements Runnable {
             }
             // Send out the content.
             output.println("HTTP/1.0 " + response.resultCode + " OK");
+            output.println("Access-Control-Allow-Origin: *");
             output.println("Content-Type: " + response.mimeType);
             output.println("Content-Length: " + response.bytes.length);
             output.println();
@@ -342,7 +343,7 @@ public class XdripWebService implements Runnable {
      *
      * @param output The output stream.
      */
-    private void writeServerError(PrintStream output) {
+    private void writeServerError(final PrintStream output) {
         output.println("HTTP/1.0 500 Internal Server Error");
         output.flush();
         UserError.Log.e(TAG, "Internal server error reply");
