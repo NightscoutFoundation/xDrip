@@ -10,6 +10,7 @@ import android.view.WindowManager;
 import android.widget.EditText;
 
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.Models.SensorSanity;
 import com.eveningoutpost.dexdrip.NFCReaderX;
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
@@ -350,6 +351,12 @@ private static final int POSITION_OF_SENSOR_STATUS_BYTE = 17;
 
             if (JoH.pratelimit(BLUKON_DECODE_SERIAL_TIMER, GET_DECODE_SERIAL_DELAY)) {
                 String SensorSn = LibreUtils.decodeSerialNumber(buffer);
+
+                if (SensorSanity.checkLibreSensorChangeIfEnabled(SensorSn)) {
+                    Log.e(TAG,"Problem with Libre Serial Number - not processing");
+                    return null;
+                }
+
                 // TODO: Only write this after checksum was verified
                 PersistentStore.setString("LibreSN", SensorSn);
             }
