@@ -1,6 +1,5 @@
 package com.eveningoutpost.dexdrip.watch.lefun;
 
-import android.app.PendingIntent;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
 import android.content.Intent;
@@ -14,9 +13,11 @@ import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Services.JamBaseBluetoothSequencer;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.store.FastStore;
 import com.eveningoutpost.dexdrip.store.KeyStore;
+import com.eveningoutpost.dexdrip.utils.framework.IncomingCallsReceiver;
 import com.eveningoutpost.dexdrip.utils.framework.WakeLockTrampoline;
 import com.eveningoutpost.dexdrip.watch.lefun.messages.BaseRx;
 import com.eveningoutpost.dexdrip.watch.lefun.messages.BaseTx;
@@ -56,7 +57,7 @@ import static com.eveningoutpost.dexdrip.watch.lefun.Const.WRITE_CHARACTERISTIC;
 import static com.eveningoutpost.dexdrip.watch.lefun.LeFun.shakeToSnooze;
 import static com.eveningoutpost.dexdrip.watch.lefun.LeFunService.LeFunState.ENABLE_NOTIFICATIONS;
 import static com.eveningoutpost.dexdrip.watch.lefun.LeFunService.LeFunState.PROTOTYPE;
-import static com.eveningoutpost.dexdrip.watch.lefun.LeFunService.LeFunState.SEND_MESSAGE;
+import static com.eveningoutpost.dexdrip.watch.lefun.LeFunService.LeFunState.QUEUE_MESSAGE;
 import static com.eveningoutpost.dexdrip.watch.lefun.LeFunService.LeFunState.SEND_SETTINGS;
 import static com.eveningoutpost.dexdrip.watch.lefun.LeFunService.LeFunState.SET_TIME;
 
@@ -69,14 +70,15 @@ import static com.eveningoutpost.dexdrip.watch.lefun.LeFunService.LeFunState.SET
 public class LeFunService extends JamBaseBluetoothSequencer {
 
     private static final String MESSAGE = "LeFun-Message";
+    private static final String MESSAGE_TYPE = "LeFun-Message-Type";
     private final KeyStore keyStore = FastStore.getInstance();
     private static final boolean d = true;
     private static final long MAX_RETRY_BACKOFF_MS = Constants.SECOND_IN_MS * 300; // sleep for max ms if we have had no signal
 
 
     final Runnable canceller = () -> {
-        if (!currentlyAlerting()) {
-            UserError.Log.d(TAG, "Clearing queue as alert ceased");
+        if (!currentlyAlerting() && !IncomingCallsReceiver.isRingingNow()) {
+            UserError.Log.d(TAG, "Clearing queue as alert / call ceased");
             emptyQueue();
         }
     };
@@ -113,9 +115,11 @@ public class LeFunService extends JamBaseBluetoothSequencer {
                                     break;
                                 case "message":
                                     final String message = intent.getStringExtra("message");
+                                    final String message_type = intent.getStringExtra("message_type");
                                     if (message != null) {
                                         keyStore.putS(MESSAGE, message);
-                                        changeState(SEND_MESSAGE);
+                                        keyStore.putS(MESSAGE_TYPE, message_type != null ? message_type : "");
+                                        changeState(QUEUE_MESSAGE);
                                     }
                             }
                         } else {
@@ -335,39 +339,60 @@ public class LeFunService extends JamBaseBluetoothSequencer {
 
     }
 
-    private void sendMessage() {
+    private void queueMessage() {
         final String alert = keyStore.getS(MESSAGE);
+        final String type = keyStore.getS(MESSAGE_TYPE);
 
+        UserError.Log.d(TAG,"Queuing message alert of type: "+type+" "+alert);
 
         if (!emptyString(alert)) {
 
             probeModelTypeIfUnknown();
 
-            new QueueMe()
-                    .setBytes(new TxShakeDetect(false).getBytes())
-                    .setDescription("Disable Shake detection")
-                    .expectReply().expireInSeconds(60)
-                    .setRunnable(canceller)
-                    .queue();
+            switch (type != null ? type : "null") {
+                case "call":
+                    for (int repeats = 0; repeats < 25; repeats++) {
+                        new QueueMe()
+                                .setBytes(new TxAlert(alert, TxAlert.ICON_CALL).getBytes())
+                                .setDescription("Send call alert: " + alert)
+                                .expectReply().expireInSeconds(60)
+                                .setDelayMs(5000)
+                                .setRunnable(canceller)
+                                .queue();
+                    }
+                    UserError.Log.d(TAG, "Queued call alert: " + alert);
+                    break;
 
-            new QueueMe()
-                    .setBytes(new TxAlert(alert).getBytes())
-                    .setDescription("Send alert: " + alert)
-                    .expectReply().expireInSeconds(60)
-                    .setDelayMs(shakeToSnooze() ? 1500 : 200)
-                    .queue();
+                default: // glucose
+                    for (int repeats = 0; repeats < 5; repeats++) {
+                        new QueueMe()
+                                .setBytes(new TxShakeDetect(false).getBytes())
+                                .setDescription("Disable Shake detection")
+                                .expectReply().expireInSeconds(60)
+                                .setRunnable(canceller)
+                                .queue();
 
-            if (shakeToSnooze()) {
-                new QueueMe()
-                        .setBytes(new TxShakeDetect(true).getBytes())
-                        .setDescription("Enable Shake detection")
-                        .expectReply().expireInSeconds(60)
-                        .setDelayMs(10000)
-                        .queue();
+                        new QueueMe()
+                                .setBytes(new TxAlert(alert).getBytes())
+                                .setDescription("Send alert: " + alert)
+                                .expectReply().expireInSeconds(60)
+                                .setDelayMs(shakeToSnooze() ? 1500 : 200)
+                                .queue();
 
+                        if (shakeToSnooze()) {
+                            new QueueMe()
+                                    .setBytes(new TxShakeDetect(true).getBytes())
+                                    .setDescription("Enable Shake detection")
+                                    .expectReply().expireInSeconds(60)
+                                    .setDelayMs(10000)
+                                    .queue();
+
+                        }
+                    }
+                    break;
             }
-
-            startQueueSend();
+            // this parent method might get called multiple times
+           Inevitable.task("lefun-s-queue", 200, () -> changeState(mState.next()));
 
         } else {
             UserError.Log.e(TAG, "Alert message requested but no message set");
@@ -378,7 +403,7 @@ public class LeFunService extends JamBaseBluetoothSequencer {
     static class LeFunState extends JamBaseBluetoothSequencer.BaseState {
         static final String SET_TIME = "Setting Time";
         static final String SEND_SETTINGS = "Updating Settings";
-        static final String SEND_MESSAGE = "Sending Alert";
+        static final String QUEUE_MESSAGE = "Sending Alert";
         static final String PROTOTYPE = "Prototype Test";
         static final String ENABLE_NOTIFICATIONS = "Enabling notify";
 
@@ -392,7 +417,7 @@ public class LeFunService extends JamBaseBluetoothSequencer {
             sequence.add(SET_TIME);
             sequence.add(SLEEP);
             //
-            sequence.add(SEND_MESSAGE);
+            sequence.add(QUEUE_MESSAGE);
             sequence.add(SEND_QUEUE);
             sequence.add(SLEEP);
             //
@@ -413,7 +438,7 @@ public class LeFunService extends JamBaseBluetoothSequencer {
         extendWakeLock(1000);
         UserError.Log.d(TAG, "Automata called in LeFun");
 
-        if (alwaysConnected()) {
+        if (I.state.equals(QUEUE_MESSAGE) || alwaysConnected()) {
             if ((I.isConnected) && !I.state.equals(CLOSE)) {
                 if (!I.isDiscoveryComplete) {
                     UserError.Log.d(TAG, "Services not discovered");
@@ -447,12 +472,8 @@ public class LeFunService extends JamBaseBluetoothSequencer {
                     prototype();
                     break;
 
-                case SEND_MESSAGE:
-                    sendMessage();
-                    sendMessage();
-                    sendMessage();
-                    sendMessage();
-                    sendMessage();
+                case QUEUE_MESSAGE:
+                    queueMessage();
                     break;
 
                 default:

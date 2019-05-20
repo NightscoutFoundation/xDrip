@@ -121,7 +121,7 @@ public class AlertType extends Model {
     private static boolean patched = false;
 
     // This shouldn't be needed but it seems it is
-    private static void fixUpTable() {
+    public static void fixUpTable() {
         if (patched) return;
         String[] patchup = {
                 "ALTER TABLE AlertType ADD COLUMN volume INTEGER;",

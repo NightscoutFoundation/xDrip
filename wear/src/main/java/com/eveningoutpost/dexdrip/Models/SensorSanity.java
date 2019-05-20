@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.Models;
 
+import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
@@ -82,6 +83,48 @@ public class SensorSanity {
     public static boolean allowTestingWithDeadSensor() {
         return Pref.getBooleanDefaultFalse("allow_testing_with_dead_sensor")
                 && Pref.getBooleanDefaultFalse("engineering_mode");
+    }
+
+
+    /**
+     * Check Libre serial for unexpected changes. Stop xDrip sensor session if there is a mismatch.
+     *
+     * Same sensor session with different sensor serial number results in error response
+     *
+     * boolean return of true indicates problem
+     */
+
+    private static final String PREF_LIBRE_SN = "SensorSanity-LibreSN";
+    private static final String PREF_LIBRE_SENSOR_UUID = "SensorSanity-LibreSensor";
+
+    public static boolean checkLibreSensorChangeIfEnabled(final String sn) {
+        return Pref.getBoolean("detect_libre_sn_changes", true) && checkLibreSensorChange(sn);
+    }
+
+    public synchronized static boolean checkLibreSensorChange(final String sn) {
+        if ((sn == null) || sn.length() < 4) return false;
+        final String lastSn = PersistentStore.getString(PREF_LIBRE_SN);
+        if (!sn.equals(lastSn)) {
+            final Sensor this_sensor = Sensor.currentSensor();
+            if ((lastSn.length() > 3) && (this_sensor != null)) {
+
+                final String last_uuid = PersistentStore.getString(PREF_LIBRE_SENSOR_UUID);
+
+                if (last_uuid.equals(this_sensor.uuid)) {
+                    if (last_uuid.length() > 3) {
+                        UserError.Log.wtf(TAG, String.format("Different sensor serial number for same sensor uuid: %s :: %s vs %s", last_uuid, last_uuid, this_sensor.uuid));
+                        Sensor.stopSensor();
+                        JoH.static_toast_long("Stopping sensor due to serial number change");
+                        Sensor.stopSensor();
+                        return true;
+                    }
+                } else {
+                    PersistentStore.setString(PREF_LIBRE_SENSOR_UUID, this_sensor.uuid);
+                }
+            }
+            PersistentStore.setString(PREF_LIBRE_SN, sn);
+        }
+        return false;
     }
 
 }

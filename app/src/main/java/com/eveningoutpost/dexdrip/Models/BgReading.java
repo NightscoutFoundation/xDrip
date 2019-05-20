@@ -428,17 +428,11 @@ public class BgReading extends Model implements ShareUploadableBg {
         return null;
     }
 
-
     public static BgReading getForPreciseTimestamp(long timestamp, long precision) {
         return getForPreciseTimestamp(timestamp, precision, true);
     }
 
-
-    public static BgReading getForPreciseTimestamp(long timestamp, double precision) {
-        return getForPreciseTimestamp(timestamp, precision, true);
-    }
-
-    static BgReading getForPreciseTimestamp(long timestamp, double precision, boolean lock_to_sensor) {
+    public static BgReading getForPreciseTimestamp(long timestamp, long precision, boolean lock_to_sensor) {
         final Sensor sensor = Sensor.currentSensor();
         if ((sensor != null) || !lock_to_sensor) {
             final BgReading bgReading = new Select()
@@ -1143,8 +1137,14 @@ public class BgReading extends Model implements ShareUploadableBg {
         return raw_data == SPECIAL_G5_PLACEHOLDER;
     }
 
+    public boolean isRemote() {
+        return filtered_data == SPECIAL_REMOTE_PLACEHOLDER;
+    }
+
+
     public static final double SPECIAL_G5_PLACEHOLDER = -0.1597;
     public static final double SPECIAL_FOLLOWER_PLACEHOLDER = -0.1486;
+    public static final double SPECIAL_REMOTE_PLACEHOLDER = -0.1375;
 
     public static BgReading bgReadingInsertFromG5(double calculated_value, long timestamp) {
         return bgReadingInsertFromG5(calculated_value, timestamp, null);
@@ -1237,6 +1237,10 @@ public class BgReading extends Model implements ShareUploadableBg {
         }
     }
 
+    public void setRemoteMarker() {
+        filtered_data = SPECIAL_REMOTE_PLACEHOLDER;
+    }
+
 
     public static void notifyAndSync(final BgReading bgr) {
         final boolean recent = bgr.isCurrent();
@@ -1250,7 +1254,7 @@ public class BgReading extends Model implements ShareUploadableBg {
     }
 
     public static BgReading bgReadingInsertFromJson(String json, boolean do_notification) {
-        return bgReadingInsertFromJson(json, do_notification, WholeHouse.isEnabled() ? true : false);
+        return bgReadingInsertFromJson(json, do_notification, WholeHouse.isEnabled());
     }
 
     public static BgReading bgReadingInsertFromJson(String json, boolean do_notification, boolean force_sensor) {
@@ -1268,6 +1272,9 @@ public class BgReading extends Model implements ShareUploadableBg {
                         if (forced_sensor != null) {
                             bgr.sensor = forced_sensor;
                             bgr.sensor_uuid = forced_sensor.uuid;
+                        }
+                        if (Pref.getBooleanDefaultFalse("illustrate_remote_data")) {
+                            bgr.setRemoteMarker();
                         }
                     }
                     final long now = JoH.tsl();

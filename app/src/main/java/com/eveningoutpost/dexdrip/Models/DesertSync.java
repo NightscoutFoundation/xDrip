@@ -429,7 +429,7 @@ public class DesertSync extends PlusModel {
             if (myRollCall == null || JoH.msSince(myRollCall.created) > Constants.MINUTE_IN_MS * 15) {
                 myRollCall = new RollCall();
             }
-            return myRollCall.toS();
+            return myRollCall.populate().toS();
         } else {
             return "Invalid topic";
         }
@@ -504,6 +504,15 @@ public class DesertSync extends PlusModel {
             }
         }
         return list;
+    }
+
+    public static String getActivePeersString() {
+        final StringBuilder sb = new StringBuilder();
+        for (final String str : getActivePeers()) {
+            sb.append(str);
+            sb.append(",");
+        }
+        return sb.toString();
     }
 
     private String getYfrom() {

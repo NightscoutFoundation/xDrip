@@ -140,7 +140,7 @@
                         android:layout_weight="1"
                         android:onClick="@{() -> prefs.togglebool(vm.PREF_numberwall_multi_param)}"
                         android:scaleType="fitCenter"
-                        android:src="@{prefs[vm.PREF_numberwall_multi_param] ? @drawable/multi_numbers : @drawable/numbers, default = @drawable/multi_numbers}" />
+                        android:src="@{safeUnbox(prefs[vm.PREF_numberwall_multi_param]) ? @drawable/multi_numbers : @drawable/numbers, default = @drawable/multi_numbers}" />
 
                 </LinearLayout>
 

@@ -1,6 +1,5 @@
 package com.eveningoutpost.dexdrip.UtilityModels.pebble;
 
-import android.app.Service;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.Intent;
@@ -15,7 +14,9 @@ import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
+import com.eveningoutpost.dexdrip.UtilityModels.BroadcastSnooze;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.utils.framework.ForegroundService;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.getpebble.android.kit.PebbleKit;
 import com.getpebble.android.kit.util.PebbleDictionary;
@@ -29,9 +30,9 @@ import java.util.UUID;
  */
 
 /**
- * Refactored by Andy, to be abble to use both Pebble displays
+ * Refactored by Andy, to be able to use both Pebble displays
  */
-public class PebbleWatchSync extends Service {
+public class PebbleWatchSync extends ForegroundService {
 
     // watch faces
     public static final UUID PEBBLEAPP_UUID = UUID.fromString("79f8ecb3-7214-4bfc-b996-cb95148ee6d3");
@@ -284,6 +285,7 @@ public class PebbleWatchSync extends Service {
         AlertPlayer.getPlayer().Snooze(xdrip.getAppContext(), -1);
 
         PebbleKit.sendAckToPebble(xdrip.getAppContext(), transactionId);
+        BroadcastSnooze.send();
         JoH.static_toast_long("Alarm snoozed by pebble");
     }
 

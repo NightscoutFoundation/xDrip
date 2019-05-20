@@ -24,7 +24,7 @@ public class StopSensor extends ActivityWithMenu {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(Sensor.isActive() == false) {
+        if(!Sensor.isActive()) {
             Intent intent = new Intent(this, StartNewSensor.class);
             startActivity(intent);
             finish();

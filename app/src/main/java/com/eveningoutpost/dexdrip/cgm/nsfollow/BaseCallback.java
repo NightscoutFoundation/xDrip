@@ -24,12 +24,12 @@ public class BaseCallback<T> implements Callback<T> {
     private Runnable onSuccess;
     private Runnable onFailure;
 
-    BaseCallback<T> setOnSuccess(final Runnable runnable) {
+    public BaseCallback<T> setOnSuccess(final Runnable runnable) {
         this.onSuccess = runnable;
         return this;
     }
 
-    BaseCallback<T> setOnFailure(final Runnable runnable) {
+    public BaseCallback<T> setOnFailure(final Runnable runnable) {
         this.onFailure = runnable;
         return this;
     }

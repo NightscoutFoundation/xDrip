@@ -232,7 +232,6 @@
     <string name="start_snoozed">Rozpocznij w stanie uśpionym</string>
     <string name="adjust_all_by_a_factor">Dostosuj wszystko przez współczynnik</string>
     <string name="reset">Resetuj</string>
-    <string name="pebble_and_android_wear_options">Opcje konfiguracji dla Pebble i Android wear</string>
     <string name="customize_colours">Dostosuj kolory</string>
     <string name="glucose_values_and_lines">Glikemia i linie</string>
     <string name="high_glucose_values">Wysoka wartość stężenia glukozy</string>

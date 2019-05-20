@@ -68,6 +68,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.utils.PowerStateReceiver;
+import com.eveningoutpost.dexdrip.utils.bt.Helper;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.io.UnsupportedEncodingException;
@@ -92,8 +93,8 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 
-import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.getStatusName;
 import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.getUUIDName;
+import static com.eveningoutpost.dexdrip.utils.bt.Helper.getStatusName;
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class G5CollectionService extends G5BaseService {
@@ -1084,7 +1085,7 @@ public class G5CollectionService extends G5BaseService {
                     Log.e(TAG, "STATE_DISCONNECTED: " + getStatusName(status));
 
                     // do we keep failing right after attempting bonding? make sure alwaysAuthenticate is enabled if so..
-                    if (status == BluetoothServices.GATT_CONN_TERMINATE_PEER_USER) {
+                    if (status == Helper.GATT_CONN_TERMINATE_PEER_USER) {
                         failures++;
                         if (!alwaysAuthenticate() && (successes == 0) && (failures > 1) && (lastOnReadCode == 7)) {
                             Log.wtf(TAG, "Force enabling AlwaysAuthenticate mode!");
@@ -1640,9 +1641,10 @@ public class G5CollectionService extends G5BaseService {
         return true;
     }
 
-    public static BatteryInfoRxMessage getBatteryDetails(String tx_id) {
+    public static BatteryInfoRxMessage getBatteryDetails(final String tx_id) {
         try {
-            return new BatteryInfoRxMessage(PersistentStore.getBytes(G5_BATTERY_MARKER + tx_id));
+            final byte[] batteryStoredBytes = PersistentStore.getBytes(G5_BATTERY_MARKER + tx_id);
+            return batteryStoredBytes.length > 0 ? new BatteryInfoRxMessage(batteryStoredBytes) : null;
         } catch (Exception e) {
             Log.wtf(TAG, "Exception in getFirmwareDetails: " + e);
             return null;

@@ -75,6 +75,7 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import lombok.Setter;
 import rx.Observable;
 import rx.Scheduler;
 import rx.Subscription;
@@ -83,6 +84,7 @@ import rx.schedulers.Schedulers;
 import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.getUUIDName;
 import static com.eveningoutpost.dexdrip.G5Model.CalibrationState.Ok;
 import static com.eveningoutpost.dexdrip.G5Model.CalibrationState.Unknown;
+import static com.eveningoutpost.dexdrip.G5Model.G6CalibrationParameters.getCurrentSensorCode;
 import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.CLOSED_OK_TEXT;
 import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.evaluateG6Settings;
 import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.pendingCalibration;
@@ -167,6 +169,7 @@ public class Ob1G5CollectionService extends G5BaseService {
     public static volatile long lastUsableGlucosePacketTime = 0;
     private static volatile String static_connection_state = null;
     private static long static_last_connected = 0;
+    @Setter
     private static long last_transmitter_timestamp = 0;
     private static long lastStateUpdated = 0;
     private static long wakeup_time = 0;
@@ -750,13 +753,16 @@ public class Ob1G5CollectionService extends G5BaseService {
 
         final Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
         if (pairedDevices.size() > 0) {
-            for (BluetoothDevice device : pairedDevices) {
+            for (final BluetoothDevice device : pairedDevices) {
                 if (device.getAddress() != null) {
                     if (device.getAddress().equals(transmitterMAC)) {
                         try {
+
                             UserError.Log.e(TAG, "removingBond: " + transmitterMAC);
-                            Method m = device.getClass().getMethod("removeBond", (Class[]) null);
+                            final Method m = device.getClass().getMethod("removeBond", (Class[]) null);
                             m.invoke(device, (Object[]) null);
+                            // TODO interpret boolean response
+                            break;
 
                         } catch (Exception e) {
                             UserError.Log.e(TAG, e.getMessage(), e);
@@ -1487,7 +1493,7 @@ public class Ob1G5CollectionService extends G5BaseService {
 
 
     private boolean getInitiateBondingFlag() {
-        return Pref.getBooleanDefaultFalse("ob1_initiate_bonding_flag");
+        return Pref.getBoolean("ob1_initiate_bonding_flag", true);
     }
 
 
@@ -1587,10 +1593,10 @@ public class Ob1G5CollectionService extends G5BaseService {
                     Ob1G5StateMachine.startSensor(JoH.tsl());
                 }
                 final PendingIntent pi = PendingIntent.getActivity(xdrip.getAppContext(), G5_SENSOR_RESTARTED, JoH.getStartActivityIntent(Home.class), PendingIntent.FLAG_UPDATE_CURRENT);
-                JoH.showNotification("Auto Start", "G5 Sensor Requesting Restart", pi, G5_SENSOR_RESTARTED, true, true, false);
+                JoH.showNotification("Auto Start", "Sensor Requesting Restart", pi, G5_SENSOR_RESTARTED, true, true, false);
             }
             final PendingIntent pi = PendingIntent.getActivity(xdrip.getAppContext(), G5_SENSOR_STARTED, JoH.getStartActivityIntent(Home.class), PendingIntent.FLAG_UPDATE_CURRENT);
-            JoH.showNotification(state.getText(), "G5 Sensor Stopped", pi, G5_SENSOR_STARTED, true, true, false);
+            JoH.showNotification(state.getText(), "Sensor Stopped", pi, G5_SENSOR_STARTED, true, true, false);
             UserError.Log.ueh(TAG, "Native Sensor is now Stopped: " + state.getExtendedText());
         } else if (is_started && !was_started) {
             JoH.cancelNotification(G5_SENSOR_STARTED);
@@ -1807,6 +1813,12 @@ public class Ob1G5CollectionService extends G5BaseService {
                 l.add(new StatusItem("Watch got Glucose", JoH.niceTimeSince(static_last_timestamp_watch) + " ago"));
             }
         }
+        final String sensorCode = getCurrentSensorCode();
+        if (sensorCode != null) {
+            if (usingG6()) {
+                l.add(new StatusItem("Calibration Code", sensorCode));
+            }
+        }
 
         // firmware details
         final VersionRequestRxMessage vr = Ob1G5StateMachine.getFirmwareDetails(tx_id);
@@ -1856,7 +1868,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                 if (!battery_status.equals("OK"))
                     l.add(new StatusItem("Transmitter Status", battery_status, BAD));
             }
-            l.add(new StatusItem("Transmitter Days", bt.runtime + ((last_transmitter_timestamp > 0) ? " / " + JoH.qs((double) last_transmitter_timestamp / 86400, 1) : "")));
+            l.add(new StatusItem("Transmitter Days", ((bt.runtime > -1) ? bt.runtime : "") + ((last_transmitter_timestamp > 0) ? " / " + JoH.qs((double) last_transmitter_timestamp / 86400, 1) : "")));
             l.add(new StatusItem("Voltage A", bt.voltagea, bt.voltagea < LOW_BATTERY_WARNING_LEVEL ? BAD : NORMAL));
             l.add(new StatusItem("Voltage B", bt.voltageb, bt.voltageb < (LOW_BATTERY_WARNING_LEVEL - 10) ? BAD : NORMAL));
             l.add(new StatusItem("Resistance", bt.resist, bt.resist > 1400 ? BAD : (bt.resist > 1000 ? NOTICE : (bt.resist > 750 ? NORMAL : Highlight.GOOD))));

@@ -7,6 +7,7 @@ public interface Intents {
     String RECEIVER_PERMISSION = "com.eveningoutpost.dexdrip.permissions.RECEIVE_BG_ESTIMATE";
 
     String ACTION_NEW_BG_ESTIMATE = "com.eveningoutpost.dexdrip.BgEstimate";
+    String EXTRA_SENDER = "com.eveningoutpost.dexdrip.Extras.Sender";
     String EXTRA_BG_ESTIMATE = "com.eveningoutpost.dexdrip.Extras.BgEstimate";
     String EXTRA_BG_SLOPE = "com.eveningoutpost.dexdrip.Extras.BgSlope";
     String EXTRA_BG_SLOPE_NAME = "com.eveningoutpost.dexdrip.Extras.BgSlopeName";
@@ -23,6 +24,7 @@ public interface Intents {
     String ACTION_REMOTE_CALIBRATION = "com.eveningoutpost.dexdrip.NewCalibration";
     String ACTION_NEW_BG_ESTIMATE_NO_DATA = "com.eveningoutpost.dexdrip.BgEstimateNoData";
     String ACTION_STATUS_UPDATE = "com.eveningoutpost.dexdrip.StatusUpdate";
+    String ACTION_SNOOZE = "com.eveningoutpost.dexdrip.Snooze";
 
     String ACTION_VEHICLE_MODE = "com.eveningoutpost.dexdrip.VehicleMode";
     String EXTRA_VEHICLE_MODE_ENABLED = "com.eveningoutpost.dexdrip.VehicleMode.Enabled";

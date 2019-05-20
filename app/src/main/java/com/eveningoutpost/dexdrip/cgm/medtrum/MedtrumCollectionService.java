@@ -585,7 +585,7 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
 
                         final double glucose = backFillRx.getGlucose(backsies.get(index));
                         final int scaled_raw_data = backFillRx.getSensorRawEmulateDex(backsies.get(index));
-                        if (BgReading.getForPreciseTimestamp(timestamp, Constants.MINUTE_IN_MS * 2.5) == null) {
+                        if (BgReading.getForPreciseTimestamp(timestamp, (long)(Constants.MINUTE_IN_MS * 2.5)) == null) {
 
                             if (isNative()) {
                                 // Native version

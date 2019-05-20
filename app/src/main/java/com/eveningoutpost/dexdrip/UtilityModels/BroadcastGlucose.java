@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.eveningoutpost.dexdrip.BestGlucose;
+import com.eveningoutpost.dexdrip.BuildConfig;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
@@ -41,6 +42,16 @@ public class BroadcastGlucose {
                     bundle.putString(Intents.XDRIP_DATA_SOURCE_INFO, bgReading.source_info);
                 }
 
+                bundle.putString(Intents.XDRIP_VERSION_INFO, BuildConfig.buildVersion + " " + BuildConfig.VERSION_NAME);
+
+                try {
+                    final Calibration calib = Calibration.lastValid();
+                    final long last_calibration_timestamp = calib != null ? calib.timestamp : -1;
+                    bundle.putString(Intents.XDRIP_CALIBRATION_INFO, last_calibration_timestamp + "");
+                } catch (Exception e) {
+                    //
+                }
+
                 // TODO this cannot handle out of sequence data due to displayGlucose taking most recent?!
                 // TODO can we do something with munging for quick data and getDisplayGlucose for non quick?
                 // use display glucose if enabled and available
@@ -65,6 +76,13 @@ public class BroadcastGlucose {
                         } else {
                             bundle.putString(Intents.EXTRA_BG_SLOPE_NAME, dg.delta_name);
                         }
+
+                        final boolean is_oop = DexCollectionType.isLibreOOPAlgorithm(null);
+                        if (dg.from_plugin || is_oop) {
+                            bundle.putString(Intents.XDRIP_CALIBRATION_PLUGIN, (is_oop ? "OOP " : "") + dg.plugin_name);
+                        }
+
+
                     } else {
                         final String msg = "Not locally broadcasting due to noise block level of: " + noiseBlockLevel + " and noise of; " + JoH.roundDouble(dg.noise, 1);
                         UserError.Log.e("LocalBroadcast", msg);
@@ -128,6 +146,7 @@ public class BroadcastGlucose {
                 addCollectorStatus(bundle);
                 final Intent intent = new Intent(Intents.ACTION_NEW_BG_ESTIMATE);
                 SendXdripBroadcast.send(intent, bundle);
+                //JoH.dumpBundle(bundle, TAG);
             } else {
                 // just status update
                 addCollectorStatus(bundle);

@@ -7,6 +7,9 @@ package com.eveningoutpost.dexdrip.tidepool;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 
+import static com.eveningoutpost.dexdrip.Models.JoH.isLANConnected;
+import static com.eveningoutpost.dexdrip.utils.PowerStateReceiver.is_power_connected;
+
 public class TidepoolEntry {
 
 
@@ -15,7 +18,10 @@ public class TidepoolEntry {
     }
 
     public static void newData() {
-        if (enabled() && JoH.pratelimit("tidepool-new-data-upload", 1200)) {
+        if (enabled()
+                && (!Pref.getBooleanDefaultFalse("tidepool_only_while_charging") || is_power_connected())
+                && (!Pref.getBooleanDefaultFalse("tidepool_only_while_unmetered") || isLANConnected())
+                && JoH.pratelimit("tidepool-new-data-upload", 1200)) {
             TidepoolUploader.doLogin(false);
         }
     }

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.LibreAlarmReceiver;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.UtilityModels.CompatibleApps;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Intents;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
@@ -42,7 +43,21 @@ public class LibreOOPAlgorithm {
         
         intent.putExtras(bundle);
         intent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
-        xdrip.getAppContext().sendBroadcast(intent);
+
+        final String packages = PersistentStore.getString(CompatibleApps.EXTERNAL_ALG_PACKAGES);
+        if (packages.length() > 0) {
+            final String[] packagesE = packages.split(",");
+            for (final String destination : packagesE) {
+                if (destination.length() > 3) {
+                    intent.setPackage(destination);
+                    Log.d(TAG, "Sending to package: " + destination);
+                    xdrip.getAppContext().sendBroadcast(intent);
+                }
+            }
+        } else {
+            Log.d(TAG, "Sending to generic package");
+            xdrip.getAppContext().sendBroadcast(intent);
+        }
     }
     
     

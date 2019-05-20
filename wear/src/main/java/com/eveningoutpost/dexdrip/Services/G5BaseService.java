@@ -190,4 +190,8 @@ public abstract class G5BaseService extends Service {
         hardResetTransmitterNow = true;
     }
 
+    public static String getLastTwoCharacters(final String txid) {
+        if (txid == null) return "NULL";
+        return txid.length() > 3 ? txid.substring(txid.length() - 2) : "ERR-" + txid;
+    }
 }

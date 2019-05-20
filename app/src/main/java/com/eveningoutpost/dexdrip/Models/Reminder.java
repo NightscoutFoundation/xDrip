@@ -8,9 +8,11 @@ import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 import com.activeandroid.util.SQLiteUtils;
+import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Reminders;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.utils.HomeWifi;
 import com.google.gson.annotations.Expose;
 
 import java.util.Calendar;
@@ -52,9 +54,12 @@ public class Reminder extends Model {
             "ALTER TABLE Reminder ADD COLUMN alternating INTEGER DEFAULT 0",
             "ALTER TABLE Reminder ADD COLUMN alternate INTEGER DEFAULT 0",
             "ALTER TABLE Reminder ADD COLUMN chime INTEGER DEFAULT 0",
+            "ALTER TABLE Reminder ADD COLUMN homeonly INTEGER DEFAULT 0",
+            "ALTER TABLE Reminder ADD COLUMN speak INTEGER DEFAULT 0",
             "CREATE INDEX index_Reminder_next_due on Reminder(next_due)",
             "CREATE INDEX index_Reminder_enabled on Reminder(enabled)",
             "CREATE INDEX index_Reminder_weekdays on Reminder(weekdays)",
+            "CREATE INDEX index_Reminder_homeonly on Reminder(homeonly)",
             "CREATE INDEX index_Reminder_weekends on Reminder(weekends)",
             "CREATE INDEX index_Reminder_priority on Reminder(priority)",
             "CREATE INDEX index_Reminder_timestamp on Reminder(timestamp)",
@@ -92,6 +97,14 @@ public class Reminder extends Model {
     @Expose
     @Column(name = "weekends", index = true)
     public boolean weekends;
+
+    @Expose
+    @Column(name = "homeonly", index = true)
+    public boolean homeonly;
+
+    @Expose
+    @Column(name = "speak")
+    public boolean speak;
 
     @Expose
     @Column(name = "repeating")
@@ -260,6 +273,7 @@ public class Reminder extends Model {
         reminder.alternating = false;
         reminder.alternate = false;
         reminder.chime_only = false;
+        reminder.homeonly = false;
         reminder.ideal_time = JoH.hourMinuteString();
         reminder.priority = 5; // default
         reminder.save();
@@ -311,6 +325,7 @@ public class Reminder extends Model {
 
     public static Reminder getNextActiveReminder() {
         fixUpTable(schema);
+        final boolean onHomeWifi = !HomeWifi.isSet() || HomeWifi.isConnected();
         final long now = JoH.tsl();
         final Reminder reminder = new Select()
                 .from(Reminder.class)
@@ -318,6 +333,8 @@ public class Reminder extends Model {
                 .where("next_due < ?", now)
                 .where("snoozed_till < ?", now)
                 .where("last_fired < (? - (600000 * alerted_times))", now)
+                // if on home wifi or not set then anything otherwise only home only = false
+                .where(onHomeWifi ? "homeonly > -1 " : "homeonly = 0")
                 .orderBy("enabled desc, priority desc, next_due asc")
                 .executeSingle();
         return reminder;

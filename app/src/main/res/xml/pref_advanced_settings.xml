@@ -327,6 +327,12 @@
                 android:dependency="lefun_send_alarms"
                 android:defaultValue="true"
                 android:title="@string/title_lefun_option_shake_snoozes" />
+            <CheckBoxPreference
+                android:key="lefun_option_call_notifications"
+                android:dependency="lefun_enabled"
+                android:defaultValue="false"
+                android:summary="Send call notifications to the band (Android 6+)"
+                android:title="Send Calls" />
 
             <PreferenceScreen android:title="@string/title_lefun_screens_features">
 
@@ -770,6 +776,11 @@
                     android:summary="@string/summary_Enable_to_allow_variable_slopes_with_Libre_collection_methods"
                     android:title="@string/title_Non_fixed_Libre_slopes" />
                 <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="detect_libre_sn_changes"
+                    android:summary="Automatically stop if Libre serial changes unexpectedly"
+                    android:title="Check Libre Serial" />
+                <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="bypass_calibration_quality_check"
                     android:summary="@string/summary_Allow_initial_calibration_no_good_enough_data"
@@ -945,12 +956,7 @@
                 android:key="disable_battery_warning"
                 android:summary="@string/disable_log_transmitter_battery_warning"
                 android:title="@string/disable_battery_warning" />
-            <CheckBoxPreference
-                android:defaultValue="false"
-                android:dependency="engineering_mode"
-                android:key="engineering_mode"
-                android:summary="@string/allow_unsafe_settings"
-                android:title="@string/engineering_mode" />
+
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:key="save_db_ondemand"
@@ -972,6 +978,12 @@
                     android:key="run_service_in_foreground"
                     android:summary="@string/shows_a_persistent_notification"
                     android:title="@string/run_collector_in_foreground" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:dependency="engineering_mode"
+                    android:key="engineering_mode"
+                    android:summary="@string/allow_unsafe_settings"
+                    android:title="@string/engineering_mode" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="requested_ignore_battery_optimizations_new"
@@ -1013,6 +1025,13 @@
                     android:key="calibrate_external_libre_algorithm"
                     android:summary="@string/calibrate_external_libre_algorithm_summary"
                     android:title="@string/calibrate_external_libre_algorithm_title" />
+                
+                <CheckBoxPreference
+                    android:enabled="true"
+                    android:defaultValue="false"
+                    android:key="libre_use_smoothed_data"
+                    android:summary="@string/libre_use_smoothed_data_summary"
+                    android:title="@string/libre_use_smoothed_data_title" />
 
                 <CheckBoxPreference
                     android:enabled="true"

@@ -32,6 +32,7 @@
     <uses-permission-sdk-23 android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
     <uses-permission-sdk-23 android:name="android.permission.READ_CONTACTS" />
     <uses-permission-sdk-23 android:name="android.permission.SEND_SMS" />
+    <uses-permission-sdk-23 android:name="android.permission.READ_PHONE_STATE" />
 
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
@@ -39,6 +40,8 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.BATTERY_STATS" />
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
+    <uses-permission android:name="android.permission.BLUETOOTH_PRIVILEGED" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
     <uses-permission android:name="com.google.android.gms.permission.ACTIVITY_RECOGNITION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -209,7 +212,11 @@
                 <action android:name="android.bluetooth.device.action.ACL_DISCONNECTED" />
             </intent-filter>
         </receiver>
-
+        <receiver android:name=".utils.framework.IncomingCallsReceiver" android:enabled="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.PHONE_STATE" />
+            </intent-filter>
+        </receiver>
         <activity
             android:name=".Tables.CalibrationDataTable"
             android:label="@string/calibration_data_table" />
@@ -455,6 +462,11 @@
                 <action android:name="com.eveningoutpost.dexdrip.NS_EMULATOR" />
             </intent-filter>
         </receiver>
+        <receiver android:name=".UtilityModels.BroadcastSnoozeReceiver">
+            <intent-filter>
+                <action android:name="com.eveningoutpost.dexdrip.Snooze" />
+            </intent-filter>
+        </receiver>
         <receiver
             android:name=".localeTasker.receiver.FireReceiver"
             android:exported="true">
@@ -646,6 +658,7 @@
         <service android:name=".watch.lefun.LeFunService" />
         <service android:name=".cgm.nsfollow.NightscoutFollowService" />
         <service android:name=".insulin.inpen.InPenService" />
+        <service android:name=".cgm.sharefollow.ShareFollowService" />
 
         <activity
             android:name=".EventLogActivity"
@@ -666,6 +679,8 @@
             android:exported="true"
             android:label="@string/number_wall_config" />
         <activity android:name=".ui.activities.TimePickerPrefActivity"></activity>
+        <activity android:name=".ui.activities.DatabaseAdmin"
+            android:label="Database Admin"/>
     </application>
 
 </manifest>

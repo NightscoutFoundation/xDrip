@@ -65,9 +65,11 @@ import com.eveningoutpost.dexdrip.UtilityModels.NotificationChannels;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.ShotStateStore;
+import com.eveningoutpost.dexdrip.UtilityModels.SpeechUtil;
 import com.eveningoutpost.dexdrip.profileeditor.DatePickerFragment;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileAdapter;
 import com.eveningoutpost.dexdrip.profileeditor.TimePickerFragment;
+import com.eveningoutpost.dexdrip.utils.HomeWifi;
 import com.github.amlcurran.showcaseview.OnShowcaseEventListener;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
@@ -194,6 +196,11 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
         updateMenuCheckboxes();
     }
 
+    public void onRemindersHomeNetworkClick(MenuItem item) {
+        HomeWifi.ask(this);
+    }
+
+
     private void invertPreferenceBoolean(String pref) {
         Pref.setBoolean(pref, !Pref.getBooleanDefaultFalse(pref));
     }
@@ -279,6 +286,7 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
         reminders.addAll(Reminder.getAllReminders());
         mAdapter.notifyDataSetChanged();
     }
+
 
     // View holder
     public class MyViewHolder extends ActivityWithRecycler.MyViewHolder {
@@ -816,6 +824,7 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
             rbday.setChecked(PersistentStore.getBoolean("reminders-rbday"));
             rbhour.setChecked(PersistentStore.getBoolean("reminders-rbhour"));
             rbweek.setChecked(PersistentStore.getBoolean("reminders-rbweek"));
+
         } else {
             rbday.setChecked(reminder.isDaysPeriod());
             rbhour.setChecked(reminder.isHoursPeriod());
@@ -862,6 +871,8 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
         final CheckBox weekendsCheckbox = (CheckBox) dialogView.findViewById(R.id.weekEndsCheckbox);
         final CheckBox weekdaysCheckbox = (CheckBox) dialogView.findViewById(R.id.weekDaysCheckbox);
         final CheckBox megapriorityCheckbox = (CheckBox) dialogView.findViewById(R.id.highPriorityCheckbox);
+        final CheckBox homeOnlyCheckbox = (CheckBox) dialogView.findViewById(R.id.homeOnlyCheckbox);
+        final CheckBox speechCheckbox = (CheckBox) dialogView.findViewById(R.id.speakCheckbox);
 
         final ImageButton swapButton = (ImageButton) dialogView.findViewById(R.id.reminderSwapButton);
 
@@ -870,6 +881,8 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
             repeatingCheckbox.setChecked(PersistentStore.getLong("reminders-last-repeating") != 2);
             chimeOnlyCheckbox.setChecked(PersistentStore.getLong("reminders-last-chimeonly") == 1);
             alternatingCheckbox.setChecked(PersistentStore.getLong("reminders-last-alternating") == 1);
+            homeOnlyCheckbox.setChecked(false); // defaults to false
+
             try {
                 reminderDaysEdt.setText(!PersistentStore.getString("reminders-last-number").equals("") ? Integer.toString(Integer.parseInt(PersistentStore.getString("reminders-last-number"))) : "1");
             } catch (Exception e) {
@@ -890,6 +903,8 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
             }
             weekdaysCheckbox.setChecked(reminder.weekdays);
             weekendsCheckbox.setChecked(reminder.weekends);
+            homeOnlyCheckbox.setChecked(reminder.homeonly);
+            speechCheckbox.setChecked(reminder.speak);
             reminderDaysEdt.setText(Long.toString(reminder.periodInUnits()));
         }
 
@@ -972,6 +987,9 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
 
                     new_reminder.weekdays = weekdaysCheckbox.isChecked();
                     new_reminder.weekends = weekendsCheckbox.isChecked();
+                    new_reminder.homeonly = homeOnlyCheckbox.isChecked();
+                    new_reminder.speak = speechCheckbox.isChecked();
+
 
                     if ((new_reminder.priority > MEGA_PRIORITY) && (!megapriorityCheckbox.isChecked())) {
                         new_reminder.priority -= MEGA_PRIORITY;
@@ -1099,6 +1117,9 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
 
                 //    JoH.showNotification(reminder.getTitle(), "Reminder due " + JoH.hourMinuteString(reminder.next_due), pendingIntent, NOTIFICATION_ID, true, true, deleteIntent, JoH.isOngoingCall() ? null : (reminder.sound_uri != null) ? Uri.parse(reminder.sound_uri) : Uri.parse(JoH.getResourceURI(R.raw.reminder_default_notification)));
                 UserError.Log.ueh("Reminder Alert", reminder.getTitle() + " due: " + JoH.dateTimeText(reminder.next_due) + ((reminder.snoozed_till > reminder.next_due) ? " snoozed till: " + JoH.dateTimeText(reminder.snoozed_till) : ""));
+                if (reminder.speak) {
+                    SpeechUtil.say(reminder.getTitle(),1000,3);
+                }
                 reminder.notified();
             }
         }, 10000);

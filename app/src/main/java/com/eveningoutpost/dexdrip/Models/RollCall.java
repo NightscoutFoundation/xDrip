@@ -1,13 +1,18 @@
 package com.eveningoutpost.dexdrip.Models;
 
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.BatteryManager;
 import android.os.Build;
 
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.UtilityModels.BridgeBattery;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.UtilityModels.desertsync.RouteTools;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
+import com.eveningoutpost.dexdrip.xdrip;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
@@ -49,6 +54,10 @@ public class RollCall {
     String ssid;
     @Expose
     String mhint;
+    @Expose
+    int battery = -1;
+    @Expose
+    int bridge_battery = -1;
 
     // not set by instantiation
     @Expose
@@ -88,7 +97,21 @@ public class RollCall {
                 //
             }
         }
+    }
 
+    // populate with values from this device
+    public RollCall populate() {
+        this.battery = getBatteryLevel();
+        this.bridge_battery = BridgeBattery.getBestBridgeBattery();
+        return this;
+    }
+
+    private boolean batteryValid() {
+        return battery != -1;
+    }
+
+    private boolean bridgeBatteryValid() {
+        return bridge_battery > 0;
     }
 
     private static String wifiString() {
@@ -98,6 +121,22 @@ public class RollCall {
         }
         return ssid;
     }
+
+    @SuppressWarnings("ConstantConditions")
+    private static int getBatteryLevel() {
+        final Intent batteryIntent = xdrip.getAppContext().registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+        try {
+            final int level = batteryIntent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+            final int scale = batteryIntent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+            if (level == -1 || scale == -1) {
+                return -1;
+            }
+            return (int) (((float) level / (float) scale) * 100.0f);
+        } catch (NullPointerException e) {
+            return -1;
+        }
+    }
+
 
     private String getRemoteIpStatus() {
         if (mhint != null) {
@@ -142,9 +181,9 @@ public class RollCall {
             return gson.fromJson(json, RollCall.class);
         } catch (Exception e) {
             UserError.Log.e(TAG, "Got exception processing fromJson() " + e);
-            UserError.Log.e(TAG, "json = "  + json);
+            UserError.Log.e(TAG, "json = " + json);
             return null;
-        }   
+        }
     }
 
     public synchronized static void Seen(String item_json) {
@@ -242,7 +281,6 @@ public class RollCall {
 
     // data for MegaStatus
     public static List<StatusItem> megaStatus() {
-        final List<StatusItem> l = new ArrayList<>();
         if (indexed == null) loadIndex();
         GcmActivity.requestRollCall();
         // TODO sort data
@@ -252,7 +290,8 @@ public class RollCall {
         final List<StatusItem> lf = new ArrayList<>();
         for (Map.Entry entry : indexed.entrySet()) {
             final RollCall rc = (RollCall) entry.getValue();
-            lf.add(new StatusItem(rc.role + (desert_sync ? rc.getRemoteWifiIndicate(our_wifi_ssid) : "") + (engineering ? ("\n" + JoH.niceTimeSince(rc.last_seen) + " ago") : ""), rc.bestName() + (desert_sync ? rc.getRemoteIpStatus() : "")));
+            // TODO refactor with stringbuilder
+            lf.add(new StatusItem(rc.role + (desert_sync ? rc.getRemoteWifiIndicate(our_wifi_ssid) : "") + (engineering ? ("\n" + JoH.niceTimeSince(rc.last_seen) + " ago") : ""), rc.bestName() + (desert_sync ? rc.getRemoteIpStatus() : "") + (engineering && rc.batteryValid() ? ("\n" + rc.battery + "%") : "") + (engineering && rc.bridgeBatteryValid() ? (" " + rc.bridge_battery+"%") : "")));
         }
 
         Collections.sort(lf, new Comparator<StatusItem>() {
@@ -264,8 +303,7 @@ public class RollCall {
         });
         // TODO could scan for duplicates and append serial to bestName
 
-        l.addAll(lf);
-        return l;
+        return new ArrayList<>(lf);
     }
 
 }

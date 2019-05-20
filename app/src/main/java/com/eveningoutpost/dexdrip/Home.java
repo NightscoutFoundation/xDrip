@@ -2325,7 +2325,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         }
         if (isWifiWixel || isWifiBluetoothWixel || isWifiandBTLibre || isWifiLibre || collector.equals(DexCollectionType.Mock)) {
             updateCurrentBgInfoForWifiWixel(collector, notificationText);
-        } else if (is_follower || collector.equals(DexCollectionType.NSEmulator) || collector.equals(DexCollectionType.NSFollow)) {
+        } else if (is_follower || collector.equals(DexCollectionType.NSEmulator) || collector.equals(DexCollectionType.NSFollow) || collector.equals(DexCollectionType.SHFollow)) {
             displayCurrentInfo();
             Inevitable.task("home-notifications-start", 5000, Notifications::start);
         } else if (!alreadyDisplayedBgInfoCommon && (DexCollectionType.getDexCollectionType() == DexCollectionType.LibreAlarm || collector == DexCollectionType.Medtrum)) {
@@ -2479,7 +2479,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         boolean isSensorActive = Sensor.isActive();
 
         // automagically start an xDrip sensor session if G5 transmitter already has active sensor
-        if (!isSensorActive && Ob1G5CollectionService.isG5SensorStarted()) {
+        if (!isSensorActive && Ob1G5CollectionService.isG5SensorStarted() && !Sensor.stoppedRecently()) {
             JoH.static_toast_long("Auto starting sensor!");
             Sensor.create(JoH.tsl() - HOUR_IN_MS * 3);
             isSensorActive = Sensor.isActive();

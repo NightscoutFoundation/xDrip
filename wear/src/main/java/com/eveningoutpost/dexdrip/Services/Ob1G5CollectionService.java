@@ -110,7 +110,7 @@ import static com.eveningoutpost.dexdrip.UtilityModels.StatusItem.Highlight.CRIT
 import static com.eveningoutpost.dexdrip.UtilityModels.StatusItem.Highlight.NORMAL;
 import static com.eveningoutpost.dexdrip.UtilityModels.StatusItem.Highlight.NOTICE;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.DexcomG5;
-
+import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 /*
 import com.polidea.rxandroidble2.RxBleClient;
@@ -453,7 +453,7 @@ public class Ob1G5CollectionService extends G5BaseService {
 
     private synchronized void scan_for_device() {
         if (state == SCAN) {
-            msg("Scanning");
+            msg(gs(R.string.scanning));
             stopScan();
             tryLoadingSavedMAC(); // did we already find it?
             if (always_scan || scan_next_run || (transmitterMAC == null) || (!transmitterID.equals(transmitterIDmatchingMAC)) || (static_last_timestamp < 1)) {
@@ -471,7 +471,12 @@ public class Ob1G5CollectionService extends G5BaseService {
                             .setDeviceAddress(historicalTransmitterMAC)
                             .build();
                 } else {
-                    filter = new ScanFilter.Builder().build();
+                    final String localTransmitterID = transmitterID;
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && localTransmitterID != null && localTransmitterID.length() > 4) {
+                        filter = new ScanFilter.Builder().setDeviceName(getTransmitterBluetoothName()).build();
+                    } else {
+                        filter = new ScanFilter.Builder().build();
+                    }
                 }
 
 
@@ -653,7 +658,7 @@ public class Ob1G5CollectionService extends G5BaseService {
     }
 
     private String getTransmitterBluetoothName() {
-        final String transmitterIdLastTwo = Extensions.lastTwoCharactersOfString(transmitterID);
+        final String transmitterIdLastTwo = getLastTwoCharacters(transmitterID);
         // todo check for bad config
         return "Dexcom" + transmitterIdLastTwo;
     }
@@ -745,13 +750,16 @@ public class Ob1G5CollectionService extends G5BaseService {
 
         final Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
         if (pairedDevices.size() > 0) {
-            for (BluetoothDevice device : pairedDevices) {
+            for (final BluetoothDevice device : pairedDevices) {
                 if (device.getAddress() != null) {
                     if (device.getAddress().equals(transmitterMAC)) {
                         try {
+
                             UserError.Log.e(TAG, "removingBond: " + transmitterMAC);
-                            Method m = device.getClass().getMethod("removeBond", (Class[]) null);
+                            final Method m = device.getClass().getMethod("removeBond", (Class[]) null);
                             m.invoke(device, (Object[]) null);
+                            // TODO interpret boolean response
+                            break;
 
                         } catch (Exception e) {
                             UserError.Log.e(TAG, e.getMessage(), e);
@@ -1482,7 +1490,7 @@ public class Ob1G5CollectionService extends G5BaseService {
 
 
     private boolean getInitiateBondingFlag() {
-        return Pref.getBooleanDefaultFalse("ob1_initiate_bonding_flag");
+        return Pref.getBoolean("ob1_initiate_bonding_flag", true);
     }
 
 
@@ -1582,10 +1590,10 @@ public class Ob1G5CollectionService extends G5BaseService {
                     Ob1G5StateMachine.startSensor(JoH.tsl());
                 }
                 final PendingIntent pi = PendingIntent.getActivity(xdrip.getAppContext(), G5_SENSOR_RESTARTED, JoH.getStartActivityIntent(Home.class), PendingIntent.FLAG_UPDATE_CURRENT);
-                JoH.showNotification("Auto Start", "G5 Sensor Requesting Restart", pi, G5_SENSOR_RESTARTED, true, true, false);
+                JoH.showNotification("Auto Start", "Sensor Requesting Restart", pi, G5_SENSOR_RESTARTED, true, true, false);
             }
             final PendingIntent pi = PendingIntent.getActivity(xdrip.getAppContext(), G5_SENSOR_STARTED, JoH.getStartActivityIntent(Home.class), PendingIntent.FLAG_UPDATE_CURRENT);
-            JoH.showNotification(state.getText(), "G5 Sensor Stopped", pi, G5_SENSOR_STARTED, true, true, false);
+            JoH.showNotification(state.getText(), "Sensor Stopped", pi, G5_SENSOR_STARTED, true, true, false);
             UserError.Log.ueh(TAG, "Native Sensor is now Stopped: " + state.getExtendedText());
         } else if (is_started && !was_started) {
             JoH.cancelNotification(G5_SENSOR_STARTED);

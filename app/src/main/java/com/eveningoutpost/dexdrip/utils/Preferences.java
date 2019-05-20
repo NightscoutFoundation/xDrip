@@ -10,6 +10,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -27,11 +28,18 @@ import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.preference.RingtonePreference;
 import android.preference.SwitchPreference;
+import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.text.InputFilter;
 import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.BaseAdapter;
 import android.widget.Toast;
 
+import com.bytehamster.lib.preferencesearch.SearchConfiguration;
+import com.bytehamster.lib.preferencesearch.SearchPreferenceResult;
+import com.bytehamster.lib.preferencesearch.SearchPreferenceResultListener;
 import com.eveningoutpost.dexdrip.BasePreferenceActivity;
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
@@ -58,6 +66,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.ShotStateStore;
 import com.eveningoutpost.dexdrip.UtilityModels.SpeechUtil;
 import com.eveningoutpost.dexdrip.UtilityModels.UpdateActivity;
+import com.eveningoutpost.dexdrip.UtilityModels.WholeHouse;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleUtil;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleWatchSync;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.watchface.InstallPebbleClassicTrendWatchface;
@@ -68,11 +77,13 @@ import com.eveningoutpost.dexdrip.UtilityModels.pebble.watchface.InstallPebbleWa
 import com.eveningoutpost.dexdrip.WidgetUpdateService;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.cgm.nsfollow.NightscoutFollow;
+import com.eveningoutpost.dexdrip.cgm.sharefollow.ShareFollowService;
 import com.eveningoutpost.dexdrip.insulin.inpen.InPenEntry;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileEditor;
 import com.eveningoutpost.dexdrip.tidepool.TidepoolUploader;
 import com.eveningoutpost.dexdrip.tidepool.UploadChunk;
 import com.eveningoutpost.dexdrip.ui.LockScreenWallPaper;
+import com.eveningoutpost.dexdrip.utils.framework.IncomingCallsReceiver;
 import com.eveningoutpost.dexdrip.watch.lefun.LeFunEntry;
 import com.eveningoutpost.dexdrip.wearintegration.Amazfitservice;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
@@ -87,8 +98,11 @@ import net.tribe7.common.base.Joiner;
 
 import java.net.URI;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import lombok.Setter;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On
@@ -101,10 +115,10 @@ import java.util.Map;
  * href="http://developer.android.com/guide/topics/ui/settings.html">Settings
  * API Guide</a> for more information on developing a Settings UI.
  */
-public class Preferences extends BasePreferenceActivity {
+public class Preferences extends BasePreferenceActivity implements SearchPreferenceResultListener {
     private static final String TAG = "jamorham PREFS";
     private static byte[] staticKey;
-    private AllPrefsFragment preferenceFragment;
+    private volatile AllPrefsFragment preferenceFragment;
 
     private static Preference units_pref;
     private static String static_units;
@@ -121,9 +135,45 @@ public class Preferences extends BasePreferenceActivity {
 
     private void refreshFragments() {
         this.preferenceFragment = new AllPrefsFragment();
+        this.preferenceFragment.setParent(this);
         pFragment = this.preferenceFragment;
         getFragmentManager().beginTransaction().replace(android.R.id.content,
                 this.preferenceFragment).commit();
+    }
+
+    public static List<String> getAllPreferenceKeys(final PreferenceGroup parent) {
+        final List<Preference> source = getAllPreferences(parent);
+        final List<String> results = new ArrayList<>(source.size());
+        for (final Preference preference : source) {
+            results.add(preference.getKey());
+        }
+        return results;
+    }
+
+    public static List<Preference> getAllPreferences(final PreferenceGroup parent) {
+        final int preferenceCount = parent.getPreferenceCount();
+        final List<Preference> results = new ArrayList<>(preferenceCount);
+        for (int i = 0; i < preferenceCount; i++) {
+            final Preference preference = parent.getPreference(i);
+            results.add(preference);
+            if (preference instanceof PreferenceGroup) {
+                // recurse
+                results.addAll(getAllPreferences((PreferenceGroup)preference));
+            }
+        }
+        return results;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    @Override
+    public void onSearchResultClicked(@NonNull SearchPreferenceResult searchPreferenceResult) {
+        try {
+            searchPreferenceResult.closeSearchPage(this);
+            searchPreferenceResult.highlight(this.preferenceFragment, Color.YELLOW);
+        } catch (RuntimeException e) {
+            Log.wtf(TAG, "Got error trying to highlight search results: " + e);
+            JoH.static_toast_long("" + e);
+        }
     }
 
 
@@ -325,12 +375,28 @@ public class Preferences extends BasePreferenceActivity {
 
     }
 
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            getMenuInflater().inflate(R.menu.menu_preferences, menu);
+        }
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    public void showSearch(MenuItem item) {
+        if (JoH.ratelimit("preference-search-button",1)) {
+            this.preferenceFragment.showSearchFragment();
+        }
+    }
+
+
     @Override
     protected void onResume()
     {
         super.onResume();
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(ActivityRecognizedService.prefListener);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && DexCollectionType.hasBluetooth()) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && DexCollectionType.hasBluetooth() && !WholeHouse.isRpi()) {
             LocationHelper.requestLocationForBluetooth(this); // double check!
         }
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(LeFunEntry.prefListener);
@@ -658,11 +724,16 @@ public class Preferences extends BasePreferenceActivity {
     }
 
 
+
     public static class AllPrefsFragment extends PreferenceFragment {
 
+        @Setter
+        Preferences parent;
         SharedPreferences prefs;
+        SearchConfiguration searchConfiguration;
 
         public LockScreenWallPaper.PrefListener lockListener = new LockScreenWallPaper.PrefListener();
+
 
         private void setSummary(String pref_name) {
      /*       try {
@@ -697,6 +768,8 @@ public class Preferences extends BasePreferenceActivity {
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             this.prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            final DexCollectionType collectionType = DexCollectionType.getType(this.prefs.getString("dex_collection_method", "BluetoothWixel"));
+
             static_units = this.prefs.getString("units", "mgdl");
             addPreferencesFromResource(R.xml.pref_license);
             addPreferencesFromResource(R.xml.pref_general);
@@ -786,6 +859,17 @@ public class Preferences extends BasePreferenceActivity {
                 return true;
             });
 
+            try {
+                final Activity activity = this.getActivity();
+                findPreference("lefun_option_call_notifications").setOnPreferenceChangeListener((preference, newValue) -> {
+                    prefs.edit().putBoolean("lefun_option_call_notifications", (Boolean) newValue).apply();
+                    IncomingCallsReceiver.checkPermission(activity);
+                    return true;
+                });
+            } catch (Exception e) {
+                //
+            }
+
             findPreference("use_ob1_g5_collector_service").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
@@ -861,7 +945,7 @@ public class Preferences extends BasePreferenceActivity {
             //DexCollectionType collectionType = DexCollectionType.getType(findPreference("dex_collection_method").)
 
             final ListPreference currentCalibrationPlugin = (ListPreference)findPreference("current_calibration_plugin");
-
+            final PreferenceCategory collectionCategory = (PreferenceCategory) findPreference("collection_category");
 
             final Preference shareKey = findPreference("share_key");
             shareKey.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -907,6 +991,37 @@ public class Preferences extends BasePreferenceActivity {
             } catch (Exception e) {
                 //
             }
+
+
+            final Preference shFollowUser = findPreference("shfollow_user");
+            final Preference shFollowPass = findPreference("shfollow_pass");
+
+            if (collectionType == DexCollectionType.SHFollow) {
+                final Preference.OnPreferenceChangeListener shFollowListener = new Preference.OnPreferenceChangeListener() {
+                    @Override
+                    public boolean onPreferenceChange(Preference preference, Object newValue) {
+                        ShareFollowService.resetInstanceAndInvalidateSession();
+                        CollectionServiceStarter.restartCollectionServiceBackground();
+                        return true;
+                    }
+                };
+
+                try {
+                    shFollowUser.setOnPreferenceChangeListener(shFollowListener);
+                    shFollowPass.setOnPreferenceChangeListener(shFollowListener);
+                } catch (Exception e) {
+                    //
+                }
+
+            } else {
+                try {
+                    collectionCategory.removePreference(shFollowUser);
+                    collectionCategory.removePreference(shFollowPass);
+                } catch (Exception e) {
+                    //
+                }
+            }
+
 
             final Preference inpen_enabled = findPreference("inpen_enabled");
             try {
@@ -957,7 +1072,7 @@ public class Preferences extends BasePreferenceActivity {
 
             final Preference useCustomSyncKey = findPreference("use_custom_sync_key");
             final Preference CustomSyncKey = findPreference("custom_sync_key");
-            final PreferenceCategory collectionCategory = (PreferenceCategory) findPreference("collection_category");
+
             final PreferenceCategory flairCategory = (PreferenceCategory) findPreference("xdrip_plus_display_colorset9_android5plus");
             //final PreferenceScreen updateScreen = (PreferenceScreen) findPreference("xdrip_plus_update_settings");
             final PreferenceScreen loggingScreen = (PreferenceScreen) findPreference("xdrip_logging_adv_settings");
@@ -1187,7 +1302,6 @@ public class Preferences extends BasePreferenceActivity {
             });
 
 
-            DexCollectionType collectionType = DexCollectionType.getType(this.prefs.getString("dex_collection_method", "BluetoothWixel"));
 
             Log.d(TAG, collectionType.name());
             if (collectionType != DexCollectionType.DexcomShare) {
@@ -1879,11 +1993,50 @@ public class Preferences extends BasePreferenceActivity {
                     //    CollectionServiceStarter.restartCollectionService(preference.getContext());
                     }
                     CollectionServiceStarter.restartCollectionServiceBackground();
+
+                    // This generically refreshes the fragment which may well nullify some of the ui logic above as it does a complete rebuild
+                    Inevitable.task("refresh-prefs", 100, new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                JoH.runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        if (parent != null) parent.refreshFragments();
+                                    }
+                                });
+                            } catch (Exception e) {
+                                Log.e(TAG, "Got exception refreshing fragments: " + e);
+                            }
+                        }
+                    });
                     return true;
                 }
             });
+
         }
 
+        private void showSearchFragment() {
+            // lazy instantiation
+            if (searchConfiguration == null) {
+                try {
+                    searchConfiguration = new SearchConfiguration(getActivity());
+                    searchConfiguration.setBreadcrumbsEnabled(true);
+
+                    searchConfiguration.getKeysList().addAll(getAllPreferenceKeys(this.getPreferenceScreen()));
+                    searchConfiguration.index(R.xml.pref_general);
+                    searchConfiguration.index(R.xml.pref_notifications);
+                    searchConfiguration.index(R.xml.pref_data_source);
+                    searchConfiguration.index(R.xml.pref_data_sync);
+                    searchConfiguration.index(R.xml.pref_advanced_settings);
+                    searchConfiguration.index(R.xml.xdrip_plus_prefs);
+                } catch (NullPointerException e) {
+                    Log.e(TAG, "Cannot find searchPreference item: " + e);
+                }
+            }
+            searchConfiguration.showSearchFragment();
+
+        }
 
 
         // all this boiler plate for a dynamic interface seems excessive and boring, I would love to know a helper library to simplify this

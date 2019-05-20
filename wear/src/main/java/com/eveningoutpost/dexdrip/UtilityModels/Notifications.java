@@ -40,6 +40,7 @@ import com.eveningoutpost.dexdrip.R;
 //KS import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.Services.MissedReadingService;
 import com.eveningoutpost.dexdrip.Services.SnoozeOnNotificationDismissService;
+import com.eveningoutpost.dexdrip.evaluators.PersistentHigh;
 import com.eveningoutpost.dexdrip.utils.PowerStateReceiver;
 import com.eveningoutpost.dexdrip.xdrip;
 
@@ -332,7 +333,7 @@ public class Notifications extends IntentService {
             BgReading.checkForRisingAllert(context);
         }
         // TODO: Add this alerts as well to depend on unclear sensor reading.
-        BgReading.checkForPersistentHigh();
+        PersistentHigh.checkForPersistentHigh();
         //KS evaluateLowPredictionAlarm();
         //KS reportNoiseChanges();
 

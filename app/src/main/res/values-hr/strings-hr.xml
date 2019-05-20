@@ -258,7 +258,6 @@
     <string name="start_snoozed">Započni odgađanje</string>
     <string name="adjust_all_by_a_factor">Podesi sve za faktor</string>
     <string name="reset">Vrati na početak</string>
-    <string name="pebble_and_android_wear_options">Pebble i Android Wear opcije</string>
     <string name="customize_colours">Prilagodi boje</string>
     <string name="xdrip_plus_color_settings">xDrip+ postavke boja</string>
     <string name="glucose_values_and_lines">Vrijednosti glukoze i linije</string>

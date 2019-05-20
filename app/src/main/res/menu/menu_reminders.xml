@@ -37,4 +37,11 @@
         android:onClick="onRemindersAdvancedClick"
         />
 
+    <item
+        android:id="@+id/reminders_home_network"
+        android:title="Set Home Network"
+        android:visible="true"
+        android:onClick="onRemindersHomeNetworkClick"
+        />
+
 </menu>
