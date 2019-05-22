@@ -1288,6 +1288,7 @@
     <string name="summary_plus_accept_follower_actions">接受来自分享者的治疗和校准数据</string>
     <string name="title_plus_accept_follower_actions">接受分享者的操作</string>
     <string name="summary_plus_whole_house">参加整体网络</string>
+    <string name="title_plus_whole_house">整个房子</string>
     <string name="summary_xdrip_plus_desert_sync_settings">关闭网络跟踪</string>
     <string name="title_xdrip_plus_desert_sync_settings">放弃同步</string>
     <string name="summary_desert_sync_enabled">启用本地非互联网同步设施</string>
@@ -1316,6 +1317,7 @@
     <string name="title_use_pendiq">Pendiq 2.0支持</string>
     <string name="summary_pendiq_send_treatments">准备笔与输入治疗胰岛素单位。你必须经常进行双重检查。</string>
     <string name="title_pendiq_send_treatments">将治疗数据发送到笔</string>
+    <string name="title_pendiq_pin">Pen Pin 代码</string>
     <string name="summary_use_notification_channels">使用Android 8+ 通知通道功能</string>
     <string name="title_use_notification_channels">通知渠道</string>
     <string name="summary_ongoing_notification_channel">可能会触发某些设备上的周围显示通知。需要测试！</string>
@@ -1324,6 +1326,7 @@
     <string name="title_notification_channels_grouping">组合通知。</string>
     <string name="summary_play_sound_for_initial_calibration">请求初始校准时播放声音。</string>
     <string name="title_play_sound_for_initial_calibration">初始警报。</string>
+    <string name="category_noisy_readings">噪音读数</string>
     <string name="category_falling_rising_bg">血糖正在上升/下降</string>
     <string name="category_alert_prefs">警报首选项（对于这些警报）</string>
     <string name="summary_persistent_high_alert">当高于上限值时间过长而没有下降时</string>
@@ -1365,9 +1368,11 @@
     <string name="connect_device_usb_otg">请通过USB OTG数据线连接您的设备</string>
     <string name="connection_status">连接状态</string>
     <string name="range_in_high_low">范围：(内/高/低)</string>
+    <string name="absolute_s">绝对 #s：</string>
     <string name="median_bg">中位血糖值</string>
     <string name="mean_bg">平均血糖值</string>
     <string name="hba1c_est">糖化血红蛋白</string>
+    <string name="stddev">StdDev:</string>
     <string name="relative_sd_cv">相对SD(CV):</string>
     <string name="important_warning">重要报警！</string>
     <string name="i_agree">我同意</string>
@@ -1416,6 +1421,7 @@
     <string name="confirm_delete">确认删除</string>
     <string name="are_you_sure_you_want_to_delete_this_treatment">你确认想要删除治疗数据吗？</string>
     <string name="no_data_received_from_master_yet">尚未从主服务器收到任何数据</string>
+    <string name="last_from_master_">Last from master: </string>
     <string name="prepare_to_test">准备测试！</string>
     <string name="after_you_click_ok_look_for_a_number_icon_in_the_notification_area_if_you_see_123_then_the_test_has_succeeded__on_some_phones_this_test_will_crash_the_phone__after_30_seconds_we_will_shut_off_the_notification_if_your_phone_does_not_recover_after_this_then_hold_the_power_button_to_reboot_it">点击确定后，请查看通知区域中的一个数字图标。\n如果你看到123然后测试成功。\n\n对于一些手机，此测试将会崩溃。\n\n我们将在30秒后关闭通知。如果您的手机在这之后不恢复电源按钮。</string>
     <string name="running_test_with_number_123">运行测试编号：123</string>
