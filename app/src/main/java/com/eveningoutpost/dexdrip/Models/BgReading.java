@@ -602,8 +602,13 @@ public class BgReading extends Model implements ShareUploadableBg {
 
                 if ((plugin != null) && ((pcalibration = plugin.getCalibrationData()) != null) && (Pref.getBoolean("use_pluggable_alg_as_primary", false))) {
                     Log.d(TAG, "USING CALIBRATION PLUGIN AS PRIMARY!!!");
-                    bgReading.calculated_value = (pcalibration.slope * bgReading.age_adjusted_raw_value) + pcalibration.intercept;
-                    bgReading.filtered_calculated_value = (pcalibration.slope * bgReading.ageAdjustedFiltered()) + calibration.intercept;
+                    if (plugin.isCalibrationSane(pcalibration)) {
+                        bgReading.calculated_value = (pcalibration.slope * bgReading.age_adjusted_raw_value) + pcalibration.intercept;
+                        bgReading.filtered_calculated_value = (pcalibration.slope * bgReading.ageAdjustedFiltered()) + calibration.intercept;
+                    } else {
+                        UserError.Log.wtf(TAG, "Calibration plugin failed intercept sanity check: " + pcalibration.toS());
+                        Home.toaststaticnext("Calibration plugin failed intercept sanity check");
+                    }
                 } else {
                     bgReading.calculated_value = ((calibration.slope * bgReading.age_adjusted_raw_value) + calibration.intercept);
                     bgReading.filtered_calculated_value = ((calibration.slope * bgReading.ageAdjustedFiltered()) + calibration.intercept);

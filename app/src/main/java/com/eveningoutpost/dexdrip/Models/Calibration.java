@@ -1,7 +1,6 @@
 package com.eveningoutpost.dexdrip.Models;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
@@ -13,7 +12,6 @@ import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
-import com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine;
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.CalRecord;
@@ -26,6 +24,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.calibrations.CalibrationAbstract;
 import com.eveningoutpost.dexdrip.calibrations.NativeCalibrationPipe;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
@@ -752,6 +751,14 @@ public class Calibration extends Model {
                     Home.toaststaticnext("Got invalid zero slope calibration!");
                     calibration.save(); // Save nulled record, lastValid should protect from bad calibrations
                     newFingerStickData();
+                } else if (calibration.intercept > CalibrationAbstract.getHighestSaneIntercept()) {
+                    calibration.sensor_confidence = 0;
+                    calibration.slope_confidence = 0;
+                    final String msg = "Got invalid non-sane intercept calibration! ";
+                    Home.toaststaticnext(msg);
+                    UserError.Log.wtf(TAG, msg + calibration.toS());
+                    calibration.save(); // Save nulled record, lastValid should protect from bad calibrations
+                    newFingerStickData();
                 } else {
                     calibration.save();
                     newFingerStickData();
@@ -1090,6 +1097,7 @@ public class Calibration extends Model {
                 .where("slope_confidence != 0")
                 .where("sensor_confidence != 0")
                 .where("slope != 0")
+                .where("intercept <= ?", CalibrationAbstract.getHighestSaneIntercept())
                 .orderBy("timestamp desc")
                 .executeSingle();
     }
