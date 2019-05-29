@@ -1509,4 +1509,6 @@
     <string name="authentication_failed_wrong_password">Authentication Failed. Wrong password?</string>
     <string name="share_login_data_isnt_valid">Share Login data isn\'t valid - check username / password</string>
     <string name="connectivity_problem_reaching_share_servers">Connectivity problem reaching Share servers</string>
+    <string name="ob1_session_restarted_title">Sensor session restarted</string>
+    <string name="ob1_session_restarted_msg">The sensor session was preemptively restarted and set to 3 days, please check if next readings are off and calibrate if needed</string>
 </resources>
