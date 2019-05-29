@@ -970,6 +970,7 @@ public class Notifications extends IntentService {
                             .setContentTitle(message)
                             .setContentText(message)
                             .setLocalOnly(localOnly)
+                            .setStyle(new NotificationCompat.BigTextStyle().bigText(message))
                             .setContentIntent(PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT));
             if (addDeleteIntent) {
                 Intent deleteIntent = new Intent(context, SnoozeOnNotificationDismissService.class);
