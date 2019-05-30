@@ -3,24 +3,21 @@ package com.eveningoutpost.dexdrip.UtilityModels;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
 
-import com.eveningoutpost.dexdrip.Home;
-import com.eveningoutpost.dexdrip.Models.SensorSanity;
-import com.eveningoutpost.dexdrip.NFCReaderX;
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.LibreBlock;
 import com.eveningoutpost.dexdrip.Models.Sensor;
+import com.eveningoutpost.dexdrip.Models.SensorSanity;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.NFCReaderX;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
@@ -346,15 +343,20 @@ private static final int POSITION_OF_SENSOR_STATUS_BYTE = 17;
                 Remark: Byte #17 (0 indexing) contains the SensorStatusByte.
             */
 
-            String SensorSn = LibreUtils.decodeSerialNumber(buffer);
+            if (!LibreUtils.validatePatchInfo(buffer)) {
+                Log.e(TAG, "Patch info doesn't look valid - read error? " + JoH.bytesToHex(buffer));
+            } else {
 
-            if (SensorSanity.checkLibreSensorChangeIfEnabled(SensorSn)) {
-                Log.e(TAG,"Problem with Libre Serial Number - not processing");
-                return null;
+                final String SensorSn = LibreUtils.decodeSerialNumber(buffer);
+
+                if (SensorSanity.checkLibreSensorChangeIfEnabled(SensorSn)) {
+                    Log.e(TAG, "Problem with Libre Serial Number - not processing");
+                    return null;
+                }
+
+                // TODO: Only write this after checksum was verified
+                PersistentStore.setString("LibreSN", SensorSn);
             }
-
-            // TODO: Only write this after checksum was verified
-            PersistentStore.setString("LibreSN", SensorSn);
 
             if (LibreUtils.isSensorReady(buffer[POSITION_OF_SENSOR_STATUS_BYTE])) {
                 currentCommand = ACK_ON_WAKEUP_ANSWER;
