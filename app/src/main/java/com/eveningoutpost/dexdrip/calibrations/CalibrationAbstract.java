@@ -25,7 +25,7 @@ public abstract class CalibrationAbstract {
 
     private static Map<String, CalibrationData> memory_cache = new HashMap<>();
 
-    private static final double HIGHEST_SANE_INTERCEPT = 35; // max value that intercept can be with positive slope
+    private static final double HIGHEST_SANE_INTERCEPT = 39; // max value that intercept can be with positive slope
 
     /* Overridable methods */
 
