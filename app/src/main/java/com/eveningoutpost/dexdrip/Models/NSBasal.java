@@ -12,7 +12,9 @@ import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.wearintegration.ExternalStatusService;
 import com.google.gson.annotations.Expose;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.json.JSONObject;
@@ -98,12 +100,16 @@ public class NSBasal extends PlusModel {
 
 
     public String toS() {
-       return toJson(); 
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+       return "created_at: " + sdf.format(new Date(created_at)) + " duration: " + duration + " rate: " + rate; 
     }
     public String toJson() {
         return JoH.defaultGsonInstance().toJson(this);
     }
-
+    
+    public long endTimestamp() {
+        return created_at + duration * 60000;
+    }
     
     public static NSBasal getForTimestamp(double timestamp) {
         NSBasal nsBasal = null;
@@ -192,6 +198,41 @@ public class NSBasal extends PlusModel {
             return;
         }
         Log.e(TAG, "Successfuly created NSBasal value " + json);
+    }
+
+    public static List<NSBasal> latestForGraph(int number, long startTime, long endTime) {
+        try {
+            final List<NSBasal> results = new Select()
+                    .from(NSBasal.class)
+                    .where("created_at >= " + Math.max(startTime, 0))
+                    .where("created_at <= " + endTime)
+                    .orderBy("created_at asc") // warn asc!
+                    .limit(number)
+                    .execute();
+            
+            if (results == null || (results.size() == 0)) {
+                return new ArrayList<NSBasal>();
+            }
+            return results;
+        } catch (android.database.sqlite.SQLiteException e) {
+            updateDB();
+            return new ArrayList<NSBasal>();
+        }
+    }
+    
+    public void trimStart(long loaded_start) {
+        duration += (created_at - loaded_start) / 60000;
+        if(duration < 0) {
+            Log.e(TAG, "xxxxx errror duration is negative");
+        }
+        created_at = loaded_start;
+    }
+    
+    public void setEnd(long new_end) {
+        duration = (new_end - created_at) / 60000;
+        if(duration < 0) {
+            Log.e(TAG, "xxxxx errror duration is negative");
+        }
     }
 
     // static methods
