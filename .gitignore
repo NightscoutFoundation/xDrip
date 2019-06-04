@@ -58,3 +58,5 @@ patches/
 *.dll
 *.exe
 *.iml
+installed-android-sdk-stamp
+unzipped-android-sdk-stamp
