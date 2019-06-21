@@ -6,8 +6,8 @@ In theory, using the same phone with the same Android version should allow you t
 
 
 Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version
---- | --- | ---
-Google Pixel 2 | 9 | Yes| Not tested|  Nightly build 30th May 2019
+--- | --- | ---  | ---  | ---
+Google Pixel 2 | 9 | Yes| 
 Google Pixel 2XL | 9 |
 Google Pixel | 7.1.1 |
 Google Pixel | 7.1.2 |
