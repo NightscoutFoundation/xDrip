@@ -26,12 +26,12 @@ Essential Phone PH-1 | 7.1.1 | Yes  | not known | not known | not known
 
 Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes | Any Known Issues
 --- | --- | ---  | ---  | ---   | ---  | ---
-Google Pixel 2 | 9 | Yes| 
-Google Pixel 2XL | 9 |
-Google Pixel | 7.1.1 |
-Google Pixel | 7.1.2 |
-Google Pixel XL | 7.1.1
-Google Pixel XL | 7.1.2
+Google Pixel 2 | 9 | Yes| not known  | not known | not known | not known | not known
+Google Pixel 2XL | 9 | Yes| not known  | not known | not known | not known | not known
+Google Pixel | 7.1.1 | Yes| not known  | not known | not known | not known | not known 
+Google Pixel | 7.1.2 | Yes|  not known  | not known | not known | not known | not known
+Google Pixel XL | 7.1.1 Yes| not known  | not known | not known | not known | not known
+Google Pixel XL | 7.1.2 Yes| not known  | not known | not known | not known | not known
 Google Pixel 3 G013A | 9 | not known  | not known | not known | not known | not known
 Google Pixel 3 XL G013C | 9 | not known  | not known | not known | not known | not known
 
