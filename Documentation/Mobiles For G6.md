@@ -1,8 +1,8 @@
-# Mobile Phones that are compatible using Dexcom G5 and G6 with Xdrip version and  have high capture rate
+# Mobile Phones that are compatible using Dexcom G5 & G6 with Xdrip and  have high capture rate
 
 
 
-The following phone's Mobiles have been confirmed to be working and  reported getting a capture rate of 90%-100%
+The following Mobiles have been confirmed to be working and to be reported on getting a capture rate of 90%-100%
 
 In theory, using the same phone with the same Android version should allow you to also potentially achieve the same high capture rate. This is a guide only, it may or may not work for you. There are no guarantees on this.
 
