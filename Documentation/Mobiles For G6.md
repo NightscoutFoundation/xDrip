@@ -9,9 +9,9 @@ In theory, using the same phone with the same Android version should allow you t
 **Version 1.0.0**
 
 ## Licence & Copyright
-@The Diabetic Way_2018 - Dave G - Informatiion Tecnology
+@2018 The Diabetic Way - Dave G - Informatiion Tecnology
 
-Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes | Issues
+Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes | Known Issues
 --- | --- | ---  | ---  | ---   | ---  | ---
 Blu R1 HD  | 6.0 | Yes  | not known | not known | not known | does not work
 
