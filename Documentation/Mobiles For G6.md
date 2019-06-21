@@ -37,6 +37,12 @@ OnePlus A0001 | 6.0.1
 
 Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes
 --- | --- | ---  | ---  | ---   | ---
+Huawei Y6 (SCL-L21)  | 5.1 | Yes  | not known | not known | not known
+Huawei P8 Lite (ALE-L21)  | 6.0 | Yes  | not known | not known | not known
+HTC 10 | 7.0 | Yes  | not known | not known | not known
+
+Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes
+--- | --- | ---  | ---  | ---   | ---
 Samsung A3 2017 | 6.0.1 |Yes | not known | not known| OB1 
 Samsung Galaxy S4 (SCH-I545) | 5.0.1
 Samsung Galaxy S5 (SM-G900V) | 6.0.1
@@ -64,9 +70,6 @@ Nexus 6P | 7.1.2
 
 Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes
 --- | --- | ---  | ---  | ---   | ---
-Huawei Y6 (SCL-L21)  | 5.1 | Yes  | not known | not known | not known
-Huawei P8 Lite (ALE-L21)  | 6.0 | Yes  | not known | not known | not known
-HTC 10 | 7.0 | Yes  | not known | not known | not known
 LG V20 (LG-H918)  | 7.0 | Yes  | not known | not known | not known
 LG G4 (VS986 & H811) | 6.0 | Yes  | not known | not known | not known
 LG V10c (LG-D415) | 5.0.2 | Yes  | not known | not known | not known
