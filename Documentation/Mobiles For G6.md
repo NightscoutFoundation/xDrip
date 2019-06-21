@@ -54,8 +54,7 @@ Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug M
 Blu R1 HD  | 6.0 | Yes  | not known | not known | 
 Doogee X5S  | 5.1 | Yes  | not known | not known | OB1
 Doogee X5 Max Pro | 6.0.1 | Yes  | not known  | not known  | not known
-
-Essential Phone PH-1  | 7.1.1 | Yes  | not known | not known 
+Essential Phone PH-1 | 7.1.1 | Yes  | not known | not known | not known
 LG V20 (LG-H918) | 7.0
 LG G4 (VS986 & H811) | 6.0
 LeEco Le Pro3 (LEX727) | 6.0.1
