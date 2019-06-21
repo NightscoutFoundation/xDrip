@@ -121,8 +121,14 @@ ZTE Axon 7 | 7.1.2 | Yes  | not known | not known | OB1  <br>
    
 ## Tips
 <br>
-On Doogee / MTK phones disable Intelligent power saving standby in Android Settings -> Battery or you will only receive a reading every 10 minutes.
-***
+On Doogee / MTK phones disable Intelligent power saving standby in Android Settings -> Battery or you will only receive a reading every 10 minutes.<br>
+* * *
+
+## Question's you might have or want to share your mobile settings that work with Xdrip <br>
+<br>
+This is [an example](http://example.com/ "Title") inline link.
+
+[This link](http://example.net/) has no title attribute.
 
 
 
