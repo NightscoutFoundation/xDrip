@@ -32,8 +32,7 @@ Google Pixel | 7.1.1 |
 Google Pixel | 7.1.2 |
 Google Pixel XL | 7.1.1
 Google Pixel XL | 7.1.2
-OnePlus A3003 | 7.0
-OnePlus A0001 | 6.0.1
+
 
 Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes
 --- | --- | ---  | ---  | ---   | ---
@@ -48,6 +47,17 @@ LG G4 (VS986 & H811) | 6.0 | Yes  | not known | not known | not known
 LG V10c (LG-D415) | 5.0.2 | Yes  | not known | not known | not known
 Lenovo Moto G4 | 7.0| Yes  | not known | not known | not known
 LeEco Le Pro3 (LEX727) | 6.0.1| Yes  | not known | not known | not known
+
+Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes
+--- | --- | ---  | ---  | ---   | ---
+Motorola Moto E (2nd Gen) (XT1526) | 5.1 | Yes  | not known | not known | not known
+Motorola G3 | 6.0 | Yes  | not known | not known | not known
+Melrose S9 | 4.4.2 | Yes  | not known | not known | OB1
+
+Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes
+--- | --- | ---  | ---  | ---   | ---
+OnePlus A3003 | 7.0 | Yes  | not known | not known | not known
+OnePlus A0001 | 6.0.1 | Yes  | not known | not known | not known
 
 Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes
 --- | --- | ---  | ---  | ---   | ---
@@ -79,9 +89,6 @@ Nexus 6P | 7.1.2
 
 Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes
 --- | --- | ---  | ---  | ---   | ---
-Motorola Moto E (2nd Gen) (XT1526) | 5.1 | Yes  | not known | not known | not known
-Motorola G3 | 6.0 | Yes  | not known | not known | not known
-Melrose S9 | 4.4.2 | Yes  | not known | not known | OB1
 Xiaomi Mi Mix 2 | Lineage OS 15.1 | Yes  | not known | not known | OB1
 ZTE Axon 7 Mini | 7.1.1 | Yes  | not known | not known | OB1
 ZTE Axon 7 | 7.1.2 | Yes  | not known | not known | OB1
