@@ -27,6 +27,7 @@ Samsung Galaxy S7 edge (SM-G935V) | 7.0
 Samsung Galaxy S7 edge (G935T) | 7.0
 Samsung Galaxy S9 (SM-G960F) | 9
 Dave was here :-)Learing how to push code to git hub! :-) |**21 June 2019**| do
+This seems to work ok! | **YES** |
 Samsung Galaxy Express Prime (SM-J320A) | 6.0.1
 Essential Phone PH-1 | 7.1.1
 HTC 10 | 7.0
