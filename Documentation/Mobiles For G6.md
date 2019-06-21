@@ -5,7 +5,7 @@ The following phone models have reported getting a capture rate of 90%-100%
 In theory, using the same phone with the same Android version should allow you to also potentially achieve the same high capture rate. This is a guide only, it may or may not work for you. There are no guarantees.
 
 
-Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version
+Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes
 --- | --- | ---  | ---  | ---
 Google Pixel 2 | 9 | Yes| 
 Google Pixel 2XL | 9 |
@@ -25,14 +25,14 @@ Samsung Galaxy S7 (SM-G930V) | 7.0
 Samsung Galaxy S7 (SM-G930W8) | 6.0.1
 Samsung Galaxy S7 edge (SM-G935V) | 7.0
 Samsung Galaxy S7 edge (G935T) | 7.0
-Samsung Galaxy S9 (SM-G960F) | 9 | Yes| Not Yes|  Nightly build 30th May 2019 - xDrip-plus-20190530-a25cacb.apk
+Samsung Galaxy S9 (SM-G960F) | 9 | Yes| Yes|  Nightly build 30th May 2019 - xDrip-plus-20190530-a25cacb.apk | OB1 - Native Algorithm
 Samsung Galaxy Express Prime (SM-J320A) | 6.0.1
 Essential Phone PH-1 | 7.1.1
 HTC 10 | 7.0
 Lenovo Moto G4 | 7.0
 
-Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version 
---- | --- | ---  | ---  | ---
+Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes
+--- | --- | ---  | ---  | ---   | ---
 Nexus 5 | 6.0
 Nexus 5X | 7.1.1
 Nexus 5X | 7.1.2
