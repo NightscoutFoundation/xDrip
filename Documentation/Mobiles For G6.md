@@ -34,11 +34,6 @@ Samsung Galaxy Express Prime (SM-J320A) | 6.0.1
 
 Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes
 --- | --- | ---  | ---  | ---   | ---
-Essential Phone PH-1 | 7.1.1
-HTC 10 | 7.0
-Lenovo Moto G4 | 7.0
-
-
 Nexus 5 | 6.0
 Nexus 5X | 7.1.1
 Nexus 5X | 7.1.2
@@ -48,6 +43,7 @@ Nexus 6P | 7.1.2
 
 Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes
 --- | --- | ---  | ---  | ---   | ---
+Doogee X5S  | 5.1 | Yes  | not known  | not known   | OB1
 LG V20 (LG-H918) | 7.0
 LG G4 (VS986 & H811) | 6.0
 LeEco Le Pro3 (LEX727) | 6.0.1
@@ -65,3 +61,7 @@ Samsung A3 2017 | 6.0.1 | OB1
 ZTE Axon 7 Mini | 7.1.1 | OB1
 ZTE Axon 7 | 7.1.2 | OB1
 Xiaomi Mi Mix 2 | Lineage OS 15.1 | OB1
+Essential Phone PH-1 | 7.1.1
+HTC 10 | 7.0
+Lenovo Moto G4 | 7.0
+
