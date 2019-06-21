@@ -46,7 +46,7 @@ Nexus 6P | 7.1.2
 
 Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes
 --- | --- | ---  | ---  | ---   | ---
-Doogee X5S  | 5.1 | Yes  | not known  | not known   | OB1
+Doogee X5S  | 5.1 | Yes  | not known | not known | OB1
 Doogee X5 Max Pro | 6.0.1 | Yes  | not known  | not known  | not known
 LG V20 (LG-H918) | 7.0
 LG G4 (VS986 & H811) | 6.0
