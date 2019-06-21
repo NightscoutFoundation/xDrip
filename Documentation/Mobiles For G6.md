@@ -56,6 +56,15 @@ Melrose S9 | 4.4.2 | Yes  | not known | not known | OB1
 
 Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes
 --- | --- | ---  | ---  | ---   | ---
+Nexus 5 | 6.0
+Nexus 5X | 7.1.1
+Nexus 5X | 7.1.2
+Nexus 6 | 7.0
+Nexus 6P | 7.1.1
+Nexus 6P | 7.1.2
+
+Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes
+--- | --- | ---  | ---  | ---   | ---
 OnePlus A3003 | 7.0 | Yes  | not known | not known | not known
 OnePlus A0001 | 6.0.1 | Yes  | not known | not known | not known
 
@@ -80,16 +89,10 @@ Sony Xperia Z3 Compact (D5803) | 6.0.1 | Yes  | not known | not known | not know
 
 Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes
 --- | --- | ---  | ---  | ---   | ---
-Nexus 5 | 6.0
-Nexus 5X | 7.1.1
-Nexus 5X | 7.1.2
-Nexus 6 | 7.0
-Nexus 6P | 7.1.1
-Nexus 6P | 7.1.2
+Xiaomi Mi Mix 2 | Lineage OS 15.1 | Yes  | not known | not known | OB1
 
 Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes
 --- | --- | ---  | ---  | ---   | ---
-Xiaomi Mi Mix 2 | Lineage OS 15.1 | Yes  | not known | not known | OB1
 ZTE Axon 7 Mini | 7.1.1 | Yes  | not known | not known | OB1
 ZTE Axon 7 | 7.1.2 | Yes  | not known | not known | OB1
 
