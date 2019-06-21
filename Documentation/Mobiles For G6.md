@@ -45,38 +45,43 @@ Huawei Y6 (SCL-L21)  | 5.1 | Yes  | not known | not known | not known | not know
 Huawei P8 Lite (ALE-L21)  | 6.0 | Yes  | not known | not known | not known | not known
 HTC 10 | 7.0 | Yes  | not known | not known | not known | not known
 
-Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes
---- | --- | ---  | ---  | ---   | ---
+
+Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes | Any Known Issues
+--- | --- | ---  | ---  | ---   | ---  | ---
 LG V20 (LG-H918)  | 7.0 | Yes  | not known | not known | not known
 LG G4 (VS986 & H811) | 6.0 | Yes  | not known | not known | not known
 LG V10c (LG-D415) | 5.0.2 | Yes  | not known | not known | not known
 Lenovo Moto G4 | 7.0| Yes  | not known | not known | not known
 LeEco Le Pro3 (LEX727) | 6.0.1| Yes  | not known | not known | not known
 
-Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes
---- | --- | ---  | ---  | ---   | ---
+
+Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes | Any Known Issues
+--- | --- | ---  | ---  | ---   | ---  | ---
 Motorola Moto E (2nd Gen) (XT1526) | 5.1 | Yes  | not known | not known | not known
 Motorola G3 | 6.0 | Yes  | not known | not known | not known
 Moto Z2 | 8.0 | not known  | Yes | not known | OB1 - Native Algorithm
 Moto G7 Power | 9 | Not known| Yes|  Nightly build 30th May 2019 - xDrip-plus-20190530-a25cacb.apk | not known
 Melrose S9 | 4.4.2 | Yes  | not known | not known | OB1
 
-Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes
---- | --- | ---  | ---  | ---   | ---
-Nexus 5 | 6.0
-Nexus 5X | 7.1.1
-Nexus 5X | 7.1.2
-Nexus 6 | 7.0
-Nexus 6P | 7.1.1
-Nexus 6P | 7.1.2
 
-Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes
---- | --- | ---  | ---  | ---   | ---
+Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes | Any Known Issues
+--- | --- | ---  | ---  | ---   | ---  | ---
+Nexus 5 | 6.0 | Yes
+Nexus 5X | 7.1.1 | Yes
+Nexus 5X | 7.1.2 | Yes
+Nexus 6 | 7.0 | Yes
+Nexus 6P | 7.1.1 | Yes
+Nexus 6P | 7.1.2 | Yes
+
+
+Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes | Any Known Issues
+--- | --- | ---  | ---  | ---   | ---  | ---
 OnePlus A3003 | 7.0 | Yes  | not known | not known | not known
 OnePlus A0001 | 6.0.1 | Yes  | not known | not known | not known
 
-Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes
---- | --- | ---  | ---  | ---   | ---
+
+Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes | Any Known Issues
+--- | --- | ---  | ---  | ---   | ---  | ---
 Samsung A3 2017 | 6.0.1 |Yes | not known | not known| OB1 
 Samsung Galaxy S4 (SCH-I545) | 5.0.1
 Samsung Galaxy S5 (SM-G900V) | 6.0.1
@@ -95,12 +100,14 @@ Samsung Galaxy S9+ (SM-G965F) | 9 | not known| Yes|  Nightly build 30th May 2019
 Samsung Galaxy Express Prime (SM-J320A) | 6.0.1
 Sony Xperia Z3 Compact (D5803) | 6.0.1 | Yes  | not known | not known | not known
 
-Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes
---- | --- | ---  | ---  | ---   | ---
+
+Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes | Any Known Issues
+--- | --- | ---  | ---  | ---   | ---  | ---
 Xiaomi Mi Mix 2 | Lineage OS 15.1 | Yes  | not known | not known | OB1
 
-Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes
---- | --- | ---  | ---  | ---   | ---
+
+Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes | Any Known Issues
+--- | --- | ---  | ---  | ---   | ---  | ---
 ZTE Axon 7 Mini | 7.1.1 | Yes  | not known | not known | OB1
 ZTE Axon 7 | 7.1.2 | Yes  | not known | not known | OB1
 
