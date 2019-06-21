@@ -120,6 +120,9 @@ ZTE Axon 7 | 7.1.2 | Yes  | not known | not known | OB1  <br>
 
    
 ## Tips
+<br>
+On Doogee / MTK phones disable Intelligent power saving standby in Android Settings -> Battery or you will only receive a reading every 10 minutes.
+***
 
 
 
