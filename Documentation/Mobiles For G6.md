@@ -5,8 +5,8 @@ The following phone models have reported getting a capture rate of 90%-100%
 In theory, using the same phone with the same Android version should allow you to also potentially achieve the same high capture rate. This is a guide only, it may or may not work for you. There are no guarantees.
 
 
-Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version
-#--- | --- | ---  | ---  | ---
+#Phone Model# | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version
+--- | --- | ---  | ---  | ---
 Google Pixel 2 | 9 | Yes| 
 Google Pixel 2XL | 9 |
 Google Pixel | 7.1.1 |
