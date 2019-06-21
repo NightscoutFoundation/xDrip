@@ -9,8 +9,8 @@ In theory, using the same phone with the same Android version should allow you t
 **Version 1.0.0**
 
 ## Licence & Copyright
-@2018 The Diabetic Way - Dave Bond - Informatiion Tecnology
-\
+@2018 The Diabetic Way - Dave Bond - Informatiion Tecnology  \
+
 
 Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes | Any Known Issues
 --- | --- | ---  | ---  | ---   | ---  | ---
@@ -110,10 +110,9 @@ Xiaomi Mi Mix 2 | Lineage OS 15.1 | Yes  | not known | not known | OB1
 Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes | Any Known Issues
 --- | --- | ---  | ---  | ---   | ---  | ---
 ZTE Axon 7 Mini | 7.1.1 | Yes  | not known | not known | OB1
-ZTE Axon 7 | 7.1.2 | Yes  | not known | not known | OB1
+ZTE Axon 7 | 7.1.2 | Yes  | not known | not known | OB1  \
 
-   \
-   \
+
    
 ## Tips
 
