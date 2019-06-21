@@ -11,7 +11,7 @@ In theory, using the same phone with the same Android version should allow you t
 ## Licence & Copyright
 @The Diabetic Way_2018 - Dave G - Informatiion Tecnology
 
-Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes
+Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes | Issues
 --- | --- | ---  | ---  | ---   | ---
 Blu R1 HD  | 6.0 | Yes  | not known | not known | not known
 
@@ -32,6 +32,8 @@ Google Pixel | 7.1.1 |
 Google Pixel | 7.1.2 |
 Google Pixel XL | 7.1.1
 Google Pixel XL | 7.1.2
+Google Pixel 3 G013A | 9 | not known  | not known | not known | not known
+Google Pixel 3 XL G013C | 9 | not known  | not known | not known | not known
 
 
 Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes
@@ -53,6 +55,7 @@ Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug M
 Motorola Moto E (2nd Gen) (XT1526) | 5.1 | Yes  | not known | not known | not known
 Motorola G3 | 6.0 | Yes  | not known | not known | not known
 Moto Z2 | 8.0 | not known  | Yes | not known | OB1 - Native Algorithm
+Moto G7 Power | 9 | Not known| Yes|  Nightly build 30th May 2019 - xDrip-plus-20190530-a25cacb.apk | not known
 Melrose S9 | 4.4.2 | Yes  | not known | not known | OB1
 
 Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes
