@@ -13,11 +13,11 @@ In theory, using the same phone with the same Android version should allow you t
 
 Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes | Issues
 --- | --- | ---  | ---  | ---   | ---  | ---
-Blu R1 HD  | 6.0 | Yes  | not known | not known | not known
+Blu R1 HD  | 6.0 | Yes  | not known | not known | not known | does not work
 
 Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes
 --- | --- | ---  | ---  | ---   | ---
-Doogee X5S  | 5.1 | Yes  | not known | not known | OB1 |does not work
+Doogee X5S  | 5.1 | Yes  | not known | not known | OB1 
 Doogee X5 Max Pro | 6.0.1 | Yes  | not known  | not known  | not known
 
 Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes
