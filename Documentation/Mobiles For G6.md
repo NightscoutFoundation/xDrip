@@ -2,9 +2,9 @@
 
 
 
-The following phone models have reported getting a capture rate of 90%-100%
+The following phone's Mobiles have been confirmed to be working and  reported getting a capture rate of 90%-100%
 
-In theory, using the same phone with the same Android version should allow you to also potentially achieve the same high capture rate. This is a guide only, it may or may not work for you. There are no guarantees.
+In theory, using the same phone with the same Android version should allow you to also potentially achieve the same high capture rate. This is a guide only, it may or may not work for you. There are no guarantees on this.
 
 **Version 1.0.0**
 
@@ -110,6 +110,9 @@ Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug M
 --- | --- | ---  | ---  | ---   | ---  | ---
 ZTE Axon 7 Mini | 7.1.1 | Yes  | not known | not known | OB1
 ZTE Axon 7 | 7.1.2 | Yes  | not known | not known | OB1
+
+
+## Tips
 
 
 
