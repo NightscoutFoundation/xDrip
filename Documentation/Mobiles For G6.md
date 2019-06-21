@@ -30,7 +30,7 @@ Samsung Galaxy Express Prime (SM-J320A) | 6.0.1
 Essential Phone PH-1 | 7.1.1
 HTC 10 | 7.0
 Lenovo Moto G4 | 7.0
-Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version
+**Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version **
 --- | --- | ---  | ---  | ---
 Nexus 5 | 6.0
 Nexus 5X | 7.1.1
