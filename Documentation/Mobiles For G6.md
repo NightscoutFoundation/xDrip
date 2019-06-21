@@ -52,6 +52,7 @@ Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug M
 --- | --- | ---  | ---  | ---   | ---
 Motorola Moto E (2nd Gen) (XT1526) | 5.1 | Yes  | not known | not known | not known
 Motorola G3 | 6.0 | Yes  | not known | not known | not known
+Moto Z2 | 8.0 | Yes  | Yes | not known | OB1 - Native Algorithm
 Melrose S9 | 4.4.2 | Yes  | not known | not known | OB1
 
 Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes
