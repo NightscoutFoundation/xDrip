@@ -13,27 +13,27 @@ In theory, using the same phone with the same Android version should allow you t
 
 Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes | Any Known Issues
 --- | --- | ---  | ---  | ---   | ---  | ---
-Blu R1 HD  | 6.0 | Yes  | not known | not known | not known | does not work
+Blu R1 HD  | 6.0 | Yes  | not known | not known | not known | none
 
 Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes | Any Known Issues
 --- | --- | ---  | ---  | ---   | ---  | ---
-Doogee X5S  | 5.1 | Yes  | not known | not known | OB1 | ok
-Doogee X5 Max Pro | 6.0.1 | Yes  | not known  | not known  | not known | ok
+Doogee X5S  | 5.1 | Yes  | not known | not known | OB1 | none
+Doogee X5 Max Pro | 6.0.1 | Yes  | not known  | not known  | not known | None
 
-Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes
---- | --- | ---  | ---  | ---   | ---
+Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes | Any Known Issues
+--- | --- | ---  | ---  | ---   | ---  | ---
 Essential Phone PH-1 | 7.1.1 | Yes  | not known | not known | not known
 
-Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes
---- | --- | ---  | ---  | ---   | ---
+Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes | Any Known Issues
+--- | --- | ---  | ---  | ---   | ---  | ---
 Google Pixel 2 | 9 | Yes| 
 Google Pixel 2XL | 9 |
 Google Pixel | 7.1.1 |
 Google Pixel | 7.1.2 |
 Google Pixel XL | 7.1.1
 Google Pixel XL | 7.1.2
-Google Pixel 3 G013A | 9 | not known  | not known | not known | not known
-Google Pixel 3 XL G013C | 9 | not known  | not known | not known | not known
+Google Pixel 3 G013A | 9 | not known  | not known | not known | not known | not known
+Google Pixel 3 XL G013C | 9 | not known  | not known | not known | not known | not known
 
 
 Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes
