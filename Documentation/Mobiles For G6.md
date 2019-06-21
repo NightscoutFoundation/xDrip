@@ -60,7 +60,7 @@ Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug M
 Motorola Moto E (2nd Gen) (XT1526) | 5.1 | Yes  | not known | not known | not known
 Motorola G3 | 6.0 | Yes  | not known | not known | not known
 Moto Z2 | 8.0 | not known  | Yes | not known | OB1 - Native Algorithm
-Moto G7 Power | 9 | Yes| Yes|  Nightly build 18 May 2019 - xDrip-plus-20190518-e239947.apk | not known
+Moto G7 Power | 9 | Yes| Yes|  Nightly build 18 May 2019 - xDrip-plus-20190518-e239947.apk | OB1 - Native Algorithm | not known
 Melrose S9 | 4.4.2 | Yes  | not known | not known | OB1
 
 
