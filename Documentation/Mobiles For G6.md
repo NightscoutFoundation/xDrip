@@ -20,7 +20,7 @@ OnePlus A0001 | 6.0.1
 
 Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes
 --- | --- | ---  | ---  | ---   | ---
-Samsung A3 2017 | 6.0.1 | | Yes| not known| not known | OB1 
+Samsung A3 2017 | 6.0.1 |Yes | not known | not known| OB1 
 Samsung Galaxy S4 (SCH-I545) | 5.0.1
 Samsung Galaxy S5 (SM-G900V) | 6.0.1
 Samsung Galaxy Note 5 (N920V) | 7.0
