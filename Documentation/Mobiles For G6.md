@@ -110,7 +110,10 @@ Xiaomi Mi Mix 2 | Lineage OS 15.1 | Yes  | not known | not known | OB1
 Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes | Any Known Issues
 --- | --- | ---  | ---  | ---   | ---  | ---
 ZTE Axon 7 Mini | 7.1.1 | Yes  | not known | not known | OB1
-ZTE Axon 7 | 7.1.2 | Yes  | not known | not known | OB1  \
+ZTE Axon 7 | 7.1.2 | Yes  | not known | not known | OB1  <br>
+<br>
+
+* * *
 
 
    
