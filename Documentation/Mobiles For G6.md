@@ -9,11 +9,20 @@ In theory, using the same phone with the same Android version should allow you t
 **Version 1.0.0**
 
 ## Licence & Copyright
-@ The Diabetic Way - Dave G - Informatiion Tecnology
+@The Diabetic Way_2018 - Dave G - Informatiion Tecnology
 
 Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes
 --- | --- | ---  | ---  | ---   | ---
 Blu R1 HD  | 6.0 | Yes  | not known | not known | not known
+
+Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes
+--- | --- | ---  | ---  | ---   | ---
+Doogee X5S  | 5.1 | Yes  | not known | not known | OB1
+Doogee X5 Max Pro | 6.0.1 | Yes  | not known  | not known  | not known
+
+Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes
+--- | --- | ---  | ---  | ---   | ---
+Essential Phone PH-1 | 7.1.1 | Yes  | not known | not known | not known
 
 Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes
 --- | --- | ---  | ---  | ---   | ---
@@ -55,9 +64,6 @@ Nexus 6P | 7.1.2
 
 Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes
 --- | --- | ---  | ---  | ---   | ---
-Doogee X5S  | 5.1 | Yes  | not known | not known | OB1
-Doogee X5 Max Pro | 6.0.1 | Yes  | not known  | not known  | not known
-Essential Phone PH-1 | 7.1.1 | Yes  | not known | not known | not known
 Huawei Y6 (SCL-L21)  | 5.1 | Yes  | not known | not known | not known
 Huawei P8 Lite (ALE-L21)  | 6.0 | Yes  | not known | not known | not known
 HTC 10 | 7.0 | Yes  | not known | not known | not known
