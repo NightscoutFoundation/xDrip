@@ -13,6 +13,10 @@ In theory, using the same phone with the same Android version should allow you t
 
 Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes
 --- | --- | ---  | ---  | ---   | ---
+Blu R1 HD  | 6.0 | Yes  | not known | not known | not known
+
+Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes
+--- | --- | ---  | ---  | ---   | ---
 Google Pixel 2 | 9 | Yes| 
 Google Pixel 2XL | 9 |
 Google Pixel | 7.1.1 |
@@ -51,7 +55,6 @@ Nexus 6P | 7.1.2
 
 Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes
 --- | --- | ---  | ---  | ---   | ---
-Blu R1 HD  | 6.0 | Yes  | not known | not known | not known
 Doogee X5S  | 5.1 | Yes  | not known | not known | OB1
 Doogee X5 Max Pro | 6.0.1 | Yes  | not known  | not known  | not known
 Essential Phone PH-1 | 7.1.1 | Yes  | not known | not known | not known
@@ -62,6 +65,7 @@ LG V20 (LG-H918)  | 7.0 | Yes  | not known | not known | not known
 LG G4 (VS986 & H811) | 6.0 | Yes  | not known | not known | not known
 LG V10c (LG-D415) | 5.0.2 | Yes  | not known | not known | not known
 Lenovo Moto G4 | 7.0| Yes  | not known | not known | not known
+LeEco Le Pro3 (LEX727) | 6.0.1| Yes  | not known | not known | not known
 Motorola Moto E (2nd Gen) (XT1526) | 5.1 | Yes  | not known | not known | not known
 Motorola G3 | 6.0 | Yes  | not known | not known | not known
 Melrose S9 | 4.4.2 | Yes  | not known | not known | OB1
@@ -69,19 +73,10 @@ Sony Xperia Z3 Compact (D5803) | 6.0.1 | Yes  | not known | not known | not know
 Xiaomi Mi Mix 2 | Lineage OS 15.1 | Yes  | not known | not known | OB1
 ZTE Axon 7 Mini | 7.1.1 | Yes  | not known | not known | OB1
 ZTE Axon 7 | 7.1.2 | Yes  | not known | not known | OB1
-LG V20 (LG-H918) | 7.0
-LG G4 (VS986 & H811) | 6.0
-LeEco Le Pro3 (LEX727) | 6.0.1
-Motorola Moto E (2nd Gen) (XT1526) | 5.1
-Motorola G3 | 6.0
-Sony Xperia Z3 Compact (D5803) | 6.0.1
-Huawei Y6 (SCL-L21) | 5.1
-Huawei P8 Lite (ALE-L21) | 6.0
-LG V10c (LG-D415) | 5.0.2
-Melrose S9 | 4.4.2 | OB1
-ZTE Axon 7 Mini | 7.1.1 | OB1
-ZTE Axon 7 | 7.1.2 | OB1
-Xiaomi Mi Mix 2 | Lineage OS 15.1 | OB1
-HTC 10 | 7.0
-Lenovo Moto G4 | 7.0
+
+
+
+
+
+
 
