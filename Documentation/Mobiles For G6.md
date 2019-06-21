@@ -43,6 +43,14 @@ HTC 10 | 7.0 | Yes  | not known | not known | not known
 
 Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes
 --- | --- | ---  | ---  | ---   | ---
+LG V20 (LG-H918)  | 7.0 | Yes  | not known | not known | not known
+LG G4 (VS986 & H811) | 6.0 | Yes  | not known | not known | not known
+LG V10c (LG-D415) | 5.0.2 | Yes  | not known | not known | not known
+Lenovo Moto G4 | 7.0| Yes  | not known | not known | not known
+LeEco Le Pro3 (LEX727) | 6.0.1| Yes  | not known | not known | not known
+
+Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes
+--- | --- | ---  | ---  | ---   | ---
 Samsung A3 2017 | 6.0.1 |Yes | not known | not known| OB1 
 Samsung Galaxy S4 (SCH-I545) | 5.0.1
 Samsung Galaxy S5 (SM-G900V) | 6.0.1
@@ -58,6 +66,7 @@ Samsung Galaxy S7 edge (SM-G935V) | 7.0
 Samsung Galaxy S7 edge (G935T) | 7.0
 Samsung Galaxy S9 (SM-G960F) | 9 | Yes| Yes|  Nightly build 30th May 2019 - xDrip-plus-20190530-a25cacb.apk | OB1 - Native Algorithm
 Samsung Galaxy Express Prime (SM-J320A) | 6.0.1
+Sony Xperia Z3 Compact (D5803) | 6.0.1 | Yes  | not known | not known | not known
 
 Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes
 --- | --- | ---  | ---  | ---   | ---
@@ -70,15 +79,9 @@ Nexus 6P | 7.1.2
 
 Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes
 --- | --- | ---  | ---  | ---   | ---
-LG V20 (LG-H918)  | 7.0 | Yes  | not known | not known | not known
-LG G4 (VS986 & H811) | 6.0 | Yes  | not known | not known | not known
-LG V10c (LG-D415) | 5.0.2 | Yes  | not known | not known | not known
-Lenovo Moto G4 | 7.0| Yes  | not known | not known | not known
-LeEco Le Pro3 (LEX727) | 6.0.1| Yes  | not known | not known | not known
 Motorola Moto E (2nd Gen) (XT1526) | 5.1 | Yes  | not known | not known | not known
 Motorola G3 | 6.0 | Yes  | not known | not known | not known
 Melrose S9 | 4.4.2 | Yes  | not known | not known | OB1
-Sony Xperia Z3 Compact (D5803) | 6.0.1 | Yes  | not known | not known | not known
 Xiaomi Mi Mix 2 | Lineage OS 15.1 | Yes  | not known | not known | OB1
 ZTE Axon 7 Mini | 7.1.1 | Yes  | not known | not known | OB1
 ZTE Axon 7 | 7.1.2 | Yes  | not known | not known | OB1
