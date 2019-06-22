@@ -9,7 +9,7 @@ In theory, using the same phone with the same Android version should allow you t
 **Version 1.0.0**
 
 ## Licence & Copyright
-@2018 The Diabetic Way - Dave Bond - Informatiion Tecnology  <br>
+@2018 The Diabetic Way - Dave - Informatiion Tecnology  <br>
 <br>
 * * *
 <br>
