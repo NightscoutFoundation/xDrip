@@ -81,6 +81,7 @@ Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug M
 --- | --- | ---  | ---  | ---   | ---  | ---
 OnePlus A3003 | 7.0 | Yes  | not known | not known | not known
 OnePlus A0001 | 6.0.1 | Yes  | not known | not known | not known
+Oneplus 6t | 9 | not known  | Yes | not known | not known
 
 
 Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes | Any Known Issues
@@ -124,7 +125,7 @@ ZTE Axon 7 | 7.1.2 | Yes  | not known | not known | OB1  <br>
 On Doogee / MTK phones disable Intelligent power saving standby in Android Settings -> Battery or you will only receive a reading every 10 minutes.<br>
 * * *
 
-## Question's you might have or want to share your mobile settings that work with Xdrip <br>
+## Any question's you might have or want to share your mobile settings that work with Xdrip please get in touch!<br>
 <br>
 This is [an example](http://example.com/ "Title") inline link.
 
