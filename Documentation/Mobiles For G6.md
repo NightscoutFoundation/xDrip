@@ -127,9 +127,9 @@ On Doogee / MTK phones disable Intelligent power saving standby in Android Setti
 
 ## Any question's you might have or want to share your mobile settings that work with Xdrip please get in touch!<br>
 <br>
-This is [an example](http://example.com/ "Title") inline link.
+(https://www.thediabeticway.co.uk/index.php/en/about-us/contact-us.html "Contact US") inline link.
 
-[This link](http://example.net/) has no title attribute.
+[This link](https://www.thediabeticway.co.uk/index.php/en/about-us/contact-us.html) has no title attribute.
 
 
 
