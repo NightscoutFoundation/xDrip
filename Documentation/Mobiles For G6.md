@@ -129,7 +129,7 @@ On Doogee / MTK phones disable Intelligent power saving standby in Android Setti
 <br>
 (https://www.thediabeticway.co.uk/index.php/en/about-us/contact-us.html "Contact US") inline link.
 
-[This link](https://www.thediabeticway.co.uk/index.php/en/about-us/contact-us.html) has no title attribute.
+[Contact US](https://www.thediabeticway.co.uk/index.php/en/about-us/contact-us.html) 
 
 
 
