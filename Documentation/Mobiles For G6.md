@@ -108,7 +108,7 @@ Sony Xperia Z3 Compact (D5803) | 6.0.1 | Yes  | not known | not known | not know
 Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes | Any Known Issues
 --- | --- | ---  | ---  | ---   | ---  | ---
 Xiaomi Mi Mix 2 | Lineage OS 15.1 | Yes  | not known | not known | OB1 | None known
-Xiaomi Pocophone f1 | Android 9 | not known  | Yes | [Installed](https://github.com/NightscoutFoundation/xDrip/releases/tag/2019.05.21) | OB1 | None known
+Xiaomi Pocophone f1 | Android 9 | not known  | Yes | [Installed](https://github.com/NightscoutFoundation/xDrip/releases/tag/2019.05.21){target="_blank"} | OB1 | None known
 
 
 Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes | Any Known Issues
