@@ -99,8 +99,8 @@ Samsung Galaxy S7 (SM-G930V) | 7.0
 Samsung Galaxy S7 (SM-G930W8) | 6.0.1
 Samsung Galaxy S7 edge (SM-G935V) | 7.0
 Samsung Galaxy S7 edge (G935T) | 7.0
-Samsung Galaxy S9 (SM-G960F) | Android9 | Yes| Yes|  [Nightly build 30th May 2019] (https://github.com/NightscoutFoundation/xDrip/releases/tag/2019.05.30) | OB1 - Native Algorithm
-Samsung Galaxy S9+ (SM-G965F) | 9 | not known| Yes|  [Nightly build 30th May 2019] (https://github.com/NightscoutFoundation/xDrip/releases/tag/2019.05.30) | OB1 - Native Algorithm
+Samsung Galaxy S9 (SM-G960F) | Android9 | Yes| Yes|[Nightly build 30th May 2019](https://github.com/NightscoutFoundation/xDrip/releases/tag/2019.05.30)| OB1 - Native Algorithm
+Samsung Galaxy S9+ (SM-G965F) | 9 | not known| Yes|[Nightly build 30th May 2019](https://github.com/NightscoutFoundation/xDrip/releases/tag/2019.05.30)| OB1 - Native Algorithm
 Samsung Galaxy Express Prime (SM-J320A) | 6.0.1
 Sony Xperia Z3 Compact (D5803) | 6.0.1 | Yes  | not known | not known | not known
 
