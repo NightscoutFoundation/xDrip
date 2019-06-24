@@ -62,7 +62,7 @@ Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug M
 --- | --- | ---  | ---  | ---   | ---  | ---
 Motorola Moto E (2nd Gen) (XT1526) | 5.1 | Yes  | not known | not known | not known
 Motorola G3 | 6.0 | Yes  | not known | not known | not known
-Moto Z2 | 8.0 | not known  | Yes | not known | OB1 - Native Algorithm
+Moto Z2 | 8.0 | not known  | Yes | not known | OB1 - Native Algorithm | none known
 Moto G7 Power | 9 | Yes| Yes|  Nightly build 18 May 2019 - xDrip-plus-20190518-e239947.apk | OB1 - Native Algorithm | not known
 Melrose S9 | 4.4.2 | Yes  | not known | not known | OB1
 
@@ -86,7 +86,7 @@ Oneplus 6t | 9 | not known  | Yes | not known | not known
 
 Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes | Any Known Issues
 --- | --- | ---  | ---  | ---   | ---  | ---
-Samsung A3 2017 | 6.0.1 |Yes | not known | not known| OB1 
+Samsung A3 2017 | 6.0.1 |Yes | not known | not known| OB1 | none known
 Samsung Galaxy S4 (SCH-I545) | 5.0.1
 Samsung Galaxy S5 (SM-G900V) | 6.0.1
 Samsung Galaxy Note 5 (N920V) | 7.0
@@ -95,14 +95,16 @@ Samsung Galaxy Note 8 (SM-N950F) | 8.0 | Yes| Yes|[Nightly build 2nd Feb 2018](h
 Samsung Galaxy Note 9 (SM-N960F) | 9 | not known| Yes|[Nightly build 30th May 2019](https://github.com/NightscoutFoundation/xDrip/releases/tag/2019.05.30)| OB1 - Native Algorithm | none known
 Samsung Galaxy S6 (G920V) | 6.0.1
 Samsung Galaxy S7 (SM-G930P) | 7.0
-Samsung Galaxy S7 (SM-G930V) | 7.0
+Samsung Galaxy S7 (SM-G930V) | Android 8 | Yes | Yes | 
 Samsung Galaxy S7 (SM-G930W8) | 6.0.1
 Samsung Galaxy S7 edge (SM-G935V) | 7.0
 Samsung Galaxy S7 edge (G935T) | 7.0
 Samsung Galaxy S9 (SM-G960F) | Android9 | Yes| Yes|[Nightly build 30th May 2019](https://github.com/NightscoutFoundation/xDrip/releases/tag/2019.05.30)| OB1 - Native Algorithm|none known
 Samsung Galaxy S9+ (SM-G965F) | 9 | not known| Yes|[Nightly build 30th May 2019](https://github.com/NightscoutFoundation/xDrip/releases/tag/2019.05.30)| OB1 - Native Algorithm|none known
 Samsung Galaxy Express Prime (SM-J320A) | 6.0.1
-Sony Xperia Z3 Compact (D5803) | 6.0.1 | Yes  | not known | not known | not known
+
+Sony Xperia Z3 Compact (D5803) | 6.0.1 | Yes  | Not known | [Nightly build 3rd Jan 2019 ](https://github.com/NightscoutFoundation/xDrip/releases/tag/2019.01.03) | Not known | None Known
+Sony Xperia Z3 Compact (D5803) | 6.0.1 | Yes  | Yes | [Nightly build 18th May 2019](https://github.com/NightscoutFoundation/xDrip/releases/tag/2019.05.18) | OB1 - Native Algorithm | Allow ob1 unbonding and initiate bonding checked
 
 
 Phone Model | Android Version | Dexcom G5 | Dexcom G6 | Xdrip Version  | Debug Modes | Any Known Issues
