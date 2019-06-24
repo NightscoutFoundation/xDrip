@@ -90,10 +90,9 @@ Samsung A3 2017 | 6.0.1 |Yes | not known | not known| OB1
 Samsung Galaxy S4 (SCH-I545) | 5.0.1
 Samsung Galaxy S5 (SM-G900V) | 6.0.1
 Samsung Galaxy Note 5 (N920V) | 7.0
-Samsung Galaxy Note 8 (SM-N950F) | 9 | Not known| Yes| Nightly build 30th May 2019 - xDrip-plus-20190530-a25cacb.apk | OB1 - Native Algorithm
-Samsung Galaxy Note 8 (SM-N950F) | 9 | Yes| Yes| [Nightly build 30th May 2019](https://github.com/NightscoutFoundation/xDrip/releases/tag/2019.05.30)| OB1 - Native Algorithm | none known
-Samsung Galaxy Note 8 (SM-N950F) | 8.0 | Yes| Yes|  Nightly build 2nd Feb 2018 - xDrip-plus-20180202-174d5c8.apk | OB1 - Native Algorithm
-Samsung Galaxy Note 9 (SM-N960F) | 9 | not known| Yes|  Nightly build 30th May 2019 - xDrip-plus-20190530-a25cacb.apk | OB1 - Native Algorithm
+Samsung Galaxy Note 8 (SM-N950F) | 9 | Yes| Yes| [Nightly build 30th May 2019](https://github.com/NightscoutFoundation/xDrip/releases/tag/2019.05.30)|OB1 - Native Algorithm | none known
+Samsung Galaxy Note 8 (SM-N950F) | 8.0 | Yes| Yes|[Nightly build 2nd Feb 2018] (https://github.com/NightscoutFoundation/xDrip/releases/tag/2018.02.02)|OB1 - Native Algorithm | none known
+Samsung Galaxy Note 9 (SM-N960F) | 9 | not known| Yes|[Nightly build 30th May 2019](https://github.com/NightscoutFoundation/xDrip/releases/tag/2019.05.30)| OB1 - Native Algorithm
 Samsung Galaxy S6 (G920V) | 6.0.1
 Samsung Galaxy S7 (SM-G930P) | 7.0
 Samsung Galaxy S7 (SM-G930V) | 7.0
