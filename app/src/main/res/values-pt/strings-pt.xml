@@ -610,6 +610,8 @@
     <string name="use_external_blukon_algorithm">Algoritmo Externo para o Libre.</string>
     <string name="calibrate_external_libre_algorithm_summary">Aplica métodos de calibração xDrip em dados OOP.</string>
     <string name="calibrate_external_libre_algorithm_title">Algoritmo de Calibração OOP.</string>
+    <string name="libre_use_smoothed_data_summary">Usa a média de 5 pontos para obter dados do Libre mais suaves.</string>
+    <string name="libre_use_smoothed_data_title">Dados do Libre suave.</string>
     <string name="retrieve_blukon_history_title">Recuperar histórico do Libre</string>
     <string name="retrieve_blukon_history_summary">Recuperar as leituras perdidas do Blucon ao ligar-se novamente ao sensor.</string>
     <string name="interpret_share_raw">Se estiver a usar Partilha, o xDrip irá mostrar os valores que normalmente estão escondidos no receptor.</string>
@@ -777,7 +779,7 @@
     <string name="step_counter_1st_color">Contador Passos 1ª Cor</string>
     <string name="step_counter_2nd_color">Contador Passos 2ª Cor</string>
     <string name="flair_colors">Cores Elegantes</string>
-    <string name="use_flair_colors">Utilizar Cores Elegantes</string>
+    <string name="use_flair_colors">Usar Cores Elegantes</string>
     <string name="upper_title_bar_flair">Barra de Título Superior Elegante</string>
     <string name="lower_button_bar_falir">Barra de Botões Inferior Elegante</string>
     <string name="force_english_text">Forçar Texto em Inglês</string>
@@ -978,7 +980,7 @@
     <string name="sensor_is_still_warming_up_please_wait">Sensor ainda está em preparação, por favor espere</string>
     <string name="number_wall_config">Configuração Number Wall</string>
     <string name="summary_If_you_plan_to_only_use_a_Wear_collector_and_never_your_phone">Se planeia usar Wear como receptor e nunca o telemóvel.</string>
-    <string name="title_Only_use_Wear">Uitlizar apenas Wear</string>
+    <string name="title_Only_use_Wear">Usar apenas Wear</string>
     <string name="summary_Also_show_the_filtered_data_on_the_trend">Mostrar também os dados filtrados na tendência</string>
     <string name="summary_Show_Bolus_Wizard_Preview_Insulin_value_on_watch_when_appropriate">Mostrar valor Insulina na Pré-Visualização Assistente de Bólus quando apropriado no relógio</string>
     <string name="title_Display_BWP_Insulin">Mostrar Insulina Pré-VAB</string>
@@ -1221,7 +1223,7 @@
     <string name="title_ob1_g5_restart_sensor">Reiniciar Sensor</string>
     <string name="summary_ob1_g5_preemptive_restart">Por precaução recomeçar o sensor antes do fim da sessão ao 6º dia de 9, para evitar o tempo de adaptação</string>
     <string name="title_ob1_g5_preemptive_restart">Reinícios Preventivos</string>
-    <string name="summary_ob1_g5_use_insufficiently_calibrated">Continuar a utilizar os dados mesmo que não existam boas calibrações suficientes (Experimental!)</string>
+    <string name="summary_ob1_g5_use_insufficiently_calibrated">Continuar a usar os dados mesmo que não existam boas calibrações suficientes (Experimental!)</string>
     <string name="title_ob1_g5_use_insufficiently_calibrated">Continuar sem calibrações</string>
     <string name="summary_ob1_g5_fallback_to_xdrip">Reverter para o algoritmo xDrip se o G5 não fornecer dados de glicose (potencialmente arriscado!)</string>
     <string name="title_ob1_g5_fallback_to_xdrip">Retorno para xDrip</string>
@@ -1468,4 +1470,7 @@
     <string name="no_sensor_found">Sensor Não Encontrado</string>
     <string name="checksum_failed__retrying">Falha na Verificação - a tentar novamente</string>
     <string name="scanning">A Procurar</string>
+    <string name="authentication_failed_wrong_password">Autenticação falhou. Palavra-passe inválida?</string>
+    <string name="share_login_data_isnt_valid">Dados Login Partilhado não são válidos - verifique utilizador / palavra-passe</string>
+    <string name="connectivity_problem_reaching_share_servers">Problema de ligação ao alcançar servidores de Partilha</string>
 </resources>
