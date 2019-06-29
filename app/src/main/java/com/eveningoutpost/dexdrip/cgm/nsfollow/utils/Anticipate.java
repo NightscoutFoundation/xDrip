@@ -5,9 +5,12 @@ package com.eveningoutpost.dexdrip.cgm.nsfollow.utils;
  *
  * Choose optimum anticipation times for re-attempting data collection
  */
-
 public class Anticipate {
 
+    /**
+     * If last + period and a bit< now, ask again after grace
+     * If last + period and a bit >= now, ask again after period and grace
+     */
     public static long next(long now, final long last, final long period, final long grace) {
 
         final long since = now - last;
@@ -29,6 +32,4 @@ public class Anticipate {
 
         return nextMin;
     }
-
-
 }
