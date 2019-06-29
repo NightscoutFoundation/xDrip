@@ -19,7 +19,7 @@ import java.util.TimeZone;
 public class DateUtil {
 
     private static final String FORMAT_DATE_ISO = "yyyy-MM-dd'T'HH:mm:ss'Z'"; // eg 2017-03-24T22:03:27Z
-    private static final String FORMAT_DATE_ISO2 = "yyyy-MM-dd'T'HH:mm:ssZ"; // eg 2017-03-27T17:38:14+03:00
+    private static final String FORMAT_DATE_ISO2 = "yyyy-MM-dd'T'HH:mm:ssZ"; // eg 2017-03-27T17:38:14+0300
     private static final String FORMAT_DATE_ISO3 = "yyyy-MM-dd'T'HH:mmZ"; // eg 2017-05-12T08:16-0400
 
     /**
@@ -32,14 +32,14 @@ public class DateUtil {
      */
     private static Date fromISODateString(String isoDateString)
             throws Exception {
-        SimpleDateFormat f = new SimpleDateFormat(FORMAT_DATE_ISO);
+        SimpleDateFormat f = new SimpleDateFormat(FORMAT_DATE_ISO, Locale.getDefault());
         f.setTimeZone(TimeZone.getTimeZone("UTC"));
         return f.parse(isoDateString);
     }
 
     private static Date fromISODateString3(String isoDateString)
             throws Exception {
-        SimpleDateFormat f = new SimpleDateFormat(FORMAT_DATE_ISO3);
+        SimpleDateFormat f = new SimpleDateFormat(FORMAT_DATE_ISO3, Locale.getDefault());
         f.setTimeZone(TimeZone.getTimeZone("UTC"));
         return f.parse(isoDateString);
     }
@@ -47,7 +47,7 @@ public class DateUtil {
     private static Date fromISODateString2(String isoDateString)
             throws Exception {
         try {
-            SimpleDateFormat f = new SimpleDateFormat(FORMAT_DATE_ISO2);
+            SimpleDateFormat f = new SimpleDateFormat(FORMAT_DATE_ISO2, Locale.getDefault());
             f.setTimeZone(TimeZone.getTimeZone("UTC"));
             return f.parse(isoDateString);
         } catch (java.text.ParseException e) {
