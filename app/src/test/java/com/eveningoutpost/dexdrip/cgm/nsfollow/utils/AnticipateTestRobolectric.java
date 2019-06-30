@@ -29,15 +29,16 @@ public class AnticipateTestRobolectric extends RobolectricTestWithConfig {
         final long now = 1545157669000L;
         final long last = now - Constants.MINUTE_IN_MS;
 
-        //  Tuesday 18. December 2018 18:27:49
+        // Tuesday 18. December 2018 18:27:49
         assertWithMessage("first now time").that(now).isEqualTo(1545157669000L);
-        // uesday 18. December 2018 18:26:49
+        // Tuesday 18. December 2018 18:26:49
         assertWithMessage("first last time").that(last).isEqualTo(1545157609000L);
         //System.out.println("Time lst: "+ dateTimeText(last));
         // System.out.println("Time now: "+ dateTimeText(now));
 
         long next = next(now, last);
 
+        // recent reading
         assertWithMessage("next 0").that(dateTimeText(next)).isEqualTo("2018-12-18 18:31:39");
         next = next(next, last);
         assertWithMessage("next 1").that(dateTimeText(next)).isEqualTo("2018-12-18 18:31:49");
@@ -46,6 +47,8 @@ public class AnticipateTestRobolectric extends RobolectricTestWithConfig {
         next = next(next, last);
         assertWithMessage("next 3").that(dateTimeText(next)).isEqualTo("2018-12-18 18:32:09");
         next = next(next, last);
+
+        // Missed Reading
         assertWithMessage("next 4").that(dateTimeText(next)).isEqualTo("2018-12-18 18:32:19");
         next = next(next, last);
         assertWithMessage("next 5").that(dateTimeText(next)).isEqualTo("2018-12-18 18:32:29");
@@ -101,6 +104,8 @@ public class AnticipateTestRobolectric extends RobolectricTestWithConfig {
         assertWithMessage("next 30").that(dateTimeText(next)).isEqualTo("2018-12-18 18:36:39");
         next = next(next, last);
         assertWithMessage("next 31").that(dateTimeText(next)).isEqualTo("2018-12-18 18:36:49");
+
+        // Modulus calculation
         next = next(next, last);
         assertWithMessage("next 32").that(dateTimeText(next)).isEqualTo("2018-12-18 18:36:59");
         next = next(next, last);
