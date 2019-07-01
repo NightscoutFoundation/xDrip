@@ -12,9 +12,7 @@ import java.util.TimeZone;
 import static com.google.common.truth.Truth.assertWithMessage;
 
 /**
- * Test originally written by jamorham
- * <p>
- * Updated by Asbjørn Aarrestad - 2019.06 - asbjorn@aarrestad.com
+ * jamorham
  */
 public class AnticipateTestRobolectric extends RobolectricTestWithConfig {
 
@@ -48,72 +46,18 @@ public class AnticipateTestRobolectric extends RobolectricTestWithConfig {
         assertWithMessage("next 3").that(dateTimeText(next)).isEqualTo("2018-12-18 18:32:09");
         next = next(next, last);
 
-        // Missed Reading
-        assertWithMessage("next 4").that(dateTimeText(next)).isEqualTo("2018-12-18 18:32:19");
-        next = next(next, last);
-        assertWithMessage("next 5").that(dateTimeText(next)).isEqualTo("2018-12-18 18:32:29");
-        next = next(next, last);
-        assertWithMessage("next 6").that(dateTimeText(next)).isEqualTo("2018-12-18 18:32:39");
-        next = next(next, last);
-        assertWithMessage("next 7").that(dateTimeText(next)).isEqualTo("2018-12-18 18:32:49");
-        next = next(next, last);
-        assertWithMessage("next 8").that(dateTimeText(next)).isEqualTo("2018-12-18 18:32:59");
-        next = next(next, last);
-        assertWithMessage("next 9").that(dateTimeText(next)).isEqualTo("2018-12-18 18:33:09");
-        next = next(next, last);
-        assertWithMessage("next 10").that(dateTimeText(next)).isEqualTo("2018-12-18 18:33:19");
-        next = next(next, last);
-        assertWithMessage("next 11").that(dateTimeText(next)).isEqualTo("2018-12-18 18:33:29");
-        next = next(next, last);
-        assertWithMessage("next 12").that(dateTimeText(next)).isEqualTo("2018-12-18 18:33:39");
-        next = next(next, last);
-        assertWithMessage("next 13").that(dateTimeText(next)).isEqualTo("2018-12-18 18:33:49");
-        next = next(next, last);
-        assertWithMessage("next 14").that(dateTimeText(next)).isEqualTo("2018-12-18 18:33:59");
-        next = next(next, last);
-        assertWithMessage("next 15").that(dateTimeText(next)).isEqualTo("2018-12-18 18:34:09");
-        next = next(next, last);
-        assertWithMessage("next 16").that(dateTimeText(next)).isEqualTo("2018-12-18 18:34:19");
-        next = next(next, last);
-        assertWithMessage("next 17").that(dateTimeText(next)).isEqualTo("2018-12-18 18:34:29");
-        next = next(next, last);
-        assertWithMessage("next 18").that(dateTimeText(next)).isEqualTo("2018-12-18 18:34:39");
-        next = next(next, last);
-        assertWithMessage("next 19").that(dateTimeText(next)).isEqualTo("2018-12-18 18:34:49");
-        next = next(next, last);
-        assertWithMessage("next 20").that(dateTimeText(next)).isEqualTo("2018-12-18 18:34:59");
-        next = next(next, last);
-        assertWithMessage("next 21").that(dateTimeText(next)).isEqualTo("2018-12-18 18:35:09");
-        next = next(next, last);
-        assertWithMessage("next 22").that(dateTimeText(next)).isEqualTo("2018-12-18 18:35:19");
-        next = next(next, last);
-        assertWithMessage("next 23").that(dateTimeText(next)).isEqualTo("2018-12-18 18:35:29");
-        next = next(next, last);
-        assertWithMessage("next 24").that(dateTimeText(next)).isEqualTo("2018-12-18 18:35:39");
-        next = next(next, last);
-        assertWithMessage("next 25").that(dateTimeText(next)).isEqualTo("2018-12-18 18:35:49");
-        next = next(next, last);
-        assertWithMessage("next 26").that(dateTimeText(next)).isEqualTo("2018-12-18 18:35:59");
-        next = next(next, last);
-        assertWithMessage("next 27").that(dateTimeText(next)).isEqualTo("2018-12-18 18:36:09");
-        next = next(next, last);
-        assertWithMessage("next 28").that(dateTimeText(next)).isEqualTo("2018-12-18 18:36:19");
-        next = next(next, last);
-        assertWithMessage("next 29").that(dateTimeText(next)).isEqualTo("2018-12-18 18:36:29");
-        next = next(next, last);
-        assertWithMessage("next 30").that(dateTimeText(next)).isEqualTo("2018-12-18 18:36:39");
-        next = next(next, last);
-        assertWithMessage("next 31").that(dateTimeText(next)).isEqualTo("2018-12-18 18:36:49");
-
         // Modulus calculation
+        assertWithMessage("next 4").that(dateTimeText(next)).isEqualTo("2018-12-18 18:36:39");
         next = next(next, last);
-        assertWithMessage("next 32").that(dateTimeText(next)).isEqualTo("2018-12-18 18:36:59");
+        assertWithMessage("next 5").that(dateTimeText(next)).isEqualTo("2018-12-18 18:36:49");
         next = next(next, last);
-        assertWithMessage("next 33").that(dateTimeText(next)).isEqualTo("2018-12-18 18:37:09");
+        assertWithMessage("next 6").that(dateTimeText(next)).isEqualTo("2018-12-18 18:36:59");
         next = next(next, last);
-        assertWithMessage("next 34").that(dateTimeText(next)).isEqualTo("2018-12-18 18:41:39");
+        assertWithMessage("next 7").that(dateTimeText(next)).isEqualTo("2018-12-18 18:37:09");
         next = next(next, last);
-        assertWithMessage("next 35").that(dateTimeText(next)).isEqualTo("2018-12-18 18:41:49");
+        assertWithMessage("next 8").that(dateTimeText(next)).isEqualTo("2018-12-18 18:41:39");
+        next = next(next, last);
+        assertWithMessage("next 9").that(dateTimeText(next)).isEqualTo("2018-12-18 18:41:49");
 
         next = next(next - Constants.SECOND_IN_MS, last);
         assertWithMessage("next -1").that(dateTimeText(next)).isEqualTo("2018-12-18 18:41:49");
@@ -123,8 +67,6 @@ public class AnticipateTestRobolectric extends RobolectricTestWithConfig {
 
         next = next(now, 0);
         assertWithMessage("next from 0").that(dateTimeText(next)).isEqualTo("2018-12-18 18:29:50");
-
-
     }
 
 
