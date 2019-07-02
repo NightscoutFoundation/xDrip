@@ -46,7 +46,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.ShotStateStore;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
 import com.eveningoutpost.dexdrip.cgm.medtrum.MedtrumCollectionService;
-import com.eveningoutpost.dexdrip.insulin.inpen.InPen;
+import com.eveningoutpost.dexdrip.cgm.nsfollow.NightscoutFollowService;
 import com.eveningoutpost.dexdrip.insulin.inpen.InPenEntry;
 import com.eveningoutpost.dexdrip.insulin.inpen.InPenService;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
@@ -64,7 +64,7 @@ import java.util.List;
 import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.DexcomG5;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.Medtrum;
-import static com.eveningoutpost.dexdrip.utils.DexCollectionType.isLibreOOPAlgorithm;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.NSFollow;
 
 public class MegaStatus extends ActivityWithMenu {
 
@@ -110,6 +110,7 @@ public class MegaStatus extends ActivityWithMenu {
     private static final String UPLOADERS = "Uploaders";
     private static final String LEFUN_STATUS = "Lefun";
     private static final String INPEN_STATUS = "InPen";
+    private static final String NIGHTSCOUT_FOLLOW = "Nightscout Follow";
 
     public static PendingIntent getStatusPendingIntent(String section_name) {
         final Intent intent = new Intent(xdrip.getAppContext(), MegaStatus.class);
@@ -158,6 +159,9 @@ public class MegaStatus extends ActivityWithMenu {
             if (LeFunEntry.isEnabled()) {
                 addAsection(LEFUN_STATUS, "Lefun Watch Status");
             }
+            if(dexCollectionType.equals(NSFollow)) {
+                addAsection(NIGHTSCOUT_FOLLOW, "Nightscout Follow Status");
+            }
 
             //addAsection("Misc", "Currently Empty");
 
@@ -205,6 +209,9 @@ public class MegaStatus extends ActivityWithMenu {
                 break;
             case INPEN_STATUS:
                 la.addRows(InPenService.megaStatus());
+                break;
+            case NIGHTSCOUT_FOLLOW:
+                la.addRows(NightscoutFollowService.megaStatus());
                 break;
         }
         la.changed();

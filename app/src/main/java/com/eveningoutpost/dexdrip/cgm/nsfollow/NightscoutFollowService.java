@@ -11,12 +11,21 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
+import com.eveningoutpost.dexdrip.UtilityModels.StatusItem.Highlight;
 import com.eveningoutpost.dexdrip.cgm.nsfollow.utils.Anticipate;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.framework.BuggySamsung;
 import com.eveningoutpost.dexdrip.utils.framework.ForegroundService;
 import com.eveningoutpost.dexdrip.utils.framework.WakeLockTrampoline;
 import com.eveningoutpost.dexdrip.xdrip;
+
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder.DEXCOM_PERIOD;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.NSFollow;
@@ -28,10 +37,8 @@ import static com.eveningoutpost.dexdrip.utils.DexCollectionType.NSFollow;
  *
  * Handles Android wake up and polling schedule, decoupled from data transport
  *
+ * Extended by Asbjørn Aarrestad - asbjorn@aarrestad.com july 2019
  */
-
-// TODO MegaStatus
-
 public class NightscoutFollowService extends ForegroundService {
 
     private static final String TAG = "NightscoutFollow";
@@ -42,7 +49,10 @@ public class NightscoutFollowService extends ForegroundService {
     private static BuggySamsung buggySamsung;
     private static volatile long wakeup_time = 0;
 
-    private BgReading lastBg;
+    private static volatile BgReading lastBg;
+    private static volatile long lastPoll = 0;
+    private static volatile long bgReceiveDelay = 0;
+    private static volatile long lastBgTime = 0;
 
     private void buggySamsungCheck() {
         if (buggySamsung == null) {
@@ -66,14 +76,19 @@ public class NightscoutFollowService extends ForegroundService {
                 stopSelf();
                 return START_NOT_STICKY;
             }
-           buggySamsungCheck();
+            buggySamsungCheck();
 
             // Check current
             lastBg = BgReading.lastNoSenssor();
+            if (lastBg != null) {
+                lastBgTime = lastBg.timestamp;
+            }
             if (lastBg == null || JoH.msSince(lastBg.timestamp) > SAMPLE_PERIOD) {
-
                 if (JoH.ratelimit("last-ns-follow-poll", 5)) {
-                    Inevitable.task("NS-Follow-Work", 200, () -> NightscoutFollow.work(true));
+                    Inevitable.task("NS-Follow-Work", 200, () -> {
+                        NightscoutFollow.work(true);
+                        lastPoll = JoH.tsl();
+                    });
                 }
             } else {
                 UserError.Log.d(TAG, "Already have recent reading: " + JoH.msSince(lastBg.timestamp));
@@ -84,6 +99,17 @@ public class NightscoutFollowService extends ForegroundService {
             JoH.releaseWakeLock(wl);
         }
         return START_STICKY;
+    }
+
+    /**
+     * Update observedDelay if new bg reading is available
+     */
+    static void updateBgReceiveDelay() {
+        lastBg = BgReading.lastNoSenssor();
+        if (lastBgTime != lastBg.timestamp) {
+            bgReceiveDelay = JoH.msSince(lastBg.timestamp);
+            lastBgTime = lastBg.timestamp;
+        }
     }
 
     static void scheduleWakeUp() {
@@ -101,6 +127,65 @@ public class NightscoutFollowService extends ForegroundService {
 
     private static boolean shouldServiceRun() {
         return DexCollectionType.getDexCollectionType() == NSFollow;
+    }
+
+    static boolean treatmentDownloadEnabled() {
+        return Pref.getBooleanDefaultFalse("nsfollow_download_treatments");
+    }
+
+
+    /**
+     * MegaStatus for Nightscout Follower
+     */
+    public static List<StatusItem> megaStatus() {
+        final BgReading lastBg = BgReading.lastNoSenssor();
+
+        String lastPollText = "n/a";
+        if (lastPoll > 0) {
+            lastPollText = JoH.niceTimeScalar(JoH.msSince(lastPoll));
+        }
+
+        long hightlightGrace = Constants.SECOND_IN_MS * 30; // 30 seconds
+
+        String ageOfBgLastPoll = "n/a";
+        Highlight ageOfLastBgPollHighlight = Highlight.NORMAL;
+        if (bgReceiveDelay > 0) {
+            ageOfBgLastPoll = JoH.niceTimeScalar(bgReceiveDelay);
+            if (bgReceiveDelay > SAMPLE_PERIOD / 2) {
+                ageOfLastBgPollHighlight = Highlight.BAD;
+            }
+            if (bgReceiveDelay > SAMPLE_PERIOD * 2) {
+                ageOfLastBgPollHighlight = Highlight.CRITICAL;
+            }
+        }
+
+        String ageLastBg = "n/a";
+        Highlight agAgeHighlight = Highlight.NORMAL;
+        if (lastBg != null) {
+            long age = JoH.msSince(lastBg.timestamp);
+            ageLastBg = JoH.niceTimeScalar(age);
+            if (age > SAMPLE_PERIOD + hightlightGrace) {
+                agAgeHighlight = Highlight.BAD;
+            }
+        }
+
+        List<StatusItem> statuses = new ArrayList<>(
+                Arrays.asList(
+                        new StatusItem("Latest BG", ageLastBg + " ago", agAgeHighlight),
+                        new StatusItem("BG receive delay", ageOfBgLastPoll, ageOfLastBgPollHighlight),
+                        new StatusItem(),
+                        new StatusItem("Last poll", lastPollText + (lastPoll > 0 ? " ago": "")),
+                        new StatusItem("Next poll in", JoH.niceTimeScalar(wakeup_time - JoH.tsl())),
+                        new StatusItem("Next poll time", JoH.dateTimeText(wakeup_time)),
+                        new StatusItem(),
+                        new StatusItem("Buggy Samsung", JoH.buggy_samsung ? "Yes" : "No"),
+                        new StatusItem("Download treatments", treatmentDownloadEnabled() ? "Yes" : "No")));
+
+        if (StringUtils.isNotBlank(lastState)) {
+            statuses.add(new StatusItem());
+            statuses.add(new StatusItem("Last state", lastState));
+        }
+        return statuses;
     }
 
     @Nullable

@@ -36,7 +36,6 @@ import static com.eveningoutpost.dexdrip.cgm.nsfollow.NightscoutFollowService.ms
  * Data transport interface to Nightscout for follower service
  *
  */
-
 public class NightscoutFollow {
 
     private static final String TAG = "NightscoutFollow";
@@ -57,7 +56,6 @@ public class NightscoutFollow {
 
         @GET("/api/v1/treatments")
         Call<ResponseBody> getTreatments(@Header("api-secret") String secret);
-
     }
 
     private static Nightscout getService() {
@@ -83,6 +81,7 @@ public class NightscoutFollow {
         session.entriesCallback = new NightscoutCallback<List<Entry>>("NS entries download", session, () -> {
             // process data
             EntryProcessor.processEntries(session.entries, live);
+            NightscoutFollowService.updateBgReceiveDelay();
             NightscoutFollowService.scheduleWakeUp();
             msg("");
         })
@@ -109,7 +108,7 @@ public class NightscoutFollow {
                 UserError.Log.e(TAG, "Exception in entries work() " + e);
                 msg("Nightscout follow entries error: " + e);
             }
-            if (treatmentDownloadEnabled()) {
+            if (NightscoutFollowService.treatmentDownloadEnabled()) {
                 if (JoH.ratelimit("nsfollow-treatment-download", 60)) {
                     try {
                         getService().getTreatments(session.url.getHashedSecret()).enqueue(session.treatmentsCallback);
@@ -126,10 +125,6 @@ public class NightscoutFollow {
 
     private static String getUrl() {
         return Pref.getString("nsfollow_url", "");
-    }
-
-    private static boolean treatmentDownloadEnabled() {
-        return Pref.getBooleanDefaultFalse("nsfollow_download_treatments");
     }
 
     // TODO make reusable
@@ -165,5 +160,4 @@ public class NightscoutFollow {
         UserError.Log.d(TAG, "Instance reset");
         CollectionServiceStarter.restartCollectionServiceBackground();
     }
-
 }
