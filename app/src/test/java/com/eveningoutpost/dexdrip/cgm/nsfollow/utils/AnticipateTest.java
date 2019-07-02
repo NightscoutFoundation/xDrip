@@ -43,21 +43,6 @@ public class AnticipateTest {
     }
 
     @Test
-    public void next_lateCall_overshoot() {
-        // :: Setup
-        long now = 10_000;
-        int period = 1_000;
-        long last = now - period - 200;
-        int grace = 5;
-
-        // :: Act
-        long next = Anticipate.next(now, last, period, grace);
-
-        // :: Verify
-        assertThat(next).isEqualTo(now + grace);
-    }
-
-    @Test
     public void next_waitPeriod() {
         // :: Setup
         long now = 10_000;
@@ -88,29 +73,6 @@ public class AnticipateTest {
     }
 
     // ===== Batch-verifications ===================================================================
-    @Test
-    public void next_betweenOneAndTwoPeriodsSinceLastReading() {
-        // :: Setup
-        long now = 10_000;
-        long period = 1_000;
-        int grace = 5;
-
-        int testCount = 0;
-
-        // :: Act
-        for (long last = now - period; last >= now - 2 * period; last -= (period / 2)) {
-            long next = Anticipate.next(now, last, period, grace);
-
-            // :: Verify
-            assertWithMessage("last: " + last)
-                    .that(next)
-                    .isEqualTo(now + grace);
-
-            testCount++;
-        }
-        assertThat(testCount).isEqualTo(3);
-    }
-
     @Test
     public void next_betweenGraceAndAPeriodSinceLastReading() {
         // :: Setup
@@ -145,7 +107,7 @@ public class AnticipateTest {
         int testCount = 0;
 
         // :: Act
-        for (long last = now - 2 * period - grace; last >= now - 5 * period; last -= (grace * 3)) {
+        for (long last = now - 3 * grace; last >= now - 5 * period; last -= (grace * 3)) {
             long next = Anticipate.next(now, last, period, grace);
 
             // :: Verify
@@ -167,7 +129,7 @@ public class AnticipateTest {
             testCount++;
         }
 
-        assertThat(testCount).isEqualTo(200);
+        assertThat(testCount).isEqualTo(333);
     }
 
     // ===== Real world examples ===================================================================
@@ -188,6 +150,6 @@ public class AnticipateTest {
 
         // :: Verify
         // 2019-06-30 11:18:59 (now + grace)
-        assertThat(next).isEqualTo(1_561_893_539_622L);
+        assertThat(next).isEqualTo(1_561_893_799_000L);
     }
 }
