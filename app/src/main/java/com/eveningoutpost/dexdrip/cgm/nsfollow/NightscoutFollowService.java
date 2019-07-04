@@ -129,11 +129,6 @@ public class NightscoutFollowService extends ForegroundService {
         return DexCollectionType.getDexCollectionType() == NSFollow;
     }
 
-    static boolean treatmentDownloadEnabled() {
-        return Pref.getBooleanDefaultFalse("nsfollow_download_treatments");
-    }
-
-
     /**
      * MegaStatus for Nightscout Follower
      */
@@ -179,7 +174,7 @@ public class NightscoutFollowService extends ForegroundService {
                         new StatusItem("Next poll time", JoH.dateTimeText(wakeup_time)),
                         new StatusItem(),
                         new StatusItem("Buggy Samsung", JoH.buggy_samsung ? "Yes" : "No"),
-                        new StatusItem("Download treatments", treatmentDownloadEnabled() ? "Yes" : "No")));
+                        new StatusItem("Download treatments", NightscoutFollow.treatmentDownloadEnabled() ? "Yes" : "No")));
 
         if (StringUtils.isNotBlank(lastState)) {
             statuses.add(new StatusItem());

@@ -108,7 +108,7 @@ public class NightscoutFollow {
                 UserError.Log.e(TAG, "Exception in entries work() " + e);
                 msg("Nightscout follow entries error: " + e);
             }
-            if (NightscoutFollowService.treatmentDownloadEnabled()) {
+            if (treatmentDownloadEnabled()) {
                 if (JoH.ratelimit("nsfollow-treatment-download", 60)) {
                     try {
                         getService().getTreatments(session.url.getHashedSecret()).enqueue(session.treatmentsCallback);
@@ -125,6 +125,10 @@ public class NightscoutFollow {
 
     private static String getUrl() {
         return Pref.getString("nsfollow_url", "");
+    }
+
+    static boolean treatmentDownloadEnabled() {
+        return Pref.getBooleanDefaultFalse("nsfollow_download_treatments");
     }
 
     // TODO make reusable
