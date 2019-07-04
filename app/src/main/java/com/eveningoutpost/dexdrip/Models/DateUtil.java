@@ -32,14 +32,14 @@ public class DateUtil {
      */
     private static Date fromISODateString(String isoDateString)
             throws Exception {
-        SimpleDateFormat f = new SimpleDateFormat(FORMAT_DATE_ISO, Locale.getDefault());
+        SimpleDateFormat f = new SimpleDateFormat(FORMAT_DATE_ISO);
         f.setTimeZone(TimeZone.getTimeZone("UTC"));
         return f.parse(isoDateString);
     }
 
     private static Date fromISODateString3(String isoDateString)
             throws Exception {
-        SimpleDateFormat f = new SimpleDateFormat(FORMAT_DATE_ISO3, Locale.getDefault());
+        SimpleDateFormat f = new SimpleDateFormat(FORMAT_DATE_ISO3);
         f.setTimeZone(TimeZone.getTimeZone("UTC"));
         return f.parse(isoDateString);
     }
@@ -47,7 +47,7 @@ public class DateUtil {
     private static Date fromISODateString2(String isoDateString)
             throws Exception {
         try {
-            SimpleDateFormat f = new SimpleDateFormat(FORMAT_DATE_ISO2, Locale.getDefault());
+            SimpleDateFormat f = new SimpleDateFormat(FORMAT_DATE_ISO2);
             f.setTimeZone(TimeZone.getTimeZone("UTC"));
             return f.parse(isoDateString);
         } catch (java.text.ParseException e) {
