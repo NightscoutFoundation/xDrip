@@ -92,6 +92,7 @@ public class NightscoutFollow {
             // process data
             try {
                 NightscoutTreatments.processTreatmentResponse(session.treatments.string());
+                NightscoutFollowService.updateTreatmentDownloaded();
             } catch (Exception e) {
                 msg("Treatments: " + e);
             }

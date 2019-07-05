@@ -8,6 +8,7 @@ import android.text.SpannableString;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
@@ -53,6 +54,9 @@ public class NightscoutFollowService extends ForegroundService {
     private static volatile long lastPoll = 0;
     private static volatile long bgReceiveDelay = 0;
     private static volatile long lastBgTime = 0;
+    private static volatile Treatments lastTreatment;
+    private static volatile long lastTreatmentTime = 0;
+    private static volatile long treatmentReceivedDelay = 0;
 
     private void buggySamsungCheck() {
         if (buggySamsung == null) {
@@ -106,9 +110,17 @@ public class NightscoutFollowService extends ForegroundService {
      */
     static void updateBgReceiveDelay() {
         lastBg = BgReading.lastNoSenssor();
-        if (lastBgTime != lastBg.timestamp) {
+        if (lastBg != null && lastBgTime != lastBg.timestamp) {
             bgReceiveDelay = JoH.msSince(lastBg.timestamp);
             lastBgTime = lastBg.timestamp;
+        }
+    }
+
+    static void updateTreatmentDownloaded() {
+        lastTreatment = Treatments.last();
+        if(lastTreatment != null && lastTreatmentTime != lastTreatment.timestamp) {
+            treatmentReceivedDelay = JoH.msSince(lastTreatment.timestamp);
+            lastTreatmentTime = lastTreatment.timestamp;
         }
     }
 
@@ -142,6 +154,7 @@ public class NightscoutFollowService extends ForegroundService {
 
         long hightlightGrace = Constants.SECOND_IN_MS * 30; // 30 seconds
 
+        // Status for BG receive delay (time from bg was recorded till received in xdrip)
         String ageOfBgLastPoll = "n/a";
         Highlight ageOfLastBgPollHighlight = Highlight.NORMAL;
         if (bgReceiveDelay > 0) {
@@ -154,32 +167,51 @@ public class NightscoutFollowService extends ForegroundService {
             }
         }
 
+        // Status for time since latest BG
         String ageLastBg = "n/a";
-        Highlight agAgeHighlight = Highlight.NORMAL;
+        Highlight bgAgeHighlight = Highlight.NORMAL;
         if (lastBg != null) {
             long age = JoH.msSince(lastBg.timestamp);
             ageLastBg = JoH.niceTimeScalar(age);
             if (age > SAMPLE_PERIOD + hightlightGrace) {
-                agAgeHighlight = Highlight.BAD;
+                bgAgeHighlight = Highlight.BAD;
             }
         }
 
-        List<StatusItem> statuses = new ArrayList<>(
-                Arrays.asList(
-                        new StatusItem("Latest BG", ageLastBg + " ago", agAgeHighlight),
-                        new StatusItem("BG receive delay", ageOfBgLastPoll, ageOfLastBgPollHighlight),
-                        new StatusItem(),
-                        new StatusItem("Last poll", lastPollText + (lastPoll > 0 ? " ago": "")),
-                        new StatusItem("Next poll in", JoH.niceTimeScalar(wakeup_time - JoH.tsl())),
-                        new StatusItem("Next poll time", JoH.dateTimeText(wakeup_time)),
-                        new StatusItem(),
-                        new StatusItem("Buggy Samsung", JoH.buggy_samsung ? "Yes" : "No"),
-                        new StatusItem("Download treatments", NightscoutFollow.treatmentDownloadEnabled() ? "Yes" : "No")));
+        // Status for treatments
+        String ageLastTreatment = "n/a";
+        String ageOfTreatmentWhenReceived = "n/a";
+        if(lastTreatment != null) {
+            long age = JoH.msSince(lastTreatment.timestamp);
+            ageLastTreatment = JoH.niceTimeScalar(age);
+            ageOfTreatmentWhenReceived = JoH.niceTimeScalar(treatmentReceivedDelay);
+        }
+
+        // Build status
+        List<StatusItem> statuses = new ArrayList<>();
+
+        statuses.add(new StatusItem("Latest BG", ageLastBg + (lastBg != null ? " ago" : ""), bgAgeHighlight));
+        statuses.add(new StatusItem("BG receive delay", ageOfBgLastPoll, ageOfLastBgPollHighlight));
+
+        if(NightscoutFollow.treatmentDownloadEnabled()) {
+            statuses.add(new StatusItem());
+            statuses.add(new StatusItem("Latest Treatment", ageLastTreatment + (lastTreatment != null ? " ago" : "")));
+            statuses.add(new StatusItem("Treatment receive delay", ageOfTreatmentWhenReceived));
+        }
+
+        statuses.add(new StatusItem());
+        statuses.add(new StatusItem("Last poll", lastPollText + (lastPoll > 0 ? " ago" : "")));
+        statuses.add(new StatusItem("Next poll in", JoH.niceTimeScalar(wakeup_time - JoH.tsl())));
+        statuses.add(new StatusItem("Next poll time", JoH.dateTimeText(wakeup_time)));
+        statuses.add(new StatusItem());
+        statuses.add(new StatusItem("Buggy Samsung", JoH.buggy_samsung ? "Yes" : "No"));
+        statuses.add(new StatusItem("Download treatments", NightscoutFollow.treatmentDownloadEnabled() ? "Yes" : "No"))))
 
         if (StringUtils.isNotBlank(lastState)) {
             statuses.add(new StatusItem());
             statuses.add(new StatusItem("Last state", lastState));
         }
+
         return statuses;
     }
 
