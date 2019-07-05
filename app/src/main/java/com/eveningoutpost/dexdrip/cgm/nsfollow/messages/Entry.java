@@ -38,8 +38,6 @@ public class Entry extends BaseMessage {
     @Expose
     public double unfiltered;
 
-// TODO unit test this!!
-
     public long getTimeStamp() {
         if (date > 1000000) {
             return date;
