@@ -4,16 +4,10 @@ import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothGatt;
 import android.os.Build;
 import android.os.PowerManager;
-
+import com.eveningoutpost.dexdrip.BestGlucose;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
-import com.eveningoutpost.dexdrip.Models.BgReading;
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.Prediction;
-import com.eveningoutpost.dexdrip.Models.Sensor;
-import com.eveningoutpost.dexdrip.Models.SensorSanity;
-import com.eveningoutpost.dexdrip.Models.TransmitterData;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.*;
 import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.BroadcastGlucose;
@@ -613,6 +607,7 @@ public class Ob1G5StateMachine {
                             break;
 
                         case TransmitterTimeRxMessage:
+                            // This message is received every 120-125m
                             final TransmitterTimeRxMessage txtime = (TransmitterTimeRxMessage) data_packet.msg;
                             DexTimeKeeper.updateAge(getTransmitterID(), txtime.getCurrentTime(), true);
                             if (txtime.sessionInProgress()) {
@@ -625,10 +620,19 @@ public class Ob1G5StateMachine {
                                 DexSessionKeeper.clearStart();
                             }
                             if (Pref.getBooleanDefaultFalse("ob1_g5_preemptive_restart")) {
-                                if (txtime.getSessionDuration() > Constants.DAY_IN_MS * (usingG6() ? 9 : 6)
+                                int restartDaysThreshold = usingG6() ? 9 : 6;
+                                if (txtime.getSessionDuration() > Constants.DAY_IN_MS * restartDaysThreshold
                                         && txtime.getSessionDuration() < Constants.MONTH_IN_MS) {
-                                    UserError.Log.uel(TAG, "Requesting preemptive session restart");
-                                    restartSensorWithTimeTravel();
+                                    BestGlucose.DisplayGlucose displayGlucose = BestGlucose.getDisplayGlucose();
+                                    // Defer restart up to 12h if current delta is high, which can lead to sensor
+                                    // errors if session is restarted during times of high fluctuation
+                                    if (displayGlucose != null && Math.abs(displayGlucose.delta_mgdl) <= 4
+                                            || txtime.getSessionDuration() > (DAY_IN_MS * restartDaysThreshold + 0.5)) {
+                                        UserError.Log.uel(TAG, "Requesting preemptive session restart");
+                                        restartSensorWithTimeTravel();
+                                    } else {
+                                        UserError.Log.uel(TAG, "Deferring preemptive session restart, current delta is too high or n/a");
+                                    }
                                 }
                             }
                             break;
