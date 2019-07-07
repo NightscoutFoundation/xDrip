@@ -139,12 +139,12 @@ public class NightscoutFollow {
                 msg("Only positive values for delay allowed. Illegal value [" + delay + "]");
                 return 0;
             }
-            if (delay > DEXCOM_PERIOD / 1000) {
-                msg("Delay is longer than poll period. Try a value less than [" + (DEXCOM_PERIOD / 1000) + "] seconds");
+            if (delay > DEXCOM_PERIOD / Constants.SECOND_IN_MS) {
+                msg("Delay is longer than poll period. Try a value less than [" + (DEXCOM_PERIOD / Constants.SECOND_IN_MS) + "] seconds");
             }
 
             msg("");
-            return delay * 1000;
+            return delay * Constants.SECOND_IN_MS;
 
         } catch (NumberFormatException nfe) {
             msg("Unable to parse [" + Pref.getStringDefaultBlank("nsfollow_delay") + "] as number");
