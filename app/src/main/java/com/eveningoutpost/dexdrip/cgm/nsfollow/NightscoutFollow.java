@@ -132,6 +132,26 @@ public class NightscoutFollow {
         return Pref.getBooleanDefaultFalse("nsfollow_download_treatments");
     }
 
+    static long pollDelay() {
+        try {
+            long delay = Long.parseLong(Pref.getString("nsfollow_delay", "0"));
+            if (delay < 0) {
+                msg("Only positive values for delay allowed. Illegal value [" + delay + "]");
+                return 0;
+            }
+            if (delay > DEXCOM_PERIOD / 1000) {
+                msg("Delay is longer than poll period. Try a value less than [" + (DEXCOM_PERIOD / 1000) + "] seconds");
+            }
+
+            msg("");
+            return delay * 1000;
+
+        } catch (NumberFormatException nfe) {
+            msg("Unable to parse [" + Pref.getStringDefaultBlank("nsfollow_delay") + "] as number");
+            return 0;
+        }
+    }
+
     // TODO make reusable
     public static Retrofit getRetrofitInstance() throws IllegalArgumentException {
         if (retrofit == null) {

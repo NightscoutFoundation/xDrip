@@ -983,11 +983,16 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
 
             final Preference nsFollowDownload = findPreference("nsfollow_download_treatments");
             final Preference nsFollowUrl = findPreference("nsfollow_url");
+            final Preference nsFollowDelay = findPreference("nsfollow_delay");
             try {
                 nsFollowUrl.setOnPreferenceChangeListener((preference, newValue) -> {
                     NightscoutFollow.resetInstance();
                     return true;
                 });
+                nsFollowDelay.setOnPreferenceChangeListener(((preference, newValue) -> {
+                    NightscoutFollow.resetInstance();
+                    return true;
+                }));
             } catch (Exception e) {
                 //
             }
