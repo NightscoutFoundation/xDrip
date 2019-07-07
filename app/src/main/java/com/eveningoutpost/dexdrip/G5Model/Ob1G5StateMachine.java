@@ -631,6 +631,7 @@ public class Ob1G5StateMachine {
                                         UserError.Log.uel(TAG, "Requesting preemptive session restart");
                                         restartSensorWithTimeTravel();
                                         Notifications.ob1SessionRestartRequested();
+                                        Treatments.create_note("Transmitter session was restarted", JoH.tsl());
                                     } else {
                                         UserError.Log.uel(TAG, "Deferring preemptive session restart, current delta is too high or n/a");
                                     }
