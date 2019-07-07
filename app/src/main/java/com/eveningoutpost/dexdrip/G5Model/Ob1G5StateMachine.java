@@ -8,6 +8,7 @@ import com.eveningoutpost.dexdrip.BestGlucose;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.Models.*;
+import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.*;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
@@ -624,7 +625,7 @@ public class Ob1G5StateMachine {
                                         UserError.Log.uel(TAG, "Requesting preemptive session restart");
                                         restartSensorWithTimeTravel();
                                         Notifications.ob1SessionRestartRequested();
-                                        Treatments.create_note("Transmitter session was restarted", JoH.tsl());
+                                        Treatments.create_note(xdrip.getAppContext().getString(R.string.ob1_session_restarted_note), JoH.tsl());
                                     } else {
                                         UserError.Log.uel(TAG, "Deferring preemptive session restart, current delta is too high or n/a");
                                     }
