@@ -108,6 +108,7 @@ public class Notifications extends IntentService {
     public static final int lowPredictAlertNotificationId = 013;
     public static final int parakeetMissingId = 014;
     public static final int persistentHighAlertNotificationId = 015;
+    public static final int ob1SessionRestartNotificationId = 016;
     private static boolean low_notifying = false;
 
     private static final int CALIBRATION_REQUEST_MAX_FREQUENCY = (60 * 60 * 6); // don't bug for extra calibrations more than every 6 hours
