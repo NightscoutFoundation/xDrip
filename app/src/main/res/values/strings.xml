@@ -1247,9 +1247,9 @@
     <string name="summary_medtrum_a_hex">Hex diagnostic test value</string>
     <string name="title_medtrum_a_hex">Medtrum Debug</string>
     <string name="summary_nsfollow_url">Web address for following</string>
-    <string name="title_nsfollow_delay">Nightscout download delay (seconds)</string>
-    <string name="summary_nsfollow_delay">Fixed delay (seconds) for polling nightscout to better sync with actual arrival of data at Nightscout</string>
     <string name="title_nsfollow_url">Nightscout Follow URL</string>
+    <string name="summary_nsfollow_delay">Fixed delay (seconds) for polling nightscout to better sync with actual arrival of data at Nightscout</string>
+    <string name="title_nsfollow_delay">Nightscout download delay (sec.)</string>
     <string name="summary_nsfollow_download_treatments">Also download treatments from Nightscout as follower</string>
     <string name="title_nsfollow_download_treatments">Download Treatments</string>
     <string name="title_ob1_options">OB1 G5/G6 Collector Settings</string>

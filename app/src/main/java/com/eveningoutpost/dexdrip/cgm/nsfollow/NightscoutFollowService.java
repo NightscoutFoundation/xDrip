@@ -49,6 +49,7 @@ public class NightscoutFollowService extends ForegroundService {
 
     private static BuggySamsung buggySamsung;
     private static volatile long wakeup_time = 0;
+    private static volatile long last_wakeup = 0;
 
     private static volatile BgReading lastBg;
     private static volatile long lastPoll = 0;
@@ -80,6 +81,9 @@ public class NightscoutFollowService extends ForegroundService {
                 stopSelf();
                 return START_NOT_STICKY;
             }
+
+            last_wakeup = JoH.tsl();
+
             buggySamsungCheck();
 
             // Check current
@@ -147,11 +151,6 @@ public class NightscoutFollowService extends ForegroundService {
     public static List<StatusItem> megaStatus() {
         final BgReading lastBg = BgReading.lastNoSenssor();
 
-        String lastPollText = "n/a";
-        if (lastPoll > 0) {
-            lastPollText = JoH.niceTimeScalar(JoH.msSince(lastPoll));
-        }
-
         long hightlightGrace = Constants.SECOND_IN_MS * 30; // 30 seconds
 
         // Status for BG receive delay (time from bg was recorded till received in xdrip)
@@ -200,7 +199,8 @@ public class NightscoutFollowService extends ForegroundService {
         }
 
         statuses.add(new StatusItem());
-        statuses.add(new StatusItem("Last poll", lastPollText + (lastPoll > 0 ? " ago" : "")));
+        statuses.add(new StatusItem("Last poll", lastPoll > 0 ? JoH.niceTimeScalar(JoH.msSince(lastPoll)) + " ago" : "n/a"));
+        statuses.add(new StatusItem("Last wakeup", last_wakeup > 0 ? JoH.niceTimeScalar(JoH.msSince(last_wakeup)) + " ago" : "n/a"));
         statuses.add(new StatusItem("Next poll in", JoH.niceTimeScalar(wakeup_time - JoH.tsl())));
         statuses.add(new StatusItem("Poll delay", JoH.niceTimeScalar(NightscoutFollow.pollDelay())));
         if (lastBg != null) {

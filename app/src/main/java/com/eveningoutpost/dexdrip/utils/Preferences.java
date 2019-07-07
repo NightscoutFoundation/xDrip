@@ -1333,6 +1333,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 try {
                     collectionCategory.removePreference(nsFollowUrl);
                     collectionCategory.removePreference(nsFollowDownload);
+                    collectionCategory.removePreference(nsFollowDelay);
                 } catch (Exception e) {
                     //
                 }
