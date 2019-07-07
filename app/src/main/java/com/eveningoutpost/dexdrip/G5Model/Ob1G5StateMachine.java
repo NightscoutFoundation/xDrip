@@ -630,6 +630,7 @@ public class Ob1G5StateMachine {
                                             || txtime.getSessionDuration() > (DAY_IN_MS * restartDaysThreshold + 0.5)) {
                                         UserError.Log.uel(TAG, "Requesting preemptive session restart");
                                         restartSensorWithTimeTravel();
+                                        Notifications.ob1SessionRestartRequested();
                                     } else {
                                         UserError.Log.uel(TAG, "Deferring preemptive session restart, current delta is too high or n/a");
                                     }
