@@ -118,7 +118,7 @@ public class NightscoutFollowService extends ForegroundService {
 
     static void updateTreatmentDownloaded() {
         lastTreatment = Treatments.last();
-        if (lastTreatment != null && lastTreatmentTime != lastTreatment.timestamp) {
+        if(lastTreatment != null && lastTreatmentTime != lastTreatment.timestamp) {
             treatmentReceivedDelay = JoH.msSince(lastTreatment.timestamp);
             lastTreatmentTime = lastTreatment.timestamp;
         }
@@ -181,7 +181,7 @@ public class NightscoutFollowService extends ForegroundService {
         // Status for treatments
         String ageLastTreatment = "n/a";
         String ageOfTreatmentWhenReceived = "n/a";
-        if (lastTreatment != null) {
+        if(lastTreatment != null) {
             long age = JoH.msSince(lastTreatment.timestamp);
             ageLastTreatment = JoH.niceTimeScalar(age);
             ageOfTreatmentWhenReceived = JoH.niceTimeScalar(treatmentReceivedDelay);
@@ -193,7 +193,7 @@ public class NightscoutFollowService extends ForegroundService {
         statuses.add(new StatusItem("Latest BG", ageLastBg + (lastBg != null ? " ago" : ""), bgAgeHighlight));
         statuses.add(new StatusItem("BG receive delay", ageOfBgLastPoll, ageOfLastBgPollHighlight));
 
-        if (NightscoutFollow.treatmentDownloadEnabled()) {
+        if(NightscoutFollow.treatmentDownloadEnabled()) {
             statuses.add(new StatusItem());
             statuses.add(new StatusItem("Latest Treatment", ageLastTreatment + (lastTreatment != null ? " ago" : "")));
             statuses.add(new StatusItem("Treatment receive delay", ageOfTreatmentWhenReceived));
