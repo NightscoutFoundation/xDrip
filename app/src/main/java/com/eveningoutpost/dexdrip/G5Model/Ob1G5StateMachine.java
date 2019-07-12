@@ -621,7 +621,7 @@ public class Ob1G5StateMachine {
                                     // Defer restart up to 12h if current delta is high, which can lead to sensor
                                     // errors if session is restarted during times of high fluctuation
                                     if (displayGlucose != null && Math.abs(displayGlucose.delta_mgdl) <= 4
-                                            || txtime.getSessionDuration() > (DAY_IN_MS * restartDaysThreshold + 0.5)) {
+                                            || txtime.getSessionDuration() > DAY_IN_MS * (restartDaysThreshold + 0.5)) {
                                         UserError.Log.uel(TAG, "Requesting preemptive session restart");
                                         restartSensorWithTimeTravel();
                                         Notifications.ob1SessionRestartRequested();
