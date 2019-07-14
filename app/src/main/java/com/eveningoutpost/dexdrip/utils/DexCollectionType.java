@@ -43,7 +43,7 @@ public enum DexCollectionType {
     Disabled("Disabled"),
     Mock("Mock"),
     Manual("Manual"),
-    LibreReceiver("LibreReciever");
+    LibreReceiver("LibreReceiver");
 
     String internalName;
     private static final Map<String, DexCollectionType> mapToInternalName;
@@ -186,6 +186,7 @@ public enum DexCollectionType {
             case Medtrum:
                 return MedtrumCollectionService.class;
             case Follower:
+            case LibreReceiver:
                 return DoNothingService.class;
             case NSFollow:
                 return NightscoutFollowService.class;
