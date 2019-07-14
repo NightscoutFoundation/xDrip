@@ -61,16 +61,14 @@ public class LibreReceiver extends BroadcastReceiver {
 
                         switch (action) {
                             case Intents.LIBRE2_ACTIVATION:
-                                Log.d(TAG, "Receiving LibreData activation");
+                                Log.v(TAG, "Receiving LibreData activation");
                                 saveSensorStartTime(intent.getBundleExtra("sensor"), intent.getBundleExtra("bleManager").getString("sensorSerial"));
                                 break;
 
                             case Intents.LIBRE2_BG:
-                                Log.d(TAG, "Receiving LibreData broadcast");
-                                //FIXME
                                 Libre2RawValue currentRawValue = processIntent(intent);
                                 if (currentRawValue == null) return;
-                                Log.d(TAG,"got bg reading: from sensor:"+currentRawValue.serial+" rawValue:"+currentRawValue.glucose+" at:"+currentRawValue.timestamp);
+                                Log.v(TAG,"got bg reading: from sensor:"+currentRawValue.serial+" rawValue:"+currentRawValue.glucose+" at:"+currentRawValue.timestamp);
                                 if(!BgReading.last_within_minutes(5)) {
                                     List<Libre2RawValue> smoothingValues = Libre2RawValue.last20Minutes();
                                     smoothingValues.add(currentRawValue);
@@ -107,8 +105,6 @@ public class LibreReceiver extends BroadcastReceiver {
             Log.e(TAG,"Received faulty intent from LibreLink.");
             return null;
         }
-        Log.d(TAG,"Received BG reading from LibreLink: glucose=" + glucose + " timestamp=" + timestamp + " serial=" + serial);
-
         Libre2RawValue rawValue = new Libre2RawValue();
         rawValue.timestamp = timestamp;
         rawValue.glucose = glucose;
