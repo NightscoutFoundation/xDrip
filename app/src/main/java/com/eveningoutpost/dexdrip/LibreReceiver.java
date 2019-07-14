@@ -123,7 +123,7 @@ public class LibreReceiver extends BroadcastReceiver {
 
         double value = calculateWeightedAverage(smoothingValues, currentValue.timestamp);
 
-        BgReading.create(context,currentValue.glucose*1000, currentValue.glucose*1000, value*1000,currentValue.timestamp,value,1.0,false);
+        BgReading.bgReadingInsertLibre2(value, currentValue.timestamp,currentValue.glucose);
     }
 
     private static void saveSensorStartTime(Bundle sensor, String serial) {

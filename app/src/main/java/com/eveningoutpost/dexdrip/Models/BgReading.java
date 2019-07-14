@@ -1231,6 +1231,36 @@ public class BgReading extends Model implements ShareUploadableBg {
             return existing;
         }
     }
+    public static synchronized BgReading bgReadingInsertLibre2(double calculated_value, long timestamp, double raw_data) {
+
+        final Sensor sensor = Sensor.currentSensor();
+        if (sensor == null) {
+            Log.w(TAG, "No sensor, ignoring this bg reading");
+            return null;
+        }
+        // TODO slope!!
+        final BgReading existing = getForPreciseTimestamp(timestamp, Constants.MINUTE_IN_MS);
+        if (existing == null) {
+            final BgReading bgr = new BgReading();
+            bgr.sensor = sensor;
+            bgr.sensor_uuid = sensor.uuid;
+            bgr.time_since_sensor_started = JoH.msSince(sensor.started_at); // is there a helper for this?
+            bgr.timestamp = timestamp;
+            bgr.uuid = UUID.randomUUID().toString();
+            bgr.calculated_value = calculated_value;
+            bgr.raw_data = raw_data;
+            bgr.filtered_data = bgr.raw_data;
+            bgr.age_adjusted_raw_value = raw_data;
+            bgr.calculated_value_slope=1;
+
+            bgr.appendSourceInfo("Libre2 Native");
+            bgr.save();
+            bgr.postProcess(false);
+            return bgr;
+        } else {
+            return existing;
+        }
+    }
 
     public static void handleResyncWearAfterBackfill(final long earliest) {
         if (earliest_backfill == 0 || earliest < earliest_backfill) earliest_backfill = earliest;
