@@ -170,6 +170,13 @@
                 android:title="@string/title_ob1_g5_preemptive_restart"
                 />
             <CheckBoxPreference
+                android:defaultValue="false"
+                android:dependency="ob1_g5_use_transmitter_alg"
+                android:key="ob1_g5_preemptive_restart_to_3_days"
+                android:summary="@string/summary_ob1_g5_preemptive_restart_to_3_days"
+                android:title="@string/title_ob1_g5_preemptive_restart_to_3_days"
+                />
+            <CheckBoxPreference
                 android:defaultValue="true"
                 android:dependency="ob1_g5_use_transmitter_alg"
                 android:key="ob1_g5_use_insufficiently_calibrated"

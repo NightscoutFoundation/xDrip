@@ -1512,4 +1512,6 @@
     <string name="ob1_session_restarted_title">Sensor session restarted</string>
     <string name="ob1_session_restarted_msg">The sensor session was preemptively restarted and set to 3 days, please check if next readings are off and calibrate if needed</string>
     <string name="ob1_session_restarted_note">Transmitter session was restarted</string>
+    <string name="title_ob1_g5_preemptive_restart_to_3_days">Restart to 3 days</string>
+    <string name="summary_ob1_g5_preemptive_restart_to_3_days">Restarts to session to start at day 3 to avoid jumps</string>
 </resources>

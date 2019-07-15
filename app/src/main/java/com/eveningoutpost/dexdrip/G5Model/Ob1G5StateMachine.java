@@ -58,6 +58,10 @@ import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.getTran
 import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.onlyUsingNativeMode;
 import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.wear_broadcast;
 import static com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder.DEXCOM_PERIOD;
+import static com.eveningoutpost.dexdrip.UtilityModels.Constants.DAY_IN_MS;
+import static com.eveningoutpost.dexdrip.UtilityModels.Constants.HOUR_IN_MS;
+import static com.eveningoutpost.dexdrip.UtilityModels.Constants.MINUTE_IN_MS;
+import static com.eveningoutpost.dexdrip.UtilityModels.Constants.SECOND_IN_MS;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.*;
 import static com.eveningoutpost.dexdrip.utils.bt.Helper.getStatusName;
 
@@ -1002,7 +1006,10 @@ public class Ob1G5StateMachine {
 
 
     public static void restartSensorWithTimeTravel() {
-        restartSensorWithTimeTravel(tsl() - DAY_IN_MS * 3);
+        restartSensorWithTimeTravel(tsl() -
+                (Pref.getBooleanDefaultFalse("ob1_g5_preemptive_restart_to_3_days")
+                        ? DAY_IN_MS * 3
+                        : HOUR_IN_MS * 2 - MINUTE_IN_MS * 10));
     }
 
     public static void restartSensorWithTimeTravel(long when) {
