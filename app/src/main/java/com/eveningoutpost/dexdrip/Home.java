@@ -132,6 +132,7 @@ import com.eveningoutpost.dexdrip.utils.DisplayQRCode;
 import com.eveningoutpost.dexdrip.utils.LibreTrendGraph;
 import com.eveningoutpost.dexdrip.utils.Preferences;
 import com.eveningoutpost.dexdrip.utils.SdcardImportExport;
+import com.eveningoutpost.dexdrip.utils.TestFeature;
 import com.eveningoutpost.dexdrip.wearintegration.Amazfitservice;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.github.amlcurran.showcaseview.ShowcaseView;
@@ -1137,7 +1138,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     }
 
     public void testFeature(MenuItem x) {
-        startActivity(new Intent(this, MegaStatus.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+        TestFeature.testFeature1();
     }
 
     public void viewEventLog(MenuItem x) {
