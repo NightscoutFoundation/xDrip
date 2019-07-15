@@ -1241,22 +1241,50 @@ public class BgReading extends Model implements ShareUploadableBg {
         // TODO slope!!
         final BgReading existing = getForPreciseTimestamp(timestamp, Constants.MINUTE_IN_MS);
         if (existing == null) {
-            final BgReading bgr = new BgReading();
-            bgr.sensor = sensor;
-            bgr.sensor_uuid = sensor.uuid;
-            bgr.time_since_sensor_started = JoH.msSince(sensor.started_at); // is there a helper for this?
-            bgr.timestamp = timestamp;
-            bgr.uuid = UUID.randomUUID().toString();
-            bgr.calculated_value = calculated_value;
-            bgr.raw_data = raw_data;
-            bgr.filtered_data = bgr.raw_data;
-            bgr.age_adjusted_raw_value = raw_data;
-            bgr.calculated_value_slope=1;
+            Calibration calibration = Calibration.lastValid();
+            final BgReading bgReading = new BgReading();
+            if (calibration == null) {
+                Log.d(TAG, "create: No calibration yet");
+                bgReading.sensor = sensor;
+                bgReading.sensor_uuid = sensor.uuid;
+                bgReading.raw_data = raw_data;
+                bgReading.age_adjusted_raw_value = raw_data;
+                bgReading.filtered_data = raw_data;
+                bgReading.timestamp = timestamp;
+                bgReading.uuid = UUID.randomUUID().toString();
+                bgReading.calculated_value = calculated_value;
+                bgReading.calculated_value_slope = 0;
+                bgReading.hide_slope = false;
+                bgReading.appendSourceInfo("Libre2 Native");
+                bgReading.find_slope();
 
-            bgr.appendSourceInfo("Libre2 Native");
-            bgr.save();
-            bgr.postProcess(false);
-            return bgr;
+                bgReading.save();
+                bgReading.perform_calculations();
+                bgReading.postProcess(false);
+
+            } else {
+                Log.d(TAG, "Calibrations, so doing everything bgReading = " + bgReading);
+                bgReading.sensor = sensor;
+                bgReading.sensor_uuid = sensor.uuid;
+                bgReading.calibration = calibration;
+                bgReading.calibration_uuid = calibration.uuid;
+                bgReading.raw_data = raw_data ;
+                bgReading.age_adjusted_raw_value = raw_data;
+                bgReading.filtered_data = raw_data;
+                bgReading.timestamp = timestamp;
+                bgReading.uuid = UUID.randomUUID().toString();
+                bgReading.calculated_value = calculated_value;
+                bgReading.calculated_value_slope = 0;
+                bgReading.hide_slope = false;
+                bgReading.appendSourceInfo("Libre2 Native");
+                bgReading.find_slope();
+
+                bgReading.save();
+                bgReading.postProcess(false);
+
+            }
+
+           return bgReading;
         } else {
             return existing;
         }
