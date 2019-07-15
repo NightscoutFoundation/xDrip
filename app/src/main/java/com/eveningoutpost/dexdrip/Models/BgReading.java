@@ -1273,13 +1273,19 @@ public class BgReading extends Model implements ShareUploadableBg {
                 bgReading.filtered_data = raw_data;
                 bgReading.timestamp = timestamp;
                 bgReading.uuid = UUID.randomUUID().toString();
-                bgReading.calculated_value = calculated_value;
+
+                bgReading.calculated_value = ((calibration.slope * calculated_value) + calibration.intercept);
+                bgReading.filtered_calculated_value = ((calibration.slope * bgReading.ageAdjustedFiltered()) + calibration.intercept);
+
                 bgReading.calculated_value_slope = 0;
                 bgReading.hide_slope = false;
                 bgReading.appendSourceInfo("Libre2 Native");
-                bgReading.find_slope();
 
+                BgReading.updateCalculatedValueToWithinMinMax(bgReading);
+
+                bgReading.find_slope();
                 bgReading.save();
+
                 bgReading.postProcess(false);
 
             }
