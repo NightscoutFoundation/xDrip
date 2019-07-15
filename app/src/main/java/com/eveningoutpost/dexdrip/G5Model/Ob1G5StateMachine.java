@@ -624,8 +624,6 @@ public class Ob1G5StateMachine {
                                     if (!deferPreemptiveRestart(txtime.getSessionDuration(), restartDaysThreshold)) {
                                         UserError.Log.uel(TAG, "Requesting preemptive session restart");
                                         restartSensorWithTimeTravel();
-                                        Notifications.ob1SessionRestartRequested();
-                                        Treatments.create_note(xdrip.getAppContext().getString(R.string.ob1_session_restarted_note), JoH.tsl());
                                     } else {
                                         UserError.Log.uel(TAG, "Deferring preemptive session restart, current delta is too high or n/a");
                                     }
@@ -1028,6 +1026,8 @@ public class Ob1G5StateMachine {
             enqueueUniqueCommand(new SessionStartTxMessage(when,
                             DexTimeKeeper.getDexTime(getTransmitterID(), when_started)),
                     "Auto Start Sensor");
+            Notifications.ob1SessionRestartRequested();
+            Treatments.create_note(xdrip.getAppContext().getString(R.string.ob1_session_restarted_note), JoH.tsl());
         }
     }
 
