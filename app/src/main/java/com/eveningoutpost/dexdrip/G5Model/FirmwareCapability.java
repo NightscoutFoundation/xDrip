@@ -4,8 +4,6 @@ package com.eveningoutpost.dexdrip.G5Model;
 
 import com.google.common.collect.ImmutableSet;
 
-import java.util.Objects;
-
 public class FirmwareCapability {
 
     private static final ImmutableSet<String> KNOWN_G5_FIRMWARES = ImmutableSet.of("1.0.0.13", "1.0.0.17", "1.0.4.10", "1.0.4.12");

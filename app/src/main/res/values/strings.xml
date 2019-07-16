@@ -1512,10 +1512,10 @@
     <string name="ob1_session_restarted_title">Sensor session restarted</string>
     <string name="ob1_session_restarted_msg">The sensor session was preemptively restarted and set to 3 days, please check if next readings are off and calibrate if needed</string>
     <string name="ob1_session_restarted_note">Transmitter session was restarted</string>
-    <string name="title_ob1_g5_preemptive_restart_to_3_days">Restart to 3 days</string>
-    <string name="summary_ob1_g5_preemptive_restart_to_3_days">Restarts to session to start at day 3 to avoid jumps in values</string>
     <string name="title_ob1_g5_defer_preemptive_restart_if_needed">Defer restart if needed</string>
-    <string name="summary_ob1_g5_defer_preemptive_restart_if_needed">Defer restarting the sessions up to 12 hours, to avoid restarting during times of high fluctuation which can cause intermittend sensor errors</string>
-    <string name="summary_ob1_g5_defer_preemptive_restart_all_firmwares">Allow extended tt with all firmwares</string>
-    <string name="title_ob1_g5_defer_preemptive_all_firmwares">Allows extended timetravel with all firmware versions (engineering mode only) </string>
+    <string name="summary_ob1_g5_defer_preemptive_restart_if_needed">Defer restarting the sessions up to 12 hours to avoid intermittent sensor errors due to high fluctuations</string>
+    <string name="title_ob1_g5_preemptive_restart_extended_time_travel">Restart to 3 days</string>
+    <string name="summary_ob1_g5_preemptive_restart_extended_time_travel">Restarts session to start at day 3 to avoid jumps in values</string>
+    <string name="title_ob1_g5_defer_preemptive_restart_all_firmwares">Allow extended timetravel</string>
+    <string name="summary_ob1_g5_defer_preemptive_restart_all_firmwares">Allow extended timetravel with all firmware versions (engineering mode only) </string>
 </resources>
