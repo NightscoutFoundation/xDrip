@@ -184,6 +184,13 @@
                 android:title="@string/title_ob1_g5_defer_preemptive_restart_if_needed"
                 />
             <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:dependency="ob1_g5_preemptive_restart"
+                    android:key="ob1_g5_defer_preemptive_restart_all_firmwares"
+                    android:summary="@string/summary_ob1_g5_defer_preemptive_restart_all_firmwares"
+                    android:title="@string/title_ob1_g5_defer_preemptive_all_firmwares"
+            />
+            <CheckBoxPreference
                 android:defaultValue="true"
                 android:dependency="ob1_g5_use_transmitter_alg"
                 android:key="ob1_g5_use_insufficiently_calibrated"

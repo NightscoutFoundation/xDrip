@@ -1011,9 +1011,13 @@ public class Ob1G5StateMachine {
 
 
     public static void restartSensorWithTimeTravel() {
-        boolean useExtendedTimeTravel = FirmwareCapability.supportsExtendedTimeTravel(getTransmitterID())
-                && Pref.getBooleanDefaultFalse("ob1_g5_preemptive_restart_to_3_days");
-        restartSensorWithTimeTravel(tsl() - (useExtendedTimeTravel ? DAY_IN_MS * 3 : HOUR_IN_MS * 2 - MINUTE_IN_MS * 10));
+        restartSensorWithTimeTravel(tsl() - (useExtendedTimeTravel() ? DAY_IN_MS * 3 : HOUR_IN_MS * 2 - MINUTE_IN_MS * 10));
+    }
+
+    private static boolean useExtendedTimeTravel() {
+        return Pref.getBooleanDefaultFalse("ob1_g5_preemptive_restart_to_3_days")
+                    && (FirmwareCapability.supportsExtendedTimeTravel(getTransmitterID())
+                    || (Pref.getBooleanDefaultFalse("ob1_g5_defer_preemptive_restart_all_firmwares") && Home.get_engineering_mode()));
     }
 
     public static void restartSensorWithTimeTravel(long when) {

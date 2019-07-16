@@ -1516,4 +1516,6 @@
     <string name="summary_ob1_g5_preemptive_restart_to_3_days">Restarts to session to start at day 3 to avoid jumps in values</string>
     <string name="title_ob1_g5_defer_preemptive_restart_if_needed">Defer restart if needed</string>
     <string name="summary_ob1_g5_defer_preemptive_restart_if_needed">Defer restarting the sessions up to 12 hours, to avoid restarting during times of high fluctuation which can cause intermittend sensor errors</string>
+    <string name="summary_ob1_g5_defer_preemptive_restart_all_firmwares">Allow extended tt with all firmwares</string>
+    <string name="title_ob1_g5_defer_preemptive_all_firmwares">Allows extended timetravel with all firmware versions (engineering mode only) </string>
 </resources>
