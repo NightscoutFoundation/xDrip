@@ -1029,7 +1029,7 @@ public class Ob1G5StateMachine {
         restartSensorWithTimeTravel(tsl() - (useExtendedTimeTravel() ? DAY_IN_MS * 3 : HOUR_IN_MS * 2 - MINUTE_IN_MS * 10));
     }
 
-    private static boolean useExtendedTimeTravel() {
+    public static boolean useExtendedTimeTravel() {
         return Pref.getBooleanDefaultFalse("ob1_g5_preemptive_restart_extended_time_travel")
                     && (FirmwareCapability.isTransmitterTimeTravelCapable(getTransmitterID())
                     || (Pref.getBooleanDefaultFalse("ob1_g5_defer_preemptive_restart_all_firmwares") && Home.get_engineering_mode()));
