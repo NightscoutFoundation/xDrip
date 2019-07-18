@@ -1031,7 +1031,7 @@ public class Ob1G5StateMachine {
 
     private static boolean useExtendedTimeTravel() {
         return Pref.getBooleanDefaultFalse("ob1_g5_preemptive_restart_extended_time_travel")
-                    && (FirmwareCapability.supportsExtendedTimeTravel(getTransmitterID())
+                    && (FirmwareCapability.isTransmitterTimeTravelCapable(getTransmitterID())
                     || (Pref.getBooleanDefaultFalse("ob1_g5_defer_preemptive_restart_all_firmwares") && Home.get_engineering_mode()));
     }
 
