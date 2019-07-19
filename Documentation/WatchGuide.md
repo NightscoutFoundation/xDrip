@@ -2,6 +2,7 @@ xDrip+ Wear Setup and Troubleshooting Guide
 ======================================
 **Table of Contents**
 - [Enable xDrip+ Android Wear Integration](#enable-xdrip-android-wear-integration)
+[Enable xDrip+ Android Wear Integration](#enable-xdrip-android-wear-integration)
     - [Patching Watch Firmware](#patching-watch-firmware)
     - [Collector](#collector)
         - [xDrip+ System Status](#xdrip-system-status)
