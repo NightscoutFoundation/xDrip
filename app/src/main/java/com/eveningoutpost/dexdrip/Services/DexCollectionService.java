@@ -400,7 +400,7 @@ public class DexCollectionService extends Service implements BtCallBack {
 
             final BluetoothGattService gattService = mBluetoothGatt.getService(xDripDataService);
             if (gattService == null) {
-                if (!(static_use_blukon || blueReader.isblueReader() || Tomato.isTomato()||Bubble.isBubble())) {
+                if (!(static_use_blukon || blueReader.isblueReader() || Tomato.isTomato())) {
                     Log.w(TAG, "onServicesDiscovered: xdrip service " + xDripDataService + " not found"); //TODO the selection of nrf is not active at the beginning,so this error will be trown one time unneeded, mey to be optimized.
                     // TODO this should be reworked to be an efficient selector
                     listAvailableServices(mBluetoothGatt);
@@ -513,7 +513,7 @@ public class DexCollectionService extends Service implements BtCallBack {
                         });
 
                         servicesDiscovered = DISCOVERED.NULL; // reset this state
-                    }else if (Bubble.isBubble()) {
+                    } else if (Bubble.isBubble()) {
                         status("Enabled bubble");
                         Log.d(TAG, "Queueing bubble initialization..");
                         Inevitable.task("initialize-bubble", 4000, new Runnable() {
@@ -524,7 +524,7 @@ public class DexCollectionService extends Service implements BtCallBack {
                                     sendBtMessage(buffer);
                                     JoH.threadSleep(150);
                                 }
-                                Log.d(TAG, "bubble initialized and data requested");
+                                Log.d(TAG, "tomato initialized and data requested");
                             }
                         });
 
@@ -1046,13 +1046,12 @@ public class DexCollectionService extends Service implements BtCallBack {
             l.add(new StatusItem("Tomato Firmware", PersistentStore.getString("TomatoFirmware")));
             l.add(new StatusItem("Libre SN", PersistentStore.getString("LibreSN")));
         }
-        if (Bubble.isBubble()) {
+        if (Tomato.isTomato()) {
             l.add(new StatusItem("Bubble Battery", PersistentStore.getString("Bubblebattery")));
             l.add(new StatusItem("Bubble Hardware", PersistentStore.getString("BubbleHArdware")));
             l.add(new StatusItem("Bubble Firmware", PersistentStore.getString("BubbleFirmware")));
             l.add(new StatusItem("Libre SN", PersistentStore.getString("LibreSN")));
         }
-
         if (static_use_blukon) {
             l.add(new StatusItem("Battery", Pref.getInt("bridge_battery", 0) + "%"));
             l.add(new StatusItem("Sensor age", JoH.qs(((double) Pref.getInt("nfc_sensor_age", 0)) / 1440, 1) + "d"));
@@ -1076,7 +1075,6 @@ public class DexCollectionService extends Service implements BtCallBack {
 
         if (scanMeister == null) {
             scanMeister = new ScanMeister()
-                    .applyKnownWorkarounds()
                     .addCallBack(this, TAG);
         }
 
@@ -1646,7 +1644,7 @@ public class DexCollectionService extends Service implements BtCallBack {
             }
             gotValidPacket();
 
-        }else if (Bubble.isBubble()) {
+        } else if (Bubble.isBubble()) {
             final BridgeResponse reply = Bubble.decodeBubblePacket(buffer, len);
             if (reply.shouldDelay()) {
                 Inevitable.task("send-bubble-reply", reply.getDelay(), () -> sendReply(reply));

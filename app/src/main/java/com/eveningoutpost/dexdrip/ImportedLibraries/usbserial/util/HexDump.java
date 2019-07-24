@@ -25,6 +25,15 @@ public class HexDump {
             '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
     };
 
+    public static String dumpHexString(Byte[] array) {
+        if (array == null) return "<null>";
+        byte[] line = new byte[array.length];
+        for (int i = 0; i < array.length; i++) {
+            line[i] = array[i];
+        }
+        return dumpHexString(line, 0, array.length);
+    }
+
     public static String dumpHexString(byte[] array) {
         if (array == null) return "<null>";
         return dumpHexString(array, 0, array.length);
