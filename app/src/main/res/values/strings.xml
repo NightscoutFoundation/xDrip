@@ -1510,4 +1510,14 @@
     <string name="authentication_failed_wrong_password">Authentication Failed. Wrong password?</string>
     <string name="share_login_data_isnt_valid">Share Login data isn\'t valid - check username / password</string>
     <string name="connectivity_problem_reaching_share_servers">Connectivity problem reaching Share servers</string>
+    <string name="ob1_session_restarted_title">Sensor session restarted</string>
+    <string name="ob1_session_restarted_msg">The sensor session was preemptively restarted and set to 3 days, please check if next readings are off and calibrate if needed</string>
+    <string name="ob1_session_restarted_note">Transmitter session was restarted</string>
+    <string name="title_ob1_g5_defer_preemptive_restart_if_needed">Defer restart if needed</string>
+    <string name="summary_ob1_g5_defer_preemptive_restart_if_needed">Defer restarting a session up to 12 hours to avoid intermittent sensor errors due to high fluctuations (experimental)</string>
+    <string name="title_ob1_g5_preemptive_restart_extended_time_travel">Extended time-travel</string>
+    <string name="summary_ob1_g5_preemptive_restart_extended_time_travel">Restart the session to start at day 3 to avoid causing jumps</string>
+    <string name="title_ob1_g5_preemptive_restart_extended_time_travel_all_firmwares">Always allow extended time-travel</string>
+    <string name="summary_ob1_g5_preemptive_restart_extended_time_travel_all_firmwares">Allow extended time-travel with all firmware versions (engineering mode only) </string>
+    <string name="collection_summary_ob1_g5_preemptive_restart">Automatically restart a sensor before it stops</string>
 </resources>
