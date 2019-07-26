@@ -680,7 +680,8 @@ public class NightscoutUploader {
         record.put("notes", treatment.notes);
         record.put("uuid", treatment.uuid);
         record.put("carbs", treatment.carbs);
-        record.put("insulin", treatment.insulin);
+        record.put("insulin", treatment.insulinSummary);
+        record.put("insulinInjections", treatment.insulinJSON);
         record.put("created_at", treatment.created_at);
         record.put("sysTime", format.format(treatment.timestamp));
         array.put(record);
@@ -1224,7 +1225,8 @@ public class NightscoutUploader {
                                         if (treatment.notes != null) record.put("notes", treatment.notes);
                                         record.put("uuid", treatment.uuid);
                                         record.put("carbs", treatment.carbs);
-                                        record.put("insulin", treatment.insulin);
+                                        record.put("insulin", treatment.insulinSummary);
+                                        record.put("insulinInjections", treatment.insulinJSON);
                                         record.put("created_at", treatment.created_at);
                                         final BasicDBObject searchQuery = new BasicDBObject().append("uuid", treatment.uuid);
                                         //treatmentDb.insert(record, WriteConcern.UNACKNOWLEDGED);

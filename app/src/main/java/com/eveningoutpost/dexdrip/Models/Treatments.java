@@ -21,11 +21,13 @@ import com.eveningoutpost.dexdrip.Services.SyncService;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.UndoRedo;
 import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
+import com.eveningoutpost.dexdrip.insulin.InsulinManager;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
 import com.google.gson.internal.bind.DateTypeAdapter;
+import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -72,37 +74,78 @@ public class Treatments extends Model {
     @Column(name = "carbs")
     public double carbs;
     @Expose
-    @Column(name = "insulin")
-    public double insulin;
+    @Column(name = "insulinSummary")
+    public double insulinSummary;
+    @Expose
+    @Column(name = "insulinJSON")
+    public String insulinJSON;
     @Expose
     @Column(name = "created_at")
     public String created_at;
 
-    public static synchronized Treatments create(final double carbs, final double insulin, long timestamp) {
-        return create(carbs, insulin, timestamp, null);
+    private ArrayList<InsulinInjection> insulinInjections;
+    public void setInsulinInjections(ArrayList<InsulinInjection> i)
+    {
+        if (i == null)
+            i = new ArrayList<InsulinInjection>();
+        insulinInjections = i;
+        Gson gson = new GsonBuilder()
+                .excludeFieldsWithoutExposeAnnotation()
+                .registerTypeAdapter(Date.class, new DateTypeAdapter())
+                .serializeSpecialFloatingPointValues()
+                .create();
+        insulinJSON = gson.toJson(i);
+    }
+    public ArrayList<InsulinInjection> getInsulinInjections() {
+        insulinInjections = new Gson().fromJson(insulinJSON, new TypeToken<ArrayList<InsulinInjection>>(){}.getType());
+        for (InsulinInjection inj: insulinInjections)
+            inj.setProfile(InsulinManager.getProfile(inj.getInsulin()));
+        return insulinInjections;
     }
 
-    public static synchronized Treatments create(final double carbs, final double insulin, long timestamp, String suggested_uuid) {
+    public void setInsulinJSON(String i)
+    {
+        if ((i == null) || i.isEmpty())
+            i = "[]";
+        insulinJSON = i;
+        insulinInjections = new Gson().fromJson(i, new TypeToken<ArrayList<InsulinInjection>>(){}.getType());
+        for (InsulinInjection inj: insulinInjections)
+            inj.setProfile(InsulinManager.getProfile(inj.getInsulin()));
+    }
+
+    public Treatments()
+    {
+        eventType = DEFAULT_EVENT_TYPE;
+        carbs = 0;
+        insulinSummary = 0;
+        setInsulinInjections(new ArrayList<InsulinInjection>());
+    }
+
+    public static synchronized Treatments create(final double carbs, final double insulinSum, final ArrayList<InsulinInjection> insulin, long timestamp) {
+        return create(carbs, insulinSum, insulin, timestamp, null);
+    }
+
+    public static synchronized Treatments create(final double carbs, final double insulinSum, final ArrayList<InsulinInjection> insulin, long timestamp, String suggested_uuid) {
         // if treatment more than 1 minutes in the future
         final long future_seconds = (timestamp - JoH.tsl()) / 1000;
         if (future_seconds > (60 * 60)) {
             JoH.static_toast_long("Refusing to create a treatement more than 1 hours in the future!");
             return null;
         }
-        if ((future_seconds > 60) && (future_seconds < 86400) && ((carbs > 0) || (insulin > 0))) {
+        if ((future_seconds > 60) && (future_seconds < 86400) && ((carbs > 0) || (insulinSum > 0))) {
             final Context context = xdrip.getAppContext();
             JoH.scheduleNotification(context, "Treatment Reminder", "@" + JoH.hourMinuteString(timestamp) + " : "
                     + carbs + " " + context.getString(R.string.carbs) + " / "
-                    + insulin + " " + context.getString(R.string.units), (int) future_seconds, 34026);
+                    + insulinSum + " " + context.getString(R.string.units), (int) future_seconds, 34026);
         }
-        return create(carbs, insulin, timestamp, -1, suggested_uuid);
+        return create(carbs, insulinSum, insulin, timestamp, -1, suggested_uuid);
     }
 
-    public static synchronized Treatments create(final double carbs, final double insulin, long timestamp, double position, String suggested_uuid) {
+    public static synchronized Treatments create(final double carbs, final double insulinSum, final ArrayList<InsulinInjection> insulin, long timestamp, double position, String suggested_uuid) {
         // TODO sanity check values
-        Log.d(TAG, "Creating treatment: Insulin: " + Double.toString(insulin) + " / Carbs: " + Double.toString(carbs) + (suggested_uuid != null && !suggested_uuid.isEmpty() ? " uuid: " + suggested_uuid : ""));
+        Log.d(TAG, "Creating treatment: Insulin: " + Double.toString(insulinSum) + " / Carbs: " + Double.toString(carbs) + (suggested_uuid != null && !suggested_uuid.isEmpty() ? " uuid: " + suggested_uuid : ""));
 
-        if ((carbs == 0) && (insulin == 0)) return null;
+        if ((carbs == 0) && (insulinSum == 0)) return null;
 
         if (timestamp == 0) {
             timestamp = new Date().getTime();
@@ -116,9 +159,9 @@ public class Treatments extends Model {
             Treatment.enteredBy = XDRIP_TAG;
         }
 
-        Treatment.eventType = DEFAULT_EVENT_TYPE;
         Treatment.carbs = carbs;
-        Treatment.insulin = insulin;
+        Treatment.insulinSummary = insulinSum;
+        Treatment.setInsulinInjections(insulin);
         Treatment.timestamp = timestamp;
         Treatment.created_at = DateUtil.toISOString(timestamp);
         Treatment.uuid = suggested_uuid != null ? suggested_uuid : UUID.randomUUID().toString();
@@ -162,9 +205,6 @@ public class Treatments extends Model {
             Log.d(TAG, "Creating new treatment entry for note");
             is_new = true;
 
-            treatment.eventType = DEFAULT_EVENT_TYPE;
-            treatment.carbs = 0;
-            treatment.insulin = 0;
             treatment.notes = note;
             treatment.timestamp = timestamp;
             treatment.created_at = DateUtil.toISOString(timestamp);
@@ -257,7 +297,8 @@ public class Treatments extends Model {
                 "ALTER TABLE Treatments ADD COLUMN enteredBy TEXT;",
                 "ALTER TABLE Treatments ADD COLUMN notes TEXT;",
                 "ALTER TABLE Treatments ADD COLUMN created_at TEXT;",
-                "ALTER TABLE Treatments ADD COLUMN insulin REAL;",
+                "ALTER TABLE Treatments ADD COLUMN insulinSummary REAL;",
+                "ALTER TABLE Treatments ADD COLUMN insulinJSON TEXT;",
                 "ALTER TABLE Treatments ADD COLUMN carbs REAL;",
                 "CREATE INDEX index_Treatments_timestamp on Treatments(timestamp);",
                 "CREATE UNIQUE INDEX index_Treatments_uuid on Treatments(uuid);"};
@@ -407,7 +448,7 @@ public class Treatments extends Model {
         Log.d(TAG, "converting treatment from json: " + json);
         final Treatments mytreatment = fromJSON(json);
         if (mytreatment != null) {
-            if ((mytreatment.carbs == 0) && (mytreatment.insulin == 0)
+            if ((mytreatment.carbs == 0) && (mytreatment.insulinSummary == 0)
                     && (mytreatment.notes != null) && (mytreatment.notes.startsWith("AndroidAPS started"))) {
                 Log.d(TAG, "Skipping AndroidAPS started message");
                 return false;
@@ -432,8 +473,9 @@ public class Treatments extends Model {
             if (dupe_treatment != null) {
                 Log.i(TAG, "Duplicate treatment for: " + mytreatment.timestamp);
 
-                if ((dupe_treatment.insulin == 0) && (mytreatment.insulin > 0)) {
-                    dupe_treatment.insulin = mytreatment.insulin;
+                if ((dupe_treatment.insulinSummary == 0) && (mytreatment.insulinSummary > 0)) {
+                    dupe_treatment.setInsulinJSON(mytreatment.insulinJSON);
+                    dupe_treatment.insulinSummary = mytreatment.insulinSummary;
                     dupe_treatment.save();
                     Home.staticRefreshBGChartsOnIdle();
                 }
@@ -564,6 +606,7 @@ public class Treatments extends Model {
         }
     }
 
+//todo gruoner: process via several insuline profiles
     public static Iob calcTreatment(Treatments treatment, double time, double lastDecayedby) {
 
         final double dia = Profile.insulinActionTime(time); // duration insulin action in hours
@@ -580,19 +623,19 @@ public class Treatments extends Model {
         //double activityContrib = 0;
 
         // only use treatments with insulin component which have already happened
-        if ((treatment.insulin > 0) && (insulin_timestamp < time)) {
+        if ((treatment.insulinSummary > 0) && (insulin_timestamp < time)) {
             //  double bolusTime = insulin_timestamp; // bit of a dupe
             double minAgo = scaleFactor * (((time - insulin_timestamp) / 1000) / 60);
 
             if (minAgo < peak) {
                 double x1 = minAgo / 5 + 1;
-                iobContrib = treatment.insulin * (1 - 0.001852 * x1 * x1 + 0.001852 * x1);
+                iobContrib = treatment.insulinSummary * (1 - 0.001852 * x1 * x1 + 0.001852 * x1);
                 // units: BG (mg/dL)  = (BG/U) *    U insulin     * scalar
                 // activityContrib = sens * activityMultipler * treatment.insulin * (2 / dia / 60 / peak) * minAgo;
 
             } else if (minAgo < 180) {
                 double x2 = (minAgo - peak) / 5;
-                iobContrib = treatment.insulin * (0.001323 * x2 * x2 - .054233 * x2 + .55556);
+                iobContrib = treatment.insulinSummary * (0.001323 * x2 * x2 - .054233 * x2 + .55556);
                 //   activityContrib = sens * activityMultipler * treatment.insulin * (2 / dia / 60 - (minAgo - peak) * 2 / dia / 60 / (60 * dia - peak));
             }
 
@@ -680,7 +723,7 @@ public class Treatments extends Model {
             mytime = ((long) (thisTreatment.timestamp / stepms)) * stepms; // effects of treatment occur only after it is given / fit to slot time
             tendtime = mytime + dontLookThisFar;
 
-            if (thisTreatment.insulin > 0) {
+            if (thisTreatment.insulinSummary > 0) {
                 // lay down insulin on board
                 while (mytime < tendtime) {
 
@@ -958,7 +1001,8 @@ public class Treatments extends Model {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("uuid", uuid);
-            jsonObject.put("insulin", insulin);
+            jsonObject.put("insulinSummary", insulinSummary);
+            jsonObject.put("insulinJSON", insulinJSON);
             jsonObject.put("carbs", carbs);
             jsonObject.put("timestamp", timestamp);
             jsonObject.put("notes", notes);
@@ -974,16 +1018,16 @@ public class Treatments extends Model {
     private static final double MAX_SMB_UNITS = 0.3;
     private static final double MAX_OPENAPS_SMB_UNITS = 0.4;
     public boolean likelySMB() {
-        return (carbs == 0 && insulin > 0
-                && ((insulin <= MAX_SMB_UNITS && (notes == null || notes.length() == 0)) || (enteredBy != null && enteredBy.startsWith("openaps:") && insulin <= MAX_OPENAPS_SMB_UNITS)));
+        return (carbs == 0 && insulinSummary > 0
+                && ((insulinSummary <= MAX_SMB_UNITS && (notes == null || notes.length() == 0)) || (enteredBy != null && enteredBy.startsWith("openaps:") && insulinSummary <= MAX_OPENAPS_SMB_UNITS)));
     }
 
     public boolean noteOnly() {
-        return carbs == 0 && insulin == 0 && noteHasContent();
+        return carbs == 0 && insulinSummary == 0 && noteHasContent();
     }
 
     public boolean hasContent() {
-        return insulin != 0 || carbs != 0 || noteHasContent() || !isEventTypeDefault();
+        return insulinSummary != 0 || carbs != 0 || noteHasContent() || !isEventTypeDefault();
     }
 
     public boolean noteHasContent() {

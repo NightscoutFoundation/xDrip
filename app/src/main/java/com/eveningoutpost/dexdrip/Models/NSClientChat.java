@@ -31,13 +31,13 @@ public class NSClientChat {
                     Context context = xdrip.getAppContext();
                     JSONObject data = new JSONObject();
                     if (thistreatment.carbs > 0) {
-                        if (thistreatment.insulin > 0) {
+                        if (thistreatment.insulinSummary > 0) {
                             data.put("eventType", "Meal Bolus");
                         } else {
                             data.put("eventType", "Carb Correction");
                         }
                     } else {
-                        if (thistreatment.insulin > 0) {
+                        if (thistreatment.insulinSummary > 0) {
                             data.put("eventType", "Correction Bolus");
                         } else {
                             if ((thistreatment.notes != null) && (thistreatment.notes.length() > 1)) {
@@ -48,7 +48,8 @@ public class NSClientChat {
                         }
                     }
 
-                    data.put("insulin", thistreatment.insulin);
+                    data.put("insulin", thistreatment.insulinSummary);
+                    data.put("insulinInjections", thistreatment.insulinJSON);
                     data.put("carbs", thistreatment.carbs);
                     if (thistreatment.notes != null) {
                         data.put("notes", thistreatment.notes);

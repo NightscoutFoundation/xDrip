@@ -1,12 +1,14 @@
 package com.eveningoutpost.dexdrip.insulin.shared;
 
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.Models.InsulinInjection;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.PenData;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -46,7 +48,7 @@ public class ProcessPenData {
             for (final PenData pd : doses) {
                 if (!Treatments.matchUUID(treatments, pd.uuid)) {
                     UserError.Log.d(TAG, "New Dose: " + pd.brief());
-                    Treatments.create(0, pd.units, pd.timestamp, pd.uuid);
+                    Treatments.create(0, pd.units, new ArrayList<InsulinInjection>(), pd.timestamp, pd.uuid);
                     newData = true;
                 }
             }

@@ -25,8 +25,8 @@ public class EWizard extends BaseElement {
         final EWizard result = (EWizard)new EWizard().populate(treatment.timestamp, treatment.uuid);
         result.carbInput = treatment.carbs;
         result.insulinCarbRatio = Profile.getCarbRatio(treatment.timestamp);
-        if (treatment.insulin > 0) {
-            result.bolus = new EBolus(treatment.insulin, treatment.insulin, treatment.timestamp, treatment.uuid);
+        if (treatment.insulinSummary > 0) {
+            result.bolus = new EBolus(treatment.insulinSummary, treatment.insulinSummary, treatment.timestamp, treatment.uuid);
         } else {
             result.bolus = new EBolus(0.0001,0.0001, treatment.timestamp, treatment.uuid); // fake insulin record
         }
