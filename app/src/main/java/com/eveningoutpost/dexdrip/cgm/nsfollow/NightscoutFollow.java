@@ -36,7 +36,6 @@ import static com.eveningoutpost.dexdrip.cgm.nsfollow.NightscoutFollowService.ms
  * Data transport interface to Nightscout for follower service
  *
  */
-
 public class NightscoutFollow {
 
     private static final String TAG = "NightscoutFollow";
@@ -57,7 +56,6 @@ public class NightscoutFollow {
 
         @GET("/api/v1/treatments")
         Call<ResponseBody> getTreatments(@Header("api-secret") String secret);
-
     }
 
     private static Nightscout getService() {
@@ -83,6 +81,7 @@ public class NightscoutFollow {
         session.entriesCallback = new NightscoutCallback<List<Entry>>("NS entries download", session, () -> {
             // process data
             EntryProcessor.processEntries(session.entries, live);
+            NightscoutFollowService.updateBgReceiveDelay();
             NightscoutFollowService.scheduleWakeUp();
             msg("");
         })
@@ -93,6 +92,7 @@ public class NightscoutFollow {
             // process data
             try {
                 NightscoutTreatments.processTreatmentResponse(session.treatments.string());
+                NightscoutFollowService.updateTreatmentDownloaded();
             } catch (Exception e) {
                 msg("Treatments: " + e);
             }
@@ -128,7 +128,7 @@ public class NightscoutFollow {
         return Pref.getString("nsfollow_url", "");
     }
 
-    private static boolean treatmentDownloadEnabled() {
+    static boolean treatmentDownloadEnabled() {
         return Pref.getBooleanDefaultFalse("nsfollow_download_treatments");
     }
 
@@ -165,5 +165,4 @@ public class NightscoutFollow {
         UserError.Log.d(TAG, "Instance reset");
         CollectionServiceStarter.restartCollectionServiceBackground();
     }
-
 }
