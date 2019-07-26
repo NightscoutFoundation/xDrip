@@ -1820,6 +1820,10 @@ public class Ob1G5CollectionService extends G5BaseService {
             }
         }
 
+        l.add(new StatusItem("Preemptive restarts",
+                (Pref.getBooleanDefaultFalse("ob1_g5_preemptive_restart") ? "Enabled" : "Disabled")
+                        + (Ob1G5StateMachine.useExtendedTimeTravel() ? " (extended)" : "")));
+
         // firmware details
         final VersionRequestRxMessage vr = Ob1G5StateMachine.getFirmwareDetails(tx_id);
         try {

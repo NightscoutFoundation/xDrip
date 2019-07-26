@@ -8,7 +8,8 @@ public class FirmwareCapability {
 
     private static final ImmutableSet<String> KNOWN_G5_FIRMWARES = ImmutableSet.of("1.0.0.13", "1.0.0.17", "1.0.4.10", "1.0.4.12");
     private static final ImmutableSet<String> KNOWN_G6_FIRMWARES = ImmutableSet.of("1.6.5.23", "1.6.5.25");
-    private static final ImmutableSet<String> KNOWN_G6_REV2_FIRMWARES = ImmutableSet.of("2.18.2.67");
+    private static final ImmutableSet<String> KNOWN_G6_REV2_FIRMWARES = ImmutableSet.of("2.18.2.67", "2.18.2.88");
+    private static final ImmutableSet<String> KNOWN_TIME_TRAVEL_TESTED = ImmutableSet.of("1.6.5.25");
 
     // new G6 firmware versions will need to be added here / above
     private static boolean isG6Firmware(final String version) {
@@ -21,6 +22,10 @@ public class FirmwareCapability {
 
     private static boolean isG5Firmware(final String version) {
         return KNOWN_G5_FIRMWARES.contains(version);
+    }
+
+    private static boolean isFirmwareTimeTravelCapable(final String version) {
+        return KNOWN_TIME_TRAVEL_TESTED.contains(version);
     }
 
     private static boolean isFirmwarePredictiveCapable(final String version) {
@@ -43,4 +48,7 @@ public class FirmwareCapability {
         return isG6Rev2(Ob1G5StateMachine.getRawFirmwareVersionString(tx_id));
     }
 
+    public static boolean isTransmitterTimeTravelCapable(final String tx_id) {
+        return isFirmwareTimeTravelCapable(Ob1G5StateMachine.getRawFirmwareVersionString(tx_id));
+    }
 }

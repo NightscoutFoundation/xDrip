@@ -80,8 +80,8 @@ import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.X;
 import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.getCol;
 
 public class BgGraphBuilder {
-    public static final int FUZZER = (1000 * 30 * 5); // 2.5 mins?
-    public final static long DEXCOM_PERIOD = 300000;
+    public static final int FUZZER = (1000 * 30 * 5); // 2.5 minutes
+    public final static long DEXCOM_PERIOD = 300_000; // 5 minutes
     public final static double NOISE_TRIGGER = 10;
     public final static double NOISE_TRIGGER_ULTRASENSITIVE = 1;
     public final static double NOISE_TOO_HIGH_FOR_PREDICT = 60;
@@ -105,7 +105,7 @@ public class BgGraphBuilder {
     public double start_time = end_time - ((60000 * 60 * 24)) / FUZZER;
 
 
-    private final static double timeshift = 500000;
+    private final static double timeshift = 500_000;
     private static final int NUM_VALUES = (60 / 5) * 24;
 
     // flag to indicate if readings data has been adjusted

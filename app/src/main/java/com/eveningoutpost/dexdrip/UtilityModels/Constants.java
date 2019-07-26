@@ -8,10 +8,10 @@ public class Constants {
     public static final double MGDL_TO_MMOLL = 1 / MMOLL_TO_MGDL;
 
 
-    public static final long SECOND_IN_MS = 1000;
-    public static final long MINUTE_IN_MS = 60000;
-    public static final long HOUR_IN_MS = 3600000;
-    public static final long DAY_IN_MS = 86400000;
+    public static final long SECOND_IN_MS = 1_000;
+    public static final long MINUTE_IN_MS = 60_000;
+    public static final long HOUR_IN_MS = 3_600_000;
+    public static final long DAY_IN_MS = 86_400_000;
     public static final long WEEK_IN_MS = DAY_IN_MS * 7;
     public static final long MONTH_IN_MS = DAY_IN_MS * 30;
 

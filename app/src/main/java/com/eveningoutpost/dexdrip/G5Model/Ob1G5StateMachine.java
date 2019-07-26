@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothGatt;
 import android.os.Build;
 import android.os.PowerManager;
 
+import com.eveningoutpost.dexdrip.BestGlucose;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.Models.BgReading;
@@ -13,13 +14,16 @@ import com.eveningoutpost.dexdrip.Models.Prediction;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.SensorSanity;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
+import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.BroadcastGlucose;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.NotificationChannels;
+import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.WholeHouse;
@@ -70,6 +74,7 @@ import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.getTran
 import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.onlyUsingNativeMode;
 import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.wear_broadcast;
 import static com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder.DEXCOM_PERIOD;
+import static com.eveningoutpost.dexdrip.UtilityModels.Constants.DAY_IN_MS;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.HOUR_IN_MS;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.MINUTE_IN_MS;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.SECOND_IN_MS;
@@ -615,6 +620,7 @@ public class Ob1G5StateMachine {
                             break;
 
                         case TransmitterTimeRxMessage:
+                            // This message is received every 120-125m
                             final TransmitterTimeRxMessage txtime = (TransmitterTimeRxMessage) data_packet.msg;
                             DexTimeKeeper.updateAge(getTransmitterID(), txtime.getCurrentTime(), true);
                             if (txtime.sessionInProgress()) {
@@ -627,10 +633,15 @@ public class Ob1G5StateMachine {
                                 DexSessionKeeper.clearStart();
                             }
                             if (Pref.getBooleanDefaultFalse("ob1_g5_preemptive_restart")) {
-                                if (txtime.getSessionDuration() > Constants.DAY_IN_MS * (usingG6() ? 9 : 6)
+                                int restartDaysThreshold = usingG6() ? 9 : 6;
+                                if (txtime.getSessionDuration() > Constants.DAY_IN_MS * restartDaysThreshold
                                         && txtime.getSessionDuration() < Constants.MONTH_IN_MS) {
-                                    UserError.Log.uel(TAG, "Requesting preemptive session restart");
-                                    restartSensorWithTimeTravel();
+                                    if (!deferPreemptiveRestart(txtime.getSessionDuration(), restartDaysThreshold)) {
+                                        UserError.Log.uel(TAG, "Requesting preemptive session restart");
+                                        restartSensorWithTimeTravel();
+                                    } else {
+                                        UserError.Log.uel(TAG, "Deferring preemptive session restart, current delta is too high or n/a");
+                                    }
                                 }
                             }
                             break;
@@ -659,6 +670,17 @@ public class Ob1G5StateMachine {
 
 
         return true;
+    }
+
+    /**
+     * Defer restart up to 12h if current delta is high, which can lead to sensor
+     * errors if session is restarted during times of high fluctuation
+     */
+    private static boolean deferPreemptiveRestart(long sessionDuration, int restartDaysThreshold) {
+        BestGlucose.DisplayGlucose displayGlucose = BestGlucose.getDisplayGlucose();
+        return Pref.getBooleanDefaultFalse("ob1_g5_defer_preemptive_restart_if_needed")
+                && (displayGlucose != null && Math.abs(displayGlucose.delta_mgdl) <= 4
+                || sessionDuration > DAY_IN_MS * (restartDaysThreshold + 0.5));
     }
 
     private static void glucoseRxCommon(final BaseGlucoseRxMessage glucose, final Ob1G5CollectionService parent, final RxBleConnection connection) {
@@ -1004,7 +1026,13 @@ public class Ob1G5StateMachine {
 
 
     public static void restartSensorWithTimeTravel() {
-        restartSensorWithTimeTravel(tsl() - HOUR_IN_MS * 2 - MINUTE_IN_MS * 10);
+        restartSensorWithTimeTravel(tsl() - (useExtendedTimeTravel() ? DAY_IN_MS * 3 : HOUR_IN_MS * 2 - MINUTE_IN_MS * 10));
+    }
+
+    public static boolean useExtendedTimeTravel() {
+        return Pref.getBooleanDefaultFalse("ob1_g5_preemptive_restart_extended_time_travel")
+                    && (FirmwareCapability.isTransmitterTimeTravelCapable(getTransmitterID())
+                    || (Pref.getBooleanDefaultFalse("ob1_g5_defer_preemptive_restart_all_firmwares") && Home.get_engineering_mode()));
     }
 
     public static void restartSensorWithTimeTravel(long when) {
@@ -1017,6 +1045,8 @@ public class Ob1G5StateMachine {
             enqueueUniqueCommand(new SessionStartTxMessage(when,
                             DexTimeKeeper.getDexTime(getTransmitterID(), when_started)),
                     "Auto Start Sensor");
+            Notifications.ob1SessionRestartRequested();
+            Treatments.create_note(xdrip.getAppContext().getString(R.string.ob1_session_restarted_note), JoH.tsl());
         }
     }
 

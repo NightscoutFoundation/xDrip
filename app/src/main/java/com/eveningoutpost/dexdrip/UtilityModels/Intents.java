@@ -58,4 +58,7 @@ public interface Intents {
     String LIBRE_DATA_TIMESTAMP = "com.eveningoutpost.dexdrip.Extras.TIMESTAMP";
     String LIBRE_SN = "com.eveningoutpost.dexdrip.Extras.LIBRE_SN";
 
+    String LIBRE2_BG = "com.librelink.app.ThirdPartyIntegration.GLUCOSE_READING";
+    String LIBRE2_ACTIVATION = "com.librelink.app.ThirdPartyIntegration.SENSOR_ACTIVATE";
+
 }
