@@ -1026,7 +1026,8 @@ public class Ob1G5StateMachine {
 
 
     public static void restartSensorWithTimeTravel() {
-        restartSensorWithTimeTravel(tsl() - (useExtendedTimeTravel() ? DAY_IN_MS * 3 : HOUR_IN_MS * 2 - MINUTE_IN_MS * 10));
+        restartSensorWithTimeTravel(tsl() -
+                (useExtendedTimeTravel() ? DAY_IN_MS * 3 + HOUR_IN_MS * 2 : HOUR_IN_MS * 2 - MINUTE_IN_MS * 10));
     }
 
     public static boolean useExtendedTimeTravel() {
