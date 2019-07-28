@@ -1,6 +1,6 @@
 language: android
 sudo: required
-
+dist: trusty
 env:
   global:
     - EMULATOR_API_LEVEL=19
