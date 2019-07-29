@@ -86,7 +86,6 @@ public class Bubble {
                 InitBuffer(expectedSize);
             }
             addData(buffer);
-            PersistentStore.setBoolean("CobbleNoSensor", false);
             return reply;
 
         }
@@ -100,7 +99,6 @@ public class Bubble {
             if (errorCount <= 2) {
                 return getBubbleResponse();
             }
-            PersistentStore.setBoolean("CobbleNoSensor", true);
             return reply;
         }
 
@@ -130,11 +128,7 @@ public class Bubble {
         InitBuffer(expectedSize);
         errorCount = 0;
         Log.e(TAG, "We have all the data that we need " + s_acumulatedSize + " checksum_ok = " + checksum_ok + HexDump.dumpHexString(data));
-        if (!checksum_ok) {
-            int count = Pref.getInt("CobbleCheckFlase", 0);
-            count = count + 1;
-            Pref.setInt("CobbleCheckFlase", count);
-        }
+
     }
 
 
