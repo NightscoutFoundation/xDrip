@@ -24,6 +24,30 @@ public class HexDump {
     private final static char[] HEX_DIGITS = {
             '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
     };
+    public static String bytesToHexString(Byte[] src) {
+        StringBuilder stringBuilder = new StringBuilder("");
+        if (src == null || src.length <= 0) {
+            return null;
+        }
+        for (int i = 0; i < src.length; i++) {
+            int v = src[i] & 0xFF;
+            String hv = Integer.toHexString(v);
+            if (hv.length() < 2) {
+                stringBuilder.append(0);
+            }
+            stringBuilder.append(hv);
+        }
+        return stringBuilder.toString();
+    }
+
+    public static String dumpHexString(Byte[] array) {
+        if (array == null) return "<null>";
+        byte[] line = new byte[array.length];
+        for (int i = 0; i < array.length; i++) {
+            line[i] = array[i];
+        }
+        return dumpHexString(line, 0, array.length);
+    }
 
     public static String dumpHexString(byte[] array) {
         if (array == null) return "<null>";
@@ -33,18 +57,19 @@ public class HexDump {
     public static String dumpHexString(byte[] array, int offset, int length) {
         if (array == null) return "<null>";
         StringBuilder result = new StringBuilder();
+        final int LINESIZE = 16;
 
-        byte[] line = new byte[16];
+        byte[] line = new byte[LINESIZE];
         int lineIndex = 0;
 
         result.append("\n0x");
         result.append(toHexString(offset));
 
         for (int i = offset; i < offset + length; i++) {
-            if (lineIndex == 16) {
+            if (lineIndex == LINESIZE) {
                 result.append(" ");
 
-                for (int j = 0; j < 16; j++) {
+                for (int j = 0; j < LINESIZE; j++) {
                     if (line[j] > ' ' && line[j] < '~') {
                         result.append(new String(line, j, 1));
                     } else {
@@ -65,8 +90,8 @@ public class HexDump {
             line[lineIndex++] = b;
         }
 
-        if (lineIndex != 16) {
-            int count = (16 - lineIndex) * 3;
+        if (lineIndex != LINESIZE) {
+            int count = (LINESIZE - lineIndex) * 3;
             count++;
             for (int i = 0; i < count; i++) {
                 result.append(" ");
@@ -160,5 +185,24 @@ public class HexDump {
         }
 
         return buffer;
+    }
+
+    private static byte charToByte(char c) {
+        return (byte) "0123456789ABCDEF".indexOf(c);
+    }
+
+    public static byte[] hexStringToBytes(String hexString) {
+        if (hexString == null || hexString.equals("")) {
+            return null;
+        }
+        hexString = hexString.toUpperCase();
+        int length = hexString.length() / 2;
+        char[] hexChars = hexString.toCharArray();
+        byte[] d = new byte[length];
+        for (int i = 0; i < length; i++) {
+            int pos = i * 2;
+            d[i] = (byte) (charToByte(hexChars[pos]) << 4 | charToByte(hexChars[pos + 1]));
+        }
+        return d;
     }
 }
