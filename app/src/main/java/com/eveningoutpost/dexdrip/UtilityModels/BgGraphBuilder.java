@@ -481,17 +481,29 @@ public class BgGraphBuilder {
                 points.add(new PointValue((float) item.created_at / FUZZER, this_ypos));
             }
         }
+        /*
+        points = new ArrayList<>(basallist.size());
+        float x2v = loaded_end - 30 * 60000;
+        float x1v = loaded_end - 60 * 60000;
+        points.add(new PointValue((float) x2v / FUZZER, 80));
+        points.add(new PointValue((float) x1v / FUZZER, 80));
+        points.add(new PointValue((float) x1v / FUZZER, 60));
+        points.add(new PointValue((float) x2v / FUZZER, 60));
+        points.add(new PointValue((float) x2v / FUZZER, 80));
+        */
+        
 
         final Line line = new Line(points);
         //line.setHasLabels(true);
         line.setFilled(true);
         //line.setFillFlipped(true); //??? trying
-        line.setHasGradientToTransparent(true);
+        line.setHasGradientToTransparent(false);
         line.setHasPoints(false);
         line.setStrokeWidth(1);
         line.setHasLines(true);
         line.setSquare(true);
         line.setPointRadius(1);
+        line.setAreaTransparency(240);
         //line.setReverseYAxis(true); //??? trying
         // line.setBackgroundUnclipped(true);// - causes damadge on zoom
         line.setGradientDivider(10f);
