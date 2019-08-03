@@ -60,7 +60,7 @@
                 android:layout_column="0"
                 android:layout_gravity="center"
                 android:src="@{idq.received_raw_data ? @drawable/ic_check : @drawable/ic_hourglass}"
-                android:visibility="@{idq.collector_running ? android.view.View.VISIBLE : android.view.View.INVISIBLE}" />
+                appx:showIfTrue="@{idq.collector_running}" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -77,7 +77,7 @@
                 android:layout_column="0"
                 android:layout_gravity="center"
                 android:src="@{idq.recent_data ? @drawable/ic_check : @drawable/ic_hourglass}"
-                android:visibility="@{idq.received_raw_data ? android.view.View.VISIBLE : android.view.View.INVISIBLE}" />
+                appx:showIfTrue="@{idq.received_raw_data}" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -94,8 +94,7 @@
                 android:layout_column="0"
                 android:layout_gravity="center"
                 android:src="@{idq.pass ? @drawable/ic_check : @drawable/ic_hourglass}"
-                android:visibility="@{idq.recent_data ? android.view.View.VISIBLE : android.view.View.INVISIBLE}"
-                appx:srcCompat="@drawable/ic_check" />
+                appx:showIfTrue="@{idq.recent_data}" />
 
             <TextView
                 android:layout_width="match_parent"
