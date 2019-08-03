@@ -9,7 +9,6 @@ import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -287,7 +286,6 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     private boolean is_newbie;
     private boolean checkedeula;
 
-
     @Inject
     BaseShelf homeShelf;
     //@Inject
@@ -350,7 +348,6 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             homeShelf.set("source_wizard_auto", true);
         }
 
-
         nanoStatus = new NanoStatus("collector", 1000);
 
         set_is_follower();
@@ -370,21 +367,18 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
         final Home home = this;
         mToolbar.setLongClickable(true);
-        mToolbar.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                // show configurator
-                final ActivityHomeShelfSettingsBinding binding = ActivityHomeShelfSettingsBinding.inflate(getLayoutInflater());
-                final Dialog dialog = new Dialog(v.getContext());
-                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                binding.setVs(homeShelf);
-                binding.setHome(home);
-                homeShelf.set("arrow_configurator", false);
-                dialog.setContentView(binding.getRoot());
-                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                dialog.show();
-                return false;
-            }
+        mToolbar.setOnLongClickListener(v -> {
+            // show configurator
+            final ActivityHomeShelfSettingsBinding binding = ActivityHomeShelfSettingsBinding.inflate(getLayoutInflater());
+            final Dialog dialog = new Dialog(v.getContext());
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            binding.setVs(homeShelf);
+            binding.setHome(home);
+            homeShelf.set("arrow_configurator", false);
+            dialog.setContentView(binding.getRoot());
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            dialog.show();
+            return false;
         });
 
         //findViewById(R.id.home_layout_holder).setBackgroundColor(getCol(X.color_home_chart_background));
@@ -441,116 +435,70 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         }
 
         this.btnSpeak = (ImageButton) findViewById(R.id.btnTreatment);
-        btnSpeak.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                promptTextInput();
-
-            }
-        });
-        btnSpeak.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                promptSpeechInput();
-                return true;
-            }
+        btnSpeak.setOnClickListener(v -> promptTextInput());
+        btnSpeak.setOnLongClickListener(v -> {
+            promptSpeechInput();
+            return true;
         });
 
         this.btnNote = (ImageButton) findViewById(R.id.btnNote);
-        btnNote.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                if (Pref.getBooleanDefaultFalse("default_to_voice_notes")) {
-                    showNoteTextInputDialog(v, 0);
-                } else {
-                    promptSpeechNoteInput(v);
-                }
-                return false;
+        btnNote.setOnLongClickListener(v -> {
+            if (Pref.getBooleanDefaultFalse("default_to_voice_notes")) {
+                showNoteTextInputDialog(v, 0);
+            } else {
+                promptSpeechNoteInput(v);
             }
+            return false;
         });
-        btnNote.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!Pref.getBooleanDefaultFalse("default_to_voice_notes")) {
-                    showNoteTextInputDialog(v, 0);
-                } else {
-                    promptSpeechNoteInput(v);
-                }
+        btnNote.setOnClickListener(v -> {
+            if (!Pref.getBooleanDefaultFalse("default_to_voice_notes")) {
+                showNoteTextInputDialog(v, 0);
+            } else {
+                promptSpeechNoteInput(v);
             }
         });
 
+        btnCancel.setOnClickListener(v -> cancelTreatment());
 
-        btnCancel.setOnClickListener(new View.OnClickListener() {
+        btnApprove.setOnClickListener(v -> processAndApproveTreatment());
 
-            @Override
-            public void onClick(View v) {
-                cancelTreatment();
+        btnInsulinDose.setOnClickListener(v -> {
+            // proccess and approve treatment
+            textInsulinDose.setVisibility(View.INVISIBLE);
+            btnInsulinDose.setVisibility(View.INVISIBLE);
+            Treatments.create(0, thisinsulinnumber, Treatments.getTimeStampWithOffset(thistimeoffset));
+            Pendiq.handleTreatment(thisinsulinnumber);
+            thisinsulinnumber = 0;
+            reset_viewport = true;
+            if (hideTreatmentButtonsIfAllDone()) {
+                updateCurrentBgInfo("insulin button");
+            }
+        });
+        btnCarbohydrates.setOnClickListener(v -> {
+            // proccess and approve treatment
+            textCarbohydrates.setVisibility(View.INVISIBLE);
+            btnCarbohydrates.setVisibility(View.INVISIBLE);
+            reset_viewport = true;
+            Treatments.create(thiscarbsnumber, 0, Treatments.getTimeStampWithOffset(thistimeoffset));
+            thiscarbsnumber = 0;
+            if (hideTreatmentButtonsIfAllDone()) {
+                updateCurrentBgInfo("carbs button");
             }
         });
 
-        btnApprove.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                processAndApproveTreatment();
-            }
+        btnBloodGlucose.setOnClickListener(v -> {
+            reset_viewport = true;
+            processCalibration();
         });
 
-        btnInsulinDose.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                // proccess and approve treatment
-                textInsulinDose.setVisibility(View.INVISIBLE);
-                btnInsulinDose.setVisibility(View.INVISIBLE);
-                Treatments.create(0, thisinsulinnumber, Treatments.getTimeStampWithOffset(thistimeoffset));
-                Pendiq.handleTreatment(thisinsulinnumber);
-                thisinsulinnumber = 0;
-                reset_viewport = true;
-                if (hideTreatmentButtonsIfAllDone()) {
-                    updateCurrentBgInfo("insulin button");
-                }
+        btnTime.setOnClickListener(v -> {
+            // clears time if clicked
+            textTime.setVisibility(View.INVISIBLE);
+            btnTime.setVisibility(View.INVISIBLE);
+            if (hideTreatmentButtonsIfAllDone()) {
+                updateCurrentBgInfo("time button");
             }
         });
-        btnCarbohydrates.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                // proccess and approve treatment
-                textCarbohydrates.setVisibility(View.INVISIBLE);
-                btnCarbohydrates.setVisibility(View.INVISIBLE);
-                reset_viewport = true;
-                Treatments.create(thiscarbsnumber, 0, Treatments.getTimeStampWithOffset(thistimeoffset));
-                thiscarbsnumber = 0;
-                if (hideTreatmentButtonsIfAllDone()) {
-                    updateCurrentBgInfo("carbs button");
-                }
-            }
-        });
-
-        btnBloodGlucose.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                reset_viewport = true;
-                processCalibration();
-            }
-        });
-
-        btnTime.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                // clears time if clicked
-                textTime.setVisibility(View.INVISIBLE);
-                btnTime.setVisibility(View.INVISIBLE);
-                if (hideTreatmentButtonsIfAllDone()) {
-                    updateCurrentBgInfo("time button");
-                }
-            }
-        });
-
 
         final DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
@@ -597,7 +545,6 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             }
         };
 
-
         // handle incoming extras
         final Bundle bundle = getIntent().getExtras();
         processIncomingBundle(bundle);
@@ -611,10 +558,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             showcasemenu(SHOWCASE_VARIANT);
         }
 
-
         currentBgValueText.setText(""); // clear any design prototyping default
-
-
     }
 
     private boolean firstRunDialogs(final boolean checkedeula) {
@@ -697,26 +641,18 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             builder.setTitle(gs(R.string.settings_issue));
             builder.setMessage(gs(R.string.you_have_an_old_experimental_glucose_prediction_setting_enabled__this_is_not_recommended_and_could_mess_things_up_badly__shall_i_disable_this_for_you));
 
-            builder.setPositiveButton(gs(R.string.yes_please), new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                    Pref.setBoolean("predictive_bg", false);
-                    toast(gs(R.string.setting_disabled_));
-                }
+            builder.setPositiveButton(gs(R.string.yes_please), (dialog, which) -> {
+                dialog.dismiss();
+                Pref.setBoolean("predictive_bg", false);
+                toast(gs(R.string.setting_disabled_));
             });
 
-            builder.setNegativeButton("No, I really know what I'm doing", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                }
-            });
+            builder.setNegativeButton("No, I really know what I'm doing", (dialog, which) -> dialog.dismiss());
 
             AlertDialog alert = builder.create();
             alert.show();
         }
     }
-
 
     // handle sending the intent
     private synchronized void processFingerStickCalibration(final double glucosenumber, final double timeoffset, boolean dontask) {
@@ -751,28 +687,20 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 builder.setTitle("Use " + JoH.qs(glucosenumber, 1) + " for Calibration?");
                 builder.setMessage(gs(R.string.do_you_want_to_use_this_synced_fingerstick_blood_glucose_result_to_calibrate_with__you_can_change_when_this_dialog_is_displayed_in_settings));
 
-                builder.setPositiveButton(gs(R.string.yes_calibrate), new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        calintent.putExtra("note_only", "false");
-                        calintent.putExtra("from_interactive", "true");
-                        startIntentThreadWithDelayedRefresh(calintent);
-                        dialog.dismiss();
-                    }
+                builder.setPositiveButton(gs(R.string.yes_calibrate), (dialog, which) -> {
+                    calintent.putExtra("note_only", "false");
+                    calintent.putExtra("from_interactive", "true");
+                    startIntentThreadWithDelayedRefresh(calintent);
+                    dialog.dismiss();
                 });
 
-                builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
+                builder.setNegativeButton("NO", (dialog, which) -> dialog.dismiss());
 
                 AlertDialog alert = builder.create();
                 alert.show();
             }
         }
     }
-
 
     // handle sending the intent
     private void processCalibrationNoUI(final double glucosenumber, final double timeoffset) {
@@ -799,23 +727,18 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 builder.setTitle(gs(R.string.use_bg_for_calibration));
                 builder.setMessage(gs(R.string.do_you_want_to_use_this_entered_fingerstick_blood_glucose_test_to_calibrate_with__you_can_change_when_this_dialog_is_displayed_in_settings));
 
-                builder.setPositiveButton(gs(R.string.yes_calibrate), new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        calintent.putExtra("note_only", "false");
-                        calintent.putExtra("from_interactive", "true");
-                        startIntentThreadWithDelayedRefresh(calintent);
-                        dialog.dismiss();
-                    }
+                builder.setPositiveButton(gs(R.string.yes_calibrate), (dialog, which) -> {
+                    calintent.putExtra("note_only", "false");
+                    calintent.putExtra("from_interactive", "true");
+                    startIntentThreadWithDelayedRefresh(calintent);
+                    dialog.dismiss();
                 });
 
-                builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // TODO make this a blood test entry xx
-                        calintent.putExtra("note_only", "true");
-                        startIntentThreadWithDelayedRefresh(calintent);
-                        dialog.dismiss();
-                    }
+                builder.setNegativeButton("NO", (dialog, which) -> {
+                    // TODO make this a blood test entry xx
+                    calintent.putExtra("note_only", "true");
+                    startIntentThreadWithDelayedRefresh(calintent);
+                    dialog.dismiss();
                 });
 
                 AlertDialog alert = builder.create();
@@ -832,20 +755,13 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                     builder.setTitle(gs(R.string.enable_automatic_calibration));
                     builder.setMessage(gs(R.string.entered_blood_tests_which_occur_during_flat_trend_periods_can_automatically_be_used_to_recalibrate_after_20_minutes_this_should_provide_the_most_accurate_method_to_calibrate_with__do_you_want_to_enable_this_feature));
 
-                    builder.setPositiveButton(gs(R.string.yes_enable), new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            Pref.setBoolean("bluetooth_meter_for_calibrations_auto", true);
-                            JoH.static_toast_long(gs(R.string.automated_calibration_enabled));
-                            dialog.dismiss();
-                        }
+                    builder.setPositiveButton(gs(R.string.yes_enable), (dialog, which) -> {
+                        Pref.setBoolean("bluetooth_meter_for_calibrations_auto", true);
+                        JoH.static_toast_long(gs(R.string.automated_calibration_enabled));
+                        dialog.dismiss();
                     });
 
-                    builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
+                    builder.setNegativeButton("NO", (dialog, which) -> dialog.dismiss());
 
                     final AlertDialog alert = builder.create();
                     alert.show();
@@ -868,12 +784,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             }
         }.start();
 
-        JoH.runOnUiThreadDelayed(new Runnable() {
-            @Override
-            public void run() {
-                staticRefreshBGCharts();
-            }
-        }, 4000);
+        JoH.runOnUiThreadDelayed(Home::staticRefreshBGCharts, 4000);
     }
 
     private void processCalibration() {
@@ -887,8 +798,6 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         if (hideTreatmentButtonsIfAllDone()) {
             updateCurrentBgInfo("bg button");
         }
-
-
     }
 
     private void cancelTreatment() {
@@ -1019,13 +928,14 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 CompatibleApps.showChoiceDialog(this, bundle.getParcelable("choice-intentx"));
             } else if (bundle.getString("numberIconTest") != null) {
 
-                JoH.show_ok_dialog(this, gs(R.string.prepare_to_test), gs(R.string.after_you_click_ok_look_for_a_number_icon_in_the_notification_area_if_you_see_123_then_the_test_has_succeeded__on_some_phones_this_test_will_crash_the_phone__after_30_seconds_we_will_shut_off_the_notification_if_your_phone_does_not_recover_after_this_then_hold_the_power_button_to_reboot_it), new Runnable() {
-                    @Override
-                    public void run() {
-                        JoH.static_toast_long(gs(R.string.running_test_with_number_123));
-                        NumberGraphic.testNotification("123");
-                    }
-                });
+                JoH.show_ok_dialog(
+                        this,
+                        gs(R.string.prepare_to_test),
+                        gs(R.string.after_you_click_ok_look_for_a_number_icon_in_the_notification_area_if_you_see_123_then_the_test_has_succeeded__on_some_phones_this_test_will_crash_the_phone__after_30_seconds_we_will_shut_off_the_notification_if_your_phone_does_not_recover_after_this_then_hold_the_power_button_to_reboot_it),
+                        () -> {
+                            JoH.static_toast_long(gs(R.string.running_test_with_number_123));
+                            NumberGraphic.testNotification("123");
+                        });
             } else if (bundle.getString("inpen-reset") != null) {
                 InPenEntry.startWithReset();
             } else if (bundle.getString(Home.BLOOD_TEST_ACTION) != null) {
@@ -1037,51 +947,36 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 if (bt_uuid != null) {
                     final BloodTest bt = BloodTest.byUUID(bt_uuid);
                     if (bt != null) {
-                        builder.setNeutralButton(gs(R.string.nothing), new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
+                        builder.setNeutralButton(gs(R.string.nothing), (dialog, which) -> dialog.dismiss());
+
+                        builder.setPositiveButton(gs(R.string.calibrate), (dialog, which) -> {
+                            dialog.dismiss();
+                            // TODO time should be absolute not relative!?!?
+                            final long time_since = JoH.msSince(bt.timestamp);
+                            Home.startHomeWithExtra(xdrip.getAppContext(), Home.BLUETOOTH_METER_CALIBRATION, BgGraphBuilder.unitized_string_static(bt.mgdl), Long.toString(time_since));
+                            bt.addState(BloodTest.STATE_CALIBRATION);
+                            GcmActivity.syncBloodTests();
+
                         });
 
-                        builder.setPositiveButton(gs(R.string.calibrate), new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                                // TODO time should be absolute not relative!?!?
-                                final long time_since = JoH.msSince(bt.timestamp);
-                                Home.startHomeWithExtra(xdrip.getAppContext(), Home.BLUETOOTH_METER_CALIBRATION, BgGraphBuilder.unitized_string_static(bt.mgdl), Long.toString(time_since));
-                                bt.addState(BloodTest.STATE_CALIBRATION);
+                        builder.setNegativeButton("Delete", (dialog, which) -> {
+                            dialog.dismiss();
+                            final AlertDialog.Builder builder1 = new AlertDialog.Builder(mActivity);
+                            builder1.setTitle(gs(R.string.confirm_delete));
+                            builder1.setMessage(gs(R.string.are_you_sure_you_want_to_delete_this_blood_test_result));
+                            builder1.setPositiveButton(gs(R.string.yes_delete), (dialog12, which12) -> {
+                                dialog12.dismiss();
+                                bt.removeState(BloodTest.STATE_VALID);
+                                NativeCalibrationPipe.removePendingCalibration((int) bt.mgdl);
                                 GcmActivity.syncBloodTests();
-
-                            }
-                        });
-
-                        builder.setNegativeButton("Delete", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                                final AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
-                                builder.setTitle(gs(R.string.confirm_delete));
-                                builder.setMessage(gs(R.string.are_you_sure_you_want_to_delete_this_blood_test_result));
-                                builder.setPositiveButton(gs(R.string.yes_delete), new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.dismiss();
-                                        bt.removeState(BloodTest.STATE_VALID);
-                                        NativeCalibrationPipe.removePendingCalibration((int) bt.mgdl);
-                                        GcmActivity.syncBloodTests();
-                                        if (Home.get_show_wear_treatments())
-                                            BloodTest.pushBloodTestSyncToWatch(bt, false);
-                                        staticRefreshBGCharts();
-                                        JoH.static_toast_short(gs(R.string.deleted));
-                                    }
-                                });
-                                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.dismiss();
-                                    }
-                                });
-                                final AlertDialog alert = builder.create();
-                                alert.show();
-                            }
+                                if (Home.get_show_wear_treatments())
+                                    BloodTest.pushBloodTestSyncToWatch(bt, false);
+                                staticRefreshBGCharts();
+                                JoH.static_toast_short(gs(R.string.deleted));
+                            });
+                            builder1.setNegativeButton("No", (dialog1, which1) -> dialog1.dismiss());
+                            final AlertDialog alert = builder1.create();
+                            alert.show();
                         });
                         final AlertDialog alert = builder.create();
                         alert.show();
@@ -1114,7 +1009,6 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         JoH.runOnUiThread(() -> getWindow().clearFlags(screenAlwaysOnFlags));
         screen_forced_on = false;
     }
-
 
     public static void startHomeWithExtra(Context context, String extra, String text) {
         startHomeWithExtra(context, extra, text, "");
@@ -1229,7 +1123,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                     "Problem loading speech lexicon!",
                     Toast.LENGTH_LONG).show();
         }
-        Log.d(TAG, "Loaded Words: " + Integer.toString(lcs.entries.size()));
+        Log.d(TAG, "Loaded Words: " + lcs.entries.size());
         searchWords = lcs;
     }
 
@@ -1284,36 +1178,25 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Type treatment\neg: units x.x");
-// Set up the input
+        // Set up the input
         final EditText input = new EditText(this);
         input.setInputType(InputType.TYPE_CLASS_TEXT);
         builder.setView(input);
-// Set up the buttons
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                voiceRecognitionText.setText(input.getText().toString());
-                voiceRecognitionText.setVisibility(View.VISIBLE);
-                last_speech_time = JoH.ts();
-                naturalLanguageRecognition(input.getText().toString());
+        // Set up the buttons
+        builder.setPositiveButton("OK", (dialog, which) -> {
+            voiceRecognitionText.setText(input.getText().toString());
+            voiceRecognitionText.setVisibility(View.VISIBLE);
+            last_speech_time = JoH.ts();
+            naturalLanguageRecognition(input.getText().toString());
 
-            }
         });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
 
         final AlertDialog dialog = builder.create();
-        input.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    if (dialog != null)
-                        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
-                }
+        input.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                if (dialog != null)
+                    dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
             }
         });
         dialog.show();
@@ -1345,14 +1228,13 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                         Toast.LENGTH_LONG).show();
             }
         }
-
     }
 
     private String classifyWord(String word) {
         if (word == null) return null;
         if (word.equals("watchkeypad")) return "watchkeypad";
         if (word.equals("uuid")) return "uuid";
-// convert fuzzy recognised word to our keyword from lexicon
+        // convert fuzzy recognised word to our keyword from lexicon
         for (wordData thislex : searchWords.entries) {
             if (thislex.matchWords.contains(word)) {
                 Log.d(TAG, "Matched spoken word: " + word + " => " + thislex.lexicon);
@@ -1462,7 +1344,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                     watchkeypad = true;
                     watchkeypadset = true;
                     watchkeypad_timestamp = (long) (thisnumber * 1000);
-                    Log.d(TAG, "Treatment entered on watchkeypad: " + Double.toString(thisnumber));
+                    Log.d(TAG, "Treatment entered on watchkeypad: " + thisnumber);
                 } else {
                     Log.d(TAG, "watchkeypad already set");
                 }
@@ -1471,8 +1353,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             case "rapid":
                 if ((insulinset == false) && (thisnumber > 0)) {
                     thisinsulinnumber = thisnumber;
-                    textInsulinDose.setText(Double.toString(thisnumber) + " units");
-                    Log.d(TAG, "Rapid dose: " + Double.toString(thisnumber));
+                    textInsulinDose.setText(thisnumber + " units");
+                    Log.d(TAG, "Rapid dose: " + thisnumber);
                     insulinset = true;
                     btnInsulinDose.setVisibility(View.VISIBLE);
                     textInsulinDose.setVisibility(View.VISIBLE);
@@ -1485,9 +1367,9 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             case "carbs":
                 if ((carbsset == false) && (thisnumber > 0)) {
                     thiscarbsnumber = thisnumber;
-                    textCarbohydrates.setText(Integer.toString((int) thisnumber) + " carbs");
+                    textCarbohydrates.setText((int) thisnumber + " carbs");
                     carbsset = true;
-                    Log.d(TAG, "Carbs eaten: " + Double.toString(thisnumber));
+                    Log.d(TAG, "Carbs eaten: " + thisnumber);
                     btnCarbohydrates.setVisibility(View.VISIBLE);
                     textCarbohydrates.setVisibility(View.VISIBLE);
                 } else {
@@ -1501,13 +1383,13 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                     thisglucosenumber = thisnumber;
                     if (Pref.getString("units", "mgdl").equals("mgdl")) {
                         if (textBloodGlucose != null)
-                            textBloodGlucose.setText(Double.toString(thisnumber) + " mg/dl");
+                            textBloodGlucose.setText(thisnumber + " mg/dl");
                     } else {
                         if (textBloodGlucose != null)
-                            textBloodGlucose.setText(Double.toString(thisnumber) + " mmol/l");
+                            textBloodGlucose.setText(thisnumber + " mmol/l");
                     }
 
-                    Log.d(TAG, "Blood test: " + Double.toString(thisnumber));
+                    Log.d(TAG, "Blood test: " + thisnumber);
                     glucoseset = true;
                     if (textBloodGlucose != null) {
                         btnBloodGlucose.setVisibility(View.VISIBLE);
@@ -1628,7 +1510,6 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                     thistimeoffset,
                     textTime.getText().toString());
         }
-
     }
 
     public static void toaststatic(final String msg) {
@@ -1643,12 +1524,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
     public void toast(final String msg) {
         try {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(mActivity, msg, Toast.LENGTH_LONG).show();
-                }
-            });
+            runOnUiThread(() -> Toast.makeText(mActivity, msg, Toast.LENGTH_LONG).show());
             Log.d(TAG, "toast: " + msg);
         } catch (Exception e) {
             Log.d(TAG, "Couldn't display toast: " + msg + " / " + e.toString());
@@ -1664,7 +1540,6 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             Log.d(TAG, "Couldn't display toast (rescheduling): " + msg + " / " + e.toString());
         }
     }
-
 
     /**
      * Receiving speech input
@@ -1686,7 +1561,6 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 }
                 recognitionRunning = false;
                 break;
-
 
             case REQ_CODE_SPEECH_NOTE_INPUT:
                 if (resultCode == RESULT_OK && null != data) {
@@ -1729,8 +1603,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         public ArrayList<wordData> entries;
 
         wordDataWrapper() {
-            entries = new ArrayList<wordData>();
-
+            entries = new ArrayList<>();
         }
     }
 
@@ -1857,8 +1730,6 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         updateCurrentBgInfo("generic on resume");
         updateHealthInfo("generic on resume");
 
-
-
         if (NFCReaderX.useNFC()) {
             NFCReaderX.doNFC(this);
         } else {
@@ -1881,18 +1752,13 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         HeyFamUpdateOptInDialog.heyFam(this); // remind about updates
         firstRunDialogs(checkedeula);
 
-        Inevitable.task("home-resume-bg", 2000, new Runnable() {
-            @Override
-            public void run() {
-                InPenEntry.startIfEnabled();
-                EmergencyAssistActivity.checkPermissionRemoved();
-                NightscoutUploader.launchDownloadRest();
-                Pendiq.immortality(); // Experimental testing phase
-            }
+        Inevitable.task("home-resume-bg", 2000, () -> {
+            InPenEntry.startIfEnabled();
+            EmergencyAssistActivity.checkPermissionRemoved();
+            NightscoutUploader.launchDownloadRest();
+            Pendiq.immortality(); // Experimental testing phase
         });
-
     }
-
 
     private void checkWifiSleepPolicy() {
         if (!JoH.getWifiSleepPolicyNever()) {
@@ -1903,36 +1769,25 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                         builder.setTitle(gs(R.string.wifi_sleep_policy_issue));
                         builder.setMessage(gs(R.string.your_wifi_is_set_to_sleep_when_the_phone_screen_is_off__this_may_cause_problems_if_you_dont_have_cellular_data_or_have_devices_on_your_local_network__would_you_like_to_go_to_the_settings_page_to_set__always_keep_wifi_on_during_sleep));
 
-                        builder.setNeutralButton(gs(R.string.maybe_later), new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
+                        builder.setNeutralButton(gs(R.string.maybe_later), (dialog, which) -> dialog.dismiss());
+
+                        builder.setPositiveButton(gs(R.string.yes_do_it), (dialog, which) -> {
+                            dialog.dismiss();
+                            toast(gs(R.string.recommend_that_you_change_wifi_to_always_be_on_during_sleep));
+                            try {
+                                startActivity(new Intent(Settings.ACTION_WIFI_IP_SETTINGS));
+                            } catch (ActivityNotFoundException e) {
+                                JoH.static_toast_long(gs(R.string.ooops_this_device_doesnt_seem_to_have_a_wifi_settings_page));
                             }
                         });
 
-                        builder.setPositiveButton(gs(R.string.yes_do_it), new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                                toast(gs(R.string.recommend_that_you_change_wifi_to_always_be_on_during_sleep));
-                                try {
-                                    startActivity(new Intent(Settings.ACTION_WIFI_IP_SETTINGS));
-                                } catch (ActivityNotFoundException e) {
-                                    JoH.static_toast_long(gs(R.string.ooops_this_device_doesnt_seem_to_have_a_wifi_settings_page));
-                                }
-
-                            }
-                        });
-
-                        builder.setNegativeButton("NO, Never", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                                Pref.setLong("wifi_warning_never", (long) JoH.ts());
-                            }
+                        builder.setNegativeButton("NO, Never", (dialog, which) -> {
+                            dialog.dismiss();
+                            Pref.setLong("wifi_warning_never", (long) JoH.ts());
                         });
 
                         AlertDialog alert = builder.create();
                         alert.show();
-
                     }
                 }
             }
@@ -2039,14 +1894,12 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             previewChart.setVisibility(homeShelf.get("chart_preview") ? View.VISIBLE : View.GONE);
         }
 
-
         if (insulinset || glucoseset || carbsset || timeset) {
             if (chart != null) {
                 chart.setAlpha((float) 0.10);
                 // TODO also set buttons alpha
             }
         }
-
     }
 
     public void setViewport() {
@@ -2083,7 +1936,6 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         } catch (Exception e) {
             Log.e(TAG, "Exception unregistering broadcast receiver: " + e);
         }
-
     }
 
     private static void set_is_follower() {
@@ -2108,7 +1960,6 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     public static boolean get_master_or_follower() {
         return get_follower() || get_master();
     }
-
 
     public static boolean get_show_wear_treatments() {
         return Pref.getBooleanDefaultFalse("wear_sync") &&
@@ -2153,7 +2004,6 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             context.startService(new Intent(context, WatchUpdaterService.class).setAction(action).putExtra(key, value));
         }
     }
-
 
     public static boolean get_holo() {
         return Home.is_holo;
@@ -2237,7 +2087,6 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         ui.bump();
         return false;
     }
-
 
     private void updateHealthInfo(String caller) {
 
@@ -2337,13 +2186,10 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             if (!Experience.gotData()) {
                 // TODO should this move to Experience::processSteps ?
                 final Activity activity = this;
-                JoH.runOnUiThreadDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        if ((dialog == null || !dialog.isShowing())) {
-                            if (JoH.ratelimit("start_source_wizard", 30)) {
-                                SourceWizard.start(activity, false);
-                            }
+                JoH.runOnUiThreadDelayed(() -> {
+                    if ((dialog == null || !dialog.isShowing())) {
+                        if (JoH.ratelimit("start_source_wizard", 30)) {
+                            SourceWizard.start(activity, false);
                         }
                     }
                 }, 500);
@@ -2386,7 +2232,6 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 }
             }
         }
-
 
         // TODO we need to consider noise level?
         // when to raise the alarm
@@ -2446,9 +2291,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
         //if (isG5Share) showcasemenu(SHOWCASE_G5FIRMWARE); // nov 2016 firmware warning resolved 15/12/2016
         //showcasemenu(1); // 3 dot menu
-
     }
-
 
     private void updateCurrentBgInfoForWifiWixel(DexCollectionType collector, TextView notificationText) {
         if (!WixelReader.IsConfigured()) {
@@ -2457,7 +2300,6 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         }
 
         updateCurrentBgInfoCommon(collector, notificationText);
-
     }
 
     private void updateCurrentBgInfoForBtBasedWixel(DexCollectionType collector, TextView notificationText) {
@@ -2486,7 +2328,6 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             isSensorActive = Sensor.isActive();
         }
 
-
         if (!isSensorActive) {
             notificationText.setText(R.string.now_start_your_sensor);
 
@@ -2496,17 +2337,10 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                     final Context context = this;
                     builder.setTitle(gs(R.string.restore_backup));
                     builder.setMessage(gs(R.string.do_you_want_to_restore_the_backup_file_) + Pref.getString("last-saved-database-zip", "ERROR").replaceFirst("^.*/", ""));
-                    builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
-                    builder.setPositiveButton(gs(R.string.restore), new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                            startActivity(new Intent(context, ImportDatabaseActivity.class).putExtra("importit", Pref.getString("last-saved-database-zip", "")).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-                        }
+                    builder.setNegativeButton("No", (dialog, which) -> dialog.dismiss());
+                    builder.setPositiveButton(gs(R.string.restore), (dialog, which) -> {
+                        dialog.dismiss();
+                        startActivity(new Intent(context, ImportDatabaseActivity.class).putExtra("importit", Pref.getString("last-saved-database-zip", "")).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                     });
                     dialog = builder.create();
                     dialog.show();
@@ -2516,18 +2350,13 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                         final Context context = this;
                         builder.setTitle(getString(R.string.start_sensor) + "?");
                         builder.setMessage("Data Source is set to: " + DexCollectionType.getDexCollectionType().toString() + "\n\nDo you want to change settings or start sensor?");
-                        builder.setNegativeButton(gs(R.string.change_settings), new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                                startActivity(new Intent(context, Preferences.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-                            }
+                        builder.setNegativeButton(gs(R.string.change_settings), (dialog, which) -> {
+                            dialog.dismiss();
+                            startActivity(new Intent(context, Preferences.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                         });
-                        builder.setPositiveButton(R.string.start_sensor, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                                startActivity(new Intent(context, StartNewSensor.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-                            }
+                        builder.setPositiveButton(R.string.start_sensor, (dialog, which) -> {
+                            dialog.dismiss();
+                            startActivity(new Intent(context, StartNewSensor.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                         });
                         dialog = builder.create();
                         dialog.show();
@@ -2644,7 +2473,6 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         }
     }
 
-
     private synchronized void promptForCalibration() {
         if ((status_helper_dialog != null) && (status_helper_dialog.isShowing()))
             status_helper_dialog.dismiss();
@@ -2655,19 +2483,14 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             final Context context = this;
             builder.setTitle(gs(R.string.calibrate_sensor));
             builder.setMessage(gs(R.string.we_have_some_readings__next_we_need_the_first_calibration_blood_test__ready_to_calibrate_now));
-            builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                    helper_dialog = null;
-                }
+            builder.setNegativeButton("No", (dialog, which) -> {
+                dialog.dismiss();
+                helper_dialog = null;
             });
-            builder.setPositiveButton(gs(R.string.calibrate), new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                    helper_dialog = null;
-                    startActivity(new Intent(context, DoubleCalibrationActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-                }
+            builder.setPositiveButton(gs(R.string.calibrate), (dialog, which) -> {
+                dialog.dismiss();
+                helper_dialog = null;
+                startActivity(new Intent(context, DoubleCalibrationActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
             });
             helper_dialog = builder.create();
             try {
@@ -2681,7 +2504,6 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 }
             }
             keepScreenOn();
-
         }
     }
 
@@ -2973,7 +2795,6 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             } else {
                 addDisplayDelta();
             }
-
         }
         if (bgGraphBuilder.unitized(estimate) <= bgGraphBuilder.lowMark) {
             currentBgValueText.setTextColor(Color.parseColor("#C30909"));
@@ -3087,7 +2908,6 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         processIncomingBundle(bundle);
     }
 
-
     private synchronized void showcasemenu(int option) {
         if ((myShowcase != null) && (myShowcase.isShowing())) return;
         if (ShotStateStore.hasShot(option)) return;
@@ -3161,7 +2981,6 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                     break;
             }
 
-
             if (target != null) {
                 //showcaseblocked = true;
                 myShowcase = new ShowcaseView.Builder(this)
@@ -3214,26 +3033,17 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         startActivity(new Intent(getApplicationContext(), EmergencyAssistActivity.class));
     }
 
-
     public void parakeetSetupMode(MenuItem myitem) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
         alertDialogBuilder.setMessage(R.string.are_you_sure_you_want_switch_parakeet_to_setup);
 
-        alertDialogBuilder.setPositiveButton(R.string.yes_enter_setup_mode, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface arg0, int arg1) {
-                // switch parakeet to setup mode
-                ParakeetHelper.parakeetSetupMode(getApplicationContext());
-            }
+        alertDialogBuilder.setPositiveButton(R.string.yes_enter_setup_mode, (arg0, arg1) -> {
+            // switch parakeet to setup mode
+            ParakeetHelper.parakeetSetupMode(getApplicationContext());
         });
 
 
-        alertDialogBuilder.setNegativeButton(R.string.nokeep_parakeet_as_it_is, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // do nothing
-            }
-        });
+        alertDialogBuilder.setNegativeButton(R.string.nokeep_parakeet_as_it_is, (dialog, which) -> {/* do nothing*/});
 
         AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();
@@ -3268,78 +3078,52 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
         dialogBuilder.setTitle(R.string.treatment_note);
         //dialogBuilder.setMessage("Enter text below");
-        dialogBuilder.setPositiveButton(R.string.done, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {
-                String treatment_text = edt.getText().toString().trim();
-                Log.d(TAG, "Got treatment note: " + treatment_text);
-                Treatments.create_note(treatment_text, timestamp, position); // timestamp?
-                Home.staticRefreshBGCharts();
+        dialogBuilder.setPositiveButton(R.string.done, (dialog, whichButton) -> {
+            String treatment_text = edt.getText().toString().trim();
+            Log.d(TAG, "Got treatment note: " + treatment_text);
+            Treatments.create_note(treatment_text, timestamp, position); // timestamp?
+            Home.staticRefreshBGCharts();
 
-                if (treatment_text.length() > 0) {
-                    // display snackbar of the snackbar
-                    final View.OnClickListener mOnClickListener = new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Home.startHomeWithExtra(xdrip.getAppContext(), Home.CREATE_TREATMENT_NOTE, Long.toString(timestamp), Double.toString(position));
-                        }
-                    };
-                    Home.snackBar(R.string.add_note, getString(R.string.added) + ":    " + treatment_text, mOnClickListener, mActivity);
-                }
+            if (treatment_text.length() > 0) {
+                // display snackbar of the snackbar
+                final View.OnClickListener mOnClickListener = v -> Home.startHomeWithExtra(xdrip.getAppContext(), Home.CREATE_TREATMENT_NOTE, Long.toString(timestamp), Double.toString(position));
+                Home.snackBar(R.string.add_note, getString(R.string.added) + ":    " + treatment_text, mOnClickListener, mActivity);
+            }
 
-                if (Pref.getBooleanDefaultFalse("default_to_voice_notes"))
-                    showcasemenu(SHOWCASE_NOTE_LONG);
-                dialog = null;
+            if (Pref.getBooleanDefaultFalse("default_to_voice_notes")) {
+                showcasemenu(SHOWCASE_NOTE_LONG);
             }
         });
-        dialogBuilder.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {
-                if (Pref.getBooleanDefaultFalse("default_to_voice_notes"))
-                    showcasemenu(SHOWCASE_NOTE_LONG);
-                dialog = null;
-
+        dialogBuilder.setNegativeButton(getString(R.string.cancel), (dialog, whichButton) -> {
+            if (Pref.getBooleanDefaultFalse("default_to_voice_notes")) {
+                showcasemenu(SHOWCASE_NOTE_LONG);
             }
+
         });
         if (Treatments.byTimestamp(timestamp, (int) (2.5 * MINUTE_IN_MS)) != null) {
-            dialogBuilder.setNeutralButton("Delete", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int whichButton) {
-                    // are you sure?
-                    final AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
-                    builder.setTitle(gs(R.string.confirm_delete));
-                    builder.setMessage(gs(R.string.are_you_sure_you_want_to_delete_this_treatment));
-                    builder.setPositiveButton(gs(R.string.yes_delete), new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                            Treatments.delete_by_timestamp(timestamp, (int) (2.5 * MINUTE_IN_MS), true); // 2.5 min resolution
-                            staticRefreshBGCharts();
-                            JoH.static_toast_short(gs(R.string.deleted));
-                        }
-                    });
-                    builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
-                    final AlertDialog alert = builder.create();
-                    alert.show();
-                    dialog = null;
-                }
+            dialogBuilder.setNeutralButton("Delete", (dialog, whichButton) -> {
+                // are you sure?
+                final AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
+                builder.setTitle(gs(R.string.confirm_delete));
+                builder.setMessage(gs(R.string.are_you_sure_you_want_to_delete_this_treatment));
+                builder.setPositiveButton(gs(R.string.yes_delete), (dialog1, which) -> {
+                    dialog1.dismiss();
+                    Treatments.delete_by_timestamp(timestamp, (int) (2.5 * MINUTE_IN_MS), true); // 2.5 min resolution
+                    staticRefreshBGCharts();
+                    JoH.static_toast_short(gs(R.string.deleted));
+                });
+                builder.setNegativeButton("No", (dialog12, which) -> dialog12.dismiss());
+                final AlertDialog alert = builder.create();
+                alert.show();
             });
         }
         dialog = dialogBuilder.create();
         edt.setInputType(InputType.TYPE_CLASS_TEXT);
-        edt.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    if (dialog != null)
-                        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
-                }
-            }
+        edt.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus && dialog != null)
+                dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
         });
-
-
         dialog.show();
-
     }
 
     public void doBackFillBroadcast(MenuItem myitem) {
@@ -3464,7 +3248,6 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         }*/
         ///
 
-
         if (item.getItemId() == R.id.action_export_csv_sidiary) {
 
             long from = Pref.getLong("sidiary_last_exportdate", 0);
@@ -3524,7 +3307,6 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
         return super.onOptionsItemSelected(item);
     }
-
 
     public void initializeGraphicTrendArrow() {
         if (homeShelf.get("graphic_trend_arrow")) {
@@ -3594,9 +3376,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 holdViewport.set(newViewport.left, newViewport.top, newViewport.right, newViewport.bottom);
             }
         }
-
     }
-
 
     public void showArrowConfigurator(View v, boolean show, boolean refresh) {
 
@@ -3648,15 +3428,12 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     }
 
     private View.OnClickListener makeSnackBarUriLauncher(final Uri uri, final String text) {
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent shareIntent = new Intent();
-                shareIntent.setAction(Intent.ACTION_SEND);
-                shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
-                shareIntent.setType("application/octet-stream");
-                Home.this.startActivity(Intent.createChooser(shareIntent, text));
-            }
+        return v -> {
+            Intent shareIntent = new Intent();
+            shareIntent.setAction(Intent.ACTION_SEND);
+            shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
+            shareIntent.setType("application/octet-stream");
+            Home.this.startActivity(Intent.createChooser(shareIntent, text));
         };
     }
 
@@ -3680,7 +3457,6 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             startActivity(Intent.createChooser(shareIntent, "Share database..."));
         }
     }*/
-
 
     class MyActionItemTarget implements Target {
 
@@ -3707,7 +3483,6 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             int y = location[1] + mView.getHeight() / 2;
             return new Point(x + xoffset, y + yoffset);
         }
-
     }
 
     @Override
@@ -3721,7 +3496,6 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             SdcardImportExport.restoreSettingsNow(this);
         }
     }
-
 
   /*  class ToolbarActionItemTarget implements Target {
 
@@ -3739,8 +3513,4 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         }
 
     }*/
-
 }
-
-
-
