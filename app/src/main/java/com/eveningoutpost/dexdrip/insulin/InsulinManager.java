@@ -1,7 +1,11 @@
 package com.eveningoutpost.dexdrip.insulin;
 
 import android.util.Log;
+
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -89,24 +93,28 @@ public class InsulinManager {
     }
 
     private static void initializeInsulinManager(InputStream in_s) {
-        if (profiles == null) {
-                Log.d(TAG, "Initialize insulin profiles");
-                insulinDataWrapper iDW;
-                try {
-                    String input = readTextFile(in_s);
-                    Gson gson = new Gson();
-                    iDW = gson.fromJson(input, insulinDataWrapper.class);
-                    profiles = iDW.getInsulinProfiles();
-                    Log.d(TAG, "Loaded Insulin Profiles: " + Integer.toString(profiles.size()));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Log.d(TAG, "Got exception during insulin load: " + e.toString());
-                }
+            Log.d(TAG, "Initialize insulin profiles");
+            insulinDataWrapper iDW;
+            try {
+                String input = readTextFile(in_s);
+                Gson gson = new Gson();
+                iDW = gson.fromJson(input, insulinDataWrapper.class);
+                profiles = iDW.getInsulinProfiles();
+                Log.d(TAG, "Loaded Insulin Profiles: " + Integer.toString(profiles.size()));
+                LoadDisabledProfilesFromPrefs();
+                Log.d(TAG, "InsulinManager initialized from config file and Prefs");
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.d(TAG, "Got exception during insulin load: " + e.toString());
             }
     }
 
     public static ArrayList<Insulin> getInstance(InputStream in_s) {
         initializeInsulinManager(in_s);
+        return profiles;
+    }
+
+    public static ArrayList<Insulin> getAllProfiles() {
         return profiles;
     }
 
@@ -116,9 +124,13 @@ public class InsulinManager {
             Log.d(TAG, "InsulinManager seems not load Profiles beforehand");
             return null;
         }
-        if (i > profiles.size())
+        ArrayList<Insulin> t = new ArrayList<Insulin>();
+        for (Insulin ins: profiles)
+            if (isProfileEnabled(ins))
+                t.add(ins);
+        if (i >= t.size())
             return null;
-        return profiles.get(i);
+        return t.get(i);
     }
 
     public static Insulin getProfile(String name)
@@ -131,5 +143,56 @@ public class InsulinManager {
             if (i.getDisplayName().toLowerCase().equals(name.toLowerCase()))
                 return i;
         return null;
+    }
+
+    public static Boolean isProfileEnabled(Insulin i)
+    {
+        return i.isEnabled();
+    }
+
+    public static void disableProfile(Insulin i)
+    {
+        if (isProfileEnabled(i) && (countEnabledProfiles() > 1))
+            i.disable();
+    }
+    public static void enableProfile(Insulin i)
+    {
+        if (!isProfileEnabled(i) && (countEnabledProfiles() < 3))
+            i.enable();
+    }
+
+    private static int countEnabledProfiles()
+    {
+        int ret = 0;
+        for (Insulin ins: profiles)
+            if (isProfileEnabled(ins))
+                ret++;
+        return ret;
+    }
+
+    public static void LoadDisabledProfilesFromPrefs()
+    {
+        for (Insulin i: profiles)
+            i.enable();
+        String json = Pref.getString("saved_disabled_insulinprofiles_json", "[]");
+        Log.d(TAG, "Loaded disabled Insulin Profiles from Prefs: " + json);
+        String[] disabled = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create().fromJson(json, String[].class);
+        for (String d: disabled)
+        {
+            Insulin ins = getProfile(d);
+            if (ins != null)
+                disableProfile(ins);
+        }
+    }
+
+    public static void saveDisabledProfilesToPrefs()
+    {
+        ArrayList<String> disabled = new ArrayList<String>();
+        for (Insulin i: profiles)
+            if (!isProfileEnabled(i))
+                disabled.add(i.getDisplayName());
+        String json = new GsonBuilder().create().toJson(disabled);
+        Pref.setString("saved_disabled_insulinprofiles_json", json);
+        Log.d(TAG, "saved disabled Insulin Profiles to Prefs: " + json);
     }
 }

@@ -18,6 +18,14 @@
       "ATCCode": "A10AB01"
     },
     {
+      "displayName": "Testulatard",
+      "PPN":
+      [
+        "1105039656-TEST"
+      ],
+      "ATCCode": "A10AC01"
+    },
+    {
       "displayName": "Novorapid",
       "PPN":
       [

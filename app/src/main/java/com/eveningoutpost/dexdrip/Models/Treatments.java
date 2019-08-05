@@ -606,7 +606,7 @@ public class Treatments extends Model {
         }
     }
 
-//todo gruoner: process via several insuline profiles
+//todo: process via several insuline profiles
     public static Iob calcTreatment(Treatments treatment, double time, double lastDecayedby) {
 
         final double dia = Profile.insulinActionTime(time); // duration insulin action in hours

@@ -377,19 +377,19 @@ public class PhoneKeypadInputActivity extends BaseActivity {
         if (timeValue.length() > 0) mystring += timeValue + " time ";
         if (nonzeroBloodValue) mystring += getValue("bloodtest") + " blood ";
         if (nonzeroCarbsValue) mystring += getValue("carbs") + " carbs ";
-        if (nonzeroInsulin1Value)
+        if (nonzeroInsulin1Value && (insulinProfile1 != null))
         {
             double d = Double.parseDouble(getValue("insulin-1"));
             mystring += String.format("%.1f", d).replace(",",".") + " " + insulinProfile1.getDisplayName() + " ";
             units += d;
         }
-        if (nonzeroInsulin2Value)
+        if (nonzeroInsulin2Value && (insulinProfile2 != null))
         {
             double d = Double.parseDouble(getValue("insulin-2"));
             mystring += String.format("%.1f", d).replace(",",".") + " " + insulinProfile2.getDisplayName() + " ";
             units += d;
         }
-        if (nonzeroInsulin3Value)
+        if (nonzeroInsulin3Value && (insulinProfile3 != null))
         {
             double d = Double.parseDouble(getValue("insulin-3"));
             mystring += String.format("%.1f", d).replace(",",".") + " " + insulinProfile3.getDisplayName() + " ";
@@ -435,19 +435,22 @@ public class PhoneKeypadInputActivity extends BaseActivity {
                     multiButton1.setText(insulinProfile1.getDisplayName());
                     multiButton1.setEnabled(true);
                     multiButton1.setVisibility(View.VISIBLE);
-                }
+                } else
+                    multiButton1.setText("");
                 if (insulinProfile2 != null)
                 {
                     multiButton2.setText(insulinProfile2.getDisplayName());
                     multiButton2.setEnabled(true);
                     multiButton2.setVisibility(View.VISIBLE);
-                }
+                } else
+                    multiButton2.setText("");
                 if (insulinProfile3 != null)
                 {
                     multiButton3.setText(insulinProfile3.getDisplayName());
                     multiButton3.setEnabled(true);
                     multiButton3.setVisibility(View.VISIBLE);
-                }
+                } else
+                    multiButton3.setText("");
                 String multibutton = "";
                 if (currenttab.contains("-"))
                     multibutton = currenttab.split("-")[1];
@@ -458,11 +461,21 @@ public class PhoneKeypadInputActivity extends BaseActivity {
                         break;
                     case "2":
                         multiButton2.setBackgroundColor(onColor);
-                        insulinprofile = insulinProfile2.getDisplayName();
+                        if (insulinProfile2 == null)
+                        {
+                            currenttab = "insulin-1";
+                            updateTab();
+                        } else
+                            insulinprofile = insulinProfile2.getDisplayName();
                         break;
                     case "3":
                         multiButton3.setBackgroundColor(onColor);
-                        insulinprofile = insulinProfile3.getDisplayName();
+                        if (insulinProfile3 == null)
+                        {
+                            currenttab = "insulin-2";
+                            updateTab();
+                        } else
+                            insulinprofile = insulinProfile3.getDisplayName();
                         break;
                 }
                 append = " " +  getString(R.string.units) + " " + insulinprofile;

@@ -601,6 +601,16 @@
                 android:title="@string/predictive_simulations" />
 
             <Preference
+                android:key="insulin_profiles"
+                android:summary="@string/desc_enable_dedicated_insulin_profiles"
+                android:title="@string/enable_dedicated_insulin_profiles">
+                <intent
+                    android:action="android.intent.action.MAIN"
+                    android:targetClass="com.eveningoutpost.dexdrip.insulin.InsulinProfileEditor"
+                    android:targetPackage="@string/local_target_package" />
+            </Preference>
+
+            <Preference
                 android:key="profile_carb_ratio_default"
                 android:summary="@string/grams_of_carbohydrate_one_unit_covers"
                 android:title="@string/carb_ratio">
@@ -609,6 +619,7 @@
                     android:targetClass="com.eveningoutpost.dexdrip.profileeditor.ProfileEditor"
                     android:targetPackage="@string/local_target_package" />
             </Preference>
+
             <Preference
                 android:key="profile_insulin_sensitivity_default"
                 android:summary="@string/glucose_drop_for_one_unit"

@@ -803,6 +803,8 @@
     <string name="notify_data_arrives_master"><![CDATA[Notify when data arrives from the master if the interval is > 20 mins.]]></string>
     <string name="follower_chime_new">Follower Chime New</string>
     <string name="carb_ratio">Carb Ratio</string>
+    <string name="enable_dedicated_insulin_profiles">Config Insulin profiles</string>
+    <string name="desc_enable_dedicated_insulin_profiles">Here one can enable or configure various insulin profiles</string>
     <string name="insulin_sensitivity">Insulin Sensitivity</string>
     <string name="secondary_plugin_glucose_value">Secondary Plugin Glucose value</string>
     <string name="step_counter_1st_color">Step counter 1st Color</string>
