@@ -70,7 +70,7 @@ public class LibreReceiver extends BroadcastReceiver {
                                 if (currentRawValue == null) return;
                                 Log.v(TAG,"got bg reading: from sensor:"+currentRawValue.serial+" rawValue:"+currentRawValue.glucose+" at:"+currentRawValue.timestamp);
                                 // period of 4.5 minutes to collect 5 readings
-                                if(!BgReading.last_within_millis(4.5 * 60 * 1000 )) {
+                                if(!BgReading.last_within_millis(45 * 6 * 1000 )) {
                                     List<Libre2RawValue> smoothingValues = Libre2RawValue.last20Minutes();
                                     smoothingValues.add(currentRawValue);
                                     processValues(currentRawValue, smoothingValues, context);
