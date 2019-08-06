@@ -871,6 +871,7 @@
     <string name="sidiary_date_title">Export starting from when?</string>
     <string name="blukon">Blucon</string>
     <string name="tomato">Tomato</string>
+    <string name="bubble">Bubble</string>
     <string name="use_gravity_sensor_to_rotate_items">Use Gravity Sensor to rotate items</string>
     <string name="low_bridge_battery">Low bridge battery</string>
     <string name="reminders">Reminders</string>
@@ -1420,7 +1421,7 @@
     <string name="classic_simple">Classic simple</string>
     <string name="libre">Libre</string>
     <string name="what_type_of_libre_bridge_device_do_you_use">What type of Libre bridge device do you use?</string>
-    <string name="bluetooth_bridge_device_blucon_limitter_bluereader_tomato_etc">Bluetooth Bridge device: Blucon, LimiTTer, Bluereader, Tomato etc</string>
+    <string name="bluetooth_bridge_device_blucon_limitter_bluereader_tomato_etc">Bluetooth Bridge device: Blucon, Bubble, LimiTTer, Bluereader, Tomato etc</string>
     <string name="libre_patched">Libre2 Patched</string>
     <string name="librealarm_app_using_sony_smartwatch">LibreAlarm App: using Sony Smartwatch</string>
     <string name="__data_source_disabled">\n DATA SOURCE DISABLED</string>
