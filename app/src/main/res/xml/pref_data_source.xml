@@ -175,6 +175,13 @@
                         android:title="@string/title_ob1_g5_preemptive_restart"
                 />
                 <CheckBoxPreference
+                        android:defaultValue="true"
+                        android:dependency="ob1_g5_preemptive_restart"
+                        android:key="ob1_g5_preemptive_restart_alert"
+                        android:title="@string/title_ob1_g5_preemptive_restart_alert"
+                        android:summary="@string/summary_ob1_g5_preemptive_restart_alert"
+                    />
+                <CheckBoxPreference
                         android:defaultValue="false"
                         android:dependency="ob1_g5_preemptive_restart"
                         android:key="ob1_g5_preemptive_restart_extended_time_travel"
