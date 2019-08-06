@@ -6,6 +6,7 @@ import android.os.PowerManager;
 
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
+import com.eveningoutpost.dexdrip.Models.InsulinInjection;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
@@ -696,7 +697,7 @@ public class PendiqService extends JamBaseBluetoothService {
                     // Search for nearby reading not synced by this function
                     final Treatments existing = Treatments.byTimestamp(record.timestamp, 120000);
 
-                    if (existing != null && (Math.abs(existing.insulin - record.insulin) < 0.01)
+                    if (existing != null && (Math.abs(existing.insulinSummary - record.insulin) < 0.01)
                             && !existing.enteredBy.contains(PENDIQ_TAG)) {
                         UserError.Log.d(TAG, "Record: " + record.getSummary() + " already processed");
                     } else {
@@ -704,7 +705,7 @@ public class PendiqService extends JamBaseBluetoothService {
 
                         getInsulinLog(); // ask for next record
 
-                        final Treatments treatment = Treatments.create(0, record.insulin, record.timestamp, suggested_uuid);
+                        final Treatments treatment = Treatments.create(0, record.insulin, new ArrayList<InsulinInjection>(), record.timestamp, suggested_uuid);
                         if (treatment != null) {
                             treatment.enteredBy += " " + PENDIQ_TAG;
                             treatment.save();

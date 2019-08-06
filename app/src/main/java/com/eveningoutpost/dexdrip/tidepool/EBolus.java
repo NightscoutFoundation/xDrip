@@ -25,7 +25,7 @@ public class EBolus extends BaseElement {
     }
 
     public static EBolus fromTreatment(Treatments treatment) {
-        return new EBolus(treatment.insulin, treatment.insulin, treatment.timestamp, treatment.uuid);
+        return new EBolus(treatment.insulinSummary, treatment.insulinSummary, treatment.timestamp, treatment.uuid);
     }
 
 }

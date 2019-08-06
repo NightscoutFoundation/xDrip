@@ -68,6 +68,7 @@ import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.BloodTest;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.HeartRate;
+import com.eveningoutpost.dexdrip.Models.InsulinInjection;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.LibreBlock;
 import com.eveningoutpost.dexdrip.Models.ProcessInitialDataQuality;
@@ -109,6 +110,11 @@ import com.eveningoutpost.dexdrip.databinding.ActivityHomeBinding;
 import com.eveningoutpost.dexdrip.databinding.ActivityHomeShelfSettingsBinding;
 import com.eveningoutpost.dexdrip.databinding.PopupInitialStatusHelperBinding;
 import com.eveningoutpost.dexdrip.eassist.EmergencyAssistActivity;
+import com.eveningoutpost.dexdrip.insulin.A10AB01;
+import com.eveningoutpost.dexdrip.insulin.A10AB05;
+import com.eveningoutpost.dexdrip.insulin.A10AC01;
+import com.eveningoutpost.dexdrip.insulin.Insulin;
+import com.eveningoutpost.dexdrip.insulin.InsulinManager;
 import com.eveningoutpost.dexdrip.insulin.inpen.InPenEntry;
 import com.eveningoutpost.dexdrip.insulin.pendiq.Pendiq;
 import com.eveningoutpost.dexdrip.languageeditor.LanguageEditor;
@@ -177,8 +183,9 @@ import static com.eveningoutpost.dexdrip.UtilityModels.Constants.MINUTE_IN_MS;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPermissionsResultCallback {
-    private final static String TAG = "jamorham: " + Home.class.getSimpleName();
+    private final static String TAG = "jamorham " + Home.class.getSimpleName();
     private final static boolean d = true;
+    private final int maxInsulinProfiles = 3;
     public final static String START_SPEECH_RECOGNITION = "START_APP_SPEECH_RECOGNITION";
     public final static String START_TEXT_RECOGNITION = "START_APP_TEXT_RECOGNITION";
     public final static String CREATE_TREATMENT_NOTE = "CREATE_TREATMENT_NOTE";
@@ -217,7 +224,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     private ImageButton btnCancel;
     private ImageButton btnCarbohydrates;
     private ImageButton btnBloodGlucose;
-    private ImageButton btnInsulinDose;
+    private ImageButton[] btnInsulinDose = new ImageButton[maxInsulinProfiles];
     private ImageButton btnTime;
     private ImageButton btnUndo;
     private ImageButton btnRedo;
@@ -225,7 +232,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     private TextView voiceRecognitionText;
     private TextView textCarbohydrates;
     private TextView textBloodGlucose;
-    private TextView textInsulinDose;
+    private TextView textInsulinSumDose;
+    private TextView[] textInsulinDose = new TextView[maxInsulinProfiles];
     private TextView textTime;
     private static final int REQ_CODE_SPEECH_INPUT = 1994;
     private static final int REQ_CODE_SPEECH_NOTE_INPUT = 1995;
@@ -266,13 +274,17 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     double thisnumber = -1;
     double thisglucosenumber = 0;
     double thiscarbsnumber = 0;
-    double thisinsulinnumber = 0;
+    double thisinsulinsumnumber = 0;
+    double[] thisinsulinnumber = new double[maxInsulinProfiles];
+    Insulin[] thisinsulinprofile = new Insulin[maxInsulinProfiles];
+    ArrayList<Insulin> insulins = null;
     double thistimeoffset = 0;
     String thisword = "";
     String thisuuid = "";
     private static String nexttoast;
     boolean carbsset = false;
-    boolean insulinset = false;
+    boolean[] insulinset = new boolean[maxInsulinProfiles];
+    boolean insulinsumset = false;
     boolean glucoseset = false;
     boolean timeset = false;
     boolean watchkeypad = false;
@@ -422,11 +434,16 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         this.voiceRecognitionText = (TextView) findViewById(R.id.treatmentTextView);
         this.textBloodGlucose = (TextView) findViewById(R.id.textBloodGlucose);
         this.textCarbohydrates = (TextView) findViewById(R.id.textCarbohydrate);
-        this.textInsulinDose = (TextView) findViewById(R.id.textInsulinUnits);
+        this.textInsulinSumDose = (TextView) findViewById(R.id.textInsulinSumUnits);
         this.textTime = (TextView) findViewById(R.id.textTimeButton);
         this.btnBloodGlucose = (ImageButton) findViewById(R.id.bloodTestButton);
         this.btnCarbohydrates = (ImageButton) findViewById(R.id.buttonCarbs);
-        this.btnInsulinDose = (ImageButton) findViewById(R.id.buttonInsulin);
+        this.textInsulinDose[0] = (TextView) findViewById(R.id.textInsulin1Units);
+        this.btnInsulinDose[0] = (ImageButton) findViewById(R.id.buttonInsulin1);
+        this.textInsulinDose[1] = (TextView) findViewById(R.id.textInsulin2Units);
+        this.btnInsulinDose[1] = (ImageButton) findViewById(R.id.buttonInsulin2);
+        this.textInsulinDose[2] = (TextView) findViewById(R.id.textInsulin3Units);
+        this.btnInsulinDose[2] = (ImageButton) findViewById(R.id.buttonInsulin3);
         this.btnCancel = (ImageButton) findViewById(R.id.cancelTreatment);
         this.btnApprove = (ImageButton) findViewById(R.id.approveTreatment);
         this.btnTime = (ImageButton) findViewById(R.id.timeButton);
@@ -439,6 +456,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         if (searchWords == null) {
             initializeSearchWords("");
         }
+        if (insulins == null)
+            insulins = InsulinManager.getInstance(getResources().openRawResource(R.raw.insulin_profiles));
 
         this.btnSpeak = (ImageButton) findViewById(R.id.btnTreatment);
         btnSpeak.setOnClickListener(new View.OnClickListener() {
@@ -480,7 +499,6 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             }
         });
 
-
         btnCancel.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -497,22 +515,30 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             }
         });
 
-        btnInsulinDose.setOnClickListener(new View.OnClickListener() {
+        for (int i = 0; i < maxInsulinProfiles; i++) {
+            int finalI = i;
+            btnInsulinDose[i].setOnClickListener(new View.OnClickListener() {
 
-            @Override
-            public void onClick(View v) {
-                // proccess and approve treatment
-                textInsulinDose.setVisibility(View.INVISIBLE);
-                btnInsulinDose.setVisibility(View.INVISIBLE);
-                Treatments.create(0, thisinsulinnumber, Treatments.getTimeStampWithOffset(thistimeoffset));
-                Pendiq.handleTreatment(thisinsulinnumber);
-                thisinsulinnumber = 0;
-                reset_viewport = true;
-                if (hideTreatmentButtonsIfAllDone()) {
-                    updateCurrentBgInfo("insulin button");
+                @Override
+                public void onClick(View v) {
+                    // proccess and approve treatment
+                    textInsulinDose[finalI].setVisibility(View.INVISIBLE);
+                    btnInsulinDose[finalI].setVisibility(View.INVISIBLE);
+                    thisinsulinnumber[finalI] = 0;
+                    insulinset[finalI] = false;
+                    textInsulinDose[finalI].setText("");
+                    reset_viewport = true;
+                    thisinsulinsumnumber = 0;
+                    for (int a = 0; a < maxInsulinProfiles; a++)
+                        if (insulinset[a])
+                            thisinsulinsumnumber += thisinsulinnumber[a];
+                    textInsulinSumDose.setText(String.format("%.1f", thisinsulinsumnumber).replace(",",".") + " units ");
+                    if (hideTreatmentButtonsIfAllDone()) {
+                        updateCurrentBgInfo("insulin button");
+                    }
                 }
-            }
-        });
+            });
+        }
         btnCarbohydrates.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -521,7 +547,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 textCarbohydrates.setVisibility(View.INVISIBLE);
                 btnCarbohydrates.setVisibility(View.INVISIBLE);
                 reset_viewport = true;
-                Treatments.create(thiscarbsnumber, 0, Treatments.getTimeStampWithOffset(thistimeoffset));
+                Treatments.create(thiscarbsnumber, 0, new ArrayList<InsulinInjection>(), Treatments.getTimeStampWithOffset(thistimeoffset));
                 thiscarbsnumber = 0;
                 if (hideTreatmentButtonsIfAllDone()) {
                     updateCurrentBgInfo("carbs button");
@@ -887,8 +913,6 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         if (hideTreatmentButtonsIfAllDone()) {
             updateCurrentBgInfo("bg button");
         }
-
-
     }
 
     private void cancelTreatment() {
@@ -918,17 +942,33 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 // sanity check timestamp
                 final Treatments exists = Treatments.byTimestamp(time);
                 if (exists == null) {
-                    Log.d(TAG, "processAndApproveTreatment create watchkeypad Treatment carbs=" + thiscarbsnumber + " insulin=" + thisinsulinnumber + " timestamp=" + JoH.dateTimeText(time) + " uuid=" + thisuuid);
-                    Treatments.create(thiscarbsnumber, thisinsulinnumber, time, thisuuid);
-                    Pendiq.handleTreatment(thisinsulinnumber);
+// gruoner: called Treatments from array of insulin-numbers instead of thisinsulinsumnumber
+// todo: manage pendiq in case of more than one type of insulin
+                    ArrayList<InsulinInjection> injections = new ArrayList<InsulinInjection>();
+                    for (int i = 0; i < maxInsulinProfiles; i++)
+                        if (insulinset[i]) {
+                            InsulinInjection injection = new InsulinInjection(thisinsulinprofile[i], thisinsulinnumber[i]);
+                            injections.add(injection);
+                        }
+                    Log.d(TAG, "processAndApproveTreatment create watchkeypad Treatment carbs=" + thiscarbsnumber + " insulin=" + thisinsulinsumnumber + " timestamp=" + JoH.dateTimeText(time) + " uuid=" + thisuuid);
+                    Treatments.create(thiscarbsnumber, thisinsulinsumnumber, injections, time, thisuuid);
+                    Pendiq.handleTreatment(thisinsulinsumnumber);
                 } else {
-                    Log.d(TAG, "processAndApproveTreatment Treatment already exists carbs=" + thiscarbsnumber + " insulin=" + thisinsulinnumber + " timestamp=" + JoH.dateTimeText(time));
+                    Log.d(TAG, "processAndApproveTreatment Treatment already exists carbs=" + thiscarbsnumber + " insulin=" + thisinsulinsumnumber + " timestamp=" + JoH.dateTimeText(time));
                 }
             }
         } else {
             WatchUpdaterService.sendWearToast(gs(R.string.treatment_processed), Toast.LENGTH_LONG);
-            Treatments.create(thiscarbsnumber, thisinsulinnumber, Treatments.getTimeStampWithOffset(mytimeoffset));
-            Pendiq.handleTreatment(thisinsulinnumber);
+// gruoner: called Treatments from array of insulin-numbers instead of thisinsulinsumnumber
+// todo: manage pendiq in case of more than one type of insulin
+            ArrayList<InsulinInjection> injections = new ArrayList<InsulinInjection>();
+            for (int i = 0; i < maxInsulinProfiles; i++)
+                if (insulinset[i]) {
+                    InsulinInjection injection = new InsulinInjection(thisinsulinprofile[i], thisinsulinnumber[i]);
+                    injections.add(injection);
+                }
+            Treatments.create(thiscarbsnumber, thisinsulinsumnumber, injections, Treatments.getTimeStampWithOffset(mytimeoffset));
+            Pendiq.handleTreatment(thisinsulinsumnumber);
         }
         hideAllTreatmentButtons();
 
@@ -1152,7 +1192,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     private boolean hideTreatmentButtonsIfAllDone() {
         if ((btnBloodGlucose.getVisibility() == View.INVISIBLE) &&
                 (btnCarbohydrates.getVisibility() == View.INVISIBLE) &&
-                (btnInsulinDose.getVisibility() == View.INVISIBLE)) {
+                (btnInsulinDose[0].getVisibility() == View.INVISIBLE)) { // the first btnInsulinDose is sufficient
             hideAllTreatmentButtons(); // we clear values here also
             //send toast to wear - closes the confirmation activity on the watch
             WatchUpdaterService.sendWearToast(gs(R.string.treatment_processed), Toast.LENGTH_LONG);
@@ -1168,8 +1208,11 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         btnApprove.setVisibility(View.INVISIBLE);
         btnCancel.setVisibility(View.INVISIBLE);
         btnCarbohydrates.setVisibility(View.INVISIBLE);
-        textInsulinDose.setVisibility(View.INVISIBLE);
-        btnInsulinDose.setVisibility(View.INVISIBLE);
+        textInsulinSumDose.setVisibility(View.INVISIBLE);
+        for (int i = 0; i < maxInsulinProfiles; i++) {
+            textInsulinDose[i].setVisibility(View.INVISIBLE);
+            btnInsulinDose[i].setVisibility(View.INVISIBLE);
+        }
         btnBloodGlucose.setVisibility(View.INVISIBLE);
         voiceRecognitionText.setVisibility(View.INVISIBLE);
         textTime.setVisibility(View.INVISIBLE);
@@ -1177,11 +1220,16 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
         // zeroing code could be functionalized
         thiscarbsnumber = 0;
-        thisinsulinnumber = 0;
+        thisinsulinsumnumber = 0;
+        insulinsumset = false;
+        for (int i = 0; i < maxInsulinProfiles; i++)
+        {
+            thisinsulinnumber[i] = 0;
+            insulinset[i] = false;
+        }
         thistimeoffset = 0;
         thisglucosenumber = 0;
         carbsset = false;
-        insulinset = false;
         glucoseset = false;
         timeset = false;
 
@@ -1212,9 +1260,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         Log.d(TAG, "Initialize Search words");
         wordDataWrapper lcs = new wordDataWrapper();
         try {
-
-            Resources res = getResources();
-            InputStream in_s = res.openRawResource(R.raw.initiallexicon);
+            InputStream in_s = getResources().openRawResource(R.raw.initiallexicon);
 
             String input = readTextFile(in_s);
 
@@ -1413,11 +1459,16 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         watchkeypad = false;
         watchkeypadset = false;
         glucoseset = false;
-        insulinset = false;
+        thisinsulinsumnumber = 0;
+        thisinsulinnumber = new double[maxInsulinProfiles];
+        thisinsulinprofile = new Insulin[maxInsulinProfiles];
         carbsset = false;
         timeset = false;
         thisnumber = -1;
         thisword = "";
+
+        for (int i = 0; i < maxInsulinProfiles; i++)
+            thisinsulinprofile[i] = null;
 
         final String[] wordsArray = allWords.split(" ");
         for (int i = 0; i < wordsArray.length; i++) {
@@ -1431,6 +1482,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 final String result = classifyWord(wordsArray[i]);
                 if (result != null)
                     thisword = result;
+                else
+                    thisword = wordsArray[i].toLowerCase();  // if we can't translate the word make it lowercase to recognise it later
                 handleWordPair();
                 if (thisword.equals("note")) {
                     String note_text = "";
@@ -1456,9 +1509,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         Log.d(TAG, "GOT WORD PAIR: " + thisnumber + " = " + thisword);
 
         switch (thisword) {
-
             case "watchkeypad":
-                if ((watchkeypadset == false) && (thisnumber > 1501968469)) {
+                if (!watchkeypadset && (thisnumber > 1501968469)) {
                     watchkeypad = true;
                     watchkeypadset = true;
                     watchkeypad_timestamp = (long) (thisnumber * 1000);
@@ -1469,13 +1521,12 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 break;
 
             case "rapid":
-                if ((insulinset == false) && (thisnumber > 0)) {
-                    thisinsulinnumber = thisnumber;
-                    textInsulinDose.setText(Double.toString(thisnumber) + " units");
+                if (!insulinsumset && (thisnumber > 0)) {
+                    thisinsulinsumnumber = thisnumber;
+                    textInsulinSumDose.setText(Double.toString(thisnumber) + " units");
                     Log.d(TAG, "Rapid dose: " + Double.toString(thisnumber));
-                    insulinset = true;
-                    btnInsulinDose.setVisibility(View.VISIBLE);
-                    textInsulinDose.setVisibility(View.VISIBLE);
+                    textInsulinSumDose.setVisibility(View.VISIBLE);
+                    insulinsumset = true;
                 } else {
                     Log.d(TAG, "Rapid dose already set");
                     preserve = true;
@@ -1483,7 +1534,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 break;
 
             case "carbs":
-                if ((carbsset == false) && (thisnumber > 0)) {
+                if (!carbsset && (thisnumber > 0)) {
                     thiscarbsnumber = thisnumber;
                     textCarbohydrates.setText(Integer.toString((int) thisnumber) + " carbs");
                     carbsset = true;
@@ -1497,7 +1548,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 break;
 
             case "blood":
-                if ((glucoseset == false) && (thisnumber > 0)) {
+                if (!glucoseset && (thisnumber > 0)) {
                     thisglucosenumber = thisnumber;
                     if (Pref.getString("units", "mgdl").equals("mgdl")) {
                         if (textBloodGlucose != null)
@@ -1522,7 +1573,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
             case "time":
                 Log.d(TAG, "processing time keyword");
-                if ((timeset == false) && (thisnumber >= 0)) {
+                if (!timeset && (thisnumber >= 0)) {
 
                     final NumberFormat nf = NumberFormat.getNumberInstance(Locale.US);
                     final DecimalFormat df = (DecimalFormat) nf;
@@ -1572,6 +1623,26 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                     preserve = true;
                 }
                 break;
+            default:
+                Insulin insulin = InsulinManager.getProfile(thisword);
+                int number = 0;
+                for (number = 0; number < maxInsulinProfiles; number++)
+                    if ((thisinsulinprofile[number] == null) || (thisinsulinprofile[number] == insulin)) {
+                        thisinsulinprofile[number] = insulin;
+                        break;
+                    }
+                if (!insulinset[number] && (thisnumber > 0)) {
+                    thisinsulinnumber[number] = thisnumber;
+                    textInsulinDose[number].setText(Double.toString(thisnumber) + " " + insulin.getDisplayName());
+                    Log.d(TAG, insulin.getDisplayName() + " dose: " + Double.toString(thisnumber));
+                    insulinset[number] = true;
+                    btnInsulinDose[number].setVisibility(View.VISIBLE);
+                    textInsulinDose[number].setVisibility(View.VISIBLE);
+                } else {
+                    Log.d(TAG, insulin.getDisplayName() + " dose already set");
+                    preserve = true;
+                }
+                break;
         } // end switch
 
         if (preserve == false) {
@@ -1583,11 +1654,12 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         }
 
         // don't show approve if we only have time
-        if ((insulinset || glucoseset || carbsset) && !watchkeypad) {
+        if ((insulinsumset || glucoseset || carbsset) && !watchkeypad) {
             btnApprove.setVisibility(View.VISIBLE);
 
             if (small_screen) {
                 final float button_scale_factor = 0.60f;
+                final int small_text_size = 12;
                 ((ViewGroup.MarginLayoutParams) btnApprove.getLayoutParams()).leftMargin = 0;
                 ((ViewGroup.MarginLayoutParams) btnBloodGlucose.getLayoutParams()).leftMargin = 0;
                 ((ViewGroup.MarginLayoutParams) btnBloodGlucose.getLayoutParams()).setMarginStart(0);
@@ -1598,32 +1670,33 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 btnApprove.setScaleY(button_scale_factor);
                 btnCancel.setScaleX(button_scale_factor);
                 btnCancel.setScaleY(button_scale_factor);
-                btnInsulinDose.setScaleX(button_scale_factor);
+                for (int i = 0; i < maxInsulinProfiles; i++) {
+                    btnInsulinDose[i].setScaleY(button_scale_factor);
+                    btnInsulinDose[i].setScaleX(button_scale_factor);
+                    textInsulinDose[i].setTextSize(small_text_size);
+                }
                 btnCarbohydrates.setScaleX(button_scale_factor);
                 btnCarbohydrates.setScaleY(button_scale_factor);
                 btnBloodGlucose.setScaleX(button_scale_factor);
                 btnBloodGlucose.setScaleY(button_scale_factor);
-                btnInsulinDose.setScaleY(button_scale_factor);
                 btnTime.setScaleX(button_scale_factor);
                 btnTime.setScaleY(button_scale_factor);
-
-                final int small_text_size = 12;
-
                 textCarbohydrates.setTextSize(small_text_size);
-                textInsulinDose.setTextSize(small_text_size);
+                textInsulinSumDose.setTextSize(small_text_size);
                 textBloodGlucose.setTextSize(small_text_size);
                 textTime.setTextSize(small_text_size);
             }
         }
 
-        if ((insulinset || glucoseset || carbsset || timeset) && !watchkeypad) {
+        if ((insulinsumset || glucoseset || carbsset || timeset) && !watchkeypad) {
             btnCancel.setVisibility(View.VISIBLE);
             if (chart != null) {
                 chart.setAlpha((float) 0.10);
             }
             WatchUpdaterService.sendTreatment(
                     thiscarbsnumber,
-                    thisinsulinnumber,
+// todo gruoner: change interfaces to sendTreatment to array of insulin-numbers instead of thisinsulinsumnumber
+                    thisinsulinsumnumber,
                     thisglucosenumber,
                     thistimeoffset,
                     textTime.getText().toString());
@@ -1730,7 +1803,6 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
         wordDataWrapper() {
             entries = new ArrayList<wordData>();
-
         }
     }
 
@@ -2040,7 +2112,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         }
 
 
-        if (insulinset || glucoseset || carbsset || timeset) {
+        if (insulinsumset || glucoseset || carbsset || timeset) {
             if (chart != null) {
                 chart.setAlpha((float) 0.10);
                 // TODO also set buttons alpha
@@ -2334,6 +2406,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         }
         if (collector.equals(DexCollectionType.Disabled)) {
             notificationText.append("\n DATA SOURCE DISABLED");
+/*gruoner: commented out because it sucks getting the wizard every 30seconds
             if (!Experience.gotData()) {
                 // TODO should this move to Experience::processSteps ?
                 final Activity activity = this;
@@ -2349,6 +2422,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 }, 500);
 
             }
+*/
         } else if (collector.equals(DexCollectionType.Mock)) {
             notificationText.append("\n USING FAKE DATA SOURCE !!!");
         }

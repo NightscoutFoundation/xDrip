@@ -22,6 +22,7 @@ import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Dex_Constants;
 import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Models.HeartRate;
+import com.eveningoutpost.dexdrip.Models.InsulinInjection;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.StepCounter;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
@@ -31,6 +32,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSparklineBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.insulin.Insulin;
 import com.eveningoutpost.dexdrip.utils.PowerStateReceiver;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.huami.watch.transport.DataBundle;
@@ -43,6 +45,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 import java.util.Set;
 
 
@@ -143,7 +146,7 @@ public class Amazfitservice extends Service {
 
                 if (item.getAction().equals("Amazfit_Treatmentsdata")) {
                     DataBundle databundle = item.getData();
-                    Treatments.create(databundle.getDouble("carbs"), databundle.getDouble("insulin"), databundle.getLong("timestamp"));
+                    Treatments.create(databundle.getDouble("carbs"), databundle.getDouble("insulin"), new ArrayList<InsulinInjection>(), databundle.getLong("timestamp"));
 
                 }
             }

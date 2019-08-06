@@ -1,0 +1,37 @@
+{
+  "profiles":
+  [
+    {
+      "displayName": "Insulatard",
+      "PPN":
+      [
+        "1105039656"
+      ],
+      "ATCCode": "A10AC01"
+    },
+    {
+      "displayName": "Actrapid",
+      "PPN":
+      [
+        "1102949004"
+      ],
+      "ATCCode": "A10AB01"
+    },
+    {
+      "displayName": "Testulatard",
+      "PPN":
+      [
+        "1105039656-TEST"
+      ],
+      "ATCCode": "A10AC01"
+    },
+    {
+      "displayName": "Novorapid",
+      "PPN":
+      [
+        "1100558736"
+      ],
+      "ATCCode": "A10AB05"
+    }
+  ]
+}
