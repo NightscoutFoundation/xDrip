@@ -6,6 +6,10 @@ package com.eveningoutpost.dexdrip.Models;
         import com.activeandroid.annotation.Column;
         import com.activeandroid.annotation.Table;
         import com.activeandroid.query.Select;
+import com.activeandroid.annotation.Column;
+import com.activeandroid.annotation.Table;
+import com.activeandroid.query.Select;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 
         import java.util.Date;
         import java.util.List;
@@ -28,8 +32,8 @@ public class Libre2RawValue extends PlusModel {
     @Column(name = "glucose", index = false)
     public double glucose;
 
-    public static List<Libre2RawValue> last20Minutes() {
-        double timestamp = (new Date().getTime()) - (60000 * 20);
+    public static List<Libre2RawValue> lastXMinutes() {
+        double timestamp = (new Date().getTime()) - (60000 * Pref.getStringToInt("libre2smoothminuts",20));
         return new Select()
                 .from(Libre2RawValue.class)
                 .where("ts >= " + timestamp)

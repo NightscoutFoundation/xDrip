@@ -902,6 +902,19 @@
                 android:summary="@string/summary_write_Battery_Information_for_additional_analytic"
                 android:title="@string/title_Batterylog" />
         </PreferenceScreen>
+
+            <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+                android:key="xdrip_libre2_advanced_settings"
+                android:summary="@string/libre2_advanced_settings_summary"
+                android:title="@string/libre2_advanced_settings_title">
+                <EditTextPreference
+                    android:key="libre2smoothminuts"
+                    android:title="@string/libre2smoothrange_title"
+                    android:summary="@string/libre2smoothrange_summary"
+                    android:numeric="integer"
+                    android:defaultValue="20" />
+            </PreferenceScreen>
+
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:key="aggressive_service_restart"

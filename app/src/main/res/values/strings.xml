@@ -1521,4 +1521,8 @@
     <string name="title_ob1_g5_preemptive_restart_extended_time_travel_all_firmwares">Always allow extended time-travel</string>
     <string name="summary_ob1_g5_preemptive_restart_extended_time_travel_all_firmwares">Allow extended time-travel with all firmware versions (engineering mode only) </string>
     <string name="collection_summary_ob1_g5_preemptive_restart">Automatically restart a sensor before it stops</string>
+    <string name="libre2_advanced_settings_summary">Advanced settings for Libre2 (Patched App)</string>
+    <string name="libre2_advanced_settings_title">Advanced settings for Libre2</string>
+    <string name="libre2smoothrange_summary">Timerange for smoothing</string>
+    <string name="libre2smoothrange_title">Timerange in minutes over wich the smoothing algorythm will be work</string>
 </resources>
