@@ -248,6 +248,7 @@ public class TidepoolUploader {
         extendWakeLock(60000);
         session.iterations++;
         final String chunk = UploadChunk.getNext(session);
+        UserError.Log.d(TAG, "Uploading chunk " + chunk);
         if (chunk != null) {
             if (chunk.length() == 2) {
                 UserError.Log.d(TAG, "Empty data set - marking as succeeded");
