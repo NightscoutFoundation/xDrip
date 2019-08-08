@@ -208,7 +208,9 @@ public class BgGraphBuilder {
             loaded_start=start;
             loaded_end=end;
             bgReadings = BgReading.latestForGraph(numValues, start, end);
-            Libre2RawValues = Libre2RawValue.latestForGraph(numValues, start, end);
+            if (prefs.getBoolean("Libre2_showRawGraph",false)) {
+                Libre2RawValues = Libre2RawValue.latestForGraph(numValues, start, end);
+            }
             plugin_adjusted = false;
         } finally {
             readings_lock.unlock();
@@ -1227,7 +1229,7 @@ public class BgGraphBuilder {
                         filteredValues.add(new PointValue((float) ((bgReading.timestamp + rollingOffset) / FUZZER), (float) unitized(rollingValue)));
                     }
                 }
-                if ((DexCollectionType.getDexCollectionType() != DexCollectionType.LibreReceiver) && (interpret_raw && (bgReading.raw_calculated > 0))) {
+                if ((interpret_raw && (bgReading.raw_calculated > 0))) {
                     rawInterpretedValues.add(new PointValue((float) (bgReading.timestamp / FUZZER), (float) unitized(bgReading.raw_calculated)));
                 }
                 if ((!glucose_from_plugin) && (plugin != null) && (cd != null)) {
@@ -1304,12 +1306,13 @@ public class BgGraphBuilder {
 
             }
 
-            for (final Libre2RawValue bgLibre : Libre2RawValues) {
-                if ((DexCollectionType.getDexCollectionType() == DexCollectionType.LibreReceiver) && (bgLibre.glucose > 0)) {
-                    rawInterpretedValues.add(new PointValue((float) (bgLibre.timestamp / FUZZER), (float) unitized(bgLibre.glucose)));
+            if (prefs.getBoolean("Libre2_showRawGraph",false)) {
+                for (final Libre2RawValue bgLibre : Libre2RawValues) {
+                    if (bgLibre.glucose > 0) {
+                        rawInterpretedValues.add(new PointValue((float) (bgLibre.timestamp / FUZZER), (float) unitized(bgLibre.glucose)));
+                    }
                 }
             }
-
             if (avg1counter > 0) {
                 avg1value = avg1value / avg1counter;
             }
