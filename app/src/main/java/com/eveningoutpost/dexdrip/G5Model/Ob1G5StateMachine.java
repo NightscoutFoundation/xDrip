@@ -678,9 +678,10 @@ public class Ob1G5StateMachine {
      */
     private static boolean deferPreemptiveRestart(long sessionDuration, int restartDaysThreshold) {
         BestGlucose.DisplayGlucose displayGlucose = BestGlucose.getDisplayGlucose();
+        boolean highDelta = displayGlucose != null && Math.abs(displayGlucose.delta_mgdl) > 4;
+        boolean maxDelayExceeded = sessionDuration > DAY_IN_MS * (restartDaysThreshold + 0.5);
         return Pref.getBooleanDefaultFalse("ob1_g5_defer_preemptive_restart_if_needed")
-                && (displayGlucose != null && Math.abs(displayGlucose.delta_mgdl) <= 4
-                || sessionDuration > DAY_IN_MS * (restartDaysThreshold + 0.5));
+                && highDelta && !maxDelayExceeded;
     }
 
     private static void glucoseRxCommon(final BaseGlucoseRxMessage glucose, final Ob1G5CollectionService parent, final RxBleConnection connection) {
