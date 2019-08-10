@@ -1384,7 +1384,7 @@
     <string name="classic_simple">简单经典的</string>
     <string name="libre">Libre</string>
     <string name="what_type_of_libre_bridge_device_do_you_use">您使用的是什么类型的Libre桥设备？</string>
-    <string name="bluetooth_bridge_device_blucon_limitter_bluereader_tomato_etc">蓝牙桥设备：Blucon, LimiTTer, Bluereader, Tomato, 等</string>
+    <string name="bluetooth_bridge_device_blucon_limitter_bluereader_tomato_etc">蓝牙桥设备：Blucon, Bubble, LimiTTer, Bluereader, Tomato, 等</string>
     <string name="librealarm_app_using_sony_smartwatch">Libre警报应用：使用索尼智能手表</string>
     <string name="__data_source_disabled">\n数据源禁用</string>
     <string name="data_source_is_set_to_">数据源设置为 </string>

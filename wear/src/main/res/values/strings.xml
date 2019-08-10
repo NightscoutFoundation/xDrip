@@ -204,6 +204,7 @@
     <string name="ok">OK</string>
     <string name="enable_permission">Enable Permission</string>
     <string name="tomato">Tomato</string>
+    <string name="bubble">Bubble</string>
     <string name="space_minutes_ago">" Minutes ago"</string>
     <string name="space_minute_ago">" Minute ago"</string>
     <string name="snooze_alert">Snooze Alert</string>
@@ -264,5 +265,7 @@
     <string name="scanned_ok">Scanned OK!</string>
     <string name="nfc_io_error">NFC IO Error</string>
     <string name="nfc_error">NFC Error</string>
-
+    <string name="ob1_session_restarted_title">Sensor session restarted</string>
+    <string name="ob1_session_restarted_msg">The sensor session was preemptively restarted and set to 3 days, please check if next readings are off and calibrate if needed</string>
+    <string name="ob1_session_restarted_note">Transmitter session was restarted</string>
 </resources>

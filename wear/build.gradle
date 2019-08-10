@@ -1,8 +1,8 @@
 buildscript {
     repositories {
         google()
-        maven { url 'https://maven.fabric.io/public' }
         jcenter()
+        maven { url 'https://maven.fabric.io/public' }
 
     }
 
