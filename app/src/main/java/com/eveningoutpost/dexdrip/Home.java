@@ -470,6 +470,13 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             }
             return false;
         });
+        btnNote.setOnClickListener(v -> {
+            if (!Pref.getBooleanDefaultFalse("default_to_voice_notes")) {
+                showNoteTextInputDialog(v, 0);
+            } else {
+                promptSpeechNoteInput(v);
+            }
+        });
 
         btnCancel.setOnClickListener(v -> cancelTreatment());
 
