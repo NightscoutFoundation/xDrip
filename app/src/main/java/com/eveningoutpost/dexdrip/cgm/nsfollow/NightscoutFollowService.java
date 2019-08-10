@@ -117,7 +117,7 @@ public class NightscoutFollowService extends ForegroundService {
     }
 
     static void updateTreatmentDownloaded() {
-        lastTreatment = Treatments.last();
+        lastTreatment = Treatments.lastNotFromXdrip();
         if(lastTreatment != null && lastTreatmentTime != lastTreatment.timestamp) {
             treatmentReceivedDelay = JoH.msSince(lastTreatment.timestamp);
             lastTreatmentTime = lastTreatment.timestamp;
