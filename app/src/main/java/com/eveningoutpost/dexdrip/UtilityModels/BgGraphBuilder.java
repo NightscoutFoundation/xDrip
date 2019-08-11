@@ -397,6 +397,24 @@ public class BgGraphBuilder {
     private float yposFromRate(double rate, float yscale) {
         return (float)rate * yscale;
     }
+    
+    private void mergeIdenticalItems(List<NSBasal> basallist) {
+        // Go over the list and merge items with identical rate
+        int list_size = basallist.size();
+        for(int i = 0; i < list_size; i++) {
+            for (int j=i+1; j < list_size; j++) {
+                if(basallist.get(i).rate != basallist.get(j).rate) {
+                    // Get out of the inner loop, objects are not the same
+                    break;
+                }
+                // We have two objects with the same rate, merge them.
+                basallist.get(i).merge(basallist.get(j));
+                basallist.remove(j);
+                list_size--;
+            }
+        }
+    }
+    
     private List<Line> nsBasalLines() {
         final List<Line> basalLines = new ArrayList<>();
 
@@ -429,6 +447,8 @@ public class BgGraphBuilder {
                 }
             }
         }
+        
+        mergeIdenticalItems(basallist);
         
         // Scale the yscale not to depend on actual bg values.
         if(max_rate != 0) {

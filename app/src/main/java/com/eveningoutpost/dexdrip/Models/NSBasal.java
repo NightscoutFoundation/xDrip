@@ -234,6 +234,23 @@ public class NSBasal extends PlusModel {
             Log.e(TAG, "xxxxx errror duration is negative");
         }
     }
+    
+    // Merge two objects with the same rate, where the later comes directly 
+    // after the first.
+    public void merge(NSBasal nextBasal) {
+      if (rate != nextBasal.rate) {
+        Log.e(TAG, "ERROR rate should be the same " + rate + " " + nextBasal.rate);
+        return;
+      }
+      if(endTimestamp() < nextBasal.created_at || 
+          nextBasal.created_at < created_at) {
+        Log.e(TAG, "ERROR start time of two objects is wrong " + toS() + " " + nextBasal.toS());
+        return;
+      }
+      
+      setEnd(nextBasal.created_at);
+      
+    }
 
     // static methods
 /*
