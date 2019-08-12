@@ -411,6 +411,9 @@ public class BgGraphBuilder {
                 basallist.get(i).merge(basallist.get(j));
                 basallist.remove(j);
                 list_size--;
+                // Since we took one object out, we need to make sure that
+                // next time we will continue from the correct place.
+                j--;
             }
         }
     }
@@ -499,6 +502,11 @@ public class BgGraphBuilder {
 
                 last_start = item.created_at;
                 last_rate = item.rate;
+            } else {
+              // This can actually happen since we some times have a zero temp basal,
+              // Or that we did not have a basal for some time, so we can not merge
+              // them.
+              Log.e(TAG, "warning - we have two objects with same rate." + item.toS() );
             }
             //???  First point, can we get it out of the loop?
             if (--count == 0) {
