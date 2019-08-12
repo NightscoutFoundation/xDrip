@@ -27,10 +27,12 @@ import com.eveningoutpost.dexdrip.G5Model.BatteryInfoRxMessage;
 import com.eveningoutpost.dexdrip.G5Model.BluetoothServices;
 import com.eveningoutpost.dexdrip.G5Model.CalibrationState;
 import com.eveningoutpost.dexdrip.G5Model.DexSyncKeeper;
-import com.eveningoutpost.dexdrip.G5Model.Extensions;
+import com.eveningoutpost.dexdrip.G5Model.DexTimeKeeper;
 import com.eveningoutpost.dexdrip.G5Model.FirmwareCapability;
 import com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine;
 import com.eveningoutpost.dexdrip.G5Model.TransmitterStatus;
+import com.eveningoutpost.dexdrip.G5Model.VersionRequest1RxMessage;
+import com.eveningoutpost.dexdrip.G5Model.VersionRequest2RxMessage;
 import com.eveningoutpost.dexdrip.G5Model.VersionRequestRxMessage;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
@@ -1824,18 +1826,50 @@ public class Ob1G5CollectionService extends G5BaseService {
                 (Pref.getBooleanDefaultFalse("ob1_g5_preemptive_restart") ? "Enabled" : "Disabled")
                         + (Ob1G5StateMachine.useExtendedTimeTravel() ? " (extended)" : "")));
 
-        // firmware details
+        final VersionRequest1RxMessage vr1 = (VersionRequest1RxMessage) Ob1G5StateMachine.getFirmwareXDetails(tx_id, 1);
+        final VersionRequest2RxMessage vr2 = (VersionRequest2RxMessage) Ob1G5StateMachine.getFirmwareXDetails(tx_id, 2);
+        try {
+            if (vr1 != null) {
+                l.add(new StatusItem("Firmware Version", vr1.firmware_version_string, FirmwareCapability.isG6Rev2(vr1.firmware_version_string) ? NOTICE : NORMAL));
+                //l.add(new StatusItem("Build Version", "" + vr1.build_version));
+                if (vr1.version_code != 3) {
+                    l.add(new StatusItem("Compat Version", "" + vr1.version_code, Highlight.BAD));
+                }
+                if (vr1.max_runtime_days != 110 && vr1.max_runtime_days != 112) {
+                    l.add(new StatusItem("Transmitter Life", "" + vr1.max_runtime_days + " " + gs(R.string.days)));
+                }
+            }
+        } catch (Exception e) {
+            // TODO add message?
+        }
+
+        try {
+            if (vr2 != null) {
+                if (vr2.typicalSensorDays != 10 && vr2.typicalSensorDays != 7) {
+                    l.add(new StatusItem("Sensor Period", vr2.typicalSensorDays, Highlight.NOTICE));
+                }
+                //l.add(new StatusItem("Feature mask", vr2.featureBits));
+            }
+        } catch (Exception e) {
+            //
+        }
+
+        // firmware hardware details
         final VersionRequestRxMessage vr = Ob1G5StateMachine.getFirmwareDetails(tx_id);
         try {
             if ((vr != null) && (vr.firmware_version_string.length() > 0)) {
 
-                l.add(new StatusItem("Firmware Version", vr.firmware_version_string, FirmwareCapability.isG6Rev2(vr.firmware_version_string) ? NOTICE : NORMAL));
                 if (Home.get_engineering_mode()) {
-                    l.add(new StatusItem("Bluetooth Version", vr.bluetooth_firmware_version_string));
+                    if (vr1 != null && !vr.firmware_version_string.equals(vr1.firmware_version_string)) {
+                        l.add(new StatusItem("2nd Firmware Version", vr.firmware_version_string, FirmwareCapability.isG6Rev2(vr.firmware_version_string) ? NOTICE : NORMAL));
+                    }
+                    if (vr1 != null && !vr.bluetooth_firmware_version_string.equals(vr1.firmware_version_string)) {
+                        l.add(new StatusItem("Bluetooth Version", vr.bluetooth_firmware_version_string));
+                    }
                     l.add(new StatusItem("Other Version", vr.other_firmware_version));
                     //  l.add(new StatusItem("Hardware Version", vr.hardwarev));
-                    if (vr.asic != 61440)
-                        l.add(new StatusItem("ASIC", vr.asic, NOTICE)); // TODO color code
+                    if (vr.asic != 61440 && vr.asic != 16705 && vr.asic != 243 && vr.asic != 74)
+                        l.add(new StatusItem("ASIC", vr.asic, NOTICE));
                 }
             }
         } catch (NullPointerException e) {
@@ -1859,6 +1893,11 @@ public class Ob1G5CollectionService extends G5BaseService {
             updateBatteryWarningLevel();
         }
 
+        if (vr1 != null && Home.get_engineering_mode()) {
+            l.add(new StatusItem("Shelf Life", "" + vr1.inactive_days + " / " + vr1.max_inactive_days));
+        }
+
+        final int timekeeperDays = DexTimeKeeper.getTransmitterAgeInDays(tx_id);
         if ((bt != null) && (last_battery_query > 0)) {
             l.add(new StatusItem("Battery Last queried", JoH.niceTimeSince(last_battery_query) + " " + "ago", NORMAL, "long-press",
                     new Runnable() {
@@ -1872,11 +1911,15 @@ public class Ob1G5CollectionService extends G5BaseService {
                 if (!battery_status.equals("OK"))
                     l.add(new StatusItem("Transmitter Status", battery_status, BAD));
             }
-            l.add(new StatusItem("Transmitter Days", ((bt.runtime > -1) ? bt.runtime : "") + ((last_transmitter_timestamp > 0) ? " / " + JoH.qs((double) last_transmitter_timestamp / 86400, 1) : "")));
+
+            // TODO use string builder instead of ternary for days
+            l.add(new StatusItem("Transmitter Days", ((bt.runtime > -1) ? bt.runtime : "") + ((timekeeperDays > -1) ? ((FirmwareCapability.isTransmitterG6Rev2(tx_id) ? " " : " / ") + timekeeperDays) : "") + ((last_transmitter_timestamp > 0) ? " / " + JoH.qs((double) last_transmitter_timestamp / 86400, 1) : "")));
             l.add(new StatusItem("Voltage A", bt.voltagea, bt.voltagea < LOW_BATTERY_WARNING_LEVEL ? BAD : NORMAL));
             l.add(new StatusItem("Voltage B", bt.voltageb, bt.voltageb < (LOW_BATTERY_WARNING_LEVEL - 10) ? BAD : NORMAL));
             l.add(new StatusItem("Resistance", bt.resist, bt.resist > 1400 ? BAD : (bt.resist > 1000 ? NOTICE : (bt.resist > 750 ? NORMAL : Highlight.GOOD))));
-            l.add(new StatusItem("Temperature", bt.temperature + " \u2103"));
+            if (vr != null && !FirmwareCapability.isG6Rev2(vr.firmware_version_string)) {
+                l.add(new StatusItem("Temperature", bt.temperature + " \u2103"));
+            }
         }
 
         return l;

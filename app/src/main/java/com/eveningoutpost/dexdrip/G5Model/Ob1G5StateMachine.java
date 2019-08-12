@@ -423,6 +423,24 @@ public class Ob1G5StateMachine {
         enqueueUniqueCommand(new GlucoseTxMessage(), "Re-read glucose");
     }
 
+    @SuppressLint("CheckResult")
+    public static void checkVersionAndBattery(final Ob1G5CollectionService parent, final RxBleConnection connection) {
+        final int nextVersionRequest = requiredNextFirmwareDetailsType();
+        if ((getVersionDetails) && (nextVersionRequest != -1)) {
+            connection.writeCharacteristic(Control, nn(new VersionRequestTxMessage(nextVersionRequest).byteSequence))
+                    .subscribe(versionValue -> {
+                        UserError.Log.e(TAG, "Wrote version request: " + nextVersionRequest);
+                    }, throwable -> {
+                        UserError.Log.e(TAG, "Failed to write VersionRequestTxMessage: " + throwable);
+                    });
+        } else if ((getBatteryDetails) && (parent.getBatteryStatusNow || !haveCurrentBatteryStatus())) {
+
+            enqueueUniqueCommand(new BatteryInfoTxMessage(), "Query battery");
+            parent.getBatteryStatusNow = false;
+
+        }
+    }
+
     // Get Data
     @SuppressLint("CheckResult")
     public static boolean doGetData(Ob1G5CollectionService parent, RxBleConnection connection) {
@@ -471,27 +489,7 @@ public class Ob1G5StateMachine {
                         case SensorRxMessage:
 
                             try {
-                                if ((getVersionDetails) && (!haveFirmwareDetails())) {
-                                    connection.writeCharacteristic(Control, nn(new VersionRequestTxMessage().byteSequence))
-                                            .subscribe(versionValue -> {
-                                                UserError.Log.d(TAG, "Wrote version request");
-                                            }, throwable -> {
-                                                UserError.Log.e(TAG, "Failed to write VersionRequestTxMessage: " + throwable);
-                                            });
-                                } else if ((getBatteryDetails) && (parent.getBatteryStatusNow || !haveCurrentBatteryStatus())) {
-
-
-                                    enqueueUniqueCommand(new BatteryInfoTxMessage(), "Query battery");
-                                    parent.getBatteryStatusNow = false;
-
-                                  /*  connection.writeCharacteristic(Control, new BatteryInfoTxMessage().byteSequence)
-                                            .subscribe(batteryValue -> {
-                                                UserError.Log.d(TAG, "Wrote battery info request");
-                                                parent.getBatteryStatusNow = false;
-                                            }, throwable -> {
-                                                UserError.Log.e(TAG, "Failed to write BatteryInfoRequestTxMessage: " + throwable);
-                                            });*/
-                                }
+                                checkVersionAndBattery(parent, connection);
                             } finally {
                                 processSensorRxMessage((SensorRxMessage) data_packet.msg);
                                 parent.msg("Got data");
@@ -500,8 +498,28 @@ public class Ob1G5StateMachine {
                             }
                             break;
 
+                        case VersionRequest1RxMessage:
+                            if (!setStoredFirmwareBytes(getTransmitterID(), 1, bytes, true)) {
+                                UserError.Log.e(TAG, "Could not save out firmware version!");
+                            }
+                            nextBackFillCheckSize = BACKFILL_CHECK_LARGE;
+                            if (JoH.ratelimit("g6-evaluate", 600)) {
+                                Inevitable.task("evaluteG6Settings", 10000, () -> evaluateG6Settings());
+                            }
+                            break;
+
                         case VersionRequestRxMessage:
                             if (!setStoredFirmwareBytes(getTransmitterID(), bytes, true)) {
+                                UserError.Log.e(TAG, "Could not save out firmware version!");
+                            }
+                            nextBackFillCheckSize = BACKFILL_CHECK_LARGE;
+                            if (JoH.ratelimit("g6-evaluate", 600)) {
+                                Inevitable.task("evaluteG6Settings", 10000, () -> evaluateG6Settings());
+                            }
+                            break;
+
+                        case VersionRequest2RxMessage:
+                            if (!setStoredFirmwareBytes(getTransmitterID(), 2, bytes, true)) {
                                 UserError.Log.e(TAG, "Could not save out firmware version!");
                             }
                             nextBackFillCheckSize = BACKFILL_CHECK_LARGE;
@@ -646,6 +664,17 @@ public class Ob1G5StateMachine {
                             }
                             break;
 
+                        case F2DUnknownRxMessage:
+                            UserError.Log.d(TAG,"Received F2D message");
+                            try {
+                                checkVersionAndBattery(parent, connection);
+                            } finally {
+                                parent.msg("Got no raw");
+                                parent.updateLast(tsl());       // TODO verify if this is ok to do here
+                                parent.clearErrors();           // TODO verify if this is ok to do here
+                            }
+                            break;
+
                         default:
                             UserError.Log.e(TAG, "Got unknown packet rx: " + JoH.bytesToHex(bytes));
                             break;
@@ -685,7 +714,9 @@ public class Ob1G5StateMachine {
 
     private static void glucoseRxCommon(final BaseGlucoseRxMessage glucose, final Ob1G5CollectionService parent, final RxBleConnection connection) {
         if (JoH.ratelimit("ob1-g5-also-read-raw", 20)) {
-            enqueueUniqueCommand(new SensorTxMessage(), "Also read raw");
+            //if (FirmwareCapability.isTransmitterRawCapable(getTransmitterID())) {
+                enqueueUniqueCommand(new SensorTxMessage(), "Also read raw");
+          //  }
         }
 
         if (JoH.pratelimit("g5-tx-time-since", 7200)
@@ -1163,6 +1194,9 @@ public class Ob1G5StateMachine {
                 } catch (Exception e) {
                     // not a good number - does this exception ever actually fire?
                 }
+                if (!FirmwareCapability.isTransmitterRawCapable(getTransmitterID())) {
+                    bgReading.noRawWillBeAvailable();
+                }
                 if (glucose.insufficient()) {
                     bgReading.appendSourceInfo("Insufficient").save();
                 }
@@ -1305,13 +1339,31 @@ public class Ob1G5StateMachine {
     }
 
 
+    private static int requiredNextFirmwareDetailsType() {
+        final String txid = getTransmitterID();
+        if (txid.length() == 6) {
+            final byte[] v1b =  getStoredFirmwareBytes(txid,1);
+            if (v1b.length < 10) return 1;
+            final byte[] v0b =  getStoredFirmwareBytes(txid,0);
+            if (v0b.length < 10) return 0;
+            final byte[] v2b =  getStoredFirmwareBytes(txid,2);
+            if (v2b.length < 10) return 2;
+        }
+        return -1; // nothing required
+    }
+
+
     private static boolean haveCurrentBatteryStatus() {
         return getTransmitterID().length() == 6 && (msSince(PersistentStore.getLong(G5_BATTERY_FROM_MARKER + getTransmitterID())) < BATTERY_READ_PERIOD_MS);
     }
 
-    private static byte[] getStoredFirmwareBytes(String transmitterId) {
+    private static byte[] getStoredFirmwareBytes(final String transmitterId) {
+        return getStoredFirmwareBytes(transmitterId, 0);
+    }
+
+    private static byte[] getStoredFirmwareBytes(final String transmitterId, final int type) {
         if (transmitterId.length() != 6) return new byte[0];
-        return PersistentStore.getBytes(G5_FIRMWARE_MARKER + transmitterId);
+        return PersistentStore.getBytes(G5_FIRMWARE_MARKER + transmitterId + "-" + type);
     }
 
     // from wear sync
@@ -1320,11 +1372,15 @@ public class Ob1G5StateMachine {
     }
 
     public static boolean setStoredFirmwareBytes(String transmitterId, byte[] data, boolean from_bluetooth) {
+        return setStoredFirmwareBytes(transmitterId, 0, data, from_bluetooth);
+    }
+
+    public static boolean setStoredFirmwareBytes(String transmitterId, int type, byte[] data, boolean from_bluetooth) {
         if (from_bluetooth) UserError.Log.e(TAG, "Store: VersionRX dbg: " + JoH.bytesToHex(data));
         if (transmitterId.length() != 6) return false;
         if (data.length < 10) return false;
-        if (JoH.ratelimit("store-firmware-bytes", 60)) {
-            PersistentStore.setBytes(G5_FIRMWARE_MARKER + transmitterId, data);
+        if (JoH.ratelimit("store-firmware-bytes" + type, 60)) {
+            PersistentStore.setBytes(G5_FIRMWARE_MARKER + transmitterId + "-" + type, data);
         }
         return true;
     }
@@ -1384,9 +1440,40 @@ public class Ob1G5StateMachine {
         return null;
     }
 
-    public static String getRawFirmwareVersionString(String tx_id) {
+    public static BaseMessage getFirmwareXDetails(final String tx_id, final int type) {
+        if (tx_id == null) {
+            if (JoH.quietratelimit("txid-null", 15))
+                UserError.Log.e(TAG, "TX ID is null in getFirmwareXDetails");
+            return null;
+        }
+        try {
+            byte[] stored = getStoredFirmwareBytes(tx_id,type);
+            if ((stored != null) && (stored.length > 9)) {
+                switch (type) {
+                    case 1:
+                        return new VersionRequest1RxMessage(stored);
+                    case 2:
+                        return new VersionRequest2RxMessage(stored);
+                    default:
+                        return new VersionRequestRxMessage(stored);
+                }
+            }
+        } catch (Exception e) {
+            if (JoH.quietratelimit("fi-exception", 15))
+                UserError.Log.e(TAG, "Exception in getFirmwareDetails: " + e);
+            return null;
+        }
+        return null;
+    }
+
+    public static String getRawFirmwareVersionString(final String tx_id) {
         final VersionRequestRxMessage vr = getFirmwareDetails(tx_id);
         if (vr != null) {
+            if (vr.firmware_version_string == null) {
+                UserError.Log.d(TAG,"Clearing firmware version as evaluated to null");
+                setStoredFirmwareBytes(tx_id, new byte[0], false);
+                return "error";
+            }
             return vr.firmware_version_string;
         } else {
             return "";
@@ -1494,6 +1581,8 @@ public class Ob1G5StateMachine {
         AuthStatusRxMessage,
         SensorRxMessage,
         VersionRequestRxMessage,
+        VersionRequest1RxMessage,
+        VersionRequest2RxMessage,
         BatteryInfoRxMessage,
         SessionStartRxMessage,
         SessionStopRxMessage,
@@ -1503,6 +1592,7 @@ public class Ob1G5StateMachine {
         BackFillRxMessage,
         TransmitterTimeRxMessage,
         BondRequestRxMessage,
+        F2DUnknownRxMessage,
         InvalidRxMessage,
 
     }
@@ -1530,6 +1620,10 @@ public class Ob1G5StateMachine {
                 return new PacketShop(PACKET.SensorRxMessage, new SensorRxMessage(packet));
             case VersionRequestRxMessage.opcode:
                 return new PacketShop(PACKET.VersionRequestRxMessage, new VersionRequestRxMessage(packet));
+            case VersionRequest1RxMessage.opcode:
+                return new PacketShop(PACKET.VersionRequest1RxMessage, new VersionRequest1RxMessage(packet));
+            case VersionRequest2RxMessage.opcode:
+                return new PacketShop(PACKET.VersionRequest2RxMessage, new VersionRequest2RxMessage(packet));
             case BatteryInfoRxMessage.opcode:
                 return new PacketShop(PACKET.BatteryInfoRxMessage, new BatteryInfoRxMessage(packet));
             case SessionStartRxMessage.opcode:
@@ -1548,6 +1642,8 @@ public class Ob1G5StateMachine {
                 return new PacketShop(PACKET.TransmitterTimeRxMessage, new TransmitterTimeRxMessage(packet));
             case BondRequestTxMessage.opcode:
                 return new PacketShop(PACKET.BondRequestRxMessage, null);
+            case F2DUnknownRxMessage.opcode:
+                return new PacketShop(PACKET.F2DUnknownRxMessage, new F2DUnknownRxMessage(packet));
             case InvalidRxMessage.opcode:
                 return new PacketShop(PACKET.InvalidRxMessage, new InvalidRxMessage(packet));
 
