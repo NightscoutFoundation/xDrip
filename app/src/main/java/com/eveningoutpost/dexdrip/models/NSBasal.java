@@ -248,7 +248,7 @@ public class NSBasal extends PlusModel {
         return;
       }
       
-      setEnd(nextBasal.created_at);
+      setEnd(nextBasal.endTimestamp());
       
     }
 
