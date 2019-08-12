@@ -1125,6 +1125,12 @@ public class BgReading extends Model implements ShareUploadableBg {
         }
     }
 
+    public BgReading noRawWillBeAvailable() {
+        raw_data = SPECIAL_RAW_NOT_AVAILABLE;
+        save();
+        return this;
+    }
+
     public BgReading appendSourceInfo(String info) {
         if ((source_info == null) || (source_info.length() == 0)) {
             source_info = info;
@@ -1146,7 +1152,7 @@ public class BgReading extends Model implements ShareUploadableBg {
         return filtered_data == SPECIAL_REMOTE_PLACEHOLDER;
     }
 
-
+    public static final double SPECIAL_RAW_NOT_AVAILABLE = -0.1279;
     public static final double SPECIAL_G5_PLACEHOLDER = -0.1597;
     public static final double SPECIAL_FOLLOWER_PLACEHOLDER = -0.1486;
     public static final double SPECIAL_REMOTE_PLACEHOLDER = -0.1375;
