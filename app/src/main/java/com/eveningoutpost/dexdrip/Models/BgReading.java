@@ -627,6 +627,11 @@ public class BgReading extends Model implements ShareUploadableBg {
         return  bgReading;
     }
 
+    public static boolean isRawMarkerValue(final double raw_data) {
+        return raw_data == BgReading.SPECIAL_G5_PLACEHOLDER
+                || raw_data == BgReading.SPECIAL_RAW_NOT_AVAILABLE;
+    }
+
 
     static void updateCalculatedValueToWithinMinMax(BgReading bgReading) {
         // TODO should this really be <10 other values also special??
