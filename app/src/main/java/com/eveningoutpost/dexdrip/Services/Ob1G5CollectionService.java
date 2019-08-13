@@ -1855,7 +1855,7 @@ public class Ob1G5CollectionService extends G5BaseService {
         }
 
         // firmware hardware details
-        final VersionRequestRxMessage vr = Ob1G5StateMachine.getFirmwareDetails(tx_id);
+        final VersionRequestRxMessage vr = (VersionRequestRxMessage) Ob1G5StateMachine.getFirmwareXDetails(tx_id,0);
         try {
             if ((vr != null) && (vr.firmware_version_string.length() > 0)) {
 

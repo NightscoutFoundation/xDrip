@@ -210,6 +210,7 @@ public class Ob1G5StateMachine {
         return true;
     }
 
+    @SuppressLint("CheckResult")
     private static void authenticationProcessor(final Ob1G5CollectionService parent, final RxBleConnection connection, final byte[] readValue) {
         PacketShop pkt = classifyPacket(readValue);
         UserError.Log.d(TAG, "Read from auth request: " + pkt.type + " " + JoH.bytesToHex(readValue));
@@ -328,6 +329,7 @@ public class Ob1G5StateMachine {
     }
 
 
+    @SuppressLint("CheckResult")
     public synchronized static void doKeepAlive(Ob1G5CollectionService parent, RxBleConnection connection, Runnable runnable) {
         if (connection == null) return;
         connection.writeCharacteristic(Authentication, nn(new KeepAliveTxMessage(60).byteSequence))
@@ -509,7 +511,7 @@ public class Ob1G5StateMachine {
                             break;
 
                         case VersionRequestRxMessage:
-                            if (!setStoredFirmwareBytes(getTransmitterID(), bytes, true)) {
+                            if (!setStoredFirmwareBytes(getTransmitterID(), 0, bytes, true)) {
                                 UserError.Log.e(TAG, "Could not save out firmware version!");
                             }
                             nextBackFillCheckSize = BACKFILL_CHECK_LARGE;
@@ -1358,7 +1360,7 @@ public class Ob1G5StateMachine {
     }
 
     private static byte[] getStoredFirmwareBytes(final String transmitterId) {
-        return getStoredFirmwareBytes(transmitterId, 0);
+        return getStoredFirmwareBytes(transmitterId, 1);
     }
 
     private static byte[] getStoredFirmwareBytes(final String transmitterId, final int type) {
@@ -1372,7 +1374,7 @@ public class Ob1G5StateMachine {
     }
 
     public static boolean setStoredFirmwareBytes(String transmitterId, byte[] data, boolean from_bluetooth) {
-        return setStoredFirmwareBytes(transmitterId, 0, data, from_bluetooth);
+        return setStoredFirmwareBytes(transmitterId, 1, data, from_bluetooth);
     }
 
     public static boolean setStoredFirmwareBytes(String transmitterId, int type, byte[] data, boolean from_bluetooth) {
@@ -1421,7 +1423,7 @@ public class Ob1G5StateMachine {
         }
     }
 
-    public static VersionRequestRxMessage getFirmwareDetails(String tx_id) {
+    public static VersionRequest1RxMessage getFirmwareDetails(String tx_id) {
         if (tx_id == null) {
             if (JoH.quietratelimit("txid-null", 15))
                 UserError.Log.e(TAG, "TX ID is null in getFirmwareDetails");
@@ -1430,7 +1432,7 @@ public class Ob1G5StateMachine {
         try {
             byte[] stored = getStoredFirmwareBytes(tx_id);
             if ((stored != null) && (stored.length > 9)) {
-                return new VersionRequestRxMessage(stored);
+                return new VersionRequest1RxMessage(stored);
             }
         } catch (Exception e) {
             if (JoH.quietratelimit("fi-exception", 15))
@@ -1467,7 +1469,7 @@ public class Ob1G5StateMachine {
     }
 
     public static String getRawFirmwareVersionString(final String tx_id) {
-        final VersionRequestRxMessage vr = getFirmwareDetails(tx_id);
+        final VersionRequest1RxMessage vr = getFirmwareDetails(tx_id);
         if (vr != null) {
             if (vr.firmware_version_string == null) {
                 UserError.Log.d(TAG,"Clearing firmware version as evaluated to null");
