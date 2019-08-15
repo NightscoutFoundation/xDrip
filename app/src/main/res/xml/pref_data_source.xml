@@ -191,13 +191,6 @@
                 <CheckBoxPreference
                         android:defaultValue="false"
                         android:dependency="ob1_g5_preemptive_restart"
-                        android:key="ob1_g5_defer_preemptive_restart_if_needed"
-                        android:summary="@string/summary_ob1_g5_defer_preemptive_restart_if_needed"
-                        android:title="@string/title_ob1_g5_defer_preemptive_restart_if_needed"
-                />
-                <CheckBoxPreference
-                        android:defaultValue="false"
-                        android:dependency="ob1_g5_preemptive_restart"
                         android:key="ob1_g5_defer_preemptive_restart_all_firmwares"
                         android:summary="@string/summary_ob1_g5_preemptive_restart_extended_time_travel_all_firmwares"
                         android:title="@string/title_ob1_g5_preemptive_restart_extended_time_travel_all_firmwares"
