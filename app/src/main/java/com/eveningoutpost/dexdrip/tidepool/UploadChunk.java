@@ -106,7 +106,10 @@ public class UploadChunk implements NamedSliderProcessor {
             if (treatment.carbs > 0) {
                 result.add(EWizard.fromTreatment(treatment));
             } else if (treatment.insulin > 0) {
-                result.add(EBolus.fromTreatment(treatment));
+                EBolus eBolus = EBolus.fromTreatment(treatment);
+                if(eBolus != null) {
+                  result.add(eBolus);
+                }
             } else {
                 // note only TODO
             }
