@@ -54,7 +54,7 @@ public class NSClientReceiver extends BroadcastReceiver {
 
         switch (action) {
             case Intents.ACTION_NEW_SGV:
-                if (Home.get_follower()) {
+                if (Home.get_follower() && prefs.getBoolean("accept_nsclient_sgv", true)) {
                     if (bundle == null) break;
                     final String sgvs_json = bundle.getString("sgvs", "");
                     if (sgvs_json.length() > 0) {
