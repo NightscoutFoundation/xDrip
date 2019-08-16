@@ -69,9 +69,12 @@ public class BackFillStream extends BaseMessage {
                     break;
 
                 case Errors:
+                    /* This preference option has never been available outside of unit testing
+                       and can now be removed.
                     if (Pref.getBooleanDefaultFalse("ob1_g5_use_errored_data")) {
                         insertBackfillItem(backsies, dexTime, glucose, trend);
                     }
+                    */
                     break;
 
                 case InsufficientCalibration:

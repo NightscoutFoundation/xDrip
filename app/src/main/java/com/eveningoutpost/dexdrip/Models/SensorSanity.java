@@ -52,7 +52,7 @@ public class SensorSanity {
         // checks for each type of data source
 
         if (DexCollectionType.hasDexcomRaw(type)) {
-            if ((raw_value != BgReading.SPECIAL_G5_PLACEHOLDER) || hard_check) {
+            if (!BgReading.isRawMarkerValue(raw_value) || hard_check) {
                 if (Pref.getBooleanDefaultFalse("using_g6")) {
                     if (raw_value < DEXCOM_G6_MIN_RAW) state = false;
                     else if (raw_value > DEXCOM_G6_MAX_RAW) state = false;

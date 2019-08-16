@@ -428,17 +428,11 @@ public class BgReading extends Model implements ShareUploadableBg {
         return null;
     }
 
-
     public static BgReading getForPreciseTimestamp(long timestamp, long precision) {
         return getForPreciseTimestamp(timestamp, precision, true);
     }
 
-
-    public static BgReading getForPreciseTimestamp(long timestamp, double precision) {
-        return getForPreciseTimestamp(timestamp, precision, true);
-    }
-
-    static BgReading getForPreciseTimestamp(long timestamp, double precision, boolean lock_to_sensor) {
+    public static BgReading getForPreciseTimestamp(long timestamp, long precision, boolean lock_to_sensor) {
         final Sensor sensor = Sensor.currentSensor();
         if ((sensor != null) || !lock_to_sensor) {
             final BgReading bgReading = new Select()
@@ -608,8 +602,13 @@ public class BgReading extends Model implements ShareUploadableBg {
 
                 if ((plugin != null) && ((pcalibration = plugin.getCalibrationData()) != null) && (Pref.getBoolean("use_pluggable_alg_as_primary", false))) {
                     Log.d(TAG, "USING CALIBRATION PLUGIN AS PRIMARY!!!");
-                    bgReading.calculated_value = (pcalibration.slope * bgReading.age_adjusted_raw_value) + pcalibration.intercept;
-                    bgReading.filtered_calculated_value = (pcalibration.slope * bgReading.ageAdjustedFiltered()) + calibration.intercept;
+                    if (plugin.isCalibrationSane(pcalibration)) {
+                        bgReading.calculated_value = (pcalibration.slope * bgReading.age_adjusted_raw_value) + pcalibration.intercept;
+                        bgReading.filtered_calculated_value = (pcalibration.slope * bgReading.ageAdjustedFiltered()) + calibration.intercept;
+                    } else {
+                        UserError.Log.wtf(TAG, "Calibration plugin failed intercept sanity check: " + pcalibration.toS());
+                        Home.toaststaticnext("Calibration plugin failed intercept sanity check");
+                    }
                 } else {
                     bgReading.calculated_value = ((calibration.slope * bgReading.age_adjusted_raw_value) + calibration.intercept);
                     bgReading.filtered_calculated_value = ((calibration.slope * bgReading.ageAdjustedFiltered()) + calibration.intercept);
@@ -626,6 +625,11 @@ public class BgReading extends Model implements ShareUploadableBg {
             bgReading.filtered_calculated_value = filtered_data;
         }
         return  bgReading;
+    }
+
+    public static boolean isRawMarkerValue(final double raw_data) {
+        return raw_data == BgReading.SPECIAL_G5_PLACEHOLDER
+                || raw_data == BgReading.SPECIAL_RAW_NOT_AVAILABLE;
     }
 
 
@@ -1126,6 +1130,12 @@ public class BgReading extends Model implements ShareUploadableBg {
         }
     }
 
+    public BgReading noRawWillBeAvailable() {
+        raw_data = SPECIAL_RAW_NOT_AVAILABLE;
+        save();
+        return this;
+    }
+
     public BgReading appendSourceInfo(String info) {
         if ((source_info == null) || (source_info.length() == 0)) {
             source_info = info;
@@ -1143,8 +1153,14 @@ public class BgReading extends Model implements ShareUploadableBg {
         return raw_data == SPECIAL_G5_PLACEHOLDER;
     }
 
+    public boolean isRemote() {
+        return filtered_data == SPECIAL_REMOTE_PLACEHOLDER;
+    }
+
+    public static final double SPECIAL_RAW_NOT_AVAILABLE = -0.1279;
     public static final double SPECIAL_G5_PLACEHOLDER = -0.1597;
     public static final double SPECIAL_FOLLOWER_PLACEHOLDER = -0.1486;
+    public static final double SPECIAL_REMOTE_PLACEHOLDER = -0.1375;
 
     public static BgReading bgReadingInsertFromG5(double calculated_value, long timestamp) {
         return bgReadingInsertFromG5(calculated_value, timestamp, null);
@@ -1226,6 +1242,70 @@ public class BgReading extends Model implements ShareUploadableBg {
             return existing;
         }
     }
+    public static synchronized BgReading bgReadingInsertLibre2(double calculated_value, long timestamp, double raw_data) {
+
+        final Sensor sensor = Sensor.currentSensor();
+        if (sensor == null) {
+            Log.w(TAG, "No sensor, ignoring this bg reading");
+            return null;
+        }
+        // TODO slope!!
+        final BgReading existing = getForPreciseTimestamp(timestamp, Constants.MINUTE_IN_MS);
+        if (existing == null) {
+            Calibration calibration = Calibration.lastValid();
+            final BgReading bgReading = new BgReading();
+            if (calibration == null) {
+                Log.d(TAG, "create: No calibration yet");
+                bgReading.sensor = sensor;
+                bgReading.sensor_uuid = sensor.uuid;
+                bgReading.raw_data = raw_data;
+                bgReading.age_adjusted_raw_value = raw_data;
+                bgReading.filtered_data = raw_data;
+                bgReading.timestamp = timestamp;
+                bgReading.uuid = UUID.randomUUID().toString();
+                bgReading.calculated_value = calculated_value;
+                bgReading.calculated_value_slope = 0;
+                bgReading.hide_slope = false;
+                bgReading.appendSourceInfo("Libre2 Native");
+                bgReading.find_slope();
+
+                bgReading.save();
+                bgReading.perform_calculations();
+                bgReading.postProcess(false);
+
+            } else {
+                Log.d(TAG, "Calibrations, so doing everything bgReading = " + bgReading);
+                bgReading.sensor = sensor;
+                bgReading.sensor_uuid = sensor.uuid;
+                bgReading.calibration = calibration;
+                bgReading.calibration_uuid = calibration.uuid;
+                bgReading.raw_data = raw_data ;
+                bgReading.age_adjusted_raw_value = raw_data;
+                bgReading.filtered_data = raw_data;
+                bgReading.timestamp = timestamp;
+                bgReading.uuid = UUID.randomUUID().toString();
+
+                bgReading.calculated_value = ((calibration.slope * calculated_value) + calibration.intercept);
+                bgReading.filtered_calculated_value = ((calibration.slope * bgReading.ageAdjustedFiltered()) + calibration.intercept);
+
+                bgReading.calculated_value_slope = 0;
+                bgReading.hide_slope = false;
+                bgReading.appendSourceInfo("Libre2 Native");
+
+                BgReading.updateCalculatedValueToWithinMinMax(bgReading);
+
+                bgReading.find_slope();
+                bgReading.save();
+
+                bgReading.postProcess(false);
+
+            }
+
+           return bgReading;
+        } else {
+            return existing;
+        }
+    }
 
     public static void handleResyncWearAfterBackfill(final long earliest) {
         if (earliest_backfill == 0 || earliest < earliest_backfill) earliest_backfill = earliest;
@@ -1235,6 +1315,10 @@ public class BgReading extends Model implements ShareUploadableBg {
                 earliest_backfill = 0;
             });
         }
+    }
+
+    public void setRemoteMarker() {
+        filtered_data = SPECIAL_REMOTE_PLACEHOLDER;
     }
 
 
@@ -1250,7 +1334,7 @@ public class BgReading extends Model implements ShareUploadableBg {
     }
 
     public static BgReading bgReadingInsertFromJson(String json, boolean do_notification) {
-        return bgReadingInsertFromJson(json, do_notification, WholeHouse.isEnabled() ? true : false);
+        return bgReadingInsertFromJson(json, do_notification, WholeHouse.isEnabled());
     }
 
     public static BgReading bgReadingInsertFromJson(String json, boolean do_notification, boolean force_sensor) {
@@ -1268,6 +1352,9 @@ public class BgReading extends Model implements ShareUploadableBg {
                         if (forced_sensor != null) {
                             bgr.sensor = forced_sensor;
                             bgr.sensor_uuid = forced_sensor.uuid;
+                        }
+                        if (Pref.getBooleanDefaultFalse("illustrate_remote_data")) {
+                            bgr.setRemoteMarker();
                         }
                     }
                     final long now = JoH.tsl();

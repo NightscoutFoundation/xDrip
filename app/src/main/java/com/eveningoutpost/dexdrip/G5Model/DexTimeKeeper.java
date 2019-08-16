@@ -102,6 +102,10 @@ public class DexTimeKeeper {
         return (valid_time >= 0) && (valid_time < DEX_TRANSMITTER_LIFE_SECONDS);
     }
 
+    public static int getTransmitterAgeInDays(final String transmitterId) {
+        final int valid_time = getDexTime(transmitterId, JoH.tsl());
+        return (valid_time >= 0) ? valid_time / 86400 : -1;
+    }
 
     public static String extractForStream(String transmitterId) {
         if (transmitterId == null || transmitterId.length() == 0) return null;
