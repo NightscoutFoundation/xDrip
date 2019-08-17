@@ -39,6 +39,7 @@ LG G4 (VS986 & H811) | 6.0
 LeEco Le Pro3 (LEX727) | 6.0.1
 Motorola Moto E (2nd Gen) (XT1526) | 5.1
 Motorola G3 | 6.0
+Motorola Moto G4 (XT1625) | 7.0
 Blu R1 HD | 6.0
 Sony Xperia Z3 Compact (D5803) | 6.0.1
 Huawei Y6 (SCL-L21) | 5.1
