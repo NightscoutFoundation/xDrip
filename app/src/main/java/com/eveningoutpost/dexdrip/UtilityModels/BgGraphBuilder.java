@@ -1304,7 +1304,7 @@ public class BgGraphBuilder {
 
             }
 
-            if (prefs.getBoolean("Libre2_showRawGraph",false)) {
+            if (DexCollectionType.getDexCollectionType() == DexCollectionType.LibreReceiver && prefs.getBoolean("Libre2_showRawGraph",false)) {
                 for (final Libre2RawValue bgLibre : Libre2RawValues) {
                     if (bgLibre.glucose > 0) {
                         rawInterpretedValues.add(new PointValue((float) (bgLibre.timestamp / FUZZER), (float) unitized(bgLibre.glucose)));
