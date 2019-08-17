@@ -656,12 +656,8 @@ public class Ob1G5StateMachine {
                                 int restartDaysThreshold = usingG6() ? 9 : 6;
                                 if (txtime.getSessionDuration() > Constants.DAY_IN_MS * restartDaysThreshold
                                         && txtime.getSessionDuration() < Constants.MONTH_IN_MS) {
-                                    if (!deferPreemptiveRestart(txtime.getSessionDuration(), restartDaysThreshold)) {
-                                        UserError.Log.uel(TAG, "Requesting preemptive session restart");
-                                        restartSensorWithTimeTravel();
-                                    } else {
-                                        UserError.Log.uel(TAG, "Deferring preemptive session restart, current delta is too high or n/a");
-                                    }
+                                    UserError.Log.uel(TAG, "Requesting preemptive session restart");
+                                    restartSensorWithTimeTravel();
                                 }
                             }
                             break;
@@ -701,17 +697,6 @@ public class Ob1G5StateMachine {
 
 
         return true;
-    }
-
-    /**
-     * Defer restart up to 12h if current delta is high, which can lead to sensor
-     * errors if session is restarted during times of high fluctuation
-     */
-    private static boolean deferPreemptiveRestart(long sessionDuration, int restartDaysThreshold) {
-        BestGlucose.DisplayGlucose displayGlucose = BestGlucose.getDisplayGlucose();
-        return Pref.getBooleanDefaultFalse("ob1_g5_defer_preemptive_restart_if_needed")
-                && (displayGlucose != null && Math.abs(displayGlucose.delta_mgdl) <= 4
-                || sessionDuration > DAY_IN_MS * (restartDaysThreshold + 0.5));
     }
 
     private static void glucoseRxCommon(final BaseGlucoseRxMessage glucose, final Ob1G5CollectionService parent, final RxBleConnection connection) {
@@ -1059,7 +1044,8 @@ public class Ob1G5StateMachine {
 
 
     public static void restartSensorWithTimeTravel() {
-        restartSensorWithTimeTravel(tsl() - (useExtendedTimeTravel() ? DAY_IN_MS * 3 : HOUR_IN_MS * 2 - MINUTE_IN_MS * 10));
+        restartSensorWithTimeTravel(tsl() -
+                (useExtendedTimeTravel() ? DAY_IN_MS * 3 + HOUR_IN_MS * 2 : HOUR_IN_MS * 2 - MINUTE_IN_MS * 10));
     }
 
     public static boolean useExtendedTimeTravel() {
@@ -1078,7 +1064,9 @@ public class Ob1G5StateMachine {
             enqueueUniqueCommand(new SessionStartTxMessage(when,
                             DexTimeKeeper.getDexTime(getTransmitterID(), when_started)),
                     "Auto Start Sensor");
-            Notifications.ob1SessionRestartRequested();
+            if (Pref.getBoolean("ob1_g5_preemptive_restart_alert", true)) {
+                Notifications.ob1SessionRestartRequested();
+            }
             Treatments.create_note(xdrip.getAppContext().getString(R.string.ob1_session_restarted_note), JoH.tsl());
         }
     }
