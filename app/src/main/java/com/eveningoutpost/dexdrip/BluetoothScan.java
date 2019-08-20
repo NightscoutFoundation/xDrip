@@ -226,7 +226,11 @@ public class BluetoothScan extends ListActivityWithMenu {
         } else {
             is_scanning = false;
             if (bluetooth_adapter != null && bluetooth_adapter.isEnabled()) {
-                bluetooth_adapter.stopLeScan(mLeScanCallback);
+                try {
+                    bluetooth_adapter.stopLeScan(mLeScanCallback);
+                } catch (NullPointerException e) {
+                    // concurrency related
+                }
             }
         }
         invalidateOptionsMenu();
