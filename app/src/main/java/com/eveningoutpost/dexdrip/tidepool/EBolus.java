@@ -27,18 +27,19 @@ public class EBolus extends BaseElement {
     }
 
     private static boolean IsBolusValid(Treatments treatment) {
-        if(treatment.insulin >= 0 && treatment.insulin <= 100) {
+        if(treatment.insulinSummary >= 0 && treatment.insulinSummary <= 100) {
             return true;
         }
         UserError.Log.e(TAG, "Ignoring invalid treatment " + treatment.toS());
         return false;
     }
-    
+
+    //todo grt: change EBolus Treatment to ArrayList<InsulinInjection>
     public static EBolus fromTreatment(Treatments treatment) {
         if(!IsBolusValid(treatment)) {
           return null;
         }
-        return new EBolus(treatment.insulin, treatment.insulin, treatment.timestamp, treatment.uuid);
+        return new EBolus(treatment.insulinSummary, treatment.insulinSummary, treatment.timestamp, treatment.uuid);
     }
 
 }

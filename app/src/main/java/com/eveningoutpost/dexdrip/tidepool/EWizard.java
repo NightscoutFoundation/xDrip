@@ -33,13 +33,14 @@ public class EWizard extends BaseElement {
             UserError.Log.e(TAG, "Ignoring invalid treatment (insulinCarbRatio) " + treatment.toS());
             return false;
         }
-        if(treatment.insulin < 0 || treatment.insulin >= 100) {
+        if(treatment.insulinSummary < 0 || treatment.insulinSummary >= 100) {
             UserError.Log.e(TAG, "Ignoring invalid treatment (insulin) " + treatment.toS());
             return false;
         }
         return true;
     }
 
+    // todo grt: change EBolus to ArrayList<InsulinInjection>
     public static EWizard fromTreatment(final Treatments treatment) {
         if(!IsEWizardValid(treatment)) {
             return null;
