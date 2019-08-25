@@ -226,7 +226,11 @@ public class BluetoothScan extends ListActivityWithMenu {
         } else {
             is_scanning = false;
             if (bluetooth_adapter != null && bluetooth_adapter.isEnabled()) {
-                bluetooth_adapter.stopLeScan(mLeScanCallback);
+                try {
+                    bluetooth_adapter.stopLeScan(mLeScanCallback);
+                } catch (NullPointerException e) {
+                    // concurrency related
+                }
             }
         }
         invalidateOptionsMenu();
@@ -381,7 +385,8 @@ public class BluetoothScan extends ListActivityWithMenu {
             if (device.getName().toLowerCase().contains("limitter")
                     && (adverts.containsKey(device.getAddress())
                     && ((new String(adverts.get(device.getAddress()), "UTF-8").contains("eLeR"))
-                    || (new String(adverts.get(device.getAddress()), "UTF-8").contains("data"))))) {
+                    || (new String(adverts.get(device.getAddress()), "UTF-8").contains("data"))))||
+                    device.getName().toLowerCase().contains("limitterd")) {
                 String msg = "Auto-detected transmiter_pl device!";
                 Log.e(TAG, msg);
                 JoH.static_toast_long(msg);
