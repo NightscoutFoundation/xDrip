@@ -1481,14 +1481,14 @@ public class BgGraphBuilder {
                         if (!treatment.hasContent()) continue;
 
                         if (showSMB && treatment.likelySMB()) {
-                            final Pair<Float, Float> yPositions = GraphTools.bestYPosition(bgReadings, treatment.timestamp, doMgdl, false, highMark, 10 + (100d * treatment.insulin));
+                            final Pair<Float, Float> yPositions = GraphTools.bestYPosition(bgReadings, treatment.timestamp, doMgdl, false, highMark, 10 + (100d * treatment.insulinSummary));
                             if (yPositions.first > 0) {
                                 final PointValueExtended pv = new PointValueExtended(treatment.timestamp / FUZZER, yPositions.first); // TEST VALUES
                                 pv.setPlumbPos(GraphTools.yposRatio(yPositions.second, yPositions.first, 0.1f));
                                 BitmapLoader.loadAndSetKey(pv, R.drawable.triangle, 180);
                                 pv.setBitmapTint(getCol(X.color_smb_icon));
-                                pv.setBitmapScale((float) (0.5f + (treatment.insulin * 5f))); // 0.1U == 100% 0.2U = 150%
-                                pv.note = "SMB: " + JoH.qs(treatment.insulin, 2) + "U" + (treatment.notes != null ? " " + treatment.notes : "");
+                                pv.setBitmapScale((float) (0.5f + (treatment.insulinSummary * 5f))); // 0.1U == 100% 0.2U = 150%
+                                pv.note = "SMB: " + JoH.qs(treatment.insulinSummary, 2) + "U" + (treatment.notes != null ? " " + treatment.notes : "");
                                 smbValues.add(pv);
                                 continue;
                             } else {
@@ -1516,17 +1516,17 @@ public class BgGraphBuilder {
 
 
                         double height = 6 * bgScale;
-                        if (treatment.insulin > 0)
-                            height = treatment.insulin; // some scaling needed I think
+                        if (treatment.insulinSummary > 0)
+                            height = treatment.insulinSummary; // some scaling needed I think
                         if (height > highMark) height = highMark;
                         if (height < lowMark) height = lowMark;
 
                         final PointValueExtended pv = new PointValueExtended((float) (treatment.timestamp / FUZZER), (float) height);
                         String mylabel = "";
-                        if (treatment.insulin > 0) {
+                        if (treatment.insulinSummary > 0) {
                             if (mylabel.length() > 0)
                                 mylabel = mylabel + System.getProperty("line.separator");
-                            mylabel = mylabel + (JoH.qs(treatment.insulin, 2) + "u").replace(".0u", "u");
+                            mylabel = mylabel + (JoH.qs(treatment.insulinSummary, 2) + "u").replace(".0u", "u");
                         }
                         if (treatment.carbs > 0) {
                             if (mylabel.length() > 0)

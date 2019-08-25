@@ -242,8 +242,11 @@ public class NSClientReceiver extends BroadcastReceiver {
             if (trt_map.containsKey("carbs")) {
                 jsonObject.put("carbs", trt_map.get("carbs"));
             }
-            if (trt_map.containsKey("insulin")) {
-                jsonObject.put("insulin", trt_map.get("insulin"));
+            if (trt_map.containsKey("insulinSummary")) {
+                jsonObject.put("insulin", trt_map.get("insulinSummary"));
+            }
+            if (trt_map.containsKey("insulinJSON")) {
+                jsonObject.put("insulinInjections", trt_map.get("insulinJSON"));
             }
             if (trt_map.containsKey("notes")) {
                 jsonObject.put("notes", trt_map.get("notes"));
