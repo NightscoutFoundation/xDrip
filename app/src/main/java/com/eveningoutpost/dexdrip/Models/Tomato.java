@@ -45,9 +45,50 @@ public class Tomato {
             return false;
         }
 
-        return activeBluetoothDevice.name.contentEquals("miaomiao");
+        return activeBluetoothDevice.name.startsWith("miaomiao");
     }
 
+    private static byte[] decodeLibre2Packet(byte[] bytes) {
+        //?????? check len
+        
+      Log.e(TAG, "Entering decodeLibre2Packet " + HexDump.dumpHexString(bytes));
+
+      byte[] string3 = new byte[344];
+      byte[] string4 = new byte[344];
+
+      for (int i = 18; i < 344 + 18; i++) {
+          string3[i - 18] = bytes[i];
+      }
+
+      for (int i = 0; i < 28; i++) {
+          string4[i] = string3[i];
+      }
+
+      for (int i = 28; i < 344 - 80 + 28; i++) {
+          string4[i] = string3[52 + i];
+      }
+
+      for (int i = 344 - 80 + 28; i < 344; i++) {
+          string4[i] = string3[i - 264];
+      }
+      //ArrayList<Byte> bytes2 = new ArrayList();
+      byte[]bytes2 = new byte[TOMATO_HEADER_LENGTH+344 + 1];
+      int bytes2_len = 0;
+      for (int i = 0; i < 18; i++) {
+          if (i == 3 || i == 4) {
+              bytes2[bytes2_len++] = ((byte) 0x0f);
+          } else {
+              bytes2[bytes2_len++] = bytes[i];
+          }
+      }
+      for (byte b : string4) {
+          bytes2[bytes2_len++] = b;
+      }
+      bytes2[bytes2_len++] = bytes[bytes.length - 1];
+      Log.e(TAG, "Exiting decodeLibre2Packet " + HexDump.dumpHexString(bytes2));
+      return bytes2;
+    }
+    
     public static BridgeResponse decodeTomatoPacket(byte[] buffer, int len) {
         final BridgeResponse reply = new BridgeResponse();
         // Check time, probably need to start on sending
@@ -81,7 +122,7 @@ public class Tomato {
                 
                 //command to start reading
                 ByteBuffer ackMessage = ByteBuffer.allocate(1);
-                ackMessage.put(0, (byte) 0xF0);
+                ackMessage.put(0, (byte) 0xA0);
                 reply.add(ackMessage);
                 return reply;
             }
@@ -168,7 +209,11 @@ public class Tomato {
         long now = JoH.tsl();
         // Important note, the actual serial number is 8 bytes long and starts at addresses 5.
         final String SensorSn = LibreUtils.decodeSerialNumberKey(Arrays.copyOfRange(s_full_data, 5, 13));
-        boolean checksum_ok = NFCReaderX.HandleGoodReading(SensorSn, data, now, true);
+        
+        
+        byte[] libre2_data = decodeLibre2Packet(data);
+        
+        boolean checksum_ok = NFCReaderX.HandleGoodReading(SensorSn, libre2_data, now, true);
         Log.e(TAG, "We have all the data that we need " + s_acumulatedSize + " checksum_ok = " + checksum_ok + HexDump.dumpHexString(data));
 
         if(!checksum_ok) {
@@ -237,7 +282,7 @@ public class Tomato {
 
         //command to start reading
         ByteBuffer ackMessage = ByteBuffer.allocate(1);
-        ackMessage.put(0, (byte) 0xF0);
+        ackMessage.put(0, (byte) 0xA0);
         ret.add(ackMessage);
         return ret;
     }
