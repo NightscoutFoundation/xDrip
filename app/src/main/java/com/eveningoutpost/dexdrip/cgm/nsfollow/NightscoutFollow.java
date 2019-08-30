@@ -150,7 +150,7 @@ public class NightscoutFollow {
         return Pref.getString("nsfollow_url", "");
     }
 
-    private static boolean treatmentDownloadEnabled() {
+    public static boolean treatmentDownloadEnabled() {
         return Pref.getBooleanDefaultFalse("nsfollow_download_treatments") ||
                Pref.getBooleanDefaultFalse("status_line_openaps");
     }
