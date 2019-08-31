@@ -203,17 +203,19 @@ public class Tomato {
         if(s_acumulatedSize < 344 + TOMATO_HEADER_LENGTH + 1) {
             return;   
         }
+        try {
+            s_full_data = decodeLibre2Packet(s_full_data);
+        } catch (Exception e){
+            Log.e(TAG, "Recieved exception in decodeLibre2Packet", e);
+        }
+        
         byte[] data = Arrays.copyOfRange(s_full_data, TOMATO_HEADER_LENGTH, TOMATO_HEADER_LENGTH+344);
         s_recviedEnoughData = true;
         
         long now = JoH.tsl();
         // Important note, the actual serial number is 8 bytes long and starts at addresses 5.
         final String SensorSn = LibreUtils.decodeSerialNumberKey(Arrays.copyOfRange(s_full_data, 5, 13));
-        
-        
-        byte[] libre2_data = decodeLibre2Packet(data);
-        
-        boolean checksum_ok = NFCReaderX.HandleGoodReading(SensorSn, libre2_data, now, true);
+        boolean checksum_ok = NFCReaderX.HandleGoodReading(SensorSn, data, now, true);
         Log.e(TAG, "We have all the data that we need " + s_acumulatedSize + " checksum_ok = " + checksum_ok + HexDump.dumpHexString(data));
 
         if(!checksum_ok) {
