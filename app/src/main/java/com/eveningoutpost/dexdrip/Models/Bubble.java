@@ -123,7 +123,9 @@ public class Bubble {
 
 
         byte[] data = Arrays.copyOfRange(s_full_data, 0, 344);
-        boolean checksum_ok = NFCReaderX.HandleGoodReading(SensorSn, data, now, true);
+        byte []patchUid = null;
+        byte []patchInfo = null;
+        boolean checksum_ok = NFCReaderX.HandleGoodReading(SensorSn, data, now, true, patchUid, patchInfo);
         int expectedSize = lens + BUBBLE_FOOTER;
         InitBuffer(expectedSize);
         errorCount = 0;
