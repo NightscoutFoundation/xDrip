@@ -55,6 +55,9 @@ public interface Intents {
     // Send to LibreXposed
     String XDRIP_PLUS_LIBRE_DATA = "com.eveningoutpost.dexdrip.LIBRE_DATA";
     String LIBRE_DATA_BUFFER = "com.eveningoutpost.dexdrip.Extras.DATA_BUFFER";
+    String LIBRE_PATCH_UID_BUFFER = "com.eveningoutpost.dexdrip.Extras.LIBRE_PATCH_UID_BUFFER";
+    String LIBRE_PATCH_INFO_BUFFER = "com.eveningoutpost.dexdrip.Extras.LIBRE_PATCH_INFO_BUFFER";
+
     String LIBRE_DATA_TIMESTAMP = "com.eveningoutpost.dexdrip.Extras.TIMESTAMP";
     String LIBRE_SN = "com.eveningoutpost.dexdrip.Extras.LIBRE_SN";
 
