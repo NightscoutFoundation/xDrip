@@ -6,11 +6,11 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-import static com.polidea.rxandroidble.exceptions.BleScanException.*;
+import static com.polidea.rxandroidble2.exceptions.BleScanException.*;
 
 public class HandleBleScanException {
 
-    public static String handle(String TAG, com.polidea.rxandroidble.exceptions.BleScanException bleScanException) {
+    public static String handle(String TAG, com.polidea.rxandroidble2.exceptions.BleScanException bleScanException) {
         final String text;
 
         switch (bleScanException.getReason()) {

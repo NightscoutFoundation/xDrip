@@ -3,7 +3,7 @@ package com.eveningoutpost.dexdrip.utils.bt;
 import android.os.ParcelUuid;
 import android.util.SparseArray;
 
-import com.polidea.rxandroidble.scan.ScanRecord;
+import com.polidea.rxandroidble2.scan.ScanRecord;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;

@@ -33,11 +33,11 @@ import com.eveningoutpost.dexdrip.utils.bt.Mimeograph;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.gson.reflect.TypeToken;
-import com.polidea.rxandroidble.RxBleConnection;
+/*import com.polidea.rxandroidble.RxBleConnection;
 import com.polidea.rxandroidble.exceptions.BleCannotSetCharacteristicNotificationException;
 import com.polidea.rxandroidble.exceptions.BleDisconnectedException;
 import com.polidea.rxandroidble.exceptions.BleGattCharacteristicException;
-
+*/
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.security.InvalidKeyException;
@@ -56,7 +56,7 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 
-import rx.schedulers.Schedulers;
+//import rx.schedulers.Schedulers;
 
 import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.Authentication;
 import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.Control;
@@ -80,12 +80,13 @@ import static com.eveningoutpost.dexdrip.UtilityModels.Constants.MINUTE_IN_MS;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.SECOND_IN_MS;
 import static com.eveningoutpost.dexdrip.utils.bt.Helper.getStatusName;
 
-/*
+
 import com.polidea.rxandroidble2.RxBleConnection;
 import com.polidea.rxandroidble2.exceptions.BleCannotSetCharacteristicNotificationException;
 import com.polidea.rxandroidble2.exceptions.BleDisconnectedException;
 import com.polidea.rxandroidble2.exceptions.BleGattCharacteristicException;
-*/
+
+import io.reactivex.schedulers.Schedulers;
 
 
 /**
@@ -620,7 +621,7 @@ public class Ob1G5StateMachine {
                             final CalibrateRxMessage calibrate = (CalibrateRxMessage) data_packet.msg;
                             if (calibrate.accepted()) {
                                 parent.msg("Calibration accepted");
-                                UserError.Log.ueh(TAG, "Calibration accepted by G5 transmitter");
+                                UserError.Log.ueh(TAG, "Calibration accepted by transmitter");
                             } else {
                                 final String msg = "Calibration rejected: " + calibrate.message();
                                 UserError.Log.wtf(TAG, msg);
@@ -656,12 +657,8 @@ public class Ob1G5StateMachine {
                                 int restartDaysThreshold = usingG6() ? 9 : 6;
                                 if (txtime.getSessionDuration() > Constants.DAY_IN_MS * restartDaysThreshold
                                         && txtime.getSessionDuration() < Constants.MONTH_IN_MS) {
-                                    if (!deferPreemptiveRestart(txtime.getSessionDuration(), restartDaysThreshold)) {
-                                        UserError.Log.uel(TAG, "Requesting preemptive session restart");
-                                        restartSensorWithTimeTravel();
-                                    } else {
-                                        UserError.Log.uel(TAG, "Deferring preemptive session restart, current delta is too high or n/a");
-                                    }
+                                    UserError.Log.uel(TAG, "Requesting preemptive session restart");
+                                    restartSensorWithTimeTravel();
                                 }
                             }
                             break;
@@ -701,17 +698,6 @@ public class Ob1G5StateMachine {
 
 
         return true;
-    }
-
-    /**
-     * Defer restart up to 12h if current delta is high, which can lead to sensor
-     * errors if session is restarted during times of high fluctuation
-     */
-    private static boolean deferPreemptiveRestart(long sessionDuration, int restartDaysThreshold) {
-        BestGlucose.DisplayGlucose displayGlucose = BestGlucose.getDisplayGlucose();
-        return Pref.getBooleanDefaultFalse("ob1_g5_defer_preemptive_restart_if_needed")
-                && (displayGlucose != null && Math.abs(displayGlucose.delta_mgdl) <= 4
-                || sessionDuration > DAY_IN_MS * (restartDaysThreshold + 0.5));
     }
 
     private static void glucoseRxCommon(final BaseGlucoseRxMessage glucose, final Ob1G5CollectionService parent, final RxBleConnection connection) {
@@ -1059,7 +1045,8 @@ public class Ob1G5StateMachine {
 
 
     public static void restartSensorWithTimeTravel() {
-        restartSensorWithTimeTravel(tsl() - (useExtendedTimeTravel() ? DAY_IN_MS * 3 : HOUR_IN_MS * 2 - MINUTE_IN_MS * 10));
+        restartSensorWithTimeTravel(tsl() -
+                (useExtendedTimeTravel() ? DAY_IN_MS * 3 + HOUR_IN_MS * 2 : HOUR_IN_MS * 2 - MINUTE_IN_MS * 10));
     }
 
     public static boolean useExtendedTimeTravel() {
@@ -1078,7 +1065,9 @@ public class Ob1G5StateMachine {
             enqueueUniqueCommand(new SessionStartTxMessage(when,
                             DexTimeKeeper.getDexTime(getTransmitterID(), when_started)),
                     "Auto Start Sensor");
-            Notifications.ob1SessionRestartRequested();
+            if (Pref.getBoolean("ob1_g5_preemptive_restart_alert", true)) {
+                Notifications.ob1SessionRestartRequested();
+            }
             Treatments.create_note(xdrip.getAppContext().getString(R.string.ob1_session_restarted_note), JoH.tsl());
         }
     }

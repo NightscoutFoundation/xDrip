@@ -45,7 +45,7 @@ public class Tomato {
             return false;
         }
 
-        return activeBluetoothDevice.name.contentEquals("miaomiao");
+        return activeBluetoothDevice.name.startsWith("miaomiao");
     }
 
     public static BridgeResponse decodeTomatoPacket(byte[] buffer, int len) {
