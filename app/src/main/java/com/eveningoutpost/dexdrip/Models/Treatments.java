@@ -42,6 +42,8 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.UUID;
 
+import static java.lang.StrictMath.abs;
+
 // TODO Switchable Carb models
 // TODO Linear array timeline optimization
 
@@ -50,6 +52,7 @@ public class Treatments extends Model {
     private static final String TAG = "jamorham " + Treatments.class.getSimpleName();
     private static final String DEFAULT_EVENT_TYPE = "<none>";
     public final static String XDRIP_TAG = "xdrip";
+    private final static int msPerMin = 1000 * 60;     // now many microseconds in a minute?
 
     //public static double activityMultipler = 8.4; // somewhere between 8.2 and 8.8
     private static Treatments lastCarbs;
@@ -203,7 +206,7 @@ public class Treatments extends Model {
         boolean is_new = false;
         // find treatment
 
-        Treatments treatment = byTimestamp(timestamp, 60 * 1000 * 5);
+        Treatments treatment = byTimestamp(timestamp, msPerMin * 5);
         // if unknown create
         if (treatment == null) {
             treatment = new Treatments();
@@ -580,7 +583,7 @@ public class Treatments extends Model {
 
         double delay = 20; // minutes till carbs start decaying
 
-        double delayms = delay * 60 * 1000;
+        double delayms = delay * msPerMin;
         if (treatment.carbs > 0) {
 
             CobCalc thisCobCalc = new CobCalc();
@@ -593,20 +596,20 @@ public class Treatments extends Model {
 
             double carbs_hr = Profile.getCarbAbsorptionRate(time);
             double carbs_min = carbs_hr / 60;
-            double carbs_ms = carbs_min / (60 * 1000);
+            double carbs_ms = carbs_min / msPerMin;
 
             thisCobCalc.decayedBy = thisCobCalc.carbTime; // initially set to start time for this treatment
 
-            double minutesleft = (lastDecayedBy - thisCobCalc.carbTime) / 1000 / 60;
+            double minutesleft = (lastDecayedBy - thisCobCalc.carbTime) / msPerMin;
             double how_long_till_carbs_start_ms = (lastDecayedBy - thisCobCalc.carbTime);
-            thisCobCalc.decayedBy += (Math.max(delay, minutesleft) + treatment.carbs / carbs_min) * 60 * 1000;
+            thisCobCalc.decayedBy += (Math.max(delay, minutesleft) + treatment.carbs / carbs_min) * msPerMin;
 
             if (delay > minutesleft) {
                 thisCobCalc.initialCarbs = treatment.carbs;
             } else {
                 thisCobCalc.initialCarbs = treatment.carbs + minutesleft * carbs_min;
             }
-            double startDecay = thisCobCalc.carbTime + (delay * 60 * 1000);
+            double startDecay = thisCobCalc.carbTime + (delay * msPerMin);
 
             if (time < lastDecayedBy || time > startDecay) {
                 thisCobCalc.isDecaying = 1;
@@ -620,43 +623,22 @@ public class Treatments extends Model {
         }
     }
 
-//todo: process via several insuline profiles
-    public static Iob calcTreatment(Treatments treatment, double time, double lastDecayedby) {
-
-        final double dia = Profile.insulinActionTime(time); // duration insulin action in hours
-        final double peak = 75; // minutes in based on a 3 hour DIA - scaled proportionally (orig 75)
-        //final double sens = Profile.getSensitivity(time); // sensitivity currently in mmol
-        double insulin_delay_minutes = 0;
-
-        double insulin_timestamp = treatment.timestamp + (insulin_delay_minutes * 60 * 1000);
+    public static Iob calcTreatment(Treatments treatment, double time) {
 
         Iob response = new Iob();
-
-        final double scaleFactor = 3.0 / dia;
         double iobContrib = 0;
-        //double activityContrib = 0;
+        double activityContrib = 0;
 
-        // only use treatments with insulin component which have already happened
-        if ((treatment.insulinSummary > 0) && (insulin_timestamp < time)) {
-            //  double bolusTime = insulin_timestamp; // bit of a dupe
-            double minAgo = scaleFactor * (((time - insulin_timestamp) / 1000) / 60);
-
-            if (minAgo < peak) {
-                double x1 = minAgo / 5 + 1;
-                iobContrib = treatment.insulinSummary * (1 - 0.001852 * x1 * x1 + 0.001852 * x1);
-                // units: BG (mg/dL)  = (BG/U) *    U insulin     * scalar
-                // activityContrib = sens * activityMultipler * treatment.insulin * (2 / dia / 60 / peak) * minAgo;
-
-            } else if (minAgo < 180) {
-                double x2 = (minAgo - peak) / 5;
-                iobContrib = treatment.insulinSummary * (0.001323 * x2 * x2 - .054233 * x2 + .55556);
-                //   activityContrib = sens * activityMultipler * treatment.insulin * (2 / dia / 60 - (minAgo - peak) * 2 / dia / 60 / (60 * dia - peak));
+        for (InsulinInjection i: treatment.getInsulinInjections())
+            if (i.getUnits() > 0)
+            {
+                iobContrib += i.getUnits() * abs(i.getProfile().calculateIOB((time-treatment.timestamp)/msPerMin));
+                activityContrib += i.getUnits() * abs(i.getProfile().calculateActivity((time-treatment.timestamp)/msPerMin));
             }
-
-        }
         if (iobContrib < 0) iobContrib = 0;
+        if (activityContrib < 0) activityContrib = 0;
         response.iob = iobContrib;
-        // response.activity = activityContrib;
+        response.jActivity = activityContrib;
         return response;
     }
 
@@ -678,19 +660,22 @@ public class Treatments extends Model {
         } else {
             tempiob = new Iob();
             tempiob.timestamp = (long) thistime;
+            tempiob.date = new Date((long)thistime);
             tempiob.cob = carbs;
         }
         timeslices.put(thistime, tempiob);
     }
 
-    private static void timesliceWriter(Map<Double, Iob> timeslices, Iob thisiob, double thistime) {
+    private static void timesliceInsulimWriter(Map<Double, Iob> timeslices, Iob thisiob, double thistime) {
         if (thisiob.iob > 0) {
             if (timeslices.containsKey(thistime)) {
                 Iob tempiob = timeslices.get(thistime);
                 tempiob.iob += thisiob.iob;
+                tempiob.jActivity+= thisiob.jActivity;
                 timeslices.put(thistime, tempiob);
             } else {
                 thisiob.timestamp = (long) thistime;
+                thisiob.date = new Date((long)thistime);
                 timeslices.put(thistime, thisiob); // first entry at timeslice so put the record in as is
             }
         }
@@ -704,8 +689,8 @@ public class Treatments extends Model {
 
         // number param currently ignored
 
-        // get all treatments from 24 hours earlier than our current time
-        final double dontLookThisFar = 10 * 60 * 60 * 1000; // 10 hours max look
+        // get all treatments from 36 hours earlier than our current time
+        final double dontLookThisFar = 36 * 60 * msPerMin; // 36 hours max look
         List<Treatments> theTreatments = latestForGraph(2000, startTime - dontLookThisFar);
         if (theTreatments.size() == 0) return null;
 
@@ -713,13 +698,13 @@ public class Treatments extends Model {
         int counter = 0; // iteration counter
 
         final double step_minutes = 5;
-        final double stepms = step_minutes * 60 * 1000; // 600s = 10 mins
+        final double stepms = step_minutes * msPerMin; // 300s = 5 mins
         double mytime = startTime;
         double tendtime = startTime;
 
 
         final double carb_delay_minutes = Profile.carbDelayMinutes(mytime); // not likely a time dependent parameter
-        final double carb_delay_ms_stepped = ((long) (carb_delay_minutes / step_minutes)) * step_minutes * (60 * 1000);
+        final double carb_delay_ms_stepped = ((long) (carb_delay_minutes / step_minutes)) * step_minutes * msPerMin;
 
         Log.d(TAG, "Carb delay ms: " + carb_delay_ms_stepped);
 
@@ -739,42 +724,20 @@ public class Treatments extends Model {
 
             if (thisTreatment.insulinSummary > 0) {
                 // lay down insulin on board
-                while (mytime < tendtime) {
+                do {
 
-                    calcreply = calcTreatment(thisTreatment, mytime, 0); // last param now not used - only insulin
+                    calcreply = calcTreatment(thisTreatment, mytime);
+                    calcreply.jActivity *= step_minutes;    // has to be multiplied because derivation function of IOB calculates a step_minutes lower activity as the "old" logic
+                    calcreply.jActivity *= Profile.getSensitivity(mytime);
 
                     if (mytime >= startTime) {
-                        timesliceWriter(timeslices, calcreply, mytime);
+                        timesliceInsulimWriter(timeslices, calcreply, mytime);
                     }
                     mytime = mytime + stepms; // advance time counter
-                }
+                } while ((mytime < tendtime) &&
+                         ((calcreply.iob == 0) || (calcreply.iob > 0.01)));
             }
         } // per insulin treatment
-
-
-        Log.d(TAG, "insulin iteration counter: " + counter);
-
-
-        // evaluate insulin impact
-        Iob lastiob = null;
-        for (Map.Entry<Double, Iob> entry : timeslices.entrySet()) {
-            Iob thisiob = entry.getValue();
-            if (lastiob != null) {
-                if ((thisiob.iob != 0) || (lastiob.iob != 0)) {
-                    if (thisiob.iob < lastiob.iob) {
-                        // decaying iob
-                        thisiob.jActivity = (lastiob.iob - thisiob.iob) * Profile.getSensitivity(thisiob.timestamp);
-                    } else {
-                        // more insulin added
-                        thisiob.jActivity = 0; // TODO THIS IS NOT RIGHT IT MISSES ONE DECAY STEP
-                    }
-                }
-            }
-
-            //Log.d(TAG,"iobinfo2 iob debug: "+JoH.qs(thisiob.timestamp)+" C:"+JoH.qs(thisiob.cob,4)+" I:"+JoH.qs(thisiob.iob,4)+" CA:"+JoH.qs(thisiob.jCarbImpact)+" IA:"+JoH.qs(thisiob.jActivity));
-            counter++;
-            lastiob = thisiob;
-        }
 
         // calculate carb treatments
         for (Treatments thisTreatment : theTreatments) {
@@ -785,7 +748,7 @@ public class Treatments extends Model {
                 tendtime = mytime + dontLookThisFar;
 
                 double cob_time = mytime + carb_delay_ms_stepped;
-                double stomachDiff = ((Profile.getCarbAbsorptionRate(cob_time) * stepms) / (60 * 60 * 1000)); // initial value
+                double stomachDiff = ((Profile.getCarbAbsorptionRate(cob_time) * stepms) / (60 * msPerMin)); // initial value
                 double newdelayedCarbs = 0;
                 double cob_remain = thisTreatment.carbs;
                 while ((cob_remain > 0) && (stomachDiff > 0) && (cob_time < tendtime)) {
@@ -795,7 +758,7 @@ public class Treatments extends Model {
                     }
                     cob_time += stepms;
 
-                    stomachDiff = ((Profile.getCarbAbsorptionRate(cob_time) * stepms) / (60 * 60 * 1000));
+                    stomachDiff = ((Profile.getCarbAbsorptionRate(cob_time) * stepms) / (60 * msPerMin));
                     cob_remain -= stomachDiff;
 
                     newdelayedCarbs = (timesliceIactivityAtTime(timeslices, cob_time) * Profile.getLiverSensRatio(cob_time) / Profile.getSensitivity(cob_time)) * Profile.getCarbRatio(cob_time);
@@ -817,7 +780,7 @@ public class Treatments extends Model {
         }
 
         // evaluate carb impact
-        lastiob = null;
+        Iob lastiob = null;
         for (Map.Entry<Double, Iob> entry : timeslices.entrySet()) {
             Iob thisiob = entry.getValue();
             if (lastiob != null) {

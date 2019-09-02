@@ -380,19 +380,19 @@ public class PhoneKeypadInputActivity extends BaseActivity {
         if (nonzeroInsulin1Value && (insulinProfile1 != null))
         {
             double d = Double.parseDouble(getValue("insulin-1"));
-            mystring += String.format("%.1f", d).replace(",",".") + " " + insulinProfile1.getDisplayName() + " ";
+            mystring += String.format("%.1f", d).replace(",",".") + " " + insulinProfile1.getName() + " ";
             units += d;
         }
         if (nonzeroInsulin2Value && (insulinProfile2 != null))
         {
             double d = Double.parseDouble(getValue("insulin-2"));
-            mystring += String.format("%.1f", d).replace(",",".") + " " + insulinProfile2.getDisplayName() + " ";
+            mystring += String.format("%.1f", d).replace(",",".") + " " + insulinProfile2.getName() + " ";
             units += d;
         }
         if (nonzeroInsulin3Value && (insulinProfile3 != null))
         {
             double d = Double.parseDouble(getValue("insulin-3"));
-            mystring += String.format("%.1f", d).replace(",",".") + " " + insulinProfile3.getDisplayName() + " ";
+            mystring += String.format("%.1f", d).replace(",",".") + " " + insulinProfile3.getName() + " ";
             units += d;
         }
         if (units > 0)
@@ -432,21 +432,21 @@ public class PhoneKeypadInputActivity extends BaseActivity {
                 insulintabbutton.setBackgroundColor(onColor);
                 String insulinprofile = "";
                 if (insulinProfile1 != null) {
-                    multiButton1.setText(insulinProfile1.getDisplayName());
+                    multiButton1.setText(insulinProfile1.getName());
                     multiButton1.setEnabled(true);
                     multiButton1.setVisibility(View.VISIBLE);
                 } else
                     multiButton1.setText("");
                 if (insulinProfile2 != null)
                 {
-                    multiButton2.setText(insulinProfile2.getDisplayName());
+                    multiButton2.setText(insulinProfile2.getName());
                     multiButton2.setEnabled(true);
                     multiButton2.setVisibility(View.VISIBLE);
                 } else
                     multiButton2.setText("");
                 if (insulinProfile3 != null)
                 {
-                    multiButton3.setText(insulinProfile3.getDisplayName());
+                    multiButton3.setText(insulinProfile3.getName());
                     multiButton3.setEnabled(true);
                     multiButton3.setVisibility(View.VISIBLE);
                 } else
@@ -457,7 +457,7 @@ public class PhoneKeypadInputActivity extends BaseActivity {
                 switch (multibutton) {
                     case "1":
                         multiButton1.setBackgroundColor(onColor);
-                        insulinprofile = insulinProfile1.getDisplayName();
+                        insulinprofile = insulinProfile1.getName();
                         break;
                     case "2":
                         multiButton2.setBackgroundColor(onColor);
@@ -466,7 +466,7 @@ public class PhoneKeypadInputActivity extends BaseActivity {
                             currenttab = "insulin-1";
                             updateTab();
                         } else
-                            insulinprofile = insulinProfile2.getDisplayName();
+                            insulinprofile = insulinProfile2.getName();
                         break;
                     case "3":
                         multiButton3.setBackgroundColor(onColor);
@@ -475,7 +475,7 @@ public class PhoneKeypadInputActivity extends BaseActivity {
                             currenttab = "insulin-2";
                             updateTab();
                         } else
-                            insulinprofile = insulinProfile3.getDisplayName();
+                            insulinprofile = insulinProfile3.getName();
                         break;
                 }
                 append = " " +  getString(R.string.units) + " " + insulinprofile;

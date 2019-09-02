@@ -12,7 +12,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
@@ -109,9 +108,6 @@ import com.eveningoutpost.dexdrip.databinding.ActivityHomeBinding;
 import com.eveningoutpost.dexdrip.databinding.ActivityHomeShelfSettingsBinding;
 import com.eveningoutpost.dexdrip.databinding.PopupInitialStatusHelperBinding;
 import com.eveningoutpost.dexdrip.eassist.EmergencyAssistActivity;
-import com.eveningoutpost.dexdrip.insulin.A10AB01;
-import com.eveningoutpost.dexdrip.insulin.A10AB05;
-import com.eveningoutpost.dexdrip.insulin.A10AC01;
 import com.eveningoutpost.dexdrip.insulin.Insulin;
 import com.eveningoutpost.dexdrip.insulin.InsulinManager;
 import com.eveningoutpost.dexdrip.insulin.inpen.InPenEntry;
@@ -132,7 +128,6 @@ import com.eveningoutpost.dexdrip.ui.graphic.TrendArrowFactory;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.eveningoutpost.dexdrip.utils.BgToSpeech;
 import com.eveningoutpost.dexdrip.utils.DatabaseUtil;
-import com.eveningoutpost.dexdrip.utils.DexCollectionHelper;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.DisplayQRCode;
 import com.eveningoutpost.dexdrip.utils.LibreTrendGraph;
@@ -1523,13 +1518,13 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                     }
                 if (!insulinset[number] && (thisnumber > 0)) {
                     thisinsulinnumber[number] = thisnumber;
-                    textInsulinDose[number].setText(Double.toString(thisnumber) + " " + insulin.getDisplayName());
-                    Log.d(TAG, insulin.getDisplayName() + " dose: " + Double.toString(thisnumber));
+                    textInsulinDose[number].setText(Double.toString(thisnumber) + " " + insulin.getName());
+                    Log.d(TAG, insulin.getName() + " dose: " + Double.toString(thisnumber));
                     insulinset[number] = true;
                     btnInsulinDose[number].setVisibility(View.VISIBLE);
                     textInsulinDose[number].setVisibility(View.VISIBLE);
                 } else {
-                    Log.d(TAG, insulin.getDisplayName() + " dose already set");
+                    Log.d(TAG, insulin.getName() + " dose already set");
                     preserve = true;
                 }
                 break;

@@ -47,7 +47,7 @@ public class InsulinProfileEditor extends BaseAppCompatActivity {
                 cb.setChecked(true);
             else
                 cb.setChecked(false);
-            cb.setText(i.getDisplayName() + " (" + i.getATCCode() + ")");
+            cb.setText(i.getDisplayName());
             cb.setTextSize(20);
             checkboxes.put(i, cb);
             cb.setOnClickListener(new View.OnClickListener() {

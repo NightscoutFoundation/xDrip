@@ -16,7 +16,7 @@ public class InsulinInjection {
     {
         profile = p;
         units = u;
-        insulin = p.getDisplayName();
+        insulin = p.getName();
     }
 
     public String getInsulin() { return insulin; }

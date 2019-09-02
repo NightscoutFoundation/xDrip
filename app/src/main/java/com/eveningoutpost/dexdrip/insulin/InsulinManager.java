@@ -5,6 +5,8 @@ import android.util.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -30,22 +32,14 @@ public class InsulinManager {
             for (insulinData d: profiles)
             {
                 Insulin insulin;
-                switch (d.ATCCode)
+                switch (d.Curve.type.toLowerCase())
                 {
-                    case "A10AB01":
-                        insulin = new A10AB01(d.displayName, d.PPN);
-                        Log.d(TAG, "initialized A10AB01 insulin " + d.displayName);
-                        break;
-                    case "A10AB05":
-                        insulin = new A10AB05(d.displayName, d.PPN);
-                        Log.d(TAG, "initialized A10AB05 insulin " + d.displayName);
-                        break;
-                    case "A10AC01":
-                        insulin = new A10AC01(d.displayName, d.PPN);
-                        Log.d(TAG, "initialized A10AC01 insulin " + d.displayName);
+                    case "linear trapezoid":
+                        insulin = new LinearTrapezoidInsulin(d.name, d.displayName, d.PPN, d.concentration, d.Curve.data);
+                        Log.d(TAG, "initialized linear trapezoid insulin " + d.displayName);
                         break;
                     default:
-                        Log.d(TAG, "UNKNOWN ATCCode " + d.ATCCode);
+                        Log.d(TAG, "UNKNOWN Curve-Type " + d.Curve.type);
                         return null;
                 }
                 ret.add(insulin);
@@ -69,10 +63,17 @@ public class InsulinManager {
         }
     }
 
+    class insulinCurve {
+        public String type;
+        public JsonObject data;
+    }
+
     class insulinData {
         public String displayName;
+        public String name;
         public ArrayList<String> PPN;
-        public String ATCCode;
+        public String concentration;
+        public insulinCurve Curve;
     }
 
     private static String readTextFile(InputStream inputStream) {
@@ -140,7 +141,7 @@ public class InsulinManager {
             return null;
         }
         for (Insulin i: profiles)
-            if (i.getDisplayName().toLowerCase().equals(name.toLowerCase()))
+            if (i.getName().toLowerCase().equals(name.toLowerCase()))
                 return i;
         return null;
     }
@@ -190,7 +191,7 @@ public class InsulinManager {
         ArrayList<String> disabled = new ArrayList<String>();
         for (Insulin i: profiles)
             if (!isProfileEnabled(i))
-                disabled.add(i.getDisplayName());
+                disabled.add(i.getName());
         String json = new GsonBuilder().create().toJson(disabled);
         Pref.setString("saved_disabled_insulinprofiles_json", json);
         Log.d(TAG, "saved disabled Insulin Profiles to Prefs: " + json);

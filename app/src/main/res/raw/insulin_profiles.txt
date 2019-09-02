@@ -2,36 +2,80 @@
   "profiles":
   [
     {
-      "displayName": "Insulatard",
+      "name": "Insulatard",
+      "displayName": "Insulatard (NPH)",
       "PPN":
       [
         "1105039656"
       ],
-      "ATCCode": "A10AC01"
+      "concentration": "U100",
+      "Curve":
+      {
+        "type": "linear trapezoid",
+        "data":
+        {
+          "onset": "60",
+          "peak": "120-720",
+          "duration": "1440"
+        }
+      }
     },
     {
-      "displayName": "Actrapid",
+      "name": "Actrapid",
+      "displayName": "Actrapid (short acting)",
+      "concentration": "U100",
       "PPN":
       [
         "1102949004"
       ],
-      "ATCCode": "A10AB01"
+      "Curve":
+      {
+        "type": "linear trapezoid",
+        "data":
+        {
+          "onset": "30",
+          "peak": "60-240",
+          "duration": "480"
+        }
+      }
     },
     {
-      "displayName": "Testulatard",
+      "name": "Testulatard",
+      "displayName": "Testulatard (non acting)",
+      "concentration": "U100",
       "PPN":
       [
         "1105039656-TEST"
       ],
-      "ATCCode": "A10AC01"
+      "Curve":
+      {
+        "type": "linear trapezoid",
+        "data":
+        {
+          "onset": "60",
+          "peak": "120-720",
+          "duration": "1440"
+        }
+      }
     },
     {
-      "displayName": "Novorapid",
+      "name": "Novorapid",
+      "displayName": "Novorapid (rapid acting)",
+      "concentration": "U100",
       "PPN":
       [
         "1100558736"
       ],
-      "ATCCode": "A10AB05"
+      "Curve":
+      {
+        "type": "linear trapezoid",
+        "data":
+        {
+          "onset": "10",
+          "peak": "75-75",
+          "duration": "180"
+        }
+      }
     }
   ]
 }
