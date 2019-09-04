@@ -1190,7 +1190,12 @@ public class NightscoutUploader {
                             testData.put("SensorId", PersistentStore.getString("LibreSN"));
                             testData.put("CaptureDateTime", libreBlockEntry.timestamp);
                             testData.put("BlockBytes",Base64.encodeToString(libreBlockEntry.blockbytes, Base64.NO_WRAP));
-                            
+                            if(libreBlockEntry.patchUid != null && libreBlockEntry.patchUid.length != 0) {
+                                testData.put("patchUid",Base64.encodeToString(libreBlockEntry.patchUid, Base64.NO_WRAP));
+                            }
+                            if(libreBlockEntry.patchInfo != null && libreBlockEntry.patchInfo.length != 0) {
+                               testData.put("patchInfo",Base64.encodeToString(libreBlockEntry.patchInfo, Base64.NO_WRAP));
+                            }
                             testData.put("ChecksumOk",ChecksumOk ? 1 : 0);
                             testData.put("Uploaded", 1);
                             testData.put("UploaderBatteryLife",getBatteryLevel());

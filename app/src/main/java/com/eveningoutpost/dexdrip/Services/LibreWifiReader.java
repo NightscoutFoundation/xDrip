@@ -366,120 +366,6 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
         return trd_list;
     }
 
-    
-    
-    public static List<LibreWifiData> ReadV1(String hostName, int port, int numberOfRecords) {
-        
-        // See how it looks
-        LibreWifiHeader libre_wifi_header = new LibreWifiHeader();
-        libre_wifi_header.debug_message = "aa";
-        libre_wifi_header.last_reading = 5;
-        libre_wifi_header.reply_version = 2;
-        libre_wifi_header.device_type = "yyyyy";
-        libre_wifi_header.libre_wifi_data = new LibreWifiData[2];
-        libre_wifi_header.libre_wifi_data[0] = new LibreWifiData();
-        libre_wifi_header.libre_wifi_data[1] = new LibreWifiData();
-        libre_wifi_header.libre_wifi_data[0].CaptureDateTime = 5l;
-        libre_wifi_header.libre_wifi_data[0].DebugInfo = "dd";
-        Log.e(TAG, "xxx " + gson.toJson(libre_wifi_header));
-
-
-        final List<LibreWifiData> trd_list = new LinkedList<LibreWifiData>();
-        Log.i(TAG, "Read called: " + hostName + " port: " + port);
-
-        final boolean skip_lan = Pref.getBooleanDefaultFalse("skip_lan_uploads_when_no_lan");
-
-        if (skip_lan && (hostName.endsWith(".local")) && !JoH.isLANConnected()) {
-            Log.d(TAG, "Skipping due to no lan: " + hostName);
-            statusLog(hostName, "Skipping, no LAN");
-            return trd_list; // blank
-        }
-
-        final long time_start = JoH.tsl();
-        String currentAddress = "null";
-        long newest_timestamp = 0;
-
-        try {
-
-
-            // An example of using gson.
-            final ComunicationHeader ch = new ComunicationHeader(numberOfRecords);
-            //ch.version = 1;
-            //ch.numberOfRecords = numberOfRecords;
-            // String flat = gson.toJson(ch);
-            //ComunicationHeader ch2 = gson.fromJson(flat, ComunicationHeader.class);
-            //System.out.println("Results code" + flat + ch2.version);
-
-            // Real client code
-            final InetSocketAddress ServerAddress = new InetSocketAddress(Mdns.genericResolver(hostName), port);
-            currentAddress = ServerAddress.getAddress().getHostAddress();
-            if (skip_lan && currentAddress.startsWith("192.168.") && !JoH.isLANConnected()) {
-                Log.d(TAG, "Skipping due to no lan: " + hostName);
-                statusLog(hostName, "Skipping, no LAN");
-                return trd_list; // blank
-            }
-
-            final Socket MySocket = new Socket();
-            MySocket.connect(ServerAddress, 10000);
-
-            //System.out.println("After the new socket \n");
-            MySocket.setSoTimeout(3000);
-
-            //System.out.println("client connected... " );
-
-            final PrintWriter out = new PrintWriter(MySocket.getOutputStream(), true);
-            final BufferedReader in = new BufferedReader(new InputStreamReader(MySocket.getInputStream()));
-
-            out.println(ch.toJson());
-
-            while (true) {
-                String data = in.readLine();
-                if (data == null) {
-                    Log.d(TAG, "recieved null exiting");
-                    break;
-                }
-                if (data.equals("")) {
-                    Log.d(TAG, "recieved \"\" exiting");
-                    break;
-                }
-
-                Log.e(TAG,  "data size " +data.length() + " data = "+ data);
-                
-                final LibreWifiData trd = gson.fromJson(data, LibreWifiData.class);
-                Log.e(TAG, "LibreWifiData = " + trd);
-                trd.CaptureDateTime = System.currentTimeMillis() - trd.RelativeTime;
-                //MapsActivity.newMapLocation(trd.GeoLocation, trd.CaptureDateTime);
-
-                if (newest_timestamp < trd.CaptureDateTime) {
-                    statusLog(hostName, JoH.hourMinuteString() + " OK data from:", trd.CaptureDateTime);
-                    newest_timestamp = trd.CaptureDateTime;
-                }
-
-                trd_list.add(0, trd);
-                //  System.out.println( trd.toTableString());
-                if (trd_list.size() == numberOfRecords) {
-                    // We have the data we want, let's get out
-                    break;
-                }
-            }
-
-
-            MySocket.close();
-            return trd_list;
-        } catch (SocketTimeoutException s) {
-            Log.e(TAG, "Socket timed out! " + hostName + " : " + currentAddress + " : " + s.toString() + " after: " + JoH.msSince(time_start));
-            statusLog(hostName, JoH.hourMinuteString() + " " + s.toString());
-        } catch (IOException e) {
-            Log.e(TAG, "caught IOException! " + hostName + " : " + currentAddress + " : " + " : " + e.toString());
-            statusLog(hostName, JoH.hourMinuteString() + " " + e.toString());
-        } catch (IllegalArgumentException e) {
-            Log.e(TAG, "Argument error on: " + hostName + " " + e.toString());
-        } catch (NullPointerException e) {
-            Log.e(TAG, "Got null pointer exception " + hostName + " " + e.toString());
-        }
-        return trd_list;
-    }
-
     static Long timeForNextRead() {
 
         LibreBlock libreBlock = LibreBlock.getLatestForTrend(0L, JoH.tsl() + 5 * 60000); // Allow some packets from the future.
@@ -587,7 +473,16 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
                 Log.d(TAG, "calling HandleGoodReading from " +  JoH.dateTimeText(LastReading.CaptureDateTime ));
 
                 byte data[] = Base64.decode(LastReading.BlockBytes, Base64.DEFAULT);
-                boolean checksum_ok = NFCReaderX.HandleGoodReading(LastReading.SensorId, data, LastReading.CaptureDateTime);
+
+                byte patchUid[] = null;
+                if (LastReading.patchUid != null && (!LastReading.patchUid.isEmpty())) {
+                    patchUid = Base64.decode(LastReading.patchUid, Base64.DEFAULT);
+                }
+                byte patchInfo[] = null;
+                if (LastReading.patchInfo != null && (!LastReading.patchInfo.isEmpty())) {        
+                    patchInfo = Base64.decode(LastReading.patchInfo, Base64.DEFAULT);
+                }
+                boolean checksum_ok = NFCReaderX.HandleGoodReading(LastReading.SensorId, data, LastReading.CaptureDateTime, false, patchUid, patchInfo);
                 if (checksum_ok) {
                     // TODO use battery, and other interesting data.
                     LastReportedTime = LastReading.CaptureDateTime;

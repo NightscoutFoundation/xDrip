@@ -30,6 +30,8 @@ public class LibreBlock extends PlusModel {
             "ALTER TABLE LibreBlock ADD COLUMN byteend INTEGER;",
             "ALTER TABLE LibreBlock ADD COLUMN calculatedbg REAL;",
             "ALTER TABLE LibreBlock ADD COLUMN uuid TEXT;",
+            "ALTER TABLE LibreBlock ADD COLUMN patchUid BLOB;",
+            "ALTER TABLE LibreBlock ADD COLUMN patchInfo BLOB;",
             "CREATE INDEX index_LibreBlock_timestamp on LibreBlock(timestamp);",
             "CREATE INDEX index_LibreBlock_bytestart on LibreBlock(bytestart);",
             "CREATE INDEX index_LibreBlock_byteend on LibreBlock(byteend);",
@@ -65,13 +67,21 @@ public class LibreBlock extends PlusModel {
     @Column(name = "uuid", index = true)
     public String uuid;
     
+    @Expose
+    @Column(name = "patchUid")
+    public byte[] patchUid;
+    
+    @Expose
+    @Column(name = "patchInfo")
+    public byte[] patchInfo;
+    
     public static LibreBlock createAndSave(String reference, long timestamp, byte[] blocks, int byte_start) {
-        return createAndSave(reference, timestamp, blocks, byte_start, false);
+        return createAndSave(reference, timestamp, blocks, byte_start, false, null, null);
     }
     
     // if you are indexing by block then just * 8 to get byte start
-    public static LibreBlock createAndSave(String reference, long timestamp, byte[] blocks, int byte_start, boolean allowUpload) {
-        final LibreBlock lb = create(reference, timestamp, blocks, byte_start);
+    public static LibreBlock createAndSave(String reference, long timestamp, byte[] blocks, int byte_start, boolean allowUpload, byte[] patchUid, byte[] patchInfo) {
+        final LibreBlock lb = create(reference, timestamp, blocks, byte_start, patchUid, patchInfo);
         if (lb != null) {
             lb.save();
             if(byte_start == 0 && blocks.length == 344 && allowUpload) {
@@ -82,7 +92,7 @@ public class LibreBlock extends PlusModel {
         return lb;
     }
 
-    private static LibreBlock create(String reference, long timestamp, byte[] blocks, int byte_start) {
+    private static LibreBlock create(String reference, long timestamp, byte[] blocks, int byte_start, byte[] patchUid, byte[] patchInfo) {
         UserError.Log.e(TAG,"Backtrack: "+JoH.backTrace());
         if (reference == null) {
             UserError.Log.e(TAG, "Cannot save block with null reference");
@@ -99,6 +109,8 @@ public class LibreBlock extends PlusModel {
         lb.byte_start = byte_start;
         lb.byte_end = byte_start + blocks.length;
         lb.timestamp = timestamp;
+        lb.patchUid = patchUid;
+        lb.patchInfo = patchInfo;
         lb.uuid = UUID.randomUUID().toString();
         return lb;
     }
