@@ -219,24 +219,27 @@ public class NFCReaderX {
     }
 
     // returns true if checksum passed.
-    public static boolean HandleGoodReading(String tagId, byte[] data1, final long CaptureDateTime, boolean allowUpload, byte []patchUid,  byte []patchInfo ) {
+    public static boolean HandleGoodReading(final String tagId, byte[] data1, final long CaptureDateTime, final boolean allowUpload, byte []patchUid,  byte []patchInfo ) {
 
-        final boolean checksum_ok = LibreUtils.verify(data1);
-        if (!checksum_ok) {
-            return false;
-        }
-        
-        // The 4'th byte is where the sensor status is.
-        if(!LibreUtils.isSensorReady(data1[4])) {
-            Log.e(TAG, "Sensor is not ready, Ignoring reading!");
-            return true;
-        }
 
         if (Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
+            // If oop is used, there is no need to  do the checksum It will be done by the oop.
+            // (or actually we don't know how to do it, for us 14/de sensors).
             // Save raw block record (we start from block 0)
-            LibreBlock.createAndSave(tagId, CaptureDateTime, data1, 0, allowUpload);
+            LibreBlock.createAndSave(tagId, CaptureDateTime, data1, 0, allowUpload, patchUid, patchInfo);
             LibreOOPAlgorithm.SendData(data1, CaptureDateTime, patchUid, patchInfo);
         } else {
+            final boolean checksum_ok = LibreUtils.verify(data1);
+            if (!checksum_ok) {
+                return false;
+            }
+            
+            // The 4'th byte is where the sensor status is.
+            if(!LibreUtils.isSensorReady(data1[4])) {
+                Log.e(TAG, "Sensor is not ready, Ignoring reading!");
+                return true;
+            }
+            
             final ReadingData mResult = parseData(0, tagId, data1, CaptureDateTime);
             new Thread() {
                 @Override
@@ -244,7 +247,7 @@ public class NFCReaderX {
                     final PowerManager.WakeLock wl = JoH.getWakeLock("processTransferObject", 60000);
                     try {
                         mResult.CalculateSmothedData();
-                        LibreAlarmReceiver.processReadingDataTransferObject(new ReadingData.TransferObject(1, mResult), CaptureDateTime, tagId, allowUpload );
+                        LibreAlarmReceiver.processReadingDataTransferObject(new ReadingData.TransferObject(1, mResult), CaptureDateTime, tagId, allowUpload, patchUid, patchInfo );
                         Home.staticRefreshBGCharts();
                     } finally {
                         JoH.releaseWakeLock(wl);
