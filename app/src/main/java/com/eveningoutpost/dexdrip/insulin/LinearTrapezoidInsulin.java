@@ -17,8 +17,14 @@ public class LinearTrapezoidInsulin extends Insulin {
         super(n, dn, ppn, c, curveData);
 
         onset = curveData.get("onset").getAsLong();
-        t1 = Integer.parseInt(curveData.get("peak").getAsString().split("-")[0]);
-        t2 = Integer.parseInt(curveData.get("peak").getAsString().split("-")[1]);
+        if (curveData.get("peak").getAsString().contains("-")) {
+            t1 = Integer.parseInt(curveData.get("peak").getAsString().split("-")[0]);
+            t2 = Integer.parseInt(curveData.get("peak").getAsString().split("-")[1]);
+        } else
+        {
+            t1 = Integer.parseInt(curveData.get("peak").getAsString());
+            t2 = t1;
+        }
         t3 = curveData.get("duration").getAsLong();
 
         max = 2.0/(t2-t1+t3);

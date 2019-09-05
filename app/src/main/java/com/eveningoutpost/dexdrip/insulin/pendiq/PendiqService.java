@@ -713,6 +713,7 @@ public class PendiqService extends JamBaseBluetoothService {
 
                         getInsulinLog(); // ask for next record
 
+// todo gruoner: create a list of insulininjections from record
                         final Treatments treatment = Treatments.create(0, record.insulin, new ArrayList<InsulinInjection>(), record.timestamp, suggested_uuid);
                         if (treatment != null) {
                             treatment.enteredBy += " " + PENDIQ_TAG;

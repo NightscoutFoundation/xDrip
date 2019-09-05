@@ -855,7 +855,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 final Treatments exists = Treatments.byTimestamp(time);
                 if (exists == null) {
 // gruoner: called Treatments from array of insulin-numbers instead of thisinsulinsumnumber
-// todo: manage pendiq in case of more than one type of insulin
+// todo gruoner: manage pendiq in case of more than one type of insulin
                     ArrayList<InsulinInjection> injections = new ArrayList<InsulinInjection>();
                     for (int i = 0; i < maxInsulinProfiles; i++)
                         if (insulinset[i]) {
@@ -872,7 +872,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         } else {
             WatchUpdaterService.sendWearToast(gs(R.string.treatment_processed), Toast.LENGTH_LONG);
 // gruoner: called Treatments from array of insulin-numbers instead of thisinsulinsumnumber
-// todo: manage pendiq in case of more than one type of insulin
+// todo gruoner: manage pendiq in case of more than one type of insulin
             ArrayList<InsulinInjection> injections = new ArrayList<InsulinInjection>();
             for (int i = 0; i < maxInsulinProfiles; i++)
                 if (insulinset[i]) {

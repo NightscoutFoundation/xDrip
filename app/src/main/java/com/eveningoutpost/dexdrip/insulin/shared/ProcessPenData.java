@@ -48,6 +48,7 @@ public class ProcessPenData {
             for (final PenData pd : doses) {
                 if (!Treatments.matchUUID(treatments, pd.uuid)) {
                     UserError.Log.d(TAG, "New Dose: " + pd.brief());
+// todo gruoner: create a list of insulininjections from record
                     Treatments.create(0, pd.units, new ArrayList<InsulinInjection>(), pd.timestamp, pd.uuid);
                     newData = true;
                 }
