@@ -17,7 +17,7 @@ public abstract class BaseTx {
     private byte[] byteSequence = null;
 
 
-    void init(final byte opcode, final int length) {
+    public void init(final byte opcode, final int length) {
         final int packet_length = length + 1;
         data = ByteBuffer.allocate(packet_length).order(ByteOrder.LITTLE_ENDIAN);
         data.put(opcode);
