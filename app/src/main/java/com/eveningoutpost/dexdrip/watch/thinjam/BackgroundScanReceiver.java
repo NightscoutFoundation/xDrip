@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.watch.thinjam;
 
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -9,6 +10,7 @@ import android.support.annotation.RequiresApi;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.RxBleProvider;
 import com.eveningoutpost.dexdrip.utils.bt.BtCallBack2;
+import com.eveningoutpost.dexdrip.xdrip;
 import com.polidea.rxandroidble2.exceptions.BleScanException;
 import com.polidea.rxandroidble2.scan.BackgroundScanner;
 import com.polidea.rxandroidble2.scan.ScanResult;
@@ -46,7 +48,7 @@ public class BackgroundScanReceiver extends BroadcastReceiver {
         callbacks2.remove(name);
     }
 
-    private static void processCallbacks(final String TAG, final String address, final String name, final String status) {
+    private static boolean processCallbacks(final String TAG, final String address, final String name, final String status) {
         boolean called_back = false;
         for (final Map.Entry<String, BtCallBack2> entry : callbacks2.entrySet()) {
             UserError.Log.d(TAG, "Callback2: " + entry.getKey());
@@ -56,6 +58,7 @@ public class BackgroundScanReceiver extends BroadcastReceiver {
         if (!called_back) {
             UserError.Log.d(TAG, "No callbacks registered!!");
         }
+        return called_back;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -77,8 +80,17 @@ public class BackgroundScanReceiver extends BroadcastReceiver {
                 final List<ScanResult> scanResults = backgroundScanner.onScanResultReceived(intent);
                 final String matchedMac = scanResults.get(0).getBleDevice().getMacAddress();
                 final String matchedName = scanResults.get(0).getBleDevice().getName();
-                processCallbacks(caller, matchedMac, matchedName, SCAN_FOUND_CALLBACK);
+                final boolean calledBack = processCallbacks(caller, matchedMac, matchedName, SCAN_FOUND_CALLBACK);
                 UserError.Log.d(caller, "Scan results received: " + matchedMac + " " + scanResults);
+                if (!calledBack) {
+                    try {
+                        // bit of an ugly fix to system wide persistent nature of background scans and lack of proper support for one hit over various android devices
+                        backgroundScanner.stopBackgroundBleScan(PendingIntent.getBroadcast(xdrip.getAppContext(), 142, // must match original
+                                intent, PendingIntent.FLAG_UPDATE_CURRENT));
+                    } catch (Exception e) {
+                        //
+                    }
+                }
             } catch (NullPointerException | BleScanException exception) {
                 UserError.Log.e(caller, "Failed to scan devices" + exception);
             }
