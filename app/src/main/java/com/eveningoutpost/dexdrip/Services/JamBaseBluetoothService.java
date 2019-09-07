@@ -54,7 +54,7 @@ public abstract class JamBaseBluetoothService extends Service {
                     UserError.Log.e(TAG, "RxJavaError: " + e.getMessage());
                 }
             } else {
-                UserError.Log.wtf(TAG, e.getClass().getCanonicalName() + " " + e.getMessage());
+                UserError.Log.wtf(TAG, "RxJavaError2:" + e.getClass().getCanonicalName() + " " + e.getMessage() + " " + JoH.backTrace(3));
             }
         });
 
