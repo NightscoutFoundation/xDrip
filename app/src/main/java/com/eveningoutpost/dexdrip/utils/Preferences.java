@@ -85,6 +85,8 @@ import com.eveningoutpost.dexdrip.tidepool.UploadChunk;
 import com.eveningoutpost.dexdrip.ui.LockScreenWallPaper;
 import com.eveningoutpost.dexdrip.utils.framework.IncomingCallsReceiver;
 import com.eveningoutpost.dexdrip.watch.lefun.LeFunEntry;
+import com.eveningoutpost.dexdrip.watch.thinjam.BlueJay;
+import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry;
 import com.eveningoutpost.dexdrip.wearintegration.Amazfitservice;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.eveningoutpost.dexdrip.webservices.XdripWebService;
@@ -295,6 +297,13 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 return;
             }
 
+            try {
+                BlueJay.processQRCode(scanResult.getRawBytes());
+            } catch (Exception e) {
+                // meh
+            }
+
+
             final NSBarcodeConfig barcode = new NSBarcodeConfig(scanresults);
             if (barcode.hasMongoConfig()) {
                 if (barcode.getMongoUri().isPresent()) {
@@ -400,6 +409,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             LocationHelper.requestLocationForBluetooth(this); // double check!
         }
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(LeFunEntry.prefListener);
+        PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(BlueJayEntry.prefListener);
     }
 
     @Override
@@ -407,6 +417,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
     {
         PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(ActivityRecognizedService.prefListener);
         PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(LeFunEntry.prefListener);
+        PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(BlueJayEntry.prefListener);
         pFragment = null;
         super.onPause();
     }
