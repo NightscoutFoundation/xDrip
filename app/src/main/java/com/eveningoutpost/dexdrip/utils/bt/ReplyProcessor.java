@@ -14,6 +14,7 @@ public abstract class ReplyProcessor {
     private Object tag;
 
     protected byte[] mOutbound;
+    @Getter
     private final RxBleConnection connection;
 
     public abstract void process(byte[] bytes);
