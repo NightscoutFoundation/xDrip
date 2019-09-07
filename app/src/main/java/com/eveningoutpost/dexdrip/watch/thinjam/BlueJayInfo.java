@@ -93,31 +93,37 @@ public class BlueJayInfo extends BaseTx {
 
     public void parseStatus1(final byte[] packet) {
         data = ByteBuffer.wrap(packet).order(ByteOrder.LITTLE_ENDIAN);
-        // TODO length check
-        thinJamVersion = getUnsignedByte();
-        uptime = getUnsignedInt();
-        buildNumber = (int) getUnsignedInt() & 0xFFFFFF;
-        coreNumber = (int) getUnsignedInt() & 0xFFFFFF;
-        bitfield1 = getUnsignedInt();
-        lastStatus1 = JoH.tsl();
-        persistentSave();
+        if (packet.length >= 17) {
+            thinJamVersion = getUnsignedByte();
+            uptime = getUnsignedInt();
+            buildNumber = (int) getUnsignedInt() & 0xFFFFFF;
+            coreNumber = (int) getUnsignedInt() & 0xFFFFFF;
+            bitfield1 = getUnsignedInt();
+            lastStatus1 = JoH.tsl();
+            persistentSave();
+        } else {
+            // packet too short
+        }
     }
 
 
     public void parseStatus2(final byte[] packet) {
         data = ByteBuffer.wrap(packet).order(ByteOrder.LITTLE_ENDIAN);
-        // TODO length check
+        if (packet.length >= 12) {
 
-        lastReadingTime = getUnsignedInt();
-        glucose = getUnsignedShort();
-        status = getUnsignedByte();
-        state = getUnsignedByte();
-        trend = data.get();
-        bitfield = getUnsignedByte();
-        connectionAttempts = getUnsignedByte();
-        successfulReplies = getUnsignedByte();
-        lastStatus2 = JoH.tsl();
-        persistentSave();
+            lastReadingTime = getUnsignedInt();
+            glucose = getUnsignedShort();
+            status = getUnsignedByte();
+            state = getUnsignedByte();
+            trend = data.get();
+            bitfield = getUnsignedByte();
+            connectionAttempts = getUnsignedByte();
+            successfulReplies = getUnsignedByte();
+            lastStatus2 = JoH.tsl();
+            persistentSave();
+        } else {
+            // packet too short
+        }
     }
 
     public void processPushRx(final PushRx pushRx) {
