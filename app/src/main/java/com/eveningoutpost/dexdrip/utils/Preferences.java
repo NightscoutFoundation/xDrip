@@ -46,6 +46,7 @@ import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.DesertSync;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Profile;
+import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.ExtraLogTags;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.Models.UserNotification;
@@ -98,12 +99,14 @@ import com.nightscout.core.barcode.NSBarcodeConfig;
 
 import net.tribe7.common.base.Joiner;
 
+import java.lang.reflect.Method;
 import java.net.URI;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -136,7 +139,11 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
 
 
     private void refreshFragments() {
-        this.preferenceFragment = new AllPrefsFragment();
+        refreshFragments(null);
+    }
+
+    private void refreshFragments(final String jumpTo) {
+        this.preferenceFragment = new AllPrefsFragment(jumpTo);
         this.preferenceFragment.setParent(this);
         pFragment = this.preferenceFragment;
         getFragmentManager().beginTransaction().replace(android.R.id.content,
@@ -372,7 +379,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
         }
         super.onCreate(savedInstanceState);
 
-        refreshFragments();
+        refreshFragments(getIntent() != null ? getIntent().getAction() : null);
         processExtraData();
 
         // cannot be in onResume as we display dialog to set
@@ -465,6 +472,13 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
     @Override
     public void onNewIntent(Intent intent)
     {
+        if (intent.getAction() != null) {
+            try {
+                refreshFragments(getIntent() != null ? getIntent().getAction() : null);
+            } catch (Exception e) {
+                //
+            }
+        }
         setIntent(intent);
         if (!processExtraData()) {
             super.onNewIntent(intent);
@@ -735,8 +749,10 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
     }
 
 
-
+    @RequiredArgsConstructor
     public static class AllPrefsFragment extends PreferenceFragment {
+
+        final String jumpTo;
 
         @Setter
         Preferences parent;
@@ -2025,6 +2041,8 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 }
             });
 
+           jumpToScreen(jumpTo);
+
         }
 
         private void showSearchFragment() {
@@ -2280,6 +2298,34 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Got exception in refresh extra: " + e.toString());
+            }
+        }
+
+        public void jumpToScreen(final String screenKey) {
+            if (screenKey == null) return;
+            UserError.Log.d(TAG, "jump to screen: " + screenKey);
+            PreferenceScreen subPreferenceScreen = (PreferenceScreen) findPreference(screenKey);
+            final AllPrefsFragment fragment = this;
+            JoH.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    clickScreen(fragment, subPreferenceScreen);
+                }
+            });
+        }
+
+        private static void clickScreen(final PreferenceFragment fragment, final PreferenceScreen screen) {
+            if (screen == null) return;
+            if (fragment.getPreferenceScreen() != screen) {
+                try {
+                    final Method method = screen.getClass().getDeclaredMethod("onClick");
+                    method.setAccessible(true);
+                    method.invoke(screen);
+                } catch (Exception e) {
+                    android.util.Log.e(TAG, "" + e);
+                }
+            } else {
+                android.util.Log.d(TAG, "Already on that screen");
             }
         }
 
