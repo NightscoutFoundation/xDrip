@@ -762,6 +762,11 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
         public LockScreenWallPaper.PrefListener lockListener = new LockScreenWallPaper.PrefListener();
 
 
+        // default constructor is required in addition on some platforms
+        public AllPrefsFragment() {
+            this(null);
+        }
+
         private void setSummary(String pref_name) {
      /*       try {
                 // is there a cleaner way to bind these values when setting programatically?

@@ -257,7 +257,7 @@ public class ThinJamActivity extends AppCompatActivity implements BtCallBack2 {
                     break;
 
                 case "launchhelp":
-                    xdrip.getAppContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://bluejay.website/quickhelp")));
+                    xdrip.getAppContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://bluejay.website/quickhelp")).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                     break;
 
                 case "launchsettings":
