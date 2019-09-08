@@ -298,7 +298,8 @@
 
 
         <PreferenceScreen
-            android:title="BlueJay Watch">
+            android:title="BlueJay Watch"
+            android:key="bluejay_preference_screen">
             <SwitchPreference
                 android:switchTextOff="@string/short_off_text_for_switches"
                 android:switchTextOn="@string/short_on_text_for_switches"
@@ -314,6 +315,13 @@
                 android:key="bluejay_collector_enabled"
                 android:summary=""
                 android:title="Run Collector" />
+
+            <CheckBoxPreference
+                android:key="bluejay_local_alarms"
+                android:dependency="bluejay_enabled"
+                android:defaultValue="true"
+                android:summary="Watch can alarm for high/low when not connected to phone."
+                android:title="Local Alarms" />
 
             <EditTextPreference
                 android:key="bluejay_mac"

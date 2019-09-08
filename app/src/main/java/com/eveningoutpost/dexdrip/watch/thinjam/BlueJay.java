@@ -112,4 +112,8 @@ public class BlueJay {
     static boolean shouldBeepOnConnect() {
         return Pref.getBooleanDefaultFalse(PREF_BLUEJAY_BEEP);
     }
+
+    public static boolean localAlarmsEnabled() {
+        return Pref.getBoolean("bluejay_local_alarms", true);
+    }
 }

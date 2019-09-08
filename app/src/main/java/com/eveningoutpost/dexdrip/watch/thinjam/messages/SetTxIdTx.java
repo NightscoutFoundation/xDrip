@@ -1,8 +1,10 @@
 package com.eveningoutpost.dexdrip.watch.thinjam.messages;
 
+import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.Unitized;
+import com.eveningoutpost.dexdrip.watch.thinjam.BlueJay;
 
 import java.io.UnsupportedEncodingException;
 
@@ -38,9 +40,19 @@ public class SetTxIdTx extends BaseTx {
                 data.put(reverseBytes(macBytes), 0, 6);
 
             }
-            // TODO get low threshold and high threshold from preferences/alarms
-            data.putShort((short) 71); // low alert mgdl
-            data.putShort((short) 216); // high alert mgdl
+
+            final double lowAlert = AlertType.getFirstActiveAlertThreshold(false);
+            final double highAlert = AlertType.getFirstActiveAlertThreshold(true);
+
+            if (BlueJay.localAlarmsEnabled()) {
+                // if high alert is below low or low is below high then it should alarm constantly anyway so we probably don't need to check that being wrong
+                // we use defaults if no active high / low alert is present
+                data.putShort(lowAlert > 0 ? (short) lowAlert : (short) 71); // low alert mgdl
+                data.putShort(highAlert > 0 ? (short) highAlert : (short) 216); // high alert mgdl
+            } else {
+                data.putShort((short)0);
+                data.putShort((short)0);
+            }
             data.putShort(constructBitfield());
         } catch (UnsupportedEncodingException e) {
             // broken
