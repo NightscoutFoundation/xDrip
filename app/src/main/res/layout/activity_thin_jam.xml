@@ -169,7 +169,34 @@
                     android:text="CONFIG" />
             </LinearLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
 
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:onClick="@{() -> vm.doAction(`launchstatus`)}"
+                    android:text="Status" />
+
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:onClick="@{() -> vm.doAction(`launchsettings`)}"
+                    android:text="Settings" />
+
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:onClick="@{() -> vm.doAction(`launchhelp`)}"
+                    android:text="Web Help" />
+
+
+            </LinearLayout>
 
         </LinearLayout>
 

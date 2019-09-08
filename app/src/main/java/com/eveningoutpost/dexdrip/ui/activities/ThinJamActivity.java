@@ -9,6 +9,7 @@ import android.databinding.Observable;
 import android.databinding.ObservableArrayList;
 import android.databinding.ObservableField;
 import android.databinding.ObservableList;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.ParcelUuid;
@@ -20,6 +21,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.eveningoutpost.dexdrip.BR;
+import com.eveningoutpost.dexdrip.MegaStatus;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.R;
@@ -30,9 +32,11 @@ import com.eveningoutpost.dexdrip.databinding.ActivityThinJamBinding;
 import com.eveningoutpost.dexdrip.ui.dialog.GenericConfirmDialog;
 import com.eveningoutpost.dexdrip.ui.dialog.QuickSettingsDialogs;
 import com.eveningoutpost.dexdrip.utils.AndroidBarcode;
+import com.eveningoutpost.dexdrip.utils.Preferences;
 import com.eveningoutpost.dexdrip.utils.bt.BtCallBack2;
 import com.eveningoutpost.dexdrip.utils.bt.ScanMeister;
 import com.eveningoutpost.dexdrip.watch.thinjam.BlueJay;
+import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry;
 import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayService;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.zxing.integration.android.IntentIntegrator;
@@ -56,6 +60,7 @@ public class ThinJamActivity extends AppCompatActivity implements BtCallBack2 {
     private static final String INSTALL_CORE = "INSTALL_CORE";
     private static final String UPDATE_CORE = "UPDATE_CORE";
     private static final String UPDATE_MAIN = "UPDATE_MAIN";
+    private static final String REQUEST_QR = "REQUEST_QR";
     private static final String SCAN_QR = "SCAN_QR";
 
     @Getter
@@ -247,6 +252,20 @@ public class ThinJamActivity extends AppCompatActivity implements BtCallBack2 {
                     thinJam.factoryReset();
                     break;
 
+                case "launchstatus":
+                    xdrip.getAppContext().startActivity(JoH.getStartActivityIntent(MegaStatus.class).setAction("BlueJay").addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT));
+                    break;
+
+                case "launchhelp":
+                    xdrip.getAppContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://bluejay.website/quickhelp")));
+                    break;
+
+                case "launchsettings":
+                    xdrip.getAppContext().startActivity(JoH.getStartActivityIntent(Preferences.class).setAction("bluejay_preference_screen").addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT));
+                break;
+
+
+
                 default:
                     JoH.static_toast_long("Unknown action: "+action);
                     break;
@@ -347,6 +366,8 @@ public class ThinJamActivity extends AppCompatActivity implements BtCallBack2 {
             connectedDevice.set(item.mac + " " + item.name);
             setMac(item.mac);
             saveConnectedDevice();
+            BlueJayEntry.setEnabled();
+            refreshFromStoredMac();
         }
 
         private static final String PREF_CONNECTED_DEVICE_INFO = "TJ_CONNECTED_DEVICE_INFO";
@@ -395,6 +416,8 @@ public class ThinJamActivity extends AppCompatActivity implements BtCallBack2 {
         startWithCommand(UPDATE_MAIN);
     }
 
+    public static void requestQrCode() { startWithCommand(REQUEST_QR);}
+
     public static void launchQRScan() {
         startWithCommand(SCAN_QR);
     }
@@ -433,6 +456,9 @@ public class ThinJamActivity extends AppCompatActivity implements BtCallBack2 {
                         break;
                     case UPDATE_MAIN:
                         promptForMainUpdate();
+                        break;
+                    case REQUEST_QR:
+                        binding.getVm().doAction("showqrcode");
                         break;
                     case SCAN_QR:
                         new AndroidBarcode(this).scan();

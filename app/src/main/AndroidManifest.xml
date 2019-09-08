@@ -692,6 +692,7 @@
             android:label="Database Admin"/>
         <activity android:name=".ui.activities.ThinJamActivity"
             android:configChanges="orientation|screenSize"
+            android:launchMode="singleTask"
             android:label="BlueJay Admin"/>
         <service android:name=".watch.thinjam.BlueJayService" />
     </application>
