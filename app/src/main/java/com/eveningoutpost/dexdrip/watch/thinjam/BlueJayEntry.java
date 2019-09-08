@@ -57,6 +57,12 @@ public class BlueJayEntry {
         }
     };
 
+    public static void startWithRefreshIfEnabled() {
+        if (isEnabled()) {
+            startWithRefresh();
+        }
+    }
+
     static void startWithRefresh() {
         Inevitable.task("bluejay-preference-changed", 1000, () -> JoH.startService(BlueJayService.class, "function", "refresh"));
     }
