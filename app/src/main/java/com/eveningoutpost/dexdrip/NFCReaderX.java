@@ -491,14 +491,18 @@ public class NFCReaderX {
                             }
                         } else {
                             // always addressed
-                            final int correct_reply_size = 10;
+                            Log.e(TAG, "startign multiblock reads ");
+                            final int correct_reply_size = 9;
                             for (int i = 0; i < 43; i++) {
-                                final byte[] cmd = new byte[]{0x60, 0x20, 0, 0, 0, 0, 0, 0, 0, 0, (byte) i, 0};
-                                System.arraycopy(uid, 0, cmd, 2, 8);
+                                //final byte[] cmd = new byte[]{0x60, 0x20, 0, 0, 0, 0, 0, 0, 0, 0, (byte) i, 0};
+                                final byte[] cmd = new byte[]{(byte)0x02, (byte) 0x23, 0, (byte) 0x0};
+                                cmd[2] = (byte)i;
+                                //System.arraycopy(uid, 0, cmd, 2, 8);
                                 byte[] oneBlock;
                                 Long time = System.currentTimeMillis();
                                 while (true) {
                                     try {
+                                        Log.e(TAG, "sending command " + HexDump.toHexString(cmd));
                                         oneBlock = nfcvTag.transceive(cmd);
                                         break;
                                     } catch (IOException e) {
@@ -511,15 +515,15 @@ public class NFCReaderX {
                                         Thread.sleep(100);
                                     }
                                 }
-                                if (d)
-                                    Log.d(TAG, HexDump.dumpHexString(oneBlock, 0, oneBlock.length));
+                                if (!d)
+                                    Log.e(TAG, HexDump.dumpHexString(oneBlock, 0, oneBlock.length));
                                 if (oneBlock.length != correct_reply_size) {
                                     Log.e(TAG, "Incorrect block size: " + oneBlock.length + " vs " + correct_reply_size);
                                     JoH.static_toast_short(gs(R.string.nfc_invalid_data));
                                     vibrate(context, 3);
                                     return null;
                                 }
-                                System.arraycopy(oneBlock, 2, data, i * 8, 8);
+                                System.arraycopy(oneBlock, 1, data, i * 8, 8);
                             }
                         }
                         JoH.benchmark("Tag read");
@@ -535,7 +539,7 @@ public class NFCReaderX {
                         JoH.static_toast_short(gs(R.string.nfc_io_error));
                         vibrate(context, 3);
                     } catch (Exception e) {
-                        Log.i(TAG, "Got exception reading nfc in background: " + e.toString());
+                        Log.e(TAG, "Got exception reading nfc in background: " + e.toString());
                         return null;
                     } finally {
                         try {
