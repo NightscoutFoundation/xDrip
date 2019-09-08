@@ -28,6 +28,7 @@ import com.eveningoutpost.dexdrip.ui.activities.ThinJamActivity;
 import com.eveningoutpost.dexdrip.utils.bt.Helper;
 import com.eveningoutpost.dexdrip.utils.bt.ReplyProcessor;
 import com.eveningoutpost.dexdrip.utils.bt.Subscription;
+import com.eveningoutpost.dexdrip.utils.framework.WakeLockTrampoline;
 import com.eveningoutpost.dexdrip.utils.time.SlidingWindowConstraint;
 import com.eveningoutpost.dexdrip.watch.thinjam.firmware.FirmwareDownload;
 import com.eveningoutpost.dexdrip.watch.thinjam.firmware.FirmwareInfo;
@@ -40,6 +41,7 @@ import com.eveningoutpost.dexdrip.watch.thinjam.messages.DefineWindowTx;
 import com.eveningoutpost.dexdrip.watch.thinjam.messages.PushRx;
 import com.eveningoutpost.dexdrip.watch.thinjam.messages.SetTimeTx;
 import com.eveningoutpost.dexdrip.watch.thinjam.messages.SetTxIdTx;
+import com.eveningoutpost.dexdrip.xdrip;
 import com.google.gson.annotations.Expose;
 import com.polidea.rxandroidble2.RxBleDeviceServices;
 import com.polidea.rxandroidble2.exceptions.BleCannotSetCharacteristicNotificationException;
@@ -68,11 +70,14 @@ import static com.eveningoutpost.dexdrip.Models.JoH.niceTimeScalar;
 import static com.eveningoutpost.dexdrip.Models.JoH.threadSleep;
 import static com.eveningoutpost.dexdrip.Models.JoH.tsl;
 import static com.eveningoutpost.dexdrip.Services.JamBaseBluetoothSequencer.BaseState.CLOSE;
+import static com.eveningoutpost.dexdrip.Services.JamBaseBluetoothSequencer.BaseState.CLOSED;
 import static com.eveningoutpost.dexdrip.Services.JamBaseBluetoothSequencer.BaseState.INIT;
+import static com.eveningoutpost.dexdrip.Services.JamBaseBluetoothSequencer.BaseState.SLEEP;
 import static com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder.DEXCOM_PERIOD;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.HOUR_IN_MS;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.MINUTE_IN_MS;
 import static com.eveningoutpost.dexdrip.UtilityModels.StatusItem.Highlight.BAD;
+import static com.eveningoutpost.dexdrip.UtilityModels.StatusItem.Highlight.CRITICAL;
 import static com.eveningoutpost.dexdrip.UtilityModels.StatusItem.Highlight.GOOD;
 import static com.eveningoutpost.dexdrip.UtilityModels.StatusItem.Highlight.NORMAL;
 import static com.eveningoutpost.dexdrip.UtilityModels.StatusItem.Highlight.NOTICE;
@@ -196,6 +201,7 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
         }
     }
 
+    // TODO revisit latency here
     public void setTime() {
         final SetTimeTx outbound = new SetTimeTx();
         new QueueMe().setBytes(outbound.getBytes())
@@ -207,7 +213,7 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
                         final SetTimeTx reply = new SetTimeTx(bytes);
                         UserError.Log.d(TAG, "Time Process callback: " + JoH.bytesToHex(bytes));
                         getInfo().parseSetTime(reply, outbound);
-                        UserError.Log.e(TAG, "Time difference with watch: " + ((outbound.getTimestamp() - reply.getTimestamp()) / 1000d));
+                        UserError.Log.d(TAG, "Time difference with watch: " + ((outbound.getTimestamp() - reply.getTimestamp()) / 1000d));
                     }
                 })
                 .queue();
@@ -951,7 +957,7 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
                                 changeState(CLOSE);
                             }
                             if (throwable instanceof BleDisconnectedException) {
-                                UserError.Log.e(TAG, "Disconnected while enabling notifications");
+                                UserError.Log.d(TAG, "Disconnected while enabling notifications");
                                 changeState(CLOSE);
                             }
 
@@ -1037,6 +1043,10 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
                     if (function != null) {
                         UserError.Log.d(TAG, "RUNNING FUNCTION: " + function);
                         switch (function) {
+
+                            case "wakeup":
+                                checkConnection();
+                                break;
 
                             case "refresh":
                                 setSettings();
@@ -1149,6 +1159,7 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
             sequence.add(ENABLE_NOTIFICATIONS); // automatically executed
             sequence.add(SCHEDULE_ITEMS);
             sequence.add(SEND_QUEUE);
+            // sequence.add(SET_TIME); could this go in here too?
             sequence.add(SLEEP);
         }
 
@@ -1178,15 +1189,18 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
                     break;
 
                 case SCHEDULE_ITEMS:
+                    cancelRetryTimer();
                     schedulePeriodicEvents();
                     break;
 
                 // TJ queue not send queue
                 case RUN_QUEUE:
+                    cancelRetryTimer();
                     processQueue();
                     break;
 
                 case SET_TIME:
+                    // TODO inject in to packet send sequence but with ratelimit
                     sendTime();
                     break;
 
@@ -1200,6 +1214,15 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
                 case LOG_TESTS:
                     debug.processTestSuite("gl");
                     break;
+
+                case SLEEP:
+                    cancelRetryTimer();
+                    return super.automata();
+
+                case CLOSED:
+                    setRetryTimerReal(); // local retry strategy
+                    return super.automata();
+
 
                 default:
                     // if (shouldServiceRun()) {
@@ -1225,6 +1248,13 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
 
     static {
         huntCharacterstics.add(Const.THINJAM_WRITE); // TODO improve
+    }
+
+    void checkConnection() {
+        if (!I.isConnected) {
+            UserError.Log.uel(TAG,"Attempting connect as we are not connected");
+            changeState(INIT);
+        }
     }
 
     // TODO move to base class as is duplicated!
@@ -1287,6 +1317,33 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
         }
     }
 
+
+    @Override
+    protected void setRetryTimerReal() {
+        if (shouldServiceRun()) {
+            final long retry_in = whenToRetryNext();
+            UserError.Log.e(TAG, "setRetryTimer: Restarting in: " + (retry_in / Constants.SECOND_IN_MS) + " seconds");
+            I.serviceIntent = WakeLockTrampoline.getPendingIntent(this.getClass(), Constants.BLUEJAY_SERVICE_RETRY_ID, "wakeup");
+            I.retry_time = JoH.wakeUpIntent(xdrip.getAppContext(), retry_in, I.serviceIntent);
+            I.wakeup_time = JoH.tsl() + retry_in;
+        } else {
+            UserError.Log.d(TAG, "Not setting retry timer as service should not be running");
+        }
+    }
+
+    private void cancelRetryTimer() {
+            JoH.cancelAlarm(xdrip.getAppContext(), I.serviceIntent);
+    }
+
+
+    private long whenToRetryNext() {
+        //I.retry_backoff += Constants.SECOND_IN_MS;
+       // if (I.retry_backoff > MAX_RETRY_BACKOFF_MS) {
+       //     I.retry_backoff = MAX_RETRY_BACKOFF_MS;
+       // }
+        return Constants.MINUTE_IN_MS * 10;
+    }
+
     public AuthReplyProcessor getARInstance(final ReplyProcessor secondary) {
         return new AuthReplyProcessor(secondary);
     }
@@ -1326,6 +1383,7 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
     private static final String PREF_BACKFILL_RECEIVED = "bluejay-backfill-received";
 
     private boolean backFillOkayToAsk(long time) {
+        // Todo add significant delay when asking for max records so we can handle situation where watch has nothing usefulbut keeps being asked
         final long granularity = Constants.MINUTE_IN_MS * 5;
         val last_asked = PersistentStore.getLong(PREF_BACKFILL_ASKED + I.address);
         UserError.Log.d(TAG, "Backfill Okay To Ask: " + time + " vs " + last_asked);
@@ -1354,6 +1412,12 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
 
         val info = BlueJayInfo.getInfo(II.address);
         l.add(new StatusItem("Mac address", II.address));
+
+        if (BlueJay.getAuthKey(II.address) == null) {
+            l.add(new StatusItem("Pairing", "Not Paired! Tap to pair", CRITICAL, "long-press", () -> ThinJamActivity.requestQrCode()));
+        } else if (BlueJay.getIdentityKey(II.address) == null) {
+            l.add(new StatusItem("Identity", "Not Identified! Tap to pair", CRITICAL, "long-press", () -> ThinJamActivity.requestQrCode()));
+        }
 
         l.add(new StatusItem("Connected", II.isConnected ? "Yes" : "No"));
         if (II.wakeup_time != 0) {
@@ -1432,6 +1496,13 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
                 }));
             }
         }
+
+        l.add(new StatusItem("Admin Panel", "Tap to open", NORMAL, "long-press", new Runnable() {
+            @Override
+            public void run() {
+                JoH.startActivity(ThinJamActivity.class);
+            }
+        }));
 
         return l;
     }
