@@ -12,6 +12,7 @@ import android.util.Pair;
 
 import com.eveningoutpost.dexdrip.G5Model.CalibrationState;
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
@@ -104,6 +105,7 @@ import static com.eveningoutpost.dexdrip.watch.thinjam.Const.THINJAM_OTA;
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.THINJAM_WRITE;
 import static com.eveningoutpost.dexdrip.watch.thinjam.firmware.BlueJayFirmware.parse;
 import static com.eveningoutpost.dexdrip.watch.thinjam.firmware.BlueJayFirmware.split;
+import static com.eveningoutpost.dexdrip.watch.thinjam.messages.NotifyTx.getPacketStreamForNotification;
 
 // jamorham
 
@@ -842,6 +844,27 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
     }
 
 
+    public void sendNotification(final String msg) {
+
+            val list = getPacketStreamForNotification(1, msg);
+            for (val part : list) {
+                val item = new QueueMe()
+                        .setBytes(part.getBytes())
+                        .expireInSeconds(60)
+                        .setDescription("Notify part");
+
+                item.setProcessor(new AuthReplyProcessor(new ReplyProcessor(I.connection) {
+                    @Override
+                    public void process(byte[] bytes) {
+                        UserError.Log.d(TAG, "Notify  reply processor: " + HexDump.dumpHexString(bytes));
+                    }
+                }).setTag(item));
+                item.queue();
+            }
+            doQueue();
+        }
+
+
     public void addToLog(final String text) {
         notificationString.append(text);
         notificationString.append("\n");
@@ -1058,11 +1081,9 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
                             case "message":
                                 final String message = intent.getStringExtra("message");
                                 final String message_type = intent.getStringExtra("message_type");
-                                // if (message != null) {
-                                //    keyStore.putS(MESSAGE, message);
-                                //    keyStore.putS(MESSAGE_TYPE, message_type != null ? message_type : "");
-                                //    changeState(QUEUE_MESSAGE);
-                                // }
+                                if (JoH.ratelimit("bj-sendmessage",30)) {
+                                    sendNotification(message);
+                                }
                         }
                     } else {
                         // no specific function
@@ -1333,6 +1354,7 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
 
     private void cancelRetryTimer() {
             JoH.cancelAlarm(xdrip.getAppContext(), I.serviceIntent);
+            I.wakeup_time = 0;
     }
 
 
@@ -1420,9 +1442,9 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
         }
 
         l.add(new StatusItem("Connected", II.isConnected ? "Yes" : "No"));
-        if (II.wakeup_time != 0) {
+        if (II.wakeup_time != 0 && !II.isConnected) {
             final long till = msTill(II.wakeup_time);
-            if (till > 0) l.add(new StatusItem("Wake Up", niceTimeScalar(till)));
+            if (till > 0) l.add(new StatusItem("Retry Wake Up", niceTimeScalar(till)));
         }
 
         l.add(new StatusItem("State", II.state));

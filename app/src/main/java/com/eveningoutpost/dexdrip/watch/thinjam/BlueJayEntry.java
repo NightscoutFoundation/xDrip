@@ -63,9 +63,20 @@ public class BlueJayEntry {
         }
     }
 
+    public static void sendNotifyIfEnabled(final String msg) {
+        if (isEnabled()) {
+            final String fmsg = msg.replaceAll("^-","").trim();
+            if (!JoH.emptyString(msg)) {
+                // TODO handle message types
+                Inevitable.task("bluejay-send-notify-external", 200, () -> JoH.startService(BlueJayService.class, "function", "message", "message", fmsg ));
+            }
+        }
+    }
+
     static void startWithRefresh() {
         Inevitable.task("bluejay-preference-changed", 1000, () -> JoH.startService(BlueJayService.class, "function", "refresh"));
     }
+
 }
 
 
