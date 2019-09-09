@@ -21,7 +21,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:padding="10dp">
+        android:padding="8dp">
 
         <ProgressBar
             android:id="@+id/progressBar2"
@@ -30,39 +30,80 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <RadioButton
-            android:id="@+id/collector_running_indicator"
+        <GridLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@{idq.collector_running ? @android:color/transparent : @android:color/holo_red_dark}"
-            android:checked="@{idq.collector_running}"
-            android:clickable="false"
-            android:enabled="true"
-            android:text="@string/data_collector_running" />
+            android:alignmentMode="alignBounds"
+            android:useDefaultMargins="true">
 
-        <RadioButton
-            android:id="@+id/received_data_indicator"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:checked="@{idq.received_raw_data}"
-            android:clickable="false"
-            android:text="@{@string/receiving_data_from_collector(ms.gs(`niceCollector`))}" />
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_row="0"
+                android:layout_column="0"
+                android:layout_gravity="center"
+                android:src="@{idq.collector_running ? @drawable/ic_check : @drawable/ic_hourglass}" />
 
-        <RadioButton
-            android:id="@+id/recent_data_indicator"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:checked="@{idq.recent_data}"
-            android:clickable="false"
-            android:text="@string/received_some_recent_data" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_row="0"
+                android:layout_column="1"
+                android:layout_gravity="center_vertical"
+                android:background="@{idq.collector_running ? @android:color/transparent : @android:color/holo_red_dark}"
+                android:text="@string/data_collector_running" />
 
-        <RadioButton
-            android:id="@+id/enough_data_indicator"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:checked="@{idq.pass}"
-            android:clickable="false"
-            android:text="@string/received_enough_good_data_to_calibrate" />
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_row="1"
+                android:layout_column="0"
+                android:layout_gravity="center"
+                android:src="@{idq.received_raw_data ? @drawable/ic_check : @drawable/ic_hourglass}"
+                appx:showIfTrue="@{idq.collector_running}" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_row="1"
+                android:layout_column="1"
+                android:layout_gravity="center_vertical"
+                android:text="@{@string/receiving_data_from_collector(ms.gs(`niceCollector`))}" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_row="2"
+                android:layout_column="0"
+                android:layout_gravity="center"
+                android:src="@{idq.recent_data ? @drawable/ic_check : @drawable/ic_hourglass}"
+                appx:showIfTrue="@{idq.received_raw_data}" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_row="2"
+                android:layout_column="1"
+                android:layout_gravity="center_vertical"
+                android:text="@string/received_some_recent_data" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_row="3"
+                android:layout_column="0"
+                android:layout_gravity="center"
+                android:src="@{idq.pass ? @drawable/ic_check : @drawable/ic_hourglass}"
+                appx:showIfTrue="@{idq.recent_data}" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_row="3"
+                android:layout_column="1"
+                android:layout_gravity="center_vertical"
+                android:text="@string/received_enough_good_data_to_calibrate" />
+        </GridLayout>
 
         <TextView
             android:id="@+id/advice_text"

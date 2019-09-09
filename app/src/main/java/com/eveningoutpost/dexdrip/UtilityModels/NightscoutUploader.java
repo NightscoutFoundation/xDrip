@@ -574,11 +574,19 @@ public class NightscoutUploader {
             json.put("dateString", format.format(record.timestamp));
             if(prefs.getBoolean("cloud_storage_api_use_best_glucose", false)){
                 json.put("sgv", (int) record.getDg_mgdl());
-                json.put("delta", new BigDecimal(record.getDg_slope() * 5 * 60 * 1000).setScale(3, BigDecimal.ROUND_HALF_UP));
+                try {
+                    json.put("delta", new BigDecimal(record.getDg_slope() * 5 * 60 * 1000).setScale(3, BigDecimal.ROUND_HALF_UP));
+                } catch (NumberFormatException e) {
+                        UserError.Log.e(TAG, "Problem calculating delta from getDg_slope() for Nightscout REST Upload, skipping");
+                }
                 json.put("direction", record.getDg_deltaName());
             } else {
                 json.put("sgv", (int) record.calculated_value);
-                json.put("delta", new BigDecimal(record.currentSlope() * 5 * 60 * 1000).setScale(3, BigDecimal.ROUND_HALF_UP)); // jamorham for automation
+                try {
+                    json.put("delta", new BigDecimal(record.currentSlope() * 5 * 60 * 1000).setScale(3, BigDecimal.ROUND_HALF_UP)); // jamorham for automation
+                } catch (NumberFormatException e) {
+                        UserError.Log.e(TAG, "Problem calculating delta from currentSlope() for Nightscout REST Upload, skipping");
+                }
                 json.put("direction", record.slopeName());
             }
             json.put("type", "sgv");

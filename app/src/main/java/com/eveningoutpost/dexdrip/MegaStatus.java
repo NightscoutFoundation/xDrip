@@ -46,13 +46,16 @@ import com.eveningoutpost.dexdrip.UtilityModels.ShotStateStore;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
 import com.eveningoutpost.dexdrip.cgm.medtrum.MedtrumCollectionService;
-import com.eveningoutpost.dexdrip.insulin.inpen.InPen;
+import com.eveningoutpost.dexdrip.cgm.nsfollow.NightscoutFollowService;
+import com.eveningoutpost.dexdrip.cgm.sharefollow.ShareFollowService;
 import com.eveningoutpost.dexdrip.insulin.inpen.InPenEntry;
 import com.eveningoutpost.dexdrip.insulin.inpen.InPenService;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.watch.lefun.LeFunEntry;
 import com.eveningoutpost.dexdrip.watch.lefun.LeFunService;
+import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry;
+import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayService;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
@@ -64,7 +67,8 @@ import java.util.List;
 import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.DexcomG5;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.Medtrum;
-import static com.eveningoutpost.dexdrip.utils.DexCollectionType.isLibreOOPAlgorithm;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.NSFollow;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.SHFollow;
 
 public class MegaStatus extends ActivityWithMenu {
 
@@ -109,7 +113,10 @@ public class MegaStatus extends ActivityWithMenu {
     private static final String XDRIP_PLUS_SYNC = "Followers";
     private static final String UPLOADERS = "Uploaders";
     private static final String LEFUN_STATUS = "Lefun";
+    private static final String BLUEJAY_STATUS = "BlueJay";
     private static final String INPEN_STATUS = "InPen";
+    private static final String NIGHTSCOUT_FOLLOW = "Nightscout Follow";
+    private static final String SHARE_FOLLOW = "Dex Share Follow";
 
     public static PendingIntent getStatusPendingIntent(String section_name) {
         final Intent intent = new Intent(xdrip.getAppContext(), MegaStatus.class);
@@ -140,6 +147,9 @@ public class MegaStatus extends ActivityWithMenu {
             } else if (dexCollectionType.equals(Medtrum)) {
                 addAsection(MEDTRUM_STATUS, "Medtrum A6 Status");
             }
+            if (BlueJayEntry.isEnabled()) {
+                addAsection(BLUEJAY_STATUS, "BlueJay Watch Status");
+            }
             if (DexCollectionType.hasWifi()) {
                 addAsection(IP_COLLECTOR, dexCollectionType == DexCollectionType.Mock ? "FAKE / MOCK DATA SOURCE" : "Wifi Wixel / Parakeet Status");
             }
@@ -157,6 +167,12 @@ public class MegaStatus extends ActivityWithMenu {
             }
             if (LeFunEntry.isEnabled()) {
                 addAsection(LEFUN_STATUS, "Lefun Watch Status");
+            }
+            if(dexCollectionType.equals(NSFollow)) {
+                addAsection(NIGHTSCOUT_FOLLOW, "Nightscout Follow Status");
+            }
+            if(dexCollectionType.equals(SHFollow)) {
+                addAsection(SHARE_FOLLOW, "Dex Share Follow Status");
             }
 
             //addAsection("Misc", "Currently Empty");
@@ -203,8 +219,17 @@ public class MegaStatus extends ActivityWithMenu {
             case LEFUN_STATUS:
                 la.addRows(LeFunService.megaStatus());
                 break;
+            case BLUEJAY_STATUS:
+                la.addRows(BlueJayService.megaStatus());
+                break;
             case INPEN_STATUS:
                 la.addRows(InPenService.megaStatus());
+                break;
+            case NIGHTSCOUT_FOLLOW:
+                la.addRows(NightscoutFollowService.megaStatus());
+                break;
+            case SHARE_FOLLOW:
+                la.addRows(ShareFollowService.megaStatus());
                 break;
         }
         la.changed();

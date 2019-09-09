@@ -8,13 +8,14 @@ import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.utils.bt.ScanMeister;
-import com.polidea.rxandroidble.scan.ScanFilter;
-import com.polidea.rxandroidble.scan.ScanResult;
-import com.polidea.rxandroidble.scan.ScanSettings;
+import com.eveningoutpost.dexdrip.utils.bt.Subscription;
+import com.polidea.rxandroidble2.scan.ScanFilter;
+import com.polidea.rxandroidble2.scan.ScanResult;
+import com.polidea.rxandroidble2.scan.ScanSettings;
 
 import java.util.concurrent.TimeUnit;
 
-import rx.schedulers.Schedulers;
+import io.reactivex.schedulers.Schedulers;
 
 import static com.eveningoutpost.dexdrip.insulin.inpen.Constants.SCAN_SERVICE_UUID;
 import static com.eveningoutpost.dexdrip.insulin.inpen.InPen.STORE_INPEN_ADVERT;
@@ -32,7 +33,7 @@ public class InPenScanMeister extends ScanMeister {
         extendWakeLock((scanSeconds + 1) * Constants.SECOND_IN_MS);
         stopScan("Scan start");
         UserError.Log.d(TAG, "startScan called: hunting: " + address + " " + name);
-        scanSubscription = rxBleClient.scanBleDevices(
+        scanSubscription = new Subscription(rxBleClient.scanBleDevices(
                 new ScanSettings.Builder()
                         .setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES)
                         .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
@@ -40,7 +41,7 @@ public class InPenScanMeister extends ScanMeister {
                 new ScanFilter.Builder().setServiceUuid(ParcelUuid.fromString(SCAN_SERVICE_UUID)).build())
                 .timeout(scanSeconds, TimeUnit.SECONDS) // is unreliable
                 .subscribeOn(Schedulers.io())
-                .subscribe(this::onScanResult, this::onScanFailure);
+                .subscribe(this::onScanResult, this::onScanFailure));
 
         Inevitable.task(STOP_SCAN_TASK_ID, scanSeconds * Constants.SECOND_IN_MS, this::stopScanWithTimeoutCallback);
     }

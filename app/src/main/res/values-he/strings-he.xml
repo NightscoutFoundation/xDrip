@@ -18,6 +18,7 @@
     <string name="title_activity_start_new_sensor">התחל סנסור חדש</string>
     <string name="title_activity_new_sensor_location">מיקום הסנסור החדש</string>
     <string name="title_activity_stop_sensor">עצור סנסור</string>
+    <string name="title_activity_nav_drawer">מגירת יישומים</string>
     <string name="snooze">השתק</string>
     <string name="snooze_hint">השתק התראה ל-x דקות</string>
     <string name="ok">אישור</string>
@@ -49,8 +50,8 @@
     <string name="pref_dialog_api_url">הזן כתובת URL בסיסית</string>
     <string name="pref_default_api_url">https://yourpassphrase@{YOUR-SITE}.azurewebsites.net/api/v1/</string>
     <!-- wifi Settings -->
-    <string name="wifi_recievers_dialog_message">רשימה של כתובת ופורט מופרדת בפסיקים (ip:port)
- (לדוגמא 37.142.132.220:50005,37.142.132.220:50010,mongodb://user:pass@ds053958.mongolab.com:53958/db/collection)</string>
+    <string name="wifi_recievers_dialog_message">"רשימה של כתובת ופורט מופרדת בפסיקים (ip:port)
+ (לדוגמא 37.142.132.220:50005,37.142.132.220:50010,mongodb://user:pass@ds053958.mongolab.com:53958/db/collection)"</string>
     <string name="wifi_recievers_dialog_title">הזן כתובות ip ו-port של הקולטים (כולל כתובת של mongodb אם יש צורך)</string>
     <!-- Location Settings -->
     <string name="location_not_found_title">מיקום אינו מופעל</string>
@@ -74,13 +75,13 @@
     <string name="action_open_watch_setting">פתח את ההגדרות על wear</string>
     <string name="erase">מחק</string>
     <string name="redo_button">לחצן בצע שוב</string>
-    <string name="showcase_redo">לחצן הבצע-שוב יכול לאפשר הוספה של סימלצית טיפול, כיולים והערות
+    <string name="showcase_redo">"לחצן הבצע-שוב יכול לאפשר הוספה של סימלצית טיפול, כיולים והערות
 
-אחרי 30 דקות הוא יוסתר שוב</string>
+אחרי 30 דקות הוא יוסתר שוב"</string>
     <string name="undo_button">לחצן ביטול</string>
-    <string name="showcase_undo">לחצן הביטול יכול לאפשר מחיקה של סימלצית טיפול, כיולים והערות
+    <string name="showcase_undo">"לחצן הביטול יכול לאפשר מחיקה של סימלצית טיפול, כיולים והערות
 
-אחרי 30 דקות הוא יוסתר שוב</string>
+אחרי 30 דקות הוא יוסתר שוב"</string>
     <string name="add_note">הוסף הערה</string>
     <string name="first_use_menu_to_scan">השתמש בתפריט בכדי לבצע סריקת בלוטוס של ההתקן שלך, או שנה את מקור הנתונים בהגדרות!</string>
     <string name="first_configure_ip_address">הגדר את כתובות הwifi של הwixel או הליברה או הparakeet url</string>
@@ -102,10 +103,13 @@
     <string name="minutes_ago">{0, choice,0# לפני {0, number, integer} דקות |1# לפני דקה|1&lt; לפני {0, number, integer} דקות }</string>
     <string name="space_minutes_ago">" דקות"</string>
     <string name="space_minute_ago">" דקה"</string>
+    <string name="show_parakeet_map">הראה מפה של הparakeet</string>
+    <string name="switch_parakeet_to_setup_mode">העבר את הparakeet למצב הגדרות</string>
     <string name="view_events_log">הצג יומן אירועים</string>
     <string name="show_libre_trend">הראה מגמת הליברה</string>
     <string name="libre_15_minutes_graph">גרף 15 דקות של הליברה</string>
     <string name="libre_last_x_minutes_graph">גרף %d דקות אחרונות של הליברה</string>
+    <string name="share_config_via_qr_code">שיתוף הגדרות באמצעות QR קוד</string>
     <string name="check_for_updated_version">בדוק האם יש גרסא חדשה</string>
     <string name="send_feedback_to_developer">שלח פידבק למפתח</string>
     <string name="home_screen">מסך הבית</string>
@@ -151,6 +155,7 @@
     <string name="bg_data_table">טבלאת ערכי סוכר</string>
     <string name="cannot_calibrate_right_now">לא ניתן לכייל עכשיו</string>
     <string name="hardware_data_source">חומרה של מקור הנתונים</string>
+    <string name="dexcom_transmitter_id">מספר משדר דקסקום</string>
     <string name="list_of_receivers">רשימת הקולטים</string>
     <string name="data_source_settings">הגדרות של מקור הנתונים</string>
     <string name="special_value">ערך מיוחד</string>
@@ -185,6 +190,7 @@
     <string name="could_not_export_database">יצוא מסד הנתונים נכשל :(</string>
     <string name="exported_to">"ייצא אל "</string>
     <string name="default_to_voice_input_next_time">ברירת מחדל תהיה זהוי קולי בפעם הבאה</string>
+    <string name="done">בוצע</string>
     <string name="entering_a_calibration_now_will_override_your_previously_entered_calibration">הזנת כיול עכשיו תחליף את הכיול שהוזן קודם לכן.</string>
     <string name="enter_blood_glucose_value">הזן ערך סוכר</string>
     <string name="no_active_alert_exists">אין התראה פעילה</string>
@@ -229,6 +235,7 @@
     <string name="be_master_for_followers">היה מאסטר עבור העוקבים</string>
     <string name="this_device_will_send_data_to_followers">התקן זה ישלח מידע לעוקבים</string>
     <string name="disable_all_sync_features">השבת את כל אפשרויות הסינכרון</string>
+    <string name="crowd_sourced_translation">תרגום המונים</string>
     <string name="please_enter_your_question_or_comments_here">אנא רשום את השאלות או הערות שלך כאן. \n\n אם תספק דואר אלקטרוני יכול להיות שתקבל תשובה \n\n</string>
     <string name="optional_contact_info_here_eg_email">אופציונלי - פרטים ליצירת קשר כגון email</string>
     <string name="send_message">שלח הודעה</string>
@@ -240,6 +247,7 @@
     <string name="warning_settings_from_xdrip_and_plus_exist">אזהרה: קימות הגדרות של xdrip ושל xdrip+. טוען את ההגדרות של xdrip+</string>
     <string name="new_version_date_colon">"תאריך הגרסא החדשה: "</string>
     <string name="old_version_date_colon">"תאריך הגרסא הישנה: "</string>
+    <string name="alerts_start_out_snoozed_and_must_persist_for_a_while">ההתראה מתחילה מושתקת וצריכה להמשך זמן מה בשביל להתחיל לפעול</string>
     <string name="keep_snoozing_if_glucose_is_heading_in_right_direction">השבת את ההתראות כל עוד הסוכר מתקדם בכיוון הרצוי</string>
     <string name="dont_alert_if_glucose_in_right_direction">אל תתריע כל עוד הסוכר מתקדם בכיוון הרצוי</string>
     <string name="displays_the_high_line">הצג את הקו הגבוה</string>
@@ -324,6 +332,7 @@
     <string name="received_realtime_readings_percentage">אחוז קריאות הסנסור שהתקבלו בזמן אמת (לא הושלמו מאוחר יותר). G5 אלגוריתם מקורי בלבד</string>
     <string name="allow_sensor_scanning">אפשר סריקה של סנסורים כאשר האפליקציה פתוחה. שים לב, זה עלול להרוס את הסנסור. בדוק שעובד על סנסור שעומד להסתיים. מומלץ לעבור למצב טיסה לפני הסריקה. ראה הוזהרת!</string>
     <string name="use_multi_block">השתמש בשיטת קריאה multi-block המהירה יותר</string>
+    <string name="transmitter_id">מספר המשדר של הדקסקום, לדוגמה 12AB3</string>
     <string name="advanced_g5_settings">הגדרות G5 מתקדמות עבור מצבים נדירים</string>
     <string name="g5_debug_settings">הגדרות דיבאג של G5/G6</string>
     <string name="use_calibrated_data">השתמש בנתונים המכוילים כמקור</string>
@@ -333,7 +342,15 @@
     <string name="user">שם משתמש</string>
     <string name="password">סיסמא</string>
     <string name="shortcut_to_bg_alerts">קיצור דרך להתראות על רמת סוכר</string>
+    <string name="suppress_alerts_missed_readings">התעלם מהתראות מושתקות או פעילות אחרי זמן מוגדר של העדר קליטה</string>
+    <string name="suppress_alerts_after">התעלם מהתראות פעילות או מושתקות אחרי .. דקות (לפחות 10)</string>
     <string name="hours_between_calibrations">שעות בין כיולים</string>
+    <string name="alert_snooze">זמן להשתקת ההתראה</string>
+    <string name="alert_minutes_reraise">מספר הדקות לפני הפעלה חוזרת של ההתראה אחרי שהושתקה.</string>
+    <string name="reraise_before_snooze">השמע את ההתראה שוב לפני זמן ההשתקה</string>
+    <string name="reraise_not_snoozed_sooner">השמע את ההתראה שוב לפני זמן ההשתקה</string>
+    <string name="alert_reraise_time">זמן להפעלה מחדש של ההתראה</string>
+    <string name="alert_seconds_reraise">מספר השניות שצריכות לעבור לפני שההתראה מופעלת מחדש.</string>
     <string name="bg_falling_fast">סוכר נופל מהר</string>
     <string name="bg_rising_fast">סוכר עולה מהר</string>
     <string name="falling_threshold">ערך סף בירידה</string>
@@ -393,10 +410,12 @@
     <string name="is_your_typical_glucose_value">האם ערך אופיני של הסוכר שלך הוא 100(mg/dl) או 5.5 (mmol/L) אנא בחר למטה</string>
     <string name="settings_updated_to_mmol">ההגדרות שונו לmmol/L</string>
     <string name="please_enter_printed_calibration_code">אנא הזן את קוד הכיול המודפס, 4 ספרות, לדוגמא: 5678</string>
+    <string name="cancel_alarm">לבטל התראה?</string>
     <string name="please_confirm_to_cancel_the_alert">אנא אשר את השתקת ההתראה</string>
     <string name="yes_cancel">כן, בטל.</string>
     <string name="emergency_messages">הודעות בחירום</string>
     <string name="sensor_is_still_warming_up_please_wait">הסנסור עדין מתחמם, אנא המתן</string>
+    <string name="summary_Accept_connections_from_any_network_instead_of_just_internally">אפשר התחברות מכל רשת ולא רק באופן פנימי מתוך הטלפון. יש לזה השלכות אבטחה! המפתח הסודי המשותף ידרש, אם הוגדר.</string>
     <string name="summary_Shared_Secret_for_open_web_service">Shared Secret for open web service (should match your Nightcout API secret)</string>
     <string name="summary_Scan_before_connecting_on_xBridge_and_Libre_bluetooth">בצע סריקת בלוטוס לפני התחברות בליברה ובxBridge</string>
     <string name="summary_write_Battery_Information_for_additional_analytic">רשום את האינפורמציה של הבטריה לצורך ניתוח נוסף. בבקשה השתמש במידע זה רק אם תתבקש לכך על ידי אחד המפתחים!</string>
@@ -456,13 +475,17 @@
     <string name="need_permission_to_access_audio_files">דרושה הרשאה לאחסון כדי לגשת לקבצי קול</string>
     <string name="xdrip_needs_whitelisting_for_proper_performance">xDrip + צריך להיות מחוץ לאופטימזציה של הסוללה בכדי לפעול נכון</string>
     <string name="use_mobile_data">השתמש בחבילת גלישה</string>
+    <string name="summary_nightscout_device_append_source_info">עבור G5, שלח את סוג האוסף (OB1) וסטטוס קריאות שהושלמו (עבור מוד מקורי) לניטסקוט.</string>
     <string name="title_nightscout_device_append_source_info">הוסף את שם מקור הנתונים לשם ההתקן</string>
     <string name="load_save_settings_on_sdcard">שמור / טען הגדרות לכרטיס זכרון (sdcard)</string>
     <string name="delete_all_bg_readings">מחק את כל קריאות הסוכר</string>
+    <string name="send_bg_readings_to_backfill">שלח השלמות נתונים של קריאות הסוכר</string>
     <string name="title_ob1_options">הגדרות איסוף OB1 עבור G5/G6</string>
     <string name="summary_ob1_g5_restart_sensor">הפעל את הסנסור בצורה אוטומטית כאשר הוא מפסיק</string>
     <string name="title_old_g5_options">הגדרות אוסף ישן של G5</string>
     <string name="title_xdrip_plus_graph_display_settings">הגדרות גרף</string>
+    <string name="summary_illustrate_backfilled_data">הדגש נתונים שהשולמו על גבי הגרף</string>
+    <string name="title_illustrate_backfilled_data">הראה נתונים שהושלמו</string>
     <string name="title_xdrip_plus_desert_sync_settings">סינכרון במדבר (רק Wifi)</string>
     <string name="summary_desert_use_https">הוסף רמה נוספת של הצפנה לרשתות משותפות, כגון Wifi ציבורי</string>
     <string name="nothing_found">לא נמצא</string>
@@ -514,9 +537,18 @@
     <string name="this_app_needs_battery_optimization_whitelisting_or_it_will_not_work_well_please_reset_app_preferences">אפליקציה זאת צריכה החרגה מאופטימזצית הבטריה או שלא תעבוד כראוי.</string>
     <string name="yes_please">כן, בבקשה</string>
     <string name="number_error_">שגיאה במספר: </string>
+    <string name="starting_sync_to_other_devices">מתחיל לסנכרן התקנים אחרים</string>
     <string name="librealarm_data_format_appears_incompatible_protocol_changed_or_no_data">הנתונים של LibreAlarm אינם מתאימים?! הפרוטוקול השתנה או שאין קליטה?</string>
     <string name="please_update_librealarm_to_use_oop_algorithm">אנא עדכן את LibreAlarm בכדי להשתמש באלגוריתם OOP</string>
     <string name="sensor_clock_has_not_advanced">השעון הפנימי של הסנסור לא התקדם!</string>
+    <string name="phone_has_no_nfc_reader">לטלפון אין קורא NFC</string>
+    <string name="nfc_is_not_enabled">NFC לא מופעל</string>
+    <string name="not_so_quickly_wait_60_seconds">לא כל כך מהר, המתן 60 שניות</string>
+    <string name="nfc_read_timeout">הזמן המוקצב לקריאת NFC הסתיים</string>
+    <string name="nfc_invalid_data__try_again">בעיית קריאה ב-NFC - נסה שוב</string>
+    <string name="nfc_invalid_data">בעית קריאה ב-NFC</string>
+    <string name="scanned_ok">נסרק בהצלחה!</string>
+    <string name="nfc_io_error">שגיאת IO בNFC</string>
     <string name="please_wait">אנא המתן..</string>
     <string name="sensor_stopped">הסנסור נעצר</string>
     <string name="follower_deleted_succesfully">העוקב נמחק בהצלחה</string>

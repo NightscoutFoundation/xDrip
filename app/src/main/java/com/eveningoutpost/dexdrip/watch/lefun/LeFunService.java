@@ -32,7 +32,7 @@ import com.eveningoutpost.dexdrip.watch.lefun.messages.TxSetScreens;
 import com.eveningoutpost.dexdrip.watch.lefun.messages.TxSetTime;
 import com.eveningoutpost.dexdrip.watch.lefun.messages.TxShakeDetect;
 import com.eveningoutpost.dexdrip.xdrip;
-import com.polidea.rxandroidble.RxBleDeviceServices;
+import com.polidea.rxandroidble2.RxBleDeviceServices;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +40,13 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import rx.schedulers.Schedulers;
+//import rx.schedulers.Schedulers;
+
+import io.reactivex.Observable;
+import io.reactivex.Scheduler;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+
 
 import static com.eveningoutpost.dexdrip.Models.ActiveBgAlert.currentlyAlerting;
 import static com.eveningoutpost.dexdrip.Models.JoH.bytesToHex;

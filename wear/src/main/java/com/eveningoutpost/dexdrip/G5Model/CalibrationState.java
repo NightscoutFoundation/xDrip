@@ -113,7 +113,7 @@ public enum CalibrationState {
     }
 
     public boolean readyForBackfill() {
-        return this != WarmingUp && this != Stopped && this != Unknown && this != NeedsFirstCalibration && this != NeedsSecondCalibration;
+       return this != WarmingUp && this != Stopped && this != Unknown && this != NeedsFirstCalibration && this != NeedsSecondCalibration && this != Errors;
     }
 
     public String getExtendedText() {

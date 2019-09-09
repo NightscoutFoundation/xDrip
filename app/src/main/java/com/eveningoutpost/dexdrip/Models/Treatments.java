@@ -100,7 +100,12 @@ public class Treatments extends Model {
 
     public static synchronized Treatments create(final double carbs, final double insulin, long timestamp, double position, String suggested_uuid) {
         // TODO sanity check values
-        Log.d(TAG, "Creating treatment: Insulin: " + Double.toString(insulin) + " / Carbs: " + Double.toString(carbs) + (suggested_uuid != null && !suggested_uuid.isEmpty() ? " uuid: " + suggested_uuid : ""));
+        Log.d(TAG, "Creating treatment: " +
+                "Insulin: " + insulin + " / " +
+                "Carbs: " + carbs +
+                (suggested_uuid != null && !suggested_uuid.isEmpty()
+                        ? " " + "uuid: " + suggested_uuid
+                        : ""));
 
         if ((carbs == 0) && (insulin == 0)) return null;
 
@@ -278,6 +283,15 @@ public class Treatments extends Model {
         return new Select()
                 .from(Treatments.class)
                 .orderBy("_ID desc")
+                .executeSingle();
+    }
+
+    public static Treatments lastNotFromXdrip() {
+        fixUpTable();
+        return new Select()
+                .from(Treatments.class)
+                .where("enteredBy NOT LIKE '" + XDRIP_TAG + "%'")
+                .orderBy("_ID DESC")
                 .executeSingle();
     }
 

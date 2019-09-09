@@ -19,7 +19,7 @@ import java.util.TimeZone;
 public class DateUtil {
 
     private static final String FORMAT_DATE_ISO = "yyyy-MM-dd'T'HH:mm:ss'Z'"; // eg 2017-03-24T22:03:27Z
-    private static final String FORMAT_DATE_ISO2 = "yyyy-MM-dd'T'HH:mm:ssZ"; // eg 2017-03-27T17:38:14+03:00
+    private static final String FORMAT_DATE_ISO2 = "yyyy-MM-dd'T'HH:mm:ssZ"; // eg 2017-03-27T17:38:14+0300
     private static final String FORMAT_DATE_ISO3 = "yyyy-MM-dd'T'HH:mmZ"; // eg 2017-05-12T08:16-0400
 
     /**

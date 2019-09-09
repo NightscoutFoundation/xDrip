@@ -45,6 +45,7 @@ import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.Models.Bubble;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.Tomato;
@@ -86,6 +87,8 @@ import static android.bluetooth.BluetoothDevice.TRANSPORT_LE;
 import static com.eveningoutpost.dexdrip.Models.JoH.convertPinToBytes;
 import static com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder.DEXCOM_PERIOD;
 import static com.eveningoutpost.dexdrip.utils.bt.Helper.getStatusName;
+import static com.eveningoutpost.dexdrip.xdrip.gs;
+
 
 @TargetApi(Build.VERSION_CODES.KITKAT)
 public class DexCollectionService extends Service implements BtCallBack {
@@ -397,7 +400,7 @@ public class DexCollectionService extends Service implements BtCallBack {
 
             final BluetoothGattService gattService = mBluetoothGatt.getService(xDripDataService);
             if (gattService == null) {
-                if (!(static_use_blukon || blueReader.isblueReader() || Tomato.isTomato())) {
+                if (!(static_use_blukon || blueReader.isblueReader() || Tomato.isTomato()||Bubble.isBubble())) {
                     Log.w(TAG, "onServicesDiscovered: xdrip service " + xDripDataService + " not found"); //TODO the selection of nrf is not active at the beginning,so this error will be trown one time unneeded, mey to be optimized.
                     // TODO this should be reworked to be an efficient selector
                     listAvailableServices(mBluetoothGatt);
@@ -506,6 +509,22 @@ public class DexCollectionService extends Service implements BtCallBack {
                                     JoH.threadSleep(150);
                                 }
                                 Log.d(TAG, "tomato initialized and data requested");
+                            }
+                        });
+
+                        servicesDiscovered = DISCOVERED.NULL; // reset this state
+                    }else if (Bubble.isBubble()) {
+                        status("Enabled bubble");
+                        Log.d(TAG, "Queueing bubble initialization..");
+                        Inevitable.task("initialize-tomato", 4000, new Runnable() {
+                            @Override
+                            public void run() {
+                                final List<ByteBuffer> buffers = Bubble.initialize();
+                                for (ByteBuffer buffer : buffers) {
+                                    sendBtMessage(buffer);
+                                    JoH.threadSleep(150);
+                                }
+                                Log.d(TAG, "bubble initialized and data requested");
                             }
                         });
 
@@ -833,6 +852,8 @@ public class DexCollectionService extends Service implements BtCallBack {
             return "BlueReader";
         } else if (static_use_nrf && Tomato.isTomato()) {
             return xdrip.getAppContext().getString(R.string.tomato);
+        } else if (static_use_nrf && Bubble.isBubble()) {
+            return xdrip.getAppContext().getString(R.string.bubble);
         } else if (static_use_blukon) {
             return xdrip.getAppContext().getString(R.string.blukon);
         } else if (static_use_transmiter_pl_bluetooth) {
@@ -908,7 +929,9 @@ public class DexCollectionService extends Service implements BtCallBack {
         if (static_use_nrf && Tomato.isTomato()) {
             l.add(new StatusItem("Hardware", xdrip.getAppContext().getString(R.string.tomato)));
         }
-
+        if (static_use_nrf && Bubble.isBubble()) {
+            l.add(new StatusItem("Hardware", xdrip.getAppContext().getString(R.string.bubble)));
+        }
         // TODO add LimiTTer info
 
         if (last_transmitter_Data != null) {
@@ -1025,7 +1048,12 @@ public class DexCollectionService extends Service implements BtCallBack {
             l.add(new StatusItem("Tomato Firmware", PersistentStore.getString("TomatoFirmware")));
             l.add(new StatusItem("Libre SN", PersistentStore.getString("LibreSN")));
         }
-
+        if (Bubble.isBubble()) {
+            l.add(new StatusItem("Bubble Battery", PersistentStore.getString("Bubblebattery")));
+            l.add(new StatusItem("Bubble Hardware", PersistentStore.getString("BubbleHArdware")));
+            l.add(new StatusItem("Bubble Firmware", PersistentStore.getString("BubbleFirmware")));
+            l.add(new StatusItem("Libre SN", PersistentStore.getString("LibreSN")));
+        }
         if (static_use_blukon) {
             l.add(new StatusItem("Battery", Pref.getInt("bridge_battery", 0) + "%"));
             l.add(new StatusItem("Sensor age", JoH.qs(((double) Pref.getInt("nfc_sensor_age", 0)) / 1440, 1) + "d"));
@@ -1276,7 +1304,7 @@ public class DexCollectionService extends Service implements BtCallBack {
                 try {
                     if (mBluetoothAdapter.isEnabled() && mBluetoothAdapter.getRemoteDevice(deviceAddress) != null) {
                         if (useScanning()) {
-                            status("Scanning" + (Home.get_engineering_mode() ? ": " + deviceAddress : ""));
+                            status(gs(R.string.scanning) + (Home.get_engineering_mode() ? ": " + deviceAddress : ""));
                             scanMeister.setAddress(deviceAddress).addCallBack(this, TAG).scan();
                         } else {
                             status("Connecting" + (Home.get_engineering_mode() ? ": " + deviceAddress : ""));
@@ -1608,6 +1636,19 @@ public class DexCollectionService extends Service implements BtCallBack {
             final BridgeResponse reply = Tomato.decodeTomatoPacket(buffer, len);
             if (reply.shouldDelay()) {
                 Inevitable.task("send-tomato-reply", reply.getDelay(), () -> sendReply(reply));
+            } else {
+                sendReply(reply);
+            }
+            if (reply.hasError()) {
+                JoH.static_toast_long(reply.getError_message());
+                error(reply.getError_message());
+            }
+            gotValidPacket();
+
+        }else if (Bubble.isBubble()) {
+            final BridgeResponse reply = Bubble.decodeBubblePacket(buffer, len);
+            if (reply.shouldDelay()) {
+                Inevitable.task("send-bubble-reply", reply.getDelay(), () -> sendReply(reply));
             } else {
                 sendReply(reply);
             }

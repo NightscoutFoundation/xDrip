@@ -12,12 +12,16 @@ import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.cgm.nsfollow.utils.Anticipate;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.framework.BuggySamsung;
 import com.eveningoutpost.dexdrip.utils.framework.ForegroundService;
 import com.eveningoutpost.dexdrip.utils.framework.WakeLockTrampoline;
 import com.eveningoutpost.dexdrip.xdrip;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.eveningoutpost.dexdrip.Models.JoH.emptyString;
 import static com.eveningoutpost.dexdrip.Models.JoH.msSince;
@@ -45,10 +49,12 @@ public class ShareFollowService extends ForegroundService {
     private static BuggySamsung buggySamsung;
     private static volatile long wakeup_time = 0;
     private static volatile long last_wakeup = 0;
+    private static volatile long lastPoll = 0;
+    private static volatile BgReading lastBg;
+    private static volatile long bgReceiveDelay;
+    private static volatile long lastBgTime;
 
-    private BgReading lastBg;
     private static ShareFollowDownload downloader;
-
 
     @Override
     public void onCreate() {
@@ -75,6 +81,9 @@ public class ShareFollowService extends ForegroundService {
 
             // Check current
             lastBg = BgReading.lastNoSenssor();
+            if (lastBg != null) {
+                lastBgTime = lastBg.timestamp;
+            }
             if (lastBg == null || msSince(lastBg.timestamp) > SAMPLE_PERIOD) {
                 // Get the data
                 if (downloader == null) {
@@ -85,6 +94,7 @@ public class ShareFollowService extends ForegroundService {
 
                 if (JoH.ratelimit("last-sh-follow-poll", 5)) {
                     Inevitable.task("SH-Follow-Work", 200, () -> downloader.doEverything(MAX_RECORDS_TO_ASK_FOR));
+                    lastPoll = JoH.tsl();
                 }
             } else {
                 UserError.Log.d(TAG, "Already have recent reading: " + msSince(lastBg.timestamp));
@@ -152,6 +162,67 @@ public class ShareFollowService extends ForegroundService {
             return lastState;
         }
         return null;
+    }
+
+    /**
+     * MegaStatus for Nightscout Follower
+     */
+    public static List<StatusItem> megaStatus() {
+        final BgReading lastBg = BgReading.lastNoSenssor();
+
+        long hightlightGrace = Constants.SECOND_IN_MS * 30; // 30 seconds
+
+        // Status for BG receive delay (time from bg was recorded till received in xdrip)
+        String ageOfBgLastPoll = "n/a";
+        StatusItem.Highlight ageOfLastBgPollHighlight = StatusItem.Highlight.NORMAL;
+        if (bgReceiveDelay > 0) {
+            ageOfBgLastPoll = JoH.niceTimeScalar(bgReceiveDelay);
+            if (bgReceiveDelay > SAMPLE_PERIOD / 2) {
+                ageOfLastBgPollHighlight = StatusItem.Highlight.BAD;
+            }
+            if (bgReceiveDelay > SAMPLE_PERIOD * 2) {
+                ageOfLastBgPollHighlight = StatusItem.Highlight.CRITICAL;
+            }
+        }
+
+        // Status for time since latest BG
+        String ageLastBg = "n/a";
+        StatusItem.Highlight bgAgeHighlight = StatusItem.Highlight.NORMAL;
+        if (lastBg != null) {
+            long age = JoH.msSince(lastBg.timestamp);
+            ageLastBg = JoH.niceTimeScalar(age);
+            if (age > SAMPLE_PERIOD + hightlightGrace) {
+                bgAgeHighlight = StatusItem.Highlight.BAD;
+            }
+        }
+
+        List<StatusItem> megaStatus = new ArrayList<>();
+
+        megaStatus.add(new StatusItem("Latest BG", ageLastBg + (lastBg != null ? " ago" : ""), bgAgeHighlight));
+        megaStatus.add(new StatusItem("BG receive delay", ageOfBgLastPoll, ageOfLastBgPollHighlight));
+        megaStatus.add(new StatusItem());
+        megaStatus.add(new StatusItem("Last poll", lastPoll > 0 ? JoH.niceTimeScalar(JoH.msSince(lastPoll)) + " ago" : "n/a"));
+        megaStatus.add(new StatusItem("Last wakeup", last_wakeup > 0 ? JoH.niceTimeScalar(JoH.msSince(last_wakeup)) + " ago" : "n/a"));
+        megaStatus.add(new StatusItem("Next poll in", JoH.niceTimeScalar(wakeup_time - JoH.tsl())));
+        if (lastBg != null) {
+            megaStatus.add(new StatusItem("Last BG time", JoH.dateTimeText(lastBg.timestamp)));
+        }
+        megaStatus.add(new StatusItem("Next poll time", JoH.dateTimeText(wakeup_time)));
+        megaStatus.add(new StatusItem());
+        megaStatus.add(new StatusItem("Buggy Samsung", JoH.buggy_samsung ? "Yes" : "No"));
+
+        return megaStatus;
+    }
+
+    /**
+     * Update observedDelay if new bg reading is available
+     */
+    static void updateBgReceiveDelay() {
+        lastBg = BgReading.lastNoSenssor();
+        if (lastBg != null && lastBgTime != lastBg.timestamp) {
+            bgReceiveDelay = JoH.msSince(lastBg.timestamp);
+            lastBgTime = lastBg.timestamp;
+        }
     }
 
     public synchronized static void resetInstanceAndInvalidateSession() {

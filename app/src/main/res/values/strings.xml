@@ -871,6 +871,7 @@
     <string name="sidiary_date_title">Export starting from when?</string>
     <string name="blukon">Blucon</string>
     <string name="tomato">Tomato</string>
+    <string name="bubble">Bubble</string>
     <string name="use_gravity_sensor_to_rotate_items">Use Gravity Sensor to rotate items</string>
     <string name="low_bridge_battery">Low bridge battery</string>
     <string name="reminders">Reminders</string>
@@ -1420,7 +1421,8 @@
     <string name="classic_simple">Classic simple</string>
     <string name="libre">Libre</string>
     <string name="what_type_of_libre_bridge_device_do_you_use">What type of Libre bridge device do you use?</string>
-    <string name="bluetooth_bridge_device_blucon_limitter_bluereader_tomato_etc">Bluetooth Bridge device: Blucon, LimiTTer, Bluereader, Tomato etc</string>
+    <string name="bluetooth_bridge_device_blucon_limitter_bluereader_tomato_etc">Bluetooth Bridge device: Blucon, Bubble, LimiTTer, Bluereader, Tomato etc</string>
+    <string name="libre_patched">Libre2 Patched</string>
     <string name="librealarm_app_using_sony_smartwatch">LibreAlarm App: using Sony Smartwatch</string>
     <string name="__data_source_disabled">\n DATA SOURCE DISABLED</string>
     <string name="data_source_is_set_to_">Data Source is set to: </string>
@@ -1509,4 +1511,14 @@
     <string name="authentication_failed_wrong_password">Authentication Failed. Wrong password?</string>
     <string name="share_login_data_isnt_valid">Share Login data isn\'t valid - check username / password</string>
     <string name="connectivity_problem_reaching_share_servers">Connectivity problem reaching Share servers</string>
+    <string name="ob1_session_restarted_title">Sensor session restarted</string>
+    <string name="ob1_session_restarted_msg">The sensor session was preemptively restarted. Please check if the next readings are off and calibrate if needed</string>
+    <string name="ob1_session_restarted_note">Sensor session was restarted</string>
+    <string name="title_ob1_g5_preemptive_restart_extended_time_travel">Extended time-travel</string>
+    <string name="summary_ob1_g5_preemptive_restart_extended_time_travel">Restart the session to start at day 3 to avoid causing jumps</string>
+    <string name="title_ob1_g5_preemptive_restart_extended_time_travel_all_firmwares">Always allow extended time-travel</string>
+    <string name="summary_ob1_g5_preemptive_restart_extended_time_travel_all_firmwares">Allow extended time-travel with all firmware versions (engineering mode only) </string>
+    <string name="collection_summary_ob1_g5_preemptive_restart">Automatically restart a sensor before it stops</string>
+    <string name="title_ob1_g5_preemptive_restart_alert">Alert on preemptive restart</string>
+    <string name="summary_ob1_g5_preemptive_restart_alert">Raise an alert when preemptively restarting the session</string>
 </resources>

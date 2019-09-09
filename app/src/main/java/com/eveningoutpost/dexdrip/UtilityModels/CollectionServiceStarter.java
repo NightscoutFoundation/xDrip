@@ -116,6 +116,9 @@ public class CollectionServiceStarter {
     public static boolean isFollower(Context context) {
         return Pref.getString("dex_collection_method", "").equals("Follower");
     }
+    public static boolean isLibre2App(Context context) {
+        return Pref.getString("dex_collection_method", "").equals("LibreReceiver");
+    }
 
     public static boolean isWifiandBTWixel(Context context) {
         return Pref.getString("dex_collection_method", "BluetoothWixel").equals("WifiBlueToothWixel");
@@ -207,6 +210,9 @@ public class CollectionServiceStarter {
 
     private static boolean isFollower(String collection_method) {
         return collection_method.equals("Follower");
+    }
+    private static boolean isLibre2App(String collection_method) {
+        return collection_method.equals("LibreReceiver");
     }
 
     //  private static void newStart(final Context context) {
@@ -316,7 +322,7 @@ public class CollectionServiceStarter {
                 startBtWixelService();
             }
             Log.d("DexDrip", "Started wifi and bt wixel collector");
-        } else if (isFollower(collection_method)) {
+        } else if (isFollower(collection_method) || isLibre2App(collection_method)) {
             stopWifWixelThread();
             stopBtShareService();
             stopBtWixelService();

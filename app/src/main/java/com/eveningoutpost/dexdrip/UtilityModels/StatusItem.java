@@ -18,31 +18,25 @@ import static com.eveningoutpost.dexdrip.UtilityModels.StatusItem.Highlight.NOTI
  * <p>
  * For representing row items suitable for MegaStatus
  */
-
 public class StatusItem {
 
-    private static final HashMap<Highlight, Integer> colorHints = new HashMap<>();
-
-    static {
-        colorHints.put(NORMAL, Color.TRANSPARENT);
-        colorHints.put(GOOD, Color.parseColor("#003000"));
-        colorHints.put(BAD, Color.parseColor("#480000"));
-        colorHints.put(NOTICE, Color.parseColor("#403000"));
-        colorHints.put(CRITICAL, Color.parseColor("#770000"));
-    }
-
     public enum Highlight {
-        NORMAL,
-        GOOD,
-        BAD,
-        NOTICE,
-        CRITICAL;
+        NORMAL(Color.TRANSPARENT),
+        GOOD(Color.parseColor("#003000")),
+        BAD(Color.parseColor("#480000")),
+        NOTICE(Color.parseColor("#403000")),
+        CRITICAL(Color.parseColor("#770000"));
+
+        int colorHint;
+
+        Highlight(int colorHint) {
+            this.colorHint = colorHint;
+        }
 
         @ColorInt
         public int color() {
-            return colorHint(this);
+            return colorHint;
         }
-
     }
 
     public String name;
@@ -50,7 +44,6 @@ public class StatusItem {
     public Highlight highlight;
     public String button_name;
     public Runnable runnable;
-
 
     public StatusItem(String name, String value) {
         this(name, value, NORMAL);
@@ -89,10 +82,4 @@ public class StatusItem {
         this.value = Integer.toString(value);
         this.highlight = highlight;
     }
-
-    @ColorInt
-    public static int colorHint(final Highlight highlight) {
-        return MoreObjects.firstNonNull(colorHints.get(highlight), Color.TRANSPARENT);
-    }
-
 }

@@ -108,6 +108,7 @@ public class Notifications extends IntentService {
     public static final int lowPredictAlertNotificationId = 013;
     public static final int parakeetMissingId = 014;
     public static final int persistentHighAlertNotificationId = 015;
+    public static final int ob1SessionRestartNotificationId = 016;
     private static boolean low_notifying = false;
 
     private static final int CALIBRATION_REQUEST_MAX_FREQUENCY = (60 * 60 * 6); // don't bug for extra calibrations more than every 6 hours
@@ -874,6 +875,11 @@ public class Notifications extends IntentService {
         OtherAlert(context, "bg_missed_alerts", context.getString(R.string.bg_reading_missed) + "  (@" + JoH.hourMinuteString() + ")", missedAlertNotificationId, NotificationChannels.BG_MISSED_ALERT_CHANNEL, true, otherAlertReraiseSec);
     }
 
+    public static void ob1SessionRestartRequested() {
+        Context context = xdrip.getAppContext();
+        OtherAlert(context, "ob1_session_restart", context.getString(R.string.ob1_session_restarted_title), context.getString(R.string.ob1_session_restarted_msg), ob1SessionRestartNotificationId, NotificationChannels.CALIBRATION_CHANNEL, true, 0);
+    }
+
     public static void RisingAlert(Context context, boolean on) {
         RiseDropAlert(context, on, "bg_rise_alert", "bg rising fast" + "  (@" + JoH.hourMinuteString() + ")", riseAlertNotificationId);
     }
@@ -939,6 +945,10 @@ public class Notifications extends IntentService {
     }
 
     private static void OtherAlert(Context context, String type, String message, int notificatioId, String channelId, boolean addDeleteIntent, long reraiseSec) {
+        OtherAlert(context, type, message, message, notificatioId, channelId, addDeleteIntent, reraiseSec);
+    }
+
+    private static void OtherAlert(Context context, String type, String title, String message, int notificatioId, String channelId, boolean addDeleteIntent, long reraiseSec) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String otherAlertsSound = prefs.getString(type+"_sound",prefs.getString("other_alerts_sound", "content://settings/system/notification_sound"));
         Boolean otherAlertsOverrideSilent = prefs.getBoolean("other_alerts_override_silent", false);
@@ -967,9 +977,10 @@ public class Notifications extends IntentService {
                     new NotificationCompat.Builder(context, channelId)
                             .setVisibility(Pref.getBooleanDefaultFalse("public_notifications") ? Notification.VISIBILITY_PUBLIC : Notification.VISIBILITY_PRIVATE)
                             .setSmallIcon(R.drawable.ic_action_communication_invert_colors_on)
-                            .setContentTitle(message)
+                            .setContentTitle(title)
                             .setContentText(message)
                             .setLocalOnly(localOnly)
+                            .setStyle(new NotificationCompat.BigTextStyle().bigText(message))
                             .setContentIntent(PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT));
             if (addDeleteIntent) {
                 Intent deleteIntent = new Intent(context, SnoozeOnNotificationDismissService.class);
