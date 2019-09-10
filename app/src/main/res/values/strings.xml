@@ -431,7 +431,7 @@
     <string name="choose_sound_used_for_predicted_low_alarm">Choose sound used for predicted low alarm.</string>
     <string name="notify_when_parakeet_device_stops_checking_in">Notify when parakeet device stops checking in</string>
     <string name="parakeet_related_alerts">Parakeet related alerts</string>
-    <string name="raise_parakeet_notification_silently_when_charging">Raise parakeet notifiction silently when charging</string>
+    <string name="raise_parakeet_notification_silently_when_charging">Raise parakeet notification silently when charging</string>
     <string name="silent_alert_when_charging">Silent alert when charging</string>
     <string name="alerts_start_out_snoozed_and_must_persist_for_a_while">Alerts start out snoozed and must persist for a while to actually trigger</string>
     <string name="alarms_silenced_during_telephone_calls">Alarms silenced during telephone calls</string>

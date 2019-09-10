@@ -54,6 +54,8 @@ import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.watch.lefun.LeFunEntry;
 import com.eveningoutpost.dexdrip.watch.lefun.LeFunService;
+import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry;
+import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayService;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
@@ -111,6 +113,7 @@ public class MegaStatus extends ActivityWithMenu {
     private static final String XDRIP_PLUS_SYNC = "Followers";
     private static final String UPLOADERS = "Uploaders";
     private static final String LEFUN_STATUS = "Lefun";
+    private static final String BLUEJAY_STATUS = "BlueJay";
     private static final String INPEN_STATUS = "InPen";
     private static final String NIGHTSCOUT_FOLLOW = "Nightscout Follow";
     private static final String SHARE_FOLLOW = "Dex Share Follow";
@@ -143,6 +146,9 @@ public class MegaStatus extends ActivityWithMenu {
                 }
             } else if (dexCollectionType.equals(Medtrum)) {
                 addAsection(MEDTRUM_STATUS, "Medtrum A6 Status");
+            }
+            if (BlueJayEntry.isEnabled()) {
+                addAsection(BLUEJAY_STATUS, "BlueJay Watch Status");
             }
             if (DexCollectionType.hasWifi()) {
                 addAsection(IP_COLLECTOR, dexCollectionType == DexCollectionType.Mock ? "FAKE / MOCK DATA SOURCE" : "Wifi Wixel / Parakeet Status");
@@ -212,6 +218,9 @@ public class MegaStatus extends ActivityWithMenu {
                 break;
             case LEFUN_STATUS:
                 la.addRows(LeFunService.megaStatus());
+                break;
+            case BLUEJAY_STATUS:
+                la.addRows(BlueJayService.megaStatus());
                 break;
             case INPEN_STATUS:
                 la.addRows(InPenService.megaStatus());

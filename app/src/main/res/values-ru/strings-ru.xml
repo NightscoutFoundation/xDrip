@@ -360,7 +360,7 @@
     <string name="choose_sound_used_for_predicted_low_alarm">Выберите звук, используемый для оповещения о предсказании низкого значения</string>
     <string name="notify_when_parakeet_device_stops_checking_in">Оповещать, когда попугайчик устройство прекращает проверки в</string>
     <string name="parakeet_related_alerts">предупреждения, связанные с попугаем</string>
-    <string name="raise_parakeet_notification_silently_when_charging">Поднимите Parakeet notifiction молча во время зарядки</string>
+    <string name="raise_parakeet_notification_silently_when_charging">Поднимите Parakeet notification молча во время зарядки</string>
     <string name="silent_alert_when_charging">Вибросигнализацию во время зарядки</string>
     <string name="alerts_start_out_snoozed_and_must_persist_for_a_while">Сигналы начинают Отложено и должны сохраняться некоторое время, чтобы на самом деле триггер</string>
     <string name="alarms_silenced_during_telephone_calls">Выключать сигналы уведомлений во время телефонных звонков</string>
