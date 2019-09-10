@@ -398,6 +398,17 @@ public class AlertType extends Model {
         }
     }
 
+    // get the first item in the alert list which is active for either high or low alert, sorted by when the threshold will be hit, eg the highest low alert or the lowest high alert
+    public static double getFirstActiveAlertThreshold(final boolean highAlert) {
+        final List<AlertType> list = getAll(highAlert);
+        if (list != null) {
+            for (final AlertType alert : list) {
+                if (alert.active) return alert.threshold;
+            }
+        }
+        return -1;
+    }
+
     public static List<AlertType> getAllActive() {
         List<AlertType> alerts  = new Select()
                 .from(AlertType.class)
