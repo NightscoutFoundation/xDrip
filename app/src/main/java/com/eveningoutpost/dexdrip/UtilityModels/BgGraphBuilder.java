@@ -208,7 +208,9 @@ public class BgGraphBuilder {
             loaded_start=start;
             loaded_end=end;
             bgReadings = BgReading.latestForGraph(numValues, start, end);
-            Libre2RawValues = Libre2RawValue.latestForGraph(numValues * 5, start, end);
+            if (DexCollectionType.getDexCollectionType() == DexCollectionType.LibreReceiver) {
+                Libre2RawValues = Libre2RawValue.latestForGraph(numValues * 5, start, end);
+            }
             plugin_adjusted = false;
         } finally {
             readings_lock.unlock();
