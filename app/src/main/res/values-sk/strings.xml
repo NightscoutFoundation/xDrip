@@ -172,7 +172,7 @@
     <string name="copying_settings">Kopíruji hodnoty</string>
     <string name="show_settings_qr_codes">Zobrazit nastavení QR kódů</string>
     <string name="load_save_settings_to_sdcard">Načíst / uložit všechna nastavení na SD kartu</string>
-    <string name="alarms_and_alerts">Výstrahy a upozornění</string>
+    <string name="alarms_and_alerts">Poplachy a upozornenia</string>
     <string name="alerts_and_notifications">Výstrahy a oznámení</string>
     <string name="glucose_level_alerts_list">Seznam výstrah glykémií</string>
     <string name="glucose_alerts_settings">Nastavení výstrah glykémie</string>
@@ -468,7 +468,7 @@
     <string name="sync_using_custom_security_key">Synchronizovat za pomocí vlastního klíče</string>
     <string name="handset_group_security_key">Synchronizační klíč Handset Group Security</string>
     <string name="handset_sync_grouping_key">Synchronizační klíč Handset Group Security</string>
-    <string name="alert_name_colon">Meno poplachu:</string>
+    <string name="alert_name_colon">Názov poplachu:</string>
     <string name="threshold_colon">Limit:</string>
     <string name="default_snooze_colon">Výchozí potvrzení:</string>
     <string name="re_raise_every_x_minutes_if_unaknowledged">Znovy spustit každých\n x minut pokud\n není potvrzena:</string>
@@ -728,5 +728,8 @@
     <string name="all_alerts_currently_disabled">VŠETKY POPLACHY SÚ VYPNUTÉ</string>
     <string name="advanced_bluereader_settings">Nastavenia blueReader</string>
     <string name="advanced_bluereader_settings_summary">Rozšírené nastavenia blueReader</string>
+    <string name="adjust_note_text_here_there_is_no_undo">Uprav text poznámky. Zmena bude nezvratná.</string>
+    <string name="advanced_mode">Rozšírený mód</string>
+    <string name="alert_calibration_request">Výstraha na požadovanú kalibráciu</string>
     <!-- trend arrow for speak -->
 </resources>
