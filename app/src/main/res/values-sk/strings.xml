@@ -173,7 +173,7 @@
     <string name="show_settings_qr_codes">Zobrazit nastavení QR kódů</string>
     <string name="load_save_settings_to_sdcard">Načíst / uložit všechna nastavení na SD kartu</string>
     <string name="alarms_and_alerts">Poplachy a upozornenia</string>
-    <string name="alerts_and_notifications">Výstrahy a oznámení</string>
+    <string name="alerts_and_notifications">Poplachy a upozornenia</string>
     <string name="glucose_level_alerts_list">Seznam výstrah glykémií</string>
     <string name="glucose_alerts_settings">Nastavení výstrah glykémie</string>
     <string name="smart_snoozing">Inteligentní potvrzování</string>
@@ -294,7 +294,7 @@
     <string name="no_active_alert_exists">Žádná aktivní výstraha</string>
     <string name="active_alert_exists_named">Existuje aktivní výstraha pojmenovaná</string>
     <string name="bracket_not_snoozed">(nepotrvzený)</string>
-    <string name="all_alerts_disabled_until">"Všechny výstrahy zakázané do "</string>
+    <string name="all_alerts_disabled_until">Všetky poplachy zakázané do</string>
     <string name="low_alerts_disabled_until">"Výstraha nízké glykémie zakázána do "</string>
     <string name="high_alerts_disabled_until">"Výstrahy vysoké glykémie zakázány do "</string>
     <string name="default_snooze">Výchozí potvrzení</string>
@@ -382,7 +382,7 @@
     <string name="parakeet_related_alerts">Výstrahy Parakeetu</string>
     <string name="raise_parakeet_notification_silently_when_charging">Spustit oznámení Parakeetu potichu během nabíjení</string>
     <string name="silent_alert_when_charging">Tiché výstrahy při nabíjení</string>
-    <string name="alerts_start_out_snoozed_and_must_persist_for_a_while">Výstrahy se spustí potvrzené a musí existovat nějakou dobu pro spuštění</string>
+    <string name="alerts_start_out_snoozed_and_must_persist_for_a_while">Okolnosti poplachu musia určitý čas pretrvávať pre jeho aktiváciu</string>
     <string name="alarms_silenced_during_telephone_calls">Umlč poplach počas telefonického hovoru</string>
     <string name="suppress_alerts_if_missed_readings">Potlačit všechny výstrahy nezachycené glykémii</string>
     <string name="bad_noisy_value_alerts">Výstrahy špatných (zarušených) hodnot</string>
@@ -475,7 +475,7 @@
     <string name="alert_tone_colon">Tón poplachu:</string>
     <string name="choose_file">Vybrat soubor</string>
     <string name="select_time_for_alert_colon">Vyber čas pro výstrahu:</string>
-    <string name="all_day">celý den</string>
+    <string name="all_day">celý deň</string>
     <string name="tap_to_change">(klik pro změnu)</string>
     <string name="override_phone_silent_mode_colon">Přebít tichý mód telefonu</string>
     <string name="vibrate_on_alert">Vibrovat při výstraze</string>
@@ -583,9 +583,9 @@
     <string name="show_datatables_in_app_drawer">Ukazovat v menu Kalibrace a Databáze glykémií</string>
     <string name="disable_log_transmitter_battery_warning">Zakázat varování nízkého stavu baterie vysílače na domovské obrazovce (pouze pro DIY vysílače)</string>
     <string name="engineering_mode">Inženýský mód</string>
-    <string name="allow_unsafe_settings">Povolit změny u potenciálně nebezpečných nastavení, které mohou vše rozbít</string>
+    <string name="allow_unsafe_settings">Povoliť zmeny riskantných nastavení, ktoré môžu aplikáciu znefunkčniť!</string>
     <string name="daily_save_db">Ukládat databázi denně</string>
-    <string name="allow_daily_db_save">Povolit uložení databáze před čištěním denní službe</string>
+    <string name="allow_daily_db_save">Povoliť službe Daily Intent Service uložiť dáta pred prečistením DB</string>
     <string name="options_for_extra_line">Volby pro extra řádek</string>
     <string name="todays_average_value">Dnešní průměrná hodnota</string>
     <string name="ac1_estimation_dcct">Odhad hodnoty HbA1c vo formáte DCCT [%]</string>
@@ -731,5 +731,6 @@
     <string name="adjust_note_text_here_there_is_no_undo">Uprav text poznámky. Zmena bude nezvratná.</string>
     <string name="advanced_mode">Rozšírený mód</string>
     <string name="alert_calibration_request">Výstraha na požadovanú kalibráciu</string>
+    <string name="are_you_sure">Si si istý?</string>
     <!-- trend arrow for speak -->
 </resources>
