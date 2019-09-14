@@ -123,7 +123,7 @@
     <string name="till">do</string>
     <string name="low_predicted">Nízká předpovídal</string>
     <string name="in">v</string>
-    <string name="yes_enter_setup_mode">Ano, spustit mód nastavování</string>
+    <string name="yes_enter_setup_mode">Áno, spustiť mód nastavovania</string>
     <string name="nokeep_parakeet_as_it_is">Ponechat Parakeet jak je</string>
     <string name="are_you_sure_you_want_switch_parakeet_to_setup">Opravdu přepnout Parakeet do režimu nastavování?\nZa normálních okolností se toto používá pouze při zaslání dalších zpráv jako změna výsílače atd.</string>
     <string name="split_delete_or_do_nothing">Rozdělit, smazat nebo nedělat nic</string>
@@ -710,7 +710,7 @@
     <string name="yes_enable">ÁNO, povoliť</string>
     <string name="yes_do_it">ÁNO, vykonať</string>
     <string name="yes_delete">ÁNO, zmazať</string>
-    <string name="yes_cancel">ÁNO zrušiť</string>
+    <string name="yes_cancel">ÁNO, zrušiť</string>
     <string name="yes_calibrate">ÁNO, kalibrovať</string>
     <string name="yes">Áno</string>
     <string name="xdrip_reminders">xDrip Upozornenia</string>
@@ -732,5 +732,6 @@
     <string name="advanced_mode">Rozšírený mód</string>
     <string name="alert_calibration_request">Výstraha na požadovanú kalibráciu</string>
     <string name="are_you_sure">Si si istý?</string>
+    <string name="xdrip_will_not_work_below_android_version_42">xDrip+ vyžaduje verziu Android 4.2 a vyššiu</string>
     <!-- trend arrow for speak -->
 </resources>
