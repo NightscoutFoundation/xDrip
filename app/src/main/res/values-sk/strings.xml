@@ -131,7 +131,7 @@
     <string name="delete_this_time_block">Smazat tento časový blok</string>
     <string name="cancel_do_nothing">Storno - nedělat nic</string>
     <string name="added">Pridané</string>
-    <string name="checking_for_update">Zjištuji novou verzi ...</string>
+    <string name="checking_for_update">Hľadám aktualizáciu…</string>
     <string name="signal_missed">Signál nezachycený</string>
     <string name="minutes_ago">{0, choice,0#{0, number, integer} Minut zpět|1#{0, number, integer} Minuta zpět|1&lt;{0, number, integer} Minut zpět}</string>
     <string name="space_minutes_ago">" Minut zpět"</string>
@@ -445,7 +445,7 @@
     <string name="blood_test_foreground">Krevní test popředí</string>
     <string name="treatment_background">Pozadí pro ošetření</string>
     <string name="treatment_foreground">Popředí ošetření</string>
-    <string name="backgrounds">Pozadí</string>
+    <string name="backgrounds">Pozadia</string>
     <string name="main_chart_background">Pozadí hlavního grafu</string>
     <string name="notification_chart_background">Pozadí oznamovacího grafu</string>
     <string name="widget_chart_background">Pozadie grafu miniaplikácie</string>
@@ -725,5 +725,8 @@
     <string name="alerts">Poplachy</string>
     <string name="alert_until_dismissed">poplach až do zrušenia</string>
     <string name="alert_sound">Zvuk poplachu</string>
+    <string name="all_alerts_currently_disabled">VŠETKY POPLACHY SÚ VYPNUTÉ</string>
+    <string name="advanced_bluereader_settings">Nastavenia blueReader</string>
+    <string name="advanced_bluereader_settings_summary">Rozšírené nastavenia blueReader</string>
     <!-- trend arrow for speak -->
 </resources>
