@@ -16,6 +16,7 @@ import java.util.ArrayList;
 public class InsulinManager {
     private static final String TAG = "InsulinManager";
     private static ArrayList<Insulin> profiles;
+    private static  Insulin primaryProfile;
 
     class insulinDataWrapper {
         public ArrayList<insulinData> profiles;
@@ -115,6 +116,15 @@ public class InsulinManager {
         return profiles;
     }
 
+    public static Insulin getPrimaryProfile()
+    {
+        return primaryProfile;
+    }
+    public static void setPrimaryProfile(Insulin p)
+    {
+        primaryProfile = p;
+    }
+
     public static ArrayList<Insulin> getAllProfiles() {
         return profiles;
     }
@@ -184,6 +194,9 @@ public class InsulinManager {
             if (ins != null)
                 disableProfile(ins);
         }
+        String primProf = Pref.getString("saved_primary_insulinprofiles", "");
+        Log.d(TAG, "Loaded primary Insulin Profiles from Prefs: " + primProf);
+        primaryProfile = getProfile(primProf);
     }
 
     public static void saveDisabledProfilesToPrefs()
@@ -195,5 +208,9 @@ public class InsulinManager {
         String json = new GsonBuilder().create().toJson(disabled);
         Pref.setString("saved_disabled_insulinprofiles_json", json);
         Log.d(TAG, "saved disabled Insulin Profiles to Prefs: " + json);
+        if (primaryProfile != null) {
+            Pref.setString("saved_primary_insulinprofiles", primaryProfile.getName());
+            Log.d(TAG, "saved primary Insulin Profiles to Prefs: " + primaryProfile.getName());
+        }
     }
 }

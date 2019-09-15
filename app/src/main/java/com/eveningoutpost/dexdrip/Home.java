@@ -140,6 +140,8 @@ import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.Target;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.internal.bind.DateTypeAdapter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -854,8 +856,6 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 // sanity check timestamp
                 final Treatments exists = Treatments.byTimestamp(time);
                 if (exists == null) {
-// gruoner: called Treatments from array of insulin-numbers instead of thisinsulinsumnumber
-// todo gruoner: manage pendiq in case of more than one type of insulin
                     ArrayList<InsulinInjection> injections = new ArrayList<InsulinInjection>();
                     for (int i = 0; i < maxInsulinProfiles; i++)
                         if (insulinset[i]) {
@@ -864,15 +864,22 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                         }
                     Log.d(TAG, "processAndApproveTreatment create watchkeypad Treatment carbs=" + thiscarbsnumber + " insulin=" + thisinsulinsumnumber + " timestamp=" + JoH.dateTimeText(time) + " uuid=" + thisuuid);
                     Treatments.create(thiscarbsnumber, thisinsulinsumnumber, injections, time, thisuuid);
-                    Pendiq.handleTreatment(thisinsulinsumnumber);
+// gruoner: changed pendiq handling 09/12/19
+// in case of multiple injections in a treatment, select the injection with the primary insulin profile defined in the profile editor; if not found, take 0
+// in case of a single injection in a treatment, assume thats the #units to send to pendiq
+                    double pendiqInsulin = 0;
+                    if (injections.size() > 1) {
+                        for (InsulinInjection i : injections)
+                            if (i.getProfile() == InsulinManager.getPrimaryProfile())
+                                pendiqInsulin = i.getUnits();
+                    } else pendiqInsulin = thisinsulinsumnumber;
+                    Pendiq.handleTreatment(pendiqInsulin);
                 } else {
                     Log.d(TAG, "processAndApproveTreatment Treatment already exists carbs=" + thiscarbsnumber + " insulin=" + thisinsulinsumnumber + " timestamp=" + JoH.dateTimeText(time));
                 }
             }
         } else {
             WatchUpdaterService.sendWearToast(gs(R.string.treatment_processed), Toast.LENGTH_LONG);
-// gruoner: called Treatments from array of insulin-numbers instead of thisinsulinsumnumber
-// todo gruoner: manage pendiq in case of more than one type of insulin
             ArrayList<InsulinInjection> injections = new ArrayList<InsulinInjection>();
             for (int i = 0; i < maxInsulinProfiles; i++)
                 if (insulinset[i]) {
@@ -880,7 +887,16 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                     injections.add(injection);
                 }
             Treatments.create(thiscarbsnumber, thisinsulinsumnumber, injections, Treatments.getTimeStampWithOffset(mytimeoffset));
-            Pendiq.handleTreatment(thisinsulinsumnumber);
+// gruoner: changed pendiq handling 09/12/19
+// in case of multiple injections in a treatment, select the injection with the primary insulin profile defined in the profile editor; if not found, take 0
+// in case of a single injection in a treatment, assume thats the #units to send to pendiq
+            double pendiqInsulin = 0;
+            if (injections.size() > 1) {
+                for (InsulinInjection i : injections)
+                    if (i.getProfile() == InsulinManager.getPrimaryProfile())
+                        pendiqInsulin = i.getUnits();
+            } else pendiqInsulin = thisinsulinsumnumber;
+            Pendiq.handleTreatment(pendiqInsulin);
         }
         hideAllTreatmentButtons();
 
@@ -1578,11 +1594,22 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             if (chart != null) {
                 chart.setAlpha((float) 0.10);
             }
+            ArrayList<InsulinInjection> injections = new ArrayList<InsulinInjection>();
+            for (int i = 0; i < maxInsulinProfiles; i++)
+                if (insulinset[i]) {
+                    InsulinInjection injection = new InsulinInjection(thisinsulinprofile[i], thisinsulinnumber[i]);
+                    injections.add(injection);
+                }
+            Gson gson = new GsonBuilder()
+                    .excludeFieldsWithoutExposeAnnotation()
+                    .registerTypeAdapter(Date.class, new DateTypeAdapter())
+                    .serializeSpecialFloatingPointValues()
+                    .create();
             WatchUpdaterService.sendTreatment(
                     thiscarbsnumber,
-// todo gruoner: change interfaces to sendTreatment to array of insulin-numbers instead of thisinsulinsumnumber
                     thisinsulinsumnumber,
                     thisglucosenumber,
+                    gson.toJson(injections),
                     thistimeoffset,
                     textTime.getText().toString());
         }

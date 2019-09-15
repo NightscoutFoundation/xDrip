@@ -15,6 +15,7 @@ import com.eveningoutpost.dexdrip.Services.JamBaseBluetoothService;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.RxBleProvider;
+import com.eveningoutpost.dexdrip.insulin.InsulinManager;
 import com.eveningoutpost.dexdrip.insulin.pendiq.messages.InjectionStatusTx;
 import com.eveningoutpost.dexdrip.insulin.pendiq.messages.InsulinLogRx;
 import com.eveningoutpost.dexdrip.insulin.pendiq.messages.InsulinLogTx;
@@ -713,8 +714,9 @@ public class PendiqService extends JamBaseBluetoothService {
 
                         getInsulinLog(); // ask for next record
 
-// todo gruoner: create a list of insulininjections from record
-                        final Treatments treatment = Treatments.create(0, record.insulin, new ArrayList<InsulinInjection>(), record.timestamp, suggested_uuid);
+                        ArrayList<InsulinInjection> inj = new ArrayList<>();
+                        inj.add(new InsulinInjection(InsulinManager.getPrimaryProfile(), record.insulin));
+                        final Treatments treatment = Treatments.create(0, record.insulin, inj, record.timestamp, suggested_uuid);
                         if (treatment != null) {
                             treatment.enteredBy += " " + PENDIQ_TAG;
                             treatment.save();

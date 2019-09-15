@@ -689,9 +689,7 @@ public class Treatments extends Model {
 
         // number param currently ignored
 
-        // get all treatments from 36 hours earlier than our current time
-        final double dontLookThisFar = 36 * 60 * msPerMin; // 36 hours max look
-        List<Treatments> theTreatments = latestForGraph(2000, startTime - dontLookThisFar);
+        List<Treatments> theTreatments = latestForGraph(2000, startTime - 36 * 60 * msPerMin);  // 36 hours max look
         if (theTreatments.size() == 0) return null;
 
 
@@ -720,8 +718,9 @@ public class Treatments extends Model {
             // early optimisation exclusion
 
             mytime = ((long) (thisTreatment.timestamp / stepms)) * stepms; // effects of treatment occur only after it is given / fit to slot time
-            tendtime = mytime + dontLookThisFar;
-
+            tendtime = mytime + 36 * 60 * msPerMin;     // 36 hours max look
+            if (tendtime > startTime + 6*60*msPerMin)
+                tendtime = startTime + 6*60*msPerMin;   // dont look more than 6h in future
             if (thisTreatment.insulinSummary > 0) {
                 // lay down insulin on board
                 do {
@@ -745,7 +744,7 @@ public class Treatments extends Model {
             if (thisTreatment.carbs > 0) {
 
                 mytime = ((long) (thisTreatment.timestamp / stepms)) * stepms; // effects of treatment occur only after it is given / fit to slot time
-                tendtime = mytime + dontLookThisFar;
+                tendtime = mytime + 6 * 60 * msPerMin;     // 6 hours max look
 
                 double cob_time = mytime + carb_delay_ms_stepped;
                 double stomachDiff = ((Profile.getCarbAbsorptionRate(cob_time) * stepms) / (60 * msPerMin)); // initial value

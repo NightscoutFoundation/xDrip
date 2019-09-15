@@ -33,6 +33,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSparklineBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.insulin.Insulin;
+import com.eveningoutpost.dexdrip.insulin.InsulinManager;
 import com.eveningoutpost.dexdrip.utils.PowerStateReceiver;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.huami.watch.transport.DataBundle;
@@ -146,8 +147,9 @@ public class Amazfitservice extends Service {
 
                 if (item.getAction().equals("Amazfit_Treatmentsdata")) {
                     DataBundle databundle = item.getData();
-// todo gruoner: create a list of insulininjections from databundle
-                    Treatments.create(databundle.getDouble("carbs"), databundle.getDouble("insulin"), new ArrayList<InsulinInjection>(), databundle.getLong("timestamp"));
+                    ArrayList<InsulinInjection> inj = new ArrayList<>();
+                    inj.add(new InsulinInjection(InsulinManager.getPrimaryProfile(), databundle.getDouble("insulin")));
+                    Treatments.create(databundle.getDouble("carbs"), databundle.getDouble("insulin"), inj, databundle.getLong("timestamp"));
 
                 }
             }
