@@ -222,18 +222,22 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
     }
 
     public void getBackFill(int records) {
-        val outbound = new BackFillTx(records);
-        val item = new QueueMe().setBytes(outbound.getBytes())
-                .setDescription("Get BackFill")
-                .expireInSeconds(30);
+        if (BlueJay.haveAuthKey(I.address)) {
+            val outbound = new BackFillTx(records);
+            val item = new QueueMe().setBytes(outbound.getBytes())
+                    .setDescription("Get BackFill")
+                    .expireInSeconds(30);
 
-        item.setProcessor(new AuthReplyProcessor(new ReplyProcessor(I.connection) {
-            @Override
-            public void process(byte[] bytes) {
-                UserError.Log.d(TAG, "BackFill request response: " + JoH.bytesToHex(bytes));
-            }
-        }).setTag(item))
-                .queue();
+            item.setProcessor(new AuthReplyProcessor(new ReplyProcessor(I.connection) {
+                @Override
+                public void process(byte[] bytes) {
+                    UserError.Log.d(TAG, "BackFill request response: " + JoH.bytesToHex(bytes));
+                }
+            }).setTag(item))
+                    .queue();
+        } else {
+            UserError.Log.d(TAG, "Cannot back fill as we don't have auth key");
+        }
     }
 
     private static final long MAX_BACKFILL_PERIOD_MS = HOUR_IN_MS * 3; // how far back to request backfill data
@@ -320,7 +324,9 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
                         UserError.Log.d(TAG, BlueJayInfo.getInfo(I.address).toS());
                         addToLog("Status information received");
                         // TODO check validity of status2 msg??
-                        processInboundGlucose();
+                        if (BlueJay.isCollector()) {
+                            processInboundGlucose();
+                        }
                     }
                 })
                 .queueUnique();
@@ -773,6 +779,7 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
 
                 });
     }
+
 
     public void doQueue() {
         ((ThinJamState) mState).getPacketQueueSequence();
