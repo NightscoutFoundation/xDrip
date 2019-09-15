@@ -85,6 +85,11 @@ public class BlueJay {
         return Pref.getString(PREF_BLUEJAY_AUTH + JoH.macFormat(mac).toUpperCase(), null);
     }
 
+    public static boolean haveAuthKey(final String mac) {
+        final String key = getAuthKey(mac);
+        return key != null && key.length() > 10;
+    }
+
     public static void storeIdentityKey(String mac, final String key) {
         mac = JoH.macFormat(mac);
         UserError.Log.d(TAG, "STORE IDENTITY: " + mac + " " + key);
