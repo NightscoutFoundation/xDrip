@@ -137,7 +137,7 @@ public class BgGraphBuilder {
     private final int loaded_numValues;
     private final long loaded_start, loaded_end;
     private final List<BgReading> bgReadings;
-    private List<Libre2RawValue> Libre2RawValues;
+    private final List<Libre2RawValue> Libre2RawValues = new ArrayList<>();
     private final List<Calibration> calibrations;
     private final List<BloodTest> bloodtests;
     private final List<PointValue> inRangeValues = new ArrayList<>();
