@@ -1306,12 +1306,16 @@ public class BgGraphBuilder {
 
             }
 
-            if (DexCollectionType.getDexCollectionType() == DexCollectionType.LibreReceiver && prefs.getBoolean("Libre2_showRawGraph",false)) {
-                for (final Libre2RawValue bgLibre : Libre2RawValues) {
-                    if (bgLibre.glucose > 0) {
-                        rawInterpretedValues.add(new PointValue((float) (bgLibre.timestamp / FUZZER), (float) unitized(bgLibre.glucose)));
+            try {
+                if (DexCollectionType.getDexCollectionType() == DexCollectionType.LibreReceiver && prefs.getBoolean("Libre2_showRawGraph",false)) {
+                    for (final Libre2RawValue bgLibre : Libre2RawValues) {
+                        if (bgLibre.glucose > 0) {
+                            rawInterpretedValues.add(new PointValue((float) (bgLibre.timestamp / FUZZER), (float) unitized(bgLibre.glucose)));
+                        }
                     }
                 }
+            } catch (Exception e) {
+                Log.wtf(TAG, "Exception to generate Raw-Graph Libre2");
             }
             if (avg1counter > 0) {
                 avg1value = avg1value / avg1counter;
