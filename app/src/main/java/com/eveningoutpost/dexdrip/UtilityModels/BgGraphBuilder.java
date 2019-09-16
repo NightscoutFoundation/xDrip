@@ -137,7 +137,7 @@ public class BgGraphBuilder {
     private final int loaded_numValues;
     private final long loaded_start, loaded_end;
     private final List<BgReading> bgReadings;
-    private final List<Libre2RawValue> Libre2RawValues = new ArrayList<>();
+    private final List<Libre2RawValue> Libre2RawValues;
     private final List<Calibration> calibrations;
     private final List<BloodTest> bloodtests;
     private final List<PointValue> inRangeValues = new ArrayList<>();
@@ -208,9 +208,8 @@ public class BgGraphBuilder {
             loaded_start=start;
             loaded_end=end;
             bgReadings = BgReading.latestForGraph(numValues, start, end);
-            if (DexCollectionType.getDexCollectionType() == DexCollectionType.LibreReceiver) {
                 Libre2RawValues = Libre2RawValue.latestForGraph(numValues * 5, start, end);
-            }
+
             plugin_adjusted = false;
         } finally {
             readings_lock.unlock();
