@@ -52,7 +52,8 @@ public class Treatments extends Model {
     private static final String TAG = "jamorham " + Treatments.class.getSimpleName();
     private static final String DEFAULT_EVENT_TYPE = "<none>";
     public final static String XDRIP_TAG = "xdrip";
-    private final static int msPerMin = 1000 * 60;     // now many microseconds in a minute?
+    private final static int msPerMin = 1000 * 60;     // now many milliseconds in a minute?
+    private final static int msPerh = msPerMin * 60;     // now many milliseconds in a minute?
 
     //public static double activityMultipler = 8.4; // somewhere between 8.2 and 8.8
     private static Treatments lastCarbs;
@@ -689,7 +690,7 @@ public class Treatments extends Model {
 
         // number param currently ignored
 
-        List<Treatments> theTreatments = latestForGraph(2000, startTime - 36 * 60 * msPerMin);  // 36 hours max look
+        List<Treatments> theTreatments = latestForGraph(2000, startTime);  // don't look back (we are always 24h behind)
         if (theTreatments.size() == 0) return null;
 
 
@@ -718,9 +719,9 @@ public class Treatments extends Model {
             // early optimisation exclusion
 
             mytime = ((long) (thisTreatment.timestamp / stepms)) * stepms; // effects of treatment occur only after it is given / fit to slot time
-            tendtime = mytime + 36 * 60 * msPerMin;     // 36 hours max look
-            if (tendtime > startTime + 6*60*msPerMin)
-                tendtime = startTime + 6*60*msPerMin;   // dont look more than 6h in future
+            tendtime = mytime + 36 * msPerh;     // 36 hours max look (24h history plus 12h forecast)
+            if (tendtime > startTime + 30*msPerh)
+                tendtime = startTime + 30*msPerh;   // dont look more than 6h in future
             if (thisTreatment.insulinSummary > 0) {
                 // lay down insulin on board
                 do {
@@ -744,10 +745,10 @@ public class Treatments extends Model {
             if (thisTreatment.carbs > 0) {
 
                 mytime = ((long) (thisTreatment.timestamp / stepms)) * stepms; // effects of treatment occur only after it is given / fit to slot time
-                tendtime = mytime + 6 * 60 * msPerMin;     // 6 hours max look
+                tendtime = mytime + 6 * msPerh;     // 6 hours max look
 
                 double cob_time = mytime + carb_delay_ms_stepped;
-                double stomachDiff = ((Profile.getCarbAbsorptionRate(cob_time) * stepms) / (60 * msPerMin)); // initial value
+                double stomachDiff = ((Profile.getCarbAbsorptionRate(cob_time) * stepms) / msPerh); // initial value
                 double newdelayedCarbs = 0;
                 double cob_remain = thisTreatment.carbs;
                 while ((cob_remain > 0) && (stomachDiff > 0) && (cob_time < tendtime)) {
@@ -757,7 +758,7 @@ public class Treatments extends Model {
                     }
                     cob_time += stepms;
 
-                    stomachDiff = ((Profile.getCarbAbsorptionRate(cob_time) * stepms) / (60 * msPerMin));
+                    stomachDiff = ((Profile.getCarbAbsorptionRate(cob_time) * stepms) / msPerh);
                     cob_remain -= stomachDiff;
 
                     newdelayedCarbs = (timesliceIactivityAtTime(timeslices, cob_time) * Profile.getLiverSensRatio(cob_time) / Profile.getSensitivity(cob_time)) * Profile.getCarbRatio(cob_time);
