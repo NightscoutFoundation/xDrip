@@ -39,6 +39,7 @@ import com.eveningoutpost.dexdrip.watch.thinjam.messages.BaseTx;
 import com.eveningoutpost.dexdrip.watch.thinjam.messages.BulkUpRequestTx;
 import com.eveningoutpost.dexdrip.watch.thinjam.messages.BulkUpTx;
 import com.eveningoutpost.dexdrip.watch.thinjam.messages.DefineWindowTx;
+import com.eveningoutpost.dexdrip.watch.thinjam.messages.GlucoseTx;
 import com.eveningoutpost.dexdrip.watch.thinjam.messages.PushRx;
 import com.eveningoutpost.dexdrip.watch.thinjam.messages.SetTimeTx;
 import com.eveningoutpost.dexdrip.watch.thinjam.messages.SetTxIdTx;
@@ -332,29 +333,81 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
                 .queueUnique();
     }
 
+    // only called for status 2 readings
     public void processInboundGlucose() {
         final BlueJayInfo info = BlueJayInfo.getInfo(I.address);
         final long inboundTimestamp = info.getTimestamp();
         // TODO allow only tighter windows for sync
         if (inboundTimestamp > 1561900000000L && inboundTimestamp < (tsl() + (Constants.MINUTE_IN_MS * 5))) {
             final BgReading bgReading = BgReading.last();
-            Ob1G5CollectionService.lastSensorState = CalibrationState.parse(info.state);
-            if (bgReading == null || msSince(bgReading.timestamp) > Constants.MINUTE_IN_MS * 4) {
 
+            if (bgReading == null || msSince(bgReading.timestamp) > Constants.MINUTE_IN_MS * 4) {
+                Ob1G5CollectionService.lastSensorState = CalibrationState.parse(info.state); // only update if newer?
                 if (D && info.glucose == 1) {
                     info.glucose = 123;         // TODO THIS IS DEBUG ONLY!!
                 }
                 if (Ob1G5CollectionService.lastSensorState.usableGlucose()) {
                     UserError.Log.d(TAG, "USABLE GLUCOSE");
-                    final BgReading bgr = BgReading.bgReadingInsertFromG5(info.glucose, inboundTimestamp, "BlueJay");
-                }
-                // TODO add trend
 
+                    final BgReading existing = BgReading.getForPreciseTimestamp(inboundTimestamp, Constants.MINUTE_IN_MS * 4, false);
+                    if (existing == null) {
+                        val last = BgReading.last();
+                        final BgReading bgr = BgReading.bgReadingInsertFromG5(info.glucose, inboundTimestamp, "BlueJay");
+                        try {
+                            bgr.calculated_value_slope = info.getTrend() / Constants.MINUTE_IN_MS; // note this is different to the typical calculated slope, (normally delta)
+                            if (bgReading.calculated_value_slope == Double.NaN) {
+                                bgReading.hide_slope = true;
+                            }
+                        } catch (Exception e) {
+                            // not a good number - does this exception ever actually fire?
+                        }
+                        if (bgr != null && bgr.timestamp > last.timestamp) {
+                            UserError.Log.d(TAG, "Post processing new reading: " + JoH.dateTimeText(bgr.timestamp));
+                            bgr.postProcess(false);
+                        }
+                    } else {
+                        UserError.Log.d(TAG,"Ignoring status glucose reading as we already have one within 4 mins");
+                    }
+                }
+                // TODO add trend - done in post process
             }
         } else {
             UserError.Log.d(TAG, "No valid timestamp for inbound glucose data");
         }
     }
+
+    public void sendGlucose() {
+        val last = BgReading.last();
+        if (last != null && msSince(last.timestamp) < Constants.HOUR_IN_MS) {
+            val info = BlueJayInfo.getInfo(BlueJay.getMac());
+            if (Math.abs(info.lastReadingTime - last.timestamp) > Constants.MINUTE_IN_MS * 3) {
+                val glucoseTx = new GlucoseTx(last);
+                if (glucoseTx.isValid()) {
+                    val item = new QueueMe()
+                            .setBytes(glucoseTx.getBytes())
+                            .expireInSeconds(45)
+                            .setDescription("Glucose to watch");
+
+                    item.setProcessor(new AuthReplyProcessor(new ReplyProcessor(I.connection) {
+                        @Override
+                        public void process(byte[] bytes) {
+                            UserError.Log.d(TAG, "Glucose Incoming reply processor: " + HexDump.dumpHexString(bytes));
+                        }
+                    }).setTag(item));
+
+                    item.queue();
+                    doQueue();
+                } else {
+                    UserError.Log.d(TAG,"GlucoseTX wasn't valid so not sending.");
+                }
+            } else {
+                UserError.Log.d(TAG,"Watch already has recent reading");
+                // watch reading too close to the reading we were going to send
+            }
+        }
+    }
+
+
 
     public void reboot() {
         queueSingleByteCommand(OPCODE_RESET_ALL, "Reset all");
@@ -581,11 +634,15 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
             setTime();
         }
 
-        val bf_status = getBackFillStatus();
-        if (bf_status.first > 0 && backFillOkayToAsk(bf_status.first)) {
-            int records = (int) ((JoH.msSince(bf_status.first) / DEXCOM_PERIOD) + 2);
-            UserError.Log.d(TAG, "Earliest backfill time: " + JoH.dateTimeText(bf_status.first) + " Would like " + records + " backfill records");
-            getBackFill(Math.min(records, 30));
+        if (BlueJay.isCollector()) {
+            val bf_status = getBackFillStatus();
+            if (bf_status.first > 0 && backFillOkayToAsk(bf_status.first)) {
+                int records = (int) ((JoH.msSince(bf_status.first) / DEXCOM_PERIOD) + 2);
+                UserError.Log.d(TAG, "Earliest backfill time: " + JoH.dateTimeText(bf_status.first) + " Would like " + records + " backfill records");
+                getBackFill(Math.min(records, 30));
+            }
+        } else {
+            UserError.Log.d(TAG,"Not checking for backfill data as bluejay is not set as collector");
         }
         UserError.Log.d(TAG, "schedule periodic events done");
         changeNextState();
@@ -904,11 +961,16 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
                     if ((since > HOUR_IN_MS * 6) || (since < 0)) {
                         UserError.Log.wtf(TAG, "Backfill timestamp unrealistic: " + JoH.dateTimeText(backsie.timestamp) + " (ignored)");
                     } else {
+
                         if (backsie.mgdl > 12) { // TODO check this cut off
-                            if (BgReading.getForPreciseTimestamp(backsie.timestamp, Constants.MINUTE_IN_MS * 4) == null) {
-                                final BgReading bgr = BgReading.bgReadingInsertFromG5(backsie.mgdl, backsie.timestamp, "Backfill"); // TODO bluejay
-                                UserError.Log.d(TAG, "Adding backfilled reading: " + JoH.dateTimeText(backsie.timestamp) + " " + Unitized.unitized_string_static(backsie.mgdl));
-                                changed = true;
+                            if (BgReading.getForPreciseTimestamp(backsie.timestamp, Constants.MINUTE_IN_MS * 4, false) == null) {
+                                try {
+                                    final BgReading bgr = BgReading.bgReadingInsertFromG5(backsie.mgdl, backsie.timestamp, "Backfill").appendSourceInfo("BlueJay"); // TODO bluejay
+                                    UserError.Log.d(TAG, "Adding backfilled reading: " + JoH.dateTimeText(backsie.timestamp) + " " + Unitized.unitized_string_static(backsie.mgdl));
+                                    changed = true;
+                                } catch (NullPointerException e) {
+                                    UserError.Log.e(TAG, "Got null pointer when trying to add backfilled data");
+                                }
                             }
                         } else {
                             //
@@ -1082,6 +1144,12 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
                                 setSettings();
                                 if (JoH.pratelimit("bj-set-time-via-refresh-" + BlueJay.getMac(), 300)) {
                                     setTime();
+                                }
+                                break;
+
+                            case "sendglucose":
+                                if (BlueJay.shouldSendReadings()) {
+                                    sendGlucose();
                                 }
                                 break;
 

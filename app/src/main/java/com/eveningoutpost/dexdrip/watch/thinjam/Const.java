@@ -16,6 +16,7 @@ public class Const {
 
     public static final byte OPCODE_GET_TXID = 0x24;
     public static final byte OPCODE_BACKFILL_REQ = 0x25;
+    public static final byte OPCODE_INBOUND_GLUCOSE = 0x26;
 
     public static final byte OPCODE_PUSH_RX = 0x30;
 
