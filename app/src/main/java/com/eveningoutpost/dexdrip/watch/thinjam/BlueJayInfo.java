@@ -152,6 +152,11 @@ public class BlueJayInfo extends BaseTx {
         return uptime * Constants.SECOND_IN_MS;
     }
 
+    public Double getTrend() {
+        return trend != 127 ? ((double) trend) / 10d : Double.NaN;
+    }
+
+
     public void persistentSave() {
         PersistentStore.setString(BLUEJAY_INFO_PERSIST + mac, JoH.defaultGsonInstance().toJson(this));
     }

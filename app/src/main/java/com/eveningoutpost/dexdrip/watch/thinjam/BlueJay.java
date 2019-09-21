@@ -22,6 +22,7 @@ public class BlueJay {
     private static final String PREF_BLUEJAY_AUTH = "bluejay-auth-";
     private static final String PREF_BLUEJAY_IDENTITY = "bluejay-identity-";
     private static final String PREF_BLUEJAY_BEEP = "bluejay_beep_on_connect";
+    private static final String PREF_BLUEJAY_SEND_READINGS = "bluejay_send_readings";
 
     public static boolean isCollector() {
         return true; // TODO make respect preference
@@ -42,6 +43,7 @@ public class BlueJay {
                     BlueJay.storeAuthKey(JoH.bytesToHex(macBytes), JoH.bytesToHex(keyBytes));
                     BlueJay.setMac(JoH.macFormat(JoH.bytesToHex(macBytes)));
                     BlueJayEntry.setEnabled();
+                    BlueJayEntry.initialStartIfEnabled();
                     ThinJamActivity.refreshFromStoredMac();
                     return true;
                 } else {
@@ -85,6 +87,11 @@ public class BlueJay {
         return Pref.getString(PREF_BLUEJAY_AUTH + JoH.macFormat(mac).toUpperCase(), null);
     }
 
+    public static boolean haveAuthKey(final String mac) {
+        final String key = getAuthKey(mac);
+        return key != null && key.length() > 10;
+    }
+
     public static void storeIdentityKey(String mac, final String key) {
         mac = JoH.macFormat(mac);
         UserError.Log.d(TAG, "STORE IDENTITY: " + mac + " " + key);
@@ -113,7 +120,19 @@ public class BlueJay {
         return Pref.getBooleanDefaultFalse(PREF_BLUEJAY_BEEP);
     }
 
+    static boolean shouldSendReadings() {
+        return Pref.getBooleanDefaultFalse(PREF_BLUEJAY_SEND_READINGS);
+    }
+
     public static boolean localAlarmsEnabled() {
         return Pref.getBoolean("bluejay_local_alarms", true);
     }
+
+    public static void showLatestBG() {
+        if (BlueJayEntry.isEnabled() && shouldSendReadings()) {
+            // already on background thread and debounced
+            JoH.startService(BlueJayService.class, "function", "sendglucose");
+        }
+    }
+
 }

@@ -22,6 +22,7 @@ public class Tomato {
     private static final String TAG = "DexCollectionService";//?????"Tomato";
 
     private static final String CHECKSUM_FAILED = "checksum failed";
+    private static final String SERIAL_FAILED = "serial failed";
 
     private enum TOMATO_STATES {
         REQUEST_DATA_SENT,
@@ -44,7 +45,7 @@ public class Tomato {
             return false;
         }
 
-        return activeBluetoothDevice.name.contentEquals("miaomiao");
+        return activeBluetoothDevice.name.startsWith("miaomiao");
     }
 
     public static BridgeResponse decodeTomatoPacket(byte[] buffer, int len) {
@@ -126,6 +127,8 @@ public class Tomato {
                        reply.setError_message(gs(R.string.checksum_failed__retrying));
                        Log.d(TAG,"Asking for retry of data");
                    }
+                } else if (e.getMessage().equals(SERIAL_FAILED)) {
+                    reply.setError_message("Sensor Serial Problem");
                 } else throw e;
             }
 
@@ -164,13 +167,19 @@ public class Tomato {
         
         long now = JoH.tsl();
         // Important note, the actual serial number is 8 bytes long and starts at addresses 5.
-        String SensorSn = LibreUtils.decodeSerialNumberKey(Arrays.copyOfRange(s_full_data, 5, 13));
+        final String SensorSn = LibreUtils.decodeSerialNumberKey(Arrays.copyOfRange(s_full_data, 5, 13));
         boolean checksum_ok = NFCReaderX.HandleGoodReading(SensorSn, data, now, true);
         Log.e(TAG, "We have all the data that we need " + s_acumulatedSize + " checksum_ok = " + checksum_ok + HexDump.dumpHexString(data));
 
         if(!checksum_ok) {
             throw new RuntimeException(CHECKSUM_FAILED);
         }
+
+        if (SensorSanity.checkLibreSensorChangeIfEnabled(SensorSn)) {
+            Log.e(TAG,"Problem with Libre Serial Number - not processing");
+            throw new RuntimeException(SERIAL_FAILED);
+        }
+
         PersistentStore.setString("Tomatobattery", Integer.toString(s_full_data[13]));
         Pref.setInt("bridge_battery", s_full_data[13]);
         PersistentStore.setString("TomatoHArdware",HexDump.toHexString(s_full_data,16,2));

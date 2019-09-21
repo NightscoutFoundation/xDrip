@@ -340,6 +340,14 @@
                 android:summary="Send call notifications to the band (Android 6+)"
                 android:title="Send Calls" />
 
+
+            <CheckBoxPreference
+                android:key="bluejay_send_readings"
+                android:dependency="bluejay_enabled"
+                android:defaultValue="true"
+                android:summary="Send glucose values received on the Phone to the Watch"
+                android:title="Send Readings" />
+
             <CheckBoxPreference
                 android:key="bluejay_option_24_hour_clock"
                 android:dependency="bluejay_enabled"
