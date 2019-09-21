@@ -22,6 +22,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusLine;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 
+import java.text.MessageFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -170,13 +171,11 @@ public class xDripWidget extends AppWidgetProvider {
                     views.setTextViewText(R.id.widgetDelta, bgGraphBuilder.unitizedDeltaStringRaw(true, true, estimated_delta));
                 }
 
-                // TODO use dg preformatted localized string
+                // render information about last value age
                 int timeAgo = (int) Math.floor((new Date().getTime() - lastBgreading.timestamp) / (1000 * 60));
-                if (timeAgo == 1) {
-                    views.setTextViewText(R.id.readingAge, timeAgo + " Minute ago" + extrastring);
-                } else {
-                    views.setTextViewText(R.id.readingAge, timeAgo + " Minutes ago" + extrastring);
-                }
+                final String fmt = context.getString(R.string.minutes_ago);
+                final String minutesAgo = MessageFormat.format(fmt, timeAgo);
+                views.setTextViewText(R.id.readingAge, minutesAgo + extrastring);
                 if (timeAgo > 15) {
                     views.setTextColor(R.id.readingAge, Color.parseColor("#FFBB33"));
                 } else {
