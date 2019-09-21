@@ -733,6 +733,7 @@
     <string name="adjust_note_text_here_there_is_no_undo">Uprav text poznámky. Zmena bude nezvratná.</string>
     <string name="advanced_mode">Rozšírený mód</string>
     <string name="alert_calibration_request">Výstraha na požadovanú kalibráciu</string>
+    <string name="set_data_source_to">Nastaviť zdroj dát na: %s ?</string>
     <string name="are_you_sure">Si si istý?</string>
     <string name="xdrip_will_not_work_below_android_version_42">xDrip+ vyžaduje verziu Android 4.2 a vyššiu</string>
     <string name="alert_minutes_reraise">Počet MINÚT, po ktorých sa zobrazí rovnaké upozornenie po odklade.</string>
