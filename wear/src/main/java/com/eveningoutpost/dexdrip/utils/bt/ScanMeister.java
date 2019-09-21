@@ -54,7 +54,6 @@ public class ScanMeister {
     protected volatile boolean stopOnFirstMatch = true;
     protected volatile String address;
     protected volatile List<String> name;
-    protected volatile ScanFilter customFilter;
     protected boolean wideSearch = false;
     private static String lastFailureReason = "";
 
@@ -83,11 +82,6 @@ public class ScanMeister {
             this.name = new ArrayList<>();
         }
         this.name.add(name);
-        return this;
-    }
-
-    public ScanMeister setFilter(final ScanFilter filter) {
-        this.customFilter = filter;
         return this;
     }
 
@@ -147,27 +141,11 @@ public class ScanMeister {
         stopScan("Scan start");
         UserError.Log.d(TAG, "startScan called: hunting: " + address + " " + name);
 
-        ScanFilter filter = this.customFilter;
-        if (filter == null) {
-            final ScanFilter.Builder builder = new ScanFilter.Builder();
-            if (address != null) {
-                try {
-                    builder.setDeviceAddress(address);
-                } catch (IllegalArgumentException e) {
-                    UserError.Log.wtf(TAG, "Invalid bluetooth address: " + address);
-                }
-            }
-            // TODO scanning by name doesn't build a filter
-            filter = builder.build();
-        } else {
-            UserError.Log.d(TAG,"Overriding with custom filter");
-        }
-
         scanSubscription = new Subscription(rxBleClient.scanBleDevices(
                 new ScanSettings.Builder()
                         .setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES)
                         .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
-                        .build(), filter)
+                        .build())
                 .timeout(scanSeconds, TimeUnit.SECONDS) // is unreliable
                 .subscribeOn(Schedulers.io())
                 .subscribe(this::onScanResult, this::onScanFailure));
@@ -197,7 +175,7 @@ public class ScanMeister {
 
     // Successful result from our bluetooth scan
     protected synchronized void onScanResult(ScanResult bleScanResult) {
-
+        UserError.Log.d(TAG, "onScanResult checking a device: " + bleScanResult.getBleDevice().getMacAddress() + " name " +  bleScanResult.getBleDevice().getName());
         if (!wideSearch && address == null && name == null) {
             UserError.Log.d(TAG, "Address has been set to null, stopping scan.");
             stopScan("Address nulled");
@@ -217,11 +195,10 @@ public class ScanMeister {
             //final String this_name = bleScanResult.getBleDevice().getName();
             final String this_address = bleScanResult.getBleDevice().getMacAddress();
             String this_name = "";
-            if (name != null || customFilter != null) {
+            if (name != null ) {
                 this_name = bleScanResult.getBleDevice().getName();
             }
-            final boolean matches = (customFilter != null)
-                    || ((address != null && address.equalsIgnoreCase(this_address))
+            final boolean matches = ((address != null && address.equalsIgnoreCase(this_address))
                     || (name != null && this_name != null && name.contains(this_name)));
             if (matches || JoH.quietratelimit("scanmeister-show-result", 2)) {
                 UserError.Log.d(TAG, "Found a device: " + this_address + " " + this_name + " rssi: " + rssi + "  " + (matches ? "-> MATCH" : ""));
