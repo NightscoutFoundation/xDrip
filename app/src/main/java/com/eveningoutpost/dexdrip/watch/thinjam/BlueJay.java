@@ -43,6 +43,7 @@ public class BlueJay {
                     BlueJay.storeAuthKey(JoH.bytesToHex(macBytes), JoH.bytesToHex(keyBytes));
                     BlueJay.setMac(JoH.macFormat(JoH.bytesToHex(macBytes)));
                     BlueJayEntry.setEnabled();
+                    BlueJayEntry.initialStartIfEnabled();
                     ThinJamActivity.refreshFromStoredMac();
                     return true;
                 } else {
