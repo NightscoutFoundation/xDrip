@@ -151,7 +151,7 @@ public class xDripWidget extends AppWidgetProvider {
                     }
                 } else {
                     // TODO make a couple of getters in dg for these functions
-                    extrastring = " "+dg.extra_string + ((dg.from_plugin) ? " " + context.getString(R.string.p_in_circle) : "");
+                    extrastring = " " + dg.extra_string + ((dg.from_plugin) ? " " + context.getString(R.string.p_in_circle) : "");
                     estimated_delta = dg.delta_mgdl;
                     // TODO properly illustrate + standardize warning level
                     if (dg.warning > 1) slope_arrow = "";
@@ -181,6 +181,11 @@ public class xDripWidget extends AppWidgetProvider {
                 if (Sensor.isActive() || Home.get_follower()) {
                     views.setTextViewText(R.id.widgetBg, stringEstimate);
                     views.setTextViewText(R.id.widgetArrow, slope_arrow);
+                    if (stringEstimate.length() > 3) {
+                        views.setFloat(R.id.widgetBg, "setTextSize", 35);
+                    } else {
+                        views.setFloat(R.id.widgetBg, "setTextSize", 55);
+                    }
                 } else {
                     views.setTextViewText(R.id.widgetBg, "");
                     views.setTextViewText(R.id.widgetArrow, "");
