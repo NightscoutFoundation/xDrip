@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.os.Bundle;
 import android.os.PowerManager;
 import android.view.View;
 import android.widget.RemoteViews;
@@ -77,8 +78,28 @@ public class xDripWidget extends AppWidgetProvider {
         }
     }
 
+    @Override
+    public void onAppWidgetOptionsChanged(Context context,
+                                          AppWidgetManager appWidgetManager,
+                                          int appWidgetId, Bundle newOptions) {
+        // update look after resize
+        int maxWidth = newOptions.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH);
+        int maxHeight = newOptions.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT);
+        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.x_drip_widget);
+        displayCurrentInfo(appWidgetManager, appWidgetId, context, views, maxWidth, maxHeight);
+        try {
+            appWidgetManager.updateAppWidget(appWidgetId, views);
+            // needed to catch RuntimeException and DeadObjectException
+        } catch (Exception e) {
+            Log.e(TAG, "Got Rexception in widget update: " + e);
+        }
+    }
 
     private static void displayCurrentInfo(AppWidgetManager appWidgetManager, int appWidgetId, Context context, RemoteViews views) {
+        displayCurrentInfo(appWidgetManager, appWidgetId, context, views, -1, -1);
+    }
+
+    private static void displayCurrentInfo(AppWidgetManager appWidgetManager, int appWidgetId, Context context, RemoteViews views, int maxWidth, int maxHeight) {
         BgGraphBuilder bgGraphBuilder = new BgGraphBuilder(context);
         BgReading lastBgreading = BgReading.lastNoSenssor();
 
@@ -89,13 +110,24 @@ public class xDripWidget extends AppWidgetProvider {
             double estimate = 0;
             double estimated_delta = -9999;
             try {
-                int height = appWidgetManager.getAppWidgetOptions(appWidgetId).getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT);
-                int width = appWidgetManager.getAppWidgetOptions(appWidgetId).getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH);
-                views.setImageViewBitmap(R.id.widgetGraph, new BgSparklineBuilder(context)
-                        .setBgGraphBuilder(bgGraphBuilder)
-                        //.setShowFiltered(Home.getBooleanDefaultFalse("show_filtered_curve"))
-                        .setBackgroundColor(ColorCache.getCol(ColorCache.X.color_widget_chart_background))
-                        .setHeight(height).setWidth(width).showHighLine(showLines).showLowLine(showLines).build());
+                int height = maxHeight == -1 ? appWidgetManager.getAppWidgetOptions(appWidgetId).getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT) : maxHeight;
+                int width = maxWidth == -1 ? appWidgetManager.getAppWidgetOptions(appWidgetId).getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH) : maxWidth;
+                if (width >= 337) {
+                    // render bg graph if the widget has enough space to be useful
+                    views.setImageViewBitmap(R.id.widgetGraph, new BgSparklineBuilder(context)
+                            .setBgGraphBuilder(bgGraphBuilder)
+                            //.setShowFiltered(Home.getBooleanDefaultFalse("show_filtered_curve"))
+                            //.setBackgroundColor(ColorCache.getCol(ColorCache.X.color_widget_chart_background))
+                            .setHeight(height)
+                            .setWidth(width)
+                            .showHighLine(showLines).showLowLine(showLines).build());
+                    views.setViewVisibility(R.id.widgetGraph, View.VISIBLE);
+                } else {
+                    // hide bg graph
+                    views.setViewVisibility(R.id.widgetGraph, View.INVISIBLE);
+                }
+
+                views.setInt(R.id.xDripwidget, "setBackgroundColor", ColorCache.getCol(ColorCache.X.color_widget_chart_background));
 
                 final BestGlucose.DisplayGlucose dg = (use_best_glucose) ? BestGlucose.getDisplayGlucose() : null;
                 estimate = (dg != null) ? dg.mgdl : lastBgreading.calculated_value;
@@ -182,7 +214,7 @@ public class xDripWidget extends AppWidgetProvider {
                     views.setTextColor(R.id.readingAge, Color.WHITE);
                 }
 
-                if(showExstraStatus) {
+                if (showExstraStatus) {
                     views.setTextViewText(R.id.widgetStatusLine, StatusLine.extraStatusLine());
                     views.setViewVisibility(R.id.widgetStatusLine, View.VISIBLE);
                 } else {
