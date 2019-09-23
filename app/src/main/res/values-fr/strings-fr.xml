@@ -103,6 +103,7 @@
     <string name="pref_amazfit_widget_graph_dots_summary">Affiche des minuscules points au lieu de petits points</string>
     <string name="pref_amazfit_widget_graph_enable">Activer</string>
     <string name="pref_amazfit_widget_graph_title">Graphique du widget</string>
+    <string name="pref_amazfit_widget_graph_enable_summary">Affiche le graphique dans le widget</string>
     <string name="toast_crash">Quelque chose a mal tourné :( un rapport a été envoyé pour aider à résoudre le problème.</string>
     <string name="taskerConfigInstruction">Il suffit de cliquer sur l\'icône Cocher ici pour confirmer. Vous ne devriez pas avoir besoin de changer la chaîne de configuration.</string>
     <string name="taskerConfiguration">Configuration Tasker</string>
@@ -167,6 +168,7 @@
     <string name="switch_parakeet_to_setup_mode">Mettre Parakeet en mode de configuration</string>
     <string name="view_events_log">Afficher le journal d\'événements</string>
     <string name="show_libre_trend">Voir la tendance du capteur libre</string>
+    <string name="libre_15_minutes_graph">Graphe 15 minutes du Libre</string>
     <string name="share_config_via_qr_code">Partager la config via le code QR</string>
     <string name="check_for_updated_version">Vérifiez les mises à jour</string>
     <string name="send_feedback_to_developer">Envoyer des messages au développeur</string>
@@ -380,7 +382,6 @@
     <string name="choose_sound_used_for_predicted_low_alarm">Choisir le son utilisé pour l\'alarme Basse prédit.</string>
     <string name="notify_when_parakeet_device_stops_checking_in">Notifier lorsque le dispositif Parakeet arrête le check-in</string>
     <string name="parakeet_related_alerts">Alertes liées à Parakeet</string>
-    <string name="raise_parakeet_notification_silently_when_charging">Déclencher la notification Parakeet silencieusement lors de la charge</string>
     <string name="silent_alert_when_charging">Alerte silencieuse lors de la charge</string>
     <string name="alerts_start_out_snoozed_and_must_persist_for_a_while">Les alertes commencent silencieuses et doivent persister pendant un certain temps pour se déclencher</string>
     <string name="alarms_silenced_during_telephone_calls">Alarmes silencieuses pendant les appels téléphoniques</string>
