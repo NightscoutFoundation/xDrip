@@ -690,9 +690,9 @@ public class Treatments extends Model {
 
         // number param currently ignored
 
-        List<Treatments> theTreatments = latestForGraph(2000, startTime);  // don't look back (we are always 24h behind)
+// look back the longest effect period of all enabled insulin profiles (startTime is always 24h behind NOW)
+        List<Treatments> theTreatments = latestForGraph(2000, startTime - msPerMin*InsulinManager.getMaxEffect(true));
         if (theTreatments.size() == 0) return null;
-
 
         int counter = 0; // iteration counter
 
@@ -711,7 +711,6 @@ public class Treatments extends Model {
 
         // linear array populated as needed and layered by each treatment etc
         SortedMap<Double, Iob> timeslices = new TreeMap<Double, Iob>();
-
         Iob calcreply;
 
         // First process all IoB calculations

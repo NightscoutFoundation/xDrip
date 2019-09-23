@@ -14,12 +14,14 @@ public abstract class Insulin {
     private final ArrayList<String> pharmacyProductNumber;
     private Boolean enabled;
     protected double concentration;
+    protected long maxEffect;
 
     public Insulin(String n, String dn, ArrayList<String> ppn, String c, JsonObject curveData)
     {
         name = n;
         displayName = dn;
         pharmacyProductNumber = ppn;
+        maxEffect = 0;
         enabled = true;
         concentration = 1;
         switch (c.toLowerCase())
@@ -43,6 +45,9 @@ public abstract class Insulin {
     public void enable() { enabled = true; }
     public void disable() { enabled = false; }
     public boolean isEnabled() { return enabled; }
+    public long getMaxEffect() {
+        return maxEffect;
+    }
 
     public ArrayList<String> getPharmacyProductNumber() {
         return pharmacyProductNumber;

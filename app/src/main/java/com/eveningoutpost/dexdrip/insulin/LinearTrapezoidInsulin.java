@@ -28,10 +28,12 @@ public class LinearTrapezoidInsulin extends Insulin {
         t3 = curveData.get("duration").getAsLong();
 
         max = 2.0/(t2-t1+t3);
+        maxEffect = t3;
     }
 
-    public double calculateIOB(double time)
+    public double calculateIOB(double t)
     {
+        double time = t - onset;
         if ((0 <= time) && (time < t1))
             return 1.0-time*time*max/(2*t1);
         else if ((t1 <= time) &&  (time < t2))
@@ -41,8 +43,9 @@ public class LinearTrapezoidInsulin extends Insulin {
         else return 0;
     }
 
-    public double calculateActivity(double time)
+    public double calculateActivity(double t)
     {
+        double time = t - onset;
         if ((0 <= time) && (time < t1))
             return concentration * time*max/t2;
         else if ((t1 <= time) &&  (time < t2))

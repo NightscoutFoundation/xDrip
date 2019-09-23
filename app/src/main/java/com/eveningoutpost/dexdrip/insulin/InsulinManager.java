@@ -156,6 +156,16 @@ public class InsulinManager {
         return null;
     }
 
+    public static long getMaxEffect(Boolean enabled)
+    {
+        long max = 0;
+        for (Insulin i: profiles)
+            if (!enabled || i.isEnabled())
+                if (max < i.getMaxEffect())
+                    max = i.getMaxEffect();
+        return max;
+    }
+
     public static Boolean isProfileEnabled(Insulin i)
     {
         return i.isEnabled();
