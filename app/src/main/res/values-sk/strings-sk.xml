@@ -282,12 +282,12 @@
     <string name="units">jednotky</string>
     <string name="carbs">sacharidy</string>
     <string name="when">když</string>
-    <string name="speak_your_treatment">Prosím řekněte ošetření jako:\nx.x jednotek inzulínu / xx gramů sacharidů</string>
-    <string name="speech_recognition_is_not_supported">Rozpoznávání hlasu není podporováno</string>
-    <string name="treatment_note">Poznámka ošetření</string>
-    <string name="could_not_export_database">Nelze exportovat databázi</string>
-    <string name="exported_to">"Exportováno do "</string>
-    <string name="default_to_voice_input_next_time">Nastavit následující vstup jako hlasový</string>
+    <string name="speak_your_treatment">Nadiktujte: X units insulin / X grams carbs</string>
+    <string name="speech_recognition_is_not_supported">Rozoznávanie hlasu nie je podporovaný</string>
+    <string name="treatment_note">Poznámka ošetrenia</string>
+    <string name="could_not_export_database">Nie je možné exportovať databázu</string>
+    <string name="exported_to">"Exportované do "</string>
+    <string name="default_to_voice_input_next_time">Nabudúce použiť hlasový vstup</string>
     <string name="done">Hotovo</string>
     <string name="entering_a_calibration_now_will_override_your_previously_entered_calibration">Zadání kalibrace nyní přepíše poslední kalibraci</string>
     <string name="enter_blood_glucose_value">Vložte hodnotu glykémie</string>
@@ -370,7 +370,7 @@
     <string name="warning_settings_from_xdrip_and_plus_exist">Nastavení varování od xDrip a xDrip+ existovat - nakládka xDrip+</string>
     <string name="new_version_date_colon">"Datum nové verze: "</string>
     <string name="old_version_date_colon">"Datum staré verze: "</string>
-    <string name="speak_your_note_text">Prosím řekněte text poznámky</string>
+    <string name="speak_your_note_text">Nadiktujte text poznámky</string>
     <string name="alarm_if_above_high_value">Výstraha pri prekročení hornej hranice</string>
     <string name="for_longer_than_minutes">déle než (minut)</string>
     <string name="choose_sound_used_for_persistent_high_alarm">Vybrat zvuk pro trvalou výstrahy vysoké glykémie</string>
@@ -673,21 +673,21 @@
     <string name="dexcom_password">Heslo k účtu Dexcom</string>
     <string name="dexcom_receiver_serial">10ti znakové sériové číslo přijímače Dexcom</string>
     <string name="dexcom_test_mode_serial">10ti znakové sériové číslo testovacího režimu</string>
-    <string name="glucose_meters">Glukoměry</string>
-    <string name="glucose_meter_options">Volby pro bezdrátové glukoměry</string>
-    <string name="auto_connect_to_meter">Automaticky stahovat data ze standartizovaných glukoměrů jako Contour Next One</string>
-    <string name="use_bluetooth_meter">Používat BT glukoměry</string>
-    <string name="scan_for_bluetooth_meter">Vyhledat BT glukoměr</string>
-    <string name="meter_connect_sound">Povolit tento zvuk při připojení, odpojení a sychronizaci dat</string>
-    <string name="meter_connect_sound_effect">Znamení zvukových efektů</string>
-    <string name="ask_for_calibration">Když je přijata nová hodnota, zeptat se, zda má být použita pro kalibraci</string>
-    <string name="use_meter_for_calibrations">Používat glukoměr pro kalibrace</string>
-    <string name="auto_calibration_good_conditions">Kalibrovat bez ptaní, pokud jsou příhodné podmínky (experimentální)</string>
-    <string name="automatic_calibration">Automatické kalibrace</string>
-    <string name="maximum_value">Maximální hodnota v rozsahu</string>
-    <string name="minimum_value">Minimální hodnota v rozsahu</string>
-    <string name="volume_buttons_snooze">Stisknutí tlačítka hlasitosti vypne alarm, pokud je aplikace aktivní</string>
-    <string name="buttons_silence_alarms">Tlačítka pro vypnutí alarmu</string>
+    <string name="glucose_meters">Glukomery</string>
+    <string name="glucose_meter_options">Nastavenia pre bezdrôtové glukomery</string>
+    <string name="auto_connect_to_meter">Automaticky sťahovať dáta zo štandartizovaných glukomerov ako je Contour Next One</string>
+    <string name="use_bluetooth_meter">Používať BT glukomery</string>
+    <string name="scan_for_bluetooth_meter">Vyhľadať BT glukomer</string>
+    <string name="meter_connect_sound">Zvukovo oznámiť pripojenie, odpojenie a sychronizáciu dát</string>
+    <string name="meter_connect_sound_effect">Zvukové znamenia</string>
+    <string name="ask_for_calibration">Spýtať sa, či použiť novo prijatú hodnotu na kalibráciu</string>
+    <string name="use_meter_for_calibrations">Používať glukomer pre kalibráce</string>
+    <string name="auto_calibration_good_conditions">Kalibrovať bez otázky, ak sú vhodné podmienky (experimentálne)</string>
+    <string name="automatic_calibration">Automatická kalibrácia</string>
+    <string name="maximum_value">Maximálna hodnota v rozsahu</string>
+    <string name="minimum_value">Minimálna hodnota v rozsahu</string>
+    <string name="volume_buttons_snooze">Stlačenie tlačítka hlasitosti vypne alarm, pokial je aplikácia aktívna</string>
+    <string name="buttons_silence_alarms">Tlačítka pre vypnutie alarmu</string>
     <string name="zero_zero_zero_zero">0000</string>
     <string name="Speech_speed">Rýchlosť reči</string>
     <string name="Speech_pitch">Výška reči</string>
@@ -754,8 +754,8 @@
     <string name="other">Iné</string>
     <string name="which_type_of_device">S ktorým zdrojom dát sa chcete prepojit?</string>
     <string name="which_system_do_you_use">Ktorý monitorovací systém používate?</string>
-    <string name="please_allow_permission">Udeľte povolenia, prosím</string>
-    <string name="xdrip_needs_whitelisting_for_proper_performance">xDrip+ potrebuje pre svoju prácu bežať na pozadí. Udeľte mu výnimku, prosím.</string>
+    <string name="please_allow_permission">Sú požadované povolenia</string>
+    <string name="xdrip_needs_whitelisting_for_proper_performance">xDrip+ potrebuje pre svoju prácu bežať na pozadí. Povoľte mu to Androide.</string>
     <string name="are_you_sure_you_want_to_delete_this_blood_test_result">Ste si istý, že chcete vymazať výsledok testu z krvi?</string>
     <string name="are_you_sure_you_want_to_delete_this_treatment">Ste si istý, že chcete zmazať toto liečbu?</string>
     <string name="are_you_sure_you_wish_to_snooze_all_other_devices_in_your_sync_group">Ste si istý, že chcete uspať všetky ostatné zariadenia vo Vašej synchronizačnej skupine?</string>
@@ -775,4 +775,29 @@
     <string name="stop_sensor">Senzor zastaviť</string>
     <string name="dont_stop_just_reset_all_calibrations">Nezastaviť, len vynulovať kalibrácie</string>
     <string name="only_stop_your_sensor_when_you_actually_plan">Zastavte senzor len v prípade, že ste sa skutočne rozdhodli ho odstrániť!</string>
+
+    <string name="it_looks_like_you_maybe_have_a_settings_backup_shall_we_try_to_restore_it">Vyzerá to, že máte uloženú zálohu nastavení. Chcete ich obnoviť?</string>
+    <string name="restore_settings">Obnoviť nastavenia</string>
+
+    <string name="no_data_received_from_master_yet">Neboli zatiaľ prijaté dáta z veliaceho mobilu</string>
+    <string name="start_source_setup_wizard">Spustiť sprievodcu nastavením zdroju dát</string>
+
+    <string name="message_snooze_explanaition_undo">Tlačítko Späť vráti pripomienku do stavu v akom bola pred odsunutím.</string>
+    <string name="showcase_undo">Tlačítko Späť sa vracia simuláciami, kalibráciami a poznámkami\n\nSkryje sa po 30 minútach</string>
+    <string name="showcase_redo">Tlačítko Opäť obnovuje simulácie, kalibrácie a poznámky\n\nSkryje sa po 30 minútach</string>
+
+    <string name="version">xDrip ver.:</string>
+    <string name="note_search">Hľadať poznámku</string>
+    <string name="note_search_button">HĽADAŤ</string>
+    <string name="search_phrase">vyhľadaný výraz</string>
+    <string name="load_more">nahrať viac</string>
+    <string name="searching">hľadám...</string>
+    <string name="collecting">spracovávam...</string>
+    <string name="insulin">inzulín</string>
+    <string name="nothing_found">žiadne výsledky</string>
+    <string name="no_search_term_found">Výraz nebol nájdený</string>
+
+    <string name="title_full_screen_mode">Na celú obrazovku</string>
+    <string name="title_colors_for_printing">Vhodné pre tlačiareň</string>
+    <string name="title_share_save_this_screen">Zdielať / Uložiť obrazovku</string>
 </resources>
