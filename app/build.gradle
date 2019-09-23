@@ -133,8 +133,9 @@ android {
         buildConfigField "long", "buildTimestamp", generateTimestamp()
         buildConfigField "int", "targetSDK", targetSdkVersion.mApiLevel.toString()
         vectorDrawables.useSupportLibrary = true
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        //testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
+        testInstrumentationRunner "android.support.test.runner.MultiDexTestRunner"
     }
     testOptions {
         animationsDisabled = true
