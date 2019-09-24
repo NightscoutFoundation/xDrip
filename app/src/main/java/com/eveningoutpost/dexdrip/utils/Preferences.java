@@ -1453,12 +1453,11 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
 
             }
 
+            if (DexCollectionType.getDexCollectionType() != DexCollectionType.LibreReceiver) {
+                collectionCategory.removePreference(libre2settings);
+            }
 
             try {
-
-                if (DexCollectionType.getDexCollectionType() != DexCollectionType.LibreReceiver) {
-                    collectionCategory.removePreference(libre2settings);
-                }
 
                 try {
                     if (!DexCollectionType.hasWifi()) {
