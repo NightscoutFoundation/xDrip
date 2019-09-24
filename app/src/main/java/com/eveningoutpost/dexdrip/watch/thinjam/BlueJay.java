@@ -7,6 +7,8 @@ import com.eveningoutpost.dexdrip.ui.activities.ThinJamActivity;
 
 import java.util.Arrays;
 
+import lombok.val;
+
 // jamorham
 
 public class BlueJay {
@@ -101,6 +103,11 @@ public class BlueJay {
         } else {
             UserError.Log.e(TAG, "Cannot store identity key as may be invalid");
         }
+    }
+
+    public static boolean hasIdentityKey() {
+        val address = getMac();
+        return address != null && getIdentityKey(address) != null;
     }
 
     public static String getIdentityKey(final String mac) {

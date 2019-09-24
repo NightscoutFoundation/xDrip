@@ -43,6 +43,7 @@ import com.eveningoutpost.dexdrip.watch.thinjam.messages.GlucoseTx;
 import com.eveningoutpost.dexdrip.watch.thinjam.messages.PushRx;
 import com.eveningoutpost.dexdrip.watch.thinjam.messages.SetTimeTx;
 import com.eveningoutpost.dexdrip.watch.thinjam.messages.SetTxIdTx;
+import com.eveningoutpost.dexdrip.watch.thinjam.messages.StandbyTx;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.gson.annotations.Expose;
 import com.polidea.rxandroidble2.RxBleDeviceServices;
@@ -74,6 +75,7 @@ import static com.eveningoutpost.dexdrip.Models.JoH.tsl;
 import static com.eveningoutpost.dexdrip.Services.JamBaseBluetoothSequencer.BaseState.CLOSE;
 import static com.eveningoutpost.dexdrip.Services.JamBaseBluetoothSequencer.BaseState.CLOSED;
 import static com.eveningoutpost.dexdrip.Services.JamBaseBluetoothSequencer.BaseState.INIT;
+import static com.eveningoutpost.dexdrip.Services.JamBaseBluetoothSequencer.BaseState.SEND_QUEUE;
 import static com.eveningoutpost.dexdrip.Services.JamBaseBluetoothSequencer.BaseState.SLEEP;
 import static com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder.DEXCOM_PERIOD;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.HOUR_IN_MS;
@@ -126,6 +128,8 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
     private Subscription notificationSubscription;
     @Setter
     private Runnable postQueueRunnable;
+
+    public volatile boolean flashIsRunning = false;
 
     @Setter
     ObservableField<Integer> progressIndicator;
@@ -224,18 +228,22 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
 
     public void getBackFill(int records) {
         if (BlueJay.haveAuthKey(I.address)) {
-            val outbound = new BackFillTx(records);
-            val item = new QueueMe().setBytes(outbound.getBytes())
-                    .setDescription("Get BackFill")
-                    .expireInSeconds(30);
+            if (!flashRunning()) {
+                val outbound = new BackFillTx(records);
+                val item = new QueueMe().setBytes(outbound.getBytes())
+                        .setDescription("Get BackFill")
+                        .expireInSeconds(30);
 
-            item.setProcessor(new AuthReplyProcessor(new ReplyProcessor(I.connection) {
-                @Override
-                public void process(byte[] bytes) {
-                    UserError.Log.d(TAG, "BackFill request response: " + JoH.bytesToHex(bytes));
-                }
-            }).setTag(item))
-                    .queue();
+                item.setProcessor(new AuthReplyProcessor(new ReplyProcessor(I.connection) {
+                    @Override
+                    public void process(byte[] bytes) {
+                        UserError.Log.d(TAG, "BackFill request response: " + JoH.bytesToHex(bytes));
+                    }
+                }).setTag(item))
+                        .queue();
+            } else {
+                UserError.Log.d(TAG, "No backfill as flash running");
+            }
         } else {
             UserError.Log.d(TAG, "Cannot back fill as we don't have auth key");
         }
@@ -366,7 +374,7 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
                             bgr.postProcess(false);
                         }
                     } else {
-                        UserError.Log.d(TAG,"Ignoring status glucose reading as we already have one within 4 mins");
+                        UserError.Log.d(TAG, "Ignoring status glucose reading as we already have one within 4 mins");
                     }
                 }
                 // TODO add trend - done in post process
@@ -385,7 +393,7 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
                 if (glucoseTx.isValid()) {
                     val item = new QueueMe()
                             .setBytes(glucoseTx.getBytes())
-                            .expireInSeconds(45)
+                            .expireInSeconds(60)
                             .setDescription("Glucose to watch");
 
                     item.setProcessor(new AuthReplyProcessor(new ReplyProcessor(I.connection) {
@@ -398,16 +406,36 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
                     item.queue();
                     doQueue();
                 } else {
-                    UserError.Log.d(TAG,"GlucoseTX wasn't valid so not sending.");
+                    UserError.Log.d(TAG, "GlucoseTX wasn't valid so not sending.");
                 }
             } else {
-                UserError.Log.d(TAG,"Watch already has recent reading");
+                UserError.Log.d(TAG, "Watch already has recent reading");
                 // watch reading too close to the reading we were going to send
             }
         }
     }
 
+    public void standby() {
+        if (BlueJayInfo.getInfo(I.address).buildNumber > 39) {
+            addToLog("Requesting watch standby");
+            val description = "Watch Standby";
+            val item = new QueueMe()
+                    .setBytes(new StandbyTx().getBytes());
+            item.setDescription(description)
+                    .setProcessor(new AuthReplyProcessor(new ReplyProcessor(I.connection) {
+                        @Override
+                        public void process(byte[] bytes) {
+                            UserError.Log.d(TAG, "Reply for: " + description + " " + JoH.bytesToHex(bytes));
+                        }
+                    }).setTag(item))
+                    .expireInSeconds(60);
 
+            item.queueUnique();
+            doQueue();
+        } else {
+            JoH.static_toast_long("Needs BlueJay firmware upgrade to support standby");
+        }
+    }
 
     public void reboot() {
         queueSingleByteCommand(OPCODE_RESET_ALL, "Reset all");
@@ -482,6 +510,7 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
                         BlueJay.storeIdentityKey(I.address, identityHex);
                     }
                 } else {
+                    addToLog("Got wrong reply from pairing - try again");
                     UserError.Log.d(TAG, "Wrong size for identity reply: " + bytes.length + " " + JoH.bytesToHex(bytes));
                 }
             }
@@ -642,7 +671,7 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
                 getBackFill(Math.min(records, 30));
             }
         } else {
-            UserError.Log.d(TAG,"Not checking for backfill data as bluejay is not set as collector");
+            UserError.Log.d(TAG, "Not checking for backfill data as bluejay is not set as collector");
         }
         UserError.Log.d(TAG, "schedule periodic events done");
         changeNextState();
@@ -664,96 +693,111 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
 
     private synchronized void sendOtaChunks(final List<byte[]> chunks) {
 
-        if (chunks == null) {
-            UserError.Log.e(TAG, "OTA chunks null");
-            return;
-        }
-        UserError.Log.d(TAG, "Running OTA sequence");
-        doSafetyQueue(); // change off ota sequence
-        JoH.threadSleep(2000);
-        int chunks_sent = 0;
-        int spinner = 0;
+        val thread = new Thread(() -> {
+            try {
+                flashIsRunning = true;
 
-        addToLog("Starting to send firmware data\n");
-
-        for (byte[] chunk : chunks) {
-
-            busy = true;
-
-            if (!sendOtaChunk(THINJAM_OTA, chunk)) {
-                UserError.Log.d(TAG, "Failed to send OTA chunk: " + chunks_sent);
-                busy = false;
-                break;
-            }
-
-            val timeoutAt = tsl() + Constants.SECOND_IN_MS * 20;
-            boolean timedOut = false;
-            while (busy && I.isConnected) {
-                if (tsl() > timeoutAt) {
-                    timedOut = true;
-                    break;
+                UserError.Log.d(TAG, "Running on thread: " + Thread.currentThread());
+                if (chunks == null) {
+                    UserError.Log.e(TAG, "OTA chunks null");
+                    return;
                 }
-                JoH.threadSleep(20);
-            }
-            if (timedOut) {
-                UserError.Log.e(TAG, "Timed out during send: " + chunks_sent);
-                busy = false;
-                break;
-            }
+                UserError.Log.d(TAG, "Running OTA sequence");
+                doSafetyQueue(); // change off ota sequence
+                JoH.threadSleep(2000);
+                int chunks_sent = 0;
+                int spinner = 0;
 
-            // start slow and speed up
-            if (chunks_sent < 200) {
-                JoH.threadSleep(200 - chunks_sent); // DEBUG
-            }
-            chunks_sent++;
+                addToLog("Starting to send firmware data\n");
 
-            if (spinner++ % 50 == 1) {
-                if (progressIndicator != null) {
-                    progressIndicator.set((spinner * 100) / (chunks.size()) + 1);
+                for (byte[] chunk : chunks) {
+
+                    busy = true;
+
+                    if (!sendOtaChunk(THINJAM_OTA, chunk)) {
+                        UserError.Log.d(TAG, "Failed to send OTA chunk: " + chunks_sent);
+                        busy = false;
+                        break;
+                    }
+
+                    val timeoutAt = tsl() + Constants.SECOND_IN_MS * 20;
+                    boolean timedOut = false;
+                    while (busy && I.isConnected) {
+                        if (tsl() > timeoutAt) {
+                            timedOut = true;
+                            break;
+                        }
+                        JoH.threadSleep(20);
+                    }
+                    if (timedOut) {
+                        UserError.Log.e(TAG, "Timed out during send: " + chunks_sent);
+                        busy = false;
+                        break;
+                    }
+
+                    // start slow and speed up
+                    if (chunks_sent < 200) {
+                        JoH.threadSleep(200 - chunks_sent); // DEBUG
+                    }
+                    chunks_sent++;
+
+                    if (spinner++ % 30 == 1) {
+                        if (progressIndicator != null) {
+                            val fspinner = spinner;
+                            JoH.runOnUiThreadDelayed(() -> progressIndicator.set((fspinner * 100) / (chunks.size()) + 1), 100);
+                        }
+                    }
                 }
+
+                if (chunks_sent == chunks.size()) {
+                    UserError.Log.d(TAG, "ALL CHUNKS SENT");
+                    addToLog("All firmware data sent\n");
+                } else {
+                    UserError.Log.d(TAG, "ERROR SENDING CHUNKS: " + chunks_sent + " vs " + chunks.size());
+                    addToLog("Failed to send all firmware data\n");
+                }
+
+                getInfo().invalidateStatus();
+                getInfo().invalidateTime();
+
+                threadSleep(10000);
+                try {
+                    progressIndicator.set(0);
+                    progressIndicator = null;
+                } catch (NullPointerException e) {
+                    //
+                }
+            } finally {
+                flashIsRunning = false;
             }
-        }
-
-        if (chunks_sent == chunks.size()) {
-            UserError.Log.d(TAG, "ALL CHUNKS SENT");
-            addToLog("All firmware data sent\n");
-        } else {
-            UserError.Log.d(TAG, "ERROR SENDING CHUNKS: " + chunks_sent + " vs " + chunks.size());
-            addToLog("Failed to send all firmware data\n");
-        }
-
-        getInfo().invalidateStatus();
-        getInfo().invalidateTime();
-
-        threadSleep(10000);
-        try {
-            progressIndicator.set(0);
-            progressIndicator = null;
-        } catch (NullPointerException e) {
-            //
-        }
-
+        });
+        thread.setPriority(Thread.MAX_PRIORITY);
+        thread.start();
     }
 
     boolean sendOtaChunk(final UUID uuid, final byte[] bytes) {
         if (I.connection == null || !I.isConnected) return false;
-        I.connection.writeCharacteristic(uuid, bytes).subscribe(
-                characteristicValue -> {
-                    if (D)
-                        UserError.Log.d(TAG, "Wrote record request request: " + bytesToHex(characteristicValue));
-                    busy = false;
-                }, throwable -> {
-                    UserError.Log.e(TAG, "Failed to write record request: " + throwable);
-                    if (throwable instanceof BleGattCharacteristicException) {
-                        final int status = ((BleGattCharacteristicException) throwable).getStatus();
-                        UserError.Log.e(TAG, "Got status message: " + Helper.getStatusName(status));
-                    } else {
-                        if (throwable instanceof BleDisconnectedException) {
-                            changeState(CLOSE);
-                        }
-                        UserError.Log.d(TAG, "Throwable in Record End write: " + throwable);
-                    }
-                });
+        I.connection.writeCharacteristic(uuid, bytes)
+                .observeOn(Schedulers.io())
+                .subscribeOn(Schedulers.io())
+                .subscribe(
+
+                        characteristicValue -> {
+                            if (D)
+                                UserError.Log.d(TAG, "Wrote record request request: " + bytesToHex(characteristicValue));
+                            busy = false;
+                        }, throwable -> {
+                            UserError.Log.e(TAG, "Failed to write record request: " + throwable);
+                            if (throwable instanceof BleGattCharacteristicException) {
+                                final int status = ((BleGattCharacteristicException) throwable).getStatus();
+                                UserError.Log.e(TAG, "Got status message: " + Helper.getStatusName(status));
+                            } else {
+                                if (throwable instanceof BleDisconnectedException) {
+                                    changeState(CLOSE);
+                                }
+                                UserError.Log.d(TAG, "Throwable in Record End write: " + throwable);
+                            }
+                        });
         return true; // only that we didn't fail in setup
     }
 
@@ -870,7 +914,7 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
         val bytes = FirmwareDownload.getLatestFirmwareBytes(I.address, type);
         UserError.Log.d(TAG, "Got bytes: " + ((bytes != null) ? bytes.length : "null!"));
         if (bytes != null) {
-            sendOtaChunks(split(parse(bytes)));
+            Inevitable.task("bluejay-background-fw-up,", 200, () -> sendOtaChunks(split(parse(bytes))));
         } else {
             addToLog("Unable to get firmware for update");
         }
@@ -910,23 +954,23 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
 
     public void sendNotification(final String msg) {
 
-            val list = getPacketStreamForNotification(1, msg);
-            for (val part : list) {
-                val item = new QueueMe()
-                        .setBytes(part.getBytes())
-                        .expireInSeconds(60)
-                        .setDescription("Notify part");
+        val list = getPacketStreamForNotification(1, msg);
+        for (val part : list) {
+            val item = new QueueMe()
+                    .setBytes(part.getBytes())
+                    .expireInSeconds(60)
+                    .setDescription("Notify part");
 
-                item.setProcessor(new AuthReplyProcessor(new ReplyProcessor(I.connection) {
-                    @Override
-                    public void process(byte[] bytes) {
-                        UserError.Log.d(TAG, "Notify  reply processor: " + HexDump.dumpHexString(bytes));
-                    }
-                }).setTag(item));
-                item.queue();
-            }
-            doQueue();
+            item.setProcessor(new AuthReplyProcessor(new ReplyProcessor(I.connection) {
+                @Override
+                public void process(byte[] bytes) {
+                    UserError.Log.d(TAG, "Notify  reply processor: " + HexDump.dumpHexString(bytes));
+                }
+            }).setTag(item));
+            item.queue();
         }
+        doQueue();
+    }
 
 
     public void addToLog(final String text) {
@@ -994,6 +1038,7 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
         if (I.isNotificationEnabled) {
             UserError.Log.d(TAG, "Notifications already enabled");
             changeNextState();
+            return;
         }
         if (notificationSubscription != null) {
             notificationSubscription.unsubscribe();
@@ -1156,7 +1201,7 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
                             case "message":
                                 final String message = intent.getStringExtra("message");
                                 final String message_type = intent.getStringExtra("message_type");
-                                if (JoH.ratelimit("bj-sendmessage",30)) {
+                                if (JoH.ratelimit("bj-sendmessage", 30)) {
                                     sendNotification(message);
                                 }
                         }
@@ -1197,6 +1242,10 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
     @Override
     public IBinder onBind(Intent intent) {
         return binder;
+    }
+
+    private boolean flashRunning() {
+        return flashIsRunning;
     }
 
     // sequencer
@@ -1317,8 +1366,16 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
 
                 case CLOSED:
                     setRetryTimerReal(); // local retry strategy
+                    I.isNotificationEnabled = false; // should be handled by throwable but just to be sure
                     return super.automata();
 
+                case SEND_QUEUE:
+                    if (!flashRunning()) {
+                        return super.automata();
+                    } else {
+                        UserError.Log.d(TAG, "Not sending queue as firmware update in progress");
+                    }
+                    break;
 
                 default:
                     // if (shouldServiceRun()) {
@@ -1348,7 +1405,7 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
 
     void checkConnection() {
         if (!I.isConnected) {
-            UserError.Log.uel(TAG,"Attempting connect as we are not connected");
+            UserError.Log.d(TAG, "Attempting connect as we are not connected");
             changeState(INIT);
         }
     }
@@ -1418,7 +1475,7 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
     protected void setRetryTimerReal() {
         if (shouldServiceRun()) {
             final long retry_in = whenToRetryNext();
-            UserError.Log.e(TAG, "setRetryTimer: Restarting in: " + (retry_in / Constants.SECOND_IN_MS) + " seconds");
+            UserError.Log.d(TAG, "setRetryTimer: Restarting in: " + (retry_in / Constants.SECOND_IN_MS) + " seconds");
             I.serviceIntent = WakeLockTrampoline.getPendingIntent(this.getClass(), Constants.BLUEJAY_SERVICE_RETRY_ID, "wakeup");
             I.retry_time = JoH.wakeUpIntent(xdrip.getAppContext(), retry_in, I.serviceIntent);
             I.wakeup_time = JoH.tsl() + retry_in;
@@ -1428,16 +1485,16 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
     }
 
     private void cancelRetryTimer() {
-            JoH.cancelAlarm(xdrip.getAppContext(), I.serviceIntent);
-            I.wakeup_time = 0;
+        JoH.cancelAlarm(xdrip.getAppContext(), I.serviceIntent);
+        I.wakeup_time = 0;
     }
 
 
     private long whenToRetryNext() {
         //I.retry_backoff += Constants.SECOND_IN_MS;
-       // if (I.retry_backoff > MAX_RETRY_BACKOFF_MS) {
-       //     I.retry_backoff = MAX_RETRY_BACKOFF_MS;
-       // }
+        // if (I.retry_backoff > MAX_RETRY_BACKOFF_MS) {
+        //     I.retry_backoff = MAX_RETRY_BACKOFF_MS;
+        // }
         return Constants.MINUTE_IN_MS * 10;
     }
 
@@ -1481,6 +1538,8 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
 
     private boolean backFillOkayToAsk(long time) {
         // Todo add significant delay when asking for max records so we can handle situation where watch has nothing usefulbut keeps being asked
+        if (flashRunning()) return false;
+        if (!BlueJay.hasIdentityKey()) return false;
         final long granularity = Constants.MINUTE_IN_MS * 5;
         val last_asked = PersistentStore.getLong(PREF_BACKFILL_ASKED + I.address);
         UserError.Log.d(TAG, "Backfill Okay To Ask: " + time + " vs " + last_asked);
@@ -1566,7 +1625,7 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
                 // prompt update for main?
             }
         }));
-
+// TODO don't show upgrade if queue still pending as we may not know the latest version
         if (latestMainVersion > info.buildNumber && II.isConnected) {
             l.add(new StatusItem("Update Available", "Tap to update " + latestMainVersion, NOTICE, "long-press", new Runnable() {
                 @Override
