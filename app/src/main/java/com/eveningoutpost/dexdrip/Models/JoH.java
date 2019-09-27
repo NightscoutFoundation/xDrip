@@ -229,6 +229,11 @@ public class JoH {
         }
     }
 
+    public static String macFormat(final String unformatted) {
+        if (unformatted == null) return null;
+        return unformatted.replaceAll("[^a-fA-F0-9]","").replaceAll("(.{2})", "$1:").substring(0,17);
+    }
+
     public static <K, V extends Comparable<? super V>> SortedSet<Map.Entry<K, V>> mapSortedByValue(Map<K, V> map, boolean descending) {
         final SortedSet<Map.Entry<K, V>> sortedSet = new TreeSet<>((value1, value2) -> {
             int result = descending ? value2.getValue().compareTo(value1.getValue())
@@ -1452,6 +1457,24 @@ public class JoH {
         }
         return false;
     }
+
+    public static boolean createSpecialBond(final String thisTAG, final BluetoothDevice device){
+        try {
+            Log.e(thisTAG,"Attempting special bond");
+            Class[] argTypes = new Class[] { int.class };
+            final Method method = device.getClass().getMethod("createBond", argTypes);
+            if (method != null) {
+                return (Boolean) method.invoke(device, 2);
+            } else {
+                Log.e(thisTAG,"CANNOT FIND SPECIAL BOND METHOD!!");
+            }
+        }
+        catch (Exception e) {
+            Log.e(thisTAG, "An exception occured while creating special bond: "+e);
+        }
+        return false;
+    }
+
 
     public synchronized static void setBluetoothEnabled(Context context, boolean state) {
         try {

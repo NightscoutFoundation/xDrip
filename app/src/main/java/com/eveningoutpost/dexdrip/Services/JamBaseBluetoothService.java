@@ -14,16 +14,18 @@ import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.utils.bt.HandleBleScanException;
-import com.polidea.rxandroidble.RxBleConnection;
-import com.polidea.rxandroidble.RxBleCustomOperation;
-import com.polidea.rxandroidble.exceptions.BleScanException;
-import com.polidea.rxandroidble.internal.connection.RxBleGattCallback;
+import com.polidea.rxandroidble2.RxBleConnection;
+import com.polidea.rxandroidble2.RxBleCustomOperation;
+import com.polidea.rxandroidble2.exceptions.BleScanException;
+import com.polidea.rxandroidble2.internal.connection.RxBleGattCallback;
 
 import java.util.concurrent.TimeUnit;
 
-import rx.Observable;
-import rx.Scheduler;
-import rx.schedulers.Schedulers;
+import io.reactivex.Observable;
+import io.reactivex.Scheduler;
+import io.reactivex.exceptions.UndeliverableException;
+import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.schedulers.Schedulers;
 
 
 // jamorham base class for reactive bluetooth services
@@ -42,6 +44,20 @@ public abstract class JamBaseBluetoothService extends Service {
 
     protected String handleBleScanException(BleScanException bleScanException) {
         return HandleBleScanException.handle(TAG, bleScanException);
+    }
+
+
+    {
+        RxJavaPlugins.setErrorHandler(e -> {
+            if (e instanceof UndeliverableException) {
+                if (!e.getCause().toString().contains("OperationSuccess")) {
+                    UserError.Log.e(TAG, "RxJavaError: " + e.getMessage());
+                }
+            } else {
+                UserError.Log.wtf(TAG, "RxJavaError2:" + e.getClass().getCanonicalName() + " " + e.getMessage() + " " + JoH.backTrace(3));
+            }
+        });
+
     }
 
     protected void startInForeground() {

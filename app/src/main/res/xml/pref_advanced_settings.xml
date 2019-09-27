@@ -296,6 +296,85 @@
             </PreferenceCategory>
         </PreferenceScreen>
 
+
+        <PreferenceScreen
+            android:title="BlueJay Watch"
+            android:key="bluejay_preference_screen">
+            <SwitchPreference
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
+                android:defaultValue="false"
+                android:key="bluejay_enabled"
+                android:summary=""
+                android:title="BlueJay Watch" />
+            <SwitchPreference
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
+                android:defaultValue="true"
+                android:dependency="bluejay_enabled"
+                android:key="bluejay_collector_enabled"
+                android:summary=""
+                android:title="Run Collector" />
+
+            <CheckBoxPreference
+                android:key="bluejay_local_alarms"
+                android:dependency="bluejay_enabled"
+                android:defaultValue="true"
+                android:summary="Watch can alarm for high/low when not connected to phone."
+                android:title="Local Alarms" />
+
+            <EditTextPreference
+                android:key="bluejay_mac"
+                android:title="BlueJay Mac"/>
+
+            <SwitchPreference
+                android:defaultValue="true"
+                android:dependency="bluejay_enabled"
+                android:key="bluejay_send_alarms"
+                android:summary=""
+                android:title="Send Alarms" />
+            <CheckBoxPreference
+                android:key="bluejay_option_call_notifications"
+                android:dependency="bluejay_enabled"
+                android:defaultValue="false"
+                android:summary="Send call notifications to the band (Android 6+)"
+                android:title="Send Calls" />
+
+
+            <CheckBoxPreference
+                android:key="bluejay_send_readings"
+                android:dependency="bluejay_enabled"
+                android:defaultValue="true"
+                android:summary="Send glucose values received on the Phone to the Watch"
+                android:title="Send Readings" />
+
+            <CheckBoxPreference
+                android:key="bluejay_option_24_hour_clock"
+                android:dependency="bluejay_enabled"
+                android:defaultValue="false"
+                android:summary="Show 24 hour clock on display"
+                android:title="24 Hour Clock" />
+
+            <CheckBoxPreference
+                android:key="bluejay_beep_on_connect"
+                android:dependency="bluejay_enabled"
+                android:defaultValue="false"
+                android:summary="Play a sound when the bluejay connects"
+                android:title="Debug sound" />
+
+
+            <Preference
+                android:key="launch_bluejay_control"
+                android:title="Launch BlueJay Panel">
+                <intent
+                    android:action="android.intent.action.MAIN"
+                    android:targetClass="com.eveningoutpost.dexdrip.ui.activities.ThinJamActivity"
+                    android:targetPackage="@string/local_target_package" />
+            </Preference>
+
+        </PreferenceScreen>
+
+
         <PreferenceScreen
             android:title="@string/title_lefun_band">
             <SwitchPreference
@@ -519,6 +598,13 @@
                 android:key="local_broadcast_specific_package_destination"
                 android:title="@string/title_Identify_receiver"
                 android:summary="@string/summary_Only_send_to_named_package"/>
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="accept_nsclient_sgv"
+                android:summary="Accept Glucose"
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
+                android:title="Process glucose data received from NSClient app" />
             <SwitchPreference
                 android:defaultValue="true"
                 android:key="accept_nsclient_treatments"

@@ -5,10 +5,10 @@ import com.eveningoutpost.dexdrip.Models.UserError;
 
 // jamorham
 
-class BaseAuthChallengeTxMessage extends BaseMessage {
+public class BaseAuthChallengeTxMessage extends BaseMessage {
     static final byte opcode = 0x04;
 
-    BaseAuthChallengeTxMessage(final byte[] challenge) {
+    public BaseAuthChallengeTxMessage(final byte[] challenge) {
 
         init(opcode, 9);
         data.put(challenge);

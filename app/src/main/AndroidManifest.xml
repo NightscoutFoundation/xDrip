@@ -58,6 +58,7 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:largeHeap="true"
+        android:usesCleartextTraffic="true"
         android:theme="@style/AppTheme">
         <meta-data
             android:name="AA_DB_NAME"
@@ -247,6 +248,7 @@
             android:name=".Services.SyncService"
             android:enabled="true"
             android:exported="true" />
+
         <service
             android:name=".ImportedLibraries.dexcom.SyncingService"
             android:enabled="true"
@@ -488,6 +490,7 @@
             </intent-filter>
         </receiver>
         <receiver android:name=".utils.framework.WakeLockTrampoline" />
+        <receiver android:name=".watch.thinjam.BackgroundScanReceiver" />
 
         <service
             android:name=".TaskService"
@@ -687,6 +690,11 @@
         <activity android:name=".ui.activities.TimePickerPrefActivity"></activity>
         <activity android:name=".ui.activities.DatabaseAdmin"
             android:label="Database Admin"/>
+        <activity android:name=".ui.activities.ThinJamActivity"
+            android:configChanges="orientation|screenSize"
+            android:launchMode="singleTask"
+            android:label="BlueJay Admin"/>
+        <service android:name=".watch.thinjam.BlueJayService" />
     </application>
 
 </manifest>

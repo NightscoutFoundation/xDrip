@@ -46,6 +46,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
+import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 
 import java.text.DecimalFormat;
@@ -555,6 +556,7 @@ public class EditAlertActivity extends ActivityWithMenu {
                 startWatchUpdaterService(mContext, WatchUpdaterService.ACTION_SYNC_ALERTTYPE, TAG);
                 Intent returnIntent = new Intent();
                 setResult(RESULT_OK,returnIntent);
+                BlueJayEntry.startWithRefreshIfEnabled();
                 finish();
             }
 

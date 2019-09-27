@@ -290,7 +290,7 @@
             android:name=".LocationPermissionActivity"
             android:label="title_activity_location_permission"
             android:launchMode="singleTop">
-            android:theme="android:theme="@style/Theme.AppCompat.Light"
+
         </activity>
         <activity
             android:name=".SnoozeActivity"

@@ -21,6 +21,7 @@ import com.eveningoutpost.dexdrip.Services.SyncService;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.UndoRedo;
 import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
+import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -39,6 +40,8 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.UUID;
+
+import static com.eveningoutpost.dexdrip.Models.JoH.emptyString;
 
 // TODO Switchable Carb models
 // TODO Linear array timeline optimization
@@ -100,7 +103,12 @@ public class Treatments extends Model {
 
     public static synchronized Treatments create(final double carbs, final double insulin, long timestamp, double position, String suggested_uuid) {
         // TODO sanity check values
-        Log.d(TAG, "Creating treatment: Insulin: " + Double.toString(insulin) + " / Carbs: " + Double.toString(carbs) + (suggested_uuid != null && !suggested_uuid.isEmpty() ? " uuid: " + suggested_uuid : ""));
+        Log.d(TAG, "Creating treatment: " +
+                "Insulin: " + insulin + " / " +
+                "Carbs: " + carbs +
+                (suggested_uuid != null && !suggested_uuid.isEmpty()
+                        ? " " + "uuid: " + suggested_uuid
+                        : ""));
 
         if ((carbs == 0) && (insulin == 0)) return null;
 
@@ -220,7 +228,8 @@ public class Treatments extends Model {
         pushTreatmentSync(treatment, true, null); // new entry by default
     }
 
-    private static void pushTreatmentSync(Treatments treatment, boolean is_new, String suggested_uuid) {;
+    private static void pushTreatmentSync(Treatments treatment, boolean is_new, String suggested_uuid) {
+
         if (Home.get_master_or_follower()) GcmActivity.pushTreatmentAsync(treatment);
 
         if (!(Pref.getBoolean("cloud_storage_api_enable", false) || Pref.getBoolean("cloud_storage_mongodb_enable", false))) {
@@ -278,6 +287,15 @@ public class Treatments extends Model {
         return new Select()
                 .from(Treatments.class)
                 .orderBy("_ID desc")
+                .executeSingle();
+    }
+
+    public static Treatments lastNotFromXdrip() {
+        fixUpTable();
+        return new Select()
+                .from(Treatments.class)
+                .where("enteredBy NOT LIKE '" + XDRIP_TAG + "%'")
+                .orderBy("_ID DESC")
                 .executeSingle();
     }
 
@@ -354,9 +372,8 @@ public class Treatments extends Model {
         }
     }
 
-    public static void delete_by_uuid(String uuid)
-    {
-        delete_by_uuid(uuid,false);
+    public static void delete_by_uuid(String uuid) {
+        delete_by_uuid(uuid, false);
     }
 
     public static void delete_by_uuid(String uuid, boolean from_interactive) {
@@ -383,7 +400,7 @@ public class Treatments extends Model {
                 //GoogleDriveInterface gdrive = new GoogleDriveInterface();
                 //gdrive.deleteTreatmentAtRemote(thistreat.uuid);
             }
-            UploaderQueue.newEntry("delete",thistreat);
+            UploaderQueue.newEntry("delete", thistreat);
             thistreat.delete();
         }
         return null;
@@ -444,18 +461,18 @@ public class Treatments extends Model {
                     Home.staticRefreshBGChartsOnIdle();
                 }
 
-                if ((dupe_treatment.uuid !=null) && (mytreatment.uuid !=null) && (dupe_treatment.uuid.equals(mytreatment.uuid)) && (mytreatment.notes != null))
-                {
+                if ((dupe_treatment.uuid != null) && (mytreatment.uuid != null) && (dupe_treatment.uuid.equals(mytreatment.uuid)) && (mytreatment.notes != null)) {
 
-                    if ((dupe_treatment.notes == null) || (dupe_treatment.notes.length() < mytreatment.notes.length()))
-                    {
+                    if ((dupe_treatment.notes == null) || (dupe_treatment.notes.length() < mytreatment.notes.length())) {
                         dupe_treatment.notes = mytreatment.notes;
                         fixUpTable();
                         dupe_treatment.save();
-                        Log.d(TAG,"Saved updated treatement notes");
+                        Log.d(TAG, "Saved updated treatement notes");
                         // should not end up needing to append notes and be from_interactive via undo as these
                         // would be mutually exclusive operations so we don't need to handle that here.
                         Home.staticRefreshBGChartsOnIdle();
+                        // TODO review if this is correct place for new notes only
+                        evaluateNotesForNotification(mytreatment);
                     }
                 }
 
@@ -482,10 +499,18 @@ public class Treatments extends Model {
             if (from_interactive) {
                 pushTreatmentSync(mytreatment);
             }
+            // TODO review if this is correct place for new notes only
+            evaluateNotesForNotification(mytreatment);
             Home.staticRefreshBGChartsOnIdle();
             return true;
         } else {
             return false;
+        }
+    }
+
+    private static void evaluateNotesForNotification(final Treatments mytreatment) {
+        if (!emptyString(mytreatment.notes) && mytreatment.notes.startsWith("-")) {
+            BlueJayEntry.sendNotifyIfEnabled(mytreatment.notes);
         }
     }
 
@@ -973,6 +998,7 @@ public class Treatments extends Model {
 
     private static final double MAX_SMB_UNITS = 0.3;
     private static final double MAX_OPENAPS_SMB_UNITS = 0.4;
+
     public boolean likelySMB() {
         return (carbs == 0 && insulin > 0
                 && ((insulin <= MAX_SMB_UNITS && (notes == null || notes.length() == 0)) || (enteredBy != null && enteredBy.startsWith("openaps:") && insulin <= MAX_OPENAPS_SMB_UNITS)));
