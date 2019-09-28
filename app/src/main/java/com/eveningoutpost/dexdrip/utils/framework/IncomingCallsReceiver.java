@@ -5,11 +5,16 @@ package com.eveningoutpost.dexdrip.utils.framework;
 import android.Manifest;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Build;
+import android.provider.ContactsContract;
 import android.support.v4.app.ActivityCompat;
+import android.telephony.PhoneNumberUtils;
 import android.telephony.TelephonyManager;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
@@ -17,6 +22,7 @@ import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.watch.lefun.LeFun;
 import com.eveningoutpost.dexdrip.watch.lefun.LeFunEntry;
+import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import lombok.Getter;
@@ -52,6 +58,8 @@ public class IncomingCallsReceiver extends BroadcastReceiver {
         UserError.Log.d(TAG, "Call State: " + stateExtra + " " + number);
         if (stateExtra != null && stateExtra.equals(TelephonyManager.EXTRA_STATE_RINGING)) {
             ringingNow = true;
+
+            // Lefun
             if (JoH.quietratelimit("lefun-call-debounce", 10)) {
                 if (LeFunEntry.areCallAlertsEnabled()) {
                     UserError.Log.d(TAG, "Sending call alert: " + number);
@@ -60,6 +68,17 @@ public class IncomingCallsReceiver extends BroadcastReceiver {
                     LeFun.sendAlert(true, caller);
                 }
             }
+
+            // BlueJay
+            if (JoH.quietratelimit("bluejay-call-debounce", 10)) {
+                if (BlueJayEntry.areCallAlertsEnabled()) {
+                    // TODO extract to generic notifier
+                    final String caller = number != null ? "Incoming Call " + getContactDisplayNameByNumber(number) + " " + bestPhoneNumberFormatter(number) + " " : "CALL";
+                    UserError.Log.d(TAG, "Sending call alert: " + caller);
+                    BlueJayEntry.sendNotifyIfEnabled(caller);
+                }
+            }
+
         } else {
             if (ringingNow) {
                 ringingNow = false;
@@ -67,5 +86,54 @@ public class IncomingCallsReceiver extends BroadcastReceiver {
             }
         }
     }
+
+
+    // TODO this is still very incomplete
+    private static String bestPhoneNumberFormatter(final String number) {
+        if (number == null) return null;
+        final String formatted = PhoneNumberUtils.formatNumber(number);
+        if (formatted.contains(" ")) {
+            return formatted;
+        } else {
+            final StringBuilder spaced = new StringBuilder();
+            final char[] array = number.toCharArray();
+            boolean first = true;
+            int counter = 0;
+            for (char c : array) {
+                spaced.append(c);
+                first = false;
+                counter++;
+                if (counter == 5) {
+                    spaced.append(" ");
+                }
+            }
+            return spaced.toString();
+        }
+    }
+
+    public String getContactDisplayNameByNumber(final String number) {
+        String name = "Unknown";
+        try {
+            final Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(number));
+            final ContentResolver contentResolver = xdrip.getAppContext().getContentResolver();
+            final Cursor cursor = contentResolver.query(uri, null, null, null, null);
+
+            try {
+                if (cursor != null && cursor.getCount() > 0) {
+                    cursor.moveToNext();
+                    name = cursor.getString(cursor.getColumnIndex(ContactsContract.Data.DISPLAY_NAME));
+                }
+            } finally {
+                if (cursor != null) {
+                    cursor.close();
+                }
+            }
+
+        } catch (SecurityException e) {
+            JoH.static_toast_long("xDrip needs contacts permission to get names from numbers");
+        }
+        return name;
+    }
+
 }
 

@@ -3,7 +3,7 @@ sudo: required
 dist: trusty
 env:
   global:
-    - EMULATOR_API_LEVEL=19
+    - EMULATOR_API_LEVEL=21
     - ANDROID_ABI=armeabi-v7a
     - ADB_INSTALL_TIMEOUT=20
     - AVD_DEBUG='init,avd_config,nand_limits,keys,adb,adbserver,adbclient'
