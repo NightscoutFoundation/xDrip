@@ -28,11 +28,11 @@
     </string-array>
 
     <string-array name="BgAlertProfileEntries">
-        <item>Vysoko</item>
-        <item>Stredne</item>
+        <item>Hlasný</item>
+        <item>Stredný</item>
         <item>Zvyšujúca hlasitosť</item>
         <item>Len vibrovať</item>
-        <item>Ticho</item>
+        <item>Tichý</item>
     </string-array>
 
     <string-array name="alertType">
