@@ -715,7 +715,7 @@
     <string name="yes_calibrate">ÁNO, kalibrovať</string>
     <string name="yes">Áno</string>
     <string name="xdrip_reminders">xDrip Upozornenia</string>
-    <string name="xdrip_software_changed_format">xDrip verzia sa zmenila z %s na %s</string>
+    <string name="xdrip_software_changed_format">xDrip verzia sa zmenila z %1$s na %2$s</string>
     <string name="xbridge_compatible">xBridge kompatibilné</string>
     <string name="and_then_repeat">a potom opakovať každých</string>
     <string name="always_use_same_title">vždy použiť rovnaký nadpis</string>
