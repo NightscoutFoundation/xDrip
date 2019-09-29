@@ -1456,8 +1456,12 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
 
             try {
 
-                if (DexCollectionType.getDexCollectionType() != DexCollectionType.LibreReceiver) {
-                    collectionCategory.removePreference(libre2settings);
+                try {
+                    if (DexCollectionType.getDexCollectionType() != DexCollectionType.LibreReceiver) {
+                        collectionCategory.removePreference(libre2settings);
+                    }
+                } catch (NullPointerException e) {
+                    Log.wtf(TAG, "Nullpointer Libre2Settings: ", e);
                 }
 
                 try {
