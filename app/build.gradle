@@ -107,7 +107,7 @@ def generateVersionName = { ->
         return "NoGitSystemAvailable"
     }
     stringBuilder.append('-')
-    stringBuilder.append((new Date()).format('yyyy.MM.dd'))
+    stringBuilder.append((new Date()).format('yy.MMdd.HHmmss'))
     return stringBuilder.toString()
 
 }

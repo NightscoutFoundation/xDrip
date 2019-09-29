@@ -14,7 +14,7 @@ class CustomUpdater {
     void monitorUpdate(Activity activity) {
         Log.d(TAG, "activating CustomUpdater from URL=" + BuildConfig.XDRIP_UPDATER_URL);
         appUpdater = new AppUpdater(activity)
-                .setDisplay(Display.NOTIFICATION)
+                .setDisplay(Display.DIALOG)
                 .setUpdateFrom(UpdateFrom.JSON);
         appUpdater.setUpdateJSON(BuildConfig.XDRIP_UPDATER_URL);
 //        appUpdater.showAppUpdated(true);
