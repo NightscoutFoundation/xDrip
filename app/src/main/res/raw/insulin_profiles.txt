@@ -114,6 +114,25 @@
           "duration": "2160"
         }
       }
+    },
+    {
+      "name": "Lantus",
+      "displayName": "Lantus (long acting)",
+      "PPN":
+      [
+        "LantusU100"
+      ],
+      "concentration": "U100",
+      "Curve":
+      {
+        "type": "linear trapezoid",
+        "data":
+        {
+          "onset": "60",
+          "peak": "420-1200",
+          "duration": "2160"
+        }
+      }
     }
   ]
 }
