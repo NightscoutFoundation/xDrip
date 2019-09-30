@@ -323,15 +323,13 @@
                 android:summary="Watch can alarm for high/low when not connected to phone."
                 android:title="Local Alarms" />
 
-            <EditTextPreference
-                android:key="bluejay_mac"
-                android:title="BlueJay Mac"/>
+
 
             <SwitchPreference
                 android:defaultValue="true"
                 android:dependency="bluejay_enabled"
                 android:key="bluejay_send_alarms"
-                android:summary=""
+                android:summary="Send xDrip generated alarms to the watch"
                 android:title="Send Alarms" />
             <CheckBoxPreference
                 android:key="bluejay_option_call_notifications"
@@ -355,13 +353,30 @@
                 android:summary="Show 24 hour clock on display"
                 android:title="24 Hour Clock" />
 
-            <CheckBoxPreference
-                android:key="bluejay_beep_on_connect"
+            <SeekBarPreference
+                android:key="bluejay_screen_timeout"
                 android:dependency="bluejay_enabled"
-                android:defaultValue="false"
-                android:summary="Play a sound when the bluejay connects"
-                android:title="Debug sound" />
+                android:title="Screen Timeout"
+                android:summary=""
+                android:max="7"
+                android:min="0"
+                android:defaultValue="6" />
 
+            <SwitchPreference
+                android:defaultValue="true"
+                android:dependency="bluejay_enabled"
+                android:key="bluejay_use_motion_wake"
+                android:summary="Use a shake of the wrist to wake BlueJay. Adjust sensitivity below."
+                android:title="Wake with motion" />
+
+            <SeekBarPreference
+                android:key="bluejay_wake_velocity"
+                android:dependency="bluejay_enabled"
+                android:title="Wake up velocity"
+                android:summary=""
+                android:max="15"
+                android:min="0"
+                android:defaultValue="6" />
 
             <Preference
                 android:key="launch_bluejay_control"
@@ -371,6 +386,41 @@
                     android:targetClass="com.eveningoutpost.dexdrip.ui.activities.ThinJamActivity"
                     android:targetPackage="@string/local_target_package" />
             </Preference>
+
+
+
+            <PreferenceScreen
+                android:key="bluejay_preference_screen"
+                android:title="BlueJay Advanced Settings">
+                <EditTextPreference
+                    android:key="bluejay_mac"
+                    android:title="BlueJay Mac" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:dependency="bluejay_enabled"
+                    android:key="bluejay_beep_on_connect"
+                    android:summary="Play a sound when the bluejay connects"
+                    android:title="Debug sound" />
+
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:dependency="bluejay_enabled"
+                    android:enabled="false"
+                    android:key="bluejay_delta_trend"
+                    android:summary="Try to calculate xDrip style delta trend arrow instead of using transmitter estimate arrow."
+                    android:title="Attempt Delta Trend" />
+
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:dependency="bluejay_enabled"
+                    android:enabled="false"
+                    android:key="bluejay_timing_failsafe"
+                    android:summary="Scan for longer periods of time if readings are missed. Uses more battery but can recover if watch gets out of sync"
+                    android:title="Timing fail-safe" />
+
+            </PreferenceScreen>
+
+
 
         </PreferenceScreen>
 
