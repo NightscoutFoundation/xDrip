@@ -215,28 +215,31 @@ public class NFCReaderX {
         }
     }
     public static boolean HandleGoodReading(String tagId, byte[] data1, final long CaptureDateTime) {
-        return HandleGoodReading(tagId, data1, CaptureDateTime, false);
+        return HandleGoodReading(tagId, data1, CaptureDateTime, false, null, null);
     }
 
     // returns true if checksum passed.
-    public static boolean HandleGoodReading(String tagId, byte[] data1, final long CaptureDateTime, boolean allowUpload ) {
+    public static boolean HandleGoodReading(final String tagId, byte[] data1, final long CaptureDateTime, final boolean allowUpload, byte []patchUid,  byte []patchInfo ) {
 
-        final boolean checksum_ok = LibreUtils.verify(data1);
-        if (!checksum_ok) {
-            return false;
-        }
-        
-        // The 4'th byte is where the sensor status is.
-        if(!LibreUtils.isSensorReady(data1[4])) {
-            Log.e(TAG, "Sensor is not ready, Ignoring reading!");
-            return true;
-        }
 
         if (Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
+            // If oop is used, there is no need to  do the checksum It will be done by the oop.
+            // (or actually we don't know how to do it, for us 14/de sensors).
             // Save raw block record (we start from block 0)
-            LibreBlock.createAndSave(tagId, CaptureDateTime, data1, 0, allowUpload);
-            LibreOOPAlgorithm.SendData(data1, CaptureDateTime);
+            LibreBlock.createAndSave(tagId, CaptureDateTime, data1, 0, allowUpload, patchUid, patchInfo);
+            LibreOOPAlgorithm.SendData(data1, CaptureDateTime, patchUid, patchInfo);
         } else {
+            final boolean checksum_ok = LibreUtils.verify(data1);
+            if (!checksum_ok) {
+                return false;
+            }
+            
+            // The 4'th byte is where the sensor status is.
+            if(!LibreUtils.isSensorReady(data1[4])) {
+                Log.e(TAG, "Sensor is not ready, Ignoring reading!");
+                return true;
+            }
+            
             final ReadingData mResult = parseData(0, tagId, data1, CaptureDateTime);
             new Thread() {
                 @Override
@@ -244,7 +247,7 @@ public class NFCReaderX {
                     final PowerManager.WakeLock wl = JoH.getWakeLock("processTransferObject", 60000);
                     try {
                         mResult.CalculateSmothedData();
-                        LibreAlarmReceiver.processReadingDataTransferObject(new ReadingData.TransferObject(1, mResult), CaptureDateTime, tagId, allowUpload );
+                        LibreAlarmReceiver.processReadingDataTransferObject(new ReadingData.TransferObject(1, mResult), CaptureDateTime, tagId, allowUpload, patchUid, patchInfo );
                         Home.staticRefreshBGCharts();
                     } finally {
                         JoH.releaseWakeLock(wl);
@@ -267,6 +270,7 @@ public class NFCReaderX {
         }
 
         private byte[] data = new byte[360];
+        private byte[] patchInfo = null;
 
 
         @Override
@@ -278,7 +282,7 @@ public class NFCReaderX {
                 if (succeeded) {
                     long now = JoH.tsl();
                     String SensorSn = LibreUtils.decodeSerialNumberKey(tag.getId());
-                    boolean checksum_ok = HandleGoodReading(SensorSn, data, now);
+                    boolean checksum_ok = HandleGoodReading(SensorSn, data, now, false, tag.getId(), patchInfo);
                     if(checksum_ok == false) {
                         Log.e(TAG, "Read data but checksum is wrong");
                     }
@@ -355,6 +359,29 @@ public class NFCReaderX {
                         // if multiblock mode
                         JoH.benchmark(null);
 
+                        Long time_patch = System.currentTimeMillis();
+                        while (true) {
+                            try {
+                                
+                                final byte[] cmd = new byte[] {0x02, (byte)0xa1, 0x07};
+                                patchInfo = nfcvTag.transceive(cmd);
+                                if(patchInfo != null) {
+                                    // We need to throw away the first byte.
+                                    patchInfo = Arrays.copyOfRange(patchInfo, 1, patchInfo.length);
+                                }
+                                break;
+                            } catch (IOException e) {
+                                if ((System.currentTimeMillis() > time_patch + 2000)) {
+                                    Log.e(TAG, "patchInfo tag read timeout");
+                                    JoH.static_toast_short(gs(R.string.nfc_read_timeout));
+                                    vibrate(context, 3);
+                                    return null;
+                                }
+                                Thread.sleep(100);
+                            }
+                        }
+                        Log.d(TAG, "patchInfo = " + HexDump.dumpHexString(patchInfo));
+                        
                         if (multiblock) {
                             final int correct_reply_size = addressed ? 28 : 25;
                             for (int i = 0; i <= 43; i = i + 3) {
