@@ -21,6 +21,10 @@ public class LibreOOPAlgorithm {
     private static final String TAG = "LibreOOPAlgorithm";
     
     static public void SendData(byte[] fullData, long timestamp) {
+        SendData(fullData, timestamp, null, null);
+    }
+    
+    static public void SendData(byte[] fullData, long timestamp, byte []patchUid,  byte []patchInfo) {
         if(fullData == null) {
             Log.e(TAG, "SendData called with null data");
             return;
@@ -40,6 +44,12 @@ public class LibreOOPAlgorithm {
         bundle.putByteArray(Intents.LIBRE_DATA_BUFFER, fullData);
         bundle.putLong(Intents.LIBRE_DATA_TIMESTAMP, timestamp);
         bundle.putString(Intents.LIBRE_SN, PersistentStore.getString("LibreSN"));
+        if(patchUid != null) {
+            bundle.putByteArray(Intents.LIBRE_PATCH_UID_BUFFER, patchUid);
+        }
+        if(patchInfo != null) {
+            bundle.putByteArray(Intents.LIBRE_PATCH_INFO_BUFFER, patchInfo);
+        }
         
         intent.putExtras(bundle);
         intent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
