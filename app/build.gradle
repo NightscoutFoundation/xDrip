@@ -175,6 +175,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'),
                     'proguard-rules.pro'
             testProguardFile 'proguard-debug.pro'
+            multiDexKeepProguard file('proguard-debug.pro')
             ext.enableCrashlytics = false
             //      applicationIdSuffix ".debug"
             versionNameSuffix "-debug"
