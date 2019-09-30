@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="PebbleTrendPeriods">
+        <item>1 hodina</item>
+        <item>2 hodiny</item>
+        <item>3 hodiny</item>
+        <item>4 hodiny</item>
+    </string-array>
+
+    <string-array name="UpdateChannelDetail">
+        <item>Stabilný - osvädčené a otestované verzie</item>
+        <item>Beta - nové funkcie, ale nie úplne otestované</item>
+        <item>Alpha - verzia určená na skoré testovanie</item>
+    </string-array>
+
+    <string-array name="UpdateChannelDetailE">
+        <item>Stabilný - osvädčené a otestované verzie</item>
+        <item>Beta - nové funkcie, ale nie úplne otestované</item>
+        <item>Alpha - verzia určená na skoré testovanie</item>
+        <item>Nočné - najnovší kód, vôbec neotestované - len pre expertov!</item>
+    </string-array>
+
+    <string-array name="TreatmentCalibrationChoiceDetail">
+        <item>Automaticky (najlepšie)</item>
+        <item>Zakaždým sa spýtať</item>
+        <item>Nikdy nepoužívať</item>
+        <item>Použiť vždy</item>
+    </string-array>
+
+    <string-array name="BgAlertProfileEntries">
+        <item>Hlasný</item>
+        <item>Stredný</item>
+        <item>Zvyšujúca hlasitosť</item>
+        <item>Len vibrovať</item>
+        <item>Tichý</item>
+    </string-array>
+
+    <string-array name="alertType">
+        <item>Systemové zvuky/Budík</item>
+        <item>Vlastný zvuk/Budík</item>
+        <item>xDrip zvuk</item>
+    </string-array>
+
+    <string-array name="reminderAlertType">
+        <item>Android budík/Budík</item>
+        <item>Vlastný zvukový súbor</item>
+        <item>xDrip+ zvuk pripomienky</item>
+    </string-array>
+
+    <!--    TODO abstract noise values to single source -->
+    <string-array name="NoiseLevelBlock">
+        <item>Posielaj aj pri extrémne rušivom signále</item>
+        <item>Blokuj len extrémne rušivú úroveň signálu</item>
+        <item>Blokuj veľmi vysokú a horšiu úroveň signálu</item>
+        <item>Blokuj vysokú a horšiu úroveň signálu</item>
+    </string-array>
+</resources>
