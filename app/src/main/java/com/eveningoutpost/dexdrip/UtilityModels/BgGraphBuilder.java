@@ -27,6 +27,7 @@ import com.eveningoutpost.dexdrip.Models.Forecast.TrendLine;
 import com.eveningoutpost.dexdrip.Models.HeartRate;
 import com.eveningoutpost.dexdrip.Models.Iob;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.Libre2RawValue;
 import com.eveningoutpost.dexdrip.Models.Prediction;
 import com.eveningoutpost.dexdrip.Models.Profile;
 import com.eveningoutpost.dexdrip.Models.StepCounter;
@@ -136,6 +137,7 @@ public class BgGraphBuilder {
     private final int loaded_numValues;
     private final long loaded_start, loaded_end;
     private final List<BgReading> bgReadings;
+    private List<Libre2RawValue> Libre2RawValues;
     private final List<Calibration> calibrations;
     private final List<BloodTest> bloodtests;
     private final List<PointValue> inRangeValues = new ArrayList<>();
@@ -206,6 +208,8 @@ public class BgGraphBuilder {
             loaded_start=start;
             loaded_end=end;
             bgReadings = BgReading.latestForGraph(numValues, start, end);
+            if (DexCollectionType.getDexCollectionType() == DexCollectionType.LibreReceiver)
+                Libre2RawValues = Libre2RawValue.latestForGraph(numValues * 5, start, end);
             plugin_adjusted = false;
         } finally {
             readings_lock.unlock();
@@ -1299,6 +1303,18 @@ public class BgGraphBuilder {
                         Log.d(TAG, "poly Added: " + JoH.qs(polyxList.get(polyxList.size() - 1)) + " / " + JoH.qs(polyyList.get(polyyList.size() - 1), 2));
                 }
 
+            }
+
+            try {
+                if (DexCollectionType.getDexCollectionType() == DexCollectionType.LibreReceiver && prefs.getBoolean("Libre2_showRawGraph",false)) {
+                    for (final Libre2RawValue bgLibre : Libre2RawValues) {
+                        if (bgLibre.glucose > 0) {
+                            rawInterpretedValues.add(new PointValue((float) (bgLibre.timestamp / FUZZER), (float) unitized(bgLibre.glucose)));
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                Log.wtf(TAG, "Exception to generate Raw-Graph Libre2");
             }
             if (avg1counter > 0) {
                 avg1value = avg1value / avg1counter;

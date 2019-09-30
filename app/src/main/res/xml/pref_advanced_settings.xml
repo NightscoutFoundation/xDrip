@@ -988,6 +988,17 @@
                 android:summary="@string/summary_write_Battery_Information_for_additional_analytic"
                 android:title="@string/title_Batterylog" />
         </PreferenceScreen>
+
+        <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+            android:key="xdrip_libre2_advanced_settings"
+            android:title="Advanced settings for Libre 2">
+            <SwitchPreference
+                android:defaultValue="false"
+                android:key="Libre2_showRawGraph"
+                android:summary="switch on to show the raw values on the Graph"
+                android:title="show Raw values in Graph" />
+        </PreferenceScreen>
+
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:key="aggressive_service_restart"
