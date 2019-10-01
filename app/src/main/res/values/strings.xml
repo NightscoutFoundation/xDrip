@@ -1524,5 +1524,6 @@
     <string name="title_ob1_g5_preemptive_restart_alert">Alert on preemptive restart</string>
     <string name="summary_ob1_g5_preemptive_restart_alert">Raise an alert when preemptively restarting the session</string>
     <string name="pref_enable_insulinprofiles">enable at leas one max three profiles</string>
-    <string name="pref_primary_insulinprofiles">your primary profiles (e.g. for pump, pen....)</string>
+    <string name="pref_select_basal_insulinprofiles">choose basal insulin profile.</string>
+    <string name="pref_select_bolus_insulinprofiles">choose bolus insulin profile. also used for pump and pen...</string>
 </resources>

@@ -715,7 +715,7 @@ public class PendiqService extends JamBaseBluetoothService {
                         getInsulinLog(); // ask for next record
 
                         ArrayList<InsulinInjection> inj = new ArrayList<>();
-                        inj.add(new InsulinInjection(InsulinManager.getPrimaryProfile(), record.insulin));
+                        inj.add(new InsulinInjection(InsulinManager.getBolusProfile(), record.insulin));
                         final Treatments treatment = Treatments.create(0, record.insulin, inj, record.timestamp, suggested_uuid);
                         if (treatment != null) {
                             treatment.enteredBy += " " + PENDIQ_TAG;

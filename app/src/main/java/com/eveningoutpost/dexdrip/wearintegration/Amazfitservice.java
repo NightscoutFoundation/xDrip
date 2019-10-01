@@ -148,7 +148,7 @@ public class Amazfitservice extends Service {
                 if (item.getAction().equals("Amazfit_Treatmentsdata")) {
                     DataBundle databundle = item.getData();
                     ArrayList<InsulinInjection> inj = new ArrayList<>();
-                    inj.add(new InsulinInjection(InsulinManager.getPrimaryProfile(), databundle.getDouble("insulin")));
+                    inj.add(new InsulinInjection(InsulinManager.getBolusProfile(), databundle.getDouble("insulin")));
                     Treatments.create(databundle.getDouble("carbs"), databundle.getDouble("insulin"), inj, databundle.getLong("timestamp"));
 
                 }

@@ -870,7 +870,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                     double pendiqInsulin = 0;
                     if (injections.size() > 1) {
                         for (InsulinInjection i : injections)
-                            if (i.getProfile() == InsulinManager.getPrimaryProfile())
+                            if (i.getProfile() == InsulinManager.getBolusProfile())
                                 pendiqInsulin = i.getUnits();
                     } else pendiqInsulin = thisinsulinsumnumber;
                     Pendiq.handleTreatment(pendiqInsulin);
@@ -893,7 +893,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             double pendiqInsulin = 0;
             if (injections.size() > 1) {
                 for (InsulinInjection i : injections)
-                    if (i.getProfile() == InsulinManager.getPrimaryProfile())
+                    if (i.getProfile() == InsulinManager.getBolusProfile())
                         pendiqInsulin = i.getUnits();
             } else pendiqInsulin = thisinsulinsumnumber;
             Pendiq.handleTreatment(pendiqInsulin);

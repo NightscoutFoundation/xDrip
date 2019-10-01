@@ -16,7 +16,7 @@ import java.util.ArrayList;
 public class InsulinManager {
     private static final String TAG = "InsulinManager";
     private static ArrayList<Insulin> profiles;
-    private static  Insulin primaryProfile;
+    private static  Insulin basalProfile, bolusProfile;
 
     class insulinDataWrapper {
         public ArrayList<insulinData> profiles;
@@ -116,13 +116,21 @@ public class InsulinManager {
         return profiles;
     }
 
-    public static Insulin getPrimaryProfile()
+    public static Insulin getBasalProfile()
     {
-        return primaryProfile;
+        return basalProfile;
     }
-    public static void setPrimaryProfile(Insulin p)
+    public static void setBasalProfile(Insulin p)
     {
-        primaryProfile = p;
+        basalProfile = p;
+    }
+    public static Insulin getBolusProfile()
+    {
+        return bolusProfile;
+    }
+    public static void setBolusProfile(Insulin p)
+    {
+        bolusProfile = p;
     }
 
     public static ArrayList<Insulin> getAllProfiles() {
@@ -204,9 +212,12 @@ public class InsulinManager {
             if (ins != null)
                 disableProfile(ins);
         }
-        String primProf = Pref.getString("saved_primary_insulinprofiles", "");
-        Log.d(TAG, "Loaded primary Insulin Profiles from Prefs: " + primProf);
-        primaryProfile = getProfile(primProf);
+        String prof = Pref.getString("saved_basal_insulinprofiles", "");
+        Log.d(TAG, "Loaded basal Insulin Profiles from Prefs: " + prof);
+        basalProfile = getProfile(prof);
+        prof = Pref.getString("saved_bolus_insulinprofiles", "");
+        Log.d(TAG, "Loaded bolus Insulin Profiles from Prefs: " + prof);
+        bolusProfile = getProfile(prof);
     }
 
     public static void saveDisabledProfilesToPrefs()
@@ -218,9 +229,13 @@ public class InsulinManager {
         String json = new GsonBuilder().create().toJson(disabled);
         Pref.setString("saved_disabled_insulinprofiles_json", json);
         Log.d(TAG, "saved disabled Insulin Profiles to Prefs: " + json);
-        if (primaryProfile != null) {
-            Pref.setString("saved_primary_insulinprofiles", primaryProfile.getName());
-            Log.d(TAG, "saved primary Insulin Profiles to Prefs: " + primaryProfile.getName());
+        if (basalProfile != null) {
+            Pref.setString("saved_basal_insulinprofiles", basalProfile.getName());
+            Log.d(TAG, "saved basal Insulin Profiles to Prefs: " + basalProfile.getName());
+        }
+        if (bolusProfile != null) {
+            Pref.setString("saved_bolus_insulinprofiles", bolusProfile.getName());
+            Log.d(TAG, "saved bolus Insulin Profiles to Prefs: " + bolusProfile.getName());
         }
     }
 }

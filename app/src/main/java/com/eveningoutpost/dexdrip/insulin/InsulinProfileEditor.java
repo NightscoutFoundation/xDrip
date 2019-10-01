@@ -3,11 +3,14 @@ package com.eveningoutpost.dexdrip.insulin;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Spinner;
 
 import com.eveningoutpost.dexdrip.BaseAppCompatActivity;
 import com.eveningoutpost.dexdrip.R;
@@ -26,9 +29,9 @@ import java.util.HashMap;
     private static Button saveBtn;
     private static Button undoBtn;
     private LinearLayout linearLayout;
-    private RadioGroup primaryProfileGroup;
+    private Spinner basalSpinner, bolusSpinner;
     private HashMap<Insulin, CheckBox> checkboxes;
-    private HashMap<RadioButton, Insulin> radiobuttons;
+    private HashMap<String, Insulin> profiles;
 
     private Context mContext;
 
@@ -39,13 +42,14 @@ import java.util.HashMap;
         setContentView(R.layout.activity_insulinprofile_editor);
 
         checkboxes = new HashMap<Insulin, CheckBox>();
-        radiobuttons = new HashMap<RadioButton, Insulin>();
+        profiles = new HashMap<>();
 
         undoBtn = (Button) findViewById(R.id.profileUndoBtn);
         saveBtn = (Button) findViewById(R.id.profileSaveBtn);
         cancelBtn = (Button) findViewById(R.id.profileCancelbtn);
         linearLayout = (LinearLayout) findViewById(R.id.profile_layout_view);
-        primaryProfileGroup = (RadioGroup) findViewById(R.id.primary_profile_group);
+        basalSpinner = (Spinner) findViewById(R.id.basalSpinner);
+        bolusSpinner = (Spinner) findViewById(R.id.bolusSpinner);
 
         for (Insulin i: InsulinManager.getAllProfiles())
         {
@@ -74,26 +78,44 @@ import java.util.HashMap;
             });
             v.addView(cb);
             linearLayout.addView(v);
+            profiles.put(i.getDisplayName(), i);
         }
-        for (Insulin i: InsulinManager.getAllProfiles())
-        {
-            RadioButton b = new RadioButton(this);
-            b.setText(i.getDisplayName());
-            b.setTextSize(20);
-            primaryProfileGroup.addView(b);
-            radiobuttons.put(b, i);
-        }
-        primaryProfileGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+        ArrayList<String> p = new ArrayList<String>(profiles.keySet());
+        ArrayAdapter<String> profilesAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, p);
+        profilesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        basalSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onCheckedChanged(RadioGroup radioGroup, int i) {
-                InsulinManager.setPrimaryProfile(radiobuttons.get(findViewById(radioGroup.getCheckedRadioButtonId())));
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                InsulinManager.setBasalProfile(profiles.get(adapterView.getItemAtPosition(i)));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
             }
         });
-        Insulin p = InsulinManager.getPrimaryProfile();
-        primaryProfileGroup.clearCheck();
-        for (RadioButton i: radiobuttons.keySet())
-            if (radiobuttons.get(i) == p)
-                primaryProfileGroup.check(i.getId());
+        basalSpinner.setAdapter(profilesAdapter);
+        bolusSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                InsulinManager.setBolusProfile(profiles.get(adapterView.getItemAtPosition(i)));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+        bolusSpinner.setAdapter(profilesAdapter);
+        String basal = InsulinManager.getBasalProfile().getDisplayName();
+        String bolus = InsulinManager.getBolusProfile().getDisplayName();
+        for (int i = 0; i < p.size(); i++)
+        {
+            if (p.get(i) == basal)
+                basalSpinner.setSelection(i);
+            if (p.get(i) == bolus)
+                bolusSpinner.setSelection(i);
+        }
     }
 
     @Override
@@ -113,16 +135,22 @@ import java.util.HashMap;
 
     public void profileUndoButton(View myview) {
         InsulinManager.LoadDisabledProfilesFromPrefs();
-        Insulin p = InsulinManager.getPrimaryProfile();
-        primaryProfileGroup.clearCheck();
-        for (RadioButton i: radiobuttons.keySet())
-            if (radiobuttons.get(i) == p)
-                primaryProfileGroup.check(i.getId());
         for (Insulin i: InsulinManager.getAllProfiles())
             if (InsulinManager.isProfileEnabled(i))
                 checkboxes.get(i).setChecked(true);
             else
                 checkboxes.get(i).setChecked(false);
+
+        ArrayList<String> p = new ArrayList<String>(profiles.keySet());
+        String basal = InsulinManager.getBasalProfile().getDisplayName();
+        String bolus = InsulinManager.getBolusProfile().getDisplayName();
+        for (int i = 0; i < p.size(); i++)
+        {
+            if (p.get(i) == basal)
+                basalSpinner.setSelection(i);
+            if (p.get(i) == bolus)
+                bolusSpinner.setSelection(i);
+        }
     }
 }
 

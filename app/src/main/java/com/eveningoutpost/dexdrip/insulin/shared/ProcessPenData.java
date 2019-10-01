@@ -50,7 +50,7 @@ public class ProcessPenData {
                 if (!Treatments.matchUUID(treatments, pd.uuid)) {
                     UserError.Log.d(TAG, "New Dose: " + pd.brief());
                     ArrayList<InsulinInjection> inj = new ArrayList<>();
-                    inj.add(new InsulinInjection(InsulinManager.getPrimaryProfile(), pd.units));
+                    inj.add(new InsulinInjection(InsulinManager.getBolusProfile(), pd.units));
                     Treatments.create(0, pd.units, inj, pd.timestamp, pd.uuid);
                     newData = true;
                 }
