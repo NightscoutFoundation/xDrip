@@ -87,6 +87,7 @@ import com.eveningoutpost.dexdrip.ui.LockScreenWallPaper;
 import com.eveningoutpost.dexdrip.utils.framework.IncomingCallsReceiver;
 import com.eveningoutpost.dexdrip.watch.lefun.LeFunEntry;
 import com.eveningoutpost.dexdrip.watch.thinjam.BlueJay;
+import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayAdapter;
 import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry;
 import com.eveningoutpost.dexdrip.wearintegration.Amazfitservice;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
@@ -985,6 +986,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             final Preference bfappid = findPreference("bugfender_appid");
             final Preference nfcSettings = findPreference("xdrip_plus_nfc_settings");
             final Preference bluereadersettings = findPreference("xdrip_blueReader_advanced_settings");
+            final Preference libre2settings = findPreference("xdrip_libre2_advanced_settings");
             //DexCollectionType collectionType = DexCollectionType.getType(findPreference("dex_collection_method").)
 
             final ListPreference currentCalibrationPlugin = (ListPreference)findPreference("current_calibration_plugin");
@@ -1112,6 +1114,17 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             bindPreferenceSummaryToValue(findPreference("node_wearG5"));//KS
             bindPreferenceSummaryToValue(findPreference("wear_logs_prefix"));
             bindPreferenceSummaryToValue(findPreference("disable_wearG5_on_missedreadings_level"));
+
+            try {
+                final Preference blueJayScreenTimeout = findPreference("bluejay_screen_timeout");
+                BlueJayAdapter.sBindPreferenceTitleAppendToBlueJayTimeoutValueListener.onPreferenceChange(blueJayScreenTimeout,
+                        PreferenceManager
+                                .getDefaultSharedPreferences(blueJayScreenTimeout.getContext())
+                                .getInt(blueJayScreenTimeout.getKey(), -1));
+                blueJayScreenTimeout.setOnPreferenceChangeListener(BlueJayAdapter.sBindPreferenceTitleAppendToBlueJayTimeoutValueListener);
+            } catch (Exception e) {
+                //
+            }
 
             final Preference useCustomSyncKey = findPreference("use_custom_sync_key");
             final Preference CustomSyncKey = findPreference("custom_sync_key");
@@ -1495,7 +1508,16 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
 
             }
 
+
             try {
+
+                try {
+                    if (DexCollectionType.getDexCollectionType() != DexCollectionType.LibreReceiver) {
+                        collectionCategory.removePreference(libre2settings);
+                    }
+                } catch (NullPointerException e) {
+                    Log.wtf(TAG, "Nullpointer Libre2Settings: ", e);
+                }
 
                 try {
                     if (!DexCollectionType.hasWifi()) {

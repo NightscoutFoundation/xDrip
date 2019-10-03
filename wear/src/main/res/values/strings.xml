@@ -237,7 +237,7 @@
     <string name="xdrip_scanning_nfc">xDrip+ Scanning NFC</string>
     <string name="still_processing_previous_backfill_request">Still processing previous back-fill request!</string>
     <string name="please_wait">Please wait..</string>
-    <string name="didnt_find_any_glucose_readings_in_that_time_period">Didn't find any glucose readings in that time period</string>
+    <string name="didnt_find_any_glucose_readings_in_that_time_period">Didn\'t find any glucose readings in that time period</string>
     <string name="got_calibration_in_the_future__cannot_process">Got calibration in the future - cannot process!</string>
     <string name="remote_snooze">Remote snooze..</string>
     <string name="sensor_stopped">Sensor stopped</string>
