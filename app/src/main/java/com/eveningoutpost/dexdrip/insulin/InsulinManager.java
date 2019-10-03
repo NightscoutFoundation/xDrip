@@ -215,9 +215,13 @@ public class InsulinManager {
         String prof = Pref.getString("saved_basal_insulinprofiles", "");
         Log.d(TAG, "Loaded basal Insulin Profiles from Prefs: " + prof);
         basalProfile = getProfile(prof);
+        if (basalProfile == null)
+            basalProfile = profiles.get(0);
         prof = Pref.getString("saved_bolus_insulinprofiles", "");
         Log.d(TAG, "Loaded bolus Insulin Profiles from Prefs: " + prof);
         bolusProfile = getProfile(prof);
+        if (bolusProfile == null)
+            bolusProfile = profiles.get(0);
     }
 
     public static void saveDisabledProfilesToPrefs()
