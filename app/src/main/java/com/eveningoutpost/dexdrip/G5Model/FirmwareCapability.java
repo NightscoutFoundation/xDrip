@@ -38,6 +38,10 @@ public class FirmwareCapability {
         return !version.equals("2.18.2.88"); // TODO will need changing in future and logic inverting
     }
 
+    private static boolean isFirmwarePreemptiveRestartCapable(final String version) {
+        return !version.equals("2.18.2.88"); // TODO will need changing in future and logic inverting)
+    }
+
     public static boolean isTransmitterPredictiveCapable(final String tx_id) {
         return isG6Firmware(getRawFirmwareVersionString(tx_id));
     }
@@ -60,5 +64,9 @@ public class FirmwareCapability {
 
     public static boolean isTransmitterRawCapable(final String tx_id) {
         return isFirmwareRawCapable(getRawFirmwareVersionString(tx_id));
+    }
+
+    public static boolean isTransmitterPreemptiveRestartCapable(final String tx_id) {
+        return isFirmwarePreemptiveRestartCapable(getRawFirmwareVersionString(tx_id));
     }
 }
