@@ -395,6 +395,16 @@
                 <EditTextPreference
                     android:key="bluejay_mac"
                     android:title="BlueJay Mac" />
+
+                <SwitchPreference
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
+                    android:defaultValue="true"
+                    android:dependency="bluejay_enabled"
+                    android:key="bluejay_run_phone_collector"
+                    android:summary="Also run the standard collector on this phone. Only turn this off if you don't want this phone itself to be connecting to the transmitter."
+                    android:title="Run Phone Collector" />
+
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="bluejay_enabled"

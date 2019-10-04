@@ -3,6 +3,7 @@ package com.eveningoutpost.dexdrip.watch.thinjam;
 import android.content.SharedPreferences;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 
@@ -18,9 +19,14 @@ public class BlueJayEntry {
     private static final String[] HUNT_PREFERENCES = {"bluejay", "units", "dex_txid"};
 
     private static final String PREF_ENABLED = "bluejay_enabled";
+    private static final String PREF_PHONE_COLLECTOR_ENABLED = "bluejay_run_phone_collector";
 
     public static boolean isEnabled() {
         return Pref.getBooleanDefaultFalse(PREF_ENABLED);
+    }
+
+    public static boolean isPhoneCollectorDisabled() {
+        return isEnabled() && BlueJay.isCollector() && !Pref.getBoolean(PREF_PHONE_COLLECTOR_ENABLED, true);
     }
 
     public static void setEnabled() {
@@ -51,6 +57,9 @@ public class BlueJayEntry {
             for (val hunt : HUNT_PREFERENCES)
                 if (key.startsWith(hunt)) {
                     android.util.Log.d("BlueJayPref", "Hit on Preference key: " + key);
+                    if (key.equals(PREF_PHONE_COLLECTOR_ENABLED)) {
+                        CollectionServiceStarter.restartCollectionServiceBackground();
+                    }
                     startWithRefresh();
                     break;
                 }
@@ -65,10 +74,10 @@ public class BlueJayEntry {
 
     public static void sendNotifyIfEnabled(final String msg) {
         if (isEnabled()) {
-            final String fmsg = msg.replaceAll("^-","").trim();
+            final String fmsg = msg.replaceAll("^-", "").trim();
             if (!JoH.emptyString(msg)) {
                 // TODO handle message types
-                Inevitable.task("bluejay-send-notify-external", 200, () -> JoH.startService(BlueJayService.class, "function", "message", "message", fmsg ));
+                Inevitable.task("bluejay-send-notify-external", 200, () -> JoH.startService(BlueJayService.class, "function", "message", "message", fmsg));
             }
         }
     }
