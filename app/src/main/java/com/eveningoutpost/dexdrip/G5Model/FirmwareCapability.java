@@ -9,7 +9,7 @@ import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.getRawFirmwar
 public class FirmwareCapability {
 
     private static final ImmutableSet<String> KNOWN_G5_FIRMWARES = ImmutableSet.of("1.0.0.13", "1.0.0.17", "1.0.4.10", "1.0.4.12");
-    private static final ImmutableSet<String> KNOWN_G6_FIRMWARES = ImmutableSet.of("1.6.5.23", "1.6.5.25");
+    private static final ImmutableSet<String> KNOWN_G6_FIRMWARES = ImmutableSet.of("1.6.5.23", "1.6.5.25", "1.6.5.27");
     private static final ImmutableSet<String> KNOWN_G6_REV2_FIRMWARES = ImmutableSet.of("2.18.2.67", "2.18.2.88");
     private static final ImmutableSet<String> KNOWN_TIME_TRAVEL_TESTED = ImmutableSet.of("1.6.5.25");
 
@@ -38,6 +38,10 @@ public class FirmwareCapability {
         return !version.equals("2.18.2.88"); // TODO will need changing in future and logic inverting
     }
 
+    private static boolean isFirmwarePreemptiveRestartCapable(final String version) {
+        return !version.equals("2.18.2.88"); // TODO will need changing in future and logic inverting)
+    }
+
     public static boolean isTransmitterPredictiveCapable(final String tx_id) {
         return isG6Firmware(getRawFirmwareVersionString(tx_id));
     }
@@ -60,5 +64,9 @@ public class FirmwareCapability {
 
     public static boolean isTransmitterRawCapable(final String tx_id) {
         return isFirmwareRawCapable(getRawFirmwareVersionString(tx_id));
+    }
+
+    public static boolean isTransmitterPreemptiveRestartCapable(final String tx_id) {
+        return isFirmwarePreemptiveRestartCapable(getRawFirmwareVersionString(tx_id));
     }
 }
