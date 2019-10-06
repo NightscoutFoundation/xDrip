@@ -19,6 +19,7 @@ public class SetTxIdTx extends BaseTx {
     private static final int SET_BIT_RUN_COLLECTOR = 2;
     private static final int SET_BIT_TREND_FROM_DELTA = 3;
     private static final int SET_BIT_FAILSAFE_TIMING = 4;
+    private static final int SET_BIT_USE_PHONE_SLOT = 5;
 
     public SetTxIdTx(final String txId, final String mac) {
 
@@ -70,6 +71,7 @@ public class SetTxIdTx extends BaseTx {
         bits |= (Pref.getBooleanDefaultFalse("bluejay_collector_enabled") ? 1 : 0) << SET_BIT_RUN_COLLECTOR;
         //bits |= (Pref.getBooleanDefaultFalse("bluejay_delta_trend") ? 1 : 0) << SET_BIT_TREND_FROM_DELTA;
         //bits |= (Pref.getBooleanDefaultFalse("bluejay_timing_failsafe") ? 1 : 0) << SET_BIT_FAILSAFE_TIMING;
+        bits |= (Pref.getBooleanDefaultFalse("bluejay_run_as_phone_collector") ? 1 : 0) << SET_BIT_USE_PHONE_SLOT;
         return bits;
     }
 

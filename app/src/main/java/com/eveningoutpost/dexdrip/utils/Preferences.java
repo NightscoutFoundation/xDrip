@@ -1122,6 +1122,10 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                                 .getDefaultSharedPreferences(blueJayScreenTimeout.getContext())
                                 .getInt(blueJayScreenTimeout.getKey(), -1));
                 blueJayScreenTimeout.setOnPreferenceChangeListener(BlueJayAdapter.sBindPreferenceTitleAppendToBlueJayTimeoutValueListener);
+                
+                findPreference("bluejay_run_as_phone_collector").setOnPreferenceChangeListener(BlueJayAdapter.changeToPhoneSlotListener);
+                findPreference("bluejay_run_phone_collector").setOnPreferenceChangeListener(BlueJayAdapter.changeToPhoneCollectorListener);
+
             } catch (Exception e) {
                 //
             }
