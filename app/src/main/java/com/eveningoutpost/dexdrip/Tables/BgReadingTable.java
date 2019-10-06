@@ -121,12 +121,14 @@ public class BgReadingTable extends BaseListActivity implements NavigationDrawer
                                 case DialogInterface.BUTTON_POSITIVE:
                                     bgReading.ignoreForStats = true;
                                     bgReading.save();
+                                    notifyDataSetChanged();
                                     if (Pref.getBooleanDefaultFalse("wear_sync")) BgReading.pushBgReadingSyncToWatch(bgReading, false);
                                     break;
 
                                 case DialogInterface.BUTTON_NEGATIVE:
                                     bgReading.ignoreForStats = false;
                                     bgReading.save();
+                                    notifyDataSetChanged();
                                     if (Pref.getBooleanDefaultFalse("wear_sync")) BgReading.pushBgReadingSyncToWatch(bgReading, false);
                                     break;
                             }
