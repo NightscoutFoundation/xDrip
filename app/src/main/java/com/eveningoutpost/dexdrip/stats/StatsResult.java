@@ -179,7 +179,7 @@ public class StatsResult {
 
     public double getTotal_insulin() {
         if (total_insulin < 0) {
-            Cursor cursor = Cache.openDatabase().rawQuery("select sum(insulin) from treatments  where timestamp >= " + from + " AND timestamp <= " + to, null);
+            Cursor cursor = Cache.openDatabase().rawQuery("select sum(insulinSummary) from treatments  where timestamp >= " + from + " AND timestamp <= " + to, null);
             cursor.moveToFirst();
             total_insulin = cursor.getDouble(0);
             cursor.close();
