@@ -4,6 +4,7 @@ package com.eveningoutpost.dexdrip.watch.thinjam;
 
 import android.preference.Preference;
 
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.xdrip;
 
@@ -59,5 +60,53 @@ public class BlueJayAdapter {
         }
     };
 
+
+    public static Preference.OnPreferenceChangeListener changeToPhoneSlotListener = new Preference.OnPreferenceChangeListener() {
+        @Override
+        public boolean onPreferenceChange(Preference preference, Object value) {
+
+            try {
+                if ((boolean) value) {
+                    // setting to true
+                    if (preference.getSharedPreferences().getBoolean("bluejay_run_phone_collector", true)) {
+                        JoH.static_toast_long("Must disable phone collector first!");
+                        return false;
+                    }
+                    if (BlueJay.getMac() == null) {
+                        JoH.static_toast_long("Needs a connected BlueJay");
+                        return false;
+                    }
+                    if (BlueJayInfo.getInfo(BlueJay.getMac()).buildNumber < 51) {
+                        JoH.static_toast_long("Needs BlueJay firmware at least version 51");
+                        return false;
+                    }
+                }
+            } catch (Exception e) {
+                //
+            }
+            return true;
+        }
+    };
+
+    public static Preference.OnPreferenceChangeListener changeToPhoneCollectorListener = new Preference.OnPreferenceChangeListener() {
+        @Override
+        public boolean onPreferenceChange(Preference preference, Object value) {
+
+            try {
+                if ((boolean) value) {
+                    // setting to true
+                    if (preference.getSharedPreferences().getBoolean("bluejay_run_as_phone_collector", false)) {
+                        JoH.static_toast_long("Must disable BlueJay using phone slot first!");
+                        return false;
+                    }
+
+                }
+
+            } catch (Exception e) {
+                //
+            }
+            return true;
+        }
+    };
 
 }
