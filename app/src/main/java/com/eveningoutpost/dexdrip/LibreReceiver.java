@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import static com.eveningoutpost.dexdrip.Home.get_engineering_mode;
 import static com.eveningoutpost.dexdrip.Models.BgReading.bgReadingInsertFromJson;
 import static com.eveningoutpost.dexdrip.Models.Libre2Sensor.Libre2Sensors;
 
@@ -177,7 +178,9 @@ public class LibreReceiver extends BroadcastReceiver {
         } catch (Exception e) {
             Log.e(TAG, "Error readlast: " + e);
         }
-        l.add(new StatusItem("Last Calc.",libre_calc_doku));
+        if (get_engineering_mode()) {
+            l.add(new StatusItem("Last Calc.", libre_calc_doku));
+        }
         l.add(new StatusItem("Sensors", Libre2Sensors()));
 
         return l;
