@@ -15,7 +15,6 @@ public class Libre2Sensor extends PlusModel {
     static final String TAG = "Libre2Sensor";
 
     static final String[] schema = {
-            "DROP VIEW IF EXISTS Libre2Sensors;",
             "CREATE VIEW Libre2Sensors AS SELECT MIN(_id) as _id, serial, MIN(ts) as ts_from, MAX(ts) AS ts_to, COUNT(*) AS readings FROM Libre2RawValue2 GROUP BY serial ORDER BY ts DESC;"
     };
 
