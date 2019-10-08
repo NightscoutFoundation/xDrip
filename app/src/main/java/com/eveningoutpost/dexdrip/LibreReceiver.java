@@ -15,6 +15,7 @@ import com.eveningoutpost.dexdrip.Models.Libre2RawValue;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.Intents;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
@@ -181,8 +182,9 @@ public class LibreReceiver extends BroadcastReceiver {
         if (get_engineering_mode()) {
             l.add(new StatusItem("Last Calc.", libre_calc_doku));
         }
-        l.add(new StatusItem("Sensors", Libre2Sensors()));
-
+        if (Pref.getBooleanDefaultFalse("Libre2_showSensors")) {
+            l.add(new StatusItem("Sensors", Libre2Sensors()));
+        }
         return l;
     }
 }
