@@ -275,7 +275,7 @@ public class DatabaseUtil {
                 }
 
                 //Extract Treatment-Values
-                cur = db.query("Treatments", new String[]{"timestamp", "carbs", "insulin", "notes"}, "timestamp >= " + from, null, null, null, "timestamp ASC");
+                cur = db.query("Treatments", new String[]{"timestamp", "carbs", "insulinSummary", "notes"}, "timestamp >= " + from, null, null, null, "timestamp ASC");
                 if (cur.moveToFirst()) {
                     do {
                         timestamp = cur.getLong(0);
