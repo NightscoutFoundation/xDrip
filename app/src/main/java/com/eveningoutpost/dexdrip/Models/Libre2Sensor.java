@@ -30,23 +30,30 @@ public class Libre2Sensor extends PlusModel {
     @Column(name = "readings", index = false)
     public long readings;
 
+    private static volatile String cachedStringSensors = null;
+
     public static String Libre2Sensors() {
-        String Sum="";
+        String Sum = "";
 
-        List<Libre2Sensor> rs = new Select()
-                .from(Libre2Sensor.class)
-                .execute();
+        if ((cachedStringSensors == null) || (JoH.ratelimit("libre2sensor-report", 600))) {
+            UserError.Log.e(TAG,"Sensorcollecting");
+            List<Libre2Sensor> rs = new Select()
+                    .from(Libre2Sensor.class)
+                    .execute();
 
-        for (Libre2Sensor Sensorpart : rs ) {
-            Long Diff_ts = Sensorpart.ts_to - Sensorpart.ts_from;
-            Sum = Sum + Sensorpart.serial +
-                    "\n" + DateFormat.format("dd.MM.yy",Sensorpart.ts_from) +
-                    " to: " + DateFormat.format("dd.MM.yy",Sensorpart.ts_to) +
-                    " (" +JoH.niceTimeScalarShortWithDecimalHours(Diff_ts) + ")" +
-                    " readings: " + ((Sensorpart.readings * 100) / (Diff_ts / 60000)) + "%\n" +
-                    "------------------\n";
+            for (Libre2Sensor Sensorpart : rs) {
+                Long Diff_ts = Sensorpart.ts_to - Sensorpart.ts_from;
+                Sum = Sum + Sensorpart.serial +
+                        "\n" + DateFormat.format("dd.MM.yy", Sensorpart.ts_from) +
+                        " to: " + DateFormat.format("dd.MM.yy", Sensorpart.ts_to) +
+                        " (" + JoH.niceTimeScalarShortWithDecimalHours(Diff_ts) + ")" +
+                        " readings: " + ((Sensorpart.readings * 100) / (Diff_ts / 60000)) + "%\n" +
+                        "------------------\n";
+            }
+            cachedStringSensors=Sum;
         }
-        return Sum;
+
+        return cachedStringSensors;
     }
 
     public static void updateDB() {
