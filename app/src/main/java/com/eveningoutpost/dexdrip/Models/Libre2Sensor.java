@@ -35,8 +35,8 @@ public class Libre2Sensor extends PlusModel {
     public static String Libre2Sensors() {
         String Sum = "";
 
-        if ((cachedStringSensors == null) || (JoH.ratelimit("libre2sensor-report", 600))) {
-            UserError.Log.e(TAG,"Sensorcollecting");
+        if ((cachedStringSensors == null) || (JoH.ratelimit("libre2sensor-report", 120))) {
+
             List<Libre2Sensor> rs = new Select()
                     .from(Libre2Sensor.class)
                     .execute();
