@@ -1066,6 +1066,11 @@
                 android:key="Libre2_showRawGraph"
                 android:summary="switch on to show the raw values on the Graph"
                 android:title="show Raw values in Graph" />
+            <SwitchPreference
+                android:defaultValue="false"
+                android:key="Libre2_showSensors"
+                android:summary="switch to On to show additional Information's in Status for Libre 2 Sensors"
+                android:title="show Sensors Infos in Status" />
         </PreferenceScreen>
 
             <CheckBoxPreference
