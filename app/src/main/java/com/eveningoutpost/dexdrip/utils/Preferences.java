@@ -41,6 +41,7 @@ import com.bytehamster.lib.preferencesearch.SearchConfiguration;
 import com.bytehamster.lib.preferencesearch.SearchPreferenceResult;
 import com.bytehamster.lib.preferencesearch.SearchPreferenceResultListener;
 import com.eveningoutpost.dexdrip.BasePreferenceActivity;
+import com.eveningoutpost.dexdrip.BuildConfig;
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.DesertSync;
@@ -837,9 +838,12 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             bindPreferenceSummaryToValue(findPreference("persistent_high_threshold_mins"));
             bindPreferenceSummaryToValue(findPreference("persistent_high_repeat_mins"));
 
-            bindPreferenceTitleAppendToValueUpdateChannel(findPreference("update_channel"));
-
-
+            Preference prefUpdateChannel = findPreference("update_channel");
+            if (BuildConfig.FLAVOR == "xdripcustom" && BuildConfig.XDRIP_UPDATER_URL != "") {
+                PreferenceScreen updateScreen = (PreferenceScreen) findPreference("xdrip_plus_update_settings");
+                updateScreen.removePreference(prefUpdateChannel);
+            }
+            bindPreferenceTitleAppendToValueUpdateChannel(prefUpdateChannel);
 
             profile_insulin_sensitivity_default = findPreference("profile_insulin_sensitivity_default");
             profile_carb_ratio_default = findPreference("profile_carb_ratio_default");

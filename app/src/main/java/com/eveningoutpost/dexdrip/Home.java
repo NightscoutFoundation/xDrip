@@ -110,7 +110,6 @@ import com.eveningoutpost.dexdrip.databinding.PopupInitialStatusHelperBinding;
 import com.eveningoutpost.dexdrip.eassist.EmergencyAssistActivity;
 import com.eveningoutpost.dexdrip.insulin.inpen.InPenEntry;
 import com.eveningoutpost.dexdrip.insulin.pendiq.Pendiq;
-import com.eveningoutpost.dexdrip.languageeditor.LanguageEditor;
 import com.eveningoutpost.dexdrip.profileeditor.DatePickerFragment;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileAdapter;
 import com.eveningoutpost.dexdrip.ui.BaseShelf;
@@ -126,7 +125,6 @@ import com.eveningoutpost.dexdrip.ui.graphic.TrendArrowFactory;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.eveningoutpost.dexdrip.utils.BgToSpeech;
 import com.eveningoutpost.dexdrip.utils.DatabaseUtil;
-import com.eveningoutpost.dexdrip.utils.DexCollectionHelper;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.DisplayQRCode;
 import com.eveningoutpost.dexdrip.utils.LibreTrendGraph;
@@ -174,9 +172,8 @@ import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.getCol;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.DAY_IN_MS;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.HOUR_IN_MS;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.MINUTE_IN_MS;
+import static com.eveningoutpost.dexdrip.UtilityModels.UpdateActivity.AUTO_UPDATE_PREFS_NAME;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
-
-import com.eveningoutpost.dexdrip.CustomUpdater;
 
 public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPermissionsResultCallback {
     private final static String TAG = "jamorham: " + Home.class.getSimpleName();
@@ -566,8 +563,11 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
         if (BuildConfig.FLAVOR == "xdripcustom" && BuildConfig.XDRIP_UPDATER_URL != "") {
             // use custom updater in not using mainstream xDrip distribution
-            customUpdater = new CustomUpdater();
-            customUpdater.monitorUpdate(this);
+            customUpdater = new CustomUpdater(this);
+            if (PreferenceManager.getDefaultSharedPreferences(this)
+                    .getBoolean(AUTO_UPDATE_PREFS_NAME, true)) {
+                customUpdater.startMonitoring();
+            }
         }
     }
 
@@ -3151,8 +3151,13 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     public void checkForUpdate(MenuItem myitem) {
         if (JoH.ratelimit("manual-update-check", 5)) {
             toast(getString(R.string.checking_for_update));
-            UpdateActivity.last_check_time = -1;
-            UpdateActivity.checkForAnUpdate(getApplicationContext());
+            if (BuildConfig.FLAVOR == "xdripcustom" && BuildConfig.XDRIP_UPDATER_URL != "") {
+                // use custom updater in not using mainstream xDrip distribution
+                customUpdater.manualCheck();
+            } else {
+                UpdateActivity.last_check_time = -1;
+                UpdateActivity.checkForAnUpdate(getApplicationContext());
+            }
         }
     }
 

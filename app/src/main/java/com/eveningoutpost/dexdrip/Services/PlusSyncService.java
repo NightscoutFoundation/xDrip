@@ -10,6 +10,7 @@ import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.eveningoutpost.dexdrip.BuildConfig;
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.GoogleDriveInterface;
 import com.eveningoutpost.dexdrip.UtilityModels.UpdateActivity;
@@ -178,7 +179,9 @@ public class PlusSyncService extends Service {
         private void updateCheckThenStop() {
             keeprunning = false;
             skipnext = true;
-            UpdateActivity.checkForAnUpdate(context);
+            if (!(BuildConfig.FLAVOR == "xdripcustom" && BuildConfig.XDRIP_UPDATER_URL != "")) {
+                UpdateActivity.checkForAnUpdate(context);
+            }
             try {
                 Log.d(TAG, "Shutting down");
                 stopSelf();
