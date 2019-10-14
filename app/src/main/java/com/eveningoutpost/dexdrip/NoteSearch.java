@@ -178,7 +178,7 @@ public class NoteSearch extends ListActivityWithMenu {
         endDate.add(Calendar.DATE, 1);
         long to = endDate.getTimeInMillis();
 
-        dbCursor = db.rawQuery("select timestamp, notes, carbs, insulin, uuid from Treatments where notes IS NOT NULL AND timestamp < " + to + " AND timestamp >= " + from + " ORDER BY timestamp DESC", null);
+        dbCursor = db.rawQuery("select timestamp, notes, carbs, insulinSummary, uuid from Treatments where notes IS NOT NULL AND timestamp < " + to + " AND timestamp >= " + from + " ORDER BY timestamp DESC", null);
         dbCursor.moveToFirst();
 
         int i = 0;
@@ -237,7 +237,7 @@ public class NoteSearch extends ListActivityWithMenu {
         long to = endDate.getTimeInMillis();
 
 
-        dbCursor = db.rawQuery("select timestamp, notes, carbs, insulin, uuid from Treatments where notes IS NOT NULL AND timestamp < ? AND timestamp >= ? AND notes like ? ORDER BY timestamp DESC", new String[]{Long.toString(to), Long.toString(from), "%" + searchTerm + "%"});
+        dbCursor = db.rawQuery("select timestamp, notes, carbs, insulinSummary, uuid from Treatments where notes IS NOT NULL AND timestamp < ? AND timestamp >= ? AND notes like ? ORDER BY timestamp DESC", new String[]{Long.toString(to), Long.toString(from), "%" + searchTerm + "%"});
         dbCursor.moveToFirst();
 
         int i = 0;
