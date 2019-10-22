@@ -425,14 +425,17 @@ public class StatsActivity extends ActivityWithMenu {
                     return new FirstPageFragment();
                 case 1:
                     return new ChartFragment();
+                case 2:
+                    return new TrendFragment();
                 default:
                     return new PercentileFragment();
             }
         }
 
+        //changed count to 4, assuming this is number of pages
         @Override
         public int getCount() {
-            return 3;
+            return 4;
         }
 
         @Override
@@ -442,6 +445,8 @@ public class StatsActivity extends ActivityWithMenu {
                     return "General";
                 case 1:
                     return "Range Pi Chart";
+                case 2:
+                    return "Trend Charts";
                 default:
                     return "Percentile Chart";
             }
