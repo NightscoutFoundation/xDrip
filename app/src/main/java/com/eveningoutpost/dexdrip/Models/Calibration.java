@@ -407,7 +407,7 @@ public class Calibration extends Model {
         }
         JoH.clearCache();
         if (!Ob1G5CollectionService.usingNativeMode()) {
-            adjustRecentBgReadings(5);
+            adjustRecentBgReadings(5, prefs);
         }
         CalibrationRequest.createOffset(lowerCalibration.bg, 35);
         Notifications.staticUpdateNotification();
@@ -633,7 +633,7 @@ public class Calibration extends Model {
                         CalibrationSendQueue.addToQueue(calibration, context);
                         BgReading.pushBgReadingSyncToWatch(bgReading, false);
                         if (!Ob1G5CollectionService.usingNativeMode()) {
-                            adjustRecentBgReadings(adjustPast ? 30 : 2);
+                            adjustRecentBgReadings(adjustPast ? 30 : 2, prefs);
                         }
                         Notifications.start();
                         Calibration.requestCalibrationIfRangeTooNarrow();
@@ -887,7 +887,7 @@ public class Calibration extends Model {
     }
 
 
-    public static void adjustRecentBgReadings(int adjustCount) {
+    public static void adjustRecentBgReadings(int adjustCount, SharedPreferences prefs) {
         //TODO: add some handling around calibration overrides as they come out looking a bit funky
         final List<Calibration> calibrations = Calibration.latest(3);
         if (calibrations == null) {
@@ -910,9 +910,12 @@ public class Calibration extends Model {
             try {
                 final Calibration latestCalibration = Calibration.lastValid();
                 int i = 0;
-                //boolean uploadModified = prefs.getBoolean("upload_modified_bgreadings", false);
-                boolean uploadModified = true;
-                Log.d(TAG, "Will initiate upload for modified readings: " + uploadModified);
+                boolean uploadModified = prefs.getBoolean("upload_modified_bgreadings", false);
+                Log.wtf(TAG, "Will initiate upload for modified readings: " + uploadModified);
+                if (!uploadModified) {
+                        Log.wtf(TAG, "Even though uploadModified = false, setting to true");
+                        uploadModified = true;
+                }
                 for (BgReading bgReading : bgReadings) {
                     if (bgReading.calibration != null) {
                         final double oldYValue = bgReading.calculated_value;
@@ -927,10 +930,9 @@ public class Calibration extends Model {
                         bgReading.save();
                         BgReading.pushBgReadingSyncToWatch(bgReading, false);
                         if (uploadModified) {
-                            // eventually I'll want to change the default above to false
                             UploaderQueue.newEntry("update", bgReading);
                             SyncService.startSyncService(3000); // sync in 3 seconds
-                            Log.d(TAG, "Adding modified bgReading to upload queue.");
+                            Log.wtf(TAG, "Adding modified bgReading to upload queue.");
                             // do similar to the above, with sync - create a method
                             // that is based on pushBgReadingSyncToWatch
                             // ..
