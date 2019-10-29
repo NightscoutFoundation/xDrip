@@ -901,6 +901,8 @@ public class Calibration extends Model {
             return;
         }
 
+        //SharedPreferences prefs = PreferenceManager.getSharedPreferences();
+
         // ongoing calibration
         if (calibrations.size() >= 3) {
             final int denom = bgReadings.size();
@@ -908,8 +910,9 @@ public class Calibration extends Model {
             try {
                 final Calibration latestCalibration = Calibration.lastValid();
                 int i = 0;
-                boolean uploadModified = prefs.getBoolean("upload_modified_bgreadings", false);
-                Log.d(TAG, "Will initiate upload for modified readings: " + uploadModified.toString());
+                //boolean uploadModified = prefs.getBoolean("upload_modified_bgreadings", false);
+                boolean uploadModified = true;
+                Log.d(TAG, "Will initiate upload for modified readings: " + uploadModified);
                 for (BgReading bgReading : bgReadings) {
                     if (bgReading.calibration != null) {
                         final double oldYValue = bgReading.calculated_value;
