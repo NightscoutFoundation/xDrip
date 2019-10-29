@@ -18,12 +18,14 @@ import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.CalRecord;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.CalSubrecord;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
+import com.eveningoutpost.dexdrip.Services.SyncService;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.CalibrationSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
 import com.eveningoutpost.dexdrip.calibrations.CalibrationAbstract;
 import com.eveningoutpost.dexdrip.calibrations.NativeCalibrationPipe;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
@@ -906,6 +908,8 @@ public class Calibration extends Model {
             try {
                 final Calibration latestCalibration = Calibration.lastValid();
                 int i = 0;
+                boolean uploadModified = prefs.getBoolean("upload_modified_bgreadings", false);
+                Log.d(TAG, "Will initiate upload for modified readings: " + uploadModified.toString());
                 for (BgReading bgReading : bgReadings) {
                     if (bgReading.calibration != null) {
                         final double oldYValue = bgReading.calculated_value;
@@ -919,6 +923,23 @@ public class Calibration extends Model {
 
                         bgReading.save();
                         BgReading.pushBgReadingSyncToWatch(bgReading, false);
+                        if (uploadModified) {
+                            // eventually I'll want to change the default above to false
+                            UploaderQueue.newEntry("update", bgReading);
+                            SyncService.startSyncService(3000); // sync in 3 seconds
+                            Log.d(TAG, "Adding modified bgReading to upload queue.");
+                            // do similar to the above, with sync - create a method
+                            // that is based on pushBgReadingSyncToWatch
+                            // ..
+                            // find out what method is currently used when the option in
+                            // settings is chosen
+                            // UploaderQueue.newEntry("update", bgReading);
+                            // SyncService.startSyncService(3000); // sync in 3 seconds
+                            // ..
+                            // need to confirm there's no issue with multiple SyncService being started
+                            // ..
+                            // https://github.com/NightscoutFoundation/xDrip/blob/master/app/src/main/java/com/eveningoutpost/dexdrip/NightscoutBackfillActivity.java#L106
+                        }
                         i += 1;
                     } else {
                         Log.d(TAG, "History Rewrite: Ignoring BgReading without calibration from: " + JoH.dateTimeText(bgReading.timestamp));
