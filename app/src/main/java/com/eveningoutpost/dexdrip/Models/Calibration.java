@@ -901,8 +901,6 @@ public class Calibration extends Model {
             return;
         }
 
-        //SharedPreferences prefs = PreferenceManager.getSharedPreferences();
-
         // ongoing calibration
         if (calibrations.size() >= 3) {
             final int denom = bgReadings.size();
@@ -911,10 +909,8 @@ public class Calibration extends Model {
                 final Calibration latestCalibration = Calibration.lastValid();
                 int i = 0;
                 boolean uploadModified = prefs.getBoolean("upload_modified_bgreadings", false);
-                Log.wtf(TAG, "Will initiate upload for modified readings: " + uploadModified);
-                if (!uploadModified) {
-                        Log.wtf(TAG, "Even though uploadModified = false, setting to true");
-                        uploadModified = true;
+                if (uploadModified) {
+                    Log.d(TAG, "Modified readings will be uploaded to NS");
                 }
                 for (BgReading bgReading : bgReadings) {
                     if (bgReading.calibration != null) {
@@ -926,24 +922,14 @@ public class Calibration extends Model {
                             bgReading.filtered_calculated_value = new_calculated_value;
                         }
                         bgReading.calculated_value = new_calculated_value;
+                        
+                        Log.d(TAG, "Previous value: " + oldYValue.toString() + ". New value: " + bgReading.calculated_value.toString());
 
                         bgReading.save();
                         BgReading.pushBgReadingSyncToWatch(bgReading, false);
                         if (uploadModified) {
                             UploaderQueue.newEntry("update", bgReading);
                             SyncService.startSyncService(3000); // sync in 3 seconds
-                            Log.wtf(TAG, "Adding modified bgReading to upload queue.");
-                            // do similar to the above, with sync - create a method
-                            // that is based on pushBgReadingSyncToWatch
-                            // ..
-                            // find out what method is currently used when the option in
-                            // settings is chosen
-                            // UploaderQueue.newEntry("update", bgReading);
-                            // SyncService.startSyncService(3000); // sync in 3 seconds
-                            // ..
-                            // need to confirm there's no issue with multiple SyncService being started
-                            // ..
-                            // https://github.com/NightscoutFoundation/xDrip/blob/master/app/src/main/java/com/eveningoutpost/dexdrip/NightscoutBackfillActivity.java#L106
                         }
                         i += 1;
                     } else {
