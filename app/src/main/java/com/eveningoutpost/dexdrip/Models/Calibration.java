@@ -910,7 +910,7 @@ public class Calibration extends Model {
                 int i = 0;
                 boolean uploadModified = prefs.getBoolean("upload_modified_bgreadings", false);
                 if (uploadModified) {
-                    Log.d(TAG, "Modified readings will be uploaded to NS");
+                    Log.v(TAG, "Modified readings will be uploaded to NS");
                 }
                 for (BgReading bgReading : bgReadings) {
                     if (bgReading.calibration != null) {
@@ -923,7 +923,7 @@ public class Calibration extends Model {
                         }
                         bgReading.calculated_value = new_calculated_value;
                         
-                        Log.d(TAG, "Previous value: " + oldYValue.toString() + ". New value: " + bgReading.calculated_value.toString());
+                        Log.v(TAG, "Previous value: " + oldYValue + ". New value: " + bgReading.calculated_value);
 
                         bgReading.save();
                         BgReading.pushBgReadingSyncToWatch(bgReading, false);
