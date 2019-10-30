@@ -12,7 +12,7 @@
     <string name="menu_import_db">Importa database</string>
     <string name="error_bluetooth_not_supported">Errore: Bluetooth non supportato da questo dispositivo</string>
     <string name="unknown_device">Dispositivo non riconosciuto</string>
-    <string name="connecting_to_device">In collegamento al dispositivo ...</string>
+    <string name="connecting_to_device">In collegamento al dispositivo...</string>
     <string name="title_activity_raw_data_table">Tabella Dati Grezzi</string>
     <string name="title_activity_calculated_data_table">Tabella Dati Calcolati</string>
     <string name="title_activity_start_new_sensor">Inizializza Nuovo Sensore</string>
@@ -27,7 +27,7 @@
     <string name="snooze_hint">Allarme sospeso per x minuti</string>
     <string name="ok">Ok</string>
     <string name="cancel">Annulla</string>
-    <string name="pref_sensor_location_dont_ask_again"> Non Chiedermelo Piu</string>
+    <string name="pref_sensor_location_dont_ask_again">Non Chiedermelo Piu</string>
     <string name="title_activity_error">"Elenco Errori e Eventi"</string>
     <string name="title_activity_main">Attività principale</string>
     <string name="title_activity_fake_numbers">Numeri Fasulli</string>
@@ -86,7 +86,7 @@
     <string name="title_activity_send_feed_back">Invia Feedback a Jamorham</string>
     <string name="title_activity_maps">Mappa Parakeet</string>
     <string name="title_activity_display_preferences">Mostra Preferenze</string>
-    <string name="export_submenu">Funzioni di importazione / esportazione</string>
+    <string name="export_submenu">Import/Export</string>
     <string name="action_resend_to_watch">Invia di nuovo i valori all\'orologio</string>
     <string name="action_open_watch_setting">Aprire Impostazioni Wear</string>
     <string name="action_sync_watch_db">Ripristino Wear DB</string>
@@ -202,7 +202,7 @@
     <string name="extra_tags_dialog_message">I tag inseriti qui saranno registrati in xDrip. Il formato è tag: level. Il livello può essere v, d, i. Per esempio bgreading: i, DexCollectionService: v. Questi tag saranno registrati con bassa priorità per errori e lista eventi.</string>
     <string name="extra_tags_dialog_title">Inserisci più tag da registrare</string>
     <string name="data_source_settings">Impostazioni origine dati</string>
-    <string name="smart_watch_features">Caratteristiche Collegamenti Smart Watch</string>
+    <string name="smart_watch_features">Integrazione con Smart Watch</string>
     <string name="wear_integration">Integrazione Wear</string>
     <string name="send_data_to_android_wear_watch">Inviare dati a Android Watchface Wear.</string>
     <string name="android_wear_integration">Integrazione Android Wear</string>
@@ -486,4 +486,82 @@
     <string name="FortyFiveUp">leggermente crescente</string>
     <string name="SingleUp">crescente</string>
     <string name="DoubleUp">crescente veloce</string>
+
+    <string name="options_for_upload">Impostazioni per l\'upload su Nightscout, MongoDB e Dexcom Share</string>
+
+    <string name="glucose_meters">Rilevatori di Glicemia</string>
+    <string name="glucose_meter_options">Impostazioni per rilevatori di Glicemia wireless</string>
+
+    <string name="pebble_and_android_wear_options">Impostazioni Smart Watch</string>
+
+    <string name="interapp_settings">Impostazioni Inter-app</string>
+    <string name="for_interacting_compatible_apps">Impostazioni di interazione con altre app compatibili</string>
+
+    <string name="movement_detection_and_vehicle_mode">Rilevazione movimento e modalità auto</string>
+
+    <string name="reminders">Promemoria</string>
+    <string name="emergency_messages">Messaggi di emergenza</string>
+
+    <string name="are_you_sure">Sei sicuro?</string>
+    <string name="blueReader_turnoffvalue">Valore in percentuale</string>
+    <string name="button_1_day">1 Giorno</string>
+    <string name="button_1_hour">1 Ora</string>
+    <string name="button_1_week">1 Settimana</string>
+    <string name="button_2_day">2 Day</string>
+    <string name="button_2_hour">2 Ore</string>
+    <string name="button_30_min">30 Minuti</string>
+    <string name="button_4_hour">4 Ore</string>
+    <string name="button_8_hour">8 Ore</string>
+    <string name="button_15_min">15 Minuti</string>
+    <string name="calibrate">Calibra</string>
+    <string name="error">errore</string>
+    <string name="hour">Ora</string>
+    <string name="hours">Ore</string>
+    <string name="pref_amazfit_watchface_graph_enable">Abilita</string>
+    <string name="pref_amazfit_widget_graph_enable">Abilita</string>
+    <string name="pref_dialog_influxdb_username">Utente</string>
+    <string name="repeat">Ripeti</string>
+    <string name="repeat_alerts">Ripeti allarmi</string>
+    <string name="repeat_sound">Ripeti suono</string>
+    <string name="repeats_every">ripeti ogni</string>
+    <string name="restore">Ripristina</string>
+    <string name="unit_day">giorno</string>
+    <string name="unit_days">giorni</string>
+    <string name="unit_hour">ora</string>
+    <string name="unit_hours">ore</string>
+    <string name="unit_minute">minuto</string>
+    <string name="unit_minutes">minuti</string>
+    <string name="unit_second">secondo</string>
+    <string name="unit_seconds">secondi</string>
+    <string name="unit_week">settimana</string>
+    <string name="unit_weeks">settimane</string>
+    <string name="user">Utente</string>
+    <string name="advanced_mode">Modalità avanzata</string>
+    <string name="yes">Si</string>
+    <string name="yes_calibrate">Si, calibra</string>
+    <string name="yes_cancel">Si, annulla</string>
+    <string name="yes_delete">Si, cancella</string>
+    <string name="yes_do_it">Si, fallo</string>
+    <string name="yes_enable">Si, abilita</string>
+    <string name="yes_please">Si, per favore</string>
+    <string name="yes_send_it">Si, invia!</string>
+    <string name="yes_today">Si, oggi</string>
+    <string name="weekdays">Giorni della settimana</string>
+    <string name="weekends">Fine settimana</string>
+    <string name="weeks">Settimane</string>
+    <string name="what_time_of_day_question">A che ora del giorno?</string>
+    <string name="version">Versione:</string>
+    <string name="title_full_screen_mode">Schermo intero</string>
+    <string name="title_edit_reminder">Modifica promemoria</string>
+    <string name="title">Titolo</string>
+    <string name="summary_using_g6">Io uso un sensore G6</string>
+    <string name="sound_once">suona una volta</string>
+    <string name="show_help">Visualizza aiuto</string>
+    <string name="searching">ricerca in corso...</string>
+    <string name="restore_settings">Ripristina impostazioni</string>
+    <string name="restore_backup">Ripristinare backup?</string>
+    <string name="return_to_home_screen">Ritorna alla schermata home</string>
+    <string name="prepare_to_test">Preparati al test!</string>
+    <string name="your_name">Nome</string>
+    <string name="title_You_have_no_reminders_yet">Non hai ancora promemoria</string>
 </resources>
