@@ -54,15 +54,19 @@ public class Bubble {
     static int errorCount = 0;
 
 
+    static byte[] patchUid = null;
+    static byte[] patchInfo = null;
 
     public static BridgeResponse decodeBubblePacket(byte[] buffer, int len) {
         final BridgeResponse reply = new BridgeResponse();
+        android.util.Log.e(TAG, JoH.bytesToHex(buffer));
         int first = 0xff & buffer[0];
         if (first == 0x80) {
             PersistentStore.setString("Bubblebattery", Integer.toString(buffer[4]));
             Pref.setInt("bridge_battery", buffer[4]);
+            String bubblefirmware = buffer[2] + "." + buffer[3];
             PersistentStore.setString("BubbleHArdware", Integer.toString(buffer[2]) + ".0");
-            PersistentStore.setString("BubbleFirmware", Integer.toString(buffer[1]) + ".0");
+            PersistentStore.setString("BubbleFirmware", bubblefirmware);
             ByteBuffer ackMessage = ByteBuffer.allocate(6);
             ackMessage.put(0, (byte) 0x02);
             ackMessage.put(1, (byte) 0x01);
@@ -72,12 +76,25 @@ public class Bubble {
             ackMessage.put(5, (byte) 0x2B);
             reply.add(ackMessage);
             s_full_data = null;
-            Log.e(TAG, "reset data");
+            Log.e(TAG, "reset data" + bubblefirmware);
             return getBubbleResponse();
         }
         if (first == 0xC0) {
-            String SensorSn = LibreUtils.decodeSerialNumberKey(Arrays.copyOfRange(buffer, 2, 10));
+            patchUid = Arrays.copyOfRange(buffer, 2, 10);
+            String SensorSn = LibreUtils.decodeSerialNumberKey(patchUid);
             PersistentStore.setString("LibreSN", SensorSn);
+            return reply;
+        }
+        if (first == 0xC1) {
+            double fv = JoH.tolerantParseDouble(PersistentStore.getString("BubbleFirmware"));
+            if (fv < 1.35) {
+                patchInfo = Arrays.copyOfRange(buffer, 3, 9);
+            } else {
+                if (buffer.length >= 11) {
+                    patchInfo = Arrays.copyOfRange(buffer, 5, 11);
+                }
+            }
+            Log.e(TAG, "reset data" + JoH.bytesToHex(patchInfo));
             return reply;
         }
         if (first == 0x82) {
@@ -123,8 +140,7 @@ public class Bubble {
 
 
         byte[] data = Arrays.copyOfRange(s_full_data, 0, 344);
-        byte []patchUid = null;
-        byte []patchInfo = null;
+
         boolean checksum_ok = NFCReaderX.HandleGoodReading(SensorSn, data, now, true, patchUid, patchInfo);
         int expectedSize = lens + BUBBLE_FOOTER;
         InitBuffer(expectedSize);
