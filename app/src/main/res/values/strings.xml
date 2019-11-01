@@ -845,8 +845,8 @@
     <string name="confirm_remote_snooze">Confirm Remote Snooze</string>
     <string name="are_you_sure_you_wish_to_snooze_all_other_devices_in_your_sync_group">Are you sure you wish to snooze all other devices in your sync group?</string>
     <string name="yes_send_it">YES, send it!</string>
-    
-    
+
+
     <string name="movement_detection_and_vehicle_mode">Movement detection and vehicle mode</string>
     <string name="xdrip_motion_tracking">xDrip+ Motion Tracking</string>
     <string name="detect_motion_types">Use sensors to detect types of motion</string>
@@ -1081,7 +1081,7 @@
     <string name="title_snooze_times">Reminder Snooze Panel - Times</string>
     <string name="message_snooze_times">The various buttons quickly change from the default snooze to a different snooze period.</string>
     <string name="title_which_day">Which day?</string>
-    <string name ="title_what_time_day">What time of day?</string>
+    <string name="title_what_time_day">What time of day?</string>
     <string name="reminder_due">Reminder due</string>
     <string name="title_add_reminder">Add Reminder</string>
     <string name="title_edit_reminder">Edit Reminder</string>
