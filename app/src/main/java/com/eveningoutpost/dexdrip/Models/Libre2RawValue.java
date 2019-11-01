@@ -1,22 +1,22 @@
 package com.eveningoutpost.dexdrip.Models;
 
 
-import com.activeandroid.annotation.Column;
-import com.activeandroid.annotation.Table;
-import com.activeandroid.query.Select;
+        import android.provider.BaseColumns;
 
-import java.util.Date;
-import java.util.List;
+        import com.activeandroid.annotation.Column;
+        import com.activeandroid.annotation.Table;
+        import com.activeandroid.query.Select;
 
-@Table(name = "Libre2RawValue")
+        import java.util.Date;
+        import java.util.List;
+
+@Table(name = "Libre2RawValue2", id = BaseColumns._ID)
 public class Libre2RawValue extends PlusModel {
 
     static final String[] schema = {
-            "CREATE TABLE Libre2RawValue (ts INTEGER PRIMARY KEY);",
-            "ALTER TABLE Libre2RawValue ADD COLUMN serial STRING;",
-            "ALTER TABLE Libre2RawValue ADD COLUMN glucose REAL;",
-
-            "CREATE INDEX index_Libre2RawValue_timestamp on Libre2RawValue(ts);"
+            "DROP TABLE Libre2RawValue;",
+            "CREATE TABLE Libre2RawValue2 (_id INTEGER PRIMARY KEY AUTOINCREMENT, ts INTEGER, serial STRING, glucose REAL);",
+            "CREATE INDEX index_Libre2RawValue2_ts on Libre2RawValue2(ts);"
     };
 
     @Column(name = "serial", index = true)

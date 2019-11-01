@@ -69,7 +69,8 @@ public class LibreReceiver extends BroadcastReceiver {
                                 Libre2RawValue currentRawValue = processIntent(intent);
                                 if (currentRawValue == null) return;
                                 Log.v(TAG,"got bg reading: from sensor:"+currentRawValue.serial+" rawValue:"+currentRawValue.glucose+" at:"+currentRawValue.timestamp);
-                                if(!BgReading.last_within_minutes(5)) {
+                                // period of 4.5 minutes to collect 5 readings
+                                if(!BgReading.last_within_millis(45 * 6 * 1000 )) {
                                     List<Libre2RawValue> smoothingValues = Libre2RawValue.last20Minutes();
                                     smoothingValues.add(currentRawValue);
                                     processValues(currentRawValue, smoothingValues, context);

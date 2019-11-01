@@ -47,7 +47,7 @@ public class SnoozeActivity extends Activity {//ActivityWithMenu {
 
     NumberPicker snoozeValue;
 
-    static final int infiniteSnoozeValueInMinutes = 5256000;//10 years
+    static final long infiniteSnoozeValueInMinutes = 5256000;//10 years
     //static final int snoozeValues[] = new int []{5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 75, 90, 105, 120, 150, 180, 240, 300, 360, 420, 480, 540, 600};
     static final int snoozeValues[] = new int []{ 10, 15, 20, 30, 40, 50, 60, 75, 90, 120, 150, 180, 240, 300, 360, 420, 480, 540, 600};
 

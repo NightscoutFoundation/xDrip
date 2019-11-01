@@ -44,19 +44,26 @@ import com.eveningoutpost.dexdrip.ui.helpers.Span;
 import com.eveningoutpost.dexdrip.utils.BtCallBack;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.DisconnectReceiver;
+import com.eveningoutpost.dexdrip.utils.bt.Subscription;
 import com.eveningoutpost.dexdrip.utils.framework.WakeLockTrampoline;
 import com.eveningoutpost.dexdrip.xdrip;
-import com.polidea.rxandroidble.RxBleClient;
-import com.polidea.rxandroidble.RxBleConnection;
-import com.polidea.rxandroidble.RxBleDevice;
+import com.polidea.rxandroidble2.RxBleClient;
+import com.polidea.rxandroidble2.RxBleConnection;
+import com.polidea.rxandroidble2.RxBleDevice;
 
 import java.security.InvalidAlgorithmParameterException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import rx.Subscription;
-import rx.schedulers.Schedulers;
+//import rx.Subscription;
+//import rx.schedulers.Schedulers;
+
+import io.reactivex.Observable;
+import io.reactivex.Scheduler;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+
 
 import static com.eveningoutpost.dexdrip.Models.BgReading.bgReadingInsertMedtrum;
 import static com.eveningoutpost.dexdrip.Models.JoH.msSince;
@@ -304,7 +311,7 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
         UserError.Log.d(TAG, "enable features - enter");
         stopListening();
         if (connection != null) {
-            notificationSubscription = connection.setupNotification(Const.CGM_CHARACTERISTIC_NOTIFY)
+            notificationSubscription = new Subscription(connection.setupNotification(Const.CGM_CHARACTERISTIC_NOTIFY)
                     .timeout(LISTEN_STASIS_SECONDS, TimeUnit.SECONDS) // WARN
                     .observeOn(Schedulers.newThread())
                     .doOnNext(notificationObservable -> {
@@ -331,12 +338,12 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
                             }, throwable -> {
                                 UserError.Log.d(TAG, "notification throwable: " + throwable);
                             }
-                    );
+                    ));
 
 
             final InboundStream inboundStream = new InboundStream();
 
-            indicationSubscription = connection.setupIndication(CGM_CHARACTERISTIC_INDICATE)
+            indicationSubscription = new Subscription(connection.setupIndication(CGM_CHARACTERISTIC_INDICATE)
                     .timeout(LISTEN_STASIS_SECONDS, TimeUnit.SECONDS) // WARN
                     .observeOn(Schedulers.newThread())
                     .doOnNext(notificationObservable -> {
@@ -372,7 +379,7 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
                             }, throwable -> {
                                 UserError.Log.d(TAG, "indication throwable: " + throwable);
                             }
-                    );
+                    ));
         } else {
             UserError.Log.e(TAG, "Connection null when trying to set notifications");
         }
@@ -401,24 +408,24 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
                 bleDevice = rxBleClient.getBleDevice(address);
 
                 // Listen for connection state changes
-                stateSubscription = bleDevice.observeConnectionStateChanges()
+                stateSubscription = new Subscription(bleDevice.observeConnectionStateChanges()
                         // .observeOn(AndroidSchedulers.mainThread())
                         .subscribeOn(Schedulers.io())
                         .subscribe(this::onConnectionStateChange, throwable -> {
                             UserError.Log.wtf(TAG, "Got Error from state subscription: " + throwable);
-                        });
+                        }));
 
                 // Attempt to establish a connection
                 listen_connected = false;
                 auto = false; // auto not allowed due to timeout
-                connectionSubscription = bleDevice.establishConnection(auto)
+                connectionSubscription = new Subscription(bleDevice.establishConnection(auto)
                         .timeout(LISTEN_STASIS_SECONDS, TimeUnit.SECONDS)
                         // .flatMap(RxBleConnection::discoverServices)
                         // .observeOn(AndroidSchedulers.mainThread())
                         // .doOnUnsubscribe(this::clearSubscription)
                         .subscribeOn(Schedulers.io())
 
-                        .subscribe(this::onConnectionReceived, this::onConnectionFailure);
+                        .subscribe(this::onConnectionReceived, this::onConnectionFailure));
 
             } else {
                 UserError.Log.wtf(TAG, "No transmitter mac address!");

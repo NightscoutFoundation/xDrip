@@ -4,7 +4,7 @@ import android.os.ParcelUuid;
 import android.support.annotation.Nullable;
 import android.util.SparseArray;
 
-import com.polidea.rxandroidble.scan.ScanRecord;
+import com.polidea.rxandroidble2.scan.ScanRecord;
 
 import java.util.List;
 import java.util.Map;

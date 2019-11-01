@@ -144,6 +144,7 @@ public class ShareFollowDownload extends RetrofitBase {
         if (session.results != null) {
             UserError.Log.d(TAG, "Success get data");
             EntryProcessor.processEntries(session.results, true);
+            ShareFollowService.updateBgReceiveDelay();
             session.results = null;
             msg(null); // clear any error msg
         } else {

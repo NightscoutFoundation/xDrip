@@ -262,7 +262,7 @@ public class SdcardImportExport extends BaseAppCompatActivity {
             builder.setTitle(gs(R.string.backup_detected));
             builder.setMessage(gs(R.string.it_looks_like_you_maybe_have_a_settings_backup_shall_we_try_to_restore_it));
 
-            builder.setNegativeButton("No", (dialog, which) -> {
+            builder.setNegativeButton(R.string.no, (dialog, which) -> {
                 backupDismissed = true;
                 dialog.dismiss();
             });

@@ -431,7 +431,7 @@
     <string name="choose_sound_used_for_predicted_low_alarm">Choose sound used for predicted low alarm.</string>
     <string name="notify_when_parakeet_device_stops_checking_in">Notify when parakeet device stops checking in</string>
     <string name="parakeet_related_alerts">Parakeet related alerts</string>
-    <string name="raise_parakeet_notification_silently_when_charging">Raise parakeet notifiction silently when charging</string>
+    <string name="raise_parakeet_notification_silently_when_charging">Raise parakeet notification silently when charging</string>
     <string name="silent_alert_when_charging">Silent alert when charging</string>
     <string name="alerts_start_out_snoozed_and_must_persist_for_a_while">Alerts start out snoozed and must persist for a while to actually trigger</string>
     <string name="alarms_silenced_during_telephone_calls">Alarms silenced during telephone calls</string>
@@ -1421,7 +1421,7 @@
     <string name="classic_simple">Classic simple</string>
     <string name="libre">Libre</string>
     <string name="what_type_of_libre_bridge_device_do_you_use">What type of Libre bridge device do you use?</string>
-    <string name="bluetooth_bridge_device_blucon_limitter_bluereader_tomato_etc">Bluetooth Bridge device: Blucon,Bubble, LimiTTer, Bluereader, Tomato etc</string>
+    <string name="bluetooth_bridge_device_blucon_limitter_bluereader_tomato_etc">Bluetooth Bridge device: Blucon, Bubble, LimiTTer, Bluereader, Tomato etc</string>
     <string name="libre_patched">Libre2 Patched</string>
     <string name="librealarm_app_using_sony_smartwatch">LibreAlarm App: using Sony Smartwatch</string>
     <string name="__data_source_disabled">\n DATA SOURCE DISABLED</string>
@@ -1511,4 +1511,14 @@
     <string name="authentication_failed_wrong_password">Authentication Failed. Wrong password?</string>
     <string name="share_login_data_isnt_valid">Share Login data isn\'t valid - check username / password</string>
     <string name="connectivity_problem_reaching_share_servers">Connectivity problem reaching Share servers</string>
+    <string name="ob1_session_restarted_title">Sensor session restarted</string>
+    <string name="ob1_session_restarted_msg">The sensor session was preemptively restarted. Please check if the next readings are off and calibrate if needed</string>
+    <string name="ob1_session_restarted_note">Sensor session was restarted</string>
+    <string name="title_ob1_g5_preemptive_restart_extended_time_travel">Extended time-travel</string>
+    <string name="summary_ob1_g5_preemptive_restart_extended_time_travel">Restart the session to start at day 3 to avoid causing jumps</string>
+    <string name="title_ob1_g5_preemptive_restart_extended_time_travel_all_firmwares">Always allow extended time-travel</string>
+    <string name="summary_ob1_g5_preemptive_restart_extended_time_travel_all_firmwares">Allow extended time-travel with all firmware versions (engineering mode only) </string>
+    <string name="collection_summary_ob1_g5_preemptive_restart">Automatically restart a sensor before it stops</string>
+    <string name="title_ob1_g5_preemptive_restart_alert">Alert on preemptive restart</string>
+    <string name="summary_ob1_g5_preemptive_restart_alert">Raise an alert when preemptively restarting the session</string>
 </resources>

@@ -162,13 +162,40 @@
                 android:summary="@string/summary_ob1_g5_restart_sensor"
                 android:title="@string/title_ob1_g5_restart_sensor"
                 />
-            <CheckBoxPreference
-                android:defaultValue="false"
-                android:dependency="ob1_g5_use_transmitter_alg"
-                android:key="ob1_g5_preemptive_restart"
-                android:summary="@string/summary_ob1_g5_preemptive_restart"
-                android:title="@string/title_ob1_g5_preemptive_restart"
+            <PreferenceScreen
+                    android:key="collection_preemptive_restart"
+                    android:dependency="ob1_g5_use_transmitter_alg"
+                    android:summary="@string/collection_summary_ob1_g5_preemptive_restart"
+                    android:title="@string/title_ob1_g5_preemptive_restart">
+                <CheckBoxPreference
+                        android:defaultValue="false"
+                        android:dependency="ob1_g5_use_transmitter_alg"
+                        android:key="ob1_g5_preemptive_restart"
+                        android:summary="@string/summary_ob1_g5_preemptive_restart"
+                        android:title="@string/title_ob1_g5_preemptive_restart"
                 />
+                <CheckBoxPreference
+                        android:defaultValue="true"
+                        android:dependency="ob1_g5_preemptive_restart"
+                        android:key="ob1_g5_preemptive_restart_alert"
+                        android:title="@string/title_ob1_g5_preemptive_restart_alert"
+                        android:summary="@string/summary_ob1_g5_preemptive_restart_alert"
+                    />
+                <CheckBoxPreference
+                        android:defaultValue="false"
+                        android:dependency="ob1_g5_preemptive_restart"
+                        android:key="ob1_g5_preemptive_restart_extended_time_travel"
+                        android:summary="@string/summary_ob1_g5_preemptive_restart_extended_time_travel"
+                        android:title="@string/title_ob1_g5_preemptive_restart_extended_time_travel"
+                />
+                <CheckBoxPreference
+                        android:defaultValue="false"
+                        android:dependency="ob1_g5_preemptive_restart"
+                        android:key="ob1_g5_defer_preemptive_restart_all_firmwares"
+                        android:summary="@string/summary_ob1_g5_preemptive_restart_extended_time_travel_all_firmwares"
+                        android:title="@string/title_ob1_g5_preemptive_restart_extended_time_travel_all_firmwares"
+                />
+            </PreferenceScreen>
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:dependency="ob1_g5_use_transmitter_alg"
