@@ -59,7 +59,6 @@ public class Bubble {
 
     public static BridgeResponse decodeBubblePacket(byte[] buffer, int len) {
         final BridgeResponse reply = new BridgeResponse();
-        android.util.Log.e(TAG, JoH.bytesToHex(buffer));
         int first = 0xff & buffer[0];
         if (first == 0x80) {
             PersistentStore.setString("Bubblebattery", Integer.toString(buffer[4]));
@@ -76,7 +75,6 @@ public class Bubble {
             ackMessage.put(5, (byte) 0x2B);
             reply.add(ackMessage);
             s_full_data = null;
-            Log.e(TAG, "reset data" + bubblefirmware);
             return getBubbleResponse();
         }
         if (first == 0xC0) {
@@ -94,7 +92,6 @@ public class Bubble {
                     patchInfo = Arrays.copyOfRange(buffer, 5, 11);
                 }
             }
-            Log.e(TAG, "reset data" + JoH.bytesToHex(patchInfo));
             return reply;
         }
         if (first == 0x82) {
