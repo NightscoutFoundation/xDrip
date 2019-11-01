@@ -41,6 +41,7 @@ import com.eveningoutpost.dexdrip.watch.thinjam.messages.BulkUpTx;
 import com.eveningoutpost.dexdrip.watch.thinjam.messages.DefineWindowTx;
 import com.eveningoutpost.dexdrip.watch.thinjam.messages.GlucoseTx;
 import com.eveningoutpost.dexdrip.watch.thinjam.messages.PushRx;
+import com.eveningoutpost.dexdrip.watch.thinjam.messages.ResetPersistTx;
 import com.eveningoutpost.dexdrip.watch.thinjam.messages.SetTimeTx;
 import com.eveningoutpost.dexdrip.watch.thinjam.messages.SetTxIdTx;
 import com.eveningoutpost.dexdrip.watch.thinjam.messages.StandbyTx;
@@ -130,6 +131,7 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
     private Runnable postQueueRunnable;
 
     public volatile boolean flashIsRunning = false;
+    public volatile boolean sleepAfterReset = false;
 
     @Setter
     ObservableField<Integer> progressIndicator;
@@ -442,7 +444,7 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
     }
 
     public void factoryReset() {
-        queueSingleByteCommand(OPCODE_RESET_PERSIST, "Factory Reset");
+        queueGenericCommand(new ResetPersistTx(sleepAfterReset).getBytes(), "Factory Reset", null);
     }
 
     public void showQrCode() {
@@ -565,8 +567,12 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
     }
 
     public void queueSingleByteCommand(final byte cmd, final String description, final Runnable runnable) {
+        queueGenericCommand(new byte[]{cmd}, description, runnable);
+    }
+
+    public void queueGenericCommand(final byte[] cmd, final String description, final Runnable runnable) {
         val item = new QueueMe()
-                .setBytes(new byte[]{cmd});
+                .setBytes(cmd);
         item.setDescription(description)
                 .setProcessor(new AuthReplyProcessor(new ReplyProcessor(I.connection) {
                     @Override

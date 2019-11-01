@@ -1,7 +1,6 @@
 package com.eveningoutpost.dexdrip.Tables;
 
 import android.app.AlertDialog;
-import android.app.ListActivity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
@@ -14,6 +13,7 @@ import android.widget.BaseAdapter;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
+import com.eveningoutpost.dexdrip.BaseListActivity;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.NavigationDrawerFragment;
@@ -26,7 +26,7 @@ import java.util.Date;
 import java.util.List;
 
 
-public class BgReadingTable extends ListActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+public class BgReadingTable extends BaseListActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
     private String menu_name = "BG Data Table";
     private NavigationDrawerFragment mNavigationDrawerFragment;
 
@@ -99,7 +99,7 @@ public class BgReadingTable extends ListActivity implements NavigationDrawerFrag
                     + "  " + JoH.qs(bgReading.calculated_value, 1)
                     + " " + (!bgReading.isBackfilled() ? bgReading.slopeArrow() : ""));
             tag.raw_data_value.setText("Aged raw: " + JoH.qs(bgReading.age_adjusted_raw_value, 2));
-            tag.raw_data_slope.setText(bgReading.isBackfilled() ? "Backfilled" : "Raw: " + JoH.qs(bgReading.raw_data, 2));
+            tag.raw_data_slope.setText(bgReading.isBackfilled() ? ("Backfilled" + " " + ((bgReading.source_info != null) ? bgReading.source_info : "")) : "Raw: " + JoH.qs(bgReading.raw_data, 2) + " " + ((bgReading.source_info != null) ? bgReading.source_info : ""));
             tag.raw_data_timestamp.setText(new Date(bgReading.timestamp).toString());
 
             if (bgReading.ignoreForStats) {
@@ -121,12 +121,14 @@ public class BgReadingTable extends ListActivity implements NavigationDrawerFrag
                                 case DialogInterface.BUTTON_POSITIVE:
                                     bgReading.ignoreForStats = true;
                                     bgReading.save();
+                                    notifyDataSetChanged();
                                     if (Pref.getBooleanDefaultFalse("wear_sync")) BgReading.pushBgReadingSyncToWatch(bgReading, false);
                                     break;
 
                                 case DialogInterface.BUTTON_NEGATIVE:
                                     bgReading.ignoreForStats = false;
                                     bgReading.save();
+                                    notifyDataSetChanged();
                                     if (Pref.getBooleanDefaultFalse("wear_sync")) BgReading.pushBgReadingSyncToWatch(bgReading, false);
                                     break;
                             }

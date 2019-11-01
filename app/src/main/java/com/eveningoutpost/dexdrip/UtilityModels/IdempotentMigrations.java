@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.Models.Libre2RawValue;
+import com.eveningoutpost.dexdrip.Models.Libre2Sensor;
 import com.eveningoutpost.dexdrip.Models.APStatus;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 //import com.eveningoutpost.dexdrip.Models.BgReadingArchive;
@@ -45,6 +46,7 @@ public class IdempotentMigrations {
         DesertSync.updateDB();
         PenData.updateDB();
         Libre2RawValue.updateDB();
+        Libre2Sensor.updateDB();
 //        BgReadingArchive.updateDB();
         AlertType.fixUpTable();
         JoH.clearCache();

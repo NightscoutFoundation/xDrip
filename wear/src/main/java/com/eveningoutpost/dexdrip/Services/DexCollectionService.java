@@ -516,7 +516,7 @@ public class DexCollectionService extends Service implements BtCallBack {
                     }else if (Bubble.isBubble()) {
                         status("Enabled bubble");
                         Log.d(TAG, "Queueing bubble initialization..");
-                        Inevitable.task("initialize-tomato", 4000, new Runnable() {
+                        Inevitable.task("initialize-bubble", 4000, new Runnable() {
                             @Override
                             public void run() {
                                 final List<ByteBuffer> buffers = Bubble.initialize();
@@ -929,9 +929,7 @@ public class DexCollectionService extends Service implements BtCallBack {
         if (static_use_nrf && Tomato.isTomato()) {
             l.add(new StatusItem("Hardware", xdrip.getAppContext().getString(R.string.tomato)));
         }
-        if (static_use_nrf && Bubble.isBubble()) {
-            l.add(new StatusItem("Hardware", xdrip.getAppContext().getString(R.string.bubble)));
-        }
+
         // TODO add LimiTTer info
 
         if (last_transmitter_Data != null) {
@@ -1054,6 +1052,7 @@ public class DexCollectionService extends Service implements BtCallBack {
             l.add(new StatusItem("Bubble Firmware", PersistentStore.getString("BubbleFirmware")));
             l.add(new StatusItem("Libre SN", PersistentStore.getString("LibreSN")));
         }
+
         if (static_use_blukon) {
             l.add(new StatusItem("Battery", Pref.getInt("bridge_battery", 0) + "%"));
             l.add(new StatusItem("Sensor age", JoH.qs(((double) Pref.getInt("nfc_sensor_age", 0)) / 1440, 1) + "d"));
@@ -1077,6 +1076,7 @@ public class DexCollectionService extends Service implements BtCallBack {
 
         if (scanMeister == null) {
             scanMeister = new ScanMeister()
+                    .applyKnownWorkarounds()
                     .addCallBack(this, TAG);
         }
 
@@ -1387,6 +1387,7 @@ public class DexCollectionService extends Service implements BtCallBack {
 
     /**
      * Displays all services and characteristics for debugging purposes.
+     *
      * @param bluetoothGatt BLE gatt profile.
      */
     private void listAvailableServices(BluetoothGatt bluetoothGatt) {
@@ -1810,12 +1811,12 @@ public class DexCollectionService extends Service implements BtCallBack {
             int MAX_BT_WDG = 20;
             int bt_wdg_timer = JoH.parseIntWithDefault(Pref.getString("bluetooth_watchdog_timer", Integer.toString(MAX_BT_WDG)), 10, MAX_BT_WDG);
 
-            if ( (bt_wdg_timer <= 5) || (bt_wdg_timer > MAX_BT_WDG) ) {
+            if ((bt_wdg_timer <= 5) || (bt_wdg_timer > MAX_BT_WDG)) {
                 bt_wdg_timer = MAX_BT_WDG;
             }
 
-            if ((JoH.msSince(last_time_seen)) > bt_wdg_timer*Constants.MINUTE_IN_MS) {
-                Log.d(TAG,"Use BT Watchdog timer=" + bt_wdg_timer);
+            if ((JoH.msSince(last_time_seen)) > bt_wdg_timer * Constants.MINUTE_IN_MS) {
+                Log.d(TAG, "Use BT Watchdog timer=" + bt_wdg_timer);
                 if (!JoH.isOngoingCall()) {
                     Log.e(TAG, "Watchdog triggered, attempting to reset bluetooth");
                     status("Watchdog triggered");

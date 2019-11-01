@@ -27,7 +27,7 @@ public class BlueJay {
     private static final String PREF_BLUEJAY_SEND_READINGS = "bluejay_send_readings";
 
     public static boolean isCollector() {
-        return true; // TODO make respect preference
+        return Pref.getBooleanDefaultFalse("bluejay_collector_enabled");
     }
 
     // process a pairing QR code and if it is from BlueJay then store and process it and return true
