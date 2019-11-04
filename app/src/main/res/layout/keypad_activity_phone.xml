@@ -271,4 +271,41 @@
 
     </TableRow>
 
+    <LinearLayout
+        android:id="@+id/insulinTypesSection"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="0.05"
+        android:visibility="gone"
+        android:gravity="center_horizontal">
+
+        <Button
+            android:id="@+id/multi_button1"
+            style="@style/KeypadButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="special1"
+            android:textSize="12sp" />
+
+        <Button
+            android:id="@+id/multi_button2"
+            style="@style/KeypadButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="special2"
+            android:textSize="12sp" />
+
+        <Button
+            android:id="@+id/multi_button3"
+            style="@style/KeypadButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="special3"
+            android:textSize="12sp" />
+    </LinearLayout>
+
 </LinearLayout>

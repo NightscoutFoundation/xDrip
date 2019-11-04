@@ -193,6 +193,7 @@ public class Simulation extends Activity {
                 try {
                     Bundle treatmentBundle = intent.getBundleExtra(ListenerService.WEARABLE_TREATMENT_PAYLOAD);
                     if (treatmentBundle != null) {
+// todo gruoner: extract the injectionJSON on wearable to display and approve the treatment
                         DataMap dataMap = DataMap.fromBundle(treatmentBundle);
                         if (dataMap != null) {
                             initValues();
