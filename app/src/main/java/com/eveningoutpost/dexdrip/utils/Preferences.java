@@ -1603,8 +1603,10 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
 
             if (engineering_mode || this.prefs.getString("update_channel", "").matches("alpha|nightly")) {
                 ListPreference update_channel = (ListPreference) findPreference("update_channel");
-                update_channel.setEntryValues(getResources().getStringArray(R.array.UpdateChannelE));
-                update_channel.setEntries(getResources().getStringArray(R.array.UpdateChannelDetailE));
+                if (update_channel != null) {
+                    update_channel.setEntryValues(getResources().getStringArray(R.array.UpdateChannelE));
+                    update_channel.setEntries(getResources().getStringArray(R.array.UpdateChannelDetailE));
+                }
             }
 
             final DecimalFormat df = new DecimalFormat("#.#");
