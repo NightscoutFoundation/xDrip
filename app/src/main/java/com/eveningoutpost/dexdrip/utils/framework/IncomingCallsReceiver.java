@@ -22,6 +22,8 @@ import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.watch.lefun.LeFun;
 import com.eveningoutpost.dexdrip.watch.lefun.LeFunEntry;
+import com.eveningoutpost.dexdrip.watch.miband.MiBand;
+import com.eveningoutpost.dexdrip.watch.miband.MiBandEntry;
 import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry;
 import com.eveningoutpost.dexdrip.xdrip;
 
@@ -66,6 +68,15 @@ public class IncomingCallsReceiver extends BroadcastReceiver {
                     // TODO extract to generic notifier
                     final String caller = number != null ? number.substring(Math.max(0, number.length() - 8)) : "CALL";
                     LeFun.sendAlert(true, caller);
+                }
+            }
+            // MiBand
+            if (JoH.quietratelimit("miband-call-debounce", 10)) {
+                if (MiBandEntry.areCallAlertsEnabled()) {
+                    // TODO extract to generic notifier
+                    final String caller = number != null ? "Incoming Call " + getContactDisplayNameByNumber(number) + " " + bestPhoneNumberFormatter(number) + " " : "CALL";
+                    UserError.Log.d(TAG, "Sending call alert: " + caller);
+                    MiBand.sendAlert(true, caller);
                 }
             }
 
