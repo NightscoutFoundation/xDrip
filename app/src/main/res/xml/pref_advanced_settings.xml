@@ -522,9 +522,47 @@
                     android:key="lefun_screen_mac_address"
                     android:title="@string/title_lefun_screen_mac_address" />
                 </PreferenceCategory>
+                <CheckBoxPreference
+                    android:key="lefun_screen_unknown_but_on"
+                    android:title="@string/title_lefun_screen_unknown_but_on" />
 
             </PreferenceScreen>
 
+        </PreferenceScreen>
+
+
+        <PreferenceScreen
+            android:title="@string/title_miband">
+            <SwitchPreference
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
+                android:defaultValue="false"
+                android:key="miband_enabled"
+                android:summary="@string/summary_miband_enable"
+                android:title="@string/title_miband_enable" />
+            <EditTextPreference
+                android:key="miband_mac"
+                android:title="@string/title_lefun_mac"/>
+            <SwitchPreference
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
+                android:defaultValue="true"
+                android:dependency="miband_enabled"
+                android:key="miband_send_readings"
+                android:summary="@string/summary_lefun_send_readings"
+                android:title="@string/title_lefun_send_readings" />
+            <SwitchPreference
+                android:defaultValue="true"
+                android:dependency="miband_enabled"
+                android:key="miband_send_alarms"
+                android:summary="@string/summary_lefun_send_alarms"
+                android:title="@string/title_lefun_send_alarms" />
+            <CheckBoxPreference
+                android:key="miband_option_call_notifications"
+                android:dependency="miband_enabled"
+                android:defaultValue="false"
+                android:summary="Send call notifications to the band (Android 6+)"
+                android:title="Send Calls" />
         </PreferenceScreen>
 
     <PreferenceScreen
