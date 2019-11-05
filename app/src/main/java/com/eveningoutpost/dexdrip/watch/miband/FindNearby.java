@@ -5,6 +5,7 @@ package com.eveningoutpost.dexdrip.watch.miband;
 import android.os.Bundle;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.utils.BtCallBack;
 import com.eveningoutpost.dexdrip.utils.bt.BtCallBack2;
 import com.eveningoutpost.dexdrip.utils.bt.ScanMeister;
 
@@ -20,13 +21,12 @@ public class FindNearby implements BtCallBack2 {
         } else {
             scanMeister.stop();
         }
-        JoH.static_toast_long("Searching... Please keep MiBand near your phone" );
+
         // TODO expand this list
         scanMeister
-                .setName(Const.MIBAND_NAME_2)
-                .setName(Const.MIBAND_NAME_3)
-                .setName(Const.MIBAND_NAME_3_1) //second name
-                .setName(Const.MIBAND_NAME_4)
+                .setName("MI Band 2")
+                .setName("MI Band 3")
+                .setName("MI Band 4")
                 .addCallBack2(this, TAG).scan();
     }
 
@@ -36,13 +36,14 @@ public class FindNearby implements BtCallBack2 {
         switch (status) {
             case ScanMeister.SCAN_FOUND_CALLBACK:
                 MiBand.setMac(mac);
-                MiBand.setModel(name, mac);
-                JoH.static_toast_long("Found " + name + ", mac address: " + mac);
+                MiBand.setModel(name);
+                JoH.static_toast_long("Found! " + mac);
                 MiBandEntry.startWithRefresh();
                 break;
+
             case ScanMeister.SCAN_FAILED_CALLBACK:
             case ScanMeister.SCAN_TIMEOUT_CALLBACK:
-                JoH.static_toast_long("Could not find MiBand, please try again, or enter MAC address manually");
+                JoH.static_toast_long(status);
                 break;
 
         }

@@ -19,8 +19,8 @@ public class AlertLevelMessage extends BaseMessage{
         NoAlert(0),
         MidAlert(1),
         HightAlert(2),
-        VibrateAlert(3),
-        Custom((byte)0xfa);// followed by another uin8
+        VibrateAlert(3);
+
         @Getter
         private final byte value;
 
