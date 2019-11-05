@@ -206,7 +206,7 @@ task AutoTestRig() doLast {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
-    wearApp project(':wear')
+   // wearApp project(':wear')
    // weapApp files('../wear/build/outputs/apk/wear_release.apk')
     //testimplementation 'com.squareup.okhttp:mockwebserver:2.5.0'
     implementation('com.github.nightscout:android-uploader:CORE_FOR_XDRIP') {

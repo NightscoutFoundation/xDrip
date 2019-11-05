@@ -803,8 +803,6 @@
     <string name="notify_data_arrives_master"><![CDATA[Notify when data arrives from the master if the interval is > 20 mins.]]></string>
     <string name="follower_chime_new">Follower Chime New</string>
     <string name="carb_ratio">Carb Ratio</string>
-    <string name="enable_dedicated_insulin_profiles">Config Insulin profiles</string>
-    <string name="desc_enable_dedicated_insulin_profiles">Here one can enable or configure various insulin profiles</string>
     <string name="insulin_sensitivity">Insulin Sensitivity</string>
     <string name="secondary_plugin_glucose_value">Secondary Plugin Glucose value</string>
     <string name="step_counter_1st_color">Step counter 1st Color</string>
@@ -1225,44 +1223,6 @@
     <string name="title_miband">MiBand</string>
     <string name="summary_miband_enable">Sync Data with MiBand fitness bands</string>
     <string name="title_miband_enable">Use MiBand Band</string>
-    <string name="title_miband_screens_features">MiBand Screens / Features</string>
-    <string name="title_miband_screen_battery">Show Battery</string>
-    <string name="title_miband_show_date">Show date on the screen</string>
-    <string name="title_miband_visibility">MiBand visibility</string>
-    <string name="summary_miband_visibility">Miband will be visible for other devices</string>
-    <string name="title_miband_switch_display_on_wrist">Switch display on wrist</string>
-    <string name="title_miband_units">Units</string>
-    <string name="summary_miband_units">km - ON, miles - OFF</string>
-    <string name="title_miband_goal_notification">Goal notification</string>
-    <string name="summary_miband_goal_notification">Miband will vibrate when you reach a goal</string>
-    <string name="title_miband_locale_24_hour">24 Hour clock</string>
-    <string name="summary_miband_locale_24_hour">Show 24 Hour clock</string>
-    <string name="title_miband_authkey">Auth Key</string>
-    <string name="summary_miband_authkey">Set the auth key for miband4 (To get auth key, follow the instrucions on https://www.freemyband.com/)</string>
-    <string name="summary_miband_mac">Leave empty for auto search</string>
-    <string name="title_miband_send_readings_as_notification">BG readings as notification</string>
-    <string name="summary_miband_send_readings_as_notification">Will use a notifications to send BG readings(The date wouldn\'t be changed,
-        need to sisable if want to use xdrip watchface)</string>
-    <string name="title_miband_vibrate_on_readings">Vibrate on readings</string>
-    <string name="title_miband_send_cals">Send Calls</string>
-    <string name="summary_miband_send_cals">Send call notifications to the band (Android 6+)</string>
-    <string name="title_miband_install_watchface">Install MiBand4 watchface</string>
-    <string name="title_miband_general_settings_category">General settings</string>
-
-    <string name="title_miband_screen_notifications">Show Notifications</string>
-    <string name="title_miband_screen_weather">Show Weather</string>
-    <string name="title_miband_screen_activity">Show Activity</string>
-    <string name="title_miband_screen_more">Show More</string>
-    <string name="title_miband_screen_status">Show Status</string>
-    <string name="title_miband_screen_heart_rate">Show Heart rate</string>
-    <string name="title_miband_screen_timer">Show Timer</string>
-    <string name="title_miband_screen_nfc">Show NFC(if available)</string>
-
-    <string name="miband_watchface_istall_success">MiBand watchface has been uploaded successfully!</string>
-    <string name="miband_watchface_istall_error">Error while uploading MiBand watchface</string>
-    <string name="miband_watchface_dialog_title">MiBand watchface install</string>
-    <string name="miband_watchface_dialog_option_mmol">Install mmol watchface?</string>
-
     <string name="title_lefun_band">Lefun Band</string>
     <string name="summary_lefun_enable">Sync Data with LeFun fitness bands</string>
     <string name="title_lefun_enable">Use LeFun Band</string>
@@ -1565,7 +1525,4 @@
     <string name="collection_summary_ob1_g5_preemptive_restart">Automatically restart a sensor before it stops</string>
     <string name="title_ob1_g5_preemptive_restart_alert">Alert on preemptive restart</string>
     <string name="summary_ob1_g5_preemptive_restart_alert">Raise an alert when preemptively restarting the session</string>
-    <string name="pref_enable_insulinprofiles">enable at least one max three profiles</string>
-    <string name="pref_select_basal_insulinprofiles">choose basal insulin profile.</string>
-    <string name="pref_select_bolus_insulinprofiles">choose bolus insulin profile. also used for pump and pen...</string>
 </resources>
