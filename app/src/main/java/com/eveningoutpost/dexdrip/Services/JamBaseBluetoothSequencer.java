@@ -616,6 +616,7 @@ public abstract class JamBaseBluetoothSequencer extends JamBaseBluetoothService 
 
     @RequiredArgsConstructor
     private class QueueItem {
+        final UUID queueWriteCharacterstic;
         final byte[] data;
         final int timeoutSeconds;
         final long post_delay;
@@ -654,6 +655,7 @@ public abstract class JamBaseBluetoothSequencer extends JamBaseBluetoothService 
         boolean start_now;
         boolean expect_reply;
         String description = "Vanilla Queue Item";
+        UUID queueWriteCharacterstic;
         Runnable runnable;
         ReplyProcessor processor;
 
@@ -699,6 +701,16 @@ public abstract class JamBaseBluetoothSequencer extends JamBaseBluetoothService 
             this.processor = runnable;
             return this;
         }
+
+        public UUID getQueueWriteCharacterstic() {
+            return queueWriteCharacterstic;
+        }
+
+        public QueueMe setQueueWriteCharacterstic(UUID queueWriteCharacterstic) {
+            this.queueWriteCharacterstic = queueWriteCharacterstic;
+            return this;
+        }
+
 
         public QueueMe now() {
             this.start_now = true;
@@ -759,16 +771,15 @@ public abstract class JamBaseBluetoothSequencer extends JamBaseBluetoothService 
                     UserError.Log.wtf(TAG, "Could not create clone of reply processor needed!!");
                 }
             }
-
-
+            UUID  queueWriteCharacterstic = queueMe.queueWriteCharacterstic;
+            if (queueWriteCharacterstic == null) queueWriteCharacterstic = I.queue_write_characterstic;
             if (atHead) {
-                I.write_queue.addFirst(new QueueItem(bytes, queueMe.timeout_seconds, queueMe.delay_ms, queueMe.description, queueMe.expect_reply, queueMe.expireAt)
+                I.write_queue.addFirst(new QueueItem(queueWriteCharacterstic, bytes, queueMe.timeout_seconds, queueMe.delay_ms, queueMe.description, queueMe.expect_reply, queueMe.expireAt)
                         .setRunnable(queueMe.runnable).setProcessor(replyProcessor));
 
             } else {
-                I.write_queue.add(new QueueItem(bytes, queueMe.timeout_seconds, queueMe.delay_ms, queueMe.description, queueMe.expect_reply, queueMe.expireAt)
+                I.write_queue.add(new QueueItem(queueWriteCharacterstic, bytes, queueMe.timeout_seconds, queueMe.delay_ms, queueMe.description, queueMe.expect_reply, queueMe.expireAt)
                         .setRunnable(queueMe.runnable).setProcessor(replyProcessor));
-
             }
         }
         if (queueMe.start_now) startQueueSend();
@@ -832,12 +843,12 @@ public abstract class JamBaseBluetoothSequencer extends JamBaseBluetoothService 
             return;
         }
 
-        if (I.queue_write_characterstic == null) {
+        if (item.queueWriteCharacterstic == null) {
             UserError.Log.e(TAG, "Write characteristic not set in queue write");
             return;
         }
-        UserError.Log.d(TAG, "Writing to characteristic: " + I.queue_write_characterstic + " " + item.description);
-        I.connection.writeCharacteristic(I.queue_write_characterstic, item.data)
+        UserError.Log.d(TAG, "Writing to characteristic: " + item.queueWriteCharacterstic + " " + item.description);
+        I.connection.writeCharacteristic(item.queueWriteCharacterstic, item.data)
                 .timeout(item.timeoutSeconds, TimeUnit.SECONDS)
                 .subscribe(Value -> {
                     UserError.Log.d(TAG, "Wrote request: " + item.description + " -> " + JoH.bytesToHex(Value));

@@ -665,6 +665,7 @@
             android:enabled="true"
             android:exported="true" />
         <service android:name=".watch.lefun.LeFunService" />
+        <service android:name=".watch.miband.MiBandService" />
         <service android:name=".cgm.nsfollow.NightscoutFollowService" />
         <service android:name=".insulin.inpen.InPenService" />
         <service android:name=".cgm.sharefollow.ShareFollowService" />

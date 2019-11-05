@@ -23,7 +23,7 @@ public class TxSetScreens extends BaseTx {
         data.put(WRITE);
 
         bitmap_start_offset = 4;
-        enable(UNKNOWN_BUT_ON);
+        //enable(UNKNOWN_BUT_ON);
 
     }
 
