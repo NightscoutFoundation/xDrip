@@ -522,10 +522,6 @@
                     android:key="lefun_screen_mac_address"
                     android:title="@string/title_lefun_screen_mac_address" />
                 </PreferenceCategory>
-                <CheckBoxPreference
-                    android:key="lefun_screen_unknown_but_on"
-                    android:title="@string/title_lefun_screen_unknown_but_on" />
-
             </PreferenceScreen>
 
         </PreferenceScreen>
@@ -563,6 +559,40 @@
                 android:defaultValue="false"
                 android:summary="Send call notifications to the band (Android 6+)"
                 android:title="Send Calls" />
+            <PreferenceScreen android:title="@string/title_miband_screens_features">
+
+                <PreferenceCategory android:title="@string/title_features">
+                    <CheckBoxPreference
+                        android:defaultValue="true"
+                        android:key="lefun_feature_lift_to_wake"
+                        android:title="@string/title_lefun_feature_lift_to_wak" />
+                    <CheckBoxPreference
+                        android:key="lefun_feature_anti_lost"
+                        android:title="@string/title_lefun_feature_anti_lost" />
+                    <CheckBoxPreference
+                        android:key="lefun_locale_12_hour"
+                        android:defaultValue="true"
+                        android:title="@string/title_lefun_locale_12_hour"/>
+                </PreferenceCategory>
+
+                <PreferenceCategory android:title="@string/title_screens">
+                    <CheckBoxPreference
+                        android:key="miband_screen_step_counter"
+                        android:title="@string/title_lefun_screen_step_counter" />
+                    <CheckBoxPreference
+                        android:key="miband_screen_step_distance"
+                        android:title="@string/title_lefun_screen_step_distance" />
+                    <CheckBoxPreference
+                        android:key="miband_screen_step_calories"
+                        android:title="@string/title_lefun_screen_step_calories" />
+                    <CheckBoxPreference
+                        android:key="miband_screen_heart_rate"
+                        android:title="@string/title_lefun_screen_heart_rate" />
+                    <CheckBoxPreference
+                        android:key="miband_screen_battery"
+                        android:title="@string/title_miband_screen_battery" />
+                </PreferenceCategory>
+            </PreferenceScreen>
         </PreferenceScreen>
 
     <PreferenceScreen

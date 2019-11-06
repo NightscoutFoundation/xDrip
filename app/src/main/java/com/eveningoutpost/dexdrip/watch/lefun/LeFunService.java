@@ -19,6 +19,7 @@ import com.eveningoutpost.dexdrip.store.FastStore;
 import com.eveningoutpost.dexdrip.store.KeyStore;
 import com.eveningoutpost.dexdrip.utils.framework.IncomingCallsReceiver;
 import com.eveningoutpost.dexdrip.utils.framework.WakeLockTrampoline;
+import com.eveningoutpost.dexdrip.watch.PrefBindingFactory;
 import com.eveningoutpost.dexdrip.watch.lefun.messages.BaseRx;
 import com.eveningoutpost.dexdrip.watch.lefun.messages.BaseTx;
 import com.eveningoutpost.dexdrip.watch.lefun.messages.RxFind;
@@ -42,9 +43,6 @@ import java.util.concurrent.TimeoutException;
 
 //import rx.schedulers.Schedulers;
 
-import io.reactivex.Observable;
-import io.reactivex.Scheduler;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 
@@ -264,7 +262,7 @@ public class LeFunService extends JamBaseBluetoothSequencer {
 
         probeModelTypeIfUnknown();
 
-        for (Pair<Integer, Boolean> lState : PrefBinding.getInstance().getStates("lefun_locale_")) {
+        for (Pair<Integer, Boolean> lState : PrefBindingFactory.LEFUN_INSTANCE.getLefun().getStates("lefun_locale_")) {
             new QueueMe()
                     .setBytes(new TxSetLocaleFeature(lState.first, lState.second).getBytes())
                     .setDescription("Set Locale Features")
@@ -274,7 +272,7 @@ public class LeFunService extends JamBaseBluetoothSequencer {
 
         BaseTx screens = new TxSetScreens();
 
-        for (int screen : PrefBinding.getInstance().getEnabled("lefun_screen")) {
+        for (int screen : PrefBindingFactory.LEFUN_INSTANCE.getLefun().getEnabled("lefun_screen")) {
             screens.enable(screen);
         }
         new QueueMe()
@@ -284,7 +282,7 @@ public class LeFunService extends JamBaseBluetoothSequencer {
                 .queue();
 
         BaseTx features = new TxSetFeatures();
-        for (int feature : PrefBinding.getInstance().getEnabled("lefun_feature")) {
+        for (int feature : PrefBindingFactory.LEFUN_INSTANCE.getLefun().getEnabled("lefun_feature")) {
             features.enable(feature);
         }
         new QueueMe()

@@ -1,7 +1,9 @@
 package com.eveningoutpost.dexdrip.watch.miband.message;
 
+import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.watch.miband.Const;
 
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -9,41 +11,45 @@ import static com.eveningoutpost.dexdrip.watch.miband.message.OperationCodes.DIS
 import static com.eveningoutpost.dexdrip.watch.miband.message.OperationCodes.ENDPOINT_DISPLAY_ITEMS;
 
 public class DisplayControllMessage extends BaseMessage {
+    private static final String TAG = "MiBand_DisplayControllMessage";
 
+    public static final int DISPLAY_ITEM_STEPS = 0;
+    public static final int DISPLAY_ITEM_DISTANCE = 1;
+    public static final int DISPLAY_ITEM_CALORIES = 2;
+    public static final int DISPLAY_ITEM_HEART_RATE = 3;
+    public static final int DISPLAY_ITEM_BATTERY = 5;
 
-    public static final byte[] COMMAND_CHANGE_SCREENS = new byte[]{ENDPOINT_DISPLAY_ITEMS, DISPLAY_ITEM_BIT_CLOCK, 0x30, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00, 0x00, 0x00};
+    //0a 01 00 00 01 02 03 04 05  disabled all screens
+    //0a 11 00 00 01 02 03 04 05  heart rate
 
     @Override
     public UUID getCharacteristicUUID() {
         return Const.UUID_CHARACTERISTIC_3_CONFIGURATION;
     }
 
-    protected byte[] getDisplayItemsMessage( ) {/*
-        Set<String> pages = HuamiCoordinator.getDisplayItems(gbDevice.getAddress());
-        LOG.info("Setting display items to " + (pages == null ? "none" : pages));
+    public byte[] getDisplayItemsMessage(List<Integer> pages) {
+        UserError.Log.e(TAG, "Setting display items to " + ((pages == null && pages.isEmpty()) ? "none" : pages));
+        byte[] data = OperationCodes.COMMAND_CHANGE_SCREENS.clone();
 
-        byte[] data = COMMAND_CHANGE_SCREENS.clone();
-
-        if (pages != null) {
-            if (pages.contains(MiBandConst.PREF_MI2_DISPLAY_ITEM_STEPS)) {
+        if (pages != null && !pages.isEmpty()) {
+            if (pages.contains(DISPLAY_ITEM_STEPS)) {
                 data[OperationCodes.SCREEN_CHANGE_BYTE] |= OperationCodes.DISPLAY_ITEM_BIT_STEPS;
-            }
-            if (pages.contains(MiBandConst.PREF_MI2_DISPLAY_ITEM_DISTANCE)) {
+           }
+            if (pages.contains(DISPLAY_ITEM_DISTANCE)) {
                 data[OperationCodes.SCREEN_CHANGE_BYTE] |= OperationCodes.DISPLAY_ITEM_BIT_DISTANCE;
             }
-            if (pages.contains(MiBandConst.PREF_MI2_DISPLAY_ITEM_CALORIES)) {
+            if (pages.contains(DISPLAY_ITEM_CALORIES)) {
                 data[OperationCodes.SCREEN_CHANGE_BYTE] |= OperationCodes.DISPLAY_ITEM_BIT_CALORIES;
             }
-            if (pages.contains(MiBandConst.PREF_MI2_DISPLAY_ITEM_HEART_RATE)) {
+            if (pages.contains(DISPLAY_ITEM_HEART_RATE)) {
                 data[OperationCodes.SCREEN_CHANGE_BYTE] |= OperationCodes.DISPLAY_ITEM_BIT_HEART_RATE;
             }
-            if (pages.contains(MiBandConst.PREF_MI2_DISPLAY_ITEM_BATTERY)) {
+            if (pages.contains(DISPLAY_ITEM_BATTERY)) {
                 data[OperationCodes.SCREEN_CHANGE_BYTE] |= OperationCodes.DISPLAY_ITEM_BIT_BATTERY;
             }
         }
-
-        builder.write(getCharacteristic(HuamiService.UUID_CHARACTERISTIC_3_CONFIGURATION), data);
-        return this;*/
+        init(data.length);
+        putData(data);
         return getBytes();
     }
 }
