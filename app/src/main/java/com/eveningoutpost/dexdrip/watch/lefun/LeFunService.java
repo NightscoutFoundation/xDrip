@@ -41,7 +41,10 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+//import rx.schedulers.Schedulers;
+
 import io.reactivex.schedulers.Schedulers;
+
 
 import static com.eveningoutpost.dexdrip.Models.ActiveBgAlert.currentlyAlerting;
 import static com.eveningoutpost.dexdrip.Models.JoH.bytesToHex;
@@ -61,8 +64,6 @@ import static com.eveningoutpost.dexdrip.watch.lefun.LeFunService.LeFunState.PRO
 import static com.eveningoutpost.dexdrip.watch.lefun.LeFunService.LeFunState.QUEUE_MESSAGE;
 import static com.eveningoutpost.dexdrip.watch.lefun.LeFunService.LeFunState.SEND_SETTINGS;
 import static com.eveningoutpost.dexdrip.watch.lefun.LeFunService.LeFunState.SET_TIME;
-
-//import rx.schedulers.Schedulers;
 
 /**
  * Jamorham
@@ -261,7 +262,7 @@ public class LeFunService extends JamBaseBluetoothSequencer {
 
         probeModelTypeIfUnknown();
 
-        for (Pair<Integer, Boolean> lState : PrefBindingFactory.getInstance(LefunPrefBinding.class).getStates("lefun_locale_")) {
+        for (Pair<Integer, Boolean> lState : PrefBindingFactory.LEFUN_INSTANCE.getLefun().getStates("lefun_locale_")) {
             new QueueMe()
                     .setBytes(new TxSetLocaleFeature(lState.first, lState.second).getBytes())
                     .setDescription("Set Locale Features")
@@ -271,7 +272,7 @@ public class LeFunService extends JamBaseBluetoothSequencer {
 
         BaseTx screens = new TxSetScreens();
 
-        for (int screen : PrefBindingFactory.getInstance(LefunPrefBinding.class).getEnabled("lefun_screen")) {
+        for (int screen : PrefBindingFactory.LEFUN_INSTANCE.getLefun().getEnabled("lefun_screen")) {
             screens.enable(screen);
         }
         new QueueMe()
@@ -281,7 +282,7 @@ public class LeFunService extends JamBaseBluetoothSequencer {
                 .queue();
 
         BaseTx features = new TxSetFeatures();
-        for (int feature : PrefBindingFactory.getInstance(LefunPrefBinding.class).getEnabled("lefun_feature")) {
+        for (int feature : PrefBindingFactory.LEFUN_INSTANCE.getLefun().getEnabled("lefun_feature")) {
             features.enable(feature);
         }
         new QueueMe()

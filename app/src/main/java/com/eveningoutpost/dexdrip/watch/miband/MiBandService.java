@@ -18,9 +18,12 @@ import com.eveningoutpost.dexdrip.store.KeyStore;
 import com.eveningoutpost.dexdrip.utils.bt.Subscription;
 import com.eveningoutpost.dexdrip.utils.framework.IncomingCallsReceiver;
 import com.eveningoutpost.dexdrip.utils.framework.WakeLockTrampoline;
+import com.eveningoutpost.dexdrip.watch.PrefBindingFactory;
 import com.eveningoutpost.dexdrip.watch.miband.message.AlertLevelMessage;
 import com.eveningoutpost.dexdrip.watch.miband.message.AlertMessage;
 import com.eveningoutpost.dexdrip.watch.miband.message.AuthMessages;
+import com.eveningoutpost.dexdrip.watch.miband.message.DisplayControllMessage;
+import com.eveningoutpost.dexdrip.watch.miband.message.OperationCodes;
 import com.eveningoutpost.dexdrip.watch.miband.message.TimeMessage;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.polidea.rxandroidble2.RxBleConnection;
@@ -63,9 +66,11 @@ public class MiBandService extends JamBaseBluetoothSequencer {
     private final KeyStore keyStore = FastStore.getInstance();
     private static final boolean d = true;
     private static final long MAX_RETRY_BACKOFF_MS = Constants.SECOND_IN_MS * 300; // sleep for max ms if we have had no signal
+    private static final int EXPIRED_TIME = 30;
     private Subscription notificationSubscription;
     private Subscription authSubscription;
     private AuthMessages authorisation;
+    private Boolean isNeedToCheckRevision = true;
 
     final Runnable canceller = () -> {
         if (!currentlyAlerting() && !IncomingCallsReceiver.isRingingNow()) {
@@ -169,21 +174,22 @@ public class MiBandService extends JamBaseBluetoothSequencer {
 
     @SuppressLint("CheckResult")
     private void getSoftwareRevision(){
-        I.connection.readCharacteristic(Const.UUID_CHAR_SOFTWARE_REVISION_STRING).subscribe(
-                readValue -> {
-                    String revision =  new String(readValue);
-                    UserError.Log.d(TAG, "Got software revision: " + revision);
-                    MiBand.setVersion(revision);
-                    changeNextState();
-                }, throwable -> {
-                    UserError.Log.e(TAG, "Could not read software revision: " + throwable);
-                    changeNextState();
-                });
+        if (isNeedToCheckRevision) { //check only once
+            I.connection.readCharacteristic(Const.UUID_CHAR_SOFTWARE_REVISION_STRING).subscribe(
+                    readValue -> {
+                        String revision = new String(readValue);
+                        UserError.Log.d(TAG, "Got software revision: " + revision);
+                        MiBand.setVersion(revision);
+                        changeNextState();
+                    }, throwable -> {
+                        UserError.Log.e(TAG, "Could not read software revision: " + throwable);
+                        changeNextState();
+                    });
+            isNeedToCheckRevision = false;
+        }
+        else changeNextState();
     }
 
-    private void sendSettings() {
-        changeState(mState.next());
-    }
 
     @SuppressLint("CheckResult")
     private void getModelName(){
@@ -214,7 +220,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                 .setBytes(message.getTimeMessage(rep.timestamp))
                 .setDescription("Send time representation for: " + rep.input)
                 .setQueueWriteCharacterstic(message.getCharacteristicUUID())
-                .expireInSeconds(60)
+                .expireInSeconds(EXPIRED_TIME)
                 .setDelayMs(50)
                 .queue();
     }
@@ -225,7 +231,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                 .setBytes(message.getAlertLevelMessage(level))
                 .setDescription("Send vibrateAlert: " + level)
                 .setQueueWriteCharacterstic(message.getCharacteristicUUID())
-                .expireInSeconds(60)
+                .expireInSeconds(EXPIRED_TIME)
                 .setDelayMs(50)
                 .queue();
     }
@@ -239,6 +245,44 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                 .expireInSeconds(60)
                 .setDelayMs(50)
                 .queue();
+    }
+
+    private void sendSettings() {
+        if (MiBandEntry.isNeedSendReading())
+            new QueueMe()
+                    .setBytes(OperationCodes.DATEFORMAT_TIME_24_HOURS)
+                    .setQueueWriteCharacterstic(Const.UUID_CHARACTERISTIC_3_CONFIGURATION)
+                    .setDescription("Set 24 date format")
+                    .expectReply().expireInSeconds(EXPIRED_TIME)
+                    .queue();
+
+        /*for (Pair<Integer, Boolean> lState : PrefBinding.getInstance().getStates("lefun_locale_")) {
+            new QueueMe()
+                    .setBytes(new TxSetLocaleFeature(lState.first, lState.second).getBytes())
+                    .setDescription("Set Locale Features")
+                    .expectReply().expireInSeconds(30)
+                    .queue();
+        }*/
+        List<Integer> screenOpt = PrefBindingFactory.MIBAND_INSTANCE.getMiband().getEnabled("miband_screen");
+        DisplayControllMessage  message =  new DisplayControllMessage();
+        new QueueMe()
+                .setBytes(message.getDisplayItemsMessage(screenOpt))
+                .setQueueWriteCharacterstic(message.getCharacteristicUUID())
+                .setDescription("Set screens")
+                .expireInSeconds(EXPIRED_TIME)
+                .queue();
+
+/*
+       // BaseTx features = new TxSetFeatures();
+        for (int feature : PrefBinding.getInstance().getEnabled("lefun_feature")) {
+            features.enable(feature);
+        }
+        new QueueMe()
+                .setBytes(features.getBytes())
+                .setDescription("Set features for: ")
+                .expectReply().expireInSeconds(30)
+                .send();*/
+
     }
 
     private void queueMessage() {
@@ -391,7 +435,6 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                     break;
                 case MiBandState.AUTHENTICATE:
                     if (MiBand.isAuthenticated()){
-                        //skip auth
                         changeNextState();
                         changeNextState();
                     }
@@ -412,24 +455,25 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                     //enableNotification();
                     changeNextState();
                     break;
-
                 case MiBandState.SEND_SETTINGS:
                     sendSettings();
+                    periodicVibrateAlert(3, 1000,300);
                     changeNextState();
                     break;
-
                 case MiBandState.SET_TIME:
+                    if (!MiBandEntry.isNeedSendReading()){
+                        changeNextState();
+                        break;
+                    }
                     vibrateAlert(AlertLevelMessage.AlertLevelType.VibrateAlert);
                     sendBG();
                     periodicVibrateAlert(5, 500,200);
                     changeNextState();
                     break;
-
                 case MiBandState.QUEUE_MESSAGE:
                     queueMessage();
                     changeNextState();
                     break;
-
                 default:
                     return super.automata();
             }
@@ -491,10 +535,14 @@ public class MiBandService extends JamBaseBluetoothSequencer {
             sequence.add(AUTHORIZE);
             sequence.add(GET_MODEL_NAME);
             sequence.add(GET_SOFT_REVISION);
+            sequence.add(SEND_SETTINGS);
+            sequence.add(SEND_QUEUE);
+            sequence.add(SLEEP);
+            //
             sequence.add(SET_TIME);
             sequence.add(SEND_QUEUE);
             sequence.add(SLEEP);
-
+            //
             sequence.add(QUEUE_MESSAGE);
             sequence.add(SEND_QUEUE);
             sequence.add(SLEEP);
