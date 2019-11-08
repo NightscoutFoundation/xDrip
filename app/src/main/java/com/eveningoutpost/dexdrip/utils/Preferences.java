@@ -87,7 +87,6 @@ import com.eveningoutpost.dexdrip.ui.LockScreenWallPaper;
 import com.eveningoutpost.dexdrip.utils.framework.IncomingCallsReceiver;
 import com.eveningoutpost.dexdrip.watch.lefun.LeFunEntry;
 import com.eveningoutpost.dexdrip.watch.miband.MiBandEntry;
-import com.eveningoutpost.dexdrip.watch.miband.MiBandService;
 import com.eveningoutpost.dexdrip.watch.thinjam.BlueJay;
 import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayAdapter;
 import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry;
@@ -900,6 +899,17 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 final Activity activity = this.getActivity();
                 findPreference("lefun_option_call_notifications").setOnPreferenceChangeListener((preference, newValue) -> {
                     prefs.edit().putBoolean("lefun_option_call_notifications", (Boolean) newValue).apply();
+                    IncomingCallsReceiver.checkPermission(activity);
+                    return true;
+                });
+            } catch (Exception e) {
+                //
+            }
+
+            try {
+                final Activity activity = this.getActivity();
+                findPreference("miband_option_call_notifications").setOnPreferenceChangeListener((preference, newValue) -> {
+                    prefs.edit().putBoolean("miband_option_call_notifications", (Boolean) newValue).apply();
                     IncomingCallsReceiver.checkPermission(activity);
                     return true;
                 });
@@ -2088,7 +2098,6 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             });
 
            jumpToScreen(jumpTo);
-
         }
 
         private void showSearchFragment() {
