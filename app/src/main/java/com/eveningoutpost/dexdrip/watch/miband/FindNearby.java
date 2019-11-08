@@ -5,7 +5,6 @@ package com.eveningoutpost.dexdrip.watch.miband;
 import android.os.Bundle;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.utils.BtCallBack;
 import com.eveningoutpost.dexdrip.utils.bt.BtCallBack2;
 import com.eveningoutpost.dexdrip.utils.bt.ScanMeister;
 
@@ -37,10 +36,9 @@ public class FindNearby implements BtCallBack2 {
             case ScanMeister.SCAN_FOUND_CALLBACK:
                 MiBand.setMac(mac);
                 MiBand.setModel(name);
-                JoH.static_toast_long("Found! " + mac);
+                JoH.static_toast_long("Found " + name + ", mac address: " + mac);
                 MiBandEntry.startWithRefresh();
                 break;
-
             case ScanMeister.SCAN_FAILED_CALLBACK:
             case ScanMeister.SCAN_TIMEOUT_CALLBACK:
                 JoH.static_toast_long(status);

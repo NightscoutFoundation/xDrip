@@ -3,6 +3,7 @@ package com.eveningoutpost.dexdrip.watch.miband.message;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
+import com.eveningoutpost.dexdrip.watch.miband.Const;
 
 import java.nio.ByteBuffer;
 import java.util.UUID;
@@ -58,6 +59,6 @@ public class AuthMessages extends BaseMessage{
 
     @Override
     public UUID getCharacteristicUUID() {
-        return null;
+        return Const.UUID_CUSTOM_SERVICE_AUTH_CHARACTERISTIC;
     }
 }

@@ -1,16 +1,22 @@
 package com.eveningoutpost.dexdrip.watch;
 
-import com.eveningoutpost.dexdrip.watch.lefun.LefunPrefBinding;
-import com.eveningoutpost.dexdrip.watch.miband.MibandPrefBinding;
+import android.support.v4.util.ArrayMap;
 
-public enum PrefBindingFactory {
-    MIBAND_INSTANCE,
-    LEFUN_INSTANCE;
+import java.util.Map;
 
-    public PrefBinding getMiband() {
-        return new MibandPrefBinding();
-    }
-    public PrefBinding getLefun() {
-        return new LefunPrefBinding();
+public class PrefBindingFactory{
+    private static volatile  Map<Class,PrefBinding> binding = new ArrayMap<>();
+
+    public static <T extends PrefBinding> T  getInstance(Class<T> c) {
+        T inst = null;
+        if(!binding.containsKey(c)){
+            try {
+                binding.put(c, c.newInstance());
+            } catch (Exception e) {
+                return inst;
+            }
+        }
+        inst = (T) binding.get(c);
+        return inst;
     }
 }

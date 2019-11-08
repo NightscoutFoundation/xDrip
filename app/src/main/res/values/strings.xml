@@ -1225,6 +1225,16 @@
     <string name="title_miband_enable">Use MiBand Band</string>
     <string name="title_miband_screens_features">MiBand Screens / Features</string>
     <string name="title_miband_screen_battery">Show Battery</string>
+    <string name="title_miband_show_date">Show date on the screen</string>
+    <string name="title_miband_visibility">MiBand visibility</string>
+    <string name="summary_miband_visibility">Miband will be visible for other devices</string>
+    <string name="title_miband_switch_display_on_wrist">Switch display on wrist</string>
+    <string name="title_miband_units">Units</string>
+    <string name="summary_miband_units">km - ON, miles - OFF</string>
+    <string name="title_miband_goal_notification">Goal notification</string>
+    <string name="summary_miband_goal_notification">Miband will vibrate when you reach a goal</string>
+    <string name="title_miband_locale_24_hour">24 Hour clock</string>
+    <string name="summary_miband_locale_24_hour">Show 24 Hour clock</string>
     <string name="title_lefun_band">Lefun Band</string>
     <string name="summary_lefun_enable">Sync Data with LeFun fitness bands</string>
     <string name="title_lefun_enable">Use LeFun Band</string>
