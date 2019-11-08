@@ -528,6 +528,7 @@
 
 
         <PreferenceScreen
+            android:key="miband_preferences"
             android:title="@string/title_miband">
             <SwitchPreference
                 android:switchTextOff="@string/short_off_text_for_switches"
@@ -562,17 +563,41 @@
             <PreferenceScreen android:title="@string/title_miband_screens_features">
 
                 <PreferenceCategory android:title="@string/title_features">
-                    <CheckBoxPreference
+                    <SwitchPreference
                         android:defaultValue="true"
-                        android:key="lefun_feature_lift_to_wake"
+                        android:key="miband_feature_lift_to_wake"
                         android:title="@string/title_lefun_feature_lift_to_wak" />
-                    <CheckBoxPreference
-                        android:key="lefun_feature_anti_lost"
-                        android:title="@string/title_lefun_feature_anti_lost" />
-                    <CheckBoxPreference
-                        android:key="lefun_locale_12_hour"
+                    <SwitchPreference
                         android:defaultValue="true"
-                        android:title="@string/title_lefun_locale_12_hour"/>
+                        android:key="miband_feature_switch_display_on_wrist"
+                        android:title="@string/title_miband_switch_display_on_wrist" />
+                    <SwitchPreference
+                        android:defaultValue="true"
+                        android:key="miband_feature_units"
+                        android:summary="@string/summary_miband_units"
+                        android:title="@string/title_miband_units" />
+                    <SwitchPreference
+                        android:defaultValue="true"
+                        android:key="miband_feature_goal_notification"
+                        android:summary="@string/summary_miband_goal_notification"
+                        android:title="@string/title_miband_goal_notification" />
+                    <SwitchPreference
+                        android:key="miband_feature_anti_lost"
+                        android:title="@string/title_lefun_feature_anti_lost" />
+                    <SwitchPreference
+                        android:key="miband_feature_locale_24_hour"
+                        android:defaultValue="true"
+                        android:title="@string/title_miband_locale_24_hour"
+                        android:summary="@string/summary_miband_locale_24_hour"/>
+                    <SwitchPreference
+                        android:key="miband_feature_show_date"
+                        android:defaultValue="true"
+                        android:title="@string/title_miband_show_date"/>
+                    <SwitchPreference
+                        android:key="miband_feature_visibility"
+                        android:defaultValue="true"
+                        android:title="@string/title_miband_visibility"
+                        android:summary="@string/summary_miband_visibility"/>
                 </PreferenceCategory>
 
                 <PreferenceCategory android:title="@string/title_screens">
