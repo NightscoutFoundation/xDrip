@@ -105,7 +105,7 @@ public class Treatments extends Model {
         boolean foundBasal = false;
         final List<InsulinInjection> injections = getInsulinInjections();
         for (InsulinInjection injection : injections) {
-            Log.d(TAG,"isBasalOnly: "+injection.isBasal()+" "+injection.getInsulin());
+            Log.d(TAG,"isBasalOnly: "+injection.isBasal()+" "+injection.getProfile().getName());
             if (!injection.isBasal()) {
                 return false;
             } else {
@@ -202,6 +202,15 @@ public class Treatments extends Model {
         }
     }
 
+    private double getMaxEffect()
+    {
+        double ret = 0;
+        for (InsulinInjection i: insulinInjections)
+            if (ret < i.getProfile().getMaxEffect())
+                ret = i.getProfile().getMaxEffect();
+        return ret;
+    }
+
     public Treatments()
     {
         eventType = DEFAULT_EVENT_TYPE;
@@ -216,11 +225,13 @@ public class Treatments extends Model {
 
     public static synchronized Treatments create(final double carbs, final double insulinSum, final long timestamp, final String suggested_uuid) {
 
-        if (MultipleInsulins.isEnabled()) {
+// changed by gruoner 11/09/19 - as we have defined a default bolus profile (currently novorapid as curve is the save as the "old" prediction logic before "multiple insulins")
+// we will store an injection list in the treatment holding just this on injection with the default bolus - the rest is still the same
+//        if (MultipleInsulins.isEnabled()) {
             return create(carbs, insulinSum, convertLegacyDoseToBolusInjectionList(insulinSum), timestamp, suggested_uuid);
-        } else {
-            return create(carbs, insulinSum, null, timestamp, suggested_uuid);
-        }
+//        } else {
+//            return create(carbs, insulinSum, null, timestamp, suggested_uuid);
+//        }
 
     }
 
@@ -872,7 +883,7 @@ public class Treatments extends Model {
         // number param currently ignored
 
         // 10 hours max look or from insulin manager if enabled
-        final double dontLookThisFar = MultipleInsulins.isEnabled() ? MINUTE_IN_MS * InsulinManager.getMaxEffect(true) : 10 * HOUR_IN_MS;
+        final double dontLookThisFar = multipleInsulins ? MINUTE_IN_MS * InsulinManager.getMaxEffect(true) : 10 * HOUR_IN_MS;
 // look back the longest effect period of all enabled insulin profiles (startTime is always 24h behind NOW)
         List<Treatments> theTreatments = latestForGraph(2000, startTime - dontLookThisFar);
         Log.d(TAG,"TREATMENT LIST: "+theTreatments.size()+" "+JoH.dateTimeText((long)(startTime - dontLookThisFar)));
@@ -901,11 +912,11 @@ public class Treatments extends Model {
         for (Treatments thisTreatment : theTreatments) {
             // early optimisation exclusion
 
-            mytime = ((long) (thisTreatment.timestamp / stepms)) * stepms; // effects of treatment occur only after it is given / fit to slot time
-            tendtime = mytime + 36 * HOUR_IN_MS;     // 36 hours max look (24h history plus 12h forecast)
-            if (tendtime > startTime + 30 * HOUR_IN_MS)
-                tendtime = startTime + 30 * HOUR_IN_MS;   // dont look more than 6h in future // TODO review time limit
             if (thisTreatment.insulin > 0) {
+                mytime = ((long) (thisTreatment.timestamp / stepms)) * stepms; // effects of treatment occur only after it is given / fit to slot time
+                tendtime = mytime + thisTreatment.getMaxEffect() * MINUTE_IN_MS;     // look just until last injected insulin has lost its effect
+                if (tendtime > startTime + 30 * HOUR_IN_MS)
+                    tendtime = startTime + 30 * HOUR_IN_MS;   // dont look more than 6h in future // TODO review time limit
                 // lay down insulin on board
                 do {
 

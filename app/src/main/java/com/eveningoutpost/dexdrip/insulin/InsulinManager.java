@@ -22,8 +22,10 @@ public class InsulinManager {
 
     class insulinDataWrapper {
         public ArrayList<insulinData> profiles;
+        public String defaultBolus;
 
         insulinDataWrapper() {
+            defaultBolus = null;
             profiles = new ArrayList<insulinData>();
         }
 
@@ -100,6 +102,8 @@ public class InsulinManager {
             Gson gson = new Gson();
             iDW = gson.fromJson(input, insulinDataWrapper.class);
             profiles = iDW.getInsulinProfiles();
+            if ((iDW.defaultBolus != null) && !iDW.defaultBolus.isEmpty())
+                basalProfile = getProfile(iDW.defaultBolus);
             Log.d(TAG, "Loaded Insulin Profiles: " + Integer.toString(profiles.size()));
             LoadDisabledProfilesFromPrefs();
             Log.d(TAG, "InsulinManager initialized from config file and Prefs");

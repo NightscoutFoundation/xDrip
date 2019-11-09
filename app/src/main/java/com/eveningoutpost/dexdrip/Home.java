@@ -451,7 +451,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         if (searchWords == null) {
             initializeSearchWords("");
         }
-        if (insulins == null)   // TODO only when using multiples?
+        if (insulins == null)   // alway load all Insulin profiles because even in single mode we store injections with the default bolus
             insulins = InsulinManager.getDefaultInstance();
 
         this.btnSpeak = (ImageButton) findViewById(R.id.btnTreatment);

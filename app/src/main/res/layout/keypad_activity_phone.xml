@@ -17,13 +17,13 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp"
         android:layout_marginTop="10dp"
+        android:layout_marginRight="5dp"
         android:background="@drawable/tick_thing"
         android:fontFamily="sans-serif-condensed"
         android:gravity="center"
         android:textColor="@android:color/white"
-        android:textSize="25sp"
+        android:textSize="18sp"
         tools:text="25.5 mmol/l" />
 
     <LinearLayout
