@@ -6,10 +6,22 @@ public class Const {
 
     public static final String BASE_UUID = "0000%s-0000-1000-8000-00805f9b34fb";
 
+    public static final UUID UUID_SERVICE_HEART_RATE = UUID.fromString(String.format(BASE_UUID, "180D"));
+    public static final UUID UUID_SERVICE_FIRMWARE_SERVICE = UUID.fromString("00001530-0000-3512-2118-0009af100700");
 
-    public static final UUID CUSTOM_SERVICE_FEE1 = UUID.fromString(String.format(BASE_UUID, "FEE1"));
-    public static final UUID UUID_CUSTOM_SERVICE_AUTH_CHARACTERISTIC = UUID.fromString("00000009-0000-3512-2118-0009af100700");
+    public static final UUID UUID_CHARACTERISTIC_FIRMWARE = UUID.fromString("00001531-0000-3512-2118-0009af100700");
+    public static final UUID UUID_CHARACTERISTIC_FIRMWARE_DATA = UUID.fromString("00001532-0000-3512-2118-0009af100700");
+
     public static final UUID UUID_CHARACTERISTIC_3_CONFIGURATION  = UUID.fromString("00000003-0000-3512-2118-0009af100700");
+    public static final UUID UUID_UNKNOWN_CHARACTERISTIC4 = UUID.fromString("00000004-0000-3512-2118-0009af100700");
+    public static final UUID UUID_CHARACTERISTIC_5_ACTIVITY_DATA = UUID.fromString("00000005-0000-3512-2118-0009af100700");
+    public static final UUID UUID_CHARACTERISTIC_6_BATTERY_INFO = UUID.fromString("00000006-0000-3512-2118-0009af100700");
+    public static final UUID UUID_CHARACTERISTIC_7_REALTIME_STEPS = UUID.fromString("00000007-0000-3512-2118-0009af100700");
+    public static final UUID UUID_CHARACTERISTIC_8_USER_SETTINGS = UUID.fromString("00000008-0000-3512-2118-0009af100700");
+    public static final UUID UUID_CHARACTERISTIC_AUTH = UUID.fromString("00000009-0000-3512-2118-0009af100700");
+    public static final UUID UUID_CHARACTERISTIC_DEVICEEVENT = UUID.fromString("00000010-0000-3512-2118-0009af100700");
+    public static final UUID UUID_CHARACTERISTIC_AUDIO = UUID.fromString("00000012-0000-3512-2118-0009af100700");
+    public static final UUID UUID_CHARACTERISTIC_AUDIODATA = UUID.fromString("00000013-0000-3512-2118-0009af100700");
     //Main service
     public static final UUID UUID_SERVICE_FEE0 = UUID.fromString(String.format(BASE_UUID, "FEE0"));
 
@@ -140,4 +152,9 @@ public class Const {
 
     public static final UUID UUID_CHAR_TX_POWER_LEVEL = UUID.fromString(String.format(BASE_UUID, "2A07"));
     public static final UUID UUID_CHAR_UNREAD_ALERT_STATUS = UUID.fromString(String.format(BASE_UUID, "2A45"));
+
+    public static final String MIBAND_NAME_2 = "MI Band 2";
+    public static final String MIBAND_NAME_3 = "MI Band 3";
+    public static final String MIBAND_NAME_3_1 = "Xiaomi Band 3";
+    public static final String MIBAND_NAME_4 = "Mi Smart Band 4";
 }

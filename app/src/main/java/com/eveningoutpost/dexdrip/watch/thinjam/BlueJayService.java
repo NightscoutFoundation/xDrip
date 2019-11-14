@@ -102,7 +102,6 @@ import static com.eveningoutpost.dexdrip.watch.thinjam.Const.OPCODE_GET_STATUS_1
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.OPCODE_GET_STATUS_2;
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.OPCODE_IDENTIFY;
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.OPCODE_RESET_ALL;
-import static com.eveningoutpost.dexdrip.watch.thinjam.Const.OPCODE_RESET_PERSIST;
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.OPCODE_SHOW_QRCODE;
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.THINJAM_BULK;
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.THINJAM_OTA;
@@ -1283,7 +1282,6 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
             //  sequence.add(RUN_QUEUE);
             sequence.add(SET_TIME);
             sequence.add(SLEEP);
-
         }
 
         void thinJamQueueSequence() {
