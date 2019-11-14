@@ -26,6 +26,15 @@ public abstract class BaseMessage implements Characteristic {
     protected byte[] getBytes() {
         return data.array();
     }
+    public static byte fromUint8(int value) {
+        return (byte) (value & 0xff);
+    }
+    public static byte[] fromUint16(int value) {
+        return new byte[] {
+                (byte) (value & 0xff),
+                (byte) ((value >> 8) & 0xff),
+        };
+    }
 }
 
 interface Characteristic{

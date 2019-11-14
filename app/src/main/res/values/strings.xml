@@ -1235,6 +1235,22 @@
     <string name="summary_miband_goal_notification">Miband will vibrate when you reach a goal</string>
     <string name="title_miband_locale_24_hour">24 Hour clock</string>
     <string name="summary_miband_locale_24_hour">Show 24 Hour clock</string>
+    <string name="title_miband_authkey">Auth Key</string>
+    <string name="summary_miband_authkey">Set the auth key for miband4 (To get auth key, follow the instrucions on https://www.freemyband.com/)</string>
+    <string name="summary_miband_mac">Leave empty for autosearch</string>
+    <string name="title_miband_vibrate_on_readings">Vibrate on readings</string>
+
+    <string name="title_miband_screen_notifications">Show Notifications</string>
+    <string name="title_miband_screen_weather">Show Weather</string>
+    <string name="title_miband_screen_activity">Show Activity</string>
+    <string name="title_miband_screen_more">Show More</string>
+    <string name="title_miband_screen_status">Show Status</string>
+    <string name="title_miband_screen_heart_rate">Show Heart rate</string>
+    <string name="title_miband_screen_timer">Show Timer</string>
+    <string name="title_miband_screen_nfc">Show NFC(if available)</string>
+
+
+
     <string name="title_lefun_band">Lefun Band</string>
     <string name="summary_lefun_enable">Sync Data with LeFun fitness bands</string>
     <string name="title_lefun_enable">Use LeFun Band</string>
