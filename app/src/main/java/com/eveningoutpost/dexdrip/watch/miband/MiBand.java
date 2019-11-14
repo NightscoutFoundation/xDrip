@@ -4,21 +4,67 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+
+import static com.eveningoutpost.dexdrip.watch.miband.Const.MIBAND_NAME_2;
+import static com.eveningoutpost.dexdrip.watch.miband.Const.MIBAND_NAME_3;
+import static com.eveningoutpost.dexdrip.watch.miband.Const.MIBAND_NAME_3_1;
+import static com.eveningoutpost.dexdrip.watch.miband.Const.MIBAND_NAME_4;
+
 /**
  * Jamorham
- *
+ * <p>
  * Lefun Lightweight logic class
  */
 
 public class MiBand {
 
+    public enum MiBandType {
+        MI_BAND2(MIBAND_NAME_2),
+        MI_BAND3(MIBAND_NAME_3),
+        MI_BAND3_1(MIBAND_NAME_3_1),
+        MI_BAND4(MIBAND_NAME_4);
+
+        private final String text;
+
+        /**
+         * @param text
+         */
+        MiBandType(final String text) {
+            this.text = text;
+        }
+
+        /* (non-Javadoc)
+         * @see java.lang.Enum#toString()
+         */
+        @Override
+        public String toString() {
+            return text;
+        }
+
+        public static MiBandType fromString(String text) {
+            for (MiBandType b : MiBandType.values()) {
+                if (b.text.equalsIgnoreCase(text)) {
+                    return b;
+                }
+            }
+            return null;
+        }
+    }
+
+
     private static final String PREF_MIBAND_MAC = "miband_mac";
     private static final String PREF_MIBAND_AUTH_MAC = "miband_auth_mac";
+    private static final String PREF_MIBAND_AUTH_KEY = "miband_authkey";
+    private static final String PREF_MIBAND_PERSISTANT_AUTH_KEY = "miband_persist_authkey";
     private static final String PREF_MIBAND_MODEL = "miband_model_";
     private static final String PREF_MIBAND_VERSION = "miband_version_";
 
+    public static MiBandType getMibandType() {
+        return MiBandType.fromString(getModel());
+    }
+
     public static boolean isAuthenticated() {
-        return MiBand.getAuthMac().isEmpty() ? false: true;
+        return MiBand.getAuthMac().isEmpty() ? false : true;
     }
 
     public static void sendAlert(final String... lines) {
@@ -28,39 +74,28 @@ public class MiBand {
     // convert multi-line text to string for display constraints
     public static void sendAlert(boolean isCall, final String... lines) {
 
-      //  final int width = ModelFeatures.getScreenWidth();
-        int width = 5;
+        int width = 10;
         final StringBuilder result = new StringBuilder();
 
         for (final String message : lines) {
-            final StringBuilder messageBuilder = new StringBuilder(message);
-            while (messageBuilder.length() < width) {
-                if ((messageBuilder.length() % 2) == 0) {
-                    messageBuilder.insert(0, " ");
-                } else {
-                    messageBuilder.append(" ");
-                }
-            }
-            result.append(messageBuilder.toString());
+            result.append(message + " ");
         }
 
         final String resultRaw = result.toString();
         final int trailing_space = resultRaw.lastIndexOf(' ');
         final String resultString = trailing_space >= width ? result.toString().substring(0, trailing_space) : resultRaw;
 
-        Inevitable.task("miband-send-alert-debounce", isCall ? 300 : 3000, () -> JoH.startService(MiBandService.class, "function", "message",
+        Inevitable.task("miband-send-alert-debounce", isCall ? 3000 : 100, () -> JoH.startService(MiBandService.class, "function", "message",
                 "message", resultString,
                 "message_type", isCall ? "call" : "glucose"));
     }
 
-    public static void showLatestBG() {
-        if (MiBandEntry.isNeedSendReading()) {
-            JoH.startService(MiBandService.class, "function", "set_time");
-        }
+    static String getMac() {
+        return Pref.getString(PREF_MIBAND_MAC, "");
     }
 
-    static String getMac() {
-        return Pref.getString(PREF_MIBAND_MAC, null);
+    static void setMac(final String mac) {
+        Pref.setString(PREF_MIBAND_MAC, mac);
     }
 
     static String getAuthMac() {
@@ -68,41 +103,75 @@ public class MiBand {
     }
 
     static void setAuthMac(final String mac) {
-        setVersion("");
-        setModel("");
+        if (mac.isEmpty()) {
+            String authMac = getAuthMac();
+            setVersion("", authMac);
+            setModel("", authMac);
+            setPersistantAuthKey("", authMac);
+            PersistentStore.removeItem(PREF_MIBAND_AUTH_MAC);
+            return;
+        }
         PersistentStore.setString(PREF_MIBAND_AUTH_MAC, mac);
     }
 
-    static void setMac(final String mac) {
-        Pref.setString(PREF_MIBAND_MAC, mac);
+    static void setAuthKey(final String key) {
+        Pref.setString(PREF_MIBAND_AUTH_KEY, key.toLowerCase());
+    }
+
+    static String getAuthKey() {
+        return Pref.getString(PREF_MIBAND_AUTH_KEY, "");
+    }
+
+    static String getPersistantAuthKey() {
+        final String mac = getAuthMac();
+        if (!mac.isEmpty()) {
+            return PersistentStore.getString(PREF_MIBAND_PERSISTANT_AUTH_KEY + mac);
+        }
+        return "";
+    }
+
+    static void setPersistantAuthKey(final String key, String mac) {
+        if (key.isEmpty()) {
+            PersistentStore.removeItem(PREF_MIBAND_PERSISTANT_AUTH_KEY + mac);
+            return;
+        }
+        if (!mac.isEmpty()) {
+            PersistentStore.setString(PREF_MIBAND_PERSISTANT_AUTH_KEY + mac, key.toLowerCase());
+        }
     }
 
     static String getModel() {
         final String mac = getMac();
-        if (mac != null) {
+        if (!mac.isEmpty()) {
             return PersistentStore.getString(PREF_MIBAND_MODEL + mac);
         }
-        return null;
+        return "";
     }
 
-    static void setModel(final String model) {
-        final String mac = getMac();
-        if (mac != null) {
+    static void setModel(final String model, String mac) {
+        if (model.isEmpty()) {
+            PersistentStore.removeItem(PREF_MIBAND_MODEL + mac);
+            return;
+        }
+        if (!mac.isEmpty()) {
             PersistentStore.setString(PREF_MIBAND_MODEL + mac, model);
         }
     }
 
     static String getVersion() {
         final String mac = getMac();
-        if (mac != null) {
+        if (!mac.isEmpty()) {
             return PersistentStore.getString(PREF_MIBAND_VERSION + mac);
         }
-        return null;
+        return "";
     }
 
-    static void setVersion(final String version) {
-        final String mac = getMac();
-        if (mac != null) {
+    static void setVersion(final String version, String mac) {
+        if (version.isEmpty()) {
+            PersistentStore.removeItem(PREF_MIBAND_MODEL + mac);
+            return;
+        }
+        if (!mac.isEmpty()) {
             PersistentStore.setString(PREF_MIBAND_VERSION + mac, version);
         }
     }

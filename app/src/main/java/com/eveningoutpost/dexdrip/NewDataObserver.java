@@ -18,7 +18,6 @@ import com.eveningoutpost.dexdrip.utils.BgToSpeech;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.watch.lefun.LeFun;
 import com.eveningoutpost.dexdrip.watch.lefun.LeFunEntry;
-import com.eveningoutpost.dexdrip.watch.miband.MiBand;
 import com.eveningoutpost.dexdrip.watch.miband.MiBandEntry;
 import com.eveningoutpost.dexdrip.watch.thinjam.BlueJay;
 import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry;
@@ -104,7 +103,7 @@ public class NewDataObserver {
 
     private static void sendToMiBand() {
         if (MiBandEntry.isEnabled()) {
-            Inevitable.task("poll-miband-for-bg", DexCollectionType.hasBluetooth() ? 2000 : 500, MiBand::showLatestBG); // delay enough for BT to finish on collector
+            Inevitable.task("poll-miband-for-bg", DexCollectionType.hasBluetooth() ? 2000 : 500, MiBandEntry::showLatestBG); // delay enough for BT to finish on collector
         }
     }
 

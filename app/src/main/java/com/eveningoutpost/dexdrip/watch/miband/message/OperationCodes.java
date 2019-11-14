@@ -39,6 +39,12 @@ public class OperationCodes {
      * 0x04 means failure.
      */
     public static final byte AUTH_FAIL = 0x04;
+    public static final byte AUTH_MIBAND4_FAIL = 0x51;
+
+
+    public static final byte AUTH_MIBAND4_CRYPT_FLAG = (byte)0x80;
+
+
     /**
      * In some logs it's 0x08...
      */
@@ -51,6 +57,7 @@ public class OperationCodes {
     public static final byte[] OPCODE_AUTH_NOTIFY_RESPONSE2 = {AUTH_RESPONSE, AUTH_REQUEST_RANDOM_AUTH_NUMBER, AUTH_SUCCESS};
     public static final byte[] OPCODE_AUTH_NOTIFY_RESPONSE_SUCCESS = {AUTH_RESPONSE, AUTH_SEND_ENCRYPTED_AUTH_NUMBER, AUTH_SUCCESS};
     public static final byte[] OPCODE_AUTH_NOTIFY_RESPONSE_ERROR = {AUTH_RESPONSE, AUTH_SEND_ENCRYPTED_AUTH_NUMBER, AUTH_FAIL};
+    public static final byte[] OPCODE_AUTH_NOTIFY_RESPONSE_ERROR_MIBAND4 = {AUTH_RESPONSE, AUTH_SEND_KEY, AUTH_MIBAND4_FAIL};
 
     public static byte ENDPOINT_DISPLAY_ITEMS = 0x0a;
 
@@ -66,7 +73,8 @@ public class OperationCodes {
 
     public static byte ENDPOINT_DISPLAY = 0x06;
 
-    public static final byte[] COMMAND_CHANGE_SCREENS = new byte[]{ENDPOINT_DISPLAY_ITEMS, DISPLAY_ITEM_BIT_CLOCK, 0x00, 0x00, 0x1, 0x02, 0x03, 0x04, 0x05};
+    public static final byte[] COMMAND_CHANGE_SCREENS_MIBAND2 = new byte[]{ENDPOINT_DISPLAY_ITEMS, DISPLAY_ITEM_BIT_CLOCK, 0x00, 0x00, 0x1, 0x02, 0x03, 0x04, 0x05};
+    public static final byte[] COMMAND_CHANGE_SCREENS_MIDAND3_4 = new byte[]{ENDPOINT_DISPLAY_ITEMS, DISPLAY_ITEM_BIT_CLOCK, 0x30, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00, 0x00, 0x00};
     public static final byte[] DATEFORMAT_DATE_TIME = new byte[] {ENDPOINT_DISPLAY, 0x0a, 0x0, 0x03 };
     public static final byte[] DATEFORMAT_TIME = new byte[] {ENDPOINT_DISPLAY, 0x0a, 0x0, 0x0 };
     public static final byte[] DATEFORMAT_TIME_12_HOURS = new byte[] {ENDPOINT_DISPLAY, 0x02, 0x0, 0x0 };
@@ -90,6 +98,19 @@ public class OperationCodes {
     public static final byte[] COMMAND_FACTORY_RESET = new byte[]{ENDPOINT_DISPLAY, 0x0b, 0x00, 0x01};
     public static final byte[] COMMAND_ENABLE_DISCONNECT_NOTIFCATION = new byte[]{ENDPOINT_DISPLAY, 0x0c, 0x00, 0x01};//, 0, 0, 0, 0};
     public static final byte[] COMMAND_DISABLE_DISCONNECT_NOTIFCATION = new byte[]{ENDPOINT_DISPLAY, 0x0c, 0x00, 0x00};//, 0, 0, 0, 0};
+
+    public static final byte RESPONSE = 0x10;
+
+    public static final byte SUCCESS = 0x01;
+
+    public static final byte COMMAND_FIRMWARE_INIT = 0x01; // to UUID_CHARACTERISTIC_FIRMWARE, followed by fw file size in bytes
+    public static final byte COMMAND_FIRMWARE_START_DATA = 0x03; // to UUID_CHARACTERISTIC_FIRMWARE
+    public static final byte COMMAND_FIRMWARE_UPDATE_SYNC = 0x00; // to UUID_CHARACTERISTIC_FIRMWARE
+    public static final byte COMMAND_FIRMWARE_CHECKSUM = 0x04; // to UUID_CHARACTERISTIC_FIRMWARE
+    public static final byte COMMAND_FIRMWARE_REBOOT = 0x05; // to UUID_CHARACTERISTIC_FIRMWARE
+
+    public static final byte[] RESPONSE_FINISH_SUCCESS = new byte[] {RESPONSE, 2, SUCCESS };
+    public static final byte[] RESPONSE_FIRMWARE_DATA_SUCCESS = new byte[] {RESPONSE, COMMAND_FIRMWARE_START_DATA, SUCCESS };
 
 
 
