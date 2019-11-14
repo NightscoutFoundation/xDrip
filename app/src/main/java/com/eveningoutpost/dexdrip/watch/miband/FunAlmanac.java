@@ -13,13 +13,12 @@ public class FunAlmanac {
 
     public static Reply getRepresentation(double value, String arrowName) {
 
-        android.util.Log.d(TAG, "called with: " + value);
+        android.util.Log.d(TAG, "Bg representation: " + value + " arrow: " + arrowName );
 
         final Calendar c = Calendar.getInstance();
         int currentDayOfWeek;
         boolean preserveDayOfWeek = true; // keep same or represent trend
         c.setTimeInMillis(JoH.tsl());
-        c.setFirstDayOfWeek(Calendar.MONDAY);
         if (preserveDayOfWeek) {
             switch(arrowName)
             {

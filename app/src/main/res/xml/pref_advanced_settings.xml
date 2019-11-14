@@ -540,6 +540,13 @@
             <EditTextPreference
                 android:key="miband_mac"
                 android:title="@string/title_lefun_mac"/>
+                android:summary="@string/summary_miband_mac" />
+            <EditTextPreference
+                android:icon="@drawable/ic_vpn_key"
+                android:key="miband_authkey"
+                android:maxLength="32"
+                android:title="@string/title_miband_authkey"
+                android:summary="@string/summary_miband_authkey" />
             <SwitchPreference
                 android:switchTextOff="@string/short_off_text_for_switches"
                 android:switchTextOn="@string/short_on_text_for_switches"
@@ -548,6 +555,13 @@
                 android:key="miband_send_readings"
                 android:summary="@string/summary_lefun_send_readings"
                 android:title="@string/title_lefun_send_readings" />
+            <SwitchPreference
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
+                android:defaultValue="true"
+                android:dependency="miband_send_readings"
+                android:key="miband_vibrate_on_readings"
+                android:title="@string/title_miband_vibrate_on_readings" />
             <SwitchPreference
                 android:defaultValue="true"
                 android:dependency="miband_enabled"
@@ -560,8 +574,9 @@
                 android:defaultValue="false"
                 android:summary="Send call notifications to the band (Android 6+)"
                 android:title="Send Calls" />
-            <PreferenceScreen android:title="@string/title_miband_screens_features">
-
+            <PreferenceScreen
+                android:key="miband_settings"
+                android:title="@string/title_miband_screens_features">
                 <PreferenceCategory android:title="@string/title_features">
                     <SwitchPreference
                         android:defaultValue="true"
@@ -600,7 +615,9 @@
                         android:summary="@string/summary_miband_visibility"/>
                 </PreferenceCategory>
 
-                <PreferenceCategory android:title="@string/title_screens">
+                <PreferenceCategory
+                    android:title="@string/title_screens"
+                    android:key="miband2_screen">
                     <CheckBoxPreference
                         android:key="miband_screen_step_counter"
                         android:title="@string/title_lefun_screen_step_counter" />
@@ -616,6 +633,34 @@
                     <CheckBoxPreference
                         android:key="miband_screen_battery"
                         android:title="@string/title_miband_screen_battery" />
+                </PreferenceCategory>
+                <PreferenceCategory
+                    android:title="@string/title_screens"
+                    android:key="miband3_4_screen">
+                    <CheckBoxPreference
+                        android:key="miband_screen_notifications"
+                        android:title="@string/title_miband_screen_notifications" />
+                    <CheckBoxPreference
+                        android:key="miband_screen_weather"
+                        android:title="@string/title_miband_screen_weather" />
+                    <CheckBoxPreference
+                        android:key="miband_screen_activity"
+                        android:title="@string/title_miband_screen_activity" />
+                    <CheckBoxPreference
+                        android:key="miband_screen_more"
+                        android:title="@string/title_miband_screen_more" />
+                    <CheckBoxPreference
+                        android:key="miband_screen_status"
+                        android:title="@string/title_miband_screen_status" />
+                    <CheckBoxPreference
+                        android:key="miband_screen_heart_rate"
+                        android:title="@string/title_miband_screen_heart_rate" />
+                    <CheckBoxPreference
+                        android:key="miband_screen_timer"
+                        android:title="@string/title_miband_screen_timer" />
+                    <CheckBoxPreference
+                        android:key="miband_screen_nfc"
+                        android:title="@string/title_miband_screen_nfc" />
                 </PreferenceCategory>
             </PreferenceScreen>
         </PreferenceScreen>
