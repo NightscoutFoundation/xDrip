@@ -407,7 +407,7 @@ public class Calibration extends Model {
         }
         JoH.clearCache();
         if (!Ob1G5CollectionService.usingNativeMode()) {
-            adjustRecentBgReadings(5, prefs);
+            adjustRecentBgReadings(5);
         }
         CalibrationRequest.createOffset(lowerCalibration.bg, 35);
         Notifications.staticUpdateNotification();
@@ -633,7 +633,7 @@ public class Calibration extends Model {
                         CalibrationSendQueue.addToQueue(calibration, context);
                         BgReading.pushBgReadingSyncToWatch(bgReading, false);
                         if (!Ob1G5CollectionService.usingNativeMode()) {
-                            adjustRecentBgReadings(adjustPast ? 30 : 2, prefs);
+                            adjustRecentBgReadings(adjustPast ? 30 : 2);
                         }
                         Notifications.start();
                         Calibration.requestCalibrationIfRangeTooNarrow();
@@ -887,7 +887,7 @@ public class Calibration extends Model {
     }
 
 
-    public static void adjustRecentBgReadings(int adjustCount, SharedPreferences prefs) {
+    public static void adjustRecentBgReadings(int adjustCount) {
         //TODO: add some handling around calibration overrides as they come out looking a bit funky
         final List<Calibration> calibrations = Calibration.latest(3);
         if (calibrations == null) {
@@ -908,7 +908,7 @@ public class Calibration extends Model {
             try {
                 final Calibration latestCalibration = Calibration.lastValid();
                 int i = 0;
-                boolean uploadModified = prefs.getBoolean("upload_modified_bgreadings", false);
+                boolean uploadModified = Pref.getBoolean("upload_modified_bgreadings", false);
                 if (uploadModified) {
                     Log.v(TAG, "Modified readings will be uploaded to NS");
                 }
