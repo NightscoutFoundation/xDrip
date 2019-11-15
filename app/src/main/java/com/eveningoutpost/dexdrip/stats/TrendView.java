@@ -340,45 +340,100 @@ public class TrendView extends View {
         public double[] q90;
     }
 
+
+    protected class trendFrag {
+        private List<BgReadingStats> fragment;
+        private boolean highTrend;
+
+        public trendFrag(boolean high) {
+            fragment = new ArrayList<BgReadingStats>();
+            highTrend = high;
+        }
+
+        /* this is some lazy shit, but might be useful later if i give up
+        public List<BgReadingStats> getFrag() {
+            return fragment;
+        } */
+
+        public BgReadingStats get(int i) {
+            return fragment.get(i);
+        }
+
+        public int size() {
+            return fragment.size();
+        }
+
+        public void addReading(BgReadingStats reading) {
+            fragment.add(reading);
+        }
+
+        public double getPeak() {
+            double peak = fragment.get(0).calculated_value;
+
+            for (BgReadingStats reading : fragment) {
+                if (highTrend) {
+                    if (peak < reading.calculated_value) {
+                        peak = reading.calculated_value;
+                    }
+                }
+                else {
+                    if (peak > reading.calculated_value) {
+                        peak = reading.calculated_value;
+                    }
+                }
+            }
+            return peak;
+        }
+    }
     protected class trend {
-        public List<List<BgReadingStats>> trendFragList = new ArrayList<List<BgReadingStats>>();
-        public long firstTimestamp;
-        public long lastTimestamp;
-        public double peakReading;
-        public boolean highTrend;
+        private List<trendFrag> trendFragList;
+        private long firstTimestamp;
+        private long lastTimestamp;
+        private double peakReading;
+        private boolean highTrend;
 
         private double pRead;
 
-        //maybe needs a constructor...gonna wait and see whats easier
-        public trend() {}
+        public trend(boolean high) {
+            trendFragList = new ArrayList<trendFrag>();
+            highTrend = high;
+        }
 
+        public void add(trendFrag t) {
+            trendFragList.add(t);
+        }
+
+        //TODO is this the best way to calculate averages?
         public void calculateTrend() {
             //calculate average first and last timestamp of trendFrags
             firstTimestamp = 0;
             lastTimestamp = 0;
             peakReading = 0;
-            for (List<BgReadingStats> frag : trendFragList) {
+
+            for (trendFrag frag : trendFragList) {
                 firstTimestamp = firstTimestamp + frag.get(0).timestamp;
                 lastTimestamp = lastTimestamp + frag.get(frag.size() - 1).timestamp;
-                //calculate average peak value
-                pRead = 0;
-                for (BgReadingStats reading : frag) {
-                    if (highTrend) {
-                        if (peakReading < reading.calculated_value) {
-                            pRead = reading.calculated_value;
-                        }
-                    }
-                    else {
-                        if (peakReading > reading.calculated_value) {
-                            pRead = reading.calculated_value;
-                        }
-                    }
-                }
-                peakReading = peakReading + pRead;
+                peakReading = peakReading + frag.getPeak();
             }
             firstTimestamp = firstTimestamp / trendFragList.size();
             lastTimestamp = lastTimestamp / trendFragList.size();
             peakReading = peakReading / trendFragList.size();
+        }
+
+        public long first() {
+            return firstTimestamp;
+        }
+
+        public long last() {
+            return lastTimestamp;
+        }
+
+        public double peak() {
+            return peakReading;
+        }
+
+        public boolean isHighTrend() {
+            return highTrend;
         }
     }
 }
