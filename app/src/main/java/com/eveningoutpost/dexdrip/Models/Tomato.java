@@ -176,8 +176,8 @@ public class Tomato {
         byte []patchUid = null;
         byte []patchInfo = null;
         if(s_acumulatedSize >= extended_length) {
-            // patchUid = Arrays.copyOfRange(s_full_data, 5, 13);
-            // patchInfo = Arrays.copyOfRange(s_full_data, TOMATO_HEADER_LENGTH+ 344 + 1 , TOMATO_HEADER_LENGTH + 344 + 1+ TOMATO_PATCH_INFO);
+            patchUid = Arrays.copyOfRange(s_full_data, 5, 13);
+            patchInfo = Arrays.copyOfRange(s_full_data, TOMATO_HEADER_LENGTH+ 344 + 1 , TOMATO_HEADER_LENGTH + 344 + 1+ TOMATO_PATCH_INFO);
         }
         Log.e(TAG, "patchUid = " + HexDump.dumpHexString(patchUid));
         Log.e(TAG, "patchInfo = " + HexDump.dumpHexString(patchInfo));
