@@ -179,8 +179,8 @@ public class Tomato {
             patchUid = Arrays.copyOfRange(s_full_data, 5, 13);
             patchInfo = Arrays.copyOfRange(s_full_data, TOMATO_HEADER_LENGTH+ 344 + 1 , TOMATO_HEADER_LENGTH + 344 + 1+ TOMATO_PATCH_INFO);
         }
-        Log.e(TAG, "patchUid = " + HexDump.dumpHexString(patchUid));
-        Log.e(TAG, "patchInfo = " + HexDump.dumpHexString(patchInfo));
+        Log.d(TAG, "patchUid = " + HexDump.dumpHexString(patchUid));
+        Log.d(TAG, "patchInfo = " + HexDump.dumpHexString(patchInfo));
         boolean checksum_ok = NFCReaderX.HandleGoodReading(SensorSn, data, now, true, patchUid, patchInfo);
         Log.e(TAG, "We have all the data that we need " + s_acumulatedSize + " checksum_ok = " + checksum_ok + HexDump.dumpHexString(data));
 
