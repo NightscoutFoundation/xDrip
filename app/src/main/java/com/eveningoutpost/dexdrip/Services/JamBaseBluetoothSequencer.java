@@ -842,6 +842,7 @@ public abstract class JamBaseBluetoothSequencer extends JamBaseBluetoothService 
             UserError.Log.e(TAG, "Cannot write queue item: " + item.description + " as we have no connection!");
             return;
         }
+
         if (item.queueWriteCharacterstic == null) {
             UserError.Log.e(TAG, "Write characteristic not set in queue write");
             return;
@@ -929,6 +930,7 @@ public abstract class JamBaseBluetoothSequencer extends JamBaseBluetoothService 
         unregisterScanReceiver();
         super.onDestroy();
     }
+
 
     // utils
 

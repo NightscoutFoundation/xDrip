@@ -1237,8 +1237,13 @@
     <string name="summary_miband_locale_24_hour">Show 24 Hour clock</string>
     <string name="title_miband_authkey">Auth Key</string>
     <string name="summary_miband_authkey">Set the auth key for miband4 (To get auth key, follow the instrucions on https://www.freemyband.com/)</string>
-    <string name="summary_miband_mac">Leave empty for autosearch</string>
+    <string name="summary_miband_mac">Leave empty for auto search</string>
     <string name="title_miband_vibrate_on_readings">Vibrate on readings</string>
+    <string name="title_miband_send_cals">Send Calls</string>
+    <string name="summary_miband_send_cals">Send call notifications to the band (Android 6+)</string>
+    <string name="title_miband_install_watchface">Install MiBand4 watchface</string>
+    <string name="title_miband_general_settings_category">General settings</string>
+
 
     <string name="title_miband_screen_notifications">Show Notifications</string>
     <string name="title_miband_screen_weather">Show Weather</string>

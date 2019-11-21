@@ -2,17 +2,14 @@ package com.eveningoutpost.dexdrip.watch.miband.message;
 
 import com.eveningoutpost.dexdrip.watch.miband.Const;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.UnsupportedEncodingException;
 import java.util.UUID;
 
 import lombok.Getter;
 
 public class AlertMessage extends BaseMessage {
-
-    @Override
-    public UUID getCharacteristicUUID() {
-        return Const.UUID_CHAR_NEW_ALERT;
-    }
 
     public enum AlertCategory {
         Simple(0),
@@ -87,30 +84,55 @@ public class AlertMessage extends BaseMessage {
         }
     }
 
-
     public byte[] getAlertMessage(final String msg, final AlertCategory category) {
         return getAlertMessage(msg, category, CustomIcon.WECHAT);
     }
 
     public byte[] getAlertMessage(final String msg, final AlertCategory category, final CustomIcon icon) {
+        return getAlertMessage(msg, category, icon, "");
+    }
+
+    public byte[] getAlertMessageTitle(final String title, final AlertMessage.AlertCategory category) {
+        return getAlertMessage("", category, CustomIcon.WECHAT, title);
+    }
+
+    @Override
+    public UUID getCharacteristicUUID() {
+        return Const.UUID_CHAR_NEW_ALERT;
+    }
+
+    public byte[] getAlertMessage(final String msg, final AlertMessage.AlertCategory category, final AlertMessage.CustomIcon icon, final String title) {
         byte[] messageBytes = new byte[1];
+        byte[] titleBytes = new byte[1];
+        String message = "\0" + StringUtils.truncate(msg, 128) + "\0";
+        String titleString = StringUtils.truncate(title, 18) + "\0";
         try {
-            messageBytes = msg.getBytes("UTF-8");
+            messageBytes = message.getBytes("UTF-8");
+            titleBytes = titleString.getBytes("UTF-8");
         } catch (UnsupportedEncodingException e) {
             //
         }
-        if (category == AlertCategory.CustomHuami) {
-            init(3 + messageBytes.length);
+        int len = 0;
+        if (msg.length() > 0)
+            len += messageBytes.length;
+        if (title.length() > 0)
+            len += titleBytes.length;
+
+        if (category == AlertMessage.AlertCategory.CustomHuami) {
+            init(3 + len);
         } else {
-            init(2 + messageBytes.length);
+            init(2 + len);
         }
         putData(category.getValue()); //alertCategory
-        putData((byte) 0x01); //number of alert
-        if (category == AlertCategory.CustomHuami) {
-            putData(fromUint8(icon.value));
+        putData((byte) 0x01); //number of alerts
+        if (category == AlertMessage.AlertCategory.CustomHuami) {
+            putData(fromUint8(icon.getValue()));
         }
         if (msg.length() > 0)
             putData(messageBytes);
+
+        if (title.length() > 0)
+            putData(titleBytes);
         return getBytes();
     }
 }
