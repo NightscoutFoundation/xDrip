@@ -153,6 +153,8 @@ public class Const {
     public static final UUID UUID_CHAR_TX_POWER_LEVEL = UUID.fromString(String.format(BASE_UUID, "2A07"));
     public static final UUID UUID_CHAR_UNREAD_ALERT_STATUS = UUID.fromString(String.format(BASE_UUID, "2A45"));
 
+    public static final UUID UUID_CHARACTERISTIC_CHUNKEDTRANSFER = UUID.fromString("00000020-0000-3512-2118-0009af100700");
+
     public static final String MIBAND_NAME_2 = "MI Band 2";
     public static final String MIBAND_NAME_3 = "MI Band 3";
     public static final String MIBAND_NAME_3_1 = "Xiaomi Band 3";

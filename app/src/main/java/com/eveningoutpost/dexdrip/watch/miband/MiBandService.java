@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
 import android.content.Intent;
 import android.os.PowerManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Pair;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
@@ -14,6 +15,7 @@ import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.JamBaseBluetoothSequencer;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
+import com.eveningoutpost.dexdrip.UtilityModels.Intents;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.store.FastStore;
 import com.eveningoutpost.dexdrip.store.KeyStore;
@@ -39,9 +41,13 @@ import com.polidea.rxandroidble2.exceptions.BleCannotSetCharacteristicNotificati
 import com.polidea.rxandroidble2.exceptions.BleCharacteristicNotFoundException;
 import com.polidea.rxandroidble2.exceptions.BleDisconnectedException;
 
+import org.apache.commons.lang3.time.DateUtils;
+
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -51,7 +57,6 @@ import java.util.concurrent.TimeoutException;
 
 import io.reactivex.schedulers.Schedulers;
 
-import static com.eveningoutpost.dexdrip.Models.ActiveBgAlert.currentlyAlerting;
 import static com.eveningoutpost.dexdrip.Models.JoH.bytesToHex;
 import static com.eveningoutpost.dexdrip.Models.JoH.emptyString;
 import static com.eveningoutpost.dexdrip.Models.JoH.msTill;
@@ -82,30 +87,38 @@ public class MiBandService extends JamBaseBluetoothSequencer {
 
     private static final String MESSAGE = "miband-Message";
     private static final String MESSAGE_TYPE = "miband-Message-Type";
+    private static final String MESSAGE_TITLE = "miband-Message-Title";
     private final KeyStore keyStore = FastStore.getInstance();
     private static final boolean d = true;
     private static final long MAX_RETRY_BACKOFF_MS = Constants.SECOND_IN_MS * 300; // sleep for max ms if we have had no signal
     private static final int QUEUE_EXPIRED_TIME = 30; //second
     private static final int QUEUE_DELAY = 0; //ms
-    private static final long BG_UPDATE_INTERVAL = 5 * Constants.MINUTE_IN_MS;
+    private static final long BG_UPDATE_INTERVAL = 30 * Constants.MINUTE_IN_MS;
     private Subscription subscription;
+    private Subscription notificationSubscription;
     private AuthMessages authorisation;
     private Boolean isNeedToCheckRevision = true;
-    private Boolean isNeedToAutentificate = true;
+    private Boolean isNeedToAuthenticate = true;
     public static Timer bgUpdateTimer;
     static BatteryInfo batteryInfo = new BatteryInfo();
     private FirmwareOperations firmware;
 
     final Runnable canceller = () -> {
-        if (!currentlyAlerting() && !IncomingCallsReceiver.isRingingNow()) {
+        if (!IncomingCallsReceiver.isRingingNow() && (MiBandState.getSequnceType() != MiBandState.SequenceType.INSTALL_WATCHFACE)) {
             UserError.Log.d(TAG, "Clearing queue as alert / call ceased");
             emptyQueue();
+            periodicVibrateAlert(1, 10, 0);
         }
     };
 
     {
         mState = new MiBandState().setLI(I);
-        I.queue_write_characterstic = new AlertMessage().getCharacteristicUUID();
+        I.backgroundStepDelay = 0;
+        //I.autoConnect = true;
+        I.connectTimeoutMinutes = 5;
+        // I.queue_write_characterstic = new AlertMessage().getCharacteristicUUID();
+
+        startBgTimer();
     }
 
     private Class getPrefBinder() {
@@ -128,16 +141,12 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                 String mac = MiBand.getMac();
                 if (!authMac.equalsIgnoreCase(mac) && !authMac.isEmpty()) {
                     MiBand.setAuthMac(""); //flush old auth info
-                    isNeedToAutentificate = true;
+                    isNeedToAuthenticate = true;
                 }
                 if (emptyString(mac)) {
                     // if mac not set then start up a scan and do nothing else
                     new FindNearby().scan();
                 } else {
-                    startBgTimer();
-                    if (!MiBandEntry.isNeedSendReading()) {
-                        stopBgUpdateTimer();
-                    }
                     setAddress(mac);
                     String message;
                     if (intent != null) {
@@ -149,20 +158,31 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                                     changeState(INIT);
                                     break;
                                 case "install-watchface":
-                                    message = intent.getStringExtra("message");
-                                    if (message != null) {
-                                        keyStore.putS(MESSAGE, message);
-                                        stopBgUpdateTimer();
-                                        ((MiBandState) mState).setInstallWatchfaceSequence();
-                                        changeState(INIT);
+                                    if (MiBand.getMibandType() == MI_BAND4) {
+                                        message = intent.getStringExtra("message");
+                                        if (message != null) {
+                                            keyStore.putS(MESSAGE, message);
+                                            stopBgUpdateTimer();
+                                            final Intent progress = new Intent(Intents.PREFERENCE_INTENT);
+                                            progress.putExtra("state", "INIT");
+                                            progress.putExtra("progress", 0);
+                                            LocalBroadcastManager.getInstance(xdrip.getAppContext()).sendBroadcast(progress);
+                                            ((MiBandState) mState).setInstallWatchfaceSequence();
+                                            changeState(INIT);
+                                        }
+                                    } else {
+                                        JoH.static_toast_long("Sorry, watchface can be installed only on MiBand4");
                                     }
                                     break;
                                 case "message":
                                     message = intent.getStringExtra("message");
                                     final String message_type = intent.getStringExtra("message_type");
+                                    final String title = intent.getStringExtra("title");
                                     if (message != null) {
                                         keyStore.putS(MESSAGE, message);
                                         keyStore.putS(MESSAGE_TYPE, message_type != null ? message_type : "");
+                                        keyStore.putS(MESSAGE_TITLE, title != null ? title : "");
+
                                         ((MiBandState) mState).setQueueSequence();
                                         changeState(INIT);
                                     }
@@ -170,8 +190,6 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                                 case "set_time":
                                     ((MiBandState) mState).setTimeSequence();
                                     changeState(INIT);
-                                    stopBgUpdateTimer();
-                                    startBgTimer();
                                     break;
                             }
                         } else {
@@ -201,17 +219,33 @@ public class MiBandService extends JamBaseBluetoothSequencer {
     }
 
     private void startBgTimer() {
+        stopBgUpdateTimer();
         if (MiBandEntry.isNeedSendReading() && MiBand.isAuthenticated() && (bgUpdateTimer == null)) {
             bgUpdateTimer = new Timer();
-            bgUpdateTimer.scheduleAtFixedRate(new TimerTask() {
+            Calendar expireDate = Calendar.getInstance();
+            Calendar currentDate = Calendar.getInstance();
+            expireDate.setTimeInMillis(System.currentTimeMillis() + BG_UPDATE_INTERVAL);
+            Date nextDate;
+            if (DateUtils.isSameDay(expireDate.getTime(), currentDate.getTime()))
+                nextDate = expireDate.getTime();
+            else {
+                currentDate.add(Calendar.DATE, 1);
+                currentDate.set(Calendar.HOUR, 0);
+                currentDate.set(Calendar.MINUTE, 0);
+                currentDate.set(Calendar.SECOND, 20);
+                nextDate = currentDate.getTime();
+            }
+            bgUpdateTimer.schedule(new TimerTask() {
                 @Override
                 public void run() {
                     if (I.state.equals(MiBandState.SLEEP) || I.state.equals(MiBandState.CLOSED) || I.state.equals(SEND_QUEUE)) {
+                        UserError.Log.d(TAG, "MiBand BG timer fired");
                         ((MiBandState) mState).setTimeSequence();
                         changeState(INIT);
                     }
+                    startBgTimer();
                 }
-            }, BG_UPDATE_INTERVAL, BG_UPDATE_INTERVAL);
+            }, nextDate, BG_UPDATE_INTERVAL);
         }
     }
 
@@ -374,22 +408,39 @@ public class MiBandService extends JamBaseBluetoothSequencer {
 
     private void sendBG() {
         final BgReading last = BgReading.last();
-        FunAlmanac.Reply rep;
-        if (last == null || last.isStale()) {
-            rep = FunAlmanac.getRepresentation(0, "Flat");
-        } else {
-            final double mmol_value = roundDouble(mmolConvert(last.getDg_mgdl()), 1);
+        if (MiBand.getMibandType() == MI_BAND2) {
+            AlertMessage message = new AlertMessage();
 
-            rep = FunAlmanac.getRepresentation(mmol_value, last.slopeName());
+            if (last == null || last.isStale()) {
+                return;
+            } else {
+                String messageText = "BG: " + last.displayValue(null) + " " + last.displaySlopeArrow();
+                new QueueMe()
+                        .setBytes(message.getAlertMessageTitle(messageText.toUpperCase(), AlertMessage.AlertCategory.SMS_MMS))
+                        .setDescription("Send alert msg: " + messageText)
+                        .setQueueWriteCharacterstic(message.getCharacteristicUUID())
+                        .expireInSeconds(60)
+                        .setDelayMs(QUEUE_DELAY)
+                        .queue();
+            }
+        } else {
+            FunAlmanac.Reply rep;
+            if (last == null || last.isStale()) {
+                rep = FunAlmanac.getRepresentation(0, "Flat");
+            } else {
+                final double mmol_value = roundDouble(mmolConvert(last.getDg_mgdl()), 1);
+
+                rep = FunAlmanac.getRepresentation(mmol_value, last.slopeName());
+            }
+            TimeMessage message = new TimeMessage();
+            new QueueMe()
+                    .setBytes(message.getTimeMessage(rep.timestamp))
+                    .setDescription("Send time representation for: " + rep.input)
+                    .setQueueWriteCharacterstic(message.getCharacteristicUUID())
+                    .expireInSeconds(QUEUE_EXPIRED_TIME)
+                    .setDelayMs(50)
+                    .queue();
         }
-        TimeMessage message = new TimeMessage();
-        new QueueMe()
-                .setBytes(message.getTimeMessage(rep.timestamp))
-                .setDescription("Send time representation for: " + rep.input)
-                .setQueueWriteCharacterstic(message.getCharacteristicUUID())
-                .expireInSeconds(QUEUE_EXPIRED_TIME)
-                .setDelayMs(50)
-                .queue();
     }
 
     private void vibrateAlert(AlertLevelMessage.AlertLevelType level) {
@@ -399,7 +450,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                 .setDescription("Send vibrateAlert: " + level)
                 .setQueueWriteCharacterstic(message.getCharacteristicUUID())
                 .expireInSeconds(QUEUE_EXPIRED_TIME)
-                .setDelayMs(QUEUE_DELAY)
+                .setDelayMs(1000)
                 .queue();
     }
 
@@ -410,7 +461,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                 .setDescription(String.format("Send periodicVibrateAlert c:%d a:%d p:%d", count, activeVibrationTime, pauseVibrationTime))
                 .setQueueWriteCharacterstic(message.getCharacteristicUUID())
                 .expireInSeconds(QUEUE_EXPIRED_TIME)
-                .setDelayMs(QUEUE_DELAY)
+                .setDelayMs((activeVibrationTime + pauseVibrationTime) * count)
                 .queue();
     }
 
@@ -450,41 +501,56 @@ public class MiBandService extends JamBaseBluetoothSequencer {
     private void queueMessage() {
         final String alert = keyStore.getS(MESSAGE);
         final String type = keyStore.getS(MESSAGE_TYPE);
+        final String title = keyStore.getS(MESSAGE_TITLE);
         if (d)
             UserError.Log.d(TAG, "Queuing message alert of type: " + type + " " + alert);
 
         if (!emptyString(alert)) {
-
+            AlertMessage message = new AlertMessage();
             switch (type != null ? type : "null") {
-                case "call":
+                case "call": {
                     new QueueMe()
-                            .setBytes(new AlertMessage().getAlertMessage(alert, AlertMessage.AlertCategory.Call))
+                            .setBytes(message.getAlertMessage(alert, AlertMessage.AlertCategory.Call))
                             .setDescription("Send call alert: " + alert)
+                            .setQueueWriteCharacterstic(message.getCharacteristicUUID())
                             .expireInSeconds(QUEUE_EXPIRED_TIME)
                             .setDelayMs(4000)
                             .setRunnable(canceller)
                             .queue();
                     if (d)
                         UserError.Log.d(TAG, "Queued call alert: " + alert);
-                    break;
+                }
+                break;
 
-                case "glucose":
+                case "glucose": {
                     new QueueMe()
-                            .setBytes(new AlertMessage().getAlertMessage("", AlertMessage.AlertCategory.CustomHuami, AlertMessage.CustomIcon.ALARM_CLOCK))
-                            .setDescription("Send alert: " + alert)
+                            .setBytes(message.getAlertMessage("", AlertMessage.AlertCategory.CustomHuami, AlertMessage.CustomIcon.ALARM_CLOCK))
+                            .setDescription("Send alert alarm: " + alert)
+                            .setQueueWriteCharacterstic(message.getCharacteristicUUID())
                             .expireInSeconds(60)
                             .setDelayMs(4000)
                             .queue();
-                    new QueueMe()
-                            .setBytes(new AlertMessage().getAlertMessage(alert, AlertMessage.AlertCategory.SMS_MMS))
-                            .setDescription("Send alert: " + alert)
-                            .expireInSeconds(60)
-                            .setDelayMs(QUEUE_DELAY)
-                            .queue();
-                    break;
+                    if (MiBand.getMibandType() == MI_BAND2) {
+                        new QueueMe()
+                                .setBytes(message.getAlertMessageTitle(alert.toUpperCase(), AlertMessage.AlertCategory.SMS_MMS))
+                                .setDescription("Send alert msg: " + alert)
+                                .setQueueWriteCharacterstic(message.getCharacteristicUUID())
+                                .expireInSeconds(60)
+                                .setDelayMs(QUEUE_DELAY)
+                                .queue();
+                    } else {
+                        new QueueMe()
+                                .setBytes(message.getAlertMessage(alert.toUpperCase(), AlertMessage.AlertCategory.CustomHuami, AlertMessage.CustomIcon.RED_WHITE_FIRE_8, title.toUpperCase()))
+                                .setDescription("Send alert msg: " + alert)
+                                .setQueueWriteCharacterstic(message.getCharacteristicUUID())
+                                .expireInSeconds(60)
+                                .setDelayMs(QUEUE_DELAY)
+                                .queue();
+                    }
+                }
+                break;
 
                 default: // glucose
-
                     break;
             }
             // this parent method might get called multiple times
@@ -497,6 +563,13 @@ public class MiBandService extends JamBaseBluetoothSequencer {
 
     @SuppressLint("CheckResult")
     private void authPhase() {
+        if (MiBand.getMibandType() == MI_BAND2) {
+            if (!MiBand.getAuthMac().isEmpty()) {
+                isNeedToAuthenticate = false; // no need to reauth for miband 2
+            }
+            return;
+        }
+
         RxBleConnection connection = I.connection;
         if (d)
             UserError.Log.d(TAG, "Authorizing");
@@ -545,8 +618,6 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                                 }
                         )
                         .flatMap(notificationObservable -> notificationObservable)
-                        //.timeout(5, TimeUnit.SECONDS)
-                        //.observeOn(Schedulers.newThread())
                         .subscribe(bytes -> {
                             // incoming notifications
                             if (d)
@@ -602,11 +673,16 @@ public class MiBandService extends JamBaseBluetoothSequencer {
         } else if (value[0] == AUTH_RESPONSE &&
                 (value[1] & 0x0f) == AUTH_SEND_ENCRYPTED_AUTH_NUMBER &&
                 value[2] == AUTH_SUCCESS) {
-            isNeedToAutentificate = false;
+            isNeedToAuthenticate = false;
             if (MiBand.getAuthMac().isEmpty()) {
                 MiBand.setAuthMac(MiBand.getMac());
                 MiBand.setPersistantAuthKey(JoH.bytesToHex(authorisation.getLocalKey()), MiBand.getAuthMac());
                 JoH.static_toast_long("MiBand succesfully authentificated");
+                if (MiBand.getMibandType() == MI_BAND4) {
+                    final Intent progress = new Intent(Intents.PREFERENCE_INTENT);
+                    progress.putExtra("state", "INSTALL_REQUEST");
+                    LocalBroadcastManager.getInstance(xdrip.getAppContext()).sendBroadcast(progress);
+                }
             }
             if (subscription != null) {
                 subscription.unsubscribe();
@@ -647,17 +723,13 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                         .doOnNext(notificationObservable -> {
                                     if (d)
                                         UserError.Log.d(TAG, "Notification for firmware enabled");
-                                    connection.writeCharacteristic(Const.UUID_CHAR_PERIPHERAL_PREFERRED_CONNECTION_PARAMETERS, new byte[]{0x06, 0x00, 0x0c, 0x00, 0x00, 0x00, (byte) 0xd0, 0x07})
-                                            .doFinally(() -> {  //min con int 06, max con int 12, 2000ms timeout (for faster upload)
-                                                        connection.writeCharacteristic(firmware.getFirmwareCharacteristicUUID(), firmware.sendFwInfo())
-                                                                .subscribe(valB -> {
-                                                                            UserError.Log.d(TAG, "Wrote sendFwInfo, got: " + JoH.bytesToHex(valB));
-                                                                        },
-                                                                        throwable -> {
-                                                                            UserError.Log.e(TAG, "Could not write sendFwInfo: " + throwable);
-                                                                            resetFirmwareState(false);
-                                                                        }
-                                                                );
+                                    connection.writeCharacteristic(firmware.getFirmwareCharacteristicUUID(), firmware.sendFwInfo())
+                                            .subscribe(valB -> {
+                                                        UserError.Log.d(TAG, "Wrote sendFwInfo, got: " + JoH.bytesToHex(valB));
+                                                    },
+                                                    throwable -> {
+                                                        UserError.Log.e(TAG, "Could not write sendFwInfo: " + throwable);
+                                                        resetFirmwareState(false);
                                                     }
                                             );
                                 }
@@ -701,7 +773,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                         break;
                     }
                     case OperationCodes.COMMAND_FIRMWARE_START_DATA: {
-                        sendFirmwareCommand(firmware.getFirmwareCharacteristicUUID(), firmware.sendChecksum(), "sendChecksum");
+                        sendFirmwareCommand(firmware.getFirmwareCharacteristicUUID(), firmware.sendChecksum(), "sendChecksum").send();
                         break;
                     }
                     case OperationCodes.COMMAND_FIRMWARE_CHECKSUM: {
@@ -709,7 +781,6 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                             //send reboot
                         } else {
                             UserError.Log.e(TAG, "Watch Face has been installed successfully");
-                            JoH.static_toast_long("Watch Face has been installed successfully");
                             resetFirmwareState(true);
                         }
                         break;
@@ -734,8 +805,13 @@ public class MiBandService extends JamBaseBluetoothSequencer {
     }
 
     private void resetFirmwareState(Boolean result) {
-        if (!result) JoH.static_toast_long("Error while uploding MiBand watchface");
-        else JoH.static_toast_long("MiBand watchface has been uploaded");
+        final Intent progress = new Intent(Intents.PREFERENCE_INTENT);
+        progress.putExtra("state", "FINISH");
+
+        if (!result) progress.putExtra("finishText", "Error while uploading MiBand watchface");
+        else progress.putExtra("finishText", "MiBand watchface has been uploaded successfully!");
+        LocalBroadcastManager.getInstance(xdrip.getAppContext()).sendBroadcast(progress);
+
         emptyQueue();
         if (subscription != null) {
             subscription.unsubscribe();
@@ -752,41 +828,64 @@ public class MiBandService extends JamBaseBluetoothSequencer {
         // going from 0 to len
         int firmwareProgress = 0;
 
-        sendFirmwareCommand(firmware.getFirmwareCharacteristicUUID(), firmware.getFirmwareStartCommand(), "Start command");
+        sendFirmwareCommand(firmware.getFirmwareCharacteristicUUID(), firmware.getFirmwareStartCommand(), "Start command").send();
         for (int i = 0; i < packets; i++) {
             byte[] fwChunk = Arrays.copyOfRange(fwbytes, i * packetLength, i * packetLength + packetLength);
-            sendFirmwareCommand(firmware.getFirmwareDataCharacteristicUUID(), fwChunk, "Chunk:" + i);
+            sendFirmwareCommand(firmware.getFirmwareDataCharacteristicUUID(), fwChunk, "Chunk:" + i).send();
             firmwareProgress += packetLength;
             int progressPercent = (int) ((((float) firmwareProgress) / len) * 100);
             if ((i > 0) && (i % 50 == 0)) {
-                sendFirmwareCommand(firmware.getFirmwareCharacteristicUUID(), new byte[]{OperationCodes.COMMAND_FIRMWARE_UPDATE_SYNC}, "Sync " + progressPercent + "%");
+                sendFirmwareCommand(firmware.getFirmwareCharacteristicUUID(), new byte[]{OperationCodes.COMMAND_FIRMWARE_UPDATE_SYNC}, "Sync " + progressPercent + "%").setRunnable(new Runnable() {
+                    @Override
+                    public void run() {
+                        final Intent progress = new Intent(Intents.PREFERENCE_INTENT);
+                        progress.putExtra("state", "PROGRESS");
+                        progress.putExtra("progress", progressPercent);
+                        LocalBroadcastManager.getInstance(xdrip.getAppContext()).sendBroadcast(progress);
+                    }
+                }).send();
             }
         }
         if (firmwareProgress < len) { //last chunk
+            int progressPercent = 100;
             byte[] fwChunk = Arrays.copyOfRange(fwbytes, packets * packetLength, len);
-            sendFirmwareCommand(firmware.getFirmwareDataCharacteristicUUID(), fwChunk, "Last chunk");
+            sendFirmwareCommand(firmware.getFirmwareDataCharacteristicUUID(), fwChunk, "Last chunk").setRunnable(new Runnable() {
+                @Override
+                public void run() {
+                    final Intent progress = new Intent(Intents.PREFERENCE_INTENT);
+                    progress.putExtra("state", "PROGRESS");
+                    progress.putExtra("progress", progressPercent);
+                    LocalBroadcastManager.getInstance(xdrip.getAppContext()).sendBroadcast(progress);
+                }
+            }).send();
         }
-        sendFirmwareCommand(firmware.getFirmwareCharacteristicUUID(), new byte[]{OperationCodes.COMMAND_FIRMWARE_UPDATE_SYNC}, "Sync");
-        sendFirmwareCommand(Const.UUID_CHAR_PERIPHERAL_PREFERRED_CONNECTION_PARAMETERS, new byte[]{(byte) 0xf0, 0x00, (byte) 0xf0, 0x00, 0x00, 0x00, (byte) 0xd0, 0x07}, "set connection interval");
-        //changeState(SEND_QUEUE);
+        sendFirmwareCommand(firmware.getFirmwareCharacteristicUUID(), new byte[]{OperationCodes.COMMAND_FIRMWARE_UPDATE_SYNC}, "Sync").send();
     }
 
-    void sendFirmwareCommand(final UUID uuid, final byte[] bytes, String info) {
-        new QueueMe()
+    QueueMe sendFirmwareCommand(final UUID uuid, final byte[] bytes, String info) {
+        return new QueueMe()
                 .setBytes(bytes)
                 .setDescription(info)
                 .setQueueWriteCharacterstic(uuid)
                 .expireInSeconds(400)
-                .setDelayMs(0)
-                .send();
+                .setDelayMs(0);
     }
 
     @SuppressLint("CheckResult")
     private void enableNotification() {
-        UserError.Log.d(TAG, "Enabling notifications");
-        I.connection.setupNotification(Const.UUID_CHARACTERISTIC_DEVICEEVENT)
+        UserError.Log.d(TAG, "enableNotifications called()");
+        if (I.isNotificationEnabled) {
+            UserError.Log.d(TAG, "Notifications already enabled");
+            changeNextState();
+            return;
+        }
+        if (notificationSubscription != null) {
+            notificationSubscription.unsubscribe();
+        }
+        UserError.Log.d(TAG, "Requesting to enable notifications");
+        notificationSubscription = new Subscription(I.connection.setupNotification(Const.UUID_CHARACTERISTIC_DEVICEEVENT)
                 .doOnNext(notificationObservable -> {
-                    JoH.threadSleep(1000);
+                    I.isNotificationEnabled = true;
                     changeNextState();
                 }).flatMap(notificationObservable -> notificationObservable)
                 //.timeout(5, TimeUnit.SECONDS)
@@ -797,13 +896,18 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                                 UserError.Log.d(TAG, "Received device notification bytes: " + bytesToHex(bytes));
                             handleDeviceEvent(bytes);
                         }, throwable -> {
-                            if (!(throwable instanceof TimeoutException)) {
-                                UserError.Log.e(TAG, "Throwable inside setup notification: " + throwable);
+                            UserError.Log.d(TAG, "Throwable in Record Notification: " + throwable);
+                            I.isNotificationEnabled = false;
+                            if (throwable instanceof BleCharacteristicNotFoundException) {
+                                // maybe legacy - ignore for now but needs better handling
+                                UserError.Log.d(TAG, "Characteristic not found for notification");
+                                changeNextState();
                             } else {
-                                UserError.Log.d(TAG, "OUTER TIMEOUT INSIDE NOTIFICATION LISTENER");
+                                isNeedToAuthenticate = true;
+                                UserError.Log.d(TAG, "Disconnected exception");
                             }
                         }
-                );
+                ));
 
     }
 
@@ -822,7 +926,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                     changeNextState();
                     break;
                 case MiBandState.AUTHENTICATE:
-                    if (isNeedToAutentificate) {
+                    if (isNeedToAuthenticate) {
                         changeNextState();
                     } else {
                         changeNextState();
@@ -845,7 +949,6 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                     break;
                 case MiBandState.ENABLE_NOTIFICATIONS:
                     enableNotification();
-                    changeNextState();
                     break;
                 case MiBandState.SEND_SETTINGS:
                     sendSettings();
@@ -860,6 +963,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                     if (MiBandEntry.isVibrateOnReadings())
                         vibrateAlert(AlertLevelMessage.AlertLevelType.VibrateAlert);
                     sendBG();
+                    startBgTimer();
                     changeNextState();
                     break;
                 case MiBandState.INSTALL_WATCHFACE:
@@ -942,10 +1046,17 @@ public class MiBandService extends JamBaseBluetoothSequencer {
             sequence.clear();
             sequence.add(INIT);
             sequence.add(CONNECT_NOW);
+            sequence.add(GET_MODEL_NAME);
+            sequence.add(GET_SOFT_REVISION);
+            sequence.add(AUTHENTICATE);
+            sequence.add(AUTHORIZE);
+            sequence.add(ENABLE_NOTIFICATIONS);
             sequence.add(SET_TIME);
             sequence.add(SEND_QUEUE);
             sequence.add(GET_BATTERY_INFO);
             sequence.add(SLEEP);
+
+            sequence.add(AUTHORIZE_FAILED);
         }
 
         void setQueueSequence() {
@@ -954,10 +1065,17 @@ public class MiBandService extends JamBaseBluetoothSequencer {
             sequence.clear();
             sequence.add(INIT);
             sequence.add(CONNECT_NOW);
+            sequence.add(GET_MODEL_NAME);
+            sequence.add(GET_SOFT_REVISION);
+            sequence.add(AUTHENTICATE);
+            sequence.add(AUTHORIZE);
+            sequence.add(ENABLE_NOTIFICATIONS);
             sequence.add(QUEUE_MESSAGE);
             sequence.add(SEND_QUEUE);
             sequence.add(GET_BATTERY_INFO);
             sequence.add(SLEEP);
+
+            sequence.add(AUTHORIZE_FAILED);
         }
 
         void setSettingsSequence() {
@@ -967,9 +1085,9 @@ public class MiBandService extends JamBaseBluetoothSequencer {
             sequence.add(INIT);
             sequence.add(CONNECT_NOW);
             sequence.add(GET_MODEL_NAME);
+            sequence.add(GET_SOFT_REVISION);
             sequence.add(AUTHENTICATE);
             sequence.add(AUTHORIZE);
-            sequence.add(GET_SOFT_REVISION);
             sequence.add(ENABLE_NOTIFICATIONS);
             sequence.add(SEND_SETTINGS);
             sequence.add(SET_TIME);
@@ -988,9 +1106,13 @@ public class MiBandService extends JamBaseBluetoothSequencer {
             sequence.add(CONNECT_NOW);
             sequence.add(GET_MODEL_NAME);
             sequence.add(GET_SOFT_REVISION);
+            sequence.add(AUTHENTICATE);
+            sequence.add(AUTHORIZE);
+            sequence.add(ENABLE_NOTIFICATIONS);
             sequence.add(INSTALL_WATCHFACE);
-            sequence.add(SEND_QUEUE);
             sequence.add(SLEEP);
+
+            sequence.add(AUTHORIZE_FAILED);
         }
 
 
@@ -1028,7 +1150,6 @@ public class MiBandService extends JamBaseBluetoothSequencer {
         if (qsize > 0) {
             l.add(new StatusItem("Queue", qsize + " items"));
         }
-
 
         return l;
     }
