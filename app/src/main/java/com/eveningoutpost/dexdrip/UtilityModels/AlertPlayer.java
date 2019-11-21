@@ -577,7 +577,7 @@ public class AlertPlayer {
         }
 
         if (MiBandEntry.areAlertsEnabled() && ActiveBgAlert.currentlyAlerting()) {
-            MiBand.sendAlert(highlow, bgValue);
+            MiBand.sendAlert(alert.name, highlow, bgValue);
         }
 
         // speak alert

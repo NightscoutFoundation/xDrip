@@ -64,4 +64,7 @@ public interface Intents {
     String LIBRE2_BG = "com.librelink.app.ThirdPartyIntegration.GLUCOSE_READING";
     String LIBRE2_ACTIVATION = "com.librelink.app.ThirdPartyIntegration.SENSOR_ACTIVATE";
 
+
+
+    String PREFERENCE_INTENT = "com.eveningoutpost.dexdrip.utils.PROGRESS";
 }
