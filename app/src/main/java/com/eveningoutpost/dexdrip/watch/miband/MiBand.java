@@ -67,16 +67,15 @@ public class MiBand {
         return MiBand.getAuthMac().isEmpty() ? false : true;
     }
 
-    public static void sendAlert(final String... lines) {
-        sendAlert(false, lines);
+    public static void sendAlert( String title, final String... lines) {
+        sendAlert(false, title, lines);
     }
 
     // convert multi-line text to string for display constraints
-    public static void sendAlert(boolean isCall, final String... lines) {
+    public static void sendAlert(boolean isCall, String title, final String... lines) {
 
         int width = 10;
         final StringBuilder result = new StringBuilder();
-
         for (final String message : lines) {
             result.append(message + " ");
         }
@@ -87,6 +86,7 @@ public class MiBand {
 
         Inevitable.task("miband-send-alert-debounce", isCall ? 3000 : 100, () -> JoH.startService(MiBandService.class, "function", "message",
                 "message", resultString,
+                "title", title,
                 "message_type", isCall ? "call" : "glucose"));
     }
 

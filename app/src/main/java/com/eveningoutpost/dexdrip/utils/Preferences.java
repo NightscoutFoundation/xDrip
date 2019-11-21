@@ -4,11 +4,14 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.appwidget.AppWidgetManager;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -18,6 +21,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
@@ -33,11 +37,16 @@ import android.preference.SwitchPreference;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.InputFilter;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Window;
 import android.widget.BaseAdapter;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bytehamster.lib.preferencesearch.SearchConfiguration;
@@ -66,6 +75,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Experience;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
+import com.eveningoutpost.dexdrip.UtilityModels.Intents;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.ShotStateStore;
 import com.eveningoutpost.dexdrip.UtilityModels.SpeechUtil;
@@ -143,6 +153,8 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
     private static Preference nfc_expiry_days;
 
     private static AllPrefsFragment pFragment;
+    private Dialog pDialog;
+    private BroadcastReceiver statusReceiver;
 
 
     private void refreshFragments() {
@@ -396,6 +408,64 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             Log.e(TAG, "Got exception registering lockListener: " + e + " " + (preferenceFragment.lockListener == null));
         }
 
+        statusReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                final String state = intent.getStringExtra("state");
+                final Integer progress = intent.getIntExtra("progress", 0);
+
+                switch (state) {
+                    case "INIT":
+                        if (pDialog == null) {
+                            pDialog = new Dialog(Preferences.this);
+                            pDialog.setCanceledOnTouchOutside(false);
+                            pDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                            pDialog.setCancelable(false);
+                            pDialog.setContentView(R.layout.dialog_progress);
+                            final ProgressBar progress_horizontal = pDialog.findViewById(R.id.progress_horizontal);
+                            final TextView statusText = pDialog.findViewById(R.id.statusTextView);
+                            final TextView valuePercentage = pDialog.findViewById(R.id.valuePercentage);
+                            statusText.setText("Please wait, uploading watchface...");
+                            progress_horizontal.setProgress(progress);
+                            valuePercentage.setText(progress.toString());
+                            pDialog.show();
+                            Window window = pDialog.getWindow();
+                            window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                        }
+                        break;
+                    case "PROGRESS":
+                        if (pDialog != null) {
+                            final ProgressBar progress_horizontal = pDialog.findViewById(R.id.progress_horizontal);
+                            final TextView valuePercentage = pDialog.findViewById(R.id.valuePercentage);
+                            progress_horizontal.setProgress(progress);
+                            valuePercentage.setText(progress.toString());
+                        }
+                        break;
+                    case "FINISH":
+                        if (pDialog != null) {
+                            final String finishText = intent.getStringExtra("finishText");
+                            final TextView statusText = pDialog.findViewById(R.id.statusTextView);
+                            statusText.setText(finishText);
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (pDialog != null) {
+                                        if (pDialog.isShowing()) {
+                                            pDialog.dismiss();
+                                            pDialog = null;
+                                        }
+                                    }
+                                }
+                            }, 3000);
+                        }
+                        break;
+                    case "INSTALL_REQUEST":
+                        preferenceFragment.installMiBandWatchface(1, Preferences.this);
+                        break;
+                }
+
+            }
+        };
     }
 
 
@@ -424,6 +494,8 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(LeFunEntry.prefListener);
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(MiBandEntry.prefListener);
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(BlueJayEntry.prefListener);
+        LocalBroadcastManager.getInstance(this).registerReceiver(statusReceiver,
+                new IntentFilter(Intents.PREFERENCE_INTENT));
     }
 
     @Override
@@ -920,9 +992,6 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                             LocationHelper.requestLocationForBluetooth((Activity) preference.getContext());
                         }
                         checkReadPermission(activity);
-                        // install watchface
-                        if (MiBand.isAuthenticated())
-                            installMiBandWatchface(1, preference);
                     }
                     return true;
                 });
@@ -938,8 +1007,13 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                             scr.removePreference(findPreference("miband2_screen"));
                             scr.addPreference(findPreference("miband3_4_screen"));
                         }
+                    } catch (NullPointerException e) {
                     }
-                    catch (NullPointerException e){}
+                    return true;
+                });
+
+                findPreference(MiBandEntry.PREF_MIBAND_INSTALL_WATCHFACE).setOnPreferenceClickListener(preference -> {
+                    installMiBandWatchface(1, preference.getContext());
                     return true;
                 });
 
@@ -2257,8 +2331,8 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             }
         }
 
-        private void installMiBandWatchface(final int watchFaceType, Preference preference) {
-            final Context context = preference.getContext();
+        public void installMiBandWatchface(final int watchFaceType, Context context) {
+            // final Context context = preference.getContext();
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
             builder.setTitle("MiBand watchface install");
             switch (watchFaceType) {
@@ -2604,5 +2678,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
         }
         return true;
     }
+
+
 }
 
