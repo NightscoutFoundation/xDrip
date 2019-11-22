@@ -80,12 +80,7 @@ public class StartNewSensor extends ActivityWithMenu {
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && DexCollectionType.hasBluetooth()) {
                     if (!LocationHelper.locationPermission(StartNewSensor.this)) {
-                        JoH.show_ok_dialog(activity, gs(R.string.please_allow_permission), gs(R.string.location_permission_needed_to_use_bluetooth), new Runnable() {
-                            @Override
-                            public void run() {
-                                activity.requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 0);
-                            }
-                        });
+                        LocationHelper.requestLocationForBluetooth(StartNewSensor.this);
                     } else {
                         sensorButtonClick();
                     }
