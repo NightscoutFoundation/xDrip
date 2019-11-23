@@ -960,9 +960,9 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                         changeNextState();
                         break;
                     }
-                    if (MiBandEntry.isVibrateOnReadings())
-                        vibrateAlert(AlertLevelMessage.AlertLevelType.VibrateAlert);
                     sendBG();
+                    if (MiBandEntry.isVibrateOnReadings() &&  (MiBand.getMibandType() != MI_BAND2))
+                        vibrateAlert(AlertLevelMessage.AlertLevelType.VibrateAlert);
                     startBgTimer();
                     changeNextState();
                     break;
