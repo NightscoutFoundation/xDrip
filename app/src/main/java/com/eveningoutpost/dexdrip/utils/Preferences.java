@@ -2333,16 +2333,16 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
 
         public void installMiBandWatchface(final int watchFaceType, Context context) {
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
-            builder.setTitle("MiBand watchface install");
+            builder.setTitle(xdrip.getAppContext().getResources().getString(R.string.miband_watchface_dialog_title));
             switch (watchFaceType) {
                 case 1:
-                    builder.setMessage("Install mmol watchface?");
+                    builder.setMessage(xdrip.getAppContext().getResources().getString(R.string.miband_watchface_dialog_option_mmol));
                     break;
                /* case 2:
                     builder.setMessage("Install mg wtchface?");
                     break;*/
             }
-            builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            builder.setPositiveButton(xdrip.getAppContext().getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
 
@@ -2356,7 +2356,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 }
             });
 
-            builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            builder.setNegativeButton(xdrip.getAppContext().getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();

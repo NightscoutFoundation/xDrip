@@ -1256,7 +1256,10 @@
     <string name="title_miband_screen_timer">Show Timer</string>
     <string name="title_miband_screen_nfc">Show NFC(if available)</string>
 
-
+    <string name="miband_watchface_istall_success">MiBand watchface has been uploaded successfully!</string>
+    <string name="miband_watchface_istall_error">Error while uploading MiBand watchface</string>
+    <string name="miband_watchface_dialog_title">MiBand watchface install</string>
+    <string name="miband_watchface_dialog_option_mmol">Install mmol watchface?</string>
 
     <string name="title_lefun_band">Lefun Band</string>
     <string name="summary_lefun_enable">Sync Data with LeFun fitness bands</string>
