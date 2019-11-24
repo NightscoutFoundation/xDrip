@@ -808,8 +808,8 @@ public class MiBandService extends JamBaseBluetoothSequencer {
 
     private void resetFirmwareState(Boolean result) {
         String finishText;
-        if (!result)  finishText = "Error while uploading MiBand watchface";
-        else finishText ="MiBand watchface has been uploaded successfully!";
+        if (!result) finishText = xdrip.getAppContext().getResources().getString(R.string.miband_watchface_istall_error);
+        else finishText = xdrip.getAppContext().getResources().getString(R.string.miband_watchface_istall_success);
         sendPrefIntent(MIBAND_INTEND_STATES.WATHCFACE_DIALOG_FINISH, 0, finishText);
 
         emptyQueue();
