@@ -101,6 +101,7 @@ import com.eveningoutpost.dexdrip.utils.framework.IncomingCallsReceiver;
 import com.eveningoutpost.dexdrip.watch.lefun.LeFunEntry;
 import com.eveningoutpost.dexdrip.watch.miband.MiBand;
 import com.eveningoutpost.dexdrip.watch.miband.MiBandEntry;
+import com.eveningoutpost.dexdrip.watch.miband.MiBandService;
 import com.eveningoutpost.dexdrip.watch.thinjam.BlueJay;
 import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayAdapter;
 import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry;
@@ -411,11 +412,11 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
         statusReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                final String state = intent.getStringExtra("state");
+                final MiBandService.MIBAND_INTEND_STATES state = MiBandService.MIBAND_INTEND_STATES.valueOf(intent.getStringExtra("state"));
                 final Integer progress = intent.getIntExtra("progress", 0);
-
+                final String descrText = intent.getStringExtra("descr_text");
                 switch (state) {
-                    case "INIT":
+                    case INIT_WATCHFACE_DIALOG:
                         if (pDialog == null) {
                             pDialog = new Dialog(Preferences.this);
                             pDialog.setCanceledOnTouchOutside(false);
@@ -433,7 +434,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                             window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                         }
                         break;
-                    case "PROGRESS":
+                    case UPDATE_PROGRESS:
                         if (pDialog != null) {
                             final ProgressBar progress_horizontal = pDialog.findViewById(R.id.progress_horizontal);
                             final TextView valuePercentage = pDialog.findViewById(R.id.valuePercentage);
@@ -441,11 +442,10 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                             valuePercentage.setText(progress.toString());
                         }
                         break;
-                    case "FINISH":
+                    case WATHCFACE_DIALOG_FINISH:
                         if (pDialog != null) {
-                            final String finishText = intent.getStringExtra("finishText");
                             final TextView statusText = pDialog.findViewById(R.id.statusTextView);
-                            statusText.setText(finishText);
+                            statusText.setText(descrText);
                             new Handler().postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
@@ -459,8 +459,8 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                             }, 3000);
                         }
                         break;
-                    case "INSTALL_REQUEST":
-                        preferenceFragment.installMiBandWatchface(1, Preferences.this);
+                    case INSTALL_REQUEST:
+                        preferenceFragment.installMiBandWatchface(1, preferenceFragment.getContext());
                         break;
                 }
 
@@ -2332,7 +2332,6 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
         }
 
         public void installMiBandWatchface(final int watchFaceType, Context context) {
-            // final Context context = preference.getContext();
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
             builder.setTitle("MiBand watchface install");
             switch (watchFaceType) {
