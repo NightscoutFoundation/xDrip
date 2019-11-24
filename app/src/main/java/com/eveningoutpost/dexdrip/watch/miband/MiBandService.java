@@ -103,6 +103,13 @@ public class MiBandService extends JamBaseBluetoothSequencer {
     static BatteryInfo batteryInfo = new BatteryInfo();
     private FirmwareOperations firmware;
 
+    public enum MIBAND_INTEND_STATES {
+        INIT_WATCHFACE_DIALOG,
+        UPDATE_PROGRESS,
+        WATHCFACE_DIALOG_FINISH,
+        INSTALL_REQUEST,
+    }
+
     final Runnable canceller = () -> {
         if (!IncomingCallsReceiver.isRingingNow() && (MiBandState.getSequnceType() != MiBandState.SequenceType.INSTALL_WATCHFACE)) {
             UserError.Log.d(TAG, "Clearing queue as alert / call ceased");
@@ -163,10 +170,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                                         if (message != null) {
                                             keyStore.putS(MESSAGE, message);
                                             stopBgUpdateTimer();
-                                            final Intent progress = new Intent(Intents.PREFERENCE_INTENT);
-                                            progress.putExtra("state", "INIT");
-                                            progress.putExtra("progress", 0);
-                                            LocalBroadcastManager.getInstance(xdrip.getAppContext()).sendBroadcast(progress);
+                                            sendPrefIntent(MIBAND_INTEND_STATES.INIT_WATCHFACE_DIALOG, 0, "");
                                             ((MiBandState) mState).setInstallWatchfaceSequence();
                                             changeState(INIT);
                                         }
@@ -679,9 +683,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                 MiBand.setPersistantAuthKey(JoH.bytesToHex(authorisation.getLocalKey()), MiBand.getAuthMac());
                 JoH.static_toast_long("MiBand succesfully authentificated");
                 if (MiBand.getMibandType() == MI_BAND4) {
-                    final Intent progress = new Intent(Intents.PREFERENCE_INTENT);
-                    progress.putExtra("state", "INSTALL_REQUEST");
-                    LocalBroadcastManager.getInstance(xdrip.getAppContext()).sendBroadcast(progress);
+                    sendPrefIntent(MIBAND_INTEND_STATES.INSTALL_REQUEST, 0, "");
                 }
             }
             if (subscription != null) {
@@ -805,12 +807,10 @@ public class MiBandService extends JamBaseBluetoothSequencer {
     }
 
     private void resetFirmwareState(Boolean result) {
-        final Intent progress = new Intent(Intents.PREFERENCE_INTENT);
-        progress.putExtra("state", "FINISH");
-
-        if (!result) progress.putExtra("finishText", "Error while uploading MiBand watchface");
-        else progress.putExtra("finishText", "MiBand watchface has been uploaded successfully!");
-        LocalBroadcastManager.getInstance(xdrip.getAppContext()).sendBroadcast(progress);
+        String finishText;
+        if (!result)  finishText = "Error while uploading MiBand watchface";
+        else finishText ="MiBand watchface has been uploaded successfully!";
+        sendPrefIntent(MIBAND_INTEND_STATES.WATHCFACE_DIALOG_FINISH, 0, finishText);
 
         emptyQueue();
         if (subscription != null) {
@@ -838,10 +838,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                 sendFirmwareCommand(firmware.getFirmwareCharacteristicUUID(), new byte[]{OperationCodes.COMMAND_FIRMWARE_UPDATE_SYNC}, "Sync " + progressPercent + "%").setRunnable(new Runnable() {
                     @Override
                     public void run() {
-                        final Intent progress = new Intent(Intents.PREFERENCE_INTENT);
-                        progress.putExtra("state", "PROGRESS");
-                        progress.putExtra("progress", progressPercent);
-                        LocalBroadcastManager.getInstance(xdrip.getAppContext()).sendBroadcast(progress);
+                        sendPrefIntent(MIBAND_INTEND_STATES.UPDATE_PROGRESS, progressPercent, "");
                     }
                 }).send();
             }
@@ -852,10 +849,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
             sendFirmwareCommand(firmware.getFirmwareDataCharacteristicUUID(), fwChunk, "Last chunk").setRunnable(new Runnable() {
                 @Override
                 public void run() {
-                    final Intent progress = new Intent(Intents.PREFERENCE_INTENT);
-                    progress.putExtra("state", "PROGRESS");
-                    progress.putExtra("progress", progressPercent);
-                    LocalBroadcastManager.getInstance(xdrip.getAppContext()).sendBroadcast(progress);
+                    sendPrefIntent(MIBAND_INTEND_STATES.UPDATE_PROGRESS, progressPercent, "");
                 }
             }).send();
         }
@@ -983,6 +977,15 @@ public class MiBandService extends JamBaseBluetoothSequencer {
         return true; // lies
     }
 
+    private void sendPrefIntent(MIBAND_INTEND_STATES state, Integer progress, String descrText ){
+        final Intent progressIntent = new Intent(Intents.PREFERENCE_INTENT);
+        progressIntent.putExtra("state", state.name());
+        progressIntent.putExtra("progress", progress);
+        if (!descrText.isEmpty())
+            progressIntent.putExtra("descr_text", descrText);
+        LocalBroadcastManager.getInstance(xdrip.getAppContext()).sendBroadcast(progressIntent);
+    }
+
     private boolean shouldServiceRun() {
         return MiBandEntry.isEnabled();
     }
@@ -993,15 +996,12 @@ public class MiBandService extends JamBaseBluetoothSequencer {
             final long retry_in = whenToRetryNext();
             UserError.Log.d(TAG, "setRetryTimer: Restarting in: " + (retry_in / Constants.SECOND_IN_MS) + " seconds");
             I.serviceIntent = WakeLockTrampoline.getPendingIntent(this.getClass(), Constants.MIBAND_SERVICE_RETRY_ID);
-            //PendingIntent.getService(xdrip.getAppContext(), Constants.MiBand_SERVICE_RETRY_ID,
-            //        new Intent(xdrip.getAppContext(), this.getClass()), 0);
             I.retry_time = JoH.wakeUpIntent(xdrip.getAppContext(), retry_in, I.serviceIntent);
             I.wakeup_time = JoH.tsl() + retry_in;
         } else {
             UserError.Log.d(TAG, "Not setting retry timer as service should not be running");
         }
     }
-
 
     private long whenToRetryNext() {
         I.retry_backoff += Constants.SECOND_IN_MS;
