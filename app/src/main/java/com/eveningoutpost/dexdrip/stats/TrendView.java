@@ -14,6 +14,8 @@ import android.util.DisplayMetrics;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
+
+import android.util.SparseArray;
 import android.view.View;
 
 import com.eveningoutpost.dexdrip.R;
@@ -24,7 +26,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 /**
@@ -32,6 +37,7 @@ import java.util.Vector;
  */
 public class TrendView extends View {
 
+    private trendMap tMap = new trendMap();
     private CalculatedData calculatedData = null;
     private boolean ranteDataCalculating = false;
 
@@ -94,7 +100,8 @@ public class TrendView extends View {
         Log.d("DrawStats", "PercentileView - onDraw");
         super.onDraw(canvas);
 
-        CalculatedData rd = getMaybeCalculatedData();
+        generateTMap();
+        trendMap rd = tMap;
 
         if (rd == null) {
             Log.d("DrawStats", "PercentileView - onDraw if");
@@ -105,15 +112,34 @@ public class TrendView extends View {
             myPaint.setStyle(Paint.Style.STROKE);
             myPaint.setTextSize(dp2px(15));
             canvas.drawText("Calculating...", dp2px(30), canvas.getHeight() / 2, myPaint);
-        } else {
+        }
+        /*else if (rd.get(0) == null) {
+            Log.d("DrawStats", "PercentileView - onDraw if");
+
+            Paint myPaint = new Paint();
+            myPaint.setColor(Color.WHITE);
+            myPaint.setAntiAlias(true);
+            myPaint.setStyle(Paint.Style.STROKE);
+            myPaint.setTextSize(dp2px(15));
+            canvas.drawText("rd.get(0) null...", dp2px(30), canvas.getHeight() / 2, myPaint);
+        }*/
+        else {
             Log.d("DrawStats", "PercentileView - onDraw else");
             //drawPolygon(canvas, rd.q10, rd.q90, outerPaint);
             //drawPolygon(canvas, rd.q25, rd.q75, innerPaint);
             //drawPolygon(canvas, rd.q50, rd.q50, medianPaint);
 
+            int day = 1000 * 60 * 60 * 24;
+            int timeslot = day / NO_TIMESLOTS;
 
-            for (int count = 0; count < rd.q75.length; count++) {
-                canvas.drawText(Double.toString(rd.q75[count]), dpOffset + dp2px(50), dp2px(14) * count, outerPaintLabel);
+            //TODO: this breaks shit
+            for (int i = 0; i < NO_TIMESLOTS; i++) {
+                int slot = i * timeslot;
+                if (rd.get(slot) == null)
+                    canvas.drawText("Failed...", dpOffset + dp2px(50), dp2px(14) * i, outerPaintLabel);
+                else
+                    canvas.drawText(Double.toString(rd.get(slot).getHighPercent()), dpOffset + dp2px(50), dp2px(14) * i, outerPaintLabel);
+                //canvas.drawText("Testing...", dpOffset + dp2px(50), dp2px(14) * i, outerPaintLabel);
             }
             //canvas.drawText(rd.q10, dpOffset + dp2px(10), dp2px(14), outerPaintLabel);
 
@@ -260,19 +286,16 @@ public class TrendView extends View {
 
 
     //return either RangeData or start a calculation if not already started
-    public synchronized CalculatedData getMaybeCalculatedData() {
-        if (!ranteDataCalculating) {
-            ranteDataCalculating = true;
-            Thread thread = new Thread() {
-                @Override
-                public void run() {
-                    super.run();
+    public synchronized trendMap generateTMap() {
+//        if (!ranteDataCalculating) {
+//            ranteDataCalculating = true;
+//            Thread thread = new Thread() {
+//                @Override
+ //               public void run() {
+//                    super.run();
                     List<BgReadingStats> readings = DBSearchUtil.getReadings(false);
-                    List<BgReadingStats> trendFrag = new ArrayList<BgReadingStats>();
-                    List<trend> trendList = new ArrayList<trend>();
 
                     int day = 1000 * 60 * 60 * 24;
-
                     int timeslot = day / NO_TIMESLOTS;
 
                     Calendar date = new GregorianCalendar();
@@ -283,53 +306,25 @@ public class TrendView extends View {
 
                     final long offset = date.getTimeInMillis() % day;
 
-/*                    double[] q10 = new double[NO_TIMESLOTS];
-                    double[] q25 = new double[NO_TIMESLOTS];
-                    double[] q50 = new double[NO_TIMESLOTS];
-                    double[] q75 = new double[NO_TIMESLOTS];
-                    double[] q90 = new double[NO_TIMESLOTS];
-*/
-
-                    //i think this is a thing that iterates and collects timestamps based on NO_TIMESLOTS?
-                    //limits it to 48 per day currently?
-                    // OH IT MEANS NUMBER OF TIME SLOTS??
                     for (int i = 0; i < NO_TIMESLOTS; i++) {
                         int begin = i * timeslot;
                         int end = begin + timeslot;
-                        List<Double> filtered = new Vector<Double>();
-
+                        tMap.setSlot(begin);
+                        // goes through entire list of readings
+                        // adds value for each reading that is within timestamp start and end
                         for (BgReadingStats reading : readings) {
                             long timeOfDay = (reading.timestamp - offset) % day;
                             if (timeOfDay >= begin && timeOfDay < end) {
-                                filtered.add(reading.calculated_value);
+                                tMap.add(begin, reading);
                             }
                         }
-                        /*
-                        Collections.sort(filtered);
-                        if (filtered.size() > 0) {
-                            q10[i] = filtered.get((int) (filtered.size()  * 0.1));
-                            q25[i] = filtered.get((int) (filtered.size() * 0.25));
-                            q50[i] = filtered.get((int) (filtered.size() * 0.50));
-                            q75[i] = filtered.get((int) (filtered.size() * 0.75));
-                            q90[i] = filtered.get((int) (filtered.size() * 0.9));
-                        } */
-
-                    } /*
-                    CalculatedData cd = new CalculatedData();
-                    cd.q10 = q10;
-                    cd.q25 = q25;
-                    cd.q50 = q50;
-                    cd.q75 = q75;
-                    cd.q90 = q90;
-                    setCalculatedData(cd);
-
-                     */
-                }
-            };
-            thread.start();
-        }
+                    }
+                //}
+            //};
+            //thread.start();
+        //}
         //will return null if not precalculated
-        return calculatedData;
+        return tMap;
     }
 
     protected class CalculatedData {
@@ -340,14 +335,81 @@ public class TrendView extends View {
         public double[] q90;
     }
 
+    //TODO the trendmap needs an object backed by a list, this is currently big dumb
+    protected class trendMap {
+        private SparseArray<trendFrag> m_trendMap;
+        private int m_size = 0;
+        /*private double m_highCount = 0.0;
+        private double m_lowCount = 0.0;
+        private double m_goodCount = 0.0;
+        private double m_highAvg;
+        private double m_lowAvg;
+        private double m_goodAvg;
+        private double m_highTotal = 0.0;
+        private double m_lowTotal = 0.0;
+        private double m_goodTotal = 0.0;*/
+        //private boolean highTrend;
+
+        public trendMap() {
+            m_trendMap = new SparseArray<trendFrag>();
+        }
+
+        //TODO high/low variable
+        public void add(int slot, BgReadingStats reading) {
+            if (m_trendMap.get(slot) == null) {
+                trendFrag bgList = new trendFrag();
+                m_trendMap.append(slot, bgList);
+            }
+            m_trendMap.get(slot).add(reading);
+            m_size++;
+            /*if (reading.calculated_value >= 200) {
+                m_highCount++;
+                m_highTotal = m_highTotal + reading.calculated_value;
+                m_highAvg = m_highTotal / m_highCount;
+            }
+            else if (reading.calculated_value <= 80) {
+                m_lowCount++;
+                m_lowTotal = m_lowTotal + reading.calculated_value;
+                m_lowAvg = m_lowTotal / m_lowCount;
+            }
+            else {
+                m_goodCount++;
+                m_goodTotal = m_goodTotal + reading.calculated_value;
+                m_goodAvg = m_goodTotal / m_goodCount;
+            }*/
+        }
+
+        public void setSlot(int slot) {
+            trendFrag bgList = new trendFrag();
+            m_trendMap.append(slot, bgList);
+        }
+
+        public int size() { return m_size; }
+        public trendFrag get(int slot) { return m_trendMap.get(slot); }
+        /*public double getHigh() { return m_highAvg; }
+        public double getLow() { return m_lowAvg; }
+        public double getGood() { return m_goodAvg; }*/
+    }
 
     protected class trendFrag {
         private List<BgReadingStats> fragment;
-        private boolean highTrend;
+        private double m_highCount = 0.0;
+        private double m_lowCount = 0.0;
+        private double m_goodCount = 0.0;
+        private double m_highAvg;
+        private double m_lowAvg;
+        private double m_goodAvg;
+        private double m_highTotal = 0.0;
+        private double m_lowTotal = 0.0;
+        private double m_goodTotal = 0.0;
+        private double m_highPercent = 0.0;
+        private double m_lowPercent = 0.0;
+        private double m_goodPercent = 0.0;
+        //private boolean highTrend;
 
-        public trendFrag(boolean high) {
+        public trendFrag() {
             fragment = new ArrayList<BgReadingStats>();
-            highTrend = high;
+            //highTrend = high;
         }
 
         /* this is some lazy shit, but might be useful later if i give up
@@ -355,19 +417,46 @@ public class TrendView extends View {
             return fragment;
         } */
 
-        public BgReadingStats get(int i) {
+        /*public BgReadingStats get(int i) {
             return fragment.get(i);
-        }
+        }*/
 
-        public int size() {
-            return fragment.size();
-        }
-
-        public void addReading(BgReadingStats reading) {
+        public void add(BgReadingStats reading) {
             fragment.add(reading);
+
+            if (reading.calculated_value >= 200) {
+                m_highCount++;
+                m_highTotal = m_highTotal + reading.calculated_value;
+                m_highAvg = m_highTotal / m_highCount;
+            }
+            else if (reading.calculated_value <= 80) {
+                m_lowCount++;
+                m_lowTotal = m_lowTotal + reading.calculated_value;
+                m_lowAvg = m_lowTotal / m_lowCount;
+            }
+            else {
+                m_goodCount++;
+                m_goodTotal = m_goodTotal + reading.calculated_value;
+                m_goodAvg = m_goodTotal / m_goodCount;
+            }
+            percentage();
         }
 
-        public double getPeak() {
+        private void percentage() {
+            m_highPercent = (m_highTotal / size()) * 100;
+            m_lowPercent = (m_lowTotal / size()) * 100;
+            m_goodPercent = (m_goodTotal / size()) * 100;
+        }
+
+        public int size() { return fragment.size(); }
+        public double getHigh() { return m_highAvg; }
+        public double getLow() { return m_lowAvg; }
+        public double getGood() { return m_goodAvg; }
+        public double getHighPercent() { return m_highPercent; }
+        public double getLowPercent() { return m_lowPercent; }
+        public double getGoodPercent() { return m_goodPercent; }
+
+        /* public double getPeak() {
             double peak = fragment.get(0).calculated_value;
 
             for (BgReadingStats reading : fragment) {
@@ -383,16 +472,15 @@ public class TrendView extends View {
                 }
             }
             return peak;
-        }
+        } */
     }
-    protected class trend {
+
+    /*protected class trend {
         private List<trendFrag> trendFragList;
         private long firstTimestamp;
         private long lastTimestamp;
         private double peakReading;
         private boolean highTrend;
-
-        private double pRead;
 
         public trend(boolean high) {
             trendFragList = new ArrayList<trendFrag>();
@@ -435,5 +523,5 @@ public class TrendView extends View {
         public boolean isHighTrend() {
             return highTrend;
         }
-    }
+    }*/
 }
