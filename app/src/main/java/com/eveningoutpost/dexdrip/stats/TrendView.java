@@ -31,6 +31,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import java.text.DecimalFormat;
 
 /**
  * Created by adrian on 30/06/15.
@@ -38,6 +39,7 @@ import java.util.Vector;
 public class TrendView extends View {
 
     private trendMap tMap = new trendMap();
+    final DecimalFormat df = new DecimalFormat("#0.00");
     private CalculatedData calculatedData = null;
     private boolean ranteDataCalculating = false;
 
@@ -138,7 +140,7 @@ public class TrendView extends View {
                 if (rd.get(slot) == null)
                     canvas.drawText("Failed...", dpOffset + dp2px(50), dp2px(14) * i, outerPaintLabel);
                 else
-                    canvas.drawText(Double.toString(rd.get(slot).getHighPercent()), dpOffset + dp2px(50), dp2px(14) * i, outerPaintLabel);
+                    canvas.drawText(Integer.toString(i) + ": High: " + df.format(rd.get(slot).getHighPercent()) + " Good: " + df.format(rd.get(slot).getGoodPercent()) + " Low: " + df.format(rd.get(slot).getLowPercent()), 0, dp2px(14) + (dp2px(14) * i), outerPaintLabel);
                 //canvas.drawText("Testing...", dpOffset + dp2px(50), dp2px(14) * i, outerPaintLabel);
             }
             //canvas.drawText(rd.q10, dpOffset + dp2px(10), dp2px(14), outerPaintLabel);
@@ -443,9 +445,9 @@ public class TrendView extends View {
         }
 
         private void percentage() {
-            m_highPercent = (m_highTotal / size()) * 100;
-            m_lowPercent = (m_lowTotal / size()) * 100;
-            m_goodPercent = (m_goodTotal / size()) * 100;
+            m_highPercent = (m_highCount / size()) * 100;
+            m_lowPercent = (m_lowCount / size()) * 100;
+            m_goodPercent = (m_goodCount / size()) * 100;
         }
 
         public int size() { return fragment.size(); }
