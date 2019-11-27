@@ -1205,8 +1205,8 @@
     <string name="title_warn_nightscout_failures">Alert on failures</string>
     <string name="summary_nightscout_device_append_source_info">For G5, sends collector type (e.g. OB1) and reading backfill status (for native) to Nightscout.</string>
     <string name="title_nightscout_device_append_source_info">Append source info to device name</string>
-    <string name="summary_upload_modified_bgreadings">When readings are updated due to a calibration, this will queue them for upload to Nightscout</string>
-    <string name="title_upload_modified_bgreadings">Upload modified readings</string>
+    <string name="summary_upload_adjusted_bgreadings">When readings are updated due to a calibration, this will queue them for upload to Nightscout</string>
+    <string name="title_upload_adjusted_bgreadings">Upload adjusted readings</string>
     <string name="summary_tap_to_send_historical_data">Tap to send historical data to Nightscout</string>
     <string name="title_back_fill_data">Back-fill data</string>
     <string name="summary_tidepool_upload_screen">Upload data to the Tidepool service</string>

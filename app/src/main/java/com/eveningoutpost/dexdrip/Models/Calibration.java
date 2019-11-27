@@ -908,9 +908,10 @@ public class Calibration extends Model {
             try {
                 final Calibration latestCalibration = Calibration.lastValid();
                 int i = 0;
-                boolean uploadModified = Pref.getBoolean("upload_modified_bgreadings", false);
-                if (uploadModified) {
-                    Log.v(TAG, "Modified readings will be uploaded to NS");
+                boolean syncAdjustedReadings = false;
+                boolean uploadAdjusted = Pref.getBoolean("upload_modified_bgreadings", false);
+                if (uploadAdjusted) {
+                    Log.v(TAG, "Adjusted readings will be uploaded to NS");
                 }
                 for (BgReading bgReading : bgReadings) {
                     if (bgReading.calibration != null) {
@@ -927,14 +928,17 @@ public class Calibration extends Model {
 
                         bgReading.save();
                         BgReading.pushBgReadingSyncToWatch(bgReading, false);
-                        if (uploadModified) {
+                        if (uploadAdjusted) {
                             UploaderQueue.newEntry("update", bgReading);
-                            SyncService.startSyncService(3000); // sync in 3 seconds
+                            syncAdjustedReadings = true;
                         }
                         i += 1;
                     } else {
                         Log.d(TAG, "History Rewrite: Ignoring BgReading without calibration from: " + JoH.dateTimeText(bgReading.timestamp));
                     }
+                }
+                if (syncAdjustedReadings) {
+                    SyncService.startSyncService(3000); // sync in 3 seconds
                 }
             } catch (NullPointerException e) {
                 Log.wtf(TAG, "Null pointer in AdjustRecentReadings >=3: " + e);
