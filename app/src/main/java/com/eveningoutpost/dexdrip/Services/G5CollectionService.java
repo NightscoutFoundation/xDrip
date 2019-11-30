@@ -976,7 +976,7 @@ public class G5CollectionService extends G5BaseService {
             waitFor(600);
             Log.e(TAG, "connectGatt() delay completed");
         }
-        mGatt = mDevice.connectGatt(getApplicationContext(), false, gattCallback);
+        mGatt = mDevice.connectGatt(getApplicationContext(), true, gattCallback);
     }
 
 

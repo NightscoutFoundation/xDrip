@@ -418,7 +418,7 @@ public class DexShareCollectionService extends Service {
                 Log.v(TAG, "Device found, already bonded, going to connect");
                if(mBluetoothAdapter.getRemoteDevice(bluetoothDevice.getAddress()) != null) {
                    device = bluetoothDevice;
-                   mBluetoothGatt = device.connectGatt(getApplicationContext(), false, mGattCallback);
+                   mBluetoothGatt = device.connectGatt(getApplicationContext(), true, mGattCallback);
                    return true;
                }
             }
@@ -430,7 +430,7 @@ public class DexShareCollectionService extends Service {
             return false;
         }
         Log.i(TAG, "Trying to create a new connection.");
-        mBluetoothGatt = device.connectGatt(getApplicationContext(), false, mGattCallback);
+        mBluetoothGatt = device.connectGatt(getApplicationContext(), true, mGattCallback);
         mConnectionState = STATE_CONNECTING;
         return true;
     }
