@@ -285,6 +285,7 @@ public class TrendView extends View {
         for (int i = 0; i < trendList.size(); i++) {
             t = trendList.get(i);
             // make milliseconds hours
+            //TODO format into time, i.e. 1:30, not 1.50
             start = (((t.getBegin() / 1000.0) / 60.0) / 60.0);
             end = (((t.getEnd() / 1000.0) / 60.0) / 60.0);
             if (t.isHigh())

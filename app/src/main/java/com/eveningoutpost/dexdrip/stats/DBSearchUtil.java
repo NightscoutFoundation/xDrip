@@ -211,6 +211,9 @@ public class DBSearchUtil {
                 case StatsActivity.D7:
                     start = getXDaysTimestamp(7);
                     break;
+                case StatsActivity.D14:
+                    start = getXDaysTimestamp(14);
+                    break;
                 case StatsActivity.D30:
                     start = getXDaysTimestamp(30);
                     break;

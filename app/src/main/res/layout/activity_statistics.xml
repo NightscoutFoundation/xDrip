@@ -60,6 +60,18 @@
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="14d"
+                android:id="@+id/button_stats_14d"
+                android:layout_marginTop="1dp"
+                android:layout_marginBottom="1dp"
+                android:paddingTop="1dp"
+                android:paddingBottom="1dp"
+                android:minHeight="1dp"
+                android:minWidth="1dp"/>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:text="30d"
                 android:id="@+id/button_stats_30d"
                 android:layout_marginTop="1dp"

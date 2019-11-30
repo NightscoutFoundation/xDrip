@@ -46,8 +46,9 @@ public class StatsActivity extends ActivityWithMenu {
     public static final int TODAY = 0;
     public static final int YESTERDAY = 1;
     public static final int D7 = 2;
-    public static final int D30 = 3;
-    public static final int D90 = 4;
+    public static final int D14 = 3;
+    public static final int D30 = 4;
+    public static final int D90 = 5;
     public static int state = D7;
     private static boolean swipeInfoNotNeeded = false; // don't show info if already swiped after startup.
     StatisticsPageAdapter mStatisticsPageAdapter;
@@ -56,6 +57,7 @@ public class StatsActivity extends ActivityWithMenu {
     private Button buttonTD;
     private Button buttonYTD;
     private Button button7d;
+    private Button button14d;
     private Button button30d;
     private Button button90d;
     MenuItem menuItem;
@@ -137,6 +139,7 @@ public class StatsActivity extends ActivityWithMenu {
         buttonTD = (Button) findViewById(R.id.button_stats_today);
         buttonYTD = (Button) findViewById(R.id.button_stats_yesterday);
         button7d = (Button) findViewById(R.id.button_stats_7d);
+        button14d = (Button) findViewById(R.id.button_stats_14d);
         button30d = (Button) findViewById(R.id.button_stats_30d);
         button90d = (Button) findViewById(R.id.button_stats_90d);
     }
@@ -197,6 +200,9 @@ public class StatsActivity extends ActivityWithMenu {
             case D7:
                 stateString = "7 days";
                 break;
+            case D14:
+                stateString = "14 days";
+                break;
             case D30:
                 stateString = "30 days";
                 break;
@@ -210,6 +216,7 @@ public class StatsActivity extends ActivityWithMenu {
             buttonTD.setBackgroundTintList(csl);
             buttonYTD.setBackgroundTintList(csl);
             button7d.setBackgroundTintList(csl);
+            button14d.setBackgroundTintList(csl);
             button30d.setBackgroundTintList(csl);
             button90d.setBackgroundTintList(csl);
             csl = new ColorStateList(new int[][]{new int[0]}, new int[]{0xFFAA0000});
@@ -223,6 +230,9 @@ public class StatsActivity extends ActivityWithMenu {
                 case D7:
                     button7d.setBackgroundTintList(csl);
                     break;
+                case D14:
+                    button14d.setBackgroundTintList(csl);
+                    break;
                 case D30:
                     button30d.setBackgroundTintList(csl);
                     break;
@@ -235,6 +245,7 @@ public class StatsActivity extends ActivityWithMenu {
             buttonTD.setAlpha(0.5f);
             buttonYTD.setAlpha(0.5f);
             button7d.setAlpha(0.5f);
+            button14d.setAlpha(0.5f);
             button30d.setAlpha(0.5f);
             button90d.setAlpha(0.5f);
             switch (state) {
@@ -246,6 +257,9 @@ public class StatsActivity extends ActivityWithMenu {
                     break;
                 case D7:
                     button7d.setAlpha(1f);
+                    break;
+                case D14:
+                    button14d.setAlpha(1f);
                     break;
                 case D30:
                     button30d.setAlpha(1f);
@@ -384,6 +398,8 @@ public class StatsActivity extends ActivityWithMenu {
                     state = YESTERDAY;
                 } else if (v == button7d) {
                     state = D7;
+                } else if (v == button14d) {
+                    state = D14;
                 } else if (v == button30d) {
                     state = D30;
                 } else if (v == button90d) {
@@ -400,6 +416,7 @@ public class StatsActivity extends ActivityWithMenu {
         buttonTD.setOnClickListener(myListener);
         buttonYTD.setOnClickListener(myListener);
         button7d.setOnClickListener(myListener);
+        button14d.setOnClickListener(myListener);
         button30d.setOnClickListener(myListener);
         button90d.setOnClickListener(myListener);
 
