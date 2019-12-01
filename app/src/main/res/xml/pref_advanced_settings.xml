@@ -529,8 +529,6 @@
                 android:defaultValue="false"
                 android:key="miband_enabled"
                 android:summary="@string/summary_miband_enable"
-                android:switchTextOff="@string/short_off_text_for_switches"
-                android:switchTextOn="@string/short_on_text_for_switches"
                 android:title="@string/title_miband_enable" />
             <EditTextPreference
                 android:key="miband_mac"
@@ -548,6 +546,12 @@
                 android:key="miband_send_readings"
                 android:summary="@string/summary_lefun_send_readings"
                 android:title="@string/title_lefun_send_readings" />
+            <SwitchPreference
+                android:defaultValue="true"
+                android:dependency="miband_send_readings"
+                android:key="miband_send_readings_as_notification"
+                android:summary="@string/summary_miband_send_readings_as_notification"
+                android:title="@string/title_miband_send_readings_as_notification" />
             <SwitchPreference
                 android:defaultValue="true"
                 android:dependency="miband_send_readings"
