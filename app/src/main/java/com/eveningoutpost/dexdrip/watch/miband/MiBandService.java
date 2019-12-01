@@ -410,41 +410,42 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                 });
     }
 
-    private void sendBG() {
+    private Boolean sendBG() {
         final BgReading last = BgReading.last();
-        if (MiBand.getMibandType() == MI_BAND2) {
-            AlertMessage message = new AlertMessage();
+            if (MiBand.getMibandType() == MI_BAND2 || MiBandEntry.isNeedSendReadingAsNotification()) {
+                AlertMessage message = new AlertMessage();
 
-            if (last == null || last.isStale()) {
-                return;
+                if (last == null || last.isStale()) {
+                    return false;
+                } else {
+                    String messageText = "BG: " + last.displayValue(null) + " " + last.displaySlopeArrow();
+                    new QueueMe()
+                            .setBytes(message.getAlertMessageTitle(messageText.toUpperCase(), AlertMessage.AlertCategory.SMS_MMS))
+                            .setDescription("Send alert msg: " + messageText)
+                            .setQueueWriteCharacterstic(message.getCharacteristicUUID())
+                            .expireInSeconds(60)
+                            .setDelayMs(QUEUE_DELAY)
+                            .queue();
+                }
             } else {
-                String messageText = "BG: " + last.displayValue(null) + " " + last.displaySlopeArrow();
+                FunAlmanac.Reply rep;
+                if (last == null || last.isStale()) {
+                    rep = FunAlmanac.getRepresentation(0, "Flat");
+                } else {
+                    final double mmol_value = roundDouble(mmolConvert(last.getDg_mgdl()), 1);
+
+                    rep = FunAlmanac.getRepresentation(mmol_value, last.slopeName());
+                }
+                TimeMessage message = new TimeMessage();
                 new QueueMe()
-                        .setBytes(message.getAlertMessageTitle(messageText.toUpperCase(), AlertMessage.AlertCategory.SMS_MMS))
-                        .setDescription("Send alert msg: " + messageText)
+                        .setBytes(message.getTimeMessage(rep.timestamp))
+                        .setDescription("Send time representation for: " + rep.input)
                         .setQueueWriteCharacterstic(message.getCharacteristicUUID())
-                        .expireInSeconds(60)
-                        .setDelayMs(QUEUE_DELAY)
+                        .expireInSeconds(QUEUE_EXPIRED_TIME)
+                        .setDelayMs(50)
                         .queue();
             }
-        } else {
-            FunAlmanac.Reply rep;
-            if (last == null || last.isStale()) {
-                rep = FunAlmanac.getRepresentation(0, "Flat");
-            } else {
-                final double mmol_value = roundDouble(mmolConvert(last.getDg_mgdl()), 1);
-
-                rep = FunAlmanac.getRepresentation(mmol_value, last.slopeName());
-            }
-            TimeMessage message = new TimeMessage();
-            new QueueMe()
-                    .setBytes(message.getTimeMessage(rep.timestamp))
-                    .setDescription("Send time representation for: " + rep.input)
-                    .setQueueWriteCharacterstic(message.getCharacteristicUUID())
-                    .expireInSeconds(QUEUE_EXPIRED_TIME)
-                    .setDelayMs(50)
-                    .queue();
-        }
+        return true;
     }
 
     private void vibrateAlert(AlertLevelMessage.AlertLevelType level) {
@@ -808,8 +809,10 @@ public class MiBandService extends JamBaseBluetoothSequencer {
 
     private void resetFirmwareState(Boolean result) {
         String finishText;
-        if (!result) finishText = xdrip.getAppContext().getResources().getString(R.string.miband_watchface_istall_error);
-        else finishText = xdrip.getAppContext().getResources().getString(R.string.miband_watchface_istall_success);
+        if (!result)
+            finishText = xdrip.getAppContext().getResources().getString(R.string.miband_watchface_istall_error);
+        else
+            finishText = xdrip.getAppContext().getResources().getString(R.string.miband_watchface_istall_success);
         sendPrefIntent(MIBAND_INTEND_STATES.WATHCFACE_DIALOG_FINISH, 0, finishText);
 
         emptyQueue();
@@ -954,8 +957,11 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                         changeNextState();
                         break;
                     }
-                    sendBG();
-                    if (MiBandEntry.isVibrateOnReadings() &&  (MiBand.getMibandType() != MI_BAND2))
+                    Boolean result = sendBG();
+                    if (result
+                            && MiBandEntry.isVibrateOnReadings()
+                            && (MiBand.getMibandType() != MI_BAND2)
+                            && !MiBandEntry.isNeedSendReadingAsNotification())
                         vibrateAlert(AlertLevelMessage.AlertLevelType.VibrateAlert);
                     startBgTimer();
                     changeNextState();
@@ -977,7 +983,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
         return true; // lies
     }
 
-    private void sendPrefIntent(MIBAND_INTEND_STATES state, Integer progress, String descrText ){
+    private void sendPrefIntent(MIBAND_INTEND_STATES state, Integer progress, String descrText) {
         final Intent progressIntent = new Intent(Intents.PREFERENCE_INTENT);
         progressIntent.putExtra("state", state.name());
         progressIntent.putExtra("progress", progress);
