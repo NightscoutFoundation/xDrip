@@ -29,7 +29,7 @@ public class TrendView extends View {
 
     public static final int OFFSET = 30;
     public static final int NO_TIMESLOTS = 48;
-    private final double TREND_TOL = 50.0;
+    private final double TREND_TOL = 40.0;
     private final double HIGH_TOL = 230.0;
     private final double LOW_TOL = 80.0;
     //private Paint outerPaint, outerPaintLabel, innerPaint, innerPaintLabel, medianPaint, medianPaintLabel, defaultTextPaint;
@@ -87,7 +87,7 @@ public class TrendView extends View {
         defaultTextPaint.setColor(Color.WHITE);
         defaultTextPaint.setAntiAlias(true);
         defaultTextPaint.setStyle(Paint.Style.STROKE);
-        defaultTextPaint.setTextSize(dp2px(15));
+        defaultTextPaint.setTextSize(dp2px(24));
 
     }
 
@@ -141,12 +141,12 @@ public class TrendView extends View {
             t = trendList.get(i);
             // make milliseconds hours
             //TODO format into time, i.e. 1:30, not 1.50
-            start = (((t.getBegin() / 1000.0) / 60.0) / 60.0);
-            end = (((t.getEnd() / 1000.0) / 60.0) / 60.0);
+            //start = (((t.getBegin() / 1000.0) / 60.0) / 60.0);
+            //end = (((t.getEnd() / 1000.0) / 60.0) / 60.0);
             if (t.isHigh())
-                canvas.drawText(df.format(start) + " - " + df.format(end) + ": Trending High.", 0, dp2px(14) + (dp2px(14) * i), defaultTextPaint);
+                canvas.drawText(t.getBegin() + " - " + t.getEnd() + ": Trending High.", dp2px(14), dp2px(24) + (dp2px(24) * i), defaultTextPaint);
             else if (!t.isHigh())
-                canvas.drawText(df.format(start) + " - " + df.format(end) + ": Trending Low.", 0, dp2px(14) + (dp2px(14) * i), defaultTextPaint);
+                canvas.drawText(t.getBegin() + " - " + t.getEnd() + ": Trending Low.", dp2px(14), dp2px(24) + (dp2px(24) * i), defaultTextPaint);
         }
     }
 
@@ -187,7 +187,6 @@ public class TrendView extends View {
             m_trendMap = new SparseArray<trendFrag>();
         }
 
-        //TODO high/low variable
         public void add(int slot, BgReadingStats reading) {
             if (m_trendMap.get(slot) == null) {
                 trendFrag bgList = new trendFrag();
@@ -350,8 +349,26 @@ public class TrendView extends View {
 
         public void setEnd(int slot) { end = slot; }
 
-        public int getBegin() { return begin; }
-        public long getEnd() { return end; }
+        public String getBegin() {
+            //long millis = durationInMillis % 1000;
+            //long second = (durationInMillis / 1000) % 60;
+            int minute = (begin / (1000 * 60)) % 60;
+            int hour = (begin / (1000 * 60 * 60)) % 24;
+
+            String time = String.format("%02d:%02d", hour, minute);
+
+            return time;
+        }
+
+        public String getEnd() {
+            int minute = (end / (1000 * 60)) % 60;
+            int hour = (end / (1000 * 60 * 60)) % 24;
+
+            String time = String.format("%02d:%02d", hour, minute);
+
+            return time;
+        }
+
         public boolean isHigh() { return high; }
     }
 }
