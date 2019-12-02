@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.support.annotation.NonNull;
 import android.util.DisplayMetrics;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
@@ -15,9 +16,12 @@ import android.view.View;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.GregorianCalendar;
+import java.util.Iterator;
 import java.util.List;
 import java.text.DecimalFormat;
+import java.util.ListIterator;
 
 /**
  * Created by Sean Curtis on 12/4/19.
@@ -29,7 +33,7 @@ public class TrendView extends View {
 
     public static final int OFFSET = 30;
     public static final int NO_TIMESLOTS = 48;
-    private final double TREND_TOL = 30.0;
+    private final double TREND_TOL = 35.0;
     private final double HIGH_TOL = 230.0;
     private final double LOW_TOL = 80.0;
     //private Paint outerPaint, outerPaintLabel, innerPaint, innerPaintLabel, medianPaint, medianPaintLabel, defaultTextPaint;
@@ -149,17 +153,14 @@ public class TrendView extends View {
         for (int i = 0; i < trendList.size(); i++) {
             t = trendList.get(i);
             x = 0;
-            // make milliseconds hours
-            //TODO format into time, i.e. 1:30, not 1.50
-            //start = (((t.getBegin() / 1000.0) / 60.0) / 60.0);
-            //end = (((t.getEnd() / 1000.0) / 60.0) / 60.0);
+
             if (t.isHigh()) {
                 canvas.drawText(t.getBegin() + " - " + t.getEnd() + ": Trending High.", dp2px(14), dp2px(24) + (dp2px(24) * y), defaultTextPaint);
                 y++;
                 for (int a = 0; a < t.size(); a++) {
-                    if (a == 6) { y++; x = 0; }
+                    if (a == 3) { y++; x = 0; }
                     tf = t.get(a);
-                    canvas.drawText( df.format(tf.getHighPercent()) + "% ", dp2px(62) * x + dp2px(14), dp2px(24) + (dp2px(24) * y), smallTextPaint);
+                    canvas.drawText(a + ": " + df.format(tf.getHighPercent()) + "% ", dp2px(124) * x + dp2px(14), dp2px(24) + (dp2px(24) * y), smallTextPaint);
                     x++;
                 }
             }
@@ -226,6 +227,7 @@ public class TrendView extends View {
             int key;
             boolean cur = false;
             trend t = new trend(true, 0);
+            List<Integer> sl = new ArrayList<Integer>();
 
             //first loop to check for high trends
             //high and low loops are separate in case of overlap.
@@ -237,11 +239,15 @@ public class TrendView extends View {
                     if (!cur) {
                         cur = true;
                         t = new trend(true, key);
+                        sl = new ArrayList<Integer>();
                     }
+                    //t.add(key, tFrag);
                     t.add(tFrag);
+                    sl.add(key);
                     if (i == m_trendMap.size() - 1) {
                         t.setEnd(key);
                         //t.setEnd(m_trendMap.keyAt(i + 1));
+                        t.setSlotList(sl);
                         tList.add(t);
                         cur = false;
                     }
@@ -249,6 +255,7 @@ public class TrendView extends View {
                 else if (cur) {
                     //t.setEnd(key);
                     t.setEnd(m_trendMap.keyAt(i + 1));
+                    t.setSlotList(sl);
                     tList.add(t);
                     cur = false;
                 }
@@ -262,11 +269,14 @@ public class TrendView extends View {
                     if (!cur) {
                         cur = true;
                         t = new trend(false, key);
+                        sl = new ArrayList<Integer>();
                     }
+                    //t.add(key, tFrag);
                     t.add(tFrag);
                     if (i == m_trendMap.size() - 1) {
                         t.setEnd(key);
                         //t.setEnd(m_trendMap.keyAt(i + 1));
+                        t.setSlotList(sl);
                         tList.add(t);
                         cur = false;
                     }
@@ -274,6 +284,7 @@ public class TrendView extends View {
                 else if (cur) {
                     //t.setEnd(key);
                     t.setEnd(m_trendMap.keyAt(i + 1));
+                    t.setSlotList(sl);
                     tList.add(t);
                     cur = false;
                 }
@@ -358,18 +369,28 @@ public class TrendView extends View {
 
     protected class trend {
         private List<trendFrag> trendFragList;
+        private List<Integer> slotList;
         private int begin;
         private int end;
         private boolean high;
 
         public trend(boolean h, int slot) {
             trendFragList = new ArrayList<trendFrag>();
+            //slotList = new ArrayList<Integer>();
             begin = slot;
+            //trendFragList.add(slot, tMap.get(slot));
             trendFragList.add(tMap.get(slot));
             high = h;
         }
 
-        public void add(trendFrag t) { trendFragList.add(t); }
+        public void add(trendFrag t) {
+            trendFragList.add(t);
+            //slotList.add(slot);
+        }
+
+        public void setSlotList(List<Integer> sl) {
+            slotList = sl;
+        }
 
         public void setEnd(int slot) { end = slot; }
 
@@ -394,6 +415,16 @@ public class TrendView extends View {
         }
 
         public trendFrag get(int i) { return trendFragList.get(i); }
+
+        /*public String getSlot(int i) {
+            int minute = (slotList.get(i) / (1000 * 60)) % 60;
+            int hour = (slotList.get(i) / (1000 * 60 * 60)) % 24;
+
+            //String time = String.format("%02d:%02d", hour, minute);
+
+            return time;
+        }*/
+
         public int size() { return trendFragList.size(); }
         public boolean isHigh() { return high; }
     }
