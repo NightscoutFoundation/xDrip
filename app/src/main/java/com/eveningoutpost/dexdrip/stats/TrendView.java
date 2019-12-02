@@ -29,11 +29,11 @@ public class TrendView extends View {
 
     public static final int OFFSET = 30;
     public static final int NO_TIMESLOTS = 48;
-    private final double TREND_TOL = 40.0;
+    private final double TREND_TOL = 30.0;
     private final double HIGH_TOL = 230.0;
     private final double LOW_TOL = 80.0;
     //private Paint outerPaint, outerPaintLabel, innerPaint, innerPaintLabel, medianPaint, medianPaintLabel, defaultTextPaint;
-    private Paint defaultTextPaint;
+    private Paint defaultTextPaint, smallTextPaint;
     private Resources resources;
     private int dpOffset;
 
@@ -89,6 +89,12 @@ public class TrendView extends View {
         defaultTextPaint.setStyle(Paint.Style.STROKE);
         defaultTextPaint.setTextSize(dp2px(24));
 
+        smallTextPaint = new Paint();
+        smallTextPaint.setColor(Color.WHITE);
+        smallTextPaint.setAntiAlias(true);
+        smallTextPaint.setStyle(Paint.Style.STROKE);
+        smallTextPaint.setTextSize(dp2px(14));
+
     }
 
     @Override
@@ -137,16 +143,30 @@ public class TrendView extends View {
         double end;
         boolean half = false;
         trend t;
+        trendFrag tf;
+        int y = 0;
+        int x = 0;
         for (int i = 0; i < trendList.size(); i++) {
             t = trendList.get(i);
+            x = 0;
             // make milliseconds hours
             //TODO format into time, i.e. 1:30, not 1.50
             //start = (((t.getBegin() / 1000.0) / 60.0) / 60.0);
             //end = (((t.getEnd() / 1000.0) / 60.0) / 60.0);
-            if (t.isHigh())
-                canvas.drawText(t.getBegin() + " - " + t.getEnd() + ": Trending High.", dp2px(14), dp2px(24) + (dp2px(24) * i), defaultTextPaint);
-            else if (!t.isHigh())
-                canvas.drawText(t.getBegin() + " - " + t.getEnd() + ": Trending Low.", dp2px(14), dp2px(24) + (dp2px(24) * i), defaultTextPaint);
+            if (t.isHigh()) {
+                canvas.drawText(t.getBegin() + " - " + t.getEnd() + ": Trending High.", dp2px(14), dp2px(24) + (dp2px(24) * y), defaultTextPaint);
+                y++;
+                for (int a = 0; a < t.size(); a++) {
+                    if (a == 6) { y++; x = 0; }
+                    tf = t.get(a);
+                    canvas.drawText( df.format(tf.getHighPercent()) + "% ", dp2px(62) * x + dp2px(14), dp2px(24) + (dp2px(24) * y), smallTextPaint);
+                    x++;
+                }
+            }
+            else if (!t.isHigh()) {
+                canvas.drawText(t.getBegin() + " - " + t.getEnd() + ": Trending Low.", dp2px(14), dp2px(24) + (dp2px(24) * y), defaultTextPaint);
+            }
+            y+=2;
         }
     }
 
@@ -221,12 +241,14 @@ public class TrendView extends View {
                     t.add(tFrag);
                     if (i == m_trendMap.size() - 1) {
                         t.setEnd(key);
+                        //t.setEnd(m_trendMap.keyAt(i + 1));
                         tList.add(t);
                         cur = false;
                     }
                 }
                 else if (cur) {
-                    t.setEnd(key);
+                    //t.setEnd(key);
+                    t.setEnd(m_trendMap.keyAt(i + 1));
                     tList.add(t);
                     cur = false;
                 }
@@ -244,12 +266,14 @@ public class TrendView extends View {
                     t.add(tFrag);
                     if (i == m_trendMap.size() - 1) {
                         t.setEnd(key);
+                        //t.setEnd(m_trendMap.keyAt(i + 1));
                         tList.add(t);
                         cur = false;
                     }
                 }
                 else if (cur) {
-                    t.setEnd(key);
+                    //t.setEnd(key);
+                    t.setEnd(m_trendMap.keyAt(i + 1));
                     tList.add(t);
                     cur = false;
                 }
@@ -369,6 +393,8 @@ public class TrendView extends View {
             return time;
         }
 
+        public trendFrag get(int i) { return trendFragList.get(i); }
+        public int size() { return trendFragList.size(); }
         public boolean isHigh() { return high; }
     }
 }
