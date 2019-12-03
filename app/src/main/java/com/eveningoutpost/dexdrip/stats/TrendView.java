@@ -36,56 +36,14 @@ public class TrendView extends View {
     private final double TREND_TOL = 35.0;
     private final double HIGH_TOL = 230.0;
     private final double LOW_TOL = 80.0;
-    //private Paint outerPaint, outerPaintLabel, innerPaint, innerPaintLabel, medianPaint, medianPaintLabel, defaultTextPaint;
     private Paint defaultTextPaint, smallTextPaint;
     private Resources resources;
     private int dpOffset;
-
 
     public TrendView(Context context) {
         super(context);
         resources = context.getResources();
         dpOffset = dp2px(OFFSET);
-
-        float textSize = dp2px(14);
-        /* outerPaint = new Paint();
-        outerPaint.setColor(resources.getColor(R.color.percentile_outer));
-        outerPaint.setStyle(Paint.Style.FILL_AND_STROKE);
-        outerPaint.setPathEffect(new CornerPathEffect(dp2px(10)));
-        outerPaint.setStrokeWidth(dp2px(1));
-
-
-        outerPaintLabel = new Paint();
-        outerPaintLabel.setColor(resources.getColor(R.color.percentile_outer));
-        outerPaintLabel.setStyle(Paint.Style.FILL_AND_STROKE);
-        outerPaintLabel.setPathEffect(new CornerPathEffect(dp2px(10)));
-        outerPaintLabel.setTextSize(textSize);
-
-        innerPaint = new Paint();
-        innerPaint.setColor(resources.getColor(R.color.percentile_inner));
-        innerPaint.setStyle(Paint.Style.FILL_AND_STROKE);
-        innerPaint.setPathEffect(new CornerPathEffect(dp2px(10)));
-        innerPaint.setStrokeWidth(dp2px(1));
-
-        innerPaintLabel = new Paint();
-        innerPaintLabel.setColor(resources.getColor(R.color.percentile_inner));
-        innerPaintLabel.setStyle(Paint.Style.FILL_AND_STROKE);
-        innerPaintLabel.setPathEffect(new CornerPathEffect(dp2px(10)));
-        innerPaintLabel.setTextSize(textSize);
-
-
-        medianPaint = new Paint();
-        medianPaint.setColor(resources.getColor(R.color.percentile_median));
-        medianPaint.setStyle(Paint.Style.STROKE);
-        medianPaint.setPathEffect(new CornerPathEffect(dp2px(10)));
-        medianPaint.setStrokeWidth(dp2px(1));
-
-
-        medianPaintLabel = new Paint();
-        medianPaintLabel.setColor(resources.getColor(R.color.percentile_median));
-        medianPaintLabel.setStyle(Paint.Style.STROKE);
-        medianPaintLabel.setPathEffect(new CornerPathEffect(dp2px(10)));
-        medianPaintLabel.setTextSize(textSize);*/
 
         defaultTextPaint = new Paint();
         defaultTextPaint.setColor(Color.WHITE);
@@ -116,19 +74,6 @@ public class TrendView extends View {
         }
         else {
             Log.d("DrawStats", "PercentileView - onDraw else");
-
-            /*int day = 1000 * 60 * 60 * 24;
-            int timeslot = day / NO_TIMESLOTS;
-
-            for (int i = 0; i < NO_TIMESLOTS; i++) {
-                int slot = i * timeslot;
-                if (rd.get(slot) == null)
-                    canvas.drawText("Failed...", dpOffset + dp2px(50), dp2px(14) * i, outerPaintLabel);
-                else
-                    canvas.drawText(Integer.toString(i) + ": High: " + df.format(rd.get(slot).getHighPercent()) + " Good: " + df.format(rd.get(slot).getGoodPercent()) + " Low: " + df.format(rd.get(slot).getLowPercent()), dp2px(14), dp2px(14) + (dp2px(14) * i), defaultTextPaint);
-                //canvas.drawText("Testing...", dpOffset + dp2px(50), dp2px(14) * i, outerPaintLabel);
-            }*/
-
             drawTrends(canvas);
         }
 
@@ -156,16 +101,21 @@ public class TrendView extends View {
 
             if (t.isHigh()) {
                 canvas.drawText(t.getBegin() + " - " + t.getEnd() + ": Trending High.", dp2px(14), dp2px(24) + (dp2px(24) * y), defaultTextPaint);
-                y++;
                 for (int a = 0; a < t.size(); a++) {
-                    if (a == 3) { y++; x = 0; }
+                    if (a % 2 == 0) { y++; x = 0; }
                     tf = t.get(a);
-                    canvas.drawText(a + ": " + df.format(tf.getHighPercent()) + "% ", dp2px(124) * x + dp2px(14), dp2px(24) + (dp2px(24) * y), smallTextPaint);
+                    canvas.drawText(a + ": High: " + df.format(tf.getHighPercent()) + "% Avg: " + df.format(tf.getHigh()), dp2px(182) * x + dp2px(14), dp2px(24) + (dp2px(24) * y), smallTextPaint);
                     x++;
                 }
             }
             else if (!t.isHigh()) {
                 canvas.drawText(t.getBegin() + " - " + t.getEnd() + ": Trending Low.", dp2px(14), dp2px(24) + (dp2px(24) * y), defaultTextPaint);
+                for (int a = 0; a < t.size(); a++) {
+                    if (a % 2 == 0) { y++; x = 0; }
+                    tf = t.get(a);
+                    canvas.drawText(a + ": Low: " + df.format(tf.getLowPercent()) + "% Avg: " + df.format(tf.getHigh()), dp2px(182) * x + dp2px(14), dp2px(24) + (dp2px(24) * y), smallTextPaint);
+                    x++;
+                }
             }
             y+=2;
         }
@@ -247,7 +197,6 @@ public class TrendView extends View {
                     if (i == m_trendMap.size() - 1) {
                         t.setEnd(key);
                         //t.setEnd(m_trendMap.keyAt(i + 1));
-                        t.setSlotList(sl);
                         tList.add(t);
                         cur = false;
                     }
@@ -255,7 +204,6 @@ public class TrendView extends View {
                 else if (cur) {
                     //t.setEnd(key);
                     t.setEnd(m_trendMap.keyAt(i + 1));
-                    t.setSlotList(sl);
                     tList.add(t);
                     cur = false;
                 }
@@ -276,7 +224,6 @@ public class TrendView extends View {
                     if (i == m_trendMap.size() - 1) {
                         t.setEnd(key);
                         //t.setEnd(m_trendMap.keyAt(i + 1));
-                        t.setSlotList(sl);
                         tList.add(t);
                         cur = false;
                     }
@@ -284,7 +231,6 @@ public class TrendView extends View {
                 else if (cur) {
                     //t.setEnd(key);
                     t.setEnd(m_trendMap.keyAt(i + 1));
-                    t.setSlotList(sl);
                     tList.add(t);
                     cur = false;
                 }
@@ -361,7 +307,6 @@ public class TrendView extends View {
         public double getGood() { return m_goodAvg; }
         public double getHighPercent() { return m_highPercent; }
         public double getLowPercent() { return m_lowPercent; }
-        public double getGoodPercent() { return m_goodPercent; }
         public boolean isHigh() { return highTrend; }
         public boolean isLow() { return lowTrend; }
 
@@ -369,34 +314,24 @@ public class TrendView extends View {
 
     protected class trend {
         private List<trendFrag> trendFragList;
-        private List<Integer> slotList;
         private int begin;
         private int end;
         private boolean high;
 
         public trend(boolean h, int slot) {
             trendFragList = new ArrayList<trendFrag>();
-            //slotList = new ArrayList<Integer>();
             begin = slot;
-            //trendFragList.add(slot, tMap.get(slot));
             trendFragList.add(tMap.get(slot));
             high = h;
         }
 
         public void add(trendFrag t) {
             trendFragList.add(t);
-            //slotList.add(slot);
-        }
-
-        public void setSlotList(List<Integer> sl) {
-            slotList = sl;
         }
 
         public void setEnd(int slot) { end = slot; }
 
         public String getBegin() {
-            //long millis = durationInMillis % 1000;
-            //long second = (durationInMillis / 1000) % 60;
             int minute = (begin / (1000 * 60)) % 60;
             int hour = (begin / (1000 * 60 * 60)) % 24;
 
@@ -415,16 +350,6 @@ public class TrendView extends View {
         }
 
         public trendFrag get(int i) { return trendFragList.get(i); }
-
-        /*public String getSlot(int i) {
-            int minute = (slotList.get(i) / (1000 * 60)) % 60;
-            int hour = (slotList.get(i) / (1000 * 60 * 60)) % 24;
-
-            //String time = String.format("%02d:%02d", hour, minute);
-
-            return time;
-        }*/
-
         public int size() { return trendFragList.size(); }
         public boolean isHigh() { return high; }
     }
