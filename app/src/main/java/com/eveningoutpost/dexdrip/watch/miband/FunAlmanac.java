@@ -55,8 +55,13 @@ public class FunAlmanac {
         micro = (int) (JoH.roundDouble(value - macro, 1) * 10);
         android.util.Log.d(TAG, "Result: " + macro + " " + micro);
 
-        if (macro > 18 ) macro = 18; //limitation in the custom watchface can count up to 18
-        if (micro == 0) micro = 10; //10 month will be displyed as 0 on the custom watchface
+        if (value >= 19 ) {
+            macro = 18; //limitation in the custom watchface can count up to 18
+            micro = 9; // so display it as 18.9
+        }
+        else {
+            if (micro == 0) micro = 10; //10 month will be displyed as 0 on the custom watchface
+        }
 
         c.set(Calendar.DAY_OF_MONTH, macro+1); //day 1 represent 0
         c.set(Calendar.MONTH, micro-1); // month starts at 0 in calendar
