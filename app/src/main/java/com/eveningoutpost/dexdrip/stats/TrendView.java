@@ -88,9 +88,6 @@ public class TrendView extends View {
 
     public synchronized void drawTrends(Canvas canvas) {
         List<trend> trendList = tMap.getTrendList();
-        double start;
-        double end;
-        boolean half = false;
         trend t;
         trendFrag tf;
         int y = 0;
@@ -177,7 +174,6 @@ public class TrendView extends View {
             int key;
             boolean cur = false;
             trend t = new trend(true, 0);
-            List<Integer> sl = new ArrayList<Integer>();
 
             //first loop to check for high trends
             //high and low loops are separate in case of overlap.
@@ -189,20 +185,15 @@ public class TrendView extends View {
                     if (!cur) {
                         cur = true;
                         t = new trend(true, key);
-                        sl = new ArrayList<Integer>();
                     }
-                    //t.add(key, tFrag);
                     t.add(tFrag);
-                    sl.add(key);
                     if (i == m_trendMap.size() - 1) {
                         t.setEnd(key);
-                        //t.setEnd(m_trendMap.keyAt(i + 1));
                         tList.add(t);
                         cur = false;
                     }
                 }
                 else if (cur) {
-                    //t.setEnd(key);
                     t.setEnd(m_trendMap.keyAt(i + 1));
                     tList.add(t);
                     cur = false;
@@ -217,19 +208,15 @@ public class TrendView extends View {
                     if (!cur) {
                         cur = true;
                         t = new trend(false, key);
-                        sl = new ArrayList<Integer>();
                     }
-                    //t.add(key, tFrag);
                     t.add(tFrag);
                     if (i == m_trendMap.size() - 1) {
                         t.setEnd(key);
-                        //t.setEnd(m_trendMap.keyAt(i + 1));
                         tList.add(t);
                         cur = false;
                     }
                 }
                 else if (cur) {
-                    //t.setEnd(key);
                     t.setEnd(m_trendMap.keyAt(i + 1));
                     tList.add(t);
                     cur = false;
