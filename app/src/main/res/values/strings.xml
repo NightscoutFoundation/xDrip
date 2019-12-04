@@ -1162,6 +1162,7 @@
     <string name="connection_status_long">Connection Status:   </string>
 
     <string name="without_location_scan_doesnt_work">Without Location permission Android Bluetooth scan doesn\'t work</string>
+    <string name="android_10_need_background_location">Android 10 and above need background location for Bluetooth to work</string>
     <string name="without_location_permission_emergency_cannot_get_location">Without Location permission emergency messages cannot use location data</string>
     <string name="force_speaker_colon">Force Speaker</string>
     <string name="choose_data_source">Choose Data Source</string>
