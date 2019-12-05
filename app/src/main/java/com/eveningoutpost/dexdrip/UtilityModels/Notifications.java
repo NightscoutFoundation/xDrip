@@ -597,7 +597,7 @@ public class Notifications extends IntentService {
             b = new Notification.Builder(mContext);
         }
         b.setOngoing(Pref.getBoolean("use_proper_ongoing", true));
-      
+        b.setGroup("xDrip ongoing");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             b.setVisibility(Pref.getBooleanDefaultFalse("public_notifications") ? Notification.VISIBILITY_PUBLIC : Notification.VISIBILITY_PRIVATE);
             b.setCategory(NotificationCompat.CATEGORY_STATUS);

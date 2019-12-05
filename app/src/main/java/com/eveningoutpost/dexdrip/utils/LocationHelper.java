@@ -68,6 +68,9 @@ public class LocationHelper {
         }
     }
 
+
+    // TODO this is just temporary until sdk tools are updated
+    private static final String ACCESS_BACKGROUND_LOCATION = "android.permission.ACCESS_BACKGROUND_LOCATION";
     /**
      * Prompt the user to enable GPS location on devices that need it for Bluetooth discovery.
      *
@@ -80,7 +83,7 @@ public class LocationHelper {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
             if (ContextCompat.checkSelfPermission(activity,
-                    android.Manifest.permission.ACCESS_COARSE_LOCATION)
+                    Manifest.permission.ACCESS_FINE_LOCATION)
                     != PackageManager.PERMISSION_GRANTED) {
 
                 JoH.show_ok_dialog(activity, activity.getString(R.string.please_allow_permission), activity.getString(R.string.without_location_scan_doesnt_work), new Runnable() {
@@ -88,13 +91,33 @@ public class LocationHelper {
                     public void run() {
                         try {
                             ActivityCompat.requestPermissions(activity,
-                                    new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION},
+                                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
                                     0);
                         } catch (Exception e) {
                             JoH.static_toast_long("Got Exception with Location Permission: " + e);
                         }
                     }
                 });
+            } else {
+                // Android 10 check additional permissions
+                if (Build.VERSION.SDK_INT >= 29) {
+                    if (ContextCompat.checkSelfPermission(activity,
+                            ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+                    JoH.show_ok_dialog(activity, activity.getString(R.string.please_allow_permission), activity.getString(R.string.android_10_need_background_location), new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                ActivityCompat.requestPermissions(activity,
+                                        new String[]{ACCESS_BACKGROUND_LOCATION},
+                                        0);
+                            } catch (Exception e) {
+                                JoH.static_toast_long("Got Exception with Android 10 Location Permission: " + e);
+                            }
+                        }
+                    });
+                    }
+                }
             }
 
             LocationHelper.requestLocation(activity);
@@ -131,16 +154,29 @@ public class LocationHelper {
     public static boolean isLocationPermissionOk(Context context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(context,
-                    android.Manifest.permission.ACCESS_COARSE_LOCATION)
+                    android.Manifest.permission.ACCESS_FINE_LOCATION)
                     != PackageManager.PERMISSION_GRANTED) {
                 return false;
+            }
+            if (Build.VERSION.SDK_INT >= 29) {
+                if (ContextCompat.checkSelfPermission(context,
+                        ACCESS_BACKGROUND_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    return false;
+                }
             }
         }
         return true;
     }
 
-    public static Boolean locationPermission(ActivityWithMenu act) {
-        return ActivityCompat.checkSelfPermission(act, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+    public static Boolean locationPermission(final Activity activity) {
+        if (Build.VERSION.SDK_INT >= 29) {
+            // check background location as well on android 10+
+            return ((ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+                    && (ActivityCompat.checkSelfPermission(activity, ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED));
+        } else {
+            return ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+        }
     }
 
 }

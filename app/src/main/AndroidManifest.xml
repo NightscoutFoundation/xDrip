@@ -29,6 +29,7 @@
     <uses-permission-sdk-23 android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission-sdk-23 android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission-sdk-23 android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission-sdk-23 android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     <uses-permission-sdk-23 android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
     <uses-permission-sdk-23 android:name="android.permission.READ_CONTACTS" />
     <uses-permission-sdk-23 android:name="android.permission.SEND_SMS" />
