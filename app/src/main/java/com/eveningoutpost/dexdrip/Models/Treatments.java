@@ -914,7 +914,7 @@ public class Treatments extends Model {
 
             if (thisTreatment.insulin > 0) {
                 /// gruoner 12/04/19: sometimes insulinInjections is NULL because it is loaded from DB - so loading it from insulinJSON
-                if (thisTreatment.insulinInjections == null)
+                if ((thisTreatment.insulinInjections == null) && !(thisTreatment.insulinJSON == null))
                     thisTreatment.setInsulinJSON(thisTreatment.insulinJSON);
                 mytime = ((long) (thisTreatment.timestamp / stepms)) * stepms; // effects of treatment occur only after it is given / fit to slot time
                 tendtime = mytime + thisTreatment.getMaxEffect() * MINUTE_IN_MS;     // look just until last injected insulin has lost its effect
