@@ -1027,6 +1027,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             });
 
             final Preference nsFollowDownload = findPreference("nsfollow_download_treatments");
+            final Preference nsFollowDownloadXDrip = findPreference("nsfollow_download_treatments_even_xdrip");
             final Preference nsFollowUrl = findPreference("nsfollow_url");
             try {
                 nsFollowUrl.setOnPreferenceChangeListener((preference, newValue) -> {
@@ -1388,6 +1389,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 try {
                     collectionCategory.removePreference(nsFollowUrl);
                     collectionCategory.removePreference(nsFollowDownload);
+                    collectionCategory.removePreference(nsFollowDownloadXDrip);
                 } catch (Exception e) {
                     //
                 }
@@ -2014,6 +2016,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     if (collectionType == DexCollectionType.NSFollow) {
                         collectionCategory.addPreference(nsFollowUrl);
                         collectionCategory.addPreference(nsFollowDownload);
+                        collectionCategory.addPreference(nsFollowDownloadXDrip);
                     }
 
 
