@@ -27,7 +27,11 @@ public class EBolus extends BaseElement {
     }
 
     private static boolean IsBolusValid(Treatments treatment) {
-        if(treatment.insulin >= 0 && treatment.insulin <= 100) {
+        if(Pref.getBooleanDefaultFalse("tidepool_no_treatments")) {
+            UserError.Log.i(TAG, "Ignoring treatment " + treatment.toS());
+            return false;
+        }
+        else if(treatment.insulin >= 0 && treatment.insulin <= 100) {
             return true;
         }
         UserError.Log.e(TAG, "Ignoring invalid treatment " + treatment.toS());
