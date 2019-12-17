@@ -225,6 +225,19 @@
                         android:title="@string/rising_threshold" />
                 </PreferenceCategory>
 
+                <PreferenceCategory android:title="@string/category_sensor_age">
+                    <CheckBoxPreference
+                            android:defaultValue="false"
+                            android:key="sensor_age_alerts"
+                            android:title="@string/sensor_age_alerts" />
+                    <EditTextPreference
+                            android:dependency="sensor_age_alerts"
+                            android:key="sensor_age_alerts_days"
+                            android:title="@string/sensor_age_alerts_days"
+                            android:numeric="integer"
+                            android:defaultValue="13" />
+                </PreferenceCategory>
+
 
                 <PreferenceCategory android:title="@string/category_alert_prefs">
                     <RingtonePreference

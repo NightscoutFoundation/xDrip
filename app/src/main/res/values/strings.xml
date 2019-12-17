@@ -792,6 +792,9 @@
     <string name="bg_rising_fast">Bg rising fast</string>
     <string name="falling_threshold">falling threshold</string>
     <string name="rising_threshold">rising threshold</string>
+    <string name="category_sensor_age">Sensor Age</string>
+    <string name="sensor_age_alerts">Sensor age alerts</string>
+    <string name="sensor_age_alerts_days">Sensor age alerts days</string>
     <string name="set_sound_for_bg_alerts">Set sound used for BG Alerts.</string>
     <string name="alert_sound">Alert Sound</string>
     <string name="override_silent_mode_these">Override Silent mode on these alerts</string>

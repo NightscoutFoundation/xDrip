@@ -819,6 +819,8 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             bindPreferenceSummaryToValueAndEnsureNumeric(findPreference("disable_alerts_stale_data_minutes"));
             bindPreferenceSummaryToValue(findPreference("falling_bg_val"));
             bindPreferenceSummaryToValue(findPreference("rising_bg_val"));
+            bindPreferenceSummaryToValue(findPreference("sensor_age_alerts"));
+            bindPreferenceSummaryToValueAndEnsureNumeric(findPreference("sensor_age_alerts_days"));
             bindPreferenceSummaryToValue(findPreference("other_alerts_sound"));
             bindPreferenceSummaryToValue(findPreference("bridge_battery_alert_level"));
 
