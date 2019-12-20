@@ -1182,12 +1182,10 @@ public class NightscoutUploader {
                         for (LibreBlock libreBlockEntry : libreBlock) {
                             
                             
-                            Log.d(TAG, "uploading new item to monog");
+                            Log.d(TAG, "uploading new item to mongo");
+                            // Checksum might be wrong, for libre 2 or libre us 14 days.
                             boolean ChecksumOk = LibreUtils.verify(libreBlockEntry.blockbytes);
-                            if(!ChecksumOk) {
-                                Log.e(TAG, "Not uploading packet with badchecksum");
-                                continue;
-                            }
+                            
                             // make db object
                             BasicDBObject testData = new BasicDBObject();
                             testData.put("SensorId", PersistentStore.getString("LibreSN"));
