@@ -79,6 +79,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.Intents;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.ShotStateStore;
 import com.eveningoutpost.dexdrip.UtilityModels.SpeechUtil;
+import com.eveningoutpost.dexdrip.UtilityModels.Unitized;
 import com.eveningoutpost.dexdrip.UtilityModels.UpdateActivity;
 import com.eveningoutpost.dexdrip.UtilityModels.WholeHouse;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleUtil;
@@ -460,7 +461,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                         }
                         break;
                     case INSTALL_REQUEST:
-                        preferenceFragment.installMiBandWatchface(1, preferenceFragment.getContext());
+                        preferenceFragment.installMiBandWatchface(preferenceFragment.getContext());
                         break;
                 }
 
@@ -1013,7 +1014,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 });
 
                 findPreference(MiBandEntry.PREF_MIBAND_INSTALL_WATCHFACE).setOnPreferenceClickListener(preference -> {
-                    installMiBandWatchface(1, preference.getContext());
+                    installMiBandWatchface(preference.getContext());
                     return true;
                 });
 
@@ -2331,28 +2332,16 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             }
         }
 
-        public void installMiBandWatchface(final int watchFaceType, Context context) {
+        public void installMiBandWatchface(Context context) {
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
             builder.setTitle(xdrip.getAppContext().getResources().getString(R.string.miband_watchface_dialog_title));
-            switch (watchFaceType) {
-                case 1:
-                    builder.setMessage(xdrip.getAppContext().getResources().getString(R.string.miband_watchface_dialog_option_mmol));
-                    break;
-               /* case 2:
-                    builder.setMessage("Install mg wtchface?");
-                    break;*/
-            }
+            String units = Unitized.unit(Unitized.usingMgDl());
+            String dialogTitle = String.format(xdrip.getAppContext().getResources().getString(R.string.miband_watchface_dialog_option_mmol), units);
+            builder.setMessage(dialogTitle);
             builder.setPositiveButton(xdrip.getAppContext().getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
-
-                    switch (watchFaceType) {
-                        case 1:
-                            MiBandEntry.installWatchface("mmol");
-                            break;
-                        case 2:
-                            break;
-                    }
+                    MiBandEntry.installWatchface(units);
                 }
             });
 

@@ -101,9 +101,11 @@ public class AlertMessage extends BaseMessage {
         return Const.UUID_CHAR_NEW_ALERT;
     }
 
-    public byte[] getAlertMessage(final String msg, final AlertMessage.AlertCategory category, final AlertMessage.CustomIcon icon, final String title) {
+    public byte[] getAlertMessage(String msg, final AlertMessage.AlertCategory category, final AlertMessage.CustomIcon icon, final String title) {
         byte[] messageBytes = new byte[1];
         byte[] titleBytes = new byte[1];
+        if (msg.isEmpty())
+            msg = title;
         String message = "\0" + StringUtils.truncate(msg, 128) + "\0";
         String titleString = StringUtils.truncate(title, 18) + "\0";
         try {
