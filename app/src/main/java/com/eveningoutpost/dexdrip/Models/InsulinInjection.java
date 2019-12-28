@@ -38,5 +38,5 @@ public class InsulinInjection {
         return getProfile().getMaxEffect() > 1000;
     }
 
-    public double getUnits() { return units; }
+//    public double getUnits() { return units; }
 }
