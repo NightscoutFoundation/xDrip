@@ -1239,8 +1239,8 @@
     <string name="summary_miband_authkey">Set the auth key for miband4 (To get auth key, follow the instrucions on https://www.freemyband.com/)</string>
     <string name="summary_miband_mac">Leave empty for auto search</string>
     <string name="title_miband_send_readings_as_notification">BG readings as notification</string>
-    <string name="summary_miband_send_readings_as_notification">Will use a notifications to send BG readings(The date wouldn\'t be changed,
-        need to sisable if want to use xdrip watchface)</string>
+    <string name="summary_miband_send_readings_as_notification">Will use a notifications to send BG readings. The date wouldn\'t be changed so can all band features can be used.
+        Need to disable if want to use xdrip watchface (Need to delete official MiFit application to avoid date override)</string>
     <string name="title_miband_vibrate_on_readings">Vibrate on readings</string>
     <string name="title_miband_send_cals">Send Calls</string>
     <string name="summary_miband_send_cals">Send call notifications to the band (Android 6+)</string>
@@ -1259,7 +1259,7 @@
     <string name="miband_watchface_istall_success">MiBand watchface has been uploaded successfully!</string>
     <string name="miband_watchface_istall_error">Error while uploading MiBand watchface</string>
     <string name="miband_watchface_dialog_title">MiBand watchface install</string>
-    <string name="miband_watchface_dialog_option_mmol">Install mmol watchface?</string>
+    <string name="miband_watchface_dialog_option_mmol">Install %s watchface?</string>
 
     <string name="title_lefun_band">Lefun Band</string>
     <string name="summary_lefun_enable">Sync Data with LeFun fitness bands</string>

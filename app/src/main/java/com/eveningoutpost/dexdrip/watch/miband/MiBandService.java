@@ -61,11 +61,10 @@ import static com.eveningoutpost.dexdrip.Models.JoH.bytesToHex;
 import static com.eveningoutpost.dexdrip.Models.JoH.emptyString;
 import static com.eveningoutpost.dexdrip.Models.JoH.msTill;
 import static com.eveningoutpost.dexdrip.Models.JoH.niceTimeScalar;
-import static com.eveningoutpost.dexdrip.Models.JoH.roundDouble;
 import static com.eveningoutpost.dexdrip.Services.JamBaseBluetoothSequencer.BaseState.CLOSE;
 import static com.eveningoutpost.dexdrip.Services.JamBaseBluetoothSequencer.BaseState.INIT;
 import static com.eveningoutpost.dexdrip.Services.JamBaseBluetoothSequencer.BaseState.SEND_QUEUE;
-import static com.eveningoutpost.dexdrip.UtilityModels.Unitized.mmolConvert;
+import static com.eveningoutpost.dexdrip.UtilityModels.Unitized.usingMgDl;
 import static com.eveningoutpost.dexdrip.watch.miband.MiBand.MiBandType.MI_BAND2;
 import static com.eveningoutpost.dexdrip.watch.miband.MiBand.MiBandType.MI_BAND4;
 import static com.eveningoutpost.dexdrip.watch.miband.MiBandService.MiBandState.AUTHORIZE_FAILED;
@@ -175,7 +174,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                                             changeState(INIT);
                                         }
                                     } else {
-                                        JoH.static_toast_long("Sorry, watchface can be installed only on MiBand4");
+                                        JoH.static_toast_long("Sorry, watchfaces can be installed only on MiBand4");
                                     }
                                     break;
                                 case "message":
@@ -411,40 +410,37 @@ public class MiBandService extends JamBaseBluetoothSequencer {
     }
 
     private Boolean sendBG() {
-        final BgReading last = BgReading.last();
-            if (MiBand.getMibandType() == MI_BAND2 || MiBandEntry.isNeedSendReadingAsNotification()) {
-                AlertMessage message = new AlertMessage();
-
-                if (last == null || last.isStale()) {
-                    return false;
-                } else {
-                    String messageText = "BG: " + last.displayValue(null) + " " + last.displaySlopeArrow();
-                    new QueueMe()
-                            .setBytes(message.getAlertMessageTitle(messageText.toUpperCase(), AlertMessage.AlertCategory.SMS_MMS))
-                            .setDescription("Send alert msg: " + messageText)
-                            .setQueueWriteCharacterstic(message.getCharacteristicUUID())
-                            .expireInSeconds(60)
-                            .setDelayMs(QUEUE_DELAY)
-                            .queue();
-                }
+         BgReading last = BgReading.last();
+        if (MiBand.getMibandType() == MI_BAND2 || MiBandEntry.isNeedSendReadingAsNotification()) {
+            AlertMessage message = new AlertMessage();
+            if (last == null || last.isStale()) {
+                return false;
             } else {
-                FunAlmanac.Reply rep;
-                if (last == null || last.isStale()) {
-                    rep = FunAlmanac.getRepresentation(0, "Flat");
-                } else {
-                    final double mmol_value = roundDouble(mmolConvert(last.getDg_mgdl()), 1);
-
-                    rep = FunAlmanac.getRepresentation(mmol_value, last.slopeName());
-                }
-                TimeMessage message = new TimeMessage();
+                String messageText = "BG: " + last.displayValue(null) + " " + last.displaySlopeArrow();
                 new QueueMe()
-                        .setBytes(message.getTimeMessage(rep.timestamp))
-                        .setDescription("Send time representation for: " + rep.input)
+                        .setBytes(message.getAlertMessageTitle(messageText.toUpperCase(), AlertMessage.AlertCategory.SMS_MMS))
+                        .setDescription("Send alert msg: " + messageText)
                         .setQueueWriteCharacterstic(message.getCharacteristicUUID())
-                        .expireInSeconds(QUEUE_EXPIRED_TIME)
-                        .setDelayMs(50)
+                        .expireInSeconds(60)
+                        .setDelayMs(QUEUE_DELAY)
                         .queue();
             }
+        } else {
+            FunAlmanac.Reply rep;
+            if (last == null || last.isStale()) {
+                rep = FunAlmanac.getRepresentation(0, "Flat", usingMgDl());
+            } else {
+                rep = FunAlmanac.getRepresentation(last.getDg_mgdl(), last.slopeName(), usingMgDl());
+            }
+            TimeMessage message = new TimeMessage();
+            new QueueMe()
+                    .setBytes(message.getTimeMessage(rep.timestamp))
+                    .setDescription("Send time representation for: " + rep.input)
+                    .setQueueWriteCharacterstic(message.getCharacteristicUUID())
+                    .expireInSeconds(QUEUE_EXPIRED_TIME)
+                    .setDelayMs(50)
+                    .queue();
+        }
         return true;
     }
 
@@ -705,7 +701,6 @@ public class MiBandService extends JamBaseBluetoothSequencer {
     @SuppressLint("CheckResult")
     private void installWatchface() {
         final String message = keyStore.getS(MESSAGE);
-        final String type = keyStore.getS(MESSAGE_TYPE);
         RxBleConnection connection = I.connection;
         if (d)
             UserError.Log.d(TAG, "Install Watchface");
@@ -717,8 +712,11 @@ public class MiBandService extends JamBaseBluetoothSequencer {
         if (d)
             UserError.Log.d(TAG, "Requesting to enable notifications for installWatchface");
         InputStream file;
-        file = getResources().openRawResource(R.raw.xdrip_miband4);
 
+        if (message.equals("mmol"))
+            file = getResources().openRawResource(R.raw.xdrip_miband4_mmol);
+        else
+            file = getResources().openRawResource(R.raw.xdrip_miband4_mgdl);
         firmware = new FirmwareOperations(file);
         subscription = new Subscription(
                 connection.setupNotification(firmware.getFirmwareCharacteristicUUID())

@@ -1,27 +1,26 @@
 package com.eveningoutpost.dexdrip.watch.miband;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.UtilityModels.Unitized;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import lombok.AllArgsConstructor;
 
+import static com.eveningoutpost.dexdrip.Models.JoH.roundDouble;
+import static com.eveningoutpost.dexdrip.UtilityModels.Unitized.mmolConvert;
+
 public class FunAlmanac {
 
-    private static final String TAG = "LeFun Almanac";
+    private static final String TAG = "miband almanac";
 
-    public static Reply getRepresentation(double value, String arrowName) {
-
-        android.util.Log.d(TAG, "Bg representation: " + value + " arrow: " + arrowName );
-
+    public static Reply getRepresentation(double bgValue, String arrowName, boolean usingMgDl) {
         final Calendar c = Calendar.getInstance();
         int currentDayOfWeek;
         boolean preserveDayOfWeek = true; // keep same or represent trend
         c.setTimeInMillis(JoH.tsl());
         if (preserveDayOfWeek) {
-            switch(arrowName)
-            {
+            switch (arrowName) {
                 case "DoubleDown":
                     currentDayOfWeek = Calendar.MONDAY;
                     break;
@@ -46,34 +45,37 @@ public class FunAlmanac {
                 default:
                     currentDayOfWeek = Calendar.THURSDAY;
             }
+        } else currentDayOfWeek = c.get(Calendar.DAY_OF_WEEK);
+
+        int macro = 0, micro = 0;
+        double value = bgValue;
+        if (usingMgDl) {
+            if (value > 299) value = 299;
+            else if (value < 10) value = 10;
+            macro = (int) value / 10;
+            micro = (int) value % 10;
+        } else {
+            value = roundDouble(mmolConvert(value), 1);
+            if (value >= 18.9) value = 18.9;
+            macro = (int) value;
+            micro = (int) (JoH.roundDouble(value - macro, 1) * 10);
+            macro++;
         }
-        else currentDayOfWeek = c.get(Calendar.DAY_OF_WEEK);
-
-        int macro, micro;
-
-        macro = (int) value;
-        micro = (int) (JoH.roundDouble(value - macro, 1) * 10);
-        android.util.Log.d(TAG, "Result: " + macro + " " + micro);
-
-        if (value >= 19 ) {
-            macro = 18; //limitation in the custom watchface can count up to 18
-            micro = 9; // so display it as 18.9
-        }
-        else {
-            if (micro == 0) micro = 10; //10 month will be displyed as 0 on the custom watchface
-        }
-
-        c.set(Calendar.DAY_OF_MONTH, macro+1); //day 1 represent 0
-        c.set(Calendar.MONTH, micro-1); // month starts at 0 in calendar
-
+        if (micro == 0) micro = 10; //10th month will be displayed as 0 on the custom watchface
+        micro--;
+        c.set(Calendar.DAY_OF_MONTH, macro); //day 1 represent 0
+        c.set(Calendar.MONTH, micro);
+        int max = c.getActualMaximum(Calendar.DAY_OF_MONTH);
         int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
-        while (dayOfWeek != currentDayOfWeek) {
+        while ((dayOfWeek != currentDayOfWeek) || ((max < 29))) {
             c.set(Calendar.YEAR, c.get(Calendar.YEAR) + 1);
+            c.set(Calendar.DAY_OF_MONTH, macro);
+            c.set(Calendar.MONTH, micro);
+            max = c.getActualMaximum(Calendar.DAY_OF_MONTH);
             dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
         }
-        String time = new SimpleDateFormat("dd-M-yyyy EEEE hh:mm:ss").format(c.getTime());
-        android.util.Log.d(TAG, "Time result: " + time);
-        return new Reply(c.getTimeInMillis(), value);
+        String textVal = Double.toString(value) + " " + Unitized.unit(usingMgDl) + ", " + arrowName;
+        return new Reply(c.getTimeInMillis(), textVal);
     }
 
     private static int advanceDay(int day) {
@@ -87,6 +89,6 @@ public class FunAlmanac {
     @AllArgsConstructor
     public static class Reply {
         public long timestamp;
-        public double input;
+        public String input;
     }
 }
