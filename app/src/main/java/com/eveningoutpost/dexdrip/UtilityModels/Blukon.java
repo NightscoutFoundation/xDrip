@@ -347,7 +347,7 @@ private static final String GET_TREND_HISTORY_BLOCK_COMMAND = READ_SINGLE_BLOCK_
             currentCommand = ACK_ON_WAKEUP_ANSWER;
             Log.i(TAG, "Send ACK");
 
-        } else if (currentCommand.startsWith(BLUCON_SECOND_BLOCK) && strRecCmd.startsWith("8bde02")) {
+        } else if (currentCommand.startsWith(BLUCON_SECOND_BLOCK) && strRecCmd.startsWith("8bde02") && (!Pref.getBooleanDefaultFalse("external_blukon_algorithm"))) {
             // Second Block response
 
             if (strRecCmd.substring(6).equals(BLUCON_ALL_ZERO_RESPONSE)) {
