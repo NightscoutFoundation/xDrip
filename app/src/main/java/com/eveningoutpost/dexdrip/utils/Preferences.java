@@ -157,6 +157,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
     private static AllPrefsFragment pFragment;
     private Dialog pDialog;
     private BroadcastReceiver statusReceiver;
+    private Preferences mContext;
 
 
     private void refreshFragments() {
@@ -398,6 +399,8 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
         } catch (Exception e) {
             Log.e(TAG, "Failed to set theme");
         }
+        mContext = this;
+
         super.onCreate(savedInstanceState);
 
         refreshFragments(getIntent() != null ? getIntent().getAction() : null);
@@ -416,10 +419,11 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 final MiBandService.MIBAND_INTEND_STATES state = MiBandService.MIBAND_INTEND_STATES.valueOf(intent.getStringExtra("state"));
                 final Integer progress = intent.getIntExtra("progress", 0);
                 final String descrText = intent.getStringExtra("descr_text");
+                if (mContext.isFinishing()) return;
                 switch (state) {
                     case INIT_WATCHFACE_DIALOG:
                         if (pDialog == null) {
-                            pDialog = new Dialog(Preferences.this);
+                            pDialog = new Dialog(mContext);
                             pDialog.setCanceledOnTouchOutside(false);
                             pDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                             pDialog.setCancelable(false);
