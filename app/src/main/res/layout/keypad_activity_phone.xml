@@ -23,7 +23,7 @@
         android:fontFamily="sans-serif-condensed"
         android:gravity="center"
         android:textColor="@android:color/white"
-        android:textSize="25sp"
+        android:textSize="@dimen/keypad_top_text_size"
         tools:text="25.5 mmol/l" />
 
     <LinearLayout
