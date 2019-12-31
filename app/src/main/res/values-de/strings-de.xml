@@ -769,6 +769,8 @@
     <string name="notify_data_arrives_master"><![CDATA[Benachrichtigen, wenn Daten vom Master im Abstand von &gt; 20 Minuten ankommen.]]></string>
     <string name="follower_chime_new">Neuer-Follower-Läuten</string>
     <string name="carb_ratio">Kohlenhydratfaktor</string>
+    <string name="enable_dedicated_insulin_profiles">Verwaltung der Insulin-Präparate</string>
+    <string name="desc_enable_dedicated_insulin_profiles">Hiermit können Sie die verschiedenen Insulin-Präparate aktivieren oder konfigurieren</string>
     <string name="insulin_sensitivity">Insulin-Empfindlichkeit</string>
     <string name="secondary_plugin_glucose_value">Glukosewert des sekundären Plugins</string>
     <string name="step_counter_1st_color">Schrittzähler 1. Farbe</string>
@@ -1135,4 +1137,7 @@
     <string name="need_contacts_permission_to_select_message_recipients">Benötige Kontakte-Berechtigung um Nachrichtenempfänger auswählen zu können</string>
     <string name="need_storage_permission_to_access_all_ringtones">Benötige Speichermedium-Berechtigung um auf alle Klingeltöne zugreifen zu können</string>
     <string name="xdrip_needs_whitelisting_for_proper_performance">xDrip+ benötigt die Eintragung auf der \"Withelist\" damit es gut funktioniert</string>
+    <string name="pref_enable_insulinprofiles">Aktiviere mind. ein maximal drei Insulin Profile</string>
+    <string name="pref_select_basal_insulinprofiles">Wähle das basale Insulin aus.</string>
+    <string name="pref_select_bolus_insulinprofiles">wähle das Bolus-Insulin aus.\nAuch verwendet für z.B. Pumpe, Pen...</string>
 </resources>

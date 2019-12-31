@@ -12,7 +12,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
@@ -67,6 +66,7 @@ import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.BloodTest;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.HeartRate;
+import com.eveningoutpost.dexdrip.Models.InsulinInjection;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.LibreBlock;
 import com.eveningoutpost.dexdrip.Models.ProcessInitialDataQuality;
@@ -108,9 +108,11 @@ import com.eveningoutpost.dexdrip.databinding.ActivityHomeBinding;
 import com.eveningoutpost.dexdrip.databinding.ActivityHomeShelfSettingsBinding;
 import com.eveningoutpost.dexdrip.databinding.PopupInitialStatusHelperBinding;
 import com.eveningoutpost.dexdrip.eassist.EmergencyAssistActivity;
+import com.eveningoutpost.dexdrip.insulin.Insulin;
+import com.eveningoutpost.dexdrip.insulin.InsulinManager;
+import com.eveningoutpost.dexdrip.insulin.MultipleInsulins;
 import com.eveningoutpost.dexdrip.insulin.inpen.InPenEntry;
 import com.eveningoutpost.dexdrip.insulin.pendiq.Pendiq;
-import com.eveningoutpost.dexdrip.languageeditor.LanguageEditor;
 import com.eveningoutpost.dexdrip.profileeditor.DatePickerFragment;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileAdapter;
 import com.eveningoutpost.dexdrip.ui.BaseShelf;
@@ -126,7 +128,6 @@ import com.eveningoutpost.dexdrip.ui.graphic.TrendArrowFactory;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.eveningoutpost.dexdrip.utils.BgToSpeech;
 import com.eveningoutpost.dexdrip.utils.DatabaseUtil;
-import com.eveningoutpost.dexdrip.utils.DexCollectionHelper;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.DisplayQRCode;
 import com.eveningoutpost.dexdrip.utils.LibreTrendGraph;
@@ -139,6 +140,8 @@ import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.Target;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.internal.bind.DateTypeAdapter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -177,8 +180,10 @@ import static com.eveningoutpost.dexdrip.UtilityModels.Constants.MINUTE_IN_MS;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPermissionsResultCallback {
-    private final static String TAG = "jamorham: " + Home.class.getSimpleName();
+    private final static String TAG = "jamorham " + Home.class.getSimpleName();
     private final static boolean d = true;
+    private static final int MAX_INSULIN_PROFILES = 3;
+    public final int maxInsulinProfiles = MultipleInsulins.isEnabled() ? MAX_INSULIN_PROFILES : 0;
     public final static String START_SPEECH_RECOGNITION = "START_APP_SPEECH_RECOGNITION";
     public final static String START_TEXT_RECOGNITION = "START_APP_TEXT_RECOGNITION";
     public final static String CREATE_TREATMENT_NOTE = "CREATE_TREATMENT_NOTE";
@@ -217,7 +222,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     private ImageButton btnCancel;
     private ImageButton btnCarbohydrates;
     private ImageButton btnBloodGlucose;
-    private ImageButton btnInsulinDose;
+    private ImageButton buttonInsulinSingleDose;
+    private ImageButton[] btnInsulinDose = new ImageButton[MAX_INSULIN_PROFILES];
     private ImageButton btnTime;
     private ImageButton btnUndo;
     private ImageButton btnRedo;
@@ -225,7 +231,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     private TextView voiceRecognitionText;
     private TextView textCarbohydrates;
     private TextView textBloodGlucose;
-    private TextView textInsulinDose;
+    private TextView textInsulinSumDose;
+    private TextView[] textInsulinDose = new TextView[MAX_INSULIN_PROFILES];
     private TextView textTime;
     private static final int REQ_CODE_SPEECH_INPUT = 1994;
     private static final int REQ_CODE_SPEECH_NOTE_INPUT = 1995;
@@ -266,13 +273,17 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     double thisnumber = -1;
     double thisglucosenumber = 0;
     double thiscarbsnumber = 0;
-    double thisinsulinnumber = 0;
+    double thisInsulinSumNumber = 0;
+    double[] thisinsulinnumber = new double[MAX_INSULIN_PROFILES];
+    Insulin[] thisinsulinprofile = new Insulin[MAX_INSULIN_PROFILES];
+    ArrayList<Insulin> insulins = null;
     double thistimeoffset = 0;
     String thisword = "";
     String thisuuid = "";
     private static String nexttoast;
     boolean carbsset = false;
-    boolean insulinset = false;
+    boolean[] insulinset = new boolean[MAX_INSULIN_PROFILES];
+    boolean insulinsumset = false;
     boolean glucoseset = false;
     boolean timeset = false;
     boolean watchkeypad = false;
@@ -417,11 +428,17 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         this.voiceRecognitionText = (TextView) findViewById(R.id.treatmentTextView);
         this.textBloodGlucose = (TextView) findViewById(R.id.textBloodGlucose);
         this.textCarbohydrates = (TextView) findViewById(R.id.textCarbohydrate);
-        this.textInsulinDose = (TextView) findViewById(R.id.textInsulinUnits);
+        this.textInsulinSumDose = (TextView) findViewById(R.id.textInsulinSumUnits);
         this.textTime = (TextView) findViewById(R.id.textTimeButton);
         this.btnBloodGlucose = (ImageButton) findViewById(R.id.bloodTestButton);
         this.btnCarbohydrates = (ImageButton) findViewById(R.id.buttonCarbs);
-        this.btnInsulinDose = (ImageButton) findViewById(R.id.buttonInsulin);
+        this.textInsulinDose[0] = (TextView) findViewById(R.id.textInsulin1Units);
+        this.buttonInsulinSingleDose = (ImageButton) findViewById(R.id.buttonInsulin0);
+        this.btnInsulinDose[0] = (ImageButton) findViewById(R.id.buttonInsulin1);
+        this.textInsulinDose[1] = (TextView) findViewById(R.id.textInsulin2Units);
+        this.btnInsulinDose[1] = (ImageButton) findViewById(R.id.buttonInsulin2);
+        this.textInsulinDose[2] = (TextView) findViewById(R.id.textInsulin3Units);
+        this.btnInsulinDose[2] = (ImageButton) findViewById(R.id.buttonInsulin3);
         this.btnCancel = (ImageButton) findViewById(R.id.cancelTreatment);
         this.btnApprove = (ImageButton) findViewById(R.id.approveTreatment);
         this.btnTime = (ImageButton) findViewById(R.id.timeButton);
@@ -434,6 +451,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         if (searchWords == null) {
             initializeSearchWords("");
         }
+        if (insulins == null)   // TODO only when using multiples?
+            insulins = InsulinManager.getDefaultInstance();
 
         this.btnSpeak = (ImageButton) findViewById(R.id.btnTreatment);
         btnSpeak.setOnClickListener(v -> promptTextInput());
@@ -461,26 +480,51 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
         btnCancel.setOnClickListener(v -> cancelTreatment());
 
-        btnApprove.setOnClickListener(v -> processAndApproveTreatment());
-
-        btnInsulinDose.setOnClickListener(v -> {
+        // handle single insulin button (non multiples)
+        buttonInsulinSingleDose.setOnClickListener(v -> {
             // proccess and approve treatment
-            textInsulinDose.setVisibility(View.INVISIBLE);
-            btnInsulinDose.setVisibility(View.INVISIBLE);
-            Treatments.create(0, thisinsulinnumber, Treatments.getTimeStampWithOffset(thistimeoffset));
-            Pendiq.handleTreatment(thisinsulinnumber);
-            thisinsulinnumber = 0;
+            textInsulinSumDose.setVisibility(View.INVISIBLE);
+            buttonInsulinSingleDose.setVisibility(View.INVISIBLE);
+            Treatments.create(0, thisInsulinSumNumber, Treatments.getTimeStampWithOffset(thistimeoffset));
+            Pendiq.handleTreatment(thisInsulinSumNumber);
+            thisInsulinSumNumber = 0;
             reset_viewport = true;
             if (hideTreatmentButtonsIfAllDone()) {
                 updateCurrentBgInfo("insulin button");
             }
         });
+
+        for (int i = 0; i < maxInsulinProfiles; i++) {
+            int finalI = i;
+            btnInsulinDose[i].setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    // proccess and approve treatment
+                    textInsulinDose[finalI].setVisibility(View.INVISIBLE);
+                    btnInsulinDose[finalI].setVisibility(View.INVISIBLE);
+                    // create individual treatment just for this entry
+                    Treatments.create(0, thisinsulinnumber[finalI], Treatments.convertLegacyDoseToInjectionListByName(thisinsulinprofile[finalI].getName(), thisinsulinnumber[finalI]), Treatments.getTimeStampWithOffset(thistimeoffset));
+
+                    thisinsulinnumber[finalI] = 0;
+                    insulinset[finalI] = false;
+                    textInsulinDose[finalI].setText("");
+                    reset_viewport = true;
+
+                    if (hideTreatmentButtonsIfAllDone()) {
+                        updateCurrentBgInfo("insulin button");
+                    }
+                }
+            });
+        }
+        btnApprove.setOnClickListener(v -> processAndApproveTreatment());
+
         btnCarbohydrates.setOnClickListener(v -> {
             // proccess and approve treatment
             textCarbohydrates.setVisibility(View.INVISIBLE);
             btnCarbohydrates.setVisibility(View.INVISIBLE);
             reset_viewport = true;
-            Treatments.create(thiscarbsnumber, 0, Treatments.getTimeStampWithOffset(thistimeoffset));
+            Treatments.create(thiscarbsnumber, 0, new ArrayList<InsulinInjection>(), Treatments.getTimeStampWithOffset(thistimeoffset));
             thiscarbsnumber = 0;
             if (hideTreatmentButtonsIfAllDone()) {
                 updateCurrentBgInfo("carbs button");
@@ -828,17 +872,47 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 // sanity check timestamp
                 final Treatments exists = Treatments.byTimestamp(time);
                 if (exists == null) {
-                    Log.d(TAG, "processAndApproveTreatment create watchkeypad Treatment carbs=" + thiscarbsnumber + " insulin=" + thisinsulinnumber + " timestamp=" + JoH.dateTimeText(time) + " uuid=" + thisuuid);
-                    Treatments.create(thiscarbsnumber, thisinsulinnumber, time, thisuuid);
-                    Pendiq.handleTreatment(thisinsulinnumber);
+                    ArrayList<InsulinInjection> injections = new ArrayList<InsulinInjection>();
+                    for (int i = 0; i < maxInsulinProfiles; i++)
+                        if (insulinset[i]) {
+                            InsulinInjection injection = new InsulinInjection(thisinsulinprofile[i], thisinsulinnumber[i]);
+                            injections.add(injection);
+                        }
+                    Log.d(TAG, "processAndApproveTreatment create watchkeypad Treatment carbs=" + thiscarbsnumber + " insulin=" + thisInsulinSumNumber + " timestamp=" + JoH.dateTimeText(time) + " uuid=" + thisuuid);
+                    Treatments.create(thiscarbsnumber, thisInsulinSumNumber, injections, time, thisuuid);
+// gruoner: changed pendiq handling 09/12/19        TODO remove duplicate code with helper function
+// in case of multiple injections in a treatment, select the injection with the primary insulin profile defined in the profile editor; if not found, take 0
+// in case of a single injection in a treatment, assume thats the #units to send to pendiq
+                    double pendiqInsulin = 0;
+                    if (MultipleInsulins.isEnabled() && injections.size() > 1) {
+                        for (InsulinInjection i : injections)
+                            if (i.getProfile() == InsulinManager.getBolusProfile())
+                                pendiqInsulin = i.getUnits();
+                    } else pendiqInsulin = thisInsulinSumNumber;
+                    Pendiq.handleTreatment(pendiqInsulin);
                 } else {
-                    Log.d(TAG, "processAndApproveTreatment Treatment already exists carbs=" + thiscarbsnumber + " insulin=" + thisinsulinnumber + " timestamp=" + JoH.dateTimeText(time));
+                    Log.d(TAG, "processAndApproveTreatment Treatment already exists carbs=" + thiscarbsnumber + " insulin=" + thisInsulinSumNumber + " timestamp=" + JoH.dateTimeText(time));
                 }
             }
         } else {
             WatchUpdaterService.sendWearToast(gs(R.string.treatment_processed), Toast.LENGTH_LONG);
-            Treatments.create(thiscarbsnumber, thisinsulinnumber, Treatments.getTimeStampWithOffset(mytimeoffset));
-            Pendiq.handleTreatment(thisinsulinnumber);
+            ArrayList<InsulinInjection> injections = new ArrayList<InsulinInjection>();
+            for (int i = 0; i < maxInsulinProfiles; i++)
+                if (insulinset[i]) {
+                    InsulinInjection injection = new InsulinInjection(thisinsulinprofile[i], thisinsulinnumber[i]);
+                    injections.add(injection);
+                }
+            Treatments.create(thiscarbsnumber, thisInsulinSumNumber, injections, Treatments.getTimeStampWithOffset(mytimeoffset));
+// gruoner: changed pendiq handling 09/12/19   TODO remove duplicate code with helper function
+// in case of multiple injections in a treatment, select the injection with the primary insulin profile defined in the profile editor; if not found, take 0
+// in case of a single injection in a treatment, assume thats the #units to send to pendiq
+            double pendiqInsulin = 0;
+            if (MultipleInsulins.isEnabled() && injections.size() > 1) {
+                for (InsulinInjection i : injections)
+                    if (i.getProfile() == InsulinManager.getBolusProfile())
+                        pendiqInsulin = i.getUnits();
+            } else pendiqInsulin = thisInsulinSumNumber;
+            Pendiq.handleTreatment(pendiqInsulin);
         }
         hideAllTreatmentButtons();
 
@@ -1046,9 +1120,19 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     }
 
     private boolean hideTreatmentButtonsIfAllDone() {
+
+        // check if any active buttons are visible;
+        boolean byTypeInvisible = true;
+        for (int i = 0; i < maxInsulinProfiles; i++) {
+            if (btnInsulinDose[i].getVisibility() != View.INVISIBLE) {
+                byTypeInvisible = false;
+                break;
+            }
+        }
+
         if ((btnBloodGlucose.getVisibility() == View.INVISIBLE) &&
                 (btnCarbohydrates.getVisibility() == View.INVISIBLE) &&
-                (btnInsulinDose.getVisibility() == View.INVISIBLE)) {
+                byTypeInvisible) {
             hideAllTreatmentButtons(); // we clear values here also
             //send toast to wear - closes the confirmation activity on the watch
             WatchUpdaterService.sendWearToast(gs(R.string.treatment_processed), Toast.LENGTH_LONG);
@@ -1064,8 +1148,12 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         btnApprove.setVisibility(View.INVISIBLE);
         btnCancel.setVisibility(View.INVISIBLE);
         btnCarbohydrates.setVisibility(View.INVISIBLE);
-        textInsulinDose.setVisibility(View.INVISIBLE);
-        btnInsulinDose.setVisibility(View.INVISIBLE);
+        textInsulinSumDose.setVisibility(View.INVISIBLE);
+        for (int i = 0; i < MAX_INSULIN_PROFILES; i++) {
+            textInsulinDose[i].setVisibility(View.INVISIBLE);
+            btnInsulinDose[i].setVisibility(View.INVISIBLE);
+        }
+        buttonInsulinSingleDose.setVisibility(View.INVISIBLE);
         btnBloodGlucose.setVisibility(View.INVISIBLE);
         voiceRecognitionText.setVisibility(View.INVISIBLE);
         textTime.setVisibility(View.INVISIBLE);
@@ -1073,11 +1161,17 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
         // zeroing code could be functionalized
         thiscarbsnumber = 0;
-        thisinsulinnumber = 0;
+        thisInsulinSumNumber = 0;
+        insulinsumset = false;
+        for (int i = 0; i < MAX_INSULIN_PROFILES; i++)
+        {
+            Log.d(TAG,"INSULINSET: "+i+" "+thisinsulinnumber.length+" "+insulinset.length);
+            thisinsulinnumber[i] = 0;
+            insulinset[i] = false;
+        }
         thistimeoffset = 0;
         thisglucosenumber = 0;
         carbsset = false;
-        insulinset = false;
         glucoseset = false;
         timeset = false;
 
@@ -1108,9 +1202,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         Log.d(TAG, "Initialize Search words");
         wordDataWrapper lcs = new wordDataWrapper();
         try {
-
-            Resources res = getResources();
-            InputStream in_s = res.openRawResource(R.raw.initiallexicon);
+            InputStream in_s = getResources().openRawResource(R.raw.initiallexicon);
 
             String input = readTextFile(in_s);
 
@@ -1297,11 +1389,16 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         watchkeypad = false;
         watchkeypadset = false;
         glucoseset = false;
-        insulinset = false;
+        thisInsulinSumNumber = 0;
+        thisinsulinnumber = new double[MAX_INSULIN_PROFILES];
+        thisinsulinprofile = new Insulin[MAX_INSULIN_PROFILES];
         carbsset = false;
         timeset = false;
         thisnumber = -1;
         thisword = "";
+
+        for (int i = 0; i < maxInsulinProfiles; i++)
+            thisinsulinprofile[i] = null;
 
         final String[] wordsArray = allWords.split(" ");
         for (int i = 0; i < wordsArray.length; i++) {
@@ -1315,6 +1412,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 final String result = classifyWord(wordsArray[i]);
                 if (result != null)
                     thisword = result;
+                else
+                    thisword = wordsArray[i].toLowerCase();  // if we can't translate the word make it lowercase to recognise it later
                 handleWordPair();
                 if (thisword.equals("note")) {
                     String note_text = "";
@@ -1340,9 +1439,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         Log.d(TAG, "GOT WORD PAIR: " + thisnumber + " = " + thisword);
 
         switch (thisword) {
-
             case "watchkeypad":
-                if ((watchkeypadset == false) && (thisnumber > 1501968469)) {
+                if (!watchkeypadset && (thisnumber > 1501968469)) {
                     watchkeypad = true;
                     watchkeypadset = true;
                     watchkeypad_timestamp = (long) (thisnumber * 1000);
@@ -1353,13 +1451,15 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 break;
 
             case "rapid":
-                if ((insulinset == false) && (thisnumber > 0)) {
-                    thisinsulinnumber = thisnumber;
-                    textInsulinDose.setText(thisnumber + " units");
-                    Log.d(TAG, "Rapid dose: " + thisnumber);
-                    insulinset = true;
-                    btnInsulinDose.setVisibility(View.VISIBLE);
-                    textInsulinDose.setVisibility(View.VISIBLE);
+                if (!insulinsumset && (thisnumber > 0)) {
+                    thisInsulinSumNumber = thisnumber;
+                    textInsulinSumDose.setText(Double.toString(thisnumber) + " units");
+                    Log.d(TAG, "Rapid dose: " + Double.toString(thisnumber));
+                    textInsulinSumDose.setVisibility(View.VISIBLE);
+                    if (!MultipleInsulins.isEnabled()) {
+                        buttonInsulinSingleDose.setVisibility(View.VISIBLE); // show the button next to the single insulin dose if not using multiples
+                    }
+                    insulinsumset = true;
                 } else {
                     Log.d(TAG, "Rapid dose already set");
                     preserve = true;
@@ -1367,7 +1467,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 break;
 
             case "carbs":
-                if ((carbsset == false) && (thisnumber > 0)) {
+                if (!carbsset && (thisnumber > 0)) {
                     thiscarbsnumber = thisnumber;
                     textCarbohydrates.setText((int) thisnumber + " carbs");
                     carbsset = true;
@@ -1381,7 +1481,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 break;
 
             case "blood":
-                if ((glucoseset == false) && (thisnumber > 0)) {
+                if (!glucoseset && (thisnumber > 0)) {
                     thisglucosenumber = thisnumber;
                     if (Pref.getString("units", "mgdl").equals("mgdl")) {
                         if (textBloodGlucose != null)
@@ -1406,7 +1506,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
             case "time":
                 Log.d(TAG, "processing time keyword");
-                if ((timeset == false) && (thisnumber >= 0)) {
+                if (!timeset && (thisnumber >= 0)) {
 
                     final NumberFormat nf = NumberFormat.getNumberInstance(Locale.US);
                     final DecimalFormat df = (DecimalFormat) nf;
@@ -1456,6 +1556,29 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                     preserve = true;
                 }
                 break;
+            default:
+                if (MultipleInsulins.isEnabled()) {
+                    Insulin insulin = InsulinManager.getProfile(thisword);
+                    UserError.Log.d("TREATMENTS","Processing for: "+insulin.getName());
+                    int number = 0;
+                    for (number = 0; number < maxInsulinProfiles; number++)
+                        if ((thisinsulinprofile[number] == null) || (thisinsulinprofile[number] == insulin)) {
+                            thisinsulinprofile[number] = insulin;
+                            break;
+                        }
+                    if (!insulinset[number] && (thisnumber > 0)) {
+                        thisinsulinnumber[number] = thisnumber;
+                        textInsulinDose[number].setText(Double.toString(thisnumber) + " " + insulin.getName());
+                        Log.d(TAG, insulin.getName() + " dose: " + Double.toString(thisnumber));
+                        insulinset[number] = true;
+                        btnInsulinDose[number].setVisibility(View.VISIBLE);
+                        textInsulinDose[number].setVisibility(View.VISIBLE);
+                    } else {
+                        Log.d(TAG, insulin.getName() + " dose already set");
+                        preserve = true;
+                    }
+                }
+                break;
         } // end switch
 
         if (preserve == false) {
@@ -1467,11 +1590,12 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         }
 
         // don't show approve if we only have time
-        if ((insulinset || glucoseset || carbsset) && !watchkeypad) {
+        if ((insulinsumset || glucoseset || carbsset) && !watchkeypad) {
             btnApprove.setVisibility(View.VISIBLE);
 
             if (small_screen) {
                 final float button_scale_factor = 0.60f;
+                final int small_text_size = 12;
                 ((ViewGroup.MarginLayoutParams) btnApprove.getLayoutParams()).leftMargin = 0;
                 ((ViewGroup.MarginLayoutParams) btnBloodGlucose.getLayoutParams()).leftMargin = 0;
                 ((ViewGroup.MarginLayoutParams) btnBloodGlucose.getLayoutParams()).setMarginStart(0);
@@ -1482,33 +1606,45 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 btnApprove.setScaleY(button_scale_factor);
                 btnCancel.setScaleX(button_scale_factor);
                 btnCancel.setScaleY(button_scale_factor);
-                btnInsulinDose.setScaleX(button_scale_factor);
+                for (int i = 0; i < maxInsulinProfiles; i++) {
+                    btnInsulinDose[i].setScaleY(button_scale_factor);
+                    btnInsulinDose[i].setScaleX(button_scale_factor);
+                    textInsulinDose[i].setTextSize(small_text_size);
+                }
                 btnCarbohydrates.setScaleX(button_scale_factor);
                 btnCarbohydrates.setScaleY(button_scale_factor);
                 btnBloodGlucose.setScaleX(button_scale_factor);
                 btnBloodGlucose.setScaleY(button_scale_factor);
-                btnInsulinDose.setScaleY(button_scale_factor);
                 btnTime.setScaleX(button_scale_factor);
                 btnTime.setScaleY(button_scale_factor);
-
-                final int small_text_size = 12;
-
                 textCarbohydrates.setTextSize(small_text_size);
-                textInsulinDose.setTextSize(small_text_size);
+                textInsulinSumDose.setTextSize(small_text_size);
                 textBloodGlucose.setTextSize(small_text_size);
                 textTime.setTextSize(small_text_size);
             }
         }
 
-        if ((insulinset || glucoseset || carbsset || timeset) && !watchkeypad) {
+        if ((insulinsumset || glucoseset || carbsset || timeset) && !watchkeypad) {
             btnCancel.setVisibility(View.VISIBLE);
             if (chart != null) {
                 chart.setAlpha((float) 0.10);
             }
+            ArrayList<InsulinInjection> injections = new ArrayList<InsulinInjection>();
+            for (int i = 0; i < maxInsulinProfiles; i++)
+                if (insulinset[i]) {
+                    InsulinInjection injection = new InsulinInjection(thisinsulinprofile[i], thisinsulinnumber[i]);
+                    injections.add(injection);
+                }
+            Gson gson = new GsonBuilder()
+                    .excludeFieldsWithoutExposeAnnotation()
+                    .registerTypeAdapter(Date.class, new DateTypeAdapter())
+                    .serializeSpecialFloatingPointValues()
+                    .create();
             WatchUpdaterService.sendTreatment(
                     thiscarbsnumber,
-                    thisinsulinnumber,
+                    thisInsulinSumNumber,
                     thisglucosenumber,
+                    gson.toJson(injections),
                     thistimeoffset,
                     textTime.getText().toString());
         }
@@ -1896,7 +2032,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             previewChart.setVisibility(homeShelf.get("chart_preview") ? View.VISIBLE : View.GONE);
         }
 
-        if (insulinset || glucoseset || carbsset || timeset) {
+        if (insulinsumset || glucoseset || carbsset || timeset) {
             if (chart != null) {
                 chart.setAlpha((float) 0.10);
                 // TODO also set buttons alpha

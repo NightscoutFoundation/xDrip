@@ -803,6 +803,8 @@
     <string name="notify_data_arrives_master"><![CDATA[Notify when data arrives from the master if the interval is > 20 mins.]]></string>
     <string name="follower_chime_new">Follower Chime New</string>
     <string name="carb_ratio">Carb Ratio</string>
+    <string name="enable_dedicated_insulin_profiles">Config Insulin profiles</string>
+    <string name="desc_enable_dedicated_insulin_profiles">Here one can enable or configure various insulin profiles</string>
     <string name="insulin_sensitivity">Insulin Sensitivity</string>
     <string name="secondary_plugin_glucose_value">Secondary Plugin Glucose value</string>
     <string name="step_counter_1st_color">Step counter 1st Color</string>
@@ -1522,4 +1524,7 @@
     <string name="collection_summary_ob1_g5_preemptive_restart">Automatically restart a sensor before it stops</string>
     <string name="title_ob1_g5_preemptive_restart_alert">Alert on preemptive restart</string>
     <string name="summary_ob1_g5_preemptive_restart_alert">Raise an alert when preemptively restarting the session</string>
+    <string name="pref_enable_insulinprofiles">enable at least one max three profiles</string>
+    <string name="pref_select_basal_insulinprofiles">choose basal insulin profile.</string>
+    <string name="pref_select_bolus_insulinprofiles">choose bolus insulin profile. also used for pump and pen...</string>
 </resources>
