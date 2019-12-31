@@ -7,6 +7,8 @@ import com.eveningoutpost.dexdrip.ui.activities.ThinJamActivity;
 
 import java.util.Arrays;
 
+import lombok.val;
+
 // jamorham
 
 public class BlueJay {
@@ -25,7 +27,7 @@ public class BlueJay {
     private static final String PREF_BLUEJAY_SEND_READINGS = "bluejay_send_readings";
 
     public static boolean isCollector() {
-        return true; // TODO make respect preference
+        return Pref.getBooleanDefaultFalse("bluejay_collector_enabled");
     }
 
     // process a pairing QR code and if it is from BlueJay then store and process it and return true
@@ -101,6 +103,11 @@ public class BlueJay {
         } else {
             UserError.Log.e(TAG, "Cannot store identity key as may be invalid");
         }
+    }
+
+    public static boolean hasIdentityKey() {
+        val address = getMac();
+        return address != null && getIdentityKey(address) != null;
     }
 
     public static String getIdentityKey(final String mac) {

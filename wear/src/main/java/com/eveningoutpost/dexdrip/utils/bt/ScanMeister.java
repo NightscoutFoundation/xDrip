@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.utils.bt;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.os.ParcelUuid;
 import android.os.PowerManager;
@@ -9,7 +10,6 @@ import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.RxBleProvider;
-
 import com.eveningoutpost.dexdrip.utils.BtCallBack;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.polidea.rxandroidble2.RxBleClient;
@@ -56,11 +56,14 @@ public class ScanMeister {
     protected volatile List<String> name;
     protected volatile ScanFilter customFilter;
     protected boolean wideSearch = false;
+    protected boolean legacyNoFilterWorkaround = false;
     private static String lastFailureReason = "";
 
     public static final String SCAN_TIMEOUT_CALLBACK = "SCAN_TIMEOUT";
     public static final String SCAN_FAILED_CALLBACK = "SCAN_FAILED";
     public static final String SCAN_FOUND_CALLBACK = "SCAN_FOUND";
+
+    private static final String[] cannotFilterModels = {"Ticwatch E", "Ticwatch S"};
 
     // TODO Log errors when location disabled etc
 
@@ -101,6 +104,11 @@ public class ScanMeister {
         return this;
     }
 
+    public ScanMeister legacyNoFilterWorkaround() {
+        this.legacyNoFilterWorkaround = true;
+        return this;
+    }
+
     // Callback boiler plate v1 callbacks
     public ScanMeister addCallBack(BtCallBack callback, String name) {
         callbacks.put(name, callback);
@@ -112,6 +120,22 @@ public class ScanMeister {
         callbacks2.put(name, callback);
         return this;
     }
+
+    // TODO this may need to be smarter in the future to account for different android versions of the same model, but for now it has only been implemented for devices which are not expecting to get future updates
+    public ScanMeister applyKnownWorkarounds() {
+        if (Build.MODEL != null) {
+            UserError.Log.d(TAG, "Checking if workarounds needed for: " + Build.MODEL);
+            for (final String model : cannotFilterModels) {
+                if (Build.MODEL.equalsIgnoreCase(model)) {
+                    UserError.Log.d(TAG, "Activating workaround for model: " + Build.MODEL);
+                    legacyNoFilterWorkaround();
+                    break;
+                }
+            }
+        }
+        return this;
+    }
+
 
     public void removeCallBack(String name) {
         callbacks.remove(name);
@@ -167,7 +191,7 @@ public class ScanMeister {
                 new ScanSettings.Builder()
                         .setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES)
                         .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
-                        .build(), filter)
+                        .build(), legacyNoFilterWorkaround ? ScanFilter.empty() : filter)
                 .timeout(scanSeconds, TimeUnit.SECONDS) // is unreliable
                 .subscribeOn(Schedulers.io())
                 .subscribe(this::onScanResult, this::onScanFailure));

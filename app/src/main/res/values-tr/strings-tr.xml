@@ -325,7 +325,7 @@
     <string name="save_all_settings_to_sdcard">Tüm ayarları SD karta kaydet</string>
     <string name="load_all_settings_from_sdcard">SD karttan tüm ayarları yükle</string>
     <string name="delete_any_settings_on_sdcard">SD kartta tüm ayarları sil</string>
-    <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[Ayarlar -> Otomatik Yapılandırma özelliği'ni kullanarak ayarları aktarmak için QR kodlarını kullanın]]></string>
+    <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[Ayarlar -> Otomatik Yapılandırma özelliği\'ni kullanarak ayarları aktarmak için QR kodlarını kullanın]]></string>
     <string name="xdrip_plus_security_key_settings_only">xDrip+ yalnızca Güvenlik Tuş Ayarları</string>
     <string name="show_general_and_collection_settings">Genel ve Okuma ayarlarını göster</string>
     <string name="copy_all_settings">Tüm ayarları kopyala</string>
@@ -747,7 +747,7 @@
     <string name="notify_on_low_battery_level">Pil seviyesi düştüğünde bildir</string>
     <string name="collector_battery_alerts">Toplayıcı pil uyarıları</string>
     <string name="low_battery_percentage">Düşük pil yüzdesi</string>
-    <string name="notify_data_arrives_master"><![CDATA[Master'dan ulaşan verinin aralığı >20 dakika ise bilgilendir.]]></string>
+    <string name="notify_data_arrives_master"><![CDATA[Master\'dan ulaşan verinin aralığı >20 dakika ise bilgilendir.]]></string>
     <string name="follower_chime_new">Yeni takipçi zil sesi</string>
     <string name="carb_ratio">Karbonhidrat oranı</string>
     <string name="insulin_sensitivity">İnsülin duyarlılığı</string>

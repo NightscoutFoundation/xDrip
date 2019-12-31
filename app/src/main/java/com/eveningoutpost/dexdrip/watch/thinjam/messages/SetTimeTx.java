@@ -7,6 +7,7 @@ import com.google.gson.annotations.Expose;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
@@ -30,7 +31,7 @@ public class SetTimeTx extends BaseTx {
 
         final Calendar mCalendar = new GregorianCalendar();
         final TimeZone mTimeZone = mCalendar.getTimeZone();
-        this.tzOffset = (mTimeZone.getRawOffset() + mTimeZone.getDSTSavings()) / 1000;
+        this.tzOffset = (mTimeZone.getRawOffset() + (int) getActualDSTOffset(mTimeZone)) / 1000;
 
         init(OPCODE_SET_TIME, 8);
         this.timestamp = JoH.tsl();
@@ -56,5 +57,11 @@ public class SetTimeTx extends BaseTx {
     @Override
     public String toS() {
         return "Valid: " + isValid() + " " + super.toS() + " " + JoH.dateTimeText(timestamp);
+    }
+
+    // TODO move to general utility class
+    // get the actual millis we are offset now
+    private static long getActualDSTOffset(final TimeZone mTimeZone) {
+        return (mTimeZone.useDaylightTime() && mTimeZone.inDaylightTime(new Date())) ? mTimeZone.getDSTSavings() : 0;
     }
 }

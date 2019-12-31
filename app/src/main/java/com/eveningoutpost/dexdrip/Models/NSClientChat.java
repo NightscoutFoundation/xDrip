@@ -49,6 +49,9 @@ public class NSClientChat {
                     }
 
                     data.put("insulin", thistreatment.insulin);
+                    if (thistreatment.insulinJSON != null) {
+                        data.put("insulinInjections", thistreatment.insulinJSON);
+                    }
                     data.put("carbs", thistreatment.carbs);
                     if (thistreatment.notes != null) {
                         data.put("notes", thistreatment.notes);

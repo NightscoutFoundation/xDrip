@@ -17,6 +17,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
@@ -32,6 +34,7 @@ import com.eveningoutpost.dexdrip.databinding.ActivityThinJamBinding;
 import com.eveningoutpost.dexdrip.ui.dialog.GenericConfirmDialog;
 import com.eveningoutpost.dexdrip.ui.dialog.QuickSettingsDialogs;
 import com.eveningoutpost.dexdrip.utils.AndroidBarcode;
+import com.eveningoutpost.dexdrip.utils.LocationHelper;
 import com.eveningoutpost.dexdrip.utils.Preferences;
 import com.eveningoutpost.dexdrip.utils.bt.BtCallBack2;
 import com.eveningoutpost.dexdrip.utils.bt.ScanMeister;
@@ -119,8 +122,27 @@ public class ThinJamActivity extends AppCompatActivity implements BtCallBack2 {
         // handle incoming extras - TODO do we need to wait for service connect?
         final Bundle bundle = getIntent().getExtras();
         processIncomingBundle(bundle);
+
+        LocationHelper.requestLocationForBluetooth(this);
     }
 
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_thinjam, menu);
+        return true;
+    }
+
+    public void blueJayPowerStandby(MenuItem x) {
+
+        GenericConfirmDialog.show(this, "Confirm Standby",
+                "Are you sure you want to put the watch in to Standby mode?\n\nLong Press Watch Button to wake it again.",
+                () -> {
+                    // call standby
+                    thinJam.standby();
+                });
+
+    }
 
     @Override
     protected void onStart() {
@@ -367,6 +389,9 @@ public class ThinJamActivity extends AppCompatActivity implements BtCallBack2 {
             setMac(item.mac);
             saveConnectedDevice();
             BlueJayEntry.setEnabled();
+            thinJam.emptyQueue();
+            thinJam.stringObservableField.set("");
+            thinJam.notificationString.setLength(0);
             refreshFromStoredMac();
         }
 

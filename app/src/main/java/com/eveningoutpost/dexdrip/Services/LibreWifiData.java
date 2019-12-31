@@ -46,6 +46,12 @@ public class LibreWifiData {
     @Expose
     String SensorId;
     
+    @Expose
+    String patchUid; // The base 64 encoded patchUid
+    
+    @Expose
+    String patchInfo; // The base 64 encoded patchInfo
+    
     public Long getCaptureDateTime() {
         return CaptureDateTime;
     }
@@ -62,6 +68,8 @@ public class LibreWifiData {
         HwVersion = src.getString("HwVersion");
         FwVersion = src.getString("FwVersion");
         SensorId = src.getString("SensorId");
+        patchUid = src.getString("patchUid");
+        patchInfo = src.getString("patchInfo");
     }
     
     
@@ -70,7 +78,8 @@ public class LibreWifiData {
         return "LibreWifiData [BlockBytes=" + BlockBytes + ", CaptureDateTime=" + CaptureDateTime + ", RelativeTime="
                 + RelativeTime + ", ChecksumOk=" + ChecksumOk + ", DebugInfo=" + DebugInfo + ", TomatoBatteryLife="
                 + TomatoBatteryLife + ", UploaderBatteryLife=" + UploaderBatteryLife + ", Uploaded=" + Uploaded
-                + ", HwVersion=" + HwVersion + ", FwVersion=" + FwVersion + ", SensorId=" + SensorId + "]";
+                + ", HwVersion=" + HwVersion + ", FwVersion=" + FwVersion + ", SensorId=" + SensorId 
+                + ", patchUid=" + patchUid + ", patchInfo=" + patchInfo +"]";
     }
     
 }

@@ -192,9 +192,9 @@ public class BlueJayInfo extends BaseTx {
 
     private void setStatusBit(final int bit, final boolean set) {
         if (set) {
-            bitfield &= ~(1 << bit);
-        } else {
             bitfield |= (1 << bit);
+        } else {
+            bitfield &= ~(1 << bit);
         }
     }
 

@@ -37,6 +37,25 @@ public class Libre2RawValue extends PlusModel {
                 .execute();
     }
 
+    public static List<Libre2RawValue> latestForGraph(int number, double startTime) {
+        return latestForGraph(number, (long) startTime, Long.MAX_VALUE);
+    }
+
+    public static List<Libre2RawValue> latestForGraph(int number, long startTime) {
+        return latestForGraph(number, startTime, Long.MAX_VALUE);
+    }
+
+    public static List<Libre2RawValue> latestForGraph(int number, long startTime, long endTime) {
+        return new Select()
+                .from(Libre2RawValue.class)
+                .where("ts >= " + Math.max(startTime, 0))
+                .where("ts <= " + endTime)
+                .where("glucose != 0")
+                .orderBy("ts desc")
+                .limit(number)
+                .execute();
+    }
+
     public static void updateDB() {
         fixUpTable(schema, false);
     }
