@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+<!-- keypad text too large in de locale so reduced here -->
+    <dimen name="keypad_top_text_size">18sp</dimen>
+
+</resources>
