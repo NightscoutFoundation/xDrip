@@ -1,10 +1,14 @@
 package com.eveningoutpost.dexdrip.Models;
 
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
+import com.eveningoutpost.dexdrip.insulin.Insulin;
+import com.eveningoutpost.dexdrip.insulin.InsulinManager;
 
 import org.junit.Test;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.google.common.truth.Truth.assertThat;
 
@@ -101,4 +105,36 @@ public class TreatmentsTest extends RobolectricTestWithConfig {
         assertThat(lastTreatment.timestamp).isEqualTo(time);
         assertThat(lastTreatment.enteredBy).startsWith("SomeOtherSource");
     }
+
+    @Test
+    public void multipleInsulinsTreatmentTest() {
+        // :: Create
+        long time = Instant.now().getEpochSecond();
+        List<InsulinInjection> list = new ArrayList<InsulinInjection>();
+
+        final ArrayList<Insulin> insulins = InsulinManager.getDefaultInstance();
+
+        list.add(new InsulinInjection(insulins.get(0),1.2));
+        list.add(new InsulinInjection(insulins.get(1),2.3));
+        Treatments thisTreatment = Treatments.create(1.0d, 1.2+2.3, list, time);
+
+        // :: Read
+        Treatments lastTreatment = Treatments.last();
+
+        // :: Verify
+        assertThat(thisTreatment != lastTreatment).isTrue(); // check not object from cache
+
+        assertThat(lastTreatment.carbs).isEqualTo(1.0d);
+        assertThat(lastTreatment.insulin).isEqualTo(1.2+2.3);
+
+        // TODO this might suffer from json sort ordering - check if that is the issue if it fails
+        assertThat(lastTreatment.getInsulinInjections()).isNotNull();
+        assertThat(lastTreatment.getInsulinInjections().size()).isEqualTo(2);
+        assertThat(lastTreatment.getInsulinInjections().get(0).getInsulin()).isEqualTo(insulins.get(0).getName());
+        assertThat(lastTreatment.getInsulinInjections().get(0).getUnits()).isEqualTo(1.2d);
+        assertThat(lastTreatment.getInsulinInjections().get(1).getInsulin()).isEqualTo(insulins.get(1).getName());
+        assertThat(lastTreatment.getInsulinInjections().get(1).getUnits()).isEqualTo(2.3d);
+
+    }
+
 }

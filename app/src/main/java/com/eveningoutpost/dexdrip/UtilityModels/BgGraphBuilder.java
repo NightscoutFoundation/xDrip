@@ -1550,9 +1550,23 @@ public class BgGraphBuilder {
                             mylabel = mylabel + (JoH.qs(treatment.carbs, 1) + "g").replace(".0g", "g");
                         }
                         pv.setLabel(mylabel); // standard label
+
+                        // show basal dose as blue syringe icon
+                        if (treatment.isBasalOnly()) {
+                            //pv.setBitmapScale((float) (0.5f + (treatment.insulin * 5f))); // 0.1U == 100% 0.2U = 150%
+                            BitmapLoader.loadAndSetKey(pv, R.drawable.ic_eyedropper_variant_grey600_24dp, 0);
+                            pv.setBitmapTint(getCol(X.color_basal_tbr));
+                            final Pair<Float, Float> yPositions = GraphTools.bestYPosition(bgReadings, treatment.timestamp, doMgdl, false, highMark, 27d + (18d * consecutiveCloseIcons));
+                            pv.set(treatment.timestamp / FUZZER, yPositions.first);
+                            pv.note = treatment.getBestShortText();
+                            iconValues.add(pv);
+                            lastIconTimestamp = treatment.timestamp;
+                            continue;
+                        }
+
                         //Log.d(TAG, "watchkeypad pv.mylabel: " + mylabel);
                         if ((treatment.notes != null) && (treatment.notes.length() > 0)) {
-                            pv.note = treatment.notes;
+                            pv.note = treatment.getBestShortText();
                             //Log.d(TAG, "watchkeypad pv.note: " + pv.note + " mylabel: " + mylabel);
                             try {
                                 final Pattern p = Pattern.compile(".*?pos:([0-9.]+).*");
