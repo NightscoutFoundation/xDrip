@@ -49,7 +49,12 @@ public class NightscoutTreatments {
                 if (tr.getString("enteredBy").startsWith(Treatments.XDRIP_TAG)) {
                     from_xdrip = true;
                     if (d) UserError.Log.d(TAG, "This record came from xDrip");
-                }
+                    /// gruoner 12/04/19: added new feature because of usage of two xdrip's
+                    if (Pref.getBooleanDefaultFalse("nsfollow_download_treatments_even_xdrip"))
+                    {
+                        from_xdrip = false;
+                        if (d) UserError.Log.d(TAG, "This record came from xDrip BUT thats OK");
+                    }                }
             } catch (JSONException e) {
                 //
             }

@@ -115,6 +115,12 @@
             android:summary="@string/summary_nsfollow_download_treatments"
             android:title="@string/title_nsfollow_download_treatments"
             />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="nsfollow_download_treatments_even_xdrip"
+            android:summary="@string/summary_nsfollow_download_treatments_even_xdrip"
+            android:title="@string/title_nsfollow_download_treatments_even_xdrip"
+            />
 
         <EditTextPreference
             android:defaultValue=""
