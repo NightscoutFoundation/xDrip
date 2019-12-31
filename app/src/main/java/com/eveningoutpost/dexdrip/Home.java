@@ -2535,7 +2535,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 if ((calculatedBgReadingsCount > 2) || (Ob1G5CollectionService.onlyUsingNativeMode() && BgReading.latest(1).size() > 0)) {
                     // TODO potential to calibrate off stale data here
                     final List<Calibration> calibrations = Calibration.latestValid(2);
-                    if ((calibrations.size() > 1) || Ob1G5CollectionService.onlyUsingNativeMode()) {
+                    if (((calibrations != null) && (calibrations.size() > 1)) || Ob1G5CollectionService.onlyUsingNativeMode()) {
                         if (calibrations.size() > 1) {
                             if (calibrations.get(0).possible_bad != null && calibrations.get(0).possible_bad == true && calibrations.get(1).possible_bad != null && calibrations.get(1).possible_bad != true) {
                                 notificationText.setText(R.string.possible_bad_calibration);
@@ -2566,13 +2566,22 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                     } else {
                         List<Calibration> calibrations = Calibration.latest(2);
                         if (calibrations.size() < 2) {
-                            notificationText.setText(R.string.please_enter_two_calibrations_to_get_started);
-                            showUncalibratedSlope();
-                            Log.d(TAG, "Asking for calibration B: Uncalculated BG readings: " + BgReading.latestUnCalculated(2).size() + " / Calibrations size: " + calibrations.size());
-                            if (!Ob1G5CollectionService.isPendingCalibration()) {
-                                promptForCalibration();
+                            if (BgReading.isDataSuitableForDoubleCalibration()) {
+                                notificationText.setText(R.string.please_enter_two_calibrations_to_get_started);
+                                showUncalibratedSlope();
+                                Log.d(TAG, "Asking for calibration B: Uncalculated BG readings: " + BgReading.latestUnCalculated(2).size() + " / Calibrations size: " + calibrations.size() + " quality: " + BgReading.isDataSuitableForDoubleCalibration());
+                                if (!Ob1G5CollectionService.isPendingCalibration()) {
+                                    promptForCalibration();
+                                } else {
+                                    notificationText.setText("Waiting for Transmitter to receive calibration");
+                                }
                             } else {
-                                notificationText.setText("Waiting for Transmitter to receive calibration");
+                                if (!Ob1G5CollectionService.isG5SensorStarted()) {
+                                    notificationText.setText("Sensor session does not appear to be started");
+                                    // TODO do we stop xDrip sensor session here?
+                                } else {
+                                    notificationText.setText("Not getting any readings.");
+                                }
                             }
                             dontKeepScreenOn();
                         }
