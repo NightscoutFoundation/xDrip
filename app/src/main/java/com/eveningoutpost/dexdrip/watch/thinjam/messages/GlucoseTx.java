@@ -25,7 +25,7 @@ public class GlucoseTx extends BaseTx {
         if (last != null) {
             if (last.source_info == null || !last.source_info.contains("BlueJay")) {
                 val secondsAgo = (msSince(last.timestamp) / 1000);
-                if (secondsAgo < 30000 && secondsAgo > 0) {
+                if (secondsAgo < 30000 && secondsAgo >= 0) {
                     data.putInt(0); // TODO proper UTC
                     data.putShort(((short) secondsAgo)); // check this would be unsigned
                     data.putShort((short) last.getDg_mgdl());
@@ -50,6 +50,8 @@ public class GlucoseTx extends BaseTx {
                         android.util.Log.d(TAG, "Couldn't get display glucose value");
                     }
                     valid = true;
+                } else {
+                    android.util.Log.d(TAG, "Last glucose seconds ago was invalid @ : " + secondsAgo);
                 }
             }
         }

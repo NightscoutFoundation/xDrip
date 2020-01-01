@@ -689,6 +689,9 @@ public class NightscoutUploader {
         record.put("uuid", treatment.uuid);
         record.put("carbs", treatment.carbs);
         record.put("insulin", treatment.insulin);
+        if (treatment.insulinJSON != null) {
+            record.put("insulinInjections", treatment.insulinJSON);
+        }
         record.put("created_at", treatment.created_at);
         record.put("sysTime", format.format(treatment.timestamp));
         array.put(record);
@@ -1190,7 +1193,12 @@ public class NightscoutUploader {
                             testData.put("SensorId", PersistentStore.getString("LibreSN"));
                             testData.put("CaptureDateTime", libreBlockEntry.timestamp);
                             testData.put("BlockBytes",Base64.encodeToString(libreBlockEntry.blockbytes, Base64.NO_WRAP));
-                            
+                            if(libreBlockEntry.patchUid != null && libreBlockEntry.patchUid.length != 0) {
+                                testData.put("patchUid",Base64.encodeToString(libreBlockEntry.patchUid, Base64.NO_WRAP));
+                            }
+                            if(libreBlockEntry.patchInfo != null && libreBlockEntry.patchInfo.length != 0) {
+                               testData.put("patchInfo",Base64.encodeToString(libreBlockEntry.patchInfo, Base64.NO_WRAP));
+                            }
                             testData.put("ChecksumOk",ChecksumOk ? 1 : 0);
                             testData.put("Uploaded", 1);
                             testData.put("UploaderBatteryLife",getBatteryLevel());
@@ -1233,6 +1241,9 @@ public class NightscoutUploader {
                                         record.put("uuid", treatment.uuid);
                                         record.put("carbs", treatment.carbs);
                                         record.put("insulin", treatment.insulin);
+                                        if (treatment.insulinJSON != null) {
+                                            record.put("insulinInjections", treatment.insulinJSON);
+                                        }
                                         record.put("created_at", treatment.created_at);
                                         final BasicDBObject searchQuery = new BasicDBObject().append("uuid", treatment.uuid);
                                         //treatmentDb.insert(record, WriteConcern.UNACKNOWLEDGED);

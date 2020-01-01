@@ -518,6 +518,7 @@ public class AlertPlayer {
                 //.addAction(R.drawable.ic_action_communication_invert_colors_on, "SNOOZE", notificationIntent(context, intent))
                 .setContentIntent(notificationIntent(context, intent))
                 .setLocalOnly(localOnly)
+                .setGroup("xDrip level alert")
                 .setPriority(Pref.getBooleanDefaultFalse("high_priority_notifications") ? Notification.PRIORITY_MAX : Notification.PRIORITY_HIGH)
                 .setDeleteIntent(snoozeIntent(context, minsFromStartPlaying));
 
