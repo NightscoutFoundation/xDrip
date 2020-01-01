@@ -336,7 +336,7 @@ dependencies {
     annotationProcessor "org.projectlombok:lombok:1.16.20"
 
     // used only in special flavour with custom updater
-    xdripcustomImplementation 'com.github.javiersantos:AppUpdater:2.7', {
+    xdripcustomImplementation 'com.github.k2s:AppUpdater:d08208ce3b', {
         exclude group: 'com.android.support'
     }
 }

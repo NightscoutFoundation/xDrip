@@ -1,7 +1,6 @@
 package com.eveningoutpost.dexdrip;
 
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -18,6 +17,7 @@ class CustomUpdater {
 
     CustomUpdater(Activity activity) {
         appUpdater = new AppUpdater(activity)
+                .removeDashedParts()
                 .setDisplay(Display.DIALOG)
                 .setButtonDoNotShowAgainClickListener((dialogInterface, i) -> {
                     Log.d(TAG, "user wants to disable future updates");
