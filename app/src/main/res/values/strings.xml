@@ -38,9 +38,9 @@
     <string name="title_activity_calibration_override">Calibration Override</string>
     <string name="pref_header_cloud_storage">Cloud Storage</string>
     <string name="auto_configure_title">Auto configure</string>
-    <string name="prefs_auto_config_summary">Auto configure using a barcode.</string>
-    <string name="scan_share2_barcode">Scan Share Barcode</string>
-    <string name="pref_share2_scan_barcode_summary">Or scan the barcode on the share receiver</string>
+    <string name="prefs_auto_config_summary">Auto configure using a QR code.</string>
+    <string name="scan_share2_barcode">Scan Share QR code</string>
+    <string name="pref_share2_scan_barcode_summary">Or scan the QR code on the share receiver</string>
 
     <!-- MongoDB Settings -->
     <string name="pref_title_mongodb">MongoDB</string>
@@ -490,10 +490,10 @@
     <string name="bad_glucose_values">Bad Glucose Values</string>
     <string name="revert_to_default">Revert to Default</string>
     <string name="filtered_values">Filtered Values</string>
-    <string name="treatment_color">Treatment Color</string>
-    <string name="treatment_color_dark">Treatment Color Dark</string>
-    <string name="predictive_color">Predictive Color</string>
-    <string name="predictive_color_dark">Predictive Color Dark</string>
+    <string name="treatment_color">Insulin On Board Color</string>
+    <string name="treatment_color_dark">Insulin Activity Color</string>
+    <string name="predictive_color">BG Prediction Color</string>
+    <string name="predictive_color_dark">COB Prediction Color</string>
     <string name="average_and_target_lines">Average and Target Lines</string>
     <string name="eight_hour_average_line">8-Hour Average Line</string>
     <string name="twenty_four_hour_average_line">24-Hour Average Line</string>
