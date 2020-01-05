@@ -40,6 +40,7 @@ public class EWizard extends BaseElement {
         return true;
     }
 
+    // todo grt: change EBolus to ArrayList<InsulinInjection> when tidepool may support that
     public static EWizard fromTreatment(final Treatments treatment) {
         if(!IsEWizardValid(treatment)) {
             return null;
