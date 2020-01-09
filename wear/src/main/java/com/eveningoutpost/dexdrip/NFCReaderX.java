@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 // From LibreAlarm et al
 
@@ -100,16 +101,16 @@ public class NFCReaderX {
         try {
             if (mNfcAdapter == null) {
 
-                JoH.static_toast_long("Phone has no NFC reader");
+                JoH.static_toast_long(gs(R.string.phone_has_no_nfc_reader));
                 //finish();
                 return;
 
             } else if (!mNfcAdapter.isEnabled()) {
-                JoH.static_toast_long("NFC is not enabled");
+                JoH.static_toast_long(gs(R.string.nfc_is_not_enabled));
                 return;
             }
         } catch (NullPointerException e) {
-            JoH.static_toast_long("Phone NFC is having problems!");
+            JoH.static_toast_long(gs(R.string.phone_nfc_is_having_problems));
             return;
         }
 
@@ -185,7 +186,7 @@ public class NFCReaderX {
                         context.startActivity(new Intent(context, NFCScanningX.class));
                     } else {
                         NFCReaderX.vibrate(context, 0);
-                        JoH.static_toast_short("Scanning");
+                        JoH.static_toast_short(gs(R.string.scanning));
                     }
                     if (d)
                         Log.d(TAG, "NFC tag discovered - going to read data");
@@ -193,7 +194,7 @@ public class NFCReaderX {
                 } else {
                     if (JoH.tsl() - last_tag_discovered > 5000) {
                         vibrate(context, 4);
-                        JoH.static_toast_short("Not so quickly, wait 60 seconds");
+                        JoH.static_toast_short(gs(R.string.not_so_quickly_wait_60_seconds));
                     }
                 }
             } else {
@@ -214,35 +215,39 @@ public class NFCReaderX {
         }
     }
     public static boolean HandleGoodReading(String tagId, byte[] data1, final long CaptureDateTime) {
-        return HandleGoodReading(tagId, data1, CaptureDateTime, false);
+        return HandleGoodReading(tagId, data1, CaptureDateTime, false, null, null);
     }
 
     // returns true if checksum passed.
-    public static boolean HandleGoodReading(String tagId, byte[] data1, final long CaptureDateTime, boolean allowUpload ) {
+    public static boolean HandleGoodReading(final String tagId, byte[] data1, final long CaptureDateTime, final boolean allowUpload, byte []patchUid,  byte []patchInfo ) {
 
-        final boolean checksum_ok = LibreUtils.verify(data1);
-        if (!checksum_ok) {
-            return false;
-        }
-        
-        // The 4'th byte is where the sensor status is.
-        if(!LibreUtils.isSensorReady(data1[4])) {
-            Log.e(TAG, "Sensor is not ready, Ignoring reading!");
-            return true;
-        }
 
         if (Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
+            // If oop is used, there is no need to  do the checksum It will be done by the oop.
+            // (or actually we don't know how to do it, for us 14/de sensors).
             // Save raw block record (we start from block 0)
-            LibreBlock.createAndSave(tagId, CaptureDateTime, data1, 0, allowUpload);
-            LibreOOPAlgorithm.SendData(data1, CaptureDateTime);
+            LibreBlock.createAndSave(tagId, CaptureDateTime, data1, 0, allowUpload, patchUid, patchInfo);
+            LibreOOPAlgorithm.SendData(data1, CaptureDateTime, patchUid, patchInfo);
         } else {
+            final boolean checksum_ok = LibreUtils.verify(data1);
+            if (!checksum_ok) {
+                return false;
+            }
+            
+            // The 4'th byte is where the sensor status is.
+            if(!LibreUtils.isSensorReady(data1[4])) {
+                Log.e(TAG, "Sensor is not ready, Ignoring reading!");
+                return true;
+            }
+            
             final ReadingData mResult = parseData(0, tagId, data1, CaptureDateTime);
             new Thread() {
                 @Override
                 public void run() {
                     final PowerManager.WakeLock wl = JoH.getWakeLock("processTransferObject", 60000);
                     try {
-                        LibreAlarmReceiver.processReadingDataTransferObject(new ReadingData.TransferObject(1, mResult), CaptureDateTime, tagId, allowUpload );
+                        mResult.CalculateSmothedData();
+                        LibreAlarmReceiver.processReadingDataTransferObject(new ReadingData.TransferObject(1, mResult), CaptureDateTime, tagId, allowUpload, patchUid, patchInfo );
                         Home.staticRefreshBGCharts();
                     } finally {
                         JoH.releaseWakeLock(wl);
@@ -265,6 +270,7 @@ public class NFCReaderX {
         }
 
         private byte[] data = new byte[360];
+        private byte[] patchInfo = null;
 
 
         @Override
@@ -276,7 +282,7 @@ public class NFCReaderX {
                 if (succeeded) {
                     long now = JoH.tsl();
                     String SensorSn = LibreUtils.decodeSerialNumberKey(tag.getId());
-                    boolean checksum_ok = HandleGoodReading(SensorSn, data, now);
+                    boolean checksum_ok = HandleGoodReading(SensorSn, data, now, false, tag.getId(), patchInfo);
                     if(checksum_ok == false) {
                         Log.e(TAG, "Read data but checksum is wrong");
                     }
@@ -334,7 +340,7 @@ public class NFCReaderX {
                                     } catch (IOException e) {
                                         if ((System.currentTimeMillis() > time + 2000)) {
                                             Log.e(TAG, "tag diagnostic read timeout");
-                                            JoH.static_toast_short("NFC diag timeout");
+                                            JoH.static_toast_short(gs(R.string.nfc_diag_timeout));
                                             vibrate(context, 3);
                                             return null;
                                         }
@@ -353,6 +359,29 @@ public class NFCReaderX {
                         // if multiblock mode
                         JoH.benchmark(null);
 
+                        Long time_patch = System.currentTimeMillis();
+                        while (true) {
+                            try {
+                                
+                                final byte[] cmd = new byte[] {0x02, (byte)0xa1, 0x07};
+                                patchInfo = nfcvTag.transceive(cmd);
+                                if(patchInfo != null) {
+                                    // We need to throw away the first byte.
+                                    patchInfo = Arrays.copyOfRange(patchInfo, 1, patchInfo.length);
+                                }
+                                break;
+                            } catch (IOException e) {
+                                if ((System.currentTimeMillis() > time_patch + 2000)) {
+                                    Log.e(TAG, "patchInfo tag read timeout");
+                                    JoH.static_toast_short(gs(R.string.nfc_read_timeout));
+                                    vibrate(context, 3);
+                                    return null;
+                                }
+                                Thread.sleep(100);
+                            }
+                        }
+                        Log.d(TAG, "patchInfo = " + HexDump.dumpHexString(patchInfo));
+                        
                         if (multiblock) {
                             final int correct_reply_size = addressed ? 28 : 25;
                             for (int i = 0; i <= 43; i = i + 3) {
@@ -373,7 +402,7 @@ public class NFCReaderX {
                                     } catch (IOException e) {
                                         if ((System.currentTimeMillis() > time + 2000)) {
                                             Log.e(TAG, "tag read timeout");
-                                            JoH.static_toast_short("NFC read timeout");
+                                            JoH.static_toast_short(gs(R.string.nfc_read_timeout));
                                             vibrate(context, 3);
                                             return null;
                                         }
@@ -387,11 +416,11 @@ public class NFCReaderX {
                                     Log.d(TAG, HexDump.dumpHexString(replyBlock, 0, replyBlock.length));
                                 if (replyBlock.length != correct_reply_size) {
                                     Log.e(TAG, "Incorrect block size: " + replyBlock.length + " vs " + correct_reply_size);
-                                    JoH.static_toast_short("NFC invalid data - try again");
+                                    JoH.static_toast_short(gs(R.string.nfc_invalid_data__try_again));
                                     if (!addressed) {
                                         if (PersistentStore.incrementLong("nfc-address-failures") > 2) {
                                             Pref.setBoolean("use_nfc_any_tag", false);
-                                            JoH.static_toast_short("Turned off any-tag feature");
+                                            JoH.static_toast_short(gs(R.string.turned_off_anytag_feature));
                                         }
                                     }
                                     vibrate(context, 3);
@@ -420,7 +449,7 @@ public class NFCReaderX {
                                     } catch (IOException e) {
                                         if ((System.currentTimeMillis() > time + 2000)) {
                                             Log.e(TAG, "tag read timeout");
-                                            JoH.static_toast_short("NFC read timeout");
+                                            JoH.static_toast_short(gs(R.string.nfc_read_timeout));
                                             vibrate(context, 3);
                                             return null;
                                         }
@@ -431,7 +460,7 @@ public class NFCReaderX {
                                     Log.d(TAG, HexDump.dumpHexString(oneBlock, 0, oneBlock.length));
                                 if (oneBlock.length != correct_reply_size) {
                                     Log.e(TAG, "Incorrect block size: " + oneBlock.length + " vs " + correct_reply_size);
-                                    JoH.static_toast_short("NFC invalid data");
+                                    JoH.static_toast_short(gs(R.string.nfc_invalid_data));
                                     vibrate(context, 3);
                                     return null;
                                 }
@@ -444,11 +473,11 @@ public class NFCReaderX {
                         succeeded = true;
                         used_nfc_successfully = true;
                         vibrate(context, 1);
-                        JoH.static_toast_short("Scanned OK!");
+                        JoH.static_toast_short(gs(R.string.scanned_ok));
                         PersistentStore.setLongZeroIfSet("nfc-address-failures");
 
                     } catch (IOException e) {
-                        JoH.static_toast_short("NFC IO Error");
+                        JoH.static_toast_short(gs(R.string.nfc_io_error));
                         vibrate(context, 3);
                     } catch (Exception e) {
                         Log.i(TAG, "Got exception reading nfc in background: " + e.toString());
@@ -458,7 +487,7 @@ public class NFCReaderX {
                             nfcvTag.close();
                         } catch (Exception e) {
                             Log.e(TAG, "Error closing tag!");
-                            JoH.static_toast_short("NFC Error");
+                            JoH.static_toast_short(gs(R.string.nfc_error));
                             vibrate(context, 3);
                         }
                     }
