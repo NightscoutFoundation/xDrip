@@ -20,6 +20,9 @@ public interface Intents {
     String EXTRA_NS_NOISE_LEVEL = "com.eveningoutpost.dexdrip.Extras.NsNoiseLevel";
     String XDRIP_DATA_SOURCE_DESCRIPTION = "com.eveningoutpost.dexdrip.Extras.SourceDesc";
     String XDRIP_DATA_SOURCE_INFO = "com.eveningoutpost.dexdrip.Extras.SourceInfo";
+    String XDRIP_VERSION_INFO = "com.eveningoutpost.dexdrip.Extras.VersionInfo";
+    String XDRIP_CALIBRATION_INFO = "com.eveningoutpost.dexdrip.Extras.CalibrationInfo";
+    String XDRIP_CALIBRATION_PLUGIN = "com.eveningoutpost.dexdrip.Extras.CalibrationPluginInfo";
 
     String ACTION_REMOTE_CALIBRATION = "com.eveningoutpost.dexdrip.NewCalibration";
     String ACTION_NEW_BG_ESTIMATE_NO_DATA = "com.eveningoutpost.dexdrip.BgEstimateNoData";
@@ -45,6 +48,7 @@ public interface Intents {
     String ACTION_DATABASE = "info.nightscout.client.DBACCESS";
     String LIBRE_ALARM_TO_XDRIP_PLUS = "com.eveningoutpost.dexdrip.FROM_LIBRE_ALARM";
     String XDRIP_PLUS_NS_EMULATOR = "com.eveningoutpost.dexdrip.NS_EMULATOR";
+    String BLUEJAY_THINJAM_API = "com.eveningoutpost.dexdrip.THINJAM_API";
 
     // Local Broadcasts
     String HOME_STATUS_ACTION = "com.eveningoutpost.dexdrip.HOME_STATUS_ACTION";

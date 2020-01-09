@@ -143,7 +143,7 @@ public class Tomato {
 
     static void addData(byte[] buffer) {
         if(s_acumulatedSize + buffer.length > s_full_data.length) {
-            Log.e(TAG, "Error recieving too much data. exiting. s_acumulatedSize = " + s_acumulatedSize +
+            Log.e(TAG, "Error recieving too much data. exiting. s_acumulatedSize = " + s_acumulatedSize + 
                     " buffer.length = " + buffer.length + " s_full_data.length " + s_full_data.length);
             //??? send something to start back??
             return;
@@ -165,7 +165,7 @@ public class Tomato {
 
         if(s_acumulatedSize < 344 + TOMATO_HEADER_LENGTH + 1 ) {
             //Log.e(TAG,"Getting out, since not enough data s_acumulatedSize = " + s_acumulatedSize);
-            return;
+            return;   
         }
         byte[] data = Arrays.copyOfRange(s_full_data, TOMATO_HEADER_LENGTH, TOMATO_HEADER_LENGTH+344);
         s_recviedEnoughData = true;

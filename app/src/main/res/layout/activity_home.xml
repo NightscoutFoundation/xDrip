@@ -187,19 +187,18 @@
                     android:id="@+id/btnTreatment"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignEnd="@+id/layoutCurrentBgValueRealTime"
                     android:layout_below="@+id/layoutCurrentBgValueRealTime"
-                    android:layout_marginBottom="1dp"
-                    android:layout_marginRight="6dp"
+                    android:layout_alignEnd="@+id/layoutCurrentBgValueRealTime"
                     android:layout_marginTop="1dp"
+                    android:layout_marginRight="6dp"
                     android:background="@android:color/transparent"
                     android:contentDescription="@string/speaktreatment"
                     android:gravity="right"
                     android:nestedScrollingEnabled="false"
-                    android:paddingBottom="1dp"
                     android:paddingLeft="2dp"
-                    android:paddingRight="4dp"
                     android:paddingTop="2dp"
+                    android:paddingRight="4dp"
+                    android:paddingBottom="1dp"
                     android:src="@drawable/ic_eyedropper_variant_grey600_24dp" />
 
                 <ImageButton
@@ -338,24 +337,90 @@
                     android:textStyle="bold" />
 
                 <ImageButton
-                    android:id="@+id/buttonInsulin"
+                    android:id="@+id/buttonInsulin0"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignStart="@+id/buttonCarbs"
-                    android:layout_below="@+id/buttonCarbs"
+                    android:layout_below="@+id/textCarbohydrate"
+                    android:layout_alignLeft="@+id/buttonCarbs"
                     android:src="@drawable/ic_colorize_white_48dp" />
 
+
                 <TextView
-                    android:id="@+id/textInsulinUnits"
+                    android:id="@+id/textInsulinSumUnits"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignBottom="@+id/buttonInsulin"
-                    android:layout_marginBottom="12dp"
-                    android:layout_toEndOf="@+id/buttonInsulin"
+                    android:layout_below="@+id/textCarbohydrate"
+                    android:layout_alignLeft="@+id/textCarbohydrate"
                     android:background="@android:color/transparent"
                     android:text="14 units"
                     android:textColor="@android:color/holo_green_light"
                     android:textSize="22dp"
+                    android:textStyle="bold" />
+
+                <ImageButton
+                    android:id="@+id/buttonInsulin1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/textInsulinSumUnits"
+                    android:layout_alignLeft="@+id/buttonCarbs"
+                    android:src="@drawable/ic_colorize_white_48dp" />
+
+                <TextView
+                    android:id="@+id/textInsulin1Units"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/buttonInsulin1"
+                    android:layout_marginStart="0dp"
+                    android:layout_marginBottom="12dp"
+                    android:layout_toEndOf="@+id/buttonInsulin1"
+                    android:background="@android:color/transparent"
+                    android:text="14 units"
+                    android:textColor="@android:color/holo_green_light"
+                    android:textSize="18dp"
+                    android:textStyle="bold" />
+
+                <ImageButton
+                    android:id="@+id/buttonInsulin2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/buttonInsulin1"
+                    android:layout_alignLeft="@+id/buttonInsulin1"
+                    android:src="@drawable/ic_colorize_white_48dp" />
+
+                <TextView
+                    android:id="@+id/textInsulin2Units"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/buttonInsulin2"
+                    android:layout_marginStart="0dp"
+                    android:layout_marginBottom="12dp"
+                    android:layout_toEndOf="@+id/buttonInsulin2"
+                    android:background="@android:color/transparent"
+                    android:text="14 units"
+                    android:textColor="@android:color/holo_green_light"
+                    android:textSize="18dp"
+                    android:textStyle="bold" />
+
+                <ImageButton
+                    android:id="@+id/buttonInsulin3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/buttonInsulin2"
+                    android:layout_alignLeft="@+id/buttonInsulin2"
+                    android:src="@drawable/ic_colorize_white_48dp" />
+
+                <TextView
+                    android:id="@+id/textInsulin3Units"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/buttonInsulin3"
+                    android:layout_marginStart="0dp"
+                    android:layout_marginBottom="12dp"
+                    android:layout_toEndOf="@+id/buttonInsulin3"
+                    android:background="@android:color/transparent"
+                    android:text="14 units"
+                    android:textColor="@android:color/holo_green_light"
+                    android:textSize="18dp"
                     android:textStyle="bold" />
 
                 <ImageButton

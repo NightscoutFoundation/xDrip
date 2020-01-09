@@ -8,10 +8,14 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.insulin.Insulin;
+import com.eveningoutpost.dexdrip.insulin.InsulinManager;
+import com.eveningoutpost.dexdrip.insulin.MultipleInsulins;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 
 import java.util.HashMap;
@@ -33,23 +37,29 @@ public class PhoneKeypadInputActivity extends BaseActivity {
 
     private TextView mDialTextView;
     private Button zeroButton, oneButton, twoButton, threeButton, fourButton, fiveButton,
-            sixButton, sevenButton, eightButton, nineButton, starButton, backSpaceButton;
+            sixButton, sevenButton, eightButton, nineButton, starButton, backSpaceButton, multiButton1, multiButton2, multiButton3;
     private ImageButton callImageButton, backspaceImageButton, insulintabbutton, carbstabbutton,
             bloodtesttabbutton, timetabbutton, speakbutton;
 
-    private static String currenttab = "insulin";
+    private static String currenttab = "insulin-1";
     private static final String LAST_TAB_STORE = "phone-keypad-treatment-last-tab";
     private static final String TAG = "KeypadInput";
     private static Map<String, String> values = new HashMap<String, String>();
     private String bgUnits;
+    private Insulin insulinProfile1 = null;
+    private Insulin insulinProfile2 = null;
+    private Insulin insulinProfile3 = null;
+    private LinearLayout insulinTypesSection = null;
+
+    private final boolean multipleInsulins = MultipleInsulins.isEnabled();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.keypad_activity_phone);
-
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
+
         int width = dm.widthPixels;
         int height = dm.heightPixels;
         final int refdpi = 320;
@@ -58,6 +68,10 @@ public class PhoneKeypadInputActivity extends BaseActivity {
         getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         WindowManager.LayoutParams lp = getWindow().getAttributes();
         lp.dimAmount = 0.5f;
+
+        insulinProfile1 = InsulinManager.getProfile(0);
+        insulinProfile2 = InsulinManager.getProfile(1);
+        insulinProfile3 = InsulinManager.getProfile(2);
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
 
@@ -74,6 +88,10 @@ public class PhoneKeypadInputActivity extends BaseActivity {
         nineButton = (Button) findViewById(R.id.nine_button);
         starButton = (Button) findViewById(R.id.star_button);
         backSpaceButton = (Button) findViewById(R.id.backspace_button);
+        insulinTypesSection = (LinearLayout) findViewById(R.id.insulinTypesSection);
+        multiButton1 = (Button) findViewById(R.id.multi_button1);
+        multiButton2 = (Button) findViewById(R.id.multi_button2);
+        multiButton3 = (Button) findViewById(R.id.multi_button3);
         // callImageButton = (ImageButton) stub.findViewById(R.id.call_image_button);
         // backspaceImageButton = (ImageButton) stub.findViewById(R.id.backspace_image_button);
 
@@ -170,6 +188,30 @@ public class PhoneKeypadInputActivity extends BaseActivity {
             }
         });
 
+        multiButton1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                currenttab = currenttab.split("-")[0] + "-1";
+                updateTab();
+            }
+        });
+
+        multiButton2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                currenttab = currenttab.split("-")[0] + "-2";
+                updateTab();
+            }
+        });
+
+        multiButton3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                currenttab = currenttab.split("-")[0] + "-3";
+                updateTab();
+            }
+        });
+
         starButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -227,7 +269,7 @@ public class PhoneKeypadInputActivity extends BaseActivity {
         insulintabbutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                currenttab = "insulin";
+                currenttab = "insulin-1";
                 updateTab();
             }
         });
@@ -251,7 +293,6 @@ public class PhoneKeypadInputActivity extends BaseActivity {
         } else {
             bgUnits = "mmol/l";
         }
-
         updateTab();
     }
 
@@ -320,15 +361,22 @@ public class PhoneKeypadInputActivity extends BaseActivity {
 
         boolean nonzeroBloodValue = isNonzeroValueInTab("bloodtest");
         boolean nonzeroCarbsValue = isNonzeroValueInTab("carbs");
-        boolean nonzeroInsulinValue = isNonzeroValueInTab("insulin");
+        boolean nonzeroInsulin1Value = isNonzeroValueInTab("insulin-1");
+        boolean nonzeroInsulin2Value = isNonzeroValueInTab("insulin-2");
+        boolean nonzeroInsulin3Value = isNonzeroValueInTab("insulin-3");
 
         // The green tick is clickable even when it's hidden, so we might get here
         // without valid data.  Ignore the click if input is incomplete
-        if(!nonzeroBloodValue && !nonzeroCarbsValue && !nonzeroInsulinValue)
+        if(!nonzeroBloodValue && !nonzeroCarbsValue && !nonzeroInsulin1Value && !nonzeroInsulin2Value && !nonzeroInsulin3Value) {
+            Log.d(TAG, "All zero values in tabs - not processing button click");
             return;
+        }
 
-        if (isInvalidTime())
+        if (isInvalidTime()) {
+            Log.d(TAG,"Time value is invalid - not processing button click");
             return;
+        }
+
 
         // Add the dot to the time if it is missing
         String timeValue = getValue("time");
@@ -337,10 +385,32 @@ public class PhoneKeypadInputActivity extends BaseActivity {
         }
 
         String mystring = "";
+        double units = 0;
         if (timeValue.length() > 0) mystring += timeValue + " time ";
         if (nonzeroBloodValue) mystring += getValue("bloodtest") + " blood ";
         if (nonzeroCarbsValue) mystring += getValue("carbs") + " carbs ";
-        if (nonzeroInsulinValue) mystring += getValue("insulin") + " units ";
+        if (nonzeroInsulin1Value && (insulinProfile1 != null))
+        {
+            double d = Double.parseDouble(getValue("insulin-1"));
+            if (multipleInsulins) {
+                mystring += String.format("%.1f", d).replace(",",".") + " " + insulinProfile1.getName() + " ";
+            }
+            units += d;
+        }
+        if (multipleInsulins) {
+            if (nonzeroInsulin2Value && (insulinProfile2 != null)) {
+                double d = Double.parseDouble(getValue("insulin-2"));
+                mystring += String.format("%.1f", d).replace(",", ".") + " " + insulinProfile2.getName() + " ";
+                units += d;
+            }
+            if (nonzeroInsulin3Value && (insulinProfile3 != null)) {
+                double d = Double.parseDouble(getValue("insulin-3"));
+                mystring += String.format("%.1f", d).replace(",", ".") + " " + insulinProfile3.getName() + " ";
+                units += d;
+            }
+        }
+        if (units > 0)
+            mystring += String.format("%.1f", units).replace(",",".") + " units ";
 
         if (mystring.length() > 1) {
             //SendData(this, WEARABLE_VOICE_PAYLOAD, mystring.getBytes(StandardCharsets.UTF_8));
@@ -360,13 +430,70 @@ public class PhoneKeypadInputActivity extends BaseActivity {
         carbstabbutton.setBackgroundColor(offColor);
         timetabbutton.setBackgroundColor(offColor);
         bloodtesttabbutton.setBackgroundColor(offColor);
-
+        insulinTypesSection.setVisibility(multipleInsulins ? View.VISIBLE : View.GONE);
+        multiButton1.setBackgroundColor(offColor);
+        multiButton2.setBackgroundColor(offColor);
+        multiButton3.setBackgroundColor(offColor);
+        multiButton1.setVisibility(View.INVISIBLE);
+        multiButton2.setVisibility(View.INVISIBLE);
+        multiButton3.setVisibility(View.INVISIBLE);
+        multiButton1.setEnabled(false);
+        multiButton2.setEnabled(false);
+        multiButton3.setEnabled(false);
 
         String append = "";
-        switch (currenttab) {
+        switch (currenttab.split("-")[0]) {
             case "insulin":
                 insulintabbutton.setBackgroundColor(onColor);
-                append = " " + getString(R.string.units);
+                String insulinprofile = "";
+                if (insulinProfile1 != null) {
+                    multiButton1.setText(insulinProfile1.getName());
+                    multiButton1.setEnabled(true);
+                    multiButton1.setVisibility(View.VISIBLE);
+                } else
+                    multiButton1.setText("");
+                if (insulinProfile2 != null)
+                {
+                    multiButton2.setText(insulinProfile2.getName());
+                    multiButton2.setEnabled(true);
+                    multiButton2.setVisibility(View.VISIBLE);
+                } else
+                    multiButton2.setText("");
+                if (insulinProfile3 != null)
+                {
+                    multiButton3.setText(insulinProfile3.getName());
+                    multiButton3.setEnabled(true);
+                    multiButton3.setVisibility(View.VISIBLE);
+                } else
+                    multiButton3.setText("");
+                String multibutton = "";
+                if (currenttab.contains("-"))
+                    multibutton = currenttab.split("-")[1];
+                switch (multibutton) {
+                    case "1":
+                        multiButton1.setBackgroundColor(onColor);
+                        insulinprofile = insulinProfile1.getName();
+                        break;
+                    case "2":
+                        multiButton2.setBackgroundColor(onColor);
+                        if (insulinProfile2 == null)
+                        {
+                            currenttab = "insulin-1";
+                            updateTab();
+                        } else
+                            insulinprofile = insulinProfile2.getName();
+                        break;
+                    case "3":
+                        multiButton3.setBackgroundColor(onColor);
+                        if (insulinProfile3 == null)
+                        {
+                            currenttab = "insulin-2";
+                            updateTab();
+                        } else
+                            insulinprofile = insulinProfile3.getName();
+                        break;
+                }
+                append = " " +  getString(R.string.units) + (multipleInsulins ? (" " + insulinprofile) : "");
                 break;
             case "carbs":
                 carbstabbutton.setBackgroundColor(onColor);
@@ -390,10 +517,10 @@ public class PhoneKeypadInputActivity extends BaseActivity {
             showSubmitButton = false;
 
         else if (currenttab.equals("time"))
-            showSubmitButton = value.length() > 0 &&
-                    ( isNonzeroValueInTab("bloodtest") || isNonzeroValueInTab("carbs") || isNonzeroValueInTab("insulin"));
+            showSubmitButton = value.length() > 0 && ( isNonzeroValueInTab("bloodtest") || isNonzeroValueInTab("carbs") || isNonzeroValueInTab("insulin-1") || isNonzeroValueInTab("insulin-2") || isNonzeroValueInTab("insulin-3"));
         else
             showSubmitButton = isNonzeroValueInTab(currenttab);
+
         mDialTextView.getBackground().setAlpha(showSubmitButton ? 255 : 0);    }
 
 
@@ -401,6 +528,12 @@ public class PhoneKeypadInputActivity extends BaseActivity {
     protected void onResume() {
         final String savedtab = PersistentStore.getString(LAST_TAB_STORE);
         if (savedtab.length() > 0) currenttab = savedtab;
+        if (!multipleInsulins) {
+            // snap back to insulin-1 tab if we have saved position on multiple insulins tabs
+            if (currenttab.equals("insulin-2") || currenttab.equals("insulin-3")) {
+                currenttab = "insulin-1";
+            }
+        }
         updateTab();
         super.onResume();
     }

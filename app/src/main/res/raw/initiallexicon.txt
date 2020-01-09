@@ -33,8 +33,7 @@
 {"lexicon": "long",
     "matchWords":[
         "long",
-        "long acting",
-        "lantus"
+        "long acting"
     ]},
 
 {"lexicon": "carbs",

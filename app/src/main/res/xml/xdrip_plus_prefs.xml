@@ -600,6 +600,35 @@
                 android:switchTextOn="@string/short_on_text_for_switches"
                 android:title="@string/predictive_simulations" />
 
+            <PreferenceScreen
+                android:title="Multiple Insulin Types"
+                android:summary="Options for working with multiple insulin types">
+                <SwitchPreference
+                    android:defaultValue="false"
+                    android:key="multiple_insulin_types"
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
+                    android:title="Multiple Insulin Types" />
+            <Preference
+                android:key="insulin_profiles"
+                android:dependency="multiple_insulin_types"
+                android:summary="@string/desc_enable_dedicated_insulin_profiles"
+                android:title="@string/enable_dedicated_insulin_profiles">
+                <intent
+                    android:action="android.intent.action.MAIN"
+                    android:targetClass="com.eveningoutpost.dexdrip.insulin.InsulinProfileEditor"
+                    android:targetPackage="@string/local_target_package" />
+            </Preference>
+
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="multiple_insulin_use_basal_activity"
+                    android:summary="Plot Basal activity on graph and incorporate in predictive model"
+                    android:title="Use Basal Activity"/>
+
+            </PreferenceScreen>
+
+
             <Preference
                 android:key="profile_carb_ratio_default"
                 android:summary="@string/grams_of_carbohydrate_one_unit_covers"
@@ -609,6 +638,7 @@
                     android:targetClass="com.eveningoutpost.dexdrip.profileeditor.ProfileEditor"
                     android:targetPackage="@string/local_target_package" />
             </Preference>
+
             <Preference
                 android:key="profile_insulin_sensitivity_default"
                 android:summary="@string/glucose_drop_for_one_unit"
