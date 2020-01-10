@@ -88,33 +88,7 @@ apply plugin: 'com.android.application'
 //apply plugin: 'me.tatarka.retrolambda'
 //apply plugin: 'io.fabric'
 
-Properties signProps = null
-def signPropFile = file('../signing.properties')
-if (signPropFile.canRead()) {
-    println("loading signingConfigs properties from signing.properties")
-    signProps = new Properties()
-    signProps.load(new FileInputStream(signPropFile))
-}
-
 android {
-    signingConfigs {
-        if (signProps != null) {
-            release {
-                storeFile file(signProps.STORE_FILE)
-                storePassword signProps.STORE_PASSWORD
-                keyAlias = signProps.KEY_ALIAS
-                keyPassword signProps.KEY_PASSWORD
-            }
-
-            debug {
-                storeFile file(signProps.STORE_FILE)
-                storePassword signProps.STORE_PASSWORD
-                keyAlias = signProps.KEY_ALIAS
-                keyPassword signProps.KEY_PASSWORD
-            }
-        }
-    }
-
     compileSdkVersion 29
     lintOptions {
         checkReleaseBuilds false
@@ -140,15 +114,6 @@ android {
         resValue "string", "label_xdrip_activity", "XDrip Prefs."
         resValue "string", "app_settings", "XDrip Settings"
 
-    }
-
-    buildTypes {
-        release {
-            if (signProps != null) {
-                signingConfig signingConfigs.release
-            }
-//            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
     }
 
     testOptions {

@@ -112,33 +112,7 @@ def generateVersionName = { ->
 
 }
 
-Properties signProps = null
-def signPropFile = file('../signing.properties')
-if (signPropFile.canRead()) {
-    println("loading signingConfigs properties from signing.properties")
-    signProps = new Properties()
-    signProps.load(new FileInputStream(signPropFile))
-}
-
 android {
-    signingConfigs {
-        if (signProps != null) {
-            release {
-                storeFile file(signProps.STORE_FILE)
-                storePassword signProps.STORE_PASSWORD
-                keyAlias = signProps.KEY_ALIAS
-                keyPassword signProps.KEY_PASSWORD
-            }
-
-            debug {
-                storeFile file(signProps.STORE_FILE)
-                storePassword signProps.STORE_PASSWORD
-                keyAlias = signProps.KEY_ALIAS
-                keyPassword signProps.KEY_PASSWORD
-            }
-        }
-    }
-
     compileSdkVersion 29
 
     dexOptions {
@@ -167,16 +141,6 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
 
-    }
-
-    buildTypes {
-        release {
-            if (signProps != null) {
-                signingConfig signingConfigs.release
-            }
-//            minifyEnabled false
-//            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
-        }
     }
 
     testOptions {
