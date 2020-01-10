@@ -112,11 +112,35 @@ def generateVersionName = { ->
 
 }
 
+Properties signProps = null
+def signPropFile = file('../signing.properties')
+if (signPropFile.canRead()) {
+    println("loading signingConfigs properties from signing.properties")
+    signProps = new Properties()
+    signProps.load(new FileInputStream(signPropFile))
+}
 
 android {
     compileSdkVersion 26
     buildToolsVersion '27.0.3'
 
+    signingConfigs {
+        if (signProps != null) {
+            release {
+                storeFile file(signProps.STORE_FILE)
+                storePassword signProps.STORE_PASSWORD
+                keyAlias = signProps.KEY_ALIAS
+                keyPassword signProps.KEY_PASSWORD
+            }
+
+            debug {
+                storeFile file(signProps.STORE_FILE)
+                storePassword signProps.STORE_PASSWORD
+                keyAlias = signProps.KEY_ALIAS
+                keyPassword signProps.KEY_PASSWORD
+            }
+        }
+    }
 
     defaultConfig {
         applicationId "com.eveningoutpost.dexdrip"
@@ -167,6 +191,9 @@ android {
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'),
                     'proguard-rules.pro'
+            if (signProps != null) {
+                signingConfig signingConfigs.release
+            }
         }
         debug {
             minifyEnabled true
