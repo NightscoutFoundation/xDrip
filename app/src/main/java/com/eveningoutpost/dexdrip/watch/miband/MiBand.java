@@ -107,7 +107,7 @@ public class MiBand {
             String authMac = getAuthMac();
             setVersion("", authMac);
             setModel("", authMac);
-            setPersistantAuthKey("", authMac);
+            setPersistentAuthKey("", authMac);
             PersistentStore.removeItem(PREF_MIBAND_AUTH_MAC);
             return;
         }
@@ -122,7 +122,7 @@ public class MiBand {
         return Pref.getString(PREF_MIBAND_AUTH_KEY, "");
     }
 
-    static String getPersistantAuthKey() {
+    static String getPersistentAuthKey() {
         final String mac = getAuthMac();
         if (!mac.isEmpty()) {
             return PersistentStore.getString(PREF_MIBAND_PERSISTANT_AUTH_KEY + mac);
@@ -130,7 +130,7 @@ public class MiBand {
         return "";
     }
 
-    static void setPersistantAuthKey(final String key, String mac) {
+    static void setPersistentAuthKey(final String key, String mac) {
         if (key.isEmpty()) {
             PersistentStore.removeItem(PREF_MIBAND_PERSISTANT_AUTH_KEY + mac);
             return;
