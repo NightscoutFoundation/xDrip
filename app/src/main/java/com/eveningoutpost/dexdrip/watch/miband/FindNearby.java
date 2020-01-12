@@ -38,7 +38,6 @@ public class FindNearby implements BtCallBack2 {
                 MiBand.setMac(mac);
                 MiBand.setModel(name, mac);
                 JoH.static_toast_long("Found " + name + ", mac address: " + mac);
-                MiBandEntry.startWithRefresh();
                 break;
             case ScanMeister.SCAN_FAILED_CALLBACK:
             case ScanMeister.SCAN_TIMEOUT_CALLBACK:

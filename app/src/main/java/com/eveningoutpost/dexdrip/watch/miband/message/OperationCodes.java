@@ -98,6 +98,8 @@ public class OperationCodes {
     public static final byte[] COMMAND_FACTORY_RESET = new byte[]{ENDPOINT_DISPLAY, 0x0b, 0x00, 0x01};
     public static final byte[] COMMAND_ENABLE_DISCONNECT_NOTIFCATION = new byte[]{ENDPOINT_DISPLAY, 0x0c, 0x00, 0x01};//, 0, 0, 0, 0};
     public static final byte[] COMMAND_DISABLE_DISCONNECT_NOTIFCATION = new byte[]{ENDPOINT_DISPLAY, 0x0c, 0x00, 0x00};//, 0, 0, 0, 0};
+    public static final byte[] COMMAND_ACK_FIND_PHONE_IN_PROGRESS = new byte[]{ENDPOINT_DISPLAY, 0x14, 0x00, 0x00};
+
 
     public static final byte RESPONSE = 0x10;
 
