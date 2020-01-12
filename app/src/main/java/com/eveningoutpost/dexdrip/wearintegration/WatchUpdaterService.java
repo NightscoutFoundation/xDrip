@@ -695,7 +695,7 @@ public class WatchUpdaterService extends WearableListenerService implements
         }
     }
 
-    public static void sendTreatment(double carbs, double insulin, double bloodtest, double timeoffset, String timestring) {
+    public static void sendTreatment(double carbs, double insulin, double bloodtest, String injectionJSON, double timeoffset, String timestring) {
         if ((googleApiClient != null) && (googleApiClient.isConnected())) {
             PutDataMapRequest dataMapRequest = PutDataMapRequest.create(WEARABLE_TREATMENT_PAYLOAD);
             //unique content
@@ -706,6 +706,7 @@ public class WatchUpdaterService extends WearableListenerService implements
             dataMapRequest.getDataMap().putDouble("bloodtest", bloodtest);
             dataMapRequest.getDataMap().putDouble("timeoffset", timeoffset);
             dataMapRequest.getDataMap().putString("timestring", timestring);
+            dataMapRequest.getDataMap().putString("injectionJSON", injectionJSON);
             dataMapRequest.getDataMap().putBoolean("ismgdl", doMgdl(PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext())));
             PutDataRequest putDataRequest = dataMapRequest.asPutDataRequest();
             Wearable.DataApi.putDataItem(googleApiClient, putDataRequest);

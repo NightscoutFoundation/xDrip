@@ -610,6 +610,11 @@
             android:label="@string/title_activity_profile_editor"
             android:windowSoftInputMode="adjustPan" />
         <activity
+            android:name=".insulin.InsulinProfileEditor"
+            android:configChanges="orientation|screenSize"
+            android:label="@string/title_activity_profile_editor"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
             android:name=".languageeditor.LanguageEditor"
             android:configChanges="orientation|screenSize"
             android:label="@string/language_editor"

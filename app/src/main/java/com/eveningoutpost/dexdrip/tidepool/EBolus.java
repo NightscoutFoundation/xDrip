@@ -33,7 +33,8 @@ public class EBolus extends BaseElement {
         UserError.Log.e(TAG, "Ignoring invalid treatment " + treatment.toS());
         return false;
     }
-    
+
+    //todo grt: change EBolus Treatment to ArrayList<InsulinInjection> when tidepool may support that
     public static EBolus fromTreatment(Treatments treatment) {
         if(!IsBolusValid(treatment)) {
           return null;
