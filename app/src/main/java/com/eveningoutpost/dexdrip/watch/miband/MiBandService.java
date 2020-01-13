@@ -253,7 +253,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
 
     private void startBgTimer() {
         stopBgUpdateTimer();
-        if (shouldServiceRun() && MiBand.isAuthenticated()) {
+        if (shouldServiceRun() && MiBand.isAuthenticated() && !MiBandEntry.isNeedSendReadingAsNotification()) {
             final long retry_in = whenToRetryNextBgTimer();
             bgServiceIntent = WakeLockTrampoline.getPendingIntent(this.getClass(), Constants.MIBAND_SERVICE_BG_RETRY_ID, "set_time_by_timer");
             JoH.wakeUpIntent(xdrip.getAppContext(), retry_in, bgServiceIntent);
