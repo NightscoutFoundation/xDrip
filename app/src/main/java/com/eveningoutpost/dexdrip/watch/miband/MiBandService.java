@@ -126,7 +126,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
     {
         mState = new MiBandState().setLI(I);
         I.backgroundStepDelay = 0;
-
+        I.autoConnect = true;
         //I.playSounds = true;
         I.connectTimeoutMinutes = (int)CONNECTION_TIMEOUT;
         startBgTimer();
@@ -149,7 +149,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
             if (shouldServiceRun()) {
                 final String authMac = MiBand.getAuthMac();
                 String mac = MiBand.getMac();
-                if (!authMac.equalsIgnoreCase(mac) && !authMac.isEmpty()) {
+                if (!authMac.equalsIgnoreCase(mac) || authMac.isEmpty()) {
                     MiBand.setAuthMac(""); //flush old auth info
                     isNeedToAuthenticate = true;
                 }
@@ -236,7 +236,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
             nextDate = expireDate;
         else {
             currentDate.add(Calendar.DATE, 1);
-            currentDate.set(Calendar.HOUR, 0);
+            currentDate.set(Calendar.HOUR_OF_DAY, 0);
             currentDate.set(Calendar.MINUTE, 0);
             currentDate.set(Calendar.SECOND, 10);
             nextDate = currentDate;
@@ -391,7 +391,6 @@ public class MiBandService extends JamBaseBluetoothSequencer {
 
     @SuppressLint("CheckResult")
     private void getSoftwareRevision() {
-        if (isNeedToCheckRevision) { //check only once
             I.connection.readCharacteristic(Const.UUID_CHAR_SOFTWARE_REVISION_STRING).subscribe(
                     readValue -> {
                         String revision = new String(readValue);
@@ -403,7 +402,6 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                         UserError.Log.e(TAG, "Could not read software revision: " + throwable);
                         changeNextState();
                     });
-        } else changeNextState();
     }
 
     @SuppressLint("CheckResult")
@@ -945,7 +943,6 @@ public class MiBandService extends JamBaseBluetoothSequencer {
 
         if (shouldServiceRun()) {
             switch (I.state) {
-
                 case INIT:
                     // connect by default
                     changeNextState();
@@ -956,7 +953,9 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                     else changeNextState();
                     break;
                 case MiBandState.GET_SOFT_REVISION:
-                    getSoftwareRevision();
+                    if (MiBand.getVersion().isEmpty() || isNeedToCheckRevision )
+                        getSoftwareRevision();
+                    else changeNextState();
                     break;
                 case MiBandState.AUTHENTICATE:
                     if (isNeedToAuthenticate) {

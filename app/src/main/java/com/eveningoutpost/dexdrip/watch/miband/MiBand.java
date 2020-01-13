@@ -149,6 +149,7 @@ public class MiBand {
     }
 
     static void setModel(final String model, String mac) {
+        if (mac.isEmpty()) mac = getMac();
         if (model.isEmpty()) {
             PersistentStore.removeItem(PREF_MIBAND_MODEL + mac);
             return;
@@ -167,6 +168,7 @@ public class MiBand {
     }
 
     static void setVersion(final String version, String mac) {
+        if (mac.isEmpty()) mac = getMac();
         if (version.isEmpty()) {
             PersistentStore.removeItem(PREF_MIBAND_MODEL + mac);
             return;
