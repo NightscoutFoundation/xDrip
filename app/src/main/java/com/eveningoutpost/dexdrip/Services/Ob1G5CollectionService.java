@@ -316,6 +316,10 @@ public class Ob1G5CollectionService extends G5BaseService {
                             UserError.Log.d(TAG, "Skipping Scanning! : Changing state due to minimize_scanning flags");
                             changeState(CONNECT_NOW);
                         } else {
+                            if (Build.VERSION.SDK_INT >= 29) { // TODO add preference option for this
+                                UserError.Log.d(TAG, "Attempting Android 10+ workaround unbonding");
+                                unBond();
+                            }
                             scan_for_device();
                         }
                         break;
