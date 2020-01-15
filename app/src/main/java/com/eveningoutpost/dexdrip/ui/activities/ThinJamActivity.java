@@ -297,10 +297,12 @@ public class ThinJamActivity extends AppCompatActivity implements BtCallBack2 {
 
         public boolean scan(boolean legacy) {
             UserError.Log.d(TAG, "Start scan");
-            if (legacy) {
-                scanMeister.setFilter(nullFilter).scan();
-            } else {
-                scanMeister.setFilter(customFilter).scan();
+            if (JoH.ratelimit("bj-scan-startb",5)) {
+                if (legacy) {
+                    scanMeister.setFilter(nullFilter).scan();
+                } else {
+                    scanMeister.setFilter(customFilter).scan();
+                }
             }
             return false;
         }
@@ -312,8 +314,16 @@ public class ThinJamActivity extends AppCompatActivity implements BtCallBack2 {
         // boolean for long click
         public boolean unitTesting(final String test) {
             // call external test suite
-            thinJam.setProgressIndicator(progressBar);
-            thinJam.getDebug().processTestSuite(test);
+            if (test.startsWith("confirm")) {
+                val subtest = test.substring(7,test.length());
+                GenericConfirmDialog.show(this.activity, "Confirm:", "Please confirm when ready for: " + subtest, () -> {
+                    thinJam.setProgressIndicator(progressBar);
+                    thinJam.getDebug().processTestSuite(subtest);
+                });
+            } else {
+                thinJam.setProgressIndicator(progressBar);
+                thinJam.getDebug().processTestSuite(test);
+            }
             return true;
         }
 
@@ -336,6 +346,7 @@ public class ThinJamActivity extends AppCompatActivity implements BtCallBack2 {
                 txid = "";
             }
             thinJam.setSettings(txid);
+            thinJam.setTime();
         }
 
 
@@ -470,6 +481,7 @@ public class ThinJamActivity extends AppCompatActivity implements BtCallBack2 {
             if (command != null) {
                 switch (command) {
                     case REFRESH_FROM_STORED_MAC:
+                        binding.getVm().connectedDevice.set(BlueJay.getMac());
                         binding.getVm().setMac(BlueJay.getMac()); // TODO this doesn't handle name
                         binding.getVm().identify(); // re(do) identification.
                         break;
