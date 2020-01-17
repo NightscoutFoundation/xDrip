@@ -11,6 +11,7 @@ import android.os.PowerManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Pair;
 
+import com.eveningoutpost.dexdrip.BestGlucose;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
@@ -521,10 +522,12 @@ public class MiBandService extends JamBaseBluetoothSequencer {
             }
         } else {
             FunAlmanac.Reply rep;
-            if (last == null || last.isStale()) {
-                rep = FunAlmanac.getRepresentation(0, "Flat", usingMgDl());
+
+            final BestGlucose.DisplayGlucose dg = BestGlucose.getDisplayGlucose();
+            if (dg != null) {
+                rep = FunAlmanac.getRepresentation(dg.mgdl, dg.delta_name, usingMgDl());
             } else {
-                rep = FunAlmanac.getRepresentation(last.getDg_mgdl(), last.slopeName(), usingMgDl());
+                rep = FunAlmanac.getRepresentation(last.calculated_value, last.slopeName(), usingMgDl());
             }
             UserError.Log.uel(TAG, "Representation for: " + rep.input);
             TimeMessage message = new TimeMessage();
