@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothGattService;
 import android.content.Intent;
 import android.databinding.ObservableField;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.util.Pair;
@@ -26,6 +27,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.UtilityModels.Unitized;
 import com.eveningoutpost.dexdrip.ui.activities.ThinJamActivity;
+import com.eveningoutpost.dexdrip.utils.BytesGenerator;
 import com.eveningoutpost.dexdrip.utils.bt.Helper;
 import com.eveningoutpost.dexdrip.utils.bt.ReplyProcessor;
 import com.eveningoutpost.dexdrip.utils.bt.Subscription;
@@ -33,6 +35,7 @@ import com.eveningoutpost.dexdrip.utils.framework.WakeLockTrampoline;
 import com.eveningoutpost.dexdrip.utils.time.SlidingWindowConstraint;
 import com.eveningoutpost.dexdrip.watch.thinjam.firmware.FirmwareDownload;
 import com.eveningoutpost.dexdrip.watch.thinjam.firmware.FirmwareInfo;
+import com.eveningoutpost.dexdrip.watch.thinjam.io.ThinJamAudioStream;
 import com.eveningoutpost.dexdrip.watch.thinjam.messages.AuthReqTx;
 import com.eveningoutpost.dexdrip.watch.thinjam.messages.BackFillTx;
 import com.eveningoutpost.dexdrip.watch.thinjam.messages.BaseTx;
@@ -41,10 +44,12 @@ import com.eveningoutpost.dexdrip.watch.thinjam.messages.BulkUpTx;
 import com.eveningoutpost.dexdrip.watch.thinjam.messages.DefineWindowTx;
 import com.eveningoutpost.dexdrip.watch.thinjam.messages.GlucoseTx;
 import com.eveningoutpost.dexdrip.watch.thinjam.messages.PushRx;
+import com.eveningoutpost.dexdrip.watch.thinjam.messages.RBulkUpTx;
 import com.eveningoutpost.dexdrip.watch.thinjam.messages.ResetPersistTx;
 import com.eveningoutpost.dexdrip.watch.thinjam.messages.SetTimeTx;
 import com.eveningoutpost.dexdrip.watch.thinjam.messages.SetTxIdTx;
 import com.eveningoutpost.dexdrip.watch.thinjam.messages.StandbyTx;
+import com.eveningoutpost.dexdrip.watch.thinjam.utils.BitmapTools;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.gson.annotations.Expose;
 import com.polidea.rxandroidble2.RxBleDeviceServices;
@@ -75,6 +80,7 @@ import static com.eveningoutpost.dexdrip.Models.JoH.threadSleep;
 import static com.eveningoutpost.dexdrip.Models.JoH.tsl;
 import static com.eveningoutpost.dexdrip.Services.JamBaseBluetoothSequencer.BaseState.CLOSE;
 import static com.eveningoutpost.dexdrip.Services.JamBaseBluetoothSequencer.BaseState.CLOSED;
+import static com.eveningoutpost.dexdrip.Services.JamBaseBluetoothSequencer.BaseState.DISCOVER;
 import static com.eveningoutpost.dexdrip.Services.JamBaseBluetoothSequencer.BaseState.INIT;
 import static com.eveningoutpost.dexdrip.Services.JamBaseBluetoothSequencer.BaseState.SEND_QUEUE;
 import static com.eveningoutpost.dexdrip.Services.JamBaseBluetoothSequencer.BaseState.SLEEP;
@@ -97,14 +103,15 @@ import static com.eveningoutpost.dexdrip.watch.thinjam.Const.ERROR_INVALID;
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.ERROR_MISC;
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.ERROR_OK;
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.ERROR_OUT_OF_RANGE;
+import static com.eveningoutpost.dexdrip.watch.thinjam.Const.OPCODE_BULK_R_XFER_0;
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.OPCODE_EASY_AUTH;
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.OPCODE_GET_STATUS_1;
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.OPCODE_GET_STATUS_2;
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.OPCODE_IDENTIFY;
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.OPCODE_RESET_ALL;
-import static com.eveningoutpost.dexdrip.watch.thinjam.Const.OPCODE_RESET_PERSIST;
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.OPCODE_SHOW_QRCODE;
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.THINJAM_BULK;
+import static com.eveningoutpost.dexdrip.watch.thinjam.Const.THINJAM_NOTIFY_TYPE_TEXTBOX1;
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.THINJAM_OTA;
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.THINJAM_WRITE;
 import static com.eveningoutpost.dexdrip.watch.thinjam.firmware.BlueJayFirmware.parse;
@@ -122,11 +129,12 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
 
     private static long awaiting_easy_auth = 0;
 
+    private static final SlidingWindowConstraint connectionTracker = new SlidingWindowConstraint(50, 20 * Constants.MINUTE_IN_MS, "max_bluejay_reconnects");
     private final IBinder binder = new LocalBinder();
     @Getter
     private final DebugUnitTestLogger debug = new DebugUnitTestLogger(this);
 
-    private Subscription notificationSubscription;
+    Subscription notificationSubscription;
     @Setter
     private Runnable postQueueRunnable;
 
@@ -143,6 +151,8 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
         final byte[] buffer;
         int type = 1;
         boolean quiet = true;
+        int retries = 20;
+        int retried = 0;
 
         public String toS() {
             return JoH.defaultGsonInstance().toJson(this);
@@ -158,6 +168,15 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
             return this;
         }
 
+        public boolean retryCounterOk() {
+            if (retries == retried) {
+                return false;
+            } else {
+                retried++;
+                return true;
+            }
+        }
+
     }
 
 
@@ -169,7 +188,7 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
     {
         mState = new ThinJamState().setLI(I);
         I.backgroundStepDelay = 0;
-        I.autoConnect = true;
+        setAutoConnect();
         I.autoReConnect = true; // TODO control these two from preference?
         //   I.playSounds = true;
         I.connectTimeoutMinutes = 25;
@@ -179,6 +198,11 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
         I.queue_write_characterstic = THINJAM_WRITE;
         setMac(BlueJay.getMac());
         //I.resetWhenAlreadyConnected = true;
+    }
+
+    private void setAutoConnect() {
+        I.autoConnect = true; // must always be true at the moment
+        //I.autoConnect = (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) || Pref.getBoolean("bluetooth_trust_autoconnect", true);
     }
 
     public BlueJayInfo getInfo() {
@@ -210,10 +234,18 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
         }
     }
 
-    // TODO revisit latency here
+
+    private volatile SetTimeTx timeOutbound;
+
     public void setTime() {
-        final SetTimeTx outbound = new SetTimeTx();
-        new QueueMe().setBytes(outbound.getBytes())
+
+        new QueueMe().setGenerator(new BytesGenerator() {
+            @Override
+            public byte[] produce() {
+                timeOutbound = new SetTimeTx();
+                return timeOutbound.getBytes();
+            }
+        })
                 .setDescription("Set time")
                 .expireInSeconds(30)
                 .setProcessor(new ReplyProcessor(I.connection) {
@@ -221,8 +253,8 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
                     public void process(byte[] bytes) {
                         final SetTimeTx reply = new SetTimeTx(bytes);
                         UserError.Log.d(TAG, "Time Process callback: " + JoH.bytesToHex(bytes));
-                        getInfo().parseSetTime(reply, outbound);
-                        UserError.Log.d(TAG, "Time difference with watch: " + ((outbound.getTimestamp() - reply.getTimestamp()) / 1000d));
+                        getInfo().parseSetTime(reply, timeOutbound);
+                        UserError.Log.d(TAG, "Time difference with watch: " + ((timeOutbound.getTimestamp() - reply.getTimestamp()) / 1000d));
                     }
                 })
                 .queue();
@@ -347,6 +379,7 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
     public void processInboundGlucose() {
         final BlueJayInfo info = BlueJayInfo.getInfo(I.address);
         final long inboundTimestamp = info.getTimestamp();
+        UserError.Log.d(TAG, "Processing inbound glucose: " + JoH.dateTimeText(info.getTimestamp()));
         // TODO allow only tighter windows for sync
         if (inboundTimestamp > 1561900000000L && inboundTimestamp < (tsl() + (Constants.MINUTE_IN_MS * 5))) {
             final BgReading bgReading = BgReading.last();
@@ -378,6 +411,8 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
                     } else {
                         UserError.Log.d(TAG, "Ignoring status glucose reading as we already have one within 4 mins");
                     }
+                } else {
+                    UserError.Log.d(TAG,"Glucose value not reported as usable");
                 }
                 // TODO add trend - done in post process
             }
@@ -434,6 +469,7 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
 
             item.queueUnique();
             doQueue();
+            invalidateCache();
         } else {
             JoH.static_toast_long("Needs BlueJay firmware upgrade to support standby");
         }
@@ -441,10 +477,12 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
 
     public void reboot() {
         queueSingleByteCommand(OPCODE_RESET_ALL, "Reset all");
+        invalidateCache();
     }
 
     public void factoryReset() {
         queueGenericCommand(new ResetPersistTx(sleepAfterReset).getBytes(), "Factory Reset", null);
+        invalidateCache();
     }
 
     public void showQrCode() {
@@ -481,7 +519,7 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
                             addToLog("Already authenticated, no need to easy auth");
                             break;
                         case ERROR_OK:
-                            addToLog("Auth Auth mode - press the button for 2 seconds");
+                            addToLog("Easy Auth mode - press the button for 2 seconds");
                             awaiting_easy_auth = tsl();
                             break;
                     }
@@ -570,11 +608,16 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
         queueGenericCommand(new byte[]{cmd}, description, runnable);
     }
 
-    public void queueGenericCommand(final byte[] cmd, final String description, final Runnable runnable) {
+    void queueGenericCommand(final byte[] cmd, final String description, final Runnable runnable) {
+        queueGenericCommand(cmd,description,runnable,null);
+    }
+
+    QueueMe queueGenericCommand(final byte[] cmd, final String description, final Runnable runnable, final ReplyProcessor processor) {
         val item = new QueueMe()
                 .setBytes(cmd);
+        if (processor != null) processor.setTag(item);
         item.setDescription(description)
-                .setProcessor(new AuthReplyProcessor(new ReplyProcessor(I.connection) {
+                .setProcessor(processor != null ? processor : new AuthReplyProcessor(new ReplyProcessor(I.connection) {
                     @Override
                     public void process(byte[] bytes) {
                         UserError.Log.d(TAG, "Reply for: " + description + " " + JoH.bytesToHex(bytes));
@@ -584,9 +627,9 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
         if (runnable != null) {
             item.setRunnable(runnable);
         }
-
         item.queue();
         doQueue();
+        return item;
     }
 
     public QueueMe getQitemInstance() {
@@ -601,6 +644,12 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
     }
 
     private static final int max_buffer_size = 256;
+
+    public void enqueueWrappedBitmap(BitmapTools.Wrapper image, int x, int y) {
+        // check valid
+        UserError.Log.d(TAG, "Wrapped bitmap: width: " + x + " height:" + y);
+        enqueue(x, y, image.width, image.height, image.body);
+    }
 
     public void enqueue(int x, int y, int width, int height, byte[] buffer) {
         if (buffer.length > max_buffer_size) {
@@ -635,8 +684,24 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
             current_y += 16;
             height_left -= 16;
         }
+        if (height_left >= 8) {
+            UserError.Log.d(TAG, "Unprocessed height left: " + height_left + " !!!");
+            current_x = 0;
+            width_left = width;
+            UserError.Log.d(TAG, "Unprocessed width left: " + width_left + " !!!");
+            while (width_left >= 16) {
+                final byte[] cropped = cropRGB565(current_x, current_y, 16, 8, width, height, buffer);
+                enqueue(start_x + current_x, start_y + current_y, 16, 8, cropped);
+                current_x += 16;
+                width_left -= 16;
+            }
+            current_y += 7;
+            height_left -= 7;
+        }
+        // Todo functionalize above and add support for straggler pixel lines
     }
 
+    // todo move to utils
     public byte[] cropRGB565(int x, int y, int width, int height, int parent_width, int parent_height, final byte[] buffer) {
         final byte[] output = new byte[width * height * 2];
         final int row_width = parent_width * 2;
@@ -684,9 +749,15 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
     }
 
     public synchronized void processQueue() {
+        // TODO should probably check we are still in correct state to run this
         final ThinJamItem item = commandQueue.peek();
         if (item != null) {
-            runQueueItem(item);
+            if (item.retryCounterOk()) {
+                runQueueItem(item);
+            } else {
+                UserError.Log.d(TAG,"ThinJam queue item exceeded retries - removing");
+                commandQueue.poll();
+            }
         } else {
             UserError.Log.d(TAG, "Queue is empty");
             if (postQueueRunnable != null) {
@@ -696,6 +767,11 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
     }
 
     static volatile boolean busy = false;
+
+    private void invalidateCache() {
+        getInfo().invalidateStatus();
+        getInfo().invalidateTime();
+    }
 
     private synchronized void sendOtaChunks(final List<byte[]> chunks) {
 
@@ -763,8 +839,7 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
                     addToLog("Failed to send all firmware data\n");
                 }
 
-                getInfo().invalidateStatus();
-                getInfo().invalidateTime();
+                invalidateCache();
 
                 threadSleep(10000);
                 try {
@@ -808,13 +883,21 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
     }
 
 
+
+    private volatile int revisedOffset = 0;
+    private volatile int lastActionedRevisedOffset = -1;
     // write the data packets
     private void bulkSend(final int opcode, final byte[] buffer, final int offset, boolean quiet) {
-        UserError.Log.d(TAG, "bulksend called: opcode " + opcode + " total " + buffer.length + " offset: " + offset);
+        UserError.Log.d(TAG, "bulksend called: opcode " + opcode + " total " + buffer.length + " offset: " + offset+ " quiet:"+quiet);
         if (buffer != null && offset < buffer.length) {
-            final BulkUpTx packet = new BulkUpTx(opcode, buffer, offset);
+            final BulkUpTx packet = (opcode >= OPCODE_BULK_R_XFER_0 ? new RBulkUpTx(opcode, buffer, offset) : new BulkUpTx(opcode, buffer, offset));
             if (quiet) {
                 packet.setQuiet();
+            }
+            if (offset ==0) {
+                revisedOffset = 0; // reset counter as this is new bulk up
+                lastActionedRevisedOffset = -1;
+                // TODO we should check it if we have failed to act on revised offset
             }
 
             I.connection.writeCharacteristic(quiet ? THINJAM_BULK : THINJAM_WRITE, packet.getBytes())
@@ -827,18 +910,43 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
 
                                 if (packet.responseOk(response)) {
                                     // WARNING recursion
-                                    final int nextOffset = offset + packet.getBytesIncluded();
+                                    final int nextOffset;
+                                    if (revisedOffset != 0 && revisedOffset < offset && revisedOffset != lastActionedRevisedOffset) {
+                                        nextOffset = revisedOffset;     // TODO we only catch this if we send a packet
+                                        lastActionedRevisedOffset = nextOffset;
+                                        UserError.Log.d(TAG,"Retrying bulk send from: "+nextOffset);
+                                    } else {
+                                        nextOffset = offset + packet.getBytesIncluded();
+                                    }
+                                    revisedOffset = 0;
                                     if (nextOffset < buffer.length) {
-                                        JoH.threadSleep(100);
+                                        if (!quiet) {
+                                            JoH.threadSleep(100);
+                                        } else {
+                                            JoH.threadSleep(1);
+                                        }
                                         bulkSend(opcode, buffer, nextOffset, packet.isQuiet());
                                     } else {
                                         UserError.Log.d(TAG, "Bulk send completed!");
-                                        commandQueue.poll(); // removes first item from the queue which should be the one we just processed!
-                                        //changeState(RUN_QUEUE);
-                                        changeState(INIT);
+
+                                        if (!(packet instanceof RBulkUpTx)) {
+                                            commandQueue.poll(); // removes first item from the queue which should be the one we just processed!
+                                        }
+                                        Inevitable.task("tj-next-queue", 4000, this::processQueue); // wait 1 second and then retry this upload if we get success reply notification then we remove it elsewhere
+
                                     }
                                 } else {
                                     UserError.Log.d(TAG, "Bulk Send failed: " + packet.responseText(response));
+                                    if (!quiet) {
+                                        Inevitable.task("tj-next-queue", 20000, this::processQueue); // retry shortly
+                                        if (JoH.ratelimit("tj-allow-bulk-retry",2)) {
+                                            UserError.Log.d(TAG,"Retrying packet");
+                                            bulkSend(opcode, buffer, offset, quiet); // retry packet send
+                                        }
+                                    } else {
+                                        UserError.Log.d(TAG,"Quiet is set so not attempting any response to failure here");
+                                    }
+
                                 }
 
                             }, throwable -> {
@@ -857,7 +965,7 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
     }
 
     private void requestBulk(ThinJamItem item) {
-        final BulkUpRequestTx packet = new BulkUpRequestTx(item.type, 1, item.buffer.length, item.buffer, item.quiet);
+        final BulkUpRequestTx packet = new BulkUpRequestTx(item.type, item.width == 0 ? 0 : 1, item.buffer.length, item.buffer, item.quiet);
         if (D)
             UserError.Log.d(TAG, "Bulk request request: " + bytesToHex(packet.getBytes()));
         // value will get notification result itself
@@ -958,14 +1066,26 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
     }
 
 
-    public void sendNotification(final String msg) {
+    public void sendNotification(final String message_type, final String msg) {
 
-        val list = getPacketStreamForNotification(1, msg);
+        int notificationType = 1;
+        if (message_type != null) {
+            switch (message_type.toUpperCase()) {
+                case THINJAM_NOTIFY_TYPE_TEXTBOX1:
+                    notificationType = 6;
+                    break;
+            }
+
+        }
+
+        val list = getPacketStreamForNotification(notificationType, msg);
+        int counter = 0;
         for (val part : list) {
+            counter++;
             val item = new QueueMe()
                     .setBytes(part.getBytes())
                     .expireInSeconds(60)
-                    .setDescription("Notify part");
+                    .setDescription("Notify type:" + message_type + " part:" + counter);
 
             item.setProcessor(new AuthReplyProcessor(new ReplyProcessor(I.connection) {
                 @Override
@@ -1039,6 +1159,17 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
     }
 
 
+    private ThinJamAudioStream audioStream;
+    private void audioStreamCallBack(final byte[] bytes) {
+        if (audioStream != null) {
+            audioStream.process(bytes);
+        }
+    }
+
+    public void registerAudioStreamCallback(ThinJamAudioStream object) {
+        audioStream = object;
+    }
+
     private void enableNotifications() {
         UserError.Log.d(TAG, "enableNotifications called()");
         if (I.isNotificationEnabled) {
@@ -1049,6 +1180,7 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
         if (notificationSubscription != null) {
             notificationSubscription.unsubscribe();
         }
+        JoH.threadSleep(500);
         UserError.Log.d(TAG, "Requesting to enable notifications");
         notificationSubscription = new Subscription(
                 I.connection.setupNotification(THINJAM_WRITE)
@@ -1075,6 +1207,21 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
                                 UserError.Log.d(TAG, "Received PushRX: " + pushRx.toS());
                                 getInfo().processPushRx(pushRx);
                                 processPushRxActions(pushRx);
+                            } else if (bytes[0]==0x06) {
+                                // TODO move this to parsed response
+                                final int replyParam = ((int) bytes[1]) & 0xff;
+                                if (replyParam == 0) {
+                                    UserError.Log.d(TAG, "Bulk up success reply marker received! - removing queue head item");
+                                    commandQueue.poll(); // removes first item from the queue which should be the one we just processed!
+                                    UserError.Log.d(TAG, "Scheduling immediate run of queue");
+                                    Inevitable.kill("tj-next-queue"); // remove timeout retry task
+                                    Inevitable.task("tj-next-queue", 0, this::processQueue);
+                                } else {
+                                    revisedOffset = replyParam;
+                                    UserError.Log.d(TAG, "Bulk up failure at: " + revisedOffset); // race condition on display
+                                }
+                            } else if (bytes[0]==(byte)0xFE) {
+                                audioStreamCallBack(bytes);
                             } else {
                                 if (ThinJamActivity.isD()) {
                                     notificationString.append(new String(bytes));
@@ -1093,7 +1240,7 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
                             if (throwable instanceof BleCharacteristicNotFoundException) {
                                 // maybe legacy - ignore for now but needs better handling
                                 UserError.Log.d(TAG, "Characteristic not found for notification");
-                                changeNextState();
+                                debug.processTestSuite("logcharerror");
                             }
                             if (throwable instanceof BleCannotSetCharacteristicNotificationException) {
                                 UserError.Log.e(TAG, "Problems setting notifications - disconnecting");
@@ -1137,33 +1284,20 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
         UserError.Log.d(TAG, "Running queue item");
 
         if (item.width > 0) {
-
             final BaseTx packet = new DefineWindowTx((byte) 1, (byte) 1, (byte) item.x, (byte) item.y, (byte) item.width, (byte) item.height, (byte) 0, (byte) 0);
+            queueGenericCommand(packet.getBytes(), "define window: " + item.x + "," + item.y + " w:" + item.width + " h:" + item.height, null, getARInstance(new ReplyProcessor(I.connection) {
+                @Override
+                public void process(byte[] response) {
+                    if (D)
+                        UserError.Log.d(TAG, "Wrote qui record request request: " + bytesToHex(response));
+                    if (packet.responseOk(response)) {
+                        requestBulk(item);
+                    } else {
+                        UserError.Log.d(TAG, "Define Window failed: " + packet.responseText(response));
+                    }
+                }
+            }));
 
-            I.connection.writeCharacteristic(THINJAM_WRITE, packet.getBytes()).subscribe(
-
-                    // value will get notification result itself
-
-                    response -> {
-                        if (D)
-                            UserError.Log.d(TAG, "Wrote qui record request request: " + bytesToHex(response));
-
-                        if (packet.responseOk(response)) {
-                            requestBulk(item);
-                        } else {
-                            UserError.Log.d(TAG, "Define Window failed: " + packet.responseText(response));
-                        }
-
-                    }, throwable -> {
-                        UserError.Log.e(TAG, "Failed to write record request: " + throwable);
-                        if (throwable instanceof BleGattCharacteristicException) {
-                            final int status = ((BleGattCharacteristicException) throwable).getStatus();
-                            UserError.Log.e(TAG, "Got status message: " + Helper.getStatusName(status));
-                        } else {
-                            UserError.Log.d(TAG, "Throwable in Record End write: " + throwable);
-                        }
-
-                    });
         } else {
             // is not a window request - is flash write
             requestBulk(item);
@@ -1180,6 +1314,7 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
                 setAddress(BlueJay.getMac());
 
                 I.playSounds = BlueJay.shouldBeepOnConnect();
+                setAutoConnect();
 
                 if (intent != null) {
                     final String function = intent.getStringExtra("function");
@@ -1208,7 +1343,7 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
                                 final String message = intent.getStringExtra("message");
                                 final String message_type = intent.getStringExtra("message_type");
                                 if (JoH.ratelimit("bj-sendmessage", 30)) {
-                                    sendNotification(message);
+                                    sendNotification(message_type, message);
                                 }
                         }
                     } else {
@@ -1334,6 +1469,10 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
                     changeNextState();
                     break;
 
+                case DISCOVER:
+                    connectionTracker.add(1);
+                    return super.automata();
+
                 case ENABLE_NOTIFICATIONS:
                     enableNotifications();
                     //changeNextState();
@@ -1341,7 +1480,12 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
 
                 case SCHEDULE_ITEMS:
                     cancelRetryTimer();
-                    schedulePeriodicEvents();
+                    if (commandQueue.peek() == null) {
+                        schedulePeriodicEvents();
+                    } else {
+                        UserError.Log.d(TAG,"Skipping schedule items as queue is not empty");
+                        changeNextState();
+                    }
                     break;
 
                 // TJ queue not send queue
@@ -1587,6 +1731,10 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
             if (till > 0) l.add(new StatusItem("Retry Wake Up", niceTimeScalar(till)));
         }
 
+        if (Home.get_engineering_mode()) {
+            val totalConnections = (int) connectionTracker.totalRecords();
+            l.add(new StatusItem("Connections", totalConnections + " last 20 min"));
+        }
         l.add(new StatusItem("State", II.state));
 
         final int qsize = II.getQueueSize();

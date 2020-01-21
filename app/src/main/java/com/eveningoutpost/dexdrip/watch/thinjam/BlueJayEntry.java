@@ -19,10 +19,15 @@ public class BlueJayEntry {
     private static final String[] HUNT_PREFERENCES = {"bluejay", "units", "dex_txid"};
 
     private static final String PREF_ENABLED = "bluejay_enabled";
+    private static final String PREF_REMOTE_ENABLED = "bluejay_send_to_another_xdrip";
     private static final String PREF_PHONE_COLLECTOR_ENABLED = "bluejay_run_phone_collector";
 
     public static boolean isEnabled() {
         return Pref.getBooleanDefaultFalse(PREF_ENABLED);
+    }
+
+    public static boolean isRemoteEnabled() {
+        return Pref.getBooleanDefaultFalse(PREF_REMOTE_ENABLED);
     }
 
     public static boolean isPhoneCollectorDisabled() {
@@ -73,11 +78,14 @@ public class BlueJayEntry {
     }
 
     public static void sendNotifyIfEnabled(final String msg) {
+        sendNotifyIfEnabled(null, msg);
+    }
+
+    public static void sendNotifyIfEnabled(final String message_type, final String msg) {
         if (isEnabled()) {
-            final String fmsg = msg.replaceAll("^-", "").trim();
+            final String fmsg = msg.replaceAll("^-", "").trim(); // TODO move
             if (!JoH.emptyString(msg)) {
-                // TODO handle message types
-                Inevitable.task("bluejay-send-notify-external", 200, () -> JoH.startService(BlueJayService.class, "function", "message", "message", fmsg));
+                Inevitable.task("bluejay-send-notify-external", 200, () -> JoH.startService(BlueJayService.class, "function", "message", "message", fmsg, "message_type", message_type));
             }
         }
     }

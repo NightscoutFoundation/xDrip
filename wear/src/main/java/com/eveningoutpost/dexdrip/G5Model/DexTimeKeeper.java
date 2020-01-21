@@ -63,7 +63,9 @@ public class DexTimeKeeper {
         final long transmitter_start_timestamp = PersistentStore.getLong(DEX_XMIT_START + transmitterId);
 
         if (transmitter_start_timestamp < OLDEST_ALLOWED) {
-            UserError.Log.e(TAG, "No valid timestamp stored for transmitter: " + transmitterId);
+            if (JoH.ratelimit("no-valid-dex-timestamp-log", 60)) {
+                UserError.Log.e(TAG, "No valid timestamp stored for transmitter: " + transmitterId);
+            }
             return -1;
         }
 
