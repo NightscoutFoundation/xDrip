@@ -465,6 +465,11 @@
                 <action android:name="com.eveningoutpost.dexdrip.NS_EMULATOR" />
             </intent-filter>
         </receiver>
+        <receiver android:name="com.eveningoutpost.dexdrip.watch.thinjam.io.ThinJamApiReceiver">
+            <intent-filter>
+                <action android:name="com.eveningoutpost.dexdrip.THINJAM_API" />
+            </intent-filter>
+        </receiver>
         <receiver android:name=".LibreReceiver">
             <intent-filter>
                 <action android:name="com.librelink.app.ThirdPartyIntegration.GLUCOSE_READING" />
