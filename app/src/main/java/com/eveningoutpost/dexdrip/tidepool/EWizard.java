@@ -37,6 +37,10 @@ public class EWizard extends BaseElement {
             UserError.Log.e(TAG, "Ignoring invalid treatment (insulin) " + treatment.toS());
             return false;
         }
+        if(Pref.getBooleanDefaultFalse("tidepool_no_treatments")) {
+            UserError.Log.i(TAG, "Ignoring treatment " + treatment.toS());
+            return false;
+        }
         return true;
     }
 
