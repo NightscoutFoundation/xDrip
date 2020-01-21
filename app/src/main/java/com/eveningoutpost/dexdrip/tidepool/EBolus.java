@@ -31,7 +31,7 @@ public class EBolus extends BaseElement {
             UserError.Log.i(TAG, "Ignoring treatment " + treatment.toS());
             return false;
         }
-        else if(treatment.insulin >= 0 && treatment.insulin <= 100) {
+        if(treatment.insulin >= 0 && treatment.insulin <= 100) {
             return true;
         }
         UserError.Log.e(TAG, "Ignoring invalid treatment " + treatment.toS());
