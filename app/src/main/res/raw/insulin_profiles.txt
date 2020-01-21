@@ -1,0 +1,138 @@
+{
+  "profiles":
+  [
+    {
+      "name": "FIASP",
+      "displayName": "FIASP (ultra fast acting)",
+      "concentration": "U100",
+      "PPN":
+      [
+        "FIASP-U100"
+      ],
+      "Curve":
+      {
+        "type": "linear trapezoid",
+        "data":
+        {
+          "onset": "2",
+          "peak": "45",
+          "duration": "300"
+        }
+      }
+    },
+    {
+      "name": "Novorapid",
+      "displayName": "Novorapid (rapid acting)",
+      "concentration": "U100",
+      "PPN":
+      [
+        "1100558736"
+      ],
+      "Curve":
+      {
+        "type": "linear trapezoid",
+        "data":
+        {
+          "onset": "10",
+          "peak": "75",
+          "duration": "180"
+        }
+      }
+    },
+    {
+      "name": "Humalog",
+      "displayName": "Humalog (rapid acting)",
+      "concentration": "U100",
+      "PPN":
+      [
+        "Humalog-U100"
+      ],
+      "Curve":
+      {
+        "type": "linear trapezoid",
+        "data":
+        {
+          "onset": "10",
+          "peak": "75",
+          "duration": "180"
+        }
+      }
+    },
+    {
+      "name": "Actrapid",
+      "displayName": "Actrapid (short acting)",
+      "concentration": "U100",
+      "PPN":
+      [
+        "1102949004"
+      ],
+      "Curve":
+      {
+        "type": "linear trapezoid",
+        "data":
+        {
+          "onset": "30",
+          "peak": "60-240",
+          "duration": "480"
+        }
+      }
+    },
+    {
+      "name": "Insulatard",
+      "displayName": "Insulatard (NPH)",
+      "PPN":
+      [
+        "1105039656"
+      ],
+      "concentration": "U100",
+      "Curve":
+      {
+        "type": "linear trapezoid",
+        "data":
+        {
+          "onset": "60",
+          "peak": "120-720",
+          "duration": "1440"
+        }
+      }
+    },
+    {
+      "name": "Toujeo",
+      "displayName": "Toujeo (long acting)",
+      "PPN":
+      [
+        "ToujeoU100"
+      ],
+      "concentration": "U100",
+      "Curve":
+      {
+        "type": "linear trapezoid",
+        "data":
+        {
+          "onset": "180",
+          "peak": "480",
+          "duration": "2160"
+        }
+      }
+    },
+    {
+      "name": "Lantus",
+      "displayName": "Lantus (long acting)",
+      "PPN":
+      [
+        "LantusU100"
+      ],
+      "concentration": "U100",
+      "Curve":
+      {
+        "type": "linear trapezoid",
+        "data":
+        {
+          "onset": "60",
+          "peak": "420-1200",
+          "duration": "2160"
+        }
+      }
+    }
+  ]
+}

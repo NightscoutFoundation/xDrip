@@ -465,6 +465,11 @@
                 <action android:name="com.eveningoutpost.dexdrip.NS_EMULATOR" />
             </intent-filter>
         </receiver>
+        <receiver android:name="com.eveningoutpost.dexdrip.watch.thinjam.io.ThinJamApiReceiver">
+            <intent-filter>
+                <action android:name="com.eveningoutpost.dexdrip.THINJAM_API" />
+            </intent-filter>
+        </receiver>
         <receiver android:name=".LibreReceiver">
             <intent-filter>
                 <action android:name="com.librelink.app.ThirdPartyIntegration.GLUCOSE_READING" />
@@ -606,6 +611,11 @@
         </activity>
         <activity
             android:name=".profileeditor.ProfileEditor"
+            android:configChanges="orientation|screenSize"
+            android:label="@string/title_activity_profile_editor"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".insulin.InsulinProfileEditor"
             android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_profile_editor"
             android:windowSoftInputMode="adjustPan" />

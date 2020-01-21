@@ -28,6 +28,7 @@ import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
+import com.eveningoutpost.dexdrip.utils.Mdns;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
@@ -48,6 +49,7 @@ import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -290,7 +292,45 @@ public class NightscoutUploader {
 
         return mongoStatus;
     }
-
+    
+    private String TryResolveName(String baseURI) {
+        Log.d(TAG,  "Resolveing name" );
+        URI uri;
+        try {
+            uri = new URI(baseURI);
+        } catch (URISyntaxException e) {
+            Log.e(TAG, "Error URISyntaxException for " + baseURI, e);
+            return baseURI;
+        }
+        String host = uri.getHost();
+        Log.d(TAG, "host = " + host);
+        // Host has either to end with .local, or be one word (with no dots) for us to try and resolve it.
+        if (host == null ||  (host.contains(".") && (!host.endsWith(".local")))) {
+            return baseURI;
+        }
+        // So, we need to resolve this name
+        String fullHost = host;
+        try {
+            if(!fullHost.endsWith(".local")) {
+                fullHost += ".local";
+            }
+            String ip = Mdns.genericResolver(fullHost);
+            if(ip == null) {
+                Log.d(TAG, "Recieved null resolving " + fullHost);
+                return baseURI;
+            }
+            // Resolve succeeded, replace host, with the resovled address.
+            String newUri = baseURI.replace(host, ip);
+            Log.d(TAG, "Returning new uri " + newUri);
+            return newUri;
+            
+            
+        } catch (UnknownHostException e) {
+            Log.w(TAG, "UnknownHostException error nanme not resovled" + fullHost);
+            return baseURI;
+        }
+    }
+    
     private synchronized boolean doRESTtreatmentDownload(SharedPreferences prefs) {
         final String baseURLSettings = prefs.getString("cloud_storage_api_base", "");
         final ArrayList<String> baseURIs = new ArrayList<>();
@@ -314,6 +354,7 @@ public class NightscoutUploader {
         // process a list of base uris
         for (String baseURI : baseURIs) {
             try {
+                baseURI = TryResolveName(baseURI);
                 int apiVersion = 0;
                 URI uri = new URI(baseURI);
                 if ((uri.getHost().startsWith("192.168.")) && prefs.getBoolean("skip_lan_uploads_when_no_lan", true) && (!JoH.isLANConnected())) {
@@ -413,6 +454,7 @@ public class NightscoutUploader {
             boolean any_successes = false;
             for (String baseURI : baseURIs) {
                 try {
+                    baseURI = TryResolveName(baseURI);
                     int apiVersion = 0;
                     URI uri = new URI(baseURI);
                     if ((uri.getHost().startsWith("192.168.")) && prefs.getBoolean("skip_lan_uploads_when_no_lan", true) && (!JoH.isLANConnected()))
@@ -689,6 +731,9 @@ public class NightscoutUploader {
         record.put("uuid", treatment.uuid);
         record.put("carbs", treatment.carbs);
         record.put("insulin", treatment.insulin);
+        if (treatment.insulinJSON != null) {
+            record.put("insulinInjections", treatment.insulinJSON);
+        }
         record.put("created_at", treatment.created_at);
         record.put("sysTime", format.format(treatment.timestamp));
         array.put(record);
@@ -1179,12 +1224,10 @@ public class NightscoutUploader {
                         for (LibreBlock libreBlockEntry : libreBlock) {
                             
                             
-                            Log.d(TAG, "uploading new item to monog");
+                            Log.d(TAG, "uploading new item to mongo");
+                            // Checksum might be wrong, for libre 2 or libre us 14 days.
                             boolean ChecksumOk = LibreUtils.verify(libreBlockEntry.blockbytes);
-                            if(!ChecksumOk) {
-                                Log.e(TAG, "Not uploading packet with badchecksum");
-                                continue;
-                            }
+                            
                             // make db object
                             BasicDBObject testData = new BasicDBObject();
                             testData.put("SensorId", PersistentStore.getString("LibreSN"));
@@ -1238,6 +1281,9 @@ public class NightscoutUploader {
                                         record.put("uuid", treatment.uuid);
                                         record.put("carbs", treatment.carbs);
                                         record.put("insulin", treatment.insulin);
+                                        if (treatment.insulinJSON != null) {
+                                            record.put("insulinInjections", treatment.insulinJSON);
+                                        }
                                         record.put("created_at", treatment.created_at);
                                         final BasicDBObject searchQuery = new BasicDBObject().append("uuid", treatment.uuid);
                                         //treatmentDb.insert(record, WriteConcern.UNACKNOWLEDGED);

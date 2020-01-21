@@ -135,6 +135,10 @@ public class BlueJay {
         return Pref.getBoolean("bluejay_local_alarms", true);
     }
 
+    public static boolean remoteApiEnabled() {
+        return Pref.getBooleanDefaultFalse("bluejay_use_broadcast_api");
+    }
+
     public static void showLatestBG() {
         if (BlueJayEntry.isEnabled() && shouldSendReadings()) {
             // already on background thread and debounced
