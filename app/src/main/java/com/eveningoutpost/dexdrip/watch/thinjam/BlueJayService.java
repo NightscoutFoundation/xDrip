@@ -6,7 +6,6 @@ import android.bluetooth.BluetoothGattService;
 import android.content.Intent;
 import android.databinding.ObservableField;
 import android.os.Binder;
-import android.os.Build;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.util.Pair;
@@ -46,10 +45,12 @@ import com.eveningoutpost.dexdrip.watch.thinjam.messages.GlucoseTx;
 import com.eveningoutpost.dexdrip.watch.thinjam.messages.PushRx;
 import com.eveningoutpost.dexdrip.watch.thinjam.messages.RBulkUpTx;
 import com.eveningoutpost.dexdrip.watch.thinjam.messages.ResetPersistTx;
+import com.eveningoutpost.dexdrip.watch.thinjam.messages.SetGammaEtc;
 import com.eveningoutpost.dexdrip.watch.thinjam.messages.SetTimeTx;
 import com.eveningoutpost.dexdrip.watch.thinjam.messages.SetTxIdTx;
 import com.eveningoutpost.dexdrip.watch.thinjam.messages.StandbyTx;
 import com.eveningoutpost.dexdrip.watch.thinjam.utils.BitmapTools;
+import com.eveningoutpost.dexdrip.watch.thinjam.utils.BitmapTools.TJ_BitmapType;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.gson.annotations.Expose;
 import com.polidea.rxandroidble2.RxBleDeviceServices;
@@ -111,6 +112,7 @@ import static com.eveningoutpost.dexdrip.watch.thinjam.Const.OPCODE_IDENTIFY;
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.OPCODE_RESET_ALL;
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.OPCODE_SHOW_QRCODE;
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.THINJAM_BULK;
+import static com.eveningoutpost.dexdrip.watch.thinjam.Const.THINJAM_NOTIFY_TYPE_CANCEL;
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.THINJAM_NOTIFY_TYPE_TEXTBOX1;
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.THINJAM_OTA;
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.THINJAM_WRITE;
@@ -150,6 +152,8 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
         final int x, y, width, height;
         final byte[] buffer;
         int type = 1;
+        int windowType = 1;
+        int colourEffect = 0;
         boolean quiet = true;
         int retries = 20;
         int retried = 0;
@@ -165,6 +169,16 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
 
         public ThinJamItem useAck() {
             this.quiet = false;
+            return this;
+        }
+
+        public ThinJamItem setWindowType(int type) {
+            this.windowType = type;
+            return this;
+        }
+
+        public ThinJamItem setColourEffect(int type) {
+            this.colourEffect = type;
             return this;
         }
 
@@ -452,6 +466,14 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
         }
     }
 
+    public void setGamma(int value) {
+        if (value <= 255) {
+            queueGenericCommand(new SetGammaEtc(value).getBytes(), "Set Gamma " + value, null);
+        } else {
+            UserError.Log.e(TAG, "Gamma out of range: " + value);
+        }
+    }
+
     public void standby() {
         if (BlueJayInfo.getInfo(I.address).buildNumber > 39) {
             addToLog("Requesting watch standby");
@@ -647,61 +669,130 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
 
     public void enqueueWrappedBitmap(BitmapTools.Wrapper image, int x, int y) {
         // check valid
-        UserError.Log.d(TAG, "Wrapped bitmap: width: " + x + " height:" + y);
-        enqueue(x, y, image.width, image.height, image.body);
+        if (image != null) {
+            if (image.width > 0 && image.height > 0 && image.width <= 240 && image.height <= 240) {
+                UserError.Log.d(TAG, "Wrapped bitmap: width: " + x + " height:" + y);
+                enqueue(x, y, image.width, image.height, image.body, image.type);
+            } else {
+                UserError.Log.e(TAG, "Wrapped bitmap out of range: " + image.toS());
+            }
+        } else {
+            UserError.Log.e(TAG, "Wrapped bitmap is null");
+        }
     }
 
-    public void enqueue(int x, int y, int width, int height, byte[] buffer) {
+    public void enqueue(int x, int y, int width, int height, byte[] buffer, TJ_BitmapType bitmapType) {
         if (buffer.length > max_buffer_size) {
             UserError.Log.d(TAG, "Breaking image up in to smaller");
-            enqueueBig(x, y, width, height, buffer);
+            enqueueBig(x, y, width, height, buffer, bitmapType);
         } else {
             UserError.Log.d(TAG, "Added new queue item: " + x + " " + y + " " + width + " " + height + " size: " + buffer.length);
-            commandQueue.add(new ThinJamItem(x, y, width, height, buffer));
-            Inevitable.task("run-thinjam-queue", 100, () -> background_automata());
+            commandQueue.add(new ThinJamItem(x, y, width, height, buffer).setWindowType(bitmapType.getValue()));
+            Inevitable.task("run-thinjam-queue", 100, this::background_automata);
         }
     }
 
-    //private final int x_step = 16;
+    private class ImageSegment {
+        final int width;
+        final int height;
+        final int start_x;
+        final int start_y;
+        int width_left;
+        int height_left;
+        int current_x;
+        int current_y;
+        TJ_BitmapType bitmapType;
+        byte[] buffer;
+        byte[] unpacked;
 
-    public void enqueueBig(final int start_x, final int start_y, final int width, final int height, final byte[] buffer) {
+        ImageSegment(final int width, final int height, final int start_x, final int start_y, byte[] buffer, TJ_BitmapType bitmapType) {
+            this.width = width;
+            this.height = height;
+            this.start_x = start_x;
+            this.start_y = start_y;
+            this.buffer = buffer;
+            this.bitmapType = bitmapType;
+            width_left = width;
+            height_left = height;
+        }
+
+        byte[] getUnpacked() {
+            if (unpacked == null) {
+                unpacked = BitmapTools.unpackMonoBytesToRGB565(buffer);
+            }
+            return unpacked;
+        }
+
+        String toS() {
+            return this.width + " " + this.height + " " + this.bitmapType + " " + this.width_left + " " + this.height_left + " " + this.current_x + " " + this.current_y;
+        }
+    }
+
+    private void cropAndQueueSegment(final ImageSegment s, final int segmentHeight, final int segmentWidth) {
+        final byte[] cropped;
+        switch (s.bitmapType) {
+            case RGB565:
+                cropped = cropRGB565(s.current_x, s.current_y, segmentWidth, segmentHeight, s.width, s.height, s.buffer);
+                break;
+            case Mono:
+                cropped = BitmapTools.packRGB565bytesToMono(cropRGB565(s.current_x, s.current_y, segmentWidth, segmentHeight, s.width, s.height, s.getUnpacked()));
+                break;
+
+            default:
+                throw new RuntimeException("Invalid type in crop and queue segment");
+
+        }
+        if (cropped != null && cropped.length > 0) {
+            enqueue(s.start_x + s.current_x, s.start_y + s.current_y, segmentWidth, segmentHeight, cropped, s.bitmapType);
+        } else {
+            UserError.Log.e(TAG, "Cropped bytes invalid: " + s.toS());
+        }
+        s.current_x += segmentWidth;
+        s.width_left -= segmentWidth;
+    }
+
+    private void processSegment(final ImageSegment s, final int segmentHeight, final int segmentWidth) {
+        while (s.height_left >= segmentHeight) {
+            s.current_x = 0;
+            s.width_left = s.width;
+            while (s.width_left > 0) {
+                cropAndQueueSegment(s, segmentHeight, s.width_left >= segmentWidth ? segmentWidth : s.width_left);
+            }
+            s.current_y += segmentHeight;
+            s.height_left -= segmentHeight;
+        }
+    }
+
+    private void processSegmentProgression(final ImageSegment s, int segmentStartHeight, int segmentStartWidth) {
+        while (segmentStartHeight > 0) {
+            processSegment(s, segmentStartHeight, segmentStartWidth);
+            segmentStartHeight /= 2;
+            segmentStartWidth *= 2;
+        }
+    }
+
+    private Pair<Integer, Integer> getBestProgressionParameters(final int width, final int height, TJ_BitmapType bitmapType) {
+        int sheight = 16;
+        int swidth = 8;
+        switch (bitmapType) {
+            case Mono:
+                if (height <= 256) {
+                    sheight = height;
+                    swidth = 2048 / sheight;
+                }
+                break;
+        }
+        return new Pair<>(sheight, swidth);
+    }
+
+    public void enqueueBig(final int start_x, final int start_y, final int width, final int height, final byte[] buffer, TJ_BitmapType bitmapType) {
         UserError.Log.d(TAG, "Big enqueue for: " + start_x + " " + start_y + " w:" + width + " h:" + height + " size: " + buffer.length);
-        final int pixels = buffer.length / 2;
-        int width_left = width;
-        int height_left = height;
-        int current_x = 0;
-        int current_y = 0;
+        val segment = new ImageSegment(width, height, start_x, start_y, buffer, bitmapType);
+        val parameters = getBestProgressionParameters(width, height, bitmapType);
+        processSegmentProgression(segment, parameters.first, parameters.second);
 
-        while (height_left >= 16) {
-            current_x = 0;
-            width_left = width;
-            while (width_left >= 8) {
-                final byte[] cropped = cropRGB565(current_x, current_y, 8, 16, width, height, buffer);
-                enqueue(start_x + current_x, start_y + current_y, 8, 16, cropped);
-                current_x += 8;
-                width_left -= 8;
-            }
-            current_y += 16;
-            height_left -= 16;
-        }
-        if (height_left >= 8) {
-            UserError.Log.d(TAG, "Unprocessed height left: " + height_left + " !!!");
-            current_x = 0;
-            width_left = width;
-            UserError.Log.d(TAG, "Unprocessed width left: " + width_left + " !!!");
-            while (width_left >= 16) {
-                final byte[] cropped = cropRGB565(current_x, current_y, 16, 8, width, height, buffer);
-                enqueue(start_x + current_x, start_y + current_y, 16, 8, cropped);
-                current_x += 16;
-                width_left -= 16;
-            }
-            current_y += 7;
-            height_left -= 7;
-        }
-        // Todo functionalize above and add support for straggler pixel lines
     }
 
-    // todo move to utils
     public byte[] cropRGB565(int x, int y, int width, int height, int parent_width, int parent_height, final byte[] buffer) {
         final byte[] output = new byte[width * height * 2];
         final int row_width = parent_width * 2;
@@ -1067,15 +1158,17 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
 
 
     public void sendNotification(final String message_type, final String msg) {
-
+        UserError.Log.d(TAG, "SendNotification: " + message_type + " " + msg);
         int notificationType = 1;
         if (message_type != null) {
             switch (message_type.toUpperCase()) {
+                case THINJAM_NOTIFY_TYPE_CANCEL:
+                    notificationType = 0;
+                    break;
                 case THINJAM_NOTIFY_TYPE_TEXTBOX1:
                     notificationType = 6;
                     break;
             }
-
         }
 
         val list = getPacketStreamForNotification(notificationType, msg);
@@ -1098,6 +1191,22 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
         doQueue();
     }
 
+    private void sendPng(final BitmapTools.Wrapper bitmap) {
+        if (bitmap != null) {
+            enqueueWrappedBitmap(bitmap, 0, 199);
+            doThinJamQueue();
+        } else {
+            UserError.Log.d(TAG, "Null bitmap in sendPng:");
+        }
+    }
+
+    private void sendColourPng(final byte[] bytes, final String parameter) {
+        sendPng(BitmapTools.loadPNGBytesToRGB565(bytes));
+    }
+
+    private void sendMonoPng(final byte[] bytes, final String parameter) {
+        sendPng(BitmapTools.convertWrappedToMono(BitmapTools.loadPNGBytesToRGB565(bytes)));
+    }
 
     public void addToLog(final String text) {
         notificationString.append(text);
@@ -1284,8 +1393,8 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
         UserError.Log.d(TAG, "Running queue item");
 
         if (item.width > 0) {
-            final BaseTx packet = new DefineWindowTx((byte) 1, (byte) 1, (byte) item.x, (byte) item.y, (byte) item.width, (byte) item.height, (byte) 0, (byte) 0);
-            queueGenericCommand(packet.getBytes(), "define window: " + item.x + "," + item.y + " w:" + item.width + " h:" + item.height, null, getARInstance(new ReplyProcessor(I.connection) {
+            final BaseTx packet = new DefineWindowTx((byte) 1, (byte) item.windowType, (byte) item.x, (byte) item.y, (byte) item.width, (byte) item.height, (byte) 0, (byte) item.colourEffect);
+            queueGenericCommand(packet.getBytes(), "define window: (" + item.windowType + ") " + item.x + "," + item.y + " w:" + item.width + " h:" + item.height, null, getARInstance(new ReplyProcessor(I.connection) {
                 @Override
                 public void process(byte[] response) {
                     if (D)
@@ -1342,9 +1451,28 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
                             case "message":
                                 final String message = intent.getStringExtra("message");
                                 final String message_type = intent.getStringExtra("message_type");
-                                if (JoH.ratelimit("bj-sendmessage", 30)) {
+                                if (JoH.ratelimit("bj-sendmessage" + message_type, 15)) {
                                     sendNotification(message_type, message);
                                 }
+                                break;
+
+                            case "png":
+                                final byte[] bytes = intent.getByteArrayExtra("bytes_payload");
+                                final String params = intent.getStringExtra("params");
+                                final String type = intent.getStringExtra("type");
+                                if (JoH.ratelimit("bj-sendpng", 15)) {
+                                    switch (type) {
+                                        case "colour":
+                                            sendColourPng(bytes, params);
+                                            break;
+                                        case "mono":
+                                            sendMonoPng(bytes, params);
+                                            break;
+                                        default:
+                                            UserError.Log.wtf(TAG, "Invalid png type: " + type);
+                                    }
+                                }
+                                break;
                         }
                     } else {
                         // no specific function
@@ -1779,8 +1907,8 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
                 // prompt update for main?
             }
         }));
-// TODO don't show upgrade if queue still pending as we may not know the latest version
-        if (latestMainVersion > info.buildNumber && II.isConnected) {
+
+        if (latestMainVersion > info.buildNumber && II.isConnected && qsize == 0) {
             l.add(new StatusItem("Update Available", "Tap to update " + latestMainVersion, NOTICE, "long-press", new Runnable() {
                 @Override
                 public void run() {
@@ -1797,7 +1925,7 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
                     // prompt upgrade for core?
                 }
             }));
-            if (latestCoreVersion > info.coreNumber) {
+            if (latestCoreVersion > info.coreNumber && qsize == 0) {
                 l.add(new StatusItem("Core Update Available", "Tap to update " + latestCoreVersion, NOTICE, "long-press", new Runnable() {
                     @Override
                     public void run() {
