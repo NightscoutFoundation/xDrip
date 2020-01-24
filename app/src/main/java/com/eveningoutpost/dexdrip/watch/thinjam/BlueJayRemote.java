@@ -19,6 +19,18 @@ public class BlueJayRemote {
 
     private static final String TAG = "BlueJayRemote";
 
+    public static void sendTextFit(final String text) {
+        sendAPIbroadcast(BlueJayAPI.TEXT_FIT, text);
+    }
+
+    public static void sendColourPng(final byte[] pngBytes, final String parameters) {
+        sendAPIbroadcast(BlueJayAPI.COLOUR_PNG, parameters, pngBytes);
+    }
+
+    public static void sendMonoPng(final byte[] pngBytes, final String parameters) {
+        sendAPIbroadcast(BlueJayAPI.MONO_PNG, parameters, pngBytes);
+    }
+
     public static void sendLatestBG() {
         if (BlueJayEntry.isRemoteEnabled()) {
             final BestGlucose.DisplayGlucose dg = BestGlucose.getDisplayGlucose();
@@ -41,20 +53,33 @@ public class BlueJayRemote {
             }
 
             val finalMessage = sb.toString();
-            UserError.Log.e(TAG, "Broadcasting: " + finalMessage);
-
-            val intent = new Intent(Intents.BLUEJAY_THINJAM_API);
-
-            intent.putExtra(ThinJamApiReceiver.API_COMMAND, BlueJayAPI.TEXT_FIT);
-            intent.putExtra(ThinJamApiReceiver.API_PARAM, finalMessage);
-
-            // TODO set destination package
-            intent.setPackage("com.eveningoutpost.dexdrip");
-
-            intent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
-            getAppContext().sendBroadcast(intent);
-
+            UserError.Log.d(TAG, "Broadcasting: " + finalMessage);
+            sendTextFit(finalMessage);
         }
+    }
+
+    private static void sendAPIbroadcast(final String command, final String param) {
+        sendAPIbroadcast(command, param, null);
+    }
+
+    private static void sendAPIbroadcast(final String command, final String param, final byte[] bytes) {
+        val intent = getAPIintent();
+
+        intent.putExtra(ThinJamApiReceiver.API_COMMAND, command);
+        intent.putExtra(ThinJamApiReceiver.API_PARAM, param);
+        if (bytes != null) {
+            intent.putExtra(ThinJamApiReceiver.API_BYTES, bytes);
+        }
+
+        // TODO set destination package
+        intent.setPackage("com.eveningoutpost.dexdrip");
+
+        intent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
+        getAppContext().sendBroadcast(intent);
+    }
+
+    private static Intent getAPIintent() {
+        return new Intent(Intents.BLUEJAY_THINJAM_API);
     }
 
 }

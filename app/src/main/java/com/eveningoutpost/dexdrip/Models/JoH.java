@@ -1070,7 +1070,14 @@ public class JoH {
     }
 
     public static void startService(final Class c, final String... args) {
+        startService(c, null, args);
+    }
+
+    public static void startService(final Class c, final byte[] bytes, final String... args) {
         final Intent intent = new Intent(xdrip.getAppContext(), c);
+        if (bytes != null) {
+            intent.putExtra("bytes_payload", bytes);
+        }
         if (args.length % 2 == 1) {
             throw new RuntimeException("Odd number of args for JoH.startService");
         }
