@@ -7,6 +7,8 @@ import com.eveningoutpost.dexdrip.Models.UserError;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+import lombok.Getter;
+
 /**
  * Created by jamorham on 07/03/2018.
  *
@@ -49,7 +51,11 @@ public class Inevitable {
                     boolean running = true;
                     // wait for task to be due or killed
                     while (running) {
-                        JoH.threadSleep(500);
+                        final Task thisTask1 = tasks.get(id);
+                        if (thisTask1 == null || thisTask1.getWhen() > 0) {
+                            // run instantly if we are set to offset of 0
+                            JoH.threadSleep(500); // Todo reduce this to reduce latency on tasks scheduled for <500ms? careful of timing implications
+                        }
                         final Task thisTask = tasks.get(id);
                         running = thisTask != null && !thisTask.poll();
                     }
@@ -83,6 +89,7 @@ public class Inevitable {
     }
 
     private static class Task {
+        @Getter
         private long when;
         private final Runnable what;
         private final String id;
@@ -90,7 +97,9 @@ public class Inevitable {
         Task(String id, long offset, Runnable what) {
             this.what = what;
             this.id = id;
-            extendTime(offset);
+            if (offset > 0) {
+                extendTime(offset); // make when 0 if offset is 0
+            }
         }
 
         public void extendTime(long offset) {

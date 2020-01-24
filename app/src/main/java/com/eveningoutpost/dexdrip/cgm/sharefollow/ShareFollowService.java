@@ -93,7 +93,13 @@ public class ShareFollowService extends ForegroundService {
                 }
 
                 if (JoH.ratelimit("last-sh-follow-poll", 5)) {
-                    Inevitable.task("SH-Follow-Work", 200, () -> downloader.doEverything(MAX_RECORDS_TO_ASK_FOR));
+                    Inevitable.task("SH-Follow-Work", 200, () -> {
+                        try {
+                            downloader.doEverything(MAX_RECORDS_TO_ASK_FOR);
+                        } catch (NullPointerException e) {
+                            UserError.Log.e(TAG, "Caught concurrency exception when trying to run doeverything");
+                        }
+                    });
                     lastPoll = JoH.tsl();
                 }
             } else {

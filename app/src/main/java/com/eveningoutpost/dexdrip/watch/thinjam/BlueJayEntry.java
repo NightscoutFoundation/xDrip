@@ -90,6 +90,12 @@ public class BlueJayEntry {
         }
     }
 
+    public static void sendPngIfEnabled(final byte[] bytes, final String parameters, final String type) {
+        if (isEnabled()) {
+            Inevitable.task("bluejay-send-png-external", 200, () -> JoH.startService(BlueJayService.class, bytes, "function", "png", "params", parameters, "type", type));
+        }
+    }
+
     static void startWithRefresh() {
         Inevitable.task("bluejay-preference-changed", 1000, () -> JoH.startService(BlueJayService.class, "function", "refresh"));
     }

@@ -30,6 +30,7 @@ public class Const {
     public static final byte OPCODE_RESET_PERSIST = 0x52;
     public static final byte OPCODE_SWITCH_OFF = 0x53;
     public static final byte OPCODE_EASY_AUTH = 0x56;
+    public static final byte OPCODE_SET_GAMMA = 0x5C;
 
     public static final int OPCODE_BULK_R_XFER_0 =  0x84;
 
@@ -79,6 +80,7 @@ public class Const {
     public static final UUID THINJAM_TEST = UUID.fromString("4a616d21-722a-4ce8-a2a2-a2b0b7da2cd1");
     public static final UUID THINJAM_OTA = UUID.fromString("4a616d21-722a-4ce8-a2a2-a2b0b7da2cd9");
 
+    public static final String THINJAM_NOTIFY_TYPE_CANCEL = "THINJAM_NOTIFY_TYPE_CANCEL";
     public static final String THINJAM_NOTIFY_TYPE_CALL = "THINJAM_NOTIFY_TYPE_CALL";
     public static final String THINJAM_NOTIFY_TYPE_TEXT_MESSAGE = "THINJAM_NOTIFY_TYPE_TEXT_MESSAGE";
     public static final String THINJAM_NOTIFY_TYPE_HIGH_ALERT = "THINJAM_NOTIFY_TYPE_HIGH_ALERT";
