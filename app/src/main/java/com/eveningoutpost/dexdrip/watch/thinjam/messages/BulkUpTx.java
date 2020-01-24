@@ -24,6 +24,8 @@ public class BulkUpTx extends BaseTx {
         data.put(buffer, offset, bytesIncluded);
     }
 
+    public BulkUpTx() {}
+
     public BulkUpTx setQuiet() {
         quiet = true;
         return this;
