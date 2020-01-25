@@ -426,6 +426,13 @@
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="bluejay_enabled"
+                    android:key="bluejay_send_status_line"
+                    android:summary="Show xDrip extra status line on X2 display"
+                    android:title="Send Status Line" />
+
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:dependency="bluejay_enabled"
                     android:key="bluejay_beep_on_connect"
                     android:summary="Play a sound when the bluejay connects"
                     android:title="Debug sound" />

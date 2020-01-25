@@ -3,11 +3,14 @@ package com.eveningoutpost.dexdrip.watch.thinjam;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.UtilityModels.StatusLine;
 import com.eveningoutpost.dexdrip.ui.activities.ThinJamActivity;
 
 import java.util.Arrays;
 
 import lombok.val;
+
+import static com.eveningoutpost.dexdrip.watch.thinjam.Const.THINJAM_NOTIFY_TYPE_TEXTBOX1;
 
 // jamorham
 
@@ -25,6 +28,7 @@ public class BlueJay {
     private static final String PREF_BLUEJAY_IDENTITY = "bluejay-identity-";
     private static final String PREF_BLUEJAY_BEEP = "bluejay_beep_on_connect";
     private static final String PREF_BLUEJAY_SEND_READINGS = "bluejay_send_readings";
+    private static final String PREF_BLUEJAY_SEND_STATUS_LINE = "bluejay_send_status_line";
 
     public static boolean isCollector() {
         return Pref.getBooleanDefaultFalse("bluejay_collector_enabled");
@@ -131,6 +135,10 @@ public class BlueJay {
         return Pref.getBooleanDefaultFalse(PREF_BLUEJAY_SEND_READINGS);
     }
 
+    static boolean shouldSendStatusLine() {
+        return Pref.getBooleanDefaultFalse(PREF_BLUEJAY_SEND_STATUS_LINE);
+    }
+
     public static boolean localAlarmsEnabled() {
         return Pref.getBoolean("bluejay_local_alarms", true);
     }
@@ -140,9 +148,21 @@ public class BlueJay {
     }
 
     public static void showLatestBG() {
-        if (BlueJayEntry.isEnabled() && shouldSendReadings()) {
-            // already on background thread and debounced
-            JoH.startService(BlueJayService.class, "function", "sendglucose");
+        if (BlueJayEntry.isEnabled()) {
+            if (shouldSendReadings()) {
+                // already on background thread and debounced
+                JoH.startService(BlueJayService.class, "function", "sendglucose");
+            }
+            if (shouldSendStatusLine()) {
+                showStatusLine();
+            }
+        }
+    }
+
+    private static void showStatusLine() {
+        if (BlueJayEntry.isEnabled() && shouldSendStatusLine()) {
+            // TODO cache with expiry / send on change
+            BlueJayEntry.sendNotifyIfEnabled(THINJAM_NOTIFY_TYPE_TEXTBOX1, StatusLine.extraStatusLine());
         }
     }
 
