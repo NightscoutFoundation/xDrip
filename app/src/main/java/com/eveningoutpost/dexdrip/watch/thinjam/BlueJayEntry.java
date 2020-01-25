@@ -9,6 +9,11 @@ import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 
 import lombok.val;
 
+import static com.eveningoutpost.dexdrip.watch.thinjam.Const.THINJAM_NOTIFY_TYPE_CANCEL;
+import static com.eveningoutpost.dexdrip.watch.thinjam.Const.THINJAM_NOTIFY_TYPE_HIGH_ALERT;
+import static com.eveningoutpost.dexdrip.watch.thinjam.Const.THINJAM_NOTIFY_TYPE_LOW_ALERT;
+import static com.eveningoutpost.dexdrip.watch.thinjam.Const.THINJAM_NOTIFY_TYPE_OTHER_ALERT;
+
 // jamorham
 
 public class BlueJayEntry {
@@ -77,6 +82,18 @@ public class BlueJayEntry {
         }
     }
 
+    public static void sendAlertIfEnabled(final String msg) {
+        if (BlueJayEntry.areAlertsEnabled()) {
+            String alertType = THINJAM_NOTIFY_TYPE_OTHER_ALERT;
+            if (msg.startsWith("High Alert")) {
+                alertType = THINJAM_NOTIFY_TYPE_HIGH_ALERT;
+            } else if (msg.startsWith("Low Alert")) {
+                alertType = THINJAM_NOTIFY_TYPE_LOW_ALERT;
+            }
+            BlueJayEntry.sendNotifyIfEnabled(alertType, "A");
+        }
+    }
+
     public static void sendNotifyIfEnabled(final String msg) {
         sendNotifyIfEnabled(null, msg);
     }
@@ -85,7 +102,15 @@ public class BlueJayEntry {
         if (isEnabled()) {
             final String fmsg = msg.replaceAll("^-", "").trim(); // TODO move
             if (!JoH.emptyString(msg)) {
-                Inevitable.task("bluejay-send-notify-external", 200, () -> JoH.startService(BlueJayService.class, "function", "message", "message", fmsg, "message_type", message_type));
+                Inevitable.task("bluejay-send-notify-external" + message_type, 200, () -> JoH.startService(BlueJayService.class, "function", "message", "message", fmsg, "message_type", message_type));
+            }
+        }
+    }
+
+    public static void cancelNotifyIfEnabled() {
+        if (isEnabled()) {
+            if (BlueJayEntry.areAlertsEnabled()) {
+                BlueJayEntry.sendNotifyIfEnabled(THINJAM_NOTIFY_TYPE_CANCEL, "C");
             }
         }
     }
