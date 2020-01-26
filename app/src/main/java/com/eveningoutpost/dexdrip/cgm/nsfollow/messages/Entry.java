@@ -14,7 +14,7 @@ public class Entry extends BaseMessage {
     @Expose
     public String _id;
     @Expose
-    public long date;
+    public double date;
     @Expose
     public String dateString;
     @Expose
@@ -40,7 +40,7 @@ public class Entry extends BaseMessage {
 
     public long getTimeStamp() {
         if (date > 1_000_000) {
-            return date;
+            return Math.round(date);
         }
         if (sysTime != null) {
             try {
