@@ -34,7 +34,7 @@ public class EntryProcessor {
 
                 final long recordTimestamp = entry.getTimeStamp();
                 if (recordTimestamp > 0) {
-                    final BgReading existing = BgReading.getForPreciseTimestamp(recordTimestamp, 10000);
+                    final BgReading existing = BgReading.getForPreciseTimestamp(recordTimestamp, 10_000);
                     if (existing == null) {
                         UserError.Log.d(TAG, "NEW NEW NEW New entry: " + entry.toS());
 

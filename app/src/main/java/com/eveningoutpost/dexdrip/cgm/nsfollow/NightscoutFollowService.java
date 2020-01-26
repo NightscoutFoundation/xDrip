@@ -12,7 +12,6 @@ import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem.Highlight;
 import com.eveningoutpost.dexdrip.cgm.nsfollow.utils.Anticipate;
@@ -25,7 +24,6 @@ import com.eveningoutpost.dexdrip.xdrip;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder.DEXCOM_PERIOD;
@@ -68,7 +66,7 @@ public class NightscoutFollowService extends ForegroundService {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        final PowerManager.WakeLock wl = JoH.getWakeLock("NSFollow-osc", 60000);
+        final PowerManager.WakeLock wl = JoH.getWakeLock("NSFollow-osc", 60_000);
         try {
 
             UserError.Log.d(TAG, "WAKE UP WAKE UP WAKE UP");

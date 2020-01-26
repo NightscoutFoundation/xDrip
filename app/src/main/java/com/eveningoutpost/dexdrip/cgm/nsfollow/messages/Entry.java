@@ -39,7 +39,7 @@ public class Entry extends BaseMessage {
     public double unfiltered;
 
     public long getTimeStamp() {
-        if (date > 1000000) {
+        if (date > 1_000_000) {
             return date;
         }
         if (sysTime != null) {
