@@ -65,7 +65,7 @@ public class ShareFollowService extends ForegroundService {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        final PowerManager.WakeLock wl = JoH.getWakeLock("SHFollow-osc", 60000);
+        final PowerManager.WakeLock wl = JoH.getWakeLock("SHFollow-osc", 60_000);
         try {
 
             UserError.Log.d(TAG, "WAKE UP WAKE UP WAKE UP");
