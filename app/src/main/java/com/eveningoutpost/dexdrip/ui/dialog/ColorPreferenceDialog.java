@@ -29,7 +29,6 @@ public class ColorPreferenceDialog {
         }
         picker.setColor(color);
         picker.showAlpha(true);
-        picker.showHex(false);
         builder.setTitle(title)
                 .setView(picker)
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {

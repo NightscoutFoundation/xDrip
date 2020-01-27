@@ -36,14 +36,14 @@
                         android:title="@string/high_glucose_values"
                         app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
                         app:colorpicker_selectNoneButtonText="@string/revert_to_default"
-                        app:colorpicker_showHex="false" />
+                        app:colorpicker_showHex="true" />
                     <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
                         android:defaultValue="#33B5E6"
                         android:key="color_inrange_values"
                         android:title="@string/in_range_glucose_values"
                         app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
                         app:colorpicker_selectNoneButtonText="@string/revert_to_default"
-                        app:colorpicker_showHex="false" />
+                        app:colorpicker_showHex="true" />
 
                     <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
                         android:defaultValue="#C30909"
@@ -51,7 +51,7 @@
                         android:title="@string/low_glucose_values"
                         app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
                         app:colorpicker_selectNoneButtonText="@string/revert_to_default"
-                        app:colorpicker_showHex="false" />
+                        app:colorpicker_showHex="true" />
 
                     <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
                         android:defaultValue="#a0a0a0"
@@ -59,7 +59,7 @@
                         android:title="@string/filtered_values"
                         app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
                         app:colorpicker_selectNoneButtonText="@string/revert_to_default"
-                        app:colorpicker_showHex="false" />
+                        app:colorpicker_showHex="true" />
                 </PreferenceCategory>
 
                 <PreferenceCategory
@@ -71,28 +71,28 @@
                         android:title="@string/treatment_color"
                         app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
                         app:colorpicker_selectNoneButtonText="@string/revert_to_default"
-                        app:colorpicker_showHex="false" />
+                        app:colorpicker_showHex="true" />
                     <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
                         android:defaultValue="#334400"
                         android:key="color_treatment_dark"
                         android:title="@string/treatment_color_dark"
                         app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
                         app:colorpicker_selectNoneButtonText="@string/revert_to_default"
-                        app:colorpicker_showHex="false" />
+                        app:colorpicker_showHex="true" />
                     <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
                         android:defaultValue="#AA66CC"
                         android:key="color_predictive"
                         android:title="@string/predictive_color"
                         app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
                         app:colorpicker_selectNoneButtonText="@string/revert_to_default"
-                        app:colorpicker_showHex="false" />
+                        app:colorpicker_showHex="true" />
                     <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
                         android:defaultValue="#7700aa"
                         android:key="color_predictive_dark"
                         android:title="@string/predictive_color_dark"
                         app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
                         app:colorpicker_selectNoneButtonText="@string/revert_to_default"
-                        app:colorpicker_showHex="false" />
+                        app:colorpicker_showHex="true" />
 
 
                 </PreferenceCategory>
@@ -107,21 +107,21 @@
                         android:title="@string/eight_hour_average_line"
                         app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
                         app:colorpicker_selectNoneButtonText="@string/revert_to_default"
-                        app:colorpicker_showHex="false" />
+                        app:colorpicker_showHex="true" />
                     <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
                         android:defaultValue="#c56f9d"
                         android:key="color_average2_line"
                         android:title="@string/twenty_four_hour_average_line"
                         app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
                         app:colorpicker_selectNoneButtonText="@string/revert_to_default"
-                        app:colorpicker_showHex="false" />
+                        app:colorpicker_showHex="true" />
                     <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
                         android:defaultValue="#a4a409"
                         android:key="color_target_line"
                         android:title="@string/glucose_target_line"
                         app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
                         app:colorpicker_selectNoneButtonText="@string/revert_to_default"
-                        app:colorpicker_showHex="false" />
+                        app:colorpicker_showHex="true" />
                 </PreferenceCategory>
 
                 <PreferenceCategory
@@ -134,7 +134,7 @@
                         android:title="@string/blood_test_background"
                         app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
                         app:colorpicker_selectNoneButtonText="@string/revert_to_default"
-                        app:colorpicker_showHex="false" />
+                        app:colorpicker_showHex="true" />
 
                     <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
                         android:defaultValue="#FF4444"
@@ -142,7 +142,7 @@
                         android:title="@string/blood_test_foreground"
                         app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
                         app:colorpicker_selectNoneButtonText="@string/revert_to_default"
-                        app:colorpicker_showHex="false" />
+                        app:colorpicker_showHex="true" />
 
                     <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
                         android:defaultValue="#FFFFFF"
@@ -150,7 +150,7 @@
                         android:title="@string/treatment_background"
                         app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
                         app:colorpicker_selectNoneButtonText="@string/revert_to_default"
-                        app:colorpicker_showHex="false" />
+                        app:colorpicker_showHex="true" />
 
                     <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
                         android:defaultValue="#77aa00"
@@ -158,7 +158,7 @@
                         android:title="@string/treatment_foreground"
                         app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
                         app:colorpicker_selectNoneButtonText="@string/revert_to_default"
-                        app:colorpicker_showHex="false" />
+                        app:colorpicker_showHex="true" />
 
                 </PreferenceCategory>
                 <PreferenceCategory
@@ -170,7 +170,7 @@
                         android:title="@string/main_chart_background"
                         app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
                         app:colorpicker_selectNoneButtonText="@string/revert_to_default"
-                        app:colorpicker_showHex="false" />
+                        app:colorpicker_showHex="true" />
 
                     <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
                         android:defaultValue="#00000000"
@@ -178,7 +178,7 @@
                         android:title="@string/notification_chart_background"
                         app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
                         app:colorpicker_selectNoneButtonText="@string/revert_to_default"
-                        app:colorpicker_showHex="false" />
+                        app:colorpicker_showHex="true" />
 
                     <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
                         android:defaultValue="#00000000"
@@ -186,7 +186,7 @@
                         android:title="@string/widget_chart_background"
                         app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
                         app:colorpicker_selectNoneButtonText="@string/revert_to_default"
-                        app:colorpicker_showHex="false" />
+                        app:colorpicker_showHex="true" />
                 </PreferenceCategory>
 
                 <PreferenceCategory
@@ -200,7 +200,7 @@
                         android:title="@string/secondary_plugin_glucose_value"
                         app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
                         app:colorpicker_selectNoneButtonText="@string/revert_to_default"
-                        app:colorpicker_showHex="false" />
+                        app:colorpicker_showHex="true" />
 
                     <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
                         android:defaultValue="#3e29937b"
@@ -208,7 +208,7 @@
                         android:title="@string/step_counter_1st_color"
                         app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
                         app:colorpicker_selectNoneButtonText="@string/revert_to_default"
-                        app:colorpicker_showHex="false" />
+                        app:colorpicker_showHex="true" />
 
                     <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
                         android:defaultValue="#3c72c3c0"
@@ -216,7 +216,7 @@
                         android:title="@string/step_counter_2nd_color"
                         app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
                         app:colorpicker_selectNoneButtonText="@string/revert_to_default"
-                        app:colorpicker_showHex="false" />
+                        app:colorpicker_showHex="true" />
 
                     <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
                         android:defaultValue="#2B212FDE"
@@ -224,7 +224,7 @@
                         android:title="@string/title_color_heart_rate1"
                         app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
                         app:colorpicker_selectNoneButtonText="@string/revert_to_default"
-                        app:colorpicker_showHex="false" />
+                        app:colorpicker_showHex="true" />
                 </PreferenceCategory>
                 <PreferenceCategory
                     android:key="xdrip_plus_display_colorset12"
@@ -243,14 +243,14 @@
                         android:title="@string/title_color_smb_icon"
                         app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
                         app:colorpicker_selectNoneButtonText="@string/revert_to_default"
-                        app:colorpicker_showHex="false" />
+                        app:colorpicker_showHex="true" />
                     <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
                         android:defaultValue="#D6597FCC"
                         android:key="color_smb_line"
                         android:title="@string/title_color_smb_line"
                         app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
                         app:colorpicker_selectNoneButtonText="@string/revert_to_default"
-                        app:colorpicker_showHex="false" />
+                        app:colorpicker_showHex="true" />
 
                 </PreferenceCategory>
                 <PreferenceCategory
@@ -269,7 +269,7 @@
                         android:title="@string/upper_title_bar_flair"
                         app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
                         app:colorpicker_selectNoneButtonText="@string/revert_to_default"
-                        app:colorpicker_showHex="false" />
+                        app:colorpicker_showHex="true" />
 
                     <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
                         android:defaultValue="#FF000000"
@@ -277,7 +277,7 @@
                         android:title="@string/lower_button_bar_falir"
                         app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
                         app:colorpicker_selectNoneButtonText="@string/revert_to_default"
-                        app:colorpicker_showHex="false" />
+                        app:colorpicker_showHex="true" />
 
                 </PreferenceCategory>
             </PreferenceScreen>
@@ -485,14 +485,14 @@
                     android:title="@string/title_color_number_wall"
                     app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
                     app:colorpicker_selectNoneButtonText="@string/revert_to_default"
-                    app:colorpicker_showHex="false" />
+                    app:colorpicker_showHex="true" />
                 <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
                     android:defaultValue="#FF000000"
                     android:key="color_number_wall_shadow"
                     android:title="@string/title_color_number_wall_shadow"
                     app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
                     app:colorpicker_selectNoneButtonText="@string/revert_to_default"
-                    app:colorpicker_showHex="false" />
+                    app:colorpicker_showHex="true" />
                 <Preference
                     android:key="pick_numberwall_start"
                     android:summary="@string/summary_pick_numberwall_start"
