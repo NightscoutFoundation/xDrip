@@ -569,9 +569,17 @@
                 android:key="miband_option_call_notifications"
                 android:summary="@string/summary_miband_send_cals"
                 android:title="@string/title_miband_send_cals" />
+            <EditTextPreference
+                android:defaultValue="4"
+                android:dependency="miband_enabled"
+                android:digits="0123456789"
+                android:inputType="number"
+                android:key="miband_graph_hours"
+                android:summary="@string/pref_amazfit_widget_graph_hours_summary"
+                android:title="@string/pref_amazfit_watchface_graph_hours_title" />
             <Preference
                 android:key="install_miband_watchface"
-                android:title="@string/title_miband_install_watchface"></Preference>
+                android:title="@string/title_miband_update_bg"></Preference>
             <PreferenceCategory android:title="@string/title_miband_general_settings_category">
                 <PreferenceScreen
                     android:key="miband_settings"

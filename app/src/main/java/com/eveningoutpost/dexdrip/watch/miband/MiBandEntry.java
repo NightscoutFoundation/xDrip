@@ -5,9 +5,6 @@ import android.content.SharedPreferences;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
-
-// jamorham
-
 // very lightweight entry point class to avoid loader overhead when not in use
 
 public class MiBandEntry {
@@ -50,7 +47,7 @@ public class MiBandEntry {
             Inevitable.task("mb-full-initial-start", 500, new Runnable() {
                 @Override
                 public void run() {
-                    startWithRefresh();
+                    showLatestBG();
                 }
             });
         }
@@ -60,23 +57,18 @@ public class MiBandEntry {
         public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
             if (key.startsWith("miband")) {
                 android.util.Log.d("miband", "Preference key: " + key);
-                startWithRefresh();
+                refresh();
             }
         }
     };
 
-    static void startWithRefresh() {
+    static void refresh() {
         Inevitable.task("miband-preference-changed", 1000, () -> JoH.startService(MiBandService.class, "function", "refresh"));
-    }
-
-    public static void installWatchface(String watchfaceType) {
-        Inevitable.task("miband-send-watchface", 1000, () -> JoH.startService(MiBandService.class, "function", "install-watchface",
-                "message", watchfaceType));
     }
 
     public static void showLatestBG() {
         if (isNeedSendReading()) {
-            JoH.startService(MiBandService.class, "function", "set_time");
+            JoH.startService(MiBandService.class, "function", "update_bg");
         }
     }
 }
