@@ -86,8 +86,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
     private final KeyStore keyStore = FastStore.getInstance();
     private static final boolean d = true;
 
-    private static final long MAX_RETRY_BACKOFF_MS = Constants.SECOND_IN_MS * 300; // sleep for max ms if we have had no signal
-    private static final long RETRY_PERIOD_MS = Constants.SECOND_IN_MS * 60; // sleep for max ms if we have had no signal
+    private static final long RETRY_PERIOD_MS = Constants.SECOND_IN_MS * 30; // sleep for max ms if we have had no signal
     private static final long BG_UPDATE_INTERVAL = 30 * Constants.MINUTE_IN_MS; //minutes
     private static final long CONNECTION_TIMEOUT = 5 * Constants.MINUTE_IN_MS; //minutes
     private static final int QUEUE_EXPIRED_TIME = 30; //second
@@ -189,10 +188,9 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                                         keyStore.putS(MESSAGE, message);
                                         keyStore.putS(MESSAGE_TYPE, message_type != null ? message_type : "");
                                         keyStore.putS(MESSAGE_TITLE, title != null ? title : "");
-
-                                        ((MiBandState) mState).setQueueSequence();
-                                        changeState(INIT);
                                     }
+                                    ((MiBandState) mState).setQueueSequence();
+                                    changeState(INIT);
                                     break;
                                 case "update_bg":
                                     startBgTimer();
