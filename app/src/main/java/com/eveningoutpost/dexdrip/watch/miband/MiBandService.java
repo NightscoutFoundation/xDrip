@@ -1049,6 +1049,12 @@ public class MiBandService extends JamBaseBluetoothSequencer {
         return true; // lies
     }
 
+    @Override
+    public void resetBluetoothIfWeSeemToAlreadyBeConnected(String mac) {
+        //super.resetBluetoothIfWeSeemToAlreadyBeConnected(mac); //do not reset
+    }
+
+
     private void sendPrefIntent(MIBAND_INTEND_STATES state, Integer progress, String descrText) {
         final Intent progressIntent = new Intent(Intents.PREFERENCE_INTENT);
         progressIntent.putExtra("state", state.name());
