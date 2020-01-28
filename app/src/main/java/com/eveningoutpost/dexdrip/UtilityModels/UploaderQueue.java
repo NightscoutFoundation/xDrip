@@ -12,7 +12,6 @@ import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Delete;
 import com.activeandroid.query.Select;
 import com.activeandroid.util.SQLiteUtils;
-import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.BloodTest;
 import com.eveningoutpost.dexdrip.Models.Calibration;
@@ -197,6 +196,9 @@ public class UploaderQueue extends Model {
     		return;
     	}
     	newEntry(action, obj);
+    	// For libre us sensors, we have a reading, it might not create a BG entry, but we still need
+    	// to upload it.
+    	startSyncService(3000); // sync in 3 seconds
     }
     
     // TODO remove duplicated functionality, replace with generic multi-purpose method
