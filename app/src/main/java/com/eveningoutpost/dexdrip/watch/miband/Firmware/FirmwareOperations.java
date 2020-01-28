@@ -11,6 +11,7 @@ import java.util.UUID;
 import static com.eveningoutpost.dexdrip.watch.miband.message.OperationCodes.COMMAND_FIRMWARE_CHECKSUM;
 import static com.eveningoutpost.dexdrip.watch.miband.message.OperationCodes.COMMAND_FIRMWARE_INIT;
 import static com.eveningoutpost.dexdrip.watch.miband.message.OperationCodes.COMMAND_FIRMWARE_START_DATA;
+import static com.eveningoutpost.dexdrip.watch.miband.message.OperationCodes.COMMAND_FIRMWARE_UPDATE_SYNC;
 
 public class FirmwareOperations {
     public enum FirmwareType {
@@ -36,7 +37,36 @@ public class FirmwareOperations {
         }
     }
 
-    private static final int packetLength = 20;
+    SequenceType sequenceType = SequenceType.NOTIFICATION_ENABLE;
+
+    public enum SequenceType {
+        NOTIFICATION_ENABLE,
+        PREPARE_UPLOAD,
+        TRANSFER_SEND_WF_INFO,
+        TRANSFER_FW_START,
+        TRANSFER_FW_DATA,
+        SEND_CHECKSUM,
+        CHECKSUM_VERIFIED;
+
+        private static SequenceType[] vals = values();
+        public SequenceType next() {
+            return vals[(this.ordinal() + 1) % vals.length];
+        }
+    }
+
+    public void nextSequence() {
+        sequenceType = sequenceType.next();
+    }
+
+    public void setSequence(SequenceType seq) {
+        sequenceType = seq;
+    }
+
+    public SequenceType getSequence() {
+        return sequenceType;
+    }
+
+    private static final int packetLength = 244;
     private byte[] fw = new byte[0];
     private FirmwareType firmwareType = FirmwareType.WATCHFACE;
 
@@ -52,17 +82,28 @@ public class FirmwareOperations {
         return packetLength;
     }
 
-    public FirmwareOperations(InputStream file) {
-        try {
-            fw = readAll(file, 1024 * 2048); // 2.0 MB
-        } catch (IOException e) {
-        }
+    public FirmwareOperations(InputStream file) throws IOException {
+        fw = readAll(file, 1024 * 2048); // 2.0 MB
+    }
+
+    public FirmwareOperations(byte[] file) {
+        fw = file;
     }
 
     public int getSize() {
         return fw.length;
     }
 
+    public static byte fromUint8(int value) {
+        return (byte) (value & 0xff);
+    }
+
+    public static byte[] fromUint16(int value) {
+        return new byte[]{
+                (byte) (value & 0xff),
+                (byte) ((value >> 8) & 0xff),
+        };
+    }
     public static byte[] fromUint24(int value) {
         return new byte[]{
                 (byte) (value & 0xff),
@@ -115,12 +156,16 @@ public class FirmwareOperations {
         return bytes;
     }
 
-    public byte[] prepareFirmawareUploadCommand() {
+    public byte[] prepareFWUploadInitCommand() {
         return new byte[]{COMMAND_FIRMWARE_INIT, (byte) 0xFF};
     }
 
     public byte[] sendChecksum() {
         return new byte[]{COMMAND_FIRMWARE_CHECKSUM};
+    }
+
+    public byte[] sendSync() {
+        return new byte[]{COMMAND_FIRMWARE_UPDATE_SYNC};
     }
 
     public byte[] getFirmwareStartCommand() {

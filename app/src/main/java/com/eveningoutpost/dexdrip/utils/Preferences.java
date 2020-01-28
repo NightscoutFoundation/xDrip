@@ -79,7 +79,6 @@ import com.eveningoutpost.dexdrip.UtilityModels.Intents;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.ShotStateStore;
 import com.eveningoutpost.dexdrip.UtilityModels.SpeechUtil;
-import com.eveningoutpost.dexdrip.UtilityModels.Unitized;
 import com.eveningoutpost.dexdrip.UtilityModels.UpdateActivity;
 import com.eveningoutpost.dexdrip.UtilityModels.WholeHouse;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleUtil;
@@ -2338,14 +2337,11 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
 
         public void installMiBandWatchface(Context context) {
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
-            builder.setTitle(xdrip.getAppContext().getResources().getString(R.string.miband_watchface_dialog_title));
-            String units = Unitized.unit(Unitized.usingMgDl());
-            String dialogTitle = String.format(xdrip.getAppContext().getResources().getString(R.string.miband_watchface_dialog_option_mmol), units);
-            builder.setMessage(dialogTitle);
+            builder.setTitle(xdrip.getAppContext().getResources().getString(R.string.miband_bg_dialog_title));
             builder.setPositiveButton(xdrip.getAppContext().getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
-                    MiBandEntry.installWatchface(units);
+                    MiBandEntry.showLatestBG();
                 }
             });
 

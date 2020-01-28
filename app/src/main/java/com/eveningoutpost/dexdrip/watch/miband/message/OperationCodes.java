@@ -105,16 +105,32 @@ public class OperationCodes {
 
     public static final byte SUCCESS = 0x01;
 
+    public static final byte LOW_BATTERY_ERROR = 0x22;
+
     public static final byte COMMAND_FIRMWARE_INIT = 0x01; // to UUID_CHARACTERISTIC_FIRMWARE, followed by fw file size in bytes
     public static final byte COMMAND_FIRMWARE_START_DATA = 0x03; // to UUID_CHARACTERISTIC_FIRMWARE
     public static final byte COMMAND_FIRMWARE_UPDATE_SYNC = 0x00; // to UUID_CHARACTERISTIC_FIRMWARE
     public static final byte COMMAND_FIRMWARE_CHECKSUM = 0x04; // to UUID_CHARACTERISTIC_FIRMWARE
     public static final byte COMMAND_FIRMWARE_REBOOT = 0x05; // to UUID_CHARACTERISTIC_FIRMWARE
 
-    public static final byte[] RESPONSE_FINISH_SUCCESS = new byte[] {RESPONSE, 2, SUCCESS };
+    public static final byte[] RESPONSE_FINISH_INIT_SUCCESS = new byte[] {RESPONSE, COMMAND_FIRMWARE_INIT, SUCCESS };
     public static final byte[] RESPONSE_FIRMWARE_DATA_SUCCESS = new byte[] {RESPONSE, COMMAND_FIRMWARE_START_DATA, SUCCESS };
 
+    private static final int CONN_INTERVAL_MIN = 240;
+    private static final int CONN_INTERVAL_MAX = 240;
+    private static final int CONN_SLAVE_LATENCY = 0x0;
+    private static final int CONN_SUPERVISION_TIMEOUT = 500;
 
+    public static final byte[] SET_CONNECTION_PARAM = {
+            (byte) (CONN_INTERVAL_MIN & 0x00FF), // gets LSB of 2 byte value
+            (byte) ((CONN_INTERVAL_MIN & 0xFF00) >> 8), // gets MSB of 2 byte value
+            (byte) (CONN_INTERVAL_MAX & 0x00FF),
+            (byte) ((CONN_INTERVAL_MAX & 0xFF00) >> 8),
+            (byte) (CONN_SLAVE_LATENCY & 0x00FF),
+            (byte) ((CONN_SLAVE_LATENCY & 0xFF00) >> 8),
+            (byte) (CONN_SUPERVISION_TIMEOUT & 0x00FF),
+            (byte) ((CONN_SUPERVISION_TIMEOUT & 0xFF00) >> 8)
+    };
 
     public static boolean isCommandEqual(byte[] command, byte[] buffer){
        return ByteBuffer.wrap(command, 0, command.length).equals(ByteBuffer.wrap(buffer, 0, command.length));
