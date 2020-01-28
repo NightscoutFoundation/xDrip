@@ -62,8 +62,6 @@ import static com.eveningoutpost.dexdrip.watch.lefun.LeFunService.LeFunState.QUE
 import static com.eveningoutpost.dexdrip.watch.lefun.LeFunService.LeFunState.SEND_SETTINGS;
 import static com.eveningoutpost.dexdrip.watch.lefun.LeFunService.LeFunState.SET_TIME;
 
-//import rx.schedulers.Schedulers;
-
 /**
  * Jamorham
  *

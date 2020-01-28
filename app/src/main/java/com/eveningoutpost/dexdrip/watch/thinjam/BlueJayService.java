@@ -1546,6 +1546,7 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
             //  sequence.add(RUN_QUEUE);
             sequence.add(SET_TIME);
             sequence.add(SLEEP);
+
         }
 
         void thinJamQueueSequence() {

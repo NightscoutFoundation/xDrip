@@ -5,7 +5,6 @@ import android.app.PendingIntent;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.media.MediaPlayer;
 import android.os.PowerManager;
 import android.support.v4.content.LocalBroadcastManager;
@@ -24,7 +23,6 @@ import com.eveningoutpost.dexdrip.store.FastStore;
 import com.eveningoutpost.dexdrip.store.KeyStore;
 import com.eveningoutpost.dexdrip.utils.bt.Subscription;
 import com.eveningoutpost.dexdrip.utils.framework.IncomingCallsReceiver;
-import com.eveningoutpost.dexdrip.utils.framework.MusicPlaybackReceiver;
 import com.eveningoutpost.dexdrip.utils.framework.WakeLockTrampoline;
 import com.eveningoutpost.dexdrip.watch.PrefBindingFactory;
 import com.eveningoutpost.dexdrip.watch.miband.Firmware.FirmwareOperations;
@@ -103,52 +101,10 @@ public class MiBandService extends JamBaseBluetoothSequencer {
     static BatteryInfo batteryInfo = new BatteryInfo();
     private FirmwareOperations firmware;
     private MediaPlayer player;
-    private MusicPlaybackReceiver mMusicPlaybackReceiver = null;
 
     private PendingIntent bgServiceIntent;
     static private long bgWakeupTime;
 
-    private final String[] mMusicActions = {
-            "com.amazon.mp3.metachanged",
-            "com.amazon.mp3.playstatechanged",
-            "com.andrew.apollo.metachanged",
-            "com.andrew.apollo.playstatechanged",
-            "com.android.music.metachanged",
-            "com.android.music.playbackcomplete",
-            "com.android.music.playstatechanged",
-            "com.android.music.queuechanged",
-            "com.doubleTwist.androidPlayer.playstatechanged",
-            "com.htc.music.metachanged",
-            "com.htc.music.playstatechanged",
-            "com.lge.music.playstatechanged",
-            "com.maxmpz.audioplayer.PLAYING_MODE_CHANGED",
-            "com.maxmpz.audioplayer.STATUS_CHANGED",
-            "com.maxmpz.audioplayer.TPOS_SYNC",
-            "com.maxmpz.audioplayer.playstatechanged",
-            "com.miui.player.metachanged",
-            "com.miui.player.playstatechanged",
-            "com.nullsoft.winamp.metachanged",
-            "com.nullsoft.winamp.playstatechanged",
-            "com.piratemedia.musicmod.playstatechanged",
-            "com.rdio.android.metachanged",
-            "com.rdio.android.playstatechanged",
-            "com.real.IMP.metachanged",
-            "com.real.IMP.playstatechanged",
-            "com.samsung.sec.android.MusicPlayer.metachanged",
-            "com.samsung.sec.android.MusicPlayer.playstatechanged",
-            "com.sec.android.app.music.metachanged",
-            "com.sec.android.app.music.playstatechanged",
-            "com.sonyericsson.music.metachanged",
-            "com.sonyericsson.music.playstatechanged",
-            "com.spotify.music.metadatachanged",
-            "com.spotify.music.playbackstatechanged",
-            "com.tbig.playerpro.playstatechanged",
-            "fm.last.android.metachanged",
-            "fm.last.android.playstatechanged",
-            "gonemad.dashclock.music.playstatechanged",
-            "net.sourceforge.subsonic.androidapp.EVENT_META_CHANGED",
-            "org.abrantix.rockon.rockonnggl.playstatechanged",
-    };
     private Subscription watchfaceSubscription;
 
     public enum MIBAND_INTEND_STATES {
@@ -187,22 +143,6 @@ public class MiBandService extends JamBaseBluetoothSequencer {
         super.onCreate();
     }
 
-    private void setMusicReceiverState(boolean enable) {
-        if (enable) {
-            if (mMusicPlaybackReceiver == null) {
-                mMusicPlaybackReceiver = new MusicPlaybackReceiver();
-                IntentFilter filter = new IntentFilter();
-                for (String action : mMusicActions) {
-                    filter.addAction(action);
-                }
-                registerReceiver(mMusicPlaybackReceiver, filter);
-            }
-        } else {
-            unregisterReceiver(mMusicPlaybackReceiver);
-            mMusicPlaybackReceiver = null;
-        }
-    }
-
     private boolean readyToProcessCommand() {
         boolean result = I.state.equals(MiBandState.SLEEP) || I.state.equals(MiBandState.CLOSED) || I.state.equals(MiBandState.INIT) || I.state.equals(MiBandState.CONNECT_NOW);
         if (!result)
@@ -216,7 +156,6 @@ public class MiBandService extends JamBaseBluetoothSequencer {
         final PowerManager.WakeLock wl = JoH.getWakeLock("Miband service", 60000);
         try {
             if (shouldServiceRun()) {
-                setMusicReceiverState(true);
                 final String authMac = MiBand.getAuthMac();
                 String mac = MiBand.getMac();
                 if (!authMac.equalsIgnoreCase(mac) || authMac.isEmpty()) {
@@ -273,7 +212,6 @@ public class MiBandService extends JamBaseBluetoothSequencer {
             } else {
                 UserError.Log.d(TAG, "Service is NOT set be active - shutting down");
                 stopBgUpdateTimer();
-                setMusicReceiverState(false);
                 changeState(CLOSE);
                 stopSelf();
                 return START_NOT_STICKY;
