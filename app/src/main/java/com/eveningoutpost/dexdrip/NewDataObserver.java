@@ -70,6 +70,7 @@ public class NewDataObserver {
             // send to pebble
             sendToPebble();
             sendToAmazfit();
+            sendStatusToBlueJay();
 
             // don't send via GCM if received via GCM!
             if (receivedLocally) {
@@ -104,6 +105,12 @@ public class NewDataObserver {
     private static void sendToBlueJay() {
         if (BlueJayEntry.isEnabled()) {
             Inevitable.task("poll-bluejay-for-bg", DexCollectionType.hasBluetooth() ? 2000 : 500, BlueJay::showLatestBG); // delay enough for BT to finish on collector
+        }
+    }
+
+    private static void sendStatusToBlueJay() {
+        if (BlueJayEntry.isEnabled()) {
+            Inevitable.task("poll-bluejay-for-status", 1000, BlueJay::showStatusLine);
         }
     }
 

@@ -1193,7 +1193,8 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
 
     private void sendPng(final BitmapTools.Wrapper bitmap) {
         if (bitmap != null) {
-            enqueueWrappedBitmap(bitmap, 0, 199);
+            val info = BlueJayInfo.getInfo(I.address);
+            enqueueWrappedBitmap(bitmap, 0, info.buildNumber > 2000 ? 199 : 110);
             doThinJamQueue();
         } else {
             UserError.Log.d(TAG, "Null bitmap in sendPng:");
@@ -1598,7 +1599,9 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
                     break;
 
                 case DISCOVER:
-                    connectionTracker.add(1);
+                    if (msSince(I.getLastConnected()) < 500) {
+                        connectionTracker.add(1);
+                    }
                     return super.automata();
 
                 case ENABLE_NOTIFICATIONS:
@@ -1866,8 +1869,13 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
         l.add(new StatusItem("State", II.state));
 
         final int qsize = II.getQueueSize();
-        if (qsize > 0) {
-            l.add(new StatusItem("Queue", qsize + " items"));
+        final int tjQueueSize = commandQueue.size();
+        if (tjQueueSize > 0 || qsize > 0) {
+            if (tjQueueSize > 0) {
+                l.add(new StatusItem("Queue", "(" + tjQueueSize + ")  " + qsize + " items"));
+            } else {
+                l.add(new StatusItem("Queue", qsize + " items"));
+            }
         }
 
         if (info.hasCoreModule()) {
