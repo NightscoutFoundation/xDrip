@@ -49,6 +49,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.schedulers.Schedulers;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import static com.eveningoutpost.dexdrip.Models.JoH.emptyString;
@@ -129,6 +130,7 @@ public abstract class JamBaseBluetoothSequencer extends JamBaseBluetoothService 
         public long wakeup_time;
         long failover_time;
         long last_wake_up_time;
+        @Getter
         long lastConnected;
 
 
