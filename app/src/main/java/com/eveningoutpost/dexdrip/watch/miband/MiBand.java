@@ -22,7 +22,8 @@ public class MiBand {
         MI_BAND2(MIBAND_NAME_2),
         MI_BAND3(MIBAND_NAME_3),
         MI_BAND3_1(MIBAND_NAME_3_1),
-        MI_BAND4(MIBAND_NAME_4);
+        MI_BAND4(MIBAND_NAME_4),
+        UNKNOWN("");
 
         private final String text;
 
@@ -47,7 +48,7 @@ public class MiBand {
                     return b;
                 }
             }
-            return null;
+            return UNKNOWN;
         }
     }
 
@@ -67,12 +68,16 @@ public class MiBand {
         return MiBand.getAuthMac().isEmpty() ? false : true;
     }
 
-    public static void sendAlert( String title, final String... lines) {
-        sendAlert(false, title, lines);
+
+
+    public static void sendCall(boolean isCall, final String title) {
+        Inevitable.task("miband-send-alert-debounce", 3000, () -> JoH.startService(MiBandService.class, "function", "message",
+                "title", title,
+                "message_type", "call"));
     }
 
     // convert multi-line text to string for display constraints
-    public static void sendAlert(boolean isCall, String title, final String... lines) {
+    public static void sendAlert(int defaultSnoozle, String title, final String... lines) {
 
         int width = 10;
         final StringBuilder result = new StringBuilder();
@@ -84,10 +89,11 @@ public class MiBand {
         final int trailing_space = resultRaw.lastIndexOf(' ');
         final String resultString = trailing_space >= width ? result.toString().substring(0, trailing_space) : resultRaw;
 
-        Inevitable.task("miband-send-alert-debounce", isCall ? 3000 : 100, () -> JoH.startService(MiBandService.class, "function", "message",
+        Inevitable.task("miband-send-alert-debounce", 100, () -> JoH.startService(MiBandService.class, "function", "message",
                 "message", resultString,
                 "title", title,
-                "message_type", isCall ? "call" : "glucose"));
+                "message_type", "glucose",
+                "default_snoozle", Integer.toString(defaultSnoozle)));
     }
 
     static String getMac() {

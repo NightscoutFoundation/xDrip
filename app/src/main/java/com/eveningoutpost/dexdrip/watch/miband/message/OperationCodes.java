@@ -100,12 +100,16 @@ public class OperationCodes {
     public static final byte[] COMMAND_DISABLE_DISCONNECT_NOTIFCATION = new byte[]{ENDPOINT_DISPLAY, 0x0c, 0x00, 0x00};//, 0, 0, 0, 0};
     public static final byte[] COMMAND_ACK_FIND_PHONE_IN_PROGRESS = new byte[]{ENDPOINT_DISPLAY, 0x14, 0x00, 0x00};
 
+    public static final byte[] COMMAND_DISABLE_CALL = new byte[]{0x00,(byte) 0xc0,0x00,0x03,0x03,0x00,0x00,0x00,0x00};
+
 
     public static final byte RESPONSE = 0x10;
 
     public static final byte SUCCESS = 0x01;
 
+    public static final byte TIMER_RUNNING = 0x21;
     public static final byte LOW_BATTERY_ERROR = 0x22;
+    public static final byte ON_CALL = 0x22;
 
     public static final byte COMMAND_FIRMWARE_INIT = 0x01; // to UUID_CHARACTERISTIC_FIRMWARE, followed by fw file size in bytes
     public static final byte COMMAND_FIRMWARE_START_DATA = 0x03; // to UUID_CHARACTERISTIC_FIRMWARE

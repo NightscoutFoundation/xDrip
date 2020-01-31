@@ -66,6 +66,13 @@ public class Image {
         palette = new ArrayList<>();
     }
 
+    public Image(ByteArrayOutputStream stream, Bitmap image) {
+        this(stream);
+        this.image = image;
+        this.width = image.getWidth();
+        this.height = image.getHeight();
+    }
+
     public void write(Bitmap image) throws Exception {
         this.image = image;
         this.width = image.getWidth();
@@ -73,9 +80,8 @@ public class Image {
 
         extractPalette();
 
-
         if (palette.size() > 256)
-           throw new Exception("Too many colors for palette mode, stopping execution");
+            throw new Exception("Too many colors for palette mode, stopping execution");
         if (bitsPerPixel == 3) bitsPerPixel = 4;
         if (bitsPerPixel == 0) bitsPerPixel = 1;
 
@@ -88,7 +94,18 @@ public class Image {
         writeImage();
     }
 
-    //TODO for some reason not all color depths can work on miband?
+    public static Bitmap findApproptiateColorDeph(Bitmap src, int initialBitOffest) {
+        Bitmap bmOut = null;
+        for (; initialBitOffest < 64; initialBitOffest++) {
+            bmOut = decreaseColorDepth(src, initialBitOffest);
+            ByteArrayOutputStream imageByteArrayOutput = new ByteArrayOutputStream();
+            Image encodedImage = new Image(imageByteArrayOutput, bmOut);
+            encodedImage.extractPalette();
+            if ((encodedImage.bitsPerPixel == 8 || encodedImage.bitsPerPixel == 4 || encodedImage.bitsPerPixel == 2  ) && encodedImage.palette.size() <= 255) break;
+        }
+        return bmOut;
+    }
+
     public static Bitmap decreaseColorDepth(Bitmap src, int bitOffset) {
         // get image size
         int width = src.getWidth();
@@ -98,8 +115,8 @@ public class Image {
         // color information
         int A, R, G, B;
         int pixel;
-        for(int x = 0; x < width; ++x) {
-            for(int y = 0; y < height; ++y) {
+        for (int x = 0; x < width; ++x) {
+            for (int y = 0; y < height; ++y) {
                 pixel = src.getPixel(x, y);
                 A = Color.alpha(pixel);
                 R = Color.red(pixel);
@@ -108,11 +125,17 @@ public class Image {
 
                 // round-off color offset
                 R = ((R + (bitOffset / 2)) - ((R + (bitOffset / 2)) % bitOffset) - 1);
-                if(R < 0) { R = 0; }
+                if (R < 0) {
+                    R = 0;
+                }
                 G = ((G + (bitOffset / 2)) - ((G + (bitOffset / 2)) % bitOffset) - 1);
-                if(G < 0) { G = 0; }
+                if (G < 0) {
+                    G = 0;
+                }
                 B = ((B + (bitOffset / 2)) - ((B + (bitOffset / 2)) % bitOffset) - 1);
-                if(B < 0) { B = 0; }
+                if (B < 0) {
+                    B = 0;
+                }
                 bmOut.setPixel(x, y, Color.argb(A, R, G, B));
             }
         }

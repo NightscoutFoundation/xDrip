@@ -603,6 +603,7 @@
                 android:title="@string/pref_amazfit_watchface_graph_hours_title" />
             <Preference
                 android:key="install_miband_watchface"
+                android:dependency="miband_enabled"
                 android:title="@string/title_miband_update_bg"></Preference>
             <PreferenceCategory android:title="@string/title_miband_general_settings_category">
                 <PreferenceScreen

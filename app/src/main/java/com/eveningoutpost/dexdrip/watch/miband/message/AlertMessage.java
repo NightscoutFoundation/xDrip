@@ -4,6 +4,8 @@ import com.eveningoutpost.dexdrip.watch.miband.Const;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.UUID;
 
@@ -94,15 +96,14 @@ public class AlertMessage extends BaseMessage {
         return getAlertMessage(msg, category, icon, "");
     }
 
-    public byte[] getAlertMessageTitle(final String title, final AlertMessage.AlertCategory category) {
-        return getAlertMessage("", category, CustomIcon.WECHAT, title);
-    }
-
     @Override
     public UUID getCharacteristicUUID() {
         return Const.UUID_CHAR_NEW_ALERT;
     }
 
+    /*
+    This works on all Huami devices except Mi Band 2
+    */
     public byte[] getAlertMessage(String msg, final AlertMessage.AlertCategory category, final AlertMessage.CustomIcon icon, final String title) {
         byte[] messageBytes = new byte[1];
         byte[] titleBytes = new byte[1];
@@ -138,5 +139,31 @@ public class AlertMessage extends BaseMessage {
         if (title.length() > 0)
             putData(titleBytes);
         return getBytes();
+    }
+
+    public byte[] getAlertMessageOld(String message, final AlertMessage.AlertCategory category) {
+        return getAlertMessageOld(message, category, null);
+    }
+
+    // suitable for miband 2 and call with title
+    public byte[] getAlertMessageOld(String message, final AlertMessage.AlertCategory category, final AlertMessage.CustomIcon icon) {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream(100);
+        stream.write(fromUint8(category.getValue()));
+        stream.write(fromUint8(0x01));
+        if (category == AlertMessage.AlertCategory.CustomHuami) {
+            stream.write(fromUint8(icon.getValue()));
+        }
+        if (message.length() > 0) {
+            try {
+                stream.write(message.getBytes("UTF-8"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            ;
+        } else {
+            // some write a null byte instead of leaving out this optional value
+            // stream.write(new byte[] {0});
+        }
+        return stream.toByteArray();
     }
 }

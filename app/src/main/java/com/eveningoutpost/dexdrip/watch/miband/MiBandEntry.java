@@ -13,6 +13,7 @@ public class MiBandEntry {
     public static final String PREF_SEND_ALARMS = "miband_send_alarms";
     public static final String PREF_CALL_ALERTS = "miband_option_call_notifications";
     public static final String PREF_MIBAND_SETTINGS = "miband_settings";
+    public static final String PREF_MIBAND_PREFERENCES = "miband_preferences";
     public static final String PREF_MIBAND_INSTALL_WATCHFACE = "install_miband_watchface";
     public static final String MIBAND_SEND_READINGS_AS_NOTIFICATION = "miband_send_readings_as_notification";
 

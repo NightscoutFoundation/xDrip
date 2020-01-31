@@ -84,7 +84,7 @@ public class IncomingCallsReceiver extends BroadcastReceiver {
                     // TODO extract to generic notifier
                     final String caller = number != null ? "Incoming Call " + getContactDisplayNameByNumber(number) + " " + bestPhoneNumberFormatter(number) + " " : "CALL";
                     UserError.Log.d(TAG, "Sending call alert: " + caller);
-                    MiBand.sendAlert(true, caller);
+                    MiBand.sendCall(true, caller);
                 }
             }
 

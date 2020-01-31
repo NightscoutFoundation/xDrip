@@ -57,8 +57,8 @@ public class WatchFaceGenerator {
     private static int textColor = Color.WHITE;
     private static int noDataTextSize = 30; //px
     private static int bgValueTextSize = 45; //px
-    private static int timeStampTextSize = 14; //px
-    private static int graphBgColor = 0xFF1B1B1B;
+    private static int timeStampTextSize = 18; //px
+    private static int graphBgColor = 0x0;
 
     public WatchFaceGenerator(AssetManager assetManager) throws Exception {
         this.assetManager = assetManager;
@@ -80,7 +80,7 @@ public class WatchFaceGenerator {
         header = Header.readFrom(stream);
         if (d) {
             UserError.Log.e(TAG, "Header was read:");
-            UserError.Log.e(TAG, String.format("Signature: %s Unknown: %d ParametersSize: %d isValid: %s", header.getSignature(), header.getUnknown(), header.getParametersSize(), header.isValid()));
+            UserError.Log.e(TAG, String.format("Signature: %s, Unknown param: %d, ParametersSize: %d isValid: %s", header.getSignature(), header.getUnknown(), header.getParametersSize(), header.isValid()));
         }
         if (!header.isValid())
             throw new Exception("Wrong watchface format");
@@ -152,7 +152,7 @@ public class WatchFaceGenerator {
         paint.setTextScaleX(1);
         paint.setColor(textColor);
         int unitsTextPosX = 0;//px
-        int unitsTextPosY = height - 37;//px
+        int unitsTextPosY = height - 33;//px
         paint.setTextSize(timeStampTextSize);
         paint.setStrikeThruText(false);
         canvas.drawText(unitized_delta, unitsTextPosX, unitsTextPosY, paint);
@@ -234,24 +234,23 @@ public class WatchFaceGenerator {
         if (dg != null) {
             String timeStampText = "";
             if (dg.timestamp > Constants.DAY_IN_MS)
-                timeStampText = JoH.niceTimeScalar(JoH.msSince(dg.timestamp)) + " ago";
-            else
                 timeStampText = "at " + hourMinuteString(dg.timestamp);
+            else
+                timeStampText = JoH.niceTimeScalar(JoH.msSince(dg.timestamp)) + " ago";
 
             InputStream arrowStream = assetManager.open("miband_watchface_parts/" + dg.delta_name + ".png");
             Bitmap arrowBitmap = BitmapFactory.decodeStream(arrowStream);
 
-            mainScreen = drawMainBitmap(dg.unitized, arrowBitmap, timeStampText, dg.unitized_delta, dg.isStale(), dg.isHigh(), dg.isLow(), graphHours);
-            resultImage = Image.decreaseColorDepth(mainScreen, 4);
-
+            mainScreen = drawMainBitmap(dg.unitized.replace(",", "."), arrowBitmap, timeStampText, dg.unitized_delta_no_units, dg.isStale(), dg.isHigh(), dg.isLow(), graphHours);
+            resultImage = Image.findApproptiateColorDeph(mainScreen, 2);
         } else {
             mainScreen = drawNoDataBitmap();
-
             //for tests
             /*InputStream arrowStream = assetManager.open("miband_watchface_parts/" + "Flat" + ".png");
             Bitmap arrowBitmap = BitmapFactory.decodeStream(arrowStream);
-            mainScreen = drawMainBitmap("133", arrowBitmap, "at " + hourMinuteString(JoH.tsl()), "+5 mg/dl", false, true, true, graphHours);*/
-            resultImage = Image.decreaseColorDepth(mainScreen, 64);
+            mainScreen = drawMainBitmap("13.3", arrowBitmap, "at " + hourMinuteString(JoH.tsl()), "+5 mg/dl", false, true, true, graphHours);
+            resultImage = Image.decreaseColorDepth(mainScreen, 2);*/
+            resultImage = Image.findApproptiateColorDeph(mainScreen, 64);
         }
 
         final String dir = getExternalDir();

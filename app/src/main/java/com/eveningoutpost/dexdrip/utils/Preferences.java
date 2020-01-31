@@ -126,7 +126,7 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
-import static com.eveningoutpost.dexdrip.watch.miband.MiBand.MiBandType.MI_BAND2;
+import static com.eveningoutpost.dexdrip.watch.miband.MiBand.MiBandType.MI_BAND4;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On
@@ -466,11 +466,16 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     case INSTALL_REQUEST:
                         preferenceFragment.installMiBandWatchface(preferenceFragment.getContext());
                         break;
+                    case UPDATE_PREFERENCES:
+                        preferenceFragment.updateMibandPreferences(true);
+                        break;
                 }
 
             }
         };
     }
+
+
 
 
     @Override
@@ -1000,19 +1005,8 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     return true;
                 });
 
-                findPreference(MiBandEntry.PREF_MIBAND_SETTINGS).setOnPreferenceClickListener(preference -> {
-                    MiBand.MiBandType type = MiBand.getMibandType();
-                    PreferenceScreen scr = (PreferenceScreen) findPreference(MiBandEntry.PREF_MIBAND_SETTINGS);
-                    try {
-                        if (type == MI_BAND2) {
-                            scr.removePreference(findPreference("miband3_4_screen"));
-                            scr.addPreference(findPreference("miband2_screen"));
-                        } else {
-                            scr.removePreference(findPreference("miband2_screen"));
-                            scr.addPreference(findPreference("miband3_4_screen"));
-                        }
-                    } catch (NullPointerException e) {
-                    }
+                findPreference(MiBandEntry.PREF_MIBAND_PREFERENCES).setOnPreferenceClickListener(preference -> {
+                    updateMibandPreferences(false);
                     return true;
                 });
 
@@ -2243,6 +2237,47 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
 
         }
 
+        private void updateMibandPreferences(Boolean isNeedToRefresh){
+            MiBand.MiBandType type = MiBand.getMibandType();
+            PreferenceScreen settings = (PreferenceScreen) findPreference(MiBandEntry.PREF_MIBAND_SETTINGS);
+            PreferenceScreen prefs = (PreferenceScreen) findPreference(MiBandEntry.PREF_MIBAND_PREFERENCES);
+
+            try {
+                if (type == MI_BAND4) {
+                    settings.removePreference(findPreference("miband2_screen"));
+                    settings.addPreference(findPreference("miband3_4_screen"));
+                    prefs.addPreference(findPreference("miband_graph_hours"));
+                    prefs.addPreference(findPreference("miband_send_readings_as_notification"));
+                    prefs.addPreference(findPreference("miband_authkey"));
+                } else {
+                    settings.addPreference(findPreference("miband2_screen"));
+                    settings.removePreference(findPreference("miband3_4_screen"));
+                    prefs.removePreference(findPreference("miband_graph_hours"));
+                    prefs.removePreference(findPreference("miband_send_readings_as_notification"));
+                    prefs.removePreference(findPreference("miband_authkey"));
+                }
+                if (isNeedToRefresh){
+                    // This generically refreshes the fragment which may well nullify some of the ui logic above as it does a complete rebuild
+                    Inevitable.task("refresh-prefs", 100, new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                JoH.runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        if (parent != null)
+                                            parent.refreshFragments(MiBandEntry.PREF_MIBAND_PREFERENCES);
+                                    }
+                                });
+                            } catch (Exception e) {
+                                Log.e(TAG, "Got exception refreshing fragments: " + e);
+                            }
+                        }
+                    });
+                }
+            } catch (NullPointerException e) {
+            }
+        }
 
         // all this boiler plate for a dynamic interface seems excessive and boring, I would love to know a helper library to simplify this
         private void set_nfc_expiry_change_listeners() {
@@ -2335,7 +2370,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             }
         }
 
-        public void installMiBandWatchface(Context context) {
+        private void installMiBandWatchface(Context context) {
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
             builder.setTitle(xdrip.getAppContext().getResources().getString(R.string.miband_bg_dialog_title));
             builder.setPositiveButton(xdrip.getAppContext().getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {

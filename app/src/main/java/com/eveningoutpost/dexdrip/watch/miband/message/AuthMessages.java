@@ -64,6 +64,12 @@ public class AuthMessages extends BaseMessage {
         }
     }
 
+    public static Boolean isValidAuthKey(String authKey){
+        if ((authKey.length() != 32) || !authKey.matches("[a-zA-Z0-9]+"))
+            return false;
+        return true;
+    }
+
     public static String getAuthCodeFromFilesSystem(String mac) {
         String authKey = "";
         String macFileName = mac.replace(":", "").toUpperCase();
