@@ -123,7 +123,7 @@ public class MegaStatus extends ActivityWithMenu {
 
         if (sectionList.isEmpty()) {
 
-            addAsection("Classic Status Page", "Legacy System Status");
+            addAsection("The Diabetic Way  Status Page", "Legacy System Status");
 
             final DexCollectionType dexCollectionType = DexCollectionType.getDexCollectionType();
 

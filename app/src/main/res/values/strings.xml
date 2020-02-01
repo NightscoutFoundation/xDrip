@@ -981,7 +981,7 @@
     <string name="warning_no_alert_will_be_played_in_silent_mode">Warning, no alert will be played when phone in silent/vibrate mode!!!</string>
     <string name="automatic_message_from_xdrip">automatic message from xDrip+</string>
     <string name="zero_zero_zero_zero">0000</string>
-    <string name="emergency_messages">Emergency Messages</string>
+    <string name="emergency_messages">Emergency Text Messages</string>
     <string name="emergency_message_feature">Emergency Message Feature</string>
     <string name="text_messages_can_be_sent_with_your_location_if_you_do_not_respond_to_alarms_this_feature_is_experimental_and_may_not_be_reliable">Text messages can be sent with your location if you do not respond to alarms. This feature is experimental and may not be reliable.</string>
     <string name="your_name">Your name</string>
