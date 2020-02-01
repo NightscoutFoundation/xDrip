@@ -127,7 +127,7 @@ android {
         // change versionCode only when downgrade should be prevented
         // eg, when data structures are incompatible
         versionCode 1603091400
-        versionName = 'TheDiabeticWay Woz Here'
+        versionName = 'TheDiabeticWay'
         buildConfigField "int", "buildVersion", generateVersionNumberString()
         buildConfigField "String", "buildUUID", generateRandomUUID()
         buildConfigField "long", "buildTimestamp", generateTimestamp()
