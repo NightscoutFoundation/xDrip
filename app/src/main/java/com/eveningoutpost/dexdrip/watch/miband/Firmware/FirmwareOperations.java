@@ -12,8 +12,15 @@ import static com.eveningoutpost.dexdrip.watch.miband.message.OperationCodes.COM
 import static com.eveningoutpost.dexdrip.watch.miband.message.OperationCodes.COMMAND_FIRMWARE_INIT;
 import static com.eveningoutpost.dexdrip.watch.miband.message.OperationCodes.COMMAND_FIRMWARE_START_DATA;
 import static com.eveningoutpost.dexdrip.watch.miband.message.OperationCodes.COMMAND_FIRMWARE_UPDATE_SYNC;
+import static com.polidea.rxandroidble2.RxBleConnection.GATT_MTU_MAXIMUM;
+import static com.polidea.rxandroidble2.RxBleConnection.GATT_MTU_MINIMUM;
+import static com.polidea.rxandroidble2.RxBleConnection.GATT_WRITE_MTU_OVERHEAD;
 
 public class FirmwareOperations {
+    private byte[] fw;
+    private FirmwareType firmwareType = FirmwareType.WATCHFACE;
+    private int mMTU = GATT_MTU_MINIMUM;
+
     public enum FirmwareType {
         FIRMWARE((byte) 0),
         FONT((byte) 1),
@@ -39,8 +46,15 @@ public class FirmwareOperations {
 
     SequenceType sequenceType = SequenceType.NOTIFICATION_ENABLE;
 
+    public void setMTU(int mMTU) {
+        this.mMTU = mMTU;
+        if (this.mMTU > GATT_MTU_MAXIMUM) this.mMTU = GATT_MTU_MAXIMUM;
+        if (this.mMTU < GATT_MTU_MINIMUM) this.mMTU = GATT_MTU_MINIMUM;
+    }
+
     public enum SequenceType {
         NOTIFICATION_ENABLE,
+        SET_NIGHTMODE,
         PREPARE_UPLOAD,
         TRANSFER_SEND_WF_INFO,
         TRANSFER_FW_START,
@@ -49,6 +63,7 @@ public class FirmwareOperations {
         CHECKSUM_VERIFIED;
 
         private static SequenceType[] vals = values();
+
         public SequenceType next() {
             return vals[(this.ordinal() + 1) % vals.length];
         }
@@ -66,9 +81,6 @@ public class FirmwareOperations {
         return sequenceType;
     }
 
-    private static final int packetLength = 244;
-    private byte[] fw = new byte[0];
-    private FirmwareType firmwareType = FirmwareType.WATCHFACE;
 
     public FirmwareType getFirmwareType() {
         return firmwareType;
@@ -79,7 +91,7 @@ public class FirmwareOperations {
     }
 
     public int getPackeLenght() {
-        return packetLength;
+        return mMTU - GATT_WRITE_MTU_OVERHEAD;
     }
 
     public FirmwareOperations(InputStream file) throws IOException {
@@ -104,6 +116,7 @@ public class FirmwareOperations {
                 (byte) ((value >> 8) & 0xff),
         };
     }
+
     public static byte[] fromUint24(int value) {
         return new byte[]{
                 (byte) (value & 0xff),

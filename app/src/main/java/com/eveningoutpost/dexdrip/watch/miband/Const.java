@@ -159,4 +159,6 @@ public class Const {
     public static final String MIBAND_NAME_3 = "MI Band 3";
     public static final String MIBAND_NAME_3_1 = "Xiaomi Band 3";
     public static final String MIBAND_NAME_4 = "Mi Smart Band 4";
+
+    public static final int PREFERRED_MTU_SIZE = 247;
 }

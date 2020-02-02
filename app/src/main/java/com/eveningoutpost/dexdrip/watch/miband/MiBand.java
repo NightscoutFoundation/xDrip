@@ -52,10 +52,11 @@ public class MiBand {
         }
     }
 
-
     private static final String PREF_MIBAND_MAC = "miband_mac";
     private static final String PREF_MIBAND_AUTH_MAC = "miband_auth_mac";
     private static final String PREF_MIBAND_AUTH_KEY = "miband_authkey";
+    public static final String PREF_MIBAND_GRAPH_HOURS = "miband_graph_hours";
+
     private static final String PREF_MIBAND_PERSISTANT_AUTH_KEY = "miband_persist_authkey";
     private static final String PREF_MIBAND_MODEL = "miband_model_";
     private static final String PREF_MIBAND_VERSION = "miband_version_";
@@ -67,8 +68,6 @@ public class MiBand {
     public static boolean isAuthenticated() {
         return MiBand.getAuthMac().isEmpty() ? false : true;
     }
-
-
 
     public static void sendCall(boolean isCall, final String title) {
         Inevitable.task("miband-send-alert-debounce", 3000, () -> JoH.startService(MiBandService.class, "function", "message",

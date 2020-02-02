@@ -37,6 +37,7 @@ import static com.eveningoutpost.dexdrip.Models.JoH.threadSleep;
 import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.getCol;
 import static com.eveningoutpost.dexdrip.utils.FileUtils.getExternalDir;
 import static com.eveningoutpost.dexdrip.utils.FileUtils.makeSureDirectoryExists;
+import static com.eveningoutpost.dexdrip.watch.miband.MiBand.PREF_MIBAND_GRAPH_HOURS;
 
 public class WatchFaceGenerator {
     private static final boolean d = true;
@@ -226,10 +227,9 @@ public class WatchFaceGenerator {
     }
 
     public byte[] genWatchFace() throws Exception {
-
         Bitmap mainScreen;
         Bitmap resultImage;
-        int graphHours = Pref.getStringToInt("miband_graph_hours", 4);
+        int graphHours = Pref.getStringToInt(PREF_MIBAND_GRAPH_HOURS, 4);
         BestGlucose.DisplayGlucose dg = BestGlucose.getDisplayGlucose();
         if (dg != null) {
             String timeStampText = "";

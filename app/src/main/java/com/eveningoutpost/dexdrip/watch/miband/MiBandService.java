@@ -47,6 +47,7 @@ import com.polidea.rxandroidble2.exceptions.BleDisconnectedException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -62,9 +63,12 @@ import static com.eveningoutpost.dexdrip.Models.JoH.niceTimeScalar;
 import static com.eveningoutpost.dexdrip.Services.JamBaseBluetoothSequencer.BaseState.CLOSE;
 import static com.eveningoutpost.dexdrip.Services.JamBaseBluetoothSequencer.BaseState.CLOSED;
 import static com.eveningoutpost.dexdrip.Services.JamBaseBluetoothSequencer.BaseState.INIT;
+import static com.eveningoutpost.dexdrip.watch.miband.Const.PREFERRED_MTU_SIZE;
 import static com.eveningoutpost.dexdrip.watch.miband.MiBand.MiBandType.MI_BAND2;
 import static com.eveningoutpost.dexdrip.watch.miband.MiBand.MiBandType.MI_BAND4;
 import static com.eveningoutpost.dexdrip.watch.miband.MiBandService.MiBandState.AUTHORIZE_FAILED;
+import static com.eveningoutpost.dexdrip.watch.miband.message.DisplayControllMessageMiband3_4.NightMode.Off;
+import static com.eveningoutpost.dexdrip.watch.miband.message.DisplayControllMessageMiband3_4.NightMode.Sheduled;
 import static com.eveningoutpost.dexdrip.watch.miband.message.OperationCodes.AUTH_FAIL;
 import static com.eveningoutpost.dexdrip.watch.miband.message.OperationCodes.AUTH_MIBAND4_FAIL;
 import static com.eveningoutpost.dexdrip.watch.miband.message.OperationCodes.AUTH_REQUEST_RANDOM_AUTH_NUMBER;
@@ -94,6 +98,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
     private static final long RETRY_PERIOD_MS = Constants.SECOND_IN_MS * 30; // sleep for max ms if we have had no signal
     private static final long BG_UPDATE_INTERVAL = 30 * Constants.MINUTE_IN_MS; //minutes
     private static final long CONNECTION_TIMEOUT = 5 * Constants.MINUTE_IN_MS; //minutes
+    private static final long RESTORE_NIGHT_MODE_DELAY = (Constants.SECOND_IN_MS * 7);
     private static final int QUEUE_EXPIRED_TIME = 30; //second
     private static final int QUEUE_DELAY = 0; //ms
     private static final int CALL_ALERT_DELAY = (int) (Constants.SECOND_IN_MS * 10);
@@ -105,15 +110,14 @@ public class MiBandService extends JamBaseBluetoothSequencer {
     private Boolean isNeedToAuthenticate = true;
     private Boolean isNeedToUpdatePreferences = false;
     private Boolean isWaitingSnoozeResponce = false;
+    private Boolean isNeedToRestoreNigtMode = false;
     static BatteryInfo batteryInfo = new BatteryInfo();
     private FirmwareOperations firmware;
+    private Subscription watchfaceSubscription;
     private MediaPlayer player;
 
     private PendingIntent bgServiceIntent;
     static private long bgWakeupTime;
-
-    private Subscription watchfaceSubscription;
-
     private MiBand.MiBandType prevDeviceType;
 
     public enum MIBAND_INTEND_STATES {
@@ -402,6 +406,10 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                         return;
                 }
                 break;
+            case DeviceEvent.MTU_REQUEST:
+                int mtu = (value[2] & 0xff) << 8 | value[1] & 0xff;
+                UserError.Log.d(TAG, "device announced MTU of " + mtu);
+                break;
             default:
                 UserError.Log.d(TAG, "unhandled event " + value[0]);
         }
@@ -677,8 +685,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                                                 }, throwable -> {
                                                     UserError.Log.e(TAG, "Could not getAuthKeyRequest: " + throwable);
                                                 });
-                                    }
-                                    else {
+                                    } else {
                                         connection.writeCharacteristic(authorisation.getCharacteristicUUID(), authorisation.getAuthCommand())
                                                 .subscribe(characteristicValue -> {
                                                             UserError.Log.d(TAG, "Wrote getAuthCommand, got: " + JoH.bytesToHex(characteristicValue));
@@ -838,6 +845,31 @@ public class MiBandService extends JamBaseBluetoothSequencer {
             UserError.Log.d(TAG, "processFirmwareCommands: " + bytesToHex(value) + ": seq:" + seq.toString());
         if (isSeqCommand) {
             switch (seq) {
+                case SET_NIGHTMODE: {
+                    if (true) {
+                        isNeedToRestoreNigtMode = true;
+                        DisplayControllMessageMiband3_4 dispControl = new DisplayControllMessageMiband3_4();
+                        Calendar sheduledCalendar = Calendar.getInstance();
+                        sheduledCalendar.set(Calendar.HOUR_OF_DAY, 0);
+                        sheduledCalendar.set(Calendar.MINUTE, 0);
+                        Date sheduledDate = sheduledCalendar.getTime();
+                        connection.writeCharacteristic(dispControl.getCharacteristicUUID(), dispControl.setNightModeCmd(Sheduled, sheduledDate, sheduledDate))
+                                .subscribe(valB -> {
+                                            UserError.Log.d(TAG, "Wrote nigntmode, got: " + JoH.bytesToHex(valB));
+                                            firmware.nextSequence();
+                                            processFirmwareCommands(null, true);
+                                        },
+                                        throwable -> {
+                                            UserError.Log.e(TAG, "Could not write nigntmode: " + throwable);
+                                            firmware.nextSequence();
+                                            processFirmwareCommands(null, true);
+                                        }
+                                );
+                    } else
+                        firmware.nextSequence();
+                    break;
+                }
+
                 case PREPARE_UPLOAD: {
                     connection.writeCharacteristic(firmware.getFirmwareCharacteristicUUID(), firmware.prepareFWUploadInitCommand())
                             .subscribe(valB -> {
@@ -951,9 +983,14 @@ public class MiBandService extends JamBaseBluetoothSequencer {
             UserError.Log.e(TAG, "resetFirmwareState result:" + result + ":" + finishText);
             sendPrefIntent(MIBAND_INTEND_STATES.WATHCFACE_DIALOG_FINISH, 0, finishText);
 
-            if (result)
+            if (isNeedToRestoreNigtMode) {
+                JoH.threadSleep(RESTORE_NIGHT_MODE_DELAY);
+                restoreNightMode();
+            }
+            if (result) {
                 changeNextState();
-            else {
+            }
+            else{
                 emptyQueue();
                 JoH.startService(MiBandService.class, "function", "update_bg_as_notification");
             }
@@ -963,7 +1000,10 @@ public class MiBandService extends JamBaseBluetoothSequencer {
     private void sendFirmwareData() {
         byte[] fwbytes = firmware.getBytes();
         int len = firmware.getSize();
+        firmware.setMTU(I.connection.getMtu());
         final int packetLength = firmware.getPackeLenght();
+        if (d)
+            UserError.Log.d(TAG, "Firmware packet lengh: " + packetLength);
         int packets = len / packetLength;
         // going from 0 to len
         int firmwareProgress = 0;
@@ -1008,18 +1048,42 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                 .setDelayMs(0);
     }
 
+    private void restoreNightMode() {
+        if (d)
+            UserError.Log.d(TAG, "Restore night mode");
+        isNeedToRestoreNigtMode = false;
+        RxBleConnection connection = I.connection;
+        DisplayControllMessageMiband3_4 dispControl = new DisplayControllMessageMiband3_4();
+        connection.writeCharacteristic(dispControl.getCharacteristicUUID(), dispControl.setNightModeCmd(Off, null, null))
+                .subscribe(valB -> {
+                            if (d)
+                                UserError.Log.d(TAG, "Wrote restore nigtmode: " + JoH.bytesToHex(valB));
+                        },
+                        throwable -> {
+                            if (d)
+                                UserError.Log.e(TAG, "Could not write restore nigtmode: " + throwable);
+                        }
+                );
+    }
+
     @SuppressLint("CheckResult")
     private void enableNotification() {
-        UserError.Log.d(TAG, "enableNotifications called");
+        if (d)
+            UserError.Log.d(TAG, "enableNotifications called");
         if (I.isNotificationEnabled) {
-            UserError.Log.d(TAG, "Notifications already enabled");
+            if (d)
+                UserError.Log.d(TAG, "Notifications already enabled");
             changeNextState();
             return;
         }
         if (notificationSubscription != null) {
             notificationSubscription.unsubscribe();
         }
-        UserError.Log.d(TAG, "Requesting to enable notifications");
+        if (d)
+            UserError.Log.d(TAG, "Requesting to enable notifications");
+
+        I.connection.requestMtu(PREFERRED_MTU_SIZE).subscribe();
+
         notificationSubscription = new Subscription(I.connection.setupNotification(Const.UUID_CHARACTERISTIC_DEVICEEVENT)
                 .doOnNext(notificationObservable -> {
                     I.isNotificationEnabled = true;
@@ -1062,16 +1126,17 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                     break;
                 case MiBandState.GET_MODEL_NAME:
                     cancelRetryTimer();
+                    if (isNeedToRestoreNigtMode) {
+                        restoreNightMode();
+                    }
                     if (MiBand.getModel().isEmpty()) {
                         getModelName();
-                    }
-                    else changeNextState();
+                    } else changeNextState();
 
-                    if(isNeedToUpdatePreferences){
+                    if (isNeedToUpdatePreferences) {
                         isNeedToUpdatePreferences = false;
                         sendPrefIntent(MIBAND_INTEND_STATES.UPDATE_PREFERENCES, 0, "");
                     }
-
                     break;
                 case MiBandState.GET_SOFT_REVISION:
                     if (MiBand.getVersion().isEmpty() || isNeedToCheckRevision)

@@ -125,6 +125,10 @@ public class OperationCodes {
     private static final int CONN_SLAVE_LATENCY = 0x0;
     private static final int CONN_SUPERVISION_TIMEOUT = 500;
 
+    public static final byte[] COMMAND_NIGHT_MODE_OFF = new byte[]{0x1a, 0x00};
+    public static final byte[] COMMAND_NIGHT_MODE_SUNSET = new byte[]{0x1a, 0x02};
+    public static final byte[] COMMAND_NIGHT_MODE_SCHEDULED = new byte[]{0x1a, 0x01, 0x10, 0x00, 0x07, 0x00};
+
     public static final byte[] SET_CONNECTION_PARAM = {
             (byte) (CONN_INTERVAL_MIN & 0x00FF), // gets LSB of 2 byte value
             (byte) ((CONN_INTERVAL_MIN & 0xFF00) >> 8), // gets MSB of 2 byte value
