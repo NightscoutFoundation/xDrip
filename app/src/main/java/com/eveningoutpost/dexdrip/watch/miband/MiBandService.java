@@ -990,10 +990,10 @@ public class MiBandService extends JamBaseBluetoothSequencer {
             if (result) {
                 changeNextState();
             }
-            else{
+            /*else{ //do not resend bg ?
                 emptyQueue();
                 JoH.startService(MiBandService.class, "function", "update_bg_as_notification");
-            }
+            }*/
         }
     }
 
