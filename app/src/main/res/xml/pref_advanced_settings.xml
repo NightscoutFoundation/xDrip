@@ -605,7 +605,9 @@
                 android:key="install_miband_watchface"
                 android:dependency="miband_enabled"
                 android:title="@string/title_miband_update_bg"></Preference>
-            <PreferenceCategory android:title="@string/title_miband_general_settings_category">
+            <PreferenceCategory
+                android:title="@string/title_miband_general_settings_category"
+                android:dependency="miband_enabled">
                 <PreferenceScreen
                     android:key="miband_settings"
                     android:title="@string/title_miband_screens_features">
@@ -646,24 +648,47 @@
                             android:summary="@string/summary_miband_visibility"
                             android:title="@string/title_miband_visibility" />
                     </PreferenceCategory>
-
+                    <PreferenceCategory
+                        android:key="miband_nightmode_category"
+                        android:title="Night mode settings">
+                        <SwitchPreference
+                            android:defaultValue="false"
+                            android:key="miband_nightmode_enabled"
+                            android:summary="Reduce band screen brightness during custom time"
+                            android:title="Enable night mode settings" />
+                        <com.eveningoutpost.dexdrip.utils.TimePreference
+                            android:key="miband_nightmode_start"
+                            android:dependency="miband_nightmode_enabled"
+                            android:title="Night mode start">
+                        </com.eveningoutpost.dexdrip.utils.TimePreference>
+                        <com.eveningoutpost.dexdrip.utils.TimePreference
+                            android:key="miband_nightmode_end"
+                            android:dependency="miband_nightmode_enabled"
+                            android:title="Night mode end">
+                        </com.eveningoutpost.dexdrip.utils.TimePreference>
+                    </PreferenceCategory>
                     <PreferenceCategory
                         android:key="miband2_screen"
                         android:title="@string/title_screens">
                         <CheckBoxPreference
                             android:key="miband_screen_step_counter"
+                            android:defaultValue="true"
                             android:title="@string/title_lefun_screen_step_counter" />
                         <CheckBoxPreference
                             android:key="miband_screen_step_distance"
+                            android:defaultValue="true"
                             android:title="@string/title_lefun_screen_step_distance" />
                         <CheckBoxPreference
                             android:key="miband_screen_step_calories"
+                            android:defaultValue="true"
                             android:title="@string/title_lefun_screen_step_calories" />
                         <CheckBoxPreference
                             android:key="miband_screen_heart_rate"
+                            android:defaultValue="true"
                             android:title="@string/title_lefun_screen_heart_rate" />
                         <CheckBoxPreference
                             android:key="miband_screen_battery"
+                            android:defaultValue="true"
                             android:title="@string/title_miband_screen_battery" />
                     </PreferenceCategory>
                     <PreferenceCategory
@@ -671,27 +696,35 @@
                         android:title="@string/title_screens">
                         <CheckBoxPreference
                             android:key="miband_screen_notifications"
+                            android:defaultValue="true"
                             android:title="@string/title_miband_screen_notifications" />
                         <CheckBoxPreference
                             android:key="miband_screen_weather"
+                            android:defaultValue="true"
                             android:title="@string/title_miband_screen_weather" />
                         <CheckBoxPreference
                             android:key="miband_screen_activity"
+                            android:defaultValue="true"
                             android:title="@string/title_miband_screen_activity" />
                         <CheckBoxPreference
                             android:key="miband_screen_more"
+                            android:defaultValue="true"
                             android:title="@string/title_miband_screen_more" />
                         <CheckBoxPreference
                             android:key="miband_screen_status"
+                            android:defaultValue="true"
                             android:title="@string/title_miband_screen_status" />
                         <CheckBoxPreference
                             android:key="miband_screen_heart_rate"
+                            android:defaultValue="true"
                             android:title="@string/title_miband_screen_heart_rate" />
                         <CheckBoxPreference
                             android:key="miband_screen_timer"
+                            android:defaultValue="true"
                             android:title="@string/title_miband_screen_timer" />
                         <CheckBoxPreference
                             android:key="miband_screen_nfc"
+                            android:defaultValue="false"
                             android:title="@string/title_miband_screen_nfc" />
                     </PreferenceCategory>
                 </PreferenceScreen>

@@ -582,6 +582,8 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                 .expireInSeconds(QUEUE_EXPIRED_TIME)
                 .setDelayMs(QUEUE_DELAY)
                 .queue();
+
+        setNightMode();
     }
 
     private void queueMessage() {
@@ -985,7 +987,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
 
             if (isNeedToRestoreNigtMode) {
                 JoH.threadSleep(RESTORE_NIGHT_MODE_DELAY);
-                restoreNightMode();
+                setNightMode();
             }
             if (result) {
                 changeNextState();
@@ -1048,20 +1050,28 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                 .setDelayMs(0);
     }
 
-    private void restoreNightMode() {
+    private void setNightMode() {
         if (d)
             UserError.Log.d(TAG, "Restore night mode");
         isNeedToRestoreNigtMode = false;
+        Date start = null, end = null;
+        DisplayControllMessageMiband3_4.NightMode nightMode = DisplayControllMessageMiband3_4.NightMode.Off ;
+        if (MiBandEntry.isNightModeEnabled())
+        {
+            nightMode = DisplayControllMessageMiband3_4.NightMode.Sheduled;
+            start = MiBandEntry.getNightModeStart();
+            end = MiBandEntry.getNightModeEnd();
+        }
         RxBleConnection connection = I.connection;
         DisplayControllMessageMiband3_4 dispControl = new DisplayControllMessageMiband3_4();
-        connection.writeCharacteristic(dispControl.getCharacteristicUUID(), dispControl.setNightModeCmd(Off, null, null))
+        connection.writeCharacteristic(dispControl.getCharacteristicUUID(), dispControl.setNightModeCmd(nightMode, start, end))
                 .subscribe(valB -> {
                             if (d)
-                                UserError.Log.d(TAG, "Wrote restore nigtmode: " + JoH.bytesToHex(valB));
+                                UserError.Log.d(TAG, "Wrote nightmode");
                         },
                         throwable -> {
                             if (d)
-                                UserError.Log.e(TAG, "Could not write restore nigtmode: " + throwable);
+                                UserError.Log.e(TAG, "Could not write nightmode: " + throwable);
                         }
                 );
     }
@@ -1127,7 +1137,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                 case MiBandState.GET_MODEL_NAME:
                     cancelRetryTimer();
                     if (isNeedToRestoreNigtMode) {
-                        restoreNightMode();
+                        setNightMode();
                     }
                     if (MiBand.getModel().isEmpty()) {
                         getModelName();

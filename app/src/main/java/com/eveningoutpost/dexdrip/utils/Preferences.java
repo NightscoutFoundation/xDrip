@@ -2241,7 +2241,6 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             MiBand.MiBandType type = MiBand.getMibandType();
             PreferenceScreen settings = (PreferenceScreen) findPreference(MiBandEntry.PREF_MIBAND_SETTINGS);
             PreferenceScreen prefs = (PreferenceScreen) findPreference(MiBandEntry.PREF_MIBAND_PREFERENCES);
-
             try {
                 if (type == MI_BAND4) {
                     settings.removePreference(findPreference("miband2_screen"));
@@ -2249,12 +2248,14 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     prefs.addPreference(findPreference("miband_graph_hours"));
                     prefs.addPreference(findPreference("miband_send_readings_as_notification"));
                     prefs.addPreference(findPreference("miband_authkey"));
+                    settings.addPreference(findPreference("miband_nightmode_category"));
                 } else {
                     settings.addPreference(findPreference("miband2_screen"));
                     settings.removePreference(findPreference("miband3_4_screen"));
                     prefs.removePreference(findPreference("miband_graph_hours"));
                     prefs.removePreference(findPreference("miband_send_readings_as_notification"));
                     prefs.removePreference(findPreference("miband_authkey"));
+                    settings.removePreference(findPreference("miband_nightmode_category"));
                 }
                 if (isNeedToRefresh){
                     // This generically refreshes the fragment which may well nullify some of the ui logic above as it does a complete rebuild

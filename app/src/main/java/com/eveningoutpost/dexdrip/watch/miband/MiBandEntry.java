@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+
+import java.util.Date;
 // very lightweight entry point class to avoid loader overhead when not in use
 
 public class MiBandEntry {
@@ -15,6 +17,10 @@ public class MiBandEntry {
     public static final String PREF_MIBAND_SETTINGS = "miband_settings";
     public static final String PREF_MIBAND_PREFERENCES = "miband_preferences";
     public static final String PREF_MIBAND_INSTALL_WATCHFACE = "install_miband_watchface";
+    public static final String PREF_MIBAND_NIGHTMODE_ENABLED = "miband_nightmode_enabled";
+    public static final String PREF_MIBAND_NIGHTMODE_START = "miband_nightmode_start";
+    public static final String PREF_MIBAND_NIGHTMODE_END = "miband_nightmode_end";
+
     public static final String MIBAND_SEND_READINGS_AS_NOTIFICATION = "miband_send_readings_as_notification";
 
     public static final String PREF_VIBRATE_ON_READINGS = "miband_vibrate_on_readings";
@@ -41,6 +47,18 @@ public class MiBandEntry {
 
     public static boolean areCallAlertsEnabled() {
         return isEnabled() && Pref.getBooleanDefaultFalse(PREF_CALL_ALERTS);
+    }
+
+    public static boolean isNightModeEnabled() {
+        return Pref.getBooleanDefaultFalse(PREF_MIBAND_NIGHTMODE_ENABLED);
+    }
+
+    public static Date getNightModeStart() {
+        return new Date(Pref.getLong(PREF_MIBAND_NIGHTMODE_START, 0));
+    }
+
+    public static Date getNightModeEnd() {
+        return new Date(Pref.getLong(PREF_MIBAND_NIGHTMODE_END, 0));
     }
 
     public static void initialStartIfEnabled() {
