@@ -867,8 +867,10 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                                             processFirmwareCommands(null, true);
                                         }
                                 );
-                    } else
+                    } else {
                         firmware.nextSequence();
+                        processFirmwareCommands(null, true);
+                    }
                     break;
                 }
 
@@ -952,11 +954,11 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                 }
             } else {
                 if (value[2] == OperationCodes.LOW_BATTERY_ERROR) {
-                    resetFirmwareState(false, "Cannot upload watchface due to low battery, please charge device", false);
+                    resetFirmwareState(false, "Cannot upload watchface, low battery, please charge device", false,true);
                 } else if (value[2] == OperationCodes.TIMER_RUNNING) {
-                    resetFirmwareState(false, "Cannot upload watchface because timer running on band", false);
+                    resetFirmwareState(false, "Cannot upload watchface, timer running on band", false);
                 } else if (value[2] == OperationCodes.ON_CALL) {
-                    resetFirmwareState(false, "Cannot upload watchface call in progress", false);
+                    resetFirmwareState(false, "Cannot upload watchface, call in progress", false);
                 } else {
                     UserError.Log.e(TAG, "Unexpected notification during firmware update:" + JoH.bytesToHex(value));
                     resetFirmwareState(false);
@@ -969,7 +971,11 @@ public class MiBandService extends JamBaseBluetoothSequencer {
         resetFirmwareState(result, null, false);
     }
 
-    private void resetFirmwareState(Boolean result, String customText, Boolean reset) {
+    private void resetFirmwareState(Boolean result, String customText, Boolean reset){
+        resetFirmwareState(result, null, false, false);
+    }
+
+    private void resetFirmwareState(Boolean result, String customText, Boolean reset, Boolean sendBGNotification) {
         if (watchfaceSubscription != null || reset) {
             if (watchfaceSubscription != null) {
                 watchfaceSubscription.unsubscribe();
@@ -989,13 +995,13 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                 JoH.threadSleep(RESTORE_NIGHT_MODE_DELAY);
                 setNightMode();
             }
-            if (result) {
+            if (!sendBGNotification) {
                 changeNextState();
             }
-            /*else{ //do not resend bg ?
+            else{
                 emptyQueue();
                 JoH.startService(MiBandService.class, "function", "update_bg_as_notification");
-            }*/
+            }
         }
     }
 
