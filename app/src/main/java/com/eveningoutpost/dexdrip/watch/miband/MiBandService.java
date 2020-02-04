@@ -1059,9 +1059,8 @@ public class MiBandService extends JamBaseBluetoothSequencer {
     private void setNightMode() {
         if (d)
             UserError.Log.d(TAG, "Restore night mode");
-        isNeedToRestoreNigtMode = false;
         Date start = null, end = null;
-        DisplayControllMessageMiband3_4.NightMode nightMode = DisplayControllMessageMiband3_4.NightMode.Off ;
+        DisplayControllMessageMiband3_4.NightMode nightMode = DisplayControllMessageMiband3_4.NightMode.Off;
         if (MiBandEntry.isNightModeEnabled())
         {
             nightMode = DisplayControllMessageMiband3_4.NightMode.Sheduled;
@@ -1074,6 +1073,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                 .subscribe(valB -> {
                             if (d)
                                 UserError.Log.d(TAG, "Wrote nightmode");
+                            isNeedToRestoreNigtMode = false;
                         },
                         throwable -> {
                             if (d)
