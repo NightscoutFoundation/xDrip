@@ -84,13 +84,15 @@ public class BlueJayEntry {
 
     public static void sendAlertIfEnabled(final String msg) {
         if (BlueJayEntry.areAlertsEnabled()) {
-            String alertType = THINJAM_NOTIFY_TYPE_OTHER_ALERT;
+            final String alertType;
             if (msg.startsWith("High Alert")) {
                 alertType = THINJAM_NOTIFY_TYPE_HIGH_ALERT;
             } else if (msg.startsWith("Low Alert")) {
                 alertType = THINJAM_NOTIFY_TYPE_LOW_ALERT;
+            } else {
+                alertType = THINJAM_NOTIFY_TYPE_OTHER_ALERT;
             }
-            BlueJayEntry.sendNotifyIfEnabled(alertType, "A");
+            Inevitable.task("send-bj-alert" + msg, 2000, () -> BlueJayEntry.sendNotifyIfEnabled(alertType, "A"));
         }
     }
 

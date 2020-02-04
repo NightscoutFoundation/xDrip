@@ -2,6 +2,7 @@ package com.eveningoutpost.dexdrip.watch.thinjam;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusLine;
 import com.eveningoutpost.dexdrip.ui.activities.ThinJamActivity;
@@ -29,6 +30,7 @@ public class BlueJay {
     private static final String PREF_BLUEJAY_BEEP = "bluejay_beep_on_connect";
     private static final String PREF_BLUEJAY_SEND_READINGS = "bluejay_send_readings";
     private static final String PREF_BLUEJAY_SEND_STATUS_LINE = "bluejay_send_status_line";
+    private static final String LAST_BLUEJAY_STATUSLINE = "bluejay-last-statusline";
 
     public static boolean isCollector() {
         return Pref.getBooleanDefaultFalse("bluejay_collector_enabled");
@@ -159,10 +161,14 @@ public class BlueJay {
         }
     }
 
-    private static void showStatusLine() {
+    public static void showStatusLine() {
         if (BlueJayEntry.isEnabled() && shouldSendStatusLine()) {
-            // TODO cache with expiry / send on change
-            BlueJayEntry.sendNotifyIfEnabled(THINJAM_NOTIFY_TYPE_TEXTBOX1, StatusLine.extraStatusLine());
+            final String currentStatusLine = StatusLine.extraStatusLine();
+            final String lastStatusLine = PersistentStore.getString(LAST_BLUEJAY_STATUSLINE);
+            if (!currentStatusLine.equals(lastStatusLine) || JoH.ratelimit("bj-duplicate-statusline", 300)) {
+                PersistentStore.setString(LAST_BLUEJAY_STATUSLINE, currentStatusLine);
+                BlueJayEntry.sendNotifyIfEnabled(THINJAM_NOTIFY_TYPE_TEXTBOX1, currentStatusLine);
+            }
         }
     }
 
