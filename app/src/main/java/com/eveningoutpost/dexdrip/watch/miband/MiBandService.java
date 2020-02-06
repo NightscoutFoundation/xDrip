@@ -101,7 +101,6 @@ public class MiBandService extends JamBaseBluetoothSequencer {
     private AuthMessages authorisation;
     private Boolean isNeedToCheckRevision = true;
     private Boolean isNeedToAuthenticate = true;
-    private Boolean isNeedToUpdatePreferences = false;
     private Boolean isWaitingSnoozeResponce = false;
     private Boolean isNeedToRestoreNightMode = false;
     static BatteryInfo batteryInfo = new BatteryInfo();
@@ -188,7 +187,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                 MiBand.MiBandType currDevice = MiBand.getMibandType();
                 if (prevDeviceType != null && (currDevice != prevDeviceType) && currDevice != UNKNOWN) {
                     UserError.Log.d(TAG, "Found new device: " + currDevice.toString());
-                    isNeedToUpdatePreferences = true;
+                    sendPrefIntent(MIBAND_INTEND_STATES.UPDATE_PREFERENCES, 0, "");
                 }
                 if (!authMac.equalsIgnoreCase(mac) || authMac.isEmpty()) {
                     prevDeviceType = MiBand.getMibandType();
@@ -1153,11 +1152,6 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                     if (MiBand.getModel().isEmpty()) {
                         getModelName();
                     } else changeNextState();
-
-                    if (isNeedToUpdatePreferences) {
-                        isNeedToUpdatePreferences = false;
-                        sendPrefIntent(MIBAND_INTEND_STATES.UPDATE_PREFERENCES, 0, "");
-                    }
                     break;
                 case MiBandState.GET_SOFT_REVISION:
                     if (MiBand.getVersion().isEmpty() || isNeedToCheckRevision)
