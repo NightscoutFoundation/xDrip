@@ -21,9 +21,8 @@ import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.Intents;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
-import com.eveningoutpost.dexdrip.store.FastStore;
-import com.eveningoutpost.dexdrip.store.KeyStore;
 import com.eveningoutpost.dexdrip.utils.bt.Subscription;
+import com.eveningoutpost.dexdrip.utils.framework.PoorMansConcurrentLinkedDeque;
 import com.eveningoutpost.dexdrip.utils.framework.WakeLockTrampoline;
 import com.eveningoutpost.dexdrip.watch.PrefBindingFactory;
 import com.eveningoutpost.dexdrip.watch.miband.Firmware.FirmwareOperations;
@@ -54,6 +53,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import io.reactivex.schedulers.Schedulers;
+import lombok.Getter;
 
 import static com.eveningoutpost.dexdrip.Models.JoH.bytesToHex;
 import static com.eveningoutpost.dexdrip.Models.JoH.emptyString;
@@ -63,11 +63,12 @@ import static com.eveningoutpost.dexdrip.Models.JoH.niceTimeScalar;
 import static com.eveningoutpost.dexdrip.Services.JamBaseBluetoothSequencer.BaseState.CLOSE;
 import static com.eveningoutpost.dexdrip.Services.JamBaseBluetoothSequencer.BaseState.CLOSED;
 import static com.eveningoutpost.dexdrip.Services.JamBaseBluetoothSequencer.BaseState.INIT;
+import static com.eveningoutpost.dexdrip.Services.JamBaseBluetoothSequencer.BaseState.SLEEP;
 import static com.eveningoutpost.dexdrip.watch.miband.Const.PREFERRED_MTU_SIZE;
 import static com.eveningoutpost.dexdrip.watch.miband.MiBand.MiBandType.MI_BAND2;
 import static com.eveningoutpost.dexdrip.watch.miband.MiBand.MiBandType.MI_BAND4;
+import static com.eveningoutpost.dexdrip.watch.miband.MiBand.MiBandType.UNKNOWN;
 import static com.eveningoutpost.dexdrip.watch.miband.MiBandService.MiBandState.AUTHORIZE_FAILED;
-import static com.eveningoutpost.dexdrip.watch.miband.message.DisplayControllMessageMiband3_4.NightMode.Off;
 import static com.eveningoutpost.dexdrip.watch.miband.message.DisplayControllMessageMiband3_4.NightMode.Sheduled;
 import static com.eveningoutpost.dexdrip.watch.miband.message.OperationCodes.AUTH_FAIL;
 import static com.eveningoutpost.dexdrip.watch.miband.message.OperationCodes.AUTH_MIBAND4_FAIL;
@@ -85,15 +86,7 @@ import static com.eveningoutpost.dexdrip.watch.miband.message.OperationCodes.COM
  */
 
 public class MiBandService extends JamBaseBluetoothSequencer {
-    private static final String MESSAGE = "miband-message";
-    private static final String MESSAGE_TYPE = "miband-message-type";
-    private static final String MESSAGE_TITLE = "miband-message-title";
-    private static final String MESSAGE_DEFAULT_SNOOZLE = "miband-def-snoozle";
-    private static final String UPDATE_BG_AS_NOTIFICATION = "miband-bg-as-notification";
-    private static final String KEYSTORE_TRUE = "true";
-    private final KeyStore keyStore = FastStore.getInstance();
     private static final boolean d = true;
-
 
     private static final long RETRY_PERIOD_MS = Constants.SECOND_IN_MS * 30; // sleep for max ms if we have had no signal
     private static final long BG_UPDATE_INTERVAL = 30 * Constants.MINUTE_IN_MS; //minutes
@@ -110,7 +103,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
     private Boolean isNeedToAuthenticate = true;
     private Boolean isNeedToUpdatePreferences = false;
     private Boolean isWaitingSnoozeResponce = false;
-    private Boolean isNeedToRestoreNigtMode = false;
+    private Boolean isNeedToRestoreNightMode = false;
     static BatteryInfo batteryInfo = new BatteryInfo();
     private FirmwareOperations firmware;
     private Subscription watchfaceSubscription;
@@ -119,6 +112,34 @@ public class MiBandService extends JamBaseBluetoothSequencer {
     private PendingIntent bgServiceIntent;
     static private long bgWakeupTime;
     private MiBand.MiBandType prevDeviceType;
+    private final PoorMansConcurrentLinkedDeque<QueueMessage> messageQueue = new PoorMansConcurrentLinkedDeque<>();
+    private QueueMessage queueItem;
+    private int defaultSnoozle;
+
+    public class QueueMessage {
+        @Getter
+        private String functionName;
+        @Getter
+        private String message_type = "";
+        @Getter
+        private String message = "";
+        @Getter
+        private String title = "";
+        @Getter
+        private int defaultSnoozle = 0;
+
+        public QueueMessage(String functionName) {
+            this.functionName = functionName;
+        }
+
+        public QueueMessage(String functionName, String message_type, String message, String title, int defaultSnoozle) {
+            this(functionName);
+            this.message_type = message_type;
+            this.message = message;
+            this.title = title;
+            this.defaultSnoozle = defaultSnoozle;
+        }
+    }
 
     public enum MIBAND_INTEND_STATES {
         INIT_WATCHFACE_DIALOG,
@@ -164,10 +185,11 @@ public class MiBandService extends JamBaseBluetoothSequencer {
             if (shouldServiceRun()) {
                 final String authMac = MiBand.getAuthMac();
                 String mac = MiBand.getMac();
-
-                if (prevDeviceType != null && (MiBand.getMibandType() != prevDeviceType))
+                MiBand.MiBandType currDevice = MiBand.getMibandType();
+                if (prevDeviceType != null && (currDevice != prevDeviceType) && currDevice != UNKNOWN) {
+                    UserError.Log.d(TAG, "Found new device: " + currDevice.toString());
                     isNeedToUpdatePreferences = true;
-
+                }
                 if (!authMac.equalsIgnoreCase(mac) || authMac.isEmpty()) {
                     prevDeviceType = MiBand.getMibandType();
                     MiBand.setAuthMac(""); //flush old auth info
@@ -178,62 +200,24 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                     new FindNearby().scan();
                 } else {
                     setAddress(mac);
-                    String message;
                     if (intent != null) {
                         final String function = intent.getStringExtra("function");
                         if (function != null) {
                             UserError.Log.d(TAG, "onStartCommand was called with function:" + function);
-                            switch (function) {
-                                case "refresh":
-                                    if (!readyToProcessCommand())
-                                        break;
-                                    ((MiBandState) mState).setSettingsSequence();
-                                    changeState(INIT);
-                                    break;
-                                case "message":
-                                    message = intent.getStringExtra("message");
-                                    String message_type = intent.getStringExtra("message_type");
-                                    String title = intent.getStringExtra("title");
-                                    String defaultSnoozle = intent.getStringExtra("default_snoozle");
 
-                                    message = message != null ? message : "";
-                                    message_type = message_type != null ? message_type : "";
-                                    title = title != null ? title : "";
-                                    defaultSnoozle = defaultSnoozle != null ? defaultSnoozle : "";
+                            String message_type = intent.getStringExtra("message_type");
+                            String message = intent.getStringExtra("message");
+                            String title = intent.getStringExtra("title");
+                            String defaultSnoozle = intent.getStringExtra("default_snoozle");
 
-                                    keyStore.putS(MESSAGE_TYPE, message_type);
-                                    keyStore.putS(MESSAGE, message);
-                                    keyStore.putS(MESSAGE_TITLE, title);
-                                    keyStore.putS(MESSAGE_DEFAULT_SNOOZLE, defaultSnoozle);
+                            message = message != null ? message : "";
+                            message_type = message_type != null ? message_type : "";
+                            title = title != null ? title : "";
+                            defaultSnoozle = defaultSnoozle != null ? defaultSnoozle : "0";
 
-                                    if (!readyToProcessCommand())
-                                        break;
-                                    ((MiBandState) mState).setQueueSequence();
-                                    changeState(INIT);
-                                    break;
-                                case "update_bg":
-                                    startBgTimer();
-                                    if (!readyToProcessCommand()) {
-                                        break;
-                                    }
-                                    keyStore.putS(UPDATE_BG_AS_NOTIFICATION, ""); //clear
-                                    ((MiBandState) mState).setSendReadingSequence();
-                                    changeState(INIT);
-                                    break;
-                                case "update_bg_as_notification":
-                                    keyStore.putS(UPDATE_BG_AS_NOTIFICATION, KEYSTORE_TRUE);
-                                    ((MiBandState) mState).setSendReadingSequence();
-                                    changeState(INIT);
-                                    break;
-                                case "glucose_after":
-                                    if (!isWaitingSnoozeResponce) break;
-                                    if (!readyToProcessCommand())
-                                        break;
-                                    keyStore.putS(MESSAGE_TYPE, "glucose_after");
-                                    ((MiBandState) mState).setQueueSequence();
-                                    changeState(INIT);
-                                    break;
-                            }
+                            messageQueue.add(new QueueMessage(function, message_type, message, title, Integer.parseInt(defaultSnoozle)));
+                            if (readyToProcessCommand())
+                                handleCommand();
                         } else {
                             // no specific function
                         }
@@ -249,6 +233,36 @@ public class MiBandService extends JamBaseBluetoothSequencer {
             }
         } finally {
             JoH.releaseWakeLock(wl);
+        }
+    }
+
+    private void handleCommand() {
+        if (messageQueue.isEmpty()) return;
+        queueItem = messageQueue.poll();
+        switch (queueItem.functionName) {
+            case "refresh":
+                ((MiBandState) mState).setSettingsSequence();
+                changeState(INIT);
+                break;
+            case "message":
+                ((MiBandState) mState).setQueueSequence();
+                defaultSnoozle = queueItem.defaultSnoozle;
+                changeState(INIT);
+                break;
+            case "glucose_after":
+                if (!isWaitingSnoozeResponce) break;
+                ((MiBandState) mState).setQueueSequence();
+                changeState(INIT);
+                break;
+            case "update_bg":
+                startBgTimer();
+                ((MiBandState) mState).setSendReadingSequence();
+                changeState(INIT);
+                break;
+            case "update_bg_as_notification":
+                ((MiBandState) mState).setSendReadingSequence();
+                changeState(INIT);
+                break;
         }
     }
 
@@ -299,35 +313,12 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                 if (ActiveBgAlert.currentlyAlerting() && isWaitingSnoozeResponce) {
                     try {
                         isWaitingSnoozeResponce = false;
-
-                        final String snoozle = keyStore.getS(MESSAGE_DEFAULT_SNOOZLE);
-                        int snoozleVal = Integer.parseInt(snoozle);
-                        AlertPlayer.getPlayer().Snooze(xdrip.getAppContext(), snoozleVal, true);
-
-                        String msgText = "Alert snoozed for " + snoozleVal + " min";
-                        UserError.Log.d(TAG, "Alert was snoozed by watch by: " + snoozleVal + " minutes");
-                        if (readyToProcessCommand() || I.state.equals(MiBandState.QUEUE_MESSAGE)) {
-                            AlertMessage message = new AlertMessage();
-                            if (MiBand.getMibandType() == MI_BAND2) {
-                                new QueueMe()
-                                        .setBytes(message.getAlertMessageOld(msgText, AlertMessage.AlertCategory.SMS_MMS))
-                                        .setDescription("Send alert msg: " + msgText)
-                                        .setQueueWriteCharacterstic(message.getCharacteristicUUID())
-                                        .expireInSeconds(QUEUE_EXPIRED_TIME)
-                                        .setDelayMs(QUEUE_DELAY)
-                                        .queue();
-                            } else {
-                                new QueueMe()
-                                        .setBytes(message.getAlertMessage(msgText, AlertMessage.AlertCategory.CustomHuami, AlertMessage.CustomIcon.RED_WHITE_FIRE_8, "Snozzed alert"))
-                                        .setDescription("Send alert msg: " + msgText)
-                                        .setQueueWriteCharacterstic(message.getCharacteristicUUID())
-                                        .expireInSeconds(QUEUE_EXPIRED_TIME)
-                                        .setDelayMs(QUEUE_DELAY)
-                                        .queue();
-                            }
-                            ((MiBandState) mState).setQueueSequence();
-                            changeState(INIT);
-                        }
+                        AlertPlayer.getPlayer().Snooze(xdrip.getAppContext(), defaultSnoozle, true);
+                        String msgText = "Alert snoozed for " + defaultSnoozle + " min";
+                        UserError.Log.d(TAG, msgText);
+                        messageQueue.addFirst(new QueueMessage("message", "message", msgText, "Alert snoozed", 0));
+                        if (readyToProcessCommand())
+                            handleCommand();
                     } catch (NumberFormatException e) {
                         UserError.Log.d(TAG, "Alert was attempted to be snoozed by watch, but snoozleVal was wrong");
                     }
@@ -587,14 +578,9 @@ public class MiBandService extends JamBaseBluetoothSequencer {
     }
 
     private void queueMessage() {
-        final String type = keyStore.getS(MESSAGE_TYPE);
-        final String title = keyStore.getS(MESSAGE_TITLE);
-        final String message = keyStore.getS(MESSAGE);
-
-        keyStore.putS(MESSAGE_TYPE, "");
-
+        String message = queueItem.message;
         if (d)
-            UserError.Log.d(TAG, "Queuing message alert of type: " + type + " " + message);
+            UserError.Log.d(TAG, "Queuing message alert: " + message);
 
         if (isWaitingSnoozeResponce) {
             vibrateAlert(AlertLevelMessage.AlertLevelType.NoAlert); //disable call
@@ -602,7 +588,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
         }
 
         AlertMessage alertMessage = new AlertMessage();
-        switch (type != null ? type : "null") {
+        switch (queueItem.message_type != null ? queueItem.message_type : "null") {
             case "call":
                 new QueueMe()
                         .setBytes(alertMessage.getAlertMessageOld(message, AlertMessage.AlertCategory.Call))
@@ -626,10 +612,25 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                 bgServiceIntent = WakeLockTrampoline.getPendingIntent(this.getClass(), Constants.MIBAND_SERVICE_BG_RETRY_ID, "glucose_after");
                 JoH.wakeUpIntent(xdrip.getAppContext(), CALL_ALERT_DELAY, bgServiceIntent);
                 break;
-            case "glucose_after":
-                //do nothing here
+            case "message":
+                if (MiBand.getMibandType() == MI_BAND2) {
+                    new QueueMe()
+                            .setBytes(alertMessage.getAlertMessageOld(message, AlertMessage.AlertCategory.SMS_MMS))
+                            .setDescription("Sent message: " + message)
+                            .setQueueWriteCharacterstic(alertMessage.getCharacteristicUUID())
+                            .expireInSeconds(QUEUE_EXPIRED_TIME)
+                            .setDelayMs(QUEUE_DELAY)
+                            .queue();
+                } else {
+                    new QueueMe()
+                            .setBytes(alertMessage.getAlertMessage(message, AlertMessage.AlertCategory.CustomHuami, AlertMessage.CustomIcon.RED_WHITE_FIRE_8, queueItem.title))
+                            .setDescription("Sent message: " + message)
+                            .setQueueWriteCharacterstic(alertMessage.getCharacteristicUUID())
+                            .expireInSeconds(QUEUE_EXPIRED_TIME)
+                            .setDelayMs(QUEUE_DELAY)
+                            .queue();
+                }
                 break;
-
             default: // glucose
                 break;
         }
@@ -797,6 +798,10 @@ public class MiBandService extends JamBaseBluetoothSequencer {
         try {
             WatchFaceGenerator wfGen = new WatchFaceGenerator(getBaseContext().getAssets());
             byte[] fwArray = wfGen.genWatchFace();
+            if (fwArray == null || fwArray.length == 0) {
+                resetFirmwareState(false, "Empty image", true);
+                return;
+            }
             firmware = new FirmwareOperations(fwArray);
         } catch (Exception e) {
             resetFirmwareState(false, "FirmwareOperations error " + e.getMessage(), true);
@@ -849,7 +854,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
             switch (seq) {
                 case SET_NIGHTMODE: {
                     if (true) {
-                        isNeedToRestoreNigtMode = true;
+                        isNeedToRestoreNightMode = true;
                         DisplayControllMessageMiband3_4 dispControl = new DisplayControllMessageMiband3_4();
                         Calendar sheduledCalendar = Calendar.getInstance();
                         sheduledCalendar.set(Calendar.HOUR_OF_DAY, 0);
@@ -954,7 +959,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                 }
             } else {
                 if (value[2] == OperationCodes.LOW_BATTERY_ERROR) {
-                    resetFirmwareState(false, "Cannot upload watchface, low battery, please charge device", false,true);
+                    resetFirmwareState(false, "Cannot upload watchface, low battery, please charge device", false, true);
                 } else if (value[2] == OperationCodes.TIMER_RUNNING) {
                     resetFirmwareState(false, "Cannot upload watchface, timer running on band", false);
                 } else if (value[2] == OperationCodes.ON_CALL) {
@@ -971,7 +976,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
         resetFirmwareState(result, null, false);
     }
 
-    private void resetFirmwareState(Boolean result, String customText, Boolean reset){
+    private void resetFirmwareState(Boolean result, String customText, Boolean reset) {
         resetFirmwareState(result, null, false, false);
     }
 
@@ -988,19 +993,19 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                 else
                     finishText = xdrip.getAppContext().getResources().getString(R.string.miband_watchface_istall_success);
             }
-            UserError.Log.e(TAG, "resetFirmwareState result:" + result + ":" + finishText);
+            UserError.Log.d(TAG, "resetFirmwareState result:" + result + ":" + finishText);
             sendPrefIntent(MIBAND_INTEND_STATES.WATHCFACE_DIALOG_FINISH, 0, finishText);
 
-            if (isNeedToRestoreNigtMode) {
+            if (isNeedToRestoreNightMode) {
                 JoH.threadSleep(RESTORE_NIGHT_MODE_DELAY);
                 setNightMode();
             }
-            if (!sendBGNotification) {
-                changeNextState();
-            }
-            else{
+            if (sendBGNotification) {
                 emptyQueue();
                 JoH.startService(MiBandService.class, "function", "update_bg_as_notification");
+                changeState(SLEEP);
+            } else {
+                changeNextState();
             }
         }
     }
@@ -1061,8 +1066,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
             UserError.Log.d(TAG, "Restore night mode");
         Date start = null, end = null;
         DisplayControllMessageMiband3_4.NightMode nightMode = DisplayControllMessageMiband3_4.NightMode.Off;
-        if (MiBandEntry.isNightModeEnabled())
-        {
+        if (MiBandEntry.isNightModeEnabled()) {
             nightMode = DisplayControllMessageMiband3_4.NightMode.Sheduled;
             start = MiBandEntry.getNightModeStart();
             end = MiBandEntry.getNightModeEnd();
@@ -1073,7 +1077,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                 .subscribe(valB -> {
                             if (d)
                                 UserError.Log.d(TAG, "Wrote nightmode");
-                            isNeedToRestoreNigtMode = false;
+                            isNeedToRestoreNightMode = false;
                         },
                         throwable -> {
                             if (d)
@@ -1122,6 +1126,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                             } else {
                                 UserError.Log.d(TAG, "Disconnected exception");
                                 isNeedToAuthenticate = true;
+                                messageQueue.clear();
                                 changeState(CLOSE);
                             }
                         }
@@ -1142,7 +1147,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                     break;
                 case MiBandState.GET_MODEL_NAME:
                     cancelRetryTimer();
-                    if (isNeedToRestoreNigtMode) {
+                    if (isNeedToRestoreNightMode) {
                         setNightMode();
                     }
                     if (MiBand.getModel().isEmpty()) {
@@ -1178,7 +1183,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                     break;
                 case MiBandState.SEND_BG:
                     if (!MiBandEntry.isNeedSendReading()) {
-                        changeState(MiBandState.QUEUE_MESSAGE);
+                        changeState(MiBandState.SEND_QUEUE);
                         break;
                     }
                     if (isWaitingSnoozeResponce) {
@@ -1186,11 +1191,11 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                         isWaitingSnoozeResponce = false;
                     }
 
-                    final String bgAsNotification = keyStore.getS(UPDATE_BG_AS_NOTIFICATION);
-                    if (MiBand.getMibandType() != MI_BAND4 || MiBandEntry.isNeedSendReadingAsNotification() || bgAsNotification.equals(KEYSTORE_TRUE)) {
+                    final String bgAsNotification = queueItem.functionName;
+                    if (MiBand.getMibandType() != MI_BAND4 || MiBandEntry.isNeedSendReadingAsNotification() || bgAsNotification.equals("update_bg_as_notification")) {
                         Boolean result = sendBG();
                         if (result) changeState(MiBandState.VIBRATE_AFTER_READING);
-                        else changeState(MiBandState.QUEUE_MESSAGE);
+                        else changeState(MiBandState.SEND_QUEUE);
                         break;
                     }
                     changeState(MiBandState.INSTALL_WATCHFACE);
@@ -1216,8 +1221,12 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                     queueMessage();
                     changeNextState();
                     break;
+                case SLEEP:
+                    handleCommand();
+                    break;
                 case CLOSED:
                     isNeedToAuthenticate = true;
+                    messageQueue.clear();
                     setRetryTimerReal(); // local retry strategy
                     return super.automata();
                 default:
@@ -1303,43 +1312,36 @@ public class MiBandService extends JamBaseBluetoothSequencer {
             sequence.add(ENABLE_NOTIFICATIONS);
         }
 
+        void prepareFinalSequences() {
+            sequence.add(SEND_QUEUE);
+            sequence.add(GET_BATTERY_INFO);
+            sequence.add(SLEEP);
+            sequence.add(AUTHORIZE_FAILED);
+        }
+
         void setSendReadingSequence() {
             UserError.Log.d(TAG, "SET UPDATE WATCHFACE DATA SEQUENCE");
             prepareInitialSequences();
-
             sequence.add(SEND_BG);
             sequence.add(INSTALL_WATCHFACE);
             sequence.add(INSTALL_WATCHFACE_IN_PROGRESS);
             sequence.add(INSTALL_WATCHFACE_FINISHED);
             sequence.add(VIBRATE_AFTER_READING);
-
-            sequence.add(SEND_QUEUE);
-            sequence.add(GET_BATTERY_INFO);
-            sequence.add(SLEEP);
-
-            sequence.add(AUTHORIZE_FAILED);
+            prepareFinalSequences();
         }
 
         void setQueueSequence() {
             UserError.Log.d(TAG, "SET QUEUE SEQUENCE");
             prepareInitialSequences();
             sequence.add(QUEUE_MESSAGE);
-            sequence.add(SEND_QUEUE);
-            sequence.add(GET_BATTERY_INFO);
-            sequence.add(SLEEP);
-
-            sequence.add(AUTHORIZE_FAILED);
+            prepareFinalSequences();
         }
 
         void setSettingsSequence() {
             UserError.Log.d(TAG, "SET SETTINGS SEQUENCE");
             prepareInitialSequences();
             sequence.add(SEND_SETTINGS);
-            sequence.add(SEND_QUEUE);
-            sequence.add(GET_BATTERY_INFO);
-            sequence.add(SLEEP);
-
-            sequence.add(AUTHORIZE_FAILED);
+            prepareFinalSequences();
         }
     }
 

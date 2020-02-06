@@ -126,6 +126,9 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+import static com.eveningoutpost.dexdrip.watch.miband.MiBand.MiBandType.MI_BAND2;
+import static com.eveningoutpost.dexdrip.watch.miband.MiBand.MiBandType.MI_BAND3;
+import static com.eveningoutpost.dexdrip.watch.miband.MiBand.MiBandType.MI_BAND3_1;
 import static com.eveningoutpost.dexdrip.watch.miband.MiBand.MiBandType.MI_BAND4;
 
 /**
@@ -844,7 +847,12 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
         SearchConfiguration searchConfiguration;
 
         public LockScreenWallPaper.PrefListener lockListener = new LockScreenWallPaper.PrefListener();
-
+        private Preference miband2_screen;
+        private Preference miband3_4_screen;
+        private Preference miband_graph_hours;
+        private Preference miband_send_readings_as_notification;
+        private Preference miband_authkey;
+        private Preference miband_nightmode_category;
 
         // default constructor is required in addition on some platforms
         public AllPrefsFragment() {
@@ -986,6 +994,13 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
 
             try {
                 final Activity activity = this.getActivity();
+                miband2_screen = findPreference("miband2_screen");
+                miband3_4_screen = findPreference("miband3_4_screen");
+                miband_graph_hours = findPreference("miband_graph_hours");
+                miband_send_readings_as_notification = findPreference("miband_send_readings_as_notification");
+                miband_authkey = findPreference("miband_authkey");
+                miband_nightmode_category = findPreference("miband_nightmode_category");
+
                 findPreference(MiBandEntry.PREF_CALL_ALERTS).setOnPreferenceChangeListener((preference, newValue) -> {
                     prefs.edit().putBoolean(MiBandEntry.PREF_CALL_ALERTS, (Boolean) newValue).apply();
                     IncomingCallsReceiver.checkPermission(activity);
@@ -1005,10 +1020,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     return true;
                 });
 
-                findPreference(MiBandEntry.PREF_MIBAND_PREFERENCES).setOnPreferenceClickListener(preference -> {
-                    updateMibandPreferences(false);
-                    return true;
-                });
+                updateMibandPreferences(false);
 
                 findPreference(MiBandEntry.PREF_MIBAND_INSTALL_WATCHFACE).setOnPreferenceClickListener(preference -> {
                     installMiBandWatchface(preference.getContext());
@@ -2242,20 +2254,25 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             PreferenceScreen settings = (PreferenceScreen) findPreference(MiBandEntry.PREF_MIBAND_SETTINGS);
             PreferenceScreen prefs = (PreferenceScreen) findPreference(MiBandEntry.PREF_MIBAND_PREFERENCES);
             try {
+                settings.removePreference(miband2_screen);
+                settings.removePreference(miband3_4_screen);
+                settings.removePreference(miband_nightmode_category);
+                prefs.removePreference(miband_graph_hours);
+                prefs.removePreference(miband_send_readings_as_notification);
+                prefs.removePreference(miband_authkey);
+
                 if (type == MI_BAND4) {
-                    settings.removePreference(findPreference("miband2_screen"));
-                    settings.addPreference(findPreference("miband3_4_screen"));
-                    prefs.addPreference(findPreference("miband_graph_hours"));
-                    prefs.addPreference(findPreference("miband_send_readings_as_notification"));
-                    prefs.addPreference(findPreference("miband_authkey"));
-                    settings.addPreference(findPreference("miband_nightmode_category"));
-                } else {
-                    settings.addPreference(findPreference("miband2_screen"));
-                    settings.removePreference(findPreference("miband3_4_screen"));
-                    prefs.removePreference(findPreference("miband_graph_hours"));
-                    prefs.removePreference(findPreference("miband_send_readings_as_notification"));
-                    prefs.removePreference(findPreference("miband_authkey"));
-                    settings.removePreference(findPreference("miband_nightmode_category"));
+                    settings.addPreference(miband3_4_screen);
+                    settings.addPreference(miband_nightmode_category);
+                    prefs.addPreference(miband_graph_hours);
+                    prefs.addPreference(miband_send_readings_as_notification);
+                    prefs.addPreference(miband_authkey);
+                } else if (type == MI_BAND2) {
+                    settings.addPreference(miband2_screen);
+                }
+                else if (type == MI_BAND3 || type == MI_BAND3_1){
+                    settings.addPreference(miband3_4_screen);
+                    settings.addPreference(miband_nightmode_category);
                 }
                 if (isNeedToRefresh){
                     // This generically refreshes the fragment which may well nullify some of the ui logic above as it does a complete rebuild
@@ -2276,7 +2293,8 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                         }
                     });
                 }
-            } catch (NullPointerException e) {
+            } catch (Exception e) {
+                Log.e(TAG, "Cannot find preference item: " + e);
             }
         }
 

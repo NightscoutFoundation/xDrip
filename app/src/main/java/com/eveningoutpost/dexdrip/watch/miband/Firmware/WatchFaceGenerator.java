@@ -64,42 +64,43 @@ public class WatchFaceGenerator {
     public WatchFaceGenerator(AssetManager assetManager) throws Exception {
         this.assetManager = assetManager;
         InputStream mainImage = assetManager.open("miband_watchface_parts/MainScreen.png");
+        fwFileStream = assetManager.open("miband_watchface_parts/xdrip_miband4_main.bin");
+
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inScaled = false;
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
         mainWatchfaceImage = BitmapFactory.decodeStream(mainImage);
         mainImage.close();
-
-        fwFileStream = assetManager.open("miband_watchface_parts/xdrip_miband4_main.bin");
         parseWatchfaceFile(fwFileStream);
     }
 
     private void parseWatchfaceFile(InputStream fwFileStream) throws Exception {
         if (d)
-            UserError.Log.e(TAG, "Reading header");
+            UserError.Log.d(TAG, "Reading header");
         BufferedInputStream stream = new BufferedInputStream(fwFileStream);
         header = Header.readFrom(stream);
         if (d) {
-            UserError.Log.e(TAG, "Header was read:");
-            UserError.Log.e(TAG, String.format("Signature: %s, Unknown param: %d, ParametersSize: %d isValid: %s", header.getSignature(), header.getUnknown(), header.getParametersSize(), header.isValid()));
+            UserError.Log.d(TAG, "Header was read:");
+            UserError.Log.d(TAG, String.format("Signature: %s, Unknown param: %d, ParametersSize: %d isValid: %s", header.getSignature(), header.getUnknown(), header.getParametersSize(), header.isValid()));
         }
         if (!header.isValid())
             throw new Exception("Wrong watchface format");
         if (d)
-            UserError.Log.e(TAG, "Reading parameter offsets...");
-
+            UserError.Log.d(TAG, "Reading parameter offsets...");
         byte[] bytes = new byte[header.getParametersSize()];
         stream.read(bytes, 0, bytes.length);
         InputStream parameterStream = new ByteArrayInputStream(bytes);
         mainParam = Parameter.readFrom(parameterStream, 0);
-        UserError.Log.e(TAG, "Parameters descriptor was read");
+        if (d)
+            UserError.Log.d(TAG, "Parameters descriptor was read");
         parametersTableLength = (int) mainParam.getChildren().get(0).getValue();
         int imagesCount = (int) mainParam.getChildren().get(1).getValue();
-        UserError.Log.e(TAG, "parametersTableLength: " + parametersTableLength + ", imagesCount: " + imagesCount);
+        if (d)
+            UserError.Log.d(TAG, "parametersTableLength: " + parametersTableLength + ", imagesCount: " + imagesCount);
         bytes = new byte[parametersTableLength];
         stream.read(bytes, 0, bytes.length);
         if (d)
-            UserError.Log.e(TAG, "Reading images offsets...");
+            UserError.Log.d(TAG, "Reading images offsets...");
         bytes = new byte[imagesCount * 4];
         stream.read(bytes, 0, bytes.length);
         ByteBuffer b = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN);
@@ -108,12 +109,11 @@ public class WatchFaceGenerator {
             imageOffsets.add(b.getInt());
         }
         if (d)
-            UserError.Log.e(TAG, "Image offsets were read");
+            UserError.Log.d(TAG, "Image offsets were read");
         fwFileStream.reset();
     }
 
-    Bitmap drawMainBitmap(String bgValueText, Bitmap arrowBitmap, String timeStampText, String unitized_delta, boolean strike_through, boolean isHigh, boolean isLow, int graphHours) {
-
+    Bitmap drawMainBitmapWithGraph(String bgValueText, Bitmap arrowBitmap, String timeStampText, String unitized_delta, boolean strike_through, boolean isHigh, boolean isLow, int graphHours) {
         int textHighColor = getCol(ColorCache.X.color_high_values);
         int textLowColor = getCol(ColorCache.X.color_low_values);
 
@@ -241,28 +241,23 @@ public class WatchFaceGenerator {
             InputStream arrowStream = assetManager.open("miband_watchface_parts/" + dg.delta_name + ".png");
             Bitmap arrowBitmap = BitmapFactory.decodeStream(arrowStream);
 
-            mainScreen = drawMainBitmap(dg.unitized.replace(",", "."), arrowBitmap, timeStampText, dg.unitized_delta_no_units, dg.isStale(), dg.isHigh(), dg.isLow(), graphHours);
+            mainScreen = drawMainBitmapWithGraph(dg.unitized.replace(",", "."), arrowBitmap, timeStampText, dg.unitized_delta_no_units, dg.isStale(), dg.isHigh(), dg.isLow(), graphHours);
             resultImage = Image.findApproptiateColorDeph(mainScreen, 2);
         } else {
             mainScreen = drawNoDataBitmap();
-            //for tests
-            /*InputStream arrowStream = assetManager.open("miband_watchface_parts/" + "Flat" + ".png");
-            Bitmap arrowBitmap = BitmapFactory.decodeStream(arrowStream);
-            mainScreen = drawMainBitmap("13.3", arrowBitmap, "at " + hourMinuteString(JoH.tsl()), "+5 mg/dl", false, true, true, graphHours);
-            resultImage = Image.decreaseColorDepth(mainScreen, 2);*/
-            resultImage = Image.findApproptiateColorDeph(mainScreen, 64);
+            resultImage = Image.findApproptiateColorDeph(mainScreen, 2);
         }
 
         final String dir = getExternalDir();
 
         if (d)
-            UserError.Log.e(TAG, "Encoding main picture");
+            UserError.Log.d(TAG, "Encoding main picture");
         ByteArrayOutputStream imageByteArrayOutput = new ByteArrayOutputStream();
         Image encodedImage = new Image(imageByteArrayOutput);
 
         encodedImage.write(resultImage);
         if (d)
-            UserError.Log.e(TAG, "Encoded image size: " + imageByteArrayOutput.size() + " bytes");
+            UserError.Log.d(TAG, "Encoded image size: " + imageByteArrayOutput.size() + " bytes");
 
         int imageOffset = header.getHeaderSize() + header.getParametersSize() + parametersTableLength;
 
@@ -276,14 +271,14 @@ public class WatchFaceGenerator {
                 (firmwareReadStream.available() - oldImageSize - imageOffset - imageOffsetTableSize));
 
         if (d) {
-            UserError.Log.e(TAG, "Copying original header with params ");
+            UserError.Log.d(TAG, "Copying original header with params ");
         }
 
         byte[] bytes = new byte[imageOffset];
         firmwareReadStream.read(bytes, 0, bytes.length);
         firmwareWriteStream.write(bytes, 0, bytes.length);
         if (d) {
-            UserError.Log.e(TAG, "Writing modified image offsets");
+            UserError.Log.d(TAG, "Writing modified image offsets");
         }
 
         Integer oldOffset, newOffset;
@@ -302,12 +297,12 @@ public class WatchFaceGenerator {
         }
 
         if (d) {
-            UserError.Log.e(TAG, "Writing main image");
+            UserError.Log.d(TAG, "Writing main image");
         }
         firmwareWriteStream.write(imageByteArrayOutput.toByteArray());
 
         if (d) {
-            UserError.Log.e(TAG, "Writing rest images from original firmware");
+            UserError.Log.d(TAG, "Writing rest images from original firmware");
         }
         firmwareReadStream.skip(imageOffsetTableSize + oldImageSize); //skip to the first image
         bytes = new byte[8192];
@@ -318,7 +313,7 @@ public class WatchFaceGenerator {
         fwFileStream.close();
         firmwareReadStream.close();
 
-        UserError.Log.e(TAG, "Watchface file ready");
+        UserError.Log.d(TAG, "Watchface file ready");
 
         if (debug) {
             makeSureDirectoryExists(dir);
