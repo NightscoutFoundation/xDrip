@@ -30,6 +30,8 @@ import com.eveningoutpost.dexdrip.xdrip;
 
 import lombok.Getter;
 
+import static com.eveningoutpost.dexdrip.watch.miband.Const.MIBAND_NOTIFY_TYPE_CALL;
+import static com.eveningoutpost.dexdrip.watch.miband.Const.MIBAND_NOTIFY_TYPE_CANCEL;
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.THINJAM_NOTIFY_TYPE_CALL;
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.THINJAM_NOTIFY_TYPE_CANCEL;
 
@@ -84,7 +86,7 @@ public class IncomingCallsReceiver extends BroadcastReceiver {
                     // TODO extract to generic notifier
                     final String caller = number != null ? "Incoming Call " + getContactDisplayNameByNumber(number) + " " + bestPhoneNumberFormatter(number) + " " : "CALL";
                     UserError.Log.d(TAG, "Sending call alert: " + caller);
-                    MiBand.sendCall(true, caller);
+                    MiBand.sendCall(MIBAND_NOTIFY_TYPE_CALL, caller);
                 }
             }
 
@@ -107,6 +109,7 @@ public class IncomingCallsReceiver extends BroadcastReceiver {
                 if (JoH.ratelimit("incoming-call-stopped", 10)) {
                     if (BlueJayEntry.areCallAlertsEnabled()) {
                         BlueJayEntry.sendNotifyIfEnabled(THINJAM_NOTIFY_TYPE_CANCEL, "C");
+                        MiBand.sendCall(MIBAND_NOTIFY_TYPE_CANCEL, "");
                     }
                 }
             }

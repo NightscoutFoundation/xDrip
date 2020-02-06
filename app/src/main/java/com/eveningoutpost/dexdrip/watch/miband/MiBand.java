@@ -9,6 +9,7 @@ import static com.eveningoutpost.dexdrip.watch.miband.Const.MIBAND_NAME_2;
 import static com.eveningoutpost.dexdrip.watch.miband.Const.MIBAND_NAME_3;
 import static com.eveningoutpost.dexdrip.watch.miband.Const.MIBAND_NAME_3_1;
 import static com.eveningoutpost.dexdrip.watch.miband.Const.MIBAND_NAME_4;
+import static com.eveningoutpost.dexdrip.watch.miband.Const.MIBAND_NOTIFY_TYPE_ALARM;
 
 /**
  * Jamorham
@@ -69,29 +70,18 @@ public class MiBand {
         return MiBand.getAuthMac().isEmpty() ? false : true;
     }
 
-    public static void sendCall(boolean isCall, final String title) {
+    public static void sendCall(final String message_type, final String message) {
         Inevitable.task("miband-send-alert-debounce", 3000, () -> JoH.startService(MiBandService.class, "function", "message",
-                "title", title,
-                "message_type", "call"));
+                "message", message,
+                "message_type", message_type));
     }
 
     // convert multi-line text to string for display constraints
-    public static void sendAlert(int defaultSnoozle, String title, final String... lines) {
-
-        int width = 10;
-        final StringBuilder result = new StringBuilder();
-        for (final String message : lines) {
-            result.append(message + " ");
-        }
-
-        final String resultRaw = result.toString();
-        final int trailing_space = resultRaw.lastIndexOf(' ');
-        final String resultString = trailing_space >= width ? result.toString().substring(0, trailing_space) : resultRaw;
-
+    public static void sendAlert(String title, String message, int defaultSnoozle) {
         Inevitable.task("miband-send-alert-debounce", 100, () -> JoH.startService(MiBandService.class, "function", "message",
-                "message", resultString,
+                "message", message,
                 "title", title,
-                "message_type", "glucose",
+                "message_type", MIBAND_NOTIFY_TYPE_ALARM,
                 "default_snoozle", Integer.toString(defaultSnoozle)));
     }
 

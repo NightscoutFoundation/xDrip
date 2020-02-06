@@ -583,7 +583,7 @@ public class AlertPlayer {
         }
 
         if (MiBandEntry.areAlertsEnabled() && ActiveBgAlert.currentlyAlerting()) {
-            MiBand.sendAlert(alert.default_snooze, alert.name, highlow, bgValue);
+            MiBand.sendAlert(alert.name, highlow + " " + bgValue, alert.default_snooze);
         }
 
         // speak alert

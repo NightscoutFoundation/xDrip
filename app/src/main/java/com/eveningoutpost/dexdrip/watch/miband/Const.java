@@ -161,4 +161,10 @@ public class Const {
     public static final String MIBAND_NAME_4 = "Mi Smart Band 4";
 
     public static final int PREFERRED_MTU_SIZE = 247;
+
+
+    public static final String MIBAND_NOTIFY_TYPE_CANCEL = "NOTIFY_TYPE_CANCEL";
+    public static final String MIBAND_NOTIFY_TYPE_CALL = "NOTIFY_TYPE_CALL";
+    public static final String MIBAND_NOTIFY_TYPE_MESSAGE = "NOTIFY_TYPE_MESSAGE";
+    public static final String MIBAND_NOTIFY_TYPE_ALARM = "NOTIFY_TYPE_ALARM";
 }

@@ -64,6 +64,10 @@ import static com.eveningoutpost.dexdrip.Services.JamBaseBluetoothSequencer.Base
 import static com.eveningoutpost.dexdrip.Services.JamBaseBluetoothSequencer.BaseState.CLOSED;
 import static com.eveningoutpost.dexdrip.Services.JamBaseBluetoothSequencer.BaseState.INIT;
 import static com.eveningoutpost.dexdrip.Services.JamBaseBluetoothSequencer.BaseState.SLEEP;
+import static com.eveningoutpost.dexdrip.watch.miband.Const.MIBAND_NOTIFY_TYPE_ALARM;
+import static com.eveningoutpost.dexdrip.watch.miband.Const.MIBAND_NOTIFY_TYPE_CALL;
+import static com.eveningoutpost.dexdrip.watch.miband.Const.MIBAND_NOTIFY_TYPE_CANCEL;
+import static com.eveningoutpost.dexdrip.watch.miband.Const.MIBAND_NOTIFY_TYPE_MESSAGE;
 import static com.eveningoutpost.dexdrip.watch.miband.Const.PREFERRED_MTU_SIZE;
 import static com.eveningoutpost.dexdrip.watch.miband.MiBand.MiBandType.MI_BAND2;
 import static com.eveningoutpost.dexdrip.watch.miband.MiBand.MiBandType.MI_BAND4;
@@ -101,6 +105,8 @@ public class MiBandService extends JamBaseBluetoothSequencer {
     private AuthMessages authorisation;
     private Boolean isNeedToCheckRevision = true;
     private Boolean isNeedToAuthenticate = true;
+
+    private boolean isWaitingCallResponce = false;
     private Boolean isWaitingSnoozeResponce = false;
     private Boolean isNeedToRestoreNightMode = false;
     static BatteryInfo batteryInfo = new BatteryInfo();
@@ -315,19 +321,19 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                         AlertPlayer.getPlayer().Snooze(xdrip.getAppContext(), defaultSnoozle, true);
                         String msgText = "Alert snoozed for " + defaultSnoozle + " min";
                         UserError.Log.d(TAG, msgText);
-                        messageQueue.addFirst(new QueueMessage("message", "message", msgText, "Alert snoozed", 0));
+                        messageQueue.addFirst(new QueueMessage("message", MIBAND_NOTIFY_TYPE_MESSAGE, msgText, "Alert snoozed", 0));
                         if (readyToProcessCommand())
                             handleCommand();
                     } catch (NumberFormatException e) {
                         UserError.Log.d(TAG, "Alert was attempted to be snoozed by watch, but snoozleVal was wrong");
                     }
                 }
+                isWaitingCallResponce = false;
                 break;
             case DeviceEvent.CALL_IGNORE:
                 UserError.Log.d(TAG, "call ignored");
-                if (ActiveBgAlert.currentlyAlerting() && isWaitingSnoozeResponce) {
-                    isWaitingSnoozeResponce = false;
-                }
+                isWaitingSnoozeResponce = false;
+                isWaitingCallResponce = false;
                 break;
             case DeviceEvent.BUTTON_PRESSED:
                 UserError.Log.d(TAG, "button pressed");
@@ -588,19 +594,28 @@ public class MiBandService extends JamBaseBluetoothSequencer {
 
         AlertMessage alertMessage = new AlertMessage();
         switch (queueItem.message_type != null ? queueItem.message_type : "null") {
-            case "call":
+            case MIBAND_NOTIFY_TYPE_CALL:
                 new QueueMe()
                         .setBytes(alertMessage.getAlertMessageOld(message, AlertMessage.AlertCategory.Call))
                         .setDescription("Send call alert: " + message)
                         .setQueueWriteCharacterstic(alertMessage.getCharacteristicUUID())
+                        .setRunnable(() -> isWaitingCallResponce = true)
                         .expireInSeconds(QUEUE_EXPIRED_TIME)
                         .setDelayMs(QUEUE_DELAY)
                         .queue();
                 if (d)
                     UserError.Log.d(TAG, "Queued call alert: " + message);
                 break;
-            case "glucose":
-                new QueueMe() //TODO test with miband2 and 3
+            case MIBAND_NOTIFY_TYPE_CANCEL:
+                if (isWaitingCallResponce) {
+                    vibrateAlert(AlertLevelMessage.AlertLevelType.NoAlert); //disable call
+                    isWaitingCallResponce = false;
+                    if (d)
+                        UserError.Log.d(TAG, "Call disabled");
+                }
+                break;
+            case MIBAND_NOTIFY_TYPE_ALARM:
+                new QueueMe()
                         .setBytes(alertMessage.getAlertMessageOld(message, AlertMessage.AlertCategory.Call))
                         .setDescription("Sent glucose alert: " + message)
                         .setQueueWriteCharacterstic(alertMessage.getCharacteristicUUID())
@@ -611,7 +626,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                 bgServiceIntent = WakeLockTrampoline.getPendingIntent(this.getClass(), Constants.MIBAND_SERVICE_BG_RETRY_ID, "glucose_after");
                 JoH.wakeUpIntent(xdrip.getAppContext(), CALL_ALERT_DELAY, bgServiceIntent);
                 break;
-            case "message":
+            case MIBAND_NOTIFY_TYPE_MESSAGE:
                 if (MiBand.getMibandType() == MI_BAND2) {
                     new QueueMe()
                             .setBytes(alertMessage.getAlertMessageOld(message, AlertMessage.AlertCategory.SMS_MMS))
@@ -1220,6 +1235,8 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                     break;
                 case CLOSED:
                     isNeedToAuthenticate = true;
+                    isWaitingCallResponce = false;
+                    isWaitingSnoozeResponce = false;
                     messageQueue.clear();
                     setRetryTimerReal(); // local retry strategy
                     return super.automata();
