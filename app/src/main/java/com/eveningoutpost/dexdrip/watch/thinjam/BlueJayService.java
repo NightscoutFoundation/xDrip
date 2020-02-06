@@ -19,6 +19,7 @@ import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Services.JamBaseBluetoothSequencer;
 import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
+import com.eveningoutpost.dexdrip.UtilityModels.BroadcastSnooze;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
@@ -1230,6 +1231,7 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
                     easyAuth();
                 } else {
                     AlertPlayer.getPlayer().OpportunisticSnooze();
+                    BroadcastSnooze.send();
                 }
                 // TODO cancel any alert queue
                 break;
