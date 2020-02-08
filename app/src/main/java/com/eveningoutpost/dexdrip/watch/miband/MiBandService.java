@@ -7,7 +7,6 @@ import android.bluetooth.BluetoothGattService;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.PowerManager;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Pair;
 
 import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
@@ -19,7 +18,6 @@ import com.eveningoutpost.dexdrip.Services.JamBaseBluetoothSequencer;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
-import com.eveningoutpost.dexdrip.UtilityModels.Intents;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.utils.bt.Subscription;
 import com.eveningoutpost.dexdrip.utils.framework.PoorMansConcurrentLinkedDeque;
@@ -116,7 +114,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
 
     private PendingIntent bgServiceIntent;
     static private long bgWakeupTime;
-    private MiBand.MiBandType prevDeviceType;
+    private MiBand.MiBandType prevDeviceType = UNKNOWN;
     private final PoorMansConcurrentLinkedDeque<QueueMessage> messageQueue = new PoorMansConcurrentLinkedDeque<>();
     private QueueMessage queueItem;
     private int defaultSnoozle;
@@ -151,7 +149,8 @@ public class MiBandService extends JamBaseBluetoothSequencer {
         UPDATE_PROGRESS,
         WATHCFACE_DIALOG_FINISH,
         INSTALL_REQUEST,
-        UPDATE_PREFERENCES
+        UPDATE_PREF_SCREEN,
+        UPDATE_PREF_DATA
     }
 
     {
@@ -188,16 +187,21 @@ public class MiBandService extends JamBaseBluetoothSequencer {
         final PowerManager.WakeLock wl = JoH.getWakeLock("Miband service", 60000);
         try {
             if (shouldServiceRun()) {
-                final String authMac = MiBand.getAuthMac();
+                final String authMac = MiBand.getPersistentAuthMac();
                 String mac = MiBand.getMac();
                 MiBand.MiBandType currDevice = MiBand.getMibandType();
-                if (prevDeviceType != null && (currDevice != prevDeviceType) && currDevice != UNKNOWN) {
+                if ((currDevice != prevDeviceType) && currDevice != UNKNOWN) {
+                    prevDeviceType = currDevice;
                     UserError.Log.d(TAG, "Found new device: " + currDevice.toString());
-                    sendPrefIntent(MIBAND_INTEND_STATES.UPDATE_PREFERENCES, 0, "");
+                     MiBandEntry.sendPrefIntent(MIBAND_INTEND_STATES.UPDATE_PREF_SCREEN, 0, "");
                 }
                 if (!authMac.equalsIgnoreCase(mac) || authMac.isEmpty()) {
                     prevDeviceType = MiBand.getMibandType();
-                    MiBand.setAuthMac(""); //flush old auth info
+                    if (!authMac.isEmpty()) {
+                        String model = MiBand.getModel();
+                        MiBand.setPersistentAuthMac(""); //flush old auth info
+                        MiBand.setModel(model, mac);
+                    }
                     isNeedToAuthenticate = true;
                 }
                 if (emptyString(mac)) {
@@ -219,10 +223,14 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                             message_type = message_type != null ? message_type : "";
                             title = title != null ? title : "";
                             defaultSnoozle = defaultSnoozle != null ? defaultSnoozle : "0";
-
-                            messageQueue.add(new QueueMessage(function, message_type, message, title, Integer.parseInt(defaultSnoozle)));
-                            if (readyToProcessCommand())
-                                handleCommand();
+                            if (function.equals("refresh") && !JoH.pratelimit("miband-set-time-via-refresh-" + MiBand.getMac(), 5)) {
+                                return START_STICKY;
+                            }
+                            else {
+                                messageQueue.add(new QueueMessage(function, message_type, message, title, Integer.parseInt(defaultSnoozle)));
+                                if (readyToProcessCommand())
+                                    handleCommand();
+                            }
                         } else {
                             // no specific function
                         }
@@ -448,7 +456,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                 readValue -> {
                     String revision = new String(readValue);
                     UserError.Log.d(TAG, "Got software revision: " + revision);
-                    MiBand.setVersion(revision, MiBand.getAuthMac());
+                    MiBand.setVersion(revision, MiBand.getPersistentAuthMac());
                     isNeedToCheckRevision = false;
                     changeNextState();
                 }, throwable -> {
@@ -477,7 +485,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                     String name = new String(readValue);
                     if (d)
                         UserError.Log.d(TAG, "Got device name: " + name);
-                    MiBand.setModel(name, MiBand.getAuthMac());
+                    MiBand.setModel(name, MiBand.getPersistentAuthMac());
                     changeNextState();
                 }, throwable -> {
                     if (d)
@@ -774,15 +782,12 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                 (value[1] & 0x0f) == AUTH_SEND_ENCRYPTED_AUTH_NUMBER &&
                 value[2] == AUTH_SUCCESS) {
             isNeedToAuthenticate = false;
-            if (MiBand.getAuthMac().isEmpty()) {
-                MiBand.setAuthMac(MiBand.getMac());
-                MiBand.setPersistentAuthKey(JoH.bytesToHex(authorisation.getLocalKey()), MiBand.getAuthMac());
+            if (MiBand.getPersistentAuthMac().isEmpty()) {
+                MiBand.setPersistentAuthMac(MiBand.getMac());
+                MiBand.setPersistentAuthKey(JoH.bytesToHex(authorisation.getLocalKey()), MiBand.getPersistentAuthMac());
                 String msg = "MiBand was successfully authenticated";
                 JoH.static_toast_long(msg);
                 UserError.Log.d(TAG, msg);
-                if (MiBand.getMibandType() == MI_BAND4) {
-                    //sendPrefIntent(MIBAND_INTEND_STATES.INSTALL_REQUEST, 0, "");
-                }
             }
             if (authSubscription != null) {
                 authSubscription.unsubscribe();
@@ -790,7 +795,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
             changeNextState();
         } else if (value[0] == AUTH_RESPONSE &&
                 (((value[2] & 0x0f) == AUTH_FAIL) || (value[2] == AUTH_MIBAND4_FAIL))) {
-            MiBand.setAuthMac("");
+            MiBand.setPersistentAuthKey("", MiBand.getPersistentAuthMac());
             if (authSubscription != null) {
                 authSubscription.unsubscribe();
             }
@@ -813,12 +818,12 @@ public class MiBandService extends JamBaseBluetoothSequencer {
             WatchFaceGenerator wfGen = new WatchFaceGenerator(getBaseContext().getAssets());
             byte[] fwArray = wfGen.genWatchFace();
             if (fwArray == null || fwArray.length == 0) {
-                resetFirmwareState(false, "Empty image", true);
+                resetFirmwareState(false, "Empty image");
                 return;
             }
             firmware = new FirmwareOperations(fwArray);
         } catch (Exception e) {
-            resetFirmwareState(false, "FirmwareOperations error " + e.getMessage(), true);
+            resetFirmwareState(false, "FirmwareOperations error " + e.getMessage());
             return;
         }
         if (d)
@@ -965,63 +970,63 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                             break;
                         }
                         default: {
-                            resetFirmwareState(false, "Unexpected response during firmware update", false);
+                            resetFirmwareState(false, "Unexpected response during firmware update");
                         }
                     }
                 } catch (Exception ex) {
                     resetFirmwareState(false);
                 }
             } else {
+                String errorMessage = null;
+                Boolean sendBGNotification = false;
                 if (value[2] == OperationCodes.LOW_BATTERY_ERROR) {
-                    resetFirmwareState(false, "Cannot upload watchface, low battery, please charge device", false, true);
+                    errorMessage = "Cannot upload watchface, low battery, please charge device";
+                    sendBGNotification = true;
                 } else if (value[2] == OperationCodes.TIMER_RUNNING) {
-                    resetFirmwareState(false, "Cannot upload watchface, timer running on band", false);
+                    errorMessage = "Cannot upload watchface, timer running on band";
                 } else if (value[2] == OperationCodes.ON_CALL) {
-                    resetFirmwareState(false, "Cannot upload watchface, call in progress", false);
+                    errorMessage = "Cannot upload watchface, call in progress";
                 } else {
-                    UserError.Log.e(TAG, "Unexpected notification during firmware update:" + JoH.bytesToHex(value));
-                    resetFirmwareState(false);
+                    errorMessage = "Unexpected notification during firmware update:" + JoH.bytesToHex(value);
+                }
+                resetFirmwareState(false, errorMessage);
+                if (sendBGNotification){
+                    emptyQueue();
+                    JoH.startService(MiBandService.class, "function", "update_bg_as_notification");
+                    changeState(SLEEP);
                 }
             }
         }
     }
 
     private void resetFirmwareState(Boolean result) {
-        resetFirmwareState(result, null, false);
+        resetFirmwareState(result, null);
     }
 
-    private void resetFirmwareState(Boolean result, String customText, Boolean reset) {
-        resetFirmwareState(result, null, false, false);
-    }
-
-    private void resetFirmwareState(Boolean result, String customText, Boolean reset, Boolean sendBGNotification) {
-        if (watchfaceSubscription != null || reset) {
-            if (watchfaceSubscription != null) {
-                watchfaceSubscription.unsubscribe();
-                watchfaceSubscription = null;
-            }
-            String finishText = customText;
-            if (customText == null) {
-                if (!result)
-                    finishText = xdrip.getAppContext().getResources().getString(R.string.miband_watchface_istall_error);
-                else
-                    finishText = xdrip.getAppContext().getResources().getString(R.string.miband_watchface_istall_success);
-            }
-            UserError.Log.d(TAG, "resetFirmwareState result:" + result + ":" + finishText);
-            sendPrefIntent(MIBAND_INTEND_STATES.WATHCFACE_DIALOG_FINISH, 0, finishText);
-
-            if (isNeedToRestoreNightMode) {
-                JoH.threadSleep(RESTORE_NIGHT_MODE_DELAY);
-                setNightMode();
-            }
-            if (sendBGNotification) {
-                emptyQueue();
-                JoH.startService(MiBandService.class, "function", "update_bg_as_notification");
-                changeState(SLEEP);
-            } else {
-                changeNextState();
-            }
+    private void resetFirmwareState(Boolean result, String customText) {
+        if (watchfaceSubscription != null) {
+            watchfaceSubscription.unsubscribe();
+            watchfaceSubscription = null;
         }
+        String finishText = customText;
+        if (customText == null) {
+            if (!result)
+                finishText = xdrip.getAppContext().getResources().getString(R.string.miband_watchface_istall_error);
+            else
+                finishText = xdrip.getAppContext().getResources().getString(R.string.miband_watchface_istall_success);
+        }
+        UserError.Log.d(TAG, "resetFirmwareState result:" + result + ":" + finishText);
+        // MiBandEntry.sendPrefIntent(MIBAND_INTEND_STATES.WATHCFACE_DIALOG_FINISH, 0, finishText);
+
+        if (isNeedToRestoreNightMode) {
+            JoH.threadSleep(RESTORE_NIGHT_MODE_DELAY);
+            setNightMode();
+        }
+        if (result) {
+            changeNextState();
+            return;
+        }
+        changeState(SLEEP);
     }
 
     private void sendFirmwareData() {
@@ -1043,7 +1048,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                 sendFirmwareCommand(firmware.getFirmwareCharacteristicUUID(), firmware.sendSync(), "Sync " + progressPercent + "%").setRunnable(new Runnable() {
                     @Override
                     public void run() {
-                        sendPrefIntent(MIBAND_INTEND_STATES.UPDATE_PROGRESS, progressPercent, "");
+                         MiBandEntry.sendPrefIntent(MIBAND_INTEND_STATES.UPDATE_PROGRESS, progressPercent, "");
                     }
                 }).queue();
             }
@@ -1054,7 +1059,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
             sendFirmwareCommand(firmware.getFirmwareDataCharacteristicUUID(), fwChunk, "Last chunk").setRunnable(new Runnable() {
                 @Override
                 public void run() {
-                    sendPrefIntent(MIBAND_INTEND_STATES.UPDATE_PROGRESS, progressPercent, "");
+                     MiBandEntry.sendPrefIntent(MIBAND_INTEND_STATES.UPDATE_PROGRESS, progressPercent, "");
                 }
             }).queue();
         }
@@ -1255,16 +1260,6 @@ public class MiBandService extends JamBaseBluetoothSequencer {
         //super.resetBluetoothIfWeSeemToAlreadyBeConnected(mac); //do not reset
     }
 
-
-    private void sendPrefIntent(MIBAND_INTEND_STATES state, Integer progress, String descrText) {
-        final Intent progressIntent = new Intent(Intents.PREFERENCE_INTENT);
-        progressIntent.putExtra("state", state.name());
-        progressIntent.putExtra("progress", progress);
-        if (!descrText.isEmpty())
-            progressIntent.putExtra("descr_text", descrText);
-        LocalBroadcastManager.getInstance(xdrip.getAppContext()).sendBroadcast(progressIntent);
-    }
-
     private boolean shouldServiceRun() {
         return MiBandEntry.isEnabled();
     }
@@ -1272,7 +1267,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
     @Override
     protected void setRetryTimerReal() {
         if (MiBand.getMibandType() == MI_BAND4)
-            sendPrefIntent(MIBAND_INTEND_STATES.WATHCFACE_DIALOG_FINISH, 0, "Can't connect or were disconnected");
+            MiBandEntry.sendPrefIntent(MIBAND_INTEND_STATES.WATHCFACE_DIALOG_FINISH, 0, "Can't connect or were disconnected");
         if (shouldServiceRun() && MiBand.isAuthenticated()) {
             final long retry_in = whenToRetryNext();
             UserError.Log.d(TAG, "setRetryTimerReal: Restarting in: " + (retry_in / Constants.SECOND_IN_MS) + " seconds");
@@ -1362,10 +1357,10 @@ public class MiBandService extends JamBaseBluetoothSequencer {
         final List<StatusItem> l = new ArrayList<>();
         final Inst II = Inst.get(MiBandService.class.getSimpleName());
 
-        if (MiBand.isAuthenticated()) {
-            l.add(new StatusItem("Model", MiBand.getModel()));
-            l.add(new StatusItem("Software version", MiBand.getVersion()));
-        }
+
+        l.add(new StatusItem("Model", MiBand.getModel()));
+        l.add(new StatusItem("Software version", MiBand.getVersion()));
+
         l.add(new StatusItem("Mac address", MiBand.getMac()));
         l.add(new StatusItem("Connected", II.isConnected ? "Yes" : "No"));
         l.add(new StatusItem("Is authenticated", MiBand.isAuthenticated() ? "Yes" : "No"));

@@ -555,12 +555,12 @@
                 android:summary="@string/summary_miband_enable"
                 android:title="@string/title_miband_enable" />
             <EditTextPreference
-                android:key="miband_mac"
+                android:key="miband_data_mac"
                 android:title="@string/title_lefun_mac"
                 android:summary="@string/summary_miband_mac" />
             <EditTextPreference
                 android:icon="@drawable/ic_vpn_key"
-                android:key="miband_authkey"
+                android:key="miband_data_authkey"
                 android:maxLength="32"
                 android:summary="@string/summary_miband_authkey"
                 android:title="@string/title_miband_authkey" />
@@ -601,6 +601,7 @@
                 android:key="miband_graph_hours"
                 android:summary="@string/pref_amazfit_widget_graph_hours_summary"
                 android:title="@string/pref_amazfit_watchface_graph_hours_title" />
+
             <Preference
                 android:key="install_miband_watchface"
                 android:dependency="miband_enabled"
@@ -666,6 +667,13 @@
                             android:dependency="miband_nightmode_enabled"
                             android:title="Night mode end">
                         </com.eveningoutpost.dexdrip.utils.TimePreference>
+                        <SeekBarPreference
+                            android:defaultValue="25"
+                            android:dependency="miband_enabled"
+                            android:key="miband_nightmode_interval"
+                            android:max="54"
+                            android:summary="@string/summary_miband_interval_in_nightmode"
+                            android:title="@string/title_miband_interval_in_nightmode" />
                     </PreferenceCategory>
                     <PreferenceCategory
                         android:key="miband2_screen"

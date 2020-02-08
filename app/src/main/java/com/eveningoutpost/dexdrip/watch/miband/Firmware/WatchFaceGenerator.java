@@ -37,7 +37,7 @@ import static com.eveningoutpost.dexdrip.Models.JoH.threadSleep;
 import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.getCol;
 import static com.eveningoutpost.dexdrip.utils.FileUtils.getExternalDir;
 import static com.eveningoutpost.dexdrip.utils.FileUtils.makeSureDirectoryExists;
-import static com.eveningoutpost.dexdrip.watch.miband.MiBand.PREF_MIBAND_GRAPH_HOURS;
+import static com.eveningoutpost.dexdrip.watch.miband.MiBandEntry.PREF_MIBAND_GRAPH_HOURS;
 
 public class WatchFaceGenerator {
     private static final boolean d = true;

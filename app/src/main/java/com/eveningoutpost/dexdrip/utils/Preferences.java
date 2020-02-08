@@ -418,62 +418,64 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
         statusReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                final MiBandService.MIBAND_INTEND_STATES state = MiBandService.MIBAND_INTEND_STATES.valueOf(intent.getStringExtra("state"));
-                final Integer progress = intent.getIntExtra("progress", 0);
-                final String descrText = intent.getStringExtra("descr_text");
-                if (mContext.isFinishing()) return;
-                switch (state) {
-                    case INIT_WATCHFACE_DIALOG:
-                        if (pDialog == null) {
-                            pDialog = new Dialog(mContext);
-                            pDialog.setCanceledOnTouchOutside(false);
-                            pDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                            pDialog.setCancelable(false);
-                            pDialog.setContentView(R.layout.dialog_progress);
-                            final ProgressBar progress_horizontal = pDialog.findViewById(R.id.progress_horizontal);
-                            final TextView statusText = pDialog.findViewById(R.id.statusTextView);
-                            final TextView valuePercentage = pDialog.findViewById(R.id.valuePercentage);
-                            statusText.setText("Please wait, uploading watchface...");
-                            progress_horizontal.setProgress(progress);
-                            valuePercentage.setText(progress.toString());
-                            pDialog.show();
-                            Window window = pDialog.getWindow();
-                            window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                        }
-                        break;
-                    case UPDATE_PROGRESS:
-                        if (pDialog != null) {
-                            final ProgressBar progress_horizontal = pDialog.findViewById(R.id.progress_horizontal);
-                            final TextView valuePercentage = pDialog.findViewById(R.id.valuePercentage);
-                            progress_horizontal.setProgress(progress);
-                            valuePercentage.setText(progress.toString());
-                        }
-                        break;
-                    case WATHCFACE_DIALOG_FINISH:
-                        if (pDialog != null) {
-                            final TextView statusText = pDialog.findViewById(R.id.statusTextView);
-                            statusText.setText(descrText);
-                            new Handler().postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if (pDialog != null) {
-                                        if (pDialog.isShowing()) {
-                                            pDialog.dismiss();
-                                            pDialog = null;
-                                        }
+            final MiBandService.MIBAND_INTEND_STATES state = MiBandService.MIBAND_INTEND_STATES.valueOf(intent.getStringExtra("state"));
+            final Integer progress = intent.getIntExtra("progress", 0);
+            final String descrText = intent.getStringExtra("descr_text");
+            if (mContext.isFinishing()) return;
+            switch (state) {
+                case INIT_WATCHFACE_DIALOG:
+                    if (pDialog == null) {
+                        pDialog = new Dialog(mContext);
+                        pDialog.setCanceledOnTouchOutside(false);
+                        pDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                        pDialog.setCancelable(false);
+                        pDialog.setContentView(R.layout.dialog_progress);
+                        final ProgressBar progress_horizontal = pDialog.findViewById(R.id.progress_horizontal);
+                        final TextView statusText = pDialog.findViewById(R.id.statusTextView);
+                        final TextView valuePercentage = pDialog.findViewById(R.id.valuePercentage);
+                        statusText.setText("Please wait, uploading watchface...");
+                        progress_horizontal.setProgress(progress);
+                        valuePercentage.setText(progress.toString());
+                        pDialog.show();
+                        Window window = pDialog.getWindow();
+                        window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                    }
+                    break;
+                case UPDATE_PROGRESS:
+                    if (pDialog != null) {
+                        final ProgressBar progress_horizontal = pDialog.findViewById(R.id.progress_horizontal);
+                        final TextView valuePercentage = pDialog.findViewById(R.id.valuePercentage);
+                        progress_horizontal.setProgress(progress);
+                        valuePercentage.setText(progress.toString());
+                    }
+                    break;
+                case WATHCFACE_DIALOG_FINISH:
+                    if (pDialog != null) {
+                        final TextView statusText = pDialog.findViewById(R.id.statusTextView);
+                        statusText.setText(descrText);
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (pDialog != null) {
+                                    if (pDialog.isShowing()) {
+                                        pDialog.dismiss();
+                                        pDialog = null;
                                     }
                                 }
-                            }, 3000);
-                        }
-                        break;
-                    case INSTALL_REQUEST:
-                        preferenceFragment.installMiBandWatchface(preferenceFragment.getContext());
-                        break;
-                    case UPDATE_PREFERENCES:
-                        preferenceFragment.updateMibandPreferences(true);
-                        break;
+                            }
+                        }, 3000);
+                    }
+                    break;
+                case INSTALL_REQUEST:
+                    preferenceFragment.installMiBandWatchface(preferenceFragment.getContext());
+                    break;
+                case UPDATE_PREF_SCREEN:
+                    preferenceFragment.updateMiBandScreen();
+                    break;
+                case UPDATE_PREF_DATA:
+                    preferenceFragment.updateMibandPreferencesData();
+                    break;
                 }
-
             }
         };
     }
@@ -708,6 +710,25 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
         }
     };
 
+    private static Preference.OnPreferenceChangeListener sBindPreferenceTitleAppendToMacValueListener = new Preference.OnPreferenceChangeListener() {
+        @Override
+        public boolean onPreferenceChange(Preference preference, Object value) {
+
+            boolean do_update = false;
+            // detect not first run
+            if (preference.getTitle().toString().contains("(")) {
+                do_update = true;
+            }
+            if (value.toString().isEmpty())
+                preference.setTitle(preference.getTitle().toString().replaceAll("  \\([a-z0-9A-Z.:]+\\)$", ""));
+            else
+                preference.setTitle(preference.getTitle().toString().replaceAll("  \\([a-z0-9A-Z.:]+\\)$", "") + "  (" + value.toString() + ")");
+            if (do_update) {
+                preference.getEditor().putString(preference.getKey(), (String) value).apply(); // update prefs now
+            }
+            return true;
+        }
+    };
 
     private static String format_carb_ratio(String oldValue, String newValue) {
         return oldValue.replaceAll(" \\(.*\\)$", "") + "  (" + newValue + "g per Unit)";
@@ -773,6 +794,18 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
         try {
             preference.setOnPreferenceChangeListener(sBindPreferenceTitleAppendToStringValueListener);
             sBindPreferenceTitleAppendToStringValueListener.onPreferenceChange(preference,
+                    PreferenceManager
+                            .getDefaultSharedPreferences(preference.getContext())
+                            .getString(preference.getKey(), ""));
+        } catch (Exception e) {
+            Log.e(TAG, "Got exception binding preference title: " + e.toString());
+        }
+    }
+
+    private static void bindPreferenceTitleAppendToMacValue(Preference preference) {
+        try {
+            preference.setOnPreferenceChangeListener(sBindPreferenceTitleAppendToMacValueListener);
+            sBindPreferenceTitleAppendToMacValueListener.onPreferenceChange(preference,
                     PreferenceManager
                             .getDefaultSharedPreferences(preference.getContext())
                             .getString(preference.getKey(), ""));
@@ -853,6 +886,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
         private Preference miband_send_readings_as_notification;
         private Preference miband_authkey;
         private Preference miband_nightmode_category;
+        private Preference intervalNightMode;
 
         // default constructor is required in addition on some platforms
         public AllPrefsFragment() {
@@ -993,45 +1027,47 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             }
 
             try {
-                final Activity activity = this.getActivity();
                 miband2_screen = findPreference("miband2_screen");
                 miband3_4_screen = findPreference("miband3_4_screen");
                 miband_graph_hours = findPreference("miband_graph_hours");
                 miband_send_readings_as_notification = findPreference("miband_send_readings_as_notification");
-                miband_authkey = findPreference("miband_authkey");
+                miband_authkey = findPreference(MiBandEntry.PREF_MIBAND_AUTH_KEY);
                 miband_nightmode_category = findPreference("miband_nightmode_category");
+                intervalNightMode = findPreference(MiBandEntry.PREF_MIBAND_NIGHTMODE_INTERVAL);
+
+                intervalNightMode.setOnPreferenceChangeListener(MiBandEntry.sBindMibandPreferenceChangeListener);
+                MiBandEntry.sBindMibandPreferenceChangeListener.onPreferenceChange(intervalNightMode,
+                        PreferenceManager
+                                .getDefaultSharedPreferences(intervalNightMode.getContext())
+                                .getInt(intervalNightMode.getKey(), -1));
 
                 findPreference(MiBandEntry.PREF_CALL_ALERTS).setOnPreferenceChangeListener((preference, newValue) -> {
-                    prefs.edit().putBoolean(MiBandEntry.PREF_CALL_ALERTS, (Boolean) newValue).apply();
-                    IncomingCallsReceiver.checkPermission(activity);
+                    IncomingCallsReceiver.checkPermission(this.getActivity());
                     return true;
                 });
 
                 findPreference(MiBandEntry.PREF_MIBAND_ENABLED).setOnPreferenceChangeListener((preference, newValue) -> {
-                    prefs.edit().putBoolean(MiBandEntry.PREF_MIBAND_ENABLED, (Boolean) newValue).apply();
-
-                    final Context context = preference.getContext();
                     if ((Boolean) newValue) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && (boolean) newValue) {
                             LocationHelper.requestLocationForBluetooth((Activity) preference.getContext());
                         }
-                        checkReadPermission(activity);
+                        checkReadPermission(this.getActivity());
                     }
                     return true;
                 });
 
-                updateMibandPreferences(false);
+                updateMiBandScreen();
+
+                bindPreferenceTitleAppendToMacValue(findPreference(MiBandEntry.PREF_MIBAND_MAC));
 
                 findPreference(MiBandEntry.PREF_MIBAND_INSTALL_WATCHFACE).setOnPreferenceClickListener(preference -> {
                     installMiBandWatchface(preference.getContext());
                     return true;
                 });
 
-
             } catch (Exception e) {
                 //
             }
-
 
             try {
                 final Activity activity = this.getActivity();
@@ -2095,7 +2131,6 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                         NFCReaderX.handleHomeScreenScanPreference(xdrip.getAppContext(), false); // always disable
                     }
 
-
                 /*    if ((collectionType != DexCollectionType.BluetoothWixel
                             && collectionType != DexCollectionType.DexcomShare
                             && collectionType != DexCollectionType.WifiWixel
@@ -2249,7 +2284,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
 
         }
 
-        private void updateMibandPreferences(Boolean isNeedToRefresh){
+        private void updateMiBandScreen(){
             MiBand.MiBandType type = MiBand.getMibandType();
             PreferenceScreen settings = (PreferenceScreen) findPreference(MiBandEntry.PREF_MIBAND_SETTINGS);
             PreferenceScreen prefs = (PreferenceScreen) findPreference(MiBandEntry.PREF_MIBAND_PREFERENCES);
@@ -2274,28 +2309,22 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     settings.addPreference(miband3_4_screen);
                     settings.addPreference(miband_nightmode_category);
                 }
-                if (isNeedToRefresh){
-                    // This generically refreshes the fragment which may well nullify some of the ui logic above as it does a complete rebuild
-                    Inevitable.task("refresh-prefs", 100, new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                JoH.runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        if (parent != null)
-                                            parent.refreshFragments(MiBandEntry.PREF_MIBAND_PREFERENCES);
-                                    }
-                                });
-                            } catch (Exception e) {
-                                Log.e(TAG, "Got exception refreshing fragments: " + e);
-                            }
-                        }
-                    });
-                }
             } catch (Exception e) {
                 Log.e(TAG, "Cannot find preference item: " + e);
             }
+        }
+
+        private void updateMibandPreferencesData(){
+            EditTextPreference prefMac = (EditTextPreference) findPreference(MiBandEntry.PREF_MIBAND_MAC);
+            if (prefMac != null ) {
+                prefMac.setText(MiBand.getMac());
+                sBindPreferenceTitleAppendToMacValueListener.onPreferenceChange(prefMac,
+                        PreferenceManager
+                                .getDefaultSharedPreferences(prefMac.getContext())
+                                .getString(prefMac.getKey(), ""));
+            }
+            EditTextPreference prefAuthKey = (EditTextPreference) findPreference(MiBandEntry.PREF_MIBAND_AUTH_KEY);
+            if (prefAuthKey != null )prefAuthKey.setText(MiBand.getAuthKey());
         }
 
         // all this boiler plate for a dynamic interface seems excessive and boring, I would love to know a helper library to simplify this

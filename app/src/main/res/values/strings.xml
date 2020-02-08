@@ -1225,6 +1225,8 @@
     <string name="title_miband">MiBand</string>
     <string name="summary_miband_enable">Sync Data with MiBand fitness bands</string>
     <string name="title_miband_enable">Use MiBand Band</string>
+    <string name="title_miband_interval_in_nightmode">Interval</string>
+    <string name="summary_miband_interval_in_nightmode">Defines how often BG would be synchronized in the night mode</string>
     <string name="title_miband_screens_features">MiBand Screens / Features</string>
     <string name="title_miband_screen_battery">Show Battery</string>
     <string name="title_miband_show_date">Show date on the screen</string>

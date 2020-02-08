@@ -10,6 +10,8 @@ import static com.eveningoutpost.dexdrip.watch.miband.Const.MIBAND_NAME_3;
 import static com.eveningoutpost.dexdrip.watch.miband.Const.MIBAND_NAME_3_1;
 import static com.eveningoutpost.dexdrip.watch.miband.Const.MIBAND_NAME_4;
 import static com.eveningoutpost.dexdrip.watch.miband.Const.MIBAND_NOTIFY_TYPE_ALARM;
+import static com.eveningoutpost.dexdrip.watch.miband.MiBandEntry.PREF_MIBAND_AUTH_KEY;
+import static com.eveningoutpost.dexdrip.watch.miband.MiBandEntry.PREF_MIBAND_MAC;
 
 /**
  * Jamorham
@@ -53,11 +55,7 @@ public class MiBand {
         }
     }
 
-    private static final String PREF_MIBAND_MAC = "miband_mac";
     private static final String PREF_MIBAND_AUTH_MAC = "miband_auth_mac";
-    private static final String PREF_MIBAND_AUTH_KEY = "miband_authkey";
-    public static final String PREF_MIBAND_GRAPH_HOURS = "miband_graph_hours";
-
     private static final String PREF_MIBAND_PERSISTANT_AUTH_KEY = "miband_persist_authkey";
     private static final String PREF_MIBAND_MODEL = "miband_model_";
     private static final String PREF_MIBAND_VERSION = "miband_version_";
@@ -67,7 +65,7 @@ public class MiBand {
     }
 
     public static boolean isAuthenticated() {
-        return MiBand.getAuthMac().isEmpty() ? false : true;
+        return MiBand.getPersistentAuthMac().isEmpty() ? false : true;
     }
 
     public static void sendCall(final String message_type, final String message) {
@@ -85,21 +83,31 @@ public class MiBand {
                 "default_snoozle", Integer.toString(defaultSnoozle)));
     }
 
-    static String getMac() {
+    public static String getMac() {
         return Pref.getString(PREF_MIBAND_MAC, "");
     }
 
     static void setMac(final String mac) {
         Pref.setString(PREF_MIBAND_MAC, mac);
+        MiBandEntry.sendPrefIntent(MiBandService.MIBAND_INTEND_STATES.UPDATE_PREF_DATA, 0, "");
     }
 
-    static String getAuthMac() {
+    static void setAuthKey(final String key) {
+        Pref.setString(PREF_MIBAND_AUTH_KEY, key.toLowerCase());
+        MiBandEntry.sendPrefIntent(MiBandService.MIBAND_INTEND_STATES.UPDATE_PREF_DATA, 0, "");
+    }
+
+    public static String getAuthKey() {
+        return Pref.getString(PREF_MIBAND_AUTH_KEY, "");
+    }
+
+    public static String getPersistentAuthMac() {
         return PersistentStore.getString(PREF_MIBAND_AUTH_MAC);
     }
 
-    static void setAuthMac(final String mac) {
+    static void setPersistentAuthMac(final String mac) {
         if (mac.isEmpty()) {
-            String authMac = getAuthMac();
+            String authMac = getPersistentAuthMac();
             setVersion("", authMac);
             setModel("", authMac);
             setPersistentAuthKey("", authMac);
@@ -109,16 +117,9 @@ public class MiBand {
         PersistentStore.setString(PREF_MIBAND_AUTH_MAC, mac);
     }
 
-    static void setAuthKey(final String key) {
-        Pref.setString(PREF_MIBAND_AUTH_KEY, key.toLowerCase());
-    }
-
-    static String getAuthKey() {
-        return Pref.getString(PREF_MIBAND_AUTH_KEY, "");
-    }
 
     static String getPersistentAuthKey() {
-        final String mac = getAuthMac();
+        final String mac = getPersistentAuthMac();
         if (!mac.isEmpty()) {
             return PersistentStore.getString(PREF_MIBAND_PERSISTANT_AUTH_KEY + mac);
         }
