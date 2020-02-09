@@ -14,6 +14,8 @@ import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.Date;
+
+import static com.eveningoutpost.dexdrip.watch.miband.MiBand.MiBandType.MI_BAND2;
 // very lightweight entry point class to avoid loader overhead when not in use
 
 public class MiBandEntry {
@@ -27,7 +29,7 @@ public class MiBandEntry {
     public static final String PREF_CALL_ALERTS = "miband_option_call_notifications";
     public static final String PREF_MIBAND_SETTINGS = "miband_settings";
     public static final String PREF_MIBAND_PREFERENCES = "miband_preferences";
-    public static final String PREF_MIBAND_INSTALL_WATCHFACE = "install_miband_watchface";
+    public static final String PREF_MIBAND_UPDATE_BG = "update_miband_bg";
     public static final String PREF_MIBAND_NIGHTMODE_ENABLED = "miband_nightmode_enabled";
     public static final String PREF_MIBAND_NIGHTMODE_START = "miband_nightmode_start";
     public static final String PREF_MIBAND_NIGHTMODE_END = "miband_nightmode_end";
@@ -51,6 +53,7 @@ public class MiBandEntry {
     }
 
     public static boolean isNeedSendReadingAsNotification() {
+        if (isEnabled() && MiBand.getMibandType() == MI_BAND2) return true;
         return isEnabled() && Pref.getBooleanDefaultFalse(PREF_MIBAND_SEND_READINGS_AS_NOTIFICATION);
     }
 
@@ -59,6 +62,7 @@ public class MiBandEntry {
     }
 
     public static boolean isNightModeEnabled() {
+        if (MiBand.getMibandType() == MI_BAND2) return false;
         return Pref.getBooleanDefaultFalse(PREF_MIBAND_NIGHTMODE_ENABLED);
     }
 
@@ -70,8 +74,12 @@ public class MiBandEntry {
         return new Date(Pref.getLong(PREF_MIBAND_NIGHTMODE_END, 0));
     }
 
+    public static void setNightModeInterval(int val) {
+        Pref.setInt(PREF_MIBAND_NIGHTMODE_INTERVAL, val);
+    }
+
     public static int getNightModeInterval() {
-        return Pref.getInt(PREF_MIBAND_NIGHTMODE_INTERVAL, 0) + 5;
+        return (Pref.getInt(PREF_MIBAND_NIGHTMODE_INTERVAL, 0) + 1) * 5;
     }
 
     public static void initialStartIfEnabled() {
@@ -91,9 +99,10 @@ public class MiBandEntry {
             try {
                 String key = preference.getKey();
                 if (key.equals(MiBandEntry.PREF_MIBAND_NIGHTMODE_INTERVAL)) {
+                    setNightModeInterval((int) value);
                     final String minutes = xdrip.gs(R.string.unit_minutes);
                     final String title_text = xdrip.gs(R.string.title_miband_interval_in_nightmode);
-                    preference.setTitle(String.format("%s\n%d %s", title_text, (int) value + 5, minutes));
+                    preference.setTitle(String.format("%s %d %s", title_text, MiBandEntry.getNightModeInterval(), minutes));
                 }
             } catch (Exception e) {
                 //
@@ -118,6 +127,12 @@ public class MiBandEntry {
     public static void showLatestBG() {
         if (isNeedSendReading()) {
             JoH.startService(MiBandService.class, "function", "update_bg");
+        }
+    }
+
+    public static void forceShowLatestBG() {
+        if (isNeedSendReading()) {
+            JoH.startService(MiBandService.class, "function", "update_bg_force");
         }
     }
 

@@ -467,7 +467,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     }
                     break;
                 case INSTALL_REQUEST:
-                    preferenceFragment.installMiBandWatchface(preferenceFragment.getContext());
+                    preferenceFragment.updateMiBandBG(preferenceFragment.getContext());
                     break;
                 case UPDATE_PREF_SCREEN:
                     preferenceFragment.updateMiBandScreen();
@@ -719,10 +719,10 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             if (preference.getTitle().toString().contains("(")) {
                 do_update = true;
             }
-            if (value.toString().isEmpty())
-                preference.setTitle(preference.getTitle().toString().replaceAll("  \\([a-z0-9A-Z.:]+\\)$", ""));
-            else
-                preference.setTitle(preference.getTitle().toString().replaceAll("  \\([a-z0-9A-Z.:]+\\)$", "") + "  (" + value.toString() + ")");
+            String title =  preference.getTitle().toString().replaceAll("  \\([a-z0-9A-Z.:]+\\)$", "");
+            if (!value.toString().isEmpty())
+                title = title + "  (" + value.toString() + ")";
+            preference.setTitle(title);
             if (do_update) {
                 preference.getEditor().putString(preference.getKey(), (String) value).apply(); // update prefs now
             }
@@ -1060,8 +1060,8 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
 
                 bindPreferenceTitleAppendToMacValue(findPreference(MiBandEntry.PREF_MIBAND_MAC));
 
-                findPreference(MiBandEntry.PREF_MIBAND_INSTALL_WATCHFACE).setOnPreferenceClickListener(preference -> {
-                    installMiBandWatchface(preference.getContext());
+                findPreference(MiBandEntry.PREF_MIBAND_UPDATE_BG).setOnPreferenceClickListener(preference -> {
+                    updateMiBandBG(preference.getContext());
                     return true;
                 });
 
@@ -2418,13 +2418,13 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             }
         }
 
-        private void installMiBandWatchface(Context context) {
+        private void updateMiBandBG(Context context) {
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
             builder.setTitle(xdrip.getAppContext().getResources().getString(R.string.miband_bg_dialog_title));
             builder.setPositiveButton(xdrip.getAppContext().getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
-                    MiBandEntry.showLatestBG();
+                    MiBandEntry.forceShowLatestBG();
                 }
             });
 

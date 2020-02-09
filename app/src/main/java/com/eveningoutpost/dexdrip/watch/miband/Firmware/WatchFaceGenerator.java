@@ -215,7 +215,6 @@ public class WatchFaceGenerator {
         float x = width / 2f - bounds.width() / 2f - bounds.left;
 
         canvas.drawText(noDataText, x, height - 100, paint); //draw bgValueText
-
         //draw timestamp
         int timeStampTextPosY = height - 37;//px
         String timeStampText = "at " + hourMinuteString(JoH.tsl());

@@ -1234,7 +1234,7 @@
     <string name="summary_miband_visibility">Miband will be visible for other devices</string>
     <string name="title_miband_switch_display_on_wrist">Switch display on wrist</string>
     <string name="title_miband_units">Units</string>
-    <string name="summary_miband_units">km - ON, miles - OFF</string>
+    <string name="summary_miband_units">Choose the distance unit used on band </string>
     <string name="title_miband_goal_notification">Goal notification</string>
     <string name="summary_miband_goal_notification">Miband will vibrate when you reach a goal</string>
     <string name="title_miband_locale_24_hour">24 Hour clock</string>
