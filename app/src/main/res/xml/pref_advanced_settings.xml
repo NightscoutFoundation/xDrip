@@ -445,6 +445,15 @@
                     android:summary="Try to calculate xDrip style delta trend arrow instead of using transmitter estimate arrow."
                     android:title="Attempt Delta Trend" />
 
+                <SeekBarPreference
+                    android:key="bluejay_backfill_hours"
+                    android:dependency="bluejay_enabled"
+                    android:title="Backfill Hours"
+                    android:summary="Larger backfill scope can reduce battery life"
+                    android:max="12"
+                    android:min="0"
+                    android:defaultValue="3" />
+
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="bluejay_enabled"

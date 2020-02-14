@@ -89,6 +89,7 @@ import static com.eveningoutpost.dexdrip.Services.JamBaseBluetoothSequencer.Base
 import static com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder.DEXCOM_PERIOD;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.HOUR_IN_MS;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.MINUTE_IN_MS;
+import static com.eveningoutpost.dexdrip.UtilityModels.Constants.SECOND_IN_MS;
 import static com.eveningoutpost.dexdrip.UtilityModels.StatusItem.Highlight.BAD;
 import static com.eveningoutpost.dexdrip.UtilityModels.StatusItem.Highlight.CRITICAL;
 import static com.eveningoutpost.dexdrip.UtilityModels.StatusItem.Highlight.GOOD;
@@ -114,6 +115,7 @@ import static com.eveningoutpost.dexdrip.watch.thinjam.Const.OPCODE_RESET_ALL;
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.OPCODE_SHOW_QRCODE;
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.THINJAM_BULK;
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.THINJAM_NOTIFY_TYPE_CANCEL;
+import static com.eveningoutpost.dexdrip.watch.thinjam.Const.THINJAM_NOTIFY_TYPE_DIALOG;
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.THINJAM_NOTIFY_TYPE_TEXTBOX1;
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.THINJAM_OTA;
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.THINJAM_WRITE;
@@ -130,7 +132,9 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
     private static final String TAG = "BlueJayServiceR";
     private static final boolean D = false;      // TODO change to false for production
 
-    private static long awaiting_easy_auth = 0;
+    private static volatile long awaiting_easy_auth = 0;
+    private static volatile long lastLongPress1 = 0;
+    private static volatile long lastUsableGlucoseTimestamp = 0;
 
     private static final SlidingWindowConstraint connectionTracker = new SlidingWindowConstraint(50, 20 * Constants.MINUTE_IN_MS, "max_bluejay_reconnects");
     private final IBinder binder = new LocalBinder();
@@ -280,7 +284,7 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
             if (!flashRunning()) {
                 val outbound = new BackFillTx(records);
                 val item = new QueueMe().setBytes(outbound.getBytes())
-                        .setDescription("Get BackFill")
+                        .setDescription("Get BackFill " + records)
                         .expireInSeconds(30);
 
                 item.setProcessor(new AuthReplyProcessor(new ReplyProcessor(I.connection) {
@@ -298,14 +302,17 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
         }
     }
 
-    private static final long MAX_BACKFILL_PERIOD_MS = HOUR_IN_MS * 3; // how far back to request backfill data
+   private static int recordsPerHour() {
+       return (int)(HOUR_IN_MS / DEXCOM_PERIOD);
+   }
 
     private static Pair<Long, Long> getBackFillStatus() {
-        final int check_readings = 30;
+        final long maxBackfillPeriodMs = getMaxBackFillHours() * HOUR_IN_MS; // how far back to request backfill data
+        final int check_readings = getMaxBackFillHours() * recordsPerHour();
         UserError.Log.d(TAG, "Checking " + check_readings + " for backfill requirement");
         final List<BgReading> lastReadings = BgReading.latest_by_size(check_readings);
         boolean ask_for_backfill = false;
-        long earliest_timestamp = tsl() - MAX_BACKFILL_PERIOD_MS;
+        long earliest_timestamp = tsl() - maxBackfillPeriodMs;
         long latest_timestamp = tsl();
         if ((lastReadings == null) || (lastReadings.size() != check_readings)) {
             ask_for_backfill = true;
@@ -314,7 +321,7 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
                 final BgReading reading = lastReadings.get(i);
                 if ((reading == null) || (msSince(reading.timestamp) > ((DEXCOM_PERIOD * i) + Constants.MINUTE_IN_MS * 7))) {
                     ask_for_backfill = true;
-                    if ((reading != null) && (msSince(reading.timestamp) <= MAX_BACKFILL_PERIOD_MS)) {
+                    if ((reading != null) && (msSince(reading.timestamp) <= maxBackfillPeriodMs)) {
                         earliest_timestamp = reading.timestamp;
                     }
                     if (reading != null) {
@@ -406,7 +413,7 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
                 }
                 if (Ob1G5CollectionService.lastSensorState.usableGlucose()) {
                     UserError.Log.d(TAG, "USABLE GLUCOSE");
-
+                    lastUsableGlucoseTimestamp = inboundTimestamp;
                     final BgReading existing = BgReading.getForPreciseTimestamp(inboundTimestamp, Constants.MINUTE_IN_MS * 4, false);
                     if (existing == null) {
                         val last = BgReading.last();
@@ -814,6 +821,14 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
         return output;
     }
 
+    private static int getMaxBackFillHours() {
+        int max_backfill_hours = (Pref.getInt("bluejay_backfill_hours", 3));
+        if (max_backfill_hours == 0) {
+            max_backfill_hours = 1; // cannot actually be disabled at the moment
+        }
+        return max_backfill_hours;
+    }
+
     public void schedulePeriodicEvents() {
         final BlueJayInfo info = getInfo();
         if (info.status1Due()) {
@@ -826,12 +841,13 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
             setTime();
         }
 
-        if (BlueJay.isCollector()) {
+        if (BlueJay.isCollector() && (JoH.msSince(lastUsableGlucoseTimestamp) < MINUTE_IN_MS * 20)) {
             val bf_status = getBackFillStatus();
             if (bf_status.first > 0 && backFillOkayToAsk(bf_status.first)) {
                 int records = (int) ((JoH.msSince(bf_status.first) / DEXCOM_PERIOD) + 2);
                 UserError.Log.d(TAG, "Earliest backfill time: " + JoH.dateTimeText(bf_status.first) + " Would like " + records + " backfill records");
-                getBackFill(Math.min(records, 30));
+                final int max_backfill_hours = getMaxBackFillHours();
+                getBackFill(Math.min(records, max_backfill_hours * recordsPerHour()));
             }
         } else {
             UserError.Log.d(TAG, "Not checking for backfill data as bluejay is not set as collector");
@@ -1056,7 +1072,7 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
         }
     }
 
-    private void requestBulk(ThinJamItem item) {
+    private void requestBulk(final ThinJamItem item) {
         final BulkUpRequestTx packet = new BulkUpRequestTx(item.type, item.width == 0 ? 0 : 1, item.buffer.length, item.buffer, item.quiet);
         if (D)
             UserError.Log.d(TAG, "Bulk request request: " + bytesToHex(packet.getBytes()));
@@ -1073,6 +1089,14 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
                         bulkSend(packet.getBulkUpOpcode(response), item.buffer, 15, item.quiet);
                     } else {
                         UserError.Log.d(TAG, "Bulk request failed: " + packet.responseText(response));
+                        if (packet.responseText(response).toLowerCase().contains("busy")
+                                && item.retryCounterOk()) {
+                            UserError.Log.d(TAG, "Device is busy, scheduling retry");
+                            Inevitable.task("bulk-retry-" + item.toS(), 3000, () -> {
+                                UserError.Log.d(TAG, "Retrying requestBulk: " + item.toS());
+                                requestBulk(item);
+                            });
+                        }
                     }
 
                 }, throwable -> {
@@ -1164,10 +1188,17 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
         if (message_type != null) {
             switch (message_type.toUpperCase()) {
                 case THINJAM_NOTIFY_TYPE_CANCEL:
+                    if (msSince(lastLongPress1) < SECOND_IN_MS) {
+                        UserError.Log.d(TAG, "Not doing circular cancel");
+                        return;
+                    }
                     notificationType = 0;
                     break;
                 case THINJAM_NOTIFY_TYPE_TEXTBOX1:
                     notificationType = 6;
+                    break;
+                case THINJAM_NOTIFY_TYPE_DIALOG:
+                    notificationType = 9;
                     break;
             }
         }
@@ -1225,6 +1256,7 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
         switch (pushRx.type) {
 
             case LongPress1:
+                lastLongPress1 = JoH.tsl();
                 if (JoH.msSince(awaiting_easy_auth) < Constants.MINUTE_IN_MS * 5) {
                     addToLog("Processing easy auth");
                     awaiting_easy_auth = 0;
@@ -1232,6 +1264,7 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
                 } else {
                     AlertPlayer.getPlayer().OpportunisticSnooze();
                     BroadcastSnooze.send();
+                    BlueJayEmit.sendButtonPress(1);
                 }
                 // TODO cancel any alert queue
                 break;
@@ -1266,6 +1299,11 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
                 if (JoH.quietratelimit("bluejay-backfill-received", 20)) {
                     backFillReceived();
                 }
+                break;
+
+            case Choice:
+                UserError.Log.d(TAG, "Push Choice: " + pushRx.value + " :: " + pushRx.text);
+                BlueJayEmit.sendChoice(pushRx.value, pushRx.text);
                 break;
         }
     }

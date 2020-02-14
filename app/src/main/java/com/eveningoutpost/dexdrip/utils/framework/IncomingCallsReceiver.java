@@ -95,7 +95,7 @@ public class IncomingCallsReceiver extends BroadcastReceiver {
                 UserError.Log.d(TAG, "Ringing stopped: " + stateExtra);
                 if (JoH.ratelimit("incoming-call-stopped", 10)) {
                     if (BlueJayEntry.areCallAlertsEnabled()) {
-                        BlueJayEntry.sendNotifyIfEnabled(THINJAM_NOTIFY_TYPE_CANCEL, "C");
+                        BlueJayEntry.cancelNotifyIfEnabled();
                     }
                 }
             }
