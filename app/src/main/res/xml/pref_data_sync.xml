@@ -290,6 +290,11 @@
                     android:key="tidepool_only_while_unmetered"
                     android:summary="Upload data only when connected to an unmetered network like Wifi"
                     android:title="Only on Wifi" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="tidepool_no_treatments"
+                    android:summary="Upload only CGM data to avoid duplicates with manual pump upload"
+                    android:title="Don't upload treatments" />
 
             </PreferenceScreen>
         </PreferenceScreen>

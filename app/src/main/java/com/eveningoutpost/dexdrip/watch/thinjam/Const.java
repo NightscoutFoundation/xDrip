@@ -57,6 +57,7 @@ public class Const {
     public static final byte PUSH_OPCODE_CHARGE = 1;
     public static final byte PUSH_OPCODE_B1_LONG = 2;
     public static final byte PUSH_OPCODE_BACKFILL = 3;
+    public static final byte PUSH_OPCODE_CHOICE = 4;
 
     public static final byte PUSH_OPCODE_BULK_ERROR = 6;
 
@@ -66,7 +67,9 @@ public class Const {
             "INVALID LENGTH",
             "INVALID MISC",
             "INVALID OPCODE",
-            "OUT OF RANGE"
+            "OUT OF RANGE",
+            "RESEND FROM",
+            "BUSY"
     };
 
     public static final String THINJAM_SERVICE_STRING = "4a616d21-722a-4ce8-a2a2-a2b0b7da2cd0";
@@ -87,5 +90,6 @@ public class Const {
     public static final String THINJAM_NOTIFY_TYPE_LOW_ALERT = "THINJAM_NOTIFY_TYPE_LOW_ALERT";
     public static final String THINJAM_NOTIFY_TYPE_OTHER_ALERT = "THINJAM_NOTIFY_TYPE_OTHER_ALERT";
     public static final String THINJAM_NOTIFY_TYPE_TEXTBOX1 = "THINJAM_NOTIFY_TYPE_TEXTBOX1";
+    public static final String THINJAM_NOTIFY_TYPE_DIALOG = "THINJAM_NOTIFY_TYPE_DIALOG";
 
 }
