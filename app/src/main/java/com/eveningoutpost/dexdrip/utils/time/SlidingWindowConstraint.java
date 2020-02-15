@@ -111,7 +111,7 @@ public class SlidingWindowConstraint {
     }
 
     // get sum of non-expired records held
-    private double totalRecords() {
+    public double totalRecords() {
         double total = 0;
         final long expire_time = tsl() - period;
         synchronized (records) {

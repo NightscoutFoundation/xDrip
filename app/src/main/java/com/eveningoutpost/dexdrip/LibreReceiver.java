@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static com.eveningoutpost.dexdrip.Home.get_engineering_mode;
-import static com.eveningoutpost.dexdrip.Models.BgReading.bgReadingInsertFromJson;
 import static com.eveningoutpost.dexdrip.Models.Libre2Sensor.Libre2Sensors;
 
 /**
@@ -70,7 +69,11 @@ public class LibreReceiver extends BroadcastReceiver {
                         switch (action) {
                             case Intents.LIBRE2_ACTIVATION:
                                 Log.v(TAG, "Receiving LibreData activation");
-                                saveSensorStartTime(intent.getBundleExtra("sensor"), intent.getBundleExtra("bleManager").getString("sensorSerial"));
+                                try {
+                                    saveSensorStartTime(intent.getBundleExtra("sensor"), intent.getBundleExtra("bleManager").getString("sensorSerial"));
+                                } catch (NullPointerException e) {
+                                    Log.e(TAG, "Null pointer in LIBRE2_ACTIVATION: " + e);
+                                }
                                 break;
 
                             case Intents.LIBRE2_BG:
@@ -102,7 +105,12 @@ public class LibreReceiver extends BroadcastReceiver {
 
     private static Libre2RawValue processIntent(Intent intent) {
         Bundle sas = intent.getBundleExtra("sas");
-        if (sas != null) saveSensorStartTime(sas.getBundle("currentSensor"),intent.getBundleExtra("bleManager").getString("sensorSerial"));
+        try {
+            if (sas != null)
+                saveSensorStartTime(sas.getBundle("currentSensor"), intent.getBundleExtra("bleManager").getString("sensorSerial"));
+        } catch (NullPointerException e) {
+            Log.e(TAG,"Null pointer exception in processIntent: " + e);
+        }
         if (!intent.hasExtra("glucose") || !intent.hasExtra("timestamp") || !intent.hasExtra("bleManager")) {
             Log.e(TAG,"Received faulty intent from LibreLink.");
             return null;
@@ -170,8 +178,10 @@ public class LibreReceiver extends BroadcastReceiver {
 
     public static List<StatusItem> megaStatus() {
         final List<StatusItem> l = new ArrayList<>();
-
-        l.add(new StatusItem("Libre2 Sensor",Sensor.currentSensor().uuid + "\nStart: " +  DateFormat.format("dd.MM.yyyy kk:mm",Sensor.currentSensor().started_at) ));
+        final Sensor sensor = Sensor.currentSensor();
+        if (sensor != null) {
+            l.add(new StatusItem("Libre2 Sensor", sensor.uuid + "\nStart: " + DateFormat.format("dd.MM.yyyy kk:mm", sensor.started_at)));
+        }
         String lastReading ="";
         try {
             lastReading = DateFormat.format("dd.MM.yyyy kk:mm:ss", last_reading).toString();

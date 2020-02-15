@@ -30,6 +30,9 @@ public class Const {
     public static final byte OPCODE_RESET_PERSIST = 0x52;
     public static final byte OPCODE_SWITCH_OFF = 0x53;
     public static final byte OPCODE_EASY_AUTH = 0x56;
+    public static final byte OPCODE_SET_GAMMA = 0x5C;
+
+    public static final int OPCODE_BULK_R_XFER_0 =  0x84;
 
     public static final byte OPCODE_INVALID = (byte) 0xFF;
 
@@ -46,12 +49,17 @@ public class Const {
     public static final byte ERROR_INVALID_OPCODE = 0x04;
     public static final byte ERROR_OUT_OF_RANGE = 0x05;
 
+    public static final byte DEFINE_WINDOW_QUIET = (byte)0x80;
+
     // Relates to opcodes also > 80
     public static final byte ERROR_OK_WITH_PARAMETER = (byte) 0x80;
 
     public static final byte PUSH_OPCODE_CHARGE = 1;
     public static final byte PUSH_OPCODE_B1_LONG = 2;
     public static final byte PUSH_OPCODE_BACKFILL = 3;
+    public static final byte PUSH_OPCODE_CHOICE = 4;
+
+    public static final byte PUSH_OPCODE_BULK_ERROR = 6;
 
     public static final String[] errorText = {
             "OK",
@@ -59,7 +67,9 @@ public class Const {
             "INVALID LENGTH",
             "INVALID MISC",
             "INVALID OPCODE",
-            "OUT OF RANGE"
+            "OUT OF RANGE",
+            "RESEND FROM",
+            "BUSY"
     };
 
     public static final String THINJAM_SERVICE_STRING = "4a616d21-722a-4ce8-a2a2-a2b0b7da2cd0";
@@ -72,5 +82,14 @@ public class Const {
     public static final UUID THINJAM_BULK = UUID.fromString("4a616d21-722a-4ce8-a2a2-a2b0b7da2cd8");
     public static final UUID THINJAM_TEST = UUID.fromString("4a616d21-722a-4ce8-a2a2-a2b0b7da2cd1");
     public static final UUID THINJAM_OTA = UUID.fromString("4a616d21-722a-4ce8-a2a2-a2b0b7da2cd9");
+
+    public static final String THINJAM_NOTIFY_TYPE_CANCEL = "THINJAM_NOTIFY_TYPE_CANCEL";
+    public static final String THINJAM_NOTIFY_TYPE_CALL = "THINJAM_NOTIFY_TYPE_CALL";
+    public static final String THINJAM_NOTIFY_TYPE_TEXT_MESSAGE = "THINJAM_NOTIFY_TYPE_TEXT_MESSAGE";
+    public static final String THINJAM_NOTIFY_TYPE_HIGH_ALERT = "THINJAM_NOTIFY_TYPE_HIGH_ALERT";
+    public static final String THINJAM_NOTIFY_TYPE_LOW_ALERT = "THINJAM_NOTIFY_TYPE_LOW_ALERT";
+    public static final String THINJAM_NOTIFY_TYPE_OTHER_ALERT = "THINJAM_NOTIFY_TYPE_OTHER_ALERT";
+    public static final String THINJAM_NOTIFY_TYPE_TEXTBOX1 = "THINJAM_NOTIFY_TYPE_TEXTBOX1";
+    public static final String THINJAM_NOTIFY_TYPE_DIALOG = "THINJAM_NOTIFY_TYPE_DIALOG";
 
 }

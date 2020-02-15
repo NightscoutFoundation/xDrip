@@ -1946,11 +1946,11 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         chart.setZoomType(ZoomType.HORIZONTAL);
 
         chart.getChartData().setAxisXTop(null);
-
+/*
         //Transmitter Battery Level
         final Sensor sensor = Sensor.currentSensor();
 
-        //????????? what about tomato here ????? TODO this sucks
+       //????????? what about tomato here ????? TODO this sucks - removed Feb 2020
         if (sensor != null && sensor.latest_battery_level != 0 && !DexCollectionService.getBestLimitterHardwareName().equalsIgnoreCase("BlueReader") && sensor.latest_battery_level <= Dex_Constants.TRANSMITTER_BATTERY_LOW && !Pref.getBoolean("disable_battery_warning", false)) {
             Drawable background = new Drawable() {
 
@@ -1988,7 +1988,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 }
             };
             chart.setBackground(background);
-        }
+        }*/
         previewChart = (PreviewLineChartView) findViewById(R.id.chart_preview);
 
         chart.setLineChartData(bgGraphBuilder.lineData());
