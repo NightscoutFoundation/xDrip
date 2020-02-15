@@ -414,6 +414,22 @@
                     android:summary="This allows the BlueJay to occupy the phone slot on the transmitter. Select this if you want another non-phone device to be able to connect to the transmitter and you are not using a phone to connect to the transmitter."
                     android:title="BlueJay uses Phone Slot" />
 
+                <SwitchPreference
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
+                    android:defaultValue="false"
+                    android:dependency="bluejay_enabled"
+                    android:key="bluejay_use_broadcast_api"
+                    android:summary="Accept commands from other apps"
+                    android:title="Enable remote API" />
+
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:dependency="bluejay_enabled"
+                    android:key="bluejay_send_status_line"
+                    android:summary="Show xDrip extra status line on X2 display"
+                    android:title="Send Status Line" />
+
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="bluejay_enabled"
@@ -429,6 +445,15 @@
                     android:summary="Try to calculate xDrip style delta trend arrow instead of using transmitter estimate arrow."
                     android:title="Attempt Delta Trend" />
 
+                <SeekBarPreference
+                    android:key="bluejay_backfill_hours"
+                    android:dependency="bluejay_enabled"
+                    android:title="Backfill Hours"
+                    android:summary="Larger backfill scope can reduce battery life"
+                    android:max="12"
+                    android:min="0"
+                    android:defaultValue="3" />
+
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="bluejay_enabled"
@@ -436,6 +461,14 @@
                     android:key="bluejay_timing_failsafe"
                     android:summary="Scan for longer periods of time if readings are missed. Uses more battery but can recover if watch gets out of sync"
                     android:title="Timing fail-safe" />
+
+                <SwitchPreference
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
+                    android:defaultValue="false"
+                    android:key="bluejay_send_to_another_xdrip"
+                    android:summary="If you have multiple xDrip instances on your phone you can send data to another one that has a BlueJay here"
+                    android:title="Send to another xDrip" />
 
             </PreferenceScreen>
 
@@ -670,10 +703,10 @@
             <SwitchPreference
                 android:defaultValue="true"
                 android:key="accept_nsclient_sgv"
-                android:summary="Accept Glucose"
+                android:title="Accept Glucose"
                 android:switchTextOff="@string/short_off_text_for_switches"
                 android:switchTextOn="@string/short_on_text_for_switches"
-                android:title="Process glucose data received from NSClient app" />
+                android:summary="Process glucose data received from NSClient app" />
             <SwitchPreference
                 android:defaultValue="true"
                 android:key="accept_nsclient_treatments"
@@ -987,6 +1020,11 @@
                     android:key="bluetooth_trust_autoconnect"
                     android:summary="@string/summary_Use_and_trust_Android_bluetooth_auto_connect_feature"
                     android:title="@string/title_Trust_Auto_Connect" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="bluetooth_allow_background_scans"
+                    android:summary="Use Android 8+ background scanning feature"
+                    android:title="Use Background Scans" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="bluetooth_excessive_wakelocks"

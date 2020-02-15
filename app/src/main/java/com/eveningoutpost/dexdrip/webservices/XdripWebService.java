@@ -264,7 +264,7 @@ public class XdripWebService implements Runnable {
                         //if (hashedSecret == null) break; // we can't optimize as we always need to look for api-secret even if server doesn't use it
                     }
 
-                } else if (line.startsWith(("api-secret"))) {
+                } else if (line.toLowerCase().startsWith(("api-secret"))) {
                     final String requestSecret[] = line.split(": ");
                     if (requestSecret.length < 2) continue;
                     secretCheckResult.set(hashedSecret != null && hashedSecret.equalsIgnoreCase(requestSecret[1]));

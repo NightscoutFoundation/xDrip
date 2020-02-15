@@ -65,7 +65,7 @@ public class ShareFollowService extends ForegroundService {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        final PowerManager.WakeLock wl = JoH.getWakeLock("SHFollow-osc", 60000);
+        final PowerManager.WakeLock wl = JoH.getWakeLock("SHFollow-osc", 60_000);
         try {
 
             UserError.Log.d(TAG, "WAKE UP WAKE UP WAKE UP");
@@ -93,7 +93,13 @@ public class ShareFollowService extends ForegroundService {
                 }
 
                 if (JoH.ratelimit("last-sh-follow-poll", 5)) {
-                    Inevitable.task("SH-Follow-Work", 200, () -> downloader.doEverything(MAX_RECORDS_TO_ASK_FOR));
+                    Inevitable.task("SH-Follow-Work", 200, () -> {
+                        try {
+                            downloader.doEverything(MAX_RECORDS_TO_ASK_FOR);
+                        } catch (NullPointerException e) {
+                            UserError.Log.e(TAG, "Caught concurrency exception when trying to run doeverything");
+                        }
+                    });
                     lastPoll = JoH.tsl();
                 }
             } else {

@@ -78,10 +78,19 @@ public class CompatibleApps extends BroadcastReceiver {
             }
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                if (Pref.getString("local_broadcast_specific_package_destination", "").length() == 0) {
+                if (!Pref.getString("local_broadcast_specific_package_destination", "").contains(package_name)) {
                     if (JoH.pratelimit(package_name + NOTIFY_MARKER + "2", RENOTIFY_TIME)) {
                         id = notify(gs(R.string.androidaps), gs(R.string.broadcast_only_to), id, Feature.ENABLE_ANDROIDAPS_FEATURE2);
                     }
+                }
+            }
+        }
+
+        package_name = "net.dinglisch.android.tasker";
+        if (InstalledApps.checkPackageExists(context, package_name) || InstalledApps.checkPackageExists(context, package_name + "m")) {
+            if (!Pref.getString("local_broadcast_specific_package_destination", "").contains(package_name)) {
+                if (JoH.pratelimit(package_name + NOTIFY_MARKER, RENOTIFY_TIME)) {
+                    id = notify("Tasker", gs(R.string.enable_local_broadcast), id, Feature.ENABLE_TASKER);
                 }
             }
         }
@@ -264,9 +273,15 @@ public class CompatibleApps extends BroadcastReceiver {
                         break;
 
                     case ENABLE_ANDROIDAPS_FEATURE2:
-                        final String msg = "Enabling broadcast only to info.nightscout.androidaps !";
-                        Pref.setString("local_broadcast_specific_package_destination", "info.nightscout.androidaps");
+                        final String msg = "Enabling broadcast to info.nightscout.androidaps !";
+                        addStringtoSpaceDelimitedPreference("local_broadcast_specific_package_destination", "info.nightscout.androidaps");
                         JoH.static_toast_long(msg);
+                        cancelSourceNotification(intent);
+                        break;
+
+                    case ENABLE_TASKER:
+                        addStringtoSpaceDelimitedPreference("local_broadcast_specific_package_destination", "net.dinglisch.android.tasker net.dinglisch.android.taskerm");
+                        JoH.static_toast_long("Setting specific package broadcast for Tasker");
                         cancelSourceNotification(intent);
                         break;
 
@@ -304,6 +319,24 @@ public class CompatibleApps extends BroadcastReceiver {
         cancelSourceNotification(intent);
     }
 
+    private void addStringtoSpaceDelimitedPreference(final String key, final String parameter) {
+
+        String value = Pref.getString(key, "");
+        if (value.length() > 3) {
+            for (final String this_value : value.split(" ")) {
+                if (this_value != null && this_value.length() > 3) {
+                    if (this_value.equals(parameter)) {
+                        return; //already present in string
+                    }
+                }
+            }
+            value += " " + parameter;
+        } else {
+            value = parameter;
+        }
+        Pref.setString(key, value);
+    }
+
     public enum Feature {
         UNKNOWN,
         CHOICE,
@@ -316,6 +349,7 @@ public class CompatibleApps extends BroadcastReceiver {
         ENABLE_OOP,
         ENABLE_WEAR_OS_SYNC,
         HARD_RESET_TRANSMITTER,
+        ENABLE_TASKER,
         FEATURE_X
     }
 
