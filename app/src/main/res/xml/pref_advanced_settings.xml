@@ -426,6 +426,13 @@
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="bluejay_enabled"
+                    android:key="bluejay_send_status_line"
+                    android:summary="Show xDrip extra status line on X2 display"
+                    android:title="Send Status Line" />
+
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:dependency="bluejay_enabled"
                     android:key="bluejay_beep_on_connect"
                     android:summary="Play a sound when the bluejay connects"
                     android:title="Debug sound" />
@@ -437,6 +444,15 @@
                     android:key="bluejay_delta_trend"
                     android:summary="Try to calculate xDrip style delta trend arrow instead of using transmitter estimate arrow."
                     android:title="Attempt Delta Trend" />
+
+                <SeekBarPreference
+                    android:key="bluejay_backfill_hours"
+                    android:dependency="bluejay_enabled"
+                    android:title="Backfill Hours"
+                    android:summary="Larger backfill scope can reduce battery life"
+                    android:max="12"
+                    android:min="0"
+                    android:defaultValue="3" />
 
                 <CheckBoxPreference
                     android:defaultValue="false"

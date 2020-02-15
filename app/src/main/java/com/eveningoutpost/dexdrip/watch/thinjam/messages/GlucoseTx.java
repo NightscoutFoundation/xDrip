@@ -28,7 +28,7 @@ public class GlucoseTx extends BaseTx {
                 if (secondsAgo < 30000 && secondsAgo >= 0) {
                     data.putInt(0); // TODO proper UTC
                     data.putShort(((short) secondsAgo)); // check this would be unsigned
-                    data.putShort((short) last.getDg_mgdl());
+                    data.putShort((short) Math.round(last.getDg_mgdl()));
                     data.put((byte) 0); // status
                     // push the state if we have it otherwise just send ok as we must have got this data from elsewhere
                     //data.put(Ob1G5CollectionService.lastSensorState != null ? Ob1G5CollectionService.lastSensorState.getValue() : CalibrationState.Ok.getValue()); // state
@@ -37,14 +37,14 @@ public class GlucoseTx extends BaseTx {
                     // take slope from displayglucose as it handles zero slope situations much better
                     final BestGlucose.DisplayGlucose dg = BestGlucose.getDisplayGlucose();
                     if (dg != null) {
-                        int slope = (int) (dg.slope * MINUTE_IN_MS * 10);
-                        android.util.Log.d(TAG, "dg slope: " + (dg.slope * MINUTE_IN_MS) + " " + dg.delta_arrow + " hide slope:" + last.hide_slope);
+                        int slope = (int) Math.round(dg.slope * MINUTE_IN_MS * 10);
 
                         if (slope < -126) slope = -126;
                         if (slope > 126) slope = 126;
                         if (last.hide_slope) {
                             slope = 127;
                         }
+                        android.util.Log.d(TAG, "dg slope: " + (dg.slope * MINUTE_IN_MS) + " " + dg.delta_arrow + " hide slope:" + last.hide_slope + " slope byte: " + slope);
                         data.put((byte) slope); // trend
                     } else {
                         android.util.Log.d(TAG, "Couldn't get display glucose value");
