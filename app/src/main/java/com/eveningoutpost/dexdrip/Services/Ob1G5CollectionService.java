@@ -174,7 +174,7 @@ public class Ob1G5CollectionService extends G5BaseService {
     public static volatile CalibrationState lastSensorState = null;
     public static volatile long lastUsableGlucosePacketTime = 0;
     private static volatile String static_connection_state = null;
-    private static long static_last_connected = 0;
+    private static volatile long static_last_connected = 0;
     @Setter
     private static long last_transmitter_timestamp = 0;
     private static long lastStateUpdated = 0;
@@ -189,8 +189,8 @@ public class Ob1G5CollectionService extends G5BaseService {
     public static boolean android_wear = false;
     public static boolean wear_broadcast = false;
 
-    private Subscription scanSubscription;
-    private Subscription connectionSubscription;
+    private static volatile Subscription scanSubscription;
+    private static volatile Subscription connectionSubscription;
     private static volatile Subscription stateSubscription;
     private Subscription discoverSubscription;
     private RxBleDevice bleDevice;
