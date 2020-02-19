@@ -37,6 +37,8 @@ android:
 
 before_install:
   - chmod +x gradlew
+  - touch $HOME/.android/repositories.cfg
+  - yes | sdkmanager "platforms;android-29"
 
 before_script:
   - android list targets
