@@ -398,7 +398,7 @@ public class Notifications extends IntentService {
 
         // Sensor age alert to notify about upcoming expiry
         long sensorAge = new Date().getTime() - sensor.started_at;
-        if (sensorAge >= prefs.getLong("sensor_age_alerts_days", 13) * 60000 * 24) {
+        if (sensorAge >= Integer.parseInt(prefs.getString("sensor_age_alerts_days", "13")) * 60000 * 24) {
             if (!prefs.getBoolean("sensor_age_alerts_notified", false)) {
                 OtherAlert(context, "sensor_age_alerts", "Sensor age: " + JoH.niceTimeScalar(sensorAge),
                         sensorAgeAlertNotificationId, true, Integer.MAX_VALUE / 100000);
