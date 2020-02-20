@@ -109,3 +109,5 @@
 }
 -keep class com.google.android.gms.measurement.AppMeasurement { *; }
 -keep class com.google.android.gms.measurement.AppMeasurement$OnEventListener { *; }
+# TODO is this not too much ?
+-keep class com.google.android.gms.** { *; }
