@@ -462,6 +462,12 @@
                     android:summary="Scan for longer periods of time if readings are missed. Uses more battery but can recover if watch gets out of sync"
                     android:title="Timing fail-safe" />
 
+
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="bluejay_button1_vibrate"
+                    android:summary="Vibrate watch when a button long press is sent to the phone"
+                    android:title="Vibrate button" />
                 <SwitchPreference
                     android:switchTextOff="@string/short_off_text_for_switches"
                     android:switchTextOn="@string/short_on_text_for_switches"

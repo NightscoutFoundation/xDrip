@@ -28,7 +28,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
  */
 
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class,
+@Config(sdk = BuildConfig.targetSDK,
         packageName = "com.eveningoutpost.dexdrip",
         application = TestingApplication.class)
 
