@@ -11,6 +11,7 @@ import android.util.Pair;
 
 import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
 import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.Models.HeartRate;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.R;
@@ -73,6 +74,7 @@ import static com.eveningoutpost.dexdrip.watch.miband.MiBand.MiBandType.UNKNOWN;
 import static com.eveningoutpost.dexdrip.watch.miband.MiBandService.MiBandState.AUTHORIZE_FAILED;
 import static com.eveningoutpost.dexdrip.watch.miband.message.DisplayControllMessageMiband3_4.NightMode.Sheduled;
 import static com.eveningoutpost.dexdrip.watch.miband.message.OperationCodes.AUTH_FAIL;
+import static com.eveningoutpost.dexdrip.watch.miband.message.OperationCodes.AUTH_MIBAND4_CODE_FAIL;
 import static com.eveningoutpost.dexdrip.watch.miband.message.OperationCodes.AUTH_MIBAND4_FAIL;
 import static com.eveningoutpost.dexdrip.watch.miband.message.OperationCodes.AUTH_REQUEST_RANDOM_AUTH_NUMBER;
 import static com.eveningoutpost.dexdrip.watch.miband.message.OperationCodes.AUTH_RESPONSE;
@@ -99,7 +101,8 @@ public class MiBandService extends JamBaseBluetoothSequencer {
     private static final int CALL_ALERT_DELAY = (int) (Constants.SECOND_IN_MS * 10);
 
     private Subscription authSubscription;
-    private Subscription notificationSubscription;
+    private Subscription notifSubscriptionDeviceEvent;
+    private Subscription notifSubscriptionHeartRateMeasurement;
     private AuthMessages authorisation;
     private Boolean isNeedToCheckRevision = true;
     private Boolean isNeedToAuthenticate = true;
@@ -241,6 +244,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
             } else {
                 UserError.Log.d(TAG, "Service is NOT set be active - shutting down");
                 stopBgUpdateTimer();
+                stopConnection();
                 changeState(CLOSE);
                 stopSelf();
                 return START_NOT_STICKY;
@@ -335,29 +339,30 @@ public class MiBandService extends JamBaseBluetoothSequencer {
     private long whenToRetryNextBgTimer() {
         final long bg_time;
         Calendar expireDate = Calendar.getInstance();
+        expireDate.setTimeInMillis(System.currentTimeMillis() + BG_UPDATE_INTERVAL);
         isNightMode = false;
         if (MiBandEntry.isNightModeEnabled()) {
-            Date curr = expireDate.getTime();
-            Date start = MiBandEntry.getNightModeStart();
-            Date end = MiBandEntry.getNightModeEnd();
-            Boolean result = isBetweenValidTime(start, end, curr);
-            UserError.Log.d(TAG, "isBetweenValidTime: " + result);
-            if (result) {
-                Calendar calTimeCal = Calendar.getInstance();
-                calTimeCal.setTimeInMillis(System.currentTimeMillis() + MiBandEntry.getNightModeInterval() * Constants.MINUTE_IN_MS);
-                if (compareTime(end, calTimeCal.getTime()) >= 0) {
-                    Calendar calEndCal = Calendar.getInstance();
-                    calEndCal.setTime(end);
-                    calTimeCal.set(Calendar.HOUR_OF_DAY, calEndCal.get(Calendar.HOUR_OF_DAY));
-                    calTimeCal.set(Calendar.MINUTE, calEndCal.get(Calendar.MINUTE));
+            int nightModeInterval = MiBandEntry.getNightModeInterval();
+            if (nightModeInterval != MiBandEntry.NIGHT_MODE_INTERVAL_STEP) {
+                Date curr = Calendar.getInstance().getTime();
+                Date start = MiBandEntry.getNightModeStart();
+                Date end = MiBandEntry.getNightModeEnd();
+                Boolean result = isBetweenValidTime(start, end, curr);
+                UserError.Log.d(TAG, "isBetweenValidTime: " + result);
+                if (result) {
+                    Calendar calTimeCal = Calendar.getInstance();
+                    calTimeCal.setTimeInMillis(System.currentTimeMillis() + nightModeInterval * Constants.MINUTE_IN_MS);
+                    if (compareTime(end, calTimeCal.getTime()) >= 0) {
+                        Calendar calEndCal = Calendar.getInstance();
+                        calEndCal.setTime(end);
+                        calTimeCal.set(Calendar.HOUR_OF_DAY, calEndCal.get(Calendar.HOUR_OF_DAY));
+                        calTimeCal.set(Calendar.MINUTE, calEndCal.get(Calendar.MINUTE));
+                    }
+                    expireDate.setTimeInMillis(calTimeCal.getTimeInMillis());
+                    isNightMode = true;
                 }
-                expireDate.setTimeInMillis(calTimeCal.getTimeInMillis());
-                isNightMode = true;
-            } else {
-                expireDate.setTimeInMillis(System.currentTimeMillis() + BG_UPDATE_INTERVAL);
             }
-        } else
-            expireDate.setTimeInMillis(System.currentTimeMillis() + BG_UPDATE_INTERVAL);
+        }
         bg_time = expireDate.getTimeInMillis() - JoH.tsl();
         return bg_time;
     }
@@ -750,8 +755,6 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                 UserError.Log.d(TAG, "Cannot enable as connection is null!");
             return;
         }
-        if (d)
-            UserError.Log.d(TAG, "Requesting to enable notifications for auth");
 
         String authKey = MiBand.getPersistentAuthKey();
         if (MiBand.getMibandType() == MI_BAND4) {
@@ -772,7 +775,12 @@ public class MiBandService extends JamBaseBluetoothSequencer {
         if (!AuthMessages.isValidAuthKey(authKey)) {
             authKey = "";
         }
+        if (d)
+            UserError.Log.d(TAG, "authKey: " + authKey);
+
         authorisation = new AuthMessages(MiBand.getMibandType(), authKey);
+        if (d)
+            UserError.Log.d(TAG, "localKey: " + JoH.bytesToHex(authorisation.getLocalKey()));
         authSubscription = new Subscription(
                 connection.setupNotification(authorisation.getCharacteristicUUID())
                         .timeout(20, TimeUnit.SECONDS) // WARN
@@ -848,14 +856,20 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                 (value[1] & 0x0f) == AUTH_REQUEST_RANDOM_AUTH_NUMBER &&
                 value[2] == AUTH_SUCCESS) {
             byte[] tmpValue = Arrays.copyOfRange(value, 3, 19);
-            byte[] authReply = authorisation.calculateAuthReply(tmpValue);
-            connection.writeCharacteristic(authorisation.getCharacteristicUUID(), authReply) //get random key from band
-                    .subscribe(val -> {
-                        if (d)
-                            UserError.Log.d(TAG, "Wrote OPCODE_AUTH_REQ2: " + JoH.bytesToHex(val));
-                    }, throwable -> {
-                        UserError.Log.e(TAG, "Could not write OPCODE_AUTH_REQ2: " + throwable);
-                    });
+            try {
+                byte[] authReply = authorisation.calculateAuthReply(tmpValue);
+                connection.writeCharacteristic(authorisation.getCharacteristicUUID(), authReply) //get random key from band
+                        .subscribe(val -> {
+                            if (d)
+                                UserError.Log.d(TAG, "Wrote OPCODE_AUTH_REQ2: " + JoH.bytesToHex(val));
+                        }, throwable -> {
+                            UserError.Log.e(TAG, "Could not write OPCODE_AUTH_REQ2: " + throwable);
+                        });
+            }catch (Exception e){
+                JoH.static_toast_long(e.getMessage());
+                UserError.Log.e(TAG, (e.getMessage()));
+                changeState(AUTHORIZE_FAILED);
+            }
         } else if (value[0] == AUTH_RESPONSE &&
                 (value[1] & 0x0f) == AUTH_SEND_ENCRYPTED_AUTH_NUMBER &&
                 value[2] == AUTH_SUCCESS) {
@@ -865,18 +879,21 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                 MiBand.setPersistentAuthKey(JoH.bytesToHex(authorisation.getLocalKey()), MiBand.getPersistentAuthMac());
                 String msg = "MiBand was successfully authenticated";
                 JoH.static_toast_long(msg);
-                UserError.Log.d(TAG, msg);
+                UserError.Log.e(TAG, msg);
             }
             if (authSubscription != null) {
                 authSubscription.unsubscribe();
             }
             changeNextState();
         } else if (value[0] == AUTH_RESPONSE &&
-                (((value[2] & 0x0f) == AUTH_FAIL) || (value[2] == AUTH_MIBAND4_FAIL))) {
+                (((value[2] & 0x0f) == AUTH_FAIL) || (value[2] == AUTH_MIBAND4_FAIL) || (value[2] == AUTH_MIBAND4_CODE_FAIL))) {
             MiBand.setPersistentAuthKey("", MiBand.getPersistentAuthMac());
             if (authSubscription != null) {
                 authSubscription.unsubscribe();
             }
+            String msg = "Cannot authorize miband, please recheck Auth code";
+            JoH.static_toast_long(msg);
+            UserError.Log.e(TAG, msg);
             changeState(AUTHORIZE_FAILED);
         }
     }
@@ -1110,7 +1127,10 @@ public class MiBandService extends JamBaseBluetoothSequencer {
     private void sendFirmwareData() {
         byte[] fwbytes = firmware.getBytes();
         int len = firmware.getSize();
-        firmware.setMTU(I.connection.getMtu());
+        int mtu = I.connection.getMtu();
+        if (!MiBandEntry.isNeedToDisableHightMTU())
+            firmware.setMTU(mtu);
+
         final int packetLength = firmware.getPackeLenght();
         if (d)
             UserError.Log.d(TAG, "Firmware packet lengh: " + packetLength);
@@ -1183,25 +1203,43 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                 );
     }
 
+    private void handleHeartrate(byte[] value) {
+        if (value.length == 2 && value[0] == 0) {
+            int hrValue = (value[1] & 0xff);
+            if (d)
+                UserError.Log.d(TAG, "heart rate: " + hrValue);
+            HeartRate.create(JoH.tsl(), hrValue, 1);
+        }
+    }
+
     @SuppressLint("CheckResult")
     private void enableNotification() {
         if (d)
             UserError.Log.d(TAG, "enableNotifications called");
+        if (I.connection == null) {
+            if (d)
+                UserError.Log.d(TAG, "Cannot enable as connection is null!");
+            return;
+        }
+        enableHeartRateNotification();
         if (I.isNotificationEnabled) {
             if (d)
                 UserError.Log.d(TAG, "Notifications already enabled");
             changeNextState();
             return;
         }
-        if (notificationSubscription != null) {
-            notificationSubscription.unsubscribe();
+        if (notifSubscriptionDeviceEvent != null) {
+            notifSubscriptionDeviceEvent.unsubscribe();
+        }
+        if (notifSubscriptionHeartRateMeasurement != null) {
+            notifSubscriptionHeartRateMeasurement.unsubscribe();
         }
         if (d)
-            UserError.Log.d(TAG, "Requesting to enable notifications");
+            UserError.Log.d(TAG, "Requesting to enable device event notifications");
 
         I.connection.requestMtu(PREFERRED_MTU_SIZE).subscribe();
 
-        notificationSubscription = new Subscription(I.connection.setupNotification(Const.UUID_CHARACTERISTIC_DEVICEEVENT)
+        notifSubscriptionDeviceEvent = new Subscription(I.connection.setupNotification(Const.UUID_CHARACTERISTIC_DEVICEEVENT)
                 .doOnNext(notificationObservable -> {
                     I.isNotificationEnabled = true;
                     changeNextState();
@@ -1225,6 +1263,42 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                                 isNeedToAuthenticate = true;
                                 messageQueue.clear();
                                 changeState(CLOSE);
+                            }
+                        }
+                ));
+
+    }
+
+    private void enableHeartRateNotification() {
+        if (MiBandEntry.isNeedToCollectHR()) {
+            if (notifSubscriptionHeartRateMeasurement != null) return;
+        } else {
+            if (notifSubscriptionHeartRateMeasurement != null) {
+                notifSubscriptionHeartRateMeasurement.unsubscribe();
+                notifSubscriptionHeartRateMeasurement = null;
+                return;
+            }
+        }
+
+        if (d)
+            UserError.Log.d(TAG, "Requesting to enable HR notifications");
+
+        notifSubscriptionHeartRateMeasurement = new Subscription(I.connection.setupNotification(Const.UUID_CHAR_HEART_RATE_MEASUREMENT)
+                .flatMap(notificationObservable -> notificationObservable)
+                .observeOn(Schedulers.newThread())
+                .subscribe(bytes -> {
+                            // incoming notifications
+                            if (d)
+                                UserError.Log.d(TAG, "Received HR notification bytes: " + bytesToHex(bytes));
+                            handleHeartrate(bytes);
+                        }, throwable -> {
+                            notifSubscriptionHeartRateMeasurement.unsubscribe();
+                            notifSubscriptionHeartRateMeasurement = null;
+                            UserError.Log.d(TAG, "HR Throwable in Record Notification: " + throwable);
+                            if (throwable instanceof BleCharacteristicNotFoundException) {
+                                UserError.Log.d(TAG, "HR Characteristic not found for notification");
+                            } else {
+                                UserError.Log.d(TAG, "HR Disconnected exception");
                             }
                         }
                 ));
@@ -1317,11 +1391,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                     handleCommand();
                     break;
                 case CLOSED:
-                    isNeedToAuthenticate = true;
-                    isWaitingCallResponce = false;
-                    isWaitingSnoozeResponce = false;
-                    messageQueue.clear();
-                    setRetryTimerReal(); // local retry strategy
+                    stopConnection();
                     return super.automata();
                 default:
                     return super.automata();
@@ -1331,6 +1401,14 @@ public class MiBandService extends JamBaseBluetoothSequencer {
             stopSelf();
         }
         return true; // lies
+    }
+
+    private void stopConnection() {
+        isNeedToAuthenticate = true;
+        isWaitingCallResponce = false;
+        isWaitingSnoozeResponce = false;
+        messageQueue.clear();
+        setRetryTimerReal(); // local retry strategy
     }
 
     @Override

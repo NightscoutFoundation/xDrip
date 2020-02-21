@@ -887,6 +887,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
         private Preference miband_authkey;
         private Preference miband_nightmode_category;
         private Preference intervalNightMode;
+        private Preference miband_graph_enable;
 
         // default constructor is required in addition on some platforms
         public AllPrefsFragment() {
@@ -1029,8 +1030,9 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             try {
                 miband2_screen = findPreference("miband2_screen");
                 miband3_4_screen = findPreference("miband3_4_screen");
-                miband_graph_hours = findPreference("miband_graph_hours");
-                miband_send_readings_as_notification = findPreference("miband_send_readings_as_notification");
+                miband_graph_enable = findPreference(MiBandEntry.PREF_MIBAND_GRAPH_ENBALE);
+                miband_graph_hours = findPreference(MiBandEntry.PREF_MIBAND_GRAPH_HOURS);
+                miband_send_readings_as_notification = findPreference(MiBandEntry.PREF_MIBAND_SEND_READINGS_AS_NOTIFICATION);
                 miband_authkey = findPreference(MiBandEntry.PREF_MIBAND_AUTH_KEY);
                 miband_nightmode_category = findPreference("miband_nightmode_category");
                 intervalNightMode = findPreference(MiBandEntry.PREF_MIBAND_NIGHTMODE_INTERVAL);
@@ -1064,6 +1066,11 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     updateMiBandBG(preference.getContext());
                     return true;
                 });
+
+                if (!Home.get_engineering_mode()){
+                    PreferenceScreen settings = (PreferenceScreen) findPreference(MiBandEntry.PREF_MIBAND_SETTINGS);
+                    settings.removePreference(findPreference("debug_miband4"));
+                }
 
             } catch (Exception e) {
                 //
@@ -2292,6 +2299,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 settings.removePreference(miband2_screen);
                 settings.removePreference(miband3_4_screen);
                 settings.removePreference(miband_nightmode_category);
+                prefs.removePreference(miband_graph_enable);
                 prefs.removePreference(miband_graph_hours);
                 prefs.removePreference(miband_send_readings_as_notification);
                 prefs.removePreference(miband_authkey);
@@ -2299,6 +2307,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 if (type == MI_BAND4) {
                     settings.addPreference(miband3_4_screen);
                     settings.addPreference(miband_nightmode_category);
+                    prefs.addPreference(miband_graph_enable);
                     prefs.addPreference(miband_graph_hours);
                     prefs.addPreference(miband_send_readings_as_notification);
                     prefs.addPreference(miband_authkey);

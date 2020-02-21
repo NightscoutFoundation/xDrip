@@ -591,11 +591,16 @@
                 android:defaultValue="false"
                 android:dependency="miband_enabled"
                 android:key="miband_option_call_notifications"
-                android:summary="@string/summary_miband_send_cals"
-                android:title="@string/title_miband_send_cals" />
+                android:summary="@string/summary_miband_send_calls"
+                android:title="@string/title_miband_send_calls" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:dependency="miband_enabled"
+                android:key="miband_graph_enable"
+                android:title="@string/title_miband_graph_enable" />
             <EditTextPreference
                 android:defaultValue="4"
-                android:dependency="miband_enabled"
+                android:dependency="miband_graph_enable"
                 android:digits="0123456789"
                 android:inputType="number"
                 android:key="miband_graph_hours"
@@ -653,21 +658,21 @@
                     </PreferenceCategory>
                     <PreferenceCategory
                         android:key="miband_nightmode_category"
-                        android:title="Night mode settings">
+                        android:title="@string/title_miband_nightmode_category">
                         <SwitchPreference
                             android:defaultValue="false"
                             android:key="miband_nightmode_enabled"
-                            android:summary="Reduce band screen brightness during custom time"
-                            android:title="Enable night mode settings" />
+                            android:summary="@string/summary_miband_nightmode_enabled"
+                            android:title="@string/title_miband_nightmode_enabled" />
                         <com.eveningoutpost.dexdrip.utils.TimePreference
                             android:key="miband_nightmode_start"
                             android:dependency="miband_nightmode_enabled"
-                            android:title="Night mode start">
+                            android:title="@string/title_miband_nightmode_start">
                         </com.eveningoutpost.dexdrip.utils.TimePreference>
                         <com.eveningoutpost.dexdrip.utils.TimePreference
                             android:key="miband_nightmode_end"
                             android:dependency="miband_nightmode_enabled"
-                            android:title="Night mode end">
+                            android:title="@string/title_miband_nightmode_end">
                         </com.eveningoutpost.dexdrip.utils.TimePreference>
                         <SeekBarPreference
                             android:defaultValue="6"
@@ -677,6 +682,13 @@
                             android:summary="@string/summary_miband_interval_in_nightmode"
                             android:title="@string/title_miband_interval_in_nightmode" />
                     </PreferenceCategory>
+                    <SwitchPreference
+                        android:defaultValue="true"
+                        android:key="miband_collect_heartrate"
+                        android:summary="@string/summary_miband_colect_heartrate"
+                        android:switchTextOff="@string/short_off_text_for_switches"
+                        android:switchTextOn="@string/short_on_text_for_switches"
+                        android:title="@string/title_miband_colect_heartrate" />
                     <PreferenceCategory
                         android:key="miband2_screen"
                         android:title="@string/title_screens">
@@ -739,6 +751,28 @@
                     </PreferenceCategory>
                 </PreferenceScreen>
             </PreferenceCategory>
+            <PreferenceCategory
+                android:title="Experimental"
+                android:key="debug_miband4"
+                >
+                <SwitchPreference
+                    android:defaultValue="false"
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
+                    android:dependency="miband_enabled"
+                    android:key="debug_miband_use_custom_watchface"
+                    android:title="Allow to use custom watchface"
+                    android:summary="You should place 'my_watchface.bin' and 'my_image.png' file into 'xdrip' folder on your phone"/>
+                <SwitchPreference
+                    android:defaultValue="false"
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
+                    android:dependency="miband_enabled"
+                    android:key="debug_miband_disable_hight_mtu"
+                    android:summary="Enabling this option in some cases can fix watchface syncronization error"
+                    android:title="Disable hight MTU values" />
+           </PreferenceCategory>
+
         </PreferenceScreen>
 
         <PreferenceScreen

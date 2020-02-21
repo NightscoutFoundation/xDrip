@@ -16,15 +16,17 @@ import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSparklineBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.ColorCache;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.watch.miband.Firmware.WatchFaceParts.Header;
 import com.eveningoutpost.dexdrip.watch.miband.Firmware.WatchFaceParts.Image;
 import com.eveningoutpost.dexdrip.watch.miband.Firmware.WatchFaceParts.Parameter;
+import com.eveningoutpost.dexdrip.watch.miband.MiBandEntry;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,14 +39,15 @@ import static com.eveningoutpost.dexdrip.Models.JoH.threadSleep;
 import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.getCol;
 import static com.eveningoutpost.dexdrip.utils.FileUtils.getExternalDir;
 import static com.eveningoutpost.dexdrip.utils.FileUtils.makeSureDirectoryExists;
-import static com.eveningoutpost.dexdrip.watch.miband.MiBandEntry.PREF_MIBAND_GRAPH_HOURS;
 
 public class WatchFaceGenerator {
     private static final boolean d = true;
     private static final boolean debug = true; //need only for debug to save resulting image and firmware
     private static final String TAG = WatchFaceGenerator.class.getSimpleName();
 
-    private final InputStream fwFileStream;
+    private InputStream fwFileStream;
+    private boolean isNeedToUseCustomWatchface;
+    private boolean isGraphEnabled;
 
     private Bitmap mainWatchfaceImage;
     private AssetManager assetManager;
@@ -55,17 +58,42 @@ public class WatchFaceGenerator {
 
     private static Bitmap graphImage;
     private static boolean drawMutex;
+
+    private static int highColor = 0xfff86f69;
+    private static int lowColor = 0xff4b95ff;
     private static int textColor = Color.WHITE;
     private static int noDataTextSize = 30; //px
     private static int bgValueTextSize = 45; //px
     private static int timeStampTextSize = 18; //px
     private static int graphBgColor = 0x0;
+    private File wfFile = null;
+
 
     public WatchFaceGenerator(AssetManager assetManager) throws Exception {
         this.assetManager = assetManager;
-        InputStream mainImage = assetManager.open("miband_watchface_parts/MainScreen.png");
-        fwFileStream = assetManager.open("miband_watchface_parts/xdrip_miband4_main.bin");
-
+        InputStream mainImage = null;
+        isGraphEnabled = MiBandEntry.isGraphEnabled();
+        isNeedToUseCustomWatchface = MiBandEntry.isNeedToUseCustomWatchface();
+        boolean customFilesFound = false;
+        if (isNeedToUseCustomWatchface) {
+            final String dir = getExternalDir();
+            final File imageFile = new File(dir + "/my_image.png");
+            wfFile = new File(dir + "/my_watchface.bin");
+            if (imageFile.exists() || wfFile.exists()) {
+                customFilesFound = true;
+                mainImage = new FileInputStream(imageFile);
+                fwFileStream = new FileInputStream(wfFile);
+            }
+        }
+        if (!customFilesFound) {
+            if (isGraphEnabled) {
+                mainImage = assetManager.open("miband_watchface_parts/MainScreen.png");
+                fwFileStream = assetManager.open("miband_watchface_parts/xdrip_miband4_main.bin");
+            } else {
+                mainImage = assetManager.open("miband_watchface_parts/MainScreenNoGraph.png");
+                fwFileStream = assetManager.open("miband_watchface_parts/xdrip_miband4_main_no_graph.bin");
+            }
+        }
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inScaled = false;
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
@@ -110,7 +138,8 @@ public class WatchFaceGenerator {
         }
         if (d)
             UserError.Log.d(TAG, "Image offsets were read");
-        fwFileStream.reset();
+        if (fwFileStream.markSupported())
+            fwFileStream.reset();
     }
 
     Bitmap drawMainBitmapWithGraph(String bgValueText, Bitmap arrowBitmap, String timeStampText, String unitized_delta, boolean strike_through, boolean isHigh, boolean isLow, int graphHours) {
@@ -164,35 +193,36 @@ public class WatchFaceGenerator {
         paint.getTextBounds(timeStampText, 0, timeStampText.length(), bounds);
         canvas.drawText(timeStampText, width - bounds.width(), timeStampTextPosY, paint);
 
-
-        //draw graph
-        drawMutex = true;
-        JoH.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    graphImage = new BgSparklineBuilder(xdrip.getAppContext())
-                            .setBgGraphBuilder(new BgGraphBuilder(xdrip.getAppContext()))
-                            .setStart(System.currentTimeMillis() - 60000 * 60 * graphHours)
-                            .setEnd(System.currentTimeMillis())
-                            .setWidthPx(width + 16)
-                            .setHeightPx(84)
-                            .setBackgroundColor(graphBgColor)
-                            .setTinyDots()
-                            .showHighLine()
-                            .showLowLine()
-                            .build();
-                } catch (Exception e) {
-                } finally {
-                    drawMutex = false;
+        if (isGraphEnabled) {
+            //draw graph
+            drawMutex = true;
+            JoH.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        graphImage = new BgSparklineBuilder(xdrip.getAppContext())
+                                .setBgGraphBuilder(new BgGraphBuilder(xdrip.getAppContext()))
+                                .setStart(System.currentTimeMillis() - 60000 * 60 * graphHours)
+                                .setEnd(System.currentTimeMillis())
+                                .setWidthPx(width + 16)
+                                .setHeightPx(84)
+                                .setBackgroundColor(graphBgColor)
+                                .setTinyDots()
+                                .showHighLine()
+                                .showLowLine()
+                                .build();
+                    } catch (Exception e) {
+                    } finally {
+                        drawMutex = false;
+                    }
                 }
-            }
-        });
-        while (drawMutex)
-            threadSleep(100);
-        //strip left and right fields
-        Bitmap resizedGraphImage = Bitmap.createBitmap(graphImage, 8, 0, width, graphImage.getHeight());
-        canvas.drawBitmap(resizedGraphImage, 0, 0, null);
+            });
+            while (drawMutex)
+                threadSleep(100);
+            //strip left and right fields
+            Bitmap resizedGraphImage = Bitmap.createBitmap(graphImage, 8, 0, width, graphImage.getHeight());
+            canvas.drawBitmap(resizedGraphImage, 0, 0, null);
+        }
         return resultBitmap;
     }
 
@@ -228,7 +258,7 @@ public class WatchFaceGenerator {
     public byte[] genWatchFace() throws Exception {
         Bitmap mainScreen;
         Bitmap resultImage;
-        int graphHours = Pref.getStringToInt(PREF_MIBAND_GRAPH_HOURS, 4);
+        int graphHours = MiBandEntry.getGraphHours();
         BestGlucose.DisplayGlucose dg = BestGlucose.getDisplayGlucose();
         if (dg != null) {
             String timeStampText = "";
@@ -264,6 +294,11 @@ public class WatchFaceGenerator {
         int newImageSize = imageByteArrayOutput.size();
         int newImageOffsetDiff = oldImageSize - newImageSize;
         int imageOffsetTableSize = imageOffsets.size() * 4;
+
+        if (wfFile != null){ //reread file
+            fwFileStream.close();
+            fwFileStream = new FileInputStream(wfFile);
+        }
 
         BufferedInputStream firmwareReadStream = new BufferedInputStream(fwFileStream, fwFileStream.available());
         ByteArrayOutputStream firmwareWriteStream = new ByteArrayOutputStream(newImageSize +

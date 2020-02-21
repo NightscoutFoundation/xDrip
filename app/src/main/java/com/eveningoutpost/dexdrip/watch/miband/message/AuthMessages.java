@@ -103,7 +103,7 @@ public class AuthMessages extends BaseMessage {
         init(18);
         putData(AUTH_SEND_KEY);
         putData(authFlags);
-        if (cryptFlags == 0)
+        //if (cryptFlags == 0)
             putData(localKey);
         return getBytes();
     }

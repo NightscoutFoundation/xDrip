@@ -40,7 +40,7 @@ public class OperationCodes {
      */
     public static final byte AUTH_FAIL = 0x04;
     public static final byte AUTH_MIBAND4_FAIL = 0x51;
-
+    public static final byte AUTH_MIBAND4_CODE_FAIL = 0x08;
 
     public static final byte AUTH_MIBAND4_CRYPT_FLAG = (byte)0x80;
 
