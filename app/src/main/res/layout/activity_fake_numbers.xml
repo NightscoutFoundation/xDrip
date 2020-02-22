@@ -21,7 +21,7 @@
             android:textAlignment="center"
             android:textSize="24dp"
             android:hint="@string/enter_blood_glucose_value"
-            android:layout_above="@+id/save_calibration_button"
+            android:layout_above="@+id/StartTest"
             android:layout_alignParentStart="true" />
 
         <Button
