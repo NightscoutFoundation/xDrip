@@ -67,7 +67,7 @@ public class WatchFaceGenerator {
     private static int timeStampTextSize = 18; //px
     private static int graphBgColor = 0x0;
     private File wfFile = null;
-
+    private int offset = 0;
 
     public WatchFaceGenerator(AssetManager assetManager) throws Exception {
         this.assetManager = assetManager;
@@ -83,6 +83,7 @@ public class WatchFaceGenerator {
                 customFilesFound = true;
                 mainImage = new FileInputStream(imageFile);
                 fwFileStream = new FileInputStream(wfFile);
+                offset = MiBandEntry.getImageOffset();
             }
         }
         if (!customFilesFound) {
@@ -143,8 +144,8 @@ public class WatchFaceGenerator {
     }
 
     Bitmap drawMainBitmapWithGraph(String bgValueText, Bitmap arrowBitmap, String timeStampText, String unitized_delta, boolean strike_through, boolean isHigh, boolean isLow, int graphHours) {
-        int textHighColor = getCol(ColorCache.X.color_high_values);
-        int textLowColor = getCol(ColorCache.X.color_low_values);
+        /*int textHighColor = getCol(ColorCache.X.color_high_values);
+        int textLowColor = getCol(ColorCache.X.color_low_values);*/
 
         Bitmap resultBitmap = mainWatchfaceImage.copy(Bitmap.Config.ARGB_8888, true);
         Canvas canvas = new Canvas(resultBitmap);
@@ -152,48 +153,10 @@ public class WatchFaceGenerator {
         int width = canvas.getWidth();
         int height = canvas.getHeight();
 
-        Paint paint = new Paint();
-        paint.setStyle(Paint.Style.FILL);
-        paint.setColor(textColor);
-        if (isHigh) paint.setColor(textHighColor);
-        if (isLow) paint.setColor(textLowColor);
-        paint.setAntiAlias(true);
-        paint.setTypeface(Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD));
-        paint.setTextScaleX(0.88f);
-        paint.setTextAlign(Paint.Align.LEFT);
-        paint.setTextSize(bgValueTextSize);
-        paint.setStrikeThruText(strike_through);
-        Rect bounds = new Rect();
-
-        //draw arrow
-        int bgTextPosY = height - 52;//px
-        int imageRightMargin = 0;//px
-        int imageLeftMargin = 10;//px
-        int arrowXPos = width - arrowBitmap.getWidth() - imageRightMargin;
-        canvas.drawBitmap(arrowBitmap, arrowXPos, bgTextPosY - arrowBitmap.getHeight(), null);
-
-        //draw bgValueText
-        paint.getTextBounds(bgValueText, 0, bgValueText.length(), bounds);
-        int bgTextPosX = arrowXPos - bounds.width() - imageLeftMargin;
-        if (bgTextPosX < 0) bgTextPosX = 0;
-        canvas.drawText(bgValueText, bgTextPosX, bgTextPosY, paint);
-
-        //draw unitized delta
-        paint.setTextScaleX(1);
-        paint.setColor(textColor);
-        int unitsTextPosX = 0;//px
-        int unitsTextPosY = height - 33;//px
-        paint.setTextSize(timeStampTextSize);
-        paint.setStrikeThruText(false);
-        canvas.drawText(unitized_delta, unitsTextPosX, unitsTextPosY, paint);
-
-        //draw timestamp
-        int timeStampTextPosY = unitsTextPosY;//px
-        //  paint.setColor(textTimestampColor);
-        paint.getTextBounds(timeStampText, 0, timeStampText.length(), bounds);
-        canvas.drawText(timeStampText, width - bounds.width(), timeStampTextPosY, paint);
+        if (offset > height) offset = 0;
 
         if (isGraphEnabled) {
+            int graphHeight = 84;
             //draw graph
             drawMutex = true;
             JoH.runOnUiThread(new Runnable() {
@@ -202,10 +165,10 @@ public class WatchFaceGenerator {
                     try {
                         graphImage = new BgSparklineBuilder(xdrip.getAppContext())
                                 .setBgGraphBuilder(new BgGraphBuilder(xdrip.getAppContext()))
-                                .setStart(System.currentTimeMillis() - 60000 * 60 * graphHours)
+                                .setStart(System.currentTimeMillis() - Constants.HOUR_IN_MS * graphHours)
                                 .setEnd(System.currentTimeMillis())
                                 .setWidthPx(width + 16)
-                                .setHeightPx(84)
+                                .setHeightPx(graphHeight)
                                 .setBackgroundColor(graphBgColor)
                                 .setTinyDots()
                                 .showHighLine()
@@ -221,8 +184,51 @@ public class WatchFaceGenerator {
                 threadSleep(100);
             //strip left and right fields
             Bitmap resizedGraphImage = Bitmap.createBitmap(graphImage, 8, 0, width, graphImage.getHeight());
-            canvas.drawBitmap(resizedGraphImage, 0, 0, null);
+            canvas.drawBitmap(resizedGraphImage, 0, offset, null);
+            offset = offset + graphHeight + 10;
         }
+
+        Paint paint = new Paint();
+        paint.setStyle(Paint.Style.FILL);
+        paint.setColor(textColor);
+        if (isHigh) paint.setColor(highColor);
+        if (isLow) paint.setColor(lowColor);
+        paint.setAntiAlias(true);
+        paint.setTypeface(Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD));
+        paint.setTextScaleX(0.88f);
+        paint.setTextAlign(Paint.Align.LEFT);
+        paint.setTextSize(bgValueTextSize);
+        paint.setStrikeThruText(strike_through);
+        Rect bounds = new Rect();
+
+        //draw arrow
+        int bgTextPosY = 34 + offset;//px
+        int imageRightMargin = 0;//px
+        int imageLeftMargin = 10;//px
+        int arrowXPos = width - arrowBitmap.getWidth() - imageRightMargin;
+        canvas.drawBitmap(arrowBitmap, arrowXPos, bgTextPosY - arrowBitmap.getHeight(), null);
+
+        //draw bgValueText
+        paint.getTextBounds(bgValueText, 0, bgValueText.length(), bounds);
+        int bgTextPosX = arrowXPos - bounds.width() - imageLeftMargin;
+        if (bgTextPosX < 0) bgTextPosX = 0;
+        canvas.drawText(bgValueText, bgTextPosX, bgTextPosY, paint);
+
+        //draw unitized delta
+        paint.setTextScaleX(1);
+        paint.setColor(textColor);
+        int unitsTextPosX = 0;//px
+        int unitsTextPosY = 53 + offset;//px
+        paint.setTextSize(timeStampTextSize);
+        paint.setStrikeThruText(false);
+        canvas.drawText(unitized_delta, unitsTextPosX, unitsTextPosY, paint);
+
+        //draw timestamp
+        int timeStampTextPosY = unitsTextPosY;//px
+        //paint.setColor(textTimestampColor);
+        paint.getTextBounds(timeStampText, 0, timeStampText.length(), bounds);
+        canvas.drawText(timeStampText, width - bounds.width(), timeStampTextPosY, paint);
+
         return resultBitmap;
     }
 
@@ -295,7 +301,7 @@ public class WatchFaceGenerator {
         int newImageOffsetDiff = oldImageSize - newImageSize;
         int imageOffsetTableSize = imageOffsets.size() * 4;
 
-        if (wfFile != null){ //reread file
+        if (wfFile != null) { //reread file
             fwFileStream.close();
             fwFileStream = new FileInputStream(wfFile);
         }

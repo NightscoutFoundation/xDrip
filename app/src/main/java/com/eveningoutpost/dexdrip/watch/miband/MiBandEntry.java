@@ -40,6 +40,7 @@ public class MiBandEntry {
     public static final String PREF_MIBAND_DISABLE_HIGHT_MTU = "debug_miband_disable_hight_mtu";
     public static final String PREF_MIBAND_USE_CUSTOM_WATHCFACE = "debug_miband_use_custom_watchface";
     public static final String PREF_MIBAND_COLLECT_HEARTRATE = "miband_collect_heartrate";
+    public static final String PREF_MIBAND_IMAGE_OFFSET = "debug_miband_image_offset";
 
     public static final int NIGHT_MODE_INTERVAL_STEP = 5;
 
@@ -108,6 +109,10 @@ public class MiBandEntry {
 
     public static boolean isNeedToCollectHR() {
         return Pref.getBooleanDefaultFalse(PREF_MIBAND_COLLECT_HEARTRATE);
+    }
+
+    public static int getImageOffset() {
+        return Pref.getStringToInt(PREF_MIBAND_IMAGE_OFFSET, 0);
     }
 
     public static void initialStartIfEnabled() {
