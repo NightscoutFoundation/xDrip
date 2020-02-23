@@ -32,10 +32,10 @@ public class LinearTrapezoidInsulin extends Insulin {
 
     public double calculateIOB(double t) {
 
-        if ((0 <= t) && (t < onset))
-            return 1.0;
+		if ((0 <= t) && (t < onset))
+			return 1.0;
 		else if ((onset <= t) && (t < t1))
-            return 1.0 - 0.5 * (t - onset)* (t - onset) * max / (t1 - onset);
+			return 1.0 - 0.5 * (t - onset)* (t - onset) * max / (t1 - onset);
         else if ((t1 <= t) && (t < t2))
             return 1.0 + 0.5 * max * (t1 - onset) - max * (t - onset);
         else if ((t2 <= t) && (t < t3))
@@ -47,7 +47,7 @@ public class LinearTrapezoidInsulin extends Insulin {
 
         if ((0 <= t) && (t < onset))
             return 0.0;
-        if ((onset <= t) && (t < t1))
+        else if ((onset <= t) && (t < t1))
             return concentration * (t - onset) * max / (t1 - onset);
         else if ((t1 <= t) && (t < t2))
             return concentration * max;
