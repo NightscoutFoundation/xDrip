@@ -15,7 +15,7 @@ import org.robolectric.annotation.Config;
  * @author Asbjørn Aarrestad, asbjorn@aarrestad.com - 2018.03
  */
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class,
+@Config(sdk = BuildConfig.targetSDK,
         packageName = "com.eveningoutpost.dexdrip",
         application = TestingApplication.class
 )

@@ -22,12 +22,14 @@ public class Tomato {
     private static final String TAG = "DexCollectionService";//?????"Tomato";
 
     private static final String CHECKSUM_FAILED = "checksum failed";
+    private static final String SERIAL_FAILED = "serial failed";
 
     private enum TOMATO_STATES {
         REQUEST_DATA_SENT,
         RECIEVING_DATA
     }
     private final static int TOMATO_HEADER_LENGTH = 18;
+    private final static int TOMATO_PATCH_INFO = 6;
 
     
     static volatile TOMATO_STATES s_state;
@@ -44,7 +46,7 @@ public class Tomato {
             return false;
         }
 
-        return activeBluetoothDevice.name.contentEquals("miaomiao");
+        return activeBluetoothDevice.name.startsWith("miaomiao");
     }
 
     public static BridgeResponse decodeTomatoPacket(byte[] buffer, int len) {
@@ -98,7 +100,7 @@ public class Tomato {
                 // &0xff is needed to convert to hex.
                 int expectedSize = 256 * (int)(buffer[1] & 0xFF) + (int)(buffer[2] & 0xFF);
                 Log.e(TAG, "Starting to acumulate data expectedSize = " + expectedSize);
-                InitBuffer(expectedSize);
+                InitBuffer(expectedSize + TOMATO_PATCH_INFO);
                 addData(buffer);
                 s_state = TOMATO_STATES.RECIEVING_DATA;
                 return reply;
@@ -126,6 +128,8 @@ public class Tomato {
                        reply.setError_message(gs(R.string.checksum_failed__retrying));
                        Log.d(TAG,"Asking for retry of data");
                    }
+                } else if (e.getMessage().equals(SERIAL_FAILED)) {
+                    reply.setError_message("Sensor Serial Problem");
                 } else throw e;
             }
 
@@ -140,7 +144,7 @@ public class Tomato {
     static void addData(byte[] buffer) {
         if(s_acumulatedSize + buffer.length > s_full_data.length) {
             Log.e(TAG, "Error recieving too much data. exiting. s_acumulatedSize = " + s_acumulatedSize + 
-                    "buffer.length = " + buffer.length + " s_full_data.length " + s_full_data.length);
+                    " buffer.length = " + buffer.length + " s_full_data.length " + s_full_data.length);
             //??? send something to start back??
             return;
             
@@ -151,12 +155,16 @@ public class Tomato {
     }
     
     static void AreWeDone() {
-        if(s_recviedEnoughData) {
+        // Give both versions a chance to work.
+        final int extended_length = 344 + TOMATO_HEADER_LENGTH + 1 + TOMATO_PATCH_INFO;
+        if(s_recviedEnoughData && (s_acumulatedSize != extended_length))  {
             // This reading already ended
+            Log.e(TAG,"Getting out, as s_recviedEnoughData and we have too much data already s_acumulatedSize = " + s_acumulatedSize);
             return;
         }
 
-        if(s_acumulatedSize < 344 + TOMATO_HEADER_LENGTH + 1) {
+        if(s_acumulatedSize < 344 + TOMATO_HEADER_LENGTH + 1 ) {
+            //Log.e(TAG,"Getting out, since not enough data s_acumulatedSize = " + s_acumulatedSize);
             return;   
         }
         byte[] data = Arrays.copyOfRange(s_full_data, TOMATO_HEADER_LENGTH, TOMATO_HEADER_LENGTH+344);
@@ -164,13 +172,27 @@ public class Tomato {
         
         long now = JoH.tsl();
         // Important note, the actual serial number is 8 bytes long and starts at addresses 5.
-        String SensorSn = LibreUtils.decodeSerialNumberKey(Arrays.copyOfRange(s_full_data, 5, 13));
-        boolean checksum_ok = NFCReaderX.HandleGoodReading(SensorSn, data, now, true);
+        final String SensorSn = LibreUtils.decodeSerialNumberKey(Arrays.copyOfRange(s_full_data, 5, 13));
+        byte []patchUid = null;
+        byte []patchInfo = null;
+        if(s_acumulatedSize >= extended_length) {
+            patchUid = Arrays.copyOfRange(s_full_data, 5, 13);
+            patchInfo = Arrays.copyOfRange(s_full_data, TOMATO_HEADER_LENGTH+ 344 + 1 , TOMATO_HEADER_LENGTH + 344 + 1+ TOMATO_PATCH_INFO);
+        }
+        Log.d(TAG, "patchUid = " + HexDump.dumpHexString(patchUid));
+        Log.d(TAG, "patchInfo = " + HexDump.dumpHexString(patchInfo));
+        boolean checksum_ok = NFCReaderX.HandleGoodReading(SensorSn, data, now, true, patchUid, patchInfo);
         Log.e(TAG, "We have all the data that we need " + s_acumulatedSize + " checksum_ok = " + checksum_ok + HexDump.dumpHexString(data));
 
         if(!checksum_ok) {
             throw new RuntimeException(CHECKSUM_FAILED);
         }
+
+        if (SensorSanity.checkLibreSensorChangeIfEnabled(SensorSn)) {
+            Log.e(TAG,"Problem with Libre Serial Number - not processing");
+            throw new RuntimeException(SERIAL_FAILED);
+        }
+
         PersistentStore.setString("Tomatobattery", Integer.toString(s_full_data[13]));
         Pref.setInt("bridge_battery", s_full_data[13]);
         PersistentStore.setString("TomatoHArdware",HexDump.toHexString(s_full_data,16,2));

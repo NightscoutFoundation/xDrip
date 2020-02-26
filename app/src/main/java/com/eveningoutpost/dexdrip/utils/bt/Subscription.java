@@ -1,8 +1,10 @@
 package com.eveningoutpost.dexdrip.utils.bt;
 
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.UndeliverableException;
 import io.reactivex.plugins.RxJavaPlugins;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +41,15 @@ public class Subscription implements Disposable {
 
 
     public static void addErrorHandler(final String TAG) {
-        RxJavaPlugins.setErrorHandler(e -> UserError.Log.d(TAG, "RxJavaError: " + e.getMessage()));
+        RxJavaPlugins.setErrorHandler(e -> {
+            if (e instanceof UndeliverableException) {
+                if (!e.getCause().toString().contains("OperationSuccess")) {
+                    UserError.Log.e(TAG, "RxJavaError: " + e.getMessage());
+                }
+            } else {
+                UserError.Log.wtf(TAG, "RxJavaError2:" + e.getClass().getCanonicalName() + " " + e.getMessage() + " " + JoH.backTrace(3));
+            }
+        });
     }
 
 }

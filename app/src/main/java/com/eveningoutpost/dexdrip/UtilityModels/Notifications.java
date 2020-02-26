@@ -24,6 +24,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.text.SpannableString;
+import android.widget.RemoteViews;
 
 import com.eveningoutpost.dexdrip.AddCalibration;
 import com.eveningoutpost.dexdrip.BestGlucose;
@@ -597,7 +598,7 @@ public class Notifications extends IntentService {
             b = new Notification.Builder(mContext);
         }
         b.setOngoing(Pref.getBoolean("use_proper_ongoing", true));
-      
+        b.setGroup("xDrip ongoing");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             b.setVisibility(Pref.getBooleanDefaultFalse("public_notifications") ? Notification.VISIBILITY_PUBLIC : Notification.VISIBILITY_PRIVATE);
             b.setCategory(NotificationCompat.CATEGORY_STATUS);
@@ -614,7 +615,7 @@ public class Notifications extends IntentService {
                 .setSmallIcon(R.drawable.ic_action_communication_invert_colors_on)
                 .setUsesChronometer(false);
 
-        boolean setLargeIcon = false;
+        Bitmap numberIcon = null;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             // in case the graphic crashes the system-ui we wont do it immediately after reboot so the
@@ -630,21 +631,11 @@ public class Notifications extends IntentService {
 
                 if (NumberGraphic.largeWithArrowEnabled()) {
                     if ((dg != null) && (!dg.isStale())) {
-                        final Bitmap icon_bitmap = NumberGraphic.getLargeWithArrowBitmap(dg.unitized, dg.delta_arrow);
-                        //if (icon_bitmap != null) b.setSmallIcon(Icon.createWithBitmap(icon_bitmap));
-                        if (icon_bitmap != null) {
-                            b.setLargeIcon(Icon.createWithBitmap(icon_bitmap));
-                            setLargeIcon = true;
-                        }
+                        numberIcon = NumberGraphic.getLargeWithArrowBitmap(dg.unitized, dg.delta_arrow);
                     }
                 } else if (NumberGraphic.largeNumberIconEnabled()) {
                     if ((dg != null) && (!dg.isStale())) {
-                        final Bitmap icon_bitmap = NumberGraphic.getLargeIconBitmap(dg.unitized);
-                        //if (icon_bitmap != null) b.setSmallIcon(Icon.createWithBitmap(icon_bitmap));
-                        if (icon_bitmap != null) {
-                            b.setLargeIcon(Icon.createWithBitmap(icon_bitmap));
-                            setLargeIcon = true;
-                        }
+                        numberIcon = NumberGraphic.getLargeIconBitmap(dg.unitized);
                     }
                 }
             }
@@ -657,15 +648,7 @@ public class Notifications extends IntentService {
                     : bgGraphBuilder.unitizedDeltaString(true, true)));
 
             b.setContentText(deltaString);
-            iconBitmap = new BgSparklineBuilder(mContext)
-                    .setHeight(64)
-                    .setWidth(64)
-                    .setStart(System.currentTimeMillis() - 60000 * 60 * 3)
-                    .setBgGraphBuilder(bgGraphBuilder)
-                    .setBackgroundColor(getCol(X.color_notification_chart_background))
-                    .build();
-            if (!setLargeIcon) b.setLargeIcon(iconBitmap);
-            Notification.BigPictureStyle bigPictureStyle = new Notification.BigPictureStyle();
+
             notifiationBitmap = new BgSparklineBuilder(mContext)
                     .setBgGraphBuilder(bgGraphBuilder)
                     .showHighLine()
@@ -675,12 +658,50 @@ public class Notifications extends IntentService {
                     .setBackgroundColor(getCol(X.color_notification_chart_background))
                     .setShowFiltered(DexCollectionType.hasFiltered() && Pref.getBooleanDefaultFalse("show_filtered_curve"))
                     .build();
-            bigPictureStyle.bigPicture(notifiationBitmap)
-                    .setSummaryText(deltaString)
-                    .setBigContentTitle(titleString);
-            b.setStyle(bigPictureStyle);
 
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                Notification.DecoratedCustomViewStyle customViewStyle = new Notification.DecoratedCustomViewStyle();
+
+                iconBitmap = numberIcon != null ? numberIcon : new BgSparklineBuilder(mContext)
+                        .setHeight(64)
+                        .showLowLine()
+                        .showHighLine()
+                        .setStart(System.currentTimeMillis() - 60000 * 60 * 3)
+                        .setBgGraphBuilder(bgGraphBuilder)
+                        .setBackgroundColor(getCol(X.color_notification_chart_background))
+                        .build();
+
+                RemoteViews collapsedViews = new RemoteViews(context.getPackageName(), R.layout.notification_bg_collapsed);
+                collapsedViews.setImageViewBitmap(R.id.notification_image, iconBitmap);
+                collapsedViews.setTextViewText(R.id.notification_title, titleString);
+                collapsedViews.setTextViewText(R.id.notification_summary, deltaString);
+
+                RemoteViews expandedViews = new RemoteViews(context.getPackageName(), R.layout.notification_bg_expanded);
+                expandedViews.setImageViewBitmap(R.id.notification_image, notifiationBitmap);
+                expandedViews.setTextViewText(R.id.notification_title, titleString);
+                expandedViews.setTextViewText(R.id.notification_summary, deltaString);
+
+                b.setStyle(customViewStyle)
+                        .setCustomContentView(collapsedViews)
+                        .setCustomBigContentView(expandedViews);
+            } else {
+                iconBitmap = numberIcon != null ? numberIcon : new BgSparklineBuilder(mContext)
+                        .setHeight(64)
+                        .setWidth(64)
+                        .setStart(System.currentTimeMillis() - 60000 * 60 * 3)
+                        .setBgGraphBuilder(bgGraphBuilder)
+                        .setBackgroundColor(getCol(X.color_notification_chart_background))
+                        .build();
+                b.setLargeIcon(iconBitmap);
+
+                Notification.BigPictureStyle bigPictureStyle = new Notification.BigPictureStyle();
+                bigPictureStyle.bigPicture(notifiationBitmap)
+                        .setSummaryText(deltaString)
+                        .setBigContentTitle(titleString);
+                b.setStyle(bigPictureStyle);
+            }
         }
+
         b.setContentIntent(resultPendingIntent);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
             b.setLocalOnly(true);

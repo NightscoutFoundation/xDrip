@@ -197,6 +197,9 @@ public class UploaderQueue extends Model {
     		return;
     	}
     	newEntry(action, obj);
+    	// For libre us sensors, we have a reading, it might not create a BG entry, but we still need
+    	// to upload it.
+    	startSyncService(3000); // sync in 3 seconds
     }
     
     // TODO remove duplicated functionality, replace with generic multi-purpose method

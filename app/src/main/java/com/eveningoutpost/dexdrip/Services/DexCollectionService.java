@@ -1076,6 +1076,7 @@ public class DexCollectionService extends Service implements BtCallBack {
 
         if (scanMeister == null) {
             scanMeister = new ScanMeister()
+                    .applyKnownWorkarounds()
                     .addCallBack(this, TAG);
         }
 

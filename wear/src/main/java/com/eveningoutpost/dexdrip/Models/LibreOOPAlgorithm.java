@@ -6,6 +6,7 @@ import android.os.Bundle;
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.LibreAlarmReceiver;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.UtilityModels.CompatibleApps;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Intents;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
@@ -20,6 +21,10 @@ public class LibreOOPAlgorithm {
     private static final String TAG = "LibreOOPAlgorithm";
     
     static public void SendData(byte[] fullData, long timestamp) {
+        SendData(fullData, timestamp, null, null);
+    }
+    
+    static public void SendData(byte[] fullData, long timestamp, byte []patchUid,  byte []patchInfo) {
         if(fullData == null) {
             Log.e(TAG, "SendData called with null data");
             return;
@@ -39,10 +44,30 @@ public class LibreOOPAlgorithm {
         bundle.putByteArray(Intents.LIBRE_DATA_BUFFER, fullData);
         bundle.putLong(Intents.LIBRE_DATA_TIMESTAMP, timestamp);
         bundle.putString(Intents.LIBRE_SN, PersistentStore.getString("LibreSN"));
+        if(patchUid != null) {
+            bundle.putByteArray(Intents.LIBRE_PATCH_UID_BUFFER, patchUid);
+        }
+        if(patchInfo != null) {
+            bundle.putByteArray(Intents.LIBRE_PATCH_INFO_BUFFER, patchInfo);
+        }
         
         intent.putExtras(bundle);
         intent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
-        xdrip.getAppContext().sendBroadcast(intent);
+
+        final String packages = PersistentStore.getString(CompatibleApps.EXTERNAL_ALG_PACKAGES);
+        if (packages.length() > 0) {
+            final String[] packagesE = packages.split(",");
+            for (final String destination : packagesE) {
+                if (destination.length() > 3) {
+                    intent.setPackage(destination);
+                    Log.d(TAG, "Sending to package: " + destination);
+                    xdrip.getAppContext().sendBroadcast(intent);
+                }
+            }
+        } else {
+            Log.d(TAG, "Sending to generic package");
+            xdrip.getAppContext().sendBroadcast(intent);
+        }
     }
     
     

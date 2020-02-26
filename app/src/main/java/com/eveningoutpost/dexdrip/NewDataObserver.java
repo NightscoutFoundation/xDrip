@@ -18,6 +18,9 @@ import com.eveningoutpost.dexdrip.utils.BgToSpeech;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.watch.lefun.LeFun;
 import com.eveningoutpost.dexdrip.watch.lefun.LeFunEntry;
+import com.eveningoutpost.dexdrip.watch.thinjam.BlueJay;
+import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry;
+import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayRemote;
 import com.eveningoutpost.dexdrip.wearintegration.Amazfitservice;
 import com.eveningoutpost.dexdrip.wearintegration.ExternalStatusService;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
@@ -38,20 +41,20 @@ public class NewDataObserver {
     // TODO move appropriate functions in to their responsible classes
 
     // when we receive new glucose reading we want to propagate
-    public static void newBgReading(BgReading bgReading, boolean is_follower, boolean quick) {
+    public static void newBgReading(BgReading bgReading, boolean is_follower) {
 
-        if (!quick) {
-            sendToPebble();
-            sendToWear();
-            sendToAmazfit();
-            sendToLeFun();
-            Notifications.start();
-            textToSpeech(bgReading, null);
-            LibreBlock.UpdateBgVal(bgReading.timestamp, bgReading.calculated_value);
-            LockScreenWallPaper.setIfEnabled();
-            TidepoolEntry.newData();
-        }
+        sendToPebble();
+        sendToWear();
+        sendToAmazfit();
+        sendToLeFun();
+        sendToBlueJay();
+        sendToRemoteBlueJay();
+        Notifications.start();
         uploadToShare(bgReading, is_follower);
+        textToSpeech(bgReading, null);
+        LibreBlock.UpdateBgVal(bgReading.timestamp, bgReading.calculated_value);
+        LockScreenWallPaper.setIfEnabled();
+        TidepoolEntry.newData();
 
     }
 
@@ -67,6 +70,7 @@ public class NewDataObserver {
             // send to pebble
             sendToPebble();
             sendToAmazfit();
+            sendStatusToBlueJay();
 
             // don't send via GCM if received via GCM!
             if (receivedLocally) {
@@ -98,6 +102,24 @@ public class NewDataObserver {
         }
     }
 
+    private static void sendToBlueJay() {
+        if (BlueJayEntry.isEnabled()) {
+            Inevitable.task("poll-bluejay-for-bg", DexCollectionType.hasBluetooth() ? 2000 : 500, BlueJay::showLatestBG); // delay enough for BT to finish on collector
+        }
+    }
+
+    private static void sendStatusToBlueJay() {
+        if (BlueJayEntry.isEnabled()) {
+            Inevitable.task("poll-bluejay-for-status", 1000, BlueJay::showStatusLine);
+        }
+    }
+
+    private static void sendToRemoteBlueJay() {
+        if (BlueJayEntry.isRemoteEnabled()) {
+            Inevitable.task("poll-bluejay-remote-for-bg", DexCollectionType.hasBluetooth() ? 2000 : 500, BlueJayRemote::sendLatestBG); // delay enough for BT to finish on collector
+        }
+    }
+
     // send to wear
     // data is already synced via UploaderQueue but this will send the display glucose
     private static void sendToWear() {
@@ -126,10 +148,12 @@ public class NewDataObserver {
     // share uploader
     private static void uploadToShare(BgReading bgReading, boolean is_follower) {
         if ((!is_follower) && (Pref.getBooleanDefaultFalse("share_upload"))) {
-            UserError.Log.d("ShareRest", "About to call ShareRest!! " + JoH.dateTimeText(bgReading.timestamp) + " BG: " + bgReading.calculated_value);
-            String receiverSn = Pref.getString("share_key", "SM00000000").toUpperCase();
-            BgUploader bgUploader = new BgUploader(xdrip.getAppContext());
-            bgUploader.upload(new ShareUploadPayload(receiverSn, bgReading));
+            if (JoH.ratelimit("sending-to-share-upload", 10)) {
+                UserError.Log.d("ShareRest", "About to call ShareRest!!");
+                String receiverSn = Pref.getString("share_key", "SM00000000").toUpperCase();
+                BgUploader bgUploader = new BgUploader(xdrip.getAppContext());
+                bgUploader.upload(new ShareUploadPayload(receiverSn, bgReading));
+            }
         }
     }
 }

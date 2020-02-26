@@ -17,6 +17,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
@@ -32,6 +34,7 @@ import com.eveningoutpost.dexdrip.databinding.ActivityThinJamBinding;
 import com.eveningoutpost.dexdrip.ui.dialog.GenericConfirmDialog;
 import com.eveningoutpost.dexdrip.ui.dialog.QuickSettingsDialogs;
 import com.eveningoutpost.dexdrip.utils.AndroidBarcode;
+import com.eveningoutpost.dexdrip.utils.LocationHelper;
 import com.eveningoutpost.dexdrip.utils.Preferences;
 import com.eveningoutpost.dexdrip.utils.bt.BtCallBack2;
 import com.eveningoutpost.dexdrip.utils.bt.ScanMeister;
@@ -119,8 +122,27 @@ public class ThinJamActivity extends AppCompatActivity implements BtCallBack2 {
         // handle incoming extras - TODO do we need to wait for service connect?
         final Bundle bundle = getIntent().getExtras();
         processIncomingBundle(bundle);
+
+        LocationHelper.requestLocationForBluetooth(this);
     }
 
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_thinjam, menu);
+        return true;
+    }
+
+    public void blueJayPowerStandby(MenuItem x) {
+
+        GenericConfirmDialog.show(this, "Confirm Standby",
+                "Are you sure you want to put the watch in to Standby mode?\n\nLong Press Watch Button to wake it again.",
+                () -> {
+                    // call standby
+                    thinJam.standby();
+                });
+
+    }
 
     @Override
     protected void onStart() {
@@ -257,7 +279,7 @@ public class ThinJamActivity extends AppCompatActivity implements BtCallBack2 {
                     break;
 
                 case "launchhelp":
-                    xdrip.getAppContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://bluejay.website/quickhelp")));
+                    xdrip.getAppContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://bluejay.website/quickhelp")).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                     break;
 
                 case "launchsettings":
@@ -275,10 +297,12 @@ public class ThinJamActivity extends AppCompatActivity implements BtCallBack2 {
 
         public boolean scan(boolean legacy) {
             UserError.Log.d(TAG, "Start scan");
-            if (legacy) {
-                scanMeister.setFilter(nullFilter).scan();
-            } else {
-                scanMeister.setFilter(customFilter).scan();
+            if (JoH.ratelimit("bj-scan-startb",5)) {
+                if (legacy) {
+                    scanMeister.setFilter(nullFilter).scan();
+                } else {
+                    scanMeister.setFilter(customFilter).scan();
+                }
             }
             return false;
         }
@@ -290,8 +314,16 @@ public class ThinJamActivity extends AppCompatActivity implements BtCallBack2 {
         // boolean for long click
         public boolean unitTesting(final String test) {
             // call external test suite
-            thinJam.setProgressIndicator(progressBar);
-            thinJam.getDebug().processTestSuite(test);
+            if (test.startsWith("confirm")) {
+                val subtest = test.substring(7,test.length());
+                GenericConfirmDialog.show(this.activity, "Confirm:", "Please confirm when ready for: " + subtest, () -> {
+                    thinJam.setProgressIndicator(progressBar);
+                    thinJam.getDebug().processTestSuite(subtest);
+                });
+            } else {
+                thinJam.setProgressIndicator(progressBar);
+                thinJam.getDebug().processTestSuite(test);
+            }
             return true;
         }
 
@@ -314,6 +346,7 @@ public class ThinJamActivity extends AppCompatActivity implements BtCallBack2 {
                 txid = "";
             }
             thinJam.setSettings(txid);
+            thinJam.setTime();
         }
 
 
@@ -367,6 +400,9 @@ public class ThinJamActivity extends AppCompatActivity implements BtCallBack2 {
             setMac(item.mac);
             saveConnectedDevice();
             BlueJayEntry.setEnabled();
+            thinJam.emptyQueue();
+            thinJam.stringObservableField.set("");
+            thinJam.notificationString.setLength(0);
             refreshFromStoredMac();
         }
 
@@ -445,6 +481,7 @@ public class ThinJamActivity extends AppCompatActivity implements BtCallBack2 {
             if (command != null) {
                 switch (command) {
                     case REFRESH_FROM_STORED_MAC:
+                        binding.getVm().connectedDevice.set(BlueJay.getMac());
                         binding.getVm().setMac(BlueJay.getMac()); // TODO this doesn't handle name
                         binding.getVm().identify(); // re(do) identification.
                         break;

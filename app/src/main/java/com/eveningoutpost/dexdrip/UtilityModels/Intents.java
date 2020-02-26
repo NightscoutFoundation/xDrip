@@ -48,6 +48,8 @@ public interface Intents {
     String ACTION_DATABASE = "info.nightscout.client.DBACCESS";
     String LIBRE_ALARM_TO_XDRIP_PLUS = "com.eveningoutpost.dexdrip.FROM_LIBRE_ALARM";
     String XDRIP_PLUS_NS_EMULATOR = "com.eveningoutpost.dexdrip.NS_EMULATOR";
+    String BLUEJAY_THINJAM_API = "com.eveningoutpost.dexdrip.THINJAM_API";
+    String BLUEJAY_THINJAM_EMIT = "com.eveningoutpost.dexdrip.THINJAM_EMIT";
 
     // Local Broadcasts
     String HOME_STATUS_ACTION = "com.eveningoutpost.dexdrip.HOME_STATUS_ACTION";
@@ -55,6 +57,9 @@ public interface Intents {
     // Send to LibreXposed
     String XDRIP_PLUS_LIBRE_DATA = "com.eveningoutpost.dexdrip.LIBRE_DATA";
     String LIBRE_DATA_BUFFER = "com.eveningoutpost.dexdrip.Extras.DATA_BUFFER";
+    String LIBRE_PATCH_UID_BUFFER = "com.eveningoutpost.dexdrip.Extras.LIBRE_PATCH_UID_BUFFER";
+    String LIBRE_PATCH_INFO_BUFFER = "com.eveningoutpost.dexdrip.Extras.LIBRE_PATCH_INFO_BUFFER";
+
     String LIBRE_DATA_TIMESTAMP = "com.eveningoutpost.dexdrip.Extras.TIMESTAMP";
     String LIBRE_SN = "com.eveningoutpost.dexdrip.Extras.LIBRE_SN";
 

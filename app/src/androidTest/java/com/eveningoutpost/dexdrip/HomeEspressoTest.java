@@ -9,15 +9,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.annotation.UiThreadTest;
-import android.support.test.espresso.NoActivityResumedException;
 import android.support.test.espresso.ViewInteraction;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.view.WindowManager;
 
-import com.schibsted.spain.barista.cleardata.ClearDatabaseRule;
-import com.schibsted.spain.barista.cleardata.ClearFilesRule;
-import com.schibsted.spain.barista.cleardata.ClearPreferencesRule;
 import com.schibsted.spain.barista.flakyespresso.AllowFlaky;
 
 import org.junit.After;
@@ -29,24 +25,18 @@ import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 
 import java.io.File;
-import java.util.concurrent.TimeUnit;
 
 import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.Espresso.pressBack;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.matcher.RootMatchers.isDialog;
+import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static com.schibsted.spain.barista.BaristaClickActions.click;
+import static com.schibsted.spain.barista.BaristaScrollActions.scrollTo;
 import static com.schibsted.spain.barista.custom.NestedEnabledScrollToAction.scrollTo;
 import static org.hamcrest.core.AllOf.allOf;
-
-
-import static com.schibsted.spain.barista.BaristaAssertions.assertDisplayed;
-import static com.schibsted.spain.barista.BaristaClickActions.click;
-import static com.schibsted.spain.barista.BaristaClickActions.clickBack;
-import static com.schibsted.spain.barista.BaristaAssertions.assertDisplayed;
-import static com.schibsted.spain.barista.BaristaAssertions.assertNotDisplayed;
-import static com.schibsted.spain.barista.BaristaScrollActions.scrollTo;
 
 @RunWith(AndroidJUnit4.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -113,6 +103,16 @@ public class HomeEspressoTest {
         appCompatButton2.perform(scrollTo(), click());
 
     }
+
+    @Test
+    @AllowFlaky(attempts = 5)
+    public void B1_checkExperienceDialogAppears() {
+        onView(withText("5.5"))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()))
+                .perform(click());
+    }
+
 
     @Test
     @AllowFlaky(attempts = 5)
