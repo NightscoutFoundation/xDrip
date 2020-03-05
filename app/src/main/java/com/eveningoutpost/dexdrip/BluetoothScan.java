@@ -440,7 +440,8 @@ public class BluetoothScan extends ListActivityWithMenu {
                     prefs.edit().putString("dex_collection_method", "LimiTTer").apply();
                 }
                 returnToHome();
-            } else if (device.getName().toLowerCase().contains("miaomiao")) {
+            } else if ((device.getName().toLowerCase().contains("miaomiao"))
+                    || (device.getName().toLowerCase().startsWith("watlaa"))) {
                 if (!(CollectionServiceStarter.isLimitter() || CollectionServiceStarter.isWifiandBTLibre())) {
                     prefs.edit().putString("dex_collection_method", "LimiTTer").apply();
                 }
