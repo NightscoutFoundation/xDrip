@@ -116,9 +116,7 @@ public class ShareRest {
                 public void checkServerTrusted(
                         java.security.cert.X509Certificate[] chain,
                         String authType) throws CertificateException {
-                    for (X509Certificate cert : certs) {
-                        cert.getCriticalExtensionOIDs().remove("2.5.29.15");
-                    }
+                      log.debug("checkServerTrusted()");
                 }
 
                 @Override
