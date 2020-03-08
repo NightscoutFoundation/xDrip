@@ -27,6 +27,7 @@ public class TrustManager {
 
                 @Override
                 public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
+                    log.debug("checkServerTrusted()");
                 }
 
                 @Override
