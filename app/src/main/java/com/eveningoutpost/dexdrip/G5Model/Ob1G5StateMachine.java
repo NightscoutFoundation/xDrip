@@ -1179,7 +1179,7 @@ public class Ob1G5StateMachine {
             if (bgReading != null) {
                 try {
                     bgReading.calculated_value_slope = glucose.getTrend() / Constants.MINUTE_IN_MS; // note this is different to the typical calculated slope, (normally delta)
-                    if (bgReading.calculated_value_slope == Double.NaN) {
+                    if (Double.isNaN(bgReading.calculated_value_slope)) {
                         bgReading.hide_slope = true;
                     }
                 } catch (Exception e) {
