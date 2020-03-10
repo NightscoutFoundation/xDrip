@@ -150,10 +150,6 @@ public class MiBandService extends JamBaseBluetoothSequencer {
     }
 
     public enum MIBAND_INTEND_STATES {
-        INIT_WATCHFACE_DIALOG,
-        UPDATE_PROGRESS,
-        WATHCFACE_DIALOG_FINISH,
-        INSTALL_REQUEST,
         UPDATE_PREF_SCREEN,
         UPDATE_PREF_DATA
     }
@@ -1111,7 +1107,6 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                 finishText = xdrip.getAppContext().getResources().getString(R.string.miband_watchface_istall_success);
         }
         UserError.Log.d(TAG, "resetFirmwareState result:" + result + ":" + finishText);
-        // MiBandEntry.sendPrefIntent(MIBAND_INTEND_STATES.WATHCFACE_DIALOG_FINISH, 0, finishText);
 
         if (isNeedToRestoreNightMode) {
             JoH.threadSleep(RESTORE_NIGHT_MODE_DELAY);
@@ -1143,23 +1138,13 @@ public class MiBandService extends JamBaseBluetoothSequencer {
             firmwareProgress += packetLength;
             int progressPercent = (int) ((((float) firmwareProgress) / len) * 100);
             if ((i > 0) && (i % 30 == 0)) {
-                sendFirmwareCommand(firmware.getFirmwareCharacteristicUUID(), firmware.sendSync(), "Sync " + progressPercent + "%").setRunnable(new Runnable() {
-                    @Override
-                    public void run() {
-                        MiBandEntry.sendPrefIntent(MIBAND_INTEND_STATES.UPDATE_PROGRESS, progressPercent, "");
-                    }
-                }).queue();
+                sendFirmwareCommand(firmware.getFirmwareCharacteristicUUID(), firmware.sendSync(), "Sync " + progressPercent + "%").queue();
             }
         }
         if (firmwareProgress < len) { //last chunk
             int progressPercent = 100;
             byte[] fwChunk = Arrays.copyOfRange(fwbytes, packets * packetLength, len);
-            sendFirmwareCommand(firmware.getFirmwareDataCharacteristicUUID(), fwChunk, "Last chunk").setRunnable(new Runnable() {
-                @Override
-                public void run() {
-                    MiBandEntry.sendPrefIntent(MIBAND_INTEND_STATES.UPDATE_PROGRESS, progressPercent, "");
-                }
-            }).queue();
+            sendFirmwareCommand(firmware.getFirmwareDataCharacteristicUUID(), fwChunk, "Last chunk").queue();
         }
         sendFirmwareCommand(firmware.getFirmwareCharacteristicUUID(), firmware.sendChecksum(), "sendChecksum").setRunnable(new Runnable() {
             @Override
@@ -1422,8 +1407,6 @@ public class MiBandService extends JamBaseBluetoothSequencer {
 
     @Override
     protected void setRetryTimerReal() {
-        if (MiBand.getMibandType() == MI_BAND4)
-            MiBandEntry.sendPrefIntent(MIBAND_INTEND_STATES.WATHCFACE_DIALOG_FINISH, 0, "Can't connect or were disconnected");
         if (shouldServiceRun() && MiBand.isAuthenticated()) {
             final long retry_in = whenToRetryNext();
             UserError.Log.d(TAG, "setRetryTimerReal: Restarting in: " + (retry_in / Constants.SECOND_IN_MS) + " seconds");

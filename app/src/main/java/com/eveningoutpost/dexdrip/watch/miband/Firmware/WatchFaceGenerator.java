@@ -39,8 +39,8 @@ import static com.eveningoutpost.dexdrip.utils.FileUtils.getExternalDir;
 import static com.eveningoutpost.dexdrip.utils.FileUtils.makeSureDirectoryExists;
 
 public class WatchFaceGenerator {
-    private static final boolean d = true;
-    private static final boolean debug = true; //need only for debug to save resulting image and firmware
+    private static final boolean d = false;
+    private static final boolean debug = false; //need only for debug to save resulting image and firmware
     private static final String TAG = WatchFaceGenerator.class.getSimpleName();
 
     private InputStream fwFileStream;

@@ -28,7 +28,6 @@ public class PnnQuantizer {
     protected int pixels[] = null;
     protected Integer m_transparentColor;
     protected Map<Integer, short[]> closestMap = new HashMap<>();
-    protected Bitmap bitmap;
 
     public PnnQuantizer(String fname) throws IOException {
         fromBitmap(fname);
@@ -39,7 +38,6 @@ public class PnnQuantizer {
     }
 
     private void fromBitmap(Bitmap bitmap) throws IOException {
-        this.bitmap = bitmap;
         width = bitmap.getWidth();
         height = bitmap.getHeight();
         pixels = new int[width * height];
@@ -430,8 +428,6 @@ public class PnnQuantizer {
                 palette[1] = Color.WHITE;
             }
         }
-        //return original bitmap;
-        if (palette.length < nMaxColors) return bitmap;
 
         int[] qPixels = new int[cPixels.length];
         quantize_image(cPixels, palette, qPixels, dither);
