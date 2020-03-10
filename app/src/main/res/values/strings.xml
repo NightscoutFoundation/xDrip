@@ -1258,6 +1258,7 @@
     <string name="title_miband_send_calls">Send Calls</string>
     <string name="summary_miband_send_calls">Send call notifications to the band (Android 6+)</string>
     <string name="title_miband_graph_enable">Enable graph</string>
+    <string name="title_miband_graph_treatment_enable">Show bolus</string>
 
     <string name="title_miband_update_bg">Update BG manually</string>
     <string name="title_miband_general_settings_category">General settings</string>

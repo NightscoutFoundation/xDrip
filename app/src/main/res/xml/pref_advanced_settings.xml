@@ -621,6 +621,11 @@
                 android:key="miband_graph_hours"
                 android:summary="@string/pref_amazfit_widget_graph_hours_summary"
                 android:title="@string/pref_amazfit_watchface_graph_hours_title" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:dependency="miband_graph_enable"
+                android:key="miband_graph_treatment_enable"
+                android:title="@string/title_miband_graph_treatment_enable" />
 
             <Preference
                 android:key="update_miband_bg"

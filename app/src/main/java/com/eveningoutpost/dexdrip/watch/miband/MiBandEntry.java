@@ -37,6 +37,7 @@ public class MiBandEntry {
     public static final String PREF_MIBAND_NIGHTMODE_INTERVAL = "miband_nightmode_interval";
     public static final String PREF_MIBAND_GRAPH_HOURS = "miband_graph_hours";
     public static final String PREF_MIBAND_GRAPH_ENBALE = "miband_graph_enable";
+    public static final String PREF_MIBAND_TREATMENT_ENBALE = "miband_graph_treatment_enable";
     public static final String PREF_MIBAND_DISABLE_HIGHT_MTU = "debug_miband_disable_hight_mtu";
     public static final String PREF_MIBAND_USE_CUSTOM_WATHCFACE = "debug_miband_use_custom_watchface";
     public static final String PREF_MIBAND_COLLECT_HEARTRATE = "miband_collect_heartrate";
@@ -93,6 +94,10 @@ public class MiBandEntry {
     public static boolean isGraphEnabled() {
         if (MiBand.getMibandType() != MI_BAND4) return false;
         return Pref.getBooleanDefaultFalse(PREF_MIBAND_GRAPH_ENBALE);
+    }
+
+    public static boolean isTreatmentEnabled() {
+        return Pref.getBooleanDefaultFalse(PREF_MIBAND_TREATMENT_ENBALE);
     }
 
     public static int getGraphHours() {
