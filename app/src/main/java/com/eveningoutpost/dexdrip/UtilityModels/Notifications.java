@@ -1,6 +1,5 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
-import android.annotation.TargetApi;
 import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -567,7 +566,7 @@ public class Notifications extends IntentService {
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.O);
     }
 
-    @TargetApi(Build.VERSION_CODES.O)
+    //@TargetApi(Build.VERSION_CODES.O)
     public synchronized Notification createOngoingNotification(BgGraphBuilder bgGraphBuilder, Context context) {
         mContext = context;
         ReadPerfs(mContext);
@@ -591,14 +590,20 @@ public class Notifications extends IntentService {
         //final NotificationCompat.Builder b = new NotificationCompat.Builder(mContext); // temporary fix until ONGOING CHANNEL is silent by default on android 8+
         //final Notification.Builder b = new Notification.Builder(mContext); // temporary fix until ONGOING CHANNEL is silent by default on android 8+
         final Notification.Builder b;
-        if (useOngoingChannel()) {
+        if (useOngoingChannel() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             b = new Notification.Builder(mContext, NotificationChannels.ONGOING_CHANNEL);
             b.setSound(null);
         } else {
             b = new Notification.Builder(mContext);
         }
         b.setOngoing(Pref.getBoolean("use_proper_ongoing", true));
-        b.setGroup("xDrip ongoing");
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                b.setGroup("xDrip ongoing");
+            }
+        } catch (Exception e) {
+            //
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             b.setVisibility(Pref.getBooleanDefaultFalse("public_notifications") ? Notification.VISIBILITY_PUBLIC : Notification.VISIBILITY_PRIVATE);
             b.setCategory(NotificationCompat.CATEGORY_STATUS);
