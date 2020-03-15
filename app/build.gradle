@@ -284,7 +284,7 @@ dependencies {
     //implementation 'com.android.support:multidex:1.0.1'
     implementation 'ar.com.hjg:pngj:2.1.0'
     //implementation 'com.bugfender.sdk:android:0.+'
-    // implementation 'com.rarepebble:colorpicker:1.7.0'com.google.android.wearable
+    // implementation 'com.rarepebble:colorpicker:1.7.0'
     implementation(name: 'colorpicker', ext: 'aar')
     implementation(name: 'hellocharts-library-release', ext: 'aar')
     implementation(name: 'search-preference', ext: 'aar')
