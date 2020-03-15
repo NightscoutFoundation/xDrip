@@ -557,10 +557,7 @@
                         android:title="@string/title_lefun_screen_mac_address" />
                 </PreferenceCategory>
             </PreferenceScreen>
-
         </PreferenceScreen>
-
-
         <PreferenceScreen
             android:key="miband_preferences"
             android:title="@string/title_miband">
@@ -608,25 +605,29 @@
                 android:key="miband_option_call_notifications"
                 android:summary="@string/summary_miband_send_calls"
                 android:title="@string/title_miband_send_calls" />
-            <CheckBoxPreference
-                android:defaultValue="true"
+            <PreferenceCategory
+                android:title="@string/title_miband_graph_category"
                 android:dependency="miband_enabled"
-                android:key="miband_graph_enable"
-                android:title="@string/title_miband_graph_enable" />
-            <EditTextPreference
-                android:defaultValue="4"
-                android:dependency="miband_graph_enable"
-                android:digits="0123456789"
-                android:inputType="number"
-                android:key="miband_graph_hours"
-                android:summary="@string/pref_amazfit_widget_graph_hours_summary"
-                android:title="@string/pref_amazfit_watchface_graph_hours_title" />
-            <CheckBoxPreference
-                android:defaultValue="true"
-                android:dependency="miband_graph_enable"
-                android:key="miband_graph_treatment_enable"
-                android:title="@string/title_miband_graph_treatment_enable" />
-
+                android:key="miband_graph_category">
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:dependency="miband_enabled"
+                    android:key="miband_graph_enable"
+                    android:title="@string/title_miband_graph_enable" />
+                <EditTextPreference
+                    android:defaultValue="4"
+                    android:dependency="miband_graph_enable"
+                    android:digits="0123456789"
+                    android:inputType="number"
+                    android:key="miband_graph_hours"
+                    android:summary="@string/pref_amazfit_widget_graph_hours_summary"
+                    android:title="@string/pref_amazfit_watchface_graph_hours_title" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:dependency="miband_graph_enable"
+                    android:key="miband_graph_treatment_enable"
+                    android:title="@string/title_miband_graph_treatment_enable" />
+            </PreferenceCategory>
             <Preference
                 android:key="update_miband_bg"
                 android:dependency="miband_enabled"

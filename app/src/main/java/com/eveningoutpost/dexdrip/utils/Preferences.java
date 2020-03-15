@@ -824,12 +824,11 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
         public LockScreenWallPaper.PrefListener lockListener = new LockScreenWallPaper.PrefListener();
         private Preference miband2_screen;
         private Preference miband3_4_screen;
-        private Preference miband_graph_hours;
         private Preference miband_send_readings_as_notification;
         private Preference miband_authkey;
         private Preference miband_nightmode_category;
-        private Preference intervalNightMode;
-        private Preference miband_graph_enable;
+        private Preference miband_nightmode_interval;
+        private Preference miband_graph_category;
 
         // default constructor is required in addition on some platforms
         public AllPrefsFragment() {
@@ -974,18 +973,17 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             try {
                 miband2_screen = findPreference("miband2_screen");
                 miband3_4_screen = findPreference("miband3_4_screen");
-                miband_graph_enable = findPreference(MiBandEntry.PREF_MIBAND_GRAPH_ENBALE);
-                miband_graph_hours = findPreference(MiBandEntry.PREF_MIBAND_GRAPH_HOURS);
+                miband_graph_category = findPreference("miband_graph_category");
                 miband_send_readings_as_notification = findPreference(MiBandEntry.PREF_MIBAND_SEND_READINGS_AS_NOTIFICATION);
                 miband_authkey = findPreference(MiBandEntry.PREF_MIBAND_AUTH_KEY);
                 miband_nightmode_category = findPreference("miband_nightmode_category");
-                intervalNightMode = findPreference(MiBandEntry.PREF_MIBAND_NIGHTMODE_INTERVAL);
+                miband_nightmode_interval = findPreference(MiBandEntry.PREF_MIBAND_NIGHTMODE_INTERVAL);
 
-                intervalNightMode.setOnPreferenceChangeListener(MiBandEntry.sBindMibandPreferenceChangeListener);
-                MiBandEntry.sBindMibandPreferenceChangeListener.onPreferenceChange(intervalNightMode,
+                miband_nightmode_interval.setOnPreferenceChangeListener(MiBandEntry.sBindMibandPreferenceChangeListener);
+                MiBandEntry.sBindMibandPreferenceChangeListener.onPreferenceChange(miband_nightmode_interval,
                         PreferenceManager
-                                .getDefaultSharedPreferences(intervalNightMode.getContext())
-                                .getInt(intervalNightMode.getKey(), -1));
+                                .getDefaultSharedPreferences(miband_nightmode_interval.getContext())
+                                .getInt(miband_nightmode_interval.getKey(), -1));
 
                 findPreference(MiBandEntry.PREF_CALL_ALERTS).setOnPreferenceChangeListener((preference, newValue) -> {
                     IncomingCallsReceiver.checkPermission(this.getActivity());
@@ -2247,16 +2245,14 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 settings.removePreference(miband2_screen);
                 settings.removePreference(miband3_4_screen);
                 settings.removePreference(miband_nightmode_category);
-                prefs.removePreference(miband_graph_enable);
-                prefs.removePreference(miband_graph_hours);
+                prefs.removePreference(miband_graph_category);
                 prefs.removePreference(miband_send_readings_as_notification);
                 prefs.removePreference(miband_authkey);
 
                 if (type == MiBand.MiBandType.MI_BAND4) {
                     settings.addPreference(miband3_4_screen);
                     settings.addPreference(miband_nightmode_category);
-                    prefs.addPreference(miband_graph_enable);
-                    prefs.addPreference(miband_graph_hours);
+                    prefs.addPreference(miband_graph_category);
                     prefs.addPreference(miband_send_readings_as_notification);
                     prefs.addPreference(miband_authkey);
                 } else if (type == MiBand.MiBandType.MI_BAND2) {

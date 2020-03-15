@@ -1257,6 +1257,8 @@
     <string name="title_miband_vibrate_on_readings">Vibrate on readings</string>
     <string name="title_miband_send_calls">Send Calls</string>
     <string name="summary_miband_send_calls">Send call notifications to the band (Android 6+)</string>
+
+    <string name="title_miband_graph_category">Graph options</string>
     <string name="title_miband_graph_enable">Enable graph</string>
     <string name="title_miband_graph_treatment_enable">Show bolus</string>
 
