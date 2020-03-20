@@ -205,8 +205,8 @@ tasks.whenTaskAdded { task ->
     }
 }
 
-task AutoTestRig() doLast {
-    AutoInstall.execute()
+task AutoTestRig()  {
+    dependsOn(AutoInstall)
 }
 
 dependencies {
@@ -262,7 +262,7 @@ dependencies {
     implementation 'com.activeandroid:thread-safe-active-android:3.1.1'
     //implementation 'com.github.lecho:hellocharts-android:v1.5.8'
     implementation "com.polidea.rxandroidble2:rxandroidble:1.11.0"
-    implementation 'com.google.guava:guava:24.1-jre'
+    implementation 'com.google.guava:guava:24.1-android'
     implementation 'com.embarkmobile:zxing-android-minimal:2.0.0@aar'
     implementation 'com.embarkmobile:zxing-android-integration:2.0.0@aar'
     //implementation 'com.embarkmobile:zxing-android-legacy:2.0.0@aar'
