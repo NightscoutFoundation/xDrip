@@ -143,7 +143,7 @@ class Li2AppParameters extends SlopeParameters {
 
     @Override
     public double restrictIntercept(double intercept) {
-        return Math.min(Math.max(intercept, -20), 20);
+        return Math.min(Math.max(intercept, -40), 20);
     }
 }
 
