@@ -11,6 +11,13 @@ import java.util.Arrays;
 
 import lombok.val;
 
+import static com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry.isEnabled;
+import static com.eveningoutpost.dexdrip.watch.thinjam.BlueJayInfo.getInfo;
+import static com.eveningoutpost.dexdrip.watch.thinjam.Const.FEATURE_TJ_AUDIO_I;
+import static com.eveningoutpost.dexdrip.watch.thinjam.Const.FEATURE_TJ_AUDIO_O;
+import static com.eveningoutpost.dexdrip.watch.thinjam.Const.FEATURE_TJ_DISP_A;
+import static com.eveningoutpost.dexdrip.watch.thinjam.Const.FEATURE_TJ_DISP_B;
+import static com.eveningoutpost.dexdrip.watch.thinjam.Const.FEATURE_TJ_DISP_C;
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.THINJAM_NOTIFY_TYPE_TEXTBOX1;
 
 // jamorham
@@ -30,6 +37,7 @@ public class BlueJay {
     private static final String PREF_BLUEJAY_BEEP = "bluejay_beep_on_connect";
     private static final String PREF_BLUEJAY_SEND_READINGS = "bluejay_send_readings";
     private static final String PREF_BLUEJAY_SEND_STATUS_LINE = "bluejay_send_status_line";
+    private static final String PREF_BLUEJAY_SEND_BACKFILL = "bluejay_send_backfill";
     private static final String LAST_BLUEJAY_STATUSLINE = "bluejay-last-statusline";
 
     public static boolean isCollector() {
@@ -121,6 +129,10 @@ public class BlueJay {
         return Pref.getString(PREF_BLUEJAY_IDENTITY + JoH.macFormat(mac).toUpperCase(), null);
     }
 
+    static boolean hasAuthCache() {
+        return hasIdentityKey() && haveAuthKey(getMac());
+    }
+
     public static String getMac() {
         return Pref.getString(PREF_BLUEJAY_MAC, null);
     }
@@ -141,6 +153,10 @@ public class BlueJay {
         return Pref.getBooleanDefaultFalse(PREF_BLUEJAY_SEND_STATUS_LINE);
     }
 
+    static boolean shouldSendBackfill() {
+        return Pref.getBooleanDefaultFalse(PREF_BLUEJAY_SEND_BACKFILL);
+    }
+
     public static boolean localAlarmsEnabled() {
         return Pref.getBoolean("bluejay_local_alarms", true);
     }
@@ -150,10 +166,13 @@ public class BlueJay {
     }
 
     public static void showLatestBG() {
-        if (BlueJayEntry.isEnabled()) {
+        if (isEnabled() && versionSufficient(getInfo(getMac()).buildNumber, FEATURE_TJ_DISP_A)) {
             if (shouldSendReadings()) {
                 // already on background thread and debounced
                 JoH.startService(BlueJayService.class, "function", "sendglucose");
+            }
+            if (shouldSendBackfill()) {
+                sendBackfill();
             }
             if (shouldSendStatusLine()) {
                 showStatusLine();
@@ -161,13 +180,41 @@ public class BlueJay {
         }
     }
 
+    public static boolean versionSufficient(final int version, final int feature) {
+        if (!hasAuthCache()) return false;
+        switch (feature) {
+            case FEATURE_TJ_DISP_A:
+                return version > 32;
+            case FEATURE_TJ_DISP_B:
+                return version > 60;
+            case FEATURE_TJ_DISP_C:
+                return version > 2030;
+            case FEATURE_TJ_AUDIO_I:
+                return version > 2099;
+            case FEATURE_TJ_AUDIO_O:
+                return version > 2100;
+            default:
+                UserError.Log.e(TAG, "Request for unknown feature " + feature);
+                return false;
+        }
+    }
+
+
     public static void showStatusLine() {
-        if (BlueJayEntry.isEnabled() && shouldSendStatusLine()) {
+        if (isEnabled() && shouldSendStatusLine()) {
             final String currentStatusLine = StatusLine.extraStatusLine();
             final String lastStatusLine = PersistentStore.getString(LAST_BLUEJAY_STATUSLINE);
             if (!currentStatusLine.equals(lastStatusLine) || JoH.ratelimit("bj-duplicate-statusline", 300)) {
                 PersistentStore.setString(LAST_BLUEJAY_STATUSLINE, currentStatusLine);
                 BlueJayEntry.sendNotifyIfEnabled(THINJAM_NOTIFY_TYPE_TEXTBOX1, currentStatusLine);
+            }
+        }
+    }
+
+    public static void sendBackfill() {
+        if (isEnabled() && shouldSendBackfill()) {
+            if (JoH.ratelimit("bj-sendbackfill-data", 300)) {
+                JoH.startService(BlueJayService.class, "function", "sendbackfill");
             }
         }
     }
