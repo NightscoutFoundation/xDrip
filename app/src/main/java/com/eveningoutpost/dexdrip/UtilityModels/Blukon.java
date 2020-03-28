@@ -347,10 +347,10 @@ private static final String GET_TREND_HISTORY_BLOCK_COMMAND = READ_SINGLE_BLOCK_
             currentCommand = ACK_ON_WAKEUP_ANSWER;
             Log.i(TAG, "Send ACK");
 
-        } else if (currentCommand.startsWith(BLUCON_SECOND_BLOCK) && strRecCmd.startsWith("8bde02") && (!Pref.getBooleanDefaultFalse("external_blukon_algorithm"))) {
+        } else if (currentCommand.startsWith(BLUCON_SECOND_BLOCK) && strRecCmd.startsWith("8bde02")) {
             // Second Block response
-
-            if (strRecCmd.substring(6).equals(BLUCON_ALL_ZERO_RESPONSE)) {
+            cmdFound = 1;
+            if (strRecCmd.substring(6).equals(BLUCON_ALL_ZERO_RESPONSE) && !Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
 /*
                 in getPatchInfo: blucon answer is 20 bytes long.
                 Bytes 13 - 19 (0 indexing) contains the bytes 0 ... 6 of block #0
@@ -379,7 +379,7 @@ private static final String GET_TREND_HISTORY_BLOCK_COMMAND = READ_SINGLE_BLOCK_
 
                 if (LibreUtils.isSensorReady(patchInfoResponse[POSITION_OF_SENSOR_STATUS_BYTE])) {
                     currentCommand = UNKNOWN1_COMMAND;
-                    Log.i(TAG, "getUnknownCmd1 : "+ currentCommand);
+                    Log.i(TAG, "getUnknownCmd1 : " + currentCommand);
                 } else {
                     Log.e(TAG, "Sensor is not ready, stop!");
                     currentCommand = SLEEP_COMMAND;
@@ -388,7 +388,7 @@ private static final String GET_TREND_HISTORY_BLOCK_COMMAND = READ_SINGLE_BLOCK_
                 }
             } else {
                 currentCommand = UNKNOWN1_COMMAND;
-                Log.i(TAG, "getUnknownCmd1 : "+ currentCommand);
+                Log.i(TAG, "getUnknownCmd1 : " + currentCommand);
             }
 
             /*
@@ -403,7 +403,7 @@ private static final String GET_TREND_HISTORY_BLOCK_COMMAND = READ_SINGLE_BLOCK_
             }
             if (strRecCmd.startsWith(BLUCON_UNKNOWN1_COMMAND_RESPONSE_START)) {
                 m_firmware = Integer.parseInt(strRecCmd.substring(4, 8));
-                Log.e(TAG, "m_firmware version " + m_firmware);
+                Log.i(TAG, "m_firmware version " + m_firmware);
             }
 
             currentCommand = UNKNOWN2_COMMAND;
@@ -426,13 +426,13 @@ private static final String GET_TREND_HISTORY_BLOCK_COMMAND = READ_SINGLE_BLOCK_
                 gotLowBat = true;
             }
 
-            Log.e(TAG, "external_blukon_algorithm = " + Pref.getBooleanDefaultFalse("external_blukon_algorithm"));
+            Log.i(TAG, "external_blukon_algorithm = " + Pref.getBooleanDefaultFalse("external_blukon_algorithm"));
             if (Pref.getBooleanDefaultFalse("external_blukon_algorithm") || getHistoricReadings) {
-                if (m_firmware >= 403){
+                if (m_firmware >= 403) {
                     // Send the command for get patchUID
                     Log.i(TAG, "BLUCON_PATCHUID  ");
                     currentCommand = BLUCON_PATCHUID;
-                }else {
+                } else {
                     // Send the command to getHistoricData (read all blocks from 0 to 0x2b)
                     Log.i(TAG, "getHistoricData (2)");
                     currentCommand = GET_HISTORIC_DATA_COMMAND_ALL_BLOCKS;
@@ -455,14 +455,14 @@ private static final String GET_TREND_HISTORY_BLOCK_COMMAND = READ_SINGLE_BLOCK_
             }
         } else if (currentCommand.startsWith(BLUCON_PATCHUID) && strRecCmd.startsWith("8b0e")) {
             cmdFound = 1;
-            Log.e("blukon", "BLUCON_PATCHUID: " + currentCommand);
+            Log.i("blukon", "BLUCON_PATCHUID: " + currentCommand);
             // Send the command for get patchInfo
             currentCommand = BLUCON_PATCHUINFO;
             patchUID = JoH.hexStringToByteArray(strRecCmd.substring(8));
 
         } else if (currentCommand.startsWith(BLUCON_PATCHUINFO) && strRecCmd.startsWith("8b0e")) {
             cmdFound = 1;
-            Log.e("blukon", "BLUCON_PATCHUINFO: " + currentCommand);
+            Log.i("blukon", "BLUCON_PATCHUINFO: " + currentCommand);
             patchInfo = JoH.hexStringToByteArray(strRecCmd.substring(6));
             /* LibreAlarmReceiver.CalculateFromDataTransferObject, called when processing historical data,
              * expects the sensor age not to be updated yet, so only update the sensor age when not retrieving history.
@@ -686,7 +686,7 @@ private static final String GET_TREND_HISTORY_BLOCK_COMMAND = READ_SINGLE_BLOCK_
             Log.i(TAG, "Full data that was received is " + HexDump.dumpHexString(m_full_data));
 
             final String tagId = PersistentStore.getString("LibreSN");
-            Log.e(TAG, "calling HandleGoodReading");
+            Log.i(TAG, "calling HandleGoodReading");
             NFCReaderX.HandleGoodReading(tagId, m_full_data, now, false, patchUID, patchInfo);
 
             PersistentStore.setLong("blukon-time-of-last-reading", now);
