@@ -217,6 +217,11 @@
                 <action android:name="android.bluetooth.device.action.ACL_DISCONNECTED" />
             </intent-filter>
         </receiver>
+        <receiver android:name=".utils.bt.ConnectReceiver">
+            <intent-filter>
+                <action android:name="android.bluetooth.device.action.ACL_CONNECTED" />
+            </intent-filter>
+        </receiver>
         <receiver android:name=".utils.framework.IncomingCallsReceiver" android:enabled="true" >
             <intent-filter>
                 <action android:name="android.intent.action.PHONE_STATE" />

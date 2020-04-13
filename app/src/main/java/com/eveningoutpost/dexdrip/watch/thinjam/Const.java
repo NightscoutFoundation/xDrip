@@ -13,6 +13,7 @@ public class Const {
 
     public static final byte OPCODE_GET_STATUS_1 = 0x21;
     public static final byte OPCODE_GET_STATUS_2 = 0x22;
+    public static final byte OPCODE_GET_STATUS_3 = 0x23;
 
     public static final byte OPCODE_GET_TXID = 0x24;
     public static final byte OPCODE_BACKFILL_REQ = 0x25;
@@ -71,6 +72,12 @@ public class Const {
             "RESEND FROM",
             "BUSY"
     };
+
+    public static final int FEATURE_TJ_DISP_A = 1;
+    public static final int FEATURE_TJ_DISP_B = 2;
+    public static final int FEATURE_TJ_DISP_C = 3;
+    public static final int FEATURE_TJ_AUDIO_I = 14;
+    public static final int FEATURE_TJ_AUDIO_O = 15;
 
     public static final String THINJAM_SERVICE_STRING = "4a616d21-722a-4ce8-a2a2-a2b0b7da2cd0";
     public static final String THINJAM_HUNT_SERVICE_STRING = "4a616d21-0000-1000-8000-00805f9b34fb";
