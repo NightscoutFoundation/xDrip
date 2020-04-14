@@ -296,7 +296,7 @@ public class NightscoutStatus {
     public static boolean processDeviceStatusResponse(final String response) throws Exception {
         boolean new_data = false;
 
-        Log.e(TAG, "Starting processDeviceStatusResponse " + response);
+        Log.i(TAG, "Starting processDeviceStatusResponse " + response);
         String last_modified_string = PersistentStore.getString(NS_STATUS_KEY);
         OApsStatus curentStatus = OApsStatus.fromJson(last_modified_string);
         if (curentStatus == null) {
@@ -314,7 +314,6 @@ public class NightscoutStatus {
             new_data |= UpdateCurrentStatus(curentStatus, oApsStatus);
         }
         if(new_data) {
-            Log.e("xxx", "seting status status = " + curentStatus.toJson()); // remove
             PersistentStore.setString(NS_STATUS_KEY, curentStatus.toJson());
             GcmActivity.pushNsStatus(curentStatus.toJson());
         }
@@ -341,7 +340,6 @@ public class NightscoutStatus {
         if (curentStatus == null) {
             return;
         }
-        Log.e("xxx", "seting status status = " + curentStatus.toJson()); // remove
         PersistentStore.setString(NS_STATUS_KEY, curentStatus.toJson());
     }
 
