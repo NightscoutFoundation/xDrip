@@ -420,7 +420,7 @@ public class NightscoutUploader {
             new_data = NightscoutStatus.processDeviceStatusResponse(response);
             PersistentStore.setString(LAST_MODIFIED_KEY, last_modified_string);
         } else {
-            Log.d(TAG, "Failed to get treatments from: " + baseURI);
+            Log.d(TAG, "Failed to get device status from: " + baseURI);
         }
         return new_data;
     }

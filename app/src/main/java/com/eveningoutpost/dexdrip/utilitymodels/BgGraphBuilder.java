@@ -402,29 +402,15 @@ public class BgGraphBuilder {
     }
 
     private float yposFromRate(double rate, float yscale) {
+        if(rate < 0) {
+            // This means that we don't have information for it.
+            return 0;
+        }
         return (float)rate * yscale;
     }
     
-    private void mergeIdenticalItems(List<NSBasal> basallist) {
-        // Go over the list and merge items with identical rate
-        int list_size = basallist.size();
-        for(int i = 0; i < list_size; i++) {
-            for (int j=i+1; j < list_size; j++) {
-                if(basallist.get(i).rate != basallist.get(j).rate) {
-                    // Get out of the inner loop, objects are not the same
-                    break;
-                }
-                // We have two objects with the same rate, merge them.
-                basallist.get(i).merge(basallist.get(j));
-                basallist.remove(j);
-                list_size--;
-                // Since we took one object out, we need to make sure that
-                // next time we will continue from the correct place.
-                j--;
-            }
-        }
-    }
     
+
     private List<Line> nsBasalLines() {
         final List<Line> basalLines = new ArrayList<>();
 
@@ -432,107 +418,73 @@ public class BgGraphBuilder {
 
         // Start by getting the data an hour earlier.
         final List<NSBasal> basallist = NSBasal.latestForGraph(2000, loaded_start - 60 * 60000, loaded_end);
-        
-        
-        Log.e("xxxxx", "before aplist.size() " + basallist.size());
-        ListIterator<NSBasal> iter = basallist.listIterator();
-        double max_rate = -1;
-        while(iter.hasNext()){
-            NSBasal current = iter.next();
-            if(current.rate > max_rate) {
-                max_rate = current.rate;
-            }
-            if(current.endTimestamp() < loaded_start){
-                // removing an item ending before the timestamp.
-                iter.remove();
-                Log.e("xxxxx", "removing item current.endTimestamp() " + current.toS() + " " + current.endTimestamp() + " loaded_start = " + loaded_start);
-            } else {
-                Log.e("xxxxx", "not removing item current.endTimestamp() " + current.toS() + " "  + current.endTimestamp() + " loaded_start = " + loaded_start);
-                if(current.created_at < loaded_start) {
-                    current.trimStart(loaded_start);
-                }
-                if (current.endTimestamp() > loaded_end) {
-                    // Trim this basal, if a new one did not allow it to finish.
-                    current.setEnd(loaded_end);
-                }
-            }
-        }
-        
-        mergeIdenticalItems(basallist);
-        
-        // Scale the yscale not to depend on actual bg values.
-        if(max_rate != 0) {
-            yscale *= (2 / max_rate);  
-        }
-        Log.e("xxxxx", "aplist.size() " + basallist.size());
 
         if (basallist.size() == 0) {
             return basalLines;
         }
+        
+        // Go over the list, and trim the basals starting too early, or ending too late.
+        ListIterator<NSBasal> iter = basallist.listIterator();
+        double max_rate = -1;
+        while(iter.hasNext()){
+            NSBasal current = iter.next();
+            if(current.endTimestamp() < loaded_start){
+                // removing an item ending before the timestamp.
+                iter.remove();
+                continue;
+                //Log.e("xxxxx", "removing item current.endTimestamp() " + current.toS() + " " + current.endTimestamp() + " loaded_start = " + loaded_start);
+            }
+            if(current.rate > max_rate) {
+                max_rate = current.rate;
+            }
+
+            //Log.e("xxxxx", "not removing item current.endTimestamp() " + current.toS() + " "  + current.endTimestamp() + " loaded_start = " + loaded_start);
+            if(current.created_at < loaded_start) {
+                current.trimStart(loaded_start);
+            }
+            if (current.endTimestamp() > loaded_end) {
+                // Trim this basal, if a new one did not allow it to finish.
+                current.setEnd(loaded_end);
+            }
+        }
+
+        // Scale the yscale not to depend on actual bg values.
+        if(max_rate != 0) {
+            yscale *= (2 / max_rate);  
+        }
+        
+        NSBasal.trimItems(basallist);
+        NSBasal.mergeIdenticalItems(basallist);
 
         Collections.reverse(basallist);
-        
         
         final List<PointValue> points = new ArrayList<>(basallist.size());
         final List<PointValue> labels = new ArrayList<>(basallist.size());
 
-        double last_rate = -1;
-        long last_start = basallist.get(0).endTimestamp(); // Do not trim the latest one. ???
-
+        
         int count = basallist.size();
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        //SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
         for (NSBasal item : basallist) {
-            if (item.rate != last_rate) {
-                Log.e("xxx", item.toS() + " last_start: " + sdf.format(new Date(last_start)));
-                if (item.endTimestamp() > last_start) {
-                    // Trim this basal, if a new one did not allow it to finish.
-                    //???item.duration = (last_start - item.created_at) / 60000;
-                    item.setEnd(last_start);
-                } else if (item.endTimestamp() < last_start) {
-                    // We have a time that insulin was given based on pump default.
-                    // Since we don't have this data adding a point with value zero.
-                    // TODO - add here the pump default values.
-                    Log.e("xxx", "in new if....");
-                    points.add(new PointValue((float) last_start / FUZZER, yposFromRate(0, yscale)));
-                }
-                final float this_ypos = yposFromRate(item.rate, yscale);// (float) ((item.rate * yscale) + defaultMinY);
-                Log.e("Nightscout", "item.rate " + item.rate + " " + this_ypos);
+            //Log.e("xxx", item.toS() + " last_start: " + sdf.format(new Date(last_start)));
 
-                points.add(new PointValue((float) item.endTimestamp() / FUZZER, this_ypos));
-                if (item.duration > 10) {
-                    PointValue pv;
-                    pv = new PointValue((float) (item.endTimestamp() - item.duration * 60000 / 2) / FUZZER, this_ypos);
-                    pv.setLabel(String.format("%.2f", item.rate));
-                    labels.add(pv);
-                    Log.e("xxx", "pv = " + pv);
-                }
+            float this_ypos = yposFromRate(item.rate, yscale);
+            //Log.e("Nightscout", "item.rate " + item.rate + " " + this_ypos);
 
-                last_start = item.created_at;
-                last_rate = item.rate;
-            } else {
-              // This can actually happen since we some times have a zero temp basal,
-              // Or that we did not have a basal for some time, so we can not merge
-              // them.
-              Log.e(TAG, "warning - we have two objects with same rate." + item.toS() );
+            points.add(new PointValue((float) item.endTimestamp() / FUZZER, this_ypos));
+            if (item.duration > 10 && (!item.isFakeRange())) {
+                PointValue pv;
+                pv = new PointValue((float) (item.endTimestamp() - item.duration * 60000 / 2) / FUZZER, this_ypos);
+                pv.setLabel(String.format("%.2f", item.rate));
+                labels.add(pv);
+                //Log.e("xxx", "pv = " + pv);
             }
-            //???  First point, can we get it out of the loop?
+
             if (--count == 0) {
-                final float this_ypos = yposFromRate(item.rate, yscale);//(float) ((item.rate * yscale)+ defaultMinY);
-                Log.e("xxx", "first point item.rate " + item.rate + " " + this_ypos);
+                this_ypos = yposFromRate(item.rate, yscale);//(float) ((item.rate * yscale)+ defaultMinY);
+                //Log.e("xxx", "first point item.rate " + item.rate + " " + this_ypos);
                 points.add(new PointValue((float) item.created_at / FUZZER, this_ypos));
             }
         }
-        /*
-        points = new ArrayList<>(basallist.size());
-        float x2v = loaded_end - 30 * 60000;
-        float x1v = loaded_end - 60 * 60000;
-        points.add(new PointValue((float) x2v / FUZZER, 80));
-        points.add(new PointValue((float) x1v / FUZZER, 80));
-        points.add(new PointValue((float) x1v / FUZZER, 60));
-        points.add(new PointValue((float) x2v / FUZZER, 60));
-        points.add(new PointValue((float) x2v / FUZZER, 80));
-        */
-        
 
         final Line line = new Line(points);
         //line.setHasLabels(true);
