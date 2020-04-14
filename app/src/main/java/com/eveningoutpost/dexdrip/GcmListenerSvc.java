@@ -569,7 +569,7 @@ public class GcmListenerSvc extends JamListenerSvc {
                     HandleLibreBlock(payload);
                 } else if (action.equals("nsBasal")) {
                     if (Home.get_follower()) {
-                        Log.e(TAG, "Received ns basal update");
+                        Log.i(TAG, "Received ns basal update");
                         NSBasal.addFromJson(payload);
                     }
                 } else if (action.equals("oapsStatus")) {
