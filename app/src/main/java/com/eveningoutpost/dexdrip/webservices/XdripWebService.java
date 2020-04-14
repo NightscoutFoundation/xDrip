@@ -26,7 +26,11 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.URLDecoder;
+import java.time.format.DateTimeFormatter;
+import java.time.ZonedDateTime;
+import java.time.ZoneOffset;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Locale;
 
 import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.SSLServerSocketFactory;
@@ -65,6 +69,7 @@ public class XdripWebService implements Runnable {
 
     private boolean isRunning;
     private ServerSocket mServerSocket;
+    private DateTimeFormatter rfc7231formatter = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss O", Locale.ENGLISH);
 
     /**
      * WebServer constructor.
@@ -252,10 +257,11 @@ public class XdripWebService implements Runnable {
             reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             String line;
 
+            boolean headersOnly = false;
             int lineCount = 0;
             while (!TextUtils.isEmpty(line = reader.readLine()) && lineCount < 50) {
 
-                if (line.startsWith("GET /")) {
+                if (line.startsWith("GET /") || line.startsWith("HEAD /")) {
                     int start = line.indexOf('/') + 1;
                     int end = line.indexOf(' ', start);
                     if (start < line.length()) {
@@ -264,6 +270,7 @@ public class XdripWebService implements Runnable {
                         //if (hashedSecret == null) break; // we can't optimize as we always need to look for api-secret even if server doesn't use it
                     }
 
+                    headersOnly = line.startsWith("HEAD /");
                 } else if (line.toLowerCase().startsWith(("api-secret"))) {
                     final String requestSecret[] = line.split(": ");
                     if (requestSecret.length < 2) continue;
@@ -312,11 +319,14 @@ public class XdripWebService implements Runnable {
             }
             // Send out the content.
             output.println("HTTP/1.0 " + response.resultCode + " OK");
+            output.println("Date: " + rfc7231formatter.format(ZonedDateTime.now(ZoneOffset.UTC)));
             output.println("Access-Control-Allow-Origin: *");
             output.println("Content-Type: " + response.mimeType);
             output.println("Content-Length: " + response.bytes.length);
             output.println();
-            output.write(response.bytes);
+            if (!headersOnly) {
+                output.write(response.bytes);
+            }
             output.flush();
 
             UserError.Log.d(TAG, "Sent response: " + response.bytes.length + " bytes, code: " + response.resultCode + " mimetype: " + response.mimeType);
