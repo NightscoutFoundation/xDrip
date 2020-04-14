@@ -222,7 +222,7 @@ public class StatusLine {
                 NSBasal nSBasal = NSBasal.last();
                 
                 if(nSBasal != null) {
-                    Log.e("xxxx", "basal data" + nSBasal.toS());
+                    Log.d("xxxx", "basal data" + nSBasal.toS());
                     sb.append(' ');
                     sb.append("basal:");
                     // duration is in minutes
