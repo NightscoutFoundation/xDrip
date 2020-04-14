@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.utilitymodels;
 
+import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.models.BloodTest;
 import com.eveningoutpost.dexdrip.models.DateUtil;
@@ -209,8 +210,6 @@ public class NightscoutTreatments {
                 if(tr.getString("eventType").indexOf("Temp Basal") != -1) {
                     new_data |= HandleTempBassal(tr);
                 }
-                
-                
             }
         }
         return new_data;
@@ -225,7 +224,7 @@ public class NightscoutTreatments {
             return false;
         }
         String uuid = tr.getString("_id");
-        Log.w(TAG, "object tagid " + uuid);
+        Log.i(TAG, "object tagid " + uuid);
         double rate = -1;
         long duration = -1;
         long timestamp = 0;
@@ -254,7 +253,8 @@ public class NightscoutTreatments {
 
         NSBasal ns_basal = NSBasal.createEfficientRecord(timestamp, rate, duration);
         if(ns_basal != null) {
-            Log.e(TAG, "created an instances, here is the data" + ns_basal.toS());
+            Log.d(TAG, "created an instances, here is the data" + ns_basal.toS());
+            GcmActivity.pushNsBasal(ns_basal);
         } else {
             return false;
         }

@@ -727,7 +727,6 @@ public class GcmActivity extends FauxActivity {
         if (!Home.get_master()) {
             return;
         }
-
         GcmActivity.sendMessage(myIdentity(), "oapsStatus", oapsStatusJson);
     }
 
