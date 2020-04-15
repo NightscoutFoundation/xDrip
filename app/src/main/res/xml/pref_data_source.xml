@@ -115,6 +115,12 @@
             android:summary="@string/summary_nsfollow_download_treatments"
             android:title="@string/title_nsfollow_download_treatments"
             />
+        <EditTextPreference
+            android:defaultValue="10"
+            android:inputType="number"
+            android:key="nsfollow_grace"
+            android:summary="Delay after 5 minute Interval in seconds"
+            android:title="@string/title_nsfollow_grace" />
 
         <EditTextPreference
             android:defaultValue=""

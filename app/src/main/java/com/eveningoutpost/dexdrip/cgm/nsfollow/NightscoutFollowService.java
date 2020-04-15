@@ -128,7 +128,7 @@ public class NightscoutFollowService extends ForegroundService {
         final BgReading lastBg = BgReading.lastNoSenssor();
         final long last = lastBg != null ? lastBg.timestamp : 0;
 
-        final long grace = Constants.SECOND_IN_MS * 10;
+        final long grace = Constants.SECOND_IN_MS * getGrace();
         final long next = Anticipate.next(JoH.tsl(), last, SAMPLE_PERIOD, grace) + grace;
         wakeup_time = next;
         UserError.Log.d(TAG, "Anticipate next: " + JoH.dateTimeText(next) + "  last: " + JoH.dateTimeText(last));
@@ -140,7 +140,9 @@ public class NightscoutFollowService extends ForegroundService {
     private static boolean shouldServiceRun() {
         return DexCollectionType.getDexCollectionType() == NSFollow;
     }
-
+    private static int getGrace(){
+        return Integer.valueOf(Pref.getString("nsfollow_grace", "10"));
+    }
     /**
      * MegaStatus for Nightscout Follower
      */
@@ -202,6 +204,7 @@ public class NightscoutFollowService extends ForegroundService {
         statuses.add(new StatusItem());
         statuses.add(new StatusItem("Last poll", lastPollText + (lastPoll > 0 ? " ago" : "")));
         statuses.add(new StatusItem("Next poll in", JoH.niceTimeScalar(wakeup_time - JoH.tsl())));
+        statuses.add(new StatusItem("Interval addition",getGrace()+" Seconds"));
         if (lastBg != null) {
             statuses.add(new StatusItem("Last BG time", JoH.dateTimeText(lastBg.timestamp)));
         }
