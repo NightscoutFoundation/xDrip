@@ -23,11 +23,15 @@ import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.watch.lefun.LeFun;
 import com.eveningoutpost.dexdrip.watch.lefun.LeFunEntry;
+import com.eveningoutpost.dexdrip.watch.miband.MiBand;
+import com.eveningoutpost.dexdrip.watch.miband.MiBandEntry;
 import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import lombok.Getter;
 
+import static com.eveningoutpost.dexdrip.watch.miband.Const.MIBAND_NOTIFY_TYPE_CALL;
+import static com.eveningoutpost.dexdrip.watch.miband.Const.MIBAND_NOTIFY_TYPE_CANCEL;
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.THINJAM_NOTIFY_TYPE_CALL;
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.THINJAM_NOTIFY_TYPE_CANCEL;
 
@@ -76,6 +80,15 @@ public class IncomingCallsReceiver extends BroadcastReceiver {
                     LeFun.sendAlert(true, caller);
                 }
             }
+            // MiBand
+            if (JoH.quietratelimit("miband-call-debounce", 10)) {
+                if (MiBandEntry.areCallAlertsEnabled()) {
+                    // TODO extract to generic notifier
+                    final String caller = number != null ? "Incoming Call " + getContactDisplayNameByNumber(number) + " " + bestPhoneNumberFormatter(number) + " " : "CALL";
+                    UserError.Log.d(TAG, "Sending call alert: " + caller);
+                    MiBand.sendCall(MIBAND_NOTIFY_TYPE_CALL, caller);
+                }
+            }
 
             // BlueJay
             if (JoH.quietratelimit("bluejay-call-debounce" + number, 10)) {
@@ -96,6 +109,7 @@ public class IncomingCallsReceiver extends BroadcastReceiver {
                 if (JoH.ratelimit("incoming-call-stopped", 10)) {
                     if (BlueJayEntry.areCallAlertsEnabled()) {
                         BlueJayEntry.cancelNotifyIfEnabled();
+                        MiBand.sendCall(MIBAND_NOTIFY_TYPE_CANCEL, "");
                     }
                 }
             }
