@@ -137,7 +137,7 @@ android {
         buildConfigField "String", "buildUUID", generateRandomUUID()
         buildConfigField "long", "buildTimestamp", generateTimestamp()
         buildConfigField "int", "targetSDK", targetSdkVersion.mApiLevel.toString()
-        vectorDrawables.useSupportLibrary = true
+        //vectorDrawables.useSupportLibrary = true // broken in newer gradle versions
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
 
