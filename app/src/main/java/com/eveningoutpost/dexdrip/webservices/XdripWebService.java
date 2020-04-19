@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.webservices;
 
+import android.os.Build;
 import android.os.PowerManager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -69,7 +70,14 @@ public class XdripWebService implements Runnable {
 
     private boolean isRunning;
     private ServerSocket mServerSocket;
-    private DateTimeFormatter rfc7231formatter = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss O", Locale.ENGLISH);
+
+    private DateTimeFormatter rfc7231formatter;
+
+    {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            rfc7231formatter = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss O", Locale.ENGLISH);
+        }
+    }
 
     /**
      * WebServer constructor.
@@ -319,7 +327,9 @@ public class XdripWebService implements Runnable {
             }
             // Send out the content.
             output.println("HTTP/1.0 " + response.resultCode + " OK");
-            output.println("Date: " + rfc7231formatter.format(ZonedDateTime.now(ZoneOffset.UTC)));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                output.println("Date: " + rfc7231formatter.format(ZonedDateTime.now(ZoneOffset.UTC)));
+            }
             output.println("Access-Control-Allow-Origin: *");
             output.println("Content-Type: " + response.mimeType);
             output.println("Content-Length: " + response.bytes.length);
