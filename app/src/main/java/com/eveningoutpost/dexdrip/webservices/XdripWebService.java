@@ -26,9 +26,8 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.URLDecoder;
-import java.time.format.DateTimeFormatter;
-import java.time.ZonedDateTime;
-import java.time.ZoneOffset;
+import java.text.SimpleDateFormat;
+import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.Locale;
 
@@ -69,7 +68,7 @@ public class XdripWebService implements Runnable {
 
     private boolean isRunning;
     private ServerSocket mServerSocket;
-    private DateTimeFormatter rfc7231formatter = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss O", Locale.ENGLISH);
+    private SimpleDateFormat dateHeaderFormatter = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss", Locale.ENGLISH);
 
     /**
      * WebServer constructor.
@@ -77,6 +76,7 @@ public class XdripWebService implements Runnable {
     private XdripWebService(int port, boolean use_ssl) {
         this.listenPort = port;
         this.useSSL = use_ssl;
+        this.dateHeaderFormatter.setTimeZone(TimeZone.getTimeZone("GMT"));
     }
 
     // start the service if needed, shut it down if not
@@ -269,7 +269,6 @@ public class XdripWebService implements Runnable {
                         UserError.Log.d(TAG, "Received request for: " + route);
                         //if (hashedSecret == null) break; // we can't optimize as we always need to look for api-secret even if server doesn't use it
                     }
-
                     headersOnly = line.startsWith("HEAD /");
                 } else if (line.toLowerCase().startsWith(("api-secret"))) {
                     final String requestSecret[] = line.split(": ");
@@ -319,7 +318,7 @@ public class XdripWebService implements Runnable {
             }
             // Send out the content.
             output.println("HTTP/1.0 " + response.resultCode + " OK");
-            output.println("Date: " + rfc7231formatter.format(ZonedDateTime.now(ZoneOffset.UTC)));
+            output.println("Date: " + dateHeaderFormatter.format(new java.util.Date()) + " GMT");
             output.println("Access-Control-Allow-Origin: *");
             output.println("Content-Type: " + response.mimeType);
             output.println("Content-Length: " + response.bytes.length);
