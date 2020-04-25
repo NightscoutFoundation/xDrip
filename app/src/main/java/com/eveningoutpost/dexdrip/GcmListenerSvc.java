@@ -21,6 +21,7 @@ import com.eveningoutpost.dexdrip.Models.BloodTest;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.DesertSync;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.LibreBlock;
 import com.eveningoutpost.dexdrip.Models.NSBasal;
 import com.eveningoutpost.dexdrip.Models.RollCall;
 import com.eveningoutpost.dexdrip.Models.Sensor;
@@ -564,6 +565,8 @@ public class GcmListenerSvc extends JamListenerSvc {
                         Log.i(TAG, "Received oapsStatus update");
                         NightscoutStatus.addFromJson(payload);
                     }
+                } else if (action.equals("libreBlock")) {
+                    HandleLibreBlock(payload);
                 } else {
                     Log.e(TAG, "Received message action we don't know about: " + action);
                 }
@@ -576,6 +579,21 @@ public class GcmListenerSvc extends JamListenerSvc {
         }
     }
 
+    private void HandleLibreBlock(String payload) {
+        LibreBlock lb = LibreBlock.createFromJson(payload);
+        if(lb == null) {
+            return;
+        }
+        if (LibreBlock.getForTimestamp(lb.timestamp) != null) {
+            // We already seen this one.
+            return;
+        }
+        LibreBlock.Save(lb);
+        if(Home.get_master()) {
+            NFCReaderX.HandleGoodReading(lb.reference, lb.blockbytes, lb.timestamp, false, lb.patchUid,  lb.patchInfo);
+        }
+    
+    }
 
     private void sendNotification(String body, String title) {
         Intent intent = new Intent(this, Home.class);

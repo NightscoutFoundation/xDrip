@@ -13,6 +13,8 @@ import com.google.gson.annotations.Expose;
 import java.text.DecimalFormat;
 import java.util.List;
 import java.util.UUID;
+
+import org.json.JSONObject;
 /**
  * Created by jamorham on 19/10/2017.
  */
@@ -75,6 +77,7 @@ public class LibreBlock extends PlusModel {
     @Column(name = "patchInfo")
     public byte[] patchInfo;
     
+    // Only called by blucon with partial data.
     public static LibreBlock createAndSave(String reference, long timestamp, byte[] blocks, int byte_start) {
         return createAndSave(reference, timestamp, blocks, byte_start, false, null, null);
     }
@@ -91,8 +94,12 @@ public class LibreBlock extends PlusModel {
         }
         return lb;
     }
+    
+    public static void Save(LibreBlock lb){
+        lb.save();
+    }
 
-    private static LibreBlock create(String reference, long timestamp, byte[] blocks, int byte_start, byte[] patchUid, byte[] patchInfo) {
+    public static LibreBlock create(String reference, long timestamp, byte[] blocks, int byte_start, byte[] patchUid, byte[] patchInfo) {
         UserError.Log.e(TAG,"Backtrack: "+JoH.backTrace());
         if (reference == null) {
             UserError.Log.e(TAG, "Cannot save block with null reference");
@@ -177,6 +184,25 @@ public class LibreBlock extends PlusModel {
     
     private static final boolean d = false;
 
+    public String toJson() {
+        return JoH.defaultGsonInstance().toJson(this);
+    }
+    
+    public static LibreBlock createFromJson(String json) {
+        if (json == null) {
+            return null;
+        }
+        LibreBlock fresh;
+        try {
+            fresh = JoH.defaultGsonInstance().fromJson(json, LibreBlock.class);
+        } catch (Exception e) {
+            Log.e(TAG, "Got exception processing json msg: " + e );
+            return null;
+        }
+        Log.e(TAG, "Successfuly created LibreBlock value " + json);
+        return fresh;
+    }
+    
     public static void updateDB() {
         fixUpTable(schema, false);
     }
