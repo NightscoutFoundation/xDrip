@@ -30,6 +30,7 @@ import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.LibreUtils;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.UtilityModels.WholeHouse;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
 import java.io.IOException;
@@ -218,10 +219,37 @@ public class NFCReaderX {
         return HandleGoodReading(tagId, data1, CaptureDateTime, false, null, null);
     }
 
+
+    public static void SendLibrereading(final String tagId, byte[] data1, final long CaptureDateTime, byte []patchUid,  byte []patchInfo){
+        if(!Home.get_master()) {
+            return;
+        }
+        LibreBlock libreBlock = LibreBlock.getForTimestamp(CaptureDateTime);
+        if (libreBlock != null) {
+            // We already have this one, so we have already sent it, so let's not crate storms.
+            return;
+        }
+        if (!JoH.ratelimit("libre-allhouse", 5)) {
+            // Do not create storm of packets.
+            Log.e(TAG, "Rate limited start libre-allhouse");
+            return;
+        }
+        // Create the object to send
+        libreBlock = LibreBlock.create(tagId, CaptureDateTime, data1, 0, patchUid, patchInfo);
+        if(libreBlock == null) {
+            Log.e(TAG, "Error could not create libreBlock for libre-allhouse");
+            return;
+        }
+        final String json = libreBlock.toJson();
+        
+        GcmActivity.pushLibreBlock(json);
+    
+    }
+    
     // returns true if checksum passed.
     public static boolean HandleGoodReading(final String tagId, byte[] data1, final long CaptureDateTime, final boolean allowUpload, byte []patchUid,  byte []patchInfo ) {
-
-
+        Log.e(TAG, "HandleGoodReading called");
+        SendLibrereading(tagId, data1, CaptureDateTime, patchUid, patchInfo);
         if (Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
             // If oop is used, there is no need to  do the checksum It will be done by the oop.
             // (or actually we don't know how to do it, for us 14/de sensors).
@@ -231,6 +259,7 @@ public class NFCReaderX {
         } else {
             final boolean checksum_ok = LibreUtils.verify(data1);
             if (!checksum_ok) {
+                Log.e(TAG, "bad cs");
                 return false;
             }
             
