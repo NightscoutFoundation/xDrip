@@ -7,6 +7,8 @@ import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
 import com.google.gson.annotations.Expose;
 
@@ -76,6 +78,11 @@ public class LibreBlock extends PlusModel {
     @Expose
     @Column(name = "patchInfo")
     public byte[] patchInfo;
+    
+    // Fields to store battery value. Not persistent in the DB.
+    public int bridge_battery;
+    public int Tomatobattery;
+    public int Bubblebattery;
     
     // Only called by blucon with partial data.
     public static LibreBlock createAndSave(String reference, long timestamp, byte[] blocks, int byte_start) {
@@ -185,6 +192,9 @@ public class LibreBlock extends PlusModel {
     private static final boolean d = false;
 
     public String toJson() {
+        bridge_battery = Pref.getInt("bridge_battery", 0);
+        Tomatobattery = PersistentStore.getStringToInt("Tomatobattery", 0);
+        Bubblebattery = PersistentStore.getStringToInt("Bubblebattery", 0);
         return JoH.defaultGsonInstance().toJson(this);
     }
     
