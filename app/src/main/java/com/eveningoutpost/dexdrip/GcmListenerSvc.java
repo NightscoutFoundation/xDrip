@@ -1,5 +1,7 @@
 package com.eveningoutpost.dexdrip;
 
+import android.R.integer;
+
 /**
  * Created by jamorham on 11/01/16.
  */
@@ -32,6 +34,7 @@ import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.NanoStatus;
+import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.PumpStatus;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
@@ -577,10 +580,14 @@ public class GcmListenerSvc extends JamListenerSvc {
             return;
         }
         LibreBlock.Save(lb);
+        
+        Pref.setInt("bridge_battery", lb.bridge_battery);
+        PersistentStore.setString("Tomatobattery", Integer.toString(lb.Tomatobattery));
+        PersistentStore.setString("Bubblebattery", Integer.toString(lb.Bubblebattery));
+        
         if(Home.get_master()) {
             NFCReaderX.HandleGoodReading(lb.reference, lb.blockbytes, lb.timestamp, false, lb.patchUid,  lb.patchInfo);
         }
-    
     }
 
     private void sendNotification(String body, String title) {
