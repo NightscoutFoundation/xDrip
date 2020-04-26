@@ -82,6 +82,11 @@ public class Bubble {
             patchUid = Arrays.copyOfRange(buffer, 2, 10);
             String SensorSn = LibreUtils.decodeSerialNumberKey(patchUid);
             PersistentStore.setString("LibreSN", SensorSn);
+            
+            if (SensorSanity.checkLibreSensorChangeIfEnabled(SensorSn)) {
+                Log.e(TAG, "Problem with Libre Serial Number - not processing");
+            }
+            
             return reply;
         }
         if (first == 0xC1) {
