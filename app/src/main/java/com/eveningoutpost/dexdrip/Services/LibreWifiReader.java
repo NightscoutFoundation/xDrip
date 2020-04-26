@@ -14,6 +14,7 @@ import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.LibreBlock;
 import com.eveningoutpost.dexdrip.Models.Sensor;
+import com.eveningoutpost.dexdrip.Models.SensorSanity;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.ParakeetHelper;
@@ -493,6 +494,10 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
                     PersistentStore.setString("TomatoFirmware",LastReading.FwVersion);
                     Log.i(TAG, "LastReading.SensorId " + LastReading.SensorId);
                     PersistentStore.setString("LibreSN", LastReading.SensorId);
+                    
+                    if (SensorSanity.checkLibreSensorChangeIfEnabled(LastReading.SensorId)) {
+                        Log.e(TAG, "Problem with Libre Serial Number - not processing");
+                    }
                     
                     
                 } else {

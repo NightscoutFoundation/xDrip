@@ -27,6 +27,7 @@ import com.eveningoutpost.dexdrip.Models.LibreBlock;
 import com.eveningoutpost.dexdrip.Models.NSBasal;
 import com.eveningoutpost.dexdrip.Models.RollCall;
 import com.eveningoutpost.dexdrip.Models.Sensor;
+import com.eveningoutpost.dexdrip.Models.SensorSanity;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
@@ -596,8 +597,13 @@ public class GcmListenerSvc extends JamListenerSvc {
         Pref.setInt("bridge_battery", lb.bridge_battery);
         PersistentStore.setString("Tomatobattery", Integer.toString(lb.Tomatobattery));
         PersistentStore.setString("Bubblebattery", Integer.toString(lb.Bubblebattery));
+        PersistentStore.setString("LibreSN", lb.reference);
         
         if(Home.get_master()) {
+            if (SensorSanity.checkLibreSensorChangeIfEnabled(lb.reference)) {
+                Log.e(TAG, "Problem with Libre Serial Number - not processing");
+            }
+            
             NFCReaderX.HandleGoodReading(lb.reference, lb.blockbytes, lb.timestamp, false, lb.patchUid,  lb.patchInfo);
         }
     }
