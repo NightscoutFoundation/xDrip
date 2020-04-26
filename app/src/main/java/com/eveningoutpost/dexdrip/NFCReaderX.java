@@ -26,6 +26,7 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.LibreBlock;
 import com.eveningoutpost.dexdrip.Models.LibreOOPAlgorithm;
 import com.eveningoutpost.dexdrip.Models.ReadingData;
+import com.eveningoutpost.dexdrip.Models.SensorSanity;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.LibreUtils;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
@@ -311,6 +312,10 @@ public class NFCReaderX {
                 if (succeeded) {
                     long now = JoH.tsl();
                     String SensorSn = LibreUtils.decodeSerialNumberKey(tag.getId());
+                    
+                    if (SensorSanity.checkLibreSensorChangeIfEnabled(SensorSn)) {
+                        Log.e(TAG, "Problem with Libre Serial Number - not processing");
+                    }
                     boolean checksum_ok = HandleGoodReading(SensorSn, data, now, false, tag.getId(), patchInfo);
                     if(checksum_ok == false) {
                         Log.e(TAG, "Read data but checksum is wrong");
