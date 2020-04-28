@@ -11,7 +11,6 @@ import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
 import com.google.gson.annotations.Expose;
-
 import java.text.DecimalFormat;
 import java.util.List;
 import java.util.UUID;
@@ -22,7 +21,7 @@ import org.json.JSONObject;
  */
 
 @Table(name = "LibreBlock", id = BaseColumns._ID)
-public class LibreBlock extends PlusModel {
+public class LibreBlock  extends PlusModel {
 
     private static final String TAG = "LibreBlock";
     static final String[] schema = {
@@ -80,10 +79,7 @@ public class LibreBlock extends PlusModel {
     public byte[] patchInfo;
     
     // Fields to store battery value. Not persistent in the DB.
-    public int bridge_battery;
-    public int Tomatobattery;
-    public int Bubblebattery;
-    
+
     // Only called by blucon with partial data.
     public static LibreBlock createAndSave(String reference, long timestamp, byte[] blocks, int byte_start) {
         return createAndSave(reference, timestamp, blocks, byte_start, false, null, null);
@@ -192,12 +188,9 @@ public class LibreBlock extends PlusModel {
     private static final boolean d = false;
 
     public String toJson() {
-        bridge_battery = Pref.getInt("bridge_battery", 0);
-        Tomatobattery = PersistentStore.getStringToInt("Tomatobattery", 0);
-        Bubblebattery = PersistentStore.getStringToInt("Bubblebattery", 0);
-        return JoH.defaultGsonInstance().toJson(this);
+        return JoH.defaultGsonInstance().toJson(this);        
     }
-    
+
     public static LibreBlock createFromJson(String json) {
         if (json == null) {
             return null;
@@ -211,6 +204,45 @@ public class LibreBlock extends PlusModel {
         }
         Log.e(TAG, "Successfuly created LibreBlock value " + json);
         return fresh;
+    }
+
+     class ExtendedLibreBlock {
+         @Expose
+         public int bridge_battery;
+          @Expose
+         public int Tomatobattery;
+          @Expose
+         public int Bubblebattery;
+          @Expose
+         public LibreBlock libreBlock;
+     }
+
+     public String toExtendedJson() {
+        ExtendedLibreBlock elb = new ExtendedLibreBlock();
+        elb.bridge_battery = Pref.getInt("bridge_battery", 0);
+        elb.Tomatobattery = PersistentStore.getStringToInt("Tomatobattery", 0);
+        elb.Bubblebattery = PersistentStore.getStringToInt("Bubblebattery", 0);
+        elb.libreBlock = this;
+        return JoH.defaultGsonInstance().toJson(elb);
+    }
+    
+    // This also saves the batteries data to the global state.
+    public static LibreBlock createFromExtendedJson(String json) {
+        if (json == null) {
+            return null;
+        }
+        ExtendedLibreBlock elb;
+        try {
+            elb = JoH.defaultGsonInstance().fromJson(json, ExtendedLibreBlock.class);
+        } catch (Exception e) {
+            Log.e(TAG, "Got exception processing json msg: " + e );
+            return null;
+        }
+        Log.e(TAG, "Successfuly created LibreBlock value " + json);
+        Pref.setInt("bridge_battery", elb.bridge_battery);
+        PersistentStore.setString("Tomatobattery", Integer.toString(elb.Tomatobattery));
+        PersistentStore.setString("Bubblebattery", Integer.toString(elb.Bubblebattery));
+        return elb.libreBlock;
     }
     
     public static void updateDB() {
