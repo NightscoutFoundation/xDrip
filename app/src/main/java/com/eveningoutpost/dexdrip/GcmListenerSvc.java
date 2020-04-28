@@ -584,7 +584,7 @@ public class GcmListenerSvc extends JamListenerSvc {
     }
 
     private void HandleLibreBlock(String payload) {
-        LibreBlock lb = LibreBlock.createFromJson(payload);
+        LibreBlock lb = LibreBlock.createFromExtendedJson(payload);
         if(lb == null) {
             return;
         }
@@ -594,9 +594,6 @@ public class GcmListenerSvc extends JamListenerSvc {
         }
         LibreBlock.Save(lb);
         
-        Pref.setInt("bridge_battery", lb.bridge_battery);
-        PersistentStore.setString("Tomatobattery", Integer.toString(lb.Tomatobattery));
-        PersistentStore.setString("Bubblebattery", Integer.toString(lb.Bubblebattery));
         PersistentStore.setString("LibreSN", lb.reference);
         
         if(Home.get_master()) {
