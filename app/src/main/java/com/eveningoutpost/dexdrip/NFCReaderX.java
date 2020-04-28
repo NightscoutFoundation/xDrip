@@ -241,7 +241,7 @@ public class NFCReaderX {
             Log.e(TAG, "Error could not create libreBlock for libre-allhouse");
             return;
         }
-        final String json = libreBlock.toJson();
+        final String json = libreBlock.toExtendedJson();
         
         GcmActivity.pushLibreBlock(json);
     
