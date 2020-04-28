@@ -58,6 +58,9 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
     private static final Gson gson = JoH.defaultGsonInstance();
 
     private final static long DEXCOM_PERIOD = 300000;
+    
+    // An object that is used to sync the readData
+    private static final Object readDataLock = new Object();
 
     // This variables are for fake function only
     static int i = 0;
@@ -407,8 +410,9 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
     public Void doInBackground(String... urls) {
         final PowerManager.WakeLock wl = JoH.getWakeLock("LibreWifiReader", 120000);
         try {
-            //getwakelock();
-            readData();
+            synchronized (readDataLock) {
+                readData();
+            }
         } finally {
             JoH.releaseWakeLock(wl);
            // Log.d(TAG, "wakelock released " + lockCounter);
@@ -464,7 +468,6 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
         for (LibreWifiData LastReading : LibreWifiDataArr) {
             // Last in the array is the most updated reading we have.
             //TransmitterRawData LastReading = LastReadingArr[LastReadingArr.length -1];
-
 
             //if (LastReading.CaptureDateTime > LastReportedReading + 5000) {
             // Make sure we do not report packets from the far future...

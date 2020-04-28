@@ -62,6 +62,8 @@ public class NFCReaderX {
     private static final boolean useReaderMode = true;
     private static boolean nfc_enabled = false;
 
+    // An object that is used to sync the processReadData
+    private static final Object processReadDataLock = new Object();
 
     public static void stopNFC(Activity context) {
         if (foreground_enabled) {
@@ -276,9 +278,12 @@ public class NFCReaderX {
                 public void run() {
                     final PowerManager.WakeLock wl = JoH.getWakeLock("processTransferObject", 60000);
                     try {
-                        mResult.CalculateSmothedData();
-                        LibreAlarmReceiver.processReadingDataTransferObject(new ReadingData.TransferObject(1, mResult), CaptureDateTime, tagId, allowUpload, patchUid, patchInfo );
-                        Home.staticRefreshBGCharts();
+                        // Protect against wifi reader and gmc reader coming at the same time.
+                        synchronized (processReadDataLock) {
+                            mResult.CalculateSmothedData();
+                            LibreAlarmReceiver.processReadingDataTransferObject(new ReadingData.TransferObject(1, mResult), CaptureDateTime, tagId, allowUpload, patchUid, patchInfo );
+                            Home.staticRefreshBGCharts();
+                        }
                     } finally {
                         JoH.releaseWakeLock(wl);
                     }
