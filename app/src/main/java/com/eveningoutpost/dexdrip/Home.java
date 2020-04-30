@@ -3040,7 +3040,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         menu.findItem(R.id.showreminders).setVisible(Pref.getBoolean("plus_show_reminders", true) && !is_newbie);
 
         LibreBlock libreBlock = null;
-        if (DexCollectionType.hasLibre()) {
+        if (DexCollectionType.hasLibre() || get_follower()) {
             libreBlock = LibreBlock.getLatestForTrend();
         }
         if (libreBlock == null) {
