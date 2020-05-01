@@ -93,7 +93,8 @@ public class MiBandService extends JamBaseBluetoothSequencer {
     private static final boolean d = true;
 
     private static final long RETRY_PERIOD_MS = Constants.SECOND_IN_MS * 30; // sleep for max ms if we have had no signal
-    private static final long BG_UPDATE_INTERVAL = 30 * Constants.MINUTE_IN_MS; //minutes
+    private static final long BG_UPDATE_DATA_LOSS_INTERVAL = 15 * Constants.MINUTE_IN_MS; //minutes, update miband display to show data loss
+    private static final long BG_UPDATE_NO_DATA_INTERVAL = 30 * Constants.MINUTE_IN_MS; //minutes
     private static final long CONNECTION_TIMEOUT = 5 * Constants.MINUTE_IN_MS; //minutes
     private static final long RESTORE_NIGHT_MODE_DELAY = (Constants.SECOND_IN_MS * 7);
     private static final int QUEUE_EXPIRED_TIME = 30; //second
@@ -266,11 +267,15 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                 break;
             case "glucose_after":
                 if (!isWaitingSnoozeResponce) break;
+                startBgTimer();
                 ((MiBandState) mState).setQueueSequence();
                 changeState(INIT);
                 break;
             case "update_bg":
-                if (isNightMode) break;
+                if (isNightMode) {
+                    UserError.Log.d(TAG, "Skip bg update because of night mode");
+                    break;
+                }
                 startBgTimer();
                 ((MiBandState) mState).setSendReadingSequence();
                 changeState(INIT);
@@ -285,6 +290,14 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                 changeState(INIT);
                 break;
         }
+    }
+
+    private boolean isStaleReading() {
+        BgReading last = BgReading.last();
+        if (last == null || last.isStale()) {
+            return true;
+        }
+        return false;
     }
 
     private static final boolean isBetweenValidTime(Date startTime, Date endTime, Date currentTime) {
@@ -334,8 +347,14 @@ public class MiBandService extends JamBaseBluetoothSequencer {
 
     private long whenToRetryNextBgTimer() {
         final long bg_time;
+
         Calendar expireDate = Calendar.getInstance();
-        expireDate.setTimeInMillis(System.currentTimeMillis() + BG_UPDATE_INTERVAL);
+
+        long updateInterval = BG_UPDATE_DATA_LOSS_INTERVAL;
+        if (isStaleReading()) {
+            updateInterval = BG_UPDATE_NO_DATA_INTERVAL;
+        }
+        expireDate.setTimeInMillis(System.currentTimeMillis() + updateInterval);
         isNightMode = false;
         if (MiBandEntry.isNightModeEnabled()) {
             int nightModeInterval = MiBandEntry.getNightModeInterval();
@@ -409,6 +428,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                         String msgText = "Alert snoozed for " + defaultSnoozle + " min";
                         UserError.Log.d(TAG, msgText);
                         messageQueue.addFirst(new QueueMessage("message", MIBAND_NOTIFY_TYPE_MESSAGE, msgText, "Alert snoozed", 0));
+                        startBgTimer();
                         if (readyToProcessCommand())
                             handleCommand();
                     } catch (NumberFormatException e) {
@@ -419,8 +439,12 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                 break;
             case DeviceEvent.CALL_IGNORE:
                 UserError.Log.d(TAG, "call ignored");
-                isWaitingSnoozeResponce = false;
+                if (isWaitingSnoozeResponce){
+                    isWaitingSnoozeResponce = false;
+                    startBgTimer();
+                }
                 isWaitingCallResponce = false;
+
                 break;
             case DeviceEvent.BUTTON_PRESSED:
                 UserError.Log.d(TAG, "button pressed");
@@ -710,6 +734,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                         .setRunnable(() -> isWaitingSnoozeResponce = true)
                         .setDelayMs(QUEUE_DELAY)
                         .queue();
+                stopBgUpdateTimer();
                 bgServiceIntent = WakeLockTrampoline.getPendingIntent(this.getClass(), Constants.MIBAND_SERVICE_BG_RETRY_ID, "glucose_after");
                 JoH.wakeUpIntent(xdrip.getAppContext(), CALL_ALERT_DELAY, bgServiceIntent);
                 break;
@@ -861,7 +886,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                         }, throwable -> {
                             UserError.Log.e(TAG, "Could not write OPCODE_AUTH_REQ2: " + throwable);
                         });
-            }catch (Exception e){
+            } catch (Exception e) {
                 JoH.static_toast_long(e.getMessage());
                 UserError.Log.e(TAG, (e.getMessage()));
                 changeState(AUTHORIZE_FAILED);

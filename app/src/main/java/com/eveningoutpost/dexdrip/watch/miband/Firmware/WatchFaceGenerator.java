@@ -258,8 +258,8 @@ public class WatchFaceGenerator {
         //draw treatment
         if (isGraphEnabled && showTreatment) {
             Treatments treatment = Treatments.last();
-            if (treatment.hasContent() && !treatment.noteOnly()) {
-                int treatmentTextPosY = unitsTextPosY + timeStampTextSize +1;//px
+            if (treatment != null && treatment.hasContent() && !treatment.noteOnly()) {
+                int treatmentTextPosY = unitsTextPosY + timeStampTextSize + 1;//px
                 paint.setTextSize(timeStampTextSize);
                 paint.setStrikeThruText(false);
 
@@ -278,7 +278,7 @@ public class WatchFaceGenerator {
                     if (treatment.timestamp > Constants.DAY_IN_MS)
                         mylabel = mylabel + " at " + hourMinuteString(treatment.timestamp);
                     else
-                        timeStampText = mylabel + " " + JoH.niceTimeScalar(JoH.msSince(treatment.timestamp)) + " ago";
+                        mylabel = mylabel + " " + JoH.niceTimeScalar(JoH.msSince(treatment.timestamp)) + " ago";
                 }
 
                 paint.getTextBounds(mylabel, 0, mylabel.length(), bounds);
