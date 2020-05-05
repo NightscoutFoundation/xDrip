@@ -889,12 +889,17 @@ public abstract class JamBaseBluetoothSequencer extends JamBaseBluetoothService 
 
     private synchronized void writeMultipleFromQueue(final PoorMansConcurrentLinkedDeque<QueueItem> queue) {
         if (I.isConnected) {
-            final QueueItem item = queue.poll();
+            QueueItem item = queue.poll();
+            while (item != null && item.isExpired()) {
+                UserError.Log.d(TAG, "Item expired from queue early: (expiry: " + JoH.dateTimeText(item.expireAt) + " " + item.description);
+                item = queue.poll();
+            }
             if (item != null) {
                 if (!item.isExpired()) {
                     UserError.Log.d(TAG, "Starting queue send for item: " + item.description);
                     writeQueueItem(queue, item);
                 } else {
+                    // TODO this is very much an edge case now
                     UserError.Log.d(TAG, "Item expired from queue: (expiry: " + JoH.dateTimeText(item.expireAt) + " " + item.description);
                     writeMultipleFromQueue(queue);
                 }
