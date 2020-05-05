@@ -379,6 +379,7 @@
     <string name="choose_sound_used_for_predicted_low_alarm">Vybrat zvuk pro předpokládanou nízkou glykémii</string>
     <string name="notify_when_parakeet_device_stops_checking_in">Oznámit, když se Parakeet přestane hlásit</string>
     <string name="parakeet_related_alerts">Výstrahy Parakeetu</string>
+    <string name="raise_parakeet_notification_silently_when_charging">Spustit oznámení Parakeetu potichu během nabíjení</string>
     <string name="silent_alert_when_charging">Tiché výstrahy při nabíjení</string>
     <string name="alerts_start_out_snoozed_and_must_persist_for_a_while">Výstrahy se spustí potvrzené a musí existovat nějakou dobu pro spuštění</string>
     <string name="alarms_silenced_during_telephone_calls">Ztišit výstrahy během hovoru</string>
