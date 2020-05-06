@@ -713,6 +713,12 @@ public class GcmActivity extends FauxActivity {
         if (!Home.get_master()) {
             return;
         }
+        if (!JoH.ratelimit("libre-allhouse", 5)) {
+            // Do not create storm of packets.
+            Log.e(TAG, "Rate limited start libre-allhouse");
+            return;
+        }
+
         GcmActivity.sendMessage(myIdentity(), "libreBlock", libreBlock);
     }
 
