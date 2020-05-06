@@ -62,9 +62,6 @@ public class NFCReaderX {
     private static final boolean useReaderMode = true;
     private static boolean nfc_enabled = false;
 
-    // An object that is used to sync the processReadData
-    private static final Object processReadDataLock = new Object();
-
     public static void stopNFC(Activity context) {
         if (foreground_enabled) {
             try {
@@ -232,11 +229,6 @@ public class NFCReaderX {
             // We already have this one, so we have already sent it, so let's not crate storms.
             return;
         }
-        if (!JoH.ratelimit("libre-allhouse", 5)) {
-            // Do not create storm of packets.
-            Log.e(TAG, "Rate limited start libre-allhouse");
-            return;
-        }
         // Create the object to send
         libreBlock = LibreBlock.create(tagId, CaptureDateTime, data1, 0, patchUid, patchInfo);
         if(libreBlock == null) {
@@ -279,7 +271,7 @@ public class NFCReaderX {
                     final PowerManager.WakeLock wl = JoH.getWakeLock("processTransferObject", 60000);
                     try {
                         // Protect against wifi reader and gmc reader coming at the same time.
-                        synchronized (processReadDataLock) {
+                        synchronized (NFCReaderX.class) {
                             mResult.CalculateSmothedData();
                             LibreAlarmReceiver.processReadingDataTransferObject(new ReadingData.TransferObject(1, mResult), CaptureDateTime, tagId, allowUpload, patchUid, patchInfo );
                             Home.staticRefreshBGCharts();

@@ -59,9 +59,6 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
 
     private final static long DEXCOM_PERIOD = 300000;
     
-    // An object that is used to sync the readData
-    private static final Object readDataLock = new Object();
-
     // This variables are for fake function only
     static int i = 0;
     static int added = 5;
@@ -410,7 +407,7 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
     public Void doInBackground(String... urls) {
         final PowerManager.WakeLock wl = JoH.getWakeLock("LibreWifiReader", 120000);
         try {
-            synchronized (readDataLock) {
+            synchronized (LibreWifiReader.class) {
                 readData();
             }
         } finally {
