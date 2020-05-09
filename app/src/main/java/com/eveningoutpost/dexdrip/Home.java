@@ -2097,6 +2097,10 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         if (!has_libreblock_set) setHasLibreblock();
         return has_libreblock;
     }
+    
+    public static boolean get_is_libre_whole_house_collector() {
+        return Pref.getBooleanDefaultFalse("libre_whole_house_collector");
+    }
 
     public static boolean get_engineering_mode() {
         return Pref.getBooleanDefaultFalse("engineering_mode");
