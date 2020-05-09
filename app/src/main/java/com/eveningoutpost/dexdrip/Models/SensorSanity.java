@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.Models;
 
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
@@ -101,30 +102,109 @@ public class SensorSanity {
         return Pref.getBoolean("detect_libre_sn_changes", true) && checkLibreSensorChange(sn);
     }
 
+    // returns true in the case of an error (had to stop the sensor)
     public synchronized static boolean checkLibreSensorChange(final String currentSerial) {
         if ((currentSerial == null) || currentSerial.length() < 4) return false;
-        final String lastSn = PersistentStore.getString(PREF_LIBRE_SN);
-        if (!currentSerial.equals(lastSn)) {
-            final Sensor this_sensor = Sensor.currentSensor();
-            if ((lastSn.length() > 3) && (this_sensor != null)) {
-
-                final String last_uuid = PersistentStore.getString(PREF_LIBRE_SENSOR_UUID);
-
-                if (last_uuid.equals(this_sensor.uuid)) {
-                    if (last_uuid.length() > 3) {
-                        UserError.Log.wtf(TAG, String.format("Different sensor serial number for same sensor uuid: %s :: %s vs %s", last_uuid, lastSn, currentSerial));
-                        Sensor.stopSensor();
-                        JoH.static_toast_long("Stopping sensor due to serial number change");
-                        Sensor.stopSensor();
-                        return true;
-                    }
-                } else {
-                    PersistentStore.setString(PREF_LIBRE_SENSOR_UUID, this_sensor.uuid);
-                }
-            }
-            PersistentStore.setString(PREF_LIBRE_SN, currentSerial);
+        final Sensor this_sensor = Sensor.currentSensor();
+        if(this_sensor == null || this_sensor.uuid == null|| this_sensor.uuid.length() < 4) {
+            Log.i(TAG, "no senosr open, deleting everything");
+            PersistentStore.setString(PREF_LIBRE_SENSOR_UUID, "");
+            PersistentStore.setString(PREF_LIBRE_SN, "");
+            return false;
         }
-        return false;
+        final String lastSn = PersistentStore.getString(PREF_LIBRE_SN);
+        final String last_uuid = PersistentStore.getString(PREF_LIBRE_SENSOR_UUID);
+        if(lastSn.length() < 4 || last_uuid.length() < 4) {
+            Log.i(TAG, "lastSn or last_uuid not valid, writing current values.");
+            PersistentStore.setString(PREF_LIBRE_SENSOR_UUID, this_sensor.uuid);
+            PersistentStore.setString(PREF_LIBRE_SN, currentSerial);
+            return false;
+        }
+        // Here we have the data that we need to start verifying.
+        if(lastSn.equals(currentSerial)) {
+            if(this_sensor.uuid.equals(last_uuid)) {
+                // all well
+                return false;
+            } else {
+                // This is the case that the user had a sensor, but he stopped it and started a new one in xDrip.
+                // This is probably ok, since physical sensor has not changed.
+                // we learn the new uuid and continue.
+                Log.e(TAG, "A new xdrip sensor was found, updating state.");
+                PersistentStore.setString(PREF_LIBRE_SENSOR_UUID, this_sensor.uuid);
+                return false;
+            }
+        } else {
+            // We have a new sensorid. So physical sensors have changed.
+            // verify uuid have also changed.
+            if(this_sensor.uuid.equals(last_uuid)) {
+                // We need to stop the sensor.
+                Log.e(TAG, String.format("Different sensor serial number for same sensor uuid: %s :: %s vs %s", last_uuid, lastSn, currentSerial));
+                Sensor.stopSensor();
+                JoH.static_toast_long("Stopping sensor due to serial number change");
+                // There is no open sensor now.
+                PersistentStore.setString(PREF_LIBRE_SENSOR_UUID, "");
+                PersistentStore.setString(PREF_LIBRE_SN, "");
+                return true;
+
+            } else {
+                // This is the first time we see this sensor, update our uuid.
+                Log.i(TAG, "This is the first time we see this sensor uuid = " +  this_sensor.uuid);
+                PersistentStore.setString(PREF_LIBRE_SENSOR_UUID, this_sensor.uuid);
+                return false;
+            }
+        }
     }
+
+    // This is a test for the CheckLibreSensorChange function.
+    public static void testCheckLibreSensorChange() {
+        // Take us to a known state:
+        Log.e("xxxxx", "testCheckLibreSensorChange starting");
+        Sensor this_sensor = Sensor.currentSensor();
+        if (this_sensor != null) {
+            Sensor.stopSensor();
+        }
+        PersistentStore.setString(PREF_LIBRE_SENSOR_UUID, "");
+        PersistentStore.setString(PREF_LIBRE_SN, "");
+        
+        // Start testing: create a sensor, call checkLibreSensorChange twice with same sensor, and once with a new
+        // sn, and verify it is closed.
+        Sensor.create(JoH.tsl());
+        checkLibreSensorChange("SN111");
+        checkLibreSensorChange("SN111");
+        checkLibreSensorChange("SN222");
+        this_sensor = Sensor.currentSensor();
+        Log.e("xxxxx", "Expectingthis_sensor to be null, actually " + this_sensor);
+        if (this_sensor != null) {
+            Sensor.stopSensor();
+        }
+        // Continue testing: create new one, call with the second sn twice. now call with third sn, sensor should be stopped.
+        Sensor.create(JoH.tsl());
+        checkLibreSensorChange("SN222");
+        checkLibreSensorChange("SN222");
+        checkLibreSensorChange("SN333");
+        this_sensor = Sensor.currentSensor();
+        Log.e("xxxxx", "Expectingthis_sensor to be null, actually " + this_sensor);
+        if (this_sensor != null) {
+            Sensor.stopSensor();
+        }
+        
+        // Create a new sensor, call check, then stop it and start another, all should be well.
+        Sensor.create(JoH.tsl());
+        checkLibreSensorChange("SN333");
+        checkLibreSensorChange("SN333");
+        checkLibreSensorChange("SN333");
+        this_sensor = Sensor.currentSensor();
+        Log.e("xxxxx", "Expectingthis_sensor not to be null, actually " + this_sensor);
+        if (this_sensor != null) {
+            Sensor.stopSensor();
+        }
+        Sensor.create(JoH.tsl());
+        checkLibreSensorChange("SN333");
+        checkLibreSensorChange("SN333");
+        this_sensor = Sensor.currentSensor();
+        Log.e("xxxxx", "Expectingthis_sensor not to be null, actually " + this_sensor);
+        
+    }
+    
 
 }
