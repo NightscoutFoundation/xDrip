@@ -280,6 +280,10 @@ public class GcmActivity extends FauxActivity {
             UserError.Log.wtf(TAG, "Cannot sync null bgreading - should never occur");
             return;
         }
+        if(Home.get_is_libre_whole_house_collector()) {
+            Log.w(TAG, "Not sending syncBGReading since this is libre allhouse collector.");
+            return;
+        }
         Log.d(TAG, "syncBGReading called");
         if (JoH.ratelimit("gcm-bgs-batch", 15)) {
             GcmActivity.sendMessage("bgs", bgReading.toJSON(true));
@@ -293,6 +297,10 @@ public class GcmActivity extends FauxActivity {
     // called only from interactive or evaluated new data
     public synchronized static void syncBloodTests() {
         Log.d(TAG, "syncBloodTests called");
+        if(Home.get_is_libre_whole_house_collector()) {
+            Log.w(TAG, "Not sending syncBloodTests since this is libre allhouse collector.");
+            return;
+        }
         if (Home.get_master_or_follower()) {
             if (JoH.ratelimit("gcm-btmm-send", 4)) {
                 final byte[] this_btmm = BloodTest.toMultiMessage(BloodTest.last(12));
@@ -309,6 +317,10 @@ public class GcmActivity extends FauxActivity {
     private synchronized static void processBgsBatch(boolean send_now) {
         final byte[] value = PersistentStore.getBytes("gcm-bgs-batch-queue");
         Log.d(TAG, "Processing BgsBatch: length: " + value.length + " now:" + send_now);
+        if(Home.get_is_libre_whole_house_collector()) {
+            Log.w(TAG, "Not sending processBgsBatch since this is libre allhouse collector.");
+            return;
+        }
         if ((send_now) || (value.length > (RELIABLE_MAX_BINARY_PAYLOAD - 100))) {
             if (value.length > 0) {
                 PersistentStore.setString("gcm-bgs-batch-queue", "");
@@ -333,6 +345,10 @@ public class GcmActivity extends FauxActivity {
         Log.i(TAG, "syncSensor called");
         if (sensor == null) {
             Log.e(TAG, "syncSensor sensor is null");
+            return;
+        }
+        if(Home.get_is_libre_whole_house_collector()) {
+            Log.w(TAG, "Not sending syncSensor since this is libre allhouse collector.");
             return;
         }
         if ((!forceSend) && !JoH.pratelimit("GcmSensorCalibrationsUpdate", 300)) {
@@ -387,18 +403,30 @@ public class GcmActivity extends FauxActivity {
     }
 
     static void sendLocation(final String location) {
+        if(Home.get_is_libre_whole_house_collector()) {
+            Log.w(TAG, "Not sending sendLocation since this is libre allhouse collector.");
+            return;
+        }
         if (JoH.pratelimit("gcm-plu", 180)) {
             GcmActivity.sendMessage("plu", location);
         }
     }
 
     public static void sendSensorBattery(final int battery) {
+        if(Home.get_is_libre_whole_house_collector()) {
+            Log.w(TAG, "Not sending sendSensorBattery since this is libre allhouse collector.");
+            return;
+        }
         if (JoH.pratelimit("gcm-sbu", 3600)) {
             GcmActivity.sendMessage("sbu", Integer.toString(battery));
         }
     }
 
     public static void sendBridgeBattery(final int battery) {
+        if(Home.get_is_libre_whole_house_collector()) {
+            Log.w(TAG, "Not sending sendBridgeBattery since this is libre allhouse collector.");
+            return;
+        }
         if (battery != last_bridge_battery) {
             if (JoH.pratelimit("gcm-bbu", 1800)) {
                 GcmActivity.sendMessage("bbu", Integer.toString(battery));
@@ -408,6 +436,10 @@ public class GcmActivity extends FauxActivity {
     }
 
     public static void sendParakeetBattery(final int battery) {
+        if(Home.get_is_libre_whole_house_collector()) {
+            Log.w(TAG, "Not sending sendParakeetBattery since this is libre allhouse collector.");
+            return;
+        }
         if (battery != last_parakeet_battery) {
             if (JoH.pratelimit("gcm-pbu", 1800)) {
                 GcmActivity.sendMessage("pbu", Integer.toString(battery));
@@ -417,6 +449,11 @@ public class GcmActivity extends FauxActivity {
     }
 
     public static void sendNotification(String title, String message) {
+        if(Home.get_is_libre_whole_house_collector()) {
+            Log.w(TAG, "Not sending sendNotification since this is libre allhouse collector.");
+            return;
+        }
+
         if (JoH.pratelimit("gcm-not", 30)) {
             GcmActivity.sendMessage("not", title.replaceAll("\\^", "") + "^" + message.replaceAll("\\^", ""));
         }
@@ -497,18 +534,30 @@ public class GcmActivity extends FauxActivity {
     }
 
     public static void sendMotionUpdate(final long timestamp, final int activity) {
+        if(Home.get_is_libre_whole_house_collector()) {
+            Log.w(TAG, "Not sending sendMotionUpdate since this is libre allhouse collector.");
+            return;
+        }
         if (JoH.pratelimit("gcm-amu", 5)) {
             sendMessage("amu", Long.toString(timestamp) + "^" + Integer.toString(activity));
         }
     }
 
     public static void sendPumpStatus(String json) {
+        if(Home.get_is_libre_whole_house_collector()) {
+            Log.w(TAG, "Not sending sendPumpStatus since this is libre allhouse collector.");
+            return;
+        }
         if (JoH.pratelimit("gcm-psu", 180)) {
             sendMessage("psu", json);
         }
     }
 
     public static void sendNanoStatusUpdate(final String json) {
+        if(Home.get_is_libre_whole_house_collector()) {
+            Log.w(TAG, "Not sending sendNanoStatusUpdate since this is libre allhouse collector.");
+            return;
+        }
         if (JoH.pratelimit("gcm-nscu", 180)) {
             UserError.Log.d(TAG, "Sending nano status update: " + json);
             sendMessage("nscu", json);
@@ -516,6 +565,10 @@ public class GcmActivity extends FauxActivity {
     }
 
     public static void sendMimeoGraphUpdate(final String json) {
+        if(Home.get_is_libre_whole_house_collector()) {
+            Log.w(TAG, "Not sending sendMimeoGraphUpdate since this is libre allhouse collector.");
+            return;
+        }
         if (JoH.pratelimit("gcm-mimg", 180)) {
             UserError.Log.d(TAG, "Sending mimeograph key update: " + json);
             sendMessage("mimg", json);
@@ -524,6 +577,11 @@ public class GcmActivity extends FauxActivity {
 
 
     public static void requestBGsync() {
+        if(Home.get_is_libre_whole_house_collector()) {
+            Log.w(TAG, "Not sending requestBGsync since this is libre allhouse collector.");
+            return;
+        }
+
         if (token != null) {
             if ((JoH.tsl() - last_sync_request) > (60 * 1000 * (5 + bg_sync_backoff))) {
                 last_sync_request = JoH.tsl();
@@ -584,6 +642,10 @@ public class GcmActivity extends FauxActivity {
 
     // callback function
     public static void backfillLink(String id, String key) {
+        if(Home.get_is_libre_whole_house_collector()) {
+            Log.w(TAG, "Not sending backfillLink since this is libre allhouse collector.");
+            return;
+        }
         Log.d(TAG, "sending bfb message: " + id);
         sendMessage("bfb", id + "^" + key);
     }
@@ -598,6 +660,10 @@ public class GcmActivity extends FauxActivity {
     }
 
     static void requestSensorBatteryUpdate() {
+        if(Home.get_is_libre_whole_house_collector()) {
+            Log.w(TAG, "Not sending requestSensorBatteryUpdate since this is libre allhouse collector.");
+            return;
+        }
         if (Home.get_follower() && JoH.pratelimit("SensorBatteryUpdateRequest", 1200)) {
             Log.d(TAG, "Requesting Sensor Battery Update");
             GcmActivity.sendMessage("sbr", ""); // request sensor battery update
@@ -605,6 +671,10 @@ public class GcmActivity extends FauxActivity {
     }
 
     public static void requestSensorCalibrationsUpdate() {
+        if(Home.get_is_libre_whole_house_collector()) {
+            Log.w(TAG, "Not sending requestSensorCalibrationsUpdate since this is libre allhouse collector.");
+            return;
+        }
         if (Home.get_follower() && JoH.pratelimit("SensorCalibrationsUpdateRequest", 300)) {
             Log.d(TAG, "Requesting Sensor and calibrations Update");
             GcmActivity.sendMessage("sensor_calibrations_update", "");
@@ -613,6 +683,10 @@ public class GcmActivity extends FauxActivity {
 
     public static void pushTreatmentAsync(final Treatments thistreatment) {
         if ((thistreatment.uuid == null) || (thistreatment.uuid.length() < 5)) return;
+        if(Home.get_is_libre_whole_house_collector()) {
+            Log.w(TAG, "Not sending pushTreatmentAsync since this is libre allhouse collector.");
+            return;
+        }
         final String json = thistreatment.toJSON();
         sendMessage(myIdentity(), "nt", json);
     }
@@ -623,24 +697,44 @@ public class GcmActivity extends FauxActivity {
     }
 
     public static void push_delete_all_treatments() {
+        if(Home.get_is_libre_whole_house_collector()) {
+            Log.w(TAG, "Not sending push_delete_all_treatments since this is libre allhouse collector.");
+            return;
+        }
         Log.i(TAG, "Sending push for delete all treatments");
         sendMessage(myIdentity(), "dat", "");
     }
 
     public static void push_delete_treatment(Treatments treatment) {
+        if(Home.get_is_libre_whole_house_collector()) {
+            Log.w(TAG, "Not sending push_delete_treatment since this is libre allhouse collector.");
+            return;
+        }
         Log.i(TAG, "Sending push for specific treatment");
         sendMessage(myIdentity(), "dt", treatment.uuid);
     }
 
     public static void push_stop_master_sensor() {
+        if(Home.get_is_libre_whole_house_collector()) {
+            Log.w(TAG, "Not sending push_stop_master_sensor since this is libre allhouse collector.");
+            return;
+        }
         sendMessage("ssom", "challenge string");
     }
 
     public static void push_start_master_sensor() {
+        if(Home.get_is_libre_whole_house_collector()) {
+            Log.w(TAG, "Not sending push_start_master_sensor since this is libre allhouse collector.");
+            return;
+        }
         sendMessage("rsom", JoH.tsl() + "");
     }
 
     public static void push_external_status_update(long timestamp, String statusLine) {
+        if(Home.get_is_libre_whole_house_collector()) {
+            Log.w(TAG, "Not sending external_status_update since this is libre allhouse collector.");
+            return;
+        }
         if (JoH.ratelimit("gcm-esup", 30)) {
             sendMessage("esup", timestamp + "^" + statusLine);
         }
@@ -663,6 +757,10 @@ public class GcmActivity extends FauxActivity {
             // For master, we now send the entire table, no need to send this specific table each time
             return;
         }
+        if(Home.get_is_libre_whole_house_collector()) {
+            Log.w(TAG, "Not sending pushCalibration since this is libre allhouse collector.");
+            return;
+        }
         if (Home.get_follower()) {
             final String currenttime = Double.toString(new Date().getTime());
             final String tosend = currenttime + " " + bg_value + " " + seconds_ago;
@@ -672,6 +770,10 @@ public class GcmActivity extends FauxActivity {
 
     static void pushCalibration2(double bgValue, String uuid, long offset) {
         Log.i(TAG, "pushCalibration2 called: " + JoH.qs(bgValue, 1) + " " + uuid + " " + offset);
+        if(Home.get_is_libre_whole_house_collector()) {
+            Log.w(TAG, "Not sending pushCalibration2 since this is libre allhouse collector.");
+            return;
+        }
         if (Home.get_master_or_follower()) {
             final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
             final String unit = prefs.getString("units", "mgdl");
@@ -723,6 +825,10 @@ public class GcmActivity extends FauxActivity {
     }
 
     public static void clearLastCalibration(String uuid) {
+        if(Home.get_is_libre_whole_house_collector()) {
+            Log.w(TAG, "Not sending clearLastCalibration since this is libre allhouse collector.");
+            return;
+        }
         sendMessage(myIdentity(), "clc", uuid);
     }
 

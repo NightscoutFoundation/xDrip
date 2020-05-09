@@ -758,6 +758,14 @@
                 android:switchTextOff="@string/short_off_text_for_switches"
                 android:switchTextOn="@string/short_on_text_for_switches"
                 android:title="@string/title_plus_whole_house" />
+            <SwitchPreference
+                android:defaultValue="false"
+                android:dependency="plus_follow_master"
+                android:key="libre_whole_house_collector"
+                android:summary="@string/summary_libre_whole_house_collector"
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
+                android:title="@string/title_libre_whole_house_collector" />
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:dependency="plus_follow_master"

@@ -1331,6 +1331,8 @@
     <string name="title_plus_accept_follower_actions">Accept follower actions</string>
     <string name="summary_plus_whole_house">Participate in a Whole House Network</string>
     <string name="title_plus_whole_house">Whole House</string>
+    <string name="summary_libre_whole_house_collector">This phone will be a collector in a whole house network</string>
+    <string name="title_libre_whole_house_collector">Libre Whole House</string>
     <string name="summary_xdrip_plus_desert_sync_settings">Off-Grid following</string>
     <string name="title_xdrip_plus_desert_sync_settings">Desert Sync</string>
     <string name="summary_desert_sync_enabled">Enabled local non-internet sync facilities</string>
