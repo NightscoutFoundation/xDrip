@@ -293,6 +293,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     private ActivityHomeBinding binding;
     private boolean is_newbie;
     private boolean checkedeula;
+    private static boolean has_libreblock = false;
+    private static boolean has_libreblock_set = false;
 
     @Inject
     BaseShelf homeShelf;
@@ -2087,6 +2089,16 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         return Home.is_follower;
     }
 
+    private static void setHasLibreblock() {
+        has_libreblock =  LibreBlock.getLatestForTrend() != null;
+        has_libreblock_set = true;
+    }
+
+    public static boolean hasLibreblock() {
+        if (!has_libreblock_set) setHasLibreblock();
+        return has_libreblock;
+    }
+
     public static boolean get_engineering_mode() {
         return Pref.getBooleanDefaultFalse("engineering_mode");
     }
@@ -3039,11 +3051,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
         menu.findItem(R.id.showreminders).setVisible(Pref.getBoolean("plus_show_reminders", true) && !is_newbie);
 
-        LibreBlock libreBlock = null;
-        if (DexCollectionType.hasLibre() || get_follower()) {
-            libreBlock = LibreBlock.getLatestForTrend();
-        }
-        if (libreBlock == null) {
+        if (!hasLibreblock()) {
             menu.findItem(R.id.libreLastMinutes).setVisible(false);
         }
 
