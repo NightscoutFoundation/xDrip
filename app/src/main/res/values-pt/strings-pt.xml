@@ -1424,7 +1424,7 @@
     <string name="median_bg">Glicemia mediana:</string>
     <string name="mean_bg">Glicemia média:</string>
     <string name="hba1c_est">HbA1c est.:</string>
-    <string name="stddev">DesvioParão:</string>
+    <string name="stddev">DesvioPadr:</string>
     <string name="relative_sd_cv">DP relativo (CV):</string>
     <string name="important_warning">Aviso Importante!</string>
     <string name="i_agree">CONCORDO</string>
