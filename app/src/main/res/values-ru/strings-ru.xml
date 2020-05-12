@@ -1185,6 +1185,7 @@
     <string name="send_bg_readings_to_backfill">Отправить данные с датчика для \'обратного заполнения\'</string>
     <string name="view_old_error_log">Просмотреть старый журнал ошибок</string>
     <string name="return_to_home_screen">Вернуться к домашнему экрану</string>
+    <string name="title_miband">MiBand</string>
     <string name="title_lefun_band">Браслет Lefun</string>
     <string name="summary_lefun_enable">Синхронизировать данные с фитнес браслетом LeFun</string>
     <string name="title_lefun_enable">Использовать браслет LeFun</string>
