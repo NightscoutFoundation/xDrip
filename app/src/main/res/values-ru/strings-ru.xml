@@ -1193,6 +1193,7 @@
     <string name="title_miband_show_date">Отображать дату на экране</string>
     <string name="title_miband_visibility">Видимость MiBand</string>
     <string name="summary_miband_visibility">MiBand будет виден остальным устройствам</string>
+    <string name="title_miband_switch_display_on_wrist">Переключать экран поворотом запястья</string>
     <string name="title_miband_units">Ед. измерения</string>
     <string name="summary_miband_units">Выберите ед. измерения расстояния для браслета </string>
     <string name="title_miband_goal_notification">Уведомление о достижении цели</string>
