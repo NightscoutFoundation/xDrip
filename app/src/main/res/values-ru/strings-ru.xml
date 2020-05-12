@@ -1191,6 +1191,8 @@
     <string name="title_miband_screens_features">Экраны / Функции MiBand</string>
     <string name="title_miband_screen_battery">Отображать заряд</string>
     <string name="title_miband_show_date">Отображать дату на экране</string>
+    <string name="title_miband_visibility">Видимость MiBand</string>
+    <string name="summary_miband_visibility">MiBand будет виден остальным устройствам</string>
     <string name="title_lefun_band">Браслет Lefun</string>
     <string name="summary_lefun_enable">Синхронизировать данные с фитнес браслетом LeFun</string>
     <string name="title_lefun_enable">Использовать браслет LeFun</string>
