@@ -214,7 +214,7 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
                 // reading, and then BT disconnects and connects after a few seconds, and we have a new reading (where 
                 // sensor did not advance). This does not mean that a sensor is not advancing. Only if this is happening
                 // for a few minutes, this is a problem.
-                if(BgReading.getTimeSinceLastReading() > 4.5*60*1000) {
+                if(BgReading.getTimeSinceLastReading() > 11 * 60 * 1000) {
                     Log.wtf(TAG, "Sensor age has not advanced: " + sensorAge);
                     JoH.static_toast_long(gs(R.string.sensor_clock_has_not_advanced));
                     Pref.setBoolean("nfc_age_problem", true);
