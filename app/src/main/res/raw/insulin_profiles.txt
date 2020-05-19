@@ -40,6 +40,25 @@
       }
     },
     {
+          "name": "Levemir",
+          "displayName": "Levemir (long acting)",
+          "concentration": "U100",
+          "PPN":
+          [
+            "LevemirU100"
+          ],
+          "Curve":
+          {
+            "type": "linear trapezoid",
+            "data":
+            {
+              "onset": "60",
+              "peak": "480",
+              "duration": "1200"
+            }
+          }
+        },
+    {
       "name": "Humalog",
       "displayName": "Humalog (rapid acting)",
       "concentration": "U100",
