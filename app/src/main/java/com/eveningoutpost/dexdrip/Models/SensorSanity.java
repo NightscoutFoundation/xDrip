@@ -98,6 +98,12 @@ public class SensorSanity {
     private static final String PREF_LIBRE_SN = "SensorSanity-LibreSN";
     private static final String PREF_LIBRE_SENSOR_UUID = "SensorSanity-LibreSensor";
 
+    // This function is intended to be used by unit tests only.
+    public static void clearEnviorment() {
+        PersistentStore.setString(PREF_LIBRE_SENSOR_UUID, "");
+        PersistentStore.setString(PREF_LIBRE_SN, "");
+    }
+    
     public static boolean checkLibreSensorChangeIfEnabled(final String sn) {
         return Pref.getBoolean("detect_libre_sn_changes", true) && checkLibreSensorChange(sn);
     }
@@ -154,57 +160,5 @@ public class SensorSanity {
             }
         }
     }
-
-    // This is a test for the CheckLibreSensorChange function.
-    public static void testCheckLibreSensorChange() {
-        // Take us to a known state:
-        Log.e("xxxxx", "testCheckLibreSensorChange starting");
-        Sensor this_sensor = Sensor.currentSensor();
-        if (this_sensor != null) {
-            Sensor.stopSensor();
-        }
-        PersistentStore.setString(PREF_LIBRE_SENSOR_UUID, "");
-        PersistentStore.setString(PREF_LIBRE_SN, "");
-        
-        // Start testing: create a sensor, call checkLibreSensorChange twice with same sensor, and once with a new
-        // sn, and verify it is closed.
-        Sensor.create(JoH.tsl());
-        checkLibreSensorChange("SN111");
-        checkLibreSensorChange("SN111");
-        checkLibreSensorChange("SN222");
-        this_sensor = Sensor.currentSensor();
-        Log.e("xxxxx", "Expectingthis_sensor to be null, actually " + this_sensor);
-        if (this_sensor != null) {
-            Sensor.stopSensor();
-        }
-        // Continue testing: create new one, call with the second sn twice. now call with third sn, sensor should be stopped.
-        Sensor.create(JoH.tsl());
-        checkLibreSensorChange("SN222");
-        checkLibreSensorChange("SN222");
-        checkLibreSensorChange("SN333");
-        this_sensor = Sensor.currentSensor();
-        Log.e("xxxxx", "Expectingthis_sensor to be null, actually " + this_sensor);
-        if (this_sensor != null) {
-            Sensor.stopSensor();
-        }
-        
-        // Create a new sensor, call check, then stop it and start another, all should be well.
-        Sensor.create(JoH.tsl());
-        checkLibreSensorChange("SN333");
-        checkLibreSensorChange("SN333");
-        checkLibreSensorChange("SN333");
-        this_sensor = Sensor.currentSensor();
-        Log.e("xxxxx", "Expectingthis_sensor not to be null, actually " + this_sensor);
-        if (this_sensor != null) {
-            Sensor.stopSensor();
-        }
-        Sensor.create(JoH.tsl());
-        checkLibreSensorChange("SN333");
-        checkLibreSensorChange("SN333");
-        this_sensor = Sensor.currentSensor();
-        Log.e("xxxxx", "Expectingthis_sensor not to be null, actually " + this_sensor);
-        
-    }
-    
 
 }
