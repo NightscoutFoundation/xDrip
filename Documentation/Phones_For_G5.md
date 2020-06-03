@@ -1,5 +1,7 @@
 # Phones which have achieved high capture rate
 
+## THIS FILE IS FOR ARCHIVE PURPOSES ONLY NOW - IT IS BELIEVED THAT ALMOST ALL PHONES WORK CORRECTLY ONCE ANY SPECIFIC MANUFACTURER POWER SAVING FEATURES ARE DISABLED FOR XDRIP
+
 The following phone models have reported getting a capture rate of 90%-100%
 
 In theory, using the same phone with the same Android version should allow you to also potentially achieve the same high capture rate. This is a guide only, it may or may not work for you. There are no guarantees.

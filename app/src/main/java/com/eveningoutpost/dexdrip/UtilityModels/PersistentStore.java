@@ -33,6 +33,14 @@ public class PersistentStore {
         return prefs.getString(name, "");
     }
 
+    public static boolean removeItem(final String pref) {
+        if (prefs != null) {
+            prefs.edit().remove(pref).apply();
+            return true;
+        }
+        return false;
+    }
+
     static {
         try {
             prefs = xdrip.getAppContext()

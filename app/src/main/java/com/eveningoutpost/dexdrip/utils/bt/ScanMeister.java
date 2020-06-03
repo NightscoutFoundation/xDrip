@@ -25,6 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 import lombok.NoArgsConstructor;
 
@@ -74,6 +75,10 @@ public class ScanMeister {
     public ScanMeister setScanSeconds(int seconds) {
         this.scanSeconds = seconds;
         return this;
+    }
+
+    {
+        RxJavaPlugins.setErrorHandler(e -> UserError.Log.d(TAG, "RxJavaError: " + e.getMessage()));
     }
 
     public ScanMeister setAddress(String address) {
@@ -253,7 +258,7 @@ public class ScanMeister {
             if (matches && stopOnFirstMatch) {
                 stopScan("Got match");
                 JoH.threadSleep(500);
-                processCallBacks(this_address, SCAN_FOUND_CALLBACK);
+                processCallBacks(this_address, SCAN_FOUND_CALLBACK, this_name, null);
                 releaseWakeLock();
             }
             if (matches && !stopOnFirstMatch) {

@@ -1,6 +1,7 @@
 xDrip+ Wear Setup and Troubleshooting Guide
 ======================================
 **Table of Contents**
+- [Choosing a Watch](#choosing-a-watch)
 - [Enable xDrip+ Android Wear Integration](#enable-xdrip-android-wear-integration)
     - [Patching Watch Firmware](#patching-watch-firmware)
     - [Collector](#collector)
@@ -26,6 +27,19 @@ xDrip+ Wear Setup and Troubleshooting Guide
     - [Confirm Noise Preferences are consistent on both phone and watch](#confirm-noise-preferences-are-consistent-on-both-phone-and-watch)
     - [Confirm Location Permission is enabled in Watch Settings](#confirm-location-permission-is-enabled-in-watch-settings)
     - [Debugging Android Wear](#debugging-android-wear)
+
+# Choosing a Watch
+
+Watch | Watch OS? | Works as collector? | extra info
+----- | --------- | ------------------- | ----------
+Sony Smartwatch 3 (SWR50) | WearOS 1.6 | Yes: 5 minute intervals | 
+Asus Zenwatch 2 | WearOS 2 | Yes: 5 minutes if patched, 10 minutes if not | [patch the firmware](https://github.com/NightscoutFoundation/xDrip/wiki/Patching-Android-Wear-devices-for-use-with-the-G5)
+Asus Zenwatch 3 | WearOS 2  | Yes: 5 minutes if patched, 10 minutes if not | [patch the firmware](https://github.com/NightscoutFoundation/xDrip/wiki/Patching-Android-Wear-devices-for-use-with-the-G5)
+Huawei Watch | WearOS 2  | Yes: 5 minutes if patched, 10 minutes if not | [patch the firmware](https://github.com/NightscoutFoundation/xDrip/wiki/Patching-Android-Wear-devices-for-use-with-the-G5)
+Huawei Watch 2 | WearOS 2  | Yes: 5 minutes if patched, 10 minutes if not | [patch the firmware](https://github.com/NightscoutFoundation/xDrip/wiki/Patching-Android-Wear-devices-for-use-with-the-G5)
+LG G Watch | WearOS 2  | Yes: 5 minutes if patched, 10 minutes if not | [patch the firmware](https://github.com/NightscoutFoundation/xDrip/wiki/Patching-Android-Wear-devices-for-use-with-the-G5)
+Polar M600 | WearOS 2  | Yes: 5 minutes if patched, 10 minutes if not | [patch the firmware](https://github.com/NightscoutFoundation/xDrip/wiki/Patching-Android-Wear-devices-for-use-with-the-G5)
+
 
 # Enable xDrip+ Android Wear Integration
 xDrip+ supports wear integration through its wear app.  The xDrip+ wear app is installed with the standard xDrip+ apk. On **Android Wear 1.x** watches, the wear component gets synced automatically to the watch. On **Android Wear 2.0** watches you need to install (activate) the wear component separately from the Play-Store on the _watch_ (under the section "Apps on your phone") after installing xDrip+ on the phone. The latest release supports a standalone mode which allows the wear app to communicate directly with the Bluetooth Collector, whether it is a Dexcom G5, a Dexcom G4 + xBridge, Dexcom Share, or a Libre LimiTTer.

@@ -20,12 +20,20 @@ import android.telephony.TelephonyManager;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.watch.lefun.LeFun;
 import com.eveningoutpost.dexdrip.watch.lefun.LeFunEntry;
+import com.eveningoutpost.dexdrip.watch.miband.MiBand;
+import com.eveningoutpost.dexdrip.watch.miband.MiBandEntry;
 import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import lombok.Getter;
+
+import static com.eveningoutpost.dexdrip.watch.miband.Const.MIBAND_NOTIFY_TYPE_CALL;
+import static com.eveningoutpost.dexdrip.watch.miband.Const.MIBAND_NOTIFY_TYPE_CANCEL;
+import static com.eveningoutpost.dexdrip.watch.thinjam.Const.THINJAM_NOTIFY_TYPE_CALL;
+import static com.eveningoutpost.dexdrip.watch.thinjam.Const.THINJAM_NOTIFY_TYPE_CANCEL;
 
 public class IncomingCallsReceiver extends BroadcastReceiver {
 
@@ -37,11 +45,15 @@ public class IncomingCallsReceiver extends BroadcastReceiver {
 
         // TODO call log permission - especially for Android 9+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (xdrip.getAppContext().checkSelfPermission(Manifest.permission.READ_PHONE_STATE)
-                    != PackageManager.PERMISSION_GRANTED) {
+            if ((xdrip.getAppContext().checkSelfPermission(Manifest.permission.READ_PHONE_STATE)
+                    != PackageManager.PERMISSION_GRANTED)
+                    || xdrip.getAppContext().checkSelfPermission(Manifest.permission.READ_CONTACTS)
+                    != PackageManager.PERMISSION_GRANTED
+                    || ((Build.VERSION.SDK_INT > Build.VERSION_CODES.O && xdrip.getAppContext().checkSelfPermission(Manifest.permission.READ_CALL_LOG)
+                    != PackageManager.PERMISSION_GRANTED))) {
 
                 ActivityCompat.requestPermissions(activity,
-                        new String[]{Manifest.permission.READ_PHONE_STATE},
+                        new String[]{Manifest.permission.READ_PHONE_STATE, Manifest.permission.READ_CALL_LOG, Manifest.permission.READ_CONTACTS},
                         Constants.GET_PHONE_READ_PERMISSION);
             }
         }
@@ -68,14 +80,25 @@ public class IncomingCallsReceiver extends BroadcastReceiver {
                     LeFun.sendAlert(true, caller);
                 }
             }
+            // MiBand
+            if (JoH.quietratelimit("miband-call-debounce", 10)) {
+                if (MiBandEntry.areCallAlertsEnabled()) {
+                    // TODO extract to generic notifier
+                    final String caller = number != null ? "Incoming Call " + getContactDisplayNameByNumber(number) + " " + bestPhoneNumberFormatter(number) + " " : "CALL";
+                    UserError.Log.d(TAG, "Sending call alert: " + caller);
+                    MiBand.sendCall(MIBAND_NOTIFY_TYPE_CALL, caller);
+                }
+            }
 
             // BlueJay
-            if (JoH.quietratelimit("bluejay-call-debounce", 10)) {
+            if (JoH.quietratelimit("bluejay-call-debounce" + number, 10)) {
                 if (BlueJayEntry.areCallAlertsEnabled()) {
                     // TODO extract to generic notifier
                     final String caller = number != null ? "Incoming Call " + getContactDisplayNameByNumber(number) + " " + bestPhoneNumberFormatter(number) + " " : "CALL";
                     UserError.Log.d(TAG, "Sending call alert: " + caller);
-                    BlueJayEntry.sendNotifyIfEnabled(caller);
+                    final String task_reference = "bluejay-wait-caller-id";
+                    Inevitable.kill(task_reference);
+                    Inevitable.task(task_reference, 200, () -> BlueJayEntry.sendNotifyIfEnabled(THINJAM_NOTIFY_TYPE_CALL, caller));
                 }
             }
 
@@ -83,6 +106,12 @@ public class IncomingCallsReceiver extends BroadcastReceiver {
             if (ringingNow) {
                 ringingNow = false;
                 UserError.Log.d(TAG, "Ringing stopped: " + stateExtra);
+                if (JoH.ratelimit("incoming-call-stopped", 10)) {
+                    if (BlueJayEntry.areCallAlertsEnabled()) {
+                        BlueJayEntry.cancelNotifyIfEnabled();
+                        MiBand.sendCall(MIBAND_NOTIFY_TYPE_CANCEL, "");
+                    }
+                }
             }
         }
     }

@@ -5,6 +5,7 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.Unitized;
 import com.eveningoutpost.dexdrip.watch.thinjam.BlueJay;
+import com.eveningoutpost.dexdrip.xdrip;
 
 import java.io.UnsupportedEncodingException;
 
@@ -20,6 +21,11 @@ public class SetTxIdTx extends BaseTx {
     private static final int SET_BIT_TREND_FROM_DELTA = 3;
     private static final int SET_BIT_FAILSAFE_TIMING = 4;
     private static final int SET_BIT_USE_PHONE_SLOT = 5;
+    private static final int SET_BIT_ULTRA_POWER_SAVE = 6;
+    private static final int SET_BIT_PHONE_COLLECTS = 7;
+    private static final int SET_BIT_ENGINEERING_MODE = 8;
+    private static final int SET_BIT_DATE_FORMAT_MD = 9;
+    private static final int SET_BIT_BUTTON_NO_VIBRATE = 10;
 
     public SetTxIdTx(final String txId, final String mac) {
 
@@ -63,6 +69,16 @@ public class SetTxIdTx extends BaseTx {
         }
     }
 
+    private boolean localeUsesMdFormat() {
+        final char dfo[] = android.text.format.DateFormat.getDateFormatOrder(xdrip.getAppContext());
+        if (dfo != null) {
+            for (char aDfo : dfo) {
+                if (aDfo == 'M' || aDfo == 'm') return true;
+                if (aDfo == 'D' || aDfo == 'd') return false;
+            }
+        }
+        return false;
+    }
 
     private short constructBitfield() {
         short bits = 0;
@@ -72,6 +88,12 @@ public class SetTxIdTx extends BaseTx {
         //bits |= (Pref.getBooleanDefaultFalse("bluejay_delta_trend") ? 1 : 0) << SET_BIT_TREND_FROM_DELTA;
         //bits |= (Pref.getBooleanDefaultFalse("bluejay_timing_failsafe") ? 1 : 0) << SET_BIT_FAILSAFE_TIMING;
         bits |= (Pref.getBooleanDefaultFalse("bluejay_run_as_phone_collector") ? 1 : 0) << SET_BIT_USE_PHONE_SLOT;
+
+        //bits |= (Pref.getBooleanDefaultFalse("bluejay_ultra_power_save") ? 1 : 0) << SET_BIT_ULTRA_POWER_SAVE;
+        bits |= ((Pref.getBooleanDefaultFalse("bluejay_run_phone_collector") && Pref.getBooleanDefaultFalse("bluejay_send_readings")) ? 1 : 0) << SET_BIT_PHONE_COLLECTS;
+        bits |= (Pref.getBooleanDefaultFalse("bluejay_engineering_mode") ? 1 : 0) << SET_BIT_ENGINEERING_MODE;
+        bits |= (localeUsesMdFormat() ? 1 : 0) << SET_BIT_DATE_FORMAT_MD;
+        bits |= (Pref.getBooleanDefaultFalse("bluejay_button1_vibrate") ? 0 : 1) << SET_BIT_BUTTON_NO_VIBRATE;
         return bits;
     }
 

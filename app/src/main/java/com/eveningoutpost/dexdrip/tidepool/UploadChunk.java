@@ -62,7 +62,9 @@ public class UploadChunk implements NamedSliderProcessor {
 
         final List<BaseElement> records = new LinkedList<>();
 
-        records.addAll(getTreatments(start, end));
+        if (!Pref.getBooleanDefaultFalse("tidepool_no_treatments")) {
+            records.addAll(getTreatments(start, end));
+        }
         records.addAll(getBloodTests(start, end));
         records.addAll(getBasals(start, end));
         records.addAll(getBgReadings(start, end));

@@ -12,14 +12,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -58,7 +55,6 @@ import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine;
-import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Dex_Constants;
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
@@ -1558,8 +1554,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 break;
             default:
                 if (MultipleInsulins.isEnabled()) {
-                    Insulin insulin = InsulinManager.getProfile(thisword);
-                    UserError.Log.d("TREATMENTS","Processing for: "+insulin.getName());
+                    final Insulin insulin = InsulinManager.getProfile(thisword);
+                    UserError.Log.d("TREATMENTS", "Processing for: " + (insulin != null ? insulin.getName() : "null"));
                     int number = 0;
                     for (number = 0; number < maxInsulinProfiles; number++)
                         if ((thisinsulinprofile[number] == null) || (thisinsulinprofile[number] == insulin)) {
@@ -1946,11 +1942,11 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         chart.setZoomType(ZoomType.HORIZONTAL);
 
         chart.getChartData().setAxisXTop(null);
-
+/*
         //Transmitter Battery Level
         final Sensor sensor = Sensor.currentSensor();
 
-        //????????? what about tomato here ????? TODO this sucks
+       //????????? what about tomato here ????? TODO this sucks - removed Feb 2020
         if (sensor != null && sensor.latest_battery_level != 0 && !DexCollectionService.getBestLimitterHardwareName().equalsIgnoreCase("BlueReader") && sensor.latest_battery_level <= Dex_Constants.TRANSMITTER_BATTERY_LOW && !Pref.getBoolean("disable_battery_warning", false)) {
             Drawable background = new Drawable() {
 
@@ -1988,7 +1984,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 }
             };
             chart.setBackground(background);
-        }
+        }*/
         previewChart = (PreviewLineChartView) findViewById(R.id.chart_preview);
 
         chart.setLineChartData(bgGraphBuilder.lineData());
@@ -2566,7 +2562,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                     } else {
                         List<Calibration> calibrations = Calibration.latest(2);
                         if (calibrations.size() < 2) {
-                            if (BgReading.isDataSuitableForDoubleCalibration()) {
+                            if (BgReading.isDataSuitableForDoubleCalibration() || Ob1G5CollectionService.isG5WantingInitialCalibration()) {
                                 notificationText.setText(R.string.please_enter_two_calibrations_to_get_started);
                                 showUncalibratedSlope();
                                 Log.d(TAG, "Asking for calibration B: Uncalculated BG readings: " + BgReading.latestUnCalculated(2).size() + " / Calibrations size: " + calibrations.size() + " quality: " + BgReading.isDataSuitableForDoubleCalibration());
