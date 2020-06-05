@@ -329,6 +329,10 @@ dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.10'
     //  compileOnly 'javax.annotation:javax.annotation-api:1.3.2'
     annotationProcessor "org.projectlombok:lombok:1.18.10"
+
+    // use lombok in unit tests
+    testCompileOnly 'org.projectlombok:lombok:1.18.10'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.10'
 }
 
 apply plugin: 'com.google.gms.google-services'
