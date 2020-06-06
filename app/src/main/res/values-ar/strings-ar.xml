@@ -8,5 +8,6 @@
     <!-- broadcast settings -->
     <!-- pebble settings -->
     <!-- Amazfit Settings -->
+    <string name="blood_test">فحص سكر الدم</string>
     <!-- trend arrow for speak -->
 </resources>
