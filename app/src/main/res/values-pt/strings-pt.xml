@@ -770,7 +770,7 @@
     <string name="notify_on_low_battery_level">Notificar quando o nível de bateria estiver abaixo</string>
     <string name="collector_battery_alerts">Alertas Bateria Dispositivo BT</string>
     <string name="low_battery_percentage">Percentagem de Bateria Fraca</string>
-    <string name="notify_data_arrives_master"><![CDATA[Notificar quando dados recebidos do Master se o o intervalo é > 20 mins.]]></string>
+    <string name="notify_data_arrives_master"><![CDATA[Notificar quando dados recebidos do Master se o intervalo é > 20 mins.]]></string>
     <string name="follower_chime_new">Novo Tom Seguidor</string>
     <string name="carb_ratio">Rácio de Hidratos</string>
     <string name="enable_dedicated_insulin_profiles">Configurar Perfis de Insulina</string>
