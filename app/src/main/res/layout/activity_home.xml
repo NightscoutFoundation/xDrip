@@ -21,6 +21,10 @@
             name="nano"
             type="com.eveningoutpost.dexdrip.UtilityModels.NanoStatus" />
 
+        <variable
+            name="expiry"
+            type="com.eveningoutpost.dexdrip.UtilityModels.NanoStatus" />
+
         <import type="android.view.View" />
     </data>
 
@@ -540,10 +544,21 @@
                     android:id="@+id/nanoStatusText"
                     android:layout_width="0dp"
                     android:layout_marginTop="2dp"
+                    android:layout_marginStart="5dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@{nano.color_watch, default=`Nano Status`}"
                     app:showIfTrue="@{nano.color_watch.length() > 0}"/>
+
+                <TextView
+                    android:id="@+id/ExpiryStatusText"
+                    android:layout_width="0dp"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginStart="5dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@{expiry.color_watch, default=`Expiry Status`}"
+                    app:showIfTrue="@{(safeUnbox(vs.included[`sensor_expiry`])) &amp;&amp; (expiry.color_watch.length() > 0)}"/>
 
             </LinearLayout>
 

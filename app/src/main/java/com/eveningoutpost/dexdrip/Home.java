@@ -300,6 +300,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     MicroStatus microStatus;
 
     NanoStatus nanoStatus;
+    NanoStatus expiryStatus;
 
     private ITrendArrow itr;
 
@@ -357,6 +358,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         }
 
         nanoStatus = new NanoStatus("collector", 1000);
+        expiryStatus = new NanoStatus("sensor-expiry", 15000);
 
         set_is_follower();
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
@@ -368,6 +370,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         binding.setHome(this);
         binding.setUi(ui);
         binding.setNano(nanoStatus);
+        binding.setExpiry(expiryStatus);
         setContentView(binding.getRoot());
 
         Toolbar mToolbar = (Toolbar) findViewById(R.id.my_toolbar);
@@ -1816,6 +1819,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         statusBWP = "";
         refreshStatusLine();
         nanoStatus.setRunning(true);
+        expiryStatus.setRunning(true);
 
         if (BgGraphBuilder.isXLargeTablet(getApplicationContext())) {
             this.currentBgValueText.setTextSize(100);
@@ -2050,6 +2054,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         super.onPause();
         NFCReaderX.stopNFC(this);
         nanoStatus.setRunning(false);
+        expiryStatus.setRunning(false);
         if (_broadcastReceiver != null) {
             try {
                 unregisterReceiver(_broadcastReceiver);
