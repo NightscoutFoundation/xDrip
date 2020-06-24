@@ -181,6 +181,8 @@
     <string name="checking_for_update">Checking for update..</string>
     <string name="signal_missed">Signal Missed</string>
     <string name="minutes_ago">{0, choice,0#{0, number, integer} Minutes ago|1#{0, number, integer} Minute ago|1&lt;{0, number, integer} Minutes ago}</string>
+    <string name="expires_days">{0, choice,0#Sensor Expired!|1#Ends in {0, number} day|1&lt;Ends in {0, number} days}</string>
+    <string name="expires_at">Ends {0}</string>
     <string name="space_minutes_ago">" Minutes ago"</string>
     <string name="space_minute_ago">" Minute ago"</string>
     <string name="show_parakeet_map">Show Parakeet map</string>
