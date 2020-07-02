@@ -163,6 +163,8 @@
     <string name="checking_for_update">A verificar actualização...</string>
     <string name="signal_missed">Sinal Perdido</string>
     <string name="minutes_ago">{0, choice,0#{0, number, integer} Minutos atrás|1#{0, number, integer} Minuto atrás|1&lt;{0, number, integer} Minutos atrás}</string>
+    <string name="expires_days">{0, choice,0#Sensor Terminou!|1#Termina em {0, number} dia|1&lt;Termina em {0, number} dias}</string>
+    <string name="expires_at">Termina {0}</string>
     <string name="space_minutes_ago">" Minutos atrás"</string>
     <string name="space_minute_ago">"Minuto atrás"</string>
     <string name="show_parakeet_map">Mostrar mapa Parakeet </string>
