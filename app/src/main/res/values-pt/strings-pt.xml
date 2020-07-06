@@ -1215,7 +1215,7 @@
     <string name="summary_miband_authkey">Defina a chave de autenticação para miband4 (para obter chave de autenticação, siga as instruções em https://www.freemyband.com/)</string>
     <string name="summary_miband_mac">Deixe em branco para pesquisa automática</string>
     <string name="title_miband_send_readings_as_notification">Leituras Glic como Notificação</string>
-    <string name="summary_miband_send_readings_as_notification">Serãp usadas notificações para enviar leituras Glic. A data não será alterada para que todos os recursos da banda possam ser usados.
+    <string name="summary_miband_send_readings_as_notification">Serão usadas notificações para enviar leituras Glicemia. A data não será alterada para que todos os recursos da banda possam ser usados.
         Precisa desactivar se você deseja usar o mostrador xdrip (É necessário eliminar a aplicação oficial MiFit para evitar sobreposição da data)</string>
     <string name="title_miband_vibrate_on_readings">Vibrar nas Leituras</string>
     <string name="title_miband_send_calls">Enviar Chamadas</string>
