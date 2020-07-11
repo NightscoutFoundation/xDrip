@@ -183,6 +183,7 @@ public class UserError extends Model {
                 .from(UserError.class)
                 .where("severity in ("+levelsString.substring(0,levelsString.length() - 1)+")")
                 .orderBy("timestamp desc")
+                .limit(10000)//too many data can kill akp
                 .execute();
     }
 

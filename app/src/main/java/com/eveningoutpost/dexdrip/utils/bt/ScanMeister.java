@@ -258,7 +258,7 @@ public class ScanMeister {
             if (matches && stopOnFirstMatch) {
                 stopScan("Got match");
                 JoH.threadSleep(500);
-                processCallBacks(this_address, SCAN_FOUND_CALLBACK);
+                processCallBacks(this_address, SCAN_FOUND_CALLBACK, this_name, null);
                 releaseWakeLock();
             }
             if (matches && !stopOnFirstMatch) {

@@ -25,6 +25,7 @@ public class SetTxIdTx extends BaseTx {
     private static final int SET_BIT_PHONE_COLLECTS = 7;
     private static final int SET_BIT_ENGINEERING_MODE = 8;
     private static final int SET_BIT_DATE_FORMAT_MD = 9;
+    private static final int SET_BIT_BUTTON_NO_VIBRATE = 10;
 
     public SetTxIdTx(final String txId, final String mac) {
 
@@ -92,6 +93,7 @@ public class SetTxIdTx extends BaseTx {
         bits |= ((Pref.getBooleanDefaultFalse("bluejay_run_phone_collector") && Pref.getBooleanDefaultFalse("bluejay_send_readings")) ? 1 : 0) << SET_BIT_PHONE_COLLECTS;
         bits |= (Pref.getBooleanDefaultFalse("bluejay_engineering_mode") ? 1 : 0) << SET_BIT_ENGINEERING_MODE;
         bits |= (localeUsesMdFormat() ? 1 : 0) << SET_BIT_DATE_FORMAT_MD;
+        bits |= (Pref.getBooleanDefaultFalse("bluejay_button1_vibrate") ? 0 : 1) << SET_BIT_BUTTON_NO_VIBRATE;
         return bits;
     }
 

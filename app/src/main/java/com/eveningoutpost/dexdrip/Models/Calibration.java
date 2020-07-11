@@ -143,7 +143,7 @@ class Li2AppParameters extends SlopeParameters {
 
     @Override
     public double restrictIntercept(double intercept) {
-        return Math.min(Math.max(intercept, -20), 20);
+        return Math.min(Math.max(intercept, -40), 20);
     }
 }
 
@@ -526,6 +526,17 @@ public class Calibration extends Model {
                 .executeSingle();
     }
 
+    public static Double getConvertedBg(double bg) {
+        final String unit = Pref.getString("units", "mgdl");
+        if (unit.compareTo("mgdl") != 0) {
+            bg = bg * Constants.MMOLL_TO_MGDL;
+        }
+        if ((bg < 40) || (bg > 400)) {
+            return null;
+        }
+        return bg;
+    }
+
     // without timeoffset
     public static Calibration create(double bg, Context context) {
         return create(bg, 0, context);
@@ -542,15 +553,14 @@ public class Calibration extends Model {
         final String unit = prefs.getString("units", "mgdl");
         final boolean adjustPast = prefs.getBoolean("rewrite_history", true);
 
-        if (unit.compareTo("mgdl") != 0) {
-            bg = bg * Constants.MMOLL_TO_MGDL;
-        }
-
-        if ((bg < 40) || (bg > 400)) {
+        final Double result = getConvertedBg(bg);
+        if (result == null) {
             Log.wtf(TAG, "Invalid out of range calibration glucose mg/dl value of: " + bg);
             JoH.static_toast_long("Calibration out of range: " + bg + " mg/dl");
             return null;
         }
+
+        bg = result; // unbox result
 
         if (!note_only) CalibrationRequest.clearAll();
         final Calibration calibration = new Calibration();

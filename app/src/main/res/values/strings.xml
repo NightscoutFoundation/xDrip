@@ -181,6 +181,8 @@
     <string name="checking_for_update">Checking for update..</string>
     <string name="signal_missed">Signal Missed</string>
     <string name="minutes_ago">{0, choice,0#{0, number, integer} Minutes ago|1#{0, number, integer} Minute ago|1&lt;{0, number, integer} Minutes ago}</string>
+    <string name="expires_days">{0, choice,0#Sensor Expired!|1#Ends in {0, number} day|1&lt;Ends in {0, number} days}</string>
+    <string name="expires_at">Ends {0}</string>
     <string name="space_minutes_ago">" Minutes ago"</string>
     <string name="space_minute_ago">" Minute ago"</string>
     <string name="show_parakeet_map">Show Parakeet map</string>
@@ -1222,6 +1224,62 @@
     <string name="send_bg_readings_to_backfill">Send BG readings to backfill</string>
     <string name="view_old_error_log">View old Error Log</string>
     <string name="return_to_home_screen">Return to Home Screen</string>
+    <string name="title_miband">MiBand</string>
+    <string name="summary_miband_enable">Sync Data with MiBand fitness bands</string>
+    <string name="title_miband_enable">Use MiBand Band</string>
+    <string name="title_miband_screens_features">MiBand Screens / Features</string>
+    <string name="title_miband_screen_battery">Show Battery</string>
+    <string name="title_miband_show_date">Show date on the screen</string>
+    <string name="title_miband_visibility">MiBand visibility</string>
+    <string name="summary_miband_visibility">Miband will be visible for other devices</string>
+    <string name="title_miband_switch_display_on_wrist">Switch display on wrist</string>
+    <string name="title_miband_units">Units</string>
+    <string name="summary_miband_units">Choose the distance unit used on band </string>
+    <string name="title_miband_goal_notification">Goal notification</string>
+    <string name="summary_miband_goal_notification">Miband will vibrate when you reach a goal</string>
+    <string name="title_miband_locale_24_hour">24 Hour clock</string>
+    <string name="summary_miband_locale_24_hour">Show 24 Hour clock</string>
+
+    <string name="title_miband_nightmode_category">Night mode settings</string>
+    <string name="title_miband_nightmode_enabled">Enable night mode settings</string>
+    <string name="summary_miband_nightmode_enabled">Reduce band screen brightness during custom time</string>
+    <string name="title_miband_nightmode_start">Night mode start</string>
+    <string name="title_miband_nightmode_end">Night mode end</string>
+    <string name="title_miband_interval_in_nightmode">Interval</string>
+    <string name="summary_miband_interval_in_nightmode">Defines how often BG would be synchronized in the night mode</string>
+    <string name="title_miband_colect_heartrate">Collect HR</string>
+    <string name="summary_miband_colect_heartrate">Would collect heart rate data from band. Update interval can be configured in MiFit or any thirdparty application</string>
+
+    <string name="title_miband_authkey">Auth Key</string>
+    <string name="summary_miband_authkey">Set the auth key for miband4 (To get auth key, follow the instructions on https://www.freemyband.com/)</string>
+    <string name="summary_miband_mac">Leave empty for auto search</string>
+    <string name="title_miband_send_readings_as_notification">BG readings as notification</string>
+    <string name="summary_miband_send_readings_as_notification">Will use a notifications to send BG readings. The date wouldn\'t be changed so all band features can be used.
+        Need to disable if you want to use xdrip watchface(It is required to delete official MiFit application to avoid date overrides)</string>
+    <string name="title_miband_vibrate_on_readings">Vibrate on readings</string>
+    <string name="title_miband_send_calls">Send Calls</string>
+    <string name="summary_miband_send_calls">Send call notifications to the band (Android 6+)</string>
+
+    <string name="title_miband_graph_category">Graph options</string>
+    <string name="title_miband_graph_enable">Enable graph</string>
+    <string name="title_miband_graph_treatment_enable">Show bolus</string>
+
+    <string name="title_miband_update_bg">Update BG manually</string>
+    <string name="title_miband_general_settings_category">General settings</string>
+
+    <string name="title_miband_screen_notifications">Show Notifications</string>
+    <string name="title_miband_screen_weather">Show Weather</string>
+    <string name="title_miband_screen_activity">Show Activity</string>
+    <string name="title_miband_screen_more">Show More</string>
+    <string name="title_miband_screen_status">Show Status</string>
+    <string name="title_miband_screen_heart_rate">Show Heart rate</string>
+    <string name="title_miband_screen_timer">Show Timer</string>
+    <string name="title_miband_screen_nfc">Show NFC(if available)</string>
+
+    <string name="miband_watchface_istall_success">MiBand watchface has been uploaded successfully!</string>
+    <string name="miband_watchface_istall_error">Error while uploading MiBand watchface</string>
+    <string name="miband_bg_dialog_title">Update bg data now?</string>
+
     <string name="title_lefun_band">Lefun Band</string>
     <string name="summary_lefun_enable">Sync Data with LeFun fitness bands</string>
     <string name="title_lefun_enable">Use LeFun Band</string>
