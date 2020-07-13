@@ -28,6 +28,7 @@ import com.eveningoutpost.dexdrip.Models.HeartRate;
 import com.eveningoutpost.dexdrip.Models.Iob;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Libre2RawValue;
+import com.eveningoutpost.dexdrip.Models.NSBasal;
 import com.eveningoutpost.dexdrip.Models.Prediction;
 import com.eveningoutpost.dexdrip.Models.Profile;
 import com.eveningoutpost.dexdrip.Models.StepCounter;
@@ -54,9 +55,11 @@ import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.LinkedList;
+import java.util.ListIterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -375,12 +378,133 @@ public class BgGraphBuilder {
                 line.setSquare(true);
                 line.setPointRadius(1);
                 line.setReverseYAxis(true);
-                line.setBackgroundUnclipped(true);
+                line.setBackgroundUnclipped(true); // acording to google, we are it's only users. It caused problems on zoom.
                 line.setGradientDivider(10f);
                 line.setColor(getCol(X.color_basal_tbr));
                 basalLines.add(line);
             }
         }
+
+        return basalLines;
+    }
+
+    private float yposFromRate(double rate, float yscale) {
+        if(rate < 0) {
+            // This means that we don't have information for it.
+            return 0;
+        }
+        return (float)rate * yscale;
+    }
+    
+    
+
+    private List<Line> nsBasalLines() {
+        final List<Line> basalLines = new ArrayList<>();
+
+        float yscale = (doMgdl ? (float) Constants.MMOLL_TO_MGDL : 1f);
+
+        // Start by getting the data an hour earlier.
+        final List<NSBasal> basallist = NSBasal.latestForGraph(2000, loaded_start - 60 * 60000, loaded_end);
+
+        if (basallist.size() == 0) {
+            return basalLines;
+        }
+        
+        // Go over the list, and trim the basals starting too early, or ending too late.
+        ListIterator<NSBasal> iter = basallist.listIterator();
+        double max_rate = -1;
+        while(iter.hasNext()){
+            NSBasal current = iter.next();
+            if(current.endTimestamp() < loaded_start){
+                // removing an item ending before the timestamp.
+                iter.remove();
+                continue;
+                //Log.e("xxxxx", "removing item current.endTimestamp() " + current.toS() + " " + current.endTimestamp() + " loaded_start = " + loaded_start);
+            }
+            if(current.rate > max_rate) {
+                max_rate = current.rate;
+            }
+
+            //Log.e("xxxxx", "not removing item current.endTimestamp() " + current.toS() + " "  + current.endTimestamp() + " loaded_start = " + loaded_start);
+            if(current.created_at < loaded_start) {
+                current.trimStart(loaded_start);
+            }
+            if (current.endTimestamp() > loaded_end) {
+                // Trim this basal, if a new one did not allow it to finish.
+                current.setEnd(loaded_end);
+            }
+        }
+
+        // Scale the yscale not to depend on actual bg values.
+        if(max_rate != 0) {
+            yscale *= (2 / max_rate);  
+        }
+        
+        NSBasal.trimItems(basallist);
+        NSBasal.mergeIdenticalItems(basallist);
+
+        Collections.reverse(basallist);
+        
+        final List<PointValue> points = new ArrayList<>(basallist.size());
+        final List<PointValue> labels = new ArrayList<>(basallist.size());
+
+        
+        int count = basallist.size();
+        //SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        for (NSBasal item : basallist) {
+            //Log.e("xxx", item.toS() + " last_start: " + sdf.format(new Date(last_start)));
+
+            float this_ypos = yposFromRate(item.rate, yscale);
+            //Log.e("Nightscout", "item.rate " + item.rate + " " + this_ypos);
+
+            points.add(new PointValue((float) item.endTimestamp() / FUZZER, this_ypos));
+            if (item.duration > 10 && (!item.isFakeRange())) {
+                PointValue pv;
+                pv = new PointValue((float) (item.endTimestamp() - item.duration * 60000 / 2) / FUZZER, this_ypos);
+                pv.setLabel(String.format("%.2f", item.rate));
+                labels.add(pv);
+                //Log.e("xxx", "pv = " + pv);
+            }
+
+            if (--count == 0) {
+                this_ypos = yposFromRate(item.rate, yscale);//(float) ((item.rate * yscale)+ defaultMinY);
+                //Log.e("xxx", "first point item.rate " + item.rate + " " + this_ypos);
+                points.add(new PointValue((float) item.created_at / FUZZER, this_ypos));
+            }
+        }
+
+        final Line line = new Line(points);
+        //line.setHasLabels(true);
+        line.setFilled(true);
+        //line.setFillFlipped(true); //??? trying
+        line.setHasGradientToTransparent(false);
+        line.setHasPoints(false);
+        line.setStrokeWidth(1);
+        line.setHasLines(true);
+        line.setSquare(true);
+        line.setPointRadius(1);
+        line.setAreaTransparency(240);
+        //line.setReverseYAxis(true); //??? trying
+        // line.setBackgroundUnclipped(true);// - causes damadge on zoom
+        line.setGradientDivider(10f);
+        line.setColor(getCol(X.color_basal_tbr));
+        basalLines.add(line);
+
+        // Create the labels line.
+        final Line labelsline = new Line(labels);
+        labelsline.setFilled(true);
+        // ??? need to verify - line.setHasGradientToTransparent(true);
+        labelsline.setHasPoints(true); // a must
+        labelsline.setColor(getCol(X.color_basal_tbr));
+        labelsline.setHasLines(false);
+        // line.setSquare(true);
+        labelsline.setPointRadius(pointSize * 5 / 4);
+        // line.setBackgroundUnclipped(true);
+        // line.setGradientDivider(10f);
+        labelsline.setShape(ValueShape.DIAMOND);
+        labelsline.setHasLabels(true);
+
+        basalLines.add(labelsline);
 
         return basalLines;
     }
@@ -604,7 +728,8 @@ public class BgGraphBuilder {
         }
         for (Line lline : previewLineData.getLines()) {
             if (((lline.getPointRadius() == pluginSize) && (lline.getPointColor() == getCol(X.color_secondary_glucose_value)))
-                    || ((lline.getColor() == getCol(X.color_step_counter1) || (lline.getColor() == getCol(X.color_step_counter2) || (lline.getColor()== getCol(X.color_heart_rate1)))))) {
+                    || (lline.getColor() == getCol(X.color_step_counter1) || (lline.getColor() == getCol(X.color_step_counter2) || 
+                    (lline.getColor()== getCol(X.color_heart_rate1))||(lline.getColor()== getCol(X.color_basal_tbr) && lline.hasLabels()==true)))) {
                 removeItems.add(lline); // remove plugin or step counter plot from preview graph
             }
 
@@ -650,6 +775,9 @@ public class BgGraphBuilder {
                 lines.addAll(heartLines());
                 lines.addAll(stepsLines());
                 lines.addAll(predictiveLines());
+                if (prefs.getBoolean("status_line_openaps", false)) {
+                    lines.addAll(nsBasalLines());
+                }
             }
 
             Line[] calib = calibrationValuesLine();

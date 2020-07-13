@@ -1,12 +1,16 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.Models.APStatus;
 import com.eveningoutpost.dexdrip.Models.BloodTest;
 import com.eveningoutpost.dexdrip.Models.DateUtil;
 import com.eveningoutpost.dexdrip.Models.InsulinInjection;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.NSBasal;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -200,8 +204,59 @@ public class NightscoutTreatments {
                         }
                     }
                 }
+            } else {
+                if(tr.getString("eventType").indexOf("Temp Basal") != -1) {
+                    new_data |= HandleTempBassal(tr);
+                }
             }
         }
         return new_data;
     }
+    private static boolean HandleTempBassal(JSONObject tr) throws JSONException {
+        // Code here is trying to do what the nightscout code does for this kind of bassals.
+        // https://github.com/nightscout/cgm-remote-monitor/blob/dc7ea1bf471b5043355806dc24ae317a1412ea5f/lib/data/dataloader.js#L156
+
+        // Make sure there is an ID.
+        if (!tr.has("_id")) {
+            Log.e(TAG, "object has no tagid" + tr.toString());
+            return false;
+        }
+        String uuid = tr.getString("_id");
+        Log.i(TAG, "object tagid " + uuid);
+        double rate = -1;
+        long duration = -1;
+        long timestamp = 0;
+        try {
+            timestamp = DateUtil.tolerantFromISODateString(tr.getString("created_at")).getTime();
+        } catch (Exception e) {
+            Log.e(TAG, "Error parsing datestring" + tr.toString()); 
+            e.printStackTrace();
+            return false;
+        }
+        try {
+            duration = tr.getLong("duration");
+        } catch (JSONException e) {
+            Log.e(TAG, "Error parsing duration" + tr.toString()); 
+            e.printStackTrace();
+            return false; 
+        }
+        try {
+            rate = tr.getDouble("rate");
+        } catch (JSONException e) {
+            Log.e(TAG, "Error parsing rate" + tr.toString()); 
+            e.printStackTrace();
+            return false; 
+        }
+        
+
+        NSBasal ns_basal = NSBasal.createEfficientRecord(timestamp, rate, duration);
+        if(ns_basal != null) {
+            Log.d(TAG, "created an instances, here is the data" + ns_basal.toS());
+            GcmActivity.pushNsBasal(ns_basal);
+        } else {
+            return false;
+        }
+        return true;
+    }
+    
 }

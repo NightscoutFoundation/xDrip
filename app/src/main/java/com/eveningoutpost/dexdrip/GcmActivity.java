@@ -21,6 +21,7 @@ import com.eveningoutpost.dexdrip.Models.BloodTest;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.DesertSync;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.NSBasal;
 import com.eveningoutpost.dexdrip.Models.RollCall;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.Treatments;
@@ -687,6 +688,24 @@ public class GcmActivity extends FauxActivity {
             final String json = newCalibrationToJson(bgValue, uuid, offset);
             GcmActivity.sendMessage(myIdentity(), "cal2", json);
         }
+    }
+    
+    public static void pushNsBasal(NSBasal nsBasal) {
+        Log.i(TAG, "pushNsBasal called: " + nsBasal.toS());
+        if (!Home.get_master()) {
+            return;
+        }
+
+        final String json = nsBasal.toJson();
+        GcmActivity.sendMessage(myIdentity(), "nsBasal", json);
+    }
+    
+    public static void pushNsStatus(String oapsStatusJson) {
+        Log.i(TAG, "pushNsStatus called: " + oapsStatusJson);
+        if (!Home.get_master()) {
+            return;
+        }
+        GcmActivity.sendMessage(myIdentity(), "oapsStatus", oapsStatusJson);
     }
 
     public static void clearLastCalibration(String uuid) {

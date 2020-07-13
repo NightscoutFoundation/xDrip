@@ -7,7 +7,9 @@ import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.BloodTest;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.NSBasal;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.calibrations.CalibrationAbstract;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.stats.StatsResult;
@@ -67,8 +69,7 @@ public class StatusLine {
             sb.append("i:");
             sb.append(String.format("%.2f", lastCalibration.intercept));
         }
-
-
+        
         if (Pref.getBoolean("status_line_avg", false)
                 || Pref.getBoolean("status_line_a1c_dcct", false)
                 || Pref.getBoolean("status_line_a1c_ifcc", false)
@@ -185,8 +186,61 @@ public class StatusLine {
             SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
             append(sb, sdf.format(new Date()));
         }
+        if(Pref.getBoolean("status_line_openaps", false)) {
+            AddOAPSStatus(sb);
+        }
+
         return sb.toString();
 
+    }
+    
+    private static void AddOAPSStatus(final StringBuilder sb) {
+        OApsStatus curentStatus = NightscoutStatus.getLatestStatus();
+        if(curentStatus != null) {
+            append(sb, "\nOAPS: ");
+            long lastLoopAgo =  Math.round((JoH.tsl() - curentStatus.lastLoopMoment) / 60000.0);
+            if (lastLoopAgo > 24 * 60) {
+                sb.append("Not Looping");
+            } else {
+                sb.append(lastLoopAgo + "min");
+                sb.append(' ');
+                sb.append("iob:");
+                double iobAgo =  Math.round((JoH.tsl() - curentStatus.iobTime) / 60000.0);
+                if(iobAgo < 60) {
+                    sb.append(String.format("%.2f", curentStatus.iob));
+                } else {
+                    sb.append("--");
+                }
+                sb.append(' ');
+                sb.append("cob:");
+                double cobAgo =  Math.round((JoH.tsl() - curentStatus.cobTime) / 60000.0);
+                if(cobAgo < 60) {
+                    sb.append(String.format("%.2f", curentStatus.cob));
+                } else {
+                    sb.append("--");
+                }
+                NSBasal nSBasal = NSBasal.last();
+                
+                if(nSBasal != null) {
+                    Log.d("xxxx", "basal data" + nSBasal.toS());
+                    sb.append(' ');
+                    sb.append("basal:");
+                    // duration is in minutes
+                    double basalAgo =  Math.round(((double)JoH.tsl() - (double)nSBasal.created_at) / 60000.0 - nSBasal.duration);
+                    // basalAgo is where this basal would end.
+                    //Log.e("xxxx", "basal ago " + basalAgo);
+                    if(basalAgo < 0) {
+                        // Basal stops if no basal was given.
+                        // Todo upload NS default basal profile.
+                        sb.append(String.format("%.2f", nSBasal.rate));
+                    } else {
+                        sb.append("--");
+                    }
+                }
+            }
+        } else {
+             append(sb, "OAPS: never looped");
+        }
     }
 
     private static void append(final StringBuilder sb, final String value) {

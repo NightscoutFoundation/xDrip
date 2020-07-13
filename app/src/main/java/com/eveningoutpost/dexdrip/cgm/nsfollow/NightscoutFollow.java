@@ -5,6 +5,7 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.UtilityModels.NightscoutStatus;
 import com.eveningoutpost.dexdrip.UtilityModels.NightscoutTreatments;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.cgm.nsfollow.messages.Entry;
@@ -56,6 +57,10 @@ public class NightscoutFollow {
 
         @GET("/api/v1/treatments")
         Call<ResponseBody> getTreatments(@Header("api-secret") String secret);
+
+        @GET("/api/v1/devicestatus")
+        Call<ResponseBody> getDeviceStatus(@Header("api-secret") String secret);
+
     }
 
     private static Nightscout getService() {
@@ -96,8 +101,17 @@ public class NightscoutFollow {
             } catch (Exception e) {
                 msg("Treatments: " + e);
             }
-        })
-                .setOnFailure(() -> msg(session.treatmentsCallback.getStatus()));
+        }).setOnFailure(() -> msg(session.treatmentsCallback.getStatus()));
+        
+        // set up processing callback for devicestatus
+        session.deviceStausCallback = new NightscoutCallback<ResponseBody>("NS device status download", session, () -> {
+            // process data
+            try {
+                NightscoutStatus.processDeviceStatusResponse(session.treatments.string());
+            } catch (Exception e) {
+                msg("DeviceStatus: " + e);
+            }
+        }).setOnFailure(() -> msg(session.deviceStausCallback.getStatus()));
 
         if (!emptyString(urlString)) {
             try {
@@ -117,8 +131,16 @@ public class NightscoutFollow {
                         UserError.Log.e(TAG, "Exception in treatments work() " + e);
                         msg("Nightscout follow treatments error: " + e);
                     }
+                    try {
+                        getService().getDeviceStatus(session.url.getHashedSecret()).enqueue(session.deviceStausCallback);
+                    } catch (Exception e) {
+                        UserError.Log.e(TAG, "Exception in devicestaus work() " + e);
+                        msg("Nightscout follow device status error: " + e);
+                    }
                 }
             }
+            
+            
         } else {
             msg("Please define Nightscout follow URL");
         }
@@ -128,8 +150,9 @@ public class NightscoutFollow {
         return Pref.getString("nsfollow_url", "");
     }
 
-    static boolean treatmentDownloadEnabled() {
-        return Pref.getBooleanDefaultFalse("nsfollow_download_treatments");
+    public static boolean treatmentDownloadEnabled() {
+        return Pref.getBooleanDefaultFalse("nsfollow_download_treatments") ||
+               Pref.getBooleanDefaultFalse("status_line_openaps");
     }
 
     // TODO make reusable
