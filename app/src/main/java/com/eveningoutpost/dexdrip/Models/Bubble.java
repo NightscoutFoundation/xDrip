@@ -144,6 +144,9 @@ public class Bubble {
 
         byte[] data = Arrays.copyOfRange(s_full_data, 0, 344);
 
+        // Set the time of the current reading
+        PersistentStore.setLong("libre-reading-timestamp", JoH.tsl());
+        
         boolean checksum_ok = NFCReaderX.HandleGoodReading(SensorSn, data, now, true, patchUid, patchInfo);
         int expectedSize = lens + BUBBLE_FOOTER;
         InitBuffer(expectedSize);

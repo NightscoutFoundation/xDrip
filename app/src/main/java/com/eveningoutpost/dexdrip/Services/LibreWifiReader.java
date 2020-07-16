@@ -497,6 +497,7 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
                     
                     if (SensorSanity.checkLibreSensorChangeIfEnabled(LastReading.SensorId)) {
                         Log.e(TAG, "Problem with Libre Serial Number - not processing");
+                        return;
                     }
                     
                     

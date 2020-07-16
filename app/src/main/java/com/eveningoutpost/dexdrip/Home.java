@@ -2474,6 +2474,19 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         if (alreadyDisplayedBgInfoCommon) return; // with bluetooth and wifi, skip second time
         alreadyDisplayedBgInfoCommon = true;
 
+        if(get_is_libre_whole_house_collector()) {
+            Long lastReading = PersistentStore.getLong("libre-reading-timestamp");
+            if(lastReading == 0) {
+                notificationText.setText(R.string.in_libre_all_house_mode_no_readings_collected_yet);
+            } else {
+                int minutes = (int) (JoH.tsl() - lastReading) / (60 * 1000);
+                final String fmt = getString(R.string.minutes_ago);
+                notificationText.setText(R.string.in_libre_all_house_mode_last_data_collected);
+                notificationText.append(MessageFormat.format(fmt, minutes));
+            }
+            return;
+        }
+
         boolean isSensorActive = Sensor.isActive();
 
         // automagically start an xDrip sensor session if G5 transmitter already has active sensor

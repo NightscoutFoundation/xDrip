@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.Models;
 
+import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
@@ -105,6 +106,10 @@ public class SensorSanity {
     }
     
     public static boolean checkLibreSensorChangeIfEnabled(final String sn) {
+        if( Home.get_is_libre_whole_house_collector() && Sensor.currentSensor() != null) {
+            Log.e(TAG, "Stopping sensor because in libre whold house coverage sensor must be stopped.");
+            Sensor.stopSensor();
+        }
         return Pref.getBoolean("detect_libre_sn_changes", true) && checkLibreSensorChange(sn);
     }
 

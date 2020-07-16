@@ -312,7 +312,11 @@ public class NFCReaderX {
                     
                     if (SensorSanity.checkLibreSensorChangeIfEnabled(SensorSn)) {
                         Log.e(TAG, "Problem with Libre Serial Number - not processing");
+                        return;
                     }
+                    // Set the time of the current reading
+                    PersistentStore.setLong("libre-reading-timestamp", JoH.tsl());
+                    
                     boolean checksum_ok = HandleGoodReading(SensorSn, data, now, false, tag.getId(), patchInfo);
                     if(checksum_ok == false) {
                         Log.e(TAG, "Read data but checksum is wrong");
