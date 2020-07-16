@@ -372,10 +372,10 @@ public class GcmListenerSvc extends JamListenerSvc {
                         Log.i(TAG, "Received pump status update");
                         PumpStatus.fromJson(payload);
                     }
-                } else if (action.equals("nscu")) {
+                } else if (action.startsWith("nscu")) {
                     if (Home.get_follower()) {
-                        Log.i(TAG,"Received nanostatus update");
-                        NanoStatus.setRemote(payload);
+                        Log.i(TAG, "Received nanostatus update: " + action);
+                        NanoStatus.setRemote(action.replaceAll("^nscu", ""), payload);
                     }
                 } else if (action.equals("not")) {
                     if (Home.get_follower()) {

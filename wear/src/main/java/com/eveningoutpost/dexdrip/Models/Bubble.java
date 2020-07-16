@@ -123,7 +123,7 @@ public class Bubble {
 
 
     static void addData(byte[] buffer) {
-        System.arraycopy(buffer, 4, s_full_data, s_acumulatedSize, 16);
+        System.arraycopy(buffer, 4, s_full_data, s_acumulatedSize, buffer.length-4);
         s_acumulatedSize = s_acumulatedSize + buffer.length - 4;
         AreWeDone();
     }

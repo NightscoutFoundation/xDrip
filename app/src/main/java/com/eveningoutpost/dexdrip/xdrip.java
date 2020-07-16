@@ -29,6 +29,7 @@ import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.utils.jobs.DailyJob;
 import com.eveningoutpost.dexdrip.utils.jobs.XDripJobCreator;
 import com.eveningoutpost.dexdrip.watch.lefun.LeFunEntry;
+import com.eveningoutpost.dexdrip.watch.miband.MiBandEntry;
 import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry;
 import com.eveningoutpost.dexdrip.webservices.XdripWebService;
 import com.evernote.android.job.JobManager;
@@ -99,6 +100,7 @@ public class xdrip extends MultiDexApplication {
             }
             BluetoothGlucoseMeter.startIfEnabled();
             LeFunEntry.initialStartIfEnabled();
+            MiBandEntry.initialStartIfEnabled();
             BlueJayEntry.initialStartIfEnabled();
             XdripWebService.immortality();
             VersionTracker.updateDevice();

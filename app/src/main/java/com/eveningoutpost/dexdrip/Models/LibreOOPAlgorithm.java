@@ -44,6 +44,8 @@ public class LibreOOPAlgorithm {
         bundle.putByteArray(Intents.LIBRE_DATA_BUFFER, fullData);
         bundle.putLong(Intents.LIBRE_DATA_TIMESTAMP, timestamp);
         bundle.putString(Intents.LIBRE_SN, PersistentStore.getString("LibreSN"));
+        bundle.putInt(Intents.LIBRE_RAW_ID, android.os.Process.myPid());
+        
         if(patchUid != null) {
             bundle.putByteArray(Intents.LIBRE_PATCH_UID_BUFFER, patchUid);
         }

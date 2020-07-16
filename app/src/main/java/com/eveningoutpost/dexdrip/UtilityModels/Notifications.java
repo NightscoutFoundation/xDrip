@@ -1,6 +1,5 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
-import android.annotation.TargetApi;
 import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -163,7 +162,7 @@ public class Notifications extends IntentService {
         bg_notification_sound = prefs.getString("bg_notification_sound", "content://settings/system/notification_sound");
         bg_sound_in_silent = prefs.getBoolean("bg_sound_in_silent", false);
 
-        calibration_notifications = prefs.getBoolean("calibration_notifications", true);
+        calibration_notifications = prefs.getBoolean("calibration_notifications", false);
         calibration_snooze = Integer.parseInt(prefs.getString("calibration_snooze", "20"));
         calibration_override_silent = prefs.getBoolean("calibration_alerts_override_silent", false);
         calibration_notification_sound = prefs.getString("calibration_notification_sound", "content://settings/system/notification_sound");
@@ -386,7 +385,8 @@ public class Notifications extends IntentService {
                 clearExtraCalibrationRequest();
             }
             // questionable use of abs for time since
-            if (calibrations.size() >= 1 && (Math.abs(JoH.msSince(calibrations.get(0).timestamp)) > (calibration_reminder_secs * 1000))
+            if (calibrations.size() >= 1 && (Math.abs(JoH.msSince(Math.max(calibrations.get(0).timestamp,
+                    PersistentStore.getLong("last-calibration-pipe-timestamp")))) > (calibration_reminder_secs * 1000))
                     && (CalibrationRequest.isSlopeFlatEnough(BgReading.last(true)))) {
                 Log.d("NOTIFICATIONS", "Calibration difference in hours: " + ((new Date().getTime() - calibrations.get(0).timestamp)) / (1000 * 60 * 60));
                 if ((!PowerStateReceiver.is_power_connected()) || (Pref.getBooleanDefaultFalse("calibration_alerts_while_charging"))) {
@@ -567,7 +567,7 @@ public class Notifications extends IntentService {
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.O);
     }
 
-    @TargetApi(Build.VERSION_CODES.O)
+    //@TargetApi(Build.VERSION_CODES.O)
     public synchronized Notification createOngoingNotification(BgGraphBuilder bgGraphBuilder, Context context) {
         mContext = context;
         ReadPerfs(mContext);
@@ -591,14 +591,20 @@ public class Notifications extends IntentService {
         //final NotificationCompat.Builder b = new NotificationCompat.Builder(mContext); // temporary fix until ONGOING CHANNEL is silent by default on android 8+
         //final Notification.Builder b = new Notification.Builder(mContext); // temporary fix until ONGOING CHANNEL is silent by default on android 8+
         final Notification.Builder b;
-        if (useOngoingChannel()) {
+        if (useOngoingChannel() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             b = new Notification.Builder(mContext, NotificationChannels.ONGOING_CHANNEL);
             b.setSound(null);
         } else {
             b = new Notification.Builder(mContext);
         }
         b.setOngoing(Pref.getBoolean("use_proper_ongoing", true));
-        b.setGroup("xDrip ongoing");
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                b.setGroup("xDrip ongoing");
+            }
+        } catch (Exception e) {
+            //
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             b.setVisibility(Pref.getBooleanDefaultFalse("public_notifications") ? Notification.VISIBILITY_PUBLIC : Notification.VISIBILITY_PRIVATE);
             b.setCategory(NotificationCompat.CATEGORY_STATUS);

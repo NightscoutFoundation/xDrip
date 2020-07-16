@@ -1072,7 +1072,7 @@ public class Ob1G5StateMachine {
         }
     }
 
-    public static void addCalibration(int glucose, long timestamp) {
+    public static void addCalibration(final int glucose, long timestamp) {
         if (acceptCommands()) {
             long since = msSince(timestamp);
             if (since < 0) {
