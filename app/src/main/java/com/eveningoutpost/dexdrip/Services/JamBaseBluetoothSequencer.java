@@ -23,6 +23,9 @@ import com.eveningoutpost.dexdrip.utils.BtCallBack;
 import com.eveningoutpost.dexdrip.utils.BytesGenerator;
 import com.eveningoutpost.dexdrip.utils.DisconnectReceiver;
 import com.eveningoutpost.dexdrip.utils.bt.BtCallBack2;
+import com.eveningoutpost.dexdrip.utils.bt.BtCallBack3;
+import com.eveningoutpost.dexdrip.utils.bt.BtReconnect;
+import com.eveningoutpost.dexdrip.utils.bt.ConnectReceiver;
 import com.eveningoutpost.dexdrip.utils.bt.ReplyProcessor;
 import com.eveningoutpost.dexdrip.utils.bt.Subscription;
 import com.eveningoutpost.dexdrip.utils.framework.PoorMansConcurrentLinkedDeque;
@@ -64,17 +67,17 @@ import static com.eveningoutpost.dexdrip.utils.bt.ScanMeister.SCAN_FOUND_CALLBAC
 
 // jamorham
 
-public abstract class JamBaseBluetoothSequencer extends JamBaseBluetoothService implements BtCallBack, BtCallBack2 {
+public abstract class JamBaseBluetoothSequencer extends JamBaseBluetoothService implements BtCallBack, BtCallBack2, BtCallBack3 {
 
     private static final HashMap<UUID, String> mapToName = new HashMap<>();
-   // protected final RxBleClient rxBleClient = RxBleProvider.getSingleton(this.getClass().getCanonicalName());
+    // protected final RxBleClient rxBleClient = RxBleProvider.getSingleton(this.getClass().getCanonicalName());
     protected final RxBleClient rxBleClient = RxBleProvider.getSingleton();
     private volatile String myid;
     protected volatile Inst I;
 
     protected BaseState mState;
 
-    protected void setMyid(final String id) {
+    protected synchronized void setMyid(final String id) {
         UserError.Log.d(TAG, "Setting myid to: " + id);
         myid = id;
         I = Inst.get(id);
@@ -121,6 +124,7 @@ public abstract class JamBaseBluetoothSequencer extends JamBaseBluetoothService 
         public volatile boolean retry133 = true;
         public volatile boolean discoverOnce = false;
         public volatile boolean resetWhenAlreadyConnected = false;
+        public volatile boolean useReconnectHandler = false;
 
         public PendingIntent serviceIntent;
         public SlidingWindowConstraint reconnectConstraint;
@@ -164,6 +168,7 @@ public abstract class JamBaseBluetoothSequencer extends JamBaseBluetoothService 
 
     protected void setAddress(String newAddress) {
         DisconnectReceiver.addCallBack(this, TAG);
+        ConnectReceiver.addCallBack(this, TAG);
         if (emptyString(newAddress)) return;
         newAddress = newAddress.toUpperCase();
 
@@ -289,17 +294,26 @@ public abstract class JamBaseBluetoothSequencer extends JamBaseBluetoothService 
                 // .observeOn(AndroidSchedulers.mainThread())
                 // .doOnUnsubscribe(this::clearSubscription)
                 .subscribeOn(Schedulers.io())
+                .doFinally(this::establishConnectionFinally)
                 .subscribe(this::onConnectionReceived, this::onConnectionFailure));
+
+
+    }
+
+    private void establishConnectionFinally() {
+        UserError.Log.d(TAG, "Establish connection finally called");
     }
 
     protected synchronized void stopConnect(final String address) {
         UserError.Log.d(TAG, "Stopping connection with: " + address);
         //UserError.Log.d(TAG, "Stopping connection with: " + address + backTrace());
-        I.connection = null; // TODO IS THIS ACTUALLY CORRECT???
+
         if (I.connectionSubscription != null) {
             I.connectionSubscription.unsubscribe();
-            UserError.Log.d(TAG,"Unsubscribed in StopConnect");
+            UserError.Log.d(TAG, "Unsubscribed in StopConnect");
         }
+        stopDiscover();
+        I.connection = null; // TODO IS THIS ACTUALLY CORRECT???
         I.isConnected = false;
     }
 
@@ -393,6 +407,14 @@ public abstract class JamBaseBluetoothSequencer extends JamBaseBluetoothService 
         }
     }
 
+
+    @Override
+    public void btCallback3(final String mac, final String status, final String name, final Bundle bundle, final BluetoothDevice device) {
+        UserError.Log.d(TAG, "Received callback: " + mac + " " + status);
+        if (device != null && I.useReconnectHandler && device.getAddress().equals(I.address)) {
+            BtReconnect.checkReconnect(device);
+        }
+    }
 
     protected synchronized void onConnectionStateChange(final RxBleConnection.RxBleConnectionState newState) {
         String connection_state = "Unknown";
@@ -581,10 +603,10 @@ public abstract class JamBaseBluetoothSequencer extends JamBaseBluetoothService 
                     break;
                 case CONNECT_NOW:
                     if (!I.isConnected) {
-                        if (JoH.ratelimit("jambase connect" + I.address,1)) {
+                        if (JoH.ratelimit("jambase connect" + I.address, 1)) {
                             startConnect(I.address);
                         } else {
-                            UserError.Log.d(TAG,"Blocking duplicate connect within 1 second");
+                            UserError.Log.d(TAG, "Blocking duplicate connect within 1 second");
                         }
                     } else {
                         changeState(mState.next());
@@ -636,6 +658,7 @@ public abstract class JamBaseBluetoothSequencer extends JamBaseBluetoothService 
 
     @RequiredArgsConstructor
     private class QueueItem {
+        final UUID queueWriteCharacterstic;
         final byte[] data;
         final int timeoutSeconds;
         final long post_delay;
@@ -692,6 +715,7 @@ public abstract class JamBaseBluetoothSequencer extends JamBaseBluetoothService 
         boolean start_now;
         boolean expect_reply;
         String description = "Vanilla Queue Item";
+        UUID queueWriteCharacterstic;
         Runnable runnable;
         ReplyProcessor processor;
         BytesGenerator generator;
@@ -743,6 +767,16 @@ public abstract class JamBaseBluetoothSequencer extends JamBaseBluetoothService 
             this.generator = generator;
             return this;
         }
+
+        public UUID getQueueWriteCharacterstic() {
+            return queueWriteCharacterstic;
+        }
+
+        public QueueMe setQueueWriteCharacterstic(UUID queueWriteCharacterstic) {
+            this.queueWriteCharacterstic = queueWriteCharacterstic;
+            return this;
+        }
+
 
         public QueueMe now() {
             this.start_now = true;
@@ -809,14 +843,14 @@ public abstract class JamBaseBluetoothSequencer extends JamBaseBluetoothService 
                     UserError.Log.wtf(TAG, "Could not create clone of reply processor needed!!");
                 }
             }
-
-
+            UUID  queueWriteCharacterstic = queueMe.queueWriteCharacterstic;
+            if (queueWriteCharacterstic == null) queueWriteCharacterstic = I.queue_write_characterstic;
             if (atHead) {
-                I.write_queue.addFirst(new QueueItem(bytes, queueMe.timeout_seconds, queueMe.delay_ms, queueMe.description, queueMe.expect_reply, queueMe.expireAt)
+                I.write_queue.addFirst(new QueueItem(queueWriteCharacterstic, bytes, queueMe.timeout_seconds, queueMe.delay_ms, queueMe.description, queueMe.expect_reply, queueMe.expireAt)
                         .setRunnable(queueMe.runnable).setProcessor(replyProcessor).setGenerator(queueMe.generator));
 
             } else {
-                I.write_queue.add(new QueueItem(bytes, queueMe.timeout_seconds, queueMe.delay_ms, queueMe.description, queueMe.expect_reply, queueMe.expireAt)
+                I.write_queue.add(new QueueItem(queueWriteCharacterstic, bytes, queueMe.timeout_seconds, queueMe.delay_ms, queueMe.description, queueMe.expect_reply, queueMe.expireAt)
                         .setRunnable(queueMe.runnable).setProcessor(replyProcessor).setGenerator(queueMe.generator));
 
             }
@@ -855,12 +889,17 @@ public abstract class JamBaseBluetoothSequencer extends JamBaseBluetoothService 
 
     private synchronized void writeMultipleFromQueue(final PoorMansConcurrentLinkedDeque<QueueItem> queue) {
         if (I.isConnected) {
-            final QueueItem item = queue.poll();
+            QueueItem item = queue.poll();
+            while (item != null && item.isExpired()) {
+                UserError.Log.d(TAG, "Item expired from queue early: (expiry: " + JoH.dateTimeText(item.expireAt) + " " + item.description);
+                item = queue.poll();
+            }
             if (item != null) {
                 if (!item.isExpired()) {
                     UserError.Log.d(TAG, "Starting queue send for item: " + item.description);
                     writeQueueItem(queue, item);
                 } else {
+                    // TODO this is very much an edge case now
                     UserError.Log.d(TAG, "Item expired from queue: (expiry: " + JoH.dateTimeText(item.expireAt) + " " + item.description);
                     writeMultipleFromQueue(queue);
                 }
@@ -882,12 +921,12 @@ public abstract class JamBaseBluetoothSequencer extends JamBaseBluetoothService 
             return;
         }
 
-        if (I.queue_write_characterstic == null) {
+        if (item.queueWriteCharacterstic == null) {
             UserError.Log.e(TAG, "Write characteristic not set in queue write");
             return;
         }
-        UserError.Log.d(TAG, "Writing to characteristic: " + I.queue_write_characterstic + " " + item.description);
-        I.connection.writeCharacteristic(I.queue_write_characterstic, item.getData())
+        UserError.Log.d(TAG, "Writing to characteristic: " + item.queueWriteCharacterstic + " " + item.description);
+        I.connection.writeCharacteristic(item.queueWriteCharacterstic, item.getData())
                 .timeout(item.timeoutSeconds, TimeUnit.SECONDS)
                 .subscribe(Value -> {
                     UserError.Log.d(TAG, "Wrote request: " + item.description + " -> " + JoH.bytesToHex(Value));
@@ -966,6 +1005,7 @@ public abstract class JamBaseBluetoothSequencer extends JamBaseBluetoothService 
     public void onDestroy() {
         shutDown();
         DisconnectReceiver.removeCallBack(TAG);
+        ConnectReceiver.removeCallBack(TAG);
         unregisterScanReceiver();
         super.onDestroy();
     }

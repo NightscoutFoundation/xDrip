@@ -26,31 +26,33 @@ public class LinearTrapezoidInsulin extends Insulin {
         }
         t3 = curveData.get("duration").getAsLong();
 
-        max = 2.0 / (t2 - t1 + t3);
+        max = 2.0 / (t2 - t1 + t3 - onset);
         maxEffect = t3;
     }
 
     public double calculateIOB(double t) {
-        double time = t - onset;
-        if ((0 <= time) && (time < t1))
-            return 1.0 - time * time * max / (2 * t1);
-        else if ((t1 <= time) && (time < t2))
-            return 1.0 + 0.5 * max * t1 - max * time;
-        else if ((t2 <= time) && (time < t3))
-            return 0.5 * (t3 - time) * (t3 - time) * max / (t3 - t2);
+
+		if ((0 <= t) && (t < onset))
+			return 1.0;
+		else if ((onset <= t) && (t < t1))
+			return 1.0 - 0.5 * (t - onset)* (t - onset) * max / (t1 - onset);
+        else if ((t1 <= t) && (t < t2))
+            return 1.0 + 0.5 * max * (t1 - onset) - max * (t - onset);
+        else if ((t2 <= t) && (t < t3))
+            return 0.5 * (t3 - t) * (t3 - t) * max / (t3 - t2);
         else return 0;
     }
 
     public double calculateActivity(double t) {
-        double time = t - onset;
-        if ((0 <= time) && (time < t1))
-            return concentration * time * max / t1;
-        else if ((t1 <= time) && (time < t2))
+
+        if ((0 <= t) && (t < onset))
+            return 0.0;
+        else if ((onset <= t) && (t < t1))
+            return concentration * (t - onset) * max / (t1 - onset);
+        else if ((t1 <= t) && (t < t2))
             return concentration * max;
-        else if ((t2 <= time) && (time < t3))
-            return concentration * (t3 - time) * max / (t3 - t2);
+        else if ((t2 <= t) && (t < t3))
+            return concentration * (t - t3) * max / (t3 - t2);
         else return 0;
     }
-
-
 }

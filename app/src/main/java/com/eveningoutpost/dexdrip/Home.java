@@ -12,14 +12,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -58,7 +55,6 @@ import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine;
-import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Dex_Constants;
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
@@ -304,6 +300,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     MicroStatus microStatus;
 
     NanoStatus nanoStatus;
+    NanoStatus expiryStatus;
 
     private ITrendArrow itr;
 
@@ -361,6 +358,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         }
 
         nanoStatus = new NanoStatus("collector", 1000);
+        expiryStatus = new NanoStatus("sensor-expiry", 15000);
 
         set_is_follower();
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
@@ -372,6 +370,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         binding.setHome(this);
         binding.setUi(ui);
         binding.setNano(nanoStatus);
+        binding.setExpiry(expiryStatus);
         setContentView(binding.getRoot());
 
         Toolbar mToolbar = (Toolbar) findViewById(R.id.my_toolbar);
@@ -1558,8 +1557,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 break;
             default:
                 if (MultipleInsulins.isEnabled()) {
-                    Insulin insulin = InsulinManager.getProfile(thisword);
-                    UserError.Log.d("TREATMENTS","Processing for: "+insulin.getName());
+                    final Insulin insulin = InsulinManager.getProfile(thisword);
+                    UserError.Log.d("TREATMENTS", "Processing for: " + (insulin != null ? insulin.getName() : "null"));
                     int number = 0;
                     for (number = 0; number < maxInsulinProfiles; number++)
                         if ((thisinsulinprofile[number] == null) || (thisinsulinprofile[number] == insulin)) {
@@ -1820,6 +1819,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         statusBWP = "";
         refreshStatusLine();
         nanoStatus.setRunning(true);
+        expiryStatus.setRunning(true);
 
         if (BgGraphBuilder.isXLargeTablet(getApplicationContext())) {
             this.currentBgValueText.setTextSize(100);
@@ -2054,6 +2054,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         super.onPause();
         NFCReaderX.stopNFC(this);
         nanoStatus.setRunning(false);
+        expiryStatus.setRunning(false);
         if (_broadcastReceiver != null) {
             try {
                 unregisterReceiver(_broadcastReceiver);
@@ -2566,7 +2567,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                     } else {
                         List<Calibration> calibrations = Calibration.latest(2);
                         if (calibrations.size() < 2) {
-                            if (BgReading.isDataSuitableForDoubleCalibration()) {
+                            if (BgReading.isDataSuitableForDoubleCalibration() || Ob1G5CollectionService.isG5WantingInitialCalibration()) {
                                 notificationText.setText(R.string.please_enter_two_calibrations_to_get_started);
                                 showUncalibratedSlope();
                                 Log.d(TAG, "Asking for calibration B: Uncalculated BG readings: " + BgReading.latestUnCalculated(2).size() + " / Calibrations size: " + calibrations.size() + " quality: " + BgReading.isDataSuitableForDoubleCalibration());

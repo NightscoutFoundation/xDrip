@@ -20,6 +20,7 @@
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
@@ -216,6 +217,11 @@
                 <action android:name="android.bluetooth.device.action.ACL_DISCONNECTED" />
             </intent-filter>
         </receiver>
+        <receiver android:name=".utils.bt.ConnectReceiver">
+            <intent-filter>
+                <action android:name="android.bluetooth.device.action.ACL_CONNECTED" />
+            </intent-filter>
+        </receiver>
         <receiver android:name=".utils.framework.IncomingCallsReceiver" android:enabled="true" >
             <intent-filter>
                 <action android:name="android.intent.action.PHONE_STATE" />
@@ -348,6 +354,7 @@
             android:exported="true" />
         <service
             android:name=".Services.Ob1G5CollectionService"
+            android:foregroundServiceType="connectedDevice|location"
             android:enabled="true" />
         <service
             android:name=".insulin.pendiq.PendiqService"
@@ -678,6 +685,7 @@
             android:enabled="true"
             android:exported="true" />
         <service android:name=".watch.lefun.LeFunService" />
+        <service android:name=".watch.miband.MiBandService" />
         <service android:name=".cgm.nsfollow.NightscoutFollowService" />
         <service android:name=".insulin.inpen.InPenService" />
         <service android:name=".cgm.sharefollow.ShareFollowService" />

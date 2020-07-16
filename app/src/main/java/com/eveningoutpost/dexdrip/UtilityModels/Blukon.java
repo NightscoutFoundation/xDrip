@@ -43,6 +43,10 @@ public class Blukon {
     private static int m_minutesBack;
     private static boolean m_getOlderReading = false;
     private static boolean m_communicationStarted = false;
+    private static byte[] patchUID;
+    private static byte[] patchInfo;
+    private static byte[] patchInfoResponse;
+    private static int m_firmware = 0;
 
     private static String currentCommand = "";
 
@@ -98,31 +102,31 @@ public class Blukon {
     }
 
     public static void initialize() {
-            Log.i(TAG, "initialize Blukon!");
-            JoH.clearRatelimit(BLUKON_GETSENSORAGE_TIMER);
-            m_getNowGlucoseDataCommand = false;
-            m_getNowGlucoseDataIndexCommand = false;
+        Log.i(TAG, "initialize Blukon!");
+        JoH.clearRatelimit(BLUKON_GETSENSORAGE_TIMER);
+        m_getNowGlucoseDataCommand = false;
+        m_getNowGlucoseDataIndexCommand = false;
 
-            m_getOlderReading = false;
-            m_blockNumber = 0;
-            // @keencave - initialize only once during initial to ensure no backfilling at start
-            //       m_timeLastBg = 0;
+        m_getOlderReading = false;
+        m_blockNumber = 0;
+        // @keencave - initialize only once during initial to ensure no backfilling at start
+        //       m_timeLastBg = 0;
     }
 
-/*
-*   blucon protocol description
-*
-*   scheme: 
-*   blucon commands starts with 0x01/0x0B followed by a 1 byte descriptor
-*       - only the ackWakeup starts with 0x81/0x0A
-*   blucon answers 
-*       - 0x8B 0xD<command descriptor as 4 bit LSB nibble>
-*       - 0x1A in NAK state
-*       - wakeUp starts with 0xCB
-*   payload in the commands are coded wuth a lenght byte followed a approbiate amount of bytes
-*   readSIngleBlock: 01-0D-0E-01-<block number>
-*   readMultipleBlock: 01-0D-0F-02-<start block>-<end block>
-*/
+    /*
+     *   blucon protocol description
+     *
+     *   scheme:
+     *   blucon commands starts with 0x01/0x0B followed by a 1 byte descriptor
+     *       - only the ackWakeup starts with 0x81/0x0A
+     *   blucon answers
+     *       - 0x8B 0xD<command descriptor as 4 bit LSB nibble>
+     *       - 0x1A in NAK state
+     *       - wakeUp starts with 0xCB
+     *   payload in the commands are coded wuth a lenght byte followed a approbiate amount of bytes
+     *   readSIngleBlock: 01-0D-0E-01-<block number>
+     *   readMultipleBlock: 01-0D-0F-02-<start block>-<end block>
+     */
 
 /*
 private static final String READ_SINGLE_BLOCK_PREFIX =                  "010d0e01";
@@ -132,53 +136,60 @@ private static final String GET_SENSOR_TIME_BLOCK_COMMAND = READ_SINGLE_BLOCK_PR
 private static final String GET_TREND_HISTORY_BLOCK_COMMAND = READ_SINGLE_BLOCK_PREFIX+BLOCK_NUMBER_TREND_HISTORY;
 */
 
-private static final String WAKEUP_COMMAND =                            "cb010000";
-private static final String ACK_ON_WAKEUP_ANSWER =                      "810a00";
-private static final String SLEEP_COMMAND =                             "010c0e00";
+    private static final String WAKEUP_COMMAND = "cb010000";
+    private static final String ACK_ON_WAKEUP_ANSWER = "810a00";
+    private static final String SLEEP_COMMAND = "010c0e00";
 
-//private static final String GET_SERIAL_NUMBER_COMMAND = "010d0e0100";
-private static final String GET_PATCH_INFO_COMMAND =                    "010d0900";
+    //private static final String GET_SERIAL_NUMBER_COMMAND = "010d0e0100";
+    private static final String GET_PATCH_INFO_COMMAND = "010d0900";
 
-private static final String UNKNOWN1_COMMAND =                          "010d0b00";
-private static final String UNKNOWN2_COMMAND =                          "010d0a00";
+    private static final String UNKNOWN1_COMMAND = "010d0b00";
+    private static final String UNKNOWN2_COMMAND = "010d0a00";
 
-private static final String GET_SENSOR_TIME_COMMAND =                   "010d0e0127";     // read single block #0x27
-private static final String GET_NOW_DATA_INDEX_COMMAND =                "010d0e0103";  // read single block #0x03
-//private static final String getNowGlucoseData = "9999999999";
+    private static final String GET_SENSOR_TIME_COMMAND = "010d0e0127";     // read single block #0x27
+    private static final String GET_NOW_DATA_INDEX_COMMAND = "010d0e0103";  // read single block #0x03
+    //private static final String getNowGlucoseData = "9999999999";
 //private static final String GET_TREND_DATA_COMMAND = "010d0f02030c";
 //private static final String GET_HISTORIC_DATA_COMMAND getHistoricData = "010d0f020f18";
-private static final String READ_SINGLE_BLOCK_COMMAND_PREFIX =          "010d0e010";
-private static final String READ_SINGLE_BLOCK_COMMAND_PREFIX_SHORT =    "010d0e01";
-private static final String GET_HISTORIC_DATA_COMMAND_ALL_BLOCKS =      "010d0f02002b"; // read all blocks from 0 to 0x2B
+    private static final String READ_SINGLE_BLOCK_COMMAND_PREFIX = "010d0e010";
+    private static final String READ_SINGLE_BLOCK_COMMAND_PREFIX_SHORT = "010d0e01";
+    private static final String GET_HISTORIC_DATA_COMMAND_ALL_BLOCKS = "010d0f02002b"; // read all blocks from 0 to 0x2B
 
-private static final String PATCH_INFO_RESPONSE_PREFIX =                "8bd9";
-private static final String SINGLE_BLOCK_INFO_RESPONSE_PREFIX =         "8bde";
-private static final String MULTIPLE_BLOCK_RESPONSE_INDEX =             "8bdf";
-//private static final String SENSOR_TIME_RESPONSE_PREFIX = "8bde27";
-private static final String BLUCON_ACK_RESPONSE =                       "8b0a00";
-private static final String BLUCON_NAK_RESPONSE_PREFIX =                "8b1a02";
+    private static final String PATCH_INFO_RESPONSE_PREFIX = "8bd9";
+    private static final String SINGLE_BLOCK_INFO_RESPONSE_PREFIX = "8bde";
+    private static final String MULTIPLE_BLOCK_RESPONSE_INDEX = "8bdf";
+    //private static final String SENSOR_TIME_RESPONSE_PREFIX = "8bde27";
+    private static final String BLUCON_ACK_RESPONSE = "8b0a00";
+    private static final String BLUCON_NAK_RESPONSE_PREFIX = "8b1a02";
 
-private static final String BLUCON_UNKNOWN1_COMMAND_RESPONSE =          "8bdb0101041711";
-private static final String BLUCON_UNKNOWN2_COMMAND_RESPONSE =          "8bdaaa";
-private static final String BLUCON_UNKNOWN2_COMMAND_RESPONSE_BATTERY_LOW = "8bda02";
+    private static final String BLUCON_UNKNOWN1_COMMAND_RESPONSE = "8bdb0101041711";
+    private static final String BLUCON_UNKNOWN2_COMMAND_RESPONSE = "8bdaaa";
+    private static final String BLUCON_UNKNOWN2_COMMAND_RESPONSE_BATTERY_LOW = "8bda02";
 
-private static final String BLUCON_NAK_RESPONSE_ERROR09 =               "8b1a020009";
-private static final String BLUCON_NAK_RESPONSE_ERROR14 =               "8b1a020014";
+    private static final String BLUCON_NAK_RESPONSE_ERROR09 = "8b1a020009";
+    private static final String BLUCON_NAK_RESPONSE_ERROR14 = "8b1a020014";
 
-private static final String PATCH_NOT_FOUND_RESPONSE =                  "8b1a02000f";
-private static final String PATCH_READ_ERROR =                          "8b1a020011";
+    private static final String PATCH_NOT_FOUND_RESPONSE = "8b1a02000f";
+    private static final String PATCH_READ_ERROR = "8b1a020011";
 
-// we guess that this two commands indicate a low battery state
-private static final String BLUCON_BATTERY_LOW_INDICATION1 =            "cb020000";
-private static final String BLUCON_BATTERY_LOW_INDICATION2 =            "cbdb0000";
+    // we guess that this two commands indicate a low battery state
+    private static final String BLUCON_BATTERY_LOW_INDICATION1 = "cb020000";
+    private static final String BLUCON_BATTERY_LOW_INDICATION2 = "cbdb0000";
 
-private static final int POSITION_OF_SENSOR_STATUS_BYTE = 17;
+    private static final String BLUCON_PATCHUID = "010e0003260100";
+    private static final String BLUCON_PATCHUINFO = "010e000302a107";
+    private static final String BLUCON_UNKNOWN1_COMMAND_RESPONSE_START = "8bdb";
+
+    private static final String BLUCON_SECOND_BLOCK = "010d0e0102";
+    private static final String BLUCON_ALL_ZERO_RESPONSE = "0000000000000000";
+
+    private static final int POSITION_OF_SENSOR_STATUS_BYTE = 17;
 
     /*
      * check first byte to detect valid blucon answers
-     */ 
+     */
     public static boolean isBlukonPacket(byte[] buffer) {
-    /* -53  0xCB -117 0x8B */
+        /* -53  0xCB -117 0x8B */
         return !((buffer == null) || (buffer.length < 3)) && (buffer[0] == (byte) 0xCB || buffer[0] == (byte) 0x8B);
     }
 
@@ -204,17 +215,17 @@ private static final int POSITION_OF_SENSOR_STATUS_BYTE = 17;
             if (Blukon.expectingBlukonDevice() && Pref.getBooleanDefaultFalse("blukon_unbonding")) {
                 final ActiveBluetoothDevice btDevice = ActiveBluetoothDevice.first();
                 if (btDevice != null) {
-                    UserError.Log.d(TAG, "Unbonding blukon at initialization");
+                    Log.d(TAG, "Unbonding blukon at initialization");
                     JoH.unBond(btDevice.address);
                 }
             }
         } catch (Exception e) {
-            UserError.Log.e(TAG, "Got exception trying to unbond blukon at init");
+            Log.e(TAG, "Got exception trying to unbond blukon at init");
         }
     }
 
     // .*(dexdrip|gatt|Blukon).
-    /* 
+    /*
      * state machine to deal with the blucon protocol
      */
     public synchronized static byte[] decodeBlukonPacket(byte[] buffer) {
@@ -261,7 +272,7 @@ private static final int POSITION_OF_SENSOR_STATUS_BYTE = 17;
         // BluconACKResponse will come in two different situations
         // 1) after we have sent an ackwakeup command
         // 2) after we have a sleep command
-        /* 
+        /*
          * step 4 / step 11: receive ACK on wakeup or after sending sleep command
          */
         if (strRecCmd.startsWith(BLUCON_ACK_RESPONSE)) {
@@ -271,9 +282,9 @@ private static final int POSITION_OF_SENSOR_STATUS_BYTE = 17;
             if (currentCommand.startsWith(ACK_ON_WAKEUP_ANSWER)) {//ACK sent
                 //ack received
 
-                currentCommand = UNKNOWN1_COMMAND;
-                Log.i(TAG, "getUnknownCmd1: " + currentCommand);
-
+                // Send Second block command
+                currentCommand = BLUCON_SECOND_BLOCK;
+                Log.i(TAG, "Get second Block: " + currentCommand);
             } else {
                 Log.i(TAG, "Got sleep ack, resetting initialstate!");
                 currentCommand = "";
@@ -313,7 +324,7 @@ private static final int POSITION_OF_SENSOR_STATUS_BYTE = 17;
             JoH.clearRatelimit(BLUKON_GETSENSORAGE_TIMER);// set to current time to force timer to be set back
         }
 
-        /* 
+        /*
          * step 2: process getPatchInfo
          */
         if (currentCommand.equals("") && strRecCmd.equalsIgnoreCase(WAKEUP_COMMAND)) {
@@ -321,18 +332,26 @@ private static final int POSITION_OF_SENSOR_STATUS_BYTE = 17;
             Log.i(TAG, "wakeup received");
 
             //must be first cmd to be sent otherwise get NACK!
-           if (JoH.ratelimit("blukon-request_patch_info",1)) {
-               currentCommand = GET_PATCH_INFO_COMMAND;
-           }
+            if (JoH.ratelimit("blukon-request_patch_info", 1)) {
+                currentCommand = GET_PATCH_INFO_COMMAND;
+            }
             Log.i(TAG, "getPatchInfo");
-        /*
-         * step 3: analyse received patch info, decode serial number and check sensorStatus
-         */
+            /*
+             * step 3: analyse received patch info, decode serial number and check sensorStatus
+             */
         } else if (currentCommand.startsWith(GET_PATCH_INFO_COMMAND) /*getPatchInfo*/ && strRecCmd.startsWith(PATCH_INFO_RESPONSE_PREFIX)) {
             cmdFound = 1;
             Log.i(TAG, "Patch Info received");
+            patchInfoResponse = buffer;
 
-            /*
+            currentCommand = ACK_ON_WAKEUP_ANSWER;
+            Log.i(TAG, "Send ACK");
+
+        } else if (currentCommand.startsWith(BLUCON_SECOND_BLOCK) && strRecCmd.startsWith("8bde02")) {
+            // Second Block response
+            cmdFound = 1;
+            if (strRecCmd.substring(6).equals(BLUCON_ALL_ZERO_RESPONSE) && !Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
+/*
                 in getPatchInfo: blucon answer is 20 bytes long.
                 Bytes 13 - 19 (0 indexing) contains the bytes 0 ... 6 of block #0
                 Bytes 11 to 12: ?
@@ -343,34 +362,38 @@ private static final int POSITION_OF_SENSOR_STATUS_BYTE = 17;
                 Remark: Byte #17 (0 indexing) contains the SensorStatusByte.
             */
 
-            if (!LibreUtils.validatePatchInfo(buffer)) {
-                Log.e(TAG, "Patch info doesn't look valid - read error? " + JoH.bytesToHex(buffer));
-            } else {
+                if (!LibreUtils.validatePatchInfo(patchInfoResponse)) {
+                    Log.e(TAG, "Patch info doesn't look valid - read error? " + JoH.bytesToHex(patchInfoResponse));
+                } else {
 
-                final String SensorSn = LibreUtils.decodeSerialNumber(buffer);
+                    final String SensorSn = LibreUtils.decodeSerialNumber(patchInfoResponse);
 
-                if (SensorSanity.checkLibreSensorChangeIfEnabled(SensorSn)) {
-                    Log.e(TAG, "Problem with Libre Serial Number - not processing");
-                    return null;
+                    if (SensorSanity.checkLibreSensorChangeIfEnabled(SensorSn)) {
+                        Log.e(TAG, "Problem with Libre Serial Number - not processing");
+                        return null;
+                    }
+
+                    // TODO: Only write this after checksum was verified
+                    PersistentStore.setString("LibreSN", SensorSn);
                 }
 
-                // TODO: Only write this after checksum was verified
-                PersistentStore.setString("LibreSN", SensorSn);
-            }
-
-            if (LibreUtils.isSensorReady(buffer[POSITION_OF_SENSOR_STATUS_BYTE])) {
-                currentCommand = ACK_ON_WAKEUP_ANSWER;
-                Log.i(TAG, "Send ACK");
+                if (LibreUtils.isSensorReady(patchInfoResponse[POSITION_OF_SENSOR_STATUS_BYTE])) {
+                    currentCommand = UNKNOWN1_COMMAND;
+                    Log.i(TAG, "getUnknownCmd1 : " + currentCommand);
+                } else {
+                    Log.e(TAG, "Sensor is not ready, stop!");
+                    currentCommand = SLEEP_COMMAND;
+                    Log.i(TAG, "Send sleep cmd");
+                    m_communicationStarted = false;
+                }
             } else {
-                Log.e(TAG, "Sensor is not ready, stop!");
-                currentCommand = SLEEP_COMMAND;
-                Log.i(TAG, "Send sleep cmd");
-                m_communicationStarted = false;
+                currentCommand = UNKNOWN1_COMMAND;
+                Log.i(TAG, "getUnknownCmd1 : " + currentCommand);
             }
 
-        /*
-         * step 5: send unknownCommand1 as otherwise communication errors will occur
-         */
+            /*
+             * step 5: send unknownCommand1 as otherwise communication errors will occur
+             */
         } else if (currentCommand.startsWith(UNKNOWN1_COMMAND) /*getUnknownCmd1*/ && strRecCmd.startsWith("8bdb")) {
             cmdFound = 1;
             Log.i(TAG, "gotUnknownCmd1 (010d0b00): " + strRecCmd);
@@ -378,13 +401,17 @@ private static final int POSITION_OF_SENSOR_STATUS_BYTE = 17;
             if (!strRecCmd.equals(BLUCON_UNKNOWN1_COMMAND_RESPONSE)) {
                 Log.e(TAG, "gotUnknownCmd1 (010d0b00): " + strRecCmd);
             }
+            if (strRecCmd.startsWith(BLUCON_UNKNOWN1_COMMAND_RESPONSE_START)) {
+                m_firmware = Integer.parseInt(strRecCmd.substring(4, 8));
+                Log.i(TAG, "m_firmware version " + m_firmware);
+            }
 
             currentCommand = UNKNOWN2_COMMAND;
             Log.i(TAG, "getUnknownCmd2 " + currentCommand);
 
-        /*
-         * step 6: send unknownCommand2 as otherwise communication errors will occur
-         */
+            /*
+             * step 6: send unknownCommand2 as otherwise communication errors will occur
+             */
         } else if (currentCommand.startsWith(UNKNOWN2_COMMAND) /*getUnknownCmd2*/ && strRecCmd.startsWith("8bda")) {
             cmdFound = 1;
             Log.i(TAG, "gotUnknownCmd2 (010d0a00): " + strRecCmd);
@@ -399,18 +426,22 @@ private static final int POSITION_OF_SENSOR_STATUS_BYTE = 17;
                 gotLowBat = true;
             }
 
-            /* LibreAlarmReceiver.CalculateFromDataTransferObject, called when processing historical data,
-             * expects the sensor age not to be updated yet, so only update the sensor age when not retrieving history.
-             */
+            Log.i(TAG, "external_blukon_algorithm = " + Pref.getBooleanDefaultFalse("external_blukon_algorithm"));
             if (Pref.getBooleanDefaultFalse("external_blukon_algorithm") || getHistoricReadings) {
-                // Send the command to getHistoricData (read all blocks from 0 to 0x2b)
-                Log.i(TAG, "getHistoricData (2)");
-                currentCommand = GET_HISTORIC_DATA_COMMAND_ALL_BLOCKS;
-                m_blockNumber = 0;
+                if (m_firmware >= 403) {
+                    // Send the command for get patchUID
+                    Log.i(TAG, "BLUCON_PATCHUID  ");
+                    currentCommand = BLUCON_PATCHUID;
+                } else {
+                    // Send the command to getHistoricData (read all blocks from 0 to 0x2b)
+                    Log.i(TAG, "getHistoricData (2)");
+                    currentCommand = GET_HISTORIC_DATA_COMMAND_ALL_BLOCKS;
+                    m_blockNumber = 0;
 
-                //force read from sensor age when getting historic on next reading
-                if (getHistoricReadings) {
-                    JoH.clearRatelimit(BLUKON_GETSENSORAGE_TIMER);
+                    //force read from sensor age when getting historic on next reading
+                    if (getHistoricReadings) {
+                        JoH.clearRatelimit(BLUKON_GETSENSORAGE_TIMER);
+                    }
                 }
             } else {
                 if (JoH.pratelimit(BLUKON_GETSENSORAGE_TIMER, GET_SENSOR_AGE_DELAY)) {
@@ -422,10 +453,33 @@ private static final int POSITION_OF_SENSOR_STATUS_BYTE = 17;
                     Log.i(TAG, "getNowGlucoseDataIndexCommand");
                 }
             }
+        } else if (currentCommand.startsWith(BLUCON_PATCHUID) && strRecCmd.startsWith("8b0e")) {
+            cmdFound = 1;
+            Log.i("blukon", "BLUCON_PATCHUID: " + currentCommand);
+            // Send the command for get patchInfo
+            currentCommand = BLUCON_PATCHUINFO;
+            patchUID = JoH.hexStringToByteArray(strRecCmd.substring(8));
 
-        /*
-         * step 7: calculate sensorAge from sensors FRAM copy
-         */
+        } else if (currentCommand.startsWith(BLUCON_PATCHUINFO) && strRecCmd.startsWith("8b0e")) {
+            cmdFound = 1;
+            Log.i("blukon", "BLUCON_PATCHUINFO: " + currentCommand);
+            patchInfo = JoH.hexStringToByteArray(strRecCmd.substring(6));
+            /* LibreAlarmReceiver.CalculateFromDataTransferObject, called when processing historical data,
+             * expects the sensor age not to be updated yet, so only update the sensor age when not retrieving history.
+             */
+            // Send the command to getHistoricData (read all blocks from 0 to 0x2b)
+            Log.i(TAG, "GET_HISTORIC_DATA_COMMAND_ALL_BLOCKS ");
+            currentCommand = GET_HISTORIC_DATA_COMMAND_ALL_BLOCKS;
+            m_blockNumber = 0;
+
+            //force read from sensor age when getting historic on next reading
+            if (getHistoricReadings) {
+                JoH.clearRatelimit(BLUKON_GETSENSORAGE_TIMER);
+            }
+
+            /*
+             * step 7: calculate sensorAge from sensors FRAM copy
+             */
         } else if (currentCommand.startsWith(GET_SENSOR_TIME_COMMAND) /*getSensorAge*/ && strRecCmd.startsWith(SINGLE_BLOCK_INFO_RESPONSE_PREFIX)) {
             cmdFound = 1;
 
@@ -456,9 +510,9 @@ private static final int POSITION_OF_SENSOR_STATUS_BYTE = 17;
             m_getNowGlucoseDataIndexCommand = true;//to avoid issue when gotNowDataIndex cmd could be same as getNowGlucoseData (case block=3)
             Log.i(TAG, "getNowGlucoseDataIndexCommand");
 
-        /*
-         * step 8: determine trend or historic data index
-         */
+            /*
+             * step 8: determine trend or historic data index
+             */
         } else if (currentCommand.startsWith(GET_NOW_DATA_INDEX_COMMAND) /*getNowDataIndex*/ && m_getNowGlucoseDataIndexCommand == true && strRecCmd.startsWith(SINGLE_BLOCK_INFO_RESPONSE_PREFIX)) {
             cmdFound = 1;
 
@@ -500,18 +554,18 @@ private static final int POSITION_OF_SENSOR_STATUS_BYTE = 17;
             m_getNowGlucoseDataIndexCommand = false;
             m_getNowGlucoseDataCommand = true;
 
-        /*
-         * step 9: calculate fro current index the block number next to read
-         */
+            /*
+             * step 9: calculate fro current index the block number next to read
+             */
         } else if (currentCommand.startsWith(READ_SINGLE_BLOCK_COMMAND_PREFIX_SHORT) /*getNowGlucoseData*/ && m_getNowGlucoseDataCommand == true && strRecCmd.startsWith(SINGLE_BLOCK_INFO_RESPONSE_PREFIX)) {
             Log.d(TAG, "Before Saving data: + currentCommand = " + currentCommand);
             String blockId = currentCommand.substring(READ_SINGLE_BLOCK_COMMAND_PREFIX_SHORT.length());
             long now = JoH.tsl();
-            if(!blockId.isEmpty()) {
+            if (!blockId.isEmpty()) {
                 int blockNum = JoH.parseIntWithDefault(blockId, 16, -1);
-                if(blockNum != -1) {
+                if (blockNum != -1) {
                     Log.d(TAG, "Saving data: + blockid = " + blockNum);
-                    LibreBlock.createAndSave("blukon", now , buffer, blockNum * 8);
+                    LibreBlock.createAndSave("blukon", now, buffer, blockNum * 8, false, patchUID, patchInfo);
                 }
             }
 
@@ -536,7 +590,7 @@ private static final int POSITION_OF_SENSOR_STATUS_BYTE = 17;
                     Log.e(TAG, "New Cmd received too early, send blukon to sleep and ignore BG value");
                 }
 
-                /* 
+                /*
                  * step 10: send sleep command
                  */
                 currentCommand = SLEEP_COMMAND;
@@ -632,7 +686,8 @@ private static final int POSITION_OF_SENSOR_STATUS_BYTE = 17;
             Log.i(TAG, "Full data that was received is " + HexDump.dumpHexString(m_full_data));
 
             final String tagId = PersistentStore.getString("LibreSN");
-            NFCReaderX.HandleGoodReading(tagId, m_full_data, now);
+            Log.i(TAG, "calling HandleGoodReading");
+            NFCReaderX.HandleGoodReading(tagId, m_full_data, now, false, patchUID, patchInfo);
 
             PersistentStore.setLong("blukon-time-of-last-reading", now);
             Log.i(TAG, "time of current reading: " + JoH.dateTimeText(now));

@@ -60,9 +60,21 @@ public class BlueJayInfo extends BaseTx {
     @Expose
     public long timeLastUpdated;
     @Expose
+    public long displayLastUpdated;
+    @Expose
     public long lastStatus1;
     @Expose
     public long lastStatus2;
+    @Expose
+    public long lastStatus3;
+    @Expose
+    public int batteryPercent;
+    @Expose
+    public int fragmentationLevel = -1;
+    @Expose
+    public int fragmentationCounter = -1;
+    @Expose
+    public int fragmentationIndex = -1;
 
     BlueJayInfo(final String mac) {
         this.mac = mac;
@@ -75,6 +87,7 @@ public class BlueJayInfo extends BaseTx {
     public void invalidateStatus() {
         lastStatus1 = 0;
         lastStatus2 = 0;
+        lastStatus3 = 0;
         persistentSave();
     }
 
@@ -88,6 +101,15 @@ public class BlueJayInfo extends BaseTx {
 
     public void invalidateTime() {
         timeLastUpdated = 0;
+        persistentSave();
+    }
+
+    public boolean isDisplayUpdatedue() {
+        return msSince(displayLastUpdated) > (Constants.MINUTE_IN_MS * 10);
+    }
+
+    public void displayUpdated() {
+        displayLastUpdated = JoH.tsl();
         persistentSave();
     }
 
@@ -119,7 +141,27 @@ public class BlueJayInfo extends BaseTx {
             bitfield = getUnsignedByte();
             connectionAttempts = getUnsignedByte();
             successfulReplies = getUnsignedByte();
+
+            if (packet.length > 12) {
+                batteryPercent = getUnsignedByte() & 0x7f;
+            } else {
+                batteryPercent = -1;
+            }
+
             lastStatus2 = JoH.tsl();
+            persistentSave();
+        } else {
+            // packet too short
+        }
+    }
+
+    public void parseStatus3(final byte[] packet) {
+        data = ByteBuffer.wrap(packet).order(ByteOrder.LITTLE_ENDIAN);
+        if (packet.length >= 5) {
+            fragmentationCounter = getUnsignedShort();
+            fragmentationIndex = getUnsignedShort();
+            fragmentationLevel = getUnsignedByte();
+            lastStatus3 = JoH.tsl();
             persistentSave();
         } else {
             // packet too short
