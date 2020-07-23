@@ -135,25 +135,6 @@
         }
       },
       {
-        "name": "Toujeo",
-        "displayName": "Toujeo (long acting)",
-        "PPN":
-        [
-          "ToujeoU100"
-        ],
-        "concentration": "U100",
-        "Curve":
-        {
-          "type": "linear trapezoid",
-          "data":
-          {
-            "onset": "180",
-            "peak": "480",
-            "duration": "2160"
-          }
-        }
-      },
-      {
         "name": "Levemir",
         "displayName": "Levemir (long acting)",
         "PPN":
@@ -168,7 +149,7 @@
           {
             "onset": "60",
             "peak": "180-840",
-            "duration": "1440"
+            "duration": "1500"
           }
         }
       },
@@ -187,7 +168,7 @@
           {
             "onset": "60",
             "peak": "420-1200",
-            "duration": "2160"
+            "duration": "1440"
           }
         }
       },
@@ -207,6 +188,25 @@
             "onset": "60",
             "peak": "480-1140",
             "duration": "1440"
+          }
+        }
+      },
+      {
+        "name": "Toujeo",
+        "displayName": "Toujeo (ultra-long acting)",
+        "PPN":
+        [
+          "ToujeoU100"
+        ],
+        "concentration": "U100",
+        "Curve":
+        {
+          "type": "linear trapezoid",
+          "data":
+          {
+            "onset": "180",
+            "peak": "480-1560",
+            "duration": "2160"
           }
         }
       },
