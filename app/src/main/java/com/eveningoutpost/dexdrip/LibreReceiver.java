@@ -18,6 +18,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.Intents;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
+import com.eveningoutpost.dexdrip.utils.math.AdaptiveSavitzkyGolay;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -80,14 +81,11 @@ public class LibreReceiver extends BroadcastReceiver {
                                 Libre2RawValue currentRawValue = processIntent(intent);
                                 if (currentRawValue == null) return;
                                 Log.v(TAG,"got bg reading: from sensor:"+currentRawValue.serial+" rawValue:"+currentRawValue.glucose+" at:"+currentRawValue.timestamp);
+                                currentRawValue.save();
                                 // period of 4.5 minutes to collect 5 readings
                                 if(!BgReading.last_within_millis(45 * 6 * 1000 )) {
-                                    List<Libre2RawValue> smoothingValues = Libre2RawValue.last20Minutes();
-                                    smoothingValues.add(currentRawValue);
-                                    processValues(currentRawValue, smoothingValues, context);
+                                    processValues(currentRawValue,context);
                                 }
-                                currentRawValue.save();
-
                                 break;
 
                             default:
@@ -129,15 +127,49 @@ public class LibreReceiver extends BroadcastReceiver {
         rawValue.serial = serial;
         return rawValue;
     }
-    private static void processValues(Libre2RawValue currentValue, List<Libre2RawValue> smoothingValues, Context context) {
-        if (Sensor.currentSensor() == null) {
+
+    private static void processValues(Libre2RawValue currentValue, Context context) {
+
+        if (Sensor.currentSensor() == null || !Sensor.currentSensor().uuid.equals(currentValue.serial)) {
             Sensor.create(currentValue.timestamp, currentValue.serial);
 
         }
 
-        double value = calculateWeightedAverage(smoothingValues, currentValue.timestamp);
+        if (false) {
+            List<Libre2RawValue> smoothingValues = Libre2RawValue.last20Minutes();
 
-        BgReading.bgReadingInsertLibre2(value, currentValue.timestamp,currentValue.glucose);
+            double value = calculateWeightedAverage(smoothingValues, currentValue.timestamp);
+
+            BgReading.bgReadingInsertLibre2(value, currentValue.timestamp, currentValue.glucose);
+
+        } else {
+
+            int horizon = 45;
+            int lag = 3;
+            int polynomialOrder = 3;
+            List<Libre2RawValue> smoothingValues = Libre2RawValue.lastMinutes(horizon);
+
+            AdaptiveSavitzkyGolay asg = new AdaptiveSavitzkyGolay(3,3);
+            for (Libre2RawValue rawValue : smoothingValues) {
+                if (!rawValue.serial.equals(Sensor.currentSensor().uuid)) {
+                    Log.v(TAG,"Skipping raw measurement from old sensor at t=" + rawValue.timestamp);
+                    continue;
+                }
+                asg.addMeasurement(rawValue.timestamp,rawValue.glucose);
+            }
+            try {
+                double value = asg.estimateValue();
+                Log.v(TAG, "Smoothed BG value using Savitzky-Golay: raw=" + currentValue.glucose +
+                        " horizon=" + horizon + "min" +
+                        " measurements=" + asg.getMeasurementCount() +
+                        " lag=" + lag +
+                        " polynomialOrder=" + polynomialOrder +
+                        " result=" + value);
+                BgReading.bgReadingInsertLibre2(value, currentValue.timestamp, currentValue.glucose);
+            } catch (RuntimeException e) {
+                Log.e(TAG, "Failed to obtain smoothed BG value: " + e);
+            }
+        }
     }
 
     private static void saveSensorStartTime(Bundle sensor, String serial) {
