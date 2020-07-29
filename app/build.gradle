@@ -335,4 +335,12 @@ dependencies {
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.10'
 }
 
+tasks.withType(Test) { 
+  testLogging {
+    exceptionFormat "full"
+    events "started", "skipped", "passed", "failed"
+    showStandardStreams true
+  }
+}
+
 apply plugin: 'com.google.gms.google-services'
