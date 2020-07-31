@@ -14,6 +14,7 @@ import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.LibreBlock;
 import com.eveningoutpost.dexdrip.Models.Sensor;
+import com.eveningoutpost.dexdrip.Models.SensorSanity;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.ParakeetHelper;
@@ -57,7 +58,7 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
     private static final Gson gson = JoH.defaultGsonInstance();
 
     private final static long DEXCOM_PERIOD = 300000;
-
+    
     // This variables are for fake function only
     static int i = 0;
     static int added = 5;
@@ -406,8 +407,9 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
     public Void doInBackground(String... urls) {
         final PowerManager.WakeLock wl = JoH.getWakeLock("LibreWifiReader", 120000);
         try {
-            //getwakelock();
-            readData();
+            synchronized (LibreWifiReader.class) {
+                readData();
+            }
         } finally {
             JoH.releaseWakeLock(wl);
            // Log.d(TAG, "wakelock released " + lockCounter);
@@ -464,7 +466,6 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
             // Last in the array is the most updated reading we have.
             //TransmitterRawData LastReading = LastReadingArr[LastReadingArr.length -1];
 
-
             //if (LastReading.CaptureDateTime > LastReportedReading + 5000) {
             // Make sure we do not report packets from the far future...
             if ((LastReading.CaptureDateTime > LastReportedTime + 4 * 60000) &&
@@ -493,6 +494,11 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
                     PersistentStore.setString("TomatoFirmware",LastReading.FwVersion);
                     Log.i(TAG, "LastReading.SensorId " + LastReading.SensorId);
                     PersistentStore.setString("LibreSN", LastReading.SensorId);
+                    
+                    if (SensorSanity.checkLibreSensorChangeIfEnabled(LastReading.SensorId)) {
+                        Log.e(TAG, "Problem with Libre Serial Number - not processing");
+                        return;
+                    }
                     
                     
                 } else {
