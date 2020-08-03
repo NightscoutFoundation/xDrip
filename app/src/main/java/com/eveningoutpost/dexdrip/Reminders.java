@@ -118,7 +118,7 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
     private long default_snooze = Constants.MINUTE_IN_MS * 30;
     private SensorManager mSensorManager;
     private Sensor mProximity;
-    private boolean proximity = true; // default to near
+    private static volatile boolean proximity = true; // default to near
     private int proximity_events = 0;
     private int highlighted = 0;
 

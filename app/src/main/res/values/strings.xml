@@ -181,7 +181,11 @@
     <string name="checking_for_update">Checking for update..</string>
     <string name="signal_missed">Signal Missed</string>
     <string name="minutes_ago">{0, choice,0#{0, number, integer} Minutes ago|1#{0, number, integer} Minute ago|1&lt;{0, number, integer} Minutes ago}</string>
+    <string name="expires_days">{0, choice,0#Sensor Expired!|1#Ends in {0, number} day|1&lt;Ends in {0, number} days}</string>
+    <string name="expires_at">Ends {0}</string>
     <string name="space_minutes_ago">" Minutes ago"</string>
+    <string name="in_libre_all_house_mode_no_readings_collected_yet">"In libre all house mode: no readings collected yet."</string>
+    <string name="in_libre_all_house_mode_last_data_collected">"In libre all house mode: Last reading "</string>
     <string name="space_minute_ago">" Minute ago"</string>
     <string name="show_parakeet_map">Show Parakeet map</string>
     <string name="switch_parakeet_to_setup_mode">Switch Parakeet to Setup mode</string>
@@ -1385,6 +1389,8 @@
     <string name="title_plus_accept_follower_actions">Accept follower actions</string>
     <string name="summary_plus_whole_house">Participate in a Whole House Network</string>
     <string name="title_plus_whole_house">Whole House</string>
+    <string name="summary_libre_whole_house_collector">This phone will be a collector in a whole house network</string>
+    <string name="title_libre_whole_house_collector">Libre Whole House</string>
     <string name="summary_xdrip_plus_desert_sync_settings">Off-Grid following</string>
     <string name="title_xdrip_plus_desert_sync_settings">Desert Sync</string>
     <string name="summary_desert_sync_enabled">Enabled local non-internet sync facilities</string>

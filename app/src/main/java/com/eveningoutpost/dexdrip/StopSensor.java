@@ -14,6 +14,7 @@ import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
+import com.eveningoutpost.dexdrip.UtilityModels.NanoStatus;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
@@ -69,6 +70,7 @@ public class StopSensor extends ActivityWithMenu {
 
         CollectionServiceStarter.restartCollectionServiceBackground();
         Home.staticRefreshBGCharts();
+        NanoStatus.keepFollowerUpdated(false);
     }
 
     public void resetAllCalibrations(View v) {
