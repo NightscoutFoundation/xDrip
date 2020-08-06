@@ -43,6 +43,7 @@ public enum DexCollectionType {
     Disabled("Disabled"),
     Mock("Mock"),
     Manual("Manual"),
+    LibreDiaBox("LibreDiaBox"),
     LibreReceiver("LibreReceiver");
 
     String internalName;
@@ -74,8 +75,8 @@ public enum DexCollectionType {
         Collections.addAll(usesWifi, WifiBlueToothWixel, WifiWixel, WifiDexBridgeWixel, Mock, LimiTTerWifi, LibreWifi);
         Collections.addAll(usesXbridge, DexbridgeWixel, WifiDexBridgeWixel);
         Collections.addAll(usesFiltered, DexbridgeWixel, WifiDexBridgeWixel, DexcomG5, WifiWixel, Follower, Mock); // Bluetooth and Wifi+Bluetooth need dynamic mode
-        Collections.addAll(usesLibre, LimiTTer, LibreAlarm, LimiTTerWifi, LibreWifi, LibreReceiver);
-        Collections.addAll(usesBattery, BluetoothWixel, DexbridgeWixel, WifiBlueToothWixel, WifiDexBridgeWixel, Follower, LimiTTer, LibreAlarm, LimiTTerWifi, LibreWifi); // parakeet separate
+        Collections.addAll(usesLibre, LimiTTer, LibreAlarm, LimiTTerWifi, LibreWifi, LibreReceiver, LibreDiaBox);
+        Collections.addAll(usesBattery, BluetoothWixel, DexbridgeWixel, WifiBlueToothWixel, WifiDexBridgeWixel, Follower, LimiTTer, LibreAlarm, LimiTTerWifi, LibreWifi, LibreDiaBox); // parakeet separate
         Collections.addAll(usesDexcomRaw, BluetoothWixel, DexbridgeWixel, WifiWixel, WifiBlueToothWixel, DexcomG5, WifiDexBridgeWixel, Mock);
         Collections.addAll(usesTransmitterBattery, WifiWixel, BluetoothWixel, DexbridgeWixel, WifiBlueToothWixel, WifiDexBridgeWixel); // G4 transmitter battery
     }

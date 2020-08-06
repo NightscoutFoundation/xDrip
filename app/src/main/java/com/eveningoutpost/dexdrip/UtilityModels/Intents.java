@@ -70,4 +70,6 @@ public interface Intents {
 
 
     String PREFERENCE_INTENT = "com.eveningoutpost.dexdrip.utils.PROGRESS";
+
+    String LIBRE_DIABOX_TO_XDRIP_PLUS = "com.eveningoutpost.dexdrip.FROM_LIBRE_DIABOX";
 }

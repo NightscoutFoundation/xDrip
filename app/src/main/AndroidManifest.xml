@@ -469,6 +469,11 @@
                 <action android:name="com.eveningoutpost.dexdrip.FROM_LIBRE_ALARM" />
             </intent-filter>
         </receiver>
+        <receiver android:name=".LibreDiaBoxReceiver">
+            <intent-filter>
+                <action android:name="com.eveningoutpost.dexdrip.FROM_LIBRE_DIABOX" />
+            </intent-filter>
+        </receiver>
         <receiver android:name=".NSEmulatorReceiver">
             <intent-filter>
                 <action android:name="com.eveningoutpost.dexdrip.NS_EMULATOR" />
