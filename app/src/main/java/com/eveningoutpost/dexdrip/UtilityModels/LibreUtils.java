@@ -1,9 +1,9 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+import android.util.Log;
+
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.SensorSanity;
-
-import android.util.Log;
 
 public class LibreUtils {
 
@@ -164,6 +164,19 @@ public class LibreUtils {
         }
         
         String v = "0";
+        byte[] patchInfo = PersistentStore.getBytes("patchInfo");
+        if (patchInfo != null && patchInfo.length > 0) {
+            int first = 0xff & patchInfo[0];
+            if (first == 0x9D) {// libre2
+                v = "Libre2/3";
+            }
+            if (first == 0xE5) {//libre us
+                v = "Libre US/0";
+            }
+            if (first == 0x70) {//libre Pro
+                v = "Libre Pro/1";
+            }
+        }
         char[] pozS = {0, 0, 0, 0, 0};
         for (i = 0; i < 10; i++) {
             for (int k = 0; k < 5; k++) pozS[k] = binary.charAt((5 * i) + k);

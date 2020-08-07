@@ -38,7 +38,22 @@ public class Bubble {
     public static BridgeResponse getBubbleResponse() {
         final BridgeResponse reply = new BridgeResponse();
         ByteBuffer ackMessage = ByteBuffer.allocate(6);
+        double fv = JoH.tolerantParseDouble(PersistentStore.getString("BubbleFirmware"));
         ackMessage.put(0, (byte) 0x02);
+        if (!Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
+            if (patchInfo != null && patchInfo.length > 0) {
+                int first = 0xff & patchInfo[0];
+                if (first == 0x9D || first == 0xE5) {//Libre us and libre2 Libre pro
+                    if (fv >= 2.6) {
+                        ackMessage.put(0, (byte) 0x08);
+                    }
+                } else if (first == 0x70) {     // Libre pro
+                    if (fv >= 2.7) {
+                        ackMessage.put(0, (byte) 0x08);
+                    }
+                }
+            }
+        }
         ackMessage.put(1, (byte) 0x01);
         ackMessage.put(2, (byte) 0x00);
         ackMessage.put(3, (byte) 0x00);
@@ -60,11 +75,12 @@ public class Bubble {
     public static BridgeResponse decodeBubblePacket(byte[] buffer, int len) {
         final BridgeResponse reply = new BridgeResponse();
         int first = 0xff & buffer[0];
+//        Log.e("bubble","first==="+first);
         if (first == 0x80) {
             PersistentStore.setString("Bubblebattery", Integer.toString(buffer[4]));
             Pref.setInt("bridge_battery", buffer[4]);
             String bubblefirmware = buffer[2] + "." + buffer[3];
-            String bubbleHArdware = buffer[buffer.length-2] + "." + buffer[buffer.length-1];
+            String bubbleHArdware = buffer[buffer.length - 2] + "." + buffer[buffer.length - 1];
             PersistentStore.setString("BubbleHArdware", bubbleHArdware);
             PersistentStore.setString("BubbleFirmware", bubblefirmware);
             ByteBuffer ackMessage = ByteBuffer.allocate(6);
@@ -82,11 +98,11 @@ public class Bubble {
             patchUid = Arrays.copyOfRange(buffer, 2, 10);
             String SensorSn = LibreUtils.decodeSerialNumberKey(patchUid);
             PersistentStore.setString("LibreSN", SensorSn);
-            
+
             if (SensorSanity.checkLibreSensorChangeIfEnabled(SensorSn)) {
                 Log.e(TAG, "Problem with Libre Serial Number - not processing");
             }
-            
+
             return reply;
         }
         if (first == 0xC1) {
@@ -98,6 +114,7 @@ public class Bubble {
                     patchInfo = Arrays.copyOfRange(buffer, 5, 11);
                 }
             }
+            PersistentStore.setBytes("patchInfo", patchInfo);
             return reply;
         }
         if (first == 0x82) {
@@ -107,9 +124,15 @@ public class Bubble {
             }
             addData(buffer);
             return reply;
-
         }
-
+        if (first == 0x88) {
+            int expectedSize = lens + BUBBLE_FOOTER;
+            if (s_full_data == null) {
+                InitBuffer(expectedSize);
+            }
+            addData(buffer);
+            return reply;
+        }
         if (first == 0xBF) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Log.e(TAG, "No sensor has been found");
@@ -128,7 +151,7 @@ public class Bubble {
 
 
     static void addData(byte[] buffer) {
-        System.arraycopy(buffer, 4, s_full_data, s_acumulatedSize, buffer.length-4);
+        System.arraycopy(buffer, 4, s_full_data, s_acumulatedSize, buffer.length - 4);
         s_acumulatedSize = s_acumulatedSize + buffer.length - 4;
         AreWeDone();
     }
@@ -143,14 +166,15 @@ public class Bubble {
 
 
         byte[] data = Arrays.copyOfRange(s_full_data, 0, 344);
-
+//        Log.e(TAG,HexDump.toHexString(data));
         // Set the time of the current reading
         PersistentStore.setLong("libre-reading-timestamp", JoH.tsl());
-        
+
         boolean checksum_ok = NFCReaderX.HandleGoodReading(SensorSn, data, now, true, patchUid, patchInfo);
         int expectedSize = lens + BUBBLE_FOOTER;
         InitBuffer(expectedSize);
         errorCount = 0;
+
         Log.e(TAG, "We have all the data that we need " + s_acumulatedSize + " checksum_ok = " + checksum_ok + HexDump.dumpHexString(data));
 
     }
