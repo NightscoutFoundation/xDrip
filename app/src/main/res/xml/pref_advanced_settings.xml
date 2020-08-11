@@ -1397,14 +1397,6 @@
                     android:title="Savitzky-Golay polynomial order" />
                 <EditTextPreference
                     android:dependency="engineering_mode"
-                    android:defaultValue="0.0"
-                    android:key="Libre2_sgDiffJumpPenalty"
-                    android:selectAllOnFocus="true"
-                    android:singleLine="true"
-                    android:summary="The polynomial order of the Savitzky-Golay smoother"
-                    android:title="Savitzky-Golay finite difference jump penalty" />
-                <EditTextPreference
-                    android:dependency="engineering_mode"
                     android:defaultValue="0.333"
                     android:key="Libre2_sgWeightedAverageFraction"
                     android:selectAllOnFocus="true"

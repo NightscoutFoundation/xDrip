@@ -15,7 +15,6 @@ const val LAG_TOLERANCE = 0.5
 class AdaptiveSavitzkyGolay @JvmOverloads constructor(
         val lag: Int,
         val polynomialOrder: Int,
-        val curvaturePenalty: Double = 0.0,
         val weightedAverageFraction: Double = 0.0,
         val weightedAverageHorizon: Int = 15,
         val ticksPerUnitTime: Double = DEFAULT_TICKS_PER_MINUTE
@@ -25,34 +24,13 @@ class AdaptiveSavitzkyGolay @JvmOverloads constructor(
 
     private val rawMeasurements = mutableListOf<RawMeasurement>()
 
-    val measurementCount get() = if (curvaturePenalty > 0) maxOf(rawMeasurements.size - 1,0) else rawMeasurements.size
+    val measurementCount get() = rawMeasurements.size
 
     fun addMeasurement(time: Long, glucose: Double) {
         if (rawMeasurements.isNotEmpty() && time <= rawMeasurements.last().time) {
             TODO("error handling!")
         }
         rawMeasurements.add(RawMeasurement(time,glucose))
-    }
-
-    private data class WeightsResult(val w : DoubleArray, val t : DoubleArray, val y : DoubleArray)
-
-    private fun calculateCurvaturePenalizedData(t: DoubleArray, y: DoubleArray) : WeightsResult {
-        val dt = (t.asSequence() + sequenceOf(t.last() + 1.0)).zipWithNext { t1, t2 -> t2 - t1}
-        val dy = (y.asSequence() + sequenceOf(y.last())).zipWithNext { y1, y2 -> y2 - y1}
-
-        val dydt = dy.zip(dt){dy,dt -> dy/dt}
-
-        val d_diff = dydt.zipWithNext { d1, d2 -> abs(d2 - d1) }.toList().toDoubleArray()
-        val d_diff_max = d_diff.max() ?: Double.NaN
-
-        val w = d_diff.map { it -> 1.0 - curvaturePenalty * it / d_diff_max}.toDoubleArray()
-        w[w.size - 1] = 1.0
-
-        return WeightsResult(
-                w,
-                t.drop(1).toDoubleArray(),
-                y.drop(1).toDoubleArray()
-        )
     }
 
     private fun calculateCoefficients(x: DoubleArray, w: DoubleArray? = null) : DoubleArray {
@@ -122,17 +100,8 @@ class AdaptiveSavitzkyGolay @JvmOverloads constructor(
         var t = rawMeasurements.map{ (it.time - zeroTime) / ticksPerUnitTime }.toDoubleArray()
         var y = rawMeasurements.map{ it.glucose }.toDoubleArray()
 
-        var w : DoubleArray? = null
-
-        val asgValue = if (curvaturePenalty > 0) {
-            val (w,t,y) = calculateCurvaturePenalizedData(t,y)
-
-            // calculate scalar product
-            calculateCoefficients(t,w).asSequence().zip(y.asSequence()) { c,y -> c*y }.sum()
-        } else {
-            // calculate scalar product
-            calculateCoefficients(t,w).asSequence().zip(y.asSequence()) { c,y -> c*y }.sum()
-        }
+        // calculate scalar product
+        val asgValue = calculateCoefficients(t,null).asSequence().zip(y.asSequence()) { c,y -> c*y }.sum()
 
         return if (weightedAverageFraction > 0.0) {
             val weightedAverageValue = calculateWeightedAverage()
