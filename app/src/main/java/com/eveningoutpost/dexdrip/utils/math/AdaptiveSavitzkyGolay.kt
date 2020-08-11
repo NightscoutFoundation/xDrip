@@ -1,10 +1,13 @@
 package com.eveningoutpost.dexdrip.utils.math
 
-import org.apache.commons.math3.stat.regression.OLSMultipleLinearRegression
+import org.apache.commons.math3.linear.Array2DRowRealMatrix
+import org.apache.commons.math3.linear.QRDecomposition
 import java.lang.IllegalArgumentException
 import java.lang.IllegalStateException
 import kotlin.math.abs
+import kotlin.math.max
 import kotlin.math.pow
+import kotlin.math.roundToLong
 
 const val DEFAULT_TICKS_PER_MINUTE = 1000.0 * 60
 const val LAG_TOLERANCE = 0.5
@@ -13,7 +16,9 @@ class AdaptiveSavitzkyGolay @JvmOverloads constructor(
         val lag: Int,
         val polynomialOrder: Int,
         val curvaturePenalty: Double = 0.0,
-        val ticksPerUnitTime : Double = DEFAULT_TICKS_PER_MINUTE
+        val weightedAverageFraction: Double = 0.0,
+        val weightedAverageHorizon: Int = 15,
+        val ticksPerUnitTime: Double = DEFAULT_TICKS_PER_MINUTE
 ) {
 
     data class RawMeasurement(val time: Long, val glucose: Double)
@@ -50,33 +55,46 @@ class AdaptiveSavitzkyGolay @JvmOverloads constructor(
         )
     }
 
-    fun calculateCoefficients(x: DoubleArray, w: DoubleArray? = null) : DoubleArray {
+    private fun calculateCoefficients(x: DoubleArray, w: DoubleArray? = null) : DoubleArray {
 
-        var A = arrayOf<DoubleArray>()
+        var A = Array2DRowRealMatrix(x.size,polynomialOrder + 1)
 
         if (w != null) {
             for (i in x.indices) {
-                val row = DoubleArray(polynomialOrder + 1)
                 for (j in 0..polynomialOrder)
-                    row[j] = x[i].pow(j) * w[i]
-                A += row
+                    A.setEntry(i,j,x[i].pow(j) * w[i])
             }
         } else {
             for (i in x.indices) {
-                val row = DoubleArray(polynomialOrder + 1)
                 for (j in 0..polynomialOrder)
-                    row[j] = x[i].pow(j)
-                A += row
+                    A.setEntry(i,j,x[i].pow(j))
             }
         }
 
-        val ols = OLSMultipleLinearRegression()
-        ols.newSampleData(x,A)
-        val coefficients = ols.estimateRegressionParameters()
+        val AT = A.transpose()
+        val ATA = AT.multiply(A)
+
+        val QR = QRDecomposition(ATA)
+        val ATA_inv = QR.solver.inverse
+
+        val coefficients = AT.preMultiply(ATA_inv.getRow(0))
 
         w?.forEachIndexed { i, w -> coefficients[i] *= w }
 
         return coefficients
+    }
+
+    fun calculateWeightedAverage() : Double {
+        val horizon = rawMeasurements.last().time - weightedAverageHorizon * ticksPerUnitTime
+        val slope = 1.0 / horizon
+        var sum = 0.0
+        var weights = 0.0
+        for (v in rawMeasurements) {
+            val weight = max(0.0,slope * (v.time - horizon))
+            sum += weight * v.glucose
+            weights += weight
+        }
+        return sum / weights
     }
 
     private fun findZeroTime() : Long {
@@ -102,18 +120,25 @@ class AdaptiveSavitzkyGolay @JvmOverloads constructor(
 
         val zeroTime = findZeroTime()
         var t = rawMeasurements.map{ (it.time - zeroTime) / ticksPerUnitTime }.toDoubleArray()
-        var y = rawMeasurements.map { it.glucose }.toDoubleArray()
+        var y = rawMeasurements.map{ it.glucose }.toDoubleArray()
 
         var w : DoubleArray? = null
 
-        if (curvaturePenalty > 0) {
+        val asgValue = if (curvaturePenalty > 0) {
             val (w,t,y) = calculateCurvaturePenalizedData(t,y)
 
-            // calculate scalar products
-            return calculateCoefficients(t,w).asSequence().zip(y.asSequence()) { c,y -> c*y }.sum();
+            // calculate scalar product
+            calculateCoefficients(t,w).asSequence().zip(y.asSequence()) { c,y -> c*y }.sum()
         } else {
-            // calculate scalar products
-            return calculateCoefficients(t,w).asSequence().zip(y.asSequence()) { c,y -> c*y }.sum();
+            // calculate scalar product
+            calculateCoefficients(t,w).asSequence().zip(y.asSequence()) { c,y -> c*y }.sum()
+        }
+
+        return if (weightedAverageFraction > 0.0) {
+            val weightedAverageValue = calculateWeightedAverage()
+            weightedAverageFraction * weightedAverageValue + (1.0 - weightedAverageFraction) * asgValue
+        } else {
+            asgValue
         }
 
     }
