@@ -156,7 +156,6 @@ public class LibreReceiver extends BroadcastReceiver {
             int horizon = Pref.getStringToInt("Libre2_sgHorizon",ASG_HORIZON);
             int lag = Pref.getStringToInt("Libre2_sgLag",ASG_LAG);
             int polynomialOrder = Pref.getStringToInt("Libre2_sgPolynomialOrder",ASG_POLYNOMIAL_ORDER);
-            double curvaturePenalty = Pref.getStringToDouble("Libre2_sgDiffJumpPenalty",ASG_CURVATURE_PENALTY);
             double weightedAverageFraction = Pref.getStringToDouble("Libre2_sgWeightedAverageFraction",ASG_WEIGHTED_AVERAGE_FRACTION);
             int weightedAverageHorizon = Pref.getStringToInt("Libre2_sgWeightedAverageHorizon",ASG_WEIGHTED_AVERAGE_HORIZON);
 
@@ -173,9 +172,9 @@ public class LibreReceiver extends BroadcastReceiver {
             try {
                 double value = Math.round(asg.estimateValue());
                 Log.i(TAG, String.format(Locale.US,"Smoothed BG value using Savitzky-Golay: raw=%.1f horizon=%dmin measurements=%d lag=%d " +
-                        "polynomialOrder=%d curvaturePenalty=%.2f weightedAverageFraction=%.2f weightedAverageHorizon=%d value=%.1f",
+                        "polynomialOrder=%d weightedAverageFraction=%.2f weightedAverageHorizon=%d value=%.1f",
                         currentValue.glucose,horizon,asg.getMeasurementCount(),lag,polynomialOrder,
-                        curvaturePenalty,weightedAverageFraction,weightedAverageHorizon,value));
+                        weightedAverageFraction,weightedAverageHorizon,value));
 
                 double noise = estimateNoise(currentValue,value);
 
