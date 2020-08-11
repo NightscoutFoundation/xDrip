@@ -1,11 +1,12 @@
 package com.eveningoutpost.dexdrip.utils.math
 
 import org.apache.commons.math3.stat.regression.OLSMultipleLinearRegression
+import java.lang.IllegalArgumentException
 import java.lang.IllegalStateException
 import kotlin.math.abs
 import kotlin.math.pow
 
-const val DEFAULT_TICKS_PER_MINUTE = 1000.0 * 60;
+const val DEFAULT_TICKS_PER_MINUTE = 1000.0 * 60
 const val LAG_TOLERANCE = 0.5
 
 class AdaptiveSavitzkyGolay @JvmOverloads constructor(
