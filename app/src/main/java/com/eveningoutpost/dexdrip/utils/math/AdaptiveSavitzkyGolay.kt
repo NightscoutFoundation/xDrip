@@ -6,6 +6,7 @@ import kotlin.math.abs
 import kotlin.math.pow
 
 const val DEFAULT_TICKS_PER_MINUTE = 1000.0 * 60;
+const val LAG_TOLERANCE = 0.5
 
 class AdaptiveSavitzkyGolay @JvmOverloads constructor(
         val lag: Int,
@@ -77,6 +78,17 @@ class AdaptiveSavitzkyGolay @JvmOverloads constructor(
         return coefficients
     }
 
+    private fun findZeroTime() : Long {
+        val target = rawMeasurements.last().time - lag * ticksPerUnitTime
+        for (m in rawMeasurements.asReversed()) {
+            if (abs(m.time - target) < LAG_TOLERANCE * ticksPerUnitTime)
+                return m.time
+        }
+        if (rawMeasurements.first().time > target)
+            throw IllegalArgumentException("No raw measurements that happened before requested time lag (" + lag + "min)")
+        return target.roundToLong()
+    }
+
     fun estimateValue() : Double {
 
         if (lag >= measurementCount - 2) {
@@ -87,7 +99,7 @@ class AdaptiveSavitzkyGolay @JvmOverloads constructor(
             throw IllegalStateException("Not enough measurements for polynomial order")
         }
 
-        val zeroTime = rawMeasurements[rawMeasurements.size - lag].time
+        val zeroTime = findZeroTime()
         var t = rawMeasurements.map{ (it.time - zeroTime) / ticksPerUnitTime }.toDoubleArray()
         var y = rawMeasurements.map { it.glucose }.toDoubleArray()
 
