@@ -28,7 +28,7 @@ public class NightscoutTreatments {
     private static final HashSet<String> bad_uuids = new HashSet<>();
     private static final HashSet<String> bad_bloodtest_uuids = new HashSet<>();
 
-    public static boolean processTreatmentResponse(final String response) throws Exception {
+    public static boolean processTreatmentResponse(final String response, boolean following) throws Exception {
         boolean new_data = false;
 
         final JSONArray jsonArray = new JSONArray(response);
@@ -57,7 +57,7 @@ public class NightscoutTreatments {
             }
             // extract blood test data if present
             try {
-                if (!from_xdrip) {
+                if (!from_xdrip || following) {
                     if (tr.getString("glucoseType").equals("Finger")) {
                         if (bad_bloodtest_uuids.contains(nightscout_id)) {
                             UserError.Log.d(TAG, "Skipping baulked bloodtest nightscout id: " + nightscout_id);
@@ -130,7 +130,7 @@ public class NightscoutTreatments {
                     Treatments existing = Treatments.byuuid(nightscout_id);
                     if (existing == null)
                         existing = Treatments.byuuid(uuid);
-                    if ((existing == null) && (!from_xdrip)) {
+                    if ((existing == null) && (!from_xdrip || following)) {
                         // check for close timestamp duplicates perhaps
                         existing = Treatments.byTimestamp(timestamp, 60000);
                         if (!((existing != null) && (JoH.roundDouble(existing.insulin, 2) == JoH.roundDouble(insulin, 2))

@@ -415,7 +415,7 @@ public class NightscoutUploader {
                             final String response = r.body().string();
                             if (d) Log.d(TAG, "Response: " + response);
 
-                            new_data = NightscoutTreatments.processTreatmentResponse(response);
+                            new_data = NightscoutTreatments.processTreatmentResponse(response, false);
                             PersistentStore.setString(LAST_MODIFIED_KEY, last_modified_string);
                             checkGzipSupport(r);
                         } else {
