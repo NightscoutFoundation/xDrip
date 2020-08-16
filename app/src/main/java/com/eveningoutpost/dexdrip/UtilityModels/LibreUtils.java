@@ -1,9 +1,9 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+import android.util.Log;
+
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.SensorSanity;
-
-import android.util.Log;
 
 public class LibreUtils {
 
@@ -73,10 +73,10 @@ public class LibreUtils {
     }
 
     public static boolean isSensorReady(byte sensorStatusByte) {
-    
+
         String sensorStatusString = "";
         boolean ret = false;
-    
+
         switch (sensorStatusByte) {
             case 0x01:
                 sensorStatusString = "not yet started";
@@ -92,12 +92,12 @@ public class LibreUtils {
             case 0x04:          // status of the following 12 h, sensor delivers last BG reading constantly
                 sensorStatusString = "expired";
                 // @keencave: to use dead sensor for test
-    //            ret = true;
+                //            ret = true;
                 break;
             case 0x05:          // sensor stops operation after 15d after start
                 sensorStatusString = "shutdown";
                 // @keencave: to use dead sensors for test
-    //            ret = true;
+                //            ret = true;
                 break;
             case 0x06:
                 sensorStatusString = "in failure";
@@ -106,21 +106,21 @@ public class LibreUtils {
                 sensorStatusString = "in an unknown state";
                 break;
         }
-    
+
         Log.i(TAG, "Sensor status is: " + sensorStatusString);
-    
-        
-        
-        
+
+
+
+
         if (SensorSanity.allowTestingWithDeadSensor()) {
             Log.e(TAG, "Warning allow to use a dead sensor");
             return true;
         }
-    
+
         if (!ret) {
             Home.toaststaticnext("Can't use this sensor as it is " + sensorStatusString);
         }
-    
+
         return ret;
     }
 
@@ -129,7 +129,7 @@ public class LibreUtils {
         return buffer.length >= 11 && buffer[9] == (byte) 0x07 && buffer[10] == (byte) 0xE0;
     }
 
-    
+
     // This is the function that all should read (only the correct 8 bytes)
     // Since I don't have a blukon to test, not changing decodeSerialNumber
     public static String decodeSerialNumberKey(byte[] input) {
@@ -162,8 +162,21 @@ public class LibreUtils {
             binS = String.format("%8s", Integer.toBinaryString(uuidShort[i] & 0xFF)).replace(' ', '0');
             binary += binS;
         }
-        
+
         String v = "0";
+        byte[] patchInfo = PersistentStore.getBytes("patchInfo");
+        if (patchInfo != null && patchInfo.length > 0) {
+            int first = 0xff & patchInfo[0];
+            if (first == 0x9D) {// libre2
+                v = "Libre2/3";
+            }
+            if (first == 0xE5) {//libre us
+                v = "Libre US/0";
+            }
+            if (first == 0x70) {//libre Pro
+                v = "Libre Pro/1";
+            }
+        }
         char[] pozS = {0, 0, 0, 0, 0};
         for (i = 0; i < 10; i++) {
             for (int k = 0; k < 5; k++) pozS[k] = binary.charAt((5 * i) + k);
