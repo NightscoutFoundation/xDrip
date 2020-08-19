@@ -46,7 +46,7 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
     private static final boolean debug = false;
     private static final boolean d = true;
     private static final boolean use_raw_ = true;
-    private static final long segmentation_timeslice = (long)(Constants.MINUTE_IN_MS * 4.5);
+    private static final long segmentation_timeslice = (long) (Constants.MINUTE_IN_MS * 4.5);
     private static SharedPreferences prefs;
     private static long oldest = -1;
     private static long newest = -1;
@@ -68,9 +68,9 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
     private static void createBGfromGD(GlucoseData gd, boolean use_smoothed_data, boolean quick) {
         final double converted;
         if (gd.glucoseLevelRaw > 0) {
-            if(use_smoothed_data) {
+            if (use_smoothed_data) {
                 converted = convert_for_dex(gd.glucoseLevelRawSmoothed);
-                Log.e(TAG,"Using smoothed value " + converted + " instead of " + convert_for_dex(gd.glucoseLevelRaw) );
+                Log.e(TAG, "Using smoothed value " + converted + " instead of " + convert_for_dex(gd.glucoseLevelRaw));
             } else {
                 converted = convert_for_dex(gd.glucoseLevelRaw);
             }
@@ -149,6 +149,16 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
                                 Log.d(TAG, "At Start: Oldest : " + JoH.dateTimeText(oldest_cmp) + " Newest : " + JoH.dateTimeText(newest_cmp));
 
                                 final String data = bundle.getString("data");
+                                final String from = bundle.getString("from");
+                                if ("Diabox".equals(from)) {
+                                    long now = System.currentTimeMillis();
+                                    String sensorSn = bundle.getString("diabox_sensorSn");
+                                    byte[] patchUid = bundle.getByteArray("diabox_patchUid");
+                                    byte[] patchInfo = bundle.getByteArray("diabox_patchInfo");
+                                    byte[] raw_data = bundle.getByteArray("diabox_raw");
+                                    boolean checksum_ok = NFCReaderX.HandleGoodReading(sensorSn, raw_data, now, true, patchUid, patchInfo);
+                                    return;
+                                }
                                 final int bridge_battery = bundle.getInt("bridge_battery");
                                 if (bridge_battery > 0) {
                                     Pref.setInt("bridge_battery", bridge_battery);
@@ -179,13 +189,13 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
         }.start();
     }
 
-    public static void processReadingDataTransferObject(ReadingData.TransferObject object, long CaptureDateTime, String tagid, boolean allowUpload, byte []patchUid,  byte []patchInfo) {
-    	Log.i(TAG, "Data that was recieved from librealarm is " + HexDump.dumpHexString(object.data.raw_data));
-    	// Save raw block record (we start from block 0)
-        LibreBlock.createAndSave(tagid, CaptureDateTime, object.data.raw_data, 0, allowUpload, patchUid,  patchInfo);
+    public static void processReadingDataTransferObject(ReadingData.TransferObject object, long CaptureDateTime, String tagid, boolean allowUpload, byte[] patchUid, byte[] patchInfo) {
+        Log.i(TAG, "Data that was recieved from librealarm is " + HexDump.dumpHexString(object.data.raw_data));
+        // Save raw block record (we start from block 0)
+        LibreBlock.createAndSave(tagid, CaptureDateTime, object.data.raw_data, 0, allowUpload, patchUid, patchInfo);
 
-        if(Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
-            if(object.data.raw_data == null) {
+        if (Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
+            if (object.data.raw_data == null) {
                 Log.e(TAG, "Please update LibreAlarm to use OOP algorithm");
                 JoH.static_toast_long(gs(R.string.please_update_librealarm_to_use_oop_algorithm));
                 return;
@@ -195,9 +205,9 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
         }
         CalculateFromDataTransferObject(object, use_raw_);
     }
-        
+
     public static void CalculateFromDataTransferObject(ReadingData.TransferObject object, boolean use_raw) {
-    	boolean use_smoothed_data = Pref.getBooleanDefaultFalse("libre_use_smoothed_data");
+        boolean use_smoothed_data = Pref.getBooleanDefaultFalse("libre_use_smoothed_data");
         // insert any recent data we can
         final List<GlucoseData> mTrend = object.data.trend;
         if (mTrend != null && mTrend.size() > 0) {
@@ -214,7 +224,7 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
                 // reading, and then BT disconnects and connects after a few seconds, and we have a new reading (where 
                 // sensor did not advance). This does not mean that a sensor is not advancing. Only if this is happening
                 // for a few minutes, this is a problem.
-                if(BgReading.getTimeSinceLastReading() > 11 * 60 * 1000) {
+                if (BgReading.getTimeSinceLastReading() > 11 * 60 * 1000) {
                     Log.wtf(TAG, "Sensor age has not advanced: " + sensorAge);
                     JoH.static_toast_long(gs(R.string.sensor_clock_has_not_advanced));
                     Pref.setBoolean("nfc_age_problem", true);
@@ -278,16 +288,16 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
                 //ConstrainedSplineInterpolator splineInterp = new ConstrainedSplineInterpolator();
                 final SplineInterpolator splineInterp = new SplineInterpolator();
 
-                if(polyxList.size() >= 3) {
+                if (polyxList.size() >= 3) {
                     // The need to have at least 3 points is a demand from the interpolate function.
                     try {
                         PolynomialSplineFunction polySplineF = splineInterp.interpolate(
                                 Forecast.PolyTrendLine.toPrimitiveFromList(polyxList),
                                 Forecast.PolyTrendLine.toPrimitiveFromList(polyyList));
-    
+
                         final long startTime = mHistory.get(0).realDate;
                         final long endTime = mHistory.get(mHistory.size() - 1).realDate;
-    
+
                         for (long ptime = startTime; ptime <= endTime; ptime += 300000) {
                             if (d)
                                 Log.d(TAG, "Spline: " + JoH.dateTimeText((long) ptime) + " value: " + (int) polySplineF.value(ptime));
