@@ -150,6 +150,11 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
 
                                 final String data = bundle.getString("data");
                                 final String from = bundle.getString("from");
+                                final int bridge_battery = bundle.getInt("bridge_battery");
+                                if (bridge_battery > 0) {
+                                    Pref.setInt("bridge_battery", bridge_battery);
+                                    CheckBridgeBattery.checkBridgeBattery();
+                                }
                                 if ("Diabox".equals(from)) {
                                     long now = System.currentTimeMillis();
                                     String sensorSn = bundle.getString("diabox_sensorSn");
@@ -158,11 +163,6 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
                                     byte[] raw_data = bundle.getByteArray("diabox_raw");
                                     boolean checksum_ok = NFCReaderX.HandleGoodReading(sensorSn, raw_data, now, true, patchUid, patchInfo);
                                     return;
-                                }
-                                final int bridge_battery = bundle.getInt("bridge_battery");
-                                if (bridge_battery > 0) {
-                                    Pref.setInt("bridge_battery", bridge_battery);
-                                    CheckBridgeBattery.checkBridgeBattery();
                                 }
                                 try {
                                     final ReadingData.TransferObject object =
