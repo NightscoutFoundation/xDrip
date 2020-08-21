@@ -580,7 +580,6 @@
                 android:defaultValue="true"
                 android:dependency="miband_enabled"
                 android:key="miband_send_readings"
-                android:summary="@string/summary_lefun_send_readings"
                 android:title="@string/title_lefun_send_readings" />
             <SwitchPreference
                 android:defaultValue="true"
@@ -710,6 +709,13 @@
                         android:switchTextOff="@string/short_off_text_for_switches"
                         android:switchTextOn="@string/short_on_text_for_switches"
                         android:title="@string/title_miband_colect_heartrate" />
+                    <SwitchPreference
+                        android:defaultValue="true"
+                        android:key="miband_us_date_format"
+                        android:summary="@string/summary_miband_us_date_format"
+                        android:switchTextOff="EU"
+                        android:switchTextOn="US"
+                        android:title="@string/title_miband_us_date_format" />
                     <PreferenceCategory
                         android:key="miband2_screen"
                         android:title="@string/title_screens">

@@ -27,6 +27,7 @@ public class FindNearby implements BtCallBack2 {
                 .setName(Const.MIBAND_NAME_3)
                 .setName(Const.MIBAND_NAME_3_1) //second name
                 .setName(Const.MIBAND_NAME_4)
+                .setName(Const.MIBAND_NAME_5)
                 .addCallBack2(this, TAG).scan();
     }
 

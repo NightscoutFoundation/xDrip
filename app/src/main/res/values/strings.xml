@@ -1251,6 +1251,8 @@
     <string name="summary_miband_interval_in_nightmode">Defines how often BG would be synchronized in the night mode</string>
     <string name="title_miband_colect_heartrate">Collect HR</string>
     <string name="summary_miband_colect_heartrate">Would collect heart rate data from band. Update interval can be configured in MiFit or any thirdparty application</string>
+    <string name="title_miband_us_date_format">Date format</string>
+    <string name="summary_miband_us_date_format">Watchface date format. US(MM/dd),EU(dd/MM)</string>
 
     <string name="title_miband_authkey">Auth Key</string>
     <string name="summary_miband_authkey">Set the auth key for miband4 (To get auth key, follow the instructions on https://www.freemyband.com/)</string>

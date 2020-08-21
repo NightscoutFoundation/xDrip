@@ -9,7 +9,10 @@ import static com.eveningoutpost.dexdrip.watch.miband.Const.MIBAND_NAME_2;
 import static com.eveningoutpost.dexdrip.watch.miband.Const.MIBAND_NAME_3;
 import static com.eveningoutpost.dexdrip.watch.miband.Const.MIBAND_NAME_3_1;
 import static com.eveningoutpost.dexdrip.watch.miband.Const.MIBAND_NAME_4;
+import static com.eveningoutpost.dexdrip.watch.miband.Const.MIBAND_NAME_5;
 import static com.eveningoutpost.dexdrip.watch.miband.Const.MIBAND_NOTIFY_TYPE_ALARM;
+import static com.eveningoutpost.dexdrip.watch.miband.MiBand.MiBandType.MI_BAND4;
+import static com.eveningoutpost.dexdrip.watch.miband.MiBand.MiBandType.MI_BAND5;
 import static com.eveningoutpost.dexdrip.watch.miband.MiBandEntry.PREF_MIBAND_AUTH_KEY;
 import static com.eveningoutpost.dexdrip.watch.miband.MiBandEntry.PREF_MIBAND_MAC;
 
@@ -26,6 +29,7 @@ public class MiBand {
         MI_BAND3(MIBAND_NAME_3),
         MI_BAND3_1(MIBAND_NAME_3_1),
         MI_BAND4(MIBAND_NAME_4),
+        MI_BAND5(MIBAND_NAME_5),
         UNKNOWN("");
 
         private final String text;
@@ -62,6 +66,10 @@ public class MiBand {
 
     public static MiBandType getMibandType() {
         return MiBandType.fromString(getModel());
+    }
+
+    public static boolean isMiband4_or_5(MiBandType bandType) {
+        return bandType == MI_BAND4 || bandType == MI_BAND5;
     }
 
     public static boolean isAuthenticated() {

@@ -15,10 +15,14 @@ import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.watch.miband.Firmware.WatchFaceParts.DisplayData;
 import com.eveningoutpost.dexdrip.watch.miband.Firmware.WatchFaceParts.Header;
+import com.eveningoutpost.dexdrip.watch.miband.Firmware.WatchFaceParts.HeaderMiBand4;
+import com.eveningoutpost.dexdrip.watch.miband.Firmware.WatchFaceParts.HeaderMiBand5;
 import com.eveningoutpost.dexdrip.watch.miband.Firmware.WatchFaceParts.Image;
 import com.eveningoutpost.dexdrip.watch.miband.Firmware.WatchFaceParts.Parameter;
 import com.eveningoutpost.dexdrip.watch.miband.Firmware.WatchFaceParts.Utils.BgMibandSparklineBuilder;
+import com.eveningoutpost.dexdrip.watch.miband.MiBand;
 import com.eveningoutpost.dexdrip.watch.miband.MiBandEntry;
 import com.eveningoutpost.dexdrip.xdrip;
 
@@ -33,6 +37,7 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
+
 import static com.eveningoutpost.dexdrip.Models.JoH.hourMinuteString;
 import static com.eveningoutpost.dexdrip.Models.JoH.threadSleep;
 import static com.eveningoutpost.dexdrip.utils.FileUtils.getExternalDir;
@@ -40,7 +45,7 @@ import static com.eveningoutpost.dexdrip.utils.FileUtils.makeSureDirectoryExists
 
 public class WatchFaceGenerator {
     private static final boolean d = false;
-    private static final boolean debug = false; //need only for debug to save resulting image and firmware
+    private static final boolean debug = true; //need only for debug to save resulting image and firmware
     private static final String TAG = WatchFaceGenerator.class.getSimpleName();
 
     private InputStream fwFileStream;
@@ -57,18 +62,22 @@ public class WatchFaceGenerator {
     private static Bitmap graphImage;
     private static boolean drawMutex;
 
-    private static int highColor = 0xfff86f69;
-    private static int lowColor = 0xff4b95ff;
+    private static int highColor = 0xffffa0a0;
+    private static int lowColor = 0xff8bbbff;
     private static int textColor = Color.WHITE;
     private static int noDataTextSize = 30; //px
     private static int bgValueTextSize = 50; //px
     private static int timeStampTextSize = 18; //px
+    private static int statusIoBTextSize = 17; //px
     private static int graphBgColor = 0x0;
     private File wfFile = null;
     private int offset = 0;
 
-    public WatchFaceGenerator(AssetManager assetManager) throws Exception {
+    private MiBand.MiBandType miBandType;
+
+    public WatchFaceGenerator(AssetManager assetManager, MiBand.MiBandType miBandType) throws Exception {
         this.assetManager = assetManager;
+        this.miBandType = miBandType;
         InputStream mainImage = null;
         isGraphEnabled = MiBandEntry.isGraphEnabled();
         isNeedToUseCustomWatchface = MiBandEntry.isNeedToUseCustomWatchface();
@@ -85,19 +94,34 @@ public class WatchFaceGenerator {
             }
         }
         if (!customFilesFound) {
-            if (isGraphEnabled) {
-                mainImage = assetManager.open("miband_watchface_parts/MainScreen.png");
-                fwFileStream = assetManager.open("miband_watchface_parts/xdrip_miband4_main.bin");
-            } else {
-                mainImage = assetManager.open("miband_watchface_parts/MainScreenNoGraph.png");
-                fwFileStream = assetManager.open("miband_watchface_parts/xdrip_miband4_main_no_graph.bin");
+            String firmwareFileName = "miband_watchface_parts/xdrip_";
+            String imageFileName = "miband_watchface_parts/miband4";
+            if (miBandType == MiBand.MiBandType.MI_BAND4) {
+                firmwareFileName += "miband4";
+            } else if (miBandType == MiBand.MiBandType.MI_BAND5) {
+                firmwareFileName += "miband5";
             }
+            imageFileName += "_main_screen";
+
+            if (!isGraphEnabled) {
+                firmwareFileName += "_no_graph";
+                imageFileName += "_no_graph";
+            }
+            if (!MiBandEntry.isUS_DateFormat()) {
+                firmwareFileName += "_eu";
+            }
+
+            firmwareFileName += ".bin";
+            imageFileName += ".png";
+            mainImage = assetManager.open(imageFileName);
+            fwFileStream = assetManager.open(firmwareFileName);
         }
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inScaled = false;
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
         mainWatchfaceImage = BitmapFactory.decodeStream(mainImage);
         mainImage.close();
+
         parseWatchfaceFile(fwFileStream);
     }
 
@@ -105,7 +129,15 @@ public class WatchFaceGenerator {
         if (d)
             UserError.Log.d(TAG, "Reading header");
         BufferedInputStream stream = new BufferedInputStream(fwFileStream);
-        header = Header.readFrom(stream);
+        header = null;
+        if (miBandType == MiBand.MiBandType.MI_BAND4) {
+            header = new HeaderMiBand4();
+        } else if (miBandType == MiBand.MiBandType.MI_BAND5) {
+            header = new HeaderMiBand5();
+        } else {
+            throw new Exception("Not supported device");
+        }
+        header = header.readFrom(stream);
         if (d) {
             UserError.Log.d(TAG, "Header was read:");
             UserError.Log.d(TAG, String.format("Signature: %s, Unknown param: %d, ParametersSize: %d isValid: %s", header.getSignature(), header.getUnknown(), header.getParametersSize(), header.isValid()));
@@ -141,9 +173,7 @@ public class WatchFaceGenerator {
             fwFileStream.reset();
     }
 
-    Bitmap drawMainBitmapWithGraph(String bgValueText, Bitmap arrowBitmap, String timeStampText, String unitized_delta, boolean strike_through, boolean isHigh, boolean isLow, int graphHours, boolean showTreatment) {
-        /*int textHighColor = getCol(ColorCache.X.color_high_values);
-        int textLowColor = getCol(ColorCache.X.color_low_values);*/
+    Bitmap drawBitmap(DisplayData data) {
 
         Bitmap resultBitmap = mainWatchfaceImage.copy(Bitmap.Config.ARGB_8888, true);
         Canvas canvas = new Canvas(resultBitmap);
@@ -153,13 +183,19 @@ public class WatchFaceGenerator {
 
         if (offset > height) offset = 0;
 
-        if (isGraphEnabled) {
+        Rect bounds = new Rect();
+        Paint paint = new Paint();
+        paint.setStyle(Paint.Style.FILL);
+        paint.setColor(textColor);
+        paint.setAntiAlias(true);
+
+        if (data.isGraphEnabled()) {
             int graphHeight = 80;
-            if (showTreatment)  graphHeight = 84;
+            if (data.isShowTreatment()) graphHeight = 84;
             int finalGraphHeight = graphHeight;
             //draw graph
             drawMutex = true;
-            long startTime = System.currentTimeMillis() - Constants.HOUR_IN_MS * graphHours;
+            long startTime = System.currentTimeMillis() - Constants.HOUR_IN_MS * data.getGraphHours();
             long endTime = System.currentTimeMillis() + Constants.MINUTE_IN_MS * 30;
             JoH.runOnUiThread(new Runnable() {
                 @Override
@@ -175,7 +211,7 @@ public class WatchFaceGenerator {
                                 .setTinyDots()
                                 .showHighLine()
                                 .showLowLine();
-                        bgGraph.showTreatmentLine(showTreatment);
+                        bgGraph.showTreatmentLine(data.isShowTreatment());
                         graphImage = bgGraph.build();
                     } catch (Exception e) {
                     } finally {
@@ -188,35 +224,40 @@ public class WatchFaceGenerator {
             //strip left and right fields
             Bitmap resizedGraphImage = Bitmap.createBitmap(graphImage, 8, 0, width, graphImage.getHeight());
             canvas.drawBitmap(resizedGraphImage, 0, offset, null);
-            if (showTreatment)
+            //draw iob
+            if (!data.getIob().isEmpty()) {
+                paint.setTextScaleX(1);
+                paint.setTextSize(statusIoBTextSize);
+                paint.getTextBounds(data.getIob(), 0, data.getIob().length(), bounds);
+                int iobTextPosX = 0;//px
+                int iobTextPosY = offset + bounds.height();//px
+                canvas.drawText(data.getIob(), iobTextPosX, iobTextPosY, paint);
+            }
+            if (data.isShowTreatment())
                 offset = offset + graphHeight - 10;
             else
                 offset = offset + graphHeight + 10;
         }
 
-        Rect bounds = new Rect();
-        Paint paint = new Paint();
-        paint.setStyle(Paint.Style.FILL);
-        paint.setColor(textColor);
-        if (isHigh) paint.setColor(highColor);
-        if (isLow) paint.setColor(lowColor);
-        paint.setAntiAlias(true);
+        //draw arrow
+        int bgTextPosY = 39 + offset;//px
+        int imageRightMargin = 0;//px
+        int imageLeftMargin = 5;//px
+        int arrowXPos = width - data.getArrowBitmap().getWidth() - imageRightMargin;
+        canvas.drawBitmap(data.getArrowBitmap(), arrowXPos, bgTextPosY - data.getArrowBitmap().getHeight(), null);
+
+        //draw bgValueText
+        if (data.isHigh()) paint.setColor(highColor);
+        if (data.isLow()) paint.setColor(lowColor);
         paint.setTypeface(Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD));
         paint.setTextAlign(Paint.Align.LEFT);
 
         paint.setTextScaleX(0.88f);
         paint.setTextSize(bgValueTextSize);
-        paint.setStrikeThruText(strike_through);
-        //draw arrow
-        int bgTextPosY = 39 + offset;//px
-        int imageRightMargin = 0;//px
-        int imageLeftMargin = 5;//px
-        int arrowXPos = width - arrowBitmap.getWidth() - imageRightMargin;
-        canvas.drawBitmap(arrowBitmap, arrowXPos, bgTextPosY - arrowBitmap.getHeight(), null);
+        paint.setStrikeThruText(false);
 
-        //draw bgValueText
-        String[] bgValuesSplitted = bgValueText.split("[,]");
-        String bgtextDigits = bgValueText;
+        String[] bgValuesSplitted = data.getBgValueText().split("[,]");
+        String bgtextDigits = data.getBgValueText();
         if (bgtextDigits.length() <= 2 || (bgValuesSplitted.length >= 2 && bgValuesSplitted[0].length() == 1))
             imageLeftMargin += 5;
         int bgTextPosX = 0;
@@ -246,17 +287,19 @@ public class WatchFaceGenerator {
         }
 
         //draw unitized delta
+
+        paint.setStrikeThruText(data.isStrike_through());
         paint.setTextScaleX(1);
         paint.setColor(textColor);
         int unitsTextPosX = 0;//px
-        int unitsTextPosY = bgTextPosY + timeStampTextSize +1;//px
+        int unitsTextPosY = bgTextPosY + timeStampTextSize + 1;//px
         paint.setTextSize(timeStampTextSize);
-        String delta = unitized_delta + " " + timeStampText;
-        paint.getTextBounds(delta, 0, delta.length(), bounds);
+        String delta = data.getUnitized_delta() + " " + data.getTimeStampText();
+        paint.getTextBounds(delta, unitsTextPosX, delta.length(), bounds);
         canvas.drawText(delta, width - bounds.width(), unitsTextPosY, paint);
 
         //draw treatment
-        if (isGraphEnabled && showTreatment) {
+        if (data.isGraphEnabled() && data.isShowTreatment()) {
             Treatments treatment = Treatments.last();
             if (treatment != null && treatment.hasContent() && !treatment.noteOnly()) {
                 int treatmentTextPosY = unitsTextPosY + timeStampTextSize + 1;//px
@@ -317,22 +360,18 @@ public class WatchFaceGenerator {
         return resultBitmap;
     }
 
-    public byte[] genWatchFace() throws Exception {
+    public byte[] genWatchFace(String iob) throws Exception {
         Bitmap mainScreen;
         Bitmap resultImage;
-        int graphHours = MiBandEntry.getGraphHours();
         BestGlucose.DisplayGlucose dg = BestGlucose.getDisplayGlucose();
         if (dg != null) {
-            String timeStampText = "";
-            if (dg.timestamp > Constants.DAY_IN_MS)
-                timeStampText = "at " + hourMinuteString(dg.timestamp);
-            else
-                timeStampText = JoH.niceTimeScalar(JoH.msSince(dg.timestamp)) + " ago";
-
-            InputStream arrowStream = assetManager.open("miband_watchface_parts/" + dg.delta_name + ".png");
-            Bitmap arrowBitmap = BitmapFactory.decodeStream(arrowStream);
-
-            mainScreen = drawMainBitmapWithGraph(dg.unitized, arrowBitmap, timeStampText, dg.unitized_delta_no_units, dg.isStale(), dg.isHigh(), dg.isLow(), graphHours, MiBandEntry.isTreatmentEnabled());
+            DisplayData.Builder displayDataBuilder = DisplayData.newBuilder(dg, assetManager);
+            if (isGraphEnabled) {
+                displayDataBuilder.enableGraph(MiBandEntry.getGraphHours());
+            }
+            displayDataBuilder.setShowTreatment(MiBandEntry.isTreatmentEnabled());
+            displayDataBuilder.setIoB(iob);
+            mainScreen = drawBitmap(displayDataBuilder.build());
             resultImage = Image.quantinizeImage(mainScreen);
         } else {
             mainScreen = drawNoDataBitmap();

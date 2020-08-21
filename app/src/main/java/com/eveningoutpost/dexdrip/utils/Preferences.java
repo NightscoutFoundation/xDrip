@@ -2250,7 +2250,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 prefs.removePreference(miband_send_readings_as_notification);
                 prefs.removePreference(miband_authkey);
 
-                if (type == MiBand.MiBandType.MI_BAND4) {
+                if (MiBand.isMiband4_or_5(type)) {
                     settings.addPreference(miband3_4_screen);
                     settings.addPreference(miband_nightmode_category);
                     prefs.addPreference(miband_graph_category);

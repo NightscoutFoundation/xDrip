@@ -2,6 +2,8 @@ package com.eveningoutpost.dexdrip.watch.miband;
 
 import java.util.UUID;
 
+import static com.polidea.rxandroidble2.RxBleConnection.GATT_WRITE_MTU_OVERHEAD;
+
 public class Const {
 
     public static final String BASE_UUID = "0000%s-0000-1000-8000-00805f9b34fb";
@@ -159,6 +161,7 @@ public class Const {
     public static final String MIBAND_NAME_3 = "MI Band 3";
     public static final String MIBAND_NAME_3_1 = "Xiaomi Band 3";
     public static final String MIBAND_NAME_4 = "Mi Smart Band 4";
+    public static final String MIBAND_NAME_5 = "Mi Smart Band 5";
 
     public static final int PREFERRED_MTU_SIZE = 247;
 

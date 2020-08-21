@@ -2,11 +2,18 @@ package com.eveningoutpost.dexdrip.watch.miband;
 
 import android.annotation.SuppressLint;
 import android.app.PendingIntent;
+import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.PowerManager;
+import android.support.annotation.RequiresApi;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Pair;
 
 import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
@@ -19,12 +26,15 @@ import com.eveningoutpost.dexdrip.Services.JamBaseBluetoothSequencer;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
+import com.eveningoutpost.dexdrip.UtilityModels.Intents;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.utils.bt.Subscription;
 import com.eveningoutpost.dexdrip.utils.framework.PoorMansConcurrentLinkedDeque;
 import com.eveningoutpost.dexdrip.utils.framework.WakeLockTrampoline;
 import com.eveningoutpost.dexdrip.watch.PrefBindingFactory;
 import com.eveningoutpost.dexdrip.watch.miband.Firmware.FirmwareOperations;
+import com.eveningoutpost.dexdrip.watch.miband.Firmware.Sequence.SequenceState;
+import com.eveningoutpost.dexdrip.watch.miband.Firmware.Sequence.SequenceStateMiBand5;
 import com.eveningoutpost.dexdrip.watch.miband.Firmware.WatchFaceGenerator;
 import com.eveningoutpost.dexdrip.watch.miband.message.AlertLevelMessage;
 import com.eveningoutpost.dexdrip.watch.miband.message.AlertMessage;
@@ -36,6 +46,7 @@ import com.eveningoutpost.dexdrip.watch.miband.message.DisplayControllMessageMib
 import com.eveningoutpost.dexdrip.watch.miband.message.FeaturesControllMessage;
 import com.eveningoutpost.dexdrip.watch.miband.message.OperationCodes;
 import com.eveningoutpost.dexdrip.xdrip;
+import com.polidea.rxandroidble2.ConnectionParameters;
 import com.polidea.rxandroidble2.RxBleConnection;
 import com.polidea.rxandroidble2.RxBleDeviceServices;
 import com.polidea.rxandroidble2.exceptions.BleCannotSetCharacteristicNotificationException;
@@ -51,6 +62,8 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import io.reactivex.Completable;
+import io.reactivex.Observable;
 import io.reactivex.schedulers.Schedulers;
 import lombok.Getter;
 
@@ -69,7 +82,7 @@ import static com.eveningoutpost.dexdrip.watch.miband.Const.MIBAND_NOTIFY_TYPE_C
 import static com.eveningoutpost.dexdrip.watch.miband.Const.MIBAND_NOTIFY_TYPE_MESSAGE;
 import static com.eveningoutpost.dexdrip.watch.miband.Const.PREFERRED_MTU_SIZE;
 import static com.eveningoutpost.dexdrip.watch.miband.MiBand.MiBandType.MI_BAND2;
-import static com.eveningoutpost.dexdrip.watch.miband.MiBand.MiBandType.MI_BAND4;
+import static com.eveningoutpost.dexdrip.watch.miband.MiBand.MiBandType.MI_BAND5;
 import static com.eveningoutpost.dexdrip.watch.miband.MiBand.MiBandType.UNKNOWN;
 import static com.eveningoutpost.dexdrip.watch.miband.MiBandService.MiBandState.AUTHORIZE_FAILED;
 import static com.eveningoutpost.dexdrip.watch.miband.message.DisplayControllMessageMiband3_4.NightMode.Sheduled;
@@ -124,6 +137,8 @@ public class MiBandService extends JamBaseBluetoothSequencer {
     private final PoorMansConcurrentLinkedDeque<QueueMessage> messageQueue = new PoorMansConcurrentLinkedDeque<>();
     private QueueMessage queueItem;
     private int defaultSnoozle;
+    private BroadcastReceiver statusReceiver;
+    private String statusIOB = "";
 
     public class QueueMessage {
         @Getter
@@ -173,7 +188,28 @@ public class MiBandService extends JamBaseBluetoothSequencer {
 
     @Override
     public void onCreate() {
+
+        statusReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                final String iob = intent.getStringExtra("iob");
+                if (iob != null) {
+                    statusIOB = iob;
+                }
+            }
+        };
+        LocalBroadcastManager.getInstance(this).registerReceiver(statusReceiver,
+                new IntentFilter(Intents.HOME_STATUS_ACTION));
         super.onCreate();
+    }
+
+    @Override
+    public void onDestroy() {
+        try {
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(statusReceiver);
+        } catch (Exception e) {
+            UserError.Log.e(TAG, "Exception unregistering broadcast receiver: " + e);
+        }
     }
 
     private boolean readyToProcessCommand() {
@@ -439,7 +475,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                 break;
             case DeviceEvent.CALL_IGNORE:
                 UserError.Log.d(TAG, "call ignored");
-                if (isWaitingSnoozeResponce){
+                if (isWaitingSnoozeResponce) {
                     isWaitingSnoozeResponce = false;
                     startBgTimer();
                 }
@@ -778,7 +814,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
         }
 
         String authKey = MiBand.getPersistentAuthKey();
-        if (MiBand.getMibandType() == MI_BAND4) {
+        if (MiBand.isMiband4_or_5(MiBand.getMibandType())) {
             if (authKey.isEmpty()) {
                 authKey = MiBand.getAuthKey();
                 if (authKey.isEmpty()) {
@@ -931,186 +967,239 @@ public class MiBandService extends JamBaseBluetoothSequencer {
             return;
         }
         try {
-            WatchFaceGenerator wfGen = new WatchFaceGenerator(getBaseContext().getAssets());
-            byte[] fwArray = wfGen.genWatchFace();
+            MiBand.MiBandType mibandType = MiBand.getMibandType();
+            WatchFaceGenerator wfGen = new WatchFaceGenerator(getBaseContext().getAssets(),
+                    MiBand.getMibandType());
+            byte[] fwArray = wfGen.genWatchFace(statusIOB);
             if (fwArray == null || fwArray.length == 0) {
                 resetFirmwareState(false, "Empty image");
                 return;
             }
             firmware = new FirmwareOperations(fwArray);
+            if (mibandType == MI_BAND5) {
+                firmware.setSequenceState(new SequenceStateMiBand5().setFirmwareOperations(firmware));
+            }
         } catch (Exception e) {
             resetFirmwareState(false, "FirmwareOperations error " + e.getMessage());
             return;
         }
         if (d)
             UserError.Log.d(TAG, "Begin uploading Watchface, lenght: " + firmware.getSize());
+
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            UserError.Log.d(TAG, "Requesting high priority connection");
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                requestConnectionPriority(connection, BluetoothGatt.CONNECTION_PRIORITY_HIGH);
+            }
+        }
+        firmware.nextSequence();
+        processFirmwareSequence();
+
+
+    }
+
+
+    private void processFirmwareSequence() {
+        RxBleConnection connection = I.connection;
+
+        String seq = firmware.getSequence();
         if (d)
-            UserError.Log.d(TAG, "Requesting to enable notifications for installWatchface");
-        watchfaceSubscription = new Subscription(
-                connection.setupNotification(firmware.getFirmwareCharacteristicUUID())
-                        .timeout(400, TimeUnit.SECONDS) // WARN
-                        .doOnNext(notificationObservable -> {
-                                    if (d)
-                                        UserError.Log.d(TAG, "Notification for firmware enabled");
+            UserError.Log.d(TAG, "processFirmwareSequence seq:" + seq.toString());
+        switch (seq) {
+            case SequenceState.SET_NIGHTMODE: {
+                isNeedToRestoreNightMode = true;
+                DisplayControllMessageMiband3_4 dispControl = new DisplayControllMessageMiband3_4();
+                Calendar sheduledCalendar = Calendar.getInstance();
+                sheduledCalendar.set(Calendar.HOUR_OF_DAY, 0);
+                sheduledCalendar.set(Calendar.MINUTE, 0);
+                Date sheduledDate = sheduledCalendar.getTime();
+                connection.writeCharacteristic(dispControl.getCharacteristicUUID(), dispControl.setNightModeCmd(Sheduled, sheduledDate, sheduledDate))
+                        .subscribe(valB -> {
+                                    UserError.Log.d(TAG, "Wrote nigntmode: " + JoH.bytesToHex(valB));
                                     firmware.nextSequence();
-                                    processFirmwareCommands(null, true);
+                                    processFirmwareSequence();
+                                },
+                                throwable -> {
+                                    UserError.Log.e(TAG, "Could not write nigntmode: " + throwable);
+                                    firmware.nextSequence();
+                                    processFirmwareSequence();
                                 }
-                        )
-                        .flatMap(notificationObservable -> notificationObservable)
-                        .subscribe(bytes -> {
-                            // incoming notifications
-                            if (d)
-                                UserError.Log.d(TAG, "Received firmware notification bytes: " + bytesToHex(bytes));
-                            processFirmwareCommands(bytes, false);
-                        }, throwable -> {
-                            UserError.Log.d(TAG, "Throwable in firmware Notification: " + throwable);
-                            if (throwable instanceof BleCharacteristicNotFoundException) {
-                                // maybe legacy - ignore for now but needs better handling
-                                UserError.Log.d(TAG, "Characteristic not found for notification");
-                            } else if (throwable instanceof BleCannotSetCharacteristicNotificationException) {
-                                UserError.Log.e(TAG, "Problems setting notifications - disconnecting");
-                            } else if (throwable instanceof BleDisconnectedException) {
-                                UserError.Log.d(TAG, "Disconnected while enabling notifications");
-                            } else if (throwable instanceof TimeoutException) {
-                                UserError.Log.d(TAG, "Timeout");
-                            }
-                            resetFirmwareState(false);
-                        }));
+                        );
+                break;
+            }
+
+            case SequenceState.PREPARE_UPLOAD: {
+                connection.writeCharacteristic(firmware.getFirmwareCharacteristicUUID(), firmware.prepareFWUploadInitCommand())
+                        .subscribe(valB -> {
+                                    UserError.Log.d(TAG, "Wrote prepareFWUploadInitCommand: " + JoH.bytesToHex(valB));
+                                    firmware.nextSequence();
+                                },
+                                throwable -> {
+                                    UserError.Log.e(TAG, "Could not write prepareFWUploadInitCommand: " + throwable);
+                                    resetFirmwareState(false);
+                                }
+                        );
+                break;
+            }
+
+            case SequenceState.TRANSFER_FW_START: {
+                connection.writeCharacteristic(firmware.getFirmwareCharacteristicUUID(), firmware.getFirmwareStartCommand())
+                        .subscribe(valB -> {
+                                    UserError.Log.d(TAG, "Wrote Start command: " + JoH.bytesToHex(valB));
+                                    firmware.nextSequence();
+                                },
+                                throwable -> {
+                                    UserError.Log.e(TAG, "Could not write Start command: " + throwable);
+                                    resetFirmwareState(false);
+                                }
+                        );
+                break;
+            }
+            case SequenceState.TRANSFER_SEND_WF_INFO: {
+                connection.writeCharacteristic(firmware.getFirmwareCharacteristicUUID(), firmware.getFwInfoCommand())
+                        .subscribe(valB -> {
+                                    UserError.Log.d(TAG, "Wrote getFwInfoCommand: " + JoH.bytesToHex(valB));
+                                    firmware.nextSequence();
+                                },
+                                throwable -> {
+                                    UserError.Log.e(TAG, "Could not write firmware info: " + throwable);
+                                    resetFirmwareState(false);
+                                }
+                        );
+                break;
+            }
+
+            case SequenceStateMiBand5.UNKNOWN_REQUEST: {
+                connection.writeCharacteristic(firmware.getFirmwareCharacteristicUUID(), firmware.getUnknownMiBand5Command())
+                        .subscribe(valB -> {
+                                    UserError.Log.d(TAG, "Wrote getUnknownMiBand5Command: " + JoH.bytesToHex(valB));
+                                },
+                                throwable -> {
+                                    UserError.Log.e(TAG, "Could not write getUnknownMiBand5Command: " + throwable);
+                                    resetFirmwareState(false);
+                                }
+                        );
+                break;
+            }
+            case SequenceStateMiBand5.UNKNOWN_INIT_COMMAND: {
+                connection.writeCharacteristic(Const.UUID_CHARACTERISTIC_3_CONFIGURATION, OperationCodes.COMMAND_MIBAND5_UNKNOW_INIT)
+                        .subscribe(val -> {
+                                    UserError.Log.d(TAG, "Wrote miband5 unknown init command: " + JoH.bytesToHex(val));
+                                    firmware.nextSequence();
+                                    processFirmwareSequence();
+                                },
+                                throwable -> {
+                                    UserError.Log.e(TAG, "Could not write miband5 unknown init command: " + throwable);
+                                    resetFirmwareState(false);
+                                }
+                        );
+                break;
+            }
+            case SequenceState.NOTIFICATION_ENABLE: {
+                watchfaceSubscription = new Subscription(
+                        connection.setupNotification(firmware.getFirmwareCharacteristicUUID())
+                                .timeout(400, TimeUnit.SECONDS) // WARN
+                                .doOnNext(notificationObservable -> {
+                                            if (d)
+                                                UserError.Log.d(TAG, "Notification for firmware enabled");
+                                            firmware.nextSequence();
+                                            processFirmwareSequence();
+                                        }
+                                )
+                                .flatMap(notificationObservable -> notificationObservable)
+                                .subscribe(bytes -> {
+                                    // incoming notifications
+                                    if (d)
+                                        UserError.Log.d(TAG, "Received firmware notification bytes: " + bytesToHex(bytes));
+                                    processFirmwareNotifications(bytes);
+                                }, throwable -> {
+                                    UserError.Log.d(TAG, "Throwable in firmware Notification: " + throwable);
+                                    if (throwable instanceof BleCharacteristicNotFoundException) {
+                                        // maybe legacy - ignore for now but needs better handling
+                                        UserError.Log.d(TAG, "Characteristic not found for notification");
+                                    } else if (throwable instanceof BleCannotSetCharacteristicNotificationException) {
+                                        UserError.Log.e(TAG, "Problems setting notifications - disconnecting");
+                                    } else if (throwable instanceof BleDisconnectedException) {
+                                        UserError.Log.d(TAG, "Disconnected while enabling notifications");
+                                    } else if (throwable instanceof TimeoutException) {
+                                        UserError.Log.d(TAG, "Timeout");
+                                    }
+                                    resetFirmwareState(false);
+                                }));
+                break;
+            }
+        }
     }
 
     @SuppressLint("CheckResult")
-    private void processFirmwareCommands(byte[] value, boolean isSeqCommand) {
-        RxBleConnection connection = I.connection;
-
-        FirmwareOperations.SequenceType seq = firmware.getSequence();
+    private void processFirmwareNotifications(byte[] value) {
         if (d)
-            UserError.Log.d(TAG, "processFirmwareCommands: " + bytesToHex(value) + ": seq:" + seq.toString());
-        if (isSeqCommand) {
-            switch (seq) {
-                case SET_NIGHTMODE: {
-                    if (true) {
-                        isNeedToRestoreNightMode = true;
-                        DisplayControllMessageMiband3_4 dispControl = new DisplayControllMessageMiband3_4();
-                        Calendar sheduledCalendar = Calendar.getInstance();
-                        sheduledCalendar.set(Calendar.HOUR_OF_DAY, 0);
-                        sheduledCalendar.set(Calendar.MINUTE, 0);
-                        Date sheduledDate = sheduledCalendar.getTime();
-                        connection.writeCharacteristic(dispControl.getCharacteristicUUID(), dispControl.setNightModeCmd(Sheduled, sheduledDate, sheduledDate))
-                                .subscribe(valB -> {
-                                            UserError.Log.d(TAG, "Wrote nigntmode, got: " + JoH.bytesToHex(valB));
-                                            firmware.nextSequence();
-                                            processFirmwareCommands(null, true);
-                                        },
-                                        throwable -> {
-                                            UserError.Log.e(TAG, "Could not write nigntmode: " + throwable);
-                                            firmware.nextSequence();
-                                            processFirmwareCommands(null, true);
-                                        }
-                                );
-                    } else {
-                        firmware.nextSequence();
-                        processFirmwareCommands(null, true);
-                    }
-                    break;
-                }
+            UserError.Log.d(TAG, "processFirmwareNotifications: " + bytesToHex(value));
 
-                case PREPARE_UPLOAD: {
-                    connection.writeCharacteristic(firmware.getFirmwareCharacteristicUUID(), firmware.prepareFWUploadInitCommand())
-                            .subscribe(valB -> {
-                                        UserError.Log.d(TAG, "Wrote prepareFWUploadInitCommand, got: " + JoH.bytesToHex(valB));
-                                    },
-                                    throwable -> {
-                                        UserError.Log.e(TAG, "Could not write prepareFWUploadInitCommand: " + throwable);
-                                        resetFirmwareState(false);
-                                    }
-                            );
-                    firmware.nextSequence();
-                    break;
-                }
-            }
+        if (value.length != 3 && value.length != 11) {
+            UserError.Log.e(TAG, "Notifications should be 3 or 11 bytes long.");
             return;
-        } else {
-            if (value.length != 3 && value.length != 11) {
-                UserError.Log.e(TAG, "Notifications should be 3 or 11 bytes long.");
-                return;
-            }
-            boolean success = value[2] == OperationCodes.SUCCESS;
+        }
+        boolean success = value[2] == OperationCodes.SUCCESS;
 
-            if (value[0] == OperationCodes.RESPONSE && success) {
-                try {
-                    switch (value[1]) {
-                        case OperationCodes.COMMAND_FIRMWARE_INIT: {
-                            if (seq == FirmwareOperations.SequenceType.TRANSFER_FW_START) {
-                                connection.writeCharacteristic(firmware.getFirmwareCharacteristicUUID(), firmware.getFirmwareStartCommand())
-                                        .subscribe(valB -> {
-                                                    UserError.Log.d(TAG, "Wrote Start command, got: " + JoH.bytesToHex(valB));
-                                                },
-                                                throwable -> {
-                                                    UserError.Log.e(TAG, "Could not write Start command: " + throwable);
-                                                    resetFirmwareState(false);
-                                                }
-                                        );
-                                firmware.nextSequence();
-                            } else if (seq == FirmwareOperations.SequenceType.TRANSFER_SEND_WF_INFO) {
-                                connection.writeCharacteristic(firmware.getFirmwareCharacteristicUUID(), firmware.sendFwInfo())
-                                        .subscribe(valB -> {
-                                                    UserError.Log.d(TAG, "Wrote sendFwInfo, got: " + JoH.bytesToHex(valB));
-                                                },
-                                                throwable -> {
-                                                    UserError.Log.e(TAG, "Could not write firmware info: " + throwable);
-                                                    resetFirmwareState(false);
-                                                }
-                                        );
-                                firmware.nextSequence();
-                                break;
-                            }
-                            break;
-                        }
-                        case OperationCodes.COMMAND_FIRMWARE_START_DATA: {
-                            sendFirmwareData();
-                            break;
-                        }
-                        case OperationCodes.COMMAND_FIRMWARE_CHECKSUM: {
-                            firmware.nextSequence();
-                            if (firmware.getFirmwareType() == FirmwareOperations.FirmwareType.FIRMWARE) {
-                                //send reboot
-                            } else {
-                                UserError.Log.e(TAG, "Watch Face has been installed successfully");
-                                resetFirmwareState(true);
-                            }
-                            break;
-                        }
-                        case OperationCodes.COMMAND_FIRMWARE_REBOOT: {
-                            UserError.Log.e(TAG, "Reboot command successfully sent.");
-                            resetFirmwareState(true);
-                            break;
-                        }
-                        default: {
-                            resetFirmwareState(false, "Unexpected response during firmware update");
-                        }
+        if (value[0] == OperationCodes.RESPONSE && success) {
+            try {
+                switch (value[1]) {
+                    case OperationCodes.COMMAND_FIRMWARE_INIT: {
+                        processFirmwareSequence();
+                        break;
                     }
-                } catch (Exception ex) {
-                    resetFirmwareState(false);
+                    case OperationCodes.COMMAND_FIRMWARE_START_DATA: {
+                        sendFirmwareData();
+                        break;
+                    }
+                    case OperationCodes.COMMAND_FIRMWARE_CHECKSUM: {
+                        firmware.nextSequence();
+                        if (firmware.getFirmwareType() == FirmwareOperations.FirmwareType.FIRMWARE) {
+                            //send reboot
+                        } else {
+                            UserError.Log.e(TAG, "Watch Face has been installed successfully");
+                            resetFirmwareState(true);
+                        }
+                        break;
+                    }
+                    case OperationCodes.COMMAND_FIRMWARE_REBOOT: {
+                        UserError.Log.e(TAG, "Reboot command successfully sent.");
+                        resetFirmwareState(true);
+                        break;
+                    }
+                    case OperationCodes.COMMAND_FIRMWARE_UNKNOWN_MIBAND5: {
+                        firmware.nextSequence();
+                        processFirmwareSequence();
+                        break;
+                    }
+                    default: {
+                        resetFirmwareState(false, "Unexpected response during firmware update");
+                    }
                 }
+            } catch (Exception ex) {
+                resetFirmwareState(false);
+            }
+        } else {
+            String errorMessage = null;
+            Boolean sendBGNotification = false;
+            if (value[2] == OperationCodes.LOW_BATTERY_ERROR) {
+                errorMessage = "Cannot upload watchface, low battery, please charge device";
+                sendBGNotification = true;
+            } else if (value[2] == OperationCodes.TIMER_RUNNING) {
+                errorMessage = "Cannot upload watchface, timer running on band";
+            } else if (value[2] == OperationCodes.ON_CALL) {
+                errorMessage = "Cannot upload watchface, call in progress";
             } else {
-                String errorMessage = null;
-                Boolean sendBGNotification = false;
-                if (value[2] == OperationCodes.LOW_BATTERY_ERROR) {
-                    errorMessage = "Cannot upload watchface, low battery, please charge device";
-                    sendBGNotification = true;
-                } else if (value[2] == OperationCodes.TIMER_RUNNING) {
-                    errorMessage = "Cannot upload watchface, timer running on band";
-                } else if (value[2] == OperationCodes.ON_CALL) {
-                    errorMessage = "Cannot upload watchface, call in progress";
-                } else {
-                    errorMessage = "Unexpected notification during firmware update:" + JoH.bytesToHex(value);
-                }
-                resetFirmwareState(false, errorMessage);
-                if (sendBGNotification) {
-                    emptyQueue();
-                    JoH.startService(MiBandService.class, "function", "update_bg_as_notification");
-                    changeState(SLEEP);
-                }
+                errorMessage = "Unexpected notification during firmware update:" + JoH.bytesToHex(value);
+            }
+            resetFirmwareState(false, errorMessage);
+            if (sendBGNotification) {
+                emptyQueue();
+                JoH.startService(MiBandService.class, "function", "update_bg_as_notification");
+                changeState(SLEEP);
             }
         }
     }
@@ -1120,6 +1209,10 @@ public class MiBandService extends JamBaseBluetoothSequencer {
     }
 
     private void resetFirmwareState(Boolean result, String customText) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            requestConnectionPriority(I.connection, BluetoothGatt.CONNECTION_PRIORITY_BALANCED);
+        }
+        emptyQueue();
         if (watchfaceSubscription != null) {
             watchfaceSubscription.unsubscribe();
             watchfaceSubscription = null;
@@ -1144,6 +1237,14 @@ public class MiBandService extends JamBaseBluetoothSequencer {
         changeState(SLEEP);
     }
 
+    @RequiresApi(26)
+    private Observable<ConnectionParameters> requestConnectionPriority(RxBleConnection rxBleConnection, int priority) {
+        return Observable.merge(
+                rxBleConnection.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH, 1, TimeUnit.MILLISECONDS).toObservable(),
+                rxBleConnection.observeConnectionParametersUpdates().take(1)
+        );
+    }
+
     private void sendFirmwareData() {
         byte[] fwbytes = firmware.getBytes();
         int len = firmware.getSize();
@@ -1162,8 +1263,8 @@ public class MiBandService extends JamBaseBluetoothSequencer {
             sendFirmwareCommand(firmware.getFirmwareDataCharacteristicUUID(), fwChunk, "Chunk:" + i).queue();
             firmwareProgress += packetLength;
             int progressPercent = (int) ((((float) firmwareProgress) / len) * 100);
-            if ((i > 0) && (i % 30 == 0)) {
-                sendFirmwareCommand(firmware.getFirmwareCharacteristicUUID(), firmware.sendSync(), "Sync " + progressPercent + "%").queue();
+            if ((i > 0) && (i % FirmwareOperations.FIRMWARE_SYNC_PACKET == 0)) {
+                sendFirmwareCommand(firmware.getFirmwareCharacteristicUUID(), firmware.getSyncCommand(), "Sync " + progressPercent + "%").queue();
             }
         }
         if (firmwareProgress < len) { //last chunk
@@ -1171,7 +1272,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
             byte[] fwChunk = Arrays.copyOfRange(fwbytes, packets * packetLength, len);
             sendFirmwareCommand(firmware.getFirmwareDataCharacteristicUUID(), fwChunk, "Last chunk").queue();
         }
-        sendFirmwareCommand(firmware.getFirmwareCharacteristicUUID(), firmware.sendChecksum(), "sendChecksum").setRunnable(new Runnable() {
+        sendFirmwareCommand(firmware.getFirmwareCharacteristicUUID(), firmware.getChecksumCommand(), "getChecksumCommand").setRunnable(new Runnable() {
             @Override
             public void run() {
                 firmware.nextSequence();
@@ -1368,7 +1469,9 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                     }
 
                     final String bgAsNotification = queueItem.functionName;
-                    if (MiBand.getMibandType() != MI_BAND4 || MiBandEntry.isNeedSendReadingAsNotification() || bgAsNotification.equals("update_bg_as_notification")) {
+                    if (!MiBand.isMiband4_or_5(MiBand.getMibandType())
+                            || MiBandEntry.isNeedSendReadingAsNotification()
+                            || bgAsNotification.equals("update_bg_as_notification")) {
                         Boolean result = sendBG();
                         if (result) changeState(MiBandState.VIBRATE_AFTER_READING);
                         else changeState(MiBandState.SEND_QUEUE);

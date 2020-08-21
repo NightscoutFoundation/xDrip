@@ -100,6 +100,9 @@ public class OperationCodes {
     public static final byte[] COMMAND_DISABLE_DISCONNECT_NOTIFCATION = new byte[]{ENDPOINT_DISPLAY, 0x0c, 0x00, 0x00};//, 0, 0, 0, 0};
     public static final byte[] COMMAND_ACK_FIND_PHONE_IN_PROGRESS = new byte[]{ENDPOINT_DISPLAY, 0x14, 0x00, 0x00};
 
+    public static final byte[] COMMAND_MIBAND5_UNKNOW_INIT = new byte[]{0x39, 0x00, (byte)0xa7, 0x1f, 0x01, 0x00, 0x22, 0x27, 0x00, 0x00};
+
+
     public static final byte[] COMMAND_DISABLE_CALL = new byte[]{0x00,(byte) 0xc0,0x00,0x03,0x03,0x00,0x00,0x00,0x00};
 
 
@@ -116,6 +119,7 @@ public class OperationCodes {
     public static final byte COMMAND_FIRMWARE_UPDATE_SYNC = 0x00; // to UUID_CHARACTERISTIC_FIRMWARE
     public static final byte COMMAND_FIRMWARE_CHECKSUM = 0x04; // to UUID_CHARACTERISTIC_FIRMWARE
     public static final byte COMMAND_FIRMWARE_REBOOT = 0x05; // to UUID_CHARACTERISTIC_FIRMWARE
+    public static final byte COMMAND_FIRMWARE_UNKNOWN_MIBAND5 = (byte)0xA0; // to UUID_CHARACTERISTIC_FIRMWARE
 
     public static final byte[] RESPONSE_FINISH_INIT_SUCCESS = new byte[] {RESPONSE, COMMAND_FIRMWARE_INIT, SUCCESS };
     public static final byte[] RESPONSE_FIRMWARE_DATA_SUCCESS = new byte[] {RESPONSE, COMMAND_FIRMWARE_START_DATA, SUCCESS };

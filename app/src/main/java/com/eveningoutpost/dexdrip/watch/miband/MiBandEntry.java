@@ -16,7 +16,6 @@ import com.eveningoutpost.dexdrip.xdrip;
 import java.util.Date;
 
 import static com.eveningoutpost.dexdrip.watch.miband.MiBand.MiBandType.MI_BAND2;
-import static com.eveningoutpost.dexdrip.watch.miband.MiBand.MiBandType.MI_BAND4;
 // very lightweight entry point class to avoid loader overhead when not in use
 
 public class MiBandEntry {
@@ -41,6 +40,7 @@ public class MiBandEntry {
     public static final String PREF_MIBAND_DISABLE_HIGHT_MTU = "debug_miband_disable_hight_mtu";
     public static final String PREF_MIBAND_USE_CUSTOM_WATHCFACE = "debug_miband_use_custom_watchface";
     public static final String PREF_MIBAND_COLLECT_HEARTRATE = "miband_collect_heartrate";
+    public static final String PREF_MIBAND_US_DATE_FORMAT = "miband_us_date_format";
     public static final String PREF_MIBAND_IMAGE_OFFSET = "debug_miband_image_offset";
 
     public static final int NIGHT_MODE_INTERVAL_STEP = 5;
@@ -92,7 +92,7 @@ public class MiBandEntry {
     }
 
     public static boolean isGraphEnabled() {
-        if (MiBand.getMibandType() != MI_BAND4) return false;
+        if (!MiBand.isMiband4_or_5(MiBand.getMibandType())) return false;
         return Pref.getBooleanDefaultFalse(PREF_MIBAND_GRAPH_ENBALE);
     }
 
@@ -114,6 +114,10 @@ public class MiBandEntry {
 
     public static boolean isNeedToCollectHR() {
         return Pref.getBooleanDefaultFalse(PREF_MIBAND_COLLECT_HEARTRATE);
+    }
+
+    public static boolean isUS_DateFormat() {
+        return Pref.getBooleanDefaultFalse(PREF_MIBAND_US_DATE_FORMAT);
     }
 
     public static int getImageOffset() {
