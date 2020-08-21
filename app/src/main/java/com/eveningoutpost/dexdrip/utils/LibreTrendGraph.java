@@ -14,6 +14,7 @@ import com.eveningoutpost.dexdrip.Models.ReadingData;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.NFCReaderX;
 import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 
@@ -28,8 +29,6 @@ import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.LineChartView;
-
-import static com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder.FUZZER;
 
 
 public class LibreTrendGraph extends BaseAppCompatActivity {
@@ -95,6 +94,25 @@ public class LibreTrendGraph extends BaseAppCompatActivity {
         setupCharts();
     }
 
+    public static List<PointValue> getTrendDataPointsOld(boolean doMgdl, long start_time, long end_time) {
+       // TODO needs to cut off if would exceed the current graph scope
+        final float conversion_factor_mmol = (float) (doMgdl ? 1 : Constants.MGDL_TO_MMOLL);
+        final LibreBlock libreBlock= LibreBlock.getLatestForTrend(start_time, end_time );
+        if (libreBlock != null) {
+            final ArrayList<Float> bg_data = getLatestBg(libreBlock);
+            if (bg_data != null) {
+                final ArrayList<PointValue> points = new ArrayList<>(bg_data.size());
+                long time_offset = 0;
+                for (Float bg : bg_data) {
+                    points.add(new PointValue((float) BgGraphBuilder.timestampToFuzzedGraphPos((libreBlock.timestamp - time_offset)), bg * conversion_factor_mmol));
+                    time_offset += Constants.MINUTE_IN_MS;
+                }
+                return points;
+            }
+        }
+        return null;
+    }
+
     public static List<PointValue> getTrendDataPoints(boolean doMgdl, long start_time, long end_time) {
         // TODO needs to cut off if would exceed the current graph scope
          final float conversion_factor_mmol = (float) (doMgdl ? 1 : Constants.MGDL_TO_MMOLL);
@@ -120,7 +138,7 @@ public class LibreTrendGraph extends BaseAppCompatActivity {
              }
              long bg_time = libreTrendLatest.timestamp - time_offset;
              if (bg_time <= end_time && bg_time >= start_time) {
-                 points.add(new PointValue((float) ((double)(bg_time) / FUZZER), bg * conversion_factor_mmol));
+                 points.add(new PointValue((float)BgGraphBuilder.timeStampToGraphPos((double)(bg_time)), bg * conversion_factor_mmol));
              }
              
              time_offset += Constants.MINUTE_IN_MS;
