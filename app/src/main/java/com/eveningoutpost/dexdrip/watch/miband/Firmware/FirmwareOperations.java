@@ -64,7 +64,8 @@ public class FirmwareOperations {
 
     public void nextSequence() {
         String new_state = mState.next();
-        UserError.Log.d(TAG, "Changing state from: " + sequenceState.toUpperCase() + " to " + new_state.toUpperCase());
+        if (MiBandService.d)
+             UserError.Log.d(TAG, "Changing firmware state from: " + sequenceState + " to " + new_state);
         sequenceState = new_state;
     }
 

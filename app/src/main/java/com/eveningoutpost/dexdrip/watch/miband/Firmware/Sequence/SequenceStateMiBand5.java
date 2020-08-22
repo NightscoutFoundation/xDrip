@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SequenceStateMiBand5 extends SequenceState {
-    public static final String UNKNOWN_REQUEST = "UNKNOWN REQUEST";
-    public static final String UNKNOWN_INIT_COMMAND = "UNKNOWN INIT COMMAND";
+    public static final String UNKNOWN_REQUEST = "Unknown miband5 request command";
+    public static final String UNKNOWN_INIT_COMMAND = "Unknown miband5 init command";
 
     {
         sequence.clear();
