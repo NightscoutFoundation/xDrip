@@ -650,6 +650,7 @@
                             android:defaultValue="true"
                             android:switchTextOff="miles"
                             android:switchTextOn="km"
+                            android:showText="true"
                             android:key="miband_feature_units"
                             android:summary="@string/summary_miband_units"
                             android:title="@string/title_miband_units" />
@@ -706,8 +707,6 @@
                         android:defaultValue="true"
                         android:key="miband_collect_heartrate"
                         android:summary="@string/summary_miband_colect_heartrate"
-                        android:switchTextOff="@string/short_off_text_for_switches"
-                        android:switchTextOn="@string/short_on_text_for_switches"
                         android:title="@string/title_miband_colect_heartrate" />
                     <SwitchPreference
                         android:defaultValue="true"
@@ -715,6 +714,7 @@
                         android:summary="@string/summary_miband_us_date_format"
                         android:switchTextOff="EU"
                         android:switchTextOn="US"
+                        android:showText="true"
                         android:title="@string/title_miband_us_date_format" />
                     <PreferenceCategory
                         android:key="miband2_screen"

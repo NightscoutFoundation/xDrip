@@ -1255,7 +1255,7 @@
     <string name="summary_miband_us_date_format">Watchface date format. US(MM/dd),EU(dd/MM)</string>
 
     <string name="title_miband_authkey">Auth Key</string>
-    <string name="summary_miband_authkey">Set the auth key for miband4 (To get auth key, follow the instructions on https://www.freemyband.com/)</string>
+    <string name="summary_miband_authkey">Set the auth key for MiBand (To get auth key, follow the instructions on https://www.freemyband.com/)</string>
     <string name="summary_miband_mac">Leave empty for auto search</string>
     <string name="title_miband_send_readings_as_notification">BG readings as notification</string>
     <string name="summary_miband_send_readings_as_notification">Will use a notifications to send BG readings. The date wouldn\'t be changed so all band features can be used.

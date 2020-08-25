@@ -95,11 +95,13 @@ public class WatchFaceGenerator {
         }
         if (!customFilesFound) {
             String firmwareFileName = "miband_watchface_parts/xdrip_";
-            String imageFileName = "miband_watchface_parts/miband4";
+            String imageFileName = "miband_watchface_parts/";
             if (miBandType == MiBand.MiBandType.MI_BAND4) {
                 firmwareFileName += "miband4";
+                imageFileName += "miband4";
             } else if (miBandType == MiBand.MiBandType.MI_BAND5) {
                 firmwareFileName += "miband5";
+                imageFileName += "miband5";
             }
             imageFileName += "_main_screen";
 
@@ -254,8 +256,7 @@ public class WatchFaceGenerator {
 
         paint.setTextScaleX(0.88f);
         paint.setTextSize(bgValueTextSize);
-        paint.setStrikeThruText(false);
-
+        paint.setStrokeWidth(2);
         String[] bgValuesSplitted = data.getBgValueText().split("[,]");
         String bgtextDigits = data.getBgValueText();
         if (bgtextDigits.length() <= 2 || (bgValuesSplitted.length >= 2 && bgValuesSplitted[0].length() == 1))
@@ -272,7 +273,7 @@ public class WatchFaceGenerator {
             paint.setTextSize(bgValueTextSize - 6);
             paint.getTextBounds(bgtextDigits, 0, bgtextDigits.length(), bounds);
             bgTextPosX = bgTextPosX - bounds.width() - 2;
-            canvas.drawText(bgtextDigits, bgTextPosX, bgTextPosY + 0, paint); //draw dot
+            canvas.drawText(bgtextDigits, bgTextPosX, bgTextPosY, paint); //draw dot
 
             paint.setTextSize(bgValueTextSize);
             bgtextDigits = bgValuesSplitted[0];
@@ -285,10 +286,12 @@ public class WatchFaceGenerator {
             if (bgTextPosX < 0) bgTextPosX = 0;
             canvas.drawText(bgtextDigits, bgTextPosX, bgTextPosY, paint);
         }
+        //draw strike line for bg
+       if ( data.isStrike_through()){
+           canvas.drawLine( bgTextPosX-5, bgTextPosY-bounds.height()/2, arrowXPos-5,bgTextPosY-bounds.height()/2, paint);
+       }
 
         //draw unitized delta
-
-        paint.setStrikeThruText(data.isStrike_through());
         paint.setTextScaleX(1);
         paint.setColor(textColor);
         int unitsTextPosX = 0;//px
@@ -304,7 +307,6 @@ public class WatchFaceGenerator {
             if (treatment != null && treatment.hasContent() && !treatment.noteOnly()) {
                 int treatmentTextPosY = unitsTextPosY + timeStampTextSize + 1;//px
                 paint.setTextSize(timeStampTextSize);
-                paint.setStrikeThruText(false);
 
                 String mylabel = "";
                 if (treatment.insulin > 0) {
