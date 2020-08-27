@@ -1531,6 +1531,7 @@
     <string name="unusual_internal_context_problem__please_report">Unusual internal context problem - please report</string>
     <string name="cannot_start__please_report_context_problem">Cannot start - please report context problem</string>
     <string name="xdrip_will_not_work_below_android_version_42">xDrip+ will not work below Android version 4.2</string>
+    <string name="xdrip_oop2_not_installed">xDrip+ needs oop2 to handle libre2/libre us sensors.</string>
     <string name="this_app_needs_battery_optimization_whitelisting_or_it_will_not_work_well_please_reset_app_preferences">This app needs battery optimization whitelisting or it will not work well. Please reset app preferences</string>
     <string name="setting_disabled_">Setting disabled :)</string>
     <string name="yes_please">YES, Please</string>

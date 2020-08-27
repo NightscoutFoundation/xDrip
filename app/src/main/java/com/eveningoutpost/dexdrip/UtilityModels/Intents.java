@@ -50,11 +50,10 @@ public interface Intents {
     String XDRIP_PLUS_NS_EMULATOR = "com.eveningoutpost.dexdrip.NS_EMULATOR";
     String BLUEJAY_THINJAM_API = "com.eveningoutpost.dexdrip.THINJAM_API";
     String BLUEJAY_THINJAM_EMIT = "com.eveningoutpost.dexdrip.THINJAM_EMIT";
-
     // Local Broadcasts
     String HOME_STATUS_ACTION = "com.eveningoutpost.dexdrip.HOME_STATUS_ACTION";
     
-    // Send to LibreXposed
+    // Send to external decoder
     String XDRIP_PLUS_LIBRE_DATA = "com.eveningoutpost.dexdrip.LIBRE_DATA";
     String LIBRE_DATA_BUFFER = "com.eveningoutpost.dexdrip.Extras.DATA_BUFFER";
     String LIBRE_PATCH_UID_BUFFER = "com.eveningoutpost.dexdrip.Extras.LIBRE_PATCH_UID_BUFFER";
@@ -68,6 +67,13 @@ public interface Intents {
     String LIBRE2_ACTIVATION = "com.librelink.app.ThirdPartyIntegration.SENSOR_ACTIVATE";
 
 
+    // oop 2 
+    String XDRIP_DECRYPT_FARM_RESULT = "com.eveningoutpost.dexdrip.OOP2_DECRYPT_FARM_RESULT";
+    String DECRYPTED_BUFFER = "DecryptedBuffer";
+    String PATCH_UID = "PatchUid";
+    String PATCH_INFO = "PatchInfo";
+    String TAG_ID = "TagId";
+    String ROW_ID = "RowId";
 
     String PREFERENCE_INTENT = "com.eveningoutpost.dexdrip.utils.PROGRESS";
 }

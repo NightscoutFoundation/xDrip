@@ -472,6 +472,7 @@
         <receiver android:name=".NSEmulatorReceiver">
             <intent-filter>
                 <action android:name="com.eveningoutpost.dexdrip.NS_EMULATOR" />
+                <action android:name="com.eveningoutpost.dexdrip.OOP2_DECRYPT_FARM_RESULT" />
             </intent-filter>
         </receiver>
         <receiver android:name="com.eveningoutpost.dexdrip.watch.thinjam.io.ThinJamApiReceiver">

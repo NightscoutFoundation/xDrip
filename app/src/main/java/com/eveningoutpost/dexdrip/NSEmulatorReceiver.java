@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
+import android.util.Base64;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
@@ -72,7 +73,7 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
 
                                 // in future this could have its own data source perhaps instead of follower
                                 if (!Home.get_follower() && DexCollectionType.getDexCollectionType() != DexCollectionType.NSEmulator &&
-                                        !Pref.getBooleanDefaultFalse("external_blukon_algorithm")) { //???DexCollectionType
+                                        !Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
                                     Log.e(TAG, "Received NSEmulator data but we are not a follower or emulator receiver");
                                     return;
                                 }
@@ -194,7 +195,11 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
                                 }
 
                                 break;
-
+                            case Intents.XDRIP_DECRYPT_FARM_RESULT:
+                                Log.e(TAG, "recieved message DECRYPT_FARM_RESULT");
+                                handleOop2DecryptFarmResult(bundle);
+                                break;
+                                
                             default:
                                 Log.e(TAG, "Unknown action! " + action);
                                 break;
@@ -206,6 +211,60 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
                 } // lock
             }
         }.start();
+    }
+    private JSONObject extractParams(Bundle bundle) {
+        final String json = bundle.getString("json");
+        if (json == null) {
+            Log.e(TAG, "json == null returning");
+            return null;
+        }
+        JSONObject json_object;
+        try {
+            json_object = new JSONObject(json);
+            int process_id = json_object.getInt("ROW_ID");
+            if(process_id != android.os.Process.myPid()) {
+                Log.d(TAG, "Ignoring OOP result since process id is wrong " + process_id);
+                return null;
+            }
+
+        } catch (JSONException e) {
+            Log.e(TAG, "Got JSON exception: " + e);
+            return null;
+        }
+        return json_object;
+        
+    }
+    
+    private void handleOop2DecryptFarmResult(Bundle bundle) {
+        JSONObject json_object = extractParams(bundle);
+        if(json_object == null) {
+            return;
+        }
+        String decrypted_buffer;
+        String patchUidString;
+        String patchInfoString;
+        String tagId;
+        long CaptureDateTime;
+        try {
+            decrypted_buffer = json_object.getString(Intents.DECRYPTED_BUFFER);
+            patchUidString = json_object.getString(Intents.PATCH_UID);
+            patchInfoString = json_object.getString(Intents.PATCH_INFO);
+            tagId = json_object.getString(Intents.TAG_ID);
+            CaptureDateTime = json_object.getLong(Intents.LIBRE_DATA_TIMESTAMP);
+        } catch (JSONException e) {
+            Log.e(TAG, "Error JSONException ", e);
+            return;
+        }
+        if(decrypted_buffer == null) {
+            Log.e(TAG, "Error could not get decrypted_buffer");
+            return;
+        }
+        
+        // Does this throws exception???
+        byte[] farm_data = Base64.decode(decrypted_buffer, Base64.NO_WRAP);
+        byte []patchUid = Base64.decode(patchUidString, Base64.NO_WRAP);
+        byte []patchInfo = Base64.decode(patchInfoString, Base64.NO_WRAP);
+        LibreOOPAlgorithm.handleOop2DecryptFarmResult(tagId, CaptureDateTime, farm_data, patchUid, patchInfo);
     }
 
     public static BgReading bgReadingInsertFromData(long timestamp, double sgv, double slope, boolean do_notification) {
