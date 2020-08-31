@@ -192,9 +192,7 @@ public class WatchFaceGenerator {
         paint.setAntiAlias(true);
 
         if (data.isGraphEnabled()) {
-            int graphHeight = 80;
-            if (data.isShowTreatment()) graphHeight = 84;
-            int finalGraphHeight = graphHeight;
+            int graphHeight = 84;
             //draw graph
             drawMutex = true;
             long startTime = System.currentTimeMillis() - Constants.HOUR_IN_MS * data.getGraphHours();
@@ -208,7 +206,7 @@ public class WatchFaceGenerator {
                                 .setStart(startTime)
                                 .setEnd(endTime)
                                 .setWidthPx(width + 16)
-                                .setHeightPx(finalGraphHeight)
+                                .setHeightPx(graphHeight)
                                 .setBackgroundColor(graphBgColor)
                                 .setTinyDots()
                                 .showHighLine()
@@ -235,10 +233,7 @@ public class WatchFaceGenerator {
                 int iobTextPosY = offset + bounds.height();//px
                 canvas.drawText(data.getIob(), iobTextPosX, iobTextPosY, paint);
             }
-            if (data.isShowTreatment())
-                offset = offset + graphHeight - 10;
-            else
-                offset = offset + graphHeight + 10;
+            offset = offset + graphHeight - 10;
         }
 
         //draw arrow

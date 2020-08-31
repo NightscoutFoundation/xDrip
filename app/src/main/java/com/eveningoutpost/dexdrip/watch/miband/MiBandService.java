@@ -1228,6 +1228,8 @@ public class MiBandService extends JamBaseBluetoothSequencer {
         if (isNeedToRestoreNightMode) {
             JoH.threadSleep(RESTORE_NIGHT_MODE_DELAY);
             setNightMode();
+            // do nothing because something happen with connection while sending nightmode
+            if (I.state == CLOSED || I.state == CLOSE) return;
         }
         if (result) {
             changeNextState();
