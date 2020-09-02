@@ -1589,4 +1589,5 @@
     <string name="pref_enable_insulinprofiles">enable at least one max three profiles</string>
     <string name="pref_select_basal_insulinprofiles">choose basal insulin profile.</string>
     <string name="pref_select_bolus_insulinprofiles">choose bolus insulin profile. also used for pump and pen...</string>
+    <string name="bubble_fw_update">Please Update your Bubble to the latest FW to get Libre2/Pro/US 14 days native support</string>
 </resources>

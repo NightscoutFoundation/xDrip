@@ -8,6 +8,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.BridgeResponse;
 import com.eveningoutpost.dexdrip.UtilityModels.LibreUtils;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.xdrip;
 
 import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
@@ -48,7 +49,7 @@ public class Bubble {
                         ackMessage.put(0, (byte) 0x08);
                     }
                 } else if (first == 0x70) {     // Libre pro
-                    if (fv >= 2.7) {
+                    if (fv >= 2.9) {
                         ackMessage.put(0, (byte) 0x08);
                     }
                 }
@@ -122,7 +123,10 @@ public class Bubble {
             if (s_full_data == null) {
                 InitBuffer(expectedSize);
             }
-            addData(buffer);
+            ByteBuffer byteBuffer = addData(buffer);
+            if (byteBuffer != null) {
+                reply.add(byteBuffer);
+            }
             return reply;
         }
         if (first == 0x88) {
@@ -150,16 +154,51 @@ public class Bubble {
     }
 
 
-    static void addData(byte[] buffer) {
+    static ByteBuffer addData(byte[] buffer) {
         System.arraycopy(buffer, 4, s_full_data, s_acumulatedSize, buffer.length - 4);
         s_acumulatedSize = s_acumulatedSize + buffer.length - 4;
-        AreWeDone();
+        return AreWeDone(buffer[0]);
     }
 
 
-    static void AreWeDone() {
+    static ByteBuffer AreWeDone(byte firstBuffer) {
         if (s_acumulatedSize < lens) {
-            return;
+            return null;
+        }
+        if (firstBuffer == 0x82) {//first 82  data is error
+            ByteBuffer ackMessage = ByteBuffer.allocate(6);
+            double fv = JoH.tolerantParseDouble(PersistentStore.getString("BubbleFirmware"));
+            ackMessage.put(0, (byte) 0x02);
+            if (!Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
+                if (patchInfo != null && patchInfo.length > 0) {
+                    int first = 0xff & patchInfo[0];
+                    if (first == 0x9D || first == 0xE5) {//Libre us and libre2 Libre pro
+                        if (fv >= 2.6) {
+                            ackMessage.put(0, (byte) 0x08);
+                            ackMessage.put(1, (byte) 0x01);
+                            ackMessage.put(2, (byte) 0x00);
+                            ackMessage.put(3, (byte) 0x00);
+                            ackMessage.put(4, (byte) 0x00);
+                            ackMessage.put(5, (byte) 0x2B);
+                            return ackMessage;
+                        }
+                        JoH.static_toast_short(xdrip.gs(R.string.bubble_fw_update));
+                        return null;
+                    } else if (first == 0x70) {     // Libre pro
+                        if (fv >= 2.9) {
+                            ackMessage.put(0, (byte) 0x08);
+                            ackMessage.put(1, (byte) 0x01);
+                            ackMessage.put(2, (byte) 0x00);
+                            ackMessage.put(3, (byte) 0x00);
+                            ackMessage.put(4, (byte) 0x00);
+                            ackMessage.put(5, (byte) 0x2B);
+                            return ackMessage;
+                        }
+                        JoH.static_toast_short(xdrip.gs(R.string.bubble_fw_update));
+                        return null;
+                    }
+                }
+            }
         }
         long now = JoH.tsl();
         String SensorSn = PersistentStore.getString("LibreSN");
@@ -176,7 +215,7 @@ public class Bubble {
         errorCount = 0;
 
         Log.e(TAG, "We have all the data that we need " + s_acumulatedSize + " checksum_ok = " + checksum_ok + HexDump.dumpHexString(data));
-
+        return null;
     }
 
 
