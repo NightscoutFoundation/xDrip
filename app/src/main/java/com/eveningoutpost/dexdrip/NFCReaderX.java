@@ -438,6 +438,7 @@ public class NFCReaderX {
                         Log.d(TAG, "patchInfo = " + HexDump.dumpHexString(patchInfo));
                         
                         if (multiblock) {
+                            Log.e(TAG, "startign multiple blobk reads - old way");
                             final int correct_reply_size = addressed ? 28 : 25;
                             for (int i = 0; i <= 43; i = i + 3) {
                                 final byte[] cmd;
@@ -491,7 +492,7 @@ public class NFCReaderX {
                             }
                         } else {
                             // always addressed
-                            Log.e(TAG, "startign multiblock reads ");
+                            Log.e(TAG, "startign single blobk reads - libre2");
                             final int correct_reply_size = 9;
                             for (int i = 0; i < 43; i++) {
                                 //final byte[] cmd = new byte[]{0x60, 0x20, 0, 0, 0, 0, 0, 0, 0, 0, (byte) i, 0};
@@ -527,7 +528,7 @@ public class NFCReaderX {
                             }
                         }
                         JoH.benchmark("Tag read");
-                        Log.d(TAG, "GOT TAG DATA!");
+                        Log.d(TAG, "GOT TAG DATA!\n" + HexDump.toHexString(data));
                         last_read_succeeded = true;
                         succeeded = true;
                         used_nfc_successfully = true;
