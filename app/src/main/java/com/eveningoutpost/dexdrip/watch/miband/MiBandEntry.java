@@ -26,6 +26,7 @@ public class MiBandEntry {
     public static final String PREF_MIBAND_SEND_READINGS_AS_NOTIFICATION = "miband_send_readings_as_notification";
     public static final String PREF_VIBRATE_ON_READINGS = "miband_vibrate_on_readings";
     public static final String PREF_SEND_ALARMS = "miband_send_alarms";
+    public static final String PREF_SEND_ALARMS_OTHER = "miband_send_alarms_other";
     public static final String PREF_CALL_ALERTS = "miband_option_call_notifications";
     public static final String PREF_MIBAND_SETTINGS = "miband_settings";
     public static final String PREF_MIBAND_PREFERENCES = "miband_preferences";
@@ -51,6 +52,10 @@ public class MiBandEntry {
 
     public static boolean areAlertsEnabled() {
         return isEnabled() && Pref.getBooleanDefaultFalse(PREF_SEND_ALARMS);
+    }
+
+    public static boolean areOtherAlertsEnabled() {
+        return isEnabled() && Pref.getBooleanDefaultFalse(PREF_SEND_ALARMS_OTHER);
     }
 
     public static boolean isVibrateOnReadings() {

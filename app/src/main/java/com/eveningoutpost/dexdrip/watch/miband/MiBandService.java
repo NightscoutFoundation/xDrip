@@ -34,6 +34,7 @@ import com.eveningoutpost.dexdrip.utils.framework.WakeLockTrampoline;
 import com.eveningoutpost.dexdrip.watch.PrefBindingFactory;
 import com.eveningoutpost.dexdrip.watch.miband.Firmware.FirmwareOperations;
 import com.eveningoutpost.dexdrip.watch.miband.Firmware.Sequence.SequenceState;
+import com.eveningoutpost.dexdrip.watch.miband.Firmware.Sequence.SequenceStateMiBand4;
 import com.eveningoutpost.dexdrip.watch.miband.Firmware.Sequence.SequenceStateMiBand5;
 import com.eveningoutpost.dexdrip.watch.miband.Firmware.WatchFaceGenerator;
 import com.eveningoutpost.dexdrip.watch.miband.message.AlertLevelMessage;
@@ -62,7 +63,6 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.schedulers.Schedulers;
 import lombok.Getter;
@@ -82,6 +82,7 @@ import static com.eveningoutpost.dexdrip.watch.miband.Const.MIBAND_NOTIFY_TYPE_C
 import static com.eveningoutpost.dexdrip.watch.miband.Const.MIBAND_NOTIFY_TYPE_MESSAGE;
 import static com.eveningoutpost.dexdrip.watch.miband.Const.PREFERRED_MTU_SIZE;
 import static com.eveningoutpost.dexdrip.watch.miband.MiBand.MiBandType.MI_BAND2;
+import static com.eveningoutpost.dexdrip.watch.miband.MiBand.MiBandType.MI_BAND4;
 import static com.eveningoutpost.dexdrip.watch.miband.MiBand.MiBandType.MI_BAND5;
 import static com.eveningoutpost.dexdrip.watch.miband.MiBand.MiBandType.UNKNOWN;
 import static com.eveningoutpost.dexdrip.watch.miband.MiBandService.MiBandState.AUTHORIZE_FAILED;
@@ -138,7 +139,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
     private int defaultSnoozle;
     private BroadcastReceiver statusReceiver;
     private String statusIOB = "";
-    private boolean prevReadingStatus = false;
+    private boolean prevReadingStatusIsStale = false;
 
     public class QueueMessage {
         @Getter
@@ -282,7 +283,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                 stopBgUpdateTimer();
                 stopConnection();
                 changeState(CLOSE);
-                prevReadingStatus = false;
+                prevReadingStatusIsStale = false;
                 stopSelf();
                 return START_NOT_STICKY;
             }
@@ -316,14 +317,14 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                     UserError.Log.d(TAG, "Skip bg update because of night mode");
                     break;
                 }
-                boolean curReadingStatus = isStaleReading();
+                boolean curReadingStatusIsStale = isStaleReading();
 
-                if (prevReadingStatus && curReadingStatus){
+                if (prevReadingStatusIsStale && curReadingStatusIsStale){
                     UserError.Log.d(TAG, "Skip bg update because of staleReading");
                     break;
                 }
 
-                prevReadingStatus = curReadingStatus;
+                prevReadingStatusIsStale = curReadingStatusIsStale;
                 startBgTimer();
                 ((MiBandState) mState).setSendReadingSequence();
                 changeState(INIT);
@@ -900,6 +901,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                                 authSubscription.unsubscribe();
                             }
                             changeState(CLOSE);
+                            releaseWakeLock();
                         }));
     }
 
@@ -963,7 +965,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
 
     @SuppressLint("CheckResult")
     private void installWatchface() {
-        //TODO decrease display brightness before uploading watchface to minimize battery consumption
+        extendWakeLock(60 * Constants.SECOND_IN_MS);
         RxBleConnection connection = I.connection;
         if (d)
             UserError.Log.d(TAG, "Install WatchFace");
@@ -981,10 +983,18 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                 resetFirmwareState(false, "Empty image");
                 return;
             }
-            firmware = new FirmwareOperations(fwArray);
-            if (mibandType == MI_BAND5) {
-                firmware.setSequenceState(new SequenceStateMiBand5().setFirmwareOperations(firmware));
+            SequenceState sequenceState = null;
+            if (mibandType == MI_BAND4) {
+                sequenceState = new SequenceStateMiBand4();
             }
+            else if (mibandType == MI_BAND5) {
+                sequenceState = new SequenceStateMiBand5();
+            }
+            else {
+                resetFirmwareState(false, "Not supported band type");
+                return;
+            }
+            firmware = new FirmwareOperations(fwArray, sequenceState);
         } catch (Exception e) {
             resetFirmwareState(false, "FirmwareOperations error " + e.getMessage());
             return;
@@ -1001,7 +1011,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
         processFirmwareSequence();
     }
 
-    private void processFirmwareSequence() {
+    private synchronized void  processFirmwareSequence() {
         RxBleConnection connection = I.connection;
 
         String seq = firmware.getSequence();
@@ -1031,10 +1041,10 @@ public class MiBandService extends JamBaseBluetoothSequencer {
             }
 
             case SequenceState.PREPARE_UPLOAD: {
+                firmware.nextSequence();
                 connection.writeCharacteristic(firmware.getFirmwareCharacteristicUUID(), firmware.prepareFWUploadInitCommand())
                         .subscribe(valB -> {
                                     UserError.Log.d(TAG, "Wrote prepareFWUploadInitCommand: " + JoH.bytesToHex(valB));
-                                    firmware.nextSequence();
                                 },
                                 throwable -> {
                                     UserError.Log.e(TAG, "Could not write prepareFWUploadInitCommand: " + throwable);
@@ -1058,10 +1068,10 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                 break;
             }
             case SequenceState.TRANSFER_SEND_WF_INFO: {
+                firmware.nextSequence();
                 connection.writeCharacteristic(firmware.getFirmwareCharacteristicUUID(), firmware.getFwInfoCommand())
                         .subscribe(valB -> {
                                     UserError.Log.d(TAG, "Wrote getFwInfoCommand: " + JoH.bytesToHex(valB));
-                                    firmware.nextSequence();
                                 },
                                 throwable -> {
                                     UserError.Log.e(TAG, "Could not write firmware info: " + throwable);
@@ -1072,6 +1082,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
             }
 
             case SequenceStateMiBand5.UNKNOWN_REQUEST: {
+                firmware.nextSequence();
                 connection.writeCharacteristic(firmware.getFirmwareCharacteristicUUID(), firmware.getUnknownMiBand5Command())
                         .subscribe(valB -> {
                                     UserError.Log.d(TAG, "Wrote getUnknownMiBand5Command: " + JoH.bytesToHex(valB));
@@ -1100,7 +1111,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
             case SequenceState.NOTIFICATION_ENABLE: {
                 watchfaceSubscription = new Subscription(
                         connection.setupNotification(firmware.getFirmwareCharacteristicUUID())
-                                .timeout(400, TimeUnit.SECONDS) // WARN
+                                .timeout(60, TimeUnit.SECONDS) // WARN
                                 .doOnNext(notificationObservable -> {
                                             if (d)
                                                 UserError.Log.d(TAG, "Notification for firmware enabled");
@@ -1143,12 +1154,16 @@ public class MiBandService extends JamBaseBluetoothSequencer {
             return;
         }
         boolean success = value[2] == OperationCodes.SUCCESS;
-
+        String seq = firmware.getSequence();
         if (value[0] == OperationCodes.RESPONSE && success) {
             try {
                 switch (value[1]) {
                     case OperationCodes.COMMAND_FIRMWARE_INIT: {
-                        processFirmwareSequence();
+                        if (seq == SequenceState.WAITING_PREPARE_UPLOAD_RESPONSE ||
+                            seq == SequenceState.WAITING_TRANSFER_SEND_WF_INFO_RESPONSE ) {
+                            firmware.nextSequence();
+                            processFirmwareSequence();
+                        }
                         break;
                     }
                     case OperationCodes.COMMAND_FIRMWARE_START_DATA: {
@@ -1156,12 +1171,16 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                         break;
                     }
                     case OperationCodes.COMMAND_FIRMWARE_CHECKSUM: {
-                        firmware.nextSequence();
-                        if (firmware.getFirmwareType() == FirmwareOperations.FirmwareType.FIRMWARE) {
-                            //send reboot
-                        } else {
-                            UserError.Log.e(TAG, "Watch Face has been installed successfully");
-                            resetFirmwareState(true);
+                        if (seq == SequenceState.WAITING_SEND_CHECKSUM_RESPONSE) {
+                            firmware.nextSequence();
+                            if (firmware.getFirmwareType() == FirmwareOperations.FirmwareType.FIRMWARE) {
+                                //send reboot
+                            } else {
+                                UserError.Log.e(TAG, "Watch Face has been installed successfully");
+                                changeNextState();
+                                resetFirmwareState(true);
+                            }
+
                         }
                         break;
                     }
@@ -1171,8 +1190,10 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                         break;
                     }
                     case OperationCodes.COMMAND_FIRMWARE_UNKNOWN_MIBAND5: {
-                        firmware.nextSequence();
-                        processFirmwareSequence();
+                        if (seq == SequenceStateMiBand5.WAITING_UNKNOWN_REQUEST_RESPONCE) {
+                            firmware.nextSequence();
+                            processFirmwareSequence();
+                        }
                         break;
                     }
                     default: {
@@ -1225,16 +1246,11 @@ public class MiBandService extends JamBaseBluetoothSequencer {
         }
         UserError.Log.d(TAG, "resetFirmwareState result:" + result + ":" + finishText);
 
-        if (isNeedToRestoreNightMode) {
-            JoH.threadSleep(RESTORE_NIGHT_MODE_DELAY);
-            setNightMode();
-            // do nothing because something happen with connection while sending nightmode
-            if (I.state == CLOSED || I.state == CLOSE) return;
-        }
         if (result) {
             changeNextState();
             return;
         }
+        prevReadingStatusIsStale = false; //try to resend readings on the next bg update
         changeState(SLEEP);
     }
 
@@ -1293,22 +1309,22 @@ public class MiBandService extends JamBaseBluetoothSequencer {
             I.connection.writeCharacteristic(firmware.getFirmwareDataCharacteristicUUID(), fwChunk)
                     .subscribe(val -> {
                                 if (d)
-                                    UserError.Log.d(TAG, "Wrote fwChunk");
+                                    UserError.Log.d(TAG, "Wrote last fwChunk");
                             },
                             throwable -> {
                                 if (d)
-                                    UserError.Log.e(TAG, "Could not write fwChunk: " + throwable);
+                                    UserError.Log.e(TAG, "Could not write last fwChunk: " + throwable);
                                 resetFirmwareState(false);
                             }
                     );
         }
 
+        firmware.nextSequence();
         I.connection.writeCharacteristic(firmware.getFirmwareCharacteristicUUID(), firmware.getChecksumCommand())
                 .subscribe(val -> {
                             if (d)
                                 UserError.Log.d(TAG, "Wrote getChecksumCommand");
                             firmware.nextSequence();
-                            changeNextState();
                         },
                         throwable -> {
                             if (d)
@@ -1516,6 +1532,16 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                     break;
                 case MiBandState.INSTALL_WATCHFACE_FINISHED:
                     break;
+                case MiBandState.RESTORE_NIGHTMODE:
+                    if (isNeedToRestoreNightMode) {
+                        // do nothing because something happen with connection while sending nightmode
+                        extendWakeLock(RESTORE_NIGHT_MODE_DELAY + Constants.SECOND_IN_MS);
+                        JoH.threadSleep(RESTORE_NIGHT_MODE_DELAY);
+                        setNightMode();
+                        if (I.state == CLOSED || I.state == CLOSE) break;
+                    }
+                    changeNextState();
+                    break;
                 case MiBandState.VIBRATE_AFTER_READING:
                     if (MiBandEntry.isVibrateOnReadings() && !MiBandEntry.isNeedSendReadingAsNotification())
                         vibrateAlert(AlertLevelMessage.AlertLevelType.VibrateAlert);
@@ -1599,7 +1625,9 @@ public class MiBandService extends JamBaseBluetoothSequencer {
         static final String INSTALL_WATCHFACE = "Watchface installation";
         static final String INSTALL_WATCHFACE_IN_PROGRESS = "Watchface installation in progress";
         static final String INSTALL_WATCHFACE_FINISHED = "Watchface installation finished";
+        static final String RESTORE_NIGHTMODE = "RESTORE_NIGHTMODE";
         static final String VIBRATE_AFTER_READING = "Vibrate";
+        static final String SEND_ALARMS = "SEND_ALARMS";
 
         private static final String TAG = "MiBandStateSequence";
 
@@ -1628,6 +1656,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
             sequence.add(INSTALL_WATCHFACE);
             sequence.add(INSTALL_WATCHFACE_IN_PROGRESS);
             sequence.add(INSTALL_WATCHFACE_FINISHED);
+            sequence.add(RESTORE_NIGHTMODE);
             sequence.add(VIBRATE_AFTER_READING);
             prepareFinalSequences();
         }

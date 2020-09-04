@@ -28,6 +28,8 @@ public class FirmwareOperations {
     private int mMTU = GATT_MTU_MINIMUM;
     public static int FIRMWARE_SYNC_PACKET = 175;
 
+    protected SequenceState mState;
+
     public enum FirmwareType {
         FIRMWARE((byte) 0),
         FONT((byte) 1),
@@ -51,26 +53,15 @@ public class FirmwareOperations {
         }
     }
 
-    private String sequenceState = SequenceState.INIT;
+    public FirmwareOperations(byte[] file, SequenceState sequenceState) {
+        fw = file;
+        mState = sequenceState;
+    }
 
     public void setMTU(int mMTU) {
         this.mMTU = mMTU;
         if (this.mMTU > GATT_MTU_MAXIMUM) this.mMTU = GATT_MTU_MAXIMUM;
         if (this.mMTU < GATT_MTU_MINIMUM) this.mMTU = GATT_MTU_MINIMUM;
-    }
-
-
-    protected SequenceState mState;
-
-    public void nextSequence() {
-        String new_state = mState.next();
-        if (MiBandService.d)
-             UserError.Log.d(TAG, "Changing firmware state from: " + sequenceState + " to " + new_state);
-        sequenceState = new_state;
-    }
-
-    public String getSequence() {
-        return sequenceState;
     }
 
     public FirmwareType getFirmwareType() {
@@ -85,17 +76,15 @@ public class FirmwareOperations {
         return mMTU - GATT_WRITE_MTU_OVERHEAD;
     }
 
-    public FirmwareOperations(InputStream file) throws IOException {
-        fw = readAll(file, 1024 * 2048); // 2.0 MB
+    public String getSequence() {
+        return mState.getSequence();
     }
 
-    public FirmwareOperations(byte[] file) {
-        fw = file;
-        mState = new SequenceState().setFirmwareOperations(this);
-    }
-
-    public void setSequenceState(SequenceState mState) {
-        this.mState = mState;
+    public void nextSequence() {
+        String oldState = mState.getSequence();
+        String new_state = mState.next();
+        if (MiBandService.d)
+            UserError.Log.d(TAG, "Changing firmware state from: " + oldState + " to " + new_state);
     }
 
     public int getSize() {

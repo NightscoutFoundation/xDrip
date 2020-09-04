@@ -1280,6 +1280,9 @@
     <string name="title_miband_screen_timer">Show Timer</string>
     <string name="title_miband_screen_nfc">Show NFC(if available)</string>
 
+    <string name="summary_miband_send_alarms_other">Sends other alerts</string>
+    <string name="title_miband_send_alarms_other">Other Alerts</string>
+
     <string name="miband_watchface_istall_success">MiBand watchface has been uploaded successfully!</string>
     <string name="miband_watchface_istall_error">Error while uploading MiBand watchface</string>
     <string name="miband_bg_dialog_title">Update bg data now?</string>

@@ -47,19 +47,6 @@ public class BgMibandSparklineBuilder extends BgSparklineBuilder {
 
         Line[] treatments = bgGraphBuilder.treatmentValuesLine();
 
-        if (showTreatment) {
-            treatments[2].setStrokeWidth(1); //bolus line
-            treatments[2].setHasPoints(false);
-            lines.add(treatments[2]);
-
-            treatments[1].setFilled(false); //bolus dots
-            treatments[1].setHasLabels(false);
-            treatments[1].setPointRadius(2);
-            lines.add(treatments[1]);
-            //lines.add(treatments[3]); // activity
-            //  lines.add(treatments[6]); // cob
-        }
-
         lines.add(treatments[5]); // predictive
         treatments[7].setHasLines(true);
         treatments[7].setHasPoints(true);
@@ -79,6 +66,19 @@ public class BgMibandSparklineBuilder extends BgSparklineBuilder {
         if (useTinyDots) {
             for (Line line : lines)
                 line.setPointRadius(1);
+        }
+
+        if (showTreatment) {
+            treatments[2].setStrokeWidth(1); //bolus line
+            treatments[2].setHasPoints(false);
+            lines.add(treatments[2]);
+
+            treatments[1].setFilled(false); //bolus dots
+            treatments[1].setHasLabels(false);
+            treatments[1].setPointRadius(2);
+            lines.add(treatments[1]);
+            //lines.add(treatments[3]); // activity
+            //  lines.add(treatments[6]); // cob
         }
 
         LineChartData lineData = new LineChartData(lines);
