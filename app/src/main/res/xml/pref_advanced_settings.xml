@@ -584,12 +584,6 @@
             <SwitchPreference
                 android:defaultValue="true"
                 android:dependency="miband_send_readings"
-                android:key="miband_send_readings_as_notification"
-                android:summary="@string/summary_miband_send_readings_as_notification"
-                android:title="@string/title_miband_send_readings_as_notification" />
-            <SwitchPreference
-                android:defaultValue="true"
-                android:dependency="miband_send_readings"
                 android:key="miband_vibrate_on_readings"
                 android:title="@string/title_miband_vibrate_on_readings" />
             <SwitchPreference
@@ -598,12 +592,12 @@
                 android:key="miband_send_alarms"
                 android:summary="@string/summary_lefun_send_alarms"
                 android:title="@string/title_lefun_send_alarms" />
-            <CheckBoxPreference
+            <SwitchPreference
                 android:defaultValue="false"
                 android:dependency="miband_enabled"
-                android:key="miband_option_call_notifications"
-                android:summary="@string/summary_miband_send_calls"
-                android:title="@string/title_miband_send_calls" />
+                android:key="miband_send_alarms_other"
+                android:summary="@string/summary_miband_send_alarms_other"
+                android:title="@string/title_miband_send_alarms_other" />
             <PreferenceCategory
                 android:title="@string/title_miband_graph_category"
                 android:dependency="miband_enabled"

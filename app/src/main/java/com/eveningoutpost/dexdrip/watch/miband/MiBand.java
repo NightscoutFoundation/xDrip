@@ -83,12 +83,11 @@ public class MiBand {
     }
 
     // convert multi-line text to string for display constraints
-    public static void sendAlert(String title, String message, int defaultSnoozle) {
-        Inevitable.task("miband-send-alert-debounce", 100, () -> JoH.startService(MiBandService.class, "function", "message",
+    public static void sendAlert(String alertType, String message) {
+        Inevitable.task("miband-send-alert-debounce", 100, () -> JoH.startService(MiBandService.class, "function", "alarm",
                 "message", message,
-                "title", title,
-                "message_type", MIBAND_NOTIFY_TYPE_ALARM,
-                "default_snoozle", Integer.toString(defaultSnoozle)));
+                "title", alertType,
+                "message_type", MIBAND_NOTIFY_TYPE_ALARM));
     }
 
     public static String getMac() {

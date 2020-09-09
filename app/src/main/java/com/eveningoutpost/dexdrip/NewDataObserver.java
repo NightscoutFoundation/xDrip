@@ -105,8 +105,9 @@ public class NewDataObserver {
     }
 
     private static void sendToMiBand() {
+
         if (MiBandEntry.isEnabled()) {
-            Inevitable.task("poll-miband-for-bg", DexCollectionType.hasBluetooth() ? 2000 : 500, MiBandEntry::showLatestBG); // delay enough for BT to finish on collector
+            Inevitable.task("poll-miband-for-bg",  2000, MiBandEntry::showLatestBG); // delay enough for BT to finish on collector
         }
     }
 

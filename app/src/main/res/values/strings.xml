@@ -1257,12 +1257,7 @@
     <string name="title_miband_authkey">Auth Key</string>
     <string name="summary_miband_authkey">Set the auth key for MiBand (To get auth key, follow the instructions on https://www.freemyband.com/)</string>
     <string name="summary_miband_mac">Leave empty for auto search</string>
-    <string name="title_miband_send_readings_as_notification">BG readings as notification</string>
-    <string name="summary_miband_send_readings_as_notification">Will use a notifications to send BG readings. The date wouldn\'t be changed so all band features can be used.
-        Need to disable if you want to use xdrip watchface(It is required to delete official MiFit application to avoid date overrides)</string>
     <string name="title_miband_vibrate_on_readings">Vibrate on readings</string>
-    <string name="title_miband_send_calls">Send Calls</string>
-    <string name="summary_miband_send_calls">Send call notifications to the band (Android 6+)</string>
 
     <string name="title_miband_graph_category">Graph options</string>
     <string name="title_miband_graph_enable">Enable graph</string>
@@ -1281,11 +1276,12 @@
     <string name="title_miband_screen_nfc">Show NFC(if available)</string>
 
     <string name="summary_miband_send_alarms_other">Sends other alerts</string>
-    <string name="title_miband_send_alarms_other">Other Alerts</string>
+    <string name="title_miband_send_alarms_other">Other Alerts (covers all xdrip alarms, except glucose hight/low alarms)</string>
 
     <string name="miband_watchface_istall_success">MiBand watchface has been uploaded successfully!</string>
     <string name="miband_watchface_istall_error">Error while uploading MiBand watchface</string>
     <string name="miband_bg_dialog_title">Update bg data now?</string>
+    <string name="miband_alert_snooze_text">Alert %s snoozed for %d min until %s</string>
 
     <string name="title_lefun_band">Lefun Band</string>
     <string name="summary_lefun_enable">Sync Data with LeFun fitness bands</string>

@@ -23,11 +23,9 @@ public class MiBandEntry {
     public static final String PREF_MIBAND_MAC = "miband_data_mac";
     public static final String PREF_MIBAND_AUTH_KEY = "miband_data_authkey";
     public static final String PREF_MIBAND_SEND_READINGS = "miband_send_readings";
-    public static final String PREF_MIBAND_SEND_READINGS_AS_NOTIFICATION = "miband_send_readings_as_notification";
     public static final String PREF_VIBRATE_ON_READINGS = "miband_vibrate_on_readings";
     public static final String PREF_SEND_ALARMS = "miband_send_alarms";
     public static final String PREF_SEND_ALARMS_OTHER = "miband_send_alarms_other";
-    public static final String PREF_CALL_ALERTS = "miband_option_call_notifications";
     public static final String PREF_MIBAND_SETTINGS = "miband_settings";
     public static final String PREF_MIBAND_PREFERENCES = "miband_preferences";
     public static final String PREF_MIBAND_UPDATE_BG = "update_miband_bg";
@@ -67,12 +65,7 @@ public class MiBandEntry {
     }
 
     public static boolean isNeedSendReadingAsNotification() {
-        if (isEnabled() && MiBand.getMibandType() == MI_BAND2) return true;
-        return isEnabled() && Pref.getBooleanDefaultFalse(PREF_MIBAND_SEND_READINGS_AS_NOTIFICATION);
-    }
-
-    public static boolean areCallAlertsEnabled() {
-        return isEnabled() && Pref.getBooleanDefaultFalse(PREF_CALL_ALERTS);
+        return !MiBand.isMiband4_or_5( MiBand.getMibandType());
     }
 
     public static boolean isNightModeEnabled() {

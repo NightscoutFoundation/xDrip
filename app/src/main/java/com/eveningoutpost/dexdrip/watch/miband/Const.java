@@ -170,4 +170,6 @@ public class Const {
     public static final String MIBAND_NOTIFY_TYPE_CALL = "NOTIFY_TYPE_CALL";
     public static final String MIBAND_NOTIFY_TYPE_MESSAGE = "NOTIFY_TYPE_MESSAGE";
     public static final String MIBAND_NOTIFY_TYPE_ALARM = "NOTIFY_TYPE_ALARM";
+
+    public static final String BG_ALERT_TYPE = "BG_ALERT_TYPE";
 }

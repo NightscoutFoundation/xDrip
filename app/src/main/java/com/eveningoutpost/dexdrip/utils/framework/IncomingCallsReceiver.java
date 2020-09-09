@@ -80,15 +80,6 @@ public class IncomingCallsReceiver extends BroadcastReceiver {
                     LeFun.sendAlert(true, caller);
                 }
             }
-            // MiBand
-            if (JoH.quietratelimit("miband-call-debounce", 10)) {
-                if (MiBandEntry.areCallAlertsEnabled()) {
-                    // TODO extract to generic notifier
-                    final String caller = number != null ? "Incoming Call " + getContactDisplayNameByNumber(number) + " " + bestPhoneNumberFormatter(number) + " " : "CALL";
-                    UserError.Log.d(TAG, "Sending call alert: " + caller);
-                    MiBand.sendCall(MIBAND_NOTIFY_TYPE_CALL, caller);
-                }
-            }
 
             // BlueJay
             if (JoH.quietratelimit("bluejay-call-debounce" + number, 10)) {

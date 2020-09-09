@@ -975,7 +975,6 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 miband2_screen = findPreference("miband2_screen");
                 miband3_4_screen = findPreference("miband3_4_screen");
                 miband_graph_category = findPreference("miband_graph_category");
-                miband_send_readings_as_notification = findPreference(MiBandEntry.PREF_MIBAND_SEND_READINGS_AS_NOTIFICATION);
                 miband_authkey = findPreference(MiBandEntry.PREF_MIBAND_AUTH_KEY);
                 miband_nightmode_category = findPreference("miband_nightmode_category");
                 miband_nightmode_interval = findPreference(MiBandEntry.PREF_MIBAND_NIGHTMODE_INTERVAL);
@@ -985,11 +984,6 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                         PreferenceManager
                                 .getDefaultSharedPreferences(miband_nightmode_interval.getContext())
                                 .getInt(miband_nightmode_interval.getKey(), -1));
-
-                findPreference(MiBandEntry.PREF_CALL_ALERTS).setOnPreferenceChangeListener((preference, newValue) -> {
-                    IncomingCallsReceiver.checkPermission(this.getActivity());
-                    return true;
-                });
 
                 findPreference(MiBandEntry.PREF_MIBAND_ENABLED).setOnPreferenceChangeListener((preference, newValue) -> {
                     if ((Boolean) newValue) {
@@ -2247,14 +2241,12 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 settings.removePreference(miband3_4_screen);
                 settings.removePreference(miband_nightmode_category);
                 prefs.removePreference(miband_graph_category);
-                prefs.removePreference(miband_send_readings_as_notification);
                 prefs.removePreference(miband_authkey);
 
                 if (MiBand.isMiband4_or_5(type)) {
                     settings.addPreference(miband3_4_screen);
                     settings.addPreference(miband_nightmode_category);
                     prefs.addPreference(miband_graph_category);
-                    prefs.addPreference(miband_send_readings_as_notification);
                     prefs.addPreference(miband_authkey);
                 } else if (type == MiBand.MiBandType.MI_BAND2) {
                     settings.addPreference(miband2_screen);
