@@ -115,6 +115,7 @@ public class SensorSanity {
 
     // returns true in the case of an error (had to stop the sensor)
     public synchronized static boolean checkLibreSensorChange(final String currentSerial) {
+        Log.i(TAG, "checkLibreSensorChange called currentSerial = " + currentSerial);
         if ((currentSerial == null) || currentSerial.length() < 4) return false;
         final Sensor this_sensor = Sensor.currentSensor();
         if(this_sensor == null || this_sensor.uuid == null|| this_sensor.uuid.length() < 4) {
@@ -125,6 +126,7 @@ public class SensorSanity {
         }
         final String lastSn = PersistentStore.getString(PREF_LIBRE_SN);
         final String last_uuid = PersistentStore.getString(PREF_LIBRE_SENSOR_UUID);
+        Log.i(TAG, "checkLibreSensorChange Initial values: lastSn = " + lastSn + " last_uuid = " + last_uuid);
         if(lastSn.length() < 4 || last_uuid.length() < 4) {
             Log.i(TAG, "lastSn or last_uuid not valid, writing current values.");
             PersistentStore.setString(PREF_LIBRE_SENSOR_UUID, this_sensor.uuid);
@@ -135,6 +137,7 @@ public class SensorSanity {
         if(lastSn.equals(currentSerial)) {
             if(this_sensor.uuid.equals(last_uuid)) {
                 // all well
+                Log.i(TAG, "checkLibreSensorChange returning false 1");
                 return false;
             } else {
                 // This is the case that the user had a sensor, but he stopped it and started a new one in xDrip.
@@ -158,9 +161,10 @@ public class SensorSanity {
                 return true;
 
             } else {
-                // This is the first time we see this sensor, update our uuid.
+                // This is the first time we see this sensor, update our uuid and current serial.
                 Log.i(TAG, "This is the first time we see this sensor uuid = " +  this_sensor.uuid);
                 PersistentStore.setString(PREF_LIBRE_SENSOR_UUID, this_sensor.uuid);
+                PersistentStore.setString(PREF_LIBRE_SN, currentSerial);
                 return false;
             }
         }
