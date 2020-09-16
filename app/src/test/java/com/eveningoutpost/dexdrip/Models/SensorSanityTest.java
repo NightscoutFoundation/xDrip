@@ -140,5 +140,14 @@ public class SensorSanityTest extends RobolectricTestWithConfig {
         SensorSanity.checkLibreSensorChange("SN333");
         this_sensor = Sensor.currentSensor();
         assertWithMessage("Expecting this_sensor not to be null without serial change").that(this_sensor).isNotNull();
+
+        // A clasic sensor replacement:
+        // Stop the sensor. Start a new one. call checkLibreSensorChange with the new sensor_sn twice. Sensor should be alive.
+        Sensor.stopSensor();
+        Sensor.create(JoH.tsl());
+        SensorSanity.checkLibreSensorChange("SN444");
+        SensorSanity.checkLibreSensorChange("SN444");
+        this_sensor = Sensor.currentSensor();
+        assertWithMessage("Expecting this_sensor not to be null without serial change").that(this_sensor).isNotNull();
     }
 }
