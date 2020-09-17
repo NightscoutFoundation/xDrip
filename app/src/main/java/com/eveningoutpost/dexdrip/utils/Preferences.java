@@ -1142,7 +1142,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     return true;
             });
 
-            final Preference nsfollowDownloadTreatment = findPreference("nsfollow_download_treatments");
+            final Preference nsFollowDownloadTreatment = findPreference("nsfollow_download_treatments");
             final Preference nsFollowDownloadTreatmentXDrip = findPreference("nsfollow_download_treatments_even_xdrip");
             final Preference nsFollowUrl = findPreference("nsfollow_url");
             try {
@@ -1504,7 +1504,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             if (collectionType != DexCollectionType.NSFollow) {
                 try {
                     collectionCategory.removePreference(nsFollowUrl);
-                    collectionCategory.removePreference(nsfollowDownloadTreatment);
+                    collectionCategory.removePreference(nsFollowDownloadTreatment);
                     collectionCategory.removePreference(nsFollowDownloadTreatmentXDrip);
                 } catch (Exception e) {
                     //
@@ -2131,7 +2131,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
 
                     if (collectionType == DexCollectionType.NSFollow) {
                         collectionCategory.addPreference(nsFollowUrl);
-                        collectionCategory.addPreference(nsfollowDownloadTreatment);
+                        collectionCategory.addPreference(nsFollowDownloadTreatment);
                         collectionCategory.addPreference(nsFollowDownloadTreatmentXDrip);
                     }
 
