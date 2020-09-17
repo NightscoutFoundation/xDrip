@@ -236,6 +236,10 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
     }
     
     private void handleOop2DecryptFarmResult(Bundle bundle) {
+        if(Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
+            Log.e(TAG, "External OOP algorithm is on, ignoring decrypted data.");
+            return;
+        }
         JSONObject json_object = extractParams(bundle);
         if(json_object == null) {
             return;

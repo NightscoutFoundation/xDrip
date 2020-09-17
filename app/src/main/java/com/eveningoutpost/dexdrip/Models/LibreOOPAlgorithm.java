@@ -24,7 +24,7 @@ import static com.eveningoutpost.dexdrip.xdrip.gs;
 public class LibreOOPAlgorithm {
     private static final String TAG = "LibreOOPAlgorithm";
     
-    enum SensorType
+    public enum SensorType
     {
         Libre1(0),
         Libre1New(1),
@@ -165,7 +165,7 @@ public class LibreOOPAlgorithm {
         
     }
     
-    static SensorType getSensorType(byte []SensorInfo) {
+    public static SensorType getSensorType(byte []SensorInfo) {
         int SensorNum = (SensorInfo[0] & 0xff) << 16 | (SensorInfo[1] & 0xff) << 8 | SensorInfo[2];
         switch (SensorNum) {
             case 0xdf0000: return SensorType.Libre1;
