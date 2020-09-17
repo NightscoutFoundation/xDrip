@@ -1142,8 +1142,8 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     return true;
             });
 
-            final Preference nsfollowDownloadTreatments = findPreference("nsfollow_download_treatments");
-            final Preference nsFollowDownloadTreatmentsXDrip = findPreference("nsfollow_download_treatments_even_xdrip");
+            final Preference nsfollowDownloadTreatment = findPreference("nsfollow_download_treatments");
+            final Preference nsFollowDownloadTreatmentXDrip = findPreference("nsfollow_download_treatments_even_xdrip");
             final Preference nsFollowUrl = findPreference("nsfollow_url");
             try {
                 nsFollowUrl.setOnPreferenceChangeListener((preference, newValue) -> {
@@ -1504,8 +1504,8 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             if (collectionType != DexCollectionType.NSFollow) {
                 try {
                     collectionCategory.removePreference(nsFollowUrl);
-                    collectionCategory.removePreference(nsfollowDownloadTreatments);
-                    collectionCategory.removePreference(nsFollowDownloadTreatmentsXDrip);
+                    collectionCategory.removePreference(nsfollowDownloadTreatment);
+                    collectionCategory.removePreference(nsFollowDownloadTreatmentXDrip);
                 } catch (Exception e) {
                     //
                 }
@@ -2131,8 +2131,8 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
 
                     if (collectionType == DexCollectionType.NSFollow) {
                         collectionCategory.addPreference(nsFollowUrl);
-                        collectionCategory.addPreference(nsfollowDownloadTreatments);
-                        collectionCategory.addPreference(nsFollowDownloadTreatmentsXDrip);
+                        collectionCategory.addPreference(nsfollowDownloadTreatment);
+                        collectionCategory.addPreference(nsFollowDownloadTreatmentXDrip);
                     }
 
 
