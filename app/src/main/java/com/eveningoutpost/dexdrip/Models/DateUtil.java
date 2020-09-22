@@ -6,6 +6,9 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.ISODateTimeFormat;
+
 // from package info.nightscout.client.utils;
 
 /**
@@ -37,11 +40,23 @@ public class DateUtil {
         return f.parse(isoDateString);
     }
 
+    
+    private static Date fromISODateString4(String isoDateString)
+            throws Exception {
+        DateTime dt = ISODateTimeFormat.dateTime().parseDateTime(isoDateString);
+        return dt.toDate();
+    }
+    
     private static Date fromISODateString3(String isoDateString)
             throws Exception {
-        SimpleDateFormat f = new SimpleDateFormat(FORMAT_DATE_ISO3);
-        f.setTimeZone(TimeZone.getTimeZone("UTC"));
-        return f.parse(isoDateString);
+        try {
+            SimpleDateFormat f = new SimpleDateFormat(FORMAT_DATE_ISO3);
+            f.setTimeZone(TimeZone.getTimeZone("UTC"));
+            return f.parse(isoDateString);
+        } catch (java.text.ParseException e) {
+            return fromISODateString4(isoDateString);
+        }
+        
     }
 
     private static Date fromISODateString2(String isoDateString)
