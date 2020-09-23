@@ -163,7 +163,11 @@
     <string name="checking_for_update">Проверка наличия обновлений...</string>
     <string name="signal_missed">Пропущенный сигнал</string>
     <string name="minutes_ago">{0, choice,0#{0, number, integer} мин. назад|1#{0, number, integer} мин. назад|1&lt;{0, number, integer} мин. назад}</string>
+    <string name="expires_days">{0, choice,0#Сенсор истек!|1#Истекает через {0, number} день|1&lt;Истекает через {0, number} дней}</string>
+    <string name="expires_at">Истекает {0}</string>
     <string name="space_minutes_ago">" мин. назад"</string>
+    <string name="in_libre_all_house_mode_no_readings_collected_yet">"В режиме Libre по всему дому: еще нет данных."</string>
+    <string name="in_libre_all_house_mode_last_data_collected">"В режиме Libre по всему дому: Последние данные "</string>
     <string name="space_minute_ago">" мин. назад"</string>
     <string name="show_parakeet_map">Показать карту Parakeet</string>
     <string name="switch_parakeet_to_setup_mode">Переключить Parakeet в режим настройки</string>
@@ -1340,6 +1344,8 @@
     <string name="title_plus_accept_follower_actions">Принимать изменения фолловеров</string>
     <string name="summary_plus_whole_house">Учавствовать в сети всего дома</string>
     <string name="title_plus_whole_house">По всему дому</string>
+    <string name="summary_libre_whole_house_collector">Это устройство будет коллектором в сети всего дома</string>
+    <string name="title_libre_whole_house_collector">Libre по всему дому</string>
     <string name="summary_xdrip_plus_desert_sync_settings">Прямая синхронизация между членами группы без использования интернета, только в зоне прямого WiFi подключения устройств</string>
     <string name="title_xdrip_plus_desert_sync_settings">Синхронизация без интернета</string>
     <string name="summary_desert_sync_enabled">Включить прямую синхронизацию без использования подключения интернет</string>
