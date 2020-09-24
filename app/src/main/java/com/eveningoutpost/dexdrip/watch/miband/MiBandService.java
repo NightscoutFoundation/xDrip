@@ -221,6 +221,9 @@ public class MiBandService extends JamBaseBluetoothSequencer {
         if (!result && I.state.equals(MiBandState.AUTHORIZE_FAILED) && MiBand.isMiband4_or_5(MiBand.getMibandType())) {
             return true;
         }
+        if ( I.state.equals(MiBandState.QUEUE_MESSAGE) && I.isConnected == false){
+            return true;
+        }
         if (!result)
             UserError.Log.d(TAG, "readyToProcessCommand not ready because state :" + I.state.toString());
         return result;
@@ -300,22 +303,18 @@ public class MiBandService extends JamBaseBluetoothSequencer {
             case "refresh":
                 whenToRetryNextBgTimer(); //recalculate isNightMode
                 ((MiBandState) mState).setSettingsSequence();
-                changeState(INIT);
                 break;
             case "message":
                 ((MiBandState) mState).setQueueSequence();
-                changeState(INIT);
                 break;
             case "alarm":
                 ((MiBandState) mState).setAlarmSequence();
-                changeState(INIT);
                 break;
             case "after_alarm":
                 if (!I.state.equals(MiBandState.WAITING_USER_RESPONSE)) break;
                 startBgTimer();
                 vibrateAlert(AlertLevelMessage.AlertLevelType.NoAlert); //disable call
                 ((MiBandState) mState).setQueueSequence();
-                changeState(INIT);
                 break;
             case "update_bg":
                 if (isNightMode) {
@@ -332,18 +331,17 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                 prevReadingStatusIsStale = curReadingStatusIsStale;
                 startBgTimer();
                 ((MiBandState) mState).setSendReadingSequence();
-                changeState(INIT);
                 break;
             case "update_bg_force":
                 startBgTimer();
                 ((MiBandState) mState).setSendReadingSequence();
-                changeState(INIT);
                 break;
             case "update_bg_as_notification":
                 ((MiBandState) mState).setSendReadingSequence();
-                changeState(INIT);
                 break;
         }
+
+        changeState(INIT);
     }
 
     private boolean isStaleReading() {
@@ -1266,10 +1264,13 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                 finishText = xdrip.getAppContext().getResources().getString(R.string.miband_watchface_istall_success);
         }
         UserError.Log.d(TAG, "resetFirmwareState result:" + result + ":" + finishText);
-        changeState(MiBandState.RESTORE_NIGHTMODE);
+
         if (!result) {
             prevReadingStatusIsStale = false; //try to resend readings on the next bg update
         }
+
+        if (I.state.equals(CLOSED) || I.state.equals(CLOSE) || I.isConnected == false) return;
+        changeState(MiBandState.RESTORE_NIGHTMODE);
     }
 
     @RequiresApi(26)
@@ -1552,7 +1553,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                         extendWakeLock(RESTORE_NIGHT_MODE_DELAY + Constants.SECOND_IN_MS);
                         JoH.threadSleep(RESTORE_NIGHT_MODE_DELAY);
                         setNightMode();
-                        if (I.state == CLOSED || I.state == CLOSE) break;
+                        if (I.state.equals(CLOSED) || I.state.equals(CLOSE) || I.isConnected == false) break;
                     }
                     changeNextState();
                     break;

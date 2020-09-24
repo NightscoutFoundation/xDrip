@@ -925,7 +925,7 @@ public abstract class JamBaseBluetoothSequencer extends JamBaseBluetoothService 
             UserError.Log.e(TAG, "Write characteristic not set in queue write");
             return;
         }
-       // UserError.Log.d(TAG, "Writing to characteristic: " + item.queueWriteCharacterstic + " " + item.description);
+        UserError.Log.d(TAG, "Writing to characteristic: " + item.queueWriteCharacterstic + " " + item.description);
         I.connection.writeCharacteristic(item.queueWriteCharacterstic, item.getData())
                 .timeout(item.timeoutSeconds, TimeUnit.SECONDS)
                 .subscribe(Value -> {
