@@ -902,7 +902,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                             ProcessAuthCommands(connection, bytes);
                             // changeNextState();
                         }, throwable -> {
-                            UserError.Log.d(TAG, "Throwable in Record Notification: " + throwable);
+                            UserError.Log.d(TAG, "Throwable in authSubscription Notification: " + throwable);
                             if (throwable instanceof BleCharacteristicNotFoundException) {
                                 // maybe legacy - ignore for now but needs better handling
                                 UserError.Log.d(TAG, "Characteristic not found for notification");
@@ -1145,7 +1145,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                                         UserError.Log.d(TAG, "Received firmware notification bytes: " + bytesToHex(bytes));
                                     processFirmwareNotifications(bytes);
                                 }, throwable -> {
-                                    UserError.Log.d(TAG, "Throwable in firmware Notification: " + throwable);
+                                    UserError.Log.d(TAG, "Throwable in firmware notification: " + throwable);
                                     if (throwable instanceof BleCharacteristicNotFoundException) {
                                         // maybe legacy - ignore for now but needs better handling
                                         UserError.Log.d(TAG, "Characteristic not found for notification");
@@ -1427,7 +1427,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                                 UserError.Log.d(TAG, "Received device notification bytes: " + bytesToHex(bytes));
                             handleDeviceEvent(bytes);
                         }, throwable -> {
-                            UserError.Log.d(TAG, "Throwable in Record Notification: " + throwable);
+                            UserError.Log.d(TAG, "Throwable in notifSubscriptionDeviceEvent notification: " + throwable);
                             I.isNotificationEnabled = false;
                             if (throwable instanceof BleCharacteristicNotFoundException) {
                                 // maybe legacy - ignore for now but needs better handling
@@ -1469,7 +1469,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                         }, throwable -> {
                             notifSubscriptionHeartRateMeasurement.unsubscribe();
                             notifSubscriptionHeartRateMeasurement = null;
-                            UserError.Log.d(TAG, "HR Throwable in Record Notification: " + throwable);
+                            UserError.Log.d(TAG, "Throwable in HR notification: " + throwable);
                             if (throwable instanceof BleCharacteristicNotFoundException) {
                                 UserError.Log.d(TAG, "HR Characteristic not found for notification");
                             } else {
