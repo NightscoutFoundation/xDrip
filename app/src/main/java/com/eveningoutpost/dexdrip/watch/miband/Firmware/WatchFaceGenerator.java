@@ -45,7 +45,7 @@ import static com.eveningoutpost.dexdrip.utils.FileUtils.makeSureDirectoryExists
 
 public class WatchFaceGenerator {
     private static final boolean d = false;
-    private static final boolean debug = true; //need only for debug to save resulting image and firmware
+    private static final boolean debug = false; //need only for debug to save resulting image and firmware
     private static final String TAG = WatchFaceGenerator.class.getSimpleName();
 
     private InputStream fwFileStream;
@@ -212,6 +212,7 @@ public class WatchFaceGenerator {
                                 .showHighLine()
                                 .showLowLine();
                         bgGraph.showTreatmentLine(data.isShowTreatment());
+                        bgGraph.setPointSize(1);
                         graphImage = bgGraph.build();
                     } catch (Exception e) {
                     } finally {
