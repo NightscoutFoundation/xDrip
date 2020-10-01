@@ -38,6 +38,8 @@ import java.util.Locale;
 
 import io.fabric.sdk.android.Fabric;
 
+import net.danlew.android.joda.JodaTimeAndroid;;
+
 //import com.bugfender.sdk.Bugfender;
 
 /**
@@ -61,6 +63,7 @@ public class xdrip extends MultiDexApplication {
     public void onCreate() {
         xdrip.context = getApplicationContext();
         super.onCreate();
+        JodaTimeAndroid.init(this);
         try {
             if (PreferenceManager.getDefaultSharedPreferences(xdrip.context).getBoolean("enable_crashlytics", true)) {
                 initCrashlytics(this);
