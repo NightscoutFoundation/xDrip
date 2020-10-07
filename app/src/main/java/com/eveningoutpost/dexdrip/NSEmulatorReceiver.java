@@ -200,6 +200,16 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
                                 handleOop2DecryptFarmResult(bundle);
                                 break;
                                 
+                            case Intents.XDRIP_DECRYPT_BLE_RESULT:
+                                Log.e(TAG, "recieved message DECRYPT_BLE_RESULT");
+                                handleOop2DecryptBleResult(bundle);
+                                break;
+                                
+                            case Intents.XDRIP_STREAMING_UNLOCK_RESULT:
+                                Log.e(TAG, "recieved message OOP2_STREAMING_UNLOCK_RESULT");
+                                handleOop2StreamingUnlockResult(bundle);
+                                break;
+
                             default:
                                 Log.e(TAG, "Unknown action! " + action);
                                 break;
@@ -270,6 +280,70 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
         byte []patchInfo = Base64.decode(patchInfoString, Base64.NO_WRAP);
         LibreOOPAlgorithm.handleOop2DecryptFarmResult(tagId, CaptureDateTime, farm_data, patchUid, patchInfo);
     }
+    
+    private void handleOop2DecryptBleResult(Bundle bundle) {
+        if(Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
+            Log.e(TAG, "External OOP algorithm is on, ignoring ble decrypted data.");
+            return;
+        }
+        JSONObject json_object = extractParams(bundle);
+        if(json_object == null) {
+            return;
+        }
+        String decrypted_buffer;
+        String patchUidString;
+        long CaptureDateTime;
+        try {
+            decrypted_buffer = json_object.getString(Intents.DECRYPTED_BUFFER);
+            patchUidString = json_object.getString(Intents.PATCH_UID);
+            CaptureDateTime = json_object.getLong(Intents.LIBRE_DATA_TIMESTAMP);
+        } catch (JSONException e) {
+            Log.e(TAG, "Error JSONException ", e);
+            return;
+        }
+        if(decrypted_buffer == null) {
+            Log.e(TAG, "Error could not get decrypted_buffer");
+            return;
+        }
+        
+        // Does this throws exception???
+        byte[] ble_data = Base64.decode(decrypted_buffer, Base64.NO_WRAP);
+        byte []patchUid = Base64.decode(patchUidString, Base64.NO_WRAP);
+        LibreAlarmReceiver.HandleBleData(CaptureDateTime, ble_data);
+    }
+    
+    private void handleOop2StreamingUnlockResult(Bundle bundle) {
+        if(Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
+            Log.e(TAG, "External OOP algorithm is on, ignoring ble decrypted data.");
+            return;
+        }
+        JSONObject json_object = extractParams(bundle);
+        if(json_object == null) {
+            return;
+        }
+        String btUunlockBufferString;
+        String nfcUnlockBufferString;
+        String patchUidString;
+        String patchInfoString;
+        
+        try {
+            btUunlockBufferString = json_object.getString(Intents.BT_UNLOCK_BUFFER);
+            nfcUnlockBufferString = json_object.getString(Intents.NFC_UNLOCK_BUFFER);
+            patchUidString = json_object.getString(Intents.PATCH_UID);
+            patchInfoString = json_object.getString(Intents.PATCH_INFO);
+        } catch (JSONException e) {
+            Log.e(TAG, "Error JSONException ", e);
+            return;
+        }
+
+        // Does this throws exception???
+        byte[] bt_unlock_buffer = Base64.decode(btUunlockBufferString, Base64.NO_WRAP);
+        byte[] nfc_unlock_buffer = Base64.decode(nfcUnlockBufferString, Base64.NO_WRAP);
+        byte []patchUid = Base64.decode(patchUidString, Base64.NO_WRAP);
+        byte []patchInfo = Base64.decode(patchInfoString, Base64.NO_WRAP);
+        LibreOOPAlgorithm.handleOop2StreamingUnlockResult(bt_unlock_buffer, nfc_unlock_buffer, patchUid, patchInfo);
+    }
+
 
     public static BgReading bgReadingInsertFromData(long timestamp, double sgv, double slope, boolean do_notification) {
         Log.d(TAG, "bgReadingInsertFromData called timestamp = " + timestamp + " bg = " + sgv + " time =" + JoH.dateTimeText(timestamp));

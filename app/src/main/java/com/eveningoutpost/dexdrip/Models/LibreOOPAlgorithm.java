@@ -14,12 +14,24 @@ import com.eveningoutpost.dexdrip.UtilityModels.Intents;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.xdrip;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.util.ArrayList;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
+
+class UnlockBuffers {
+    UnlockBuffers(byte [] btUnlockBuffer,  byte [] nfcUnlockBuffer) {
+        this.btUnlockBuffer = btUnlockBuffer;
+        this.nfcUnlockBuffer = nfcUnlockBuffer;
+    }
+    public byte [] btUnlockBuffer;
+    public byte [] nfcUnlockBuffer;
+}
+
 
 public class LibreOOPAlgorithm {
     private static final String TAG = "LibreOOPAlgorithm";
@@ -94,6 +106,78 @@ public class LibreOOPAlgorithm {
         lastSentData = JoH.tsl();
     }
     
+    static public void SendBleData(byte[] fullData, long timestamp, byte []patchUid) {
+        if(fullData == null) {
+            Log.e(TAG, "SendData called with null data");
+            return;
+        }
+        
+        if(fullData.length != 46) {
+            Log.e(TAG, "SendData called with wrong data size " + fullData.length);
+            return;
+        }
+        Log.i(TAG, "Sending full data to OOP Algorithm data-len = " + fullData.length);
+
+        Bundle bundle = new Bundle();
+        bundle.putByteArray(Intents.LIBRE_DATA_BUFFER, fullData);
+        bundle.putLong(Intents.LIBRE_DATA_TIMESTAMP, timestamp);
+        bundle.putInt(Intents.LIBRE_RAW_ID, android.os.Process.myPid());
+        bundle.putByteArray(Intents.LIBRE_PATCH_UID_BUFFER, patchUid);
+        
+        SendIntent(Intents.XDRIP_PLUS_LIBRE_BLE_DATA, bundle);
+    }
+
+    // A mechanism to wait for the unlock buffer to return:
+
+
+    
+    
+    static UnlockBuffers WaitForUnlockPayload() {
+        UnlockBuffers ret;
+        UnlockBlockingQueue.clear();
+        try {
+            ret = UnlockBlockingQueue.poll(2, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            Log.e(TAG, "Interuptted exception", e);
+            return null;
+        }
+        Log.e(TAG, "WaitForUnlockPayload (SendgetStreamingUnlockPayload) payload is " + JoH.bytesToHex(ret.btUnlockBuffer) + " "+  JoH.bytesToHex(ret.nfcUnlockBuffer));
+        return ret;
+        
+    }
+    
+    
+    static public  UnlockBuffers SendgetStreamingUnlockPayload(boolean increaseUnlockCount) {
+        
+        Libre2SensorData currentSensorData = Libre2SensorData.getSensorData(increaseUnlockCount);
+        if(currentSensorData == null) {
+            Log.e(TAG, "SendgetStreamingUnlockPayload currentSensorData == null");
+            return null;
+        }
+        Log.e(TAG, "SendgetStreamingUnlockPayload called enableTime_ = " + currentSensorData.enableTime_ +
+                " unlockCount_ " + currentSensorData.unlockCount_ + 
+                 " patchUid " + JoH.bytesToHex(currentSensorData.patchUid_) +
+                 " patchInfo " + JoH.bytesToHex(currentSensorData.patchInfo_) +
+                " increaseUnlockCount " + increaseUnlockCount);
+        
+        Bundle bundle = new Bundle();
+        bundle.putInt(Intents.LIBRE_RAW_ID, android.os.Process.myPid());
+        bundle.putByteArray(Intents.LIBRE_PATCH_UID_BUFFER, currentSensorData.patchUid_);
+        bundle.putByteArray(Intents.LIBRE_PATCH_INFO_BUFFER, currentSensorData.patchInfo_);
+        bundle.putInt(Intents.ENABLE_TIME, currentSensorData.enableTime_);
+        bundle.putInt(Intents.UNLOCK_COUNT, currentSensorData.unlockCount_);
+        SendIntent(Intents.XDRIP_PLUS_STREAMING_UNLOCK, bundle);
+        return WaitForUnlockPayload();
+    }
+    
+    static public  byte[] NfcSendgetStreamingUnlockPayload() {
+        UnlockBuffers unlockBuffers = SendgetStreamingUnlockPayload(false);
+        if(unlockBuffers == null) {
+            Log.e(TAG, "NfcSendgetStreamingUnlockPayload returning null");
+            return null;
+        }
+        return unlockBuffers.nfcUnlockBuffer;
+    }
     
     static public void HandleData(String oopData) {
         Log.e(TAG, "HandleData called with " + oopData);
@@ -177,6 +261,22 @@ public class LibreOOPAlgorithm {
         Log.e(TAG, "Sensor type unknown, returning libre1 as failsafe");
         return SensorType.Libre1;
     }
+
+    public static int readBits(byte []buffer, int byteOffset,int  bitOffset, int  bitCount) {
+        if (bitCount == 0) {
+            return 0;
+        }
+        int res = 0;
+        for (int i = 0; i < bitCount; i++) {
+            final int totalBitOffset = byteOffset * 8 + bitOffset + i;
+            final int byte1 = (int)Math.floor(totalBitOffset / 8);
+            final int bit = totalBitOffset % 8;
+            if (totalBitOffset >= 0 && ((buffer[byte1] >> bit) & 0x1) == 1) {
+                res = res | (1 << i);
+            }
+        }
+        return res;
+    }
     
     // Functions that are used for an external decoder.
     static public boolean IsDecriptableData(byte []patchInfo) {
@@ -187,11 +287,26 @@ public class LibreOOPAlgorithm {
     // Two variables that are used to see if oop2 is installed.
     static long lastRecievedData = 0;
     static long lastSentData = 0;
+    static ArrayBlockingQueue<UnlockBuffers> UnlockBlockingQueue = new ArrayBlockingQueue<UnlockBuffers>(1);
     
     static public void handleOop2DecryptFarmResult(String tagId, long CaptureDateTime, byte[] buffer, byte []patchUid,  byte []patchInfo ) {
         lastRecievedData = JoH.tsl();
         Log.e(TAG, "handleOop2PingResult - data" + JoH.bytesToHex(buffer));
         NFCReaderX.HandleGoodReading(tagId, buffer, CaptureDateTime, false , patchUid, patchInfo, true );
+    }
+    
+    
+    static public void  handleOop2StreamingUnlockResult(byte[] bt_unlock_buffer, byte[] nfc_unlock_buffer, byte[] patchUid, byte[] patchInfo) {
+        lastRecievedData = JoH.tsl();
+        Log.e(TAG, "handleOop2StreamingUnlockResult - data bt_unlock_buffer " + JoH.bytesToHex(bt_unlock_buffer) + "\n nfc_unlock_buffer "+ JoH.bytesToHex(nfc_unlock_buffer));
+        UnlockBlockingQueue.clear();
+        try {
+            UnlockBlockingQueue.add(new UnlockBuffers(bt_unlock_buffer, nfc_unlock_buffer));
+        } catch (IllegalStateException  is) {
+            Log.e(TAG, "Queue is full", is);
+
+        }
+        
     }
     
     static public void LogIfOOP2NotAlive() {

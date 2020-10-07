@@ -47,6 +47,7 @@ import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Bubble;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.LibreBluetooth;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.Tomato;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
@@ -94,7 +95,7 @@ import static com.eveningoutpost.dexdrip.xdrip.gs;
 public class DexCollectionService extends Service implements BtCallBack {
     public static final String LIMITTER_NAME = "LimiTTer";
     private final static String TAG = DexCollectionService.class.getSimpleName();
-    private static final boolean d = false;
+    private static final boolean d = true;
     //private Context mContext;
     private static final int STATE_DISCONNECTED = BluetoothProfile.STATE_DISCONNECTED;
     private static final int STATE_DISCONNECTING = BluetoothProfile.STATE_DISCONNECTING;
@@ -163,6 +164,7 @@ public class DexCollectionService extends Service implements BtCallBack {
     private final UUID xDripDataCharacteristicSend = use_rfduino_bluetooth ? UUID.fromString(HM10Attributes.HM_TX) : UUID.fromString(HM10Attributes.HM_RX_TX);
     private final String DEFAULT_BT_PIN = getDefaultPin();
     private final UUID blukonDataService = UUID.fromString(HM10Attributes.BLUKON_SERVICE);
+    private final UUID AbbottServiceUUID = UUID.fromString(HM10Attributes.ABBOTT_SERVICE_ID);
     public DexCollectionService dexCollectionService;
     long lastPacketTime;
     private SharedPreferences prefs;
@@ -400,7 +402,7 @@ public class DexCollectionService extends Service implements BtCallBack {
 
             final BluetoothGattService gattService = mBluetoothGatt.getService(xDripDataService);
             if (gattService == null) {
-                if (!(static_use_blukon || blueReader.isblueReader() || Tomato.isTomato()||Bubble.isBubble())) {
+                if (!(static_use_blukon || blueReader.isblueReader() || Tomato.isTomato()||Bubble.isBubble() || LibreBluetooth.isLibreBluettoh())) {
                     Log.w(TAG, "onServicesDiscovered: xdrip service " + xDripDataService + " not found"); //TODO the selection of nrf is not active at the beginning,so this error will be trown one time unneeded, mey to be optimized.
                     // TODO this should be reworked to be an efficient selector
                     listAvailableServices(mBluetoothGatt);
@@ -582,6 +584,58 @@ public class DexCollectionService extends Service implements BtCallBack {
                 static_use_blukon = true; // doesn't ever get unset
                 Blukon.initialize();
 
+            }
+            
+            // Abbott libre2 device
+            Log.i(TAG, "Looking for  Abbott device");
+            final BluetoothGattService AbbottService = mBluetoothGatt.getService(AbbottServiceUUID);
+            if (AbbottService != null) {
+                Log.i(TAG, "Found Abbott device");
+                mCharacteristic = AbbottService.getCharacteristic(UUID.fromString(HM10Attributes.ABBOTT_DATA_CHARACTERISTIC));
+                if (mCharacteristic == null) {
+                    Log.w(TAG, "onServicesDiscovered: Abbott characteristic  not found");
+                    // WHAT TO DO HERE?
+                    JoH.releaseWakeLock(wl);
+                    return;
+                }
+
+                try {
+                    final int charaProp = mCharacteristic.getProperties();
+                    if ((charaProp & BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
+                        UserError.Log.d(TAG, "Setting notification on characteristic: " + mCharacteristic.getUuid() + " charaprop: " + charaProp);
+                        final boolean result = mBluetoothGatt.setCharacteristicNotification(mCharacteristic, true);
+                        if (!result)
+                            UserError.Log.d(TAG, "Failed setting notification on abbott characteristic! " + mCharacteristic.getUuid());
+                    } else {
+                        Log.e(TAG, "Abbott characteristic doesn't seem to allow notify - this is very unusual");
+                    }
+                } catch (Exception e) {
+                    Log.e(TAG, "Abbott Exception during notification preparation " + e);
+                }
+
+             /*   // TODO move this to a function for generic use
+                try {
+                    final BluetoothGattDescriptor bdescriptor = mCharacteristic.getDescriptor(UUID.fromString(HM10Attributes.CLIENT_CHARACTERISTIC_CONFIG));
+                    Log.i(TAG, "Blukon Bluetooth Notification Descriptor found: " + bdescriptor.getUuid());
+                    descriptor_time = JoH.tsl();
+                    bdescriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                    mBluetoothGatt.writeDescriptor(bdescriptor);
+                } catch (Exception e) {
+                    Log.e(TAG, "Error creating notification value descriptor: " + e);
+                }
+*/
+                
+                mCharacteristicSend = AbbottService.getCharacteristic(UUID.fromString(HM10Attributes.ABBOTT_LOGIN_CHARACTERISTIC));
+                if (mCharacteristicSend == null) {
+                    Log.w(TAG, "onServicesDiscovered: abbott login characteristic not found");
+                    JoH.releaseWakeLock(wl);
+                    return;
+                }
+                status("Enabled " + getString(R.string.blukon)); //??? change to abbott
+                byte[] reply = LibreBluetooth.initialize();
+                if(reply != null) {
+                    sendBtMessage(reply);
+                }
             }
 
             // TODO is this duplicated in some situations?
@@ -1435,6 +1489,7 @@ public class DexCollectionService extends Service implements BtCallBack {
         }
 
         // BLUCON NULL HERE? HOW TO RESOLVE?
+        // ??? return this as needed
         if (mCharacteristic == null) {
             status("Error: mCharacteristic was null in sendBtMessage");
             Log.e(TAG, lastState);
@@ -1650,6 +1705,19 @@ public class DexCollectionService extends Service implements BtCallBack {
             final BridgeResponse reply = Bubble.decodeBubblePacket(buffer, len);
             if (reply.shouldDelay()) {
                 Inevitable.task("send-bubble-reply", reply.getDelay(), () -> sendReply(reply));
+            } else {
+                sendReply(reply);
+            }
+            if (reply.hasError()) {
+                JoH.static_toast_long(reply.getError_message());
+                error(reply.getError_message());
+            }
+            gotValidPacket();
+
+        } else if (LibreBluetooth.isLibreBluettoh()) {
+            final BridgeResponse reply = LibreBluetooth.decodeLibrePacket(buffer, len);
+            if (reply.shouldDelay()) {
+                Inevitable.task("send-tomato-reply", reply.getDelay(), () -> sendReply(reply));
             } else {
                 sendReply(reply);
             }
