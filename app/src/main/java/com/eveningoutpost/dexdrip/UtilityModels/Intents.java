@@ -69,9 +69,17 @@ public interface Intents {
 
     // oop 2 
     String XDRIP_DECRYPT_FARM_RESULT = "com.eveningoutpost.dexdrip.OOP2_DECRYPT_FARM_RESULT";
+    String XDRIP_DECRYPT_BLE_RESULT = "com.eveningoutpost.dexdrip.OOP2_DECRYPT_BLE_RESULT";
+    String XDRIP_STREAMING_UNLOCK_RESULT = "com.eveningoutpost.dexdrip.OOP2_STREAMING_UNLOCK_RESULT";
+    String XDRIP_PLUS_LIBRE_BLE_DATA = "com.eveningoutpost.dexdrip.LIBRE_BLE_DATA";
+    String XDRIP_PLUS_STREAMING_UNLOCK = "com.eveningoutpost.dexdrip.STREAMING_UNLOCK";
     String DECRYPTED_BUFFER = "DecryptedBuffer";
     String PATCH_UID = "PatchUid";
     String PATCH_INFO = "PatchInfo";
+    String ENABLE_TIME = "EnableTime";
+    String UNLOCK_COUNT = "UnlockCount";
+    String BT_UNLOCK_BUFFER = "BtUnlockBuffer";
+    String NFC_UNLOCK_BUFFER = "NfcUnlockBuffer";
     String TAG_ID = "TagId";
     String ROW_ID = "RowId";
 

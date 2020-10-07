@@ -473,6 +473,8 @@
             <intent-filter>
                 <action android:name="com.eveningoutpost.dexdrip.NS_EMULATOR" />
                 <action android:name="com.eveningoutpost.dexdrip.OOP2_DECRYPT_FARM_RESULT" />
+                <action android:name="com.eveningoutpost.dexdrip.OOP2_DECRYPT_BLE_RESULT" />
+                <action android:name="com.eveningoutpost.dexdrip.OOP2_STREAMING_UNLOCK_RESULT" />
             </intent-filter>
         </receiver>
         <receiver android:name="com.eveningoutpost.dexdrip.watch.thinjam.io.ThinJamApiReceiver">
