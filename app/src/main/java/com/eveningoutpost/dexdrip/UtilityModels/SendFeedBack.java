@@ -53,7 +53,7 @@ public class SendFeedBack extends BaseAppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_send_feed_back);
-        send_url = "http://27302.s.t4vps.eu/xdrip/debug-logs.php";
+        send_url = getString(R.string.wserviceurl) + "/joh-feedback";
 
         myrating = (RatingBar) findViewById(R.id.ratingBar);
         ratingtext = (TextView) findViewById(R.id.ratingtext);
@@ -150,7 +150,7 @@ public class SendFeedBack extends BaseAppCompatActivity {
         client.setReadTimeout(30, TimeUnit.SECONDS);
         client.setWriteTimeout(30, TimeUnit.SECONDS);
 
-       // client.interceptors().add(new GzipRequestInterceptor());
+        client.interceptors().add(new GzipRequestInterceptor());
 
         if (yourtext.length() == 0) {
             toast("No text entered - cannot send blank");

@@ -221,7 +221,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
         if (!result && I.state.equals(MiBandState.AUTHORIZE_FAILED) && MiBand.isMiband4_or_5(MiBand.getMibandType())) {
             return true;
         }
-        if ( I.state.equals(MiBandState.QUEUE_MESSAGE) && I.isConnected == false){
+        if ( !I.isConnected ){
             return true;
         }
         if (!result)

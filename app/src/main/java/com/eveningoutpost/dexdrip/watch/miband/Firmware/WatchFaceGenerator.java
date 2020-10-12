@@ -86,7 +86,7 @@ public class WatchFaceGenerator {
             final String dir = getExternalDir();
             final File imageFile = new File(dir + "/my_image.png");
             wfFile = new File(dir + "/my_watchface.bin");
-            if (imageFile.exists() || wfFile.exists()) {
+            if (imageFile.exists() && wfFile.exists()) {
                 customFilesFound = true;
                 mainImage = new FileInputStream(imageFile);
                 fwFileStream = new FileInputStream(wfFile);
