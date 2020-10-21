@@ -47,6 +47,14 @@ public class WebServiceModule {
 
     @Provides
     @Singleton
+    @Named("WebServiceTreatments")
+    BaseWebService providesWebServiceTreatments() {
+        if (d) Log.d("INJECT", "creating WebServiceTreatments");
+        return new WebServiceTreatments();
+    }
+
+    @Provides
+    @Singleton
     @Named("WebServiceStatus")
     BaseWebService providesWebServiceStatus() {
         if (d) Log.d("INJECT", "creating WebServiceStatus");
