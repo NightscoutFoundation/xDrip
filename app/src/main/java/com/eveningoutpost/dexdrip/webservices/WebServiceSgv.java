@@ -17,6 +17,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -37,6 +39,8 @@ import static com.eveningoutpost.dexdrip.wearintegration.ExternalStatusService.g
 public class WebServiceSgv extends BaseWebService {
 
     private static String TAG = "WebServiceSgv";
+
+    private static List<BgReading> cachedReadings = null;
 
 
     // process the request and produce a response object
@@ -106,7 +110,35 @@ public class WebServiceSgv extends BaseWebService {
         // whether to include data which doesn't match the current sensor
         final boolean ignore_sensor = Home.get_follower() || cgi.containsKey("all_data");
 
-        final List<BgReading> readings = BgReading.latest(count, ignore_sensor);
+
+        // Store a cache of the last BgReading.latest() query for the duration in which there is no
+        // new latest reading. Since obtaining the latest reading is fast, but a larger number of
+        // readings is significantly slower, this optimizes the most often use case.
+        Iterator<BgReading> it = BgReading.latest(1, ignore_sensor).iterator();
+        BgReading latestReading = it != null ? it.next() : null;
+
+        List<BgReading> readings;
+        if (this.cachedReadings != null && latestReading != null &&
+            this.cachedReadings.size() > 0 && latestReading.uuid.equals(this.cachedReadings.iterator().next().uuid) &&
+            count <= this.cachedReadings.size())
+        {
+            if (count == this.cachedReadings.size()) {
+                UserError.Log.d(TAG, "Using cached readings");
+                readings = this.cachedReadings;
+            } else {
+                UserError.Log.d(TAG, "Copying "+count+" of "+this.cachedReadings.size()+" cached readings");
+                readings = new ArrayList<>();
+                it = this.cachedReadings.iterator();
+                for (int i=0; i<count; i++) {
+                    readings.add(it.next());
+                }
+            }
+        } else {
+            UserError.Log.d(TAG, "Fetching latest "+count+" readings from BgReading");
+            readings = BgReading.latest(count, ignore_sensor);
+            this.cachedReadings = readings;
+        }
+
         if (readings != null) {
             // populate json structures
             try {
