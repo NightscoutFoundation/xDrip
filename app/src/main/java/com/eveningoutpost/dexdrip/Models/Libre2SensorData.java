@@ -21,6 +21,9 @@ public class Libre2SensorData {
 
     static Libre2SensorData getSensorData(boolean increaseUnlockCount) {
         // read from persistent storage if needed.???
+        if(currentSensorData == null) {
+            return null;
+        }
         
         Libre2SensorData libre2SensorData= new Libre2SensorData();
         libre2SensorData.patchUid_ = currentSensorData.patchUid_;
