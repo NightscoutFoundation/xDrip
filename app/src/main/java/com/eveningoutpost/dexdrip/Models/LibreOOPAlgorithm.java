@@ -141,7 +141,11 @@ public class LibreOOPAlgorithm {
             Log.e(TAG, "Interuptted exception", e);
             return null;
         }
-        Log.e(TAG, "WaitForUnlockPayload (SendgetStreamingUnlockPayload) payload is " + JoH.bytesToHex(ret.btUnlockBuffer) + " "+  JoH.bytesToHex(ret.nfcUnlockBuffer));
+        if(ret == null) {
+            Log.e(TAG, "WaitForUnlockPayload (SendgetStreamingUnlockPayload) returning null");
+        } else {
+            Log.e(TAG, "WaitForUnlockPayload (SendgetStreamingUnlockPayload) got data payload is " + JoH.bytesToHex(ret.btUnlockBuffer) + " "+  JoH.bytesToHex(ret.nfcUnlockBuffer));
+        }
         return ret;
         
     }
