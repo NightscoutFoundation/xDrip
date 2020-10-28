@@ -17,6 +17,7 @@ import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.Services.G5BaseService;
 import com.eveningoutpost.dexdrip.cgm.medtrum.MedtrumCollectionService;
 import com.eveningoutpost.dexdrip.ui.activities.DatabaseAdmin;
+import com.eveningoutpost.dexdrip.ui.dialog.G6CalibrationCodeDialog;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.SdcardImportExport;
 
@@ -44,7 +45,8 @@ public class VoiceCommands {
         } else if (get_engineering_mode() && allWords.equals("repair fake data source")) {
             JoH.static_toast_long("Repairing fake data source");
             MockDataSource.fixRaw();
-
+        } else if (allWords.contentEquals("set sensor code")) {
+            G6CalibrationCodeDialog.ask(mActivity, null);
         } else if (allWords.contentEquals("hard reset transmitter")) {
             G5BaseService.setHardResetTransmitterNow();
             JoH.static_toast_long("Will attempt to reset transmitter on next poll!! Can take 15 minutes to process");

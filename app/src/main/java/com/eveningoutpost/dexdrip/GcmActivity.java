@@ -688,6 +688,19 @@ public class GcmActivity extends FauxActivity {
             GcmActivity.sendMessage(myIdentity(), "cal2", json);
         }
     }
+    public static void pushLibreBlock(String libreBlock) {
+        Log.i(TAG, "libreBlock called: " + libreBlock);
+        if (!Home.get_master()) {
+            return;
+        }
+        if (!JoH.pratelimit("libre-allhouse", 5)) {
+            // Do not create storm of packets.
+            Log.e(TAG, "Rate limited start libre-allhouse");
+            return;
+        }
+
+        GcmActivity.sendMessage(myIdentity(), "libreBlock", libreBlock);
+    }
 
     public static void clearLastCalibration(String uuid) {
         sendMessage(myIdentity(), "clc", uuid);

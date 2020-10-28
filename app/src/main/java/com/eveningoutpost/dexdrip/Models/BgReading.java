@@ -1826,7 +1826,7 @@ public class BgReading extends Model implements ShareUploadableBg {
     }
 
     public int noiseValue() {
-        if(noise == null || noise.compareTo("") == 0) {
+        if (noise == null || noise.compareTo("") == 0 || noise.compareToIgnoreCase("null") == 0) {
             return 1;
         } else {
             return Integer.valueOf(noise);
