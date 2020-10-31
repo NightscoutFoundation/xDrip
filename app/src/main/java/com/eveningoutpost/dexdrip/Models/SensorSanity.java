@@ -83,9 +83,8 @@ public class SensorSanity {
     }
 
     public static boolean allowTestingWithDeadSensor() {
-        //return Pref.getBooleanDefaultFalse("allow_testing_with_dead_sensor")
-        //        && Pref.getBooleanDefaultFalse("engineering_mode");
-        return true;
+        return Pref.getBooleanDefaultFalse("allow_testing_with_dead_sensor")
+                && Pref.getBooleanDefaultFalse("engineering_mode");
     }
 
 

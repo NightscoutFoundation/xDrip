@@ -89,7 +89,7 @@ public class LibreBluetooth {
             }
 
             byte []patchUid = currentSensorData.patchUid_;
-            if(NFCReaderX.use_fake_de_data) {
+            if(NFCReaderX.use_fake_de_data()) {
                 patchUid =  new byte[]{(byte)0xEC, (byte)0x0B, (byte)0x48, (byte)0x00, (byte)0x00, (byte)0xa4, (byte)0x07, (byte)0xe0}; //EC0B480000A407E0
             }
             

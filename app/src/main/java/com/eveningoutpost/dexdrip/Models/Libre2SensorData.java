@@ -1,28 +1,43 @@
 package com.eveningoutpost.dexdrip.Models;
 
+import com.google.gson.annotations.Expose;
+
+import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
+
 public class Libre2SensorData {
+
+    @Expose
     byte []patchUid_ = null;
+    @Expose
     byte []patchInfo_ = null;
+    @Expose
     int enableTime_;
+    @Expose
     int unlockCount_;
     
     static Libre2SensorData currentSensorData = null;
-    //byte [] StreamingUnlockPayload_ = null;
+    private static final String TAG = "Libre2SensorData";
+    private static final String SENSOR_DATA_KAY = "Libre2SensorData";
     
-    static public void setLibre2SensorData(byte []patchUid, byte []patchInfo, int enableTime, int unlockCount) {
+    static synchronized public void setLibre2SensorData(byte []patchUid, byte []patchInfo, int enableTime, int unlockCount) {
         currentSensorData = new Libre2SensorData();
         currentSensorData.patchUid_ = patchUid;
         currentSensorData.patchInfo_ = patchInfo;
         currentSensorData.enableTime_ = enableTime;
         currentSensorData.unlockCount_ = unlockCount;
-        //??? persist this
+        Log.e(TAG, "persisting sensor data");
+        PersistentStore.setString(SENSOR_DATA_KAY, currentSensorData.toJson());
     }
     
 
-    static Libre2SensorData getSensorData(boolean increaseUnlockCount) {
-        // read from persistent storage if needed.???
+    static synchronized Libre2SensorData getSensorData(boolean increaseUnlockCount) {
         if(currentSensorData == null) {
-            return null;
+            String json = PersistentStore.getString(SENSOR_DATA_KAY);;
+            currentSensorData = createFromJson(json);
+            if(currentSensorData == null) {
+                return null;
+            }
         }
         
         Libre2SensorData libre2SensorData= new Libre2SensorData();
@@ -32,8 +47,29 @@ public class Libre2SensorData {
         libre2SensorData.unlockCount_ = currentSensorData.unlockCount_;
         if(increaseUnlockCount) {
             currentSensorData.unlockCount_++;
+            Log.e(TAG, "persisting sensor data");
+            PersistentStore.setString(SENSOR_DATA_KAY, currentSensorData.toJson());
         }
-        //??? persist current data
-        return libre2SensorData; //??? or null if needed
+        return libre2SensorData;
     }
+    
+    private String toJson() {
+        return JoH.defaultGsonInstance().toJson(this);        
+    }
+
+    private static Libre2SensorData createFromJson(String json) {
+        if (json == null) {
+            return null;
+        }
+        Libre2SensorData fresh;
+        try {
+            fresh = JoH.defaultGsonInstance().fromJson(json, Libre2SensorData.class);
+        } catch (Exception e) {
+            Log.e(TAG, "Libre2SensorData Got exception processing json msg: " + e );
+            return null;
+        }
+        Log.e(TAG, "Successfuly created Libre2SensorData value " + json);
+        return fresh;
+    }
+    
 }
