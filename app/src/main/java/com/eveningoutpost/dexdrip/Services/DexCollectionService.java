@@ -387,9 +387,10 @@ public class DexCollectionService extends Service implements BtCallBack {
             if (prefs.getBoolean(PREF_DEX_COLLECTION_BONDING, false)) {
                 if ((mDeviceAddress != null) && (device != null) && (!areWeBonded(mDeviceAddress))) {
                     if (JoH.ratelimit("dexcollect-create-bond", 20)) {
-                        Log.d(TAG, "Attempting to create bond to: " + mDeviceAddress);
+                        Log.d(TAG, "Attempting to create bond to: " + mDeviceAddress + " try " + bondingTries);
                         bondingTries++;
                         if (bondingTries > 5) {
+                            Log.w(TAG, "Bonding failing so disabling bonding feature");
                             Home.toaststaticnext("Bonding failing so disabling bonding feature");
                             Pref.setBoolean(PREF_DEX_COLLECTION_BONDING, false);
                         } else {
@@ -598,7 +599,7 @@ public class DexCollectionService extends Service implements BtCallBack {
                     JoH.releaseWakeLock(wl);
                     return;
                 }
-
+                
                 try {
                     final int charaProp = mCharacteristic.getProperties();
                     if ((charaProp & BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
@@ -613,17 +614,6 @@ public class DexCollectionService extends Service implements BtCallBack {
                     Log.e(TAG, "Abbott Exception during notification preparation " + e);
                 }
 
-             /*   // TODO move this to a function for generic use
-                try {
-                    final BluetoothGattDescriptor bdescriptor = mCharacteristic.getDescriptor(UUID.fromString(HM10Attributes.CLIENT_CHARACTERISTIC_CONFIG));
-                    Log.i(TAG, "Blukon Bluetooth Notification Descriptor found: " + bdescriptor.getUuid());
-                    descriptor_time = JoH.tsl();
-                    bdescriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-                    mBluetoothGatt.writeDescriptor(bdescriptor);
-                } catch (Exception e) {
-                    Log.e(TAG, "Error creating notification value descriptor: " + e);
-                }
-*/
                 
                 mCharacteristicSend = AbbottService.getCharacteristic(UUID.fromString(HM10Attributes.ABBOTT_LOGIN_CHARACTERISTIC));
                 if (mCharacteristicSend == null) {
@@ -635,6 +625,8 @@ public class DexCollectionService extends Service implements BtCallBack {
                 byte[] reply = LibreBluetooth.initialize();
                 if(reply != null) {
                     sendBtMessage(reply);
+                } else {
+                    Log.e(TAG, "Not sending, No streaming unlock buffer.");
                 }
             }
 
@@ -730,7 +722,7 @@ public class DexCollectionService extends Service implements BtCallBack {
             } catch (Exception e) {
                 UserError.Log.wtf(TAG, "Got exception trying to display data: " + e);
             }
-        }
+         }
 
         @Override
         public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
@@ -1496,7 +1488,7 @@ public class DexCollectionService extends Service implements BtCallBack {
             servicesDiscovered = DISCOVERED.NULL;
             return false;
         }
-
+        
         if (mCharacteristicSend != null && mCharacteristicSend != mCharacteristic) {
             return writeChar(mCharacteristicSend, value);
         }

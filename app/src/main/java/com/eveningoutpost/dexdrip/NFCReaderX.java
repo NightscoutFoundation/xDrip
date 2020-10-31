@@ -21,6 +21,7 @@ import android.os.Vibrator;
 import android.view.View;
 
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
+import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Models.GlucoseData;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Libre2SensorData;
@@ -37,6 +38,8 @@ import com.eveningoutpost.dexdrip.UtilityModels.WholeHouse;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
 import com.eveningoutpost.dexdrip.Models.LibreOOPAlgorithm.SensorType;
+import com.eveningoutpost.dexdrip.watch.thinjam.messages.BaseTx;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -71,7 +74,10 @@ public class NFCReaderX {
     static final byte []de_new_patch_uid = {(byte)0x2f, (byte)0x58, (byte)0x3f, (byte)0x00, (byte)0x00, (byte)0xa4, (byte)0x07, (byte)0xe0};
     static final byte []de_new_patch_info = {(byte)0x9d, (byte)0x08, (byte)0x30, (byte)0x01, (byte)0xd8, (byte)0x13};
     // Never in production. Used to emulate German sensor behavior.
-    public static boolean use_fake_de_data = false;
+    public static boolean use_fake_de_data() {
+        //Pref.setBoolean("use_fake_de_data", true);
+        return Pref.getBooleanDefaultFalse("use_fake_de_data");
+    }
 
     
     public static void stopNFC(Activity context) {
@@ -342,7 +348,7 @@ public class NFCReaderX {
                     
                     
                     boolean checksum_ok; 
-                    if(use_fake_de_data) {
+                    if(use_fake_de_data()) {
                         checksum_ok = HandleGoodReading(SensorSn, de_new_packet, now, false, de_new_patch_uid, de_new_patch_info);
                     } else {
                         checksum_ok = HandleGoodReading(SensorSn, data, now, false, tag.getId(), patchInfo);
@@ -387,9 +393,14 @@ public class NFCReaderX {
             Log.e(TAG, "nfc_command to enable streaming = " + HexDump.dumpHexString(full_cmd));
 
             Long time_patch = System.currentTimeMillis();
+            byte[] res = null;
             while (true) {
                 try {
-                    byte[] res = nfcvTag.transceive(full_cmd);
+                    res = nfcvTag.transceive(full_cmd);
+                    if(use_fake_de_data()) {
+                        // DC:A6:32:0F:4F:92
+                        res = new byte[]{(byte)0x12, (byte)0x92, (byte)0x4f, (byte)0x0f, (byte)0x32, (byte)0xa6, (byte)0xdc};
+                    }
                     Log.e(TAG, "enable streaming command returned: " + HexDump.dumpHexString(res));
                     break;
                 } catch (IOException e) {
@@ -402,7 +413,16 @@ public class NFCReaderX {
                     Thread.sleep(100);
                 }
             }
-            CollectionServiceStarter.restartCollectionServiceBackground();
+            if(res.length == 7) {
+                // The mac addresses of the device is the returned data, after removing the first byte, and reversing it.
+                res = Arrays.copyOfRange(res, 1, res.length);
+                res = BaseTx.reverseBytes(res);
+
+                ActiveBluetoothDevice.SetDevice("ABBOTT" + SensorSN, JoH.bytesToHexMacFormat(res));
+                CollectionServiceStarter.restartCollectionServiceBackground();
+            } else {
+                Log.e(TAG, "enable streaming returned bad data. BT will not work." + HexDump.dumpHexString(res));
+            }
         }
 
 
@@ -486,7 +506,7 @@ public class NFCReaderX {
                         }
                         Log.d(TAG, "patchInfo = " + HexDump.dumpHexString(patchInfo));
                         byte []patchUid = tag.getId();
-                        if(use_fake_de_data) {
+                        if(use_fake_de_data()) {
                             patchUid = de_new_patch_uid;
                             patchInfo = de_new_patch_info;
                         }
