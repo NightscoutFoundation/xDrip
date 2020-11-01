@@ -309,7 +309,7 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
         // Does this throws exception???
         byte[] ble_data = Base64.decode(decrypted_buffer, Base64.NO_WRAP);
         byte []patchUid = Base64.decode(patchUidString, Base64.NO_WRAP);
-        LibreAlarmReceiver.HandleBleData(CaptureDateTime, ble_data);
+        LibreOOPAlgorithm.HandleDecryptBleResult(CaptureDateTime, ble_data, patchUid);
     }
     
     private void handleOop2StreamingUnlockResult(Bundle bundle) {
