@@ -11,6 +11,7 @@ import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.CompatibleApps;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Intents;
+import com.eveningoutpost.dexdrip.UtilityModels.LibreUtils;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -281,6 +282,34 @@ public class LibreOOPAlgorithm {
         }
         return res;
     }
+    
+    public static void HandleDecryptBleResult(long timestamp, byte[] ble_data, byte []patchUid) {
+
+        int raw  = LibreOOPAlgorithm.readBits(ble_data, 0 , 0 , 0xe);
+        int sensorTime = 256 * (ble_data[41] & 0xFF) + (ble_data[40] & 0xFF);
+        Log.e(TAG, "Creating BG time =  " + sensorTime + "raw = " + raw);
+        
+        ReadingData.TransferObject libreAlarmObject = new ReadingData.TransferObject();
+        libreAlarmObject.data = new ReadingData();
+        libreAlarmObject.data.trend = new ArrayList<GlucoseData>();
+
+        libreAlarmObject.data.raw_data = ble_data;
+        
+        // Add the first object, that is the current time
+        GlucoseData glucoseData = new GlucoseData();
+        glucoseData.sensorTime = sensorTime;
+        glucoseData.realDate = timestamp;
+        glucoseData.glucoseLevel = raw;
+        glucoseData.glucoseLevelRaw = raw;
+        
+        libreAlarmObject.data.trend.add(glucoseData);
+        String SensorSN = LibreUtils.decodeSerialNumberKey(patchUid);
+        
+        // TODO: Add here data of last 10 minutes or whatever.
+        Log.e(TAG, "HandleData Created the following object " + libreAlarmObject.toString());
+        LibreAlarmReceiver.processReadingDataTransferObject(libreAlarmObject, timestamp, SensorSN, true /*=allowupload*/, patchUid, null/*=patchInfo*/);   
+    }
+    
     
     // Functions that are used for an external decoder.
     static public boolean IsDecriptableData(byte []patchInfo) {

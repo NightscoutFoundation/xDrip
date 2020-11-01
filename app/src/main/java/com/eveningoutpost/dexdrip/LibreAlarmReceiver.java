@@ -65,24 +65,11 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
         return (lib_raw_value * LIBRE_MULTIPLIER); // to match (raw/8.5)*1000
     }
 
-    
-    public static void HandleBleData(long realDate, byte[] ble_data) {
-        //??????? run all kind of tests here, see below.
-
-        // make sure not to allow more data than once every 5 minutes.
-        int raw  = LibreOOPAlgorithm.readBits(ble_data, 0 , 0 , 0xc);
-        Log.e(TAG, "Creating BG value " + raw);
-        final double converted = convert_for_dex(raw);
-        
-        BgReading.create(converted, converted, xdrip.getAppContext(), realDate, false);
-        
-        
-    }
-    
+   
     private static void createBGfromGD(GlucoseData gd, boolean use_smoothed_data, boolean quick) {
         final double converted;
         if (gd.glucoseLevelRaw > 0) {
-            if(use_smoothed_data) {
+            if(use_smoothed_data && gd.glucoseLevelRawSmoothed > 0) {
                 converted = convert_for_dex(gd.glucoseLevelRawSmoothed);
                 Log.e(TAG,"Using smoothed value " + converted + " instead of " + convert_for_dex(gd.glucoseLevelRaw) );
             } else {
