@@ -294,6 +294,7 @@ dependencies {
     implementation 'com.android.support:multidex:1.0.3'
     //implementation 'com.google.dagger:dagger-android-support:2.x' // if you use the support libraries
     annotationProcessor 'com.google.dagger:dagger-compiler:2.25.4'
+    implementation 'net.danlew:android.joda:2.10.6.1'
 
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.objenesis:objenesis:2.5.1'
