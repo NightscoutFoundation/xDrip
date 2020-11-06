@@ -383,50 +383,39 @@ public class MiBandService extends JamBaseBluetoothSequencer {
         }
     }
 
-    private static final int compareTime(Date date1, Date date2) {
-        //Start Time
-        Calendar StartTime = Calendar.getInstance();
-        StartTime.setTime(date1);
-        StartTime.set(1, 1, 1);
-
-        Calendar EndTime = Calendar.getInstance();
-        EndTime.setTime(date2);
-        EndTime.set(1, 1, 1);
-
-        return EndTime.compareTo(StartTime);
-    }
-
-
     private long whenToRetryNextBgTimer() {
         final long bg_time;
 
         Calendar expireDate = Calendar.getInstance();
-
+        long currTimeMillis = JoH.tsl();
         expireDate.setTimeInMillis(System.currentTimeMillis() + BG_UPDATE_NO_DATA_INTERVAL);
         isNightMode = false;
         if (MiBandEntry.isNightModeEnabled()) {
             int nightModeInterval = MiBandEntry.getNightModeInterval();
             if (nightModeInterval != MiBandEntry.NIGHT_MODE_INTERVAL_STEP) {
-                Date curr = Calendar.getInstance().getTime();
+                Calendar currCal = Calendar.getInstance();
+                Date curr = currCal.getTime();
                 Date start = MiBandEntry.getNightModeStart();
                 Date end = MiBandEntry.getNightModeEnd();
-                Boolean result = isBetweenValidTime(start, end, curr);
+                boolean result = isBetweenValidTime(start, end, curr);
                 UserError.Log.d(TAG, "isBetweenValidTime: " + result);
                 if (result) {
-                    Calendar calTimeCal = Calendar.getInstance();
-                    calTimeCal.setTimeInMillis(System.currentTimeMillis() + nightModeInterval * Constants.MINUTE_IN_MS);
-                    if (compareTime(end, calTimeCal.getTime()) >= 0) {
+                    Calendar futureCal = Calendar.getInstance();
+                    futureCal.setTimeInMillis(currTimeMillis + nightModeInterval * Constants.MINUTE_IN_MS);
+
+                    Date futureDate = futureCal.getTime();
+                    if ( !isBetweenValidTime(start, end,  futureDate) ) {
                         Calendar calEndCal = Calendar.getInstance();
                         calEndCal.setTime(end);
-                        calTimeCal.set(Calendar.HOUR_OF_DAY, calEndCal.get(Calendar.HOUR_OF_DAY));
-                        calTimeCal.set(Calendar.MINUTE, calEndCal.get(Calendar.MINUTE));
+                        futureCal.set(Calendar.HOUR_OF_DAY, calEndCal.get(Calendar.HOUR_OF_DAY));
+                        futureCal.set(Calendar.MINUTE, calEndCal.get(Calendar.MINUTE));
                     }
-                    expireDate.setTimeInMillis(calTimeCal.getTimeInMillis());
+                    expireDate = (Calendar) futureCal.clone();
                     isNightMode = true;
                 }
             }
         }
-        bg_time = expireDate.getTimeInMillis() - JoH.tsl();
+        bg_time = expireDate.getTimeInMillis() - currTimeMillis;
         return bg_time;
     }
 
