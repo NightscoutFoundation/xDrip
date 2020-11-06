@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: xDrip Community Support at Facebook
+    url: https://www.facebook.com/groups/xDripG5
+    about: If you're a xDrip user and have trouble with the app or any connected device, please post questions here. We don't have the resources to answer support questions posted here as tickets.
+  - name: xDrip Community Support at Gitter
+    url: https://gitter.im/jamorham/xDrip-plus
+    about: If you're a xDrip user and have trouble with the app or any connected device, please post questions here. We don't have the resources to answer support questions posted here as tickets.
