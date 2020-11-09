@@ -115,11 +115,6 @@ public class SensorSanity {
 
     // returns true in the case of an error (had to stop the sensor)
     public synchronized static boolean checkLibreSensorChange(final String currentSerial) {
-        for (StackTraceElement ste : Thread.currentThread().getStackTrace()) {
-            Log.i(TAG, ste.toString());
-        }
-        
-        Log.i(TAG, "checkLibreSensorChange called currentSerial = " + currentSerial);
         if ((currentSerial == null) || currentSerial.length() < 4) return false;
         final Sensor this_sensor = Sensor.currentSensor();
         if(this_sensor == null || this_sensor.uuid == null|| this_sensor.uuid.length() < 4) {

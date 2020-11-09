@@ -15,17 +15,20 @@ public class Libre2SensorData {
     int enableTime_;
     @Expose
     int unlockCount_;
+    @Expose
+    String deviceName_;
     
     static Libre2SensorData currentSensorData = null;
     private static final String TAG = "Libre2SensorData";
     private static final String SENSOR_DATA_KAY = "Libre2SensorData";
     
-    static synchronized public void setLibre2SensorData(byte []patchUid, byte []patchInfo, int enableTime, int unlockCount) {
+    static synchronized public void setLibre2SensorData(byte []patchUid, byte []patchInfo, int enableTime, int unlockCount, String deviceName) {
         currentSensorData = new Libre2SensorData();
         currentSensorData.patchUid_ = patchUid;
         currentSensorData.patchInfo_ = patchInfo;
         currentSensorData.enableTime_ = enableTime;
         currentSensorData.unlockCount_ = unlockCount;
+        currentSensorData.deviceName_ = deviceName;
         Log.e(TAG, "persisting sensor data");
         PersistentStore.setString(SENSOR_DATA_KAY, currentSensorData.toJson());
     }
@@ -33,7 +36,7 @@ public class Libre2SensorData {
 
     static synchronized Libre2SensorData getSensorData(boolean increaseUnlockCount) {
         if(currentSensorData == null) {
-            String json = PersistentStore.getString(SENSOR_DATA_KAY);;
+            String json = PersistentStore.getString(SENSOR_DATA_KAY);
             currentSensorData = createFromJson(json);
             if(currentSensorData == null) {
                 return null;
@@ -45,6 +48,7 @@ public class Libre2SensorData {
         libre2SensorData.patchInfo_ = currentSensorData.patchInfo_;
         libre2SensorData.enableTime_ = currentSensorData.enableTime_;
         libre2SensorData.unlockCount_ = currentSensorData.unlockCount_;
+        libre2SensorData.deviceName_ = currentSensorData.deviceName_;
         if(increaseUnlockCount) {
             currentSensorData.unlockCount_++;
             Log.e(TAG, "persisting sensor data");

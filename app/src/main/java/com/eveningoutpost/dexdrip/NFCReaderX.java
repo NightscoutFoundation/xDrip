@@ -18,6 +18,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.os.Vibrator;
+import android.util.Pair;
 import android.view.View;
 
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
@@ -39,6 +40,8 @@ import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
 import com.eveningoutpost.dexdrip.Models.LibreOOPAlgorithm.SensorType;
 import com.eveningoutpost.dexdrip.watch.thinjam.messages.BaseTx;
+
+
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -265,11 +268,11 @@ public class NFCReaderX {
         Log.e(TAG, "HandleGoodReading called");
         SendLibrereading(tagId, data1, CaptureDateTime, patchUid, patchInfo);
         
-        if(LibreOOPAlgorithm.IsDecriptableData(patchInfo) && decripted_data == false 
+        if(LibreOOPAlgorithm.isDecodeableData(patchInfo) && decripted_data == false 
                 && !Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
             // Send to OOP2 for drcryption.
-            LibreOOPAlgorithm.LogIfOOP2NotAlive();
-            LibreOOPAlgorithm.SendData(data1, CaptureDateTime, patchUid, patchInfo, tagId);
+            LibreOOPAlgorithm.logIfOOP2NotAlive();
+            LibreOOPAlgorithm.sendData(data1, CaptureDateTime, patchUid, patchInfo, tagId);
             return true;
         }
         
@@ -278,7 +281,7 @@ public class NFCReaderX {
             // (or actually we don't know how to do it, for us 14/de sensors).
             // Save raw block record (we start from block 0)
             LibreBlock.createAndSave(tagId, CaptureDateTime, data1, 0, allowUpload, patchUid, patchInfo);
-            LibreOOPAlgorithm.SendData(data1, CaptureDateTime, patchUid, patchInfo, tagId);
+            LibreOOPAlgorithm.sendData(data1, CaptureDateTime, patchUid, patchInfo, tagId);
         } else {
             final boolean checksum_ok = LibreUtils.verify(data1);
             if (!checksum_ok) {
@@ -345,8 +348,6 @@ public class NFCReaderX {
                     // Set the time of the current reading
                     PersistentStore.setLong("libre-reading-timestamp", JoH.tsl());
                     
-                    
-                    
                     boolean checksum_ok; 
                     if(use_fake_de_data()) {
                         checksum_ok = HandleGoodReading(SensorSn, de_new_packet, now, false, de_new_patch_uid, de_new_patch_info);
@@ -371,20 +372,21 @@ public class NFCReaderX {
             }
         }
 
-        void StartLibre2Streaming(NfcV nfcvTag, byte[] patchUid, byte[] patchInfo) throws InterruptedException {
+        void startLibre2Streaming(NfcV nfcvTag, byte[] patchUid, byte[] patchInfo) throws InterruptedException {
             // Should this depend on the UI???????
             Log.e(TAG, "Sensor is libre 2, enabeling BT");
-            Libre2SensorData.setLibre2SensorData(patchUid, patchInfo, 42, 1);
-            // ????? We should set here the BT device name and mac addresses.
+            
             String SensorSN = LibreUtils.decodeSerialNumberKey(patchUid);
 
             // This is the nfc command to enable streaming
-            byte[] nfc_command = LibreOOPAlgorithm.NfcSendgetStreamingUnlockPayload();
-            if (nfc_command == null) {
-                Log.e(TAG, "nfc_command is null, not enabeling streaming");
+            Pair<byte[], String> unlockData = LibreOOPAlgorithm.nfcSendgetStreamingUnlockPayload();
+            if (unlockData == null) {
+                Log.e(TAG, "unlockData is null, not enabeling streaming");
                 return;
             }
-
+            byte[] nfc_command = unlockData.first;
+            Libre2SensorData.setLibre2SensorData(patchUid, patchInfo, 42, 1 , unlockData.second);
+            
             final byte[] cmd = new byte[]{0x02, (byte) 0xa1, 0x07};
             final byte[] full_cmd = new byte[cmd.length + nfc_command.length];
             System.arraycopy(cmd, 0, full_cmd, 0, cmd.length);
@@ -418,7 +420,7 @@ public class NFCReaderX {
                 res = Arrays.copyOfRange(res, 1, res.length);
                 res = BaseTx.reverseBytes(res);
 
-                ActiveBluetoothDevice.SetDevice("ABBOTT" + SensorSN, JoH.bytesToHexMacFormat(res));
+                ActiveBluetoothDevice.setDevice(LibreOOPAlgorithm.getLibreDeviceName() + SensorSN, JoH.bytesToHexMacFormat(res));
                 CollectionServiceStarter.restartCollectionServiceBackground();
             } else {
                 Log.e(TAG, "enable streaming returned bad data. BT will not work." + HexDump.dumpHexString(res));
@@ -517,11 +519,11 @@ public class NFCReaderX {
                             addressed = false;
                         }
                         if(sensorType == SensorType.Libre2) {
-                            StartLibre2Streaming(nfcvTag, patchUid, patchInfo);
+                            startLibre2Streaming(nfcvTag, patchUid, patchInfo);
                         }
                         
                         if (multiblock) {
-                            Log.e(TAG, "startign multiple blobk reads");
+                            Log.e(TAG, "starting multiple blobk reads");
                             final int correct_reply_size = addressed ? 28 : 25;
                             for (int i = 0; i <= 43; i = i + 3) {
                                 final byte[] cmd;

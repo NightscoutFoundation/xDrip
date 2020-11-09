@@ -164,7 +164,7 @@ public class DexCollectionService extends Service implements BtCallBack {
     private final UUID xDripDataCharacteristicSend = use_rfduino_bluetooth ? UUID.fromString(HM10Attributes.HM_TX) : UUID.fromString(HM10Attributes.HM_RX_TX);
     private final String DEFAULT_BT_PIN = getDefaultPin();
     private final UUID blukonDataService = UUID.fromString(HM10Attributes.BLUKON_SERVICE);
-    private final UUID AbbottServiceUUID = UUID.fromString(HM10Attributes.ABBOTT_SERVICE_ID);
+    private final UUID Libre2ServiceUUID = UUID.fromString(HM10Attributes.LIBRE2_SERVICE_ID);
     public DexCollectionService dexCollectionService;
     long lastPacketTime;
     private SharedPreferences prefs;
@@ -587,15 +587,14 @@ public class DexCollectionService extends Service implements BtCallBack {
 
             }
             
-            // Abbott libre2 device
-            Log.i(TAG, "Looking for  Abbott device");
-            final BluetoothGattService AbbottService = mBluetoothGatt.getService(AbbottServiceUUID);
-            if (AbbottService != null) {
-                Log.i(TAG, "Found Abbott device");
-                mCharacteristic = AbbottService.getCharacteristic(UUID.fromString(HM10Attributes.ABBOTT_DATA_CHARACTERISTIC));
+            // libre2 device
+            Log.i(TAG, "Looking for  libre2 device");
+            final BluetoothGattService Libre2Service = mBluetoothGatt.getService(Libre2ServiceUUID);
+            if (Libre2Service != null) {
+                Log.i(TAG, "Found libre2 device");
+                mCharacteristic = Libre2Service.getCharacteristic(UUID.fromString(HM10Attributes.LIBRE2_DATA_CHARACTERISTIC));
                 if (mCharacteristic == null) {
-                    Log.w(TAG, "onServicesDiscovered: Abbott characteristic  not found");
-                    // WHAT TO DO HERE?
+                    Log.w(TAG, "onServicesDiscovered: libre2 characteristic  not found");
                     JoH.releaseWakeLock(wl);
                     return;
                 }
@@ -606,22 +605,22 @@ public class DexCollectionService extends Service implements BtCallBack {
                         UserError.Log.d(TAG, "Setting notification on characteristic: " + mCharacteristic.getUuid() + " charaprop: " + charaProp);
                         final boolean result = mBluetoothGatt.setCharacteristicNotification(mCharacteristic, true);
                         if (!result)
-                            UserError.Log.d(TAG, "Failed setting notification on abbott characteristic! " + mCharacteristic.getUuid());
+                            UserError.Log.d(TAG, "Failed setting notification on libre2 characteristic! " + mCharacteristic.getUuid());
                     } else {
-                        Log.e(TAG, "Abbott characteristic doesn't seem to allow notify - this is very unusual");
+                        Log.e(TAG, "Libre2 characteristic doesn't seem to allow notify - this is very unusual");
                     }
                 } catch (Exception e) {
-                    Log.e(TAG, "Abbott Exception during notification preparation " + e);
+                    Log.e(TAG, "Libre2 Exception during notification preparation " + e);
                 }
 
                 
-                mCharacteristicSend = AbbottService.getCharacteristic(UUID.fromString(HM10Attributes.ABBOTT_LOGIN_CHARACTERISTIC));
+                mCharacteristicSend = Libre2Service.getCharacteristic(UUID.fromString(HM10Attributes.LIBRE2_LOGIN_CHARACTERISTIC));
                 if (mCharacteristicSend == null) {
-                    Log.w(TAG, "onServicesDiscovered: abbott login characteristic not found");
+                    Log.w(TAG, "onServicesDiscovered: Libre2 login characteristic not found");
                     JoH.releaseWakeLock(wl);
                     return;
                 }
-                status("Enabled " + getString(R.string.blukon)); //??? change to abbott
+                status("Enabled " + getString(R.string.blukon)); //??? change to libre2
                 byte[] reply = LibreBluetooth.initialize();
                 if(reply != null) {
                     sendBtMessage(reply);
@@ -1481,7 +1480,6 @@ public class DexCollectionService extends Service implements BtCallBack {
         }
 
         // BLUCON NULL HERE? HOW TO RESOLVE?
-        // ??? return this as needed
         if (mCharacteristic == null) {
             status("Error: mCharacteristic was null in sendBtMessage");
             Log.e(TAG, lastState);

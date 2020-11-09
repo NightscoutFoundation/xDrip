@@ -221,7 +221,6 @@ public class JoH {
             ret +=":";
         }
         return ret.substring(0,ret.length()-1);
-            
     }
 
     public static byte[] tolerantHexStringToByteArray(String str) {

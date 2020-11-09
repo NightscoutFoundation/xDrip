@@ -65,7 +65,6 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
         return (lib_raw_value * LIBRE_MULTIPLIER); // to match (raw/8.5)*1000
     }
 
-   
     private static void createBGfromGD(GlucoseData gd, boolean use_smoothed_data, boolean quick) {
         final double converted;
         if (gd.glucoseLevelRaw > 0) {
@@ -191,7 +190,7 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
                 JoH.static_toast_long(gs(R.string.please_update_librealarm_to_use_oop_algorithm));
                 return;
             }
-            LibreOOPAlgorithm.SendData(object.data.raw_data, CaptureDateTime, tagid);
+            LibreOOPAlgorithm.sendData(object.data.raw_data, CaptureDateTime, tagid);
             return;
         }
         CalculateFromDataTransferObject(object, use_raw_);
