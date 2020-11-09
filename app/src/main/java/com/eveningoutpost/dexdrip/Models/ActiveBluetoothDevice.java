@@ -63,10 +63,7 @@ public class ActiveBluetoothDevice extends Model {
         return (activeBluetoothDevice != null && activeBluetoothDevice.connected);
     }
 
-
-
-
-    public static synchronized void SetDevice(String name, String address) {
+    public static synchronized void setDevice(String name, String address) {
         ActiveBluetoothDevice btDevice;
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
         synchronized (ActiveBluetoothDevice.table_lock) {
@@ -86,7 +83,5 @@ public class ActiveBluetoothDevice extends Model {
             btDevice.address = address;
             btDevice.save();
         }
-
     }
-    
 }

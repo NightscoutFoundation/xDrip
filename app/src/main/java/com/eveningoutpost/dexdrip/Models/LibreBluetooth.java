@@ -33,7 +33,7 @@ public class LibreBluetooth {
             return false;
         }
 
-        return activeBluetoothDevice.name.startsWith("ABBOTT");
+        return activeBluetoothDevice.name.startsWith(LibreOOPAlgorithm.getLibreDeviceName());
     }
 
     public static BridgeResponse decodeLibrePacket(byte[] buffer, int len) {
@@ -66,10 +66,10 @@ public class LibreBluetooth {
         }
         System.arraycopy(buffer, 0, s_full_data, s_acumulatedSize, buffer.length);
         s_acumulatedSize += buffer.length;
-        AreWeDone();
+        areWeDone();
     }
     
-    static void AreWeDone() {
+    static void areWeDone() {
         if(s_acumulatedSize < LIBRE_DATA_LENGTH ) {
             //Log.e(TAG,"Getting out, since not enough data s_acumulatedSize = " + s_acumulatedSize);
             return;
@@ -81,11 +81,12 @@ public class LibreBluetooth {
         Log.e(TAG, "We have all the data that we need " + s_acumulatedSize + HexDump.dumpHexString(s_full_data));
         if( !Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
             // Send to OOP2 for drcryption.
-            LibreOOPAlgorithm.LogIfOOP2NotAlive();
+            LibreOOPAlgorithm.logIfOOP2NotAlive();
             
             Libre2SensorData currentSensorData = Libre2SensorData.getSensorData(false);
             if(currentSensorData == null || currentSensorData.patchUid_ == null) {
-                Log.e(TAG, "AreWeDone - we have the data but patchUid == null");
+                Log.e(TAG, "areWeDone - we have the data but patchUid == null");
+                return;
             }
 
             byte []patchUid = currentSensorData.patchUid_;
@@ -93,16 +94,16 @@ public class LibreBluetooth {
                 patchUid =  new byte[]{(byte)0xEC, (byte)0x0B, (byte)0x48, (byte)0x00, (byte)0x00, (byte)0xa4, (byte)0x07, (byte)0xe0}; //EC0B480000A407E0
             }
             
-            Log.e(TAG, "AreWeDone patchUid = " + HexDump.dumpHexString(patchUid));
+            Log.e(TAG, "areWeDone patchUid = " + HexDump.dumpHexString(patchUid));
             
-            LibreOOPAlgorithm.SendBleData(s_full_data, JoH.tsl(), patchUid);
+            LibreOOPAlgorithm.sendBleData(s_full_data, JoH.tsl(), patchUid);
         }
 
         s_acumulatedSize = 0;
 
     }
 
-    static void InitBuffer(int expectedSize) {
+    static void initBuffer(int expectedSize) {
         s_full_data = new byte[expectedSize];
         s_acumulatedSize = 0;
 
@@ -110,10 +111,10 @@ public class LibreBluetooth {
 
     public static byte[] initialize() {
         Log.i(TAG, "initialize!");
-        InitBuffer(LIBRE_DATA_LENGTH);
-        UnlockBuffers unlockBuffers =  LibreOOPAlgorithm.SendgetStreamingUnlockPayload(true);
+        initBuffer(LIBRE_DATA_LENGTH);
+        UnlockBuffers unlockBuffers =  LibreOOPAlgorithm.sendgetStreamingUnlockPayload(true);
         if(unlockBuffers == null) {
-            Log.e(TAG, "SendgetStreamingUnlockPayload returned null");
+            Log.e(TAG, "sendgetStreamingUnlockPayload returned null");
             return null;
         }
         return unlockBuffers.btUnlockBuffer;
