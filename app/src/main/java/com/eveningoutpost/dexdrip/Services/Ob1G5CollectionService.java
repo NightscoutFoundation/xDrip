@@ -71,6 +71,8 @@ import com.polidea.rxandroidble2.scan.ScanResult;
 import com.polidea.rxandroidble2.scan.ScanSettings;
 
 import java.lang.reflect.Method;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -317,9 +319,19 @@ public class Ob1G5CollectionService extends G5BaseService {
                             UserError.Log.d(TAG, "Skipping Scanning! : Changing state due to minimize_scanning flags");
                             changeState(CONNECT_NOW);
                         } else {
-                            if (Build.VERSION.SDK_INT >= 29) { // TODO add preference option for this
-                                UserError.Log.d(TAG, "Attempting Android 10+ workaround unbonding");
-                                unBond();
+                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+                            try {
+                                // A security patch was introduced that will force users interaction re-pair a device
+                                // this is not whitelistable at this time so we should avoid unbonding if we have that patch
+                                Date secPatchDate = sdf.parse(Build.VERSION.SECURITY_PATCH);
+                                Date secPatchThatBrokeStuffDate = sdf.parse("2020-11-01");
+
+                                if ((Build.VERSION.SDK_INT >= 29) &&  (secPatchDate.compareTo(secPatchThatBrokeStuffDate)) <= 0) { // TODO add preference option for this
+                                    UserError.Log.d(TAG, "Attempting Android 10+ workaround unbonding");
+                                    unBond();
+                                }
+                            } catch (ParseException e) {
+                                e.printStackTrace();
                             }
                             scan_for_device();
                         }
@@ -389,6 +401,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                         handleWakeup();
                         break;
                 }
+
             } finally {
                 JoH.releaseWakeLock(wl);
             }
