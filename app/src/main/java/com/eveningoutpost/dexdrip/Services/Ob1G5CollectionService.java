@@ -372,8 +372,8 @@ public class Ob1G5CollectionService extends G5BaseService {
                         create_bond();
                         break;
                     case UNBOND:
-                        UserError.Log.d(TAG, "Unbond state");
-                        Ob1G5StateMachine.doUnBond(this, connection);
+                        UserError.Log.d(TAG, "Unbond state - not yet implemented");
+                        //Ob1G5StateMachine.doUnBond(this, connection);
                         break;
 
                     case RESET:
