@@ -29,13 +29,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.eveningoutpost.dexdrip.G5Model.Extensions;
+import com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine;
 import com.eveningoutpost.dexdrip.G5Model.Transmitter;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Dex_Constants;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
@@ -51,9 +51,6 @@ import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.google.android.gms.wearable.DataMap;
 
 import java.lang.reflect.Method;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -75,6 +72,7 @@ public class SystemStatusFragment extends Fragment {
     private Button forget_device;
     private Button futureDataDeleteButton;
     private ImageButton refresh;
+    private Button clearQueue;
     private SharedPreferences prefs;
     private BluetoothManager mBluetoothManager;
     private BluetoothAdapter mBluetoothAdapter;
@@ -186,6 +184,7 @@ public class SystemStatusFragment extends Fragment {
         forget_device = (Button) v.findViewById(R.id.forget_device);
         refresh = (ImageButton) v.findViewById(R.id.refresh_current_values);
         futureDataDeleteButton = (Button) v.findViewById(R.id.delete_future_data);
+        clearQueue = (Button) v.findViewById(R.id.clear_queue);
 
         //check for small devices:
         Display display = getActivity().getWindowManager().getDefaultDisplay();
@@ -212,6 +211,7 @@ public class SystemStatusFragment extends Fragment {
         restartButtonListener();
         forgetDeviceListener();
         refreshButtonListener();
+        clearQueueListener();
     }
 
     //@Override
@@ -543,6 +543,16 @@ public class SystemStatusFragment extends Fragment {
             public void onClick(View v) {
                 set_current_values();
                 requestWearCollectorStatus();
+            }
+        });
+    }
+
+
+    private void clearQueueListener() {
+        clearQueue.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                JoH.static_toast_short(gs(R.string.clearing_queue));
+                Ob1G5StateMachine.emptyQueue();
             }
         });
     }

@@ -2,7 +2,6 @@ package com.eveningoutpost.dexdrip;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -17,24 +16,19 @@ import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.NanoStatus;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
+
 import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 public class StopSensor extends ActivityWithMenu {
-   public Button button;
+    public Button button;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(!Sensor.isActive()) {
-            Intent intent = new Intent(this, StartNewSensor.class);
-            startActivity(intent);
-            finish();
-        } else {
-            JoH.fixActionBar(this);
-            setContentView(R.layout.activity_stop_sensor);
-            button = (Button)findViewById(R.id.stop_sensor);
-            addListenerOnButton();
-        }
+        JoH.fixActionBar(this);
+        setContentView(R.layout.activity_stop_sensor);
+        button = (Button) findViewById(R.id.stop_sensor);
+        addListenerOnButton();
     }
 
     @Override
@@ -44,7 +38,7 @@ public class StopSensor extends ActivityWithMenu {
 
     public void addListenerOnButton() {
 
-        button = (Button)findViewById(R.id.stop_sensor);
+        button = (Button) findViewById(R.id.stop_sensor);
 
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -58,7 +52,7 @@ public class StopSensor extends ActivityWithMenu {
 
     public synchronized static void stop() {
         Sensor.stopSensor();
-        Inevitable.task("stop-sensor",1000, Sensor::stopSensor);
+        Inevitable.task("stop-sensor", 1000, Sensor::stopSensor);
         AlertPlayer.getPlayer().stopAlert(xdrip.getAppContext(), true, false);
 
         JoH.static_toast_long(gs(R.string.sensor_stopped));

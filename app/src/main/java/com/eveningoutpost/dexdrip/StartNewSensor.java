@@ -4,11 +4,9 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.Button;
@@ -38,7 +36,6 @@ import java.util.Date;
 
 import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
 import static com.eveningoutpost.dexdrip.Models.BgReading.AGE_ADJUSTMENT_TIME;
-
 import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 public class StartNewSensor extends ActivityWithMenu {
@@ -53,18 +50,12 @@ public class StartNewSensor extends ActivityWithMenu {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (!Sensor.isActive()) {
-            JoH.fixActionBar(this);
-            setContentView(R.layout.activity_start_new_sensor);
-            button = (Button) findViewById(R.id.startNewSensor);
-            //dp = (DatePicker)findViewById(R.id.datePicker);
-            //tp = (TimePicker)findViewById(R.id.timePicker);
-            addListenerOnButton();
-        } else {
-            Intent intent = new Intent(this, StopSensor.class);
-            startActivity(intent);
-            finish();
-        }
+        JoH.fixActionBar(this);
+        setContentView(R.layout.activity_start_new_sensor);
+        button = (Button) findViewById(R.id.startNewSensor);
+        //dp = (DatePicker)findViewById(R.id.datePicker);
+        //tp = (TimePicker)findViewById(R.id.timePicker);
+        addListenerOnButton();
     }
 
     @Override
@@ -179,7 +170,7 @@ public class StartNewSensor extends ActivityWithMenu {
 
         LibreAlarmReceiver.clearSensorStats();
         // TODO this is just a timer and could be confusing - consider removing this notification
-       // JoH.scheduleNotification(xdrip.getAppContext(), "Sensor should be ready", xdrip.getAppContext().getString(R.string.please_enter_two_calibrations_to_get_started), 60 * 130, Home.SENSOR_READY_ID);
+        // JoH.scheduleNotification(xdrip.getAppContext(), "Sensor should be ready", xdrip.getAppContext().getString(R.string.please_enter_two_calibrations_to_get_started), 60 * 130, Home.SENSOR_READY_ID);
 
         // reverse libre hacky workaround
         Treatments.SensorStart((DexCollectionType.hasLibre() ? startTime + (3600000) : startTime));

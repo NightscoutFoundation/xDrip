@@ -902,6 +902,7 @@
     <string name="forget_device">Forget Device</string>
     <string name="other_notes">Other Notes:</string>
     <string name="delete_future_data">Delete Future Data</string>
+    <string name="clear_queue">Clear Queue</string>
     <string name="show_only_untranslated">Show only untranslated</string>
     <string name="collecting_initial_readings">Collecting Initial Readings</string>
     <string name="data_collector_running">Data Collector Running</string>
@@ -1566,6 +1567,7 @@
     <string name="remote_snooze">Remote snooze..</string>
     <string name="sensor_stopped">Sensor stopped</string>
     <string name="restarting_collector">Restarting Collector!</string>
+    <string name="clearing_queue">Clearing Queue!</string>
     <string name="follower_deleted_succesfully">Follower deleted succesfully</string>
     <string name="failed_to_delete_follower">Failed to delete follower</string>
     <string name="input_not_found_cancelled">Input not found! Cancelled!</string>

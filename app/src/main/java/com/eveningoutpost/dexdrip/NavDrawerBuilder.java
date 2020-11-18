@@ -16,6 +16,7 @@ import com.eveningoutpost.dexdrip.Tables.BgReadingTable;
 import com.eveningoutpost.dexdrip.Tables.CalibrationDataTable;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Experience;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.stats.StatsActivity;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.Preferences;
@@ -74,7 +75,7 @@ public class NavDrawerBuilder {
                             if (bGreadings_in_last_30_mins.size() >= 2) {
                                 long time_now = JoH.tsl();
                                 if ((time_now - last_two_calibrations.get(0).timestamp < (1000 * 60 * 60))
-                                && !Ob1G5CollectionService.isG5WantingCalibration()) { //Put steps in place to discourage over calibration
+                                        && !Ob1G5CollectionService.isG5WantingCalibration()) { //Put steps in place to discourage over calibration
                                     this.nav_drawer_options.add(context.getString(R.string.override_calibration));
                                     this.nav_drawer_intents.add(new Intent(context, CalibrationOverride.class));
                                 } else {
@@ -93,13 +94,23 @@ public class NavDrawerBuilder {
                         }
                     }
                 }
+            }
+            if (Pref.getBooleanDefaultFalse("engineering_mode")) {
                 this.nav_drawer_options.add(context.getString(R.string.stop_sensor));
                 this.nav_drawer_intents.add(new Intent(context, StopSensor.class));
-            } else {
+
                 this.nav_drawer_options.add(context.getString(R.string.start_sensor));
                 this.nav_drawer_intents.add(new Intent(context, StartNewSensor.class));
             }
-        }
+            else if (!Pref.getBooleanDefaultFalse("engineering_mode") && is_active_sensor) {
+                this.nav_drawer_options.add(context.getString(R.string.stop_sensor));
+                this.nav_drawer_intents.add(new Intent(context, StopSensor.class));
+            }
+            else {
+                this.nav_drawer_options.add(context.getString(R.string.start_sensor));
+                this.nav_drawer_intents.add(new Intent(context, StartNewSensor.class));
+                }
+            }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
             if (DexCollectionType.hasBluetooth() && (DexCollectionType.getDexCollectionType() != DexCollectionType.DexcomG5)) {
