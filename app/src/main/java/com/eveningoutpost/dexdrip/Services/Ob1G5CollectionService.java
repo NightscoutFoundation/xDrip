@@ -243,6 +243,7 @@ public class Ob1G5CollectionService extends G5BaseService {
         CHECK_AUTH("Checking Auth"),
         PREBOND("Bond Prepare"),
         BOND("Bonding"),
+        UNBOND("UnBonding"),
         RESET("Reseting"),
         GET_DATA("Getting Data"),
         CLOSE("Sleeping"),
@@ -317,9 +318,9 @@ public class Ob1G5CollectionService extends G5BaseService {
                             UserError.Log.d(TAG, "Skipping Scanning! : Changing state due to minimize_scanning flags");
                             changeState(CONNECT_NOW);
                         } else {
-                            if (Build.VERSION.SDK_INT >= 29) { // TODO add preference option for this
+                            if ((Build.VERSION.SDK_INT >= 29) && (Pref.getBooleanDefaultFalse("ob1_android10workaround"))) {
                                 UserError.Log.d(TAG, "Attempting Android 10+ workaround unbonding");
-                                unBond();
+                                unbondIfAllowed();
                             }
                             scan_for_device();
                         }
@@ -370,6 +371,11 @@ public class Ob1G5CollectionService extends G5BaseService {
                         }
                         create_bond();
                         break;
+                    case UNBOND:
+                        UserError.Log.d(TAG, "Unbond state - not yet implemented");
+                        //Ob1G5StateMachine.doUnBond(this, connection);
+                        break;
+
                     case RESET:
                         UserError.Log.d(TAG, "Entering hard reset state");
                         Ob1G5StateMachine.doReset(this, connection);
@@ -406,6 +412,9 @@ public class Ob1G5CollectionService extends G5BaseService {
         if (wholeHouse) {
             estimateAnticipateFromLinkedData();
             alwaysMinimize = !preScanFailureMarker;
+        }
+        if (!alwaysMinimize) {
+            alwaysMinimize = Pref.getBooleanDefaultFalse("ob1_avoid_scanning");
         }
         return minimize_scanning && transmitterMAC != null && (!lastConnectFailed || (modulo == 1) || alwaysMinimize) && (DexSyncKeeper.isReady(transmitterID));
     }
@@ -650,7 +659,7 @@ public class Ob1G5CollectionService extends G5BaseService {
         UserError.Log.d(TAG, "Attempting to create bond, device is : " + (isDeviceLocallyBonded ? "BONDED" : "NOT Bonded"));
 
         if (isDeviceLocallyBonded && getInitiateBondingFlag()) {
-            UserError.Log.d(TAG, "Device is marked as bonded but we are being asked to bond so attempting to unbond first");
+            UserError.Log.e(TAG, "Device is marked as bonded but we are being asked to bond so attempting to unbond first");
             unbondIfAllowed();
             changeState(CLOSE);
         } else {
