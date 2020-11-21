@@ -379,7 +379,7 @@ public class NFCReaderX {
             String SensorSN = LibreUtils.decodeSerialNumberKey(patchUid);
 
             // This is the nfc command to enable streaming
-            Pair<byte[], String> unlockData = LibreOOPAlgorithm.nfcSendgetStreamingUnlockPayload();
+            Pair<byte[], String> unlockData = LibreOOPAlgorithm.nfcSendgetBlutoothEnablePayload();
             if (unlockData == null) {
                 Log.e(TAG, "unlockData is null, not enabeling streaming");
                 return;
@@ -635,7 +635,7 @@ public class NFCReaderX {
                         JoH.static_toast_short(gs(R.string.nfc_io_error));
                         vibrate(context, 3);
                     } catch (Exception e) {
-                        Log.e(TAG, "Got exception reading nfc in background: " + e.toString());
+                        Log.e(TAG, "Got exception reading nfc in background: ",e);
                         return null;
                     } finally {
                         try {

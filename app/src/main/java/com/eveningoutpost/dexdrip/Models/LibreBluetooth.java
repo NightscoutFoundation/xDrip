@@ -112,9 +112,9 @@ public class LibreBluetooth {
     public static byte[] initialize() {
         Log.i(TAG, "initialize!");
         initBuffer(LIBRE_DATA_LENGTH);
-        UnlockBuffers unlockBuffers =  LibreOOPAlgorithm.sendgetStreamingUnlockPayload(true);
+        UnlockBuffers unlockBuffers =  LibreOOPAlgorithm.sendGetBlutoothEnablePayload(true);
         if(unlockBuffers == null) {
-            Log.e(TAG, "sendgetStreamingUnlockPayload returned null");
+            Log.e(TAG, "sendGetBlutoothEnablePayload returned null");
             return null;
         }
         return unlockBuffers.btUnlockBuffer;

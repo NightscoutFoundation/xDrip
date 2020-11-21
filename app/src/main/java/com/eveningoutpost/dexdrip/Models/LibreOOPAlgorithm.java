@@ -142,39 +142,39 @@ public class LibreOOPAlgorithm {
             return null;
         }
         if(ret == null) {
-            Log.e(TAG, "waitForUnlockPayload (sendgetStreamingUnlockPayload) returning null");
+            Log.e(TAG, "waitForUnlockPayload (sendGetBlutoothEnablePayload) returning null");
         } else {
-            Log.e(TAG, "waitForUnlockPayload (sendgetStreamingUnlockPayload) got data payload is " + JoH.bytesToHex(ret.btUnlockBuffer) + " "+  JoH.bytesToHex(ret.nfcUnlockBuffer));
+            Log.e(TAG, "waitForUnlockPayload (sendGetBlutoothEnablePayload) got data payload is " + JoH.bytesToHex(ret.btUnlockBuffer) + " "+  JoH.bytesToHex(ret.nfcUnlockBuffer));
         }
         return ret;
     }
     
-    static public  UnlockBuffers sendgetStreamingUnlockPayload(boolean increaseUnlockCount) {
-        Libre2SensorData currentSensorData = Libre2SensorData.getSensorData(increaseUnlockCount);
+    static public  UnlockBuffers sendGetBlutoothEnablePayload(boolean increaseConnectionIndex) {
+        Libre2SensorData currentSensorData = Libre2SensorData.getSensorData(increaseConnectionIndex);
         if(currentSensorData == null) {
-            Log.e(TAG, "sendgetStreamingUnlockPayload currentSensorData == null");
+            Log.e(TAG, "sendGetBlutoothEnablePayload currentSensorData == null");
             return null;
         }
-        Log.e(TAG, "sendgetStreamingUnlockPayload called enableTime_ = " + currentSensorData.enableTime_ +
-                " unlockCount_ " + currentSensorData.unlockCount_ + 
+        Log.e(TAG, "sendGetBlutoothEnablePayload called enableTime_ = " + currentSensorData.enableTime_ +
+                " connectionIndex_ " + currentSensorData.connectionIndex_ + 
                  " patchUid " + JoH.bytesToHex(currentSensorData.patchUid_) +
                  " patchInfo " + JoH.bytesToHex(currentSensorData.patchInfo_) +
-                " increaseUnlockCount " + increaseUnlockCount);
+                " increaseConnectionIndex " + increaseConnectionIndex);
         
         Bundle bundle = new Bundle();
         bundle.putInt(Intents.LIBRE_RAW_ID, android.os.Process.myPid());
         bundle.putByteArray(Intents.LIBRE_PATCH_UID_BUFFER, currentSensorData.patchUid_);
         bundle.putByteArray(Intents.LIBRE_PATCH_INFO_BUFFER, currentSensorData.patchInfo_);
         bundle.putInt(Intents.ENABLE_TIME, currentSensorData.enableTime_);
-        bundle.putInt(Intents.UNLOCK_COUNT, currentSensorData.unlockCount_);
-        sendIntent(Intents.XDRIP_PLUS_STREAMING_UNLOCK, bundle);
+        bundle.putInt(Intents.CONNECTION_INDEX, currentSensorData.connectionIndex_);
+        sendIntent(Intents.XDRIP_PLUS_BLUETOOTH_ENABLE, bundle);
         return waitForUnlockPayload();
     }
     
-    static public  Pair<byte[], String> nfcSendgetStreamingUnlockPayload() {
-        UnlockBuffers unlockBuffers = sendgetStreamingUnlockPayload(false);
+    static public  Pair<byte[], String> nfcSendgetBlutoothEnablePayload() {
+        UnlockBuffers unlockBuffers = sendGetBlutoothEnablePayload(false);
         if(unlockBuffers == null) {
-            Log.e(TAG, "nfcSendgetStreamingUnlockPayload returning null");
+            Log.e(TAG, "nfcSendgetBlutoothEnablePayload returning null");
             return null;
         }
         return new Pair(unlockBuffers.nfcUnlockBuffer, unlockBuffers.deviceName);
@@ -337,9 +337,9 @@ public class LibreOOPAlgorithm {
     }
     
     
-    static public void  handleOop2StreamingUnlockResult(byte[] bt_unlock_buffer, byte[] nfc_unlock_buffer, byte[] patchUid, byte[] patchInfo, String device_name) {
+    static public void  handleOop2BlutoothEnableResult(byte[] bt_unlock_buffer, byte[] nfc_unlock_buffer, byte[] patchUid, byte[] patchInfo, String device_name) {
         lastRecievedData = JoH.tsl();
-        Log.e(TAG, "handleOop2StreamingUnlockResult - data bt_unlock_buffer " + JoH.bytesToHex(bt_unlock_buffer) + "\n nfc_unlock_buffer "+ JoH.bytesToHex(nfc_unlock_buffer));
+        Log.e(TAG, "handleOop2BlutoothEnableResult - data bt_unlock_buffer " + JoH.bytesToHex(bt_unlock_buffer) + "\n nfc_unlock_buffer "+ JoH.bytesToHex(nfc_unlock_buffer));
         UnlockBlockingQueue.clear();
         try {
             UnlockBlockingQueue.add(new UnlockBuffers(bt_unlock_buffer, nfc_unlock_buffer, device_name));

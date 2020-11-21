@@ -625,7 +625,7 @@ public class DexCollectionService extends Service implements BtCallBack {
                 if(reply != null) {
                     sendBtMessage(reply);
                 } else {
-                    Log.e(TAG, "Not sending, No streaming unlock buffer.");
+                    Log.e(TAG, "Not sending, No bluetooth enable buffer.");
                 }
             }
 

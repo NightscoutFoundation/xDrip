@@ -70,14 +70,14 @@ public interface Intents {
     // oop 2 
     String XDRIP_DECODE_FARM_RESULT = "com.eveningoutpost.dexdrip.OOP2_DECODE_FARM_RESULT";
     String XDRIP_DECODE_BLE_RESULT = "com.eveningoutpost.dexdrip.OOP2_DECODE_BLE_RESULT";
-    String XDRIP_STREAMING_UNLOCK_RESULT = "com.eveningoutpost.dexdrip.OOP2_STREAMING_UNLOCK_RESULT";
+    String XDRIP_BLUETOOTH_ENABLE_RESULT = "com.eveningoutpost.dexdrip.OOP2_BLUETOOTH_ENABLE_RESULT";
     String XDRIP_PLUS_LIBRE_BLE_DATA = "com.eveningoutpost.dexdrip.LIBRE_BLE_DATA";
-    String XDRIP_PLUS_STREAMING_UNLOCK = "com.eveningoutpost.dexdrip.STREAMING_UNLOCK";
+    String XDRIP_PLUS_BLUETOOTH_ENABLE = "com.eveningoutpost.dexdrip.BLUETOOTH_ENABLE";
     String DECODED_BUFFER = "DecodedBuffer";
     String PATCH_UID = "PatchUid";
     String PATCH_INFO = "PatchInfo";
     String ENABLE_TIME = "EnableTime";
-    String UNLOCK_COUNT = "UnlockCount";
+    String CONNECTION_INDEX = "ConnectionIndex";
     String BT_UNLOCK_BUFFER = "BtUnlockBuffer";
     String NFC_UNLOCK_BUFFER = "NfcUnlockBuffer";
     String DEVICE_NAME = "DeviceName";

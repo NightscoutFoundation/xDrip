@@ -474,7 +474,7 @@
                 <action android:name="com.eveningoutpost.dexdrip.NS_EMULATOR" />
                 <action android:name="com.eveningoutpost.dexdrip.OOP2_DECODE_FARM_RESULT" />
                 <action android:name="com.eveningoutpost.dexdrip.OOP2_DECODE_BLE_RESULT" />
-                <action android:name="com.eveningoutpost.dexdrip.OOP2_STREAMING_UNLOCK_RESULT" />
+                <action android:name="com.eveningoutpost.dexdrip.OOP2_BLUETOOTH_ENABLE_RESULT" />
             </intent-filter>
         </receiver>
         <receiver android:name="com.eveningoutpost.dexdrip.watch.thinjam.io.ThinJamApiReceiver">

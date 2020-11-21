@@ -205,9 +205,9 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
                                 handleOop2DecodeBleResult(bundle);
                                 break;
                                 
-                            case Intents.XDRIP_STREAMING_UNLOCK_RESULT:
-                                Log.e(TAG, "recieved message XDRIP_STREAMING_UNLOCK_RESULT");
-                                handleOop2StreamingUnlockResult(bundle);
+                            case Intents.XDRIP_BLUETOOTH_ENABLE_RESULT:
+                                Log.e(TAG, "recieved message XDRIP_BLUETOOTH_ENABLE_RESULT");
+                                handleOop2BlutoothEnableResult(bundle);
                                 break;
 
                             default:
@@ -312,7 +312,7 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
         LibreOOPAlgorithm.handleDecodedBleResult(CaptureDateTime, ble_data, patchUid);
     }
     
-    private void handleOop2StreamingUnlockResult(Bundle bundle) {
+    private void handleOop2BlutoothEnableResult(Bundle bundle) {
         if(Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
             Log.e(TAG, "External OOP algorithm is on, ignoring data.");
             return;
@@ -344,7 +344,7 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
         byte[] nfc_unlock_buffer = Base64.decode(nfcUnlockBufferString, Base64.NO_WRAP);
         byte []patchUid = Base64.decode(patchUidString, Base64.NO_WRAP);
         byte []patchInfo = Base64.decode(patchInfoString, Base64.NO_WRAP);
-        LibreOOPAlgorithm.handleOop2StreamingUnlockResult(bt_unlock_buffer, nfc_unlock_buffer, patchUid, patchInfo, deviceName);
+        LibreOOPAlgorithm.handleOop2BlutoothEnableResult(bt_unlock_buffer, nfc_unlock_buffer, patchUid, patchInfo, deviceName);
     }
 
 
