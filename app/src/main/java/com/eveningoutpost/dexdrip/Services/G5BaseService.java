@@ -39,11 +39,12 @@ public abstract class G5BaseService extends Service {
 
     public static volatile boolean getBatteryStatusNow = false;
     protected static volatile boolean hardResetTransmitterNow = false;
+    public static volatile boolean unBondAndStop = false;
 
-    protected static String lastState = "Not running";
-    protected static String lastStateWatch = "Not running";
-    protected static long static_last_timestamp = 0;
-    protected static long static_last_timestamp_watch = 0;
+    protected static volatile String lastState = "Not running";
+    protected static volatile String lastStateWatch = "Not running";
+    protected static volatile long static_last_timestamp = 0;
+    protected static volatile long static_last_timestamp_watch = 0;
 
     protected ForegroundServiceStarter foregroundServiceStarter;
     protected Service service;
