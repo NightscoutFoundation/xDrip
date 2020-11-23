@@ -319,13 +319,13 @@ public class MiBandService extends JamBaseBluetoothSequencer {
             case "update_bg":
                 if (isNightMode) {
                     UserError.Log.d(TAG, "Skip bg update because of night mode");
-                    break;
+                    return;
                 }
                 boolean curReadingStatusIsStale = isStaleReading();
 
                 if (prevReadingStatusIsStale && curReadingStatusIsStale) {
                     UserError.Log.d(TAG, "Skip bg update because of staleReading");
-                    break;
+                    return;
                 }
 
                 prevReadingStatusIsStale = curReadingStatusIsStale;
@@ -339,6 +339,8 @@ public class MiBandService extends JamBaseBluetoothSequencer {
             case "update_bg_as_notification":
                 ((MiBandState) mState).setSendReadingSequence();
                 break;
+            default:
+                return;
         }
 
         changeState(INIT);
