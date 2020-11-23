@@ -170,6 +170,26 @@ public enum DexCollectionType {
         return getCollectorServiceClass(getDexCollectionType());
     }
 
+    public static boolean hasSensorStartStopSupport(){
+        switch (getDexCollectionType()) {
+            case DexcomG5:
+            case LibreReceiver:
+            case Medtrum:
+                return true;
+
+            case DexcomShare:
+            case WifiWixel:
+            case Mock:
+            case Follower:
+            case NSFollow:
+            case SHFollow:
+                return false;
+
+            default:
+                return true;
+        }
+    }
+
     public static Class<?> getCollectorServiceClass(final DexCollectionType type) {
         switch (type) {
             case DexcomG5:
