@@ -56,7 +56,6 @@ public enum DexCollectionType {
     private static final HashSet<DexCollectionType> usesBattery = new HashSet<>();
     private static final HashSet<DexCollectionType> usesDexcomRaw = new HashSet<>();
     private static final HashSet<DexCollectionType> usesTransmitterBattery = new HashSet<>();
-
     private static final HashSet<DexCollectionType> supportsSensorStartStop = new HashSet<>();
 
     public static final String DEX_COLLECTION_METHOD = "dex_collection_method";
@@ -132,8 +131,6 @@ public enum DexCollectionType {
         return usesBattery.contains(getDexCollectionType());
     }
 
-    public static boolean hasSensorStartStopSupport() { return supportsSensorStartStop.contains(getDexCollectionType()); }
-
     public static boolean hasSensor() {
         return getDexCollectionType() != DexCollectionType.Manual;
     }
@@ -144,6 +141,10 @@ public enum DexCollectionType {
 
     public static boolean usesDexCollectionService(DexCollectionType type) {
         return usesBtWixel.contains(type) || usesXbridge.contains(type) || type.equals(LimiTTer);
+    }
+
+    public static boolean hasSensorStartStopSupport() {
+        return supportsSensorStartStop.contains(getDexCollectionType());
     }
 
     public static boolean usesClassicTransmitterBattery() {
