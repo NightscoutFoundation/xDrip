@@ -24,13 +24,6 @@ import com.eveningoutpost.dexdrip.utils.Preferences;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.eveningoutpost.dexdrip.utils.DexCollectionType.DexcomShare;
-import static com.eveningoutpost.dexdrip.utils.DexCollectionType.Disabled;
-import static com.eveningoutpost.dexdrip.utils.DexCollectionType.Follower;
-import static com.eveningoutpost.dexdrip.utils.DexCollectionType.NSFollow;
-import static com.eveningoutpost.dexdrip.utils.DexCollectionType.SHFollow;
-import static com.eveningoutpost.dexdrip.utils.DexCollectionType.hasSensorStartStopSupport;
-
 /**
  * Created by Emma Black on 11/5/14.
  */
@@ -109,16 +102,13 @@ public class NavDrawerBuilder {
                 this.nav_drawer_options.add(context.getString(R.string.start_sensor));
                 this.nav_drawer_intents.add(new Intent(context, StartNewSensor.class));
             }
-
-            else if (!Pref.getBooleanDefaultFalse("engineering_mode")) {
-                if (hasSensorStartStopSupport()) {
-                    if (is_active_sensor) {
-                        this.nav_drawer_options.add(context.getString(R.string.stop_sensor));
-                        this.nav_drawer_intents.add(new Intent(context, StopSensor.class));
-                    } else {
-                        this.nav_drawer_options.add(context.getString(R.string.start_sensor));
-                        this.nav_drawer_intents.add(new Intent(context, StartNewSensor.class));
-                    }
+            else if (!Pref.getBooleanDefaultFalse("engineering_mode") && DexCollectionType.hasSensorStartStopSupport()) {
+                if (is_active_sensor) {
+                    this.nav_drawer_options.add(context.getString(R.string.stop_sensor));
+                    this.nav_drawer_intents.add(new Intent(context, StopSensor.class));
+                } else {
+                    this.nav_drawer_options.add(context.getString(R.string.start_sensor));
+                    this.nav_drawer_intents.add(new Intent(context, StartNewSensor.class));
                 }
             }
         }

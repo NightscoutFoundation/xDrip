@@ -57,6 +57,8 @@ public enum DexCollectionType {
     private static final HashSet<DexCollectionType> usesDexcomRaw = new HashSet<>();
     private static final HashSet<DexCollectionType> usesTransmitterBattery = new HashSet<>();
 
+    private static final HashSet<DexCollectionType> supportsSensorStartStop = new HashSet<>();
+
     public static final String DEX_COLLECTION_METHOD = "dex_collection_method";
 
     public static boolean does_have_filtered = false; // TODO this could get messy with GC
@@ -68,7 +70,6 @@ public enum DexCollectionType {
         for (DexCollectionType dct : values()) {
             mapToInternalName.put(dct.internalName, dct);
         }
-
         Collections.addAll(usesBluetooth, BluetoothWixel, DexcomShare, DexbridgeWixel, LimiTTer, WifiBlueToothWixel, DexcomG5, WifiDexBridgeWixel, LimiTTerWifi, Medtrum);
         Collections.addAll(usesBtWixel, BluetoothWixel, LimiTTer, WifiBlueToothWixel, LimiTTerWifi); // Name is misleading here, should probably be using dexcollectionservice
         Collections.addAll(usesWifi, WifiBlueToothWixel, WifiWixel, WifiDexBridgeWixel, Mock, LimiTTerWifi, LibreWifi);
@@ -78,6 +79,7 @@ public enum DexCollectionType {
         Collections.addAll(usesBattery, BluetoothWixel, DexbridgeWixel, WifiBlueToothWixel, WifiDexBridgeWixel, Follower, LimiTTer, LibreAlarm, LimiTTerWifi, LibreWifi); // parakeet separate
         Collections.addAll(usesDexcomRaw, BluetoothWixel, DexbridgeWixel, WifiWixel, WifiBlueToothWixel, DexcomG5, WifiDexBridgeWixel, Mock);
         Collections.addAll(usesTransmitterBattery, WifiWixel, BluetoothWixel, DexbridgeWixel, WifiBlueToothWixel, WifiDexBridgeWixel); // G4 transmitter battery
+        Collections.addAll(supportsSensorStartStop, BluetoothWixel, DexbridgeWixel, LimiTTer, LimiTTerWifi, LibreWifi, WifiBlueToothWixel, WifiWixel, DexcomG5, DexcomG6, WifiDexBridgeWixel, LibreAlarm, Medtrum, LibreReceiver);
     }
 
 
@@ -130,6 +132,8 @@ public enum DexCollectionType {
         return usesBattery.contains(getDexCollectionType());
     }
 
+    public static boolean hasSensorStartStopSupport() { return supportsSensorStartStop.contains(getDexCollectionType()); }
+
     public static boolean hasSensor() {
         return getDexCollectionType() != DexCollectionType.Manual;
     }
@@ -168,26 +172,6 @@ public enum DexCollectionType {
 
     public static Class<?> getCollectorServiceClass() {
         return getCollectorServiceClass(getDexCollectionType());
-    }
-
-    public static boolean hasSensorStartStopSupport(){
-        switch (getDexCollectionType()) {
-            case DexcomG5:
-            case LibreReceiver:
-            case Medtrum:
-                return true;
-
-            case DexcomShare:
-            case WifiWixel:
-            case Mock:
-            case Follower:
-            case NSFollow:
-            case SHFollow:
-                return false;
-
-            default:
-                return true;
-        }
     }
 
     public static Class<?> getCollectorServiceClass(final DexCollectionType type) {
