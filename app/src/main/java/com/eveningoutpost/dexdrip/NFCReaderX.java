@@ -2,11 +2,13 @@ package com.eveningoutpost.dexdrip;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.nfc.NfcAdapter;
 import android.nfc.NfcManager;
@@ -18,8 +20,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.os.Vibrator;
+import android.support.v7.preference.PreferenceManager;
 import android.util.Pair;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
+import android.widget.CheckBox;
 
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
@@ -41,13 +47,12 @@ import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.Models.LibreOOPAlgorithm.SensorType;
 import com.eveningoutpost.dexdrip.watch.thinjam.messages.BaseTx;
 
-
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+
 import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 // From LibreAlarm et al
@@ -70,6 +75,7 @@ public class NFCReaderX {
     private static final Lock read_lock = new ReentrantLock();
     private static final boolean useReaderMode = true;
     private static boolean nfc_enabled = false;
+    private static final String ENABLE_BLUETOOTH_TIMESTAMP = "enable_bluetooth_timestamp";
 
     
     // For libre2 emulation only
@@ -80,6 +86,13 @@ public class NFCReaderX {
     public static boolean use_fake_de_data() {
         //Pref.setBoolean("use_fake_de_data", true);
         return Pref.getBooleanDefaultFalse("use_fake_de_data");
+    }
+
+    static boolean enable_bluetooth_ask_user = false;
+    enum ENABLE_BLUETOOTH_SET {
+        ALWAYS_ALLOW,
+        NEVER_ALLOW,
+        ASK
     }
 
     
@@ -316,8 +329,82 @@ public class NFCReaderX {
         return true; // Checksum tests have passed.
     }
 
+    public static void enableBluetoothAskUser(Activity context) {
+        final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
+        LayoutInflater inflater = context.getLayoutInflater();
+        View  dialogView = inflater.inflate(R.layout.activity_enable_bluetooth, null);
+
+        dialogBuilder.setView(dialogView);
+        final AlertDialog show = dialogBuilder.show();
+        
+        final CheckBox cbx = (CheckBox) dialogView.findViewById(R.id.enable_streaming_dont_ask_again);
+
+        Button enableStreamingYesButton = (Button) dialogView.findViewById(R.id.enable_streaming_yes);
+        enableStreamingYesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+                if(cbx.isChecked()) {
+                    prefs.edit().putString("libre2_enable_bluetooth_streaming", "enable_streaming_always").apply();
+                }
+                Pref.setLong(ENABLE_BLUETOOTH_TIMESTAMP, JoH.tsl());
+                show.dismiss();
+            }
+        });
+
+        Button enableStreamingNoButton = (Button) dialogView.findViewById(R.id.enable_streaming_no);
+        enableStreamingNoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+                if(cbx.isChecked()) {
+                    prefs.edit().putString("libre2_enable_bluetooth_streaming", "enable_streaming_never").apply();
+                }
+                Pref.setLong(ENABLE_BLUETOOTH_TIMESTAMP, 0);
+                show.dismiss();
+            }
+        });
+
+    }
+
     private static class NfcVReaderTask extends AsyncTask<Tag, Void, Tag> {
 
+        static ENABLE_BLUETOOTH_SET readEnableBluetoothAllowed(Context context) {
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            String enable_streaming = prefs.getString("libre2_enable_bluetooth_streaming", "enable_streaming_ask");
+            switch(enable_streaming) {
+                case "enable_streaming_always":
+                    return ENABLE_BLUETOOTH_SET.ALWAYS_ALLOW;
+                case "enable_streaming_never":
+                    return ENABLE_BLUETOOTH_SET.NEVER_ALLOW;
+                case "enable_streaming_ask":
+                    return ENABLE_BLUETOOTH_SET.ASK;
+
+            }
+            Log.e(TAG, "libre2_enable_bluetooth_streaming bad value - not connecting" + enable_streaming);
+            return ENABLE_BLUETOOTH_SET.NEVER_ALLOW;
+        }
+
+        static boolean enableBluetoothAllowed(Context context) {
+            enable_bluetooth_ask_user = false;
+            ENABLE_BLUETOOTH_SET ebs = readEnableBluetoothAllowed(context);
+            switch (ebs)  {
+                case NEVER_ALLOW:
+                    return false;
+                case ALWAYS_ALLOW:
+                    return true;
+                default:
+                    // act based on elapsed time,
+            }
+            if(JoH.msSince(Pref.getLong(ENABLE_BLUETOOTH_TIMESTAMP, 0)) < 2 * MINUTE) {
+                return true;
+            }
+            // We still don't know what to do, so returning false, but we will ask the user.
+            enable_bluetooth_ask_user = true;
+            return false;
+        }
+        
+        
         Activity context;
         boolean succeeded = false;
 
@@ -361,7 +448,12 @@ public class NFCReaderX {
                 } else {
                     Log.d(TAG, "Scan did not succeed so ignoring buffer");
                 }
-                Home.startHomeWithExtra(context, null, null);
+                Log.d(TAG,"calling startHomeWithExtra");
+                if (enable_bluetooth_ask_user) {
+                    Home.startHomeWithExtra(context, Home.ENABLE_STREAMING_DIALOG, "");
+                } else {
+                    Home.startHomeWithExtra(context, null, null);
+                }
 
             } catch (IllegalStateException e) {
                 Log.e(TAG, "Illegal state exception in postExecute: " + e);
@@ -373,7 +465,10 @@ public class NFCReaderX {
         }
 
         void startLibre2Streaming(NfcV nfcvTag, byte[] patchUid, byte[] patchInfo) throws InterruptedException {
-            // Should this depend on the UI???????
+            if(!enableBluetoothAllowed(context)) {
+                Log.e(TAG, "Sensor is libre 2, enabeling BT not allowed");
+                return;
+            }
             Log.e(TAG, "Sensor is libre 2, enabeling BT");
             
             String SensorSN = LibreUtils.decodeSerialNumberKey(patchUid);
@@ -611,7 +706,7 @@ public class NFCReaderX {
                                         Thread.sleep(100);
                                     }
                                 }
-                                if (!d)
+                                if (d)
                                     Log.e(TAG, HexDump.dumpHexString(oneBlock, 0, oneBlock.length));
                                 if (oneBlock.length != correct_reply_size) {
                                     Log.e(TAG, "Incorrect block size: " + oneBlock.length + " vs " + correct_reply_size);
