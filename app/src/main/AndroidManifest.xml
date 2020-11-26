@@ -715,7 +715,9 @@
             android:configChanges="orientation|screenSize"
             android:launchMode="singleTask"
             android:label="BlueJay Admin"/>
-        <service android:name=".watch.thinjam.BlueJayService" />
+        <service android:name=".watch.thinjam.BlueJayService"
+            android:foregroundServiceType="connectedDevice|location"
+            />
     </application>
 
 </manifest>
