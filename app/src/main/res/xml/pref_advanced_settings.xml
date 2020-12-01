@@ -844,6 +844,13 @@
                 android:switchTextOff="@string/short_off_text_for_switches"
                 android:switchTextOn="@string/short_on_text_for_switches"
                 android:title="@string/speak_readings" />
+            <SwitchPreference
+                android:defaultValue="false"
+                android:key="@string/pref_car_loud_readings_key"
+                android:title="@string/pref_car_loud_readings"
+                android:summary="@string/pref_car_loud_readings_summary"
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"/>
             <SeekBarPreference
                 android:defaultValue="0"
                 android:dependency="bg_to_speech"
@@ -867,6 +874,13 @@
                 android:switchTextOff="@string/short_off_text_for_switches"
                 android:switchTextOn="@string/short_on_text_for_switches"
                 android:title="@string/Speak_Alerts" />
+            <SwitchPreference
+                android:defaultValue="false"
+                android:key="@string/pref_car_loud_alerts_key"
+                android:title="@string/pref_car_loud_alerts"
+                android:summary="@string/pref_car_loud_alerts_summary"
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"/>
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:dependency="bg_to_speech"

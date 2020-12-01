@@ -1187,4 +1187,8 @@
     <string name="summary_using_g6">Ich nutze den G6 Sensor</string>
     <string name="title_using_g6">Unterstützung für G6</string>
     <string name="title_g5_battery_warning_level">Batteriewarnung anpassen</string>
+    <string name="pref_car_loud_alerts">Alarme im Auto vorlesen</string>
+    <string name="pref_car_loud_readings">Werte im Auto vorlesen</string>
+    <string name="pref_car_loud_alerts_summary">Alarme vorlesen wenn Android Auto verbunden ist</string>
+    <string name="pref_car_loud_readings_summary">Werte vorlesen wenn Android Auto verbunden ist</string>
 </resources>
