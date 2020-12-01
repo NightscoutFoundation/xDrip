@@ -405,7 +405,7 @@
     <string name="disable_alert">alert uitschakelen</string>
     <string name="save_alert">opslaan alert</string>
     <string name="remove_alert">verwijderen alert</string>
-    <string name="snooze_alert_before_it_fires">snooze alarm voordat het in brand steekt</string>
+    <string name="snooze_alert_before_it_fires">snooze alarm voordat het af gaat</string>
     <string name="create_low_alert">Maak een laag alert</string>
     <string name="create_high_alert">Maak een hoge alert</string>
     <string name="long_press_an_existing_alert_to_edit">(Long Druk op een bestaande alert te bewerken)</string>
