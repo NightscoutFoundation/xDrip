@@ -152,7 +152,6 @@ public class NewDataObserver {
         Log.e(TAG, "textToSpeech: called" );
         if (Pref.getBooleanDefaultFalse("bg_to_speech") || VehicleMode.shouldSpeak()
                 || (Pref.getBooleanDefaultFalse(xdrip.getAppContext().getString(R.string.pref_car_loud_alerts_key)) && isCarUiMode(xdrip.getAppContext()))) {
-            Log.e(TAG, "textToSpeech: reading loud" );
             if (dg == null) dg = BestGlucose.getDisplayGlucose();
             if (dg != null) {
                 BgToSpeech.speak(dg.mgdl, dg.timestamp, dg.delta_name);
