@@ -413,7 +413,6 @@
             android:name=".FollowerManagementActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/manage_followers" />
-
         <service
             android:name=".Services.SnoozeOnNotificationDismissService"
             android:exported="false" />
@@ -590,6 +589,13 @@
                     android:configChanges="orientation|keyboardHidden"
                     android:label="@string/basal_editor"
                     android:screenOrientation="landscape" />
+        <activity
+            android:name=".BolusCalculatorActivity"
+            android:configChanges="orientation|screenSize"
+            android:label="@string/navdrawer_boluscalc"
+            android:enabled="true"
+            android:exported="true" />
+
         <service
             android:name=".Services.DoNothingService"
             android:enabled="true"

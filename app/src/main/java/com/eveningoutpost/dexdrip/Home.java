@@ -1340,7 +1340,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         return null; // if cannot match
     }
 
-    private void naturalLanguageRecognition(String allWords) {
+    public void naturalLanguageRecognition(String allWords) {
         if (searchWords == null) {
 
             Toast.makeText(getApplicationContext(),

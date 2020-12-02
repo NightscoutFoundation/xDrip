@@ -38,7 +38,7 @@ public class PhoneKeypadInputActivity extends BaseActivity {
     private TextView mDialTextView;
     private Button zeroButton, oneButton, twoButton, threeButton, fourButton, fiveButton,
             sixButton, sevenButton, eightButton, nineButton, starButton, backSpaceButton, multiButton1, multiButton2, multiButton3;
-    private ImageButton callImageButton, backspaceImageButton, insulintabbutton, carbstabbutton,
+    private ImageButton callImageButton, backspaceImageButton, insulintabbutton, carbstabbutton, boluscalctabbutton,
             bloodtesttabbutton, timetabbutton, speakbutton;
 
     private static String currenttab = "insulin-1";
@@ -99,6 +99,7 @@ public class PhoneKeypadInputActivity extends BaseActivity {
         bloodtesttabbutton = (ImageButton) findViewById(R.id.bloodtesttabbutton);
         timetabbutton = (ImageButton) findViewById(R.id.timetabbutton);
         carbstabbutton = (ImageButton) findViewById(R.id.carbstabbutton);
+        boluscalctabbutton = (ImageButton) findViewById(R.id.boluscalctabbutton);
         speakbutton = (ImageButton) findViewById(R.id.btnKeypadSpeak);
 
         mDialTextView.setText("");
@@ -288,6 +289,15 @@ public class PhoneKeypadInputActivity extends BaseActivity {
             }
         });
 
+        boluscalctabbutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                currenttab = "boluscalc";
+                updateTab();
+                setContentView(R.layout.activity_bolus_calc);
+            }
+        });
+
         if (Pref.getString("units", "mgdl").equals("mgdl")) {
             bgUnits = "mg/dl";
         } else {
@@ -300,7 +310,7 @@ public class PhoneKeypadInputActivity extends BaseActivity {
         values = new HashMap<String, String>();
     }
 
-    private static String getValue(String tab) {
+    private static String getValue(String tab) { //if has value, return it, else just put a space
         if (values.containsKey(tab)) {
             return values.get(tab);
         } else {
@@ -506,6 +516,11 @@ public class PhoneKeypadInputActivity extends BaseActivity {
             case "time":
                 timetabbutton.setBackgroundColor(onColor);
                 append = " " + getString(R.string.when);
+                break;
+            case "boluscalc":
+                boluscalctabbutton.setBackgroundColor(onColor);
+                //append = " " + getString(R.string.when);
+                //setContentView(R.layout.activity_bolus_calc);
                 break;
         }
         String value = getValue(currenttab);

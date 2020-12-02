@@ -1589,4 +1589,27 @@
     <string name="pref_enable_insulinprofiles">enable at least one max three profiles</string>
     <string name="pref_select_basal_insulinprofiles">choose basal insulin profile.</string>
     <string name="pref_select_bolus_insulinprofiles">choose bolus insulin profile. also used for pump and pen...</string>
+
+
+    <string name="navdrawer_boluscalc">Bolus Calculator</string>
+    <string name="title_carbs_boluscalc">Carbs</string>
+    <string name="title_blood_glucose_boluscalc">Blood Glucose</string>
+    <string name="title_correction_bolus">Correction Bolus:</string>
+    <string name="title_meal_bolus">Meal Bolus:</string>
+    <string name="title_total_bolus">Total Bolus:</string>
+    <string name="title_notes">Notes</string>
+    <string name="hint_notes">Enter notes here</string>
+
+    <string name="confirm_button_boluscalc">Confirm</string>
+    <string name="mgdl_units">mg/dL</string>
+    <string name="mmol_units">mmol/l</string>
+    <string name="carb_units">g</string>
+    <string name="insulin_units">u</string>
+    <string name="number_placeholder">0.00</string>
+    <string name="dialog_caution">Proceed with Caution.</string>
+    <string name="dialog_low_bg">Your blood glucose is low! Proceed with caution.</string>
+
+
+
+
 </resources>
