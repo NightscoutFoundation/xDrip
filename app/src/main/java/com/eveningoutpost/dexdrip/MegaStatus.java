@@ -112,7 +112,7 @@ public class MegaStatus extends ActivityWithMenu {
     }
 
     private static final String G4_STATUS = "BT Device";
-    private static final String G5_STATUS = "G5/G6 Status";
+    public static final String G5_STATUS = "G5/G6 Status";
     private static final String MEDTRUM_STATUS = "Medtrum Status";
     private static final String IP_COLLECTOR = "IP Collector";
     private static final String XDRIP_PLUS_SYNC = "Followers";
@@ -133,6 +133,14 @@ public class MegaStatus extends ActivityWithMenu {
         final Intent intent = new Intent(xdrip.getAppContext(), MegaStatus.class);
         intent.setAction(section_name);
         return PendingIntent.getActivity(xdrip.getAppContext(), 0, intent, android.app.PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+
+    public static void startStatus(String section_name) {
+        try {
+            getStatusPendingIntent(section_name).send();
+        } catch (PendingIntent.CanceledException e) {
+            UserError.Log.e(TAG, "Unable to start status: " + e);
+        }
     }
 
     private void populateSectionList() {

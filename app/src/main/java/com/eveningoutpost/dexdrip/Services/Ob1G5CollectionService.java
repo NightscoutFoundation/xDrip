@@ -170,7 +170,8 @@ public class Ob1G5CollectionService extends G5BaseService {
     private static volatile String historicalTransmitterMAC;
     private static String transmitterIDmatchingMAC;
 
-    private static String lastScanError = null;
+    private static volatile String lastScanError = null;
+    private static volatile int lastScanException = -1;
     public static volatile String lastSensorStatus = null;
     public static volatile CalibrationState lastSensorState = null;
     public static volatile long lastUsableGlucosePacketTime = 0;
@@ -319,10 +320,10 @@ public class Ob1G5CollectionService extends G5BaseService {
                             UserError.Log.d(TAG, "Skipping Scanning! : Changing state due to minimize_scanning flags");
                             changeState(CONNECT_NOW);
                         } else {
-                            if ((Build.VERSION.SDK_INT >= 29) && (Pref.getBooleanDefaultFalse("ob1_android10workaround"))) {
+                           /* if ((Build.VERSION.SDK_INT >= 29) && (Pref.getBooleanDefaultFalse("ob1_android10workaround"))) {
                                 UserError.Log.d(TAG, "Attempting Android 10+ workaround unbonding");
                                 unbondIfAllowed();
-                            }
+                            }*/
                             scan_for_device();
                         }
                         break;
@@ -506,6 +507,11 @@ public class Ob1G5CollectionService extends G5BaseService {
                     }
                 }
 
+                if (lastScanException == BleScanException.LOCATION_PERMISSION_MISSING) {
+                    UserError.Log.d(TAG, "Clearing location permission error as we will get it again when we scan now if it is still a problem");
+                    lastScanException = -1;
+                    lastScanError = null;
+                }
 
                 scanSubscription = new Subscription(rxBleClient.scanBleDevices(
                         new ScanSettings.Builder()
@@ -1133,6 +1139,7 @@ public class Ob1G5CollectionService extends G5BaseService {
     private synchronized void onScanFailure(Throwable throwable) {
 
         if (throwable instanceof BleScanException) {
+            lastScanException = ((BleScanException) throwable).getReason();
             final String info = handleBleScanException((BleScanException) throwable);
             lastScanError = info;
             UserError.Log.d(TAG, info);
