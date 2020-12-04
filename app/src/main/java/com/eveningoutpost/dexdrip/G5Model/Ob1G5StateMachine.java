@@ -139,7 +139,7 @@ public class Ob1G5StateMachine {
         final AuthRequestTxMessage authRequest = new AuthRequestTxMessage(getTokenSize(), usingAlt());
         UserError.Log.i(TAG, "AuthRequestTX: " + JoH.bytesToHex(authRequest.byteSequence));
 
-        connection.setupNotification(Authentication)
+        connection.setupIndication(Authentication)
                 // .timeout(10, TimeUnit.SECONDS)
                 .timeout(15, TimeUnit.SECONDS) // WARN
                 // .observeOn(Schedulers.newThread()) // needed?
@@ -150,14 +150,10 @@ public class Ob1G5StateMachine {
                                         // Characteristic value confirmed.
                                         if (d)
                                             UserError.Log.d(TAG, "Wrote authrequest, got: " + JoH.bytesToHex(characteristicValue));
-                                        speakSlowly();
-                                        connection.readCharacteristic(Authentication).subscribe(
-                                                readValue -> {
-                                                    authenticationProcessor(parent, connection, readValue);
-                                                }, throwable -> {
-                                                    UserError.Log.e(TAG, "Could not read after AuthRequestTX: " + throwable);
-                                                });
-                                        //parent.background_automata();
+
+                                        UserError.Log.i(TAG, "SUCCESS: read after AuthRequestTX: " + JoH.bytesToHex(characteristicValue));
+                                        authenticationProcessor(parent, connection, characteristicValue);
+
                                     },
                                     throwable -> {
                                         UserError.Log.e(TAG, "Could not write AuthRequestTX: " + throwable);
@@ -228,24 +224,8 @@ public class Ob1G5StateMachine {
                     connection.writeCharacteristic(Authentication, nn(new BaseAuthChallengeTxMessage(challengeHash).byteSequence))
                             .subscribe(
                                     challenge_value -> {
+                                        authenticationProcessor(parent, connection, challenge_value);
 
-                                        speakSlowly();
-
-                                        connection.readCharacteristic(Authentication)
-                                                //.observeOn(Schedulers.io())
-                                                .subscribe(
-                                                        status_value -> {
-                                                            // interpret authentication response
-                                                            authenticationProcessor(parent, connection, status_value);
-                                                        }, throwable -> {
-                                                            if (throwable instanceof OperationSuccess) {
-                                                                UserError.Log.d(TAG, "Stopping auth challenge listener due to success");
-                                                            } else {
-                                                                UserError.Log.e(TAG, "Could not read reply to auth challenge: " + throwable);
-                                                                parent.incrementErrors();
-                                                                speakSlowly = true;
-                                                            }
-                                                        });
                                     }, throwable -> {
                                         UserError.Log.e(TAG, "Could not write auth challenge reply: " + throwable);
                                         parent.incrementErrors();
@@ -308,14 +288,14 @@ public class Ob1G5StateMachine {
                 break;
 
             default:
-                UserError.Log.e(TAG, "Unhandled packet type in reply: " + pkt.type + " " + JoH.bytesToHex(readValue));
-                parent.incrementErrors();
+                UserError.Log.d(TAG, "Unhandled packet type in reply: " + pkt.type + " " + JoH.bytesToHex(readValue));
+                //parent.incrementErrors();
                 // TODO what to do here?
                 break;
         }
     }
 
-    private static final int SPEAK_SLOWLY_DELAY = 300;
+    private static final int SPEAK_SLOWLY_DELAY = 50;
 
     private static int speakSlowlyDelay() {
         return speakSlowly ? SPEAK_SLOWLY_DELAY : 0;
@@ -379,20 +359,12 @@ public class Ob1G5StateMachine {
                                     .subscribe(
                                             bondRequestValue -> {
                                                 UserError.Log.d(TAG, "Wrote bond request value: " + JoH.bytesToHex(bondRequestValue));
-                                                speakSlowly();
-                                                connection.readCharacteristic(Authentication)
-                                                        .observeOn(Schedulers.io())
-                                                        .timeout(10, TimeUnit.SECONDS)
-                                                        .subscribe(
-                                                                status_value -> {
-                                                                    UserError.Log.d(TAG, "Got status read after keepalive " + JoH.bytesToHex(status_value));
-                                                                    authenticationProcessor(parent, connection, status_value);
-                                                                    throw new OperationSuccess("Bond requested");
-                                                                }, throwable -> {
-                                                                    UserError.Log.e(TAG, "Throwable when reading characteristic after keepalive: " + throwable);
-                                                                });
 
-                                                // Wrote bond request successfully was here moved above - is this right?
+                                                UserError.Log.d(TAG, "Got status read after keepalive " + JoH.bytesToHex(bondRequestValue));
+                                                authenticationProcessor(parent, connection, bondRequestValue);
+                                                throw new OperationSuccess("Bond requested");
+
+                                                  // Wrote bond request successfully was here moved above - is this right?
                                             }, throwable -> {
                                                 // failed to write bond request retry?
                                                 if (!(throwable instanceof OperationSuccess)) {
@@ -779,7 +751,7 @@ public class Ob1G5StateMachine {
                             UserError.Log.d(TAG, "Failed to write DisconnectTxMessage as already disconnected: " + throwable);
 
                         } else {
-                            UserError.Log.d(TAG, "Failed to write DisconnectTxMessage: " + throwable);
+                            UserError.Log.e(TAG, "Failed to write DisconnectTxMessage: " + throwable);
 
                         }
                         parent.changeState(Ob1G5CollectionService.STATE.CLOSE);

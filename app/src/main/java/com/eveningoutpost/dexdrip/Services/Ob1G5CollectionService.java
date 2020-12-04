@@ -328,7 +328,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                         }
                         break;
                     case CONNECT_NOW:
-                        connect_to_device(false);
+                        connect_to_device(true);
                         break;
                     case CONNECT:
                         connect_to_device(true);
@@ -2027,8 +2027,10 @@ public class Ob1G5CollectionService extends G5BaseService {
             l.add(new StatusItem("Voltage A", bt.voltagea, bt.voltagea < LOW_BATTERY_WARNING_LEVEL ? BAD : NORMAL));
             l.add(new StatusItem("Voltage B", bt.voltageb, bt.voltageb < (LOW_BATTERY_WARNING_LEVEL - 10) ? BAD : NORMAL));
             if (vr != null && FirmwareCapability.isFirmwareTemperatureCapable(vr.firmware_version_string)) {
-                l.add(new StatusItem("Resistance", bt.resist, bt.resist > 1400 ? BAD : (bt.resist > 1000 ? NOTICE : (bt.resist > 750 ? NORMAL : Highlight.GOOD))));
                 l.add(new StatusItem("Temperature", bt.temperature + " \u2103"));
+            }
+            if(bt.resist !=0) {
+                l.add(new StatusItem("Resistance", bt.resist, bt.resist > 1400 ? BAD : (bt.resist > 1000 ? NOTICE : (bt.resist > 750 ? NORMAL : Highlight.GOOD))));
             }
         }
 

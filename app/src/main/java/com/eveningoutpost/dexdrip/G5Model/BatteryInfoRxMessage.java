@@ -26,7 +26,20 @@ public class BatteryInfoRxMessage extends BaseMessage {
     public int temperature;
 
     public BatteryInfoRxMessage(byte[] packet) {
-        if (packet.length >= 10) {
+        if (packet.length == 10) {
+            data = ByteBuffer.wrap(packet).order(ByteOrder.LITTLE_ENDIAN);
+            if (data.get() == opcode) {
+                status = data.get();
+                voltagea = getUnsignedShort(data);
+                voltageb = getUnsignedShort(data);
+                resist = 0;
+                runtime = getUnsignedByte(data);
+                temperature = data.get(); // not sure if signed or not, but <0c or >127C seems unlikely!
+            } else {
+                UserError.Log.wtf(TAG, "Invalid opcode for BatteryInfoRxMessage");
+            }
+        }
+        else if (packet.length == 12) {
             data = ByteBuffer.wrap(packet).order(ByteOrder.LITTLE_ENDIAN);
             if (data.get() == opcode) {
                 status = data.get();
@@ -34,14 +47,15 @@ public class BatteryInfoRxMessage extends BaseMessage {
                 voltageb = getUnsignedShort(data);
                 resist = getUnsignedShort(data);
                 runtime = getUnsignedByte(data);
-                if (packet.length == 10) {
-                    runtime = -1; // this byte isn't runtime on rev2
-                }
+                //if (packet.length == 10) {
+                //runtime = -1; // this byte isn't runtime on rev2
+                //}
                 temperature = data.get(); // not sure if signed or not, but <0c or >127C seems unlikely!
             } else {
                 UserError.Log.wtf(TAG, "Invalid opcode for BatteryInfoRxMessage");
             }
-        } else {
+        }
+        else {
             UserError.Log.wtf(TAG, "Invalid length for BatteryInfoMessage: " + packet.length);
         }
     }
