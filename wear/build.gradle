@@ -27,8 +27,8 @@ def generateTimestamp = { ->
 }
 
 def generateRandomUUID = { ->
-    StringBuilder stringBuilder = new StringBuilder();
-    stringBuilder.append('"' + UUID.randomUUID().toString() + '"')
+    StringBuilder stringBuilder = new StringBuilder()
+    stringBuilder.append('"').append(UUID.randomUUID().toString()).append('"')
     return stringBuilder.toString()
 }
 
@@ -70,7 +70,7 @@ def generateVersionName = { ->
             standardOutput = stdout
         }
         String branch = stdout.toString().trim()
-        if (!branch.equals("master")) {
+        if (branch != "master") {
             stringBuilder.append('-')
             stringBuilder.append(branch)
         }
