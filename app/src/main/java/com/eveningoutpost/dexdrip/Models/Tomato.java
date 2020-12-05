@@ -182,6 +182,10 @@ public class Tomato {
         }
         Log.d(TAG, "patchUid = " + HexDump.dumpHexString(patchUid));
         Log.d(TAG, "patchInfo = " + HexDump.dumpHexString(patchInfo));
+        PersistentStore.setString("Tomatobattery", Integer.toString(s_full_data[13]));
+        Pref.setInt("bridge_battery", s_full_data[13]);
+        // Set the time of the current reading
+        PersistentStore.setLong("libre-reading-timestamp", JoH.tsl());
         boolean checksum_ok = NFCReaderX.HandleGoodReading(SensorSn, data, now, true, patchUid, patchInfo);
         Log.e(TAG, "We have all the data that we need " + s_acumulatedSize + " checksum_ok = " + checksum_ok + HexDump.dumpHexString(data));
 
@@ -194,8 +198,6 @@ public class Tomato {
             throw new RuntimeException(SERIAL_FAILED);
         }
 
-        PersistentStore.setString("Tomatobattery", Integer.toString(s_full_data[13]));
-        Pref.setInt("bridge_battery", s_full_data[13]);
         PersistentStore.setString("TomatoHArdware",HexDump.toHexString(s_full_data,16,2));
         PersistentStore.setString("TomatoFirmware",HexDump.toHexString(s_full_data,14,2));
         PersistentStore.setString("LibreSN", SensorSn);

@@ -2,6 +2,7 @@ package com.eveningoutpost.dexdrip.Models;
 
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
+import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 
 import org.junit.Test;
 
@@ -92,5 +93,61 @@ public class SensorSanityTest extends RobolectricTestWithConfig {
         } else {
             assertWithMessage(checkName + " sensor result not null").that(sensor).isNotNull();
         }
+    }
+
+    @Test
+    public void checkLibreSensorChangeTestRepeatStarting() {
+        // Take us to a known state:
+
+        Sensor.shutdownAllSensors();
+
+        Sensor this_sensor = Sensor.currentSensor();
+        assertWithMessage("Expecting this_sensor to be null after shutdownAllSensors").that(this_sensor).isNull();
+
+        SensorSanity.clearEnviorment();
+        
+        // Start testing: create a sensor, call checkLibreSensorChange twice with same sensor, and once with a new
+        // sn, and verify it is closed.
+        Sensor.create(JoH.tsl());
+        SensorSanity.checkLibreSensorChange("SN111");
+        SensorSanity.checkLibreSensorChange("SN111");
+        SensorSanity.checkLibreSensorChange("SN222");
+        this_sensor = Sensor.currentSensor();
+
+        assertWithMessage("Expecting this_sensor to be null after serial change").that(this_sensor).isNull();
+
+        // Continue testing: create new one, call with the second sn twice. now call with third sn, sensor should be stopped.
+        Sensor.create(JoH.tsl());
+        SensorSanity.checkLibreSensorChange("SN222");
+        SensorSanity.checkLibreSensorChange("SN222");
+        boolean retVal = SensorSanity.checkLibreSensorChange("SN333");
+        assertWithMessage("Expecting true after serial change").that(retVal).isEqualTo(true);
+        this_sensor = Sensor.currentSensor();
+        assertWithMessage("Expecting this_sensor to be null after serial change").that(this_sensor).isNull();
+
+        // Create a new sensor, call check, then stop it and start another, all should be well.
+        Sensor.create(JoH.tsl());
+        SensorSanity.checkLibreSensorChange("SN333");
+        SensorSanity.checkLibreSensorChange("SN333");
+        SensorSanity.checkLibreSensorChange("SN333");
+        this_sensor = Sensor.currentSensor();
+        assertWithMessage("Expecting this_sensor not to be null without serial change").that(this_sensor).isNotNull();
+        if (this_sensor != null) {
+            Sensor.stopSensor();
+        }
+        Sensor.create(JoH.tsl());
+        SensorSanity.checkLibreSensorChange("SN333");
+        SensorSanity.checkLibreSensorChange("SN333");
+        this_sensor = Sensor.currentSensor();
+        assertWithMessage("Expecting this_sensor not to be null without serial change").that(this_sensor).isNotNull();
+
+        // A clasic sensor replacement:
+        // Stop the sensor. Start a new one. call checkLibreSensorChange with the new sensor_sn twice. Sensor should be alive.
+        Sensor.stopSensor();
+        Sensor.create(JoH.tsl());
+        SensorSanity.checkLibreSensorChange("SN444");
+        SensorSanity.checkLibreSensorChange("SN444");
+        this_sensor = Sensor.currentSensor();
+        assertWithMessage("Expecting this_sensor not to be null without serial change").that(this_sensor).isNotNull();
     }
 }

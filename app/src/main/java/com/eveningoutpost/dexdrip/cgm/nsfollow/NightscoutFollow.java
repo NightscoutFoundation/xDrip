@@ -11,7 +11,17 @@ import com.eveningoutpost.dexdrip.cgm.nsfollow.messages.Entry;
 import com.eveningoutpost.dexdrip.cgm.nsfollow.utils.NightscoutUrl;
 import com.eveningoutpost.dexdrip.evaluators.MissedReadingsEstimator;
 import com.eveningoutpost.dexdrip.tidepool.InfoInterceptor;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
+import com.google.gson.TypeAdapter;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.internal.bind.TypeAdapters;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
+import com.google.gson.stream.JsonWriter;
 
+import java.io.IOException;
 import java.util.List;
 
 import okhttp3.OkHttpClient;
@@ -132,6 +142,40 @@ public class NightscoutFollow {
         return Pref.getBooleanDefaultFalse("nsfollow_download_treatments");
     }
 
+    public static final TypeAdapter<Number> UNRELIABLE_INTEGER = new TypeAdapter<Number>() {
+        @Override
+        public Number read(JsonReader in) throws IOException {
+            JsonToken jsonToken = in.peek();
+            switch (jsonToken) {
+                case NUMBER:
+                case STRING:
+                    String s = in.nextString();
+                    try {
+                        return Integer.parseInt(s);
+                    } catch (NumberFormatException ignored) {
+                    }
+                    try {
+                        return (int)Double.parseDouble(s);
+                    } catch (NumberFormatException ignored) {
+                    }
+                    return null;
+                case NULL:
+                    in.nextNull();
+                    return null;
+                case BOOLEAN:
+                    in.nextBoolean();
+                    return null;
+                default:
+                    throw new JsonSyntaxException("Expecting number, got: " + jsonToken);
+            }
+        }
+        @Override
+        public void write(JsonWriter out, Number value) throws IOException {
+            out.value(value);
+        }
+    };
+    public static final TypeAdapterFactory UNRELIABLE_INTEGER_FACTORY = TypeAdapters.newFactory(int.class, Integer.class, UNRELIABLE_INTEGER);
+
     // TODO make reusable
     public static Retrofit getRetrofitInstance() throws IllegalArgumentException {
         if (retrofit == null) {
@@ -150,10 +194,13 @@ public class NightscoutFollow {
                     .addInterceptor(new GzipRequestInterceptor())
                     .build();
 
+            final Gson gson = new GsonBuilder()
+                    .registerTypeAdapterFactory(UNRELIABLE_INTEGER_FACTORY)
+                    .create();
             retrofit = new retrofit2.Retrofit.Builder()
                     .baseUrl(url)
                     .client(client)
-                    .addConverterFactory(GsonConverterFactory.create())
+                    .addConverterFactory(GsonConverterFactory.create(gson))
                     .build();
         }
         return retrofit;

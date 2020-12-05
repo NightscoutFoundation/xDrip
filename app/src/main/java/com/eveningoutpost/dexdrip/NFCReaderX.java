@@ -26,10 +26,12 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.LibreBlock;
 import com.eveningoutpost.dexdrip.Models.LibreOOPAlgorithm;
 import com.eveningoutpost.dexdrip.Models.ReadingData;
+import com.eveningoutpost.dexdrip.Models.SensorSanity;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.LibreUtils;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
+import com.eveningoutpost.dexdrip.UtilityModels.WholeHouse;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
 import java.io.IOException;
@@ -59,7 +61,6 @@ public class NFCReaderX {
     private static final Lock read_lock = new ReentrantLock();
     private static final boolean useReaderMode = true;
     private static boolean nfc_enabled = false;
-
 
     public static void stopNFC(Activity context) {
         if (foreground_enabled) {
@@ -218,10 +219,32 @@ public class NFCReaderX {
         return HandleGoodReading(tagId, data1, CaptureDateTime, false, null, null);
     }
 
+
+    public static void SendLibrereading(final String tagId, byte[] data1, final long CaptureDateTime, byte []patchUid,  byte []patchInfo){
+        if(!Home.get_master()) {
+            return;
+        }
+        LibreBlock libreBlock = LibreBlock.getForTimestamp(CaptureDateTime);
+        if (libreBlock != null) {
+            // We already have this one, so we have already sent it, so let's not crate storms.
+            return;
+        }
+        // Create the object to send
+        libreBlock = LibreBlock.create(tagId, CaptureDateTime, data1, 0, patchUid, patchInfo);
+        if(libreBlock == null) {
+            Log.e(TAG, "Error could not create libreBlock for libre-allhouse");
+            return;
+        }
+        final String json = libreBlock.toExtendedJson();
+        
+        GcmActivity.pushLibreBlock(json);
+    
+    }
+    
     // returns true if checksum passed.
     public static boolean HandleGoodReading(final String tagId, byte[] data1, final long CaptureDateTime, final boolean allowUpload, byte []patchUid,  byte []patchInfo ) {
-
-
+        Log.e(TAG, "HandleGoodReading called");
+        SendLibrereading(tagId, data1, CaptureDateTime, patchUid, patchInfo);
         if (Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
             // If oop is used, there is no need to  do the checksum It will be done by the oop.
             // (or actually we don't know how to do it, for us 14/de sensors).
@@ -231,6 +254,7 @@ public class NFCReaderX {
         } else {
             final boolean checksum_ok = LibreUtils.verify(data1);
             if (!checksum_ok) {
+                Log.e(TAG, "bad cs");
                 return false;
             }
             
@@ -246,9 +270,12 @@ public class NFCReaderX {
                 public void run() {
                     final PowerManager.WakeLock wl = JoH.getWakeLock("processTransferObject", 60000);
                     try {
-                        mResult.CalculateSmothedData();
-                        LibreAlarmReceiver.processReadingDataTransferObject(new ReadingData.TransferObject(1, mResult), CaptureDateTime, tagId, allowUpload, patchUid, patchInfo );
-                        Home.staticRefreshBGCharts();
+                        // Protect against wifi reader and gmc reader coming at the same time.
+                        synchronized (NFCReaderX.class) {
+                            mResult.CalculateSmothedData();
+                            LibreAlarmReceiver.processReadingDataTransferObject(new ReadingData.TransferObject(1, mResult), CaptureDateTime, tagId, allowUpload, patchUid, patchInfo );
+                            Home.staticRefreshBGCharts();
+                        }
                     } finally {
                         JoH.releaseWakeLock(wl);
                     }
@@ -282,6 +309,14 @@ public class NFCReaderX {
                 if (succeeded) {
                     long now = JoH.tsl();
                     String SensorSn = LibreUtils.decodeSerialNumberKey(tag.getId());
+                    
+                    if (SensorSanity.checkLibreSensorChangeIfEnabled(SensorSn)) {
+                        Log.e(TAG, "Problem with Libre Serial Number - not processing");
+                        return;
+                    }
+                    // Set the time of the current reading
+                    PersistentStore.setLong("libre-reading-timestamp", JoH.tsl());
+                    
                     boolean checksum_ok = HandleGoodReading(SensorSn, data, now, false, tag.getId(), patchInfo);
                     if(checksum_ok == false) {
                         Log.e(TAG, "Read data but checksum is wrong");

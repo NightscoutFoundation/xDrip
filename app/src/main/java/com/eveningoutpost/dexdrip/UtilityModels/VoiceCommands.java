@@ -15,8 +15,10 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.Services.G5BaseService;
+import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.cgm.medtrum.MedtrumCollectionService;
 import com.eveningoutpost.dexdrip.ui.activities.DatabaseAdmin;
+import com.eveningoutpost.dexdrip.ui.dialog.G6CalibrationCodeDialog;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.SdcardImportExport;
 
@@ -44,10 +46,17 @@ public class VoiceCommands {
         } else if (get_engineering_mode() && allWords.equals("repair fake data source")) {
             JoH.static_toast_long("Repairing fake data source");
             MockDataSource.fixRaw();
-
+        } else if (allWords.contentEquals("set sensor code")) {
+            G6CalibrationCodeDialog.ask(mActivity, null);
         } else if (allWords.contentEquals("hard reset transmitter")) {
             G5BaseService.setHardResetTransmitterNow();
             JoH.static_toast_long("Will attempt to reset transmitter on next poll!! Can take 15 minutes to process");
+        } else if (allWords.contentEquals("remove transmitter bonding")) {
+            Ob1G5CollectionService.unBondAndStop = true;
+            JoH.static_toast_long("Attempt to unbond and shutdown collector");
+        } else if (allWords.contentEquals("clear transmitter queue")) {
+            Ob1G5StateMachine.emptyQueue();
+            JoH.static_toast_long("Clearing transmitter command queue");
         } else if (allWords.contentEquals("reset heart rate sync")) {
             PersistentStore.setLong("nightscout-rest-heartrate-synced-time", 0);
             JoH.static_toast_long("Cleared heart rate sync data");

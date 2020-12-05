@@ -32,6 +32,18 @@ public class PersistentStore {
     public static String getString(final String name) {
         return prefs.getString(name, "");
     }
+    
+    public static String getString(final String name, String defaultValue) {
+        return prefs.getString(name, defaultValue);
+    }
+    
+    public static int getStringToInt(final String name, final int defaultValue) {
+        try {
+            return Integer.parseInt(getString(name, Integer.toString(defaultValue)));
+        } catch (Exception e) {
+            return defaultValue;
+        }
+    }
 
     public static boolean removeItem(final String pref) {
         if (prefs != null) {

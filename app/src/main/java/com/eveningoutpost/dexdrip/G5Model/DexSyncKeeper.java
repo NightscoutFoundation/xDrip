@@ -40,6 +40,13 @@ public class DexSyncKeeper {
         UserError.Log.d(TAG, "Sync time updated to: " + JoH.dateTimeText(when));
     }
 
+    public static void clear(final String transmitterId) {
+        if (PersistentStore.getLong(DEX_SYNC_STORE + transmitterId) > 0) {
+            UserError.Log.e(TAG, "Clearing stored timing sync information for: " + transmitterId);
+            PersistentStore.setLong(DEX_SYNC_STORE + transmitterId, 0);
+        }
+    }
+
     // anticpiate next wake up from now
     public static long anticipate(final String transmitterId) {
         return anticipate(transmitterId, JoH.tsl());

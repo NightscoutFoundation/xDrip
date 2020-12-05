@@ -17,17 +17,21 @@ import android.text.SpannableString;
 import android.util.Log;
 
 import com.eveningoutpost.dexdrip.BuildConfig;
+import com.eveningoutpost.dexdrip.G5Model.SensorDays;
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.adapters.SpannableSerializer;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
 
 import lombok.Setter;
+import lombok.val;
+
+import static com.eveningoutpost.dexdrip.Models.JoH.emptyString;
 
 public class NanoStatus {
 
@@ -36,7 +40,6 @@ public class NanoStatus {
     private static final String REMOTE_COLLECTOR_STATUS_STORE = "REMOTE_COLLECTOR_STATUS_STORE";
     private static final HashMap<Class<?>, Method> cache = new HashMap<>();
     private static final boolean D = false;
-    private static Gson muhGson;
 
     private final String parameter;
     private final int freqMs;
@@ -45,8 +48,8 @@ public class NanoStatus {
     private volatile Thread myThread;
     @Setter
     private Runnable doveTail;
-    public ObservableField<String> watch = new ObservableField<>();
-    public ObservableField<SpannableString> color_watch = new ObservableField<>();
+    public final ObservableField<String> watch = new ObservableField<>();
+    public final ObservableField<SpannableString> color_watch = new ObservableField<>();
 
 
     public NanoStatus(final String parameter, final int freqMs) {
@@ -120,9 +123,18 @@ public class NanoStatus {
                 return collectorNano(DexCollectionType.getCollectorServiceClass());
             case "mtp-configure":
                 return collectorNano(getClassByName(".UtilityModels.MtpConfigure"));
+            case "sensor-expiry":
+                return getLocalOrRemoteSensorExpiry();
             default:
                 return new SpannableString("Invalid module type");
         }
+    }
+
+    private static SpannableString getLocalOrRemoteSensorExpiry() {
+        if (Home.get_follower()) {
+            return getRemote("sensor-expiry");
+        }
+        return SensorDays.get().getSpannable();
     }
 
 
@@ -139,29 +151,34 @@ public class NanoStatus {
 
             } catch (Exception e) {
                 Log.d(TAG, "reflection exception: " + e + " " + service.getSimpleName());
+                // TODO cache negative hits that land here?
             }
         }
         return null;
     }
 
-    private static void gsonInstance() {
-        if (muhGson == null) {
-            muhGson = new GsonBuilder().create();
-        }
-    }
 
     public static void keepFollowerUpdated() {
+        keepFollowerUpdated(true);
+    }
+
+    public static void keepFollowerUpdated(final boolean ratelimits) {
+        keepFollowerUpdated("", 0); // legacy defaults to collector
+        keepFollowerUpdated("sensor-expiry", ratelimits ? 3600 : 0);
+    }
+
+    public static void keepFollowerUpdated(final String prefix, final int rateLimit) {
         try {
             if (Home.get_master()) {
-                gsonInstance();
-                final String serialized = muhGson.toJson(nanoStatusColor("collector"));
-                if (PersistentStore.updateStringIfDifferent(LAST_COLLECTOR_STATUS_STORE, serialized)) {
-                    Inevitable.task("update-follower-to-nanostatus", 500, new Runnable() {
-                        @Override
-                        public void run() {
-                            GcmActivity.sendNanoStatusUpdate(PersistentStore.getString(LAST_COLLECTOR_STATUS_STORE));
-                        }
-                    });
+                UserError.Log.d(TAG, "keepfollower updated called: " + prefix + " " + rateLimit);
+                if (rateLimit == 0 || JoH.pratelimit("keep-follower-updated" + prefix, rateLimit)) {
+                    final String serialized = SpannableSerializer.serializeSpannableString(nanoStatusColor(prefix.equals("") ? "collector" : prefix));
+                    if (PersistentStore.updateStringIfDifferent(LAST_COLLECTOR_STATUS_STORE + prefix, serialized)) {
+                        Inevitable.task("update-follower-to-nanostatus" + prefix, 500, () ->
+                                GcmActivity.sendNanoStatusUpdate(prefix, PersistentStore.getString(LAST_COLLECTOR_STATUS_STORE + prefix)));
+                    }
+                } else {
+                    UserError.Log.d(TAG, "Ratelimiting keepFollowerUpdated check on " + prefix + " @ " + rateLimit);
                 }
             }
         } catch (Exception e) {
@@ -170,14 +187,23 @@ public class NanoStatus {
     }
 
     public static void setRemote(final String json) {
-        PersistentStore.setString(REMOTE_COLLECTOR_STATUS_STORE, json);
+        setRemote("", json);
+    }
+
+    public static void setRemote(final String prefix, final String json) {
+        PersistentStore.setString(REMOTE_COLLECTOR_STATUS_STORE + prefix, json);
     }
 
     public static SpannableString getRemote() {
+        return getRemote("");
+    }
+
+    public static SpannableString getRemote(final String prefix) {
         // TODO apply timeout?
         try {
-            gsonInstance();
-            return muhGson.fromJson(PersistentStore.getString(REMOTE_COLLECTOR_STATUS_STORE), SpannableString.class);
+            val result = PersistentStore.getString(REMOTE_COLLECTOR_STATUS_STORE + prefix);
+            if (emptyString(result)) return new SpannableString("");
+            return SpannableSerializer.unserializeSpannableString(result);
         } catch (Exception e) {
             return new SpannableString("");
         }
