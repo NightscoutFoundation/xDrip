@@ -385,7 +385,7 @@
     <string name="average">Media</string>
     <string name="in_percentage">In Percentuale</string>
     <string name="high_percentage">Alta Percentuale</string>
-    <string name="low_percentage">% BASSO</string>
+    <string name="low_percentage">&#37; BASSO</string>
     <string name="the_current_time">Ora corrente</string>
     <string name="time">Tempo</string>
     <string name="show_extra_line">Mostra Linea Extra</string>
