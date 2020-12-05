@@ -220,17 +220,6 @@ dependencies {
     }
 
     implementation project(':localeapi')
-    //implementation 'com.nispok:snackbar:2.10.8'
-
-
-    // use specific version of data binding until google resolves the bugs with mixed case package names
-    //noinspection GradleDependency
-    implementation 'com.android.databinding:adapters:3.1.4'
-    //noinspection GradleDependency
-    implementation 'com.android.databinding:library:3.1.4'
-    //noinspection GradleDependency
-    implementation 'com.android.databinding:baseLibrary:3.1.4'
-    //////
 
     implementation 'com.android.support:appcompat-v7:26.1.0'
     implementation 'com.android.support:design:26.1.0'
