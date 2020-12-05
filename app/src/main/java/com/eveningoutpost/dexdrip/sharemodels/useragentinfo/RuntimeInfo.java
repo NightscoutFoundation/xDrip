@@ -1,4 +1,4 @@
-package com.eveningoutpost.dexdrip.sharemodels.UserAgentInfo;
+package com.eveningoutpost.dexdrip.sharemodels.useragentinfo;
 
 import com.google.gson.annotations.Expose;
 

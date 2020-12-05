@@ -12,8 +12,8 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.eveningoutpost.dexdrip.sharemodels.Models.ExistingFollower;
-import com.eveningoutpost.dexdrip.sharemodels.Models.InvitationPayload;
+import com.eveningoutpost.dexdrip.sharemodels.models.ExistingFollower;
+import com.eveningoutpost.dexdrip.sharemodels.models.InvitationPayload;
 import com.eveningoutpost.dexdrip.sharemodels.ShareRest;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 

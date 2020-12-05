@@ -5,7 +5,7 @@ import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.LibreBlock;
 import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.sharemodels.BgUploader;
-import com.eveningoutpost.dexdrip.sharemodels.Models.ShareUploadPayload;
+import com.eveningoutpost.dexdrip.sharemodels.models.ShareUploadPayload;
 import com.eveningoutpost.dexdrip.utilitymodels.Inevitable;
 import com.eveningoutpost.dexdrip.utilitymodels.Notifications;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;

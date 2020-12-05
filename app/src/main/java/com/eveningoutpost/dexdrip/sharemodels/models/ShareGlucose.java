@@ -1,4 +1,4 @@
-package com.eveningoutpost.dexdrip.sharemodels.Models;
+package com.eveningoutpost.dexdrip.sharemodels.models;
 
 import android.content.Context;
 import android.content.Intent;

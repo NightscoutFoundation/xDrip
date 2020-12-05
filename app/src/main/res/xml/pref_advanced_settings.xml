@@ -206,7 +206,7 @@
                     android:title="@string/install_pebble_snooze_control_app">
                     <intent
                         android:action="android.intent.action.MAIN"
-                        android:targetClass="com.eveningoutpost.dexdrip.UtilityModels.pebble.watchface.InstallPebbleSnoozeControlApp"
+                        android:targetClass="com.eveningoutpost.dexdrip.utilitymodels.pebble.watchface.InstallPebbleSnoozeControlApp"
                         android:targetPackage="@string/local_target_package" />
                 </Preference>
             </PreferenceCategory>

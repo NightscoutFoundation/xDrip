@@ -40,7 +40,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 // We also intercept UserError so we can redirect logs from there but then mock the instantiation to avoid it trying to use
 // active android.
 
-@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*", "com.activeandroid.*", "com.eveningoutpost.dexdrip.Models.*"})
+@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*", "com.activeandroid.*", "com.eveningoutpost.dexdrip.models.*"})
 @PrepareForTest({android.util.Log.class, com.eveningoutpost.dexdrip.models.UserError.class})
 
 //@PowerMockRunnerDelegate(RobolectricTestRunner.class)

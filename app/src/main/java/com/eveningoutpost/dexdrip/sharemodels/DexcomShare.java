@@ -1,9 +1,9 @@
 package com.eveningoutpost.dexdrip.sharemodels;
 
-import com.eveningoutpost.dexdrip.sharemodels.Models.ExistingFollower;
-import com.eveningoutpost.dexdrip.sharemodels.Models.InvitationPayload;
-import com.eveningoutpost.dexdrip.sharemodels.Models.ShareUploadPayload;
-import com.eveningoutpost.dexdrip.sharemodels.UserAgentInfo.UserAgent;
+import com.eveningoutpost.dexdrip.sharemodels.models.ExistingFollower;
+import com.eveningoutpost.dexdrip.sharemodels.models.InvitationPayload;
+import com.eveningoutpost.dexdrip.sharemodels.models.ShareUploadPayload;
+import com.eveningoutpost.dexdrip.sharemodels.useragentinfo.UserAgent;
 import com.squareup.okhttp.ResponseBody;
 
 import java.util.List;

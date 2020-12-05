@@ -7,10 +7,10 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.eveningoutpost.dexdrip.models.UserError;
-import com.eveningoutpost.dexdrip.sharemodels.Models.ExistingFollower;
-import com.eveningoutpost.dexdrip.sharemodels.Models.InvitationPayload;
-import com.eveningoutpost.dexdrip.sharemodels.Models.ShareAuthenticationBody;
-import com.eveningoutpost.dexdrip.sharemodels.Models.ShareUploadPayload;
+import com.eveningoutpost.dexdrip.sharemodels.models.ExistingFollower;
+import com.eveningoutpost.dexdrip.sharemodels.models.InvitationPayload;
+import com.eveningoutpost.dexdrip.sharemodels.models.ShareAuthenticationBody;
+import com.eveningoutpost.dexdrip.sharemodels.models.ShareUploadPayload;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

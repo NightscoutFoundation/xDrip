@@ -1,4 +1,4 @@
-package com.eveningoutpost.dexdrip.sharemodels.Models;
+package com.eveningoutpost.dexdrip.sharemodels.models;
 
 import com.eveningoutpost.dexdrip.sharemodels.ShareUploadableBg;
 import com.google.gson.annotations.Expose;

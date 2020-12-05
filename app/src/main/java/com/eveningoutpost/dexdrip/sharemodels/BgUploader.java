@@ -2,7 +2,7 @@ package com.eveningoutpost.dexdrip.sharemodels;
 
 import android.content.Context;
 
-import com.eveningoutpost.dexdrip.sharemodels.Models.ShareUploadPayload;
+import com.eveningoutpost.dexdrip.sharemodels.models.ShareUploadPayload;
 import com.squareup.okhttp.ResponseBody;
 
 import retrofit.Callback;
