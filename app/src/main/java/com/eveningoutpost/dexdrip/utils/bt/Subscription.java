@@ -1,7 +1,7 @@
 package com.eveningoutpost.dexdrip.utils.bt;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.UserError;
 
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.UndeliverableException;

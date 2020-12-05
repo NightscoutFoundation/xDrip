@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip.cgm.nsfollow;
 
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.store.FastStore;
 
 import lombok.RequiredArgsConstructor;

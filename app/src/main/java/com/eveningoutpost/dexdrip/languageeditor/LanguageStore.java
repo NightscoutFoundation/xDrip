@@ -2,7 +2,7 @@ package com.eveningoutpost.dexdrip.languageeditor;
 
 import android.content.Context;
 
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.Locale;

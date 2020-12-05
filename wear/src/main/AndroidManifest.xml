@@ -174,32 +174,32 @@
             </intent-filter>
         </service>
         <service
-            android:name=".Services.G5CollectionService"
+            android:name=".services.G5CollectionService"
             android:enabled="true"
             android:exported="true"></service>
         <service
-            android:name=".Services.Ob1G5CollectionService"
+            android:name=".services.Ob1G5CollectionService"
             android:enabled="true" />
         <service
-            android:name=".Services.DexCollectionService"
+            android:name=".services.DexCollectionService"
             android:enabled="true"
             android:exported="true" />
         <service
-            android:name=".Services.DexShareCollectionService"
+            android:name=".services.DexShareCollectionService"
             android:enabled="true"
             android:exported="true" />
         <service
-            android:name=".UtilityModels.Notifications"
+            android:name=".utilitymodels.Notifications"
             android:exported="false" />
         <service
-            android:name=".Services.SnoozeOnNotificationDismissService"
+            android:name=".services.SnoozeOnNotificationDismissService"
             android:exported="false" />
         <service
-            android:name=".Services.MissedReadingService"
+            android:name=".services.MissedReadingService"
             android:enabled="true"
             android:exported="true" />
         <service
-            android:name=".Services.CustomComplicationProviderService"
+            android:name=".services.CustomComplicationProviderService"
             android:icon="@drawable/ic_watch_white"
             android:label="xDrip Complication Provider"
             android:permission="com.google.android.wearable.permission.BIND_COMPLICATION_PROVIDER">
@@ -214,9 +214,9 @@
                 android:name="android.support.wearable.complications.UPDATE_PERIOD_SECONDS"
                 android:value="60" />
         </service>
-        <service android:name=".Services.HeartRateService" />
+        <service android:name=".services.HeartRateService" />
         <service
-            android:name=".Services.HeartRateJobService"
+            android:name=".services.HeartRateJobService"
             android:permission="android.permission.BIND_JOB_SERVICE" />
         <service
             android:name=".ProcessAPKChannelDownload"
@@ -227,7 +227,7 @@
                 <action android:name="com.eveningoutpost.dexdrip.NS_EMULATOR" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".Services.ComplicationTapBroadcastReceiver" />
+        <receiver android:name=".services.ComplicationTapBroadcastReceiver" />
         <receiver android:name=".utils.DisconnectReceiver">
             <intent-filter>
                 <action android:name="android.bluetooth.device.action.ACL_DISCONNECTED" />
@@ -307,23 +307,23 @@
             android:configChanges="orientation|screenSize"
             android:label="Menu" />
         <activity
-            android:name=".Tables.CalibrationDataTable"
+            android:name=".tables.CalibrationDataTable"
             android:configChanges="orientation|screenSize"
             android:label="@string/calibration_data_table" />
         <activity
-            android:name=".Tables.BgReadingTable"
+            android:name=".tables.BgReadingTable"
             android:configChanges="orientation|screenSize"
             android:label="@string/bg_readings_table" />
         <activity
-            android:name=".Tables.SensorDataTable"
+            android:name=".tables.SensorDataTable"
             android:configChanges="orientation|screenSize"
             android:label="@string/sensor_table" />
         <activity
-            android:name=".Tables.BloodTestTable"
+            android:name=".tables.BloodTestTable"
             android:configChanges="orientation|screenSize"
             android:label="@string/bg_readings_table" />
         <activity
-            android:name=".Tables.TreatmentsTable"
+            android:name=".tables.TreatmentsTable"
             android:configChanges="orientation|screenSize"
             android:label="@string/bg_readings_table" />
         <activity android:name=".SensorPermissionActivity" />

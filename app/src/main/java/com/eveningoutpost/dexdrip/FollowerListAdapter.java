@@ -9,8 +9,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.eveningoutpost.dexdrip.ShareModels.Models.ExistingFollower;
-import com.eveningoutpost.dexdrip.ShareModels.ShareRest;
+import com.eveningoutpost.dexdrip.sharemodels.Models.ExistingFollower;
+import com.eveningoutpost.dexdrip.sharemodels.ShareRest;
 import com.squareup.okhttp.ResponseBody;
 
 import java.util.List;

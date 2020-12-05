@@ -19,11 +19,11 @@
 
         <variable
             name="nano"
-            type="com.eveningoutpost.dexdrip.UtilityModels.NanoStatus" />
+            type="com.eveningoutpost.dexdrip.utilitymodels.NanoStatus" />
 
         <variable
             name="expiry"
-            type="com.eveningoutpost.dexdrip.UtilityModels.NanoStatus" />
+            type="com.eveningoutpost.dexdrip.utilitymodels.NanoStatus" />
 
         <import type="android.view.View" />
     </data>

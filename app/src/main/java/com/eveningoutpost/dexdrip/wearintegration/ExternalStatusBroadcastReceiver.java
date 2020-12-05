@@ -4,8 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.WakefulBroadcastReceiver;
 
-import com.eveningoutpost.dexdrip.Models.UserError;
-
 /**
  * Created by adrian on 14/02/16.
  */

@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip.tidepool;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.models.JoH;
 
 import okhttp3.MediaType;
 import okhttp3.RequestBody;

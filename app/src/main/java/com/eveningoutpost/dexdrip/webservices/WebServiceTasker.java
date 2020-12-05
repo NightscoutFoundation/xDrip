@@ -2,14 +2,13 @@ package com.eveningoutpost.dexdrip.webservices;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 
-import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.localeTasker.bundle.PluginBundleManager;
+import com.eveningoutpost.dexdrip.models.UserError;
+import com.eveningoutpost.dexdrip.localetasker.bundle.PluginBundleManager;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import static com.eveningoutpost.dexdrip.BuildConfig.APPLICATION_ID;
-import static com.eveningoutpost.dexdrip.localeTasker.bundle.PluginBundleManager.BUNDLE_EXTRA_INT_VERSION_CODE;
+import static com.eveningoutpost.dexdrip.localetasker.bundle.PluginBundleManager.BUNDLE_EXTRA_INT_VERSION_CODE;
 
 /**
  * Created by jamorham on 06/01/2018.

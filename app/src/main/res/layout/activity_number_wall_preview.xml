@@ -11,11 +11,11 @@
 
         <variable
             name="prefs"
-            type="com.eveningoutpost.dexdrip.UtilityModels.PrefsViewImpl" />
+            type="com.eveningoutpost.dexdrip.utilitymodels.PrefsViewImpl" />
 
         <variable
             name="sprefs"
-            type="com.eveningoutpost.dexdrip.UtilityModels.PrefsViewString" />
+            type="com.eveningoutpost.dexdrip.utilitymodels.PrefsViewString" />
 
     </data>
 

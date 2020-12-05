@@ -7,14 +7,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.PowerManager;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayAPI;
 
 import lombok.val;
 
-import static com.eveningoutpost.dexdrip.Models.JoH.emptyString;
-import static com.eveningoutpost.dexdrip.UtilityModels.Intents.BLUEJAY_THINJAM_API;
+import static com.eveningoutpost.dexdrip.models.JoH.emptyString;
+import static com.eveningoutpost.dexdrip.utilitymodels.Intents.BLUEJAY_THINJAM_API;
 
 public class ThinJamApiReceiver extends BroadcastReceiver {
 

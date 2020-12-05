@@ -4,7 +4,7 @@ package com.eveningoutpost.dexdrip.watch.thinjam;
 
 import android.preference.Preference;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.xdrip;
 

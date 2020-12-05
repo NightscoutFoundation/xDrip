@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip.cgm.sharefollow;
 
-import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.models.BgReading;
 
 import org.junit.Test;
 

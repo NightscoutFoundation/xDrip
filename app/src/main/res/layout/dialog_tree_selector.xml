@@ -8,7 +8,7 @@
 
         <variable
             name="viewModel"
-            type="com.eveningoutpost.dexdrip.UtilityModels.SourceWizard.ViewModel" />
+            type="com.eveningoutpost.dexdrip.utilitymodels.SourceWizard.ViewModel" />
     </data>
 
     <LinearLayout

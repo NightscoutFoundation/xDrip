@@ -41,7 +41,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 // active android.
 
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*", "com.activeandroid.*", "com.eveningoutpost.dexdrip.Models.*"})
-@PrepareForTest({android.util.Log.class, com.eveningoutpost.dexdrip.Models.UserError.class})
+@PrepareForTest({android.util.Log.class, com.eveningoutpost.dexdrip.models.UserError.class})
 
 //@PowerMockRunnerDelegate(RobolectricTestRunner.class)
 // TODO can we make this neater using delegate or avoiding warnings about org/powermock/default.properties is found in 2 places ?
@@ -92,7 +92,7 @@ public abstract class RobolectricTestWithConfigAndPowerMockLogRedirect {
         });
 
         try {
-            PowerMockito.whenNew(com.eveningoutpost.dexdrip.Models.UserError.class).withAnyArguments().thenReturn(null);
+            PowerMockito.whenNew(com.eveningoutpost.dexdrip.models.UserError.class).withAnyArguments().thenReturn(null);
         } catch (Exception e) {
             System.out.println("Exception mocking usererror: " + e);
         }
