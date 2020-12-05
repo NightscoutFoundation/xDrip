@@ -12,6 +12,7 @@ buildscript {
         classpath 'com.google.gms:google-services:4.3.4'
  //       classpath 'me.tatarka:gradle-retrolambda:3.7.0'
         classpath 'io.fabric.tools:gradle:1.+'
+        classpath 'com.netflix.nebula:gradle-lint-plugin:16.15.9'
 
         apply plugin: 'java'
         apply plugin: 'maven'
@@ -30,4 +31,18 @@ allprojects {
             dirs 'libs'
         }
     }
+    apply plugin: 'nebula.lint'
+    gradleLint {
+        rules = ['all-dependencies', 'dependency-parentheses', 'unused-dependency'] // add as many rules here as you'd like
+        reportFormat = 'text'
+    }
+}
+
+tasks.withType(JavaCompile) {
+    options.compilerArgs << '-Xlint:unchecked'
+    options.deprecation = true
+}
+
+subprojects {
+    task allDeps(type: DependencyReportTask) {}
 }
