@@ -15,7 +15,6 @@ import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.Date;
 
-import static com.eveningoutpost.dexdrip.watch.miband.MiBand.MiBandType.MI_BAND2;
 // very lightweight entry point class to avoid loader overhead when not in use
 
 public class MiBandEntry {
@@ -65,11 +64,11 @@ public class MiBandEntry {
     }
 
     public static boolean isNeedSendReadingAsNotification() {
-        return !MiBand.isMiband4_or_5( MiBand.getMibandType());
+        return !MiBandType.supportGraph( MiBand.getMibandType());
     }
 
     public static boolean isNightModeEnabled() {
-        if (MiBand.getMibandType() == MI_BAND2) return false;
+        if (MiBand.getMibandType() == MiBandType.MI_BAND2) return false;
         return Pref.getBooleanDefaultFalse(PREF_MIBAND_NIGHTMODE_ENABLED);
     }
 
@@ -90,7 +89,7 @@ public class MiBandEntry {
     }
 
     public static boolean isGraphEnabled() {
-        if (!MiBand.isMiband4_or_5(MiBand.getMibandType())) return false;
+        if (!MiBandType.supportGraph(MiBand.getMibandType())) return false;
         return Pref.getBooleanDefaultFalse(PREF_MIBAND_GRAPH_ENBALE);
     }
 

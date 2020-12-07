@@ -7,7 +7,7 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
 import com.eveningoutpost.dexdrip.watch.miband.Const;
-import com.eveningoutpost.dexdrip.watch.miband.MiBand;
+import com.eveningoutpost.dexdrip.watch.miband.MiBandType;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -34,8 +34,8 @@ public class AuthMessages extends BaseMessage {
     byte[] localKey;
     public ByteBuffer data = null;
 
-    public AuthMessages(MiBand.MiBandType mibandType, String authKey) {
-        if (MiBand.isMiband4_or_5(mibandType)) {
+    public AuthMessages(MiBandType mibandType, String authKey) {
+        if (MiBandType.supportPairingKey(mibandType)) {
             cryptFlags = OperationCodes.AUTH_MIBAND4_CRYPT_FLAG;
         }
         localKey = CipherUtils.getRandomKey();

@@ -5,14 +5,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 
-import static com.eveningoutpost.dexdrip.watch.miband.Const.MIBAND_NAME_2;
-import static com.eveningoutpost.dexdrip.watch.miband.Const.MIBAND_NAME_3;
-import static com.eveningoutpost.dexdrip.watch.miband.Const.MIBAND_NAME_3_1;
-import static com.eveningoutpost.dexdrip.watch.miband.Const.MIBAND_NAME_4;
-import static com.eveningoutpost.dexdrip.watch.miband.Const.MIBAND_NAME_5;
 import static com.eveningoutpost.dexdrip.watch.miband.Const.MIBAND_NOTIFY_TYPE_ALARM;
-import static com.eveningoutpost.dexdrip.watch.miband.MiBand.MiBandType.MI_BAND4;
-import static com.eveningoutpost.dexdrip.watch.miband.MiBand.MiBandType.MI_BAND5;
 import static com.eveningoutpost.dexdrip.watch.miband.MiBandEntry.PREF_MIBAND_AUTH_KEY;
 import static com.eveningoutpost.dexdrip.watch.miband.MiBandEntry.PREF_MIBAND_MAC;
 
@@ -24,41 +17,6 @@ import static com.eveningoutpost.dexdrip.watch.miband.MiBandEntry.PREF_MIBAND_MA
 
 public class MiBand {
 
-    public enum MiBandType {
-        MI_BAND2(MIBAND_NAME_2),
-        MI_BAND3(MIBAND_NAME_3),
-        MI_BAND3_1(MIBAND_NAME_3_1),
-        MI_BAND4(MIBAND_NAME_4),
-        MI_BAND5(MIBAND_NAME_5),
-        UNKNOWN("");
-
-        private final String text;
-
-        /**
-         * @param text
-         */
-        MiBandType(final String text) {
-            this.text = text;
-        }
-
-        /* (non-Javadoc)
-         * @see java.lang.Enum#toString()
-         */
-        @Override
-        public String toString() {
-            return text;
-        }
-
-        public static MiBandType fromString(String text) {
-            for (MiBandType b : MiBandType.values()) {
-                if (b.text.equalsIgnoreCase(text)) {
-                    return b;
-                }
-            }
-            return UNKNOWN;
-        }
-    }
-
     private static final String PREF_MIBAND_AUTH_MAC = "miband_auth_mac";
     private static final String PREF_MIBAND_PERSISTANT_AUTH_KEY = "miband_persist_authkey";
     private static final String PREF_MIBAND_MODEL = "miband_model_";
@@ -66,10 +24,6 @@ public class MiBand {
 
     public static MiBandType getMibandType() {
         return MiBandType.fromString(getModel());
-    }
-
-    public static boolean isMiband4_or_5(MiBandType bandType) {
-        return bandType == MI_BAND4 || bandType == MI_BAND5;
     }
 
     public static boolean isAuthenticated() {

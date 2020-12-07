@@ -16,7 +16,6 @@ import android.os.PowerManager;
 import android.support.annotation.RequiresApi;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.preference.PreferenceManager;
-import android.util.Pair;
 
 import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
 import com.eveningoutpost.dexdrip.Models.AlertType;
@@ -32,12 +31,10 @@ import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.Intents;
-import com.eveningoutpost.dexdrip.UtilityModels.NotificationChannels;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.utils.bt.Subscription;
 import com.eveningoutpost.dexdrip.utils.framework.PoorMansConcurrentLinkedDeque;
 import com.eveningoutpost.dexdrip.utils.framework.WakeLockTrampoline;
-import com.eveningoutpost.dexdrip.watch.PrefBindingFactory;
 import com.eveningoutpost.dexdrip.watch.miband.Firmware.FirmwareOperations;
 import com.eveningoutpost.dexdrip.watch.miband.Firmware.Sequence.SequenceState;
 import com.eveningoutpost.dexdrip.watch.miband.Firmware.Sequence.SequenceStateMiBand4;
@@ -47,10 +44,7 @@ import com.eveningoutpost.dexdrip.watch.miband.message.AlertLevelMessage;
 import com.eveningoutpost.dexdrip.watch.miband.message.AlertMessage;
 import com.eveningoutpost.dexdrip.watch.miband.message.AuthMessages;
 import com.eveningoutpost.dexdrip.watch.miband.message.DeviceEvent;
-import com.eveningoutpost.dexdrip.watch.miband.message.DisplayControllMessage;
-import com.eveningoutpost.dexdrip.watch.miband.message.DisplayControllMessageMiBand2;
 import com.eveningoutpost.dexdrip.watch.miband.message.DisplayControllMessageMiband3_4;
-import com.eveningoutpost.dexdrip.watch.miband.message.FeaturesControllMessage;
 import com.eveningoutpost.dexdrip.watch.miband.message.OperationCodes;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.polidea.rxandroidble2.ConnectionParameters;
@@ -87,10 +81,6 @@ import static com.eveningoutpost.dexdrip.watch.miband.Const.MIBAND_NOTIFY_TYPE_C
 import static com.eveningoutpost.dexdrip.watch.miband.Const.MIBAND_NOTIFY_TYPE_CANCEL;
 import static com.eveningoutpost.dexdrip.watch.miband.Const.MIBAND_NOTIFY_TYPE_MESSAGE;
 import static com.eveningoutpost.dexdrip.watch.miband.Const.PREFERRED_MTU_SIZE;
-import static com.eveningoutpost.dexdrip.watch.miband.MiBand.MiBandType.MI_BAND2;
-import static com.eveningoutpost.dexdrip.watch.miband.MiBand.MiBandType.MI_BAND4;
-import static com.eveningoutpost.dexdrip.watch.miband.MiBand.MiBandType.MI_BAND5;
-import static com.eveningoutpost.dexdrip.watch.miband.MiBand.MiBandType.UNKNOWN;
 import static com.eveningoutpost.dexdrip.watch.miband.MiBandService.MiBandState.AUTHORIZE_FAILED;
 import static com.eveningoutpost.dexdrip.watch.miband.message.DisplayControllMessageMiband3_4.NightMode.Sheduled;
 import static com.eveningoutpost.dexdrip.watch.miband.message.OperationCodes.AUTH_FAIL;
@@ -139,7 +129,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
 
     private PendingIntent bgServiceIntent;
     static private long bgWakeupTime;
-    private MiBand.MiBandType prevDeviceType = UNKNOWN;
+    private MiBandType prevDeviceType = MiBandType.UNKNOWN;
     private final PoorMansConcurrentLinkedDeque<QueueMessage> messageQueue = new PoorMansConcurrentLinkedDeque<>();
     private QueueMessage queueItem;
     private BroadcastReceiver statusReceiver;
@@ -184,8 +174,8 @@ public class MiBandService extends JamBaseBluetoothSequencer {
     }
 
     private Class getPrefBinder() {
-        MiBand.MiBandType type = MiBand.getMibandType();
-        if (type == MI_BAND2)
+        MiBandType type = MiBand.getMibandType();
+        if (type == MiBandType.MI_BAND2)
             return Miband2PrefBinding.class;
         else return Miband3_4PrefBinding.class;
     }
@@ -218,7 +208,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
 
     private boolean readyToProcessCommand() {
         boolean result = I.state.equals(MiBandState.SLEEP) || I.state.equals(MiBandState.CLOSED) || I.state.equals(MiBandState.CLOSE) || I.state.equals(MiBandState.INIT) || I.state.equals(MiBandState.CONNECT_NOW);
-        if (!result && I.state.equals(MiBandState.AUTHORIZE_FAILED) && MiBand.isMiband4_or_5(MiBand.getMibandType())) {
+        if (!result && I.state.equals(MiBandState.AUTHORIZE_FAILED) && MiBandType.supportPairingKey(MiBand.getMibandType())) {
             return true;
         }
         if ( !I.isConnected ){
@@ -237,8 +227,8 @@ public class MiBandService extends JamBaseBluetoothSequencer {
             if (shouldServiceRun()) {
                 final String authMac = MiBand.getPersistentAuthMac();
                 String mac = MiBand.getMac();
-                MiBand.MiBandType currDevice = MiBand.getMibandType();
-                if ((currDevice != prevDeviceType) && currDevice != UNKNOWN) {
+                MiBandType currDevice = MiBand.getMibandType();
+                if ((currDevice != prevDeviceType) && currDevice != MiBandType.UNKNOWN) {
                     prevDeviceType = currDevice;
                     UserError.Log.d(TAG, "Found new device: " + currDevice.toString());
                     MiBandEntry.sendPrefIntent(MIBAND_INTEND_STATES.UPDATE_PREF_SCREEN, 0, "");
@@ -664,7 +654,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
         } else {
             String messageText = "BG: " + last.displayValue(null) + " " + last.displaySlopeArrow();
             UserError.Log.uel(TAG, "Send alert msg: " + messageText);
-            if (MiBand.getMibandType() == MI_BAND2) {
+            if (MiBand.getMibandType() == MiBandType.MI_BAND2) {
                 new QueueMe()
                         .setBytes(message.getAlertMessageOld(messageText.toUpperCase(), AlertMessage.AlertCategory.SMS_MMS))
                         .setDescription("Send alert msg: " + messageText)
@@ -718,7 +708,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
     }
 
     private void sendSettings() {
-        List<Pair<Integer, Boolean>> features = PrefBindingFactory.getInstance(getPrefBinder()).getStates("miband_feature_");
+       /* List<Pair<Integer, Boolean>> features = PrefBindingFactory.getInstance(getPrefBinder()).getStates("miband_feature_");
         FeaturesControllMessage featureMessage = new FeaturesControllMessage();
         for (Pair<Integer, Boolean> item : features) {
             byte[] message = featureMessage.getMessage(item);
@@ -736,8 +726,8 @@ public class MiBandService extends JamBaseBluetoothSequencer {
         List<Integer> screenOpt = PrefBindingFactory.getInstance(getPrefBinder()).getEnabled("miband_screen");
 
         DisplayControllMessage dispMessage;
-        MiBand.MiBandType type = MiBand.getMibandType();
-        if (type == MI_BAND2)
+        MiBandType type = MiBand.getMibandType();
+        if (type == MiBandType.MI_BAND2)
             dispMessage = new DisplayControllMessageMiBand2();
         else
             dispMessage = new DisplayControllMessageMiband3_4();
@@ -748,7 +738,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                 .expireInSeconds(QUEUE_EXPIRED_TIME)
                 .setDelayMs(QUEUE_DELAY)
                 .queue();
-
+        */
         setNightMode();
     }
 
@@ -794,7 +784,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                 JoH.wakeUpIntent(xdrip.getAppContext(), CALL_ALERT_DELAY, bgServiceIntent);
                 break;
             case MIBAND_NOTIFY_TYPE_MESSAGE:
-                if (MiBand.getMibandType() == MI_BAND2) {
+                if (MiBand.getMibandType() == MiBandType.MI_BAND2) {
                     new QueueMe()
                             .setBytes(alertMessage.getAlertMessageOld(message, AlertMessage.AlertCategory.SMS_MMS))
                             .setDescription("Sent message: " + message)
@@ -833,7 +823,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
         }
 
         String authKey = MiBand.getPersistentAuthKey();
-        if (MiBand.isMiband4_or_5(MiBand.getMibandType())) {
+        if (MiBandType.supportPairingKey(MiBand.getMibandType())) {
             if (authKey.isEmpty()) {
                 authKey = MiBand.getAuthKey();
                 if (authKey.isEmpty()) {
@@ -987,7 +977,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
             return;
         }
         try {
-            MiBand.MiBandType mibandType = MiBand.getMibandType();
+            MiBandType mibandType = MiBand.getMibandType();
             WatchFaceGenerator wfGen = new WatchFaceGenerator(getBaseContext().getAssets(),
                     MiBand.getMibandType());
             byte[] fwArray = wfGen.genWatchFace(statusIOB);
@@ -996,9 +986,9 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                 return;
             }
             SequenceState sequenceState = null;
-            if (mibandType == MI_BAND4) {
+            if (mibandType == MiBandType.MI_BAND4) {
                 sequenceState = new SequenceStateMiBand4();
-            } else if (mibandType == MI_BAND5) {
+            } else if (mibandType == MiBandType.MI_BAND5) {
                 sequenceState = new SequenceStateMiBand5();
             } else {
                 resetFirmwareState(false, "Not supported band type");
@@ -1520,7 +1510,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                     }
 
                     final String bgAsNotification = queueItem.functionName;
-                    if (!MiBand.isMiband4_or_5(MiBand.getMibandType())
+                    if (!MiBandType.supportPairingKey(MiBand.getMibandType())
                             || MiBandEntry.isNeedSendReadingAsNotification()
                             || bgAsNotification.equals("update_bg_as_notification")) {
                         Boolean result = sendBG();

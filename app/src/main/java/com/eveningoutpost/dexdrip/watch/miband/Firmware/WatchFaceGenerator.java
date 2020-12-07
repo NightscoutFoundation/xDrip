@@ -22,8 +22,8 @@ import com.eveningoutpost.dexdrip.watch.miband.Firmware.WatchFaceParts.HeaderMiB
 import com.eveningoutpost.dexdrip.watch.miband.Firmware.WatchFaceParts.Image;
 import com.eveningoutpost.dexdrip.watch.miband.Firmware.WatchFaceParts.Parameter;
 import com.eveningoutpost.dexdrip.watch.miband.Firmware.WatchFaceParts.Utils.BgMibandSparklineBuilder;
-import com.eveningoutpost.dexdrip.watch.miband.MiBand;
 import com.eveningoutpost.dexdrip.watch.miband.MiBandEntry;
+import com.eveningoutpost.dexdrip.watch.miband.MiBandType;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.io.BufferedInputStream;
@@ -44,8 +44,8 @@ import static com.eveningoutpost.dexdrip.utils.FileUtils.getExternalDir;
 import static com.eveningoutpost.dexdrip.utils.FileUtils.makeSureDirectoryExists;
 
 public class WatchFaceGenerator {
-    private static final boolean d = false;
-    private static final boolean debug = false; //need only for debug to save resulting image and firmware
+    private static final boolean d = true;
+    private static final boolean debug = true; //need only for debug to save resulting image and firmware
     private static final String TAG = WatchFaceGenerator.class.getSimpleName();
 
     private InputStream fwFileStream;
@@ -73,11 +73,14 @@ public class WatchFaceGenerator {
     private File wfFile = null;
     private int offset = 0;
 
-    private MiBand.MiBandType miBandType;
+    private MiBandType miBandType;
 
-    public WatchFaceGenerator(AssetManager assetManager, MiBand.MiBandType miBandType) throws Exception {
+    public WatchFaceGenerator(AssetManager assetManager, MiBandType miBandType) throws Exception {
         this.assetManager = assetManager;
         this.miBandType = miBandType;
+        if (!MiBandType.supportGraph(miBandType)) {
+            throw new Exception("Not supported device");
+        }
         InputStream mainImage = null;
         isGraphEnabled = MiBandEntry.isGraphEnabled();
         isNeedToUseCustomWatchface = MiBandEntry.isNeedToUseCustomWatchface();
@@ -96,14 +99,18 @@ public class WatchFaceGenerator {
         if (!customFilesFound) {
             String firmwareFileName = "miband_watchface_parts/xdrip_";
             String imageFileName = "miband_watchface_parts/";
-            if (miBandType == MiBand.MiBandType.MI_BAND4) {
-                firmwareFileName += "miband4";
-                imageFileName += "miband4";
-            } else if (miBandType == MiBand.MiBandType.MI_BAND5) {
-                firmwareFileName += "miband5";
-                imageFileName += "miband5";
+            String wathcTypeFileName = "";
+            if (miBandType == MiBandType.MI_BAND4) {
+                wathcTypeFileName = "miband4";
+            } else if (miBandType == MiBandType.MI_BAND5) {
+                wathcTypeFileName = "miband5";
+            } else if (miBandType == MiBandType.AMAZFITGTR) {
+                wathcTypeFileName = "amazfit_gtr";
+            } else if (miBandType == MiBandType.AMAZFITGTR_LITE) {
+                wathcTypeFileName = "amazfit_gtr_l";
             }
-            imageFileName += "_main_screen";
+            firmwareFileName += wathcTypeFileName;
+            imageFileName += wathcTypeFileName + "_main_screen";
 
             if (!isGraphEnabled) {
                 firmwareFileName += "_no_graph";
@@ -132,12 +139,10 @@ public class WatchFaceGenerator {
             UserError.Log.d(TAG, "Reading header");
         BufferedInputStream stream = new BufferedInputStream(fwFileStream);
         header = null;
-        if (miBandType == MiBand.MiBandType.MI_BAND4) {
+        if (miBandType == MiBandType.MI_BAND4 || miBandType == MiBandType.AMAZFITGTR || miBandType == MiBandType.AMAZFITGTR_LITE) {
             header = new HeaderMiBand4();
-        } else if (miBandType == MiBand.MiBandType.MI_BAND5) {
+        } else if (miBandType == MiBandType.MI_BAND5) {
             header = new HeaderMiBand5();
-        } else {
-            throw new Exception("Not supported device");
         }
         header = header.readFrom(stream);
         if (d) {
@@ -283,9 +288,9 @@ public class WatchFaceGenerator {
             canvas.drawText(bgtextDigits, bgTextPosX, bgTextPosY, paint);
         }
         //draw strike line for bg
-       if ( data.isStrike_through()){
-           canvas.drawLine( bgTextPosX-5, bgTextPosY-bounds.height()/2, arrowXPos-5,bgTextPosY-bounds.height()/2, paint);
-       }
+        if (data.isStrike_through()) {
+            canvas.drawLine(bgTextPosX - 5, bgTextPosY - bounds.height() / 2, arrowXPos - 5, bgTextPosY - bounds.height() / 2, paint);
+        }
 
         //draw unitized delta
         paint.setTextScaleX(1);
