@@ -163,6 +163,7 @@
     <string name="checking_for_update">Überprüfe auf Updates ...</string>
     <string name="signal_missed">Keine Daten empfangen</string>
     <string name="minutes_ago">{0, choice,0#{0, number, integer} Minuten her|1#{0, number, integer} Minute her|1&lt;{0, number, integer} Minuten her}</string>
+    <string name="expires_days">{0, choice,0#Sensor abgelaufen!|1#Endet in {0, number} Tag|1&lt;Endet in {0, number} Tagen}</string>
     <string name="space_minutes_ago">" Minuten her"</string>
     <string name="space_minute_ago">" Minute her"</string>
     <string name="show_parakeet_map">Parakeet Map anzeigen</string>
@@ -774,6 +775,7 @@
     <string name="follower_chime_new">Neuer-Follower-Läuten</string>
     <string name="carb_ratio">Kohlenhydratfaktor</string>
     <string name="enable_dedicated_insulin_profiles">Insulinprofile konfigurieren</string>
+    <string name="desc_enable_dedicated_insulin_profiles">Hier kann man verschiedene Insulinprofile aktivieren oder konfigurieren</string>
     <string name="insulin_sensitivity">Insulin-Empfindlichkeit</string>
     <string name="secondary_plugin_glucose_value">Glukosewert des sekundären Plugins</string>
     <string name="step_counter_1st_color">Schrittzähler 1. Farbe</string>
@@ -1182,6 +1184,18 @@
     <string name="view_old_error_log">Altes Fehlerprotokoll anzeigen</string>
     <string name="return_to_home_screen">Zum Startbildschirm zurückkehren</string>
     <string name="title_miband">MiBand</string>
+    <string name="summary_miband_enable">Daten mit MiBand Fitness Bändern synchronisieren</string>
+    <string name="title_miband_enable">MiBand verwenden</string>
+    <string name="title_miband_screen_battery">Akkustand anzeigen</string>
+    <string name="title_miband_show_date">Datum anzeigen</string>
+    <string name="title_miband_visibility">MiBand Sichtbarkeit</string>
+    <string name="title_miband_switch_display_on_wrist">Anzeige durch Handgelenk anheben einschalten</string>
+    <string name="title_miband_units">Einheiten</string>
+    <string name="summary_miband_units">Wähle die auf dem Band verwendete Längeneinheit </string>
+    <string name="title_miband_goal_notification">Benachrichtigung über Zielerreichung</string>
+    <string name="summary_miband_goal_notification">MiBand vibriert bei Zielerreichung</string>
+    <string name="title_miband_locale_24_hour">24-Stunden-Format</string>
+    <string name="summary_miband_locale_24_hour">Zeige 24-Stunden-Format</string>
     <string name="title_lefun_mac">MAC-Adresse</string>
     <string name="title_lefun_locale_12_hour">12-Stunden-Format</string>
     <string name="title_ob1_g5_use_transmitter_alg">Nativer Algorithmus</string>
