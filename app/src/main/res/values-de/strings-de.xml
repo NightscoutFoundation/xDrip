@@ -1196,7 +1196,19 @@
     <string name="summary_miband_goal_notification">MiBand vibriert bei Zielerreichung</string>
     <string name="title_miband_locale_24_hour">24-Stunden-Format</string>
     <string name="summary_miband_locale_24_hour">Zeige 24-Stunden-Format</string>
+    <string name="title_miband_nightmode_category">Nachtmodus Einstellungen</string>
+    <string name="title_miband_nightmode_enabled">Nachtmodus aktivieren</string>
+    <string name="summary_miband_nightmode_enabled">Bildschirmhelligkeit während benutzerdefinierter Zeit reduzieren</string>
+    <string name="title_miband_nightmode_start">Nachtmodus starten</string>
+    <string name="title_miband_nightmode_end">Nachtmodus beenden</string>
+    <string name="title_miband_interval_in_nightmode">Intervall</string>
+    <string name="summary_miband_interval_in_nightmode">Legt fest, wie oft BZ im Nachtmodus synchronisiert werden soll</string>
+    <string name="summary_miband_colect_heartrate">Erhalte Herzfrequenzdaten vom MiBand. Aktualisierungsintervall kann in MiFit oder einer Drittanbieter-Anwendung konfiguriert werden</string>
+    <string name="summary_miband_mac">Für automatische Suche leer lassen</string>
+    <string name="title_miband_send_readings_as_notification">BZ-Werte als Benachrichtigung</string>
+    <string name="title_miband_screen_notifications">Benachrichtigungen zeigen</string>
     <string name="title_lefun_mac">MAC-Adresse</string>
+    <string name="title_features">Funktionen</string>
     <string name="title_lefun_locale_12_hour">12-Stunden-Format</string>
     <string name="title_ob1_g5_use_transmitter_alg">Nativer Algorithmus</string>
     <string name="summary_ob1_g5_restart_sensor">Automatisch einen Sensor neu starten, wenn er stoppt</string>
@@ -1206,4 +1218,7 @@
     <string name="summary_using_g6">Ich nutze den G6 Sensor</string>
     <string name="title_using_g6">Unterstützung für G6</string>
     <string name="title_g5_battery_warning_level">Batteriewarnung anpassen</string>
+    <string name="title_plugins_and_features">Plugins und Funktionen</string>
+    <string name="title_color_heart_rate1">Herzfrequenz-Monitor</string>
+    <string name="title_insulin_colors">Insulin-Farben</string>
 </resources>
