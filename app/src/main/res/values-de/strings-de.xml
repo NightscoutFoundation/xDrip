@@ -773,6 +773,7 @@
     <string name="notify_data_arrives_master"><![CDATA[Benachrichtigen, wenn Daten vom Master im Abstand von &gt; 20 Minuten ankommen.]]></string>
     <string name="follower_chime_new">Neuer-Follower-Läuten</string>
     <string name="carb_ratio">Kohlenhydratfaktor</string>
+    <string name="enable_dedicated_insulin_profiles">Insulinprofile konfigurieren</string>
     <string name="insulin_sensitivity">Insulin-Empfindlichkeit</string>
     <string name="secondary_plugin_glucose_value">Glukosewert des sekundären Plugins</string>
     <string name="step_counter_1st_color">Schrittzähler 1. Farbe</string>
