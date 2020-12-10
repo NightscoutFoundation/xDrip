@@ -1291,6 +1291,13 @@
     <string name="title_plus_whole_house">Whole-House</string>
     <string name="summary_libre_whole_house_collector">Dieses Telefon wird ein Collector im Whole-House-Netzwerk sein</string>
     <string name="title_libre_whole_house_collector">Libre-Whole-House</string>
+    <string name="summary_use_notification_channels">Verwende die Android 8+ Benachrichtigungskanal-Funktion</string>
+    <string name="title_use_notification_channels">Benachrichtigungskanäle</string>
+    <string name="title_notification_channels_grouping">Gruppiere Benachrichtigungen</string>
+    <string name="summary_play_sound_for_initial_calibration">Ton abspielen, wenn die initiale Kalibrierung angefordert wird</string>
+    <string name="category_noisy_readings">Verrauschte Werte</string>
+    <string name="category_alert_prefs">Alarm-Einstellungen (für diese Warnungen)</string>
+    <string name="summary_persistent_high_alert">Wenn zu lange über der Obergrenze ohne Tendenz nach unten</string>
     <string name="note_search_button">SUCHE</string>
     <string name="all_note_button">ALLE</string>
     <string name="title_full_screen_mode">Vollbild-Modus</string>
