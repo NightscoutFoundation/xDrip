@@ -47,6 +47,7 @@ import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Bubble;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.LibreBluetooth;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.Tomato;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
@@ -94,7 +95,7 @@ import static com.eveningoutpost.dexdrip.xdrip.gs;
 public class DexCollectionService extends Service implements BtCallBack {
     public static final String LIMITTER_NAME = "LimiTTer";
     private final static String TAG = DexCollectionService.class.getSimpleName();
-    private static final boolean d = false;
+    private static final boolean d = true;
     //private Context mContext;
     private static final int STATE_DISCONNECTED = BluetoothProfile.STATE_DISCONNECTED;
     private static final int STATE_DISCONNECTING = BluetoothProfile.STATE_DISCONNECTING;
@@ -163,6 +164,7 @@ public class DexCollectionService extends Service implements BtCallBack {
     private final UUID xDripDataCharacteristicSend = use_rfduino_bluetooth ? UUID.fromString(HM10Attributes.HM_TX) : UUID.fromString(HM10Attributes.HM_RX_TX);
     private final String DEFAULT_BT_PIN = getDefaultPin();
     private final UUID blukonDataService = UUID.fromString(HM10Attributes.BLUKON_SERVICE);
+    private final UUID Libre2ServiceUUID = UUID.fromString(HM10Attributes.LIBRE2_SERVICE_ID);
     public DexCollectionService dexCollectionService;
     long lastPacketTime;
     private SharedPreferences prefs;
@@ -385,9 +387,10 @@ public class DexCollectionService extends Service implements BtCallBack {
             if (prefs.getBoolean(PREF_DEX_COLLECTION_BONDING, false)) {
                 if ((mDeviceAddress != null) && (device != null) && (!areWeBonded(mDeviceAddress))) {
                     if (JoH.ratelimit("dexcollect-create-bond", 20)) {
-                        Log.d(TAG, "Attempting to create bond to: " + mDeviceAddress);
+                        Log.d(TAG, "Attempting to create bond to: " + mDeviceAddress + " try " + bondingTries);
                         bondingTries++;
                         if (bondingTries > 5) {
+                            Log.w(TAG, "Bonding failing so disabling bonding feature");
                             Home.toaststaticnext("Bonding failing so disabling bonding feature");
                             Pref.setBoolean(PREF_DEX_COLLECTION_BONDING, false);
                         } else {
@@ -400,7 +403,7 @@ public class DexCollectionService extends Service implements BtCallBack {
 
             final BluetoothGattService gattService = mBluetoothGatt.getService(xDripDataService);
             if (gattService == null) {
-                if (!(static_use_blukon || blueReader.isblueReader() || Tomato.isTomato()||Bubble.isBubble())) {
+                if (!(static_use_blukon || blueReader.isblueReader() || Tomato.isTomato()||Bubble.isBubble() || LibreBluetooth.isLibreBluettoh())) {
                     Log.w(TAG, "onServicesDiscovered: xdrip service " + xDripDataService + " not found"); //TODO the selection of nrf is not active at the beginning,so this error will be trown one time unneeded, mey to be optimized.
                     // TODO this should be reworked to be an efficient selector
                     listAvailableServices(mBluetoothGatt);
@@ -583,6 +586,48 @@ public class DexCollectionService extends Service implements BtCallBack {
                 Blukon.initialize();
 
             }
+            
+            // libre2 device
+            Log.i(TAG, "Looking for  libre2 device");
+            final BluetoothGattService Libre2Service = mBluetoothGatt.getService(Libre2ServiceUUID);
+            if (Libre2Service != null) {
+                Log.i(TAG, "Found libre2 device");
+                mCharacteristic = Libre2Service.getCharacteristic(UUID.fromString(HM10Attributes.LIBRE2_DATA_CHARACTERISTIC));
+                if (mCharacteristic == null) {
+                    Log.w(TAG, "onServicesDiscovered: libre2 characteristic  not found");
+                    JoH.releaseWakeLock(wl);
+                    return;
+                }
+                
+                try {
+                    final int charaProp = mCharacteristic.getProperties();
+                    if ((charaProp & BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
+                        UserError.Log.d(TAG, "Setting notification on characteristic: " + mCharacteristic.getUuid() + " charaprop: " + charaProp);
+                        final boolean result = mBluetoothGatt.setCharacteristicNotification(mCharacteristic, true);
+                        if (!result)
+                            UserError.Log.d(TAG, "Failed setting notification on libre2 characteristic! " + mCharacteristic.getUuid());
+                    } else {
+                        Log.e(TAG, "Libre2 characteristic doesn't seem to allow notify - this is very unusual");
+                    }
+                } catch (Exception e) {
+                    Log.e(TAG, "Libre2 Exception during notification preparation " + e);
+                }
+
+                
+                mCharacteristicSend = Libre2Service.getCharacteristic(UUID.fromString(HM10Attributes.LIBRE2_LOGIN_CHARACTERISTIC));
+                if (mCharacteristicSend == null) {
+                    Log.w(TAG, "onServicesDiscovered: Libre2 login characteristic not found");
+                    JoH.releaseWakeLock(wl);
+                    return;
+                }
+                status("Enabled " + getString(R.string.blukon)); //??? change to libre2
+                byte[] reply = LibreBluetooth.initialize();
+                if(reply != null) {
+                    sendBtMessage(reply);
+                } else {
+                    Log.e(TAG, "Not sending, No bluetooth enable buffer.");
+                }
+            }
 
             // TODO is this duplicated in some situations?
 
@@ -676,7 +721,7 @@ public class DexCollectionService extends Service implements BtCallBack {
             } catch (Exception e) {
                 UserError.Log.wtf(TAG, "Got exception trying to display data: " + e);
             }
-        }
+         }
 
         @Override
         public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
@@ -1441,7 +1486,7 @@ public class DexCollectionService extends Service implements BtCallBack {
             servicesDiscovered = DISCOVERED.NULL;
             return false;
         }
-
+        
         if (mCharacteristicSend != null && mCharacteristicSend != mCharacteristic) {
             return writeChar(mCharacteristicSend, value);
         }
@@ -1650,6 +1695,19 @@ public class DexCollectionService extends Service implements BtCallBack {
             final BridgeResponse reply = Bubble.decodeBubblePacket(buffer, len);
             if (reply.shouldDelay()) {
                 Inevitable.task("send-bubble-reply", reply.getDelay(), () -> sendReply(reply));
+            } else {
+                sendReply(reply);
+            }
+            if (reply.hasError()) {
+                JoH.static_toast_long(reply.getError_message());
+                error(reply.getError_message());
+            }
+            gotValidPacket();
+
+        } else if (LibreBluetooth.isLibreBluettoh()) {
+            final BridgeResponse reply = LibreBluetooth.decodeLibrePacket(buffer, len);
+            if (reply.shouldDelay()) {
+                Inevitable.task("send-tomato-reply", reply.getDelay(), () -> sendReply(reply));
             } else {
                 sendReply(reply);
             }
