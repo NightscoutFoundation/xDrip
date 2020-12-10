@@ -164,6 +164,7 @@
     <string name="signal_missed">Keine Daten empfangen</string>
     <string name="minutes_ago">{0, choice,0#{0, number, integer} Minuten her|1#{0, number, integer} Minute her|1&lt;{0, number, integer} Minuten her}</string>
     <string name="expires_days">{0, choice,0#Sensor abgelaufen!|1#Endet in {0, number} Tag|1&lt;Endet in {0, number} Tagen}</string>
+    <string name="expires_at">Endet {0}</string>
     <string name="space_minutes_ago">" Minuten her"</string>
     <string name="space_minute_ago">" Minute her"</string>
     <string name="show_parakeet_map">Parakeet Map anzeigen</string>
@@ -1220,10 +1221,16 @@
     <string name="title_miband_screen_weather">Wetter anzeigen</string>
     <string name="title_miband_screen_activity">Aktivität anzeigen</string>
     <string name="title_miband_screen_more">Mehr anzeigen</string>
+    <string name="title_miband_screen_status">Status anzeigen</string>
     <string name="title_miband_screen_heart_rate">Herzfrequenz anzeigen</string>
     <string name="title_miband_screen_timer">Timer anzeigen</string>
     <string name="title_miband_screen_nfc">NFC anzeigen (falls verfügbar)</string>
     <string name="miband_watchface_istall_success">MiBand-Watchface wurde erfolgreich hochgeladen!</string>
+    <string name="miband_watchface_istall_error">Fehler beim Hochladen des MiBand-Watchface</string>
+    <string name="miband_bg_dialog_title">BZ-Daten jetzt aktualisieren?</string>
+    <string name="title_lefun_band">Lefun Band</string>
+    <string name="summary_lefun_enable">Daten mit LeFun Fitness Bändern synchronisieren</string>
+    <string name="title_lefun_enable">LeFun Band verwenden</string>
     <string name="title_lefun_mac">MAC-Adresse</string>
     <string name="title_features">Funktionen</string>
     <string name="title_lefun_locale_12_hour">12-Stunden-Format</string>
