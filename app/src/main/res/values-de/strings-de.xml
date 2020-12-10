@@ -1219,6 +1219,8 @@
     <string name="summary_miband_send_readings_as_notification">BZ-Werte als Benachrichtigung senden. Das Datum wird nicht geändert, so dass alle Bandfunktionen genutzt werden können.
         Du musst dies deaktivieren, wenn du das xdrip Watchface verwenden möchtest (die offizielle MiFit App ist zu deinstallieren, um Datumsüberschreibungen zu vermeiden)</string>
     <string name="title_miband_vibrate_on_readings">Vibriere bei empfangenen Werten</string>
+    <string name="title_miband_send_calls">Sende Anrufe</string>
+    <string name="summary_miband_send_calls">Schicke Anrufbenachrichtigungen an das Band (Android 6+)</string>
     <string name="title_miband_graph_category">Diagramm-Optionen</string>
     <string name="title_miband_graph_enable">Diagramm anzeigen</string>
     <string name="title_miband_graph_treatment_enable">Bolus anzeigen</string>
@@ -1289,6 +1291,13 @@
     <string name="title_plus_whole_house">Whole-House</string>
     <string name="summary_libre_whole_house_collector">Dieses Telefon wird ein Collector im Whole-House-Netzwerk sein</string>
     <string name="title_libre_whole_house_collector">Libre-Whole-House</string>
+    <string name="note_search_button">SUCHE</string>
+    <string name="all_note_button">ALLE</string>
+    <string name="title_full_screen_mode">Vollbild-Modus</string>
+    <string name="title_share_save_this_screen">Diesen Bildschirm teilen/speichern</string>
+    <string name="search_phrase">Suchbegriff</string>
     <string name="xdrip_oop2_not_installed">xDrip+ benötigt oop2, um mit libre2/libre Sensoren aus USA umzugehen.</string>
+    <string name="enable_streaming_summary">verbinde Libre2-Sensoren nach dem Scannen. Das Libre-Lesegerät und die Libre Link-App werden dann keine Alarme mehr empfangen</string>
+    <string name="enable_streaming_title">Starte Bluetooth-Verbindung mit Libre2-Sensoren</string>
     <string name="enable_streaming_dialog_text">Möchtest Du xDrip mit diesem Sensor verbinden? Das Libre Lesegerät und die Libre Link-App werden dann keine Alarme mehr empfangen. Drücke \"Ja\" und scanne erneut für eine Verbindung (wähle \"nicht verbinden\", wenn Du xDrip mit der gepatchten Libre-App benutzt)</string>
 </resources>
