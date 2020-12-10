@@ -167,6 +167,7 @@
     <string name="expires_at">Endet {0}</string>
     <string name="space_minutes_ago">" Minuten her"</string>
     <string name="in_libre_all_house_mode_no_readings_collected_yet">"Im Libre-Whole-House-Modus: noch keine Messungen gesammelt."</string>
+    <string name="in_libre_all_house_mode_last_data_collected">"In Libre-Whole-House-Modus: Letzter Werteempfang "</string>
     <string name="space_minute_ago">" Minute her"</string>
     <string name="show_parakeet_map">Parakeet Map anzeigen</string>
     <string name="switch_parakeet_to_setup_mode">Parakeet in Setup-Modus starten</string>
@@ -1184,6 +1185,7 @@
     <string name="delete_all_bg_readings">Alle BG-Werte löschen</string>
     <string name="debugging_test_feature">Debugging-Testfunktion</string>
     <string name="sync_treatments">Synchronisiere Behandlungen</string>
+    <string name="send_bg_readings_to_backfill">Sende BZ-Messwerte um vergangene nachzutragen</string>
     <string name="view_old_error_log">Altes Fehlerprotokoll anzeigen</string>
     <string name="return_to_home_screen">Zum Startbildschirm zurückkehren</string>
     <string name="title_miband">MiBand</string>
@@ -1208,6 +1210,7 @@
     <string name="title_miband_nightmode_end">Nachtmodus beenden</string>
     <string name="title_miband_interval_in_nightmode">Intervall</string>
     <string name="summary_miband_interval_in_nightmode">Legt fest, wie oft BZ im Nachtmodus synchronisiert werden soll</string>
+    <string name="title_miband_colect_heartrate">HR empfangen</string>
     <string name="summary_miband_colect_heartrate">Erhalte Herzfrequenzdaten vom MiBand. Aktualisierungsintervall kann in MiFit oder einer Drittanbieter-Anwendung konfiguriert werden</string>
     <string name="title_miband_authkey">Authentifizierungsschlüssel</string>
     <string name="summary_miband_authkey">Lege den Authentifizierungsschlüssel für MiBand4 fest (um den Authentifizierungsschlüssel zu erhalten, folge den Anweisungen auf https://www.freemyband.com/)</string>
