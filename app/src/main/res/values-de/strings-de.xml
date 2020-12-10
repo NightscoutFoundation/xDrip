@@ -417,7 +417,7 @@
     <string name="alerts_start_out_snoozed_and_must_persist_for_a_while">Warnungen starten lautlos und werden nach einer Zeitspanne aktiviert</string>
     <string name="alarms_silenced_during_telephone_calls">Alarme bei Telefonaten lautlos</string>
     <string name="suppress_alerts_if_missed_readings">Warnungen deaktivieren bei verpassten Werten</string>
-    <string name="bad_noisy_value_alerts">Schlechte (noisy) Werte Warnung</string>
+    <string name="bad_noisy_value_alerts">Warnung verrauschte Werte</string>
     <string name="keep_snoozing_if_glucose_is_heading_in_right_direction">Alarme im Schlummermodus (snooze) behalten bei Trend in der richtigen Richtung</string>
     <string name="dont_alert_if_glucose_in_right_direction">Keine Warnungen bei Trend in richtiger Richtung</string>
     <string name="calibration_request_sound">Sound: Kalibrierung nötig</string>
