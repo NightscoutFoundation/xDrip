@@ -1185,7 +1185,7 @@
     <string name="delete_all_bg_readings">Alle BG-Werte löschen</string>
     <string name="debugging_test_feature">Debugging-Testfunktion</string>
     <string name="sync_treatments">Synchronisiere Behandlungen</string>
-    <string name="send_bg_readings_to_backfill">Sende BZ-Messwerte um vergangene nachzutragen</string>
+    <string name="send_bg_readings_to_backfill">Sende BZ-Messwerte um verpasste nachzutragen</string>
     <string name="view_old_error_log">Altes Fehlerprotokoll anzeigen</string>
     <string name="return_to_home_screen">Zum Startbildschirm zurückkehren</string>
     <string name="title_miband">MiBand</string>
