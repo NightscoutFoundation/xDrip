@@ -6,6 +6,7 @@ public enum MiBandType {
     MI_BAND3_1(Const.MIBAND_NAME_3_1),
     MI_BAND4(Const.MIBAND_NAME_4),
     MI_BAND5(Const.MIBAND_NAME_5),
+    AMAZFIT5(Const.AMAZFIT5_NAME),
     AMAZFITGTR(Const.AMAZFITGTR_NAME),
     AMAZFITGTR_LITE(Const.AMAZFITGTR_LITE_NAME),
     UNKNOWN("");
@@ -39,6 +40,7 @@ public enum MiBandType {
     public static boolean supportGraph(MiBandType bandType) {
         return  bandType == MiBandType.MI_BAND4 ||
                 bandType == MiBandType.MI_BAND5 ||
+                bandType == MiBandType.AMAZFIT5 ||
                 bandType == MiBandType.AMAZFITGTR ||
                 bandType == MiBandType.AMAZFITGTR_LITE;
     }
@@ -48,12 +50,14 @@ public enum MiBandType {
                 bandType == MiBandType.MI_BAND3_1 ||
                 bandType == MiBandType.MI_BAND4 ||
                 bandType == MiBandType.MI_BAND5 ||
+                bandType == MiBandType.AMAZFIT5 ||
                 bandType == MiBandType.AMAZFITGTR ||
                 bandType == MiBandType.AMAZFITGTR_LITE;
     }
     public static boolean supportPairingKey(MiBandType bandType) {
         return bandType == MiBandType.MI_BAND4 ||
                 bandType == MiBandType.MI_BAND5 ||
+                bandType == MiBandType.AMAZFIT5 ||
                 bandType == MiBandType.AMAZFITGTR ||
                 bandType == MiBandType.AMAZFITGTR_LITE;
     }

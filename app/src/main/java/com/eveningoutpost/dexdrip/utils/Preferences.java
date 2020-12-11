@@ -2256,7 +2256,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     prefs.addPreference(miband_graph_category);
                 }
                 if (MiBandType.supportNightMode(type)) {
-                    prefs.addPreference(miband_nightmode_category);
+                    settings.addPreference(miband_nightmode_category);
                 }
                 if (MiBandType.supportPairingKey(type)) {
                     prefs.addPreference(miband_authkey);

@@ -162,6 +162,7 @@ public class Const {
     public static final String MIBAND_NAME_3_1 = "Xiaomi Band 3";
     public static final String MIBAND_NAME_4 = "Mi Smart Band 4";
     public static final String MIBAND_NAME_5 = "Mi Smart Band 5";
+    public static final String AMAZFIT5_NAME = "Amazfit Band 5";
     public static final String AMAZFITGTR_NAME = "Amazfit GTR";
     public static final String AMAZFITGTR_LITE_NAME = "Amazfit GTR L";
 

@@ -15,6 +15,7 @@ import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.watch.miband.Firmware.WatchFaceParts.ConfigPOJO.WatchfaceConfig;
 import com.eveningoutpost.dexdrip.watch.miband.Firmware.WatchFaceParts.DisplayData;
 import com.eveningoutpost.dexdrip.watch.miband.Firmware.WatchFaceParts.Header;
 import com.eveningoutpost.dexdrip.watch.miband.Firmware.WatchFaceParts.HeaderMiBand4;
@@ -26,6 +27,9 @@ import com.eveningoutpost.dexdrip.watch.miband.MiBandEntry;
 import com.eveningoutpost.dexdrip.watch.miband.MiBandType;
 import com.eveningoutpost.dexdrip.xdrip;
 
+import org.simpleframework.xml.Serializer;
+import org.simpleframework.xml.core.Persister;
+
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -34,6 +38,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringReader;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
@@ -74,6 +81,7 @@ public class WatchFaceGenerator {
     private int offset = 0;
 
     private MiBandType miBandType;
+    private WatchfaceConfig watchfaceConfig;
 
     public WatchFaceGenerator(AssetManager assetManager, MiBandType miBandType) throws Exception {
         this.assetManager = assetManager;
@@ -82,12 +90,18 @@ public class WatchFaceGenerator {
             throw new Exception("Not supported device");
         }
         InputStream mainImage = null;
+        InputStream configFileStream = null;
         isGraphEnabled = MiBandEntry.isGraphEnabled();
         isNeedToUseCustomWatchface = MiBandEntry.isNeedToUseCustomWatchface();
         boolean customFilesFound = false;
         if (isNeedToUseCustomWatchface) {
             final String dir = getExternalDir();
             final File imageFile = new File(dir + "/my_image.png");
+            final File configFile = new File(dir + "/config.xml");
+            if (configFile.exists()){
+                configFileStream = new FileInputStream(configFile);;
+            }
+
             wfFile = new File(dir + "/my_watchface.bin");
             if (imageFile.exists() && wfFile.exists()) {
                 customFilesFound = true;
@@ -96,13 +110,19 @@ public class WatchFaceGenerator {
                 offset = MiBandEntry.getImageOffset();
             }
         }
+        if (configFileStream == null){
+            configFileStream = assetManager.open("miband_watchface_parts/config.xml");
+        }
+        Persister serializer = new Persister();
+       // watchfaceConfig = serializer.read(WatchfaceConfig.class, new InputStreamReader(configFileStream));
+
         if (!customFilesFound) {
             String firmwareFileName = "miband_watchface_parts/xdrip_";
             String imageFileName = "miband_watchface_parts/";
             String wathcTypeFileName = "";
             if (miBandType == MiBandType.MI_BAND4) {
                 wathcTypeFileName = "miband4";
-            } else if (miBandType == MiBandType.MI_BAND5) {
+            } else if (miBandType == MiBandType.MI_BAND5 || miBandType == MiBandType.AMAZFIT5 ) {
                 wathcTypeFileName = "miband5";
             } else if (miBandType == MiBandType.AMAZFITGTR) {
                 wathcTypeFileName = "amazfit_gtr";
@@ -141,7 +161,7 @@ public class WatchFaceGenerator {
         header = null;
         if (miBandType == MiBandType.MI_BAND4 || miBandType == MiBandType.AMAZFITGTR || miBandType == MiBandType.AMAZFITGTR_LITE) {
             header = new HeaderMiBand4();
-        } else if (miBandType == MiBandType.MI_BAND5) {
+        } else if (miBandType == MiBandType.MI_BAND5 || miBandType == MiBandType.AMAZFIT5) {
             header = new HeaderMiBand5();
         }
         header = header.readFrom(stream);

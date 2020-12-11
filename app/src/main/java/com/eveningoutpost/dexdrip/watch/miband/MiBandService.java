@@ -101,7 +101,7 @@ import static com.eveningoutpost.dexdrip.watch.miband.message.OperationCodes.COM
 
 public class MiBandService extends JamBaseBluetoothSequencer {
     public static final boolean d = true;
-
+    static final List<UUID> huntCharacterstics = new ArrayList<>();
     private static final long RETRY_PERIOD_MS = Constants.SECOND_IN_MS * 30; // sleep for max ms if we have had no signal
     private static final long BG_UPDATE_NO_DATA_INTERVAL = 30 * Constants.MINUTE_IN_MS; //minutes
     private static final long CONNECTION_TIMEOUT = 5 * Constants.MINUTE_IN_MS; //minutes
@@ -110,59 +110,33 @@ public class MiBandService extends JamBaseBluetoothSequencer {
     private static final int QUEUE_DELAY = 0; //ms
     private static final int CALL_ALERT_DELAY = (int) (Constants.SECOND_IN_MS * 10);
     private static final int MESSAGE_DELAY = (int) (Constants.SECOND_IN_MS * 5);
+    static BatteryInfo batteryInfo = new BatteryInfo();
+    static private long bgWakeupTime;
 
+    static {
+        huntCharacterstics.add(Const.UUID_CHAR_NEW_ALERT);
+    }
+
+    private final PoorMansConcurrentLinkedDeque<QueueMessage> messageQueue = new PoorMansConcurrentLinkedDeque<>();
     private Subscription authSubscription;
     private Subscription notifSubscriptionDeviceEvent;
     private Subscription notifSubscriptionHeartRateMeasurement;
     private AuthMessages authorisation;
     private Boolean isNeedToCheckRevision = true;
     private Boolean isNeedToAuthenticate = true;
-
     private boolean isWaitingCallResponce = false;
     private Boolean isNeedToRestoreNightMode = false;
     private boolean isNightMode = false;
-
-    static BatteryInfo batteryInfo = new BatteryInfo();
     private FirmwareOperations firmware;
     private Subscription watchfaceSubscription;
     private MediaPlayer player;
-
     private PendingIntent bgServiceIntent;
-    static private long bgWakeupTime;
     private MiBandType prevDeviceType = MiBandType.UNKNOWN;
-    private final PoorMansConcurrentLinkedDeque<QueueMessage> messageQueue = new PoorMansConcurrentLinkedDeque<>();
     private QueueMessage queueItem;
     private BroadcastReceiver statusReceiver;
     private String statusIOB = "";
     private boolean prevReadingStatusIsStale = false;
     private String activeAlertType;
-
-    public class QueueMessage {
-        @Getter
-        private String functionName;
-        @Getter
-        private String message_type = "";
-        @Getter
-        private String message = "";
-        @Getter
-        private String title = "";
-
-        public QueueMessage(String functionName) {
-            this.functionName = functionName;
-        }
-
-        public QueueMessage(String functionName, String message_type, String message, String title) {
-            this(functionName);
-            this.message_type = message_type;
-            this.message = message;
-            this.title = title;
-        }
-    }
-
-    public enum MIBAND_INTEND_STATES {
-        UPDATE_PREF_SCREEN,
-        UPDATE_PREF_DATA
-    }
 
     {
         mState = new MiBandState().setLI(I);
@@ -171,6 +145,79 @@ public class MiBandService extends JamBaseBluetoothSequencer {
         //I.playSounds = true;
         I.connectTimeoutMinutes = (int) CONNECTION_TIMEOUT;
         startBgTimer();
+    }
+
+    private static final boolean isBetweenValidTime(Date startTime, Date endTime, Date currentTime) {
+        //Start Time
+        Calendar StartTime = Calendar.getInstance();
+        StartTime.setTime(startTime);
+        StartTime.set(1, 1, 1);
+
+        Calendar EndTime = Calendar.getInstance();
+        EndTime.setTime(endTime);
+        EndTime.set(1, 1, 1);
+
+        //Current Time
+        Calendar CurrentTime = Calendar.getInstance();
+        CurrentTime.setTime(currentTime);
+        CurrentTime.set(1, 1, 1);
+        if (EndTime.compareTo(StartTime) > 0) {
+            if ((CurrentTime.compareTo(StartTime) >= 0) && (CurrentTime.compareTo(EndTime) <= 0)) {
+                return true;
+            } else {
+                return false;
+            }
+        } else if (EndTime.compareTo(StartTime) < 0) {
+            if ((CurrentTime.compareTo(EndTime) >= 0) && (CurrentTime.compareTo(StartTime) <= 0)) {
+                return false;
+            } else {
+                return true;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    // Mega Status
+    public static List<StatusItem> megaStatus() {
+
+        final List<StatusItem> l = new ArrayList<>();
+        final Inst II = Inst.get(MiBandService.class.getSimpleName());
+
+
+        l.add(new StatusItem("Model", MiBand.getModel()));
+        l.add(new StatusItem("Software version", MiBand.getVersion()));
+
+        l.add(new StatusItem("Mac address", MiBand.getMac()));
+        l.add(new StatusItem("Connected", II.isConnected ? "Yes" : "No"));
+        l.add(new StatusItem("Is authenticated", MiBand.isAuthenticated() ? "Yes" : "No"));
+        if (II.isConnected) {
+            int levelInPercent = batteryInfo.getLevelInPercent();
+            String levelInPercentText;
+            if (levelInPercent == 1000)
+                levelInPercentText = "Unknown";
+            else
+                levelInPercentText = levelInPercent + "%";
+            l.add(new StatusItem("Battery", levelInPercentText));
+        }
+        if (II.wakeup_time != 0) {
+            final long till = msTill(II.wakeup_time);
+            if (till > 0) l.add(new StatusItem("Wake Up", niceTimeScalar(till)));
+        }
+
+        if (bgWakeupTime != 0) {
+            final long till = msTill(bgWakeupTime);
+            if (till > 0) l.add(new StatusItem("Next time update", niceTimeScalar(till)));
+        }
+
+        l.add(new StatusItem("State", II.state));
+
+        final int qsize = II.getQueueSize();
+        if (qsize > 0) {
+            l.add(new StatusItem("Queue", qsize + " items"));
+        }
+
+        return l;
     }
 
     private Class getPrefBinder() {
@@ -211,7 +258,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
         if (!result && I.state.equals(MiBandState.AUTHORIZE_FAILED) && MiBandType.supportPairingKey(MiBand.getMibandType())) {
             return true;
         }
-        if ( !I.isConnected ){
+        if (!I.isConnected) {
             return true;
         }
         if (!result)
@@ -288,7 +335,11 @@ public class MiBandService extends JamBaseBluetoothSequencer {
 
     private void handleCommand() {
         if (messageQueue.isEmpty()) return;
-        queueItem = messageQueue.poll();
+        do {
+            queueItem = messageQueue.poll();
+        } while (queueItem.isExpired() && !messageQueue.isEmpty());
+        if (queueItem.isExpired()) return;
+
         switch (queueItem.functionName) {
             case "refresh":
                 whenToRetryNextBgTimer(); //recalculate isNightMode
@@ -344,37 +395,6 @@ public class MiBandService extends JamBaseBluetoothSequencer {
         return false;
     }
 
-    private static final boolean isBetweenValidTime(Date startTime, Date endTime, Date currentTime) {
-        //Start Time
-        Calendar StartTime = Calendar.getInstance();
-        StartTime.setTime(startTime);
-        StartTime.set(1, 1, 1);
-
-        Calendar EndTime = Calendar.getInstance();
-        EndTime.setTime(endTime);
-        EndTime.set(1, 1, 1);
-
-        //Current Time
-        Calendar CurrentTime = Calendar.getInstance();
-        CurrentTime.setTime(currentTime);
-        CurrentTime.set(1, 1, 1);
-        if (EndTime.compareTo(StartTime) > 0) {
-            if ((CurrentTime.compareTo(StartTime) >= 0) && (CurrentTime.compareTo(EndTime) <= 0)) {
-                return true;
-            } else {
-                return false;
-            }
-        } else if (EndTime.compareTo(StartTime) < 0) {
-            if ((CurrentTime.compareTo(EndTime) >= 0) && (CurrentTime.compareTo(StartTime) <= 0)) {
-                return false;
-            } else {
-                return true;
-            }
-        } else {
-            return false;
-        }
-    }
-
     private long whenToRetryNextBgTimer() {
         final long bg_time;
 
@@ -396,7 +416,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                     futureCal.setTimeInMillis(currTimeMillis + nightModeInterval * Constants.MINUTE_IN_MS);
 
                     Date futureDate = futureCal.getTime();
-                    if ( !isBetweenValidTime(start, end,  futureDate) ) {
+                    if (!isBetweenValidTime(start, end, futureDate)) {
                         Calendar calEndCal = Calendar.getInstance();
                         calEndCal.setTime(end);
                         futureCal.set(Calendar.HOUR_OF_DAY, calEndCal.get(Calendar.HOUR_OF_DAY));
@@ -458,8 +478,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                             ActiveBgAlert activeBgAlert = ActiveBgAlert.getOnly();
                             if (activeBgAlert == null) {
                                 UserError.Log.e(TAG, "Error, snooze was called but no alert is active");
-                            }
-                            else {
+                            } else {
                                 AlertType alert = ActiveBgAlert.alertTypegetOnly();
                                 if (alert != null) {
                                     alertName = alert.name;
@@ -569,12 +588,6 @@ public class MiBandService extends JamBaseBluetoothSequencer {
             default:
                 UserError.Log.d(TAG, "unhandled event " + value[0]);
         }
-    }
-
-    static final List<UUID> huntCharacterstics = new ArrayList<>();
-
-    static {
-        huntCharacterstics.add(Const.UUID_CHAR_NEW_ALERT);
     }
 
     @Override
@@ -988,7 +1001,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
             SequenceState sequenceState = null;
             if (mibandType == MiBandType.MI_BAND4) {
                 sequenceState = new SequenceStateMiBand4();
-            } else if (mibandType == MiBandType.MI_BAND5) {
+            } else if (mibandType == MiBandType.MI_BAND5 || mibandType == MiBandType.AMAZFIT5) {
                 sequenceState = new SequenceStateMiBand5();
             } else {
                 resetFirmwareState(false, "Not supported band type");
@@ -1534,7 +1547,8 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                         extendWakeLock(RESTORE_NIGHT_MODE_DELAY + Constants.SECOND_IN_MS);
                         JoH.threadSleep(RESTORE_NIGHT_MODE_DELAY);
                         setNightMode();
-                        if (I.state.equals(CLOSED) || I.state.equals(CLOSE) || I.isConnected == false) break;
+                        if (I.state.equals(CLOSED) || I.state.equals(CLOSE) || I.isConnected == false)
+                            break;
                     }
                     changeNextState();
                     break;
@@ -1605,6 +1619,11 @@ public class MiBandService extends JamBaseBluetoothSequencer {
     private long whenToRetryNext() {
         I.retry_backoff = RETRY_PERIOD_MS;
         return I.retry_backoff;
+    }
+
+    public enum MIBAND_INTEND_STATES {
+        UPDATE_PREF_SCREEN,
+        UPDATE_PREF_DATA
     }
 
     static class MiBandState extends JamBaseBluetoothSequencer.BaseState {
@@ -1682,45 +1701,32 @@ public class MiBandService extends JamBaseBluetoothSequencer {
         }
     }
 
-    // Mega Status
-    public static List<StatusItem> megaStatus() {
+    public class QueueMessage {
+        @Getter
+        private String functionName;
+        @Getter
+        private String message_type = "";
+        @Getter
+        private String message = "";
+        @Getter
+        private String title = "";
+        @Getter
+        private long expireAt;
 
-        final List<StatusItem> l = new ArrayList<>();
-        final Inst II = Inst.get(MiBandService.class.getSimpleName());
-
-
-        l.add(new StatusItem("Model", MiBand.getModel()));
-        l.add(new StatusItem("Software version", MiBand.getVersion()));
-
-        l.add(new StatusItem("Mac address", MiBand.getMac()));
-        l.add(new StatusItem("Connected", II.isConnected ? "Yes" : "No"));
-        l.add(new StatusItem("Is authenticated", MiBand.isAuthenticated() ? "Yes" : "No"));
-        if (II.isConnected) {
-            int levelInPercent = batteryInfo.getLevelInPercent();
-            String levelInPercentText;
-            if (levelInPercent == 1000)
-                levelInPercentText = "Unknown";
-            else
-                levelInPercentText = levelInPercent + "%";
-            l.add(new StatusItem("Battery", levelInPercentText));
-        }
-        if (II.wakeup_time != 0) {
-            final long till = msTill(II.wakeup_time);
-            if (till > 0) l.add(new StatusItem("Wake Up", niceTimeScalar(till)));
+        public QueueMessage(String functionName) {
+            this.functionName = functionName;
         }
 
-        if (bgWakeupTime != 0) {
-            final long till = msTill(bgWakeupTime);
-            if (till > 0) l.add(new StatusItem("Next time update", niceTimeScalar(till)));
+        public QueueMessage(String functionName, String message_type, String message, String title) {
+            this(functionName);
+            this.message_type = message_type;
+            this.message = message;
+            this.title = title;
+            this.expireAt = JoH.tsl() + (Constants.MINUTE_IN_MS * 10);
         }
 
-        l.add(new StatusItem("State", II.state));
-
-        final int qsize = II.getQueueSize();
-        if (qsize > 0) {
-            l.add(new StatusItem("Queue", qsize + " items"));
+        boolean isExpired() {
+            return expireAt != 0 && expireAt < JoH.tsl();
         }
-
-        return l;
     }
 }

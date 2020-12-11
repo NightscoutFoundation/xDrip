@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Watchface canvas_image_offset="10" watch_type="Mi Smart Band 5">
+    <ArrowPosition x="10" y="5"/>
+    <IobText text_pattern="IOB: $value">
+        <TextSettings color="#ffffff" font_size="12"/>
+        <Position x="20" y="2"/>
+    </IobText>
+    <DeltaText></DeltaText>
+</Watchface>
