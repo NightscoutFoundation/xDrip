@@ -25,5 +25,10 @@ public class HM10Attributes {
     public static final String BLUKON_SERVICE = "436a62c0-082e-4ce8-a08b-01d81f195b24";
     public static final String BLUKON_UART_TX = "436aa6e9-082e-4ce8-a08b-01d81f195b24";
     public static final String BLUKON_UART_RX = "436a0c82-082e-4ce8-a08b-01d81f195b24";
+    
+    // libre2 bluetooth support
+    public static final String LIBRE2_SERVICE_ID = "0000fde3-0000-1000-8000-00805f9b34fb";
+    public static final String LIBRE2_LOGIN_CHARACTERISTIC = "0000f001-0000-1000-8000-00805f9b34fb";
+    public static final String LIBRE2_DATA_CHARACTERISTIC = "0000f002-0000-1000-8000-00805f9b34fb";
 
 }

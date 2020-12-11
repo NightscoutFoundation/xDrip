@@ -472,6 +472,9 @@
         <receiver android:name=".NSEmulatorReceiver">
             <intent-filter>
                 <action android:name="com.eveningoutpost.dexdrip.NS_EMULATOR" />
+                <action android:name="com.eveningoutpost.dexdrip.OOP2_DECODE_FARM_RESULT" />
+                <action android:name="com.eveningoutpost.dexdrip.OOP2_DECODE_BLE_RESULT" />
+                <action android:name="com.eveningoutpost.dexdrip.OOP2_BLUETOOTH_ENABLE_RESULT" />
             </intent-filter>
         </receiver>
         <receiver android:name="com.eveningoutpost.dexdrip.watch.thinjam.io.ThinJamApiReceiver">
@@ -715,7 +718,9 @@
             android:configChanges="orientation|screenSize"
             android:launchMode="singleTask"
             android:label="BlueJay Admin"/>
-        <service android:name=".watch.thinjam.BlueJayService" />
+        <service android:name=".watch.thinjam.BlueJayService"
+            android:foregroundServiceType="connectedDevice|location"
+            />
     </application>
 
 </manifest>

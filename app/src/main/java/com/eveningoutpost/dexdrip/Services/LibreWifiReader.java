@@ -406,6 +406,7 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
 
     public Void doInBackground(String... urls) {
         final PowerManager.WakeLock wl = JoH.getWakeLock("LibreWifiReader", 120000);
+        Log.e(TAG, "doInBackground called");
         try {
             synchronized (LibreWifiReader.class) {
                 readData();
@@ -426,6 +427,7 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
         LibreBlock libreBlock = LibreBlock.getLatestForTrend(0L, JoH.tsl() + 5 * 60000); // Allow some packets from the future.
         if (libreBlock != null) {
             LastReportedTime = libreBlock.timestamp;
+            Log.e(TAG, "LastReportedTime = " + JoH.dateTimeText(LastReportedTime));
 
             // jamorham fix to avoid going twice to network when we just got a packet
             if ((new Date().getTime() - LastReportedTime) < DEXCOM_PERIOD - 2000) {
@@ -468,10 +470,13 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
 
             //if (LastReading.CaptureDateTime > LastReportedReading + 5000) {
             // Make sure we do not report packets from the far future...
+            
+            Log.d(TAG, "checking packet from " +  JoH.dateTimeText(LastReading.CaptureDateTime ));
+            
             if ((LastReading.CaptureDateTime > LastReportedTime + 4 * 60000) &&
                     LastReading.CaptureDateTime < new Date().getTime() + 120000) {
                 // We have a real new reading...
-                Log.d(TAG, "calling HandleGoodReading from " +  JoH.dateTimeText(LastReading.CaptureDateTime ));
+                Log.d(TAG, "will call with packet from " +  JoH.dateTimeText(LastReading.CaptureDateTime ));
 
                 byte data[] = Base64.decode(LastReading.BlockBytes, Base64.DEFAULT);
 
@@ -485,6 +490,7 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
                 }
                 boolean checksum_ok = NFCReaderX.HandleGoodReading(LastReading.SensorId, data, LastReading.CaptureDateTime, false, patchUid, patchInfo);
                 if (checksum_ok) {
+                    Log.d(TAG, "checksum ok updating LastReportedTime to " +  JoH.dateTimeText(LastReading.CaptureDateTime ));
                     // TODO use battery, and other interesting data.
                     LastReportedTime = LastReading.CaptureDateTime;
                     
