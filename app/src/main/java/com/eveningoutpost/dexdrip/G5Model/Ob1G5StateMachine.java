@@ -751,7 +751,7 @@ public class Ob1G5StateMachine {
                             UserError.Log.d(TAG, "Failed to write DisconnectTxMessage as already disconnected: " + throwable);
 
                         } else {
-                            UserError.Log.d(TAG, "Failed to write DisconnectTxMessage: " + throwable);
+                            UserError.Log.e(TAG, "Failed to write DisconnectTxMessage: " + throwable);
 
                         }
                         parent.changeState(Ob1G5CollectionService.STATE.CLOSE);
