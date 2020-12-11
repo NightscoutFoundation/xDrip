@@ -190,6 +190,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     public final static String SHOW_NOTIFICATION = "SHOW_NOTIFICATION";
     public final static String BLUETOOTH_METER_CALIBRATION = "BLUETOOTH_METER_CALIBRATION";
     public final static String ACTIVITY_SHOWCASE_INFO = "ACTIVITY_SHOWCASE_INFO";
+    public final static String ENABLE_STREAMING_DIALOG = "ENABLE_STREAMING_DIALOG";
     public final static int SENSOR_READY_ID = 4912;
     private final UiPing ui = new UiPing();
     public static boolean activityVisible = false;
@@ -1066,6 +1067,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                         DidYouCancelAlarm.dialog(this, AlertPlayer::defaultSnooze);
                         break;
                 }
+            } else if (bundle.getString(Home.ENABLE_STREAMING_DIALOG) != null) {
+                NFCReaderX.enableBluetoothAskUser(mActivity);
             }
         }
     }
@@ -1100,6 +1103,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         intent.putExtra(extra, text);
         intent.putExtra(extra + "2", even_more);
         if (even_even_more.length() > 0) intent.putExtra(extra + "3", even_even_more);
+        Log.e("xxxxx", "calling startActivity");
         context.startActivity(intent);
     }
 
