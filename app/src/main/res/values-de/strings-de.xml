@@ -1334,7 +1334,7 @@
     <string name="title_full_screen_mode">Vollbild-Modus</string>
     <string name="title_share_save_this_screen">Diesen Bildschirm teilen/speichern</string>
     <string name="search_phrase">Suchbegriff</string>
-    <string name="xdrip_oop2_not_installed">xDrip+ benötigt oop2, um mit libre2/libre Sensoren aus USA umzugehen.</string>
+    <string name="xdrip_oop2_not_installed">xDrip+ benötigt OOP2, um mit Libre2/LibreUS Sensoren umzugehen.</string>
     <string name="enable_streaming_summary">verbinde Libre2-Sensoren nach dem Scannen. Das Libre-Lesegerät und die Libre Link-App werden dann keine Alarme mehr empfangen</string>
     <string name="enable_streaming_title">Starte Bluetooth-Verbindung mit Libre2-Sensoren</string>
     <string name="enable_streaming_always_allow">Immer mit Libre2-Sensoren verbinden</string>
