@@ -166,6 +166,8 @@
     <string name="expires_days">{0, choice,0#Sensor Terminou!|1#Termina em {0, number} dia|1&lt;Termina em {0, number} dias}</string>
     <string name="expires_at">Termina {0}</string>
     <string name="space_minutes_ago">" Minutos atrás"</string>
+    <string name="in_libre_all_house_mode_no_readings_collected_yet">"No libre em modo all house: ainda sem leituras."</string>
+    <string name="in_libre_all_house_mode_last_data_collected">"No libre em modo all house: Última leitura "</string>
     <string name="space_minute_ago">"Minuto atrás"</string>
     <string name="show_parakeet_map">Mostrar mapa Parakeet </string>
     <string name="switch_parakeet_to_setup_mode">Mudar Parakeet para Modo de Configuração</string>
@@ -1343,6 +1345,8 @@
     <string name="title_plus_accept_follower_actions">Aceitar acções do seguidor</string>
     <string name="summary_plus_whole_house">Rede Whole House</string>
     <string name="title_plus_whole_house">Whole House</string>
+    <string name="summary_libre_whole_house_collector">Este telefone será um colector numa rede whole house</string>
+    <string name="title_libre_whole_house_collector">Libre Whole House</string>
     <string name="summary_xdrip_plus_desert_sync_settings">Seguir Off-Grid</string>
     <string name="title_xdrip_plus_desert_sync_settings">Desert Sync</string>
     <string name="summary_desert_sync_enabled">Disponibilidade de sincronização local sem-internet ativada</string>
@@ -1483,6 +1487,7 @@
     <string name="unusual_internal_context_problem__please_report">Problema de contexto interno incomum - reporte-o</string>
     <string name="cannot_start__please_report_context_problem">Não pode iniciar - reporte o problema de contexto</string>
     <string name="xdrip_will_not_work_below_android_version_42">xDrip+ não funcionará em versões inferiores a Android 4.2</string>
+    <string name="xdrip_oop2_not_installed">xDrip+ precisa do OOP2 para lidar com sensores Libre2/LibreUS.</string>
     <string name="this_app_needs_battery_optimization_whitelisting_or_it_will_not_work_well_please_reset_app_preferences">Esta aplicação precisa da permissão de otimização de bateria ou não funcionará bem. Por favor, redefina as preferências da aplicação</string>
     <string name="setting_disabled_">Configuração desactivada :)</string>
     <string name="yes_please">SIM, Por Favor</string>
@@ -1541,4 +1546,14 @@
     <string name="pref_enable_insulinprofiles">active pelo menos um máximo de três perfis</string>
     <string name="pref_select_basal_insulinprofiles">escolha o perfil da insulina basal.</string>
     <string name="pref_select_bolus_insulinprofiles">escolha o perfil de insulina de bólus. Também usado para bomba e caneta...</string>
+    <string name="enable_streaming_summary">ligar a sensores Libre 2 após leitura NFC. Isto impedirá o leitor do Libre e app LibreLink de receber alertas</string>
+    <string name="enable_streaming_title">A iniciar ligação bluetooth com sensores Libre 2</string>
+    <string name="enable_streaming_always_allow">Ligar sempre aos sensores Libre 2</string>
+    <string name="enable_streaming_ask_each_time">perguntar de cada vez</string>
+    <string name="enable_streaming_never">Nunca ligar aos sensores Libre 2</string>
+    <string name="enable_streaming_dialog_yes">ligar a este sensor Libre 2</string>
+    <string name="enable_streaming_dialog_no">Não ligar a este sensor libre 2 </string>
+    <string name="enable_streaming_dialog_dont_ask_again">Não voltar a perguntar</string>
+    <string name="enable_streaming_dialog_title">A ligar o sensor Libre ao bluetooth</string>
+    <string name="enable_streaming_dialog_text">Deseja ligar o xDrip com este sensor?  Isto impedirá o leitor do Libre e app LibreLink de receber alertas. Pressione sim e faça leitura por NFC novamente para ligar (escolha não ligar se quiser executar o xDrip com a Libre 2 Patched app)</string>
 </resources>
