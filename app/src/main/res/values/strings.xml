@@ -1251,6 +1251,8 @@
     <string name="summary_miband_interval_in_nightmode">Defines how often BG would be synchronized in the night mode</string>
     <string name="title_miband_colect_heartrate">Collect HR</string>
     <string name="summary_miband_colect_heartrate">Would collect heart rate data from band. Update interval can be configured in MiFit or any thirdparty application</string>
+    <string name="title_miband_colect_steps">Collect steps</string>
+    <string name="summary_miband_colect_steps">Would collect steps data from band. Update interval can be configured in MiFit or any thirdparty application</string>
     <string name="title_miband_us_date_format">Date format</string>
     <string name="summary_miband_us_date_format">Watchface date format. US(MM/dd),EU(dd/MM)</string>
 
@@ -1282,6 +1284,7 @@
     <string name="miband_watchface_istall_error">Error while uploading MiBand watchface</string>
     <string name="miband_bg_dialog_title">Update bg data now?</string>
     <string name="miband_alert_snooze_text">Alert %s snoozed for %d min until %s</string>
+    <string name="miband_alert_missing_text">Missing alert: </string>
 
     <string name="title_lefun_band">Lefun Band</string>
     <string name="summary_lefun_enable">Sync Data with LeFun fitness bands</string>

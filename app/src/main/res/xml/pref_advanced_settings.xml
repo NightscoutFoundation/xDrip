@@ -704,6 +704,11 @@
                         android:title="@string/title_miband_colect_heartrate" />
                     <SwitchPreference
                         android:defaultValue="true"
+                        android:key="miband_collect_steps"
+                        android:summary="@string/summary_miband_colect_steps"
+                        android:title="@string/title_miband_colect_steps" />
+                    <SwitchPreference
+                        android:defaultValue="true"
                         android:key="miband_us_date_format"
                         android:summary="@string/summary_miband_us_date_format"
                         android:switchTextOff="EU"

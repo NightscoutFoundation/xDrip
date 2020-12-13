@@ -22,6 +22,7 @@ import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.HeartRate;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.StepCounter;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserNotification;
 import com.eveningoutpost.dexdrip.R;
@@ -114,13 +115,14 @@ public class MiBandService extends JamBaseBluetoothSequencer {
     static private long bgWakeupTime;
 
     static {
-        huntCharacterstics.add(Const.UUID_CHAR_NEW_ALERT);
+        huntCharacterstics.add(Const.UUID_CHAR_HEART_RATE_MEASUREMENT);
     }
 
     private final PoorMansConcurrentLinkedDeque<QueueMessage> messageQueue = new PoorMansConcurrentLinkedDeque<>();
     private Subscription authSubscription;
     private Subscription notifSubscriptionDeviceEvent;
     private Subscription notifSubscriptionHeartRateMeasurement;
+    private Subscription notifSubscriptionStepsMeasurement;
     private AuthMessages authorisation;
     private Boolean isNeedToCheckRevision = true;
     private Boolean isNeedToAuthenticate = true;
@@ -137,6 +139,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
     private String statusIOB = "";
     private boolean prevReadingStatusIsStale = false;
     private String activeAlertType;
+    private String missingAlertMessage;
 
     {
         mState = new MiBandState().setLI(I);
@@ -309,9 +312,16 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                             if (function.equals("refresh") && !JoH.pratelimit("miband-set-time-via-refresh-" + MiBand.getMac(), 5)) {
                                 return START_STICKY;
                             } else {
-                                messageQueue.add(new QueueMessage(function, message_type, message, title));
-                                if (readyToProcessCommand())
+                                if (function.equals("after_alarm")){
+                                    messageQueue.addFirst(new QueueMessage(function, message_type, message, title));
                                     handleCommand();
+                                }
+                                else {
+                                    messageQueue.add(new QueueMessage(function, message_type, message, title));
+                                    if (readyToProcessCommand()) {
+                                        handleCommand();
+                                    }
+                                }
                             }
                         } else {
                             // no specific function
@@ -350,11 +360,17 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                 break;
             case "alarm":
                 ((MiBandState) mState).setAlarmSequence();
+                if (isNightMode) {
+                    messageQueue.addFirst(new QueueMessage("update_bg_force"));
+                }
                 break;
             case "after_alarm":
                 if (!I.state.equals(MiBandState.WAITING_USER_RESPONSE)) break;
-                startBgTimer();
                 vibrateAlert(AlertLevelMessage.AlertLevelType.NoAlert); //disable call
+                if (!missingAlertMessage.isEmpty()) {
+                    String msgText = xdrip.getAppContext().getString(R.string.miband_alert_missing_text) + missingAlertMessage;
+                    messageQueue.addFirst(new QueueMessage("message", MIBAND_NOTIFY_TYPE_MESSAGE, msgText, "Missing allert"));
+                }
                 ((MiBandState) mState).setQueueSequence();
                 break;
             case "update_bg":
@@ -600,7 +616,6 @@ public class MiBandService extends JamBaseBluetoothSequencer {
 
                 for (final UUID check : huntCharacterstics) {
                     if (characteristic.getUuid().equals(check)) {
-                        I.readCharacteristic = check;
                         found = true;
                     }
                 }
@@ -792,6 +807,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                         .setDelayMs(QUEUE_DELAY)
                         .queue();
                 activeAlertType = title;
+                missingAlertMessage = message;
                 stopBgUpdateTimer();
                 bgServiceIntent = WakeLockTrampoline.getPendingIntent(this.getClass(), Constants.MIBAND_SERVICE_BG_RETRY_ID, "after_alarm");
                 JoH.wakeUpIntent(xdrip.getAppContext(), CALL_ALERT_DELAY, bgServiceIntent);
@@ -1381,8 +1397,23 @@ public class MiBandService extends JamBaseBluetoothSequencer {
         }
     }
 
+    private void handleRealtimeSteps(byte[] value) {
+        if (value == null) {
+            return;
+        }
+        if (value.length == 13) {
+            byte[] stepsValue = new byte[] {value[1], value[2]};
+            int steps = FirmwareOperations.toUint16(stepsValue);
+            if (d)
+                UserError.Log.d(TAG, "realtime steps: " + steps);
+            StepCounter.createEfficientRecord(JoH.tsl(), steps);
+        } else {
+            UserError.Log.d(TAG, "Unrecognized realtime steps value: " + bytesToHex(value));
+        }
+    }
+
     @SuppressLint("CheckResult")
-    private void enableNotification() {
+    private void enableNotifications() {
         if (d)
             UserError.Log.d(TAG, "enableNotifications called");
         if (I.connection == null) {
@@ -1390,18 +1421,18 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                 UserError.Log.d(TAG, "Cannot enable as connection is null!");
             return;
         }
-        enableHeartRateNotification();
         if (I.isNotificationEnabled) {
             if (d)
                 UserError.Log.d(TAG, "Notifications already enabled");
             changeNextState();
             return;
         }
+
+        enableHeartRateNotification();
+        enableStepsNotification();
+
         if (notifSubscriptionDeviceEvent != null) {
             notifSubscriptionDeviceEvent.unsubscribe();
-        }
-        if (notifSubscriptionHeartRateMeasurement != null) {
-            notifSubscriptionHeartRateMeasurement.unsubscribe();
         }
         if (d)
             UserError.Log.d(TAG, "Requesting to enable device event notifications");
@@ -1409,33 +1440,32 @@ public class MiBandService extends JamBaseBluetoothSequencer {
         I.connection.requestMtu(PREFERRED_MTU_SIZE).subscribe();
 
         notifSubscriptionDeviceEvent = new Subscription(I.connection.setupNotification(Const.UUID_CHARACTERISTIC_DEVICEEVENT)
-                .doOnNext(notificationObservable -> {
-                    I.isNotificationEnabled = true;
-                    changeNextState();
-                }).flatMap(notificationObservable -> notificationObservable)
-                //.timeout(5, TimeUnit.SECONDS)
-                .observeOn(Schedulers.newThread())
-                .subscribe(bytes -> {
-                            // incoming notifications
-                            if (d)
-                                UserError.Log.d(TAG, "Received device notification bytes: " + bytesToHex(bytes));
-                            handleDeviceEvent(bytes);
-                        }, throwable -> {
-                            UserError.Log.d(TAG, "Throwable in notifSubscriptionDeviceEvent notification: " + throwable);
-                            I.isNotificationEnabled = false;
-                            if (throwable instanceof BleCharacteristicNotFoundException) {
-                                // maybe legacy - ignore for now but needs better handling
-                                UserError.Log.d(TAG, "Characteristic not found for notification");
-                                changeNextState();
-                            } else {
-                                UserError.Log.d(TAG, "Disconnected exception");
-                                isNeedToAuthenticate = true;
-                                messageQueue.clear();
-                                changeState(CLOSE);
-                            }
-                        }
-                ));
-
+            .doOnNext(notificationObservable -> {
+                I.isNotificationEnabled = true;
+                changeNextState();
+            }).flatMap(notificationObservable -> notificationObservable)
+            //.timeout(5, TimeUnit.SECONDS)
+            .observeOn(Schedulers.newThread())
+            .subscribe(bytes -> {
+                    // incoming notifications
+                    if (d)
+                        UserError.Log.d(TAG, "Received device notification bytes: " + bytesToHex(bytes));
+                    handleDeviceEvent(bytes);
+                }, throwable -> {
+                    UserError.Log.d(TAG, "Throwable in notifSubscriptionDeviceEvent notification: " + throwable);
+                    I.isNotificationEnabled = false;
+                    if (throwable instanceof BleCharacteristicNotFoundException) {
+                        // maybe legacy - ignore for now but needs better handling
+                        UserError.Log.d(TAG, "Characteristic not found for notification");
+                        changeNextState();
+                    } else {
+                        UserError.Log.d(TAG, "Disconnected exception");
+                        isNeedToAuthenticate = true;
+                        messageQueue.clear();
+                        changeState(CLOSE);
+                    }
+                }
+            ));
     }
 
     private void enableHeartRateNotification() {
@@ -1453,25 +1483,59 @@ public class MiBandService extends JamBaseBluetoothSequencer {
             UserError.Log.d(TAG, "Requesting to enable HR notifications");
 
         notifSubscriptionHeartRateMeasurement = new Subscription(I.connection.setupNotification(Const.UUID_CHAR_HEART_RATE_MEASUREMENT)
-                .flatMap(notificationObservable -> notificationObservable)
-                .observeOn(Schedulers.newThread())
-                .subscribe(bytes -> {
-                            // incoming notifications
-                            if (d)
-                                UserError.Log.d(TAG, "Received HR notification bytes: " + bytesToHex(bytes));
-                            handleHeartrate(bytes);
-                        }, throwable -> {
-                            notifSubscriptionHeartRateMeasurement.unsubscribe();
-                            notifSubscriptionHeartRateMeasurement = null;
-                            UserError.Log.d(TAG, "Throwable in HR notification: " + throwable);
-                            if (throwable instanceof BleCharacteristicNotFoundException) {
-                                UserError.Log.d(TAG, "HR Characteristic not found for notification");
-                            } else {
-                                UserError.Log.d(TAG, "HR Disconnected exception");
-                            }
-                        }
-                ));
+            .flatMap(notificationObservable -> notificationObservable)
+            .observeOn(Schedulers.newThread())
+            .subscribe(bytes -> {
+                    // incoming notifications
+                    if (d)
+                        UserError.Log.d(TAG, "Received HR notification bytes: " + bytesToHex(bytes));
+                    handleHeartrate(bytes);
+                }, throwable -> {
+                    notifSubscriptionHeartRateMeasurement.unsubscribe();
+                    notifSubscriptionHeartRateMeasurement = null;
+                    UserError.Log.d(TAG, "Throwable in HR notification: " + throwable);
+                    if (throwable instanceof BleCharacteristicNotFoundException) {
+                        UserError.Log.d(TAG, "HR Characteristic not found for notification");
+                    } else {
+                        UserError.Log.d(TAG, "HR Disconnected exception");
+                    }
+                }
+            ));
+    }
 
+    private void enableStepsNotification() {
+        if (MiBandEntry.isNeedToCollectSteps()) {
+            if (notifSubscriptionStepsMeasurement != null) return;
+        } else {
+            if (notifSubscriptionStepsMeasurement != null) {
+                notifSubscriptionStepsMeasurement.unsubscribe();
+                notifSubscriptionStepsMeasurement = null;
+                return;
+            }
+        }
+
+        if (d)
+            UserError.Log.d(TAG, "Requesting to enable steps notifications");
+
+        notifSubscriptionStepsMeasurement = new Subscription(I.connection.setupNotification(Const.UUID_CHARACTERISTIC_7_REALTIME_STEPS)
+            .flatMap(notificationObservable -> notificationObservable)
+            .observeOn(Schedulers.newThread())
+            .subscribe(bytes -> {
+                    // incoming notifications
+                    if (d)
+                        UserError.Log.d(TAG, "Received steps notification bytes: " + bytesToHex(bytes));
+                    handleRealtimeSteps(bytes);
+                }, throwable -> {
+                notifSubscriptionStepsMeasurement.unsubscribe();
+                notifSubscriptionStepsMeasurement = null;
+                    UserError.Log.d(TAG, "Throwable in steps notification: " + throwable);
+                    if (throwable instanceof BleCharacteristicNotFoundException) {
+                        UserError.Log.d(TAG, "steps Characteristic not found for notification");
+                    } else {
+                        UserError.Log.d(TAG, "steps Disconnected exception");
+                    }
+                }
+            ));
     }
 
     @Override
@@ -1510,7 +1574,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                     authPhase();
                     break;
                 case MiBandState.ENABLE_NOTIFICATIONS:
-                    enableNotification();
+                    enableNotifications();
                     break;
                 case MiBandState.SEND_SETTINGS:
                     sendSettings();
