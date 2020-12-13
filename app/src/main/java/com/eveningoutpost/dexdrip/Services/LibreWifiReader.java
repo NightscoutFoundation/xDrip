@@ -5,6 +5,10 @@ import android.os.AsyncTask;
 import android.os.PowerManager;
 import android.util.Base64;
 
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
+
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.MapsActivity;
@@ -44,7 +48,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-
 // Important note, this class is based on the fact that android will always run it one thread, which means it does not
 // need synchronization
 
@@ -58,6 +61,7 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
     private static final Gson gson = JoH.defaultGsonInstance();
 
     private final static long DEXCOM_PERIOD = 300000;
+    private static OkHttpClient httpClient = null;
     
     // This variables are for fake function only
     static int i = 0;
@@ -217,6 +221,81 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
         
     }
 
+    // read from http source like cloud hosted parakeet receiver.cgi / json.get
+    private static List<LibreWifiData> readHttpJson(String url, int numberOfRecords) {
+        long newest_timestamp = 0;
+        final long time_start = JoH.tsl();
+        final List<LibreWifiData> trd_list = new LinkedList<LibreWifiData>();
+        try {
+
+            if (httpClient == null) {
+                httpClient = new OkHttpClient();
+                // suitable for GPRS
+                httpClient.setConnectTimeout(30, TimeUnit.SECONDS);
+                httpClient.setReadTimeout(60, TimeUnit.SECONDS);
+                httpClient.setWriteTimeout(20, TimeUnit.SECONDS);
+            }
+
+
+            // simple HTTP GET request
+            // n=numberOfRecords for backfilling
+            // r=sequence number to avoid any cache
+            // expecting json reply like the standard json server in dexterity / python pi usb / parakeet
+            final Request request = new Request.Builder()
+                    // Mozilla header facilitates compression
+                    .header("User-Agent", "Mozilla/5.0")
+                    .header("Connection", "close")
+                    //.url(url + "?n=" + Integer.toString(numberOfRecords)
+                    //        + "&r=" + Long.toString((System.currentTimeMillis() / 1000) % 9999999))
+                    //.url("https://afternoon-tundra-66717.herokuapp.com/libre/1")
+                    .url(url + "/libre/" + numberOfRecords)
+                    .build();
+
+            final Response response = httpClient.newCall(request).execute();
+            if (!response.isSuccessful()) {
+                Log.e(TAG, "Error reading from " + url + " "+ response.message());
+                return trd_list;
+            }
+            String res = response.body().string();
+            Log.d(TAG, "Data read from " + url + " " + res);
+
+            final LibreWifiData[] libre_wifi_data_array = gson.fromJson(res, LibreWifiData[].class);
+            Log.e(TAG, "LibreWifiHeader = " + libre_wifi_data_array);
+
+            for (LibreWifiData libre_wifi_data : libre_wifi_data_array) {
+
+                if (newest_timestamp < libre_wifi_data.CaptureDateTime) {
+                    statusLog(url, JoH.hourMinuteString() + " OK data from:", libre_wifi_data.CaptureDateTime);
+                    newest_timestamp = libre_wifi_data.CaptureDateTime;
+                }
+
+                trd_list.add(0, libre_wifi_data);
+                //  System.out.println( trd.toTableString());
+                if (trd_list.size() == numberOfRecords) {
+                    // We have the data we want, let's get out
+                    break;
+                }
+            }
+            return trd_list;
+
+        } catch (SocketTimeoutException s) {
+            Log.e(TAG, "Socket timed out! " + url + " : " + s.toString() + " after: " + JoH.msSince(time_start));
+            statusLog(url, JoH.hourMinuteString() + " " + s.toString());
+        } catch (IOException e) {
+            Log.e(TAG, "caught IOException! " + url + " : " + " : " + e.toString());
+            statusLog(url, JoH.hourMinuteString() + " " + e.toString());
+        } catch (IllegalArgumentException e) {
+            Log.e(TAG, "Argument error on: " + url + " " + e.toString());
+        } catch (NullPointerException e) {
+            Log.e(TAG, "Got null pointer exception " + url + " " + e.toString());
+        } catch (Exception e) {
+            Log.e(TAG, "Got exception " + url + " " + e.toString());
+        }
+
+        return trd_list;
+    }
+    
+    
     // format of string is ip1:port1,ip2:port2;
     public static LibreWifiData[] Read(String hostsNames, int numberOfRecords) {
         String[] hosts = hostsNames.split(",");
@@ -236,7 +315,9 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
                     && (Home.get_engineering_mode())
                     && (DexCollectionType.getDexCollectionType() == DexCollectionType.Mock))) {
                 tmpList = readFake();
-            } else {
+            } else if ( host.startsWith("https://")) {
+                tmpList = readHttpJson(host, numberOfRecords);
+            }else {
                 tmpList = ReadHost(host, numberOfRecords);
             }
             if (tmpList != null && tmpList.size() > 0) {
