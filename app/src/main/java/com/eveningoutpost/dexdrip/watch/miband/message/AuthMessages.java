@@ -114,10 +114,12 @@ public class AuthMessages extends BaseMessage {
             putData(AUTH_REQUEST_RANDOM_AUTH_NUMBER);
             putData(authFlags);
         } else {
-            init(3);
+            init(5);
             putData((byte) (cryptFlags | AUTH_REQUEST_RANDOM_AUTH_NUMBER));
             putData(authFlags);
             putData((byte) 0x02);
+            putData((byte) 0x01);
+            putData((byte) 0x00);
         }
         return getBytes();
     }
