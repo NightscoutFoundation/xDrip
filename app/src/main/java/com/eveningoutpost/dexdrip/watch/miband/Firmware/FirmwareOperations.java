@@ -119,6 +119,10 @@ public class FirmwareOperations {
         };
     }
 
+    public static int toUint16(byte... bytes) {
+        return (bytes[0] & 0xff) | ((bytes[1] & 0xff) << 8);
+    }
+
     public static byte[] readAll(InputStream in, long maxLen) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream(Math.max(8192, in.available()));
         byte[] buf = new byte[8192];
