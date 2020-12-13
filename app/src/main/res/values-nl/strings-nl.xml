@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="connected">Aangesloten</string>
-    <string name="disconnected">Losgekoppeld</string>
-    <string name="menu_scan">Scannen</string>
-    <string name="menu_refresh">Verversen</string>
+    <string name="title_activity_bluetooth_scan">Bluetooth scan</string>
+    <string name="menu_stop">Stop</string>
+    <string name="menu_refresh">Vernieuwen</string>
     <string name="menu_export_database">Export databank</string>
-    <string name="menu_export_csv_sidiary">Exporteer CSV (SiDiary format)</string>
+    <string name="menu_export_csv_sidiary">Exporteer CSV (SiDiary formaat)</string>
     <string name="menu_import_db">Database importeren</string>
     <string name="error_bluetooth_not_supported">Fout: Bluetooth niet ondersteund door dit apparaat</string>
     <string name="unknown_device">Niet-herkend apparaat</string>
@@ -14,6 +13,7 @@
     <string name="title_activity_calculated_data_table">Berekend Gegevenstabel</string>
     <string name="title_activity_start_new_sensor">Start nieuwe sensor</string>
     <string name="title_activity_new_sensor_location">Nieuwe Sensor Locatie</string>
+    <string name="title_activity_stop_sensor">Stop de sensor</string>
     <string name="title_activity_nav_drawer">Nav lade</string>
     <string name="navigation_drawer_open">Open navigatielade</string>
     <string name="navigation_drawer_close">Sluiten navigatielade</string>
@@ -21,6 +21,7 @@
     <string name="title_activity_usb_connected">USB aangesloten Activiteit</string>
     <string name="snooze">Dutten</string>
     <string name="snooze_hint">Snooze alert voor x minuten</string>
+    <string name="ok">Oké</string>
     <string name="cancel">Annuleer</string>
     <string name="no">Nee</string>
     <string name="pref_sensor_location_dont_ask_again"> Vraag me dat niet opnieuw vragen</string>
@@ -31,10 +32,14 @@
     <string name="title_activity_double_calibration">Dubbele Kalibratie</string>
     <string name="title_activity_calibration_override">Kalibratie Overschrijven</string>
     <string name="pref_header_cloud_storage">Cloud opslag</string>
+    <string name="auto_configure_title">Automatisch configureren</string>
     <string name="prefs_auto_config_summary">Automatisch configureren met behulp van een barcode.</string>
     <string name="scan_share2_barcode">Scan Deel Barcode</string>
     <string name="pref_share2_scan_barcode_summary">Of scan de barcode op het aandeel receiver</string>
     <!-- MongoDB Settings -->
+    <string name="pref_title_mongodb">MongoDB</string>
+    <string name="pref_summary_mongodb_enabled">Directe database upload, niet aanbevolen voor Nightscout</string>
+    <string name="pref_title_mongodb_uri">URI</string>
     <string name="pref_dialog_mongodb_uri">Voer MongoDB URI\"</string>
     <string name="pref_message_mongodb_uri">Vervang bijvoorbeeld waarden in {} \'s met uw juiste waarden</string>
     <string name="pref_default_mongodb_uri">MongoDB: // {user}: {password} @ {} gastheer .mongolab.com: {11111} / {databank}</string>
@@ -47,6 +52,8 @@
     <!-- API Settings -->
     <string name="pref_title_api">API uploaden (REST)</string>
     <string name="pref_title_api_enabled">Ingeschakeld</string>
+    <string name="pref_summary_api_enabled">De REST API is de standaard manier om verbinding te maken met Nightscout</string>
+    <string name="pref_title_api_url">Basis URL</string>
     <string name="pref_dialog_api_url">Voer Base API URL</string>
     <string name="pref_message_api_url">Dit alleen de basis-URL, zal de uploader automatisch toevoegen / inzendingen voor de POST. API_SECRET op de server moet yourpassphrase wedstrijd in deze instelling.</string>
     <string name="pref_default_api_url">https: // yourpassphrase @ {UW-SITE} .azurewebsites.net / api / v1 /</string>
@@ -69,6 +76,18 @@
     <string name="pref_pebble_display_high_line">Tonen High Line</string>
     <string name="pref_pebble_display_low_line">Tonen Low Line</string>
     <!-- Amazfit Settings -->
+    <string name="amazfit_sync_service">AmazFit synchronisatieservice</string>
+    <string name="pref_amazfit_enable_summary">Schakel Amazfit Data-ondersteuning in</string>
+    <string name="pref_amazfit_enable">Inschakelen</string>
+    <string name="pref_amazfit_BG_alert_enable_summary">Zend actieve BG waarschuwingen naar Smartwatch</string>
+    <string name="pref_amazfit_BG_alert_enable">Inschakelen</string>
+    <string name="pref_amazfit_BG_alert_title">BG waarschuwingen</string>
+    <string name="pref_amazfit_other_alert_enable_summary">Verstuurt andere meldingen naar smartwatch</string>
+    <string name="pref_amazfit_other_alert_enable">Inschakelen</string>
+    <string name="pref_amazfit_other_alert_title">Andere waarschuwingen</string>
+    <string name="pref_amazfit_widget_graph_hours_title">Widget grafiek</string>
+    <string name="pref_amazfit_widget_graph_hours_summary">stel in hoeveel uren in de grafiek</string>
+    <string name="pref_amazfit_widget_graph_dots_title">Widget grafiekpunten</string>
     <string name="toast_crash">Er is iets misgegaan :( een rapport gestuurd naar het probleem verhelpen.</string>
     <string name="taskerConfigInstruction">Klik gewoon op het pictogram Tick hier om te bevestigen. Je moet niet nodig om de configuratie snaar te veranderen.</string>
     <string name="add_widget">Widget toevoegen</string>
