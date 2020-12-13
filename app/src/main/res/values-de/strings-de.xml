@@ -44,7 +44,7 @@
     <string name="pref_summary_mongodb_enabled">Direkter Datenbankupload, nicht empfohlen für Nightscout</string>
     <string name="pref_title_mongodb_uri">URL</string>
     <string name="pref_dialog_mongodb_uri">MongoDB URI eingeben\"</string>
-    <string name="pref_message_mongodb_uri">Ersetzen Sie die Werte zwischen {} mit Ihren Werten</string>
+    <string name="pref_message_mongodb_uri">Ersetze die Beispiel-Werte zwischen {} mit Deinen korrekten Daten</string>
     <string name="pref_default_mongodb_uri">mongodb://{Benutzer}:{Passwort}@{host}.mongolab.com:{port}/{Datenbank}</string>
     <string name="pref_title_mongodb_collection">Collection-Name</string>
     <string name="pref_dialog_mongodb_collection">Name der Collection eingeben</string>
@@ -535,7 +535,7 @@
     <string name="rewrite_history">Übersicht neu anlegen</string>
     <string name="grid_time_lines_visible">Zeitrasterlinien sichtbar</string>
     <string name="grid_glucose_lines_visible">Glukoserasterlinien sichtbar</string>
-    <string name="useful_for_noise_and_missed_readings">Nützlich für Rausch- oder verpasste Werte</string>
+    <string name="useful_for_noise_and_missed_readings">Nützlich für verrauschte oder verpasste Werte</string>
     <string name="the_standard_xdrip_calculated_value">Berechnete standard xDrip-Werte</string>
     <string name="display_ideal_glucose_target_line">Zeige ideale Glukosegerade</string>
     <string name="display_eight_hour_average_line">Zeige 8 Stunden Durchschnittslinie</string>
@@ -547,7 +547,7 @@
     <string name="upload_logs">Hochladen von Logs</string>
     <string name="short_off_text_for_switches">AUS</string>
     <string name="short_on_text_for_switches">AN</string>
-    <string name="install_pebble_apps">Installieren Sie Pebble Apps</string>
+    <string name="install_pebble_apps">Installiere Pebble Apps</string>
     <string name="sliding_24_hour_window_summary">Verwende die letzten 24 Stunden anstatt der Zeit seit Mitternacht für die Statistik.</string>
     <string name="sliding_24_hour_window">Schiebefenster</string>
     <string name="split">Teilen</string>
@@ -586,7 +586,7 @@
     <string name="speak_glucose_twice">Sprich den Glukosewert jedesmal zwei mal</string>
     <string name="short_speak_readings_shortcut">Zeige eine Verknüfpung im ☰ Menü zur Spracheingabe von Werten</string>
     <string name="speak_readings_shortcut">Werte-Vorlesen-Verknüpfung</string>
-    <string name="battery_optimization_off">Stelle auf Android 6+ sicher, dass die Batterie-Optimierung ausgeschaltet ist. Empfohlene Einstellung</string>
+    <string name="battery_optimization_off">Stelle auf Android 6+ sicher, dass die Akku-Optimierung ausgeschaltet ist. Empfohlene Einstellung</string>
     <string name="battery_optimization_on">Nicht nach der Batterie-Optimierung fragen. Nicht empfohlen</string>
     <string name="battery_optimization_prompt">Batterie-Optimierungs-Aufforderung</string>
     <string name="advanced_bluetooth_settings">Erweiterte Bluetootheinstellungen</string>
