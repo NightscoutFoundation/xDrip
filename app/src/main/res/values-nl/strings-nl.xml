@@ -6,7 +6,7 @@
     <string name="menu_refresh">Verversen</string>
     <string name="menu_export_database">Export databank</string>
     <string name="menu_export_csv_sidiary">Exporteer CSV (SiDiary format)</string>
-    <string name="menu_import_db">Importeer database</string>
+    <string name="menu_import_db">Database importeren</string>
     <string name="error_bluetooth_not_supported">Fout: Bluetooth niet ondersteund door dit apparaat</string>
     <string name="unknown_device">Niet-herkend apparaat</string>
     <string name="connecting_to_device">Verbinding maken met apparaat</string>
@@ -156,9 +156,9 @@
     <string name="glucose_alerts_settings">Glucose Alerts Instellingen</string>
     <string name="calibration_alerts">Calibration alerts</string>
     <string name="missed_reading_alert">Gemiste lezen Alert</string>
-    <string name="other_alerts">Andere alerts</string>
-    <string name="forecasted_low_alert">Voorspelde Low Alert</string>
-    <string name="extrapolate_data_to_try_to_predict_lows">Extrapoleren data om te proberen om dieptepunten te voorspellen</string>
+    <string name="other_alerts">Andere waarschuwingen</string>
+    <string name="forecasted_low_alert">Voorspelde lage alarm</string>
+    <string name="extrapolate_data_to_try_to_predict_lows">Extrapoleer gegevens om te proberen dieptepunten te voorspellen</string>
     <string name="alarm_at_forecasted_low_mins">Alarm bij Voorspelde Low mins</string>
     <string name="other_xdrip_plus_alerts">Andere xDrip+ waarschuwingen</string>
     <string name="display_customisations">Weergave aanpassingen</string>
