@@ -598,29 +598,7 @@
                 android:key="miband_send_alarms_other"
                 android:summary="@string/summary_miband_send_alarms_other"
                 android:title="@string/title_miband_send_alarms_other" />
-            <PreferenceCategory
-                android:title="@string/title_miband_graph_category"
-                android:dependency="miband_enabled"
-                android:key="miband_graph_category">
-                <CheckBoxPreference
-                    android:defaultValue="true"
-                    android:dependency="miband_enabled"
-                    android:key="miband_graph_enable"
-                    android:title="@string/title_miband_graph_enable" />
-                <EditTextPreference
-                    android:defaultValue="4"
-                    android:dependency="miband_graph_enable"
-                    android:digits="0123456789"
-                    android:inputType="number"
-                    android:key="miband_graph_hours"
-                    android:summary="@string/pref_amazfit_widget_graph_hours_summary"
-                    android:title="@string/pref_amazfit_watchface_graph_hours_title" />
-                <CheckBoxPreference
-                    android:defaultValue="true"
-                    android:dependency="miband_graph_enable"
-                    android:key="miband_graph_treatment_enable"
-                    android:title="@string/title_miband_graph_treatment_enable" />
-            </PreferenceCategory>
+
             <Preference
                 android:key="update_miband_bg"
                 android:dependency="miband_enabled"
@@ -630,8 +608,10 @@
                 android:dependency="miband_enabled">
                 <PreferenceScreen
                     android:key="miband_settings"
-                    android:title="@string/title_miband_screens_features">
-                    <PreferenceCategory android:title="@string/title_features">
+                    android:title="@string/title_miband_general_settings_category">
+                   <!-- <PreferenceCategory
+                        android:title="@string/title_features"
+                        >
                         <SwitchPreference
                             android:defaultValue="true"
                             android:key="miband_feature_lift_to_wake"
@@ -670,6 +650,29 @@
                             android:key="miband_feature_visibility"
                             android:summary="@string/summary_miband_visibility"
                             android:title="@string/title_miband_visibility" />
+                    </PreferenceCategory>-->
+                    <PreferenceCategory
+                        android:title="@string/title_miband_graph_category"
+                        android:dependency="miband_enabled"
+                        android:key="miband_graph_category">
+                        <CheckBoxPreference
+                            android:defaultValue="true"
+                            android:dependency="miband_enabled"
+                            android:key="miband_graph_enable"
+                            android:title="@string/title_miband_graph_enable" />
+                        <EditTextPreference
+                            android:defaultValue="4"
+                            android:dependency="miband_graph_enable"
+                            android:digits="0123456789"
+                            android:inputType="number"
+                            android:key="miband_graph_hours"
+                            android:summary="@string/pref_amazfit_widget_graph_hours_summary"
+                            android:title="@string/pref_amazfit_watchface_graph_hours_title" />
+                        <CheckBoxPreference
+                            android:defaultValue="true"
+                            android:dependency="miband_graph_enable"
+                            android:key="miband_graph_treatment_enable"
+                            android:title="@string/title_miband_graph_treatment_enable" />
                     </PreferenceCategory>
                     <PreferenceCategory
                         android:key="miband_nightmode_category"
@@ -697,24 +700,28 @@
                             android:summary="@string/summary_miband_interval_in_nightmode"
                             android:title="@string/title_miband_interval_in_nightmode" />
                     </PreferenceCategory>
-                    <SwitchPreference
-                        android:defaultValue="true"
-                        android:key="miband_collect_heartrate"
-                        android:summary="@string/summary_miband_colect_heartrate"
-                        android:title="@string/title_miband_colect_heartrate" />
-                    <SwitchPreference
-                        android:defaultValue="true"
-                        android:key="miband_collect_steps"
-                        android:summary="@string/summary_miband_colect_steps"
-                        android:title="@string/title_miband_colect_steps" />
-                    <SwitchPreference
-                        android:defaultValue="true"
-                        android:key="miband_us_date_format"
-                        android:summary="@string/summary_miband_us_date_format"
-                        android:switchTextOff="EU"
-                        android:switchTextOn="US"
-                        android:showText="true"
-                        android:title="@string/title_miband_us_date_format" />
+                    <PreferenceCategory
+                        android:key="miband_other_settings_category"
+                        android:title="@string/title_miband_other_settings_category">
+                        <SwitchPreference
+                            android:defaultValue="true"
+                            android:key="miband_collect_heartrate"
+                            android:summary="@string/summary_miband_colect_heartrate"
+                            android:title="@string/title_miband_colect_heartrate" />
+                        <SwitchPreference
+                            android:defaultValue="true"
+                            android:key="miband_collect_steps"
+                            android:summary="@string/summary_miband_colect_steps"
+                            android:title="@string/title_miband_colect_steps" />
+                        <SwitchPreference
+                            android:defaultValue="true"
+                            android:key="miband_us_date_format"
+                            android:summary="@string/summary_miband_us_date_format"
+                            android:switchTextOff="EU"
+                            android:switchTextOn="US"
+                            android:showText="true"
+                            android:title="@string/title_miband_us_date_format" />
+                    </PreferenceCategory>
                     <PreferenceCategory
                         android:key="miband2_screen"
                         android:title="@string/title_screens">

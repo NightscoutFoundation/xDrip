@@ -1188,7 +1188,6 @@
     <string name="title_miband">MiBand</string>
     <string name="summary_miband_enable">Sincronizar Dados com as bandas fitness MiBand</string>
     <string name="title_miband_enable">Usar banda MiBand</string>
-    <string name="title_miband_screens_features">Ecrãs / Funções MiBand</string>
     <string name="title_miband_screen_battery">Mostrar Bateria</string>
     <string name="title_miband_show_date">Mostrar Data no ecrã</string>
     <string name="title_miband_visibility">Visibilidade MiBand</string>

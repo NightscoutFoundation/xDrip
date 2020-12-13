@@ -369,7 +369,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                 vibrateAlert(AlertLevelMessage.AlertLevelType.NoAlert); //disable call
                 if (!missingAlertMessage.isEmpty()) {
                     String msgText = xdrip.getAppContext().getString(R.string.miband_alert_missing_text) + missingAlertMessage;
-                    messageQueue.addFirst(new QueueMessage("message", MIBAND_NOTIFY_TYPE_MESSAGE, msgText, "Missing allert"));
+                    messageQueue.addFirst(new QueueMessage("message", MIBAND_NOTIFY_TYPE_MESSAGE, msgText, xdrip.getAppContext().getString(R.string.miband_alert_missing_title_text)));
                 }
                 ((MiBandState) mState).setQueueSequence();
                 break;
@@ -516,7 +516,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
                     }
                     msgText = String.format(xdrip.getAppContext().getString(R.string.miband_alert_snooze_text), alertName, snoozeMinutes, JoH.hourMinuteString((long) next_alert_at));
                     UserError.Log.d(TAG, msgText);
-                    messageQueue.addFirst(new QueueMessage("message", MIBAND_NOTIFY_TYPE_MESSAGE, msgText, "Alert snoozed"));
+                    messageQueue.addFirst(new QueueMessage("message", MIBAND_NOTIFY_TYPE_MESSAGE, msgText, xdrip.getAppContext().getString(R.string.miband_alert_snooze_title_text)));
                     startBgTimer();
                     handleCommand();
                 }

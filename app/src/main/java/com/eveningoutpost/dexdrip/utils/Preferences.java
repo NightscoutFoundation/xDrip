@@ -2249,7 +2249,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 settings.removePreference(miband2_screen);
                 settings.removePreference(miband3_4_screen);
                 settings.removePreference(miband_nightmode_category);
-                prefs.removePreference(miband_graph_category);
+                settings.removePreference(miband_graph_category);
                 prefs.removePreference(miband_authkey);
 
                 /*if (type == MiBandType.MI_BAND4 || type == MiBandType.MI_BAND5) {
@@ -2261,7 +2261,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     settings.addPreference(miband3_4_screen);
                 }*/
                 if (MiBandType.supportGraph(type)) {
-                    prefs.addPreference(miband_graph_category);
+                    settings.addPreference(miband_graph_category);
                 }
                 if (MiBandType.supportNightMode(type)) {
                     settings.addPreference(miband_nightmode_category);
