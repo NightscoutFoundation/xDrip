@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="title_activity_bluetooth_scan">Bluetooth scan</string>
+    <string name="connected">Verbonden</string>
+    <string name="disconnected">Losgekoppeld</string>
+    <string name="menu_scan">Scannen</string>
     <string name="menu_stop">Stop</string>
     <string name="menu_refresh">Vernieuwen</string>
-    <string name="menu_export_database">Export databank</string>
+    <string name="menu_export_database">Database exporteren</string>
     <string name="menu_export_csv_sidiary">Exporteer CSV (SiDiary formaat)</string>
     <string name="menu_import_db">Database importeren</string>
-    <string name="error_bluetooth_not_supported">Fout: Bluetooth niet ondersteund door dit apparaat</string>
+    <string name="error_bluetooth_not_supported">Fout: Bluetooth wordt niet ondersteund door dit apparaat</string>
     <string name="unknown_device">Niet-herkend apparaat</string>
     <string name="connecting_to_device">Verbinding maken met apparaat</string>
     <string name="title_activity_raw_data_table">Ruwe Data Tabel</string>
@@ -15,7 +18,7 @@
     <string name="title_activity_new_sensor_location">Nieuwe Sensor Locatie</string>
     <string name="title_activity_stop_sensor">Stop de sensor</string>
     <string name="title_activity_nav_drawer">Nav lade</string>
-    <string name="navigation_drawer_open">Open navigatielade</string>
+    <string name="navigation_drawer_open">Open de navigatielade</string>
     <string name="navigation_drawer_close">Sluiten navigatielade</string>
     <string name="title_activity_calibration_check_in">Kalibratie Activiteit</string>
     <string name="title_activity_usb_connected">USB aangesloten Activiteit</string>
@@ -79,15 +82,28 @@
     <string name="amazfit_sync_service">AmazFit synchronisatieservice</string>
     <string name="pref_amazfit_enable_summary">Schakel Amazfit Data-ondersteuning in</string>
     <string name="pref_amazfit_enable">Inschakelen</string>
+    <string name="pref_amazfit_tile">Amazfit Service</string>
     <string name="pref_amazfit_BG_alert_enable_summary">Zend actieve BG waarschuwingen naar Smartwatch</string>
     <string name="pref_amazfit_BG_alert_enable">Inschakelen</string>
     <string name="pref_amazfit_BG_alert_title">BG waarschuwingen</string>
     <string name="pref_amazfit_other_alert_enable_summary">Verstuurt andere meldingen naar smartwatch</string>
     <string name="pref_amazfit_other_alert_enable">Inschakelen</string>
     <string name="pref_amazfit_other_alert_title">Andere waarschuwingen</string>
+    <string name="pref_amazfit_watchface_graph_dots_title">Watchface Grafiekpunten</string>
+    <string name="pref_amazfit_watchface_graph_dots_summary">Toont kleine stippen in plaats van smalle</string>
+    <string name="pref_amazfit_watchface_graph_enable">Inschakelen</string>
+    <string name="pref_amazfit_watchface_graph_title">Wijzerplaat grafiek</string>
+    <string name="pref_amazfit_watchface_graph_hours_title">Watchface grafiek</string>
+    <string name="pref_amazfit_watchface_graph_hours_summary">stel in hoeveel uren in de grafiek</string>
     <string name="pref_amazfit_widget_graph_hours_title">Widget grafiek</string>
     <string name="pref_amazfit_widget_graph_hours_summary">stel in hoeveel uren in de grafiek</string>
     <string name="pref_amazfit_widget_graph_dots_title">Widget grafiekpunten</string>
+    <string name="pref_amazfit_widget_graph_dots_summary">Toont kleine stippen in plaats van smalle</string>
+    <string name="pref_amazfit_widget_graph_enable">Inschakelen</string>
+    <string name="pref_amazfit_widget_graph_title">Widget grafiek</string>
+    <string name="pref_amazfit_widget_graph_enable_summary">Toon grafiek in de widget</string>
+    <string name="pref_amazfit_watchface_settings">Watchface instellingen (kan meer batterij nodig hebben)</string>
+    <string name="pref_amazfit_widget_settings">Widgetinstellingen (kan meer batterij nodig hebben)</string>
     <string name="toast_crash">Er is iets misgegaan :( een rapport gestuurd naar het probleem verhelpen.</string>
     <string name="taskerConfigInstruction">Klik gewoon op het pictogram Tick hier om te bevestigen. Je moet niet nodig om de configuratie snaar te veranderen.</string>
     <string name="add_widget">Widget toevoegen</string>
@@ -168,7 +184,7 @@
     <string name="send_feedback_message">Feedback verzenden Message</string>
     <string name="copying_settings">Kopiëren Instellingen</string>
     <string name="show_settings_qr_codes">Instellingen weergeven QR-codes</string>
-    <string name="load_save_settings_to_sdcard">Laden / Opslaan-instellingen om SDcard</string>
+    <string name="load_save_settings_to_sdcard">Instellingen laden / opslaan op SD-kaart</string>
     <string name="alarms_and_alerts">Alarmen en waarschuwingen</string>
     <string name="alerts_and_notifications">Waarschuwingen en meldingen</string>
     <string name="glucose_level_alerts_list">Glucoseniveau Alerts List</string>
