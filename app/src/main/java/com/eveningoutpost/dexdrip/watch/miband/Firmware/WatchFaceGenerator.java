@@ -26,11 +26,11 @@ import com.eveningoutpost.dexdrip.watch.miband.Firmware.WatchFaceParts.Utils.BgM
 import com.eveningoutpost.dexdrip.watch.miband.MiBandEntry;
 import com.eveningoutpost.dexdrip.watch.miband.MiBandType;
 import com.eveningoutpost.dexdrip.xdrip;
-
-import org.simpleframework.xml.Serializer;
-import org.simpleframework.xml.core.Persister;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -111,10 +111,16 @@ public class WatchFaceGenerator {
             }
         }
         if (configFileStream == null){
-            configFileStream = assetManager.open("miband_watchface_parts/config.xml");
+            configFileStream = assetManager.open("miband_watchface_parts/config.json");
         }
-        Persister serializer = new Persister();
-       // watchfaceConfig = serializer.read(WatchfaceConfig.class, new InputStreamReader(configFileStream));
+
+        Gson gson = new Gson();
+        String temp = gson.toJson(new WatchfaceConfig());
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(configFileStream));
+        GsonBuilder builder = new GsonBuilder();
+        gson = builder.create();
+        watchfaceConfig = gson.fromJson(br, WatchfaceConfig.class);
 
         if (!customFilesFound) {
             String firmwareFileName = "miband_watchface_parts/xdrip_";

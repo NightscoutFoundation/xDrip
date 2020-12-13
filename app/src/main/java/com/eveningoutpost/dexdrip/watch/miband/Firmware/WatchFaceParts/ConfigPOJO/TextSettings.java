@@ -1,12 +1,17 @@
 package com.eveningoutpost.dexdrip.watch.miband.Firmware.WatchFaceParts.ConfigPOJO;
 
-import org.simpleframework.xml.Attribute;
-import org.simpleframework.xml.Element;
 
-@Element
+import android.graphics.Color;
+
+import com.google.gson.annotations.SerializedName;
+
 public class TextSettings {
-    @Attribute(required = false)
-    public int color = -1;
-    @Attribute(required = false, name = "font_size")
+
+    @SerializedName("font_size")
     public int fontSize = 10;
+    private String color = "#FFFFFF";
+
+    public int getColor() {
+        return Color.parseColor(color);
+    }
 }

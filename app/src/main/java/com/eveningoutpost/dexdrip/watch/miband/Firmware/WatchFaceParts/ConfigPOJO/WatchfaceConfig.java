@@ -1,36 +1,31 @@
 package com.eveningoutpost.dexdrip.watch.miband.Firmware.WatchFaceParts.ConfigPOJO;
 
-import org.simpleframework.xml.Attribute;
-import org.simpleframework.xml.Element;
-import org.simpleframework.xml.Root;
+import com.eveningoutpost.dexdrip.watch.miband.MiBandType;
+import com.google.gson.annotations.SerializedName;
 
-@Root(name = "Watchface")
 public class WatchfaceConfig {
-    @Attribute(name = "watch_type")
-    public String watchType;
-
-    @Attribute(required = false, name = "canvas_image_offset")
+    @SerializedName("canvas_image_offset")
     public int canvasImageOffset = 0;
 
-    @Element(required = false, name = "Graph")
+    @SerializedName("graph")
     public GraphSettings graph = new GraphSettings();
 
-    @Element(required = false, name = "ArrowPosition")
+    @SerializedName("arrow_position")
     public Position arrowPosition = new Position();
 
-    @Element(required = false, name = "IobText")
+    @SerializedName("iob_text")
     public SimpleText iob = new SimpleText();
 
-    @Element(required = false, name = "DeltaText")
+    @SerializedName("delta_text")
     public ValueTimeText deltaText = new ValueTimeText();
 
-    @Element(required = false, name = "DeltaTimeText")
-    public ValueTimeText deltaTimeText;
+    @SerializedName("delta_time_text")
+    public SimpleText deltaTimeText = new SimpleText();
 
-    @Element(required = false, name = "TreatmentText")
+    @SerializedName("treatment_text")
     public ValueTimeText treatmentText = new ValueTimeText();
 
-    @Element(required = false, name = "TreatmentTimeText")
-    public ValueTimeText treatmentTimeText;
+    @SerializedName("treatment_time_text")
+    public SimpleText treatmentTimeText  = new SimpleText();
 
 }

@@ -1,0 +1,74 @@
+{
+    "arrow_position":{
+        "x":0,
+        "y":0
+    },
+    "canvas_image_offset":0,
+    "delta_text":{
+        "outdated_text_pattern":"$value $unit ago",
+        "position":{
+            "x":0,
+            "y":0
+        },
+        "text_pattern":"$value $unit at $time",
+        "text_settings":{
+            "color":"#FFFFFF",
+            "font_size":10
+        }
+    },
+    "delta_time_text":{
+        "position":{
+            "x":0,
+            "y":0
+        },
+        "text_pattern":"$value $unit at $time",
+        "text_settings":{
+            "color":"#FFFFFF",
+            "font_size":10
+        }
+    },
+    "graph":{
+        "bg_color":"#FFFFFF",
+        "display_graph":false,
+        "height":0,
+        "position":{
+            "x":0,
+            "y":0
+        },
+        "width":-1
+    },
+    "iob_text":{
+        "position":{
+            "x":0,
+            "y":0
+        },
+        "text_pattern":"$value $unit at $time",
+        "text_settings":{
+            "color":"#FFFFFF",
+            "font_size":10
+        }
+    },
+    "treatment_text":{
+        "outdated_text_pattern":"$value $unit ago",
+        "position":{
+            "x":0,
+            "y":0
+        },
+        "text_pattern":"$value $unit at $time",
+        "text_settings":{
+            "color":"#FFFFFF",
+            "font_size":10
+        }
+    },
+    "treatment_time_text":{
+        "position":{
+            "x":0,
+            "y":0
+        },
+        "text_pattern":"$value $unit at $time",
+        "text_settings":{
+            "color":"#FFFFFF",
+            "font_size":10
+        }
+    }
+}
