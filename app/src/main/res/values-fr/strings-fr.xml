@@ -647,6 +647,12 @@
     <string name="total_insulin">Insuline total</string>
     <string name="received_readings_percentage">Pourcentage des lectures du capteur reçus</string>
     <string name="received_realtime_readings_percentage">Pourcentage des lectures du capteur reçus en temps réel (non récupérées). Mode natif G5 seulement</string>
+    <string name="show_calibration_accuracy">Afficher l\'évaluation de précision d\'étalonnage des 3 derniers jours</string>
+    <string name="show_extra_status_on_widget">Montrer aussi la ligne d\'état supplémentaire sur le widget</string>
+    <string name="show_long_calibration_data">Voir la pente et l\'ordonnée à l\'origine en format long.</string>
+    <string name="all_new_glucose_data_plugin">Toutes les nouvelles données de glycémie seront calculées et enregistrées du plugin sélectionné et non à partir de l\'algorithme standard xDrip. Ce n\'est pas testé et peut être inexacte et pleins de bug. Utiliser avec une extrême prudence.</string>
+    <string name="allow_sensor_scanning">Permettre aux capteurs d\'être scannés lorsque l\'application est ouverte. Les données historiques seront récupérées. Très expérimental ! Méfiez-vous cela peut casser le capteur. Tester la compatibilité du téléphone avec un capteur presque expiré tout d\'abord. Vous aurez été prévenu !</string>
+    <string name="sensor_age_or_expiry">Âge du capteur ou date d\'expiration</string>
     <string name="g5_remove_before_read">Cela supprimera le G5 de la liste des périphériques jumelés de votre appareil et tentera d\'une authentification complète et une connexion avec chaque tentative de lecture.</string>
     <string name="g5_experimental_mode">Mode expérimental qui n\'utilise pas de données brutes</string>
     <string name="use_calibrated_data">Utiliser les données calibrées comme source</string>
@@ -679,5 +685,16 @@
     <string name="glucose_meter_options">Options pour les lecteurs de glucose sans fil</string>
     <string name="use_bluetooth_meter">Utiliser un lecteur Bluetooth</string>
     <string name="scan_for_bluetooth_meter">Scanner pour trouver un lecteur Bluetooth</string>
+    <string name="meter_connect_sound">Cocher pour jouer des effets sonores lorsque le compteur se connecte, se déconnecte ou synchronise les données</string>
+    <string name="meter_connect_sound_effect">Indicateurs d’effets sonores</string>
+    <string name="use_meter_for_calibrations">Utiliser le lecteur pour les étalonnages</string>
+    <string name="auto_calibration_good_conditions">Étalonner en utilisant de nouvelles lectures de glycémie si les conditions semblent avoir le droit de le faire sans demander confirmation (expérimental)</string>
+    <string name="automatic_calibration">Étalonnage automatique</string>
+    <string name="maximum_value">La valeur maximale que vous considérez être dans la plage.</string>
+    <string name="minimum_value">La valeur minimale que vous considérez être dans la plage.</string>
+    <string name="create_shortcut">Créer un raccourci sur la navigation principale vers le niveau de bg</string>
+    <string name="shortcut_to_bg_alerts">Raccourci vers les alertes de niveau Bg</string>
+    <string name="suppress_alerts_missed_readings">Supprime les alertes en veille et actives après la période prédéfinie de lectures manquées</string>
+    <string name="reraise_not_snoozed_sooner">Relancer l\'alerte si non mise en veille plus tôt</string>
     <!-- trend arrow for speak -->
 </resources>
