@@ -292,7 +292,7 @@
     <string name="glucose_calibration_and_other_alerts">Glucose, kalibratie en andere waarschuwingen</string>
     <string name="alert_volume_profile">Alert Volume Profiel</string>
     <string name="smart_alerting">Slimme Alarmering</string>
-    <string name="dont_alarm_during_phone_calls">Niet alarm tijdens het telefoneren</string>
+    <string name="dont_alarm_during_phone_calls">Geen alarm tijdens telefoongesprekken</string>
     <string name="start_snoozed">Start Gesnoozed</string>
     <string name="adjust_all_by_a_factor">Afstellen alle een factor</string>
     <string name="reset">Reset</string>
