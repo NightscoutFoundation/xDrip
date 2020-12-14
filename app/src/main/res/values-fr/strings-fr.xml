@@ -696,5 +696,11 @@
     <string name="shortcut_to_bg_alerts">Raccourci vers les alertes de niveau Bg</string>
     <string name="suppress_alerts_missed_readings">Supprime les alertes en veille et actives après la période prédéfinie de lectures manquées</string>
     <string name="reraise_not_snoozed_sooner">Relancer l\'alerte si non mise en veille plus tôt</string>
+    <string name="forget_device">Oublier ce périphérique</string>
     <!-- trend arrow for speak -->
+    <string name="enter_your_transmitter_id_exactly">Entrer votre ID de l\'émetteur exactement tel qu\'il est affiché</string>
+    <string name="which_type_of_device">Quel type de périphérique ?</string>
+    <string name="did_not_acknowledge_a_high_glucose_alert">%s n\'a pas reconnu une alerte de glucose élevé depuis %s</string>
+    <string name="has_not_had_glucose_data_received_for">%s n\'a pas reçu de données de glycémie depuis %s</string>
+    <string name="phone_has_not_been_used_for">Le téléphone %s n\'a pas été utilisé depuis %s</string>
 </resources>
