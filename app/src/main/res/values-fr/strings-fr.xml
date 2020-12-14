@@ -37,7 +37,7 @@
     <string name="pref_header_cloud_storage">Stockage Cloud</string>
     <string name="auto_configure_title">Configuration automatique</string>
     <string name="prefs_auto_config_summary">Configuration automatique en utilisant un code  barres.</string>
-    <string name="scan_share2_barcode">Numériser Partager Barcode</string>
+    <string name="scan_share2_barcode">Numériser le code-barres Share</string>
     <string name="pref_share2_scan_barcode_summary">Ou scanner le code-barres sur le récepteur partagé</string>
     <!-- MongoDB Settings -->
     <string name="pref_title_mongodb">MongoDB</string>
