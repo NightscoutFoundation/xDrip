@@ -595,5 +595,8 @@
     <string name="reset_bluetooth">Réinitialiser Bluetooth en le désactivant puis réactivant si nous n’obtenons rien pendant 20 minutes</string>
     <string name="bluetooth_watchdog">Garde-fou Bluetooth</string>
     <string name="g5_bluetooth_watchdog">Garde-fou Bluetooth G5</string>
+    <string name="close_gatt">Si le garde-fou Bluetooth s\'active souvent alors vous pouvez essayer de décocher cette option pour voir si ça aide</string>
+    <string name="older_bluetooth_wakelocks">Anciens wakelocks Bluetooth qui peuvent drainer la batterie un peu plus, mais pourraient être nécessaire pour la réception bluetooth</string>
+    <string name="reset_bluetooth_on_off">Réinitialiser le Bluetooth en le désactivant en en le réactivant après quelques minutes ! A sélectionner uniquement pour test. Cela peut perturber les autres utilisations du Bluetooth.</string>
     <!-- trend arrow for speak -->
 </resources>
