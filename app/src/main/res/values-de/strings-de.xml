@@ -1363,6 +1363,7 @@
     <string name="searching">Suche läuft...</string>
     <string name="collecting">empfange...</string>
     <string name="insulin">Insulin</string>
+    <string name="nothing_found">nichts gefunden</string>
     <string name="calibration_graph_no_calibration">Kalibrierungsdiagramm (keine Kalibration)</string>
     <string name="usb_device_was_not_recognized">USB-Gerät wurde nicht erkannt</string>
     <string name="followers_name">Name des Followers:</string>
@@ -1404,6 +1405,8 @@
     <string name="yes_do_it">JA, los gehts</string>
     <string name="restore_backup">Backup wiederherstellen?</string>
     <string name="restore">Wiederherstellen</string>
+    <string name="calibrate_sensor">Sensor kalibrieren?</string>
+    <string name="calibrate">Kalibrieren</string>
     <string name="xdrip_oop2_not_installed">xDrip+ benötigt OOP2, um mit Libre2/LibreUS Sensoren umzugehen.</string>
     <string name="enable_streaming_summary">verbinde Libre2-Sensoren nach dem Scannen. Das Libre-Lesegerät und die Libre Link-App werden dann keine Alarme mehr empfangen</string>
     <string name="enable_streaming_title">Starte Bluetooth-Verbindung mit Libre2-Sensoren</string>
