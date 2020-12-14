@@ -45,7 +45,7 @@
     <string name="pref_title_mongodb_uri">URI</string>
     <string name="pref_dialog_mongodb_uri">Entrez MongoDB URI\"</string>
     <string name="pref_message_mongodb_uri">Remplacer les valeurs exemples dans {} avec vos valeurs correctes</string>
-    <string name="pref_default_mongodb_uri">mongodb://{user}:{password}@ {host}.mongolab.com:{11111}/{base de données}</string>
+    <string name="pref_default_mongodb_uri">mongodb://{user}:{password}@{host}.mongolab.com:{11111}/{database}</string>
     <string name="pref_title_mongodb_collection">Nom de la Collection</string>
     <string name="pref_dialog_mongodb_collection">Entrez le nom de Collection</string>
     <string name="pref_message_mongodb_collection">Ceci est le nom de la collection où les données CGM seront stockées</string>
@@ -153,7 +153,7 @@
     <string name="low_predicted">Prediction Basse</string>
     <string name="in">dans</string>
     <string name="yes_enter_setup_mode">Oui entrer en mode de configuration</string>
-    <string name="nokeep_parakeet_as_it_is">Ne pas garder Parakeet comme il est</string>
+    <string name="nokeep_parakeet_as_it_is">Non, garder Parakeet comme il est</string>
     <string name="are_you_sure_you_want_switch_parakeet_to_setup">Etes-vous sûr de vouloir changer Parakeet en mode de configuration?\n\nNormalement, c\'est seulement utilisé pour envoyer d\'autres messages texte à Parakeet pour reconfigurer l\'émetteur sur lequel il écoute, etc.</string>
     <string name="split_delete_or_do_nothing">Couper, supprimer ou ne rien faire</string>
     <string name="split_this_block_in_two">Diviser ce bloc en deux</string>
@@ -1190,8 +1190,8 @@
     <string name="view_old_error_log">Voir l\'ancien journal d\'erreur</string>
     <string name="return_to_home_screen">Retourner à la page d\'accueil</string>
     <string name="title_miband">MiBand</string>
-    <string name="summary_miband_enable">Synchroniser les données avec les bandes de fitness MiBand</string>
-    <string name="title_miband_enable">Utiliser la bande MiBand</string>
+    <string name="summary_miband_enable">Synchroniser les données avec les bracelets de fitness MiBand</string>
+    <string name="title_miband_enable">Utiliser le bracelet MiBand</string>
     <string name="title_miband_screens_features">Fonctionnalités / Écrans MiBand</string>
     <string name="title_miband_screen_battery">Afficher la batterie</string>
     <string name="title_miband_show_date">Afficher la date sur l\'écran</string>
@@ -1206,7 +1206,7 @@
     <string name="summary_miband_locale_24_hour">Afficher l\'horloge 24 heures</string>
     <string name="title_miband_nightmode_category">Paramètres du mode nuit</string>
     <string name="title_miband_nightmode_enabled">Activer les paramètres du mode nuit</string>
-    <string name="summary_miband_nightmode_enabled">Réduire la luminosité de l\'écran de la bande pendant un temps personnalisé</string>
+    <string name="summary_miband_nightmode_enabled">Réduire la luminosité de l\'écran du bracelet pendant un temps personnalisé</string>
     <string name="title_miband_nightmode_start">Démarrage du mode nuit</string>
     <string name="title_miband_nightmode_end">Fin du mode nuit</string>
     <string name="title_miband_interval_in_nightmode">Intervalle</string>
@@ -1221,7 +1221,7 @@
         Besoin de désactiver si vous voulez utiliser xdrip watchface(Il est nécessaire de supprimer l\'application MiFit officielle pour éviter les remplacements de dates)</string>
     <string name="title_miband_vibrate_on_readings">Vibrer lors des lectures</string>
     <string name="title_miband_send_calls">Envoyer les appels</string>
-    <string name="summary_miband_send_calls">Envoyer des notifications d\'appel à la bande (Android 6+)</string>
+    <string name="summary_miband_send_calls">Envoyer des notifications d\'appel au bracelet (Android 6+)</string>
     <string name="title_miband_graph_category">Options du graphique</string>
     <string name="title_miband_graph_enable">Activer le graphique</string>
     <string name="title_miband_graph_treatment_enable">Afficher le bolus</string>
