@@ -138,7 +138,7 @@
     <string name="now_start_your_sensor">Maintenant, démarrez votre capteur ou vérifier les paramètres</string>
     <string name="please_wait_while_sensor_warms_up">S\'il vous plaît patienter pendant que le capteur se réchauffe! (</string>
     <string name="minutes_with_bracket">" minutes)"</string>
-    <string name="possible_bad_calibration">Possible mauvaise pente d\'étalonnage, allez boire un verre, lavez-vous les mains, puis recalibrez dans quelques temps!</string>
+    <string name="possible_bad_calibration">Possible mauvaise pente d\'étalonnage, allez boire un verre d\'eau, lavez-vous les mains, puis recalibrez dans quelques temps!</string>
     <string name="please_wait_need_two_readings_first">Attendez s\'il vous plaît, besoin de 2 lectures supplémentaires de l\'émetteur.</string>
     <string name="please_enter_two_calibrations_to_get_started">S\'il vous plaît effectuez deux étalonnages pour commencer!</string>
     <string name="now_pair_with_your_dexcom_share">Maintenant jumeler avec votre Dexcom Share</string>
