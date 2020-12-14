@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="title_activity_bluetooth_scan">Pesquisa Bluetooth</string>
-    <string name="connected">Ligado</string>
+    <string name="connected">Conectado</string>
     <string name="disconnected">Desligado</string>
     <string name="menu_scan">Pesquisar</string>
     <string name="menu_stop">Parar</string>
