@@ -878,6 +878,20 @@
     <string name="play_sound_when_ready_for_calibration">Speel geluid wanneer je klaar bent voor kalibratie</string>
     <string name="receiving_data_from_collector">Gegevens ontvangen van %s verzamelaar</string>
     <!-- trend arrow for speak -->
+    <string name="DoubleDown">Snel dalend</string>
+    <string name="SingleDown">Dalend</string>
+    <string name="FortyFiveDown">Licht dalend</string>
+    <string name="Flat">Gelijk blijvend</string>
+    <string name="FortyFiveUp">Licht steigend</string>
+    <string name="SingleUp">Steigend</string>
+    <string name="DoubleUp">Snel steigend</string>
+    <string name="Speak_trend_arrow_name">Spreek de naam van de trendpijl uit</string>
+    <string name="Speak_everything_twice">Spreek alles twee keer uit</string>
+    <string name="Speech_speed">Spraaksnelheid</string>
+    <string name="Speech_pitch">Spraak toonhoogte</string>
+    <string name="Speak_Alerts">Spreek waarschuwingen uit</string>
+    <string name="Speak_Alerts_Summary">Geef ook enkele gesproken waarschuwingsberichten</string>
+    <string name="advanced_bluereader_settings_summary">Geavanceerde blueReader-instellingen</string>
     <string name="offical_msg">De officiële app</string>
     <string name="use_conflict_msg">kan ook proberen om toegang te krijgen tot het zenderapparaat en dit kan problemen veroorzaken met beide apps</string>
     <string name="use_confict_msg_glimp">U kunt Glimp instellingen aanpassen: opties -&gt; apparaten -&gt; deselecteer Bluetooth optie</string>
