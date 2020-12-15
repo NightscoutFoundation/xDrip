@@ -1262,7 +1262,9 @@
     <string name="title_lefun_screen_mac_address">MAC-Adresse anzeigen</string>
     <string name="summary_allow_samsung_workaround">Verwende Workarounds, um abweichendes Android-Verhalten bei Samsung-Geräten zu vermeiden. Ohne dies erhalten Datensammler normalerweise keine Daten.</string>
     <string name="title_allow_samsung_workaround">Samsung Workarounds</string>
+    <string name="title_medtrum_use_native">Medtrum Native</string>
     <string name="summary_medtrum_a_hex">Wert des Hex-Diagnosetests</string>
+    <string name="title_medtrum_a_hex">Medtrum Debug</string>
     <string name="summary_nsfollow_url">Webadresse für Follower</string>
     <string name="title_nsfollow_url">Nightscout Follower URL</string>
     <string name="summary_nsfollow_download_treatments">Lade auch Behandlungen von Nightscout als Follower herunter</string>
@@ -1351,6 +1353,7 @@
     <string name="title_use_notification_channels">Benachrichtigungskanäle</string>
     <string name="title_notification_channels_grouping">Gruppiere Benachrichtigungen</string>
     <string name="summary_play_sound_for_initial_calibration">Ton abspielen, wenn die initiale Kalibrierung angefordert wird</string>
+    <string name="title_play_sound_for_initial_calibration">Initiale Warnung</string>
     <string name="category_noisy_readings">Verrauschte Werte</string>
     <string name="category_falling_rising_bg">Glukose fällt/steigt</string>
     <string name="category_alert_prefs">Alarm-Einstellungen (für diese Warnungen)</string>
@@ -1376,6 +1379,9 @@
     <string name="use_internal_downloader">Internen Downloader verwenden</string>
     <string name="title">Titel</string>
     <string name="summary">Zusammenfassung</string>
+    <string name="auto_refresh">Automatisch aktualisieren</string>
+    <string name="version">Version:</string>
+    <string name="sensor_start">Sensorstart:</string>
     <string name="hba1c_est">geschätzter HbA1c:</string>
     <string name="stddev">StdAbw:</string>
     <string name="relative_sd_cv">Relative StdAbw (CV):</string>
