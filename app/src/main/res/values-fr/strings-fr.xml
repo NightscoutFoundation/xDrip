@@ -36,7 +36,7 @@
     <string name="title_activity_calibration_override">Override de calibration</string>
     <string name="pref_header_cloud_storage">Stockage Cloud</string>
     <string name="auto_configure_title">Configuration automatique</string>
-    <string name="prefs_auto_config_summary">Configuration automatique en utilisant un code  barres.</string>
+    <string name="prefs_auto_config_summary">Configuration automatique en utilisant un code-barres.</string>
     <string name="scan_share2_barcode">Numériser le code-barres Share</string>
     <string name="pref_share2_scan_barcode_summary">Ou scanner le code-barres sur le récepteur partagé</string>
     <!-- MongoDB Settings -->
@@ -351,7 +351,7 @@
     <string name="save_all_settings_to_sdcard">Enregistrer les paramètres sur la carte SD</string>
     <string name="load_all_settings_from_sdcard">Charger les paramètres de la carte SD</string>
     <string name="delete_any_settings_on_sdcard">Supprimer les paramètres sur la carte SD</string>
-    <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[Utilisez les codes QR pour transférer les paramètres en utilisant Paramètres-&gt; fonction Configurer Auto]]></string>
+    <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[Utilisez les codes QR pour transférer les paramètres en utilisant Paramètres-> Configuration Automatique]]></string>
     <string name="xdrip_plus_security_key_settings_only">xDrip+ Clés de Sécurité seulement</string>
     <string name="show_general_and_collection_settings">Afficher les paramètres Généraux et Collection</string>
     <string name="copy_all_settings">Copier tous les paramètres</string>
@@ -397,8 +397,8 @@
     <string name="external_storage_not_writable">Le stockage externe n\'est pas inscriptible</string>
     <string name="successfully_deleted">Supprimé avec succès</string>
     <string name="deletion_problem">Problème de suppression</string>
-    <string name="sdcard_not_writable_cannot_save">SDcard pas inscriptible - impossible de sauver</string>
-    <string name="sdcard_not_readable">SDcard pas lisible</string>
+    <string name="sdcard_not_writable_cannot_save">Carte SD non inscriptible - impossible de sauver</string>
+    <string name="sdcard_not_readable">Carte SD non lisible</string>
     <string name="loading_settings_from_xdrip_mainline">Chargement des paramètres depuis xDrip principal</string>
     <string name="warning_settings_from_xdrip_and_plus_exist">Les paramètres d\'avertissement de xDrip et xDrip+ existent - Chargement xDrip+</string>
     <string name="new_version_date_colon">"Date de la nouvelle Version: "</string>
