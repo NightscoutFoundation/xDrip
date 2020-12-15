@@ -653,9 +653,9 @@
     <string name="show_calibration_accuracy">Zeige die Kalibrierungsgenauigkeit der letzten drei Tage.</string>
     <string name="accuracy_evaluation">Genauigkeitseinschätzung</string>
     <string name="show_extra_status_on_widget">Zeige die Extrastatuszeile auch auf dem Widget.</string>
-    <string name="show_long_calibration_data">Zeige Steigung und Anfangswert in der langen Form.</string>
-    <string name="show_short_calibration_data">Zeige die Steigung und den Anfangswert in kurzer Form.</string>
-    <string name="show_plugin_data">Zeige Steigung und Anfangswert vom aktiven Plugin.</string>
+    <string name="show_long_calibration_data">Zeige Steigung und Achsenabschnitt in der langen Form.</string>
+    <string name="show_short_calibration_data">Zeige Steigung und Achsenabschnitt in kurzer Form.</string>
+    <string name="show_plugin_data">Zeige Steigung und Achsenabschnitt vom aktiven Plugin.</string>
     <string name="calibration_plugin">Kalibrierungsplugin</string>
     <string name="advanced_calibration">Erweiterte Kalibrierung</string>
     <string name="extra_calibration_options">Extra Kalibrierungsoptionen</string>
@@ -1150,7 +1150,7 @@
     <string name="need_contacts_permission_to_select_message_recipients">Benötige Kontakte-Berechtigung um Nachrichtenempfänger auswählen zu können</string>
     <string name="need_storage_permission_to_access_all_ringtones">Benötige Speichermedium-Berechtigung um auf alle Klingeltöne zugreifen zu können</string>
     <string name="xdrip_needs_whitelisting_for_proper_performance">xDrip+ benötigt die Eintragung auf der \"Withelist\" damit es gut funktioniert</string>
-    <string name="overwrite_slope_engineering_only">Überschreibe Slope (nur Entwicklermodus!)</string>
+    <string name="overwrite_slope_engineering_only">Überschreibe Steigung (nur Entwicklermodus!)</string>
     <string name="overwrite_intercept_engineering_only">Überschreibe Achsenabschnitt (nur Entwicklermodus!)</string>
     <string name="manual_overwrite_not_possible">Manuelles Überschreiben nicht möglich!</string>
     <string name="upload_even_when_using_mobile_data">Auch hochladen wenn mobile Daten verwendet werden</string>
