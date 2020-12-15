@@ -205,7 +205,7 @@
     <string name="send_feedback_message">Envoyer Feedback message</string>
     <string name="copying_settings">Copie de paramètres</string>
     <string name="show_settings_qr_codes">Afficher les paramètres codes QR</string>
-    <string name="load_save_settings_to_sdcard">Charger / Enregistrer les paramètres sur la SDcard</string>
+    <string name="load_save_settings_to_sdcard">Charger / Enregistrer les paramètres sur la carte SD</string>
     <string name="alarms_and_alerts">Alarmes et alertes</string>
     <string name="alerts_and_notifications">Alertes et notifications</string>
     <string name="glucose_level_alerts_list">Liste d\'alertes de niveau de glucose</string>
@@ -347,10 +347,10 @@
     <string name="version_details">Détails Version</string>
     <string name="download_now">Télécharger maintenant</string>
     <string name="automatically_check_for_updates">Vérifier automatiquement les mises à jour</string>
-    <string name="here_you_can_save_the_settings_to_the_external_storage_sdcard">Ici, vous pouvez enregistrer les paramètres de la mémoire externe (sdcard).\n\nUne fois enregistré dans le stockage externe, il est possible pour toute application de lire les paramètres qui pourraient contenir des informations sensibles.\n\nIl est conseillé de supprimer les paramètres une fois que vous les avez importés à nouveau si vous êtes préoccupé par cela.</string>
-    <string name="save_all_settings_to_sdcard">Enregistrer tous les paramètres sur la SDcard</string>
+    <string name="here_you_can_save_the_settings_to_the_external_storage_sdcard">Ici, vous pouvez enregistrer les paramètres vers la mémoire externe (sdcard).\n\nUne fois enregistrés dans le stockage externe, il est possible pour toute application de lire les paramètres qui pourraient contenir des informations sensibles.\n\nIl est conseillé de supprimer les paramètres une fois que vous les avez importés à nouveau si vous êtes préoccupé par cela.</string>
+    <string name="save_all_settings_to_sdcard">Enregistrer les paramètres sur la carte SD</string>
     <string name="load_all_settings_from_sdcard">Charger les paramètres de la carte SD</string>
-    <string name="delete_any_settings_on_sdcard">Supprimer tous les paramètres sur SDcard</string>
+    <string name="delete_any_settings_on_sdcard">Supprimer les paramètres sur la carte SD</string>
     <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[Utilisez les codes QR pour transférer les paramètres en utilisant Paramètres-&gt; fonction Configurer Auto]]></string>
     <string name="xdrip_plus_security_key_settings_only">xDrip+ Clés de Sécurité seulement</string>
     <string name="show_general_and_collection_settings">Afficher les paramètres Généraux et Collection</string>
