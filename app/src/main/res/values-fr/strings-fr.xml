@@ -1543,7 +1543,7 @@
     <string name="collection_summary_ob1_g5_preemptive_restart">Redémarrer automatiquement un capteur avant qu\'il ne s\'arrête</string>
     <string name="title_ob1_g5_preemptive_restart_alert">Alerte au redémarrage préventif</string>
     <string name="summary_ob1_g5_preemptive_restart_alert">Déclencher une alerte lors du redémarrage préventif de la session</string>
-    <string name="pref_enable_insulinprofiles">active au moins un maximum de trois profils</string>
+    <string name="pref_enable_insulinprofiles">activer au moins un et maximum de trois profils</string>
     <string name="pref_select_basal_insulinprofiles">choisir le profil d\'insuline basale.</string>
     <string name="pref_select_bolus_insulinprofiles">choisir le profil d\'insuline de bolus. Également utilisé pour la pompe et le stylo...</string>
     <string name="enable_streaming_summary">Se connecter à des capteurs Freestyle Libre 2 après les avoir scannés. Cela empêchera le lecteur Freestyle Libre 2 et l\'application LibreLink de recevoir les alertes</string>
