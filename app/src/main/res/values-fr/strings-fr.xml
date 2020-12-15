@@ -15,7 +15,7 @@
     <string name="title_activity_raw_data_table">Tableau de données brut</string>
     <string name="title_activity_calculated_data_table">Table de données calculé</string>
     <string name="title_activity_start_new_sensor">Lancer un nouveau capteur</string>
-    <string name="title_activity_new_sensor_location">Localisation du nouveau capteur</string>
+    <string name="title_activity_new_sensor_location">Emplacement du nouveau capteur</string>
     <string name="title_activity_stop_sensor">Arrêt du capteur</string>
     <string name="title_activity_nav_drawer">Menu de Navigation</string>
     <string name="navigation_drawer_open">Ouvrez la fenêtre de navigation</string>
@@ -458,7 +458,7 @@
     <string name="show_on_widget">Voir sur le widget</string>
     <string name="calibration_data_long">Données d\'étalonnage (long)</string>
     <string name="calibration_data_short">Données d\'étalonnage (court)</string>
-    <string name="store_sensor_location_to_help">Stocker la localisation du capteur pour aider à améliorer l\'algorithme</string>
+    <string name="store_sensor_location_to_help">Sauver l\'emplacement du capteur pour aider à améliorer l\'algorithme</string>
     <string name="help_the_developers_improve_the_algorithm">Aider les développeurs à améliorer l\'algorithme de xDrip.</string>
     <string name="help_the_community">Aider la communauté</string>
     <string name="double_tap_or_pinch_to_zoom">Double clic ou élargissement pour zoomer.</string>
@@ -1129,7 +1129,7 @@
     <string name="not_connected">Non connecté</string>
     <string name="no_data">Pas de données</string>
     <string name="no_bluetooth">Pas de bluetooth</string>
-    <string name="connection_status_long">Statut de connexion:   </string>
+    <string name="connection_status_long">État de la connexion:   </string>
     <string name="without_location_scan_doesnt_work">Sans la permission de Localisation le scan Bluetooth Android ne marche pas</string>
     <string name="android_10_need_background_location">Android 10 et plus ont besoin de la localisation en arrière-plan pour que Bluetooth fonctionne</string>
     <string name="without_location_permission_emergency_cannot_get_location">Sans la permission de Localisation les messages d\'urgence ne pourront utiliser les données de localisation</string>
@@ -1416,7 +1416,7 @@
     <string name="auto_refresh">Actualisation automatique</string>
     <string name="set_up_desert_sync_follower">Configurer la synchronisation abonné en milieu desert</string>
     <string name="version">Version :</string>
-    <string name="sensor_start">Début du capteur :</string>
+    <string name="sensor_start">Démarrage du capteur:</string>
     <string name="plug_in_your_dexcom_reciever">Branchez votre lecteur dexcom puis appuyez sur ce bouton et croisez les doigts !</string>
     <string name="check_in_dexcom_calibrations">Vérifier les étalonnages Dexcom</string>
     <string name="progress">progrès</string>
@@ -1424,7 +1424,7 @@
     <string name="transmitter_battery_status">Batterie transmitter :  </string>
     <string name="top">Haut</string>
     <string name="connect_device_usb_otg">Veuillez connecter votre appareil via le câble USB OTG.</string>
-    <string name="connection_status">Statut de connexion :</string>
+    <string name="connection_status">État de la connexion:</string>
     <string name="range_in_high_low">Plage: (dans/haut/bas)</string>
     <string name="absolute_s">Absolu #s :</string>
     <string name="median_bg">Moyenne BG :</string>
