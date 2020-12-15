@@ -17,14 +17,29 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginLeft="5dp"
+        android:layout_marginTop="15dp"
         android:layout_marginRight="5dp"
-        android:layout_marginTop="10dp"
         android:background="@drawable/tick_thing"
         android:fontFamily="sans-serif-condensed"
         android:gravity="center"
         android:textColor="@android:color/white"
         android:textSize="@dimen/keypad_top_text_size"
         tools:text="25.5 mmol/l" />
+
+    <TextView
+        android:id="@+id/recommendations_textview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:clickable="true"
+        android:fontFamily="sans-serif-condensed"
+        android:gravity="center"
+        android:textColor="#FBED6F"
+        android:textSize="18sp"
+        android:textStyle="italic"
+        tools:text="Recommendation: 0.5u " />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -245,16 +260,6 @@
                 android:layout_marginRight="2dp"
                 android:scaleType="centerCrop"
                 android:src="@drawable/ic_av_timer_white_36dp" />
-
-            <ImageButton
-                android:id="@+id/boluscalctabbutton"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_marginLeft="2dp"
-                android:layout_marginRight="2dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/ic_bolus_calc_white_48dp"
-                android:tint="#FFFFFF" />
 
         </LinearLayout>
 

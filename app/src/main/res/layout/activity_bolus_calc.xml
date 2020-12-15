@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -11,54 +12,148 @@
     tools:context="com.eveningoutpost.dexdrip.BolusCalculatorActivity">
 
     <LinearLayout
-        android:layout_width="400dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/carbsheader"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="sans-serif-condensed"
-            android:text="@string/title_carbs_boluscalc"
-            android:textColor="#ffffffff"
-            android:textSize="32sp" />
-
         <LinearLayout
-            android:id="@+id/layout_carbs_value"
+            android:id="@+id/layout_carbs"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="32dp"
+            android:orientation="vertical">
 
-            <EditText
-                android:id="@+id/editTextCarbs"
-                android:layout_width="75dp"
-                android:layout_height="wrap_content"
-                android:inputType="number"
-                android:textColor="#ffffffff"
-                android:textSize="30sp" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/carb_unit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/carb_units"
-                android:textSize="25sp" />
+                <TextView
+                    android:id="@+id/carbsheader"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-condensed"
+                    android:text="@string/title_carbs_boluscalc"
+                    android:textColor="#ffffffff"
+                    android:textSize="32sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/LinearLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/minusButton"
+                    android:layout_width="40dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/minus" />
+
+                <EditText
+                    android:id="@+id/editTextCarbs"
+                    android:layout_width="75dp"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:textColor="#ffffffff"
+                    android:textSize="30sp" />
+
+                <Button
+                    android:id="@+id/plusButton"
+                    android:layout_width="40dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/plus" />
+
+                <TextView
+                    android:id="@+id/carb_unit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="g"
+                    android:textSize="25sp" />
+
+            </LinearLayout>
+
         </LinearLayout>
 
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="50dp" />
+        <TableLayout
+            android:id="@+id/proteinsAndFatsTable"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="32dp">
+
+            <TableRow
+                android:id="@+id/proteinsRow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/proteinsHeader"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-condensed"
+                    android:text="@string/title_proteins"
+                    android:textColor="#ffffffff"
+                    android:textSize="25sp" />
+
+                <EditText
+                    android:id="@+id/editTextProteins"
+                    android:layout_width="75dp"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:textColor="#ffffffff"
+                    android:textSize="25sp" />
+
+                <TextView
+                    android:id="@+id/protein_unit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="g"
+                    android:textSize="25sp" />
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/fatsRow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/proteinsHeader2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-condensed"
+                    android:text="@string/title_fats"
+                    android:textColor="#ffffffff"
+                    android:textSize="25sp" />
+
+                <EditText
+                    android:id="@+id/editTextFats"
+                    android:layout_width="75dp"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:textColor="#ffffffff"
+                    android:textSize="25sp" />
+
+                <TextView
+                    android:id="@+id/protein_unit2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="g"
+                    android:textSize="25sp" />
+            </TableRow>
+
+        </TableLayout>
 
         <LinearLayout
             android:id="@+id/layout_bloodGlucose"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="32dp"
             android:orientation="horizontal">
 
             <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="vertical">
 
                 <TextView
@@ -71,9 +166,16 @@
                     android:textSize="32sp" />
 
                 <LinearLayout
-                    android:layout_width="184dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/minusButton2"
+                        android:layout_width="40dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/minus" />
 
                     <EditText
                         android:id="@+id/editTextBloodGlucose"
@@ -83,78 +185,37 @@
                         android:textColor="#ffffffff"
                         android:textSize="30sp" />
 
+                    <Button
+                        android:id="@+id/plusButton2"
+                        android:layout_width="40dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/plus" />
+
                     <TextView
                         android:id="@+id/bg_units"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/mgdl_units"
                         android:textColor="#ffffffff"
-                        android:textSize="20sp" />
+                        android:textSize="20sp"
+                        tools:text="mg/dL" />
+
                 </LinearLayout>
 
             </LinearLayout>
 
         </LinearLayout>
 
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="40dp" />
-
-        <LinearLayout
-            android:id="@+id/layout_boluses"
+        <TableLayout
+            android:id="@+id/bolusesTable"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_marginBottom="32dp">
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <CheckBox
-                    android:id="@+id/mealBolusCheckbox"
-                    android:layout_width="250dp"
-                    android:layout_height="wrap_content"
-                    android:checked="true"
-                    android:onClick="onCheckboxClicked"
-                    android:text="@string/title_meal_bolus"
-                    android:textSize="25sp" />
-
-                <TextView
-                    android:id="@+id/mealBolusText"
-                    android:layout_width="210dp"
-                    android:layout_height="wrap_content"
-                    android:text="@string/title_meal_bolus"
-                    android:textColor="#ffffffff"
-                    android:textSize="25sp"
-                    android:visibility="gone" />
-
-                <TextView
-                    android:id="@+id/mealBolusTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="0dp"
-                    android:text="@string/number_placeholder"
-                    android:textColor="#ffffffff"
-                    android:textSize="25sp" />
-
-                <TextView
-                    android:id="@+id/insulin_unit_mealBolus"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/insulin_units"
-                    android:textSize="25sp" />
-
-            </LinearLayout>
-
-            <Space
+            <TableRow
+                android:id="@+id/correctionBolusRow"
                 android:layout_width="match_parent"
-                android:layout_height="10dp" />
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:layout_height="match_parent">
 
                 <CheckBox
                     android:id="@+id/correctionBolusCheckbox"
@@ -166,19 +227,9 @@
                     android:textSize="25sp" />
 
                 <TextView
-                    android:id="@+id/correctionBolus"
-                    android:layout_width="210dp"
-                    android:layout_height="wrap_content"
-                    android:text="@string/title_correction_bolus"
-                    android:textColor="#ffffffff"
-                    android:textSize="25sp"
-                    android:visibility="gone" />
-
-                <TextView
                     android:id="@+id/correctionBolusTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="0dp"
                     android:text="@string/number_placeholder"
                     android:textColor="#ffffffff"
                     android:textSize="25sp" />
@@ -187,25 +238,51 @@
                     android:id="@+id/insulin_unit_correctionBolus"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/insulin_units"
+                    android:text="u"
+                    android:textSize="25sp" />
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/mealBolusRow"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <CheckBox
+                    android:id="@+id/mealBolusCheckbox"
+                    android:layout_width="250dp"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:onClick="onCheckboxClicked"
+                    android:text="@string/title_meal_bolus"
                     android:textSize="25sp" />
 
-            </LinearLayout>
+                <TextView
+                    android:id="@+id/mealBolusTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/number_placeholder"
+                    android:textColor="#ffffffff"
+                    android:textSize="25sp" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"></LinearLayout>
+                <TextView
+                    android:id="@+id/insulin_unit_mealBolus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="u"
+                    android:textSize="25sp" />
+            </TableRow>
 
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="35dp" />
+        </TableLayout>
 
-            <LinearLayout
-                android:id="@+id/layout_notes"
+        <TableLayout
+            android:id="@+id/notesLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="20dp">
+
+            <TableRow
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:layout_height="match_parent">
 
                 <TextView
                     android:id="@+id/notesTitle"
@@ -213,78 +290,78 @@
                     android:layout_height="wrap_content"
                     android:text="@string/title_notes"
                     android:textSize="25sp" />
+            </TableRow>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal">
-
-                    <EditText
-                        android:id="@+id/editTextNotes"
-                        android:layout_width="241dp"
-                        android:layout_height="wrap_content"
-                        android:hint="@string/hint_notes"
-                        android:inputType="textPersonName|text" />
-
-                    <ImageButton
-                        android:id="@+id/note_speak"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="32dp"
-                        app:srcCompat="@android:drawable/ic_btn_speak_now" />
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <Space
+            <TableRow
                 android:layout_width="match_parent"
-                android:layout_height="25dp" />
+                android:layout_height="match_parent">
 
-            <LinearLayout
-                android:id="@+id/layout_total_bolus"
+                <EditText
+                    android:id="@+id/editTextNotes"
+                    android:layout_width="250dp"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/hint_notes"
+                    android:inputType="textPersonName|text" />
+
+            </TableRow>
+
+        </TableLayout>
+
+        <TableLayout
+            android:id="@+id/totalBolusTable"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TableRow
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:layout_height="wrap_content">
 
                 <TextView
                     android:id="@+id/totalBolusText"
-                    android:layout_width="183dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="10sp"
                     android:text="@string/title_total_bolus"
                     android:textColor="#ffffffff"
                     android:textSize="32sp" />
 
+                <Button
+                    android:id="@+id/minusButton3"
+                    android:layout_width="40dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/minus" />
+
                 <EditText
                     android:id="@+id/editTextTotalBolus"
-                    android:layout_width="85dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:inputType="number"
                     android:text="@string/number_placeholder"
                     android:textColor="#ffffffff"
                     android:textSize="30sp" />
 
+                <Button
+                    android:id="@+id/plusButton3"
+                    android:layout_width="40dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/plus" />
+
                 <TextView
                     android:id="@+id/insulin_unit_totalBolus"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/insulin_units"
+                    android:text="u"
                     android:textSize="30sp" />
 
-            </LinearLayout>
+            </TableRow>
 
-        </LinearLayout>
-
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="15dp" />
+        </TableLayout>
 
         <Button
             android:id="@+id/confirm_button"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_marginBottom="16dp"
+            android:layout_height="wrap_content"
             android:text="@string/confirm_button_boluscalc" />
 
     </LinearLayout>
-
-</RelativeLayout>
+</ScrollView>

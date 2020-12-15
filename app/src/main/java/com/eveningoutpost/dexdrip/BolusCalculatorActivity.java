@@ -1,9 +1,9 @@
 package com.eveningoutpost.dexdrip;
 
-import android.content.ActivityNotFoundException;
-import android.content.Intent;
+import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
+import android.content.DialogInterface;
 import android.os.Bundle;
-import android.speech.RecognizerIntent;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -12,7 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ImageButton;
+import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,19 +27,11 @@ import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import static com.eveningoutpost.dexdrip.Home.startHomeWithExtra;
 import static com.eveningoutpost.dexdrip.Models.JoH.roundDouble;
 import static com.eveningoutpost.dexdrip.UtilityModels.Unitized.mmolConvert;
-
-/**
- * Adapted from WearDialer which is:
- * <p/>
- * Confirmed as in the public domain by Kartik Arora who also maintains the
- * Potato Library: http://kartikarora.me/Potato-Library
- */
 
 // jamorham xdrip plus
 
@@ -47,35 +39,44 @@ public class BolusCalculatorActivity extends AppCompatActivity {
 
     private TextView correctionBolusTextView, mealBolusTextView, bgUnitText;
     private CheckBox mealBolusCheckbox, correctionBolusCheckBox;
+    public Button carbsMinusButton, carbsPlusButton, bgMinusButton, bgPlusButton,
+            totalBolusMinusButton, totalBolusPlusButton, confirmButton;
 
-    private Button confirmButton;
-    private ImageButton noteSpeakButton;
-    private EditText carbsEditText, bloodGlucoseEditText, totalBolusEditText, notesEditText;
+    private TableLayout proteinsAndFatsTable;
+    private EditText carbsEditText, bloodGlucoseEditText, totalBolusEditText, notesEditText, proteinsEditText, fatsEditText;
 
     private static final String menu_name = "Bolus Calculator";
     private static final String TAG = "BolusCalculator";
-
-    private boolean recognitionRunning = false;
-    private static final int REQ_CODE_SPEECH_INPUT = 1994;
-    private static final int REQ_CODE_SPEECH_NOTE_INPUT = 1995;
+    private BroadcastReceiver statusReceiver;
 
     private static Map<String, String> values = new HashMap<String, String>();
 
-    // TODO sync profile from nightscout
+    // TODO sync profile from nightscout?
     // TODO IOB adjustments
-    // TODO calibrate sensor from calculator
-    // TODO extended boluses?
     // TODO time custom set
-    // TODO more settings for bolus calc (correct above, pen/pump increments, etc.)
-    // TODO dialog warnings for low/high blood sugar
 
     final BgReading last = BgReading.last();
-    public long time = new Date().getTime();
+    long time = new Date().getTime();
+
     double totalBolus = 0;
+    int carbsValue = 0;
+    double bgValue = 0;
+    double plusMinusDifference;
+
+    int maxCarbs = 300;
+    int maxBloodGlucose = 400;
 
     int mgdl_value = (int) last.getDg_mgdl();
     double mmol_value = roundDouble(mmolConvert(last.getDg_mgdl()), 1);
     DecimalFormat df = new DecimalFormat("#0.00");
+
+    /*
+    if bg > target && correction <= IOBcarb(iob covering carbs): correction -= IOBcorrection (iob for correction)
+
+    if bg > target && correction > IOBcarb: correction -= IOB
+
+    if bg < target: correction - IOBcorrection
+     */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,23 +87,87 @@ public class BolusCalculatorActivity extends AppCompatActivity {
         correctionBolusTextView = (TextView) findViewById(R.id.correctionBolusTextView);
         mealBolusTextView = (TextView) findViewById(R.id.mealBolusTextView);
         bgUnitText = (TextView) findViewById(R.id.bg_units);
+        proteinsAndFatsTable = (TableLayout) findViewById(R.id.proteinsAndFatsTable);
 
         carbsEditText = (EditText) findViewById(R.id.editTextCarbs);
         bloodGlucoseEditText = (EditText) findViewById(R.id.editTextBloodGlucose);
         totalBolusEditText = (EditText) findViewById(R.id.editTextTotalBolus);
+        proteinsEditText = (EditText) findViewById(R.id.editTextProteins);
+        fatsEditText = (EditText) findViewById(R.id.editTextFats);
         notesEditText = (EditText) findViewById(R.id.editTextNotes);
 
+        carbsMinusButton = (Button) findViewById(R.id.minusButton);
+        carbsPlusButton = (Button) findViewById(R.id.plusButton);
+        bgMinusButton = (Button) findViewById(R.id.minusButton2);
+        bgPlusButton = (Button) findViewById(R.id.plusButton2);
+        totalBolusMinusButton = (Button) findViewById(R.id.minusButton3);
+        totalBolusPlusButton = (Button) findViewById(R.id.plusButton3);
         confirmButton = (Button) findViewById(R.id.confirm_button);
-        noteSpeakButton = (ImageButton) findViewById(R.id.note_speak);
 
         mealBolusCheckbox = (CheckBox) findViewById(R.id.mealBolusCheckbox);
         correctionBolusCheckBox = (CheckBox) findViewById(R.id.correctionBolusCheckbox);
 
         carbsEditText.addTextChangedListener(textWatcher);
         bloodGlucoseEditText.addTextChangedListener(textWatcher);
+        totalBolusEditText.addTextChangedListener(textWatcher);
 
-        final Bundle bundle = getIntent().getExtras();
-        processIncomingBundle(bundle);
+        if (Pref.getString("units", "mgdl").equals("mgdl")) {
+            bgUnitText.setText("mg/dL");
+            plusMinusDifference = 1;
+            bloodGlucoseEditText.setText(String.valueOf(mgdl_value));
+        } else {
+            bgUnitText.setText("mmol/l");
+            plusMinusDifference = 0.1;
+            bloodGlucoseEditText.setText(String.valueOf(mmol_value));
+        }
+
+        carbsPlusButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                carbsValue = getCarbsText();
+                carbsEditText.setText(String.valueOf(carbsValue += 1));
+            }
+        });
+
+        carbsMinusButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                carbsValue = getCarbsText();
+                carbsEditText.setText(String.valueOf(carbsValue -= 1));
+            }
+        });
+
+        bgPlusButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                bgValue = getBloodGlucoseText();
+                bloodGlucoseEditText.setText(String.valueOf(bgValue += plusMinusDifference));
+            }
+        });
+
+        bgMinusButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                bgValue = getBloodGlucoseText();
+                bloodGlucoseEditText.setText(String.valueOf(bgValue -= plusMinusDifference));
+            }
+        });
+
+        totalBolusPlusButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                totalBolus = getTotalBolusText();
+                totalBolusEditText.setText(String.valueOf(totalBolus += bolusIncrement()));
+            }
+        });
+
+        totalBolusMinusButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                totalBolus = getTotalBolusText();
+                totalBolusEditText.setText(String.valueOf(totalBolus -= bolusIncrement()));
+            }
+        });
 
         confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -111,24 +176,33 @@ public class BolusCalculatorActivity extends AppCompatActivity {
             }
         });
 
-        noteSpeakButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                promptSpeechNoteInput(v);
-            }
-        });
+        if (Pref.getBooleanDefaultFalse("plus_minus_buttons_in_calc")) {
+            carbsPlusButton.setVisibility(View.VISIBLE);
+            carbsMinusButton.setVisibility(View.VISIBLE);
 
-        if (Pref.getString("units", "mgdl").equals("mgdl")) {
-            bgUnitText.setText(R.string.mgdl_units);
-            bloodGlucoseEditText.setText(String.valueOf(mgdl_value));
+            bgPlusButton.setVisibility(View.VISIBLE);
+            bgMinusButton.setVisibility(View.VISIBLE);
+
+            totalBolusPlusButton.setVisibility(View.VISIBLE);
+            totalBolusMinusButton.setVisibility(View.VISIBLE);
+
         } else {
-            bgUnitText.setText(R.string.mmol_units);
-            bloodGlucoseEditText.setText(String.valueOf(mmol_value));
-        }
-    }
+            carbsPlusButton.setVisibility(View.GONE);
+            carbsMinusButton.setVisibility(View.GONE);
 
-    double lowMark(){
-        return JoH.tolerantParseDouble(Pref.getString("lowValue", "70"), 70d);
+            bgPlusButton.setVisibility(View.GONE);
+            bgMinusButton.setVisibility(View.GONE);
+
+            totalBolusPlusButton.setVisibility(View.GONE);
+            totalBolusMinusButton.setVisibility(View.GONE);
+        }
+
+        if (Pref.getBooleanDefaultFalse("fats_proteins_enabled")) {
+            proteinsAndFatsTable.setVisibility(View.VISIBLE);
+        } else {
+            proteinsAndFatsTable.setVisibility(View.GONE);
+        }
+        showDialogues();
     }
 
     public void onCheckboxClicked(View view) {
@@ -137,7 +211,7 @@ public class BolusCalculatorActivity extends AppCompatActivity {
             case R.id.mealBolusCheckbox:
                 if (!checked) {
                     totalBolus -= mealBolus();
-                    mealBolusTextView.setText("0");
+                    mealBolusTextView.setText("0.00");
                     totalBolus();
                 }
                 if (checked) {
@@ -148,7 +222,7 @@ public class BolusCalculatorActivity extends AppCompatActivity {
             case R.id.correctionBolusCheckbox:
                 if (!checked) {
                     totalBolus -= correctionBolus();
-                    correctionBolusTextView.setText("0");
+                    correctionBolusTextView.setText("0.00");
                     totalBolus();
                 }
                 if (checked) {
@@ -163,33 +237,84 @@ public class BolusCalculatorActivity extends AppCompatActivity {
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
         }
-
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
+            if (carbsValue < 0) {
+                carbsEditText.setText("0.00");
+            }
+            if (bgValue < 0) {
+                bloodGlucoseEditText.setText("0.00");
+            }
+
             mealBolus();
             correctionBolus();
+
             totalBolus = Double.parseDouble(totalBolusEditText.getText().toString());
             totalBolus();
         }
-
         @Override
         public void afterTextChanged(Editable s) {
-            if(getBloodGlucoseText() < lowMark()){
-                Toast.makeText(getApplicationContext(),
-                        getString(R.string.dialog_low_bg),
-                        Toast.LENGTH_SHORT).show();
-            }
-            if(BgGraphBuilder.low_occurs_at > 0 && getBloodGlucoseText() > lowMark()){
-                final double now = JoH.ts();
-                final double predicted_low_in_mins = (BgGraphBuilder.low_occurs_at - now) / 60000;
-                Toast.makeText(getApplicationContext(),
-                        getString(R.string.low_predicted) + " " + getString(R.string.in) + ": " + (int) predicted_low_in_mins + getString(R.string.space_mins) +
-                                "\n" + getString(R.string.dialog_caution),
-                        Toast.LENGTH_SHORT).show();
-            }
-
+            showDialogues();
         }
     };
+
+    private void showDialogues() {
+        //low occurs at
+        if (BgGraphBuilder.low_occurs_at > 0 && getBloodGlucoseText() > lowMark()) {
+            final double now = JoH.ts();
+            final double predicted_low_in_mins = (BgGraphBuilder.low_occurs_at - now) / 60000;
+            Toast.makeText(getApplicationContext(),
+                    getString(R.string.low_predicted) + " " + getString(R.string.in) + ": " + (int) predicted_low_in_mins + getString(R.string.space_mins) +
+                            "\n" + getString(R.string.dialog_caution),
+                    Toast.LENGTH_SHORT).show();
+        }
+
+        //max bolus
+        if (getTotalBolusText() > maxBolus()) {
+            Toast.makeText(getApplicationContext(),
+                    getString(R.string.dialog_bolus_constraint),
+                    Toast.LENGTH_SHORT).show();
+            totalBolusEditText.setText(String.valueOf(maxBolus()));
+        }
+
+        //max carbs
+        if (getCarbsText() > maxCarbs) {
+            Toast.makeText(getApplicationContext(),
+                    getString(R.string.dialog_carbs_constraint),
+                    Toast.LENGTH_SHORT).show();
+            totalBolusEditText.setText(String.valueOf(maxCarbs));
+        }
+
+        //max blood glucose
+        if (getBloodGlucoseText() > maxBloodGlucose) {
+            Toast.makeText(getApplicationContext(),
+                    getString(R.string.dialog_high_glucose),
+                    Toast.LENGTH_SHORT).show();
+            bloodGlucoseEditText.setText(String.valueOf(maxBloodGlucose));
+        }
+
+        //low warning
+        if (getBloodGlucoseText() < lowMark()) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(BolusCalculatorActivity.this);
+            builder.setCancelable(true);
+            builder.setMessage(getString(R.string.dialog_low_glucose));
+
+            builder.setPositiveButton(getString(R.string.proceed), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                }
+            });
+
+            builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                }
+            });
+
+            AlertDialog dialog = builder.create();
+            dialog.show();
+        }
+    }
 
     //getter methods
     private int getCarbsText() {
@@ -228,39 +353,20 @@ public class BolusCalculatorActivity extends AppCompatActivity {
         return notesEditText.getText().toString();
     }
 
-    public void promptSpeechNoteInput(View abc) {
-
-        if (recognitionRunning) return;
-        recognitionRunning = true;
-
-        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
-        // intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "en-US"); // debug voice
-        intent.putExtra(RecognizerIntent.EXTRA_PROMPT,
-                getString(R.string.speak_your_note_text));
-
-        try {
-            startActivityForResult(intent, REQ_CODE_SPEECH_NOTE_INPUT);
-        } catch (ActivityNotFoundException a) {
-            Toast.makeText(getApplicationContext(),
-                    getString(R.string.speech_recognition_is_not_supported),
-                    Toast.LENGTH_LONG).show();
-        }
-        recognitionRunning = false;
+    private double bolusIncrement() {
+        return Double.parseDouble(Pref.getString("bolus_increment", ""));
     }
 
-    private void processIncomingBundle(Bundle bundle) {
-        Log.d(TAG, "Processing incoming bundle");
-        if (bundle != null) {
-            String receivedText = bundle.getString(WatchUpdaterService.WEARABLE_VOICE_PAYLOAD);
-            if (receivedText != null) {
-                notesEditText.setText(receivedText);
-                Home home = new Home();
-                home.naturalLanguageRecognition(receivedText);
-            }
-        }
+    private int maxBolus() {
+        return Integer.parseInt(Pref.getString("max_bolus_value", ""));
+    }
+
+    private double correctAbove(){
+        return Double.parseDouble(Pref.getString("correct_above_value", ""));
+    }
+
+    double lowMark(){
+        return JoH.tolerantParseDouble(Pref.getString("lowValue", "70"), 70d);
     }
 
     private double mealBolus() {
@@ -272,9 +378,11 @@ public class BolusCalculatorActivity extends AppCompatActivity {
     }
 
     private double correctionBolus() {
+        double target = Profile.getTargetRangeInUnits(time);
         double correctionBolus;
-        if (getBloodGlucoseText() >= Profile.getTargetRangeInUnits(time)) {
-            correctionBolus = ((getBloodGlucoseText() - Profile.getTargetRangeInUnits(time)) / Profile.getSensitivity(time));
+
+        if (getBloodGlucoseText() >= correctAbove()) {
+            correctionBolus = ((getBloodGlucoseText() - target) / Profile.getSensitivity(time));
         } else {
             correctionBolus = 0;
         }
@@ -285,14 +393,20 @@ public class BolusCalculatorActivity extends AppCompatActivity {
 
     private double totalBolus() {
         totalBolus = Double.parseDouble(df.format(getMealBolus() + getCorrectionBolus()));
+        totalBolus = roundUnits(totalBolus);
 
         if (totalBolus < 0) {
             totalBolus = 0;
-            totalBolusEditText.setText("0");
+            totalBolusEditText.setText("0.00");
         }
 
         totalBolusEditText.setText(df.format(totalBolus));
-        return totalBolus;
+        return roundUnits(totalBolus);
+    }
+
+    public double roundUnits(double num) {
+        num = Double.parseDouble(df.format(num));
+        return Math.ceil(num / bolusIncrement()) * bolusIncrement();
     }
 
     private static String getValue(String tab) { //if has value, return it, else just put a space
@@ -304,18 +418,6 @@ public class BolusCalculatorActivity extends AppCompatActivity {
         }
     }
 
-    private boolean isNonzeroValueInTab(String tab) {
-        try {
-            return (0 != Double.parseDouble(getValue(tab)));
-        } catch (NumberFormatException e) {
-            return false;
-        }
-    }
-
-    public static void resetValues() {
-        values = new HashMap<String, String>();
-    }
-
     private void submitAll() {
         //insulin, carbs, bloodtest, time
         //units, carbs,
@@ -323,18 +425,12 @@ public class BolusCalculatorActivity extends AppCompatActivity {
         values.put("carbs", String.valueOf(getCarbsText()));
         values.put("units", String.valueOf(getTotalBolusText()));
 
-        if (getTotalBolusText() > 0) {
-            confirmButton.setVisibility(View.VISIBLE);
-        }
+        PhoneKeypadInputActivity keypadActivity = new PhoneKeypadInputActivity();
 
-        boolean nonzeroBloodValue = isNonzeroValueInTab("bloodtest");
-        boolean nonzeroCarbsValue = isNonzeroValueInTab("carbs");
+        boolean nonzeroBloodValue = keypadActivity.isNonzeroValueInTab("bloodtest");
+        boolean nonzeroCarbsValue = keypadActivity.isNonzeroValueInTab("carbs");
 
         String mystring = "";
-
-//        DateTime dt = new DateTime();
-//        String timeValue = dt.getHourOfDay() +  "." + dt.getMinuteOfHour();
-//        if (timeValue.length() > 0) mystring += timeValue + " time ";
 
         if (nonzeroBloodValue && getBloodGlucoseText() != mgdl_value)
             mystring += getValue("bloodtest") + " blood ";
@@ -349,7 +445,7 @@ public class BolusCalculatorActivity extends AppCompatActivity {
         Treatments.create_note(treatment_text, time, -1); // timestamp?
         Home.staticRefreshBGCharts();
 
-        resetValues();
+        values = new HashMap<String, String>();
         startHomeWithExtra(this, WatchUpdaterService.WEARABLE_VOICE_PAYLOAD, mystring); // send data to home directly
         finish();
     }

@@ -11,6 +11,8 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.Profile;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.insulin.Insulin;
@@ -18,10 +20,14 @@ import com.eveningoutpost.dexdrip.insulin.InsulinManager;
 import com.eveningoutpost.dexdrip.insulin.MultipleInsulins;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import static com.eveningoutpost.dexdrip.Home.startHomeWithExtra;
+import static com.eveningoutpost.dexdrip.Models.BgReading.last;
+import static com.eveningoutpost.dexdrip.Models.JoH.roundDouble;
+import static com.eveningoutpost.dexdrip.UtilityModels.Unitized.mmolConvert;
 
 
 /**
@@ -35,10 +41,10 @@ import static com.eveningoutpost.dexdrip.Home.startHomeWithExtra;
 
 public class PhoneKeypadInputActivity extends BaseActivity {
 
-    private TextView mDialTextView;
+    private TextView mDialTextView, recommendationsTextView;
     private Button zeroButton, oneButton, twoButton, threeButton, fourButton, fiveButton,
             sixButton, sevenButton, eightButton, nineButton, starButton, backSpaceButton, multiButton1, multiButton2, multiButton3;
-    private ImageButton callImageButton, backspaceImageButton, insulintabbutton, carbstabbutton, boluscalctabbutton,
+    private ImageButton callImageButton, backspaceImageButton, insulintabbutton, carbstabbutton,
             bloodtesttabbutton, timetabbutton, speakbutton;
 
     private static String currenttab = "insulin-1";
@@ -50,8 +56,12 @@ public class PhoneKeypadInputActivity extends BaseActivity {
     private Insulin insulinProfile2 = null;
     private Insulin insulinProfile3 = null;
     private LinearLayout insulinTypesSection = null;
+    BolusCalculatorActivity bolusCalc = new BolusCalculatorActivity();
 
     private final boolean multipleInsulins = MultipleInsulins.isEnabled();
+    int savedCarbs;
+    double savedBG;
+    boolean addedCorrection = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +74,7 @@ public class PhoneKeypadInputActivity extends BaseActivity {
         int height = dm.heightPixels;
         final int refdpi = 320;
         Log.d(TAG, "Width height: " + width + " " + height + " DPI:" + dm.densityDpi);
-        getWindow().setLayout((int) Math.min(((520 * dm.densityDpi) / refdpi), width), (int) Math.min((650 * dm.densityDpi) / refdpi, height));
+        getWindow().setLayout((int) Math.min(((550 * dm.densityDpi) / refdpi), width), (int) Math.min((680 * dm.densityDpi) / refdpi, height));
         getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         WindowManager.LayoutParams lp = getWindow().getAttributes();
         lp.dimAmount = 0.5f;
@@ -76,6 +86,7 @@ public class PhoneKeypadInputActivity extends BaseActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
 
         mDialTextView = (TextView) findViewById(R.id.dialed_no_textview);
+        recommendationsTextView = (TextView) findViewById(R.id.recommendations_textview);
         zeroButton = (Button) findViewById(R.id.zero_button);
         oneButton = (Button) findViewById(R.id.one_button);
         twoButton = (Button) findViewById(R.id.two_button);
@@ -99,10 +110,10 @@ public class PhoneKeypadInputActivity extends BaseActivity {
         bloodtesttabbutton = (ImageButton) findViewById(R.id.bloodtesttabbutton);
         timetabbutton = (ImageButton) findViewById(R.id.timetabbutton);
         carbstabbutton = (ImageButton) findViewById(R.id.carbstabbutton);
-        boluscalctabbutton = (ImageButton) findViewById(R.id.boluscalctabbutton);
         speakbutton = (ImageButton) findViewById(R.id.btnKeypadSpeak);
 
         mDialTextView.setText("");
+        recommendationsTextView.setVisibility(View.GONE);
 
         mDialTextView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -289,15 +300,6 @@ public class PhoneKeypadInputActivity extends BaseActivity {
             }
         });
 
-        boluscalctabbutton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                currenttab = "boluscalc";
-                updateTab();
-                setContentView(R.layout.activity_bolus_calc);
-            }
-        });
-
         if (Pref.getString("units", "mgdl").equals("mgdl")) {
             bgUnits = "mg/dl";
         } else {
@@ -344,20 +346,29 @@ public class PhoneKeypadInputActivity extends BaseActivity {
         if (cval.length() > 0) {
             values.put(currenttab, cval.substring(0, cval.length() - 1));
         }
+        if (cval.length() == 0) {
+            recommendationsTextView.setVisibility(View.GONE);
+        }
         updateTab();
     }
 
-    private boolean isNonzeroValueInTab(String tab)
-    {
-        try
-        {
+    public boolean isNonzeroValueInTab(String tab) {
+        try {
             return (0 != Double.parseDouble(getValue(tab)));
+        } catch (NumberFormatException e) {
+            return false;
         }
-        catch(NumberFormatException e) { return false; }
     }
 
-    private boolean isInvalidTime()
-    {
+    private double getNumberValueFromTab(String tab){
+        try {
+            return isNonzeroValueInTab(tab) ? Double.parseDouble(getValue(tab)) : 0;
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
+
+    private boolean isInvalidTime() {
         String timeValue = getValue("time");
         if (timeValue.length() == 0) return false;
         if (!timeValue.contains("."))
@@ -377,13 +388,13 @@ public class PhoneKeypadInputActivity extends BaseActivity {
 
         // The green tick is clickable even when it's hidden, so we might get here
         // without valid data.  Ignore the click if input is incomplete
-        if(!nonzeroBloodValue && !nonzeroCarbsValue && !nonzeroInsulin1Value && !nonzeroInsulin2Value && !nonzeroInsulin3Value) {
+        if (!nonzeroBloodValue && !nonzeroCarbsValue && !nonzeroInsulin1Value && !nonzeroInsulin2Value && !nonzeroInsulin3Value) {
             Log.d(TAG, "All zero values in tabs - not processing button click");
             return;
         }
 
         if (isInvalidTime()) {
-            Log.d(TAG,"Time value is invalid - not processing button click");
+            Log.d(TAG, "Time value is invalid - not processing button click");
             return;
         }
 
@@ -391,7 +402,7 @@ public class PhoneKeypadInputActivity extends BaseActivity {
         // Add the dot to the time if it is missing
         String timeValue = getValue("time");
         if (timeValue.length() > 2 && !timeValue.contains(".")) {
-            timeValue = timeValue.substring(0, timeValue.length()-2) + "." + timeValue.substring(timeValue.length()-2);
+            timeValue = timeValue.substring(0, timeValue.length() - 2) + "." + timeValue.substring(timeValue.length() - 2);
         }
 
         String mystring = "";
@@ -399,11 +410,10 @@ public class PhoneKeypadInputActivity extends BaseActivity {
         if (timeValue.length() > 0) mystring += timeValue + " time ";
         if (nonzeroBloodValue) mystring += getValue("bloodtest") + " blood ";
         if (nonzeroCarbsValue) mystring += getValue("carbs") + " carbs ";
-        if (nonzeroInsulin1Value && (insulinProfile1 != null))
-        {
+        if (nonzeroInsulin1Value && (insulinProfile1 != null)) {
             double d = Double.parseDouble(getValue("insulin-1"));
             if (multipleInsulins) {
-                mystring += String.format("%.1f", d).replace(",",".") + " " + insulinProfile1.getName() + " ";
+                mystring += String.format("%.1f", d).replace(",", ".") + " " + insulinProfile1.getName() + " ";
             }
             units += d;
         }
@@ -420,7 +430,7 @@ public class PhoneKeypadInputActivity extends BaseActivity {
             }
         }
         if (units > 0)
-            mystring += String.format("%.1f", units).replace(",",".") + " units ";
+            mystring += String.format("%.1f", units).replace(",", ".") + " units ";
 
         if (mystring.length() > 1) {
             //SendData(this, WEARABLE_VOICE_PAYLOAD, mystring.getBytes(StandardCharsets.UTF_8));
@@ -450,6 +460,8 @@ public class PhoneKeypadInputActivity extends BaseActivity {
         multiButton1.setEnabled(false);
         multiButton2.setEnabled(false);
         multiButton3.setEnabled(false);
+        recommendationsTextView.setVisibility(View.GONE);
+        treatmentRecommendations();
 
         String append = "";
         switch (currenttab.split("-")[0]) {
@@ -462,15 +474,13 @@ public class PhoneKeypadInputActivity extends BaseActivity {
                     multiButton1.setVisibility(View.VISIBLE);
                 } else
                     multiButton1.setText("");
-                if (insulinProfile2 != null)
-                {
+                if (insulinProfile2 != null) {
                     multiButton2.setText(insulinProfile2.getName());
                     multiButton2.setEnabled(true);
                     multiButton2.setVisibility(View.VISIBLE);
                 } else
                     multiButton2.setText("");
-                if (insulinProfile3 != null)
-                {
+                if (insulinProfile3 != null) {
                     multiButton3.setText(insulinProfile3.getName());
                     multiButton3.setEnabled(true);
                     multiButton3.setVisibility(View.VISIBLE);
@@ -486,8 +496,7 @@ public class PhoneKeypadInputActivity extends BaseActivity {
                         break;
                     case "2":
                         multiButton2.setBackgroundColor(onColor);
-                        if (insulinProfile2 == null)
-                        {
+                        if (insulinProfile2 == null) {
                             currenttab = "insulin-1";
                             updateTab();
                         } else
@@ -495,15 +504,14 @@ public class PhoneKeypadInputActivity extends BaseActivity {
                         break;
                     case "3":
                         multiButton3.setBackgroundColor(onColor);
-                        if (insulinProfile3 == null)
-                        {
+                        if (insulinProfile3 == null) {
                             currenttab = "insulin-2";
                             updateTab();
                         } else
                             insulinprofile = insulinProfile3.getName();
                         break;
                 }
-                append = " " +  getString(R.string.units) + (multipleInsulins ? (" " + insulinprofile) : "");
+                append = " " + getString(R.string.units) + (multipleInsulins ? (" " + insulinprofile) : "");
                 break;
             case "carbs":
                 carbstabbutton.setBackgroundColor(onColor);
@@ -517,11 +525,6 @@ public class PhoneKeypadInputActivity extends BaseActivity {
                 timetabbutton.setBackgroundColor(onColor);
                 append = " " + getString(R.string.when);
                 break;
-            case "boluscalc":
-                boluscalctabbutton.setBackgroundColor(onColor);
-                //append = " " + getString(R.string.when);
-                //setContentView(R.layout.activity_bolus_calc);
-                break;
         }
         String value = getValue(currenttab);
         mDialTextView.setText(value + append);
@@ -532,12 +535,111 @@ public class PhoneKeypadInputActivity extends BaseActivity {
             showSubmitButton = false;
 
         else if (currenttab.equals("time"))
-            showSubmitButton = value.length() > 0 && ( isNonzeroValueInTab("bloodtest") || isNonzeroValueInTab("carbs") || isNonzeroValueInTab("insulin-1") || isNonzeroValueInTab("insulin-2") || isNonzeroValueInTab("insulin-3"));
+            showSubmitButton = value.length() > 0 && (isNonzeroValueInTab("bloodtest") || isNonzeroValueInTab("carbs") || isNonzeroValueInTab("insulin-1") || isNonzeroValueInTab("insulin-2") || isNonzeroValueInTab("insulin-3"));
         else
             showSubmitButton = isNonzeroValueInTab(currenttab);
 
-        mDialTextView.getBackground().setAlpha(showSubmitButton ? 255 : 0);    }
+        mDialTextView.getBackground().setAlpha(showSubmitButton ? 255 : 0);
+    }
 
+    private void treatmentRecommendations() {
+        String value = "";
+        String units = "";
+        String recommendationHeader = getString(R.string.recommendation) + " ";
+        long time = new Date().getTime();
+
+        double bgValue = getNumberValueFromTab("bloodtest");
+        double sensorBG = bgUnits.equals("mg/dl") ? (int) last().getDg_mgdl() : roundDouble(mmolConvert(last().getDg_mgdl()), 1);
+        double lowValue = JoH.tolerantParseDouble(Pref.getString("lowValue", "70"), 70d);
+        double target = Profile.getTargetRangeInUnits(time);
+
+        int carbs = (int) getNumberValueFromTab("carbs");
+        double correctAbove = Double.parseDouble(Pref.getString("correct_above_value", ""));
+        double correctionBolus;
+
+        if (!Pref.getBooleanDefaultFalse("bolus_recommendations_enabled")) {
+            return;
+        }
+
+        switch (currenttab.split("-")[0]) {
+            case "carbs":
+                double carbRatio = Profile.getCarbRatio(time);
+
+                if(savedCarbs != carbs){
+                    recommendationsTextView.setVisibility(View.VISIBLE);
+
+                    if (sensorBG < lowValue) {
+                        value = "15";
+                        units = " " + getString(R.string.carbs);
+                        onClickRecommendation("carbs", "15");
+                        savedCarbs = 0;
+                    }
+
+                    if (isNonzeroValueInTab("carbs")) {
+                        double mealBolus = carbs / carbRatio;
+
+                        value = String.valueOf(bolusCalc.roundUnits(mealBolus));
+                        units = " " + getString(R.string.units);
+
+                        onClickRecommendation("insulin-1", String.valueOf(bolusCalc.roundUnits(mealBolus)));
+                        savedCarbs = carbs;
+                    }
+                }
+                break;
+
+            case "bloodtest":
+                if (isNonzeroValueInTab("bloodtest") && bgValue >= correctAbove && savedBG != bgValue) {
+                    correctionBolus = ((bgValue - target) / Profile.getSensitivity(time));
+                    recommendationsTextView.setVisibility(View.VISIBLE);
+
+                    value = String.valueOf(bolusCalc.roundUnits(correctionBolus));
+                    units = " " + getString(R.string.units);
+                    onClickRecommendation("insulin-1", String.valueOf(bolusCalc.roundUnits(correctionBolus)));
+                    savedBG = bgValue;
+                }
+                break;
+
+            case "insulin-1":
+                if (sensorBG >= correctAbove) {
+                    correctionBolus = ((sensorBG - target) / Profile.getSensitivity(time));
+                    recommendationsTextView.setVisibility(View.VISIBLE);
+
+                    value = String.valueOf(bolusCalc.roundUnits(correctionBolus));
+                    units = " " + getString(R.string.units);
+                    onClickRecommendation("insulin-1", String.valueOf(bolusCalc.roundUnits(correctionBolus)));
+                }
+                break;
+
+            case "time":
+            case "boluscalc":
+                recommendationsTextView.setVisibility(View.GONE);
+                break;
+        }
+
+        if (!value.isEmpty()) {
+            recommendationsTextView.setText(recommendationHeader + value + units);
+            recommendationsTextView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void onClickRecommendation(String tab, String append) {
+        double existingValue = getNumberValueFromTab(tab);
+        double newValue = (append.length() == 0) ? 0 : Double.parseDouble(append);
+
+        recommendationsTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!append.equals(getValue(tab))) {
+                    values.put(tab, String.valueOf(bolusCalc.roundUnits(existingValue + newValue)));
+                }
+                if(currenttab.equals("insulin-1")){
+                    addedCorrection = true;
+                }
+
+                recommendationsTextView.setVisibility(View.GONE);
+            }
+        });
+    }
 
     @Override
     protected void onResume() {

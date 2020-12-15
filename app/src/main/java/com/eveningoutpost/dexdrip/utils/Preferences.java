@@ -140,6 +140,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
     private static String static_units;
     private static Preference profile_insulin_sensitivity_default;
     private static Preference profile_carb_ratio_default;
+    private static Preference correct_above_value;
 
     private static ListPreference locale_choice;
     private static Preference force_english;
@@ -679,6 +680,18 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
         return oldValue.replaceAll(" \\(.*\\)$", "") + "  (" + newValue + "g per hour)";
     }
 
+    private static String format_bolus_increment(String oldValue, String newValue) {
+        return oldValue.replaceAll(" \\(.*\\)$", "") + "  (" + newValue + "u increment)";
+    }
+
+    private static String format_max_bolus(String oldValue, String newValue) {
+        return oldValue.replaceAll(" \\(.*\\)$", "") + "  (" + newValue + "u max bolus)";
+    }
+
+    private static String format_correct_above(String oldValue, String newValue) {
+        return oldValue.replaceAll(" \\(.*\\)$", "") + " (" + newValue + static_units + ")";
+    }
+
     private static String format_insulin_sensitivity(String oldValue, String newValue) {
         try {
             return oldValue.replaceAll("  \\(.*\\)$", "") + "  (" + newValue + " " + static_units + " per U)";
@@ -912,6 +925,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
 
             profile_insulin_sensitivity_default = findPreference("profile_insulin_sensitivity_default");
             profile_carb_ratio_default = findPreference("profile_carb_ratio_default");
+            correct_above_value = findPreference("correct_above_value");
             refreshProfileRatios();
 
             nfc_expiry_days = findPreference("nfc_expiry_days");
@@ -1065,6 +1079,53 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
 
             profile_carb_absorption_default.setTitle(format_carb_absorption_rate(profile_carb_absorption_default.getTitle().toString(), this.prefs.getString("profile_carb_absorption_default", "")));
 
+            final Preference profile_bolus_increment = findPreference("bolus_increment");
+            profile_bolus_increment.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    if (!isNumeric(newValue.toString())) {
+                        return false;
+                    }
+                    preference.setTitle(format_bolus_increment(preference.getTitle().toString(), newValue.toString()));
+                    Profile.reloadPreferences(AllPrefsFragment.this.prefs);
+                    Home.staticRefreshBGCharts();
+                    return true;
+                }
+            });
+
+            profile_bolus_increment.setTitle(format_bolus_increment(profile_bolus_increment.getTitle().toString(), this.prefs.getString("bolus_increment", "")));
+
+
+            final Preference profile_max_bolus = findPreference("max_bolus_value");
+            profile_max_bolus.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    if (!isNumeric(newValue.toString())) {
+                        return false;
+                    }
+                    preference.setTitle(format_max_bolus(preference.getTitle().toString(), newValue.toString()));
+                    Profile.reloadPreferences(AllPrefsFragment.this.prefs);
+                    Home.staticRefreshBGCharts();
+                    return true;
+                }
+            });
+
+            profile_max_bolus.setTitle(format_max_bolus(profile_max_bolus.getTitle().toString(), this.prefs.getString("max_bolus_value", "")));
+
+            final Preference correct_above_value = findPreference("correct_above_value");
+            correct_above_value.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    if (!isNumeric(newValue.toString())) {
+                        return false;
+                    }
+                    preference.setTitle(format_correct_above(preference.getTitle().toString(), newValue.toString()));
+                    Profile.reloadPreferences(AllPrefsFragment.this.prefs);
+                    Home.staticRefreshBGCharts();
+                    return true;
+                }
+            });
+            correct_above_value.setTitle(format_correct_above(correct_above_value.getTitle().toString(), this.prefs.getString("correct_above_value", "")));
 
             refresh_extra_items();
             findPreference("plus_extra_features").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
@@ -2640,6 +2701,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             final Double lowVal = Double.parseDouble(preferences.getString("lowValue", "0"));
             final Double default_insulin_sensitivity = Double.parseDouble(preferences.getString("profile_insulin_sensitivity_default", "54"));
             final Double default_target_glucose = Double.parseDouble(preferences.getString("plus_target_range", "100"));
+            final Double default_correct_above = Double.parseDouble(preferences.getString("correct_above_value", "150"));
 
 
             static_units = newValue.toString();
@@ -2649,6 +2711,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     preferences.edit().putString("highValue", Long.toString(Math.round(highVal * Constants.MMOLL_TO_MGDL))).apply();
                     preferences.edit().putString("profile_insulin_sensitivity_default", Long.toString(Math.round(default_insulin_sensitivity * Constants.MMOLL_TO_MGDL))).apply();
                     preferences.edit().putString("plus_target_range", Long.toString(Math.round(default_target_glucose * Constants.MMOLL_TO_MGDL))).apply();
+                    preferences.edit().putString("correct_above_value", Long.toString(Math.round(default_correct_above * Constants.MMOLL_TO_MGDL))).apply();
                     Profile.invalidateProfile();
                 }
                 if (lowVal < 36) {
@@ -2656,6 +2719,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     preferences.edit().putString("lowValue", Long.toString(Math.round(lowVal * Constants.MMOLL_TO_MGDL))).apply();
                     preferences.edit().putString("profile_insulin_sensitivity_default", Long.toString(Math.round(default_insulin_sensitivity * Constants.MMOLL_TO_MGDL))).apply();
                     preferences.edit().putString("plus_target_range", Long.toString(Math.round(default_target_glucose * Constants.MMOLL_TO_MGDL))).apply();
+                    preferences.edit().putString("correct_above_value", Long.toString(Math.round(default_correct_above * Constants.MMOLL_TO_MGDL))).apply();
                     Profile.invalidateProfile();
                 }
 
@@ -2665,6 +2729,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     preferences.edit().putString("highValue", JoH.qs(highVal * Constants.MGDL_TO_MMOLL, 1)).apply();
                     preferences.edit().putString("profile_insulin_sensitivity_default", JoH.qs(default_insulin_sensitivity * Constants.MGDL_TO_MMOLL, 2)).apply();
                     preferences.edit().putString("plus_target_range", JoH.qs(default_target_glucose * Constants.MGDL_TO_MMOLL,1)).apply();
+                    preferences.edit().putString("correct_above_value", JoH.qs(default_correct_above * Constants.MGDL_TO_MMOLL,1)).apply();
                     Profile.invalidateProfile();
                 }
                 if (lowVal > 35) {
@@ -2672,6 +2737,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     preferences.edit().putString("lowValue", JoH.qs(lowVal * Constants.MGDL_TO_MMOLL, 1)).apply();
                     preferences.edit().putString("profile_insulin_sensitivity_default", JoH.qs(default_insulin_sensitivity * Constants.MGDL_TO_MMOLL, 2)).apply();
                     preferences.edit().putString("plus_target_range", JoH.qs(default_target_glucose * Constants.MGDL_TO_MMOLL,1)).apply();
+                    preferences.edit().putString("correct_above_value", JoH.qs(default_correct_above * Constants.MGDL_TO_MMOLL,1)).apply();
                     Profile.invalidateProfile();
                 }
             }
@@ -2685,6 +2751,9 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 profile_insulin_sensitivity_default.setTitle(format_insulin_sensitivity(profile_insulin_sensitivity_default.getTitle().toString(), ProfileEditor.minMaxSens(ProfileEditor.loadData(false))));
 
 //                            do_format_insulin_sensitivity(profile_insulin_sensitivity_default, AllPrefsFragment.this.prefs, false, null);
+            }
+            if(correct_above_value != null){
+                correct_above_value.setTitle(format_correct_above(correct_above_value.getTitle().toString(), Pref.getString("correct_above_value", "")));
             }
             Profile.reloadPreferences(preferences);
 
