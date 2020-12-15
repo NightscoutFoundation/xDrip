@@ -110,7 +110,7 @@
     <string name="taskerConfiguration">Configuration Tasker</string>
     <string name="finish_preferences_activity">finish_preferences_activity</string>
     <string name="add_widget">Ajouter un widget</string>
-    <string name="title_activity_alert_list">Liste d\'alerte</string>
+    <string name="title_activity_alert_list">Liste d\'alertes</string>
     <string name="speaktreatment">Enoncer le traitement</string>
     <string name="title_activity_update">Mise à jour xDrip+ disponible</string>
     <string name="title_activity_display_qrcode">Partager les paramètres via le code QR</string>
@@ -369,7 +369,7 @@
     <string name="import_database">Importer la base de données</string>
     <string name="sensor_table">Table de Capteurs</string>
     <string name="bg_readings_table">Tableau de valeurs de glucoses</string>
-    <string name="long_press_to_split_or_delete">Appuyez long pour Couper ou Supprimer</string>
+    <string name="long_press_to_split_or_delete">Appui long pour Couper ou Supprimer</string>
     <string name="press_and_hold_on_the_background_to_split_or_delete">Appuyez et maintenez sur l\'arrière-plan pour couper ou supprimer un bloc de temps</string>
     <string name="search">Chercher</string>
     <string name="reset_all_language_data">Réinitialiser toutes les données linguistiques</string>
@@ -511,7 +511,7 @@
     <string name="choose_file">Choisir le fichier</string>
     <string name="select_time_for_alert_colon">Sélectionner la période de l\'alerte:</string>
     <string name="all_day">toute la journée</string>
-    <string name="tap_to_change">(Appuyez pour changer)</string>
+    <string name="tap_to_change">(Appuyer pour changer)</string>
     <string name="override_phone_silent_mode_colon">Remplacer le mode silencieux du téléphone:</string>
     <string name="vibrate_on_alert">Vibrez en alerte</string>
     <string name="test_alert">test de l\'alerte</string>
@@ -1133,7 +1133,7 @@
     <string name="without_location_scan_doesnt_work">Sans la permission de Localisation le scan Bluetooth Android ne marche pas</string>
     <string name="android_10_need_background_location">Android 10 et plus ont besoin de la localisation en arrière-plan pour que Bluetooth fonctionne</string>
     <string name="without_location_permission_emergency_cannot_get_location">Sans la permission de Localisation les messages d\'urgence ne pourront utiliser les données de localisation</string>
-    <string name="force_speaker_colon">Forcer le haut-parleur</string>
+    <string name="force_speaker_colon">Forcer par haut-parleur</string>
     <string name="choose_data_source">Choisir la source de données</string>
     <string name="which_system_do_you_use">Quel système utilisez-vous ?</string>
     <string name="please_allow_permission">Veuillez autoriser les permissions</string>
