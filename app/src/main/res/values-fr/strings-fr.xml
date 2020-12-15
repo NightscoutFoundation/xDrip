@@ -444,7 +444,7 @@
     <string name="bluetooth_wakelocks">Wakelocks Bluetooth</string>
     <string name="compatible_broadcast">Diffusion Compatible</string>
     <string name="show_datatables">Afficher les tables de données</string>
-    <string name="display_bridge_battery">Afficher la batterie du Bridge</string>
+    <string name="display_bridge_battery">Afficher la batterie du transmetteur</string>
     <string name="close_gatt_on_ble_disconnect">Fermer GATT sur déconnexion BLE</string>
     <string name="disable_battery_warning">Désactiver l\'avertissement de batterie</string>
     <string name="additional_text_status">Statut de texte supplémentaire</string>
@@ -847,7 +847,7 @@
     <string name="tomato">Tomato</string>
     <string name="bubble">Bubble</string>
     <string name="use_gravity_sensor_to_rotate_items">Utiliser le capteur de gravité pour faire pivoter les éléments</string>
-    <string name="low_bridge_battery">Batterie bridge faible</string>
+    <string name="low_bridge_battery">Batterie transmetteur faible</string>
     <string name="reminders">Rappels</string>
     <string name="error">erreur</string>
     <string name="install_text_to_speech_data_question">Installer les données Text-To-Speech?</string>
@@ -1033,7 +1033,7 @@
     <string name="title_supress_ugly_state_message">supprimer le message d\'état</string>
     <string name="summary_write_Battery_Information_for_additional_analytic">écrire les informations sur la batterie pour une analyse supplémentaire dans un fichier. Veuillez utiliser ceci uniquement si cela sera demandé par un développeur !</string>
     <string name="title_Batterylog">Log batterie</string>
-    <string name="summary_Choose_to_display_the_bridge_battery_level">Choisir pour afficher le niveau de pile du bridge</string>
+    <string name="summary_Choose_to_display_the_bridge_battery_level">Choisir pour afficher le niveau de batterie du transmetteur</string>
     <string name="title_Glucose_Retention">Rétention de glucose</string>
     <string name="summary_Erase_data_older_than_this_many_days">Effacer les données antérieures à ce nombre de jours. 0 = ne rien effacer</string>
     <string name="title_Other_misc_options">Autres options diverses</string>
@@ -1160,8 +1160,8 @@
     <string name="summary_bluetooth_meter_for_calibrations_auto">Étalonner en utilisant de nouvelles lectures de glycémie si les conditions semblent correctes sans demander confirmation (expérimental)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Étalonnage automatique</string>
     <string name="title_rest_api_extra_options">Options supplémentaires</string>
-    <string name="summary_send_bridge_battery_to_nightscout">Envoyer votre niveau de batterie de bridge à Nightscout. Décochez si votre capteur de batterie ne marche pas.</string>
-    <string name="title_send_bridge_battery_to_nightscout">Charger la batterie du Bridge</string>
+    <string name="summary_send_bridge_battery_to_nightscout">Envoyer votre niveau de batterie du transmetteur à Nightscout. Décocher si votre capteur de batterie ne marche pas.</string>
+    <string name="title_send_bridge_battery_to_nightscout">Charger la batterie du transmetteur</string>
     <string name="summary_send_treatments_to_nightscout">Envoyer des données de traitement à Nightscout. Décochez si votre portail ne marche pas.</string>
     <string name="title_send_treatments_to_nightscout">Charger les traitements</string>
     <string name="summary_warn_nightscout_failures">Afficher et émettre une notification si le chargement vers Nightscout échoue.</string>
@@ -1437,12 +1437,12 @@
     <string name="backup_detected">Sauvegarde détectée</string>
     <string name="it_looks_like_you_maybe_have_a_settings_backup_shall_we_try_to_restore_it">Il semble que vous ayez peut-être une sauvegarde des paramètres, devons-nous essayer de la restaurer?</string>
     <string name="restore_settings">Rétablir les paramètres</string>
-    <string name="what_type_of_g4_bridge_device_do_you_use">Quel périphérique bridge G4 utilisez-vous?</string>
+    <string name="what_type_of_g4_bridge_device_do_you_use">Quel type de transmetteur G4 utilisez-vous?</string>
     <string name="xbridge_compatible">compatible xBridge</string>
     <string name="classic_simple">Classic simple</string>
     <string name="libre">Libre</string>
-    <string name="what_type_of_libre_bridge_device_do_you_use">Quel type de périphérique de bridge Libre utilisez-vous ?</string>
-    <string name="bluetooth_bridge_device_blucon_limitter_bluereader_tomato_etc">Périphérique bridge Bluetooth: Blucon, LimiTTer, Bluereader, Tomato, etc</string>
+    <string name="what_type_of_libre_bridge_device_do_you_use">Quel type de transmetteur Libre utilisez-vous ?</string>
+    <string name="bluetooth_bridge_device_blucon_limitter_bluereader_tomato_etc">Périphérique transmetteur Bluetooth: Blucon, LimiTTer, Bluereader, Tomato, etc</string>
     <string name="libre_patched">Libre2 Patché</string>
     <string name="librealarm_app_using_sony_smartwatch">Application LibreAlarm : utiliser Sony Smartwatch</string>
     <string name="__data_source_disabled">\n SOURCE DE DONNÉES DÉSACTIVÉE</string>
