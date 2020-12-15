@@ -111,7 +111,7 @@
     <string name="finish_preferences_activity">finish_preferences_activity</string>
     <string name="add_widget">Ajouter un widget</string>
     <string name="title_activity_alert_list">Liste d\'alertes</string>
-    <string name="speaktreatment">Enoncer le traitement</string>
+    <string name="speaktreatment">Prononcer le traitement</string>
     <string name="title_activity_update">Mise à jour xDrip+ disponible</string>
     <string name="title_activity_display_qrcode">Partager les paramètres via le code QR</string>
     <string name="title_activity_send_feed_back">Envoyer des commentaires à Jamorham</string>
@@ -367,7 +367,7 @@
     <string name="install_pebble_watchface">Installez le Cadran Pebble</string>
     <string name="glucose_history">Historique Glucose</string>
     <string name="import_database">Importer la base de données</string>
-    <string name="sensor_table">Table de Capteurs</string>
+    <string name="sensor_table">Table du Capteur</string>
     <string name="bg_readings_table">Tableau de valeurs de glucoses</string>
     <string name="long_press_to_split_or_delete">Appui long pour Couper ou Supprimer</string>
     <string name="press_and_hold_on_the_background_to_split_or_delete">Appuyez et maintenez sur l\'arrière-plan pour couper ou supprimer un bloc de temps</string>
