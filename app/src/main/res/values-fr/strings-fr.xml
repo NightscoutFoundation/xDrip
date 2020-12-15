@@ -117,7 +117,7 @@
     <string name="title_activity_send_feed_back">Envoyer des commentaires à Jamorham</string>
     <string name="title_activity_maps">Carte Parakeet</string>
     <string name="title_activity_display_preferences">Préférences d\'affichage</string>
-    <string name="export_submenu">Import / Export fonctionnalités</string>
+    <string name="export_submenu">Fonctionnalités Import / Export</string>
     <string name="action_resend_to_watch">Renvoyer le glucose vers la montre</string>
     <string name="action_open_watch_setting">Ouvrir les paramètres sur Android Wear</string>
     <string name="action_sync_watch_db">Réinitialiser la DB Android Wear</string>
