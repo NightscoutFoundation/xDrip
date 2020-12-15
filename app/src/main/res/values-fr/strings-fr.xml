@@ -210,7 +210,7 @@
     <string name="alerts_and_notifications">Alertes et notifications</string>
     <string name="glucose_level_alerts_list">Liste d\'alertes de niveau de glucose</string>
     <string name="glucose_alerts_settings">Paramètres d\'alertes glucose</string>
-    <string name="smart_snoozing">Snooze intelligent</string>
+    <string name="smart_snoozing">Mise en veille intelligente</string>
     <string name="calibration_alerts">Alertes d\'étalonnage</string>
     <string name="missed_reading_alert">Alerte lecture manquée</string>
     <string name="other_alerts">Autres alertes</string>
@@ -573,7 +573,7 @@
     <string name="use_tiny_dots">Utiliser des points de petite taille</string>
     <string name="watch_vibrate_active_alerts">Faire vibrer la montre en cas d\'alertes active de glucose</string>
     <string name="vibrate_alerts">Vibrer en cas d\'alertes</string>
-    <string name="attach_to_button">Attachez-le à un bouton peeble pour Mettre en veille instantanément toute alerte active de votre montre. Également pour la fonction de Veille distante.</string>
+    <string name="attach_to_button">Attachez-le à un bouton peeble pour Mettre en veille instantanément toute alerte active de votre montre. Également pour la fonction de Mise en veille distante.</string>
     <string name="for_interacting_compatible_apps">Pour interagir avec d’autres applications compatibles</string>
     <string name="interapp_settings">Paramètres inter applications</string>
     <string name="use_plugins_for_brodcast">Utiliser le lissage du bruit et les plugins (si activés) pour les valeurs diffusées</string>
@@ -742,8 +742,8 @@
     <string name="buttons_silence_alarms">La pression des boutons met en veille les alarmes</string>
     <string name="create_shortcut">Créer un raccourci sur la navigation principale vers le niveau de bg</string>
     <string name="shortcut_to_bg_alerts">Raccourci vers les alertes de niveau Bg</string>
-    <string name="suppress_alerts_missed_readings">Supprime les alertes en veille et actives après la période prédéfinie de lectures manquées</string>
-    <string name="suppress_alerts_after">Supprimer les alertes en veille et actives après .. minutes (minimum 10)</string>
+    <string name="suppress_alerts_missed_readings">Supprime les alertes de mise en veille et actives après la période prédéfinie de lectures manquées</string>
+    <string name="suppress_alerts_after">Supprimer les alertes de mise en veille et actives après .. minutes (minimum 10)</string>
     <string name="alert_calibration_request">Alerte lorsqu\'un étalonnage est demandé</string>
     <string name="calibrations_request_time_time_difference">Combien d\'heures entre les requêtes de étalonnage</string>
     <string name="hours_between_calibrations">Heures entre les étalonnages</string>
@@ -1048,9 +1048,9 @@
     <string name="title_snooze_trash">Panneau de rappel de mise en veille - Poubelle</string>
     <string name="message_snooze_trash">Le bouton Poubelle supprime définitivement le rappel glissé!</string>
     <string name="title_snooze_hide">Panneau de rappel de mise en veille - Cacher</string>
-    <string name="message_snooze_hide">Le bouton Masquer cache le panneau de veilles</string>
-    <string name="title_snooze_times">Panneau de rappel de veilles - Temps</string>
-    <string name="message_snooze_times">Les différents boutons changent rapidement de la veille par défaut à une autre période de veille.</string>
+    <string name="message_snooze_hide">Le bouton Masquer cache le panneau de mise en veille</string>
+    <string name="title_snooze_times">Panneau de rappel de mise en veille - Temps</string>
+    <string name="message_snooze_times">Les différents boutons changent rapidement de la mise en veille par défaut à une autre période de mise en veille.</string>
     <string name="title_which_day">Quel jour?</string>
     <string name="title_what_time_day">Quelle heure de la journée?</string>
     <string name="reminder_due">Rappel dû</string>
@@ -1258,7 +1258,7 @@
     <string name="title_lefun_screen_step_calories">Afficher les calories</string>
     <string name="title_lefun_screen_heart_rate">Afficher le rythme cardiaque</string>
     <string name="title_lefun_screen_heart_pressure">Afficher la pression cardiaque</string>
-    <string name="title_lefun_screen_find_phone">Afficher Trouver le téléphone / Veille</string>
+    <string name="title_lefun_screen_find_phone">Afficher Trouver le téléphone / Mettre en veille</string>
     <string name="title_lefun_screen_mac_address">Afficher l\'adresse MAC</string>
     <string name="summary_allow_samsung_workaround">Utiliser des améliorations pour éviter le comportement androïd non standard des combinés Samsung. Sans cela, les collecteurs ne peuvent pas obtenir les données.</string>
     <string name="title_allow_samsung_workaround">Améliorations Samsung</string>
@@ -1520,7 +1520,7 @@
     <string name="please_wait">Veuillez patienter...</string>
     <string name="didnt_find_any_glucose_readings_in_that_time_period">Aucune lecture de glucose n\'a été trouvée dans cette période</string>
     <string name="got_calibration_in_the_future__cannot_process">Valeur d\'étalonnage dans le futur - Impossible à traiter !</string>
-    <string name="remote_snooze">Veille distante..</string>
+    <string name="remote_snooze">Mise en veille distante..</string>
     <string name="sensor_stopped">Capteur arrêté</string>
     <string name="restarting_collector">Redémarrage du Collecteur !</string>
     <string name="follower_deleted_succesfully">Abonné supprimé avec succès</string>
