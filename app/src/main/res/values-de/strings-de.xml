@@ -1382,6 +1382,14 @@
     <string name="auto_refresh">Automatisch aktualisieren</string>
     <string name="version">Version:</string>
     <string name="sensor_start">Sensorstart:</string>
+    <string name="progress">Fortschritt</string>
+    <string name="bluetooth_device">Bluetooth-Gerät:</string>
+    <string name="transmitter_battery_status">Transmitter-Batterie:</string>
+    <string name="connect_device_usb_otg">Schließe dein Gerät bitte per USB OTG Kabel an.</string>
+    <string name="connection_status">Verbindungsstatus:</string>
+    <string name="range_in_high_low">Bereich: (innerhalb/hoch/niedrig)</string>
+    <string name="absolute_s">Absolute #s:</string>
+    <string name="median_bg">Median-BZ:</string>
     <string name="hba1c_est">geschätzter HbA1c:</string>
     <string name="stddev">StdAbw:</string>
     <string name="relative_sd_cv">Relative StdAbw (CV):</string>
@@ -1390,6 +1398,7 @@
     <string name="backup_detected">Backup gefunden</string>
     <string name="it_looks_like_you_maybe_have_a_settings_backup_shall_we_try_to_restore_it">Es sieht so aus, als hättest du ein Backup der Einstellungen. Sollen wir versuchen, sie wiederherzustellen?</string>
     <string name="restore_settings">Einstellungen wiederherstellen</string>
+    <string name="what_type_of_g4_bridge_device_do_you_use">Welche Art von G4 Bridge verwendest du?</string>
     <string name="xbridge_compatible">xBridge kompatibel</string>
     <string name="classic_simple">Klassisch einfach</string>
     <string name="libre">Libre</string>
@@ -1414,6 +1423,11 @@
     <string name="calibrate_sensor">Sensor kalibrieren?</string>
     <string name="calibrate">Kalibrieren</string>
     <string name="xdrip_oop2_not_installed">xDrip+ benötigt OOP2, um mit Libre2/LibreUS Sensoren umzugehen.</string>
+    <string name="yes_please">JA, bitte</string>
+    <string name="automated_calibration_enabled">Automatische Kalibrierung aktiviert</string>
+    <string name="treatment_cancelled">Behandlung abgebrochen</string>
+    <string name="treatment_time_wrong">Behandlungszeit falsch</string>
+    <string name="treatment_processed">Behandlung verarbeitet</string>
     <string name="enable_streaming_summary">verbinde Libre2-Sensoren nach dem Scannen. Das Libre-Lesegerät und die Libre Link-App werden dann keine Alarme mehr empfangen</string>
     <string name="enable_streaming_title">Starte Bluetooth-Verbindung mit Libre2-Sensoren</string>
     <string name="enable_streaming_always_allow">Immer mit Libre2-Sensoren verbinden</string>
