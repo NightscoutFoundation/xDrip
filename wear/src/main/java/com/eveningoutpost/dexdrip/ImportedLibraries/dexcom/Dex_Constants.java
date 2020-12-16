@@ -4,9 +4,7 @@ package com.eveningoutpost.dexdrip.ImportedLibraries.dexcom;
 // Check them out here: https://github.com/nightscout/android-uploader
 // Some of this code may have been modified for use in this project
 
-// TODO remove duplicates
-
-public class Constants {
+public class Dex_Constants {
 
     public final static int NULL = 0;
     public final static int ACK = 1;
@@ -114,6 +112,7 @@ public class Constants {
             this.trendName = name;
             this.threshold = threshold;
         }
+
         TREND_ARROW_VALUES(int id) {
             this(id,null, null, null);
         }
@@ -138,14 +137,16 @@ public class Constants {
             }
         }
 
-        public int getID(){
+        public int getID() {
             return myID;
         }
+
         public static TREND_ARROW_VALUES getTrend(double value) {
             TREND_ARROW_VALUES finalTrend = NONE;
             for (TREND_ARROW_VALUES trend : values()) {
                 if (trend.threshold == null)
                     continue;
+
                 if (value > trend.threshold)
                     return finalTrend;
                 else
@@ -153,6 +154,7 @@ public class Constants {
             }
             return finalTrend;
         }
+
         public static double getSlope(String value) {
             for (TREND_ARROW_VALUES trend : values())
                 if (trend.trendName.equalsIgnoreCase(value))
