@@ -223,6 +223,14 @@ public class JoH {
         return ret.substring(0,ret.length()-1);
     }
 
+    public static byte[] reverseBytes(byte[] source) {
+        byte[] dest = new byte[source.length];
+        for (int i = 0; i < source.length; i++) {
+            dest[(source.length - i) - 1] = source[i];
+        }
+        return dest;
+    }
+
     public static byte[] tolerantHexStringToByteArray(String str) {
         return hexStringToByteArray(str.toUpperCase().replaceAll("[^A-F0-9]",""));
     }
@@ -809,7 +817,7 @@ public class JoH {
         return wl;
     }
 
-    public static void releaseWakeLock(PowerManager.WakeLock wl) {
+    public static synchronized void releaseWakeLock(final PowerManager.WakeLock wl) {
         if (debug_wakelocks) Log.d(TAG, "releaseWakeLock: " + wl.toString());
         if (wl == null) return;
         if (wl.isHeld()) {

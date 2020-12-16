@@ -20,7 +20,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.os.Vibrator;
-import android.support.v7.preference.PreferenceManager;
+import android.preference.PreferenceManager;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,11 +41,10 @@ import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.LibreUtils;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
-import com.eveningoutpost.dexdrip.UtilityModels.WholeHouse;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
 import com.eveningoutpost.dexdrip.Models.LibreOOPAlgorithm.SensorType;
-import com.eveningoutpost.dexdrip.watch.thinjam.messages.BaseTx;
+
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -513,7 +512,7 @@ public class NFCReaderX {
             if(res.length == 7) {
                 // The mac addresses of the device is the returned data, after removing the first byte, and reversing it.
                 res = Arrays.copyOfRange(res, 1, res.length);
-                res = BaseTx.reverseBytes(res);
+                res = JoH.reverseBytes(res);
 
                 ActiveBluetoothDevice.setDevice(LibreOOPAlgorithm.getLibreDeviceName() + SensorSN, JoH.bytesToHexMacFormat(res));
                 CollectionServiceStarter.restartCollectionServiceBackground();
