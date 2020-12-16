@@ -472,14 +472,15 @@ public class NFCReaderX {
             
             String SensorSN = LibreUtils.decodeSerialNumberKey(patchUid);
 
+            Libre2SensorData.setLibre2SensorData(patchUid, patchInfo, 42, 1 , "");
             // This is the nfc command to enable streaming
             Pair<byte[], String> unlockData = LibreOOPAlgorithm.nfcSendgetBlutoothEnablePayload();
             if (unlockData == null) {
                 Log.e(TAG, "unlockData is null, not enabeling streaming");
                 return;
             }
-            byte[] nfc_command = unlockData.first;
             Libre2SensorData.setLibre2SensorData(patchUid, patchInfo, 42, 1 , unlockData.second);
+            byte[] nfc_command = unlockData.first;
             
             final byte[] cmd = new byte[]{0x02, (byte) 0xa1, 0x07};
             final byte[] full_cmd = new byte[cmd.length + nfc_command.length];
