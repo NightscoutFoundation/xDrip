@@ -20,7 +20,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.os.Vibrator;
-import android.support.v7.preference.PreferenceManager;
+import android.preference.PreferenceManager;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,11 +41,10 @@ import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.LibreUtils;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
-import com.eveningoutpost.dexdrip.UtilityModels.WholeHouse;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
 import com.eveningoutpost.dexdrip.Models.LibreOOPAlgorithm.SensorType;
-import com.eveningoutpost.dexdrip.watch.thinjam.messages.BaseTx;
+
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -473,14 +472,15 @@ public class NFCReaderX {
             
             String SensorSN = LibreUtils.decodeSerialNumberKey(patchUid);
 
+            Libre2SensorData.setLibre2SensorData(patchUid, patchInfo, 42, 1 , "");
             // This is the nfc command to enable streaming
             Pair<byte[], String> unlockData = LibreOOPAlgorithm.nfcSendgetBlutoothEnablePayload();
             if (unlockData == null) {
                 Log.e(TAG, "unlockData is null, not enabeling streaming");
                 return;
             }
-            byte[] nfc_command = unlockData.first;
             Libre2SensorData.setLibre2SensorData(patchUid, patchInfo, 42, 1 , unlockData.second);
+            byte[] nfc_command = unlockData.first;
             
             final byte[] cmd = new byte[]{0x02, (byte) 0xa1, 0x07};
             final byte[] full_cmd = new byte[cmd.length + nfc_command.length];
@@ -513,7 +513,7 @@ public class NFCReaderX {
             if(res.length == 7) {
                 // The mac addresses of the device is the returned data, after removing the first byte, and reversing it.
                 res = Arrays.copyOfRange(res, 1, res.length);
-                res = BaseTx.reverseBytes(res);
+                res = JoH.reverseBytes(res);
 
                 ActiveBluetoothDevice.setDevice(LibreOOPAlgorithm.getLibreDeviceName() + SensorSN, JoH.bytesToHexMacFormat(res));
                 CollectionServiceStarter.restartCollectionServiceBackground();

@@ -23,7 +23,7 @@
                 android:summary="@string/allow_sensor_scanning"
                 android:title="@string/use_nfc_feature" />
             <ListPreference
-	            android:defaultValue="enable_streaming_never"
+	            android:defaultValue="enable_streaming_ask"
 	            android:entries="@array/EnableStreamingMethods"
 	            android:entryValues="@array/EnableStreamingValues"
 	            android:key="libre2_enable_bluetooth_streaming"
