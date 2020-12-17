@@ -198,7 +198,7 @@
     <string name="settings_for_syncing">Instellingen voor het synchroniseren tussen handsets</string>
     <string name="xdrip_plus_sync_settings">xDrip+ Synchronisatie-instellingen</string>
     <string name="xdrip_plus_update_settings">xDrip+ Update-instellingen</string>
-    <string name="automatic_update_check">Automatische update check</string>
+    <string name="automatic_update_check">Automatische update controle</string>
     <string name="update_channel">Update-Channel</string>
     <string name="send_crash_errors_to_developer">Stuur crash fouten aan de ontwikkelaar</string>
     <string name="automatic_crash_reporting">Automatische crashrapportage</string>
@@ -212,7 +212,7 @@
     <string name="glucose_alerts_settings">Glucose Alerts Instellingen</string>
     <string name="smart_snoozing">Slim Sluimeren</string>
     <string name="calibration_alerts">Calibration alerts</string>
-    <string name="missed_reading_alert">Gemiste lezen Alert</string>
+    <string name="missed_reading_alert">Gemiste meting waarschuwing</string>
     <string name="other_alerts">Andere waarschuwingen</string>
     <string name="extra_alerts_xdrip_plus">Extra Alerts (xDrip+)</string>
     <string name="persistent_high_alert">Aanhoudende Hoge Waarschuwing</string>
