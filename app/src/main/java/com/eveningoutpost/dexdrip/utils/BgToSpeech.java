@@ -49,10 +49,9 @@ public class BgToSpeech implements NamedSliderProcessor {
             return;
         }
 
-        // TODO As we check for this in new data observer should we only check for ongoing call here? -> deleted other cases as they are checked in NewDataObserver
-        // TODO We don't really need checking for ongoing call either as this is also checked directly before speaking in SpeechUtil
+        // TODO As we check for this in new data observer should we only check for ongoing call here?
         // check if speech is enabled and extra check for ongoing call
-        if (JoH.isOngoingCall()) {
+        if (!(Pref.getBooleanDefaultFalse(BG_TO_SPEECH_PREF) || VehicleMode.shouldSpeak()) || JoH.isOngoingCall()) {
             return;
         }
 

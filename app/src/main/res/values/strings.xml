@@ -1590,12 +1590,6 @@
     <string name="pref_enable_insulinprofiles">enable at least one max three profiles</string>
     <string name="pref_select_basal_insulinprofiles">choose basal insulin profile.</string>
     <string name="pref_select_bolus_insulinprofiles">choose bolus insulin profile. also used for pump and pen...</string>
-    <string name="pref_car_loud_alerts">Speak Alerts in car</string>
-    <string name="pref_car_loud_readings">Speak Readings in car</string>
-    <string name="pref_car_loud_alerts_summary">Speak Alerts when connected to Android Auto</string>
-    <string name="pref_car_loud_readings_summary">Speak Readings when connected to Android Auto</string>
-    <string name="pref_car_loud_alerts_key" translatable="false">speak_car_alerts</string>
-    <string name="pref_car_loud_readings_key" translatable="false">speak_car_readings</string>
     <string name="enable_streaming_summary">connect to libre 2 sensors after scanning them. This will stop libre reader and libre link from receiving alerts</string>
     <string name="enable_streaming_title">Starting bluetooth connection with libre 2 sensors</string>
     <string name="enable_streaming_always_allow">Always connect to libre2 sensors</string>

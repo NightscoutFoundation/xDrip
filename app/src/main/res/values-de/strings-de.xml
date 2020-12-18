@@ -1289,10 +1289,6 @@
     <string name="summary_ob1_g5_allow_resetbond">Der OB1 Kollektor kann die Kopplung aufheben, wenn er glaubt, dass die Verschlüsselung fehlgeschlagen ist. Wenn Unpairing zum Problem wird, deaktivierebbdiese Option. Wenn du danach die Verbindung vollständig verlierst, stelle sicher, dass sie aktiviert ist.</string>
     <string name="title_g5g6_battery_options">G5/G6 Akku-Optionen</string>
     <string name="title_g5_battery_warning_level">Batteriewarnung anpassen</string>
-    <string name="pref_car_loud_alerts">Alarme im Auto vorlesen</string>
-    <string name="pref_car_loud_readings">Werte im Auto vorlesen</string>
-    <string name="pref_car_loud_alerts_summary">Alarme vorlesen wenn Android Auto verbunden ist</string>
-    <string name="pref_car_loud_readings_summary">Werte vorlesen wenn Android Auto verbunden ist</string>
     <string name="title_plugins_and_features">Plugins und Funktionen</string>
     <string name="title_color_heart_rate1">Herzfrequenz-Monitor</string>
     <string name="title_insulin_colors">Insulin-Farben</string>

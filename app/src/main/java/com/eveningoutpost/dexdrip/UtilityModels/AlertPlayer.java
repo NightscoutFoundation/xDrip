@@ -3,12 +3,10 @@ package com.eveningoutpost.dexdrip.UtilityModels;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.UiModeManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.AssetFileDescriptor;
-import android.content.res.Configuration;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -17,7 +15,6 @@ import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 
-import com.eveningoutpost.dexdrip.BestGlucose;
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
@@ -41,7 +38,6 @@ import com.eveningoutpost.dexdrip.xdrip;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.Objects;
 
 import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
 
@@ -591,17 +587,9 @@ public class AlertPlayer {
         }
 
         // speak alert
-        if (Pref.getBooleanDefaultFalse("speak_alerts") || (Pref.getBooleanDefaultFalse(context.getString(R.string.pref_car_loud_alerts_key)) && isCarUiMode(context))) {
+        if (Pref.getBooleanDefaultFalse("speak_alerts")) {
             SpeechUtil.say(highlow + ", " + bgValue, 3000);
         }
-    }
-
-    private boolean isCarUiMode(Context c) {
-        UiModeManager uiModeManager = (UiModeManager) c.getSystemService(Context.UI_MODE_SERVICE);
-        if(uiModeManager != null) {
-            return uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_CAR;
-        }
-        return false;
     }
 
     private void notificationDismiss(Context ctx) {
