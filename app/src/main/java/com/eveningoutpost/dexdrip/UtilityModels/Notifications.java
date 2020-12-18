@@ -5,9 +5,11 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
+import android.app.UiModeManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Icon;
 import android.media.AudioAttributes;
@@ -919,7 +921,7 @@ public class Notifications extends IntentService {
         if (on) {
             if ((Pref.getLong("alerts_disabled_until", 0) < JoH.tsl()) && (Pref.getLong("low_alerts_disabled_until", 0) < JoH.tsl())) {
                 OtherAlert(context, type, msg, lowPredictAlertNotificationId, NotificationChannels.BG_PREDICTED_LOW_CHANNEL, false, 20 * 60);
-                if (Pref.getBooleanDefaultFalse("speak_alerts")) {
+                if (Pref.getBooleanDefaultFalse("speak_alerts") || (Pref.getBooleanDefaultFalse(context.getString(R.string.pref_car_loud_alerts_key)) && isCarUiMode(context))) {
                    if (JoH.pratelimit("low-predict-speak", 1800)) SpeechUtil.say(msg, 4000);
                 }
             } else {
@@ -930,6 +932,14 @@ public class Notifications extends IntentService {
             mNotifyMgr.cancel(lowPredictAlertNotificationId);
             UserNotification.DeleteNotificationByType(type);
         }
+    }
+
+    private static boolean isCarUiMode(Context c) {
+        UiModeManager uiModeManager = (UiModeManager) c.getSystemService(Context.UI_MODE_SERVICE);
+        if(uiModeManager != null) {
+            return uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_CAR;
+        }
+        return false;
     }
 
     public static void persistentHighAlert(Context context, boolean on, String msg) {
@@ -945,7 +955,7 @@ public class Notifications extends IntentService {
                 if (snooze_time < 1) snooze_time = 1;       // not less than 1 minute
                 if (snooze_time > 1440) snooze_time = 1440; // not more than 1 day
                 OtherAlert(context, type, msg, persistentHighAlertNotificationId, NotificationChannels.BG_PERSISTENT_HIGH_CHANNEL, false, snooze_time * 60);
-                if (Pref.getBooleanDefaultFalse("speak_alerts")) {
+                if (Pref.getBooleanDefaultFalse("speak_alerts") || (Pref.getBooleanDefaultFalse(context.getString(R.string.pref_car_loud_alerts_key)) && isCarUiMode(context))) {
                     if (JoH.pratelimit("persist-high-speak", 1800)) {
                         SpeechUtil.say(msg, 4000);
                     }

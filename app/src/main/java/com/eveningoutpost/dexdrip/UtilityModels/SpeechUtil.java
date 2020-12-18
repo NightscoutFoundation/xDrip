@@ -4,8 +4,11 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
+import android.os.Build;
 import android.os.PowerManager;
 import android.speech.tts.TextToSpeech;
+import android.speech.tts.UtteranceProgressListener;
+import android.util.Log;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
@@ -31,6 +34,7 @@ public class SpeechUtil {
     public static final String TAG = "SpeechUtil";
     public static final String TWICE_DELIMITER = " ... ... ... "; // creates a pause hopefully works on all locales
     private static volatile TextToSpeech tts = null; // maintained instance
+    private static boolean audioFocusRequested = false;
 
     // delay parameter allows you to force a millis delay before playing to avoid clash with notification sounds triggered at the same time
     @SuppressWarnings("WeakerAccess")
@@ -90,7 +94,11 @@ public class SpeechUtil {
 
                 int result;
                 try {
-                    result = tts.speak(final_text_to_speak, TextToSpeech.QUEUE_ADD, null);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        result = tts.speak(final_text_to_speak, TextToSpeech.QUEUE_ADD, null, TextToSpeech.ACTION_TTS_QUEUE_PROCESSING_COMPLETED);
+                    } else {
+                        result = tts.speak(final_text_to_speak, TextToSpeech.QUEUE_ADD, null);
+                    }
                 } catch (NullPointerException e) {
                     result = TextToSpeech.ERROR;
                     UserError.Log.e(TAG, "Got null pointer trying to speak! concurrency issue");
@@ -200,6 +208,27 @@ public class SpeechUtil {
                     UserError.Log.e(TAG, "English is not supported! total failure");
                     tts = null;
                 }
+
+                tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+                    @Override
+                    public void onStart(String s) {}
+
+                    @Override
+                    public void onDone(String s) {
+                        if (audioFocusRequested) {
+                            final AudioManager manager = (AudioManager) xdrip.getAppContext().getSystemService(Context.AUDIO_SERVICE);
+                            if (manager != null) {
+                                manager.abandonAudioFocus(null);
+                            }
+                            audioFocusRequested = false;
+                        }
+                    }
+
+                    @Override
+                    public void onError(String s) {
+                        UserError.Log.e(TAG, "Error in UtteranceProgress");
+                    }
+                });
             } else {
                 UserError.Log.e(TAG, "Initialize status code indicates failure, code: " + status);
                 tts = null;
@@ -236,7 +265,13 @@ public class SpeechUtil {
     private static boolean isMusicPlaying() {
         final AudioManager manager = (AudioManager) xdrip.getAppContext().getSystemService(Context.AUDIO_SERVICE);
         try {
-            return manager.isMusicActive();
+            // if music is currently playing then we request audio focus and abandon it when speech is done
+            if (manager.isMusicActive()) {
+                int result = manager.requestAudioFocus(null, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
+                audioFocusRequested = true;
+                return result != AudioManager.AUDIOFOCUS_REQUEST_GRANTED;
+            } else
+                return false;
         } catch (NullPointerException e) {
             return false;
         }
