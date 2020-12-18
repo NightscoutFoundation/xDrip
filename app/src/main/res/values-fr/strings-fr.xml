@@ -841,7 +841,6 @@
     <string name="repeat_sound">Répéter le son</string>
     <string name="enable_telemetry">Activer la télémétrie</string>
     <string name="send_data_to_developers">Envoyer des données aux développeurs sur les taux de réussite des différents périphériques</string>
-    <string name="try_to_work_around_noisy_readings_ultrasensitive">Commencer à adresser les lectures incorrectes même sur des niveaux de bruit très bas (mode d\'ingénierie seulement)</string>
     <string name="sidiary_date_title">Exportation depuis quand?</string>
     <string name="blukon">Blucon</string>
     <string name="tomato">Tomato</string>
@@ -1487,7 +1486,6 @@
     <string name="unusual_internal_context_problem__please_report">Problème de contexte interne anormal - veuillez le reporter</string>
     <string name="cannot_start__please_report_context_problem">Impossible de démarrer - veuillez signaler le problème du contexte</string>
     <string name="xdrip_will_not_work_below_android_version_42">xDrip+ ne fonctionnera pas sur Android version 4.2 et antérieures</string>
-    <string name="xdrip_oop2_not_installed">xDrip+ a besoin d\'OOP2 pour gérer les capteurs Freestyle Libre2/LibreUS.</string>
     <string name="this_app_needs_battery_optimization_whitelisting_or_it_will_not_work_well_please_reset_app_preferences">Cette application a besoin d\'une liste blanche d\'optimisation de batterie ou elle ne fonctionnera pas correctement. Veuillez réinitialiser les préférences de l\'application</string>
     <string name="setting_disabled_">Paramètre désactivé :)</string>
     <string name="yes_please">OUI, s\'il vous plaît</string>
