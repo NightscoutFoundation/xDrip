@@ -987,4 +987,5 @@
     <string name="without_location_scan_doesnt_work">Sin el permiso de ubicación el escaneo Bluetooth de Android no funciona</string>
     <string name="without_location_permission_emergency_cannot_get_location">Sin permiso de ubicación los mensajes de emergencia no pueden utilizar datos de ubicación</string>
     <string name="please_allow_permission">Por favor, concede permiso</string>
+    <string name="xdrip_oop2_not_installed">xDrip+ necesita OOP2 para manejar sensores Libre2/LibreUS.</string>
 </resources>

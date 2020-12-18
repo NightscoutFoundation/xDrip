@@ -3,7 +3,7 @@ package com.eveningoutpost.dexdrip.UtilityModels;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.SensorSanity;
 
-import android.util.Log;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 public class LibreUtils {
 
@@ -85,7 +85,7 @@ public class LibreUtils {
                 sensorStatusString = "starting";
                 ret = true;
                 break;
-            case 0x03:          // status for 14 days and 12 h of normal operation, abbott reader quits after 14 days
+            case 0x03:          // status for 14 days and 12 h of normal operation, libre reader quits after 14 days
                 sensorStatusString = "ready";
                 ret = true;
                 break;
