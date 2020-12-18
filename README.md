@@ -1,4 +1,4 @@
-# Nightscout xDrip++
+# Nightscout xDrip+
 > Enhanced personal research version of xDrip
 
  <img align="right" src="Documentation/images/download-xdrip-plus-qr-code.png">
