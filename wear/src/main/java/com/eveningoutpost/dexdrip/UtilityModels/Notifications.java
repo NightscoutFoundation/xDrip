@@ -878,7 +878,10 @@ public class Notifications extends IntentService {
             if (addDeleteIntent) {
                 Intent deleteIntent = new Intent(context, SnoozeOnNotificationDismissService.class);
                 deleteIntent.putExtra("alertType", type);
-                mBuilder.setDeleteIntent(PendingIntent.getService(context, 0, deleteIntent, PendingIntent.FLAG_UPDATE_CURRENT));
+                PendingIntent pendingIntent = PendingIntent.getService(context, 0, deleteIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                mBuilder.setDeleteIntent(pendingIntent);
+                mBuilder.addAction(new NotificationCompat.Action.Builder(R.drawable.ic_action_communication_invert_colors_on,
+                        context.getResources().getString(R.string.snooze), pendingIntent).build());
             }
             mBuilder.setVibrate(vibratePattern);
             mBuilder.setLights(0xff00ff00, 300, 1000);

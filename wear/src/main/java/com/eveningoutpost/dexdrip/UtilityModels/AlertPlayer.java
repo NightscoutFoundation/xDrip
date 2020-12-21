@@ -39,24 +39,24 @@ import static com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer.getAlertPlaye
 // A helper class to create the mediaplayer on the UI thread.
 // This is needed in order for the callbackst to work.
 class MediaPlayerCreaterHelper {
-    
+
     private final static String TAG = AlertPlayer.class.getSimpleName();
 
     final Object lock1_ = new Object();
     boolean mplayerCreated_ = false;
     volatile MediaPlayer mediaPlayer_ = null;
-    
+
     MediaPlayer createMediaPlayer(Context ctx) {
         if (isUiThread()) {
             return new MediaPlayer();
         }
-        
+
         mplayerCreated_ = false;
         mediaPlayer_ = null;
         Handler mainHandler = new Handler(ctx.getMainLooper());
 
         Runnable myRunnable = new Runnable() {
-            @Override 
+            @Override
             public void run() {
                 synchronized(lock1_) {
                     try {
@@ -66,19 +66,19 @@ class MediaPlayerCreaterHelper {
                         mplayerCreated_ = true;
                         lock1_.notifyAll();
                     }
-                    
+
                 }
             }
         };
         mainHandler.post(myRunnable);
-        
+
         try {
             synchronized(lock1_) {
                 while(mplayerCreated_ == false) {
-                   
+
                         lock1_.wait();
                 }
-            } 
+            }
         }catch (InterruptedException e){
              Log.e(TAG, "Cought exception", e);
         }
@@ -90,7 +90,7 @@ class MediaPlayerCreaterHelper {
         }
         return mediaPlayer_;
     }
-    
+
     boolean isUiThread() {
         return Looper.myLooper() == Looper.getMainLooper();
     }
@@ -248,13 +248,13 @@ public class AlertPlayer {
             Log.d(TAG,"ClockTick: Playing the alert again");
             long nextAlertTime = alert.getNextAlertTime(ctx);
             activeBgAlert.updateNextAlertAt(nextAlertTime);
-            
+
             Vibrate(ctx, alert, bgValue, alert.override_silent_mode, timeFromStartPlaying);
         }
 
     }
 
-    
+
     private boolean setDataSource(Context context, MediaPlayer mp, Uri uri) {
         try {
             mp.setDataSource(context, uri);
@@ -271,7 +271,7 @@ public class AlertPlayer {
         }
         return false;
     }
-    
+
     private boolean setDataSource(Context context, MediaPlayer mp, int resid) {
         try {
             AssetFileDescriptor afd = context.getResources().openRawResourceFd(resid);
@@ -302,13 +302,13 @@ public class AlertPlayer {
             mediaPlayer.release();
             mediaPlayer = null;
         }
-        
+
         mediaPlayer = new MediaPlayerCreaterHelper().createMediaPlayer(ctx);
         if(mediaPlayer == null) {
             Log.e(TAG, "MediaPlayerCreaterHelper().createMediaPlayer failed");
             return;
         }
-        
+
         boolean setDataSourceSucceeded = false;
         if(FileName != null && FileName.length() > 0) {
             setDataSourceSucceeded = setDataSource(ctx, mediaPlayer, Uri.parse(FileName));
@@ -320,7 +320,7 @@ public class AlertPlayer {
             Log.e(TAG, "setDataSource failed");
             return;
         }
-            
+
         try {
             mediaPlayer.prepare();
         } catch (IOException e) {
@@ -357,7 +357,7 @@ public class AlertPlayer {
             Log.wtf(TAG, "PlayFile: Starting an alert failed, what should we do !!!");
         }
     }
-    
+
     private void revertCurrentVolume(final Context ctx) {
         AudioManager manager = (AudioManager) ctx.getSystemService(Context.AUDIO_SERVICE);
         int currentVolume = manager.getStreamVolume(AudioManager.STREAM_MUSIC);
@@ -369,7 +369,7 @@ public class AlertPlayer {
         }
         volumeBeforeAlert = -1;
         volumeForThisAlert = - 1;
-        
+
     }
 
     private PendingIntent notificationIntent(Context ctx, Intent intent){
@@ -409,7 +409,7 @@ public class AlertPlayer {
         return ALERT_PROFILE_ASCENDING;
 
     }
-    
+
     public static boolean isAscendingMode(Context ctx){
         Log.d("Adrian", "(getAlertProfile(ctx) == ALERT_PROFILE_ASCENDING): " + (getAlertProfile(ctx) == ALERT_PROFILE_ASCENDING));
         return getAlertProfile(ctx) == ALERT_PROFILE_ASCENDING;
@@ -434,7 +434,9 @@ public class AlertPlayer {
                 .setContentText(content)
                 .setContentIntent(notificationIntent(ctx, intent))
                 .setLocalOnly(localOnly)//KS
-                .setDeleteIntent(snoozeIntent(ctx));
+                .setDeleteIntent(snoozeIntent(ctx))
+                .addAction(new NotificationCompat.Action.Builder(R.drawable.ic_action_communication_invert_colors_on,
+                        ctx.getResources().getString(R.string.snooze), snoozeIntent(ctx)).build());
         builder.setVibrate(Notifications.vibratePattern);
         Log.ueh("Alerting",content);
         NotificationManager mNotifyMgr = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -480,7 +482,9 @@ public class AlertPlayer {
             .setContentText(content)
             .setContentIntent(notificationIntent(ctx, intent))
             .setLocalOnly(localOnly)//KS
-            .setDeleteIntent(snoozeIntent(ctx));
+            .setDeleteIntent(snoozeIntent(ctx))
+            .addAction(new NotificationCompat.Action.Builder(R.drawable.ic_action_communication_invert_colors_on,
+                    ctx.getResources().getString(R.string.snooze), snoozeIntent(ctx)).build());
 
         if (profile != ALERT_PROFILE_VIBRATE_ONLY && profile != ALERT_PROFILE_SILENT) {
             if (timeFromStartPlaying >= MAX_VIBRATING) {
