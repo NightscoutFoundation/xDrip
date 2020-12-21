@@ -42,6 +42,18 @@
         <item>Disabled</item>
     </string-array>
 
+     <string-array name="EnableStreamingMethods">
+        <item>@string/enable_streaming_always_allow</item>
+        <item>@string/enable_streaming_ask_each_time</item>
+        <item>@string/enable_streaming_never</item>
+    </string-array>
+
+    <string-array name="EnableStreamingValues">
+        <item>enable_streaming_always</item>
+        <item>enable_streaming_ask</item>
+        <item>enable_streaming_never</item>
+    </string-array>
+    
     <string-array name="SendToPebbleChoice">
 
         <item>Standard Watchface (old)</item>

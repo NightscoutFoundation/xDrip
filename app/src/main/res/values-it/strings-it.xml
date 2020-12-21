@@ -484,4 +484,5 @@
     <string name="FortyFiveUp">leggermente crescente</string>
     <string name="SingleUp">crescente</string>
     <string name="DoubleUp">crescente veloce</string>
+    <string name="xdrip_oop2_not_installed">xDrip+ ha bisogno di OOP2 per gestire i sensori Libre2/LibreUS.</string>
 </resources>
