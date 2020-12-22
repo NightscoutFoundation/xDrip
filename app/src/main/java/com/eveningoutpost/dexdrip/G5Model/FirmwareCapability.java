@@ -11,7 +11,7 @@ public class FirmwareCapability {
 
     private static final ImmutableSet<String> KNOWN_G5_FIRMWARES = ImmutableSet.of("1.0.0.13", "1.0.0.17", "1.0.4.10", "1.0.4.12");
     private static final ImmutableSet<String> KNOWN_G6_FIRMWARES = ImmutableSet.of("1.6.5.23", "1.6.5.25", "1.6.5.27");
-    private static final ImmutableSet<String> KNOWN_G6_REV2_FIRMWARES = ImmutableSet.of("2.18.2.67", "2.18.2.88", "2.18.2.98");
+    private static final ImmutableSet<String> KNOWN_G6_REV2_FIRMWARES = ImmutableSet.of("2.18.2.67", "2.18.2.88", "2.18.2.98", "2.27.2.98");
     private static final ImmutableSet<String> KNOWN_G6_REV2_RAW_FIRMWARES = ImmutableSet.of("2.18.2.67");
     private static final ImmutableSet<String> KNOWN_G6_PLUS_FIRMWARES = ImmutableSet.of("2.4.2.88");
     private static final ImmutableSet<String> KNOWN_TIME_TRAVEL_TESTED = ImmutableSet.of("1.6.5.25");
@@ -23,11 +23,12 @@ public class FirmwareCapability {
                 || KNOWN_G6_PLUS_FIRMWARES.contains(version)
                 || version.startsWith("1.6.5.")
                 || version.startsWith("2.18.")
+                || version.startsWith("2.27.")
                 || version.startsWith("2.4."));
     }
 
     public static boolean isG6Rev2(final String version) {
-        return version != null && (KNOWN_G6_REV2_FIRMWARES.contains(version) || version.startsWith("2.18."));
+        return version != null && (KNOWN_G6_REV2_FIRMWARES.contains(version) || version.startsWith("2.18.") || version.startsWith("2.27."));
     }
 
     public static boolean isG6Plus(final String version) {

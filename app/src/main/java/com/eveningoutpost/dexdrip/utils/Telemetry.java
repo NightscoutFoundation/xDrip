@@ -1,11 +1,8 @@
 package com.eveningoutpost.dexdrip.utils;
 
-import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.crashlytics.android.answers.Answers;
-import com.crashlytics.android.answers.CustomEvent;
 import com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
@@ -15,9 +12,11 @@ import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.stats.StatsResult;
 import com.eveningoutpost.dexdrip.xdrip;
 
-import static com.eveningoutpost.dexdrip.Models.JoH.getVersionDetails;
 import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.getTransmitterID;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.DexcomG5;
+
+//import com.crashlytics.android.answers.Answers;
+//import com.crashlytics.android.answers.CustomEvent;
 
 /**
  * Created by jamorham on 31/01/2017.
@@ -52,8 +51,8 @@ public class Telemetry {
 
                         final String version = Ob1G5StateMachine.getRawFirmwareVersionString(getTransmitterID());
                         if (version.length() > 0) {
-                            Answers.getInstance().logCustom(new CustomEvent("GFirmware")
-                                    .putCustomAttribute("Firmware", version));
+                            //Answers.getInstance().logCustom(new CustomEvent("GFirmware")
+                            //        .putCustomAttribute("Firmware", version));
                         }
                     }
                 }
@@ -103,20 +102,20 @@ public class Telemetry {
                                     }
                                 }
                                 if (watch_model.length() > 0) {
-                                    Answers.getInstance().logCustom(new CustomEvent(capture_id)
-                                            .putCustomAttribute("Model", Build.MODEL + " " + Build.VERSION.RELEASE)
-                                            .putCustomAttribute("Manufacturer", Build.MANUFACTURER)
-                                            .putCustomAttribute("Version", Build.VERSION.RELEASE)
-                                            .putCustomAttribute("xDrip", getVersionDetails())
-                                            .putCustomAttribute("Watch", watch_model)
-                                            .putCustomAttribute("Percentage", capture_percentage));
+                                    //      Answers.getInstance().logCustom(new CustomEvent(capture_id)
+                                    //             .putCustomAttribute("Model", Build.MODEL + " " + Build.VERSION.RELEASE)
+                                    //              .putCustomAttribute("Manufacturer", Build.MANUFACTURER)
+                                    //             .putCustomAttribute("Version", Build.VERSION.RELEASE)
+                                    //             .putCustomAttribute("xDrip", getVersionDetails())
+                                    //             .putCustomAttribute("Watch", watch_model)
+                                    //             .putCustomAttribute("Percentage", capture_percentage));
                                 } else {
-                                    Answers.getInstance().logCustom(new CustomEvent(capture_id)
-                                            .putCustomAttribute("Model", Build.MODEL + " " + Build.VERSION.RELEASE)
-                                            .putCustomAttribute("Manufacturer", Build.MANUFACTURER)
-                                            .putCustomAttribute("Version", Build.VERSION.RELEASE)
-                                            .putCustomAttribute("xDrip", getVersionDetails())
-                                            .putCustomAttribute("Percentage", capture_percentage));
+                                    //      Answers.getInstance().logCustom(new CustomEvent(capture_id)
+                                    //              .putCustomAttribute("Model", Build.MODEL + " " + Build.VERSION.RELEASE)
+                                    //             .putCustomAttribute("Manufacturer", Build.MANUFACTURER)
+                                    //             .putCustomAttribute("Version", Build.VERSION.RELEASE)
+                                    //            .putCustomAttribute("xDrip", getVersionDetails())
+                                    //            .putCustomAttribute("Percentage", capture_percentage));
                                 }
                             }
                         } else {
