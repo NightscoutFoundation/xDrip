@@ -581,7 +581,7 @@
     <string name="send_broadcasts_old_permission_model">Envoyer des broadcasts sans verrouiller le modèle de permission ancien</string>
     <string name="process_nsclient_treatments">Traiter les données de traitement reçues de NSClient</string>
     <string name="accept_treatments">Accepter les traitements</string>
-    <string name="process_broadcasted_calibrations">Traiter les étalonnages reçus à partir d\'autres applications</string>
+    <string name="process_broadcasted_calibrations">Traiter les calibrations reçus à partir d\'autres applications</string>
     <string name="spoken_readings_locale">Paramètres régionaux utilisés pour les lectures énoncées, par exemple : fr ou en_IN</string>
     <string name="speak_glucose_twice">Prononcer la valeur de glycémie deux fois</string>
     <string name="short_speak_readings_shortcut">Afficher un raccourci dans le menu ☰ pour gérer les prononciations de lectures</string>
@@ -611,8 +611,8 @@
     <string name="use_external_blukon_algorithm_summary">Utiliser un algorithme Libre hors processus. (blukon/NFC/LibreAlarm)</string>
     <string name="display_predictive_values">Afficher les valeurs prédictives</string>
     <string name="use_external_blukon_algorithm">Utiliser l\'algorithme hors processus Libre.</string>
-    <string name="calibrate_external_libre_algorithm_summary">Appliquer les méthodes d\'étalonnage xDrip sur des données hors processus.</string>
-    <string name="calibrate_external_libre_algorithm_title">Algorithme d\'étalonnage hors processus.</string>
+    <string name="calibrate_external_libre_algorithm_summary">Appliquer les méthodes de calibration xDrip sur des données OOP.</string>
+    <string name="calibrate_external_libre_algorithm_title">Calibration de l\'algorithme OOP.</string>
     <string name="libre_use_smoothed_data_summary">Utiliser une moyenne de 5 points pour obtenir des données Libre plus lisses.</string>
     <string name="libre_use_smoothed_data_title">Données Freestyle Libre lissées.</string>
     <string name="retrieve_blukon_history_title">Récupérer l\'historique du Freestyle Libre</string>
@@ -668,8 +668,8 @@
     <string name="main_glucose_plugin">L\'affichage des chiffres principaux de glucides proviennent du plugin !</string>
     <string name="plugin_override_all">Plugin surpasse tous les autres</string>
     <string name="all_new_glucose_data_plugin">Toutes les nouvelles données de glycémie seront calculées et enregistrées du plugin sélectionné et non à partir de l\'algorithme standard xDrip. Ce n\'est pas testé et peut être inexacte et pleins de bug. Utiliser avec une extrême prudence.</string>
-    <string name="old_school_calibrations">Intervalles de pentes plus étroites d\'origine dans l\'algorithme d\'étalonnage classique xDrip (avant 2017). Les pentes par défaut sont plus probables! (mode d\'ingénierie seulement)</string>
-    <string name="old_school_calibration_mode">Vieille méthode d\'étalonnage</string>
+    <string name="old_school_calibrations">Gamme originale plus étroite de pentes autorisées dans l\'algorithme d\'étalonnage classique xDrip (avant 2017). Les pentes par défaut sont plus probables! (mode ingénierie uniquement)</string>
+    <string name="old_school_calibration_mode">Ancienne méthode de calibration</string>
     <string name="how_receive_data">Comment allez-vous pour recevoir les données de votre Dexcom/Transmitter ?</string>
     <string name="nfc_options">Options pour scanner les capteurs basés sur NFC avec le combiné du téléphone</string>
     <string name="nfc_scan_features">Fonctionnalités de scan NFC</string>
@@ -745,7 +745,7 @@
     <string name="suppress_alerts_missed_readings">Supprime les alertes de mise en veille et actives après la période prédéfinie de lectures manquées</string>
     <string name="suppress_alerts_after">Supprimer les alertes de mise en veille et actives après .. minutes (minimum 10)</string>
     <string name="alert_calibration_request">Alerte lorsqu\'un étalonnage est demandé</string>
-    <string name="calibrations_request_time_time_difference">Combien d\'heures entre les requêtes de étalonnage</string>
+    <string name="calibrations_request_time_time_difference">Combien d\'heures entre les requêtes de calibration</string>
     <string name="hours_between_calibrations">Heures entre les étalonnages</string>
     <string name="calibrations_sound">Définir le son utilisé pour les demandes d\'étalonnage.</string>
     <string name="override_silent_mode">Remplacer le mode silencieux</string>
@@ -841,6 +841,7 @@
     <string name="repeat_sound">Répéter le son</string>
     <string name="enable_telemetry">Activer la télémétrie</string>
     <string name="send_data_to_developers">Envoyer des données aux développeurs sur les taux de réussite des différents périphériques</string>
+    <string name="try_to_work_around_noisy_readings_ultrasensitive">Commencer à contourner les lectures bruyantes même sur des niveaux de bruit très bas (mode ingénierie uniquement)</string>
     <string name="sidiary_date_title">Exportation depuis quand?</string>
     <string name="blukon">Blucon</string>
     <string name="tomato">Tomato</string>
@@ -1486,6 +1487,7 @@
     <string name="unusual_internal_context_problem__please_report">Problème de contexte interne anormal - veuillez le reporter</string>
     <string name="cannot_start__please_report_context_problem">Impossible de démarrer - veuillez signaler le problème du contexte</string>
     <string name="xdrip_will_not_work_below_android_version_42">xDrip+ ne fonctionnera pas sur Android version 4.2 et antérieures</string>
+    <string name="xdrip_oop2_not_installed">xDrip+ a besoin d\'OOP2 pour gérer les capteurs Freestyle Libre2/LibreUS.</string>
     <string name="this_app_needs_battery_optimization_whitelisting_or_it_will_not_work_well_please_reset_app_preferences">Cette application a besoin d\'une liste blanche d\'optimisation de batterie ou elle ne fonctionnera pas correctement. Veuillez réinitialiser les préférences de l\'application</string>
     <string name="setting_disabled_">Paramètre désactivé :)</string>
     <string name="yes_please">OUI, s\'il vous plaît</string>
@@ -1541,6 +1543,7 @@
     <string name="collection_summary_ob1_g5_preemptive_restart">Redémarrer automatiquement un capteur avant qu\'il ne s\'arrête</string>
     <string name="title_ob1_g5_preemptive_restart_alert">Alerte au redémarrage préventif</string>
     <string name="summary_ob1_g5_preemptive_restart_alert">Déclencher une alerte lors du redémarrage préventif de la session</string>
+    <string name="blood_glucose_graph">Graphique Glycémie</string>
     <string name="pref_enable_insulinprofiles">activer au moins un et maximum de trois profils</string>
     <string name="pref_select_basal_insulinprofiles">choisir le profil d\'insuline basale.</string>
     <string name="pref_select_bolus_insulinprofiles">choisir le profil d\'insuline de bolus. Également utilisé pour la pompe et le stylo...</string>
