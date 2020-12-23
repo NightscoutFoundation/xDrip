@@ -841,7 +841,6 @@
     <string name="repeat_sound">Herhaal geluid</string>
     <string name="enable_telemetry">Schakel telemetrie in</string>
     <string name="send_data_to_developers">Stuur gegevens naar ontwikkelaars over slagingspercentages van verschillende apparaten</string>
-    <string name="try_to_work_around_noisy_readings_ultrasensitive">Begin met het omzeilen van luidruchtige metingen, zelfs bij zeer lage geluidsniveaus (alleen in ontwikkelaars modus)</string>
     <string name="sidiary_date_title">Vanaf wanneer exporteren?</string>
     <string name="blukon">Blucon</string>
     <string name="tomato">Tomato</string>
@@ -1486,7 +1485,6 @@
     <string name="unusual_internal_context_problem__please_report">Ongebruikelijk intern contextprobleem - gelieve te melden</string>
     <string name="cannot_start__please_report_context_problem">Kan niet starten - meld contextprobleem</string>
     <string name="xdrip_will_not_work_below_android_version_42">xDrip+ werkt niet onder Android-versie 4.2</string>
-    <string name="xdrip_oop2_not_installed">xDrip+ heeft OOP2 nodig om Libre2 / LibreUS-sensoren te verwerken.</string>
     <string name="this_app_needs_battery_optimization_whitelisting_or_it_will_not_work_well_please_reset_app_preferences">Deze app heeft een witte lijst met batterij-optimalisatie nodig, anders werkt deze niet goed. Reset app-voorkeuren</string>
     <string name="setting_disabled_">Instelling uitgeschakeld :)</string>
     <string name="yes_please">JA, graag</string>

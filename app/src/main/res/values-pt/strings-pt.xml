@@ -841,7 +841,7 @@
     <string name="repeat_sound">Repetir som</string>
     <string name="enable_telemetry">Activar Telemetria</string>
     <string name="send_data_to_developers">Enviar dados para os programadores sobre as taxas de sucesso de diferentes dispositivos</string>
-    <string name="try_to_work_around_noisy_readings_ultrasensitive">Iniciar análise sobre leituras irregulares mesmo em valores baixos de ruído (só em modo programador)</string>
+    <string name="try_to_work_around_noisy_readings_ultrasensitive">Começar a trabalhar sobre leituras com ruído mesmo em níveis de ruído muito baixos (apenas no modo engenheiro)</string>
     <string name="sidiary_date_title">Exportar a partir de?</string>
     <string name="blukon">Blucon</string>
     <string name="tomato">Tomato</string>
@@ -1543,6 +1543,7 @@
     <string name="collection_summary_ob1_g5_preemptive_restart">Reiniciar automaticamente um sensor antes que ele pare</string>
     <string name="title_ob1_g5_preemptive_restart_alert">Alerta num reinício preventivo</string>
     <string name="summary_ob1_g5_preemptive_restart_alert">Aumente um alerta quando reiniciar a sessão preventivamente</string>
+    <string name="blood_glucose_graph">Gráfico de Glicemia</string>
     <string name="pref_enable_insulinprofiles">active pelo menos um máximo de três perfis</string>
     <string name="pref_select_basal_insulinprofiles">escolha o perfil da insulina basal.</string>
     <string name="pref_select_bolus_insulinprofiles">escolha o perfil de insulina de bólus. Também usado para bomba e caneta...</string>
