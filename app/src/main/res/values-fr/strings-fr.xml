@@ -12,7 +12,7 @@
     <string name="error_bluetooth_not_supported">Erreur: Bluetooth pas pris en charge par ce dispositif</string>
     <string name="unknown_device">Dispositif non reconnu</string>
     <string name="connecting_to_device">Connection au périphérique</string>
-    <string name="title_activity_raw_data_table">Tableau de données brut</string>
+    <string name="title_activity_raw_data_table">Table des données brutes</string>
     <string name="title_activity_calculated_data_table">Table de données calculé</string>
     <string name="title_activity_start_new_sensor">Lancer un nouveau capteur</string>
     <string name="title_activity_new_sensor_location">Emplacement du nouveau capteur</string>
@@ -44,10 +44,10 @@
     <string name="pref_summary_mongodb_enabled">Téléchargement direct de la base de données, non recommandé pour Nightscout</string>
     <string name="pref_title_mongodb_uri">URI</string>
     <string name="pref_dialog_mongodb_uri">Entrez MongoDB URI\"</string>
-    <string name="pref_message_mongodb_uri">Remplacer les valeurs exemples dans {} avec vos valeurs correctes</string>
+    <string name="pref_message_mongodb_uri">Remplacer les valeurs exemples entre {} avec vos valeurs correctes</string>
     <string name="pref_default_mongodb_uri">mongodb://{user}:{password}@{host}.mongolab.com:{11111}/{database}</string>
     <string name="pref_title_mongodb_collection">Nom de la Collection</string>
-    <string name="pref_dialog_mongodb_collection">Entrez le nom de Collection</string>
+    <string name="pref_dialog_mongodb_collection">Entrer le nom de la Collection</string>
     <string name="pref_message_mongodb_collection">Ceci est le nom de la collection où les données CGM seront stockées</string>
     <string name="pref_title_mongodb_device_status_collection">Nom de la Collection d\'état du périphérique</string>
     <string name="pref_dialog_mongodb_device_status_collection">Entrez le nom de la Collection du périphérique\"</string>
@@ -61,7 +61,7 @@
     <string name="pref_message_api_url">Cela ne l\'URL de base, le téléchargeur ajoutera automatiquement / entrées pour le POST. API_SECRET sur le serveur doit correspondre à yourpassphrase dans ce cadre.</string>
     <string name="pref_default_api_url">https://yourpassphrase@{VOTRE-SITE}. azurewebsites.net/api/v1/</string>
     <!-- wifi Settings -->
-    <string name="wifi_recievers_dialog_message">Comma liste des ip séparés: port (par exemple 37.142.132.220:50005,37.142.132.220:50010,mongodb://user:pass@ds053958.mongolab.com:53958/db/collection)</string>
+    <string name="wifi_recievers_dialog_message">Liste des ip:port séparés par des virgules (exemple : 37.142.132.220:50005,37.142.132.220:50010,mongodb://user:pass@ds053958.mongolab.com:53958/db/collection)</string>
     <string name="wifi_recievers_dialog_title">Entrez les adresses et les ports de récepteurs IP (y compris les adresses MongoDB si nécessaire)</string>
     <!-- Location Settings -->
     <string name="location_not_found_title">La localisation n\'est pas activée</string>
