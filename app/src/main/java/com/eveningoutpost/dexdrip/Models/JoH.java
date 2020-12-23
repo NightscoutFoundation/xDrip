@@ -208,6 +208,28 @@ public class JoH {
         }
         return new String(hexChars);
     }
+    
+    // Convert a stream of bytes to a mac format (i.e: 12:34:AB:BC:DE:FC)
+    public static String bytesToHexMacFormat(byte[] bytes) {
+        if(bytes == null || bytes.length == 0) {
+            return "NoMac";
+        }
+        String str = bytesToHex(bytes);
+        String ret = new String();
+        for(int i = 0; i < str.length() ; i+=2) {
+            ret += str.substring(i, i+2);
+            ret +=":";
+        }
+        return ret.substring(0,ret.length()-1);
+    }
+
+    public static byte[] reverseBytes(byte[] source) {
+        byte[] dest = new byte[source.length];
+        for (int i = 0; i < source.length; i++) {
+            dest[(source.length - i) - 1] = source[i];
+        }
+        return dest;
+    }
 
     public static byte[] tolerantHexStringToByteArray(String str) {
         return hexStringToByteArray(str.toUpperCase().replaceAll("[^A-F0-9]",""));
@@ -795,7 +817,7 @@ public class JoH {
         return wl;
     }
 
-    public static void releaseWakeLock(PowerManager.WakeLock wl) {
+    public static synchronized void releaseWakeLock(final PowerManager.WakeLock wl) {
         if (debug_wakelocks) Log.d(TAG, "releaseWakeLock: " + wl.toString());
         if (wl == null) return;
         if (wl.isHeld()) {

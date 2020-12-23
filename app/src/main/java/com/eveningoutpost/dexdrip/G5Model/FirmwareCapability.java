@@ -23,8 +23,8 @@ public class FirmwareCapability {
                 || KNOWN_G6_PLUS_FIRMWARES.contains(version)
                 || version.startsWith("1.6.5.")
                 || version.startsWith("2.18.")
-                || version.startsWith("2.4.")
-                || version.startsWith("2.27."));
+                || version.startsWith("2.27.")
+                || version.startsWith("2.4."));
     }
 
     public static boolean isG6Rev2(final String version) {
