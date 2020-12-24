@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="title_activity_bluetooth_scan">Bluetooth-Suche</string>
-    <string name="connected">Verbunden</string>
     <string name="disconnected">Getrennt</string>
     <string name="menu_scan">Scannen</string>
     <string name="menu_stop">Stop</string>
@@ -1287,6 +1285,9 @@
     <string name="summary_using_g6">Ich nutze den G6 Sensor</string>
     <string name="title_using_g6">Unterstützung für G6</string>
     <string name="summary_ob1_g5_allow_resetbond">Der OB1 Kollektor kann die Kopplung aufheben, wenn er glaubt, dass die Verschlüsselung fehlgeschlagen ist. Wenn Unpairing zum Problem wird, deaktivierebbdiese Option. Wenn du danach die Verbindung vollständig verlierst, stelle sicher, dass sie aktiviert ist.</string>
+    <string name="title_ob1_g5_allow_resetbond">OB1-Entkoppelung erlauben</string>
+    <string name="title_ob1_initiate_bonding_flag">OB1 Verbindungsaufbau erlauben</string>
+    <string name="title_old_g5_options">Alte G5 Kollektor-Einstellungen</string>
     <string name="title_g5g6_battery_options">G5/G6 Akku-Optionen</string>
     <string name="title_g5_battery_warning_level">Batteriewarnung anpassen</string>
     <string name="title_plugins_and_features">Plugins und Funktionen</string>
@@ -1370,6 +1371,7 @@
     <string name="note_search_button">SUCHE</string>
     <string name="all_note_button">ALLE</string>
     <string name="title_full_screen_mode">Vollbild-Modus</string>
+    <string name="title_colors_for_printing">Druckfarben</string>
     <string name="title_share_save_this_screen">Diesen Bildschirm teilen/speichern</string>
     <string name="search_phrase">Suchbegriff</string>
     <string name="load_more">Mehr laden</string>
@@ -1493,6 +1495,7 @@
     <string name="authentication_failed_wrong_password">Authentifizierung fehlgeschlagen. Falsches Passwort?</string>
     <string name="ob1_session_restarted_title">Sensorsitzung neu gestartet</string>
     <string name="ob1_session_restarted_note">Sensorsitzung wurde neu gestartet</string>
+    <string name="summary_ob1_g5_preemptive_restart_extended_time_travel_all_firmwares">Ermöglicht verlängerten Nutzungszeitraum mit allen Firmware-Versionen (nur im Entwicklermodus) </string>
     <string name="blood_glucose_graph">Blutzuckerdiagramm</string>
     <string name="enable_streaming_summary">verbinde Libre2-Sensoren nach dem Scannen. Das Libre-Lesegerät und die Libre Link-App werden dann keine Alarme mehr empfangen</string>
     <string name="enable_streaming_title">Starte Bluetooth-Verbindung mit Libre2-Sensoren</string>
