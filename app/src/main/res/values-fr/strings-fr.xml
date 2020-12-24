@@ -135,7 +135,7 @@
     <string name="title_activity_profile_editor">Editeur de profil de traitement</string>
     <string name="first_use_menu_to_scan">Tout d\'abord utiliser le menu pour scanner votre appareil BT ou modifier la source de données dans les paramètres!</string>
     <string name="first_configure_ip_address">Tout d\'abord configurer l\'adresse IP de votre lecteur wixel ou l\'url Parakeet</string>
-    <string name="now_start_your_sensor">Maintenant, démarrez votre capteur ou vérifier les paramètres</string>
+    <string name="now_start_your_sensor">Maintenant, démarrer votre capteur ou vérifier les paramètres</string>
     <string name="please_wait_while_sensor_warms_up">S\'il vous plaît patienter pendant que le capteur se réchauffe! (</string>
     <string name="minutes_with_bracket">" minutes)"</string>
     <string name="possible_bad_calibration">Possible mauvaise pente d\'étalonnage, allez boire un verre d\'eau, lavez-vous les mains, puis recalibrez dans quelques temps!</string>
@@ -176,7 +176,7 @@
     <string name="libre_15_minutes_graph">Graphe 15 minutes du Libre</string>
     <string name="libre_last_x_minutes_graph">Graphe des dernières %d minutes du Libre</string>
     <string name="share_config_via_qr_code">Partager la config via le code QR</string>
-    <string name="check_for_updated_version">Vérifiez les mises à jour</string>
+    <string name="check_for_updated_version">Vérifier les mises à jour</string>
     <string name="send_feedback_to_developer">Envoyer des messages au développeur</string>
     <string name="home_screen">Écran d\'accueil</string>
     <string name="event_logs">Journal des événements</string>
@@ -851,7 +851,7 @@
     <string name="reminders">Rappels</string>
     <string name="error">erreur</string>
     <string name="install_text_to_speech_data_question">Installer les données Text-To-Speech?</string>
-    <string name="after_installation_of_languages_you_might_have_to">(Après l\'installation de langues, vous pourriez avoir à appuyer sur « Restart Collector » dans l\'état du système.)</string>
+    <string name="after_installation_of_languages_you_might_have_to">(Après l\'installation de langues, vous pourriez avoir à appuyer sur \"Redémarrer le collecteur\" dans État du système.)</string>
     <string name="stop_sensor">Arrêter le capteur</string>
     <string name="dont_stop_just_reset_all_calibrations">Ne pas arrêter, simplement réinitialiser tous les étalonnages</string>
     <string name="initial_calibration">Étalonnage initial</string>
