@@ -1521,6 +1521,7 @@
     <string name="didnt_find_any_glucose_readings_in_that_time_period">No se encontraron lecturas de glucosa en ese período</string>
     <string name="got_calibration_in_the_future__cannot_process">Se obtuvo una calibración en el futuro, ¡no se puede procesar!</string>
     <string name="remote_snooze">Diferido a Distancia…</string>
+    <string name="sensor_stopped">Sensor parado</string>
     <string name="restarting_collector">¡Reinicializando colector!</string>
     <string name="follower_deleted_succesfully">Se borró el seguidor con éxito</string>
     <string name="failed_to_delete_follower">No se pudo borrar el seguidor</string>
