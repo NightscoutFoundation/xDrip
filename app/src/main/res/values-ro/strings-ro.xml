@@ -390,7 +390,7 @@
     <string name="bluetooth_wakelocks">Procese persistente Bluetooth</string>
     <string name="compatible_broadcast">Transmitere compatibilă</string>
     <string name="show_datatables">Arată tabelele de date</string>
-    <string name="display_bridge_battery">Afișează Podul baterie</string>
+    <string name="display_bridge_battery">Afișează bateria aparatului bridge</string>
     <string name="close_gatt_on_ble_disconnect">Închide GATT la deconectarea Bluetooth</string>
     <string name="disable_battery_warning">Dezactivează avertizare baterie</string>
     <string name="additional_text_status">Stare text adițional</string>
