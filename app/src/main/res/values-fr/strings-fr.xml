@@ -14,7 +14,7 @@
     <string name="connecting_to_device">Connection au périphérique</string>
     <string name="title_activity_raw_data_table">Table des données brutes</string>
     <string name="title_activity_calculated_data_table">Table de données calculé</string>
-    <string name="title_activity_start_new_sensor">Lancer un nouveau capteur</string>
+    <string name="title_activity_start_new_sensor">Démarrer un nouveau capteur</string>
     <string name="title_activity_new_sensor_location">Emplacement du nouveau capteur</string>
     <string name="title_activity_stop_sensor">Arrêt du capteur</string>
     <string name="title_activity_nav_drawer">Menu de Navigation</string>
@@ -1399,7 +1399,7 @@
     <string name="collecting">collecte...</string>
     <string name="insulin">insuline</string>
     <string name="nothing_found">aucun résultat</string>
-    <string name="do_not_hit_start_long">Ne pas démarrer le capteur à moins que le capteur ne soit déjà installé et l\'émetteur connecté.</string>
+    <string name="do_not_hit_start_long">Ne pas cliquer sur \'démarrer le capteur\' à moins que le capteur ne soit déjà installé et l\'émetteur connecté.</string>
     <string name="calibration_graph_no_calibration">graphique d\'étalonnage (pas d\'étalonnage)</string>
     <string name="calibration_plugin_header">en-tête du plugin d\'étalonnage</string>
     <string name="usb_device_was_not_recognized">Périphérique USB non reconnu</string>
@@ -1427,11 +1427,11 @@
     <string name="connection_status">État de la connexion:</string>
     <string name="range_in_high_low">Plage: (dans/haut/bas)</string>
     <string name="absolute_s">Absolu #s :</string>
-    <string name="median_bg">Moyenne BG :</string>
-    <string name="mean_bg">Moyenne BG :</string>
+    <string name="median_bg">Glycémie médiane :</string>
+    <string name="mean_bg">Glycémie moyenne :</string>
     <string name="hba1c_est">Estimation HbA1c :</string>
     <string name="stddev">StdDev :</string>
-    <string name="relative_sd_cv">SD relative (CV) :</string>
+    <string name="relative_sd_cv">Coefficient de Variation (CV) :</string>
     <string name="important_warning">Avertissement important!</string>
     <string name="i_agree">J\'ACCEPTE</string>
     <string name="backup_detected">Sauvegarde détectée</string>
