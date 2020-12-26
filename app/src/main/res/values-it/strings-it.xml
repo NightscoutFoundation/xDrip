@@ -39,6 +39,8 @@
     <string name="scan_share2_barcode">Scan Condividi Barcode</string>
     <string name="pref_share2_scan_barcode_summary">Oppure scansiona il codice sul ricevitore</string>
     <!-- MongoDB Settings -->
+    <string name="pref_title_mongodb">MongoDB</string>
+    <string name="pref_summary_mongodb_enabled">Upload diretto nel database, sconsigliato per Nightscout</string>
     <string name="pref_dialog_mongodb_uri">Inserisci MongoDB URI\"</string>
     <string name="pref_message_mongodb_uri">Sostituire valori in {} con i tuoi valori corretti</string>
     <string name="pref_default_mongodb_uri">MongoDB: // {user}: {Password} @ {host} .mongolab.com: {11111} / {dati}</string>
@@ -51,6 +53,7 @@
     <!-- API Settings -->
     <string name="pref_title_api">API Upload (REST)</string>
     <string name="pref_title_api_enabled">Abilitato</string>
+    <string name="pref_summary_api_enabled">REST API è il modo standard per connettersi a Nightscout</string>
     <string name="pref_title_api_url">URL di base</string>
     <string name="pref_dialog_api_url">Inserisci l\'API URL</string>
     <string name="pref_message_api_url">Questo solo l\'URL di base, l\'uploader aggiungerà automaticamente i valori del POST. API_SECRET sul server. La tua  passphrase deve corrispondere.</string>
@@ -74,6 +77,11 @@
     <string name="pref_pebble_display_high_line">Visualizzare Linea Limite di Glicemia Alta</string>
     <string name="pref_pebble_display_low_line">Visualizzare Linea Limite di Glicemia Bassa</string>
     <!-- Amazfit Settings -->
+    <string name="amazfit_sync_service">Servizio di sincronizzazione AmazFit</string>
+    <string name="pref_amazfit_enable_summary">Abilita supporto dati Amazfit</string>
+    <string name="pref_amazfit_tile">Servizio Amazfit</string>
+    <string name="pref_amazfit_BG_alert_enable_summary">Invia allarmi di glicemia allo smartwatch</string>
+    <string name="pref_amazfit_other_alert_enable_summary">Invia altri allarmi allo smartwatch</string>
     <string name="toast_crash">Qualcosa è andato storto :( un rapporto è stato inviato per aiutare a risolvere il problema.</string>
     <string name="taskerConfigInstruction">Clicca sull\'icona Tick qui per confermare. Non dovrebbe essere necessario modificare la stringa di configurazione.</string>
     <string name="taskerConfiguration">Configurazione Tasker</string>
@@ -209,6 +217,9 @@
     <string name="pref_summary_enable_wearG5">Collegare indossare per G5 quando il telefono è out-of-range</string>
     <string name="pref_force_wearG5">Forza Indossare servizio G5 Collection</string>
     <string name="pref_summary_force_wearG5">Telefono Force per l\'uso Indossare G5 Collection Service</string>
+    <string name="pref_summary_disable_wearG5_on_lowbattery">Disabilita collezione forzata da Wear per allarme batteria smartwatch scarica</string>
+    <string name="pref_disable_wearG5_on_missedreadings">Disabilita lettura forzata da smartwatch per assenza letture</string>
+    <string name="pref_summary_disable_wearG5_on_missedreadings">Disabilita la lettura forzata da Wear dopo minuti di letture mancante dallo smartwatch</string>
     <string name="pref_node_wearG5">Dispositivo G5 esecuzione Collection Service</string>
     <string name="pref_summary_node_wearG5">Telefono Force per utilizzare questa usura G5 Collection Service</string>
     <string name="pebble_integration">Integrazione Pebble</string>
@@ -348,6 +359,7 @@
     <string name="alarm_if_above_high_value">Allarme se persistono valori ALTI</string>
     <string name="for_longer_than_minutes">per più di (minuti)</string>
     <string name="choose_sound_used_for_persistent_high_alarm">Scegliere il suono usato per allarme valore ALTO persistente.</string>
+    <string name="persistent_high_sound">Allarme per VALORI ALTI Persistenti</string>
     <string name="forecast_lows">Lows Previsione</string>
     <string name="raise_alarm_on_forecast_low">Allarme Previsione Ragg. VALORE BASSO</string>
     <string name="notify_when_predicted_low_time_reaches_threshold">Notifica quando il valore minimo previsto raggiunge la soglia</string>
@@ -377,7 +389,10 @@
     <string name="display_slope_arrows">Mostra le Frecce di Tendenza</string>
     <string name="vibrate_watch_to_alert_no_data">Vibrazione orologio se non riceve letture</string>
     <string name="vibrate_when_missed_signal">Vibrazione in caso di perdita segnale</string>
+    <string name="vibrate_watch_to_alert_no_bluetooth">Vibra in caso di disconnessione bluetooth</string>
+    <string name="vibrate_when_no_bluetooth">Vibra in assenza di bluetooth</string>
     <string name="special_glucose_value_to_display_message">Mostra messaggio in caso di particolari valori glicemici</string>
+    <string name="bluetooth_wakelocks">Bluetooth Wakelocks</string>
     <string name="show_datatables">Mostra Datatables</string>
     <string name="display_bridge_battery">Visualizzare Ponte Batteria</string>
     <string name="disable_battery_warning">Disabilita Allarme Batteria Scarica</string>
@@ -476,6 +491,25 @@
     <string name="sliding_24_hour_window_summary">Per statistica usa le ultime 24 H invece di iniziare a mezzanotte.</string>
     <string name="split">APRI</string>
     <string name="delete">Cancella</string>
+    <string name="notify_disable_wearG5_on_missedreadings">Collezione forzata da Wear disabilitata per mancate letture da %1$d minuti dallo smartwatch!</string>
+    <string name="pref_summary_influxdb_enabled">Se usi un database privato InfluxDB, questo dovrebbe essere abilitato</string>
+    <string name="pref_dialog_influxdb_uri">Inserisci l\'URI di InfluxDB</string>
+    <string name="watch_vibrate_active_alerts">Vibrazione smartwatch per allarmi glicemia attivi</string>
+    <string name="interapp_settings">Impostazioni Inter-app</string>
+    <string name="use_plugins_for_brodcast">Usa filtraggio del rumore e plugins (se abilitati) per il valore trasmesso</string>
+    <string name="process_nsclient_treatments">Processa i trattamenti ricevuti dall\'app NSClient</string>
+    <string name="advanced_bluetooth_settings">Impostazioni Bluetooth avanzate</string>
+    <string name="bluetooth_settings">Impostazioni Bluetooth</string>
+    <string name="auto_turn_on_bluetooth">Attiva automaticamente il bluetooth se è spento quando si prova a connettersi a un dispositivo bluetooth</string>
+    <string name="turn_bluetooth_on">Attiva Bluetooth</string>
+    <string name="reset_bluetooth">Resetta Bluetooth (spegni e riaccendi) se non si ricevono dati in 20 minuti</string>
+    <string name="bluetooth_watchdog">Watchdog Bluetooth</string>
+    <string name="reset_bluetooth_g5">Resetta Bluetooth (spegni/riaccendi) per mantenere la sorgente di dati G5 in funzione. Senza questo il collettore G5 potrebbe fallire.</string>
+    <string name="g5_bluetooth_watchdog">Watchdog Bluetooth G5</string>
+    <string name="close_gatt">Se il watchdog bluetooth si attiva spesso, provare a deselezionare questa opzione per vedere se aiuta</string>
+    <string name="older_bluetooth_wakelocks">Vecchi wakelocks bluetooth (possono necessitare più batteria) che potrebbero essere necessari per la ricezione dei bluetooth</string>
+    <string name="reset_bluetooth_on_off">Resetta Bluetooth spegnendolo e riaccendendolo ogni pochi minuti! Selezionare solo per prove. Potrebbe disturbare qualsiasi altra cosa usando bluetooth.</string>
+    <string name="constantly_reset_bluetooth">Resetta costantemente bluetooth</string>
     <!-- trend arrow for speak -->
     <string name="DoubleDown">veloce caduta</string>
     <string name="SingleDown">falling</string>
