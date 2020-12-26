@@ -108,7 +108,7 @@
     <string name="show_libre_trend">הראה מגמת הליברה</string>
     <string name="libre_15_minutes_graph">גרף 15 דקות של הליברה</string>
     <string name="libre_last_x_minutes_graph">גרף %d דקות אחרונות של הליברה</string>
-    <string name="share_config_via_qr_code">שיתוף הגדרות באמצעות QR קוד</string>
+    <string name="share_config_via_qr_code">שיתוף הגדרות באמצעות קוד QR</string>
     <string name="check_for_updated_version">בדוק האם יש גרסא חדשה</string>
     <string name="send_feedback_to_developer">שלח פידבק למפתח</string>
     <string name="home_screen">מסך הבית</string>
@@ -316,7 +316,6 @@
     <string name="vibrate_alerts">רעידה בזמן ההתראות</string>
     <string name="interapp_settings">הגדרות לשיתוף פעולה בין אפליקציות</string>
     <string name="accept_treatments">קבל טיפולים</string>
-    <string name="short_speak_readings_shortcut">Show a shortcut in the â˜° menu to toggle Speak Readings</string>
     <string name="advanced_bluetooth_settings">הגדרות בלוטוס מתקדמות</string>
     <string name="bluetooth_settings">הגדרות Bluetooth</string>
     <string name="auto_turn_on_bluetooth">הפעלה אוטומטית של הבלוטוס כאשר ננסה להתחבר להתקן בלוטוס</string>
