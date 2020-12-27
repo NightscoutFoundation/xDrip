@@ -1484,6 +1484,7 @@
     <string name="unusual_internal_context_problem__please_report">Необычная внутренняя проблема контекста - пожалуйста, сообщите</string>
     <string name="cannot_start__please_report_context_problem">Невозможно запустить - пожалуйста, сообщите о проблеме контекста</string>
     <string name="xdrip_will_not_work_below_android_version_42">xDrip+ не совместим с версиями Android ниже 4.2</string>
+    <string name="xdrip_oop2_not_installed">xDrip+ нужен OOP2 для работы Libre2/LibreUS сенсоров.</string>
     <string name="this_app_needs_battery_optimization_whitelisting_or_it_will_not_work_well_please_reset_app_preferences">Для корректной работы приложение необходимо исключить из списка оптимизации энергопотребления. Пожалуйста выполните необходимые настройки</string>
     <string name="setting_disabled_">Настройка отключена :)</string>
     <string name="yes_please">ДА, пожалуйста</string>
@@ -1542,4 +1543,7 @@
     <string name="pref_enable_insulinprofiles">активировать от 1-го до 3-ех профилей</string>
     <string name="pref_select_basal_insulinprofiles">выбрать профиль базального инсулина.</string>
     <string name="pref_select_bolus_insulinprofiles">выбрать профиль болюсного инсулина. также используется для помпы и ручки...</string>
+    <string name="enable_streaming_always_allow">Всегда подключаться к сенсорам Libre2</string>
+    <string name="enable_streaming_dialog_no">Не подключаться к этому датчику Libre2 </string>
+    <string name="enable_streaming_dialog_text">Вы хотите подключить xDrip к этому датчику? Данное действие сделает невозможным получение сигналов тревоги на ридере и в приложении LibreLink. Нажмите \"да\" и просканируйте датчик еще раз, чтобы создать подключение (выберите \"не подключать\", если планируете использовать xDrip с \"пропатченным\" приложением LibreLink)</string>
 </resources>
