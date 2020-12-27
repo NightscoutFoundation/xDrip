@@ -840,7 +840,6 @@
     <string name="repeat_sound">Повторять звуковое уведомление</string>
     <string name="enable_telemetry">Включить телеметрию</string>
     <string name="send_data_to_developers">Отправлять информацию об использовании разработчика в целях улучшения качества приложения</string>
-    <string name="try_to_work_around_noisy_readings_ultrasensitive">Начинать подавление некорректных значений при низком уровне шума показаний (только в инженерном режиме)</string>
     <string name="sidiary_date_title">Экспортировать начиная с?</string>
     <string name="blukon">Blucon</string>
     <string name="tomato">Tomato</string>
