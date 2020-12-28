@@ -32,7 +32,7 @@
     <string name="title_activity_main">Activité principale</string>
     <string name="title_activity_fake_numbers">Faux nombres</string>
     <string name="title_activity_edit_alert">Modifier l\'alerte</string>
-    <string name="title_activity_double_calibration">Calibration initiale</string>
+    <string name="title_activity_double_calibration">Étalonnage initial</string>
     <string name="title_activity_calibration_override">Override de calibration</string>
     <string name="pref_header_cloud_storage">Stockage Cloud</string>
     <string name="auto_configure_title">Configuration automatique</string>
