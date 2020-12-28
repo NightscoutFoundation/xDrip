@@ -32,7 +32,7 @@
     <string name="title_activity_main">Activități principale</string>
     <string name="title_activity_fake_numbers">Valori false</string>
     <string name="title_activity_edit_alert">Editează alerta</string>
-    <string name="title_activity_double_calibration">Calibrare dublă</string>
+    <string name="title_activity_double_calibration">Calibrare inițială</string>
     <string name="title_activity_calibration_override">Calibrarea Suprascriere</string>
     <string name="pref_header_cloud_storage">Stocare în cloud</string>
     <string name="auto_configure_title">Configurează automat</string>
@@ -216,7 +216,7 @@
     <string name="pref_summary_node_wearG5">Telefon forța de a utiliza aceasta Wear Collection Serviciu</string>
     <string name="pref_sync_wear_logs">Jurnale Wear sincronizare</string>
     <string name="pref_summary_sync_wear_logs">Trimite jurnalele Wear la Event Viewer</string>
-    <string name="pref_wear_logs_prefix">A se purta Log Prefixul</string>
+    <string name="pref_wear_logs_prefix">Prefixul jurnalului Wear</string>
     <string name="pref_summary_wear_logs_prefix">Prefixul pentru intrările din jurnal utilizate Wear</string>
     <string name="pebble_integration">Integrare Pebble</string>
     <string name="send_data_to_pebble_watchface">Trimite date la cadranul Pebble</string>
