@@ -56,7 +56,7 @@ public class WebServiceProfile extends BaseWebService {
         }
 
         final JSONArray wrapper = new JSONArray();
-        wrapper.append(reply);
+        wrapper.put(reply);
         return new WebResponse(wrapper.toString());
     }
 

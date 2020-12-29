@@ -132,7 +132,7 @@ public class WebServiceSgv extends BaseWebService {
             } else {
                 UserError.Log.d(TAG, "Copying "+count+" of "+this.cachedReadings.size()+" cached readings");
                 readings = new ArrayList<>();
-                it = this.cachedReadings.iterator();
+                Iterator<BgReading> it = this.cachedReadings.iterator();
                 for (int i=0; i<count; i++) {
                     readings.add(it.next());
                 }
