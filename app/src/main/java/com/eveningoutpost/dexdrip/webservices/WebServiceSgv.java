@@ -114,8 +114,12 @@ public class WebServiceSgv extends BaseWebService {
         // Store a cache of the last BgReading.latest() query for the duration in which there is no
         // new latest reading. Since obtaining the latest reading is fast, but a larger number of
         // readings is significantly slower, this optimizes the most often use case.
-        Iterator<BgReading> it = BgReading.latest(1, ignore_sensor).iterator();
-        BgReading latestReading = it.hasNext() ? it.next() : null;
+        BgReading bgr = BgReading.latest(1, ignore_sensor);
+        BgReading latestReading = null;
+        if (bgr != null) {
+            Iterator<BgReading> it = bgr.iterator();
+            latestReading = it.hasNext() ? it.next() : null;
+        }
 
         List<BgReading> readings;
         if (this.cachedReadings != null && latestReading != null &&
