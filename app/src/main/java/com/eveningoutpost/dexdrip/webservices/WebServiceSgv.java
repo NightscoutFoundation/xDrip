@@ -18,6 +18,7 @@ import org.json.JSONObject;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +42,7 @@ public class WebServiceSgv extends BaseWebService {
     private static String TAG = "WebServiceSgv";
 
     private static List<BgReading> cachedReadings = null;
+    private static Map<String, JSONObject> cachedJson = new HashMap<>();
 
 
     // process the request and produce a response object
@@ -143,7 +145,15 @@ public class WebServiceSgv extends BaseWebService {
             this.cachedReadings = readings;
         }
 
+        // Prevent the cache from growing too large. 1000 entries is about 3.5 days
+        if (cachedJson.size() > 1000) {
+            cachedJson.clear();
+        }
+
         if (readings != null) {
+            String unitsHint = Pref.getString("units", "mgdl").equals("mgdl") ? "mgdl" : "mmol";
+            int withCache = 0;
+            int withManual = 0;
             // populate json structures
             try {
 
@@ -152,6 +162,11 @@ public class WebServiceSgv extends BaseWebService {
 
                 // for each reading produce a json record
                 for (BgReading reading : readings) {
+                    if (cachedJson.containsKey(reading.uuid)) {
+                        reply.put(cachedJson.get(reading.uuid));
+                        withCache++;
+                        continue;
+                    }
                     final JSONObject item = new JSONObject();
                     if (!brief) {
                         item.put("_id", reading.uuid);
@@ -177,7 +192,7 @@ public class WebServiceSgv extends BaseWebService {
                         item.put("type", "sgv");
                     }
                     if (units_indicator > 0) {
-                        item.put("units_hint", Pref.getString("units", "mgdl").equals("mgdl") ? "mgdl" : "mmol");
+                        item.put("units_hint", unitsHint);
                         units_indicator = 0;
                     }
 
@@ -220,9 +235,12 @@ public class WebServiceSgv extends BaseWebService {
                         sensor_status_string = null;
                     }
 
+                    cachedJson.put(reading.uuid, item);
+                    withManual++;
                     reply.put(item);
                 }
 
+                Log.d(TAG, "Processed "+withCache+" cached entries and "+withManual+" manual entries");
                 Log.d(TAG, "Output: " + reply.toString());
             } catch (JSONException e) {
                 UserError.Log.wtf(TAG, "Got json exception: " + e);
