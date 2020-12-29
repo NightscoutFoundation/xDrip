@@ -82,23 +82,6 @@ public class Sensor extends Model {
         return currentSensor();
     }
 
-    // Used by xDripViewer
-    public static void createUpdate(long started_at, long stopped_at,  int latest_battery_level, String uuid) {
-
-        Sensor sensor = getByTimestamp(started_at);
-        if (sensor != null) {
-            Log.d("SENSOR", "updatinga an existing sensor");
-        } else {
-            Log.d("SENSOR", "creating a new sensor");
-            sensor = new Sensor();
-        }
-        sensor.started_at = started_at;
-        sensor.stopped_at = stopped_at;
-        sensor.latest_battery_level = latest_battery_level;
-        sensor.uuid = uuid;
-        sensor.save();
-    }
-
     public synchronized static void stopSensor() {
         final Sensor sensor = currentSensor();
         if (sensor == null) {

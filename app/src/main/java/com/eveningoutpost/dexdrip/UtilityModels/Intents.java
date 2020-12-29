@@ -57,6 +57,8 @@ public interface Intents {
     String BOLUSCALC_COB_RECEIVER = "com.eveningoutpost.dexdrip.BOLUSCALC_COB_RECEIVER";
 
     // Send to LibreXposed
+
+    // Send to external decoder
     String XDRIP_PLUS_LIBRE_DATA = "com.eveningoutpost.dexdrip.LIBRE_DATA";
     String LIBRE_DATA_BUFFER = "com.eveningoutpost.dexdrip.Extras.DATA_BUFFER";
     String LIBRE_PATCH_UID_BUFFER = "com.eveningoutpost.dexdrip.Extras.LIBRE_PATCH_UID_BUFFER";

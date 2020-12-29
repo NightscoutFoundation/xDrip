@@ -773,7 +773,6 @@
     <string name="repeat_sound">Ponavljaj zvuk</string>
     <string name="enable_telemetry">Omogući telemetriju</string>
     <string name="send_data_to_developers">Programerima pošalji podatke o stopi uspješnosti različitih uređaja</string>
-    <string name="try_to_work_around_noisy_readings_ultrasensitive">Počni ispravljati očitanja sa šumovima čak i na vrlo niskim razinama šumova (jedino inženjerski način rada)</string>
     <string name="sidiary_date_title">Izvezi počevši od kada?</string>
     <string name="use_gravity_sensor_to_rotate_items">Koristi senzor gravitacije za rotaciju elemenata</string>
     <string name="low_bridge_battery">Bridge baterija je slaba</string>

@@ -5,7 +5,6 @@ import android.bluetooth.BluetoothGatt;
 import android.os.Build;
 import android.os.PowerManager;
 
-import com.eveningoutpost.dexdrip.BestGlucose;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.Models.BgReading;
@@ -20,6 +19,7 @@ import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.BroadcastGlucose;
+import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.NotificationChannels;
@@ -33,11 +33,11 @@ import com.eveningoutpost.dexdrip.utils.bt.Mimeograph;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.gson.reflect.TypeToken;
-/*import com.polidea.rxandroidble.RxBleConnection;
-import com.polidea.rxandroidble.exceptions.BleCannotSetCharacteristicNotificationException;
-import com.polidea.rxandroidble.exceptions.BleDisconnectedException;
-import com.polidea.rxandroidble.exceptions.BleGattCharacteristicException;
-*/
+import com.polidea.rxandroidble2.RxBleConnection;
+import com.polidea.rxandroidble2.exceptions.BleCannotSetCharacteristicNotificationException;
+import com.polidea.rxandroidble2.exceptions.BleDisconnectedException;
+import com.polidea.rxandroidble2.exceptions.BleGattCharacteristicException;
+
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.security.InvalidKeyException;
@@ -56,7 +56,7 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 
-//import rx.schedulers.Schedulers;
+import io.reactivex.schedulers.Schedulers;
 
 import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.Authentication;
 import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.Control;
@@ -80,13 +80,12 @@ import static com.eveningoutpost.dexdrip.UtilityModels.Constants.MINUTE_IN_MS;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.SECOND_IN_MS;
 import static com.eveningoutpost.dexdrip.utils.bt.Helper.getStatusName;
 
-
-import com.polidea.rxandroidble2.RxBleConnection;
-import com.polidea.rxandroidble2.exceptions.BleCannotSetCharacteristicNotificationException;
-import com.polidea.rxandroidble2.exceptions.BleDisconnectedException;
-import com.polidea.rxandroidble2.exceptions.BleGattCharacteristicException;
-
-import io.reactivex.schedulers.Schedulers;
+/*import com.polidea.rxandroidble.RxBleConnection;
+import com.polidea.rxandroidble.exceptions.BleCannotSetCharacteristicNotificationException;
+import com.polidea.rxandroidble.exceptions.BleDisconnectedException;
+import com.polidea.rxandroidble.exceptions.BleGattCharacteristicException;
+*/
+//import rx.schedulers.Schedulers;
 
 
 /**
@@ -266,15 +265,23 @@ public class Ob1G5StateMachine {
                 if (d)
                     UserError.Log.d(TAG, ("Authenticated: " + status.isAuthenticated() + " " + status.isBonded()));
                 if (status.isAuthenticated()) {
-                    if (status.isBonded()) {
-                        parent.msg("Authenticated");
-                        parent.authResult(true);
-                        parent.changeState(Ob1G5CollectionService.STATE.GET_DATA);
-                        throw new OperationSuccess("Authenticated");
+
+                    if (parent.unBondAndStop) {
+                        UserError.Log.d(TAG,"Processing unbond and stop");
+                        parent.changeState(Ob1G5CollectionService.STATE.UNBOND);
+
                     } else {
-                        //parent.unBond(); // bond must be invalid or not existing // WARN
-                        parent.changeState(Ob1G5CollectionService.STATE.PREBOND);
-                        // TODO what to do here?
+
+                        if (status.isBonded()) {
+                            parent.msg("Authenticated");
+                            parent.authResult(true);
+                            parent.changeState(Ob1G5CollectionService.STATE.GET_DATA);
+                            throw new OperationSuccess("Authenticated");
+                        } else {
+                            //parent.unBond(); // bond must be invalid or not existing // WARN
+                            parent.changeState(Ob1G5CollectionService.STATE.PREBOND);
+                            // TODO what to do here?
+                        }
                     }
                 } else {
                     parent.msg("Not Authorized! (Wrong TxID?)");
@@ -399,6 +406,26 @@ public class Ob1G5StateMachine {
                         });
         UserError.Log.d(TAG, "Exiting doKeepAliveBondRequest");
         final PowerManager.WakeLock linger = JoH.getWakeLock("jam-g5-bond-linger", 30000);
+        return true;
+    }
+
+    private static void localUnbondAndStop(final Ob1G5CollectionService parent, RxBleConnection connection) {
+        Inevitable.task("local unbond", 3000, () -> {
+            parent.unBond(); // remove local bond
+            Inevitable.task("shutdown collector",2000, () -> {
+                UserError.Log.d(TAG,"Shutting down collector");
+                DexCollectionType.setDexCollectionType(DexCollectionType.Disabled);
+                CollectionServiceStarter.restartCollectionServiceBackground();
+                parent.unBondAndStop = false;
+            });
+        });
+    }
+
+    @SuppressLint("CheckResult")
+    public static boolean doUnBond(final Ob1G5CollectionService parent, RxBleConnection connection) {
+        if (connection == null) return false;
+        parent.msg("Unbond Transmitter a:" + usingAlt());
+        localUnbondAndStop(parent, connection);
         return true;
     }
 
@@ -752,7 +779,7 @@ public class Ob1G5StateMachine {
                             UserError.Log.d(TAG, "Failed to write DisconnectTxMessage as already disconnected: " + throwable);
 
                         } else {
-                            UserError.Log.e(TAG, "Failed to write DisconnectTxMessage: " + throwable);
+                            UserError.Log.d(TAG, "Failed to write DisconnectTxMessage: " + throwable);
 
                         }
                         parent.changeState(Ob1G5CollectionService.STATE.CLOSE);

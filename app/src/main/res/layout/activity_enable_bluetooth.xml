@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+
+
+    <LinearLayout
+        android:id="@+id/profile_layout_view"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:layout_gravity="top"
+        android:layout_weight="1"
+        android:fadeScrollbars="false"
+        android:orientation="vertical"
+        android:scrollbars="vertical">
+
+        <TextView
+            android:id="@+id/enable_streaming_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:text="@string/enable_streaming_dialog_title"
+            android:textSize="26sp" />
+
+        <TextView
+            android:id="@+id/enable_streaming_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:text="@string/enable_streaming_dialog_text"
+            android:textSize="18sp" />
+            android:layout_toEndOf="@+id/enable_streaming_title"
+
+
+
+        <Button
+            android:id="@+id/enable_streaming_yes"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:layout_toEndOf="@+id/enable_streaming_title"
+            android:text="@string/enable_streaming_dialog_yes" />
+
+        <Button
+            android:id="@+id/enable_streaming_no"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:layout_toEndOf="@+id/enable_streaming_yes"
+            android:text="@string/enable_streaming_dialog_no" />
+
+        <CheckBox
+            android:id="@+id/enable_streaming_dont_ask_again"
+            android:layout_toEndOf="@+id/enable_streaming_no"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+
+            android:layout_weight="1"
+            android:text="Don't ask this again" />
+    </LinearLayout>
+
+</android.support.design.widget.CoordinatorLayout>
