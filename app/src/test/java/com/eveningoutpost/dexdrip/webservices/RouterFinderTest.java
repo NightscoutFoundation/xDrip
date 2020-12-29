@@ -67,6 +67,24 @@ public class RouterFinderTest extends RobolectricTestWithConfig {
                 .that(response.bytes[0])
                 .isEqualTo('[');
 
+
+        // status
+        subroute = "status.json";
+        response = routeFinder.handleRoute(subroute);
+        validResponse(subroute, response);
+        assertWithMessage(subroute + " instance data format")
+                .that(response.bytes[0])
+                .isEqualTo('{');
+
+
+        // profile
+        subroute = "profile.json";
+        response = routeFinder.handleRoute(subroute);
+        validResponse(subroute, response);
+        assertWithMessage(subroute + " instance data format")
+                .that(response.bytes[0])
+                .isEqualTo('[');
+
         // tasker
         subroute = "tasker/snooze";
         response = routeFinder.handleRoute(subroute);
