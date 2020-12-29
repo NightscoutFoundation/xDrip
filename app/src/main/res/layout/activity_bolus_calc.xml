@@ -7,7 +7,6 @@
     android:layout_height="match_parent"
     android:layout_marginStart="32dp"
     android:layout_marginTop="32dp"
-    android:layout_marginEnd="32dp"
     android:layout_marginBottom="32dp"
     tools:context="com.eveningoutpost.dexdrip.BolusCalculatorActivity">
 
@@ -30,12 +29,21 @@
 
                 <TextView
                     android:id="@+id/carbsheader"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="6"
                     android:fontFamily="sans-serif-condensed"
                     android:text="@string/title_carbs_boluscalc"
                     android:textColor="#ffffffff"
                     android:textSize="32sp" />
+
+                <ImageButton
+                    android:id="@+id/settingsButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="32dp"
+                    android:src="@drawable/ic_settings_button"
+                    android:background="@android:color/transparent" />
 
             </LinearLayout>
 
@@ -55,7 +63,7 @@
                     android:id="@+id/editTextCarbs"
                     android:layout_width="75dp"
                     android:layout_height="wrap_content"
-                    android:inputType="number"
+                    android:inputType="numberDecimal"
                     android:textColor="#ffffffff"
                     android:textSize="30sp" />
 
@@ -100,7 +108,7 @@
                     android:id="@+id/editTextProteins"
                     android:layout_width="75dp"
                     android:layout_height="wrap_content"
-                    android:inputType="number"
+                    android:inputType="numberDecimal"
                     android:textColor="#ffffffff"
                     android:textSize="25sp" />
 
@@ -130,7 +138,7 @@
                     android:id="@+id/editTextFats"
                     android:layout_width="75dp"
                     android:layout_height="wrap_content"
-                    android:inputType="number"
+                    android:inputType="numberDecimal"
                     android:textColor="#ffffffff"
                     android:textSize="25sp" />
 
@@ -181,7 +189,7 @@
                         android:id="@+id/editTextBloodGlucose"
                         android:layout_width="75dp"
                         android:layout_height="wrap_content"
-                        android:inputType="number"
+                        android:inputType="numberDecimal"
                         android:textColor="#ffffffff"
                         android:textSize="30sp" />
 
@@ -335,7 +343,8 @@
                     android:id="@+id/editTextTotalBolus"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:inputType="number"
+                    android:inputType="numberDecimal"
+                    android:maxLength="4"
                     android:text="@string/number_placeholder"
                     android:textColor="#ffffffff"
                     android:textSize="30sp" />
@@ -360,7 +369,9 @@
         <Button
             android:id="@+id/confirm_button"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="60dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="32dp"
             android:text="@string/confirm_button_boluscalc" />
 
     </LinearLayout>

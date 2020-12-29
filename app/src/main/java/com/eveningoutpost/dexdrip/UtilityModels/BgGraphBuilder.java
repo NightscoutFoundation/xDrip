@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.AddCalibration;
+import com.eveningoutpost.dexdrip.BolusCalculatorActivity;
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.APStatus;
@@ -1747,6 +1748,8 @@ public class BgGraphBuilder {
                                         df.setMinimumIntegerDigits(1);
                                         //  iv.setLabel("IoB: " + df.format(iob.iob));
                                         Home.updateStatusLine("iob", df.format(iob.iob));
+
+                                        BolusCalculatorActivity.sendValuesToCalc("iobValue", df.format(iob.iob), Intents.BOLUSCALC_IOB_RECEIVER);
                                         //  annotationValues.add(iv); // needs to be different value list so we can make annotation nicer
 
                                     }

@@ -53,7 +53,9 @@ public interface Intents {
 
     // Local Broadcasts
     String HOME_STATUS_ACTION = "com.eveningoutpost.dexdrip.HOME_STATUS_ACTION";
-    
+    String BOLUSCALC_IOB_RECEIVER = "com.eveningoutpost.dexdrip.BOLUSCALC_IOB_RECEIVER";
+    String BOLUSCALC_COB_RECEIVER = "com.eveningoutpost.dexdrip.BOLUSCALC_COB_RECEIVER";
+
     // Send to LibreXposed
     String XDRIP_PLUS_LIBRE_DATA = "com.eveningoutpost.dexdrip.LIBRE_DATA";
     String LIBRE_DATA_BUFFER = "com.eveningoutpost.dexdrip.Extras.DATA_BUFFER";

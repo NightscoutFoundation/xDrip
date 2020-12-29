@@ -312,7 +312,7 @@ public class PhoneKeypadInputActivity extends BaseActivity {
         values = new HashMap<String, String>();
     }
 
-    private static String getValue(String tab) { //if has value, return it, else just put a space
+    public static String getValue(String tab) { //if has value, return it, else just put a space
         if (values.containsKey(tab)) {
             return values.get(tab);
         } else {
@@ -454,9 +454,9 @@ public class PhoneKeypadInputActivity extends BaseActivity {
         multiButton1.setBackgroundColor(offColor);
         multiButton2.setBackgroundColor(offColor);
         multiButton3.setBackgroundColor(offColor);
-        multiButton1.setVisibility(View.INVISIBLE);
-        multiButton2.setVisibility(View.INVISIBLE);
-        multiButton3.setVisibility(View.INVISIBLE);
+        multiButton1.setVisibility(View.GONE);
+        multiButton2.setVisibility(View.GONE);
+        multiButton3.setVisibility(View.GONE);
         multiButton1.setEnabled(false);
         multiButton2.setEnabled(false);
         multiButton3.setEnabled(false);

@@ -732,12 +732,11 @@
                 android:dependency="bolus_calculator_enabled"
                 android:summary="@string/summary_bolus_recommendations"
                 android:title="@string/title_enable_bolus_recommendations" />
-            <EditTextPreference
-                android:defaultValue="@string/bolus_increment"
-                android:dependency="bolus_calculator_enabled"
-                android:inputType="numberDecimal"
+            <ListPreference
+                android:defaultValue="0.05"
+                android:entries="@array/BolusIncrementValues"
+                android:entryValues="@array/BolusIncrementValues"
                 android:key="bolus_increment"
-                android:maxLength="4"
                 android:summary="@string/summary_bolus_increment"
                 android:title="@string/title_bolus_increment" />
             <EditTextPreference
