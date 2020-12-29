@@ -23,40 +23,42 @@ public class WebServiceProfile extends BaseWebService {
 
     public WebResponse request(String query) {
         final JSONObject reply = new JSONObject();
+        final JSONArray wrapper = new JSONArray();
 
         // populate json structures
         try {
-            // "settings":{"units":"mmol"}
-            final JSONObject settings = new JSONObject();
-            final boolean using_mgdl = Pref.getString("units", "mgdl").equals("mgdl");
-            settings.put("units", using_mgdl ? "mg/dl" : "mmol");
+            reply.put("defaultProfile", "Default");
+            final JSONObject basal = new JSONObject();
+            basal.put("time", "00:00");
+            basal.put("value", "0.0");
+            basal.put("timeAsSeconds", "0");
 
-            // thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}
-            double highMark = tolerantParseDouble(Pref.getString("highValue", "170"), 170d);
-            double lowMark = tolerantParseDouble(Pref.getString("lowValue", "70"), 70d);
+            final JSONArray basalArr = new JSONArray();
+            basalArr.put(basal);
+            final JSONObject defaultObj = new JSONObject();
+            defaultObj.put("basal", basalArr);
+            reply.put("store", defaultObj);
+            /*
+            "defaultProfile": "Default",
+            "store": {
+              "Default": {
+                "basal": [
+                  {
+                    "time": "00:00",
+                    "value": "0.0",
+                    "timeAsSeconds": "0"
+                  }
+                ],
+              }
+            },
+             */
 
-            if (!using_mgdl) {
-                // if we're using mmol then the marks will be in mmol but should be expressed in mgdl
-                // to be in line with how Nightscout presents data
-                highMark = JoH.roundDouble(highMark * Constants.MMOLL_TO_MGDL, 0);
-                lowMark = JoH.roundDouble(lowMark * Constants.MMOLL_TO_MGDL, 0);
-            }
-
-            final JSONObject thresholds = new JSONObject();
-            thresholds.put("bgHigh", highMark);
-            thresholds.put("bgLow", lowMark);
-
-            settings.put("thresholds", thresholds);
-
-            reply.put("settings", settings);
-
-            Log.d(TAG, "Output: " + reply.toString());
+            wrapper.put(reply);
+            Log.d(TAG, "Output: " + wrapper.toString());
         } catch (JSONException e) {
             UserError.Log.wtf(TAG, "Got json exception: " + e);
         }
 
-        final JSONArray wrapper = new JSONArray();
-        wrapper.put(reply);
         return new WebResponse(wrapper.toString());
     }
 
