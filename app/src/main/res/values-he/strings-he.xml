@@ -829,6 +829,7 @@
     <string name="only_stop_your_sensor_when_you_actually_plan">עצרו את הסנסור רק כשאתם מתכוונים להחליף אותו. אחרת השאירו אותו פועל!</string>
     <string name="restart_collector">התחל אוסף מחדש</string>
     <string name="forget_device">שכח התקן</string>
+    <string name="other_notes">הערות אחרות:</string>
     <string name="delete_future_data">מחק ערכים מהעתיד</string>
     <string name="show_only_untranslated">הראה רק מה שלא תורגם</string>
     <string name="collecting_initial_readings">אוסף קריאות ראשוניות</string>
