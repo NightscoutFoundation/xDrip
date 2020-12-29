@@ -55,6 +55,10 @@ public class Singleton extends SingletonHotel {
     Lazy<BaseWebService> webServiceStatus;
 
     @Inject
+    @Named("WebServiceProfile")
+    Lazy<BaseWebService> webServiceProfile;
+
+    @Inject
     @Named("WebServiceSteps")
     Lazy<BaseWebService> webServiceSteps;
 

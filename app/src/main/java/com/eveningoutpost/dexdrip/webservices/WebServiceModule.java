@@ -63,6 +63,14 @@ public class WebServiceModule {
 
     @Provides
     @Singleton
+    @Named("WebServiceProfile")
+    BaseWebService providesWebServiceProfile() {
+        if (d) Log.d("INJECT", "creating WebServiceProfile");
+        return new WebServiceProfile();
+    }
+
+    @Provides
+    @Singleton
     @Named("WebServiceTasker")
     BaseWebService providesWebServiceTasker() {
         if (d) Log.d("INJECT", "creating WebServiceTasker");
