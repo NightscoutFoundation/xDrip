@@ -834,7 +834,6 @@
     <string name="repeat_sound">重复播放声音</string>
     <string name="enable_telemetry">启用遥测</string>
     <string name="send_data_to_developers">将不同设备的成功率数据发送给开发者</string>
-    <string name="try_to_work_around_noisy_readings_ultrasensitive">即使有很小的嘈杂数据，也启用临时解决方法（此功能只在工程师模式下可用）</string>
     <string name="sidiary_date_title">从何时开始导出？</string>
     <string name="blukon">Blucon</string>
     <string name="tomato">番茄</string>
