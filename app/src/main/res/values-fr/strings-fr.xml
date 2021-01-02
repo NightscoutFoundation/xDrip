@@ -12,9 +12,9 @@
     <string name="error_bluetooth_not_supported">Erreur: Bluetooth pas pris en charge par ce dispositif</string>
     <string name="unknown_device">Dispositif non reconnu</string>
     <string name="connecting_to_device">Connection au périphérique</string>
-    <string name="title_activity_raw_data_table">Tableau de données brut</string>
+    <string name="title_activity_raw_data_table">Table des données brutes</string>
     <string name="title_activity_calculated_data_table">Table de données calculé</string>
-    <string name="title_activity_start_new_sensor">Lancer un nouveau capteur</string>
+    <string name="title_activity_start_new_sensor">Démarrer un nouveau capteur</string>
     <string name="title_activity_new_sensor_location">Emplacement du nouveau capteur</string>
     <string name="title_activity_stop_sensor">Arrêt du capteur</string>
     <string name="title_activity_nav_drawer">Menu de Navigation</string>
@@ -32,7 +32,7 @@
     <string name="title_activity_main">Activité principale</string>
     <string name="title_activity_fake_numbers">Faux nombres</string>
     <string name="title_activity_edit_alert">Modifier l\'alerte</string>
-    <string name="title_activity_double_calibration">Calibration initiale</string>
+    <string name="title_activity_double_calibration">Étalonnage initial</string>
     <string name="title_activity_calibration_override">Override de calibration</string>
     <string name="pref_header_cloud_storage">Stockage Cloud</string>
     <string name="auto_configure_title">Configuration automatique</string>
@@ -44,10 +44,10 @@
     <string name="pref_summary_mongodb_enabled">Téléchargement direct de la base de données, non recommandé pour Nightscout</string>
     <string name="pref_title_mongodb_uri">URI</string>
     <string name="pref_dialog_mongodb_uri">Entrez MongoDB URI\"</string>
-    <string name="pref_message_mongodb_uri">Remplacer les valeurs exemples dans {} avec vos valeurs correctes</string>
+    <string name="pref_message_mongodb_uri">Remplacer les valeurs exemples entre {} avec vos valeurs correctes</string>
     <string name="pref_default_mongodb_uri">mongodb://{user}:{password}@{host}.mongolab.com:{11111}/{database}</string>
     <string name="pref_title_mongodb_collection">Nom de la Collection</string>
-    <string name="pref_dialog_mongodb_collection">Entrez le nom de Collection</string>
+    <string name="pref_dialog_mongodb_collection">Entrer le nom de la Collection</string>
     <string name="pref_message_mongodb_collection">Ceci est le nom de la collection où les données CGM seront stockées</string>
     <string name="pref_title_mongodb_device_status_collection">Nom de la Collection d\'état du périphérique</string>
     <string name="pref_dialog_mongodb_device_status_collection">Entrez le nom de la Collection du périphérique\"</string>
@@ -61,7 +61,7 @@
     <string name="pref_message_api_url">Cela ne l\'URL de base, le téléchargeur ajoutera automatiquement / entrées pour le POST. API_SECRET sur le serveur doit correspondre à yourpassphrase dans ce cadre.</string>
     <string name="pref_default_api_url">https://yourpassphrase@{VOTRE-SITE}. azurewebsites.net/api/v1/</string>
     <!-- wifi Settings -->
-    <string name="wifi_recievers_dialog_message">Comma liste des ip séparés: port (par exemple 37.142.132.220:50005,37.142.132.220:50010,mongodb://user:pass@ds053958.mongolab.com:53958/db/collection)</string>
+    <string name="wifi_recievers_dialog_message">Liste des ip:port séparés par des virgules (exemple : 37.142.132.220:50005,37.142.132.220:50010,mongodb://user:pass@ds053958.mongolab.com:53958/db/collection)</string>
     <string name="wifi_recievers_dialog_title">Entrez les adresses et les ports de récepteurs IP (y compris les adresses MongoDB si nécessaire)</string>
     <!-- Location Settings -->
     <string name="location_not_found_title">La localisation n\'est pas activée</string>
@@ -135,7 +135,7 @@
     <string name="title_activity_profile_editor">Editeur de profil de traitement</string>
     <string name="first_use_menu_to_scan">Tout d\'abord utiliser le menu pour scanner votre appareil BT ou modifier la source de données dans les paramètres!</string>
     <string name="first_configure_ip_address">Tout d\'abord configurer l\'adresse IP de votre lecteur wixel ou l\'url Parakeet</string>
-    <string name="now_start_your_sensor">Maintenant, démarrez votre capteur ou vérifier les paramètres</string>
+    <string name="now_start_your_sensor">Maintenant, démarrer votre capteur ou vérifier les paramètres</string>
     <string name="please_wait_while_sensor_warms_up">S\'il vous plaît patienter pendant que le capteur se réchauffe! (</string>
     <string name="minutes_with_bracket">" minutes)"</string>
     <string name="possible_bad_calibration">Possible mauvaise pente d\'étalonnage, allez boire un verre d\'eau, lavez-vous les mains, puis recalibrez dans quelques temps!</string>
@@ -176,7 +176,7 @@
     <string name="libre_15_minutes_graph">Graphe 15 minutes du Libre</string>
     <string name="libre_last_x_minutes_graph">Graphe des dernières %d minutes du Libre</string>
     <string name="share_config_via_qr_code">Partager la config via le code QR</string>
-    <string name="check_for_updated_version">Vérifiez les mises à jour</string>
+    <string name="check_for_updated_version">Vérifier les mises à jour</string>
     <string name="send_feedback_to_developer">Envoyer des messages au développeur</string>
     <string name="home_screen">Écran d\'accueil</string>
     <string name="event_logs">Journal des événements</string>
@@ -851,7 +851,7 @@
     <string name="reminders">Rappels</string>
     <string name="error">erreur</string>
     <string name="install_text_to_speech_data_question">Installer les données Text-To-Speech?</string>
-    <string name="after_installation_of_languages_you_might_have_to">(Après l\'installation de langues, vous pourriez avoir à appuyer sur « Restart Collector » dans l\'état du système.)</string>
+    <string name="after_installation_of_languages_you_might_have_to">(Après l\'installation de langues, vous pourriez avoir à appuyer sur \"Redémarrer le collecteur\" dans État du système.)</string>
     <string name="stop_sensor">Arrêter le capteur</string>
     <string name="dont_stop_just_reset_all_calibrations">Ne pas arrêter, simplement réinitialiser tous les étalonnages</string>
     <string name="initial_calibration">Étalonnage initial</string>
@@ -1399,7 +1399,7 @@
     <string name="collecting">collecte...</string>
     <string name="insulin">insuline</string>
     <string name="nothing_found">aucun résultat</string>
-    <string name="do_not_hit_start_long">Ne pas démarrer le capteur à moins que le capteur ne soit déjà installé et l\'émetteur connecté.</string>
+    <string name="do_not_hit_start_long">Ne pas cliquer sur \'démarrer le capteur\' à moins que le capteur ne soit déjà installé et l\'émetteur connecté.</string>
     <string name="calibration_graph_no_calibration">graphique d\'étalonnage (pas d\'étalonnage)</string>
     <string name="calibration_plugin_header">en-tête du plugin d\'étalonnage</string>
     <string name="usb_device_was_not_recognized">Périphérique USB non reconnu</string>
@@ -1427,11 +1427,11 @@
     <string name="connection_status">État de la connexion:</string>
     <string name="range_in_high_low">Plage: (dans/haut/bas)</string>
     <string name="absolute_s">Absolu #s :</string>
-    <string name="median_bg">Moyenne BG :</string>
-    <string name="mean_bg">Moyenne BG :</string>
+    <string name="median_bg">Glycémie médiane :</string>
+    <string name="mean_bg">Glycémie moyenne :</string>
     <string name="hba1c_est">Estimation HbA1c :</string>
     <string name="stddev">StdDev :</string>
-    <string name="relative_sd_cv">SD relative (CV) :</string>
+    <string name="relative_sd_cv">Coefficient de Variation (CV) :</string>
     <string name="important_warning">Avertissement important!</string>
     <string name="i_agree">J\'ACCEPTE</string>
     <string name="backup_detected">Sauvegarde détectée</string>
