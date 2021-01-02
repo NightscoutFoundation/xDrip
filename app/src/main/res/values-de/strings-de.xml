@@ -1287,6 +1287,9 @@
     <string name="summary_using_g6">Ich nutze den G6 Sensor</string>
     <string name="title_using_g6">Unterstützung für G6</string>
     <string name="summary_ob1_g5_allow_resetbond">Der OB1 Kollektor kann die Kopplung aufheben, wenn er glaubt, dass die Verschlüsselung fehlgeschlagen ist. Wenn Unpairing zum Problem wird, deaktivierebbdiese Option. Wenn du danach die Verbindung vollständig verlierst, stelle sicher, dass sie aktiviert ist.</string>
+    <string name="title_ob1_g5_allow_resetbond">OB1-Entkoppelung erlauben</string>
+    <string name="title_ob1_initiate_bonding_flag">OB1 Verbindungsaufbau erlauben</string>
+    <string name="title_old_g5_options">Alte G5 Kollektor-Einstellungen</string>
     <string name="title_g5g6_battery_options">G5/G6 Akku-Optionen</string>
     <string name="title_g5_battery_warning_level">Batteriewarnung anpassen</string>
     <string name="title_plugins_and_features">Plugins und Funktionen</string>
@@ -1332,6 +1335,7 @@
     <string name="title_use_number_icon_large">Verwende großes Nummernsymbol</string>
     <string name="summary_number_icon_large_arrow">Zeigt den Trendpfeil im großen Symbol an</string>
     <string name="title_number_icon_large_arrow">Pfeil in großem Symbol anzeigen</string>
+    <string name="title_show_home_on_boot">Zeige xDrip beim Booten</string>
     <string name="eula">EULA</string>
     <string name="summary_plus_accept_follower_actions">Behandlungen und Kalibrierung von Followern werden akzeptiert</string>
     <string name="title_plus_accept_follower_actions">Follower-Aktionen akzeptieren</string>
@@ -1347,6 +1351,12 @@
     <string name="summary_inpen_screen">Lade Dosen herunter</string>
     <string name="title_inpen_screen">InPen-Insulinstift</string>
     <string name="title_inpen_enabled">InPen-Unterstützung</string>
+    <string name="summary_inpen_detect_priming">Entlüftungsdosen erkennen und ausschließen</string>
+    <string name="title_inpen_detect_priming">Entlüftung erkennen</string>
+    <string name="title_inpen_prime_units">Entlüftungs-IE</string>
+    <string name="title_inpen_prime_minutes">Entlüftungs-Zeitfenster</string>
+    <string name="summary_inpen_orphan_primes_ignored">Entlüftungsinsulin ohne nachfolgende Dosis wird ignoriert. Deaktivieren, um sie als Dosis zu behandeln</string>
+    <string name="title_inpen_orphan_primes_ignored">Ignoriere Entlüftungsinsulin</string>
     <string name="summary_inpen_sounds">Akustisches Signal beim Datenaustausch mit dem Pen</string>
     <string name="title_inpen_sounds">Ton abspielen</string>
     <string name="summary_inpen_reset">Zurücksetzen und im Kopplungsmodus nach neuem Pen suchen</string>
@@ -1370,6 +1380,7 @@
     <string name="note_search_button">SUCHE</string>
     <string name="all_note_button">ALLE</string>
     <string name="title_full_screen_mode">Vollbild-Modus</string>
+    <string name="title_colors_for_printing">Druckfarben</string>
     <string name="title_share_save_this_screen">Diesen Bildschirm teilen/speichern</string>
     <string name="search_phrase">Suchbegriff</string>
     <string name="load_more">Mehr laden</string>
@@ -1458,6 +1469,7 @@
     <string name="running_test_with_number_123">Test mit Nummer: 123</string>
     <string name="xdrip_will_not_work_below_android_version_42">xDrip+ funktioniert nicht mit Android-Versionen vor 4.2</string>
     <string name="xdrip_oop2_not_installed">xDrip+ benötigt oop2, um mit Libre2/LibreUS Sensoren umzugehen.</string>
+    <string name="this_app_needs_battery_optimization_whitelisting_or_it_will_not_work_well_please_reset_app_preferences">Diese App benötigt eine Whitelisting für die Akku-Optimierung, anderenfalls wird sie nicht gut funktionieren. Bitte passe die App-Einstellungen an</string>
     <string name="setting_disabled_">Einstellung deaktiviert :)</string>
     <string name="yes_please">JA, bitte</string>
     <string name="automated_calibration_enabled">Automatische Kalibrierung aktiviert</string>
@@ -1465,9 +1477,12 @@
     <string name="treatment_time_wrong">Behandlungszeit falsch</string>
     <string name="treatment_error">Fehler bei Behandlung</string>
     <string name="treatment_processed">Behandlung verarbeitet</string>
+    <string name="number_error_">Nummern-Fehler: </string>
     <string name="starting_sync_to_other_devices">Synchronisierung mit anderen Geräten starten</string>
     <string name="deleting_all_bg_readings">Alle BZ-Werte löschen!</string>
     <string name="could_not_export_csv_">Konnte CSV nicht exportieren :-(</string>
+    <string name="librealarm_data_format_appears_incompatible_protocol_changed_or_no_data">LibreAlarm-Datenformat erscheint inkompatibel! Protokoll geändert oder keine Daten?</string>
+    <string name="please_update_librealarm_to_use_oop_algorithm">Bitte aktualisieren Sie LibreAlarm um den OOP-Algorithmus zu verwenden</string>
     <string name="sensor_clock_has_not_advanced">Sensoruhr ist stehen geblieben!</string>
     <string name="sensor_age_has_gone_backwards">Das Sensoralter hat sich verringert!!</string>
     <string name="phone_has_no_nfc_reader">Telefon hat keinen NFC-Reader</string>
@@ -1478,11 +1493,14 @@
     <string name="nfc_invalid_data__try_again">ungültige NFC-Daten - versuche es neu</string>
     <string name="nfc_invalid_data">ungültige NFC-Daten</string>
     <string name="scanned_ok">Scannen erfolgreich!</string>
+    <string name="nfc_io_error">NFC-Fehler</string>
     <string name="nfc_error">NFC-Fehler</string>
+    <string name="still_processing_previous_backfill_request">Bearbeite immer noch vorherige Backfill Anfrage!</string>
     <string name="please_wait">Bitte warten..</string>
     <string name="didnt_find_any_glucose_readings_in_that_time_period">Keine Glukosemessungen in diesem Zeitraum gefunden</string>
     <string name="got_calibration_in_the_future__cannot_process">Kalibrierung in der Zukunft erhalten - kann nicht verarbeitet werden!</string>
     <string name="sensor_stopped">Sensor gestoppt</string>
+    <string name="restarting_collector">Datensammler neustarten!</string>
     <string name="follower_deleted_succesfully">Follower erfolgreich gelöscht</string>
     <string name="failed_to_delete_follower">Fehler beim Löschen des Follower</string>
     <string name="input_not_found_cancelled">Eingabe nicht gefunden! Abgebrochen!</string>
@@ -1493,6 +1511,8 @@
     <string name="authentication_failed_wrong_password">Authentifizierung fehlgeschlagen. Falsches Passwort?</string>
     <string name="ob1_session_restarted_title">Sensorsitzung neu gestartet</string>
     <string name="ob1_session_restarted_note">Sensorsitzung wurde neu gestartet</string>
+    <string name="summary_ob1_g5_preemptive_restart_extended_time_travel_all_firmwares">Ermöglicht verlängerten Nutzungszeitraum mit allen Firmware-Versionen (nur im Entwicklermodus) </string>
+    <string name="collection_summary_ob1_g5_preemptive_restart">Einen Sensor automatisch neu starten, bevor er gestoppt wird</string>
     <string name="blood_glucose_graph">Blutzuckerdiagramm</string>
     <string name="enable_streaming_summary">verbinde Libre2-Sensoren nach dem Scannen. Das Libre-Lesegerät und die Libre Link-App werden dann keine Alarme mehr empfangen</string>
     <string name="enable_streaming_title">Starte Bluetooth-Verbindung mit Libre2-Sensoren</string>
