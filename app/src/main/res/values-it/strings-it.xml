@@ -163,7 +163,6 @@
     <string name="checking_for_update">Verifica degli aggiornamenti ..</string>
     <string name="signal_missed">Segnale Perso</string>
     <string name="minutes_ago">{0, choice,0#{0, number, integer} Minuti fa|1#{0, number, integer} Minuto fa|1&lt;{0, number, integer} Minuti fa}</string>
-    <string name="expires_days">{0, scelta,0#Sensore scaduto!|1#Termina tra {0, number} giorno|1&lt;Termina tra {0, number} giorni}</string>
     <string name="expires_at">Termina {0}</string>
     <string name="space_minutes_ago">" Minuti fa"</string>
     <string name="in_libre_all_house_mode_no_readings_collected_yet">"Modalità Libre copertura casa intera: nessuna lettura raccolta per il momento."</string>
