@@ -163,7 +163,7 @@
     <string name="checking_for_update">Controleren op updates ..</string>
     <string name="signal_missed">Signaal gemist</string>
     <string name="minutes_ago">{0, choice,0#{0, number, integer} Minuten geleden|1#{0, number, integer} Minuut geleden|1&lt;{0, number, integer} Minuten geleden}</string>
-    <string name="expires_days">{0, choice,0#Sensor Verloopt!Meas1#Eindigt in {0, number} Dagvaccination 1&lt;eindigt in {0, number} dagen}</string>
+    <string name="expires_days">{0, choice,0#Sensor Verloopt!|1#Eindigt in {0, number} dagen|1&lt;Eindigt in {0, number} dagen}</string>
     <string name="expires_at">Eindigt over {0}</string>
     <string name="space_minutes_ago">" Minuten geleden"</string>
     <string name="in_libre_all_house_mode_no_readings_collected_yet">"In libre alle thuismodus: nog geen metingen verzameld."</string>
