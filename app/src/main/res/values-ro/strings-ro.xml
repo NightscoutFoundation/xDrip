@@ -163,7 +163,6 @@
     <string name="checking_for_update">Se caută actualizări...</string>
     <string name="signal_missed">S-a pierdut semnalul</string>
     <string name="minutes_ago">{0, choice,0#{0, number, integer} Minute în urmă|1#{0, number, integer} Minut în urmă|1&lt;{0, number, integer} Minute în urmă}</string>
-    <string name="expires_days">{0, opțiune,0#Senzor Expirat!|1#expiră în {0, number} ziua|1&lt;expiră în {0, number} zile}</string>
     <string name="expires_at">Expiră {0}</string>
     <string name="space_minutes_ago">" Minute în urmă"</string>
     <string name="in_libre_all_house_mode_no_readings_collected_yet">"În modul Libre în toată casa: nici o citire nu a fost colectată încă."</string>
