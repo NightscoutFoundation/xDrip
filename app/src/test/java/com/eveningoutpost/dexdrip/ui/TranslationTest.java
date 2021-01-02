@@ -49,5 +49,10 @@ public class TranslationTest extends RobolectricTestWithConfig {
             assertWithMessage("expires_days choice message format failed to contain value").that(result).contains("123.4");
 
         }
+
+        // restore after test
+       config.setLocale(new Locale("en", "", ""));
+       xdrip.getAppContext().getResources().updateConfiguration(config, xdrip.getAppContext().getResources().getDisplayMetrics());
+
     }
 }
