@@ -163,7 +163,6 @@
     <string name="checking_for_update">Tarkistetaan onko päivitystä saatavilla  ...</string>
     <string name="signal_missed">Signaali jäänyt välistä</string>
     <string name="minutes_ago">{0, choice,0#{0, number, integer} minuuttia sitten|1#{0, number, integer} minuuttia sitten|1&lt;{0, number, integer} minuuttia sitten}</string>
-    <string name="expires_days">{0, valinta,0#Sensori vanhentunut!|1#Päättyy {0, number} päivässä|1&lt;Päättyy {0, number} päivässä}</string>
     <string name="expires_at">Päättyy {0}</string>
     <string name="space_minutes_ago">" Minuuttia sitten"</string>
     <string name="in_libre_all_house_mode_no_readings_collected_yet">"Libren Koko talo -järjestelmä: ensimmäistä lukemaa odotellaan"</string>
