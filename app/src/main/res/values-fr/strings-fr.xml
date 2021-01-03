@@ -356,7 +356,7 @@
     <string name="show_general_and_collection_settings">Afficher les paramètres Généraux et Collection</string>
     <string name="copy_all_settings">Copier tous les paramètres</string>
     <string name="sensor_is_ready_please_enter_double_calibration">Le capteur est prêt, s\'il vous plaît entrer un double calibrage</string>
-    <string name="in_order_to_get_started_please_perform_two_finger">Pour commencer, s\'il vous plaît effectuer deux tests de piqûre au doigt et entrez les valeurs ici!</string>
+    <string name="in_order_to_get_started_please_perform_two_finger">Pour pouvoir commencer, effectuer deux tests de glycémie capillaire et entrer les valeurs ici!</string>
     <string name="enter_first_bg_value">Entrer la première valeur de glycémie</string>
     <string name="enter_second_bg_value">Entrer la seconde valeur de glycémie</string>
     <string name="language_editor">Editeur de langue</string>
@@ -449,8 +449,8 @@
     <string name="disable_battery_warning">Désactiver l\'avertissement de batterie</string>
     <string name="additional_text_status">Statut de texte supplémentaire</string>
     <string name="average">Moyenne</string>
-    <string name="in_percentage">En pourcentage</string>
-    <string name="high_percentage">Pourcentage élevé</string>
+    <string name="in_percentage">Pourcentage Dans la plage</string>
+    <string name="high_percentage">Pourcentage Haut</string>
     <string name="low_percentage">Pourcentage Bas</string>
     <string name="the_current_time">L\'heure actuelle.</string>
     <string name="time">Temps</string>
