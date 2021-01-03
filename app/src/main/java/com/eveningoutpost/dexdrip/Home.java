@@ -1,6 +1,7 @@
 package com.eveningoutpost.dexdrip;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -53,7 +54,6 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.crashlytics.android.Crashlytics;
 import com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine;
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
@@ -318,6 +318,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     private static String statusBWP = "";
 
 
+    @SuppressLint("ObsoleteSdkInt")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         mActivity = this;
@@ -325,12 +326,6 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         if (!xdrip.checkAppContext(getApplicationContext())) {
             toast(gs(R.string.unusual_internal_context_problem__please_report));
             Log.wtf(TAG, "xdrip.checkAppContext FAILED!");
-            try {
-                xdrip.initCrashlytics(getApplicationContext());
-                Crashlytics.log("xdrip.checkAppContext FAILED!");
-            } catch (Exception e) {
-                // nothing we can do really
-            }
             try {
                 Thread.sleep(2000);
             } catch (InterruptedException e) {
@@ -3236,6 +3231,10 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
     public void noteDefaultMethodChanged(View myitem) {
         Pref.setBoolean("default_to_voice_notes", !Pref.getBooleanDefaultFalse("default_to_voice_notes"));
+    }
+
+    public void showNoteTextInputDialog(View myitem) {
+        showNoteTextInputDialog(myitem, JoH.tsl(), -1);
     }
 
     public void showNoteTextInputDialog(View myitem, final long timestamp) {
