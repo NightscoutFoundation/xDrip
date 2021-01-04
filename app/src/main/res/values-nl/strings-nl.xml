@@ -324,7 +324,7 @@
     <string name="default_to_voice_input_next_time">Standaard naar voice-ingang de volgende keer</string>
     <string name="done">Gedaan</string>
     <string name="entering_a_calibration_now_will_override_your_previously_entered_calibration">Het invoeren van een kalibratie zal nu eerder ingevoerde kalibratie overschrijven.</string>
-    <string name="enter_blood_glucose_value">Voer Blood Glucose Value</string>
+    <string name="enter_blood_glucose_value">Voer de bloedglucosewaarde in</string>
     <string name="this_does_not_get_used_for_anything_its_just_to_keep_track_of_differences_for_algorithem_improvement_purposes">Dit betekent niet wennen voor iets, het is gewoon te houden van verschillen algorithem verbetering doeleinden te houden</string>
     <string name="no_active_alert_exists">Geen actieve signalering voorkomt</string>
     <string name="active_alert_exists_named">Actief alarm bestaat met de naam</string>
@@ -335,9 +335,9 @@
     <string name="default_snooze">Standaard Snooze</string>
     <string name="until_you_reenable">Totdat je weer inschakelen</string>
     <string name="set">Instellen</string>
-    <string name="disable_low_alerts">Uitschakelen Low waarschuwingen</string>
+    <string name="disable_low_alerts">Schakel lage waarschuwingen uit</string>
     <string name="re_enable_low_alerts">Lage waarschuwingen opnieuw inschakelen</string>
-    <string name="disable_high_alerts">Uitschakelen High waarschuwingen</string>
+    <string name="disable_high_alerts">Schakel hoge waarschuwingen uit</string>
     <string name="re_enable_high_alerts">Hoge Waarschuwingen opnieuw inschakelen</string>
     <string name="disable_all_alerts">Schakel alle waarschuwingen</string>
     <string name="re_enable_all_alerts">Re-Enable Alle waarschuwingen</string>
