@@ -2307,14 +2307,14 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             btnUndo.setVisibility(View.VISIBLE);
             showcasemenu(SHOWCASE_UNDO);
         } else {
-            btnUndo.setVisibility(View.INVISIBLE);
+            btnUndo.setVisibility(View.GONE);
         }
 
         if (UndoRedo.redoListHasItems()) {
             btnRedo.setVisibility(View.VISIBLE);
             showcasemenu(SHOWCASE_REDO);
         } else {
-            btnRedo.setVisibility(View.INVISIBLE);
+            btnRedo.setVisibility(View.GONE);
         }
 
         final DexCollectionType collector = DexCollectionType.getDexCollectionType();

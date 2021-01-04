@@ -775,11 +775,10 @@
             <CheckBoxPreference
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:defaultValue="false"
-                android:dependency="engineering_mode"
-                android:key="fats_proteins_enabled"
-                android:summary="EXPERIMENTAL: allows for protein and fat logging"
-                android:title="Enable Fats and Proteins Entry" />
+                android:defaultValue="true"
+                android:key="notes_entry_enabled"
+                android:summary="@string/summary_notes_entry"
+                android:title="@string/title_notes_entry" />
         </PreferenceCategory>
     </PreferenceScreen>
 

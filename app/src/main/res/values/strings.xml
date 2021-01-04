@@ -1601,8 +1601,6 @@
     <string name="title_total_bolus">Total Bolus:</string>
     <string name="title_notes">Notes</string>
     <string name="hint_notes">Enter notes here</string>
-    <string name="title_proteins">Proteins:</string>
-    <string name="title_fats">Fats:</string>
 
     <string name="plus">+</string>
     <string name="minus">-</string>
@@ -1638,10 +1636,6 @@
     <string name="summary_correct_above">At what bg level the calculator will calculate a correction bolus</string>
     <string name="title_enable_plus_minus_bottons">Enable +/- Buttons in Calculator</string>
 
-
-
-
-
-
-
+    <string name="title_notes_entry">Enable Notes Entry in Bolus Calculator</string>
+    <string name="summary_notes_entry">Shows the text field for inputting notes in the Bolus Calculator</string>
 </resources>

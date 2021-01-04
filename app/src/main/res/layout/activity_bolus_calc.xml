@@ -84,74 +84,6 @@
 
         </LinearLayout>
 
-        <TableLayout
-            android:id="@+id/proteinsAndFatsTable"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="32dp">
-
-            <TableRow
-                android:id="@+id/proteinsRow"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:id="@+id/proteinsHeader"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif-condensed"
-                    android:text="@string/title_proteins"
-                    android:textColor="#ffffffff"
-                    android:textSize="25sp" />
-
-                <EditText
-                    android:id="@+id/editTextProteins"
-                    android:layout_width="75dp"
-                    android:layout_height="wrap_content"
-                    android:inputType="numberDecimal"
-                    android:textColor="#ffffffff"
-                    android:textSize="25sp" />
-
-                <TextView
-                    android:id="@+id/protein_unit"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="g"
-                    android:textSize="25sp" />
-            </TableRow>
-
-            <TableRow
-                android:id="@+id/fatsRow"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:id="@+id/proteinsHeader2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif-condensed"
-                    android:text="@string/title_fats"
-                    android:textColor="#ffffffff"
-                    android:textSize="25sp" />
-
-                <EditText
-                    android:id="@+id/editTextFats"
-                    android:layout_width="75dp"
-                    android:layout_height="wrap_content"
-                    android:inputType="numberDecimal"
-                    android:textColor="#ffffffff"
-                    android:textSize="25sp" />
-
-                <TextView
-                    android:id="@+id/protein_unit2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="g"
-                    android:textSize="25sp" />
-            </TableRow>
-
-        </TableLayout>
-
         <LinearLayout
             android:id="@+id/layout_bloodGlucose"
             android:layout_width="match_parent"
@@ -310,6 +242,49 @@
                     android:layout_height="wrap_content"
                     android:hint="@string/hint_notes"
                     android:inputType="textPersonName|text" />
+
+            </TableRow>
+
+        </TableLayout>
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="20dp">
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <CheckBox
+                    android:id="@+id/timeCheckBox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:drawableEnd="@drawable/ic_av_timer_white_36dp"
+                    android:onClick="onCheckboxClicked" />
+
+                <Button
+                    android:id="@+id/timeMinusButton"
+                    android:layout_width="40dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/minus" />
+
+                <EditText
+                    android:id="@+id/timeEditText"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:inputType="number"
+                    android:maxLength="3"
+                    android:text="0"
+                    android:textSize="25sp" />
+
+                <Button
+                    android:id="@+id/timePlusButton"
+                    android:layout_width="40dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/plus" />
 
             </TableRow>
 
