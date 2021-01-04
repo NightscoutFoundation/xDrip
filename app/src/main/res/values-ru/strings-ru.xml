@@ -306,6 +306,7 @@
     <string name="xdrip_plus_extra_settings">Дополнительные настройки xDrip+</string>
     <string name="example_chart">Пример графика</string>
     <string name="treatments_prediction_curves">Введённые значения / Прогнозные кривые</string>
+    <string name="carbs_per_unit">Углеводов на 1 единицу инсулина</string>
     <string name="everyday">Ежедневно</string>
     <string name="insulin_sensitivity_glucose_drop_per_unit">Чувствительность к инсулину: спад глюкозы от 1 ед. инсулина</string>
     <string name="transmitter_battery">Батарея трансмиттера</string>
@@ -840,6 +841,7 @@
     <string name="repeat_sound">Повторять звуковое уведомление</string>
     <string name="enable_telemetry">Включить телеметрию</string>
     <string name="send_data_to_developers">Отправлять информацию об использовании разработчика в целях улучшения качества приложения</string>
+    <string name="try_to_work_around_noisy_readings_ultrasensitive">Сглаживать зашумленные показания даже при очень низком уровне шумов (только в инженерном режиме)</string>
     <string name="sidiary_date_title">Экспортировать начиная с?</string>
     <string name="blukon">Blucon</string>
     <string name="tomato">Tomato</string>
@@ -1484,6 +1486,7 @@
     <string name="unusual_internal_context_problem__please_report">Необычная внутренняя проблема контекста - пожалуйста, сообщите</string>
     <string name="cannot_start__please_report_context_problem">Невозможно запустить - пожалуйста, сообщите о проблеме контекста</string>
     <string name="xdrip_will_not_work_below_android_version_42">xDrip+ не совместим с версиями Android ниже 4.2</string>
+    <string name="xdrip_oop2_not_installed">xDrip+ нужен OOP2 для работы Libre2/LibreUS сенсоров.</string>
     <string name="this_app_needs_battery_optimization_whitelisting_or_it_will_not_work_well_please_reset_app_preferences">Для корректной работы приложение необходимо исключить из списка оптимизации энергопотребления. Пожалуйста выполните необходимые настройки</string>
     <string name="setting_disabled_">Настройка отключена :)</string>
     <string name="yes_please">ДА, пожалуйста</string>
@@ -1539,7 +1542,18 @@
     <string name="collection_summary_ob1_g5_preemptive_restart">Автоматически перезапускать сенсор до остановки</string>
     <string name="title_ob1_g5_preemptive_restart_alert">Уведомлять при упреждающем перезапуске</string>
     <string name="summary_ob1_g5_preemptive_restart_alert">Создавать уведомление при упреждающем перезапуске сессии</string>
+    <string name="blood_glucose_graph">График уровня глюкозы</string>
     <string name="pref_enable_insulinprofiles">активировать от 1-го до 3-ех профилей</string>
     <string name="pref_select_basal_insulinprofiles">выбрать профиль базального инсулина.</string>
     <string name="pref_select_bolus_insulinprofiles">выбрать профиль болюсного инсулина. также используется для помпы и ручки...</string>
+    <string name="enable_streaming_summary">Подключаться к сенсору Libre2 после его сканирования. Считыватель Libre и Libre link перестанут получать оповещения.</string>
+    <string name="enable_streaming_title">Использовать Bluetooth с сенсором Libre2</string>
+    <string name="enable_streaming_always_allow">Всегда подключаться к сенсорам Libre2</string>
+    <string name="enable_streaming_ask_each_time">спрашивать каждый раз</string>
+    <string name="enable_streaming_never">Никогда не подключаться к сенсорам Libre2</string>
+    <string name="enable_streaming_dialog_yes">подключиться к этому сенсору Libre2</string>
+    <string name="enable_streaming_dialog_no">Не подключаться к этому датчику Libre2 </string>
+    <string name="enable_streaming_dialog_dont_ask_again">Больше не спрашивать</string>
+    <string name="enable_streaming_dialog_title">Подключение датчика Libre к Bluetooth</string>
+    <string name="enable_streaming_dialog_text">Вы хотите подключить xDrip к этому датчику? Данное действие сделает невозможным получение сигналов тревоги на ридере и в приложении LibreLink. Нажмите \"да\" и просканируйте датчик еще раз, чтобы создать подключение (выберите \"не подключать\", если планируете использовать xDrip с \"пропатченным\" приложением LibreLink)</string>
 </resources>
