@@ -787,7 +787,6 @@ public class NFCReaderX {
             int time = Math.max(0, Math.abs((sensorTime - 3) / 15) * 15 - index * 15);
 
             glucoseData.realDate = sensorStartTime + time * MINUTE;
-            glucoseData.sensorId = tagId;
             glucoseData.sensorTime = time;
             historyList.add(glucoseData);
         }
@@ -808,7 +807,6 @@ public class NFCReaderX {
             int time = Math.max(0, sensorTime - index);
 
             glucoseData.realDate = sensorStartTime + time * MINUTE;
-            glucoseData.sensorId = tagId;
             glucoseData.sensorTime = time;
             trendList.add(glucoseData);
         }
@@ -925,17 +923,25 @@ public class NFCReaderX {
     }
     
     static public ReadingData getTrend(LibreBlock libreBlock) {
-        if(libreBlock.byte_start != 0 || libreBlock.byte_end < 344) {
-            Log.i(TAG, "libreBlock exists but does not have enough data " + libreBlock.timestamp);
+        if(libreBlock.byte_start != 0) {
+            Log.i(TAG, "libreBlock does not start with 0, don't know how to parse it " + libreBlock.timestamp);
             return null;
         }
-        ReadingData result = parseData(0, "", libreBlock.blockbytes, JoH.tsl());
-        if(result.trend.size() == 0 || result.trend.get(0).glucoseLevelRaw == 0) {
+        ReadingData result;
+        if(libreBlock.byte_end == 344) {
+            result = parseData(0, "", libreBlock.blockbytes, libreBlock.timestamp);
+        }
+        else if(libreBlock.byte_end == 44) {
+            // This is the libre2 ble data
+            result = LibreOOPAlgorithm.parseBleData(libreBlock.blockbytes, libreBlock.timestamp);
+        } else {
+            Log.i(TAG, "libreBlock exists bue size is " + libreBlock.byte_end + " don't know how to parse it " + libreBlock.timestamp);
+            return null;
+        }
+        if(result.trend.size() == 0 ) {
             Log.i(TAG, "libreBlock exists but no trend data exists, or first value is zero " + libreBlock.timestamp);
             return null;
         }
-        
-        // TODO: verify checksum
         return result;
     }
     

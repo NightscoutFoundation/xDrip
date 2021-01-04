@@ -1,7 +1,10 @@
 package com.eveningoutpost.dexdrip.Models;
 
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.provider.BaseColumns;
 
+import com.activeandroid.Cache;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
@@ -12,6 +15,9 @@ import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
 import com.google.gson.annotations.Expose;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -129,29 +135,58 @@ public class LibreBlock  extends PlusModel {
         return getLatestForTrend(JoH.tsl() - Constants.DAY_IN_MS, JoH.tsl() );
     }
 
+    static LibreBlock getFromCursor(Cursor cursor) {
+        LibreBlock libreBlock  = new LibreBlock();
+
+        libreBlock.timestamp = cursor.getLong(cursor.getColumnIndex("timestamp"));
+        libreBlock.byte_start = cursor.getLong(cursor.getColumnIndex("bytestart"));
+        libreBlock.byte_end = cursor.getInt(cursor.getColumnIndex("byteend"));
+        libreBlock.reference = cursor.getString(cursor.getColumnIndex("reference"));
+        libreBlock.blockbytes = cursor.getBlob(cursor.getColumnIndex("blockbytes"));
+        libreBlock.calculated_bg = cursor.getDouble(cursor.getColumnIndex("calculatedbg"));
+        libreBlock.uuid = cursor.getString(cursor.getColumnIndex("uuid"));
+        libreBlock.patchUid = cursor.getBlob(cursor.getColumnIndex("patchUid"));
+
+        libreBlock.patchInfo = cursor.getBlob(cursor.getColumnIndex("patchInfo"));
+        return libreBlock;
+    }
 
     public static LibreBlock getLatestForTrend(long start_time, long end_time) {
 
-        return new Select()
-                .from(LibreBlock.class)
-                .where("bytestart == 0")
-                .where("byteend >= 344")
-                .where("timestamp >= ?", start_time)
-                .where("timestamp <= ?", end_time)
-                .orderBy("timestamp desc")
-                .executeSingle();
+        SQLiteDatabase db = Cache.openDatabase();
+
+        // Using this syntex since there is no way to tell the DB which index to use.
+        // Using ActiveAndroid method would take up to 8 seconds to complete.
+        Cursor cursor= db.rawQuery("select * from libreblock  INDEXED BY  index_LibreBlock_timestamp "+
+                "where bytestart == 0 AND byteend == 344 OR byteend == 44 " +
+                "AND timestamp >= " + start_time + " AND timestamp <= " + end_time +
+                " ORDER BY timestamp desc limit 1", null);
+        if (cursor.getCount() == 0) {
+            cursor.close();
+            return null;
+        }
+        cursor.moveToFirst();
+        LibreBlock libreBlock = getFromCursor(cursor);
+        cursor.close();
+        return libreBlock;
     }
     
     public static List<LibreBlock> getForTrend(long start_time, long end_time) {
-
-        return new Select()
+        List<LibreBlock> res1 =  new Select()
                 .from(LibreBlock.class)
-                .where("bytestart == 0")
-                .where("byteend >= 344")
                 .where("timestamp >= ?", start_time)
                 .where("timestamp <= ?", end_time)
                 .orderBy("timestamp asc")
                 .execute();
+        // One can think that we could do this filtering as part of the SQL. practically speaking
+        // the wrong key was used for the query, and it takes 2-3 minutes.
+        List<LibreBlock> res = new ArrayList<LibreBlock>();
+        for (LibreBlock lb: res1) {
+            if (lb.byte_start == 0 && (lb.byte_end == 344 || lb.byte_end == 44)) {
+                res.add(lb);
+            }
+        }
+        return res;
     }
 
     public static LibreBlock getForTimestamp(long timestamp) {
@@ -259,6 +294,4 @@ public class LibreBlock  extends PlusModel {
                 .where("_ID = ?", id)
                 .executeSingle();
     }
-
-
 }

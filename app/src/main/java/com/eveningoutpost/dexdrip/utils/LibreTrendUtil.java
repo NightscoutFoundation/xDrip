@@ -4,7 +4,9 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.ListIterator;
 
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.NFCReaderX;
 import com.eveningoutpost.dexdrip.Models.GlucoseData;
 import com.eveningoutpost.dexdrip.Models.LibreBlock;
@@ -36,9 +38,22 @@ class LibreTrendPoint {
 class LibreTrendLatest {
     long timestamp = 0;
     int id = 0;
-    double bg = 0;
-    int glucoseLevelRaw;
-    String SensorSN; 
+    // bg and glucoseLevelRaw might be from a previous point that we have data for.
+    private double bg = 0;
+    private int glucoseLevelRaw;
+    String SensorSN;
+    
+    // A factor of zero, means that the object is not valid.
+    double getFactor() {
+        if (glucoseLevelRaw == 0) {
+            return 0;
+        }
+        return bg / glucoseLevelRaw;
+    }
+    void setFactorData(int glucoseLevelRaw, double bg) {
+        this.glucoseLevelRaw = glucoseLevelRaw;
+        this.bg = bg;
+    }
 }
 
 public class LibreTrendUtil {
@@ -91,31 +106,59 @@ public class LibreTrendUtil {
         Log.i(TAG, "Size of latestBlocks is " + latestBlocks.size());
         
         // Go for the last libreBlock and get calculated bg and timestamp.
-        if (latestBlocks.size() > 0) {
-            LibreBlock lastBlock = latestBlocks.get(latestBlocks.size() - 1);
-            // 
-            ReadingData readingData = NFCReaderX.getTrend(lastBlock);
-            if(readingData == null){
-                Log.e(TAG, "Error: NFCReaderX.getTrend retuned null for latest block");
-                return m_points;
-            }
-            if(readingData.trend.size() > 0 ) {
-                m_libreTrendLatest.id = (int)readingData.trend.get(0).sensorTime;
-                m_libreTrendLatest.glucoseLevelRaw = readingData.trend.get(0).glucoseLevelRaw;
+        ListIterator<LibreBlock> li = latestBlocks.listIterator(latestBlocks.size());
+        long lastBlockTime = 0;
+        boolean isLast = true;
+        while (li.hasPrevious()) {
+            LibreBlock libreBlock = li.previous();
+            // Get of the loop if no valid data in the last 15 minutes.
+            if(lastBlockTime == 0) {
+                lastBlockTime = libreBlock.timestamp;
             } else {
-                Log.e(TAG, "Error no readingData.trend for this point, returning withoug doing anything");
-                return m_points;
+                if (JoH.msSince(lastBlockTime, libreBlock.timestamp) > 16 * 60 * 1000) {
+                    // We have readings for the last 16 minutes, but none of them has a BG value.
+                    // This should not happen, but if it does, than it is too much time.
+                    Log.w(TAG, "getData was not able to find a valid time - quiting");
+                    break;
+                }
             }
-            m_libreTrendLatest.timestamp = lastBlock.timestamp;
-            m_libreTrendLatest.bg = lastBlock.calculated_bg;
+            if(isLast) {
+                
+                ReadingData readingData = NFCReaderX.getTrend(libreBlock);
+                if(readingData == null || readingData.trend.size() == 0){
+                    Log.w(TAG, "Error: NFCReaderX.getTrend retuned null for latest block");
+                    continue;
+                }
+                // The last object is used to calculate the timestamp and id.
+                isLast = false;
+                m_libreTrendLatest.id = (int)readingData.trend.get(0).sensorTime;
+                m_libreTrendLatest.timestamp = libreBlock.timestamp;
+            }
+
+            // Now trying to get a valid object with BG and a raw value.
+            if(libreBlock.calculated_bg == 0 ) {
+                continue;
+            }
+            ReadingData readingData = NFCReaderX.getTrend(libreBlock);
+            if(readingData == null || readingData.trend.size() == 0){
+                Log.e(TAG, "Error: NFCReaderX.getTrend returned null for latest block");
+                return null;
+            }
+            if(readingData.trend.get(0).glucoseLevelRaw == 0) {
+                continue;
+            }
+
+            m_libreTrendLatest.setFactorData(readingData.trend.get(0).glucoseLevelRaw, libreBlock.calculated_bg);
             String time = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(new Date((long) m_libreTrendLatest.timestamp));
-            Log.i(TAG, "Latest values " + time + " m_latestId = " + m_libreTrendLatest.id  + " m_libreTrendLatest.m_GlucoseLevelRaw = " + m_libreTrendLatest.glucoseLevelRaw + " bg = " + m_libreTrendLatest.bg );
+            Log.i(TAG, "Latest values with valid bg " + time + " m_latestId = " + m_libreTrendLatest.id  + " m_libreTrendLatest.m_GlucoseLevelRaw = " + readingData.trend.get(0).glucoseLevelRaw + " bg = " + libreBlock.calculated_bg );
+            // We have finished the calculations, so getting out.
+            break;
         }
         
         // Go over all blocks from the earlier to the latest, and fill the data.
         for (LibreBlock libreBlock : latestBlocks) {
             if(!libreBlock.reference.equals(m_libreTrendLatest.SensorSN)) {
-                Log.i(TAG, "Detected a sensor change new sn is " + libreBlock.reference);
+                Log.i(TAG, "Detected a sensor change (or a new one) new sn is " + libreBlock.reference);
                 ResetPoints();
                 m_libreTrendLatest.SensorSN = libreBlock.reference;
             }

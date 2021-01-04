@@ -7,12 +7,10 @@ import java.text.DecimalFormat;
 
 public class GlucoseData implements Comparable<GlucoseData> {
 
-    public long realDate;
-    public String sensorId;
-    public long sensorTime;
+    public long realDate;               // The time of this reading in ms
+    public long sensorTime;             // The counter in minutes from start of sensor.
     public int glucoseLevel = -1;
     public int glucoseLevelRaw = -1;
-    public long phoneDatabaseId;
     public int glucoseLevelRawSmoothed;
 
     public GlucoseData(){}
