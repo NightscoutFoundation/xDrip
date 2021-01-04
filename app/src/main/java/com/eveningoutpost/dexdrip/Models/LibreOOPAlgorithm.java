@@ -39,6 +39,9 @@ class UnlockBuffers {
 
 public class LibreOOPAlgorithm {
     private static final String TAG = "LibreOOPAlgorithm";
+    private static final int MINUTE = 60000;
+    // This are the shifts of the libre different buffers
+    static final int[] LIBRE2_SHIFT = {0, 2, 4, 6, 7, 12, 15};
     
     public enum SensorType
     {
@@ -311,13 +314,39 @@ public class LibreOOPAlgorithm {
         glucoseData.glucoseLevelRaw = raw;
         
         libreAlarmObject.data.trend.add(glucoseData);
+
+        //========= add code here for smmothing and gap closing.
+
+
         String SensorSN = LibreUtils.decodeSerialNumberKey(patchUid);
         
         // TODO: Add here data of last 10 minutes or whatever.
         Log.e(TAG, "handleDecodedBleResult Created the following object " + libreAlarmObject.toString());
         LibreAlarmReceiver.processReadingDataTransferObject(libreAlarmObject, timestamp, SensorSN, true /*=allowupload*/, patchUid, null/*=patchInfo*/);   
     }
-    
+
+    public static ReadingData parseBleData(byte[] ble_data, Long CaptureDateTime) {
+        int sensorTime = 256 * (ble_data[41] & 0xFF) + (ble_data[40] & 0xFF);
+        //long sensorStartTime = CaptureDateTime - sensorTime * MINUTE;
+        ArrayList<GlucoseData> historyList = new ArrayList<>();
+        
+        ArrayList<GlucoseData> trendList = new ArrayList<>();
+        for (int i = 0; i < 7; i++) {
+            GlucoseData glucoseData = new GlucoseData();
+            
+            glucoseData.glucoseLevelRaw = LibreOOPAlgorithm.readBits(ble_data, i * 4 , 0 , 0xe);
+
+            int relative_time = LIBRE2_SHIFT[i];
+            glucoseData.realDate = CaptureDateTime - relative_time * MINUTE; 
+            glucoseData.sensorTime = sensorTime - relative_time;
+            Log.d(TAG, "Adding value with sensorTime" + glucoseData.sensorTime + " glucoseLevelRaw " + glucoseData.glucoseLevelRaw);
+            trendList.add(glucoseData);
+        }
+        
+        final ReadingData readingData = new ReadingData(null, trendList, historyList);
+        
+        return readingData;
+    }
     
     // Functions that are used for an external decoder.
     static public boolean isDecodeableData(byte []patchInfo) {
