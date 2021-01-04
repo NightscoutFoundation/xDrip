@@ -325,12 +325,5 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
         }
         return 0;
     }
-
-    private static void applyTimeShift(List<GlucoseData> gds, long timeshift) {
-        if (timeshift == 0) return;
-        for (GlucoseData gd : gds) {
-            gd.realDate = gd.realDate + timeshift;
-        }
-    }
 }
 

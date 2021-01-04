@@ -82,6 +82,7 @@ import java.net.URLEncoder;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.Charset;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
@@ -190,6 +191,18 @@ public class JoH {
 
     public static long msSince(long when) {
         return (tsl() - when);
+    }
+
+    public static long msSince(long end, long start) {
+        return (end - start);
+    }
+
+    public static String toHumanTime(double t) {
+        return toHumanTime((long)t);
+    }
+
+    public static String toHumanTime(long t) {
+        return DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(new Date(t));
     }
 
     public static long msTill(long when) {
