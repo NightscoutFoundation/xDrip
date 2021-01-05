@@ -75,7 +75,7 @@
     <string name="pref_pebble_trend_watchface">Utiliser le Cadran Pebble Tendances</string>
     <string name="pref_summary_pebble_trend_watchface">Utilisez/installez le Cadran Pebble Tendances (expérimental)</string>
     <string name="pref_pebble_display_trend">Afficher la Tendance</string>
-    <string name="pref_summary_display_trend">Afficher la tendance de glucose sur le cadran de la montre Pebble xDrip.</string>
+    <string name="pref_summary_display_trend">Afficher la tendance de glycémie sur le cadran de la montre Pebble xDrip.</string>
     <string name="pref_pebble_display_high_line">Afficher la ligne Haute</string>
     <string name="pref_pebble_display_low_line">Afficher la ligne Basse</string>
     <!-- Amazfit Settings -->
@@ -118,7 +118,7 @@
     <string name="title_activity_maps">Carte Parakeet</string>
     <string name="title_activity_display_preferences">Préférences d\'affichage</string>
     <string name="export_submenu">Fonctionnalités Import / Export</string>
-    <string name="action_resend_to_watch">Renvoyer le glucose vers la montre</string>
+    <string name="action_resend_to_watch">Renvoyer la glycémie vers la montre</string>
     <string name="action_open_watch_setting">Ouvrir les paramètres sur Android Wear</string>
     <string name="action_sync_watch_db">Réinitialiser la DB Android Wear</string>
     <string name="erase">Effacer</string>
@@ -181,7 +181,7 @@
     <string name="home_screen">Écran d\'accueil</string>
     <string name="event_logs">Journal des événements</string>
     <string name="calibration_graph">Graphe d\'étalonnage</string>
-    <string name="glucose_units">Unités de glucose</string>
+    <string name="glucose_units">Unité de glycémie</string>
     <string name="mmol_or_mgdl_high_and_low">mmol/l ou mg/dl Haute et Basse</string>
     <string name="general_settings">Paramètres Généraux</string>
     <string name="high_value">Valeur Haute</string>
@@ -193,7 +193,7 @@
     <string name="not_for_medical_use">Non destiné à l\'usage médical - outil de recherche uniquement</string>
     <string name="deel_settings_for_algs">Paramètres avancés pour les algorithmes</string>
     <string name="low_level_prediction_values">Valeurs de niveau de prédiction Bas</string>
-    <string name="glucose_drop_for_one_unit">Baisse du glucose pour 1 unité</string>
+    <string name="glucose_drop_for_one_unit">Baisse de la glycémie pour 1 Unité</string>
     <string name="xdrip_plus_prediction_settings">xDrip+ Paramètres de simulation prédictive</string>
     <string name="settings_for_syncing">Paramètres pour la synchronisation entre les combinés</string>
     <string name="xdrip_plus_sync_settings">xDrip+ Paramètres de synchronisation</string>
@@ -209,7 +209,7 @@
     <string name="alarms_and_alerts">Alarmes et alertes</string>
     <string name="alerts_and_notifications">Alertes et notifications</string>
     <string name="glucose_level_alerts_list">Liste d\'alertes de niveau de glucose</string>
-    <string name="glucose_alerts_settings">Paramètres d\'alertes glucose</string>
+    <string name="glucose_alerts_settings">Paramètres d\'alertes glycémiques</string>
     <string name="smart_snoozing">Mise en veille intelligente</string>
     <string name="calibration_alerts">Alertes d\'étalonnage</string>
     <string name="missed_reading_alert">Alerte lecture manquée</string>
@@ -222,18 +222,17 @@
     <string name="other_xdrip_plus_alerts">Autres alertes xDrip+</string>
     <string name="xdrip_plus_display_settings">xDrip+ Paramètres d\'affichage</string>
     <string name="display_customisations">Afficher les personnalisations</string>
-    <string name="insulin_carb_ratios_etc_for_models">L\'insuline, les ratios de glucose, etc par modèles</string>
+    <string name="insulin_carb_ratios_etc_for_models">Insuline, ratios de glycémie, etc par modèles</string>
     <string name="grams_of_carbohydrate_one_unit_covers">Grammes de glucides que couvre 1 Unité</string>
     <string name="linear_model_carbs_absorbed_per_hour">Glucides linéaires absorbés par heure</string>
     <string name="carb_absorption_rate">Taux d\'absorption de glucides</string>
-    <string name="calculate_including_glucose_trend">Calculer y compris la tendance de glucose</string>
+    <string name="calculate_including_glucose_trend">Calculer y compris la tendance de glycémie</string>
     <string name="use_trend_momentum">Utiliser la tendance dynamique</string>
     <string name="add_calibration">Ajouter Calibration</string>
     <string name="system_status">État du système</string>
     <string name="settings">Paramètres</string>
     <string name="calibration_data_table">Tableau de données de calibration</string>
-    <string name="bg_data_table">Tableau de données de glucose</string>
-    <string name="cannot_calibrate_right_now">Vous ne pouvez pas calibrer maintenant</string>
+    <string name="bg_data_table">Tableau de données de glycémie</string>
     <string name="hardware_data_source">Source de données matérielle</string>
     <string name="enter_ten_character_dexcom_receiver_serial">Entrer les 10 caractères du numéro de série du Dexcom</string>
     <string name="dexcom_transmitter_id">ID de transmetteur Dexcom</string>
@@ -289,7 +288,7 @@
     <string name="upload_data_to_dex_servers">Téléchargement des données aux serveurs Dexcoms afin que vous puissiez utiliser vos données avec des applications Dexcoms</string>
     <string name="manage_followers">Gérer les Abonnés</string>
     <string name="manage_existing_followers">Gérer vos Abonnés existants et inviter de nouveaux.</string>
-    <string name="glucose_calibration_and_other_alerts">Glucose, Calibration et autres alertes</string>
+    <string name="glucose_calibration_and_other_alerts">Glycémie, étalonnage et autres alertes</string>
     <string name="alert_volume_profile">Profil de volume d\'alerte</string>
     <string name="smart_alerting">Alertes intelligentes</string>
     <string name="dont_alarm_during_phone_calls">Ne pas alerter pendant les appels téléphoniques</string>
@@ -299,16 +298,16 @@
     <string name="pebble_and_android_wear_options">Options pour différentes montres</string>
     <string name="customize_colours">Personnaliser les couleurs</string>
     <string name="xdrip_plus_color_settings">xDrip+ Couleurs</string>
-    <string name="glucose_values_and_lines">Valeurs et lignes de glucose</string>
+    <string name="glucose_values_and_lines">Valeurs et lignes de glycémie</string>
     <string name="high_glucose_values">Valeurs glucose Hautes</string>
-    <string name="in_range_glucose_values">Valeurs de glucose dans la plage</string>
+    <string name="in_range_glucose_values">Valeurs de glycémie dans la cible</string>
     <string name="default_color_selected">Couleur par défaut sélectionnée</string>
     <string name="xdrip_plus_extra_settings">xDrip+ Extra</string>
     <string name="example_chart">Exemple Graphique</string>
     <string name="treatments_prediction_curves">Traitements / Courbes de prévision</string>
     <string name="carbs_per_unit">Glucides par unité</string>
     <string name="everyday">Tous les jours</string>
-    <string name="insulin_sensitivity_glucose_drop_per_unit">Sensibilité à l\'insuline: baisse du glucose par unité</string>
+    <string name="insulin_sensitivity_glucose_drop_per_unit">Sensibilité à l\'insuline : baisse de la glycémie par unité</string>
     <string name="transmitter_battery">batterie de l\'émetteur</string>
     <string name="very_low">TRÈS BAS</string>
     <string name="low">bas</string>
@@ -365,10 +364,10 @@
     <string name="install_pebble_classic_trend_watchface">Installez le Cadran Pebble Tendances Classic</string>
     <string name="install_pebble_trend_watchface">Installez le Cadran Pebble Tendances</string>
     <string name="install_pebble_watchface">Installez le Cadran Pebble</string>
-    <string name="glucose_history">Historique Glucose</string>
+    <string name="glucose_history">Historique Glycémie</string>
     <string name="import_database">Importer la base de données</string>
     <string name="sensor_table">Table du Capteur</string>
-    <string name="bg_readings_table">Tableau de valeurs de glucoses</string>
+    <string name="bg_readings_table">Tableau des glycémies</string>
     <string name="long_press_to_split_or_delete">Appui long pour Couper ou Supprimer</string>
     <string name="press_and_hold_on_the_background_to_split_or_delete">Appuyez et maintenez sur l\'arrière-plan pour couper ou supprimer un bloc de temps</string>
     <string name="search">Chercher</string>
@@ -421,8 +420,8 @@
     <string name="alarms_silenced_during_telephone_calls">Alarmes silencieuses pendant les appels téléphoniques</string>
     <string name="suppress_alerts_if_missed_readings">Suppression des alertes en cas de lectures manquées</string>
     <string name="bad_noisy_value_alerts">Alertes de valeurs incorrectes (bruit)</string>
-    <string name="keep_snoozing_if_glucose_is_heading_in_right_direction">Rester inactif si le glucose se dirige dans la bonne direction</string>
-    <string name="dont_alert_if_glucose_in_right_direction">Ne pas alerter si le glucose se dirige dans la bonne direction</string>
+    <string name="keep_snoozing_if_glucose_is_heading_in_right_direction">Rester inactif si la glycémie évolue dans la bonne direction</string>
+    <string name="dont_alert_if_glucose_in_right_direction">Ne pas alerter si la glycémie évolue dans la bonne direction</string>
     <string name="calibration_request_sound">Son de demande de calibration</string>
     <string name="display_filtered_line">Afficher la ligne filtrée</string>
     <string name="show_tiny_dots_instead">Afficher des points minuscules au lieu de petits sur le graphique</string>
@@ -436,11 +435,11 @@
     <string name="display_delta_units">Afficher unités Delta</string>
     <string name="displays_the_slope_arrows">Affiche les flèches de tendance</string>
     <string name="display_slope_arrows">Affichage de la flèche de tendance</string>
-    <string name="vibrate_watch_to_alert_no_data">Vibrer la montre pour alerter quand nous ne recevons pas les données de glucose</string>
+    <string name="vibrate_watch_to_alert_no_data">Vibrer la montre pour alerter quand nous ne recevons pas les données de glycémie</string>
     <string name="vibrate_when_missed_signal">Vibrer par manque de signal</string>
     <string name="vibrate_watch_to_alert_no_bluetooth">Faire vibrer la montre pour avertir lorsque bluetooth se déconnecte</string>
     <string name="vibrate_when_no_bluetooth">Vibrer quand pas de bluetooth</string>
-    <string name="special_glucose_value_to_display_message">La valeur spéciale de glucose pour afficher le message ci-dessous</string>
+    <string name="special_glucose_value_to_display_message">Valeur spéciale de la glycémie pour afficher le message ci-dessous</string>
     <string name="bluetooth_wakelocks">Wakelocks Bluetooth</string>
     <string name="compatible_broadcast">Diffusion Compatible</string>
     <string name="show_datatables">Afficher les tables de données</string>
@@ -464,7 +463,7 @@
     <string name="double_tap_or_pinch_to_zoom">Double clic ou élargissement pour zoomer.</string>
     <string name="start_sensor">Démarrer le capteur</string>
     <string name="debug_and_other_misc_options">Debug et autres options</string>
-    <string name="low_glucose_values">Valeurs de glucose Bas</string>
+    <string name="low_glucose_values">Valeur Hypoglycémie</string>
     <string name="revert_to_default">Revenir aux valeurs par défaut</string>
     <string name="filtered_values">Valeurs filtrées</string>
     <string name="treatment_color">Couleur de Traitement</string>
@@ -474,7 +473,7 @@
     <string name="average_and_target_lines">Lignes moyenne et cible</string>
     <string name="eight_hour_average_line">Ligne Moyenne de 8 heures</string>
     <string name="twenty_four_hour_average_line">Ligne moyenne 24 heures</string>
-    <string name="glucose_target_line">Ligne cible de Glucose</string>
+    <string name="glucose_target_line">Ligne cible de la Glycémie</string>
     <string name="annotations_and_dots">Annotations et Dots</string>
     <string name="blood_test_background">Arrière-plan du Test Sanguin</string>
     <string name="blood_test_foreground">Premier plan pour Test Sanguin</string>
@@ -488,7 +487,7 @@
     <string name="show_tips_hints">Afficher les astuces / conseils décrivant les fonctions des boutons etc. Décochez et revérifier pour réinitialiser au début</string>
     <string name="show_interface_hints">Afficher les astuces de l\'interface</string>
     <string name="show_graph_time_lines">Afficher la grille de lignes de temps</string>
-    <string name="show_graph_glucose_lines">Afficher la grille des lignes de glucose</string>
+    <string name="show_graph_glucose_lines">Afficher la grille des lignes de glycémie</string>
     <string name="display_filtered_plot">Affichage graphique filtrée</string>
     <string name="display_raw_plot_data">Affichage tracé de données brutes</string>
     <string name="show_graph_target_line">Afficher la ligne cible</string>
@@ -537,7 +536,7 @@
     <string name="grid_glucose_lines_visible">Grille de ligne de glucose visible</string>
     <string name="useful_for_noise_and_missed_readings">Utile pour le bruit et les lectures manquées</string>
     <string name="the_standard_xdrip_calculated_value">Les valeurs standards calculées par xDrip</string>
-    <string name="display_ideal_glucose_target_line">Affichage ligne cible de glucose idéal</string>
+    <string name="display_ideal_glucose_target_line">Affichage ligne cible de glycémie idéale</string>
     <string name="display_eight_hour_average_line">Afficher la ligne moyenne sur 8 heures</string>
     <string name="display_twenty_four_hour_average_line">Afficher la ligne moyenne sur 24 heures</string>
     <string name="predictive_model_inner_workings">Fonctionnement interne du modèle de Prédictions</string>
@@ -571,7 +570,7 @@
     <string name="pref_message_influxdb_password">Mot de passe pour l’authentification. Il est recommandé de ne pas permettre son utilisation sans authentification.</string>
     <string name="pref_dialog_influxdb_password">Mot de passe</string>
     <string name="use_tiny_dots">Utiliser des points de petite taille</string>
-    <string name="watch_vibrate_active_alerts">Faire vibrer la montre en cas d\'alertes active de glucose</string>
+    <string name="watch_vibrate_active_alerts">Faire vibrer la montre en cas d\'alertes glycémiques actives</string>
     <string name="vibrate_alerts">Vibrer en cas d\'alertes</string>
     <string name="attach_to_button">Attachez-le à un bouton peeble pour Mettre en veille instantanément toute alerte active de votre montre. Également pour la fonction de Mise en veille distante.</string>
     <string name="for_interacting_compatible_apps">Pour interagir avec d’autres applications compatibles</string>
@@ -659,7 +658,7 @@
     <string name="calibration_plugin">Plugin d\'étalonnage</string>
     <string name="advanced_calibration">Étalonnage avancé</string>
     <string name="extra_calibration_options">Options supplémentaires relatives aux étalonnages</string>
-    <string name="choose_use_treament_bg">Indiquer si vous voulez calibrer avec la valeur BG dans une entrée de traitement</string>
+    <string name="choose_use_treament_bg">Indiquer si vous voulez étalonner avec la valeur de glycémie dans une entrée de traitement</string>
     <string name="usw_treatment_bg">Utiliser les valeurs BG des traitements</string>
     <string name="experimental_calibration_plugin">Plugin d\'étalonnage expérimental secondaire</string>
     <string name="show_plugin_results_on_graph">Afficher les résultats de glycémie du plugin sur le graphique principal</string>
@@ -725,8 +724,8 @@
     <string name="dexcom_password">Mot de passe de compte DexCom</string>
     <string name="dexcom_receiver_serial">Numéro de série du récepteur Dexcom sur 10 caractères</string>
     <string name="dexcom_test_mode_serial">Numéro de série de Mode de Test sur 10 caractères</string>
-    <string name="glucose_meters">Lecteurs de Glucose</string>
-    <string name="glucose_meter_options">Options pour les lecteurs de glucose sans fil</string>
+    <string name="glucose_meters">Lecteurs de Glycémie</string>
+    <string name="glucose_meter_options">Options pour les lecteurs de glycémie sans fil</string>
     <string name="auto_connect_to_meter">Automatiquement connecter et extraire des données d\'un lecteur de glycémie compatible standard comme le Contour Next One</string>
     <string name="use_bluetooth_meter">Utiliser un lecteur Bluetooth</string>
     <string name="scan_for_bluetooth_meter">Scanner pour trouver un lecteur Bluetooth</string>
@@ -841,7 +840,7 @@
     <string name="repeat_sound">Répéter le son</string>
     <string name="enable_telemetry">Activer la télémétrie</string>
     <string name="send_data_to_developers">Envoyer des données aux développeurs sur les taux de réussite des différents périphériques</string>
-    <string name="try_to_work_around_noisy_readings_ultrasensitive">Commencer à contourner les lectures bruyantes même sur des niveaux de bruit très bas (mode ingénierie uniquement)</string>
+    <string name="try_to_work_around_noisy_readings_ultrasensitive">Commencer à contourner les lectures bruitées même sur des niveaux de bruit très bas (mode ingénierie uniquement)</string>
     <string name="sidiary_date_title">Exportation depuis quand?</string>
     <string name="blukon">Blucon</string>
     <string name="tomato">Tomato</string>
@@ -874,7 +873,6 @@
     <string name="collecting_initial_readings">Collecte des premières lectures</string>
     <string name="data_collector_running">Collecteur de données en fonction</string>
     <string name="received_some_recent_data">Reçu quelques données récentes</string>
-    <string name="received_enough_good_data_to_calibrate">Reçu assez de bonnes données pour calibrer</string>
     <string name="play_sound_when_ready_for_calibration">Émette un son lorsque prêt pour l\'étalonnage</string>
     <string name="receiving_data_from_collector">Réception de données depuis le collecteur %s</string>
     <!-- trend arrow for speak -->
@@ -933,7 +931,7 @@
     <string name="noise_blocking">Blocage du bruit</string>
     <string name="level_at_which_noisy_data_should_not_be_broadcast">Niveau à partir duquel les données bruitées ne devraient pas être diffusées car cela pourrait perturber les applis réceptrices</string>
     <string name="low_parakeet_battery">Batterie Parakeet faible</string>
-    <string name="glucose_units_mmol_or_mgdl">Unités de glucose mmol/L ou mg/dL</string>
+    <string name="glucose_units_mmol_or_mgdl">Unité de glycémie : mmol/L ou mg/dL</string>
     <string name="is_your_typical_glucose_value">Votre valeur glycémie typique : 5.5 (mmol/L) ou 100 (mg/dL). Veuillez sélectionner ci-dessous</string>
     <string name="settings_updated_to_mmol">Paramètres mis à jour vers mmol/L</string>
     <string name="external_calibration_app">Appli d\'étalonnage externe</string>
@@ -958,8 +956,8 @@
     <string name="emergency_message_feature">Fonction Message d\'urgence</string>
     <string name="text_messages_can_be_sent_with_your_location_if_you_do_not_respond_to_alarms_this_feature_is_experimental_and_may_not_be_reliable">Des Sms peuvent être envoyés avec votre localisation si vous ne répondez pas aux alarmes. Cette fonctionnalité est expérimentale et peut ne pas être fiable.</string>
     <string name="your_name">Votre nom</string>
-    <string name="did_not_acknowledge_a_low_glucose_alert">%s n\'a pas reconnu une alerte de glucose faible depuis %s</string>
-    <string name="did_not_acknowledge_a_high_glucose_alert">%s n\'a pas reconnu une alerte de glucose élevé depuis %s</string>
+    <string name="did_not_acknowledge_a_low_glucose_alert">%s n\'a pas reconnu une alerte de glycémie faible depuis %s</string>
+    <string name="did_not_acknowledge_a_high_glucose_alert">%s n\'a pas reconnu une alerte de glycémie élevé depuis %s</string>
     <string name="has_not_had_glucose_data_received_for">%s n\'a pas reçu de données de glycémie depuis %s</string>
     <string name="phone_has_not_been_used_for">Le téléphone %s n\'a pas été utilisé depuis %s</string>
     <string name="is_requesting_assistance">%s demande assistance</string>
@@ -1237,14 +1235,14 @@
     <string name="title_miband_screen_nfc">Afficher le NFC (si disponible)</string>
     <string name="miband_watchface_istall_success">Le cadran MiBand a été téléchargé avec succès !</string>
     <string name="miband_watchface_istall_error">Erreur lors du chargement du cadran MiBand</string>
-    <string name="miband_bg_dialog_title">Mettre à jour les données de glucose maintenant ?</string>
+    <string name="miband_bg_dialog_title">Mettre à jour les données de glycémie maintenant ?</string>
     <string name="title_lefun_band">Bracelet Lefun</string>
     <string name="summary_lefun_enable">Synchroniser les données avec les bracelets de fitness LeFun</string>
     <string name="title_lefun_enable">Utiliser bracelet LeFun</string>
     <string name="title_lefun_mac">Adresse Mac</string>
-    <string name="summary_lefun_send_readings">Améliorer la date de la montre pour représenter les valeurs de glucose. Meilleur en mmol/l - voir la documentation</string>
+    <string name="summary_lefun_send_readings">Améliorer la date de la montre pour représenter les valeurs de glycémie. Meilleur en mmol/l - voir la documentation</string>
     <string name="title_lefun_send_readings">Envoyer les valeurs</string>
-    <string name="summary_lefun_send_alarms">Envoyer les notifications au bracelet pour les alarmes de glucose</string>
+    <string name="summary_lefun_send_alarms">Envoyer les notifications au bracelet pour les alarmes glycémiques</string>
     <string name="title_lefun_send_alarms">Envoyer les alarmes</string>
     <string name="title_lefun_option_shake_snoozes">Secouer pour Mettre en veille</string>
     <string name="title_lefun_screens_features">LeFun Écrans / Fonctionnalités</string>
@@ -1273,7 +1271,7 @@
     <string name="title_ob1_options">Paramètres de Collecteur OB1 G5/G6</string>
     <string name="summary_use_ob1_g5_collector_service">Réécriture complète, devrait fonctionner sur Android 4.4-9, supporte le mode natif et plus</string>
     <string name="title_use_ob1_g5_collector_service">Utiliser le Collecteur OB1</string>
-    <string name="summary_ob1_g5_use_transmitter_alg">Utiliser l\'algorithme interne de l\'émetteur pour calculer les valeurs de glucose lorsque cela est possible.</string>
+    <string name="summary_ob1_g5_use_transmitter_alg">Utiliser l\'algorithme interne de l\'émetteur pour calculer les valeurs de glycémie lorsque cela est possible.</string>
     <string name="title_ob1_g5_use_transmitter_alg">Algorithme natif</string>
     <string name="summary_ob1_g5_restart_sensor">Redémarrer automatiquement un capteur lorsqu\'il s\'arrête</string>
     <string name="title_ob1_g5_restart_sensor">Redémarrer le capteur</string>
@@ -1281,7 +1279,7 @@
     <string name="title_ob1_g5_preemptive_restart">Redémarrage préventif</string>
     <string name="summary_ob1_g5_use_insufficiently_calibrated">Toujours utiliser les données même si les étalonnages ne sont pas assez de bons (expérimental !)</string>
     <string name="title_ob1_g5_use_insufficiently_calibrated">Continuer sans étalonnage</string>
-    <string name="summary_ob1_g5_fallback_to_xdrip">Revenir à l\'algorithme xDrip si G5 ne fournit pas de données de glucose (potentiellement risqué!)</string>
+    <string name="summary_ob1_g5_fallback_to_xdrip">Revenir à l\'algorithme xDrip si G5 ne fournit pas de données de glycémie (potentiellement risqué !)</string>
     <string name="title_ob1_g5_fallback_to_xdrip">Revenir à xDrip</string>
     <string name="summary_ob1_minimize_scanning">Utiliser des heuristiques pour minimiser le scan bluetooth + économie d\'énergie</string>
     <string name="title_ob1_minimize_scanning">Réduire le scan</string>
@@ -1304,11 +1302,11 @@
     <string name="title_xdrip_plus_graph_display_settings">Paramètres de Graph</string>
     <string name="summary_show_basal_line">Afficher les informations basales depuis l\'état externe</string>
     <string name="title_show_basal_line">Afficher le Basal</string>
-    <string name="summary_show_g_prediction">Afficher les points de glucose prédictives G6</string>
+    <string name="summary_show_g_prediction">Afficher les points de glycémie prédictifs G6</string>
     <string name="title_show_g_prediction">Prédiction G6</string>
     <string name="summary_show_smb_icons">Découper le graphique avec les icônes de traitement pour les petits bolus</string>
     <string name="title_show_smb_icons">Afficher les icônes micro bolus</string>
-    <string name="summary_show_medtrum_secondary">Afficher les points de glucose alternatifs</string>
+    <string name="summary_show_medtrum_secondary">Afficher les points de glycémie alternatifs</string>
     <string name="title_show_medtrum_secondary">Medtrum Secondaire</string>
     <string name="summary_illustrate_backfilled_data">Indiquer les données récupérées sur le graphique</string>
     <string name="title_illustrate_backfilled_data">Afficher les données récupérées</string>
@@ -1332,7 +1330,7 @@
     <string name="title_do_number_icon_test">Lancer le test d\'icône Valeur</string>
     <string name="summary_number_icon_tested">Lorsque vous aurez confirmé, votre appareil pourra afficher une icône de valeur</string>
     <string name="title_number_icon_tested">Icône de Valeur testé</string>
-    <string name="summary_use_number_icon">Affiche la valeur de glucose actuelle comme icône pour la barre de notification et l\'écran de verrouillage</string>
+    <string name="summary_use_number_icon">Affiche la valeur de glycémie actuelle comme icône pour la barre de notification et l\'écran de verrouillage</string>
     <string name="title_use_number_icon">Afficher l\'icône Valeur en petit</string>
     <string name="summary_use_number_icon_large">Affiche une icône plus grande dans la zone de notification uniquement lorsque l\'ecran est activé</string>
     <string name="title_use_number_icon_large">Utiliser l\'icône Valeur grand</string>
@@ -1385,7 +1383,7 @@
     <string name="summary_play_sound_for_initial_calibration">Jouer un son lorsque l\'étalonnage initial est demandé</string>
     <string name="title_play_sound_for_initial_calibration">Alerte initiale</string>
     <string name="category_noisy_readings">Lectures de bruits</string>
-    <string name="category_falling_rising_bg">Hausse/Baisse de Glucose</string>
+    <string name="category_falling_rising_bg">Chute/Hausse de la Glycémie</string>
     <string name="category_alert_prefs">Préférences d\'alerte (pour ces alertes)</string>
     <string name="summary_persistent_high_alert">Quand supérieur au niveau Haut pour une longue période, et ne se dirige pas vers le bas</string>
     <string name="note_search_button">RECHERCHE</string>
@@ -1450,14 +1448,11 @@
     <string name="__do_you_want_to_change_settings_or_start_sensor">\n\nVoulez-vous changer les paramètres ou démarrer le capteur ?</string>
     <string name="change_settings">Modifier les paramètres</string>
     <string name="do_you_want_to_delete_and_reset_the_calibrations_for_this_sensor">Voulez-vous supprimer et réinitialiser les étalonnages de ce capteur ?</string>
-    <string name="you_have_an_old_experimental_glucose_prediction_setting_enabled__this_is_not_recommended_and_could_mess_things_up_badly__shall_i_disable_this_for_you">Vous avez un ancien paramètre de prédiction de glucose expérimental activé.\n\nCe n\'est PAS RECOMMANDÉ et pourrait causer des dégâts.\n\nPuis-je de désactiver pour vous?</string>
+    <string name="you_have_an_old_experimental_glucose_prediction_setting_enabled__this_is_not_recommended_and_could_mess_things_up_badly__shall_i_disable_this_for_you">Vous avez un ancien paramètre expérimental de prédiction de la glycémie activé.\n\nCe N\'est PAS RECOMMANDÉ et pourrait causer des dégâts.\n\nPuis-je de désactiver pour vous?</string>
     <string name="settings_issue">Problème des paramètres !</string>
-    <string name="do_you_want_to_use_this_synced_fingerstick_blood_glucose_result_to_calibrate_with__you_can_change_when_this_dialog_is_displayed_in_settings">Voulez-vous utiliser ce résultat de glycémie du doigt synchronisé pour calibrer?\n\n(vous pouvez changer lorsque cette boîte de dialogue est affichée dans Paramètres)</string>
     <string name="use_bg_for_calibration">Utiliser les glycémies capillaires pour l\'étalonnage ?</string>
-    <string name="do_you_want_to_use_this_entered_fingerstick_blood_glucose_test_to_calibrate_with__you_can_change_when_this_dialog_is_displayed_in_settings">Voulez-vous utiliser ce résultat de glycémie capilaire synchronisé pour calibrer?\n\n(vous pouvez changer lorsque cette boîte de dialogue est affichée dans Paramètres)</string>
-    <string name="yes_calibrate">OUI, calibrer</string>
+    <string name="do_you_want_to_use_this_entered_fingerstick_blood_glucose_test_to_calibrate_with__you_can_change_when_this_dialog_is_displayed_in_settings">Voulez-vous utiliser ce résultat de glycémie capillaire synchronisé pour étalonner ?\n\n(vous pouvez changer lorsque cette boîte de dialogue est affichée dans Paramètres)</string>
     <string name="enable_automatic_calibration">Activer l\'étalonnage automatique</string>
-    <string name="entered_blood_tests_which_occur_during_flat_trend_periods_can_automatically_be_used_to_recalibrate_after_20_minutes_this_should_provide_the_most_accurate_method_to_calibrate_with__do_you_want_to_enable_this_feature">Les tests sanguins entrés qui se produisent pendant les périodes de tendance plates peuvent automatiquement être utilisés pour recalibrer après 20 minutes. Cela devrait fournir la méthode la plus précise pour calibrer.\n\nVoulez-vous activer cette fonctionnalité ?</string>
     <string name="yes_enable">OUI, activer</string>
     <string name="blood_test_action">Action de test sanguin</string>
     <string name="what_would_you_like_to_do">Que voulez-vous faire?</string>
@@ -1474,7 +1469,6 @@
     <string name="restore_backup">Restaurer la sauvegarde ?</string>
     <string name="do_you_want_to_restore_the_backup_file_">Voulez-vous restaurer le fichier de sauvegarde : </string>
     <string name="restore">Restaurer</string>
-    <string name="calibrate_sensor">Calibrer le capteur ?</string>
     <string name="we_have_some_readings__next_we_need_the_first_calibration_blood_test__ready_to_calibrate_now">Nous avons quelques valeurs !\n\nEnsuite, nous avons besoin d\'un premier test de glycémie capillaire.\n\nPrêt à étalonner maintenant ?</string>
     <string name="calibrate">Étalonnage</string>
     <string name="confirm_delete">Confirmer la Suppression</string>
@@ -1518,7 +1512,7 @@
     <string name="nfc_error">Erreur NFC</string>
     <string name="still_processing_previous_backfill_request">Toujours en cours de traitement de la demande de remplissage précédente !</string>
     <string name="please_wait">Veuillez patienter...</string>
-    <string name="didnt_find_any_glucose_readings_in_that_time_period">Aucune lecture de glucose n\'a été trouvée dans cette période</string>
+    <string name="didnt_find_any_glucose_readings_in_that_time_period">Aucune lecture de glycémie n\'a été trouvée durant cette période</string>
     <string name="got_calibration_in_the_future__cannot_process">Valeur d\'étalonnage dans le futur - Impossible à traiter !</string>
     <string name="remote_snooze">Mise en veille distante..</string>
     <string name="sensor_stopped">Capteur arrêté</string>
@@ -1534,7 +1528,7 @@
     <string name="share_login_data_isnt_valid">Les données de connexion Share ne sont pas valide - vérifier le nom d\'utilisateur / mot de passe</string>
     <string name="connectivity_problem_reaching_share_servers">Problème de connectivité pour rejoindre les serveurs Share</string>
     <string name="ob1_session_restarted_title">Capteurs redémarrés</string>
-    <string name="ob1_session_restarted_msg">La session du capteur a été redémarrée préventivement. Veuillez vérifier si les prochaines lectures sont décalées et calibrer si nécessaire</string>
+    <string name="ob1_session_restarted_msg">La session du capteur a été redémarrée préventivement. Veuillez vérifier si les prochaines lectures sont décalées et étalonner si nécessaire</string>
     <string name="ob1_session_restarted_note">La session du capteur a été redémarrée</string>
     <string name="title_ob1_g5_preemptive_restart_extended_time_travel">Durée de voyage prolongée</string>
     <string name="summary_ob1_g5_preemptive_restart_extended_time_travel">Redémarrer la session pour commencer au troisième jour afin d\'éviter de causer des sauts</string>
