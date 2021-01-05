@@ -107,7 +107,9 @@
         <service
             android:name=".Services.DexCollectionService"
             android:enabled="true"
-            android:exported="true" />
+            android:exported="true"
+            android:foregroundServiceType="connectedDevice|location"
+            />
         <service
             android:name=".Services.WifiCollectionService"
             android:enabled="true"
@@ -359,11 +361,15 @@
         <service
             android:name=".insulin.pendiq.PendiqService"
             android:enabled="true"
-            android:exported="false" />
+            android:exported="false"
+            android:foregroundServiceType="connectedDevice|location"
+            />
         <service
             android:name=".cgm.medtrum.MedtrumCollectionService"
             android:enabled="true"
-            android:exported="false" />
+            android:exported="false"
+            android:foregroundServiceType="connectedDevice|location"
+            />
 
         <activity
             android:name=".ShareTest"
@@ -426,7 +432,9 @@
         <service
             android:name=".UtilityModels.pebble.PebbleWatchSync"
             android:enabled="true"
-            android:exported="true" />
+            android:exported="true"
+            android:foregroundServiceType="connectedDevice|location"
+            />
         <service
             android:name=".Services.DailyIntentService"
             android:exported="false" />
@@ -471,6 +479,9 @@
         <receiver android:name=".NSEmulatorReceiver">
             <intent-filter>
                 <action android:name="com.eveningoutpost.dexdrip.NS_EMULATOR" />
+                <action android:name="com.eveningoutpost.dexdrip.OOP2_DECODE_FARM_RESULT" />
+                <action android:name="com.eveningoutpost.dexdrip.OOP2_DECODE_BLE_RESULT" />
+                <action android:name="com.eveningoutpost.dexdrip.OOP2_BLUETOOTH_ENABLE_RESULT" />
             </intent-filter>
         </receiver>
         <receiver android:name="com.eveningoutpost.dexdrip.watch.thinjam.io.ThinJamApiReceiver">
@@ -599,7 +610,9 @@
         <service
             android:name=".Services.DoNothingService"
             android:enabled="true"
-            android:exported="true" />
+            android:exported="true"
+            android:foregroundServiceType="connectedDevice|location"
+            />
 
         <activity android:name=".HelpActivity" />
         <activity
@@ -690,10 +703,16 @@
             android:name=".wearintegration.Amazfitservice"
             android:enabled="true"
             android:exported="true" />
-        <service android:name=".watch.lefun.LeFunService" />
-        <service android:name=".watch.miband.MiBandService" />
+        <service android:name=".watch.lefun.LeFunService"
+            android:foregroundServiceType="connectedDevice|location"
+            />
+        <service android:name=".watch.miband.MiBandService"
+            android:foregroundServiceType="connectedDevice|location"
+            />
         <service android:name=".cgm.nsfollow.NightscoutFollowService" />
-        <service android:name=".insulin.inpen.InPenService" />
+        <service android:name=".insulin.inpen.InPenService"
+            android:foregroundServiceType="connectedDevice|location"
+            />
         <service android:name=".cgm.sharefollow.ShareFollowService" />
 
         <activity
@@ -721,7 +740,9 @@
             android:configChanges="orientation|screenSize"
             android:launchMode="singleTask"
             android:label="BlueJay Admin"/>
-        <service android:name=".watch.thinjam.BlueJayService" />
+        <service android:name=".watch.thinjam.BlueJayService"
+            android:foregroundServiceType="connectedDevice|location"
+            />
     </application>
 
 </manifest>

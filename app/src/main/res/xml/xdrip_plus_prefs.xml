@@ -181,7 +181,7 @@
                         app:colorpicker_showHex="false" />
 
                     <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
-                        android:defaultValue="#00000000"
+                        android:defaultValue="#B3000000"
                         android:key="color_widget_chart_background"
                         android:title="@string/widget_chart_background"
                         app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"

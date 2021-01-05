@@ -543,7 +543,7 @@
     <string name="process_broadcasted_calibrations">Zpracovávat kalibrace z ostatních aplikací</string>
     <string name="spoken_readings_locale">Vlastní kód jazyka pro předčítání např. cs nebo en_IN</string>
     <string name="speak_glucose_twice">Předčítat glykémie 2x</string>
-    <string name="short_speak_readings_shortcut">Zobrazovat zástupce v menu ☰ pro zapnutí přečítání</string>
+    <string name="short_speak_readings_shortcut">Zobrazovat zástupce v menu ☰ pro zapnutí předčítání</string>
     <string name="speak_readings_shortcut">Předčítání glykémií</string>
     <string name="battery_optimization_off">Na Androidu 6+ se ujistěte, že je vypnutá optimalizace baterie. Doporučeno</string>
     <string name="battery_optimization_on">Již se neptat na vypnutí optimalizace baterie. Nedoporučeno</string>

@@ -1,6 +1,7 @@
 package com.eveningoutpost.dexdrip;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -53,7 +54,6 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.crashlytics.android.Crashlytics;
 import com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine;
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
@@ -190,6 +190,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     public final static String SHOW_NOTIFICATION = "SHOW_NOTIFICATION";
     public final static String BLUETOOTH_METER_CALIBRATION = "BLUETOOTH_METER_CALIBRATION";
     public final static String ACTIVITY_SHOWCASE_INFO = "ACTIVITY_SHOWCASE_INFO";
+    public final static String ENABLE_STREAMING_DIALOG = "ENABLE_STREAMING_DIALOG";
     public final static int SENSOR_READY_ID = 4912;
     private final UiPing ui = new UiPing();
     public static boolean activityVisible = false;
@@ -318,6 +319,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     private static String statusBWP = "";
 
 
+    @SuppressLint("ObsoleteSdkInt")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         mActivity = this;
@@ -325,12 +327,6 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         if (!xdrip.checkAppContext(getApplicationContext())) {
             toast(gs(R.string.unusual_internal_context_problem__please_report));
             Log.wtf(TAG, "xdrip.checkAppContext FAILED!");
-            try {
-                xdrip.initCrashlytics(getApplicationContext());
-                Crashlytics.log("xdrip.checkAppContext FAILED!");
-            } catch (Exception e) {
-                // nothing we can do really
-            }
             try {
                 Thread.sleep(2000);
             } catch (InterruptedException e) {
@@ -1077,6 +1073,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                         DidYouCancelAlarm.dialog(this, AlertPlayer::defaultSnooze);
                         break;
                 }
+            } else if (bundle.getString(Home.ENABLE_STREAMING_DIALOG) != null) {
+                NFCReaderX.enableBluetoothAskUser(mActivity);
             }
         }
     }
@@ -1111,6 +1109,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         intent.putExtra(extra, text);
         intent.putExtra(extra + "2", even_more);
         if (even_even_more.length() > 0) intent.putExtra(extra + "3", even_even_more);
+        Log.e("xxxxx", "calling startActivity");
         context.startActivity(intent);
     }
 
@@ -3249,6 +3248,10 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
     public void noteDefaultMethodChanged(View myitem) {
         Pref.setBoolean("default_to_voice_notes", !Pref.getBooleanDefaultFalse("default_to_voice_notes"));
+    }
+
+    public void showNoteTextInputDialog(View myitem) {
+        showNoteTextInputDialog(myitem, JoH.tsl(), -1);
     }
 
     public void showNoteTextInputDialog(View myitem, final long timestamp) {

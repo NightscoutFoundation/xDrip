@@ -772,7 +772,6 @@
     <string name="repeat_sound">Repeter lyd</string>
     <string name="enable_telemetry">Aktiver telemetri</string>
     <string name="send_data_to_developers">Send data til utviklerne om suksessforhold for forskjellige enheter.</string>
-    <string name="try_to_work_around_noisy_readings_ultrasensitive">Prøv å fikse data med støy selv ved lave støyverdier (Kun i Teknisk modus)</string>
     <string name="sidiary_date_title">Eksporter data fra når?</string>
     <string name="use_gravity_sensor_to_rotate_items">Bruk tyngdekraftsensor for å rotere</string>
     <string name="low_bridge_battery">Bro har lavt batteri</string>
