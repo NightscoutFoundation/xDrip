@@ -1,13 +1,15 @@
 buildscript {
     repositories {
-        maven { url 'https://maven.fabric.io/public' }
+        google()
+        jcenter()
     }
 
     dependencies {
-        classpath 'io.fabric.tools:gradle:1.+'
+        classpath "com.newrelic.agent.android:agent-gradle-plugin:5.27.1"
     }
 }
 apply plugin: 'com.android.application'
+apply plugin: 'newrelic'
 //apply plugin: 'me.tatarka.retrolambda'
 //apply plugin: 'io.fabric'
 
@@ -22,7 +24,6 @@ repositories {
     maven {
         url "https://maven.google.com"
     }
-    maven { url 'https://maven.fabric.io/public' }
     maven {
         url "https://raw.github.com/embarkmobile/zxing-android-minimal/mvn-repo/maven-repository/"
     }
@@ -110,6 +111,11 @@ def generateVersionName = { ->
     stringBuilder.append((new Date()).format('yyyy.MM.dd'))
     return stringBuilder.toString()
 
+}
+
+newrelic {
+    variantMapsEnabled false
+    uploadMapsForVariant ''
 }
 
 android {
@@ -246,8 +252,9 @@ dependencies {
     implementation "com.google.android.gms:play-services-gcm:10.2.1"
     implementation 'com.squareup.wire:wire-runtime:2.2.0'
     implementation 'com.squareup.okhttp:okhttp:2.7.5'
-    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
+    implementation 'com.squareup.okhttp3:okhttp:3.12.1'
     implementation 'com.squareup.okhttp3:logging-interceptor:3.10.0'
+    implementation "com.newrelic.agent.android:android-agent:5.27.1"
     //implementation 'com.jakewharton.retrofit:retrofit1-okhttp3-client:1.1.0'
     implementation 'com.squareup.retrofit2:retrofit:2.4.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
@@ -273,13 +280,10 @@ dependencies {
     implementation 'me.tatarka.bindingcollectionadapter2:bindingcollectionadapter-recyclerview:2.2.0'
     implementation 'org.slf4j:slf4j-api:1.7.7'
     implementation 'org.apache.commons:commons-math3:3.6'
-    implementation('com.crashlytics.sdk.android:crashlytics:2.6.6@aar') {
-        transitive = true
-    }
     implementation 'uk.com.robust-it:cloning:1.9.5'
     implementation 'com.github.amlcurran.showcaseview:library:5.4.3'
     // implementation 'com.itextpdf:itextg:5.5.9'
-
+    implementation 'com.github.jamorham:QR-Code-generator:d0454644af'
     // Pebble-Trend, needs to be checked if really needed
     //implementation 'com.android.support:multidex:1.0.1'
     implementation 'ar.com.hjg:pngj:2.1.0'

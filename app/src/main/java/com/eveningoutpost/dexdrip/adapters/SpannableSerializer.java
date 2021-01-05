@@ -19,7 +19,8 @@ import lombok.val;
 public class SpannableSerializer {
 
 
-    public static String serializeSpannableString(final SpannableString ss) {
+    public static String serializeSpannableString(SpannableString ss) {
+        if (ss == null) ss = new SpannableString(""); // use blank if input is null
         val json = new JSONObject();
         try {
             json.put("mText", ss.toString());

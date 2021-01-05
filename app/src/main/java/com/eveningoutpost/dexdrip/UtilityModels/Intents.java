@@ -50,11 +50,10 @@ public interface Intents {
     String XDRIP_PLUS_NS_EMULATOR = "com.eveningoutpost.dexdrip.NS_EMULATOR";
     String BLUEJAY_THINJAM_API = "com.eveningoutpost.dexdrip.THINJAM_API";
     String BLUEJAY_THINJAM_EMIT = "com.eveningoutpost.dexdrip.THINJAM_EMIT";
-
     // Local Broadcasts
     String HOME_STATUS_ACTION = "com.eveningoutpost.dexdrip.HOME_STATUS_ACTION";
     
-    // Send to LibreXposed
+    // Send to external decoder
     String XDRIP_PLUS_LIBRE_DATA = "com.eveningoutpost.dexdrip.LIBRE_DATA";
     String LIBRE_DATA_BUFFER = "com.eveningoutpost.dexdrip.Extras.DATA_BUFFER";
     String LIBRE_PATCH_UID_BUFFER = "com.eveningoutpost.dexdrip.Extras.LIBRE_PATCH_UID_BUFFER";
@@ -68,6 +67,23 @@ public interface Intents {
     String LIBRE2_ACTIVATION = "com.librelink.app.ThirdPartyIntegration.SENSOR_ACTIVATE";
 
 
+    // oop 2 
+    String XDRIP_DECODE_FARM_RESULT = "com.eveningoutpost.dexdrip.OOP2_DECODE_FARM_RESULT";
+    String XDRIP_DECODE_BLE_RESULT = "com.eveningoutpost.dexdrip.OOP2_DECODE_BLE_RESULT";
+    String XDRIP_BLUETOOTH_ENABLE_RESULT = "com.eveningoutpost.dexdrip.OOP2_BLUETOOTH_ENABLE_RESULT";
+    String XDRIP_PLUS_LIBRE_BLE_DATA = "com.eveningoutpost.dexdrip.LIBRE_BLE_DATA";
+    String XDRIP_PLUS_BLUETOOTH_ENABLE = "com.eveningoutpost.dexdrip.BLUETOOTH_ENABLE";
+    String DECODED_BUFFER = "DecodedBuffer";
+    String PATCH_UID = "PatchUid";
+    String PATCH_INFO = "PatchInfo";
+    String ENABLE_TIME = "EnableTime";
+    String CONNECTION_INDEX = "ConnectionIndex";
+    String BT_UNLOCK_BUFFER = "BtUnlockBuffer";
+    String NFC_UNLOCK_BUFFER = "NfcUnlockBuffer";
+    String DEVICE_NAME = "DeviceName";
+    
+    String TAG_ID = "TagId";
+    String ROW_ID = "RowId";
 
     String PREFERENCE_INTENT = "com.eveningoutpost.dexdrip.utils.PROGRESS";
 }

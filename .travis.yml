@@ -42,33 +42,33 @@ before_install:
 
 before_script:
   - android list targets
-  - echo no | android create avd --force -n test -t android-$EMULATOR_API_LEVEL --abi $ANDROID_ABI --tag google_apis
-  - export QEMU_AUDIO_DRV=none && emulator -engine classic -avd test -no-window &
-  - sleep 30
+#  - echo no | android create avd --force -n test -t android-$EMULATOR_API_LEVEL --abi $ANDROID_ABI --tag google_apis
+#  - export QEMU_AUDIO_DRV=none && emulator -engine classic -avd test -no-window &
+#  - sleep 30
 #  - curl -L -o butler.apk https://bintray.com/linkedin/maven/download_file?file_path=com%2Flinkedin%2Ftestbutler%2Ftest-butler-app%2F1.3.1%2Ftest-butler-app-1.3.1.apk
 
 script:
   - nice ./gradlew test -PdisablePreDex
-  - sleep 20
-  - nice ./gradlew app:assembleAndroidTest -PdisablePreDex
-  - sleep 10
-  - android-wait-for-emulator
-  - adb -e logcat -t 20
-  - adb shell settings put global window_animation_scale 0
-  - adb shell settings put global transition_animation_scale 0
-  - adb shell settings put global animator_duration_scale 0
-  - sleep 35
-  - adb shell input keyevent 82
-  - adb devices
+#  - sleep 20
+#  - nice ./gradlew app:assembleAndroidTest -PdisablePreDex
+#  - sleep 10
+#  - android-wait-for-emulator
+#  - adb -e logcat -t 20
+#  - adb shell settings put global window_animation_scale 0
+#  - adb shell settings put global transition_animation_scale 0
+#  - adb shell settings put global animator_duration_scale 0
+#  - sleep 35
+#  - adb shell input keyevent 82
+#  - adb devices
 #  - ./gradlew app:installDebugAndroidTest  -PdisablePreDex
-  - adb shell input tap 134 467
-  - travis_retry travis_wait nice ./gradlew app:connectedAndroidTest -PdisablePreDex
+#  - adb shell input tap 134 467
+#  - travis_retry travis_wait nice ./gradlew app:connectedAndroidTest -PdisablePreDex
   - ./gradlew assembleRelease
 
 after_failure:
-  - adb shell screencap -p | sed 's/\r$//' > failure-screen.png
-  - curl -L -o imgur.sh https://github.com/tremby/imgur.sh/raw/master/imgur.sh
-  - chmod 700 ./imgur.sh
-  - ./imgur.sh failure-screen.png
+#  - adb shell screencap -p | sed 's/\r$//' > failure-screen.png
+#  - curl -L -o imgur.sh https://github.com/tremby/imgur.sh/raw/master/imgur.sh
+#  - chmod 700 ./imgur.sh
+#  - ./imgur.sh failure-screen.png
   - cat app/build/reports/tests/testDebugUnitTest/classes/*
   - cat app/build/reports/tests/testReleaseUnitTest/classes/*

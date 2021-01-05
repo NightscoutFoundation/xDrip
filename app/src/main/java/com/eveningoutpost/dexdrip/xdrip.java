@@ -11,8 +11,6 @@ import android.support.annotation.StringRes;
 import android.support.multidex.MultiDexApplication;
 import android.util.Log;
 
-import com.crashlytics.android.Crashlytics;
-import com.crashlytics.android.core.CrashlyticsCore;
 import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Reminder;
@@ -26,6 +24,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.PlusAsyncExecutor;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.VersionTracker;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
+import com.eveningoutpost.dexdrip.utils.NewRelicCrashReporting;
 import com.eveningoutpost.dexdrip.utils.jobs.DailyJob;
 import com.eveningoutpost.dexdrip.utils.jobs.XDripJobCreator;
 import com.eveningoutpost.dexdrip.watch.lefun.LeFunEntry;
@@ -34,13 +33,11 @@ import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry;
 import com.eveningoutpost.dexdrip.webservices.XdripWebService;
 import com.evernote.android.job.JobManager;
 
+import net.danlew.android.joda.JodaTimeAndroid;
+
 import java.util.Locale;
 
-import io.fabric.sdk.android.Fabric;
 
-import net.danlew.android.joda.JodaTimeAndroid;;
-
-//import com.bugfender.sdk.Bugfender;
 
 /**
  * Created by Emma Black on 3/21/15.
@@ -66,8 +63,7 @@ public class xdrip extends MultiDexApplication {
         JodaTimeAndroid.init(this);
         try {
             if (PreferenceManager.getDefaultSharedPreferences(xdrip.context).getBoolean("enable_crashlytics", true)) {
-                initCrashlytics(this);
-                initBF();
+                NewRelicCrashReporting.start();
             }
         } catch (Exception e) {
             Log.e(TAG, e.toString());
@@ -115,19 +111,6 @@ public class xdrip extends MultiDexApplication {
         PluggableCalibration.invalidateCache();
     }
 
-    public synchronized static void initCrashlytics(Context context) {
-        if ((!fabricInited) && !isRunningTest()) {
-            try {
-                Crashlytics crashlyticsKit = new Crashlytics.Builder()
-                        .core(new CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build())
-                        .build();
-                Fabric.with(context, crashlyticsKit);
-            } catch (Exception e) {
-                Log.e(TAG, e.toString());
-            }
-            fabricInited = true;
-        }
-    }
 
     public static synchronized boolean isRunningTest() {
         if (null == isRunningTestCache) {
