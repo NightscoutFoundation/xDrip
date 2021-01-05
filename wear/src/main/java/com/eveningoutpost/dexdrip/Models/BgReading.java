@@ -56,6 +56,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
+import static com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Dex_Constants.TREND_ARROW_VALUES.*;
 import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.getCalibrationPluginFromPreferences;
 import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.newCloseSensorData;
 
@@ -712,21 +713,7 @@ public class BgReading extends Model implements ShareUploadableBg {
     }
 
     public static String slopeToArrowSymbol(double slope) {
-        if (slope <= (-3.5)) {
-            return "\u21ca";// ⇊
-        } else if (slope <= (-2)) {
-            return "\u2193"; // ↓
-        } else if (slope <= (-1)) {
-            return "\u2198"; // ↘
-        } else if (slope <= (1)) {
-            return "\u2192"; // →
-        } else if (slope <= (2)) {
-            return "\u2197"; // ↗
-        } else if (slope <= (3.5)) {
-            return "\u2191"; // ↑
-        } else {
-            return "\u21c8"; // ⇈
-        }
+        return getTrend(slope).Symbol();
     }
 
     public String slopeArrow() {
@@ -734,47 +721,12 @@ public class BgReading extends Model implements ShareUploadableBg {
     }
 
     public  String slopeName() {
-        double slope_by_minute = calculated_value_slope * 60000;
-        String arrow = "NONE";
-        if (slope_by_minute <= (-3.5)) {
-            arrow = "DoubleDown";
-        } else if (slope_by_minute <= (-2)) {
-            arrow = "SingleDown";
-        } else if (slope_by_minute <= (-1)) {
-            arrow = "FortyFiveDown";
-        } else if (slope_by_minute <= (1)) {
-            arrow = "Flat";
-        } else if (slope_by_minute <= (2)) {
-            arrow = "FortyFiveUp";
-        } else if (slope_by_minute <= (3.5)) {
-            arrow = "SingleUp";
-        } else if (slope_by_minute <= (40)) {
-            arrow = "DoubleUp";
-        }
-        if (hide_slope) {
-            arrow = "NOT COMPUTABLE";
-        }
-        return arrow;
+        return hide_slope ? NOT_COMPUTABLE.trendName().replace("_", " ") :
+            slopeName(calculated_value_slope * 60000);
     }
 
     public static String slopeName(double slope_by_minute) {
-        String arrow = "NONE";
-        if (slope_by_minute <= (-3.5)) {
-            arrow = "DoubleDown";
-        } else if (slope_by_minute <= (-2)) {
-            arrow = "SingleDown";
-        } else if (slope_by_minute <= (-1)) {
-            arrow = "FortyFiveDown";
-        } else if (slope_by_minute <= (1)) {
-            arrow = "Flat";
-        } else if (slope_by_minute <= (2)) {
-            arrow = "FortyFiveUp";
-        } else if (slope_by_minute <= (3.5)) {
-            arrow = "SingleUp";
-        } else if (slope_by_minute <= (40)) {
-            arrow = "DoubleUp";
-        }
-        return arrow;
+        return getTrend(slope_by_minute).friendlyTrendName();
     }
 
     public static double slopefromName(String slope_name) {
@@ -1826,7 +1778,7 @@ public class BgReading extends Model implements ShareUploadableBg {
     }
 
     public int noiseValue() {
-        if(noise == null || noise.compareTo("") == 0) {
+        if (noise == null || noise.compareTo("") == 0 || noise.compareToIgnoreCase("null") == 0) {
             return 1;
         } else {
             return Integer.valueOf(noise);

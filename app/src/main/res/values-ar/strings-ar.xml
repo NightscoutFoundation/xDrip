@@ -7,6 +7,6 @@
     <!-- broadcast settings -->
     <!-- pebble settings -->
     <!-- Amazfit Settings -->
-    <string name="retrieve_blukon_history_summary">Retrieve missed history from Blucon device when reconnecting to sensor.</string>
+    <string name="blood_test">فحص سكر الدم</string>
     <!-- trend arrow for speak -->
 </resources>

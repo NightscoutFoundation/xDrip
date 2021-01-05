@@ -1,15 +1,13 @@
 package com.eveningoutpost.dexdrip.Models;
 
-import android.content.SharedPreferences;
 import android.provider.BaseColumns;
-import android.support.v7.preference.PreferenceManager;
 
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.UtilityModels.Blukon;
-import com.eveningoutpost.dexdrip.xdrip;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 
 /**
  * Created by Emma Black on 11/3/14.
@@ -65,13 +63,12 @@ public class ActiveBluetoothDevice extends Model {
 
     public static synchronized void setDevice(String name, String address) {
         ActiveBluetoothDevice btDevice;
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
         synchronized (ActiveBluetoothDevice.table_lock) {
              btDevice = new Select().from(ActiveBluetoothDevice.class)
                     .orderBy("_ID desc")
                     .executeSingle();
         }
-        prefs.edit().putString("last_connected_device_address", address).apply();
+        Pref.setString("last_connected_device_address", address);
         Blukon.clearPin();
         if (btDevice == null) {
             ActiveBluetoothDevice newBtDevice = new ActiveBluetoothDevice();

@@ -810,7 +810,6 @@
     <string name="repeat_sound">Sesi Tekrarla</string>
     <string name="enable_telemetry">Telemetry\'i etkinleştir</string>
     <string name="send_data_to_developers">Farklı cihazların başarı oranları hakkında geliştiricilere veri gönderin</string>
-    <string name="try_to_work_around_noisy_readings_ultrasensitive">Çok düşük gürültü seviyelerinde bile gürültülü okumalar yapmaya başlayabilirsiniz (sadece geliştirici modu)</string>
     <string name="sidiary_date_title">Dışa aktarım başlangıç tarihi?</string>
     <string name="blukon">Blucon</string>
     <string name="tomato">Tomato</string>

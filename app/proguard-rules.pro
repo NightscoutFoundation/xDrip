@@ -122,3 +122,9 @@
 -dontwarn **$$Lambda$*
 
 -dontwarn com.google.devtools.build.android.desugar.runtime.**
+
+-keep @org.junit.runner.RunWith public class *
+
+-keep class com.newrelic.** { *; }
+-dontwarn com.newrelic.**
+-keepattributes Exceptions, Signature, InnerClasses, LineNumberTable
