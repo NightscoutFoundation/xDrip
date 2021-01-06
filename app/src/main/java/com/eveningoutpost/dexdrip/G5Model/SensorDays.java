@@ -28,6 +28,7 @@ import static com.eveningoutpost.dexdrip.Services.G5BaseService.usingG6;
 import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.getTransmitterID;
 import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.usingNativeMode;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.DAY_IN_MS;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.None;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getDexCollectionType;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.hasDexcomRaw;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.hasLibre;
@@ -62,7 +63,9 @@ public class SensorDays {
     }
 
     // compute based on type
-    public static SensorDays get(final DexCollectionType type, final String tx_id) {
+    public static SensorDays get(DexCollectionType type, final String tx_id) {
+
+        if (type == null) type = None;  // obscure workaround
 
         // get cached result
         val result = cache.get(type.toString() + tx_id);
