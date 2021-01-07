@@ -288,7 +288,7 @@
     <string name="dexcom_share_server_upload">Dexcom Share Server upload</string>
     <string name="upload_data_to_dex_servers">Uploaden van gegevens naar Dexcoms servers, zodat u uw gegevens kunt gebruiken met Dexcoms apps</string>
     <string name="manage_followers">Beheer Volgers</string>
-    <string name="manage_existing_followers">Beheer uw bestaande volgelingen en nodigen nieuwe.</string>
+    <string name="manage_existing_followers">Beheer uw bestaande volgers en nodig nieuwe uit.</string>
     <string name="glucose_calibration_and_other_alerts">Glucose, kalibratie en andere waarschuwingen</string>
     <string name="alert_volume_profile">Alert Volume Profiel</string>
     <string name="smart_alerting">Slimme Alarmering</string>
@@ -378,9 +378,9 @@
     <string name="get_notified_of_new_apk_releases">Blijf op de hoogte van de nieuwe apk releases</string>
     <string name="choose_stable_beta_or_alpha_releases">Kies Stabiel, Bèta of Alfa releases</string>
     <string name="web_feedback_form_for_sending_messages">Web feedback formulier voor het verzenden van berichten en ratings van xDrip+ aan de ontwikkelaars</string>
-    <string name="be_master_for_followers">Wees meester voor aanhangers</string>
-    <string name="this_device_will_send_data_to_followers">Dit toestel zal data naar volgelingen te sturen</string>
-    <string name="send_parakeet_map_location_to_followers">Stuur Parkiet locatie op de kaart om volgelingen</string>
+    <string name="be_master_for_followers">Wees meester voor volgers</string>
+    <string name="this_device_will_send_data_to_followers">Dit apparaat stuurt gegevens naar volgers</string>
+    <string name="send_parakeet_map_location_to_followers">Stuur Parkiet kaart locatie naar volgers</string>
     <string name="sync_parakeet_geolocation">Sync Parkiet geolocatie</string>
     <string name="disable_all_sync_features">Schakel alle sync features</string>
     <string name="temporary_work_around_disable_all_sync_detail">Tijdelijk werk-around optie, volledig stopt alle synchronisatie. Kan reboot nodig heeft na opnieuw worden ingeschakeld. Gebruik in combinatie met zorg!</string>
