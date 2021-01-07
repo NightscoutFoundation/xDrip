@@ -233,6 +233,7 @@
     <string name="settings">Paramètres</string>
     <string name="calibration_data_table">Tableau de données de calibration</string>
     <string name="bg_data_table">Tableau de données de glycémie</string>
+    <string name="cannot_calibrate_right_now">Vous ne pouvez pas calibrer maintenant</string>
     <string name="hardware_data_source">Source de données matérielle</string>
     <string name="enter_ten_character_dexcom_receiver_serial">Entrer les 10 caractères du numéro de série du Dexcom</string>
     <string name="dexcom_transmitter_id">ID de transmetteur Dexcom</string>
@@ -873,6 +874,7 @@
     <string name="collecting_initial_readings">Collecte des premières lectures</string>
     <string name="data_collector_running">Collecteur de données en fonction</string>
     <string name="received_some_recent_data">Reçu quelques données récentes</string>
+    <string name="received_enough_good_data_to_calibrate">Reçu assez de bonnes données pour calibrer</string>
     <string name="play_sound_when_ready_for_calibration">Émette un son lorsque prêt pour l\'étalonnage</string>
     <string name="receiving_data_from_collector">Réception de données depuis le collecteur %s</string>
     <!-- trend arrow for speak -->
@@ -1450,8 +1452,10 @@
     <string name="do_you_want_to_delete_and_reset_the_calibrations_for_this_sensor">Voulez-vous supprimer et réinitialiser les étalonnages de ce capteur ?</string>
     <string name="you_have_an_old_experimental_glucose_prediction_setting_enabled__this_is_not_recommended_and_could_mess_things_up_badly__shall_i_disable_this_for_you">Vous avez un ancien paramètre expérimental de prédiction de la glycémie activé.\n\nCe N\'est PAS RECOMMANDÉ et pourrait causer des dégâts.\n\nPuis-je de désactiver pour vous?</string>
     <string name="settings_issue">Problème des paramètres !</string>
+    <string name="do_you_want_to_use_this_synced_fingerstick_blood_glucose_result_to_calibrate_with__you_can_change_when_this_dialog_is_displayed_in_settings">Voulez-vous utiliser ce résultat de glycémie capillaire synchronisé pour calibrer?\n\n(vous pouvez changer lorsque cette boîte de dialogue est affichée dans Paramètres)</string>
     <string name="use_bg_for_calibration">Utiliser les glycémies capillaires pour l\'étalonnage ?</string>
     <string name="do_you_want_to_use_this_entered_fingerstick_blood_glucose_test_to_calibrate_with__you_can_change_when_this_dialog_is_displayed_in_settings">Voulez-vous utiliser ce résultat de glycémie capillaire synchronisé pour étalonner ?\n\n(vous pouvez changer lorsque cette boîte de dialogue est affichée dans Paramètres)</string>
+    <string name="yes_calibrate">OUI, calibrer</string>
     <string name="enable_automatic_calibration">Activer l\'étalonnage automatique</string>
     <string name="yes_enable">OUI, activer</string>
     <string name="blood_test_action">Action de test sanguin</string>
@@ -1469,6 +1473,7 @@
     <string name="restore_backup">Restaurer la sauvegarde ?</string>
     <string name="do_you_want_to_restore_the_backup_file_">Voulez-vous restaurer le fichier de sauvegarde : </string>
     <string name="restore">Restaurer</string>
+    <string name="calibrate_sensor">Calibrer le capteur ?</string>
     <string name="we_have_some_readings__next_we_need_the_first_calibration_blood_test__ready_to_calibrate_now">Nous avons quelques valeurs !\n\nEnsuite, nous avons besoin d\'un premier test de glycémie capillaire.\n\nPrêt à étalonner maintenant ?</string>
     <string name="calibrate">Étalonnage</string>
     <string name="confirm_delete">Confirmer la Suppression</string>
