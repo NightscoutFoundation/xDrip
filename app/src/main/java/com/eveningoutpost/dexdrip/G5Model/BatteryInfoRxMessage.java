@@ -6,7 +6,6 @@ import com.eveningoutpost.dexdrip.Services.G5CollectionService;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Locale;
-import java.util.function.Predicate;
 
 /**
  * Created by jamorham on 25/11/2016.
@@ -38,9 +37,10 @@ public class BatteryInfoRxMessage extends BaseMessage {
         // byte packetOpcode = packet[0];
 
 
-        ByteBuffer.allocate(packet.length-1).mark()             //sure we could keep it in there
-                .put(packet,1,packet.length-1)      //but why?
-                .rewind().order(ByteOrder.LITTLE_ENDIAN);       //BYTES READ TOTAL
+        data = ByteBuffer.allocate(packet.length-1) ;           //sure we could keep it in there
+        data.put(packet,1,packet.length-1)      //but why?
+            .order(ByteOrder.LITTLE_ENDIAN)
+            .rewind();        //BYTES READ TOTAL
                                                                 // 10b      12b
                                                                 // ---------------
                                                                 //  1       1 //opcode
@@ -63,8 +63,8 @@ public class BatteryInfoRxMessage extends BaseMessage {
                 TransmitterStatus.getBatteryLevel(status).toString(), voltagea, voltageb, resist, runtime, temperature);
     }
 
-    static class PacketValidator implements Predicate<byte[]> {
-        @Override
+    static class PacketValidator {
+
         public boolean test(byte[] bytes) {
             if (bytes != null) {
                 switch(bytes.length) {
@@ -75,10 +75,10 @@ public class BatteryInfoRxMessage extends BaseMessage {
                     case(12):
                         return bytes[0] == opcode;
                     default:
-                        UserError.Log.wtf(TAG, "Malformed BattteryInfoRxMessage packet opcode: 0x" + Integer.toHexString(bytes[0]) + " and length was " + bytes.length + ", expected is 10 or 12");
+                        UserError.Log.e(TAG, "Malformed BattteryInfoRxMessage packet opcode: 0x" + Integer.toHexString(bytes[0]) + " and length was " + bytes.length + ", expected is 10 or 12");
                 }
             } else {
-                UserError.Log.wtf(TAG, "a null byte array sent to BatteryInfoRxMessage ");
+                UserError.Log.e(TAG, "a null byte array sent to BatteryInfoRxMessage ");
             }
             return false;
         }
