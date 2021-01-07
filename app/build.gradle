@@ -150,8 +150,10 @@ android {
         //vectorDrawables.useSupportLibrary = true // broken in newer gradle versions
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
-        // workaround till #1596 gets merged
-        resValue "string", "google_maps_key", "AIzaSyDOa0FJV2h2qf0tJ-kSeX1Sk2f1-IbUOz4"
+
+        // To get a Google Maps API key, follow this link, follow the directions and press "Create" at the end:
+        // https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend&keyType=CLIENT_SIDE_ANDROID&r=7C:1E:BB:15:CE:A1:92:30:47:9D:D0:3D:89:F6:C6:51:7D:3C:1B:DD%3Bcom.eveningoutpost.dexdrip
+        manifestPlaceholders = [google_maps_key: "AIzaSyDOa0FJV2h2qf0tJ-kSeX1Sk2f1-IbUOz4"]
     }
 
     // The defaultConfig values above are fixed, so your incremental builds don't
