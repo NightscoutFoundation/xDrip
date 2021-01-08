@@ -1335,6 +1335,7 @@
     <string name="title_use_number_icon_large">Verwende großes Nummernsymbol</string>
     <string name="summary_number_icon_large_arrow">Zeigt den Trendpfeil im großen Symbol an</string>
     <string name="title_number_icon_large_arrow">Pfeil in großem Symbol anzeigen</string>
+    <string name="summary_show_home_on_boot">Zeige den xDrip-Bildschirm automatisch nach dem Start des Geräts</string>
     <string name="title_show_home_on_boot">Zeige xDrip beim Booten</string>
     <string name="eula">EULA</string>
     <string name="summary_plus_accept_follower_actions">Behandlungen und Kalibrierung von Followern werden akzeptiert</string>

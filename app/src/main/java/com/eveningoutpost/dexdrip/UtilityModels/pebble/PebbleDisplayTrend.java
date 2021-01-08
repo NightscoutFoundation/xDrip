@@ -525,7 +525,8 @@ public class PebbleDisplayTrend extends PebbleDisplayAbstract {
                             clearDictionary();
                         }
 
-                        if (d) Log.i(TAG, "sendData: messageInTransit= " + messageInTransit + ", transactionFailed= " + transactionFailed + ", sendStep= " + sendStep);
+                        if (d)
+                            Log.i(TAG, "sendData: messageInTransit= " + messageInTransit + ", transactionFailed= " + transactionFailed + ", sendStep= " + sendStep);
                         if (sendStep == 0 && !messageInTransit && !transactionOk && !transactionFailed) {
 
                             if (use_best_glucose) {
@@ -559,7 +560,8 @@ public class PebbleDisplayTrend extends PebbleDisplayAbstract {
                         }
 
                         if (sendStep == 5) {
-                            if (d) Log.i(TAG, "sendData: finished sending.  sendStep = " + sendStep);
+                            if (d)
+                                Log.i(TAG, "sendData: finished sending.  sendStep = " + sendStep);
                             done = true;
                             transactionFailed = false;
                             transactionOk = false;
@@ -567,6 +569,9 @@ public class PebbleDisplayTrend extends PebbleDisplayAbstract {
                             sendingData = false;
                         }
                     }
+
+                } catch (Exception e) {
+                    Log.wtf(TAG, "Got exception handling pebble: " + e);
 
                 } finally {
                     lock.unlock();

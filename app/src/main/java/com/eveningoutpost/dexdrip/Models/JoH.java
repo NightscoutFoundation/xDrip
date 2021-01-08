@@ -208,19 +208,21 @@ public class JoH {
         }
         return new String(hexChars);
     }
-    
+
     // Convert a stream of bytes to a mac format (i.e: 12:34:AB:BC:DE:FC)
-    public static String bytesToHexMacFormat(byte[] bytes) {
-        if(bytes == null || bytes.length == 0) {
+    public static String bytesToHexMacFormat(final byte[] bytes) {
+        if (bytes == null || bytes.length == 0) {
             return "NoMac";
         }
-        String str = bytesToHex(bytes);
-        String ret = new String();
-        for(int i = 0; i < str.length() ; i+=2) {
-            ret += str.substring(i, i+2);
-            ret +=":";
+        final String str = bytesToHex(bytes);
+        final StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < str.length(); i += 2) {
+            if (sb.length() > 0) {
+                sb.append(":");
+            }
+            sb.append(str.substring(i, i + 2));
         }
-        return ret.substring(0,ret.length()-1);
+        return sb.toString();
     }
 
     public static byte[] reverseBytes(byte[] source) {
@@ -253,7 +255,11 @@ public class JoH {
 
     public static String macFormat(final String unformatted) {
         if (unformatted == null) return null;
-        return unformatted.replaceAll("[^a-fA-F0-9]","").replaceAll("(.{2})", "$1:").substring(0,17);
+        try {
+            return unformatted.replaceAll("[^a-fA-F0-9]", "").replaceAll("(.{2})", "$1:").substring(0, 17);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public static <K, V extends Comparable<? super V>> SortedSet<Map.Entry<K, V>> mapSortedByValue(Map<K, V> map, boolean descending) {
