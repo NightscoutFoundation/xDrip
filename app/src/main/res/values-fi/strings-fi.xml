@@ -545,8 +545,8 @@
     <string name="glucose_number_from_filtered">Glukoosi arvo suodatetusta tiedosta</string>
     <string name="if_the_phone_has_text_to_speech">Jos puhelimesi osaa puhua tekstiä, se puhuu jokaisen uuden lukeman.</string>
     <string name="upload_logs">Lähetä lokitiedot</string>
-    <string name="short_off_text_for_switches">POIS PÄÄLTÄ</string>
-    <string name="short_on_text_for_switches">PÄÄLLÄ</string>
+    <string name="short_off_text_for_switches">EI</string>
+    <string name="short_on_text_for_switches">ON</string>
     <string name="install_pebble_apps">Asenna Pebble-sovellukset</string>
     <string name="sliding_24_hour_window_summary">Käytä keskiyön jälkeisen ajan tietojen sijasta viimeisen 24 tunnin tietoja.</string>
     <string name="sliding_24_hour_window">Liukuva aikaikkuna</string>
