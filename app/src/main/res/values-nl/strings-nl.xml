@@ -14,7 +14,7 @@
     <string name="connecting_to_device">Verbinding maken met apparaat</string>
     <string name="title_activity_raw_data_table">Ruwe Data Tabel</string>
     <string name="title_activity_calculated_data_table">Berekend Gegevenstabel</string>
-    <string name="title_activity_start_new_sensor">Start nieuwe sensor</string>
+    <string name="title_activity_start_new_sensor">Start een nieuwe sensor</string>
     <string name="title_activity_new_sensor_location">Nieuwe Sensor Locatie</string>
     <string name="title_activity_stop_sensor">Stop de sensor</string>
     <string name="title_activity_nav_drawer">Nav lade</string>
@@ -293,7 +293,7 @@
     <string name="alert_volume_profile">Alert Volume Profiel</string>
     <string name="smart_alerting">Slimme Alarmering</string>
     <string name="dont_alarm_during_phone_calls">Geen alarm tijdens telefoongesprekken</string>
-    <string name="start_snoozed">Start Gesnoozed</string>
+    <string name="start_snoozed">Start gesluimerd</string>
     <string name="adjust_all_by_a_factor">Afstellen alle een factor</string>
     <string name="reset">Reset</string>
     <string name="pebble_and_android_wear_options">Opties voor verschillende horloges</string>
@@ -326,12 +326,12 @@
     <string name="entering_a_calibration_now_will_override_your_previously_entered_calibration">Het invoeren van een kalibratie zal nu eerder ingevoerde kalibratie overschrijven.</string>
     <string name="enter_blood_glucose_value">Voer de bloedglucosewaarde in</string>
     <string name="this_does_not_get_used_for_anything_its_just_to_keep_track_of_differences_for_algorithem_improvement_purposes">Dit betekent niet wennen voor iets, het is gewoon te houden van verschillen algorithem verbetering doeleinden te houden</string>
-    <string name="no_active_alert_exists">Geen actieve signalering voorkomt</string>
-    <string name="active_alert_exists_named">Actief alarm bestaat met de naam</string>
+    <string name="no_active_alert_exists">Er is geen actief alarm</string>
+    <string name="active_alert_exists_named">Actieve waarschuwing bestaat met de naam</string>
     <string name="bracket_not_snoozed">(Niet snoozed)</string>
     <string name="all_alerts_disabled_until">"Alle waarschuwingen uitgeschakeld totdat "</string>
-    <string name="low_alerts_disabled_until">"Low alarm uitgeschakeld totdat "</string>
-    <string name="high_alerts_disabled_until">"High waarschuwingen uitgeschakeld totdat "</string>
+    <string name="low_alerts_disabled_until">"Lage waarschuwing uitgeschakeld tot "</string>
+    <string name="high_alerts_disabled_until">"Hoge waarschuwingen uitgeschakeld tot "</string>
     <string name="default_snooze">Standaard Snooze</string>
     <string name="until_you_reenable">Totdat je weer inschakelen</string>
     <string name="set">Instellen</string>
@@ -356,7 +356,7 @@
     <string name="show_general_and_collection_settings">Toon algemene en Collection Settings</string>
     <string name="copy_all_settings">Kopieer alle instellingen</string>
     <string name="sensor_is_ready_please_enter_double_calibration">Sensor is klaar, dan kunt u een dubbele kalibratie invoeren</string>
-    <string name="in_order_to_get_started_please_perform_two_finger">Om te beginnen, voert u twee vingers prik tests en voer de waarden hier!</string>
+    <string name="in_order_to_get_started_please_perform_two_finger">Voer om te beginnen een of twee vingerpriktesten uit en voer de waarden hier in!</string>
     <string name="enter_first_bg_value">Voer eerst BG Waarde</string>
     <string name="enter_second_bg_value">Voer Tweede BG Waarde</string>
     <string name="language_editor">Taal Editor</string>
@@ -392,7 +392,7 @@
     <string name="please_indicate_what_you_think_of_the_app_generally">Geef aan wat u vindt van de app in het algemeen</string>
     <string name="preferences_saved_in_sdcard_downloads">Voorkeuren opgeslagen in sdcard Downloads</string>
     <string name="could_not_write_to_sdcard_check_perms">Kan niet schrijven naar sdcard - check toestemmingen?</string>
-    <string name="loaded_preferences_restarting">Geladen Voorkeuren! - herstarten</string>
+    <string name="loaded_preferences_restarting">Geladen voorkeuren! - Opnieuw opstarten</string>
     <string name="could_not_load_preferences_check_pers">Check machtigingen of het bestand - kon niet voorkeuren te laden?</string>
     <string name="external_storage_not_writable">Externe opslag is niet beschrijfbaar</string>
     <string name="successfully_deleted">Succesvol verwijderd</string>
@@ -417,7 +417,7 @@
     <string name="parakeet_related_alerts">Parkiet gerelateerde meldingen</string>
     <string name="raise_parakeet_notification_silently_when_charging">Verhoog de parkietmelding stil tijdens het opladen</string>
     <string name="silent_alert_when_charging">Trilsignaal tijdens het opladen</string>
-    <string name="alerts_start_out_snoozed_and_must_persist_for_a_while">Alerts beginnen Gesnoozed en moet blijven bestaan ​​voor een tijdje om daadwerkelijk trekker</string>
+    <string name="alerts_start_out_snoozed_and_must_persist_for_a_while">Waarschuwingen beginnen op sluimeren en moeten een tijdje aanhouden om daadwerkelijk te worden geactiveerd</string>
     <string name="alarms_silenced_during_telephone_calls">Alarmen tot zwijgen tijdens telefoongesprekken</string>
     <string name="suppress_alerts_if_missed_readings">Onderdrukken Alerts indien gemist lezingen</string>
     <string name="bad_noisy_value_alerts">Bad (luidruchtige) Value Alerts</string>
@@ -841,7 +841,7 @@
     <string name="repeat_sound">Herhaal geluid</string>
     <string name="enable_telemetry">Schakel telemetrie in</string>
     <string name="send_data_to_developers">Stuur gegevens naar ontwikkelaars over slagingspercentages van verschillende apparaten</string>
-    <string name="try_to_work_around_noisy_readings_ultrasensitive">Start met het omzeilen van metingen met ruis, zelfs als er zeer weinig ruis is (alleen in ontwikkelaars mode)</string>
+    <string name="try_to_work_around_noisy_readings_ultrasensitive">Begin met het omzeilen van luidruchtige metingen, zelfs bij zeer lage geluidsniveaus (alleen in ontwikkelaars modus)</string>
     <string name="sidiary_date_title">Vanaf wanneer exporteren?</string>
     <string name="blukon">Blucon</string>
     <string name="tomato">Tomato</string>
@@ -1123,7 +1123,7 @@
     <string name="what_time_of_day_question">Welke tijd van de dag?</string>
     <string name="all_alerts_currently_disabled">ALLE ALARMEN MOMENTEEL UITGESCHAKELD</string>
     <string name="low_and_high_alerts_currently_disabled">LAGE EN HOGE ALARMEN MOMENTEEL UITGESCHAKELD</string>
-    <string name="low_alerts_currently_disabled">LAGE ALARMEN MOMENTEEL UITGESCHAKELD</string>
+    <string name="low_alerts_currently_disabled">LAGE WAARSCHUWINGEN MOMENTEEL UITGESCHAKELD</string>
     <string name="high_alerts_currently_disabled">HOGE ALARMEN MOMENTEEL UITGESCHAKELD</string>
     <string name="bg_reading_missed">Gemiste BG-metingen</string>
     <string name="not_connected">Niet verbonden</string>
