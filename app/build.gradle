@@ -5,11 +5,20 @@ buildscript {
     }
 
     dependencies {
-        classpath "com.newrelic.agent.android:agent-gradle-plugin:5.27.1"
+        if (getGradle().getStartParameter().getTaskRequests().toString().endsWith("Release")) {
+            println("Enabling New Relic")
+            classpath "com.newrelic.agent.android:agent-gradle-plugin:5.27.1"
+        }
     }
 }
 apply plugin: 'com.android.application'
-apply plugin: 'newrelic'
+if (getGradle().getStartParameter().getTaskRequests().toString().endsWith("Release")) {
+    apply plugin: 'newrelic'
+    newrelic {
+        variantMapsEnabled false
+        uploadMapsForVariant ''
+    }
+}
 //apply plugin: 'me.tatarka.retrolambda'
 //apply plugin: 'io.fabric'
 
@@ -111,11 +120,6 @@ def generateVersionName = { ->
     stringBuilder.append((new Date()).format('yyyy.MM.dd'))
     return stringBuilder.toString()
 
-}
-
-newrelic {
-    variantMapsEnabled false
-    uploadMapsForVariant ''
 }
 
 android {
