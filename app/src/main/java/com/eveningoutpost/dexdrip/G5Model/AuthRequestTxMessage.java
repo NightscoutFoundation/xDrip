@@ -17,7 +17,24 @@ import static com.eveningoutpost.dexdrip.utils.CipherUtils.getRandomKey;
  */
 
 /**
- * This message is transmitted either
+ * This message is transmitted either as a response to a challenge presumably
+ * or directly when actively starting an authenticated session
+ * It consists of the usual opcode, a number of random bytes and an
+ * undocumented final byte which is either
+ * 0x01 or 0x02.
+ *
+ * In truth 0x01 is used when actively starting the process for a authenticated
+ * session with a device that has a characteristic specifically for that purpose,
+ * while 0x02 seems to be used in situations where a wearable device is running
+ * a secondary collector. The decision is made in
+ *
+ * Ob1G5StateMachine on line 1688 in the static method usingAlt (included below because
+ * I'm sure someone other than me can make sense of it)
+ *
+ * public static boolean usingAlt() {
+ *    return (android_wear && !Pref.getBooleanDefaultFalse("only_ever_use_wear_collector"))
+ *            || WholeHouse.isLive();
+ *  }
  */
 
 @SuppressWarnings("FieldCanBeLocal")
