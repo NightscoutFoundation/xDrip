@@ -5,13 +5,21 @@ import com.eveningoutpost.dexdrip.Models.UserError;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.util.Arrays;
 import java.util.UUID;
 
+import static com.eveningoutpost.dexdrip.utils.CipherUtils.getRandomBytes;
 import static com.eveningoutpost.dexdrip.utils.CipherUtils.getRandomKey;
 
 /**
  * Created by joeginley on 3/16/16.
  */
+
+/**
+ * This message is transmitted either
+ */
+
 @SuppressWarnings("FieldCanBeLocal")
 public class AuthRequestTxMessage extends BaseMessage {
     public final byte opcode = 0x01;
@@ -24,27 +32,29 @@ public class AuthRequestTxMessage extends BaseMessage {
         this(token_size, false);
     }
 
-    public AuthRequestTxMessage(int token_size, boolean alt) {
-        byte[] uuidBytes = getRandomKey();
-        final UUID uuid = UUID.nameUUIDFromBytes(uuidBytes);
+    /**
+     * We are expected (presumably although I think this may be somewhat of a misunderstanding
+     * of the process and I'm not sure if it has ever really worked but let's try and figure out
+     * shall we. We are expected to create tokenSize random bytes preceded by an opcode and
+     * followed by a flag. And since little endian only affects byte order there's no need for a
+     * ByteBuffer (or two),
+     * Note that this method is sneaky and steals two random bytes in order to save some cycles
+     * and some memory.
+     *
+     * @param tokenSize
+     * @param alt
+     */
+    public AuthRequestTxMessage(int tokenSize, boolean alt) {
+        byteSequence = getRandomBytes(tokenSize+2);
+        singleUseToken = Arrays.copyOfRange(byteSequence,1,tokenSize+1);
+        byteSequence[0] = opcode;
+        byteSequence[tokenSize+1] = getEndByte(alt);
 
-        try {
-            uuidBytes = uuid.toString().getBytes("UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-
-        final ByteBuffer bb = ByteBuffer.allocate(token_size);
-        bb.put(uuidBytes, 0, token_size);
-        singleUseToken = bb.array();
-
-        data = ByteBuffer.allocate(token_size + 2);
-        data.put(opcode);
-        data.put(singleUseToken);
-        data.put(alt ? endByteAlt : endByteStd);
-
-        byteSequence = data.array();
         UserError.Log.d(TAG, "New AuthRequestTxMessage: " + JoH.bytesToHex(byteSequence));
+    }
+
+    public byte getEndByte(boolean alt) {
+        return alt ? endByteAlt : endByteStd;
     }
 }
 
