@@ -206,11 +206,40 @@ public class CipherUtils {
                 , Base64.NO_WRAP);
     }
 
+    /**
+     * On the assumption that the general keylength is 16 bytes
+     * or 128 bits if you will, this utility method simple
+     * generates exactly 16 bytes by using the customisable
+     * getRandomBytes which allows for a specific number of
+     * secure random bytes to be produced
+     * @return byte[] an array of bytes, 16 bytes long
+     */
     public static byte[] getRandomKey() {
-        byte[] keybytes = new byte[16];
+        return getRandomBytes(16);
+    }
+
+    /**
+     * For many situations 16 bytes are either too many
+     * or too few, the cost of SecureRandom even if it
+     * might not be enormous is still significant enough
+     * that the maximum count is 2048. If you have the
+     * need for more random bytes than that, then perhaps
+     * you are not looking for SecureRandom specifically.
+     * A number less than 1 or larger than 2048 will
+     * result in an IllegalArgumentException being thrown
+     *
+     * @param count
+     * @return an array of bytes exactly count long
+     * @throws IllegalArgumentException
+     */
+    public static byte[] getRandomBytes(int count) {
+        if (count < 1 || count > 2048) {
+            throw new IllegalArgumentException("The range of valid values is between 1 and 2048 inclusive, you provided " + count);
+        }
+        byte[] rnd = new byte[count];
         SecureRandom sr = new SecureRandom();
-        sr.nextBytes(keybytes);
-        return keybytes;
+        sr.nextBytes(rnd);
+        return rnd;
     }
 
     public static String getRandomHexKey() {
