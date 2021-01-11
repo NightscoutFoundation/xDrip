@@ -7,6 +7,7 @@ import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
 import com.eveningoutpost.dexdrip.xdrip;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.junit.Test;
 
 import java.text.MessageFormat;
@@ -27,8 +28,9 @@ public class TranslationTest extends RobolectricTestWithConfig {
     public void testFormatStrings() {
 
         final Configuration config = xdrip.getAppContext().getResources().getConfiguration();
-        val locales = xdrip.getAppContext().getResources().getStringArray(R.array.LocaleChoicesValues);
-
+        val internal = xdrip.getAppContext().getResources().getStringArray(R.array.LocaleChoicesValues);
+        val extra = new String[]{"ar", "cs", "de", "el", "en", "es", "fi", "fr", "he", "hr", "it", "iw", "ja", "ko", "nb", "nl", "no", "pl", "pt", "ro", "ru", "sk", "sl", "sv", "tr", "zh"};
+        val locales = ArrayUtils.addAll(internal, extra);
         String fmt;
         String result;
 
@@ -38,21 +40,28 @@ public class TranslationTest extends RobolectricTestWithConfig {
             config.setLocale(new Locale(language, "", ""));
             xdrip.getAppContext().getResources().updateConfiguration(config, xdrip.getAppContext().getResources().getDisplayMetrics());
 
-            // check minutes ago days
-            fmt = xdrip.gs(R.string.minutes_ago);
-            result = MessageFormat.format(fmt, 123);
-            assertWithMessage("minutes_ago choice message format failed to contain value").that(result).contains("123");
+            try {
+                // check minutes ago days
+                fmt = xdrip.gs(R.string.minutes_ago);
+                result = MessageFormat.format(fmt, 123);
+                assertWithMessage("minutes_ago choice message format failed to contain value").that(result).contains("123");
+            } catch (IllegalArgumentException e) {
+                throw new RuntimeException("Failed minutes ago test with language " + language + " with exception: " + e);
+            }
 
-            // check expires days
-            fmt = xdrip.gs(R.string.expires_days);
-            result = MessageFormat.format(fmt, 123.4f);
-            assertWithMessage("expires_days choice message format failed to contain value").that(result).contains("123.4");
-
+            try {
+                // check expires days
+                fmt = xdrip.gs(R.string.expires_days);
+                result = MessageFormat.format(fmt, 123.4f);
+                assertWithMessage("expires_days choice message format failed to contain value").that(result).contains("123.4");
+            } catch (IllegalArgumentException e) {
+                throw new RuntimeException("Failed expires days test with language " + language + " with exception: " + e);
+            }
         }
 
         // restore after test
-       config.setLocale(new Locale("en", "", ""));
-       xdrip.getAppContext().getResources().updateConfiguration(config, xdrip.getAppContext().getResources().getDisplayMetrics());
+        config.setLocale(new Locale("en", "", ""));
+        xdrip.getAppContext().getResources().updateConfiguration(config, xdrip.getAppContext().getResources().getDisplayMetrics());
 
     }
 }
