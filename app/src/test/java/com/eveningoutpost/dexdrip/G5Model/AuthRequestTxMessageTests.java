@@ -57,17 +57,17 @@ public class AuthRequestTxMessageTests {
     public void ensureKeyLengthLargerthan2048Fails() {
         //standard length, this time with alt false
         boolean alt = false;
-        int tokenSize = 2048;
+        int tokenSize = 2050;
         AuthRequestTxMessage msg = new AuthRequestTxMessage(tokenSize,alt);
         Assert.assertThat(msg.opcode, is(msg.byteSequence[0]));
         Assert.assertThat(msg.getEndByte(alt), is(msg.byteSequence[tokenSize+1]));
         Assert.assertThat(msg.byteSequence.length, is(tokenSize+2));
     }
     @Test
-    public void ensureKeyLengthEqualTo2046Succeeds() {
+    public void ensureKeyLengthEqualTo2048Succeeds() {
         //standard length, this time with alt false
         boolean alt = false;
-        int tokenSize = 2046;
+        int tokenSize = 2048;
         AuthRequestTxMessage msg = new AuthRequestTxMessage(tokenSize,alt);
         Assert.assertThat(msg.opcode, is(msg.byteSequence[0]));
         Assert.assertThat(msg.getEndByte(alt), is(msg.byteSequence[tokenSize+1]));
@@ -134,7 +134,7 @@ public class AuthRequestTxMessageTests {
             devSq = outcomes[i]-mean;
             total+=(devSq*devSq);
         }
-        double variance = ((double)total/(rounds*tokenSize));
+        double variance = ((double)total/outcomes.length);
         double stdDev = Math.sqrt(variance);
 
 

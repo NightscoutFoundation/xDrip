@@ -62,10 +62,11 @@ public class AuthRequestTxMessage extends BaseMessage {
      * @param alt
      */
     public AuthRequestTxMessage(int tokenSize, boolean alt) {
-        byteSequence = getRandomBytes(tokenSize+2);
-        singleUseToken = Arrays.copyOfRange(byteSequence,1,tokenSize+1);
+        singleUseToken = getRandomBytes(tokenSize);
+        byteSequence = new byte[tokenSize+2];
         byteSequence[0] = opcode;
-        byteSequence[tokenSize+1] = getEndByte(alt);
+        System.arraycopy(singleUseToken,0,byteSequence,1,singleUseToken.length);
+        byteSequence[tokenSize+1] =getEndByte(alt);
 
         UserError.Log.d(TAG, "New AuthRequestTxMessage: " + JoH.bytesToHex(byteSequence));
     }
