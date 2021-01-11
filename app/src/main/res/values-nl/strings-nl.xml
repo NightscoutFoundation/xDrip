@@ -2,7 +2,7 @@
 <resources>
     <string name="title_activity_bluetooth_scan">Bluetooth scan</string>
     <string name="connected">Verbonden</string>
-    <string name="disconnected">Losgekoppeld</string>
+    <string name="disconnected">Verbinding verbroken</string>
     <string name="menu_scan">Scannen</string>
     <string name="menu_stop">Stop</string>
     <string name="menu_refresh">Vernieuwen</string>
@@ -10,10 +10,10 @@
     <string name="menu_export_csv_sidiary">Exporteer CSV (SiDiary formaat)</string>
     <string name="menu_import_db">Database importeren</string>
     <string name="error_bluetooth_not_supported">Fout: Bluetooth wordt niet ondersteund door dit apparaat</string>
-    <string name="unknown_device">Niet-herkend apparaat</string>
-    <string name="connecting_to_device">Verbinding maken met apparaat</string>
-    <string name="title_activity_raw_data_table">Ruwe Data Tabel</string>
-    <string name="title_activity_calculated_data_table">Berekend Gegevenstabel</string>
+    <string name="unknown_device">Onbekend apparaat</string>
+    <string name="connecting_to_device">Verbinden met apparaat</string>
+    <string name="title_activity_raw_data_table">Ruwe gegevenstabel</string>
+    <string name="title_activity_calculated_data_table">Berekende Gegevenstabel</string>
     <string name="title_activity_start_new_sensor">Start een nieuwe sensor</string>
     <string name="title_activity_new_sensor_location">Nieuwe Sensor Locatie</string>
     <string name="title_activity_stop_sensor">Stop de sensor</string>
@@ -32,7 +32,7 @@
     <string name="title_activity_main">Hoofdactiviteit</string>
     <string name="title_activity_fake_numbers">Valse Nummers</string>
     <string name="title_activity_edit_alert">Waarschuwing bewerken</string>
-    <string name="title_activity_double_calibration">Dubbele Kalibratie</string>
+    <string name="title_activity_double_calibration">Initiële kalibratie</string>
     <string name="title_activity_calibration_override">Kalibratie Overschrijven</string>
     <string name="pref_header_cloud_storage">Cloud opslag</string>
     <string name="auto_configure_title">Automatisch configureren</string>
@@ -45,11 +45,11 @@
     <string name="pref_title_mongodb_uri">URI</string>
     <string name="pref_dialog_mongodb_uri">Voer MongoDB URI in\"</string>
     <string name="pref_message_mongodb_uri">Vervang voorbeeld waarden in {} \'s door uw juiste waarden</string>
-    <string name="pref_default_mongodb_uri">mongodb://{user}:{password}@{host}.mongolab.com:{11111}/{database}</string>
+    <string name="pref_default_mongodb_uri">mongodb://{gebruiker}:{wachtwoord}@{host}.mongolab.com:{11111}/{database}</string>
     <string name="pref_title_mongodb_collection">Collectie naam</string>
     <string name="pref_dialog_mongodb_collection">Voer collectienaam in</string>
-    <string name="pref_message_mongodb_collection">Dit is de naam van de collectie waar de CGM gegevens worden opgeslagen</string>
-    <string name="pref_title_mongodb_device_status_collection">Status apparaat collectienaam</string>
+    <string name="pref_message_mongodb_collection">Dit is de naam van de collectie waarin de CGM-gegevens worden opgeslagen</string>
+    <string name="pref_title_mongodb_device_status_collection">Naam van verzameling apparaatstatus</string>
     <string name="pref_dialog_mongodb_device_status_collection">Voer de naam van de collectie apparaatstatus in \"</string>
     <string name="pref_message_mongodb_device_status_collection">Dit is de naam van de collectie waar de batterij en andere apparaatgegevens worden opgeslagen</string>
     <!-- API Settings -->
@@ -61,7 +61,7 @@
     <string name="pref_message_api_url">Dit is alleen de basis-URL, de uploader zal automatisch / items voor de POST toevoegen.  API_SECRET op de server moet overeenkomen met uw wachtwoordzin in deze instelling.</string>
     <string name="pref_default_api_url">https: // yourpassphrase @ {UW-SITE} .azurewebsites.net / api / v1 /</string>
     <!-- wifi Settings -->
-    <string name="wifi_recievers_dialog_message">Komma\'s gescheiden lijst van ip: poort (bijvoorbeeld 37.142.132.220:50005,37.142.132.220:50010,mongodb://user:pass@ds053958.mongolab.com:53958/db/collection)</string>
+    <string name="wifi_recievers_dialog_message">Door komma\'s gescheiden lijst van ip: poort (bijvoorbeeld 37.142.132.220:50005,37.142.132.220:50010,mongodb://user:pass@ds053958.mongolab.com:53958/db/collection)</string>
     <string name="wifi_recievers_dialog_title">Voer Ip-adressen en poorten van de ontvangers in(met inbegrip van MongoDB adressen indien nodig)</string>
     <!-- Location Settings -->
     <string name="location_not_found_title">Locatie is niet ingeschakeld</string>
@@ -222,10 +222,10 @@
     <string name="other_xdrip_plus_alerts">Andere xDrip+ waarschuwingen</string>
     <string name="xdrip_plus_display_settings">xDrip+ weergaveinstellingen</string>
     <string name="display_customisations">Weergave aanpassingen</string>
-    <string name="insulin_carb_ratios_etc_for_models">Insuline, Carb ratio\'s etc voor modellen</string>
-    <string name="grams_of_carbohydrate_one_unit_covers">Gram koolhydraten 1 Unit covers</string>
-    <string name="linear_model_carbs_absorbed_per_hour">Lineair model koolhydraten geabsorbeerd per uur</string>
-    <string name="carb_absorption_rate">Carb Absorption Rate</string>
+    <string name="insulin_carb_ratios_etc_for_models">Insuline, koolhydraten ratio\'s etc. voor modellen</string>
+    <string name="grams_of_carbohydrate_one_unit_covers">Koolhydraten die worden gedekt door een insuline-eenheid</string>
+    <string name="linear_model_carbs_absorbed_per_hour">Lineair model koolhydraten die per uur worden opgenomen</string>
+    <string name="carb_absorption_rate">Absorptiesnelheid van koolhydraten</string>
     <string name="calculate_including_glucose_trend">Bereken waaronder glucose trend</string>
     <string name="use_trend_momentum">Gebruik trend momentum</string>
     <string name="add_calibration">Kalibratie toevoegen</string>
@@ -308,7 +308,7 @@
     <string name="treatments_prediction_curves">Behandelingen / Voorspelling Curves</string>
     <string name="carbs_per_unit">Koolhydraten per eenheid</string>
     <string name="everyday">Elke dag</string>
-    <string name="insulin_sensitivity_glucose_drop_per_unit">Insuline Gevoeligheid: glucose druppel per Unit</string>
+    <string name="insulin_sensitivity_glucose_drop_per_unit">Insulinegevoeligheid: glucosedaling per eenheid</string>
     <string name="transmitter_battery">batterij van de zender</string>
     <string name="very_low">HEEL LAAG</string>
     <string name="low">laag</string>
@@ -329,7 +329,7 @@
     <string name="no_active_alert_exists">Er is geen actief alarm</string>
     <string name="active_alert_exists_named">Actieve waarschuwing bestaat met de naam</string>
     <string name="bracket_not_snoozed">(Niet snoozed)</string>
-    <string name="all_alerts_disabled_until">"Alle waarschuwingen uitgeschakeld totdat "</string>
+    <string name="all_alerts_disabled_until">"Alle waarschuwingen uitgeschakeld tot "</string>
     <string name="low_alerts_disabled_until">"Lage waarschuwing uitgeschakeld tot "</string>
     <string name="high_alerts_disabled_until">"Hoge waarschuwingen uitgeschakeld tot "</string>
     <string name="default_snooze">Standaard Snooze</string>
@@ -339,8 +339,8 @@
     <string name="re_enable_low_alerts">Lage waarschuwingen opnieuw inschakelen</string>
     <string name="disable_high_alerts">Schakel hoge waarschuwingen uit</string>
     <string name="re_enable_high_alerts">Hoge Waarschuwingen opnieuw inschakelen</string>
-    <string name="disable_all_alerts">Schakel alle waarschuwingen</string>
-    <string name="re_enable_all_alerts">Re-Enable Alle waarschuwingen</string>
+    <string name="disable_all_alerts">Schakel alle waarschuwingen uit</string>
+    <string name="re_enable_all_alerts">Alle waarschuwingen opnieuw inschakelen</string>
     <string name="alert_snoozed_by_watch">Alarm gesluimerd door horloge</string>
     <string name="update_channel_colon_space">"Kanaal bijwerken: "</string>
     <string name="a_new_version_is_available">Een nieuwe versie is beschikbaar</string>
