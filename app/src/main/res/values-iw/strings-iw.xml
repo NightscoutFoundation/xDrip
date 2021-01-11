@@ -164,7 +164,6 @@
     <string name="checking_for_update">מחפש עדכונים..</string>
     <string name="signal_missed">אין קליטה</string>
     <string name="minutes_ago">{0, choice,0# לפני {0, number, integer} דקות |1# לפני דקה|1&lt; לפני {0, number, integer} דקות }</string>
-    <string name="expires_days">{0, בחירה,0#חיישן פג תוקף!|1#מסתיים בעוד {0, number} יום|1&lt; {0, number} ימים}</string>
     <string name="expires_at">מסתיים {0}</string>
     <string name="space_minutes_ago">" דקות"</string>
     <string name="in_libre_all_house_mode_no_readings_collected_yet">"במצב רשת ליברה כלל ביתית: לא נקלטו קריאות."</string>
