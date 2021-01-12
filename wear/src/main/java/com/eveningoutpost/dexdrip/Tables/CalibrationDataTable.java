@@ -1,9 +1,7 @@
 package com.eveningoutpost.dexdrip.Tables;
 
-import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -129,8 +127,8 @@ public class CalibrationDataTable extends ListActivity {//implements NavigationD
                     };
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                    builder.setMessage("Disable this calibration?\nFlagged calibrations will no longer have an effect.").setPositiveButton("Yes", dialogClickListener)
-                            .setNegativeButton("No", dialogClickListener).show();
+                    builder.setMessage("Disable this calibration?\nFlagged calibrations will no longer have an effect.").setPositiveButton(gs(R.string.yes), dialogClickListener)
+                            .setNegativeButton(gs(R.string.no), dialogClickListener).show();
                     return true;
                 }
             });*/

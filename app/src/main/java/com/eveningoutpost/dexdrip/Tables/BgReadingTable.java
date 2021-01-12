@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static com.eveningoutpost.dexdrip.xdrip.gs;
+
 
 public class BgReadingTable extends BaseListActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
     private String menu_name = "BG Data Table";
@@ -136,8 +138,8 @@ public class BgReadingTable extends BaseListActivity implements NavigationDrawer
                     };
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                    builder.setMessage("Flag reading as \"bad\".\nFlagged readings have no impact on the statistics.").setPositiveButton("Yes", dialogClickListener)
-                            .setNegativeButton("No", dialogClickListener).show();
+                    builder.setMessage("Flag reading as \"bad\".\nFlagged readings have no impact on the statistics.").setPositiveButton(gs(R.string.yes), dialogClickListener)
+                            .setNegativeButton(gs(R.string.no), dialogClickListener).show();
                     return true;
                 }
             });
