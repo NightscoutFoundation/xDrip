@@ -1,9 +1,5 @@
 package com.eveningoutpost.dexdrip;
 
-/**
- * Created by jamorham on 01/10/2017.
- */
-
 
 import android.app.Activity;
 import android.content.Context;
@@ -37,6 +33,10 @@ import static com.schibsted.spain.barista.BaristaClickActions.click;
 import static com.schibsted.spain.barista.BaristaScrollActions.scrollTo;
 import static com.schibsted.spain.barista.custom.NestedEnabledScrollToAction.scrollTo;
 import static org.hamcrest.core.AllOf.allOf;
+
+/**
+ * Created by jamorham on 01/10/2017.
+ */
 
 @RunWith(AndroidJUnit4.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)

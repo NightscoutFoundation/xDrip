@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.ui;
 
+
 import android.annotation.SuppressLint;
 import android.app.WallpaperManager;
 import android.content.SharedPreferences;
@@ -9,7 +10,7 @@ import android.preference.Preference;
 
 import com.eveningoutpost.dexdrip.BestGlucose;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
@@ -73,7 +74,7 @@ public class LockScreenWallPaper {
             }
         } else {
             if (JoH.ratelimit("lockscreen-wallpaper", 3600)) {
-                UserError.Log.e(TAG, "Insufficient android version to set lockscreen image");
+                UserErrorLog.e(TAG, "Insufficient android version to set lockscreen image");
             }
         } // if sufficient android version
     }
@@ -100,7 +101,7 @@ public class LockScreenWallPaper {
                 wallpaperManager.setBitmap(wallpaper, null, false, FLAG_LOCK);
                 wallpaper.recycle();
             } catch (Exception e) {
-                UserError.Log.e(TAG, "Failed to set wallpaper: " + e);
+                UserErrorLog.e(TAG, "Failed to set wallpaper: " + e);
             }
         }
     }

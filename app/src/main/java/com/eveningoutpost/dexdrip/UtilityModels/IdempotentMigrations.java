@@ -1,27 +1,29 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 
-import com.eveningoutpost.dexdrip.Models.Libre2RawValue;
-import com.eveningoutpost.dexdrip.Models.Libre2Sensor;
 import com.eveningoutpost.dexdrip.Models.APStatus;
+import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Models.BgReading;
-//import com.eveningoutpost.dexdrip.Models.BgReadingArchive;
 import com.eveningoutpost.dexdrip.Models.DesertSync;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.Libre2RawValue;
+import com.eveningoutpost.dexdrip.Models.Libre2Sensor;
 import com.eveningoutpost.dexdrip.Models.LibreBlock;
 import com.eveningoutpost.dexdrip.Models.LibreData;
 import com.eveningoutpost.dexdrip.Models.PenData;
 import com.eveningoutpost.dexdrip.Models.Prediction;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.SnoozeActivity;
-import com.eveningoutpost.dexdrip.Models.AlertType;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+
+//import com.eveningoutpost.dexdrip.Models.BgReadingArchive;
 
 /**
  * Created by Emma Black on 4/15/15.

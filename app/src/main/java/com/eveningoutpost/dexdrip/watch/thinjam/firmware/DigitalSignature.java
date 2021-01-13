@@ -1,7 +1,8 @@
 package com.eveningoutpost.dexdrip.watch.thinjam.firmware;
 
+
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 
 import java.security.KeyFactory;
 import java.security.PublicKey;
@@ -40,7 +41,7 @@ public class DigitalSignature {
             return KeyFactory.getInstance("DSA")
                     .generatePublic(new X509EncodedKeySpec(JoH.hexStringToByteArray(OTA_FILE_SIGNING_PUBLIC_KEY)));
         } catch (Exception e) {
-            UserError.Log.e(TAG, "Failed to get public key: " + e);
+            UserErrorLog.e(TAG, "Failed to get public key: " + e);
             return null;
         }
     }
@@ -52,7 +53,7 @@ public class DigitalSignature {
             signCheck.update(data);
             return signCheck.verify(signature);
         } catch (Exception e) {
-            UserError.Log.e(TAG, "Verification failed due to exception: " + e);
+            UserErrorLog.e(TAG, "Verification failed due to exception: " + e);
             return false;
         }
     }

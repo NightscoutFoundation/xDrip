@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.profileeditor;
 
+
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.annotation.ColorInt;
@@ -19,7 +20,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.ColorCache;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
@@ -263,7 +264,7 @@ public class BasalProfileEditor extends AppCompatActivity implements AdapterView
         final Viewport moveViewPort = new Viewport(chart.getMaximumViewport());
         final float max = BasalChart.getMaxYvalue(chart.getChartData());
         final float calc = ((float) Math.round((max * 2) + 0.5f + 0.2f)) / 2 + 0.1f;
-        UserError.Log.d(TAG, "BASAL max: " + max + " " + calc);
+        UserErrorLog.d(TAG, "BASAL max: " + max + " " + calc);
         moveViewPort.top = calc;
         //moveViewPort.set(0, 24, 0, 2);
         return moveViewPort;
@@ -291,7 +292,7 @@ public class BasalProfileEditor extends AppCompatActivity implements AdapterView
 
     private void adjustSelectedColumns(final float adjust, final boolean set) {
         if (controlsLocked) {
-            UserError.Log.d(TAG, "controls locked");
+            UserErrorLog.d(TAG, "controls locked");
             return;
         }
         final List<SubcolumnValue> changed = new ArrayList<>(48);
@@ -303,7 +304,7 @@ public class BasalProfileEditor extends AppCompatActivity implements AdapterView
             } else {
                 //v.setValue(Math.max(0, v.getValue() + adjust));
                 v.setTarget(Math.max(0, v.getValue() + adjust));
-                UserError.Log.d(TAG, "SET TARGET: " + v.getValue());
+                UserErrorLog.d(TAG, "SET TARGET: " + v.getValue());
             }
 
             changed.add(v);
@@ -420,7 +421,7 @@ public class BasalProfileEditor extends AppCompatActivity implements AdapterView
     // spinner
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        UserError.Log.d(TAG, "Spinner selected it: " + position);
+        UserErrorLog.d(TAG, "Spinner selected it: " + position);
         basalStepSpinner.setSelection(position);
         PersistentStore.setLong(PREF_STORED_BASAL_STEP, position + 1); // increment so we know 0 is unset
         buttonsToMatchStep();
@@ -433,13 +434,13 @@ public class BasalProfileEditor extends AppCompatActivity implements AdapterView
 
     @Override
     public void onAnimationStarted() {
-        UserError.Log.d(TAG, "Animation started");
+        UserErrorLog.d(TAG, "Animation started");
         controlsLocked = true;
     }
 
     @Override
     public void onAnimationFinished() {
-        UserError.Log.d(TAG, "Animation finished");
+        UserErrorLog.d(TAG, "Animation finished");
 
         // TODO DO ALL COLUMNS??
         for (int col : getSelectColumnList()) {

@@ -1,4 +1,11 @@
 package com.eveningoutpost.dexdrip;
+
+import android.graphics.Canvas;
+import android.support.v4.view.ViewCompat;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
+
 /*
  * Copyright (C) 2015 Paul Burke
  *
@@ -14,12 +21,6 @@ package com.eveningoutpost.dexdrip;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import android.graphics.Canvas;
-import android.support.v4.view.ViewCompat;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
 
 
 /**

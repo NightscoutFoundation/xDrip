@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.utils.usb;
 
+
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -8,7 +9,7 @@ import android.content.IntentFilter;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.HashMap;
@@ -30,7 +31,7 @@ public class UsbTools {
             final UsbDevice device = entry.getValue();
             if (device.getVendorId() == vendorId && device.getProductId() == productId
                     && device.toString().contains(search)) {
-                Log.d(TAG, "Found device: " + entry.getKey() + " " + device.toString());
+                UserErrorLog.d(TAG, "Found device: " + entry.getKey() + " " + device.toString());
                 return device;
             }
         }
@@ -51,7 +52,7 @@ public class UsbTools {
                             onGranted(device);
                         }
                     } else {
-                        Log.d(TAG, "permission denied for device " + device);
+                        UserErrorLog.d(TAG, "permission denied for device " + device);
                     }
                     xdrip.getAppContext().unregisterReceiver(this);
                 }
@@ -65,7 +66,7 @@ public class UsbTools {
     public static void requestPermission(final UsbDevice device, final PermissionReceiver receiver) {
         final UsbManager usbManager = (UsbManager) xdrip.getAppContext().getSystemService(Context.USB_SERVICE);
         if (usbManager == null) {
-            Log.d(TAG, "UsbManager is null in requestPermission");
+            UserErrorLog.d(TAG, "UsbManager is null in requestPermission");
             return;
         }
         final PendingIntent mPermissionIntent = PendingIntent.getBroadcast(xdrip.getAppContext(), 0, new Intent(ACTION_USB_PERMISSION), 0);

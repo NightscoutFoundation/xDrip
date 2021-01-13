@@ -1,9 +1,8 @@
 package com.eveningoutpost.dexdrip.UtilityModels.desertsync;
 
-// jamorham
 
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 
 import java.net.InetAddress;
 import java.net.InterfaceAddress;
@@ -11,6 +10,8 @@ import java.net.NetworkInterface;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+// jamorham
 
 public class RouteTools {
 
@@ -28,7 +29,7 @@ public class RouteTools {
             return anyMatches;
         } catch (Exception e) {
             if (JoH.quietratelimit("route-tools-error", 60)) {
-                UserError.Log.e(TAG, "Exception trying to calculate reachability of: " + checkIp + " " + e);
+                UserErrorLog.e(TAG, "Exception trying to calculate reachability of: " + checkIp + " " + e);
             }
             return true;
         }

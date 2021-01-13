@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.watch.lefun.messages;
 
+
 public class TxSetLocaleFeature extends BaseTx {
 
     final byte opcode = 0x02;

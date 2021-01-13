@@ -1,7 +1,8 @@
 package com.eveningoutpost.dexdrip.Models;
 
+
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.NFCReaderX;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.BridgeResponse;
@@ -84,7 +85,7 @@ public class Bubble {
             PersistentStore.setString("LibreSN", SensorSn);
             
             if (SensorSanity.checkLibreSensorChangeIfEnabled(SensorSn)) {
-                Log.e(TAG, "Problem with Libre Serial Number - not processing");
+                UserErrorLog.e(TAG, "Problem with Libre Serial Number - not processing");
             }
             
             return reply;
@@ -112,7 +113,7 @@ public class Bubble {
 
         if (first == 0xBF) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            Log.e(TAG, "No sensor has been found");
+            UserErrorLog.e(TAG, "No sensor has been found");
             reply.setError_message(gs(R.string.no_sensor_found));
             s_full_data = null;
             errorCount++;
@@ -151,7 +152,7 @@ public class Bubble {
         int expectedSize = lens + BUBBLE_FOOTER;
         InitBuffer(expectedSize);
         errorCount = 0;
-        Log.e(TAG, "We have all the data that we need " + s_acumulatedSize + " checksum_ok = " + checksum_ok + HexDump.dumpHexString(data));
+        UserErrorLog.e(TAG, "We have all the data that we need " + s_acumulatedSize + " checksum_ok = " + checksum_ok + HexDump.dumpHexString(data));
 
     }
 
@@ -162,7 +163,7 @@ public class Bubble {
     }
 
     public static ArrayList<ByteBuffer> initialize() {
-        Log.e(TAG, "initialize!");
+        UserErrorLog.e(TAG, "initialize!");
         Pref.setInt("bridge_battery", 0); //force battery to no-value before first reading
         return resetBubbleState();
     }

@@ -1,6 +1,8 @@
 /*
 package com.eveningoutpost.dexdrip.Services;
 
+
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;

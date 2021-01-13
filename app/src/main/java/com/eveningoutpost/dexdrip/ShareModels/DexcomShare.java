@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.ShareModels;
 
+
 import com.eveningoutpost.dexdrip.ShareModels.Models.ExistingFollower;
 import com.eveningoutpost.dexdrip.ShareModels.Models.InvitationPayload;
 import com.eveningoutpost.dexdrip.ShareModels.Models.ShareUploadPayload;

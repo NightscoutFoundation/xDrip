@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip;
 
+
 public class HexTestTools {
 
     private final static char[] hexArray = "0123456789ABCDEF" .toCharArray();

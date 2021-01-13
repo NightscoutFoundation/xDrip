@@ -1,6 +1,7 @@
 
 package com.eveningoutpost.dexdrip.UtilityModels.pebble.watchface;
 
+
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -14,14 +15,12 @@ import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutCompat;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.BaseAppCompatActivity;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.R;
 
 import java.io.File;
@@ -140,7 +139,7 @@ public class InstallPebbleWatchFace extends BaseAppCompatActivity {
             startActivity(intent);
 
         } catch (Exception e) {
-            UserError.Log.e(getTag(), " Got exception: " + e.toString());
+            UserErrorLog.e(getTag(), " Got exception: " + e.toString());
             toast("Error: "+e.getLocalizedMessage());
         }
         return true;

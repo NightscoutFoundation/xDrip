@@ -21,6 +21,7 @@
 
 package com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.driver;
 
+
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
 

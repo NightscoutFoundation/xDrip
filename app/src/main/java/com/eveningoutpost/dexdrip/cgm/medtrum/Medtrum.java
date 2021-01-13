@@ -1,15 +1,10 @@
 package com.eveningoutpost.dexdrip.cgm.medtrum;
 
-/**
- * jamorham
- *
- * Medtrum domain interface class + persistent storage
- */
 
 import android.util.Pair;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
@@ -25,6 +20,12 @@ import lombok.Getter;
 import static com.eveningoutpost.dexdrip.Models.JoH.msSince;
 import static com.eveningoutpost.dexdrip.cgm.medtrum.Const.MANUFACTURER_ID;
 import static com.eveningoutpost.dexdrip.cgm.medtrum.Const.SUPPORTED_DEVICES;
+
+/**
+ * jamorham
+ * <p>
+ * Medtrum domain interface class + persistent storage
+ */
 
 public class Medtrum {
 
@@ -49,12 +50,12 @@ public class Medtrum {
             final AdvertRx advert = new AdvertRx(dataBlob);
             if (advert.isValid()) {
                 lastAdvertAnnex = advert.getAnnex();
-                UserError.Log.d(TAG, "Advert: " + advert.toS());
+                UserErrorLog.d(TAG, "Advert: " + advert.toS());
                 //advert.getAnnex().processForTimeKeeper(advert.serial); // TODO is timekeeper valid here?
                 setVersion(advert.serial, advert.version);
             }
         } else {
-            UserError.Log.d(TAG, "Could not extract needed data from scan record");
+            UserErrorLog.d(TAG, "Could not extract needed data from scan record");
         }
     }
 

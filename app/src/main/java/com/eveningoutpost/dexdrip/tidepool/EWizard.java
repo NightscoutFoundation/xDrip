@@ -1,8 +1,9 @@
 package com.eveningoutpost.dexdrip.tidepool;
 
+
 import com.eveningoutpost.dexdrip.Models.Profile;
 import com.eveningoutpost.dexdrip.Models.Treatments;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.google.gson.annotations.Expose;
 
 // jamorham
@@ -24,17 +25,17 @@ public class EWizard extends BaseElement {
 
     private static boolean IsEWizardValid(Treatments treatment) {
         if(treatment.carbs < 0 || treatment.carbs > 1000) {
-            UserError.Log.e(TAG, "Ignoring invalid treatment (carbs) " + treatment.toS());
+            UserErrorLog.e(TAG, "Ignoring invalid treatment (carbs) " + treatment.toS());
             return false;
         }
         
         double insulinCarbRatio = Profile.getCarbRatio(treatment.timestamp);
         if(insulinCarbRatio <= 0 || insulinCarbRatio > 250) {
-            UserError.Log.e(TAG, "Ignoring invalid treatment (insulinCarbRatio) " + treatment.toS());
+            UserErrorLog.e(TAG, "Ignoring invalid treatment (insulinCarbRatio) " + treatment.toS());
             return false;
         }
         if(treatment.insulin < 0 || treatment.insulin >= 100) {
-            UserError.Log.e(TAG, "Ignoring invalid treatment (insulin) " + treatment.toS());
+            UserErrorLog.e(TAG, "Ignoring invalid treatment (insulin) " + treatment.toS());
             return false;
         }
         return true;

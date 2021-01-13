@@ -1,8 +1,9 @@
 package com.eveningoutpost.dexdrip.watch.thinjam;
 
-// jamorham
 
 import java.util.UUID;
+
+// jamorham
 
 public class Const {
 

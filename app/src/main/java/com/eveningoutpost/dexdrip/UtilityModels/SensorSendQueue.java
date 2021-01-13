@@ -1,8 +1,6 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
+
 import android.provider.BaseColumns;
 
 import com.activeandroid.Model;
@@ -11,7 +9,6 @@ import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
-import com.eveningoutpost.dexdrip.xdrip;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 
 import java.util.List;

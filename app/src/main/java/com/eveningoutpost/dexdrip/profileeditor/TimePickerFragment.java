@@ -1,8 +1,5 @@
 package com.eveningoutpost.dexdrip.profileeditor;
 
-/**
- * Created by jamorham on 22/06/2016.
- */
 
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -10,6 +7,10 @@ import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.widget.TimePicker;
+
+/**
+ * Created by jamorham on 22/06/2016.
+ */
 
 
 public class TimePickerFragment extends DialogFragment implements TimePickerDialog.OnTimeSetListener {

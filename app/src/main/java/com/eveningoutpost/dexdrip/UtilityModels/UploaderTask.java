@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+
 import android.content.Context;
 import android.os.AsyncTask;
 
@@ -11,9 +12,9 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.LibreBlock;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.Treatments;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
-import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.Services.SyncService;
+import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.ArrayList;
@@ -36,7 +37,7 @@ public class UploaderTask extends AsyncTask<String, Void, Void> {
 
     public Void doInBackground(String... urls) {
         try {
-            Log.d(TAG, "UploaderTask doInBackground called");
+            UserErrorLog.d(TAG, "UploaderTask doInBackground called");
             final List<Long> circuits = new ArrayList<>();
             final List<String> types = new ArrayList<>();
 
@@ -58,7 +59,7 @@ public class UploaderTask extends AsyncTask<String, Void, Void> {
                 if ((Pref.getBoolean("cloud_storage_api_use_mobile", true) || (JoH.isLANConnected()))) {
                     circuits.add(UploaderQueue.NIGHTSCOUT_RESTAPI);
                 } else {
-                    Log.e(TAG, "Skipping Nightscout upload due to mobile data only");
+                    UserErrorLog.e(TAG, "Skipping Nightscout upload due to mobile data only");
                 }
             }
             if (Pref.getBooleanDefaultFalse("cloud_storage_influxdb_enable")) {
@@ -92,14 +93,14 @@ public class UploaderTask extends AsyncTask<String, Void, Void> {
                                         if (this_bg != null) {
                                             bgReadings.add(this_bg);
                                         } else {
-                                            Log.wtf(TAG, "BgReading with ID: " + up.reference_id + " appears to have been deleted");
+                                            UserErrorLog.wtf(TAG, "BgReading with ID: " + up.reference_id + " appears to have been deleted");
                                         }
                                     } else if (type.equals(Calibration.class.getSimpleName())) {
                                         final Calibration this_cal = Calibration.byid(up.reference_id);
                                         if ((this_cal != null) && (this_cal.isValid())) {
                                             calibrations.add(this_cal);
                                         } else {
-                                            Log.wtf(TAG, "Calibration with ID: " + up.reference_id + " appears to have been deleted");
+                                            UserErrorLog.wtf(TAG, "Calibration with ID: " + up.reference_id + " appears to have been deleted");
                                         }
 
                                     } else if (type.equals(BloodTest.class.getSimpleName())) {
@@ -107,45 +108,45 @@ public class UploaderTask extends AsyncTask<String, Void, Void> {
                                         if (this_bt != null) {
                                             bloodtests.add(this_bt);
                                         } else {
-                                            Log.wtf(TAG, "Bloodtest with ID: " + up.reference_id + " appears to have been deleted");
+                                            UserErrorLog.wtf(TAG, "Bloodtest with ID: " + up.reference_id + " appears to have been deleted");
                                         }
                                     } else if (type.equals(Treatments.class.getSimpleName())) {
                                         final Treatments this_treat = Treatments.byid(up.reference_id);
                                         if (this_treat != null) {
                                             treatmentsAdd.add(this_treat);
                                         } else {
-                                            Log.wtf(TAG, "Treatments with ID: " + up.reference_id + " appears to have been deleted");
+                                            UserErrorLog.wtf(TAG, "Treatments with ID: " + up.reference_id + " appears to have been deleted");
                                         }
                                     } else if (type.equals(TransmitterData.class.getSimpleName())) {
                                         final TransmitterData this_transmitterData = TransmitterData.byid(up.reference_id);
                                         if (this_transmitterData != null) {
                                             transmittersData.add(this_transmitterData);
                                         } else {
-                                            Log.wtf(TAG, "TransmitterData with ID: " + up.reference_id + " appears to have been deleted");
+                                            UserErrorLog.wtf(TAG, "TransmitterData with ID: " + up.reference_id + " appears to have been deleted");
                                         }
                                     }  else if (type.equals(LibreBlock.class.getSimpleName())) {
                                         final LibreBlock this_LibreBlock = LibreBlock.byid(up.reference_id);
                                         if (this_LibreBlock != null) {
                                             libreBlock.add(this_LibreBlock);
                                         } else {
-                                            Log.wtf(TAG, "LibreBlock with ID: " + up.reference_id + " appears to have been deleted");
+                                            UserErrorLog.wtf(TAG, "LibreBlock with ID: " + up.reference_id + " appears to have been deleted");
                                         }
                                     }
                                     break;
                                 case "delete":
                                     if ((THIS_QUEUE == UploaderQueue.WATCH_WEARAPI || THIS_QUEUE == UploaderQueue.NIGHTSCOUT_RESTAPI) && type.equals(Treatments.class.getSimpleName())) {
                                         items.add(up);
-                                        Log.wtf(TAG, "Delete Treatments with ID: " + up.reference_uuid);
+                                        UserErrorLog.wtf(TAG, "Delete Treatments with ID: " + up.reference_uuid);
                                         treatmentsDel.add(up.reference_uuid);
                                     }
                                     else
                                     if (up.reference_uuid != null) {
-                                        Log.d(TAG, UploaderQueue.getCircuitName(THIS_QUEUE) + " delete not yet implemented: " + up.reference_uuid);
+                                        UserErrorLog.d(TAG, UploaderQueue.getCircuitName(THIS_QUEUE) + " delete not yet implemented: " + up.reference_uuid);
                                         up.completed(THIS_QUEUE); // mark as completed so as not to tie up the queue for now
                                     }
                                     break;
                                 default:
-                                    Log.e(TAG, "Unsupported operation type for " + type + " " + up.action);
+                                    UserErrorLog.e(TAG, "Unsupported operation type for " + type + " " + up.action);
                                     break;
                             }
                         }
@@ -157,7 +158,7 @@ public class UploaderTask extends AsyncTask<String, Void, Void> {
                         (libreBlock.size() > 0)
                         || (UploaderQueue.getPendingbyType(Treatments.class.getSimpleName(), THIS_QUEUE, 1).size() > 0)) {
 
-                    Log.d(TAG, UploaderQueue.getCircuitName(THIS_QUEUE) + " Processing: " + bgReadings.size() + " BgReadings and " + calibrations.size() + " Calibrations " + bloodtests.size() + " bloodtests " + treatmentsAdd.size() + " treatmentsAdd " + treatmentsDel.size() + " treatmentsDel");
+                    UserErrorLog.d(TAG, UploaderQueue.getCircuitName(THIS_QUEUE) + " Processing: " + bgReadings.size() + " BgReadings and " + calibrations.size() + " Calibrations " + bloodtests.size() + " bloodtests " + treatmentsAdd.size() + " treatmentsAdd " + treatmentsDel.size() + " treatmentsDel");
                     boolean uploadStatus = false;
 
                     if (THIS_QUEUE == UploaderQueue.MONGO_DIRECT) {
@@ -178,10 +179,10 @@ public class UploaderTask extends AsyncTask<String, Void, Void> {
                         for (UploaderQueue up : items) {
                             up.completed(THIS_QUEUE); // approve all types for this queue
                         }
-                        Log.d(TAG, UploaderQueue.getCircuitName(THIS_QUEUE) + " Marking: " + items.size() + " Items as successful");
+                        UserErrorLog.d(TAG, UploaderQueue.getCircuitName(THIS_QUEUE) + " Marking: " + items.size() + " Items as successful");
 
                         if (PersistentStore.getBoolean(BACKFILLING_BOOSTER)) {
-                            Log.d(TAG,"Scheduling boosted repeat query");
+                            UserErrorLog.d(TAG,"Scheduling boosted repeat query");
                             SyncService.startSyncService(2000);
                         }
 
@@ -189,16 +190,16 @@ public class UploaderTask extends AsyncTask<String, Void, Void> {
 
 
                 } else {
-                    Log.d(TAG, "Nothing to upload for: " + UploaderQueue.getCircuitName(THIS_QUEUE));
+                    UserErrorLog.d(TAG, "Nothing to upload for: " + UploaderQueue.getCircuitName(THIS_QUEUE));
                     if (PersistentStore.getBoolean(BACKFILLING_BOOSTER)) {
                         PersistentStore.setBoolean(BACKFILLING_BOOSTER, false);
-                        Log.d(TAG,"Switched off backfilling booster");
+                        UserErrorLog.d(TAG,"Switched off backfilling booster");
                     }
                 }
 
             }
         } catch (Exception e) {
-            Log.e(TAG, "caught exception", e);
+            UserErrorLog.e(TAG, "caught exception", e);
             exception = e;
             return null;
         }

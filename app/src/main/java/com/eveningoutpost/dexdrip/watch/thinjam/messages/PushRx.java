@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.watch.thinjam.messages;
 
+
 import android.util.SparseArray;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
@@ -97,7 +98,7 @@ public class PushRx extends BaseRx {
                         val secondsAgo = push.getUnsignedShort();
                         val mgdl = push.getUnsignedShort();
                         push.backfills.add(new BackFillRecord(secondsAgo, mgdl, trend));
-                        //UserError.Log.d("BlueJayParse",push.backfills.get(push.backfills.size()-1).toS());
+                        //UserErrorLog.d("BlueJayParse",push.backfills.get(push.backfills.size()-1).toS());
                     }
                 } else if (push.type == Type.Choice) {
                     val choice = push.data.get();

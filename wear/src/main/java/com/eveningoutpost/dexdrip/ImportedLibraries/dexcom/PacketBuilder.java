@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip.ImportedLibraries.dexcom;
 
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +45,7 @@ public class PacketBuilder {
         byte[] crc16 = CRC16.calculate(toBytes(), 0, this.packet.size());
         this.packet.add(crc16[0]);
         this.packet.add(crc16[1]);
-        Log.d("ShareTest", "About to start adding to Byte, size: " + this.packet.size());
+        UserErrorLog.d("ShareTest", "About to start adding to Byte, size: " + this.packet.size());
         return this.toBytes();
     }
 
@@ -59,7 +59,7 @@ public class PacketBuilder {
         byte[] crc16 = CRC16.calculate(toBytes(), 0, this.packet.size());
         this.packet.add(crc16[0]);
         this.packet.add(crc16[1]);
-        Log.d("ShareTest", "About to start adding to ByteList, size: " + this.packet.size());
+        UserErrorLog.d("ShareTest", "About to start adding to ByteList, size: " + this.packet.size());
         return this.toBytesList();
     }
 
@@ -94,7 +94,7 @@ public class PacketBuilder {
                 thisPacketSize = (20);
             }
             int offset = m * 18;
-            Log.d("ShareTest", "This packet size: " + thisPacketSize);
+            UserErrorLog.d("ShareTest", "This packet size: " + thisPacketSize);
             byte[] b = new byte[thisPacketSize];
             b[0] = (byte) (m + 1);
             b[1] = (byte) (messages);

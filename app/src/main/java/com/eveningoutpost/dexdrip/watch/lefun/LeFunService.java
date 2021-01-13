@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.watch.lefun;
 
+
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
 import android.content.Intent;
@@ -9,7 +10,7 @@ import android.util.Pair;
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.Services.JamBaseBluetoothSequencer;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
@@ -79,7 +80,7 @@ public class LeFunService extends JamBaseBluetoothSequencer {
 
     final Runnable canceller = () -> {
         if (!currentlyAlerting() && !IncomingCallsReceiver.isRingingNow()) {
-            UserError.Log.d(TAG, "Clearing queue as alert / call ceased");
+            UserErrorLog.d(TAG, "Clearing queue as alert / call ceased");
             emptyQueue();
         }
     };
@@ -125,7 +126,7 @@ public class LeFunService extends JamBaseBluetoothSequencer {
                             }
                         } else {
                             // no specific function
-                            UserError.Log.d(TAG, "SET TIME CALLED");
+                            UserErrorLog.d(TAG, "SET TIME CALLED");
                             changeState(SET_TIME);
                         }
                     }
@@ -133,7 +134,7 @@ public class LeFunService extends JamBaseBluetoothSequencer {
 
                 return START_STICKY;
             } else {
-                UserError.Log.d(TAG, "Service is NOT set be active - shutting down");
+                UserErrorLog.d(TAG, "Service is NOT set be active - shutting down");
                 stopSelf();
                 return START_NOT_STICKY;
             }
@@ -149,9 +150,9 @@ public class LeFunService extends JamBaseBluetoothSequencer {
     protected void onServicesDiscovered(RxBleDeviceServices services) {
         boolean found = false;
         for (BluetoothGattService service : services.getBluetoothGattServices()) {
-            UserError.Log.d(TAG, "Service: " + getUUIDName(service.getUuid()));
+            UserErrorLog.d(TAG, "Service: " + getUUIDName(service.getUuid()));
             for (BluetoothGattCharacteristic characteristic : service.getCharacteristics()) {
-                UserError.Log.d(TAG, "-- Character: " + getUUIDName(characteristic.getUuid()));
+                UserErrorLog.d(TAG, "-- Character: " + getUUIDName(characteristic.getUuid()));
 
                 for (final UUID check : huntCharacterstics) {
                     if (characteristic.getUuid().equals(check)) {
@@ -165,20 +166,20 @@ public class LeFunService extends JamBaseBluetoothSequencer {
             I.isDiscoveryComplete = true;
             enableNotification();
         } else {
-            UserError.Log.e(TAG, "Could not find characteristic during service discovery. This is very unusual");
+            UserErrorLog.e(TAG, "Could not find characteristic during service discovery. This is very unusual");
         }
     }
 
 
     private void enableNotification() {
-        UserError.Log.d(TAG, "Enabling notifications");
+        UserErrorLog.d(TAG, "Enabling notifications");
         I.isNotificationEnabled = false;
         if (I.connection == null) {
-            UserError.Log.d(TAG, "Cannot enable as connection is null!");
+            UserErrorLog.d(TAG, "Cannot enable as connection is null!");
             return;
         }
         if (I.readCharacteristic == null) {
-            UserError.Log.d(TAG, "Cannot enable as read characterstic is null");
+            UserErrorLog.d(TAG, "Cannot enable as read characterstic is null");
             return;
         }
         I.connection.setupNotification(I.readCharacteristic)
@@ -194,15 +195,15 @@ public class LeFunService extends JamBaseBluetoothSequencer {
                 .subscribe(bytes -> {
                             // incoming notifications
                             if (d)
-                                UserError.Log.d(TAG, "Received data notification bytes: " + HexDump.dumpHexString(bytes));
+                                UserErrorLog.d(TAG, "Received data notification bytes: " + HexDump.dumpHexString(bytes));
 
                             processAndAction(bytes);
 
                         }, throwable -> {
                             if (!(throwable instanceof TimeoutException)) {
-                                UserError.Log.e(TAG, "Throwable inside setup notification: " + throwable);
+                                UserErrorLog.e(TAG, "Throwable inside setup notification: " + throwable);
                             } else {
-                                UserError.Log.d(TAG, "OUTER TIMEOUT INSIDE NOTIFICATION LISTENER");
+                                UserErrorLog.d(TAG, "OUTER TIMEOUT INSIDE NOTIFICATION LISTENER");
                             }
                             I.isNotificationEnabled = false;
                             changeState(CLOSE);
@@ -223,7 +224,7 @@ public class LeFunService extends JamBaseBluetoothSequencer {
             default:
                 final BaseRx packet = Classifier.classify(bytes);
                 if (packet != null) {
-                    UserError.Log.d(TAG, "Classified: " + packet.getClass().getSimpleName());
+                    UserErrorLog.d(TAG, "Classified: " + packet.getClass().getSimpleName());
                     if (packet instanceof RxPong) {
                         LeFun.setModel(((RxPong) packet).getModel());
                     } else if (packet instanceof RxShake) {
@@ -236,21 +237,21 @@ public class LeFunService extends JamBaseBluetoothSequencer {
     }
 
     private void shakeDetected() {
-        UserError.Log.d(TAG, "Shake detected");
+        UserErrorLog.d(TAG, "Shake detected");
         if (shakeToSnooze()) {
             AlertPlayer.getPlayer().OpportunisticSnooze();
             emptyQueue();
-            UserError.Log.ueh(TAG, "Alert snoozed by Shake");
+            UserErrorLog.ueh(TAG, "Alert snoozed by Shake");
         }
     }
 
     private void findPhone() {
-        UserError.Log.d(TAG, "Find phone function triggered");
+        UserErrorLog.d(TAG, "Find phone function triggered");
         if (!AlertPlayer.getPlayer().OpportunisticSnooze()) {
             JoH.showNotification("Find Phone", "Activated from Lefun band", null, 5, true, true, false);
         } else {
             emptyQueue();
-            UserError.Log.ueh(TAG, "Alert snoozed by Find feature");
+            UserErrorLog.ueh(TAG, "Alert snoozed by Find feature");
         }
     }
 
@@ -328,7 +329,7 @@ public class LeFunService extends JamBaseBluetoothSequencer {
             rep = FunAlmanac.getRepresentation(mmol_value);
         }
 
-        UserError.Log.uel(TAG, "Representation for: " + rep.input);
+        UserErrorLog.uel(TAG, "Representation for: " + rep.input);
 
         probeModelTypeIfUnknown();
 
@@ -344,7 +345,7 @@ public class LeFunService extends JamBaseBluetoothSequencer {
         final String alert = keyStore.getS(MESSAGE);
         final String type = keyStore.getS(MESSAGE_TYPE);
 
-        UserError.Log.d(TAG,"Queuing message alert of type: "+type+" "+alert);
+        UserErrorLog.d(TAG,"Queuing message alert of type: "+type+" "+alert);
 
         if (!emptyString(alert)) {
 
@@ -361,7 +362,7 @@ public class LeFunService extends JamBaseBluetoothSequencer {
                                 .setRunnable(canceller)
                                 .queue();
                     }
-                    UserError.Log.d(TAG, "Queued call alert: " + alert);
+                    UserErrorLog.d(TAG, "Queued call alert: " + alert);
                     break;
 
                 default: // glucose
@@ -396,7 +397,7 @@ public class LeFunService extends JamBaseBluetoothSequencer {
            Inevitable.task("lefun-s-queue", 200, () -> changeState(mState.next()));
 
         } else {
-            UserError.Log.e(TAG, "Alert message requested but no message set");
+            UserErrorLog.e(TAG, "Alert message requested but no message set");
         }
     }
 
@@ -437,15 +438,15 @@ public class LeFunService extends JamBaseBluetoothSequencer {
     @Override
     protected synchronized boolean automata() {
         extendWakeLock(1000);
-        UserError.Log.d(TAG, "Automata called in LeFun");
+        UserErrorLog.d(TAG, "Automata called in LeFun");
 
         if (I.state.equals(QUEUE_MESSAGE) || alwaysConnected()) {
             if ((I.isConnected) && !I.state.equals(CLOSE)) {
                 if (!I.isDiscoveryComplete) {
-                    UserError.Log.d(TAG, "Services not discovered");
+                    UserErrorLog.d(TAG, "Services not discovered");
                     I.state = DISCOVER;
                 } else if ((!I.isNotificationEnabled) && (JoH.ratelimit("lefun-enable-notifications", 2))) {
-                    UserError.Log.d(TAG, "Notifications not enabled");
+                    UserErrorLog.d(TAG, "Notifications not enabled");
                     I.state = ENABLE_NOTIFICATIONS;
                 }
             }
@@ -493,14 +494,14 @@ public class LeFunService extends JamBaseBluetoothSequencer {
     protected void setRetryTimerReal() {
         if (shouldServiceRun()) {
             final long retry_in = whenToRetryNext();
-            UserError.Log.d(TAG, "setRetryTimer: Restarting in: " + (retry_in / Constants.SECOND_IN_MS) + " seconds");
+            UserErrorLog.d(TAG, "setRetryTimer: Restarting in: " + (retry_in / Constants.SECOND_IN_MS) + " seconds");
             I.serviceIntent = WakeLockTrampoline.getPendingIntent(this.getClass(), Constants.LEFUN_SERVICE_RETRY_ID);
             //PendingIntent.getService(xdrip.getAppContext(), Constants.LEFUN_SERVICE_RETRY_ID,
             //        new Intent(xdrip.getAppContext(), this.getClass()), 0);
             I.retry_time = JoH.wakeUpIntent(xdrip.getAppContext(), retry_in, I.serviceIntent);
             I.wakeup_time = JoH.tsl() + retry_in;
         } else {
-            UserError.Log.d(TAG, "Not setting retry timer as service should not be running");
+            UserErrorLog.d(TAG, "Not setting retry timer as service should not be running");
         }
     }
 

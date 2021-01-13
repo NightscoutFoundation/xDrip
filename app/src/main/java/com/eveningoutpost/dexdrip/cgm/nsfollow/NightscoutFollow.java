@@ -1,8 +1,9 @@
 package com.eveningoutpost.dexdrip.cgm.nsfollow;
 
+
 import com.eveningoutpost.dexdrip.BuildConfig;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.NightscoutTreatments;
@@ -73,7 +74,7 @@ public class NightscoutFollow {
             try {
                 service = getRetrofitInstance().create(Nightscout.class);
             } catch (NullPointerException e) {
-                UserError.Log.e(TAG, "Null pointer trying to getService()");
+                UserErrorLog.e(TAG, "Null pointer trying to getService()");
             }
         }
         return service;
@@ -112,11 +113,11 @@ public class NightscoutFollow {
         if (!emptyString(urlString)) {
             try {
                 int count = Math.min(MissedReadingsEstimator.estimate() + 1, (int) (Constants.DAY_IN_MS / DEXCOM_PERIOD));
-                UserError.Log.d(TAG, "Estimating missed readings as: " + count);
+                UserErrorLog.d(TAG, "Estimating missed readings as: " + count);
                 count = Math.max(10, count); // pep up with a view to potential period mismatches - might be excessive
                 getService().getEntries(session.url.getHashedSecret(), count, JoH.tsl() + "").enqueue(session.entriesCallback);
             } catch (Exception e) {
-                UserError.Log.e(TAG, "Exception in entries work() " + e);
+                UserErrorLog.e(TAG, "Exception in entries work() " + e);
                 msg("Nightscout follow entries error: " + e);
             }
             if (treatmentDownloadEnabled()) {
@@ -124,7 +125,7 @@ public class NightscoutFollow {
                     try {
                         getService().getTreatments(session.url.getHashedSecret()).enqueue(session.treatmentsCallback);
                     } catch (Exception e) {
-                        UserError.Log.e(TAG, "Exception in treatments work() " + e);
+                        UserErrorLog.e(TAG, "Exception in treatments work() " + e);
                         msg("Nightscout follow treatments error: " + e);
                     }
                 }
@@ -181,7 +182,7 @@ public class NightscoutFollow {
         if (retrofit == null) {
             final String url = getUrl();
             if (emptyString(url)) {
-                UserError.Log.d(TAG, "Empty url - cannot create instance");
+                UserErrorLog.d(TAG, "Empty url - cannot create instance");
                 return null;
             }
             final HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
@@ -209,7 +210,7 @@ public class NightscoutFollow {
     public static void resetInstance() {
         retrofit = null;
         service = null;
-        UserError.Log.d(TAG, "Instance reset");
+        UserErrorLog.d(TAG, "Instance reset");
         CollectionServiceStarter.restartCollectionServiceBackground();
     }
 }

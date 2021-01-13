@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.Models;
 
+
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -55,6 +56,7 @@ import android.widget.Toast;
 
 import com.activeandroid.ActiveAndroid;
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
@@ -174,6 +176,8 @@ public class JoH {
         return new Date().getTime();
     }
 
+    //TODO: Don't. Because it can cause all sorts
+    //of issues.
     public static long tsl() {
         return System.currentTimeMillis();
     }
@@ -415,7 +419,7 @@ public class JoH {
         if (!buggy_samsung) {
            if (JoH.isSamsung() && PersistentStore.getLong(BUGGY_SAMSUNG_ENABLED) > 4) {
                buggy_samsung = true;
-               UserError.Log.d(TAG,"Enabling buggy samsung mode due to historical pattern");
+               UserErrorLog.d(TAG,"Enabling buggy samsung mode due to historical pattern");
            }
         }
     }
@@ -494,12 +498,12 @@ public class JoH {
             for (String key : bundle.keySet()) {
                 Object value = bundle.get(key);
                 if (value != null) {
-                    UserError.Log.d(tag, String.format("%s %s (%s)", key,
+                    UserErrorLog.d(tag, String.format("%s %s (%s)", key,
                             value.toString(), value.getClass().getName()));
                 }
             }
         } else {
-            UserError.Log.d(tag, "Bundle is empty");
+            UserErrorLog.d(tag, "Bundle is empty");
         }
     }
 
@@ -1437,7 +1441,7 @@ public class JoH {
                         broadcastReceiver.abortBroadcast();
                     }
                     try {
-                        UserError.Log.e(TAG, "Pairing type: " + type);
+                        UserErrorLog.e(TAG, "Pairing type: " + type);
                         if (type != PAIRING_VARIANT_PIN && type != PAIRING_VARIANT_PASSKEY) {
                             device.setPairingConfirmation(true);
                             JoH.static_toast_short("xDrip Pairing");
@@ -1447,7 +1451,7 @@ public class JoH {
                         }
 
                     } catch (Exception e) {
-                        UserError.Log.e(TAG, "Could not set pairing confirmation due to exception: " + e);
+                        UserErrorLog.e(TAG, "Could not set pairing confirmation due to exception: " + e);
                         if (JoH.ratelimit("failed pair confirmation", 200)) {
                             // BluetoothDevice.PAIRING_VARIANT_CONSENT)
                             if (type == 3) {
@@ -1461,10 +1465,10 @@ public class JoH {
                         }
                     }
                 } else {
-                    UserError.Log.e(TAG, "Received pairing request for not our device: " + device.getAddress());
+                    UserErrorLog.e(TAG, "Received pairing request for not our device: " + device.getAddress());
                 }
             } else {
-                UserError.Log.e(TAG, "Device was null in pairing receiver");
+                UserErrorLog.e(TAG, "Device was null in pairing receiver");
             }
         }
         return true;
@@ -1515,7 +1519,7 @@ public class JoH {
         try {
 
             if (isAirplaneModeEnabled(context)) {
-                UserError.Log.e(TAG, "Not setting bluetooth to state: " + state + " due to airplane mode being enabled");
+                UserErrorLog.e(TAG, "Not setting bluetooth to state: " + state + " due to airplane mode being enabled");
                 return;
             }
 
@@ -1523,28 +1527,28 @@ public class JoH {
 
                 final BluetoothManager bluetoothManager = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
                 if (bluetoothManager == null) {
-                    UserError.Log.e(TAG, "Couldn't get bluetooth in setBluetoothEnabled");
+                    UserErrorLog.e(TAG, "Couldn't get bluetooth in setBluetoothEnabled");
                     return;
                 }
                 BluetoothAdapter mBluetoothAdapter = bluetoothManager.getAdapter(); // local scope only
                 if (mBluetoothAdapter == null) {
-                    UserError.Log.e(TAG, "Couldn't get bluetooth adapter in setBluetoothEnabled");
+                    UserErrorLog.e(TAG, "Couldn't get bluetooth adapter in setBluetoothEnabled");
                     return;
                 }
                 try {
                     if (state) {
-                        UserError.Log.i(TAG, "Setting bluetooth enabled");
+                        UserErrorLog.i(TAG, "Setting bluetooth enabled");
                         mBluetoothAdapter.enable();
                     } else {
-                        UserError.Log.i(TAG, "Setting bluetooth disabled");
+                        UserErrorLog.i(TAG, "Setting bluetooth disabled");
                         mBluetoothAdapter.disable();
 
                     }
                 } catch (Exception e) {
-                    UserError.Log.e(TAG, "Exception when enabling/disabling bluetooth: " + e);
+                    UserErrorLog.e(TAG, "Exception when enabling/disabling bluetooth: " + e);
                 }
             } else {
-                UserError.Log.e(TAG, "Bluetooth low energy not supported");
+                UserErrorLog.e(TAG, "Bluetooth low energy not supported");
             }
         } finally {
             //
@@ -1594,7 +1598,7 @@ public class JoH {
 
     public static synchronized void unBond(String transmitterMAC) {
 
-        UserError.Log.d(TAG, "unBond() start");
+        UserErrorLog.d(TAG, "unBond() start");
         if (transmitterMAC == null) return;
         try {
             final BluetoothAdapter mBluetoothAdapter = ((BluetoothManager) xdrip.getAppContext().getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
@@ -1605,12 +1609,12 @@ public class JoH {
                     if (device.getAddress() != null) {
                         if (device.getAddress().equals(transmitterMAC)) {
                             try {
-                                UserError.Log.e(TAG, "removingBond: " + transmitterMAC);
+                                UserErrorLog.e(TAG, "removingBond: " + transmitterMAC);
                                 Method m = device.getClass().getMethod("removeBond", (Class[]) null);
                                 m.invoke(device, (Object[]) null);
 
                             } catch (Exception e) {
-                                UserError.Log.e(TAG, e.getMessage(), e);
+                                UserErrorLog.e(TAG, e.getMessage(), e);
                             }
                         }
 
@@ -1618,9 +1622,9 @@ public class JoH {
                 }
             }
         } catch (Exception e) {
-            UserError.Log.e(TAG, "Exception during unbond! " + transmitterMAC, e);
+            UserErrorLog.e(TAG, "Exception during unbond! " + transmitterMAC, e);
         }
-        UserError.Log.d(TAG, "unBond() finished");
+        UserErrorLog.d(TAG, "unBond() finished");
     }
 
 

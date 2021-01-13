@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.watch.miband.Firmware;
 
+
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -12,7 +13,7 @@ import android.graphics.Typeface;
 import com.eveningoutpost.dexdrip.BestGlucose;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Treatments;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.watch.miband.Firmware.WatchFaceParts.Header;
@@ -33,6 +34,7 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
+
 import static com.eveningoutpost.dexdrip.Models.JoH.hourMinuteString;
 import static com.eveningoutpost.dexdrip.Models.JoH.threadSleep;
 import static com.eveningoutpost.dexdrip.utils.FileUtils.getExternalDir;
@@ -103,31 +105,31 @@ public class WatchFaceGenerator {
 
     private void parseWatchfaceFile(InputStream fwFileStream) throws Exception {
         if (d)
-            UserError.Log.d(TAG, "Reading header");
+            UserErrorLog.d(TAG, "Reading header");
         BufferedInputStream stream = new BufferedInputStream(fwFileStream);
         header = Header.readFrom(stream);
         if (d) {
-            UserError.Log.d(TAG, "Header was read:");
-            UserError.Log.d(TAG, String.format("Signature: %s, Unknown param: %d, ParametersSize: %d isValid: %s", header.getSignature(), header.getUnknown(), header.getParametersSize(), header.isValid()));
+            UserErrorLog.d(TAG, "Header was read:");
+            UserErrorLog.d(TAG, String.format("Signature: %s, Unknown param: %d, ParametersSize: %d isValid: %s", header.getSignature(), header.getUnknown(), header.getParametersSize(), header.isValid()));
         }
         if (!header.isValid())
             throw new Exception("Wrong watchface format");
         if (d)
-            UserError.Log.d(TAG, "Reading parameter offsets...");
+            UserErrorLog.d(TAG, "Reading parameter offsets...");
         byte[] bytes = new byte[header.getParametersSize()];
         stream.read(bytes, 0, bytes.length);
         InputStream parameterStream = new ByteArrayInputStream(bytes);
         mainParam = Parameter.readFrom(parameterStream, 0);
         if (d)
-            UserError.Log.d(TAG, "Parameters descriptor was read");
+            UserErrorLog.d(TAG, "Parameters descriptor was read");
         parametersTableLength = (int) mainParam.getChildren().get(0).getValue();
         int imagesCount = (int) mainParam.getChildren().get(1).getValue();
         if (d)
-            UserError.Log.d(TAG, "parametersTableLength: " + parametersTableLength + ", imagesCount: " + imagesCount);
+            UserErrorLog.d(TAG, "parametersTableLength: " + parametersTableLength + ", imagesCount: " + imagesCount);
         bytes = new byte[parametersTableLength];
         stream.read(bytes, 0, bytes.length);
         if (d)
-            UserError.Log.d(TAG, "Reading images offsets...");
+            UserErrorLog.d(TAG, "Reading images offsets...");
         bytes = new byte[imagesCount * 4];
         stream.read(bytes, 0, bytes.length);
         ByteBuffer b = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN);
@@ -136,7 +138,7 @@ public class WatchFaceGenerator {
             imageOffsets.add(b.getInt());
         }
         if (d)
-            UserError.Log.d(TAG, "Image offsets were read");
+            UserErrorLog.d(TAG, "Image offsets were read");
         if (fwFileStream.markSupported())
             fwFileStream.reset();
     }
@@ -342,13 +344,13 @@ public class WatchFaceGenerator {
         final String dir = getExternalDir();
 
         if (d)
-            UserError.Log.d(TAG, "Encoding main picture");
+            UserErrorLog.d(TAG, "Encoding main picture");
         ByteArrayOutputStream imageByteArrayOutput = new ByteArrayOutputStream();
         Image encodedImage = new Image(imageByteArrayOutput);
 
         encodedImage.write(resultImage);
         if (d)
-            UserError.Log.d(TAG, "Encoded image size: " + imageByteArrayOutput.size() + " bytes");
+            UserErrorLog.d(TAG, "Encoded image size: " + imageByteArrayOutput.size() + " bytes");
 
         int imageOffset = header.getHeaderSize() + header.getParametersSize() + parametersTableLength;
 
@@ -367,14 +369,14 @@ public class WatchFaceGenerator {
                 (firmwareReadStream.available() - oldImageSize - imageOffset - imageOffsetTableSize));
 
         if (d) {
-            UserError.Log.d(TAG, "Copying original header with params ");
+            UserErrorLog.d(TAG, "Copying original header with params ");
         }
 
         byte[] bytes = new byte[imageOffset];
         firmwareReadStream.read(bytes, 0, bytes.length);
         firmwareWriteStream.write(bytes, 0, bytes.length);
         if (d) {
-            UserError.Log.d(TAG, "Writing modified image offsets");
+            UserErrorLog.d(TAG, "Writing modified image offsets");
         }
 
         Integer oldOffset, newOffset;
@@ -393,12 +395,12 @@ public class WatchFaceGenerator {
         }
 
         if (d) {
-            UserError.Log.d(TAG, "Writing main image");
+            UserErrorLog.d(TAG, "Writing main image");
         }
         firmwareWriteStream.write(imageByteArrayOutput.toByteArray());
 
         if (d) {
-            UserError.Log.d(TAG, "Writing rest images from original firmware");
+            UserErrorLog.d(TAG, "Writing rest images from original firmware");
         }
         firmwareReadStream.skip(imageOffsetTableSize + oldImageSize); //skip to the first image
         bytes = new byte[8192];
@@ -409,7 +411,7 @@ public class WatchFaceGenerator {
         fwFileStream.close();
         firmwareReadStream.close();
 
-        UserError.Log.d(TAG, "Watchface file ready");
+        UserErrorLog.d(TAG, "Watchface file ready");
 
         if (debug) {
             makeSureDirectoryExists(dir);

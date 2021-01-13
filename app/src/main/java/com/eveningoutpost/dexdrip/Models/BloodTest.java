@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.Models;
 
+
 import android.provider.BaseColumns;
 import android.util.Log;
 
@@ -12,6 +13,7 @@ import com.activeandroid.util.SQLiteUtils;
 import com.eveningoutpost.dexdrip.AddCalibration;
 import com.eveningoutpost.dexdrip.GlucoseMeter.GlucoseReadingRx;
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.Services.SyncService;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
@@ -133,19 +135,19 @@ public class BloodTest extends Model {
     public static BloodTest create(long timestamp_ms, double mgdl, String source, String suggested_uuid) {
 
         if ((timestamp_ms == 0) || (mgdl == 0)) {
-            UserError.Log.e(TAG, "Either timestamp or mgdl is zero - cannot create reading");
+            UserErrorLog.e(TAG, "Either timestamp or mgdl is zero - cannot create reading");
             return null;
         }
 
         if (timestamp_ms < 1487759433000L) {
-            UserError.Log.d(TAG, "Timestamp really too far in the past @ " + timestamp_ms);
+            UserErrorLog.d(TAG, "Timestamp really too far in the past @ " + timestamp_ms);
             return null;
         }
 
         final long now = JoH.tsl();
         if (timestamp_ms > now) {
             if ((timestamp_ms - now) > 600000) {
-                UserError.Log.wtf(TAG, "Timestamp is > 10 minutes in the future! Something is wrong: " + JoH.dateTimeText(timestamp_ms));
+                UserErrorLog.wtf(TAG, "Timestamp is > 10 minutes in the future! Something is wrong: " + JoH.dateTimeText(timestamp_ms));
                 return null;
             }
             timestamp_ms = now; // force to now if it showed up to 10 mins in the future
@@ -167,7 +169,7 @@ public class BloodTest extends Model {
 
             if (Pref.getBooleanDefaultFalse("bluetooth_meter_for_calibrations_auto")) {
                 if ((JoH.msSince(bt.timestamp) < Constants.MINUTE_IN_MS * 5) && (JoH.msSince(bt.timestamp) > 0)) {
-                    UserError.Log.d(TAG, "Blood test value recent enough to send to G5");
+                    UserErrorLog.d(TAG, "Blood test value recent enough to send to G5");
                     //Ob1G5StateMachine.addCalibration((int) bt.mgdl, timestamp_ms);
                     NativeCalibrationPipe.addCalibration((int) bt.mgdl, timestamp_ms);
                 }
@@ -175,7 +177,7 @@ public class BloodTest extends Model {
 
             return bt;
         } else {
-            UserError.Log.d(TAG, "Not creating new reading as timestamp is too close");
+            UserErrorLog.d(TAG, "Not creating new reading as timestamp is too close");
         }
         return null;
     }
@@ -310,7 +312,7 @@ public class BloodTest extends Model {
             if (bt == null) {
                 bt = getForPreciseTimestamp(Wire.get(btm.timestamp, BloodTestMessage.DEFAULT_TIMESTAMP), CLOSEST_READING_MS);
                 if (bt != null) {
-                    UserError.Log.wtf(TAG, "Error matches a different uuid with the same timestamp: " + bt.uuid + " vs " + btm.uuid + " skipping!");
+                    UserErrorLog.wtf(TAG, "Error matches a different uuid with the same timestamp: " + bt.uuid + " vs " + btm.uuid + " skipping!");
                     return;
                 }
                 bt = new BloodTest();
@@ -335,7 +337,7 @@ public class BloodTest extends Model {
                 }
             }
         } else {
-            UserError.Log.wtf(TAG, "processFromMessage uuid is null or invalid");
+            UserErrorLog.wtf(TAG, "processFromMessage uuid is null or invalid");
         }
     }
 
@@ -349,20 +351,20 @@ public class BloodTest extends Model {
                 Home.staticRefreshBGCharts();
             }
         } catch (IOException | NullPointerException | IllegalStateException e) {
-            UserError.Log.e(TAG, "exception processFromMessage: " + e);
+            UserErrorLog.e(TAG, "exception processFromMessage: " + e);
         }
     }
 
     public static BloodTest fromJSON(String json) {
         if ((json == null) || (json.length() == 0)) {
-            UserError.Log.d(TAG, "Empty json received in bloodtest fromJson");
+            UserErrorLog.d(TAG, "Empty json received in bloodtest fromJson");
             return null;
         }
         try {
-            UserError.Log.d(TAG, "Processing incoming json: " + json);
+            UserErrorLog.d(TAG, "Processing incoming json: " + json);
             return new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create().fromJson(json, BloodTest.class);
         } catch (Exception e) {
-            UserError.Log.d(TAG, "Got exception parsing bloodtest json: " + e.toString());
+            UserErrorLog.d(TAG, "Got exception parsing bloodtest json: " + e.toString());
             Home.toaststaticnext("Error on Bloodtest sync, probably decryption key mismatch");
             return null;
         }
@@ -471,7 +473,7 @@ public class BloodTest extends Model {
 
             // TODO Check we have prior reading as well perhaps
             JoH.clearCache();
-            UserError.Log.ueh(TAG, "Opportunistic calibration for Blood Test at " + JoH.dateTimeText(bt.timestamp) + " of " + BgGraphBuilder.unitized_string_with_units_static(bt.mgdl) + " matching sensor slope at: " + JoH.dateTimeText(bgReading.timestamp) + " from source " + bt.source);
+            UserErrorLog.ueh(TAG, "Opportunistic calibration for Blood Test at " + JoH.dateTimeText(bt.timestamp) + " of " + BgGraphBuilder.unitized_string_with_units_static(bt.mgdl) + " matching sensor slope at: " + JoH.dateTimeText(bgReading.timestamp) + " from source " + bt.source);
             final long time_since = JoH.msSince(bt.timestamp);
 
 
@@ -566,9 +568,9 @@ public class BloodTest extends Model {
         for (String patch : patchup) {
             try {
                 SQLiteUtils.execSql(patch);
-                //  UserError.Log.e(TAG, "Processed patch should not have succeeded!!: " + patch);
+                //  UserErrorLog.e(TAG, "Processed patch should not have succeeded!!: " + patch);
             } catch (Exception e) {
-                //  UserError.Log.d(TAG, "Patch: " + patch + " generated exception as it should: " + e.toString());
+                //  UserErrorLog.d(TAG, "Patch: " + patch + " generated exception as it should: " + e.toString());
             }
         }
         patched = true;

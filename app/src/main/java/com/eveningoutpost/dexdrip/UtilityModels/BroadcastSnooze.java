@@ -1,10 +1,11 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+
 import android.content.Intent;
 
 import com.eveningoutpost.dexdrip.BuildConfig;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 
 import static com.eveningoutpost.dexdrip.xdrip.getAppContext;
 
@@ -23,7 +24,7 @@ public class BroadcastSnooze {
                 final Intent intent = new Intent(Intents.ACTION_SNOOZE);
                 intent.putExtra(Intents.EXTRA_SENDER, BuildConfig.APPLICATION_ID);
                 getAppContext().sendBroadcast(intent);
-                UserError.Log.d(TAG, "Sent snooze");
+                UserErrorLog.d(TAG, "Sent snooze");
             }
         }
     }

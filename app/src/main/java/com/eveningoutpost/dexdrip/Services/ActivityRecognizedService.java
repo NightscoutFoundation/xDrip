@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.Services;
 
+
 import android.app.IntentService;
 import android.app.PendingIntent;
 import android.content.ContentResolver;
@@ -20,13 +21,12 @@ import com.eveningoutpost.dexdrip.ErrorsActivity;
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.ShotStateStore;
 import com.eveningoutpost.dexdrip.UtilityModels.VehicleMode;
 import com.eveningoutpost.dexdrip.utils.PowerStateReceiver;
-import com.eveningoutpost.dexdrip.utils.WebAppHelper;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -138,7 +138,7 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
         if ((no_rate_limit) || (JoH.ratelimit("recognizer-start", 60))) {
             release_wl_start();
             wl_start = JoH.getWakeLock("recognizer-start", 60000);
-            UserError.Log.e(TAG, "Restarting API");
+            UserErrorLog.e(TAG, "Restarting API");
             mApiClient = new GoogleApiClient.Builder(this)
                     .addApi(ActivityRecognition.API)
                     .addConnectionCallbacks(this)
@@ -147,7 +147,7 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
 
             mApiClient.connect();
         } else {
-            UserError.Log.e(TAG, "Couldn't restart API due to ratelimit");
+            UserErrorLog.e(TAG, "Couldn't restart API due to ratelimit");
         }
     }
 
@@ -206,7 +206,7 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
             Log.d(TAG, "Requested: " + requested + " Received: " + received);
             if (requested == 10) {
                 if (received < 4) {
-                    UserError.Log.ueh(TAG, "Issuing full screen wakeup as req: " + getInternalPrefsLong(REQUESTED) + " rec: " + getInternalPrefsLong(RECEIVED));
+                    UserErrorLog.ueh(TAG, "Issuing full screen wakeup as req: " + getInternalPrefsLong(REQUESTED) + " rec: " + getInternalPrefsLong(RECEIVED));
                     Home.startHomeWithExtra(context, Home.HOME_FULL_WAKEUP, "1");
                 }
             } else if (requested == 15) {
@@ -227,8 +227,8 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
         final long received = getInternalPrefsLong(RECEIVED);
         Home.toaststaticnext("DISABLED MOTION TRACKING DUE TO FAILURES! See Error Log!");
         final String msg = "Had to disable motion tracking feature as it did not seem to be working and may be incompatible with your phone. Please report this to the developers using the send logs feature: " + requested + " vs " + received + " " + JoH.getDeviceDetails();
-        UserError.Log.wtf(TAG, msg);
-        UserError.Log.ueh(TAG, msg);
+        UserErrorLog.wtf(TAG, msg);
+        UserErrorLog.ueh(TAG, msg);
         Pref.setBoolean("motion_tracking_enabled", false);
         evaluateRequestReceivedCounters(true, context); // mark for disable
         setInternalPrefsLong(REQUESTED, 0);
@@ -295,7 +295,7 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
             final long duration = get_vehicle_mode_minutes();
             setInternalPrefsLong(VEHICLE_MODE_SINCE, -1);
             if (duration > 0) {
-                UserError.Log.ueh(TAG, "Exiting vehicle mode after: " + duration + " minutes");
+                UserErrorLog.ueh(TAG, "Exiting vehicle mode after: " + duration + " minutes");
             }
         }
         VehicleMode.sendBroadcast();
@@ -422,7 +422,7 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
             interpretRatio(this);
             ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(mApiClient, frequency, get_pending_intent());
         } catch (Exception e) {
-            UserError.Log.wtf(TAG, "Got exception starting activity recognition: " + e.toString());
+            UserErrorLog.wtf(TAG, "Got exception starting activity recognition: " + e.toString());
         }
     }
 
@@ -436,7 +436,7 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
                 wl_global = null;
             }
         } catch (Exception e) {
-            UserError.Log.wtf(TAG, "Got exception stopping activity recognition: " + e.toString());
+            UserErrorLog.wtf(TAG, "Got exception stopping activity recognition: " + e.toString());
         }
     }
 
@@ -463,7 +463,7 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        UserError.Log.e(TAG, "onConnected");
+        UserErrorLog.e(TAG, "onConnected");
         requestUpdates(FREQUENCY);
         release_wl_start();
     }
@@ -471,20 +471,20 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
 
     @Override
     public void onConnectionSuspended(int i) {
-        UserError.Log.e(TAG, "onConnectionSuspended");
+        UserErrorLog.e(TAG, "onConnectionSuspended");
         start();
     }
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        UserError.Log.e(TAG, "onConnectionFailed: " + connectionResult.toString());
+        UserErrorLog.e(TAG, "onConnectionFailed: " + connectionResult.toString());
         if (connectionResult.hasResolution()) {
             try {
                 connectionResult.getResolution().send();
             } catch (NullPointerException e) {
                 //
             } catch (Exception e) {
-                UserError.Log.e(TAG, e.toString());
+                UserErrorLog.e(TAG, e.toString());
             }
         } else {
             if (connectionResult.getErrorCode() == ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED) {
@@ -493,7 +493,7 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
                 notificationIntent.setData(Uri.parse("https://play.google.com/store/apps/details?id=com.google.android.gms"));
                 final PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
                 JoH.showNotification("Google Update Needed","Google Play Services update download needed for Motion. Download update via Google Play Store and try motion again after installed.",contentIntent,60302,true,true,true);
-                UserError.Log.ueh(TAG,"Google Play Services updated needed for motion - disabling motion for now");
+                UserErrorLog.ueh(TAG,"Google Play Services updated needed for motion - disabling motion for now");
                 Pref.setBoolean("motion_tracking_enabled", false);
 
             }
@@ -511,7 +511,7 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
                 restart(FREQUENCY);
                 checkVehicleRepeatNotification();
             } else if (intent.getStringExtra(STOP_ACTIVITY_ACTION) != null) {
-                UserError.Log.uel(TAG, "Stopping service");
+                UserErrorLog.uel(TAG, "Stopping service");
                 stop();
             } else if (intent.getStringExtra(RECHECK_VEHICLE_MODE) != null) {
                 checkVehicleRepeatNotification();
@@ -528,7 +528,7 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
                         stopUpdates(); // one hit only
                 } else {
                     if (JoH.ratelimit("not-expected-activity", 1200)) {
-                        UserError.Log.e(TAG, "Received ActivityRecognition we were not expecting!"); /// DEEEBUG
+                        UserErrorLog.e(TAG, "Received ActivityRecognition we were not expecting!"); /// DEEEBUG
                         stop();
                     }
                 }
@@ -571,14 +571,14 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
         }
         if (topActivity != null) {
             if (d)
-                UserError.Log.uel(TAG, "Top activity: " + topActivity.toString() + "req: " + getInternalPrefsLong(REQUESTED) + " rec: " + getInternalPrefsLong(RECEIVED));
+                UserErrorLog.uel(TAG, "Top activity: " + topActivity.toString() + "req: " + getInternalPrefsLong(REQUESTED) + " rec: " + getInternalPrefsLong(RECEIVED));
             if ((topActivity.getType() != DetectedActivity.UNKNOWN) && (topActivity.getType() != DetectedActivity.TILTING)) {
                 if (activityState == null) activityState = getLastStoredDetectedActivity();
 
                 if (((topActivity.getConfidence() > 89) || ((lastactivity != null) && (topActivity.getType() == lastactivity.getType()) && ((lastactivity.getConfidence() + topActivity.getConfidence()) > 150)))
                         && ((activityState == null) || (activityState.getType() != topActivity.getType()))) {
                     if (Pref.getBoolean("motion_tracking_enabled", false)) {
-                        UserError.Log.ueh(TAG, "Changed activity state from " + ((activityState == null) ? "null" : activityState.toString()) + " to: " + topActivity.toString());
+                        UserErrorLog.ueh(TAG, "Changed activity state from " + ((activityState == null) ? "null" : activityState.toString()) + " to: " + topActivity.toString());
                         activityState = topActivity;
 
                         if (Pref.getBoolean("plot_motion", true))
@@ -587,7 +587,7 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
                         switch (topActivity.getType()) {
 
                             case DetectedActivity.IN_VEHICLE: {
-                                UserError.Log.e(TAG, "Vehicle: " + topActivity.getConfidence());
+                                UserErrorLog.e(TAG, "Vehicle: " + topActivity.getConfidence());
                                 // confidence condition above overrides this for non consolidated entries
                                 if (topActivity.getConfidence() >= 75) {
 
@@ -613,13 +613,13 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
                         }
 
                     } else {
-                        UserError.Log.e(TAG, "Shutting down");
+                        UserErrorLog.e(TAG, "Shutting down");
                         stop();
                     }
                 } else {
                     if (JoH.ratelimit("check-vehicle-repeat", 60)) checkVehicleRepeatNotification();
                     if (d)
-                        UserError.Log.uel(TAG, "Last: " + ((lastactivity == null) ? "null" : lastactivity.toString()) + " Current: " + topActivity.toString());
+                        UserErrorLog.uel(TAG, "Last: " + ((lastactivity == null) ? "null" : lastactivity.toString()) + " Current: " + topActivity.toString());
                 }
                 lastactivity = topActivity;
             }

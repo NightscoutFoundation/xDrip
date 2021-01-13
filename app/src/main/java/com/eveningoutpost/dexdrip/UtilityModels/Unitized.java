@@ -1,14 +1,14 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
-// jamorham
 
-import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.List;
 import java.util.Locale;
+
+// jamorham
 
 public class Unitized {
 

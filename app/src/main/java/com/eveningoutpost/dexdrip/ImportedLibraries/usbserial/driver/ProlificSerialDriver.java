@@ -27,13 +27,15 @@
 
 package com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.driver;
 
+
 import android.hardware.usb.UsbConstants;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbEndpoint;
 import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbRequest;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -281,7 +283,7 @@ public class ProlificSerialDriver implements UsbSerialDriver {
                                 STATUS_BUFFER_SIZE,
                                 100);
                         if (readBytes != STATUS_BUFFER_SIZE) {
-                            Log.w(TAG, "Could not read initial CTS / DSR / CD / RI status");
+                            UserErrorLog.w(TAG, "Could not read initial CTS / DSR / CD / RI status");
                         } else {
                             mStatus = buffer[STATUS_BYTE_IDX] & 0xff;
                         }
@@ -360,17 +362,17 @@ public class ProlificSerialDriver implements UsbSerialDriver {
                                 || (mDevice.getDeviceClass() == 0xff)) {
                             mDeviceType = DEVICE_TYPE_1;
                         } else {
-                          Log.w(TAG, "Could not detect PL2303 subtype, "
+                          UserErrorLog.w(TAG, "Could not detect PL2303 subtype, "
                               + "Assuming that it is a HX device");
                           mDeviceType = DEVICE_TYPE_HX;
                         }
                     } catch (NoSuchMethodException e) {
-                        Log.w(TAG, "Method UsbDeviceConnection.getRawDescriptors, "
+                        UserErrorLog.w(TAG, "Method UsbDeviceConnection.getRawDescriptors, "
                                 + "required for PL2303 subtype detection, not "
                                 + "available! Assuming that it is a HX device");
                         mDeviceType = DEVICE_TYPE_HX;
                     } catch (Exception e) {
-                        Log.e(TAG, "An unexpected exception occured while trying "
+                        UserErrorLog.e(TAG, "An unexpected exception occured while trying "
                                 + "to detect PL2303 subtype", e);
                     }
                 }
@@ -400,7 +402,7 @@ public class ProlificSerialDriver implements UsbSerialDriver {
                         try {
                             mReadStatusThread.join();
                         } catch (Exception e) {
-                            Log.w(TAG, "An error occured while waiting for status read thread", e);
+                            UserErrorLog.w(TAG, "An error occured while waiting for status read thread", e);
                         }
                     }
                 }

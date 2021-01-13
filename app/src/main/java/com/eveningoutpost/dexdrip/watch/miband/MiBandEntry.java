@@ -1,12 +1,13 @@
 package com.eveningoutpost.dexdrip.watch.miband;
 
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.Preference;
 import android.support.v4.content.LocalBroadcastManager;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.Intents;
@@ -157,7 +158,7 @@ public class MiBandEntry {
     public static SharedPreferences.OnSharedPreferenceChangeListener prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
         public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
             if (key.startsWith("miband")) {
-                UserError.Log.d("miband", "Preference key: " + key);
+                UserErrorLog.d("miband", "Preference key: " + key);
                 refresh();
             }
         }

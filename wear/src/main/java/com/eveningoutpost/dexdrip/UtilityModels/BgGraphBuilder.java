@@ -34,7 +34,7 @@ import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.Chart;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.xdrip;
 
 /**
@@ -303,14 +303,14 @@ public class BgGraphBuilder {
         try {
             final long last_bg_reading_timestamp = BgReading.last().timestamp;
             if (low_occurs_at_processed_till_timestamp < last_bg_reading_timestamp) {
-                Log.d(TAG, "Recalculating lowOccursAt: " + JoH.dateTimeText((long) low_occurs_at_processed_till_timestamp) + " vs " + JoH.dateTimeText(last_bg_reading_timestamp));
+                UserErrorLog.d(TAG, "Recalculating lowOccursAt: " + JoH.dateTimeText((long) low_occurs_at_processed_till_timestamp) + " vs " + JoH.dateTimeText(last_bg_reading_timestamp));
                 // new only the last hour worth of data for this
                 (new BgGraphBuilder(xdrip.getAppContext(), System.currentTimeMillis() - 60 * 60 * 1000, System.currentTimeMillis() + 5 * 60 * 1000, 24, true)).addBgReadingValues(false);
             } else {
-                Log.d(TAG, "Cached current low timestamp ok: " +  JoH.dateTimeText((long) low_occurs_at_processed_till_timestamp) + " vs " + JoH.dateTimeText(last_bg_reading_timestamp));
+                UserErrorLog.d(TAG, "Cached current low timestamp ok: " +  JoH.dateTimeText((long) low_occurs_at_processed_till_timestamp) + " vs " + JoH.dateTimeText(last_bg_reading_timestamp));
             }
         } catch (Exception e) {
-            Log.e(TAG, "Got exception in getCurrentLowOccursAt() " + e);
+            UserErrorLog.e(TAG, "Got exception in getCurrentLowOccursAt() " + e);
         }
         return low_occurs_at;
     }
@@ -672,7 +672,7 @@ public class BgGraphBuilder {
         			filtered = " (" + Math.round(pve.calculatedFilteredValue*10) / 10d +")";
         		}
         	} catch (ClassCastException e) {
-        		Log.e(TAG, "Error casting a point from pointValue to PointValueExtended", e);
+        		UserErrorLog.e(TAG, "Error casting a point from pointValue to PointValueExtended", e);
         	}
             final java.text.DateFormat timeFormat = DateFormat.getTimeFormat(context);
             //Won't give the exact time of the reading but the time on the grid: close enough.

@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.cgm.medtrum.messages;
 
+
 import com.google.gson.annotations.Expose;
 
 import lombok.Getter;

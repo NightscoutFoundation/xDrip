@@ -1,8 +1,9 @@
 package com.eveningoutpost.dexdrip.watch.thinjam.messages;
 
-// jamorham
 
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.OPCODE_SET_GAMMA;
+
+// jamorham
 
 public class SetGammaEtc extends BaseTx {
     public SetGammaEtc(int value) {

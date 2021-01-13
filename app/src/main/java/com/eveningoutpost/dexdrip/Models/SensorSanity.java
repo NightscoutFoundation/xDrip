@@ -1,7 +1,8 @@
 package com.eveningoutpost.dexdrip.Models;
 
+
 import com.eveningoutpost.dexdrip.Home;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
@@ -43,7 +44,7 @@ public class SensorSanity {
         // bypass checks if the allowing dead sensor engineering mode is enabled
         if (allowTestingWithDeadSensor()) {
             if (JoH.pratelimit("dead-sensor-sanity-passing", 3600)) {
-                UserError.Log.e(TAG, "Allowing any value due to Allow Dead Sensor being enabled");
+                UserErrorLog.e(TAG, "Allowing any value due to Allow Dead Sensor being enabled");
             }
             return true;
         }
@@ -74,7 +75,7 @@ public class SensorSanity {
         if (!state) {
             if (JoH.ratelimit("sanity-failure", 20)) {
                 final String msg = "Sensor Raw Data Sanity Failure: " + raw_value;
-                UserError.Log.e(TAG, msg);
+                UserErrorLog.e(TAG, msg);
                 JoH.static_toast_long(msg);
             }
         }
@@ -107,7 +108,7 @@ public class SensorSanity {
     
     public static boolean checkLibreSensorChangeIfEnabled(final String sn) {
         if( Home.get_is_libre_whole_house_collector() && Sensor.currentSensor() != null) {
-            Log.e(TAG, "Stopping sensor because in libre whold house coverage sensor must be stopped.");
+            UserErrorLog.e(TAG, "Stopping sensor because in libre whold house coverage sensor must be stopped.");
             Sensor.stopSensor();
         }
         return Pref.getBoolean("detect_libre_sn_changes", true) && checkLibreSensorChange(sn);
@@ -115,20 +116,20 @@ public class SensorSanity {
 
     // returns true in the case of an error (had to stop the sensor)
     public synchronized static boolean checkLibreSensorChange(final String currentSerial) {
-        Log.i(TAG, "checkLibreSensorChange called currentSerial = " + currentSerial);
+        UserErrorLog.i(TAG, "checkLibreSensorChange called currentSerial = " + currentSerial);
         if ((currentSerial == null) || currentSerial.length() < 4) return false;
         final Sensor this_sensor = Sensor.currentSensor();
         if(this_sensor == null || this_sensor.uuid == null|| this_sensor.uuid.length() < 4) {
-            Log.i(TAG, "no senosr open, deleting everything");
+            UserErrorLog.i(TAG, "no senosr open, deleting everything");
             PersistentStore.setString(PREF_LIBRE_SENSOR_UUID, "");
             PersistentStore.setString(PREF_LIBRE_SN, "");
             return false;
         }
         final String lastSn = PersistentStore.getString(PREF_LIBRE_SN);
         final String last_uuid = PersistentStore.getString(PREF_LIBRE_SENSOR_UUID);
-        Log.i(TAG, "checkLibreSensorChange Initial values: lastSn = " + lastSn + " last_uuid = " + last_uuid);
+        UserErrorLog.i(TAG, "checkLibreSensorChange Initial values: lastSn = " + lastSn + " last_uuid = " + last_uuid);
         if(lastSn.length() < 4 || last_uuid.length() < 4) {
-            Log.i(TAG, "lastSn or last_uuid not valid, writing current values.");
+            UserErrorLog.i(TAG, "lastSn or last_uuid not valid, writing current values.");
             PersistentStore.setString(PREF_LIBRE_SENSOR_UUID, this_sensor.uuid);
             PersistentStore.setString(PREF_LIBRE_SN, currentSerial);
             return false;
@@ -137,13 +138,13 @@ public class SensorSanity {
         if(lastSn.equals(currentSerial)) {
             if(this_sensor.uuid.equals(last_uuid)) {
                 // all well
-                Log.i(TAG, "checkLibreSensorChange returning false 1");
+                UserErrorLog.i(TAG, "checkLibreSensorChange returning false 1");
                 return false;
             } else {
                 // This is the case that the user had a sensor, but he stopped it and started a new one in xDrip.
                 // This is probably ok, since physical sensor has not changed.
                 // we learn the new uuid and continue.
-                Log.e(TAG, "A new xdrip sensor was found, updating state.");
+                UserErrorLog.e(TAG, "A new xdrip sensor was found, updating state.");
                 PersistentStore.setString(PREF_LIBRE_SENSOR_UUID, this_sensor.uuid);
                 return false;
             }
@@ -152,7 +153,8 @@ public class SensorSanity {
             // verify uuid have also changed.
             if(this_sensor.uuid.equals(last_uuid)) {
                 // We need to stop the sensor.
-                Log.e(TAG, String.format("Different sensor serial number for same sensor uuid: %s :: %s vs %s", last_uuid, lastSn, currentSerial));
+                
+                UserErrorLog.e(TAG, String.format("Different sensor serial number for same sensor uuid: %s :: %s vs %s", last_uuid, lastSn, currentSerial));
                 Sensor.stopSensor();
                 JoH.static_toast_long("Stopping sensor due to serial number change");
                 // There is no open sensor now.
@@ -162,7 +164,7 @@ public class SensorSanity {
 
             } else {
                 // This is the first time we see this sensor, update our uuid and current serial.
-                Log.i(TAG, "This is the first time we see this sensor uuid = " +  this_sensor.uuid);
+                UserErrorLog.i(TAG, "This is the first time we see this sensor uuid = " +  this_sensor.uuid);
                 PersistentStore.setString(PREF_LIBRE_SENSOR_UUID, this_sensor.uuid);
                 PersistentStore.setString(PREF_LIBRE_SN, currentSerial);
                 return false;

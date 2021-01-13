@@ -1,9 +1,10 @@
 package com.eveningoutpost.dexdrip.utils.framework;
 
+
 import android.os.Build;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 
 import lombok.Getter;
@@ -37,14 +38,14 @@ public class BuggySamsung {
     public long evaluate(final long wakeup_time) {
         if (wakeup_time > 0) {
             final long wakeup_jitter = msSince(wakeup_time);
-            //UserError.Log.e(TAG, "debug jitter: " + wakeup_jitter);
+            //UserErrorLog.e(TAG, "debug jitter: " + wakeup_jitter);
             if (wakeup_jitter < 0) {
-                UserError.Log.e(TAG, "Woke up Early..");
+                UserErrorLog.e(TAG, "Woke up Early..");
             } else {
                 if (wakeup_jitter > 1000) {
-                    UserError.Log.d(TAG, "Wake up, time jitter: " + JoH.niceTimeScalar(wakeup_jitter));
+                    UserErrorLog.d(TAG, "Wake up, time jitter: " + JoH.niceTimeScalar(wakeup_jitter));
                     if ((wakeup_jitter > TOLERABLE_JITTER) && (!buggy_samsung) && isSamsung()) {
-                        UserError.Log.wtf(TAG, "Enabled Buggy Samsung workaround due to jitter of: " + JoH.niceTimeScalar(wakeup_jitter));
+                        UserErrorLog.wtf(TAG, "Enabled Buggy Samsung workaround due to jitter of: " + JoH.niceTimeScalar(wakeup_jitter));
                         buggy_samsung = true;
                         PersistentStore.incrementLong(BUGGY_SAMSUNG_ENABLED);
                         max_wakeup_jitter = 0;
@@ -63,7 +64,7 @@ public class BuggySamsung {
     // enable if we have historic markers showing previous enabling
     public void checkWasBuggy() {
         if (!buggy_samsung && isSamsung() && PersistentStore.getLong(BUGGY_SAMSUNG_ENABLED) > 4) {
-            UserError.Log.e(TAG, "Enabling buggy samsung due to persistent metric");
+            UserErrorLog.e(TAG, "Enabling buggy samsung due to persistent metric");
             buggy_samsung = true;
         }
     }

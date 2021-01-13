@@ -1,9 +1,10 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Treatments;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -86,7 +87,7 @@ public class UndoRedo {
                         undo_queue.remove(location);
                         Treatments.delete_by_uuid(item.Treatment_uuid,true);
                     } catch (NullPointerException e) {
-                        UserError.Log.wtf(TAG, "Null pointer exception in undoNext()");
+                        UserErrorLog.wtf(TAG, "Null pointer exception in undoNext()");
                         undo_queue.remove(location);
                     }
                     return true;

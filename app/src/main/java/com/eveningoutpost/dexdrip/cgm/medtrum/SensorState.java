@@ -1,9 +1,10 @@
 package com.eveningoutpost.dexdrip.cgm.medtrum;
 
-// jamorham
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+
+// jamorham
 
 @AllArgsConstructor
 public enum SensorState {

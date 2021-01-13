@@ -1,12 +1,5 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
-/**
- * jamorham
- *
- * Vehicle mode abstraction interface
- */
-
-// TODO move elements relating only to vehicle mode from ActivityRecognizedService to here
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,6 +8,13 @@ import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
 
 import static com.eveningoutpost.dexdrip.UtilityModels.Intents.ACTION_VEHICLE_MODE;
 import static com.eveningoutpost.dexdrip.UtilityModels.Intents.EXTRA_VEHICLE_MODE_ENABLED;
+
+/**
+ * jamorham
+ * <p>
+ * Vehicle mode abstraction interface
+ */
+// TODO move elements relating only to vehicle mode from ActivityRecognizedService to here
 
 public class VehicleMode {
 

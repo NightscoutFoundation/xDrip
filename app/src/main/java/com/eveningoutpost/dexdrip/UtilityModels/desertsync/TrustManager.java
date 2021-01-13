@@ -1,6 +1,7 @@
 package com.eveningoutpost.dexdrip.UtilityModels.desertsync;
 
-import com.eveningoutpost.dexdrip.Models.UserError;
+
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
 
 import java.security.KeyManagementException;
@@ -56,12 +57,12 @@ public class TrustManager {
                     if (CERTIFICATE_PIN.equals(peerCertificateHash)) {
                         return true;
                     } else {
-                        UserError.Log.e(TAG, "Remote https certificate doesn't match! " + peerCertificateHash);
+                        UserErrorLog.e(TAG, "Remote https certificate doesn't match! " + peerCertificateHash);
                         return false;
                     }
 
                 } catch (Exception e) {
-                    UserError.Log.e(TAG, "Unable to verify host: " + e);
+                    UserErrorLog.e(TAG, "Unable to verify host: " + e);
                     return false;
                 }
             }

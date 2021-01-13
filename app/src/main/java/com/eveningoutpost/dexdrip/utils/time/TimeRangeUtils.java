@@ -1,6 +1,5 @@
 package com.eveningoutpost.dexdrip.utils.time;
 
-// jamorham
 
 import android.annotation.SuppressLint;
 import android.text.format.DateFormat;
@@ -14,6 +13,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import static com.eveningoutpost.dexdrip.Models.JoH.tolerantParseInt;
+
+// jamorham
 
 public class TimeRangeUtils {
 

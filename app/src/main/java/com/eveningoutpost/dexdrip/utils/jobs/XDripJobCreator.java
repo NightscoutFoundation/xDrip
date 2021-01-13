@@ -1,10 +1,11 @@
 package com.eveningoutpost.dexdrip.utils.jobs;
 
+
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.evernote.android.job.Job;
 import com.evernote.android.job.JobCreator;
 import com.evernote.android.job.JobManager;
@@ -17,7 +18,7 @@ public class XDripJobCreator implements JobCreator {
     private static final boolean D = false;
 
     public XDripJobCreator() {
-        if (D) UserError.Log.uel(TAG, "Start: " + JoH.dateTimeText(JoH.tsl()));
+        if (D) UserErrorLog.uel(TAG, "Start: " + JoH.dateTimeText(JoH.tsl()));
     }
 
     /**
@@ -26,7 +27,7 @@ public class XDripJobCreator implements JobCreator {
     @Override
     @Nullable
     public Job create(@NonNull final String tag) {
-        if (D) UserError.Log.ueh("JobCreator", JoH.dateTimeText(JoH.tsl()) + " Passed: " + tag);
+        if (D) UserErrorLog.ueh("JobCreator", JoH.dateTimeText(JoH.tsl()) + " Passed: " + tag);
         switch (tag) {
 /*
             case CloudSyncJob.TAG:
@@ -38,7 +39,7 @@ public class XDripJobCreator implements JobCreator {
                 return new DailyJob();
 
             default:
-                UserError.Log.wtf(TAG, "Failed to match Job: " + tag + " requesting cancellation");
+                UserErrorLog.wtf(TAG, "Failed to match Job: " + tag + " requesting cancellation");
                 try {
                     JobManager.instance().cancelAllForTag(tag);
                 } catch (Exception e) {

@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.watch.thinjam.firmware;
 
+
 import com.eveningoutpost.dexdrip.Models.JoH;
 
 import java.security.MessageDigest;

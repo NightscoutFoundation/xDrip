@@ -28,7 +28,17 @@ build/
 app/release
 localeapi/gradle/
 localeapi/lint.xml
+<<<<<<< HEAD
 
+gradle/wrapper/dists
+gradle/caches
+gradle/daemon
+gradle/native
+=======
+gradle/native
+gradle/wrapper/dists
+gradle/caches
+>>>>>>> master
 
 # Local configuration file (sdk path, etc)
 local.properties

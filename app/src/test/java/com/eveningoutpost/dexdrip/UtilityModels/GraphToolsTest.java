@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
 
@@ -7,7 +8,6 @@ import org.junit.Test;
 
 import static com.eveningoutpost.dexdrip.UtilityModels.GraphTools.interpolateCalculatedValue;
 import static com.google.common.truth.Truth.assertWithMessage;
-import static org.junit.Assert.*;
 
 
 public class GraphToolsTest extends RobolectricTestWithConfig {

@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip;
 
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -11,7 +12,7 @@ import android.util.Log;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Treatments;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Intents;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
@@ -22,6 +23,7 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.UUID;
+
 import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 
@@ -46,7 +48,7 @@ public class NSClientReceiver extends BroadcastReceiver {
         final String action = intent.getAction();
 
         if ((bundle != null) && (debug)) {
-            UserError.Log.d(TAG, "Action: " + action);
+            UserErrorLog.d(TAG, "Action: " + action);
             JoH.dumpBundle(bundle, TAG);
         }
 
@@ -133,7 +135,7 @@ public class NSClientReceiver extends BroadcastReceiver {
                             Log.d(TAG, "Converting from mmol to mgdl: " + JoH.qs(glucose_number, 2));
                         }
 
-                        UserError.Log.ueh(TAG, "Processing broadcasted calibration: " + JoH.qs(glucose_number, 2) + " offset ms: " + JoH.qs(timeoffset, 0));
+                        UserErrorLog.ueh(TAG, "Processing broadcasted calibration: " + JoH.qs(glucose_number, 2) + " offset ms: " + JoH.qs(timeoffset, 0));
                         final Intent calintent = new Intent(xdrip.getAppContext(), AddCalibration.class);
                         calintent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         calintent.putExtra("timestamp",JoH.tsl());

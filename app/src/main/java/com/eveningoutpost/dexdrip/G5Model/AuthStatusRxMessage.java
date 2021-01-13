@@ -1,8 +1,7 @@
 package com.eveningoutpost.dexdrip.G5Model;
 
 
-import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.Services.G5CollectionService;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -22,7 +21,7 @@ public class AuthStatusRxMessage extends BaseMessage {
 
                 authenticated = data.get(1);
                 bonded = data.get(2);
-                UserError.Log.d(TAG,"AuthRequestRxMessage:  authenticated:"+authenticated+"  bonded:"+bonded);
+                UserErrorLog.d(TAG,"AuthRequestRxMessage:  authenticated:"+authenticated+"  bonded:"+bonded);
             }
         }
     }

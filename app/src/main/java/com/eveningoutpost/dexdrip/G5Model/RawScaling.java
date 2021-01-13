@@ -1,8 +1,9 @@
 package com.eveningoutpost.dexdrip.G5Model;
 
-// jamorham
 
 import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.usingG6;
+
+// jamorham
 
 public class RawScaling {
 

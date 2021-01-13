@@ -1,11 +1,12 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
 import com.eveningoutpost.dexdrip.BuildConfig;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 
 /**
  * jamorham
@@ -26,14 +27,14 @@ public class BroadcastSnoozeReceiver extends BroadcastReceiver {
         if (intent.getAction().equals(Intents.ACTION_SNOOZE)) {
             final String sender = intent.getStringExtra(Intents.EXTRA_SENDER);
             if (sender == null || sender.equals(BuildConfig.APPLICATION_ID)) {
-                UserError.Log.d(TAG, "Ignoring broadcast we probably sent or is invalid");
+                UserErrorLog.d(TAG, "Ignoring broadcast we probably sent or is invalid");
                 return;
             }
             if (Pref.getBooleanDefaultFalse("accept_broadcast_snooze")) {
-                UserError.Log.uel(TAG, "Received snooze from: " + sender);
+                UserErrorLog.uel(TAG, "Received snooze from: " + sender);
                 AlertPlayer.getPlayer().OpportunisticSnooze();
             } else {
-                UserError.Log.d(TAG, "Received a locally broadcast snooze but we don't accept it: " + sender);
+                UserErrorLog.d(TAG, "Received a locally broadcast snooze but we don't accept it: " + sender);
             }
         }
     }

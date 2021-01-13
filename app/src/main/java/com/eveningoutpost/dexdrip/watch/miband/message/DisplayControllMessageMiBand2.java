@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.watch.miband.message;
 
+
 import com.eveningoutpost.dexdrip.watch.miband.Const;
 
 import java.util.List;

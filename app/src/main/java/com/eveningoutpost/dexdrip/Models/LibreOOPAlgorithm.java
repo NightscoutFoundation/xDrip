@@ -1,12 +1,13 @@
 package com.eveningoutpost.dexdrip.Models;
 
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Pair;
 
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.LibreAlarmReceiver;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.NFCReaderX;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.CompatibleApps;
@@ -16,13 +17,13 @@ import com.eveningoutpost.dexdrip.UtilityModels.LibreUtils;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.xdrip;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.TimeUnit;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.util.ArrayList;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.TimeUnit;
+
 import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 class UnlockBuffers {
@@ -62,18 +63,18 @@ public class LibreOOPAlgorithm {
     
     static public void sendData(byte[] fullData, long timestamp, byte []patchUid,  byte []patchInfo, String tagId) {
         if(fullData == null) {
-            Log.e(TAG, "sendData called with null data");
+            UserErrorLog.e(TAG, "sendData called with null data");
             return;
         }
         
         if(fullData.length < 344) {
-            Log.e(TAG, "sendData called with data size too small. " + fullData.length);
+            UserErrorLog.e(TAG, "sendData called with data size too small. " + fullData.length);
             return;
         }
-        Log.i(TAG, "Sending full data to OOP Algorithm data-len = " + fullData.length);
+        UserErrorLog.i(TAG, "Sending full data to OOP Algorithm data-len = " + fullData.length);
         
         fullData = java.util.Arrays.copyOfRange(fullData, 0, 0x158);
-        Log.i(TAG, "Data that will be sent is " + HexDump.dumpHexString(fullData));
+        UserErrorLog.i(TAG, "Data that will be sent is " + HexDump.dumpHexString(fullData));
         
         Intent intent = new Intent(Intents.XDRIP_PLUS_LIBRE_DATA);
         Bundle bundle = new Bundle();
@@ -99,12 +100,12 @@ public class LibreOOPAlgorithm {
             for (final String destination : packagesE) {
                 if (destination.length() > 3) {
                     intent.setPackage(destination);
-                    Log.d(TAG, "Sending to package: " + destination);
+                    UserErrorLog.d(TAG, "Sending to package: " + destination);
                     xdrip.getAppContext().sendBroadcast(intent);
                 }
             }
         } else {
-            Log.d(TAG, "Sending to generic package");
+            UserErrorLog.d(TAG, "Sending to generic package");
             xdrip.getAppContext().sendBroadcast(intent);
         }
         lastSentData = JoH.tsl();
@@ -112,15 +113,15 @@ public class LibreOOPAlgorithm {
     
     static public void sendBleData(byte[] fullData, long timestamp, byte []patchUid) {
         if(fullData == null) {
-            Log.e(TAG, "sendBleData called with null data");
+            UserErrorLog.e(TAG, "sendBleData called with null data");
             return;
         }
         
         if(fullData.length != 46) {
-            Log.e(TAG, "sendBleData called with wrong data size " + fullData.length);
+            UserErrorLog.e(TAG, "sendBleData called with wrong data size " + fullData.length);
             return;
         }
-        Log.i(TAG, "Sending full data to OOP Algorithm data-len = " + fullData.length);
+        UserErrorLog.i(TAG, "Sending full data to OOP Algorithm data-len = " + fullData.length);
 
         Bundle bundle = new Bundle();
         bundle.putByteArray(Intents.LIBRE_DATA_BUFFER, fullData);
@@ -138,13 +139,13 @@ public class LibreOOPAlgorithm {
         try {
             ret = UnlockBlockingQueue.poll(2, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
-            Log.e(TAG, "Interuptted exception", e);
+            UserErrorLog.e(TAG, "Interuptted exception", e);
             return null;
         }
         if(ret == null) {
-            Log.e(TAG, "waitForUnlockPayload (sendGetBlutoothEnablePayload) returning null");
+            UserErrorLog.e(TAG, "waitForUnlockPayload (sendGetBlutoothEnablePayload) returning null");
         } else {
-            Log.e(TAG, "waitForUnlockPayload (sendGetBlutoothEnablePayload) got data payload is " + JoH.bytesToHex(ret.btUnlockBuffer) + " "+  JoH.bytesToHex(ret.nfcUnlockBuffer));
+            UserErrorLog.e(TAG, "waitForUnlockPayload (sendGetBlutoothEnablePayload) got data payload is " + JoH.bytesToHex(ret.btUnlockBuffer) + " "+  JoH.bytesToHex(ret.nfcUnlockBuffer));
         }
         return ret;
     }
@@ -152,10 +153,10 @@ public class LibreOOPAlgorithm {
     static public  UnlockBuffers sendGetBlutoothEnablePayload(boolean increaseConnectionIndex) {
         Libre2SensorData currentSensorData = Libre2SensorData.getSensorData(increaseConnectionIndex);
         if(currentSensorData == null) {
-            Log.e(TAG, "sendGetBlutoothEnablePayload currentSensorData == null");
+            UserErrorLog.e(TAG, "sendGetBlutoothEnablePayload currentSensorData == null");
             return null;
         }
-        Log.e(TAG, "sendGetBlutoothEnablePayload called enableTime_ = " + currentSensorData.enableTime_ +
+        UserErrorLog.e(TAG, "sendGetBlutoothEnablePayload called enableTime_ = " + currentSensorData.enableTime_ +
                 " connectionIndex_ " + currentSensorData.connectionIndex_ + 
                  " patchUid " + JoH.bytesToHex(currentSensorData.patchUid_) +
                  " patchInfo " + JoH.bytesToHex(currentSensorData.patchInfo_) +
@@ -174,7 +175,7 @@ public class LibreOOPAlgorithm {
     static public  Pair<byte[], String> nfcSendgetBlutoothEnablePayload() {
         UnlockBuffers unlockBuffers = sendGetBlutoothEnablePayload(false);
         if(unlockBuffers == null) {
-            Log.e(TAG, "nfcSendgetBlutoothEnablePayload returning null");
+            UserErrorLog.e(TAG, "nfcSendgetBlutoothEnablePayload returning null");
             return null;
         }
         return new Pair(unlockBuffers.nfcUnlockBuffer, unlockBuffers.deviceName);
@@ -184,31 +185,31 @@ public class LibreOOPAlgorithm {
         
         Libre2SensorData currentSensorData = Libre2SensorData.getSensorData(false);
         if(currentSensorData == null || currentSensorData.deviceName_ == null) {
-            Log.e(TAG, "getLibreDeviceName currentSensorData == null");
+            UserErrorLog.e(TAG, "getLibreDeviceName currentSensorData == null");
             return "unknown";
         }
         return currentSensorData.deviceName_;
     }
     
     static public void handleData(String oopData) {
-        Log.e(TAG, "handleData called with " + oopData);
+        UserErrorLog.e(TAG, "handleData called with " + oopData);
         OOPResults oOPResults = null;
         try {
             final Gson gson = new GsonBuilder().create();
             OOPResultsContainer oOPResultsContainer = gson.fromJson(oopData, OOPResultsContainer.class);
             
             if(oOPResultsContainer.Message != null) {
-                Log.e(TAG, "recieved a message from oop algorithm:" + oOPResultsContainer.Message);
+                UserErrorLog.e(TAG, "recieved a message from oop algorithm:" + oOPResultsContainer.Message);
             }
             
             if(oOPResultsContainer.oOPResultsArray.length > 0) {
                 oOPResults =  oOPResultsContainer.oOPResultsArray[0];
             } else {
-                Log.e(TAG, "oOPResultsArray exists, but size is zero");
+                UserErrorLog.e(TAG, "oOPResultsArray exists, but size is zero");
                 return;
             }
         } catch (Exception  e) { //TODO: what exception should we catch here.
-            Log.e(TAG, "HandleData cought exception ", e);
+            UserErrorLog.e(TAG, "HandleData cought exception ", e);
             return;
         }
         boolean use_raw = Pref.getBooleanDefaultFalse("calibrate_external_libre_algorithm");
@@ -255,7 +256,7 @@ public class LibreOOPAlgorithm {
         glucoseData.glucoseLevelRaw = (int)(oOPResults.currentBg * factor);
         libreAlarmObject.data.history.add(glucoseData);
         
-        Log.e(TAG, "handleData Created the following object " + libreAlarmObject.toString());
+        UserErrorLog.e(TAG, "handleData Created the following object " + libreAlarmObject.toString());
         LibreAlarmReceiver.CalculateFromDataTransferObject(libreAlarmObject, use_raw);
     }
     
@@ -271,7 +272,7 @@ public class LibreOOPAlgorithm {
             case 0x9d0830: return SensorType.Libre2;
             case 0x700010: return SensorType.LibreProH;
         }
-        Log.e(TAG, "Sensor type unknown, returning libre1 as failsafe");
+        UserErrorLog.e(TAG, "Sensor type unknown, returning libre1 as failsafe");
         return SensorType.Libre1;
     }
 
@@ -295,7 +296,7 @@ public class LibreOOPAlgorithm {
 
         int raw  = LibreOOPAlgorithm.readBits(ble_data, 0 , 0 , 0xe);
         int sensorTime = 256 * (ble_data[41] & 0xFF) + (ble_data[40] & 0xFF);
-        Log.e(TAG, "Creating BG time =  " + sensorTime + "raw = " + raw);
+        UserErrorLog.e(TAG, "Creating BG time =  " + sensorTime + "raw = " + raw);
         
         ReadingData.TransferObject libreAlarmObject = new ReadingData.TransferObject();
         libreAlarmObject.data = new ReadingData();
@@ -314,7 +315,7 @@ public class LibreOOPAlgorithm {
         String SensorSN = LibreUtils.decodeSerialNumberKey(patchUid);
         
         // TODO: Add here data of last 10 minutes or whatever.
-        Log.e(TAG, "handleDecodedBleResult Created the following object " + libreAlarmObject.toString());
+        UserErrorLog.e(TAG, "handleDecodedBleResult Created the following object " + libreAlarmObject.toString());
         LibreAlarmReceiver.processReadingDataTransferObject(libreAlarmObject, timestamp, SensorSN, true /*=allowupload*/, patchUid, null/*=patchInfo*/);   
     }
     
@@ -332,19 +333,19 @@ public class LibreOOPAlgorithm {
     
     static public void handleOop2DecryptFarmResult(String tagId, long CaptureDateTime, byte[] buffer, byte []patchUid,  byte []patchInfo ) {
         lastRecievedData = JoH.tsl();
-        Log.e(TAG, "handleOop2PingResult - data" + JoH.bytesToHex(buffer));
+        UserErrorLog.e(TAG, "handleOop2PingResult - data" + JoH.bytesToHex(buffer));
         NFCReaderX.HandleGoodReading(tagId, buffer, CaptureDateTime, false , patchUid, patchInfo, true );
     }
     
     
     static public void  handleOop2BlutoothEnableResult(byte[] bt_unlock_buffer, byte[] nfc_unlock_buffer, byte[] patchUid, byte[] patchInfo, String device_name) {
         lastRecievedData = JoH.tsl();
-        Log.e(TAG, "handleOop2BlutoothEnableResult - data bt_unlock_buffer " + JoH.bytesToHex(bt_unlock_buffer) + "\n nfc_unlock_buffer "+ JoH.bytesToHex(nfc_unlock_buffer));
+        UserErrorLog.e(TAG, "handleOop2BlutoothEnableResult - data bt_unlock_buffer " + JoH.bytesToHex(bt_unlock_buffer) + "\n nfc_unlock_buffer "+ JoH.bytesToHex(nfc_unlock_buffer));
         UnlockBlockingQueue.clear();
         try {
             UnlockBlockingQueue.add(new UnlockBuffers(bt_unlock_buffer, nfc_unlock_buffer, device_name));
         } catch (IllegalStateException  is) {
-            Log.e(TAG, "Queue is full", is);
+            UserErrorLog.e(TAG, "Queue is full", is);
 
         }
         
@@ -357,7 +358,7 @@ public class LibreOOPAlgorithm {
         }
         if(JoH.msSince(lastSentData) > 5 * 1000  && lastRecievedData == 0 ) {
             // We have sent date, but still got no response, so warning.
-            Log.e(TAG, "OOP is not alive, sending data but no response.");
+            UserErrorLog.e(TAG, "OOP is not alive, sending data but no response.");
             JoH.static_toast_long(gs(R.string.xdrip_oop2_not_installed));
         }
 
@@ -377,12 +378,12 @@ public class LibreOOPAlgorithm {
             for (final String destination : packagesE) {
                 if (destination.length() > 3) {
                     intent.setPackage(destination);
-                    Log.d(TAG, "Sending to package: " + destination);
+                    UserErrorLog.d(TAG, "Sending to package: " + destination);
                     xdrip.getAppContext().sendBroadcast(intent);
                 }
             }
         } else {
-            Log.d(TAG, "Sending to generic package");
+            UserErrorLog.d(TAG, "Sending to generic package");
             xdrip.getAppContext().sendBroadcast(intent);
         }
     }

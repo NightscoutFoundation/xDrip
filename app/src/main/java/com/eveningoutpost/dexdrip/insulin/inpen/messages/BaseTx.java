@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.insulin.inpen.messages;
 
+
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.insulin.inpen.Constants;
 

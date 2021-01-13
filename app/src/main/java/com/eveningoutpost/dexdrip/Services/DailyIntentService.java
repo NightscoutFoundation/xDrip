@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.Services;
 
+
 import android.app.AlarmManager;
 import android.app.IntentService;
 import android.app.PendingIntent;
@@ -13,8 +14,8 @@ import com.eveningoutpost.dexdrip.Models.DesertSync;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.RollCall;
 import com.eveningoutpost.dexdrip.Models.StepCounter;
-import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorStore;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.CalibrationSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.IncompatibleApps;
@@ -39,7 +40,7 @@ public class DailyIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        UserError.Log.wtf(TAG, "CALLED VIA INTENT - cancelling");
+        UserErrorLog.wtf(TAG, "CALLED VIA INTENT - cancelling");
         cancelSelf();
     }
 
@@ -50,16 +51,16 @@ public class DailyIntentService extends IntentService {
             final AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
             am.cancel(pi);
         } catch (Exception e) {
-            UserError.Log.wtf(TAG, "Crash in cancelSelf() " + e);
+            UserErrorLog.wtf(TAG, "Crash in cancelSelf() " + e);
         }
     }
 
     public static synchronized void work() {
         final PowerManager.WakeLock wl = JoH.getWakeLock("DailyIntentService", 120000);
         try {
-            UserError.Log.ueh(TAG, "DailyIntent Service work called");
+            UserErrorLog.ueh(TAG, "DailyIntent Service work called");
             if (JoH.pratelimit("daily-intent-service", 60000)) {
-                Log.i(TAG, "DailyIntentService onHandleIntent Starting");
+                UserErrorLog.i(TAG, "DailyIntentService onHandleIntent Starting");
                 Long start = JoH.tsl();
 
                 // @TecMunky -- save database before pruning - allows daily capture of database
@@ -67,7 +68,7 @@ public class DailyIntentService extends IntentService {
                     try {
                         String export = DatabaseUtil.saveSql(xdrip.getAppContext(), "daily");
                     } catch (Exception e) {
-                        Log.e(TAG, "DailyIntentService exception on Daily Save Database - ", e);
+                        UserErrorLog.e(TAG, "DailyIntentService exception on Daily Save Database - ", e);
                     }
                 }
 
@@ -76,33 +77,33 @@ public class DailyIntentService extends IntentService {
                 try {
                     startWatchUpdaterService(xdrip.getAppContext(), WatchUpdaterService.ACTION_SYNC_DB, TAG);
                 } catch (Exception e) {
-                    Log.e(TAG, "DailyIntentService exception on watch clear DB ", e);
+                    UserErrorLog.e(TAG, "DailyIntentService exception on watch clear DB ", e);
                 }
                 try {
-                    UserError.cleanup();
+                    UserErrorStore.get().cleanup();
                 } catch (Exception e) {
-                    Log.e(TAG, "DailyIntentService exception on UserError ", e);
+                    UserErrorLog.e(TAG, "DailyIntentService exception on UserError ", e);
                 }
                 try {
                     BgSendQueue.cleanQueue(); // no longer used
 
                 } catch (Exception e) {
-                    Log.d(TAG, "DailyIntentService exception on BgSendQueue " + e);
+                    UserErrorLog.d(TAG, "DailyIntentService exception on BgSendQueue " + e);
                 }
                 try {
                     CalibrationSendQueue.cleanQueue();
                 } catch (Exception e) {
-                    Log.d(TAG, "DailyIntentService exception on CalibrationSendQueue " + e);
+                    UserErrorLog.d(TAG, "DailyIntentService exception on CalibrationSendQueue " + e);
                 }
                 try {
                     UploaderQueue.cleanQueue();
                 } catch (Exception e) {
-                    Log.e(TAG, "DailyIntentService exception on UploaderQueue ", e);
+                    UserErrorLog.e(TAG, "DailyIntentService exception on UploaderQueue ", e);
                 }
                 try {
                     StepCounter.cleanup(Pref.getInt("retention_pebble_movement", 180));
                 } catch (Exception e) {
-                    Log.e(TAG, "DailyIntentService exception on PebbleMovement ", e);
+                    UserErrorLog.e(TAG, "DailyIntentService exception on PebbleMovement ", e);
                 }
 
                 try {
@@ -111,34 +112,34 @@ public class DailyIntentService extends IntentService {
                         BgReading.cleanup(bg_retention_days);
                     }
                 } catch (Exception e) {
-                    Log.e(TAG, "DailyIntentService exception on BgReadings cleanup ", e);
+                    UserErrorLog.e(TAG, "DailyIntentService exception on BgReadings cleanup ", e);
                 }
 
                 try {
                     BluetoothGlucoseMeter.startIfNoRecentData();
                 } catch (Exception e) {
-                    Log.e(TAG, "DailyIntentService exception on BluetoothGlucoseMeter");
+                    UserErrorLog.e(TAG, "DailyIntentService exception on BluetoothGlucoseMeter");
                 }
                 try {
                     checkForAnUpdate(xdrip.getAppContext());
                 } catch (Exception e) {
-                    Log.e(TAG, "DailyIntentService exception on checkForAnUpdate ", e);
+                    UserErrorLog.e(TAG, "DailyIntentService exception on checkForAnUpdate ", e);
                 }
                 try {
                     if (Home.get_master_or_follower()) RollCall.pruneOld(0);
                 } catch (Exception e) {
-                    Log.e(TAG, "exception on RollCall prune " + e);
+                    UserErrorLog.e(TAG, "exception on RollCall prune " + e);
                 }
                 try {
                     DesertSync.cleanup();
                 } catch (Exception e) {
-                    Log.e(TAG, "Exception cleaning up DesertSync");
+                    UserErrorLog.e(TAG, "Exception cleaning up DesertSync");
                 }
                 try {
                     Telemetry.sendFirmwareReport();
                     Telemetry.sendCaptureReport();
                 } catch (Exception e) {
-                    Log.e(TAG, "Exception in Telemetry: " + e);
+                    UserErrorLog.e(TAG, "Exception in Telemetry: " + e);
                 }
 
                 try {
@@ -147,9 +148,9 @@ public class DailyIntentService extends IntentService {
                     //
                 }
 
-                Log.i(TAG, "DailyIntentService onHandleIntent exiting after " + ((JoH.tsl() - start) / 1000) + " seconds");
+                UserErrorLog.i(TAG, "DailyIntentService onHandleIntent exiting after " + ((JoH.tsl() - start) / 1000) + " seconds");
                 //} else {
-                // Log.e(TAG, "DailyIntentService exceeding rate limit");
+                // UserErrorLog.e(TAG, "DailyIntentService exceeding rate limit");
             }
         } finally {
             JoH.releaseWakeLock(wl);

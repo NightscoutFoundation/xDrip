@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.ui.activities;
 
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -12,7 +13,7 @@ import android.view.View;
 
 import com.eveningoutpost.dexdrip.BestGlucose;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.ColorCache;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
@@ -187,7 +188,7 @@ public class NumberWallPreview extends AppCompatActivity {
             }
 
             if (!result.equals(original)) {
-                UserError.Log.d(TAG, "Snapped: " + key + " " + original + " -> " + result);
+                UserErrorLog.d(TAG, "Snapped: " + key + " " + original + " -> " + result);
                 put((String) key, result);
             }
             return result;

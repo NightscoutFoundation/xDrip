@@ -1,10 +1,11 @@
 package com.eveningoutpost.dexdrip.insulin.shared;
 
+
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.PenData;
 import com.eveningoutpost.dexdrip.Models.Treatments;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 
 import java.util.List;
@@ -27,7 +28,7 @@ public class ProcessPenData {
         final List<PenData> rewinds = classifyResults.get(2);
 
         final List<Treatments> treatments = Treatments.latestForGraph(50000, JoH.tsl() - Constants.WEEK_IN_MS, JoH.tsl());
-        UserError.Log.d(TAG, "Existing treatments size: " + treatments.size());
+        UserErrorLog.d(TAG, "Existing treatments size: " + treatments.size());
 
         boolean newData = false;
 
@@ -35,7 +36,7 @@ public class ProcessPenData {
 
             for (final PenData pd : rewinds) {
                 if (!Treatments.matchUUID(treatments, pd.uuid)) {
-                    UserError.Log.d(TAG, "New rewind: " + pd.brief());
+                    UserErrorLog.d(TAG, "New rewind: " + pd.brief());
                     // create rewind treatment entry thing
                     // TODO format string
                     Treatments.create_note("Pen cartridge change: rewound: " + pd.units + "U on " + pd.penName(), pd.timestamp, 0, pd.uuid);
@@ -45,7 +46,7 @@ public class ProcessPenData {
 
             for (final PenData pd : doses) {
                 if (!Treatments.matchUUID(treatments, pd.uuid)) {
-                    UserError.Log.d(TAG, "New Dose: " + pd.brief());
+                    UserErrorLog.d(TAG, "New Dose: " + pd.brief());
                     Treatments.create(0, pd.units, pd.timestamp, pd.uuid);
                     newData = true;
                 }
@@ -55,7 +56,7 @@ public class ProcessPenData {
                 Home.staticRefreshBGChartsOnIdle();
             }
         } else {
-            UserError.Log.d(TAG, "No results to process");
+            UserErrorLog.d(TAG, "No results to process");
         }
 
         // TODO show temporal prime a button

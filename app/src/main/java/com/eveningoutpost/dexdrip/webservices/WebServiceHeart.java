@@ -1,8 +1,9 @@
 package com.eveningoutpost.dexdrip.webservices;
 
+
 import com.eveningoutpost.dexdrip.Models.HeartRate;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 
 import java.util.List;
 
@@ -29,7 +30,7 @@ public class WebServiceHeart extends BaseWebService {
         List<String> components = getUrlComponents(query);
 
         if (components.size() > 0) {
-            UserError.Log.d(TAG, "Processing " + query);
+            UserErrorLog.d(TAG, "Processing " + query);
             switch (components.get(0)) {
 
                 case "set":

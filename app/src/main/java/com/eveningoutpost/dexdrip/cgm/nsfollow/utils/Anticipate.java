@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.cgm.nsfollow.utils;
 
+
 /**
  * Choose optimum anticipation times for re-attempting data collection to minimize
  * number of requests to nightscout but at the same time reduce latency from new

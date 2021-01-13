@@ -1,11 +1,12 @@
 package com.eveningoutpost.dexdrip.utils;
 
+
 import android.app.PendingIntent;
 import android.content.Intent;
 
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.NotificationChannels;
@@ -47,11 +48,11 @@ public class CheckBridgeBattery {
         try {
             threshold = Integer.parseInt(Pref.getString("bridge_battery_alert_level", "30"));
         } catch (NumberFormatException e) {
-            UserError.Log.e(TAG, "Got error parsing alert level");
+            UserErrorLog.e(TAG, "Got error parsing alert level");
         }
 
         final int this_level = Pref.getInt("bridge_battery", -1);
-        UserError.Log.d(TAG, "checkBridgeBattery threshold:" + threshold + " this_level:" + this_level + " last_level:" + last_level);
+        UserErrorLog.d(TAG, "checkBridgeBattery threshold:" + threshold + " this_level:" + this_level + " last_level:" + last_level);
         if ((this_level > 0) && (threshold > 0)) {
             if ((this_level < threshold) && ((this_level < last_level) || (last_level == -1))) {
                 if (JoH.pratelimit("bridge-battery-warning", repeat_seconds)) {
@@ -84,11 +85,11 @@ public class CheckBridgeBattery {
             if (threshold > 5)//give user 5% leeway to begin charging wear device
                 threshold = threshold - 5;
         } catch (NumberFormatException e) {
-            UserError.Log.e(TAG, "Got error parsing alert level");
+            UserErrorLog.e(TAG, "Got error parsing alert level");
         }
 
         final int this_level = Pref.getInt("bridge_battery", -1);
-        UserError.Log.d(TAG, "checkForceWearBridgeBattery threshold:" + threshold + " this_level:" + this_level);
+        UserErrorLog.d(TAG, "checkForceWearBridgeBattery threshold:" + threshold + " this_level:" + this_level);
         if ((this_level > 0) && (threshold > 0)) {
             if (this_level < threshold) {
                 lowbattery = true;
@@ -108,7 +109,7 @@ public class CheckBridgeBattery {
             last_parakeet_level = (int) PersistentStore.getLong(LAST_PARAKEET_PREFS_ITEM);
         }
 
-        if (d) UserError.Log.e(TAG, "checkParakeetBattery threshold:" + threshold + " this_level:" + this_level + " last:" + last_parakeet_level);
+        if (d) UserErrorLog.e(TAG, "checkParakeetBattery threshold:" + threshold + " this_level:" + this_level + " last:" + last_parakeet_level);
         if ((this_level > 0) && (threshold > 0)) {
             if ((this_level < threshold) && (this_level < last_parakeet_level)) {
                 if (JoH.pratelimit("parakeet-battery-warning", repeat_seconds)) {
@@ -118,7 +119,7 @@ public class CheckBridgeBattery {
                     showNotification(xdrip.getAppContext().getString(R.string.low_parakeet_battery), "Parakeet battery dropped to: " + this_level + "%",
                             pendingIntent, PARAKEET_NOTIFICATION_ITEM, NotificationChannels.LOW_BRIDGE_BATTERY_CHANNEL, true, true, null, null, null);
                     last_parakeet_notification = JoH.tsl();
-                    if (d) UserError.Log.e(TAG, "checkParakeetBattery RAISED ALERT threshold:" + threshold + " this_level:" + this_level + " last:" + last_parakeet_level);
+                    if (d) UserErrorLog.e(TAG, "checkParakeetBattery RAISED ALERT threshold:" + threshold + " this_level:" + this_level + " last:" + last_parakeet_level);
                 }
             } else {
                 if ((parakeet_notification_showing) && (JoH.msSince(last_parakeet_level) > Constants.MINUTE_IN_MS * 25)) {
@@ -136,7 +137,7 @@ public class CheckBridgeBattery {
         if (Pref.getInt(PREFS_ITEM, -1) < 1)
             Pref.setInt(PREFS_ITEM, 60);
         Pref.setInt(PREFS_ITEM, Pref.getInt(PREFS_ITEM, 0) - (int) (JoH.tsl() % 15));
-        UserError.Log.d(TAG, "Bridge battery: " + Pref.getInt(PREFS_ITEM, 0));
+        UserErrorLog.d(TAG, "Bridge battery: " + Pref.getInt(PREFS_ITEM, 0));
         checkBridgeBattery();
     }
 

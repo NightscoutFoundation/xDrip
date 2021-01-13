@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -15,8 +16,7 @@ import com.eveningoutpost.dexdrip.Models.LibreBlock;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.SensorSanity;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
-import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.NFCReaderX;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.DexCollectionService;
@@ -84,7 +84,7 @@ public class Blukon {
 
         m_minutesDiff = (long) (JoH.msSince(m_timeLastCmdReceived) / Constants.MINUTE_IN_MS);
 
-        Log.i(TAG, "m_minutesDiff to last cmd=" + m_minutesDiff + ", last cmd received at: " + JoH.dateTimeText(m_timeLastCmdReceived));
+        UserErrorLog.i(TAG, "m_minutesDiff to last cmd=" + m_minutesDiff + ", last cmd received at: " + JoH.dateTimeText(m_timeLastCmdReceived));
 
         if (m_communicationStarted) {
             //we need to make sure communication did not stop a long time ago because of another issue
@@ -102,7 +102,7 @@ public class Blukon {
     }
 
     public static void initialize() {
-        Log.i(TAG, "initialize Blukon!");
+        UserErrorLog.i(TAG, "initialize Blukon!");
         JoH.clearRatelimit(BLUKON_GETSENSORAGE_TIMER);
         m_getNowGlucoseDataCommand = false;
         m_getNowGlucoseDataIndexCommand = false;
@@ -215,12 +215,12 @@ private static final String GET_TREND_HISTORY_BLOCK_COMMAND = READ_SINGLE_BLOCK_
             if (Blukon.expectingBlukonDevice() && Pref.getBooleanDefaultFalse("blukon_unbonding")) {
                 final ActiveBluetoothDevice btDevice = ActiveBluetoothDevice.first();
                 if (btDevice != null) {
-                    Log.d(TAG, "Unbonding blukon at initialization");
+                    UserErrorLog.d(TAG, "Unbonding blukon at initialization");
                     JoH.unBond(btDevice.address);
                 }
             }
         } catch (Exception e) {
-            Log.e(TAG, "Got exception trying to unbond blukon at init");
+            UserErrorLog.e(TAG, "Got exception trying to unbond blukon at init");
         }
     }
 
@@ -234,7 +234,7 @@ private static final String GET_TREND_HISTORY_BLOCK_COMMAND = READ_SINGLE_BLOCK_
         Boolean getHistoricReadings = false;
 
         if (buffer == null) {
-            Log.e(TAG, "null buffer passed to decodeBlukonPacket");
+            UserErrorLog.e(TAG, "null buffer passed to decodeBlukonPacket");
             return null;
         }
 
@@ -244,7 +244,7 @@ private static final String GET_TREND_HISTORY_BLOCK_COMMAND = READ_SINGLE_BLOCK_
         m_persistentTimeLastBg = PersistentStore.getLong("blukon-time-of-last-reading");
         m_minutesDiffToLastReading = (int) (((JoH.msSince(m_persistentTimeLastBg) / 1000) + 30) / 60);
 
-        Log.i(TAG, "m_minutesDiffToLastReading=" + m_minutesDiffToLastReading + ", last reading: " + JoH.dateTimeText(m_persistentTimeLastBg));
+        UserErrorLog.i(TAG, "m_minutesDiffToLastReading=" + m_minutesDiffToLastReading + ", last reading: " + JoH.dateTimeText(m_persistentTimeLastBg));
 
         // Get history if the last reading is older than we can reasonably backfill
         if (Pref.getBooleanDefaultFalse("retrieve_blukon_history") && (m_persistentTimeLastBg > 0) && (m_minutesDiffToLastReading > 17)) {
@@ -253,10 +253,10 @@ private static final String GET_TREND_HISTORY_BLOCK_COMMAND = READ_SINGLE_BLOCK_
 
         //BluCon code by gregorybel
         final String strRecCmd = CipherUtils.bytesToHex(buffer).toLowerCase();
-        Log.i(TAG, "Blukon data: " + strRecCmd);
+        UserErrorLog.i(TAG, "Blukon data: " + strRecCmd);
 
         if (Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
-            Log.i(TAG, HexDump.dumpHexString(buffer));
+            UserErrorLog.i(TAG, HexDump.dumpHexString(buffer));
         }
 
         /*
@@ -264,7 +264,7 @@ private static final String GET_TREND_HISTORY_BLOCK_COMMAND = READ_SINGLE_BLOCK_
          */
         if (strRecCmd.equalsIgnoreCase(WAKEUP_COMMAND)) {
             cmdFound = 1;
-            Log.i(TAG, "Reset currentCommand");
+            UserErrorLog.i(TAG, "Reset currentCommand");
             currentCommand = "";
             m_communicationStarted = true;
         }
@@ -277,34 +277,34 @@ private static final String GET_TREND_HISTORY_BLOCK_COMMAND = READ_SINGLE_BLOCK_
          */
         if (strRecCmd.startsWith(BLUCON_ACK_RESPONSE)) {
             cmdFound = 1;
-            Log.i(TAG, "Got ACK");
+            UserErrorLog.i(TAG, "Got ACK");
 
             if (currentCommand.startsWith(ACK_ON_WAKEUP_ANSWER)) {//ACK sent
                 //ack received
 
                 // Send Second block command
                 currentCommand = BLUCON_SECOND_BLOCK;
-                Log.i(TAG, "Get second Block: " + currentCommand);
+                UserErrorLog.i(TAG, "Get second Block: " + currentCommand);
             } else {
-                Log.i(TAG, "Got sleep ack, resetting initialstate!");
+                UserErrorLog.i(TAG, "Got sleep ack, resetting initialstate!");
                 currentCommand = "";
             }
         }
 
         if (strRecCmd.startsWith(BLUCON_NAK_RESPONSE_PREFIX)) {
             cmdFound = 1;
-            Log.e(TAG, "Got NACK on cmd=" + currentCommand + " with error=" + strRecCmd.substring(6));
+            UserErrorLog.e(TAG, "Got NACK on cmd=" + currentCommand + " with error=" + strRecCmd.substring(6));
 
             if (strRecCmd.startsWith(BLUCON_NAK_RESPONSE_ERROR14)) {
-                Log.e(TAG, "Timeout: please wait 5min or push button to restart!");
+                UserErrorLog.e(TAG, "Timeout: please wait 5min or push button to restart!");
             }
 
             if (strRecCmd.startsWith(PATCH_NOT_FOUND_RESPONSE)) {
-                Log.e(TAG, "Libre sensor has been removed!");
+                UserErrorLog.e(TAG, "Libre sensor has been removed!");
             }
 
             if (strRecCmd.startsWith(PATCH_READ_ERROR)) {
-                Log.e(TAG, "Patch read error.. please check the connectivity and re-initiate... or maybe battery is low?");
+                UserErrorLog.e(TAG, "Patch read error.. please check the connectivity and re-initiate... or maybe battery is low?");
                 Pref.setInt("bridge_battery", 1);
                 gotLowBat = true;
             }
@@ -317,7 +317,7 @@ private static final String GET_TREND_HISTORY_BLOCK_COMMAND = READ_SINGLE_BLOCK_
             m_getNowGlucoseDataIndexCommand = false;
 
             currentCommand = SLEEP_COMMAND;
-            Log.i(TAG, "Send sleep cmd");
+            UserErrorLog.i(TAG, "Send sleep cmd");
             m_communicationStarted = false;
 
 
@@ -329,23 +329,23 @@ private static final String GET_TREND_HISTORY_BLOCK_COMMAND = READ_SINGLE_BLOCK_
          */
         if (currentCommand.equals("") && strRecCmd.equalsIgnoreCase(WAKEUP_COMMAND)) {
             cmdFound = 1;
-            Log.i(TAG, "wakeup received");
+            UserErrorLog.i(TAG, "wakeup received");
 
             //must be first cmd to be sent otherwise get NACK!
             if (JoH.ratelimit("blukon-request_patch_info", 1)) {
                 currentCommand = GET_PATCH_INFO_COMMAND;
             }
-            Log.i(TAG, "getPatchInfo");
+            UserErrorLog.i(TAG, "getPatchInfo");
             /*
              * step 3: analyse received patch info, decode serial number and check sensorStatus
              */
         } else if (currentCommand.startsWith(GET_PATCH_INFO_COMMAND) /*getPatchInfo*/ && strRecCmd.startsWith(PATCH_INFO_RESPONSE_PREFIX)) {
             cmdFound = 1;
-            Log.i(TAG, "Patch Info received");
+            UserErrorLog.i(TAG, "Patch Info received");
             patchInfoResponse = buffer;
 
             currentCommand = ACK_ON_WAKEUP_ANSWER;
-            Log.i(TAG, "Send ACK");
+            UserErrorLog.i(TAG, "Send ACK");
 
         } else if (currentCommand.startsWith(BLUCON_SECOND_BLOCK) && strRecCmd.startsWith("8bde02")) {
             // Second Block response
@@ -363,13 +363,13 @@ private static final String GET_TREND_HISTORY_BLOCK_COMMAND = READ_SINGLE_BLOCK_
             */
 
                 if (!LibreUtils.validatePatchInfo(patchInfoResponse)) {
-                    Log.e(TAG, "Patch info doesn't look valid - read error? " + JoH.bytesToHex(patchInfoResponse));
+                    UserErrorLog.e(TAG, "Patch info doesn't look valid - read error? " + JoH.bytesToHex(patchInfoResponse));
                 } else {
 
                     final String SensorSn = LibreUtils.decodeSerialNumber(patchInfoResponse);
 
                     if (SensorSanity.checkLibreSensorChangeIfEnabled(SensorSn)) {
-                        Log.e(TAG, "Problem with Libre Serial Number - not processing");
+                        UserErrorLog.e(TAG, "Problem with Libre Serial Number - not processing");
                         return null;
                     }
 
@@ -379,16 +379,16 @@ private static final String GET_TREND_HISTORY_BLOCK_COMMAND = READ_SINGLE_BLOCK_
 
                 if (LibreUtils.isSensorReady(patchInfoResponse[POSITION_OF_SENSOR_STATUS_BYTE])) {
                     currentCommand = UNKNOWN1_COMMAND;
-                    Log.i(TAG, "getUnknownCmd1 : " + currentCommand);
+                    UserErrorLog.i(TAG, "getUnknownCmd1 : " + currentCommand);
                 } else {
-                    Log.e(TAG, "Sensor is not ready, stop!");
+                    UserErrorLog.e(TAG, "Sensor is not ready, stop!");
                     currentCommand = SLEEP_COMMAND;
-                    Log.i(TAG, "Send sleep cmd");
+                    UserErrorLog.i(TAG, "Send sleep cmd");
                     m_communicationStarted = false;
                 }
             } else {
                 currentCommand = UNKNOWN1_COMMAND;
-                Log.i(TAG, "getUnknownCmd1 : " + currentCommand);
+                UserErrorLog.i(TAG, "getUnknownCmd1 : " + currentCommand);
             }
 
             /*
@@ -396,45 +396,45 @@ private static final String GET_TREND_HISTORY_BLOCK_COMMAND = READ_SINGLE_BLOCK_
              */
         } else if (currentCommand.startsWith(UNKNOWN1_COMMAND) /*getUnknownCmd1*/ && strRecCmd.startsWith("8bdb")) {
             cmdFound = 1;
-            Log.i(TAG, "gotUnknownCmd1 (010d0b00): " + strRecCmd);
+            UserErrorLog.i(TAG, "gotUnknownCmd1 (010d0b00): " + strRecCmd);
 
             if (!strRecCmd.equals(BLUCON_UNKNOWN1_COMMAND_RESPONSE)) {
-                Log.e(TAG, "gotUnknownCmd1 (010d0b00): " + strRecCmd);
+                UserErrorLog.e(TAG, "gotUnknownCmd1 (010d0b00): " + strRecCmd);
             }
             if (strRecCmd.startsWith(BLUCON_UNKNOWN1_COMMAND_RESPONSE_START)) {
                 m_firmware = Integer.parseInt(strRecCmd.substring(4, 8));
-                Log.i(TAG, "m_firmware version " + m_firmware);
+                UserErrorLog.i(TAG, "m_firmware version " + m_firmware);
             }
 
             currentCommand = UNKNOWN2_COMMAND;
-            Log.i(TAG, "getUnknownCmd2 " + currentCommand);
+            UserErrorLog.i(TAG, "getUnknownCmd2 " + currentCommand);
 
             /*
              * step 6: send unknownCommand2 as otherwise communication errors will occur
              */
         } else if (currentCommand.startsWith(UNKNOWN2_COMMAND) /*getUnknownCmd2*/ && strRecCmd.startsWith("8bda")) {
             cmdFound = 1;
-            Log.i(TAG, "gotUnknownCmd2 (010d0a00): " + strRecCmd);
+            UserErrorLog.i(TAG, "gotUnknownCmd2 (010d0a00): " + strRecCmd);
 
             if (!strRecCmd.equals(BLUCON_UNKNOWN2_COMMAND_RESPONSE)) {
-                Log.e(TAG, "gotUnknownCmd2 (010d0a00): " + strRecCmd);
+                UserErrorLog.e(TAG, "gotUnknownCmd2 (010d0a00): " + strRecCmd);
             }
 
             if (strRecCmd.equals(BLUCON_UNKNOWN2_COMMAND_RESPONSE_BATTERY_LOW)) {
-                Log.e(TAG, "gotUnknownCmd2: is maybe battery low????");
+                UserErrorLog.e(TAG, "gotUnknownCmd2: is maybe battery low????");
                 Pref.setInt("bridge_battery", 5);
                 gotLowBat = true;
             }
 
-            Log.i(TAG, "external_blukon_algorithm = " + Pref.getBooleanDefaultFalse("external_blukon_algorithm"));
+            UserErrorLog.i(TAG, "external_blukon_algorithm = " + Pref.getBooleanDefaultFalse("external_blukon_algorithm"));
             if (Pref.getBooleanDefaultFalse("external_blukon_algorithm") || getHistoricReadings) {
                 if (m_firmware >= 403) {
                     // Send the command for get patchUID
-                    Log.i(TAG, "BLUCON_PATCHUID  ");
+                    UserErrorLog.i(TAG, "BLUCON_PATCHUID  ");
                     currentCommand = BLUCON_PATCHUID;
                 } else {
                     // Send the command to getHistoricData (read all blocks from 0 to 0x2b)
-                    Log.i(TAG, "getHistoricData (2)");
+                    UserErrorLog.i(TAG, "getHistoricData (2)");
                     currentCommand = GET_HISTORIC_DATA_COMMAND_ALL_BLOCKS;
                     m_blockNumber = 0;
 
@@ -446,29 +446,29 @@ private static final String GET_TREND_HISTORY_BLOCK_COMMAND = READ_SINGLE_BLOCK_
             } else {
                 if (JoH.pratelimit(BLUKON_GETSENSORAGE_TIMER, GET_SENSOR_AGE_DELAY)) {
                     currentCommand = GET_SENSOR_TIME_COMMAND;
-                    Log.i(TAG, "getSensorAge");
+                    UserErrorLog.i(TAG, "getSensorAge");
                 } else {
                     currentCommand = GET_NOW_DATA_INDEX_COMMAND;
                     m_getNowGlucoseDataIndexCommand = true;//to avoid issue when gotNowDataIndex cmd could be same as getNowGlucoseData (case block=3)
-                    Log.i(TAG, "getNowGlucoseDataIndexCommand");
+                    UserErrorLog.i(TAG, "getNowGlucoseDataIndexCommand");
                 }
             }
         } else if (currentCommand.startsWith(BLUCON_PATCHUID) && strRecCmd.startsWith("8b0e")) {
             cmdFound = 1;
-            Log.i("blukon", "BLUCON_PATCHUID: " + currentCommand);
+            UserErrorLog.i("blukon", "BLUCON_PATCHUID: " + currentCommand);
             // Send the command for get patchInfo
             currentCommand = BLUCON_PATCHUINFO;
             patchUID = JoH.hexStringToByteArray(strRecCmd.substring(8));
 
         } else if (currentCommand.startsWith(BLUCON_PATCHUINFO) && strRecCmd.startsWith("8b0e")) {
             cmdFound = 1;
-            Log.i("blukon", "BLUCON_PATCHUINFO: " + currentCommand);
+            UserErrorLog.i("blukon", "BLUCON_PATCHUINFO: " + currentCommand);
             patchInfo = JoH.hexStringToByteArray(strRecCmd.substring(6));
             /* LibreAlarmReceiver.CalculateFromDataTransferObject, called when processing historical data,
              * expects the sensor age not to be updated yet, so only update the sensor age when not retrieving history.
              */
             // Send the command to getHistoricData (read all blocks from 0 to 0x2b)
-            Log.i(TAG, "GET_HISTORIC_DATA_COMMAND_ALL_BLOCKS ");
+            UserErrorLog.i(TAG, "GET_HISTORIC_DATA_COMMAND_ALL_BLOCKS ");
             currentCommand = GET_HISTORIC_DATA_COMMAND_ALL_BLOCKS;
             m_blockNumber = 0;
 
@@ -484,14 +484,14 @@ private static final String GET_TREND_HISTORY_BLOCK_COMMAND = READ_SINGLE_BLOCK_
             cmdFound = 1;
 
             int sensorAge = sensorAge(buffer);
-            Log.d(TAG, "SensorAge received=" + sensorAge);
+            UserErrorLog.d(TAG, "SensorAge received=" + sensorAge);
 
             int currentSensorAge = Pref.getInt("nfc_sensor_age", 0);
-            Log.d(TAG, "current SensorAge=" + currentSensorAge);
+            UserErrorLog.d(TAG, "current SensorAge=" + currentSensorAge);
 
             //This is a new sensor, force read from serial
             if (sensorAge < currentSensorAge) {
-                Log.i(TAG, "new sensor?");
+                UserErrorLog.i(TAG, "new sensor?");
             }
 
             if ((sensorAge >= 0) && (sensorAge < 200000)) {
@@ -500,15 +500,15 @@ private static final String GET_TREND_HISTORY_BLOCK_COMMAND = READ_SINGLE_BLOCK_
                 //to avoid warning, simply overide this flag
                 Pref.setBoolean("nfc_age_problem", false);
             } else {
-                Log.e(TAG, "Do not set 'nfc_sensor_age'");
+                UserErrorLog.e(TAG, "Do not set 'nfc_sensor_age'");
             }
 
             currentSensorAge = Pref.getInt("nfc_sensor_age", 0);
-            Log.d(TAG, "[After set] current SensorAge=" + currentSensorAge);
+            UserErrorLog.d(TAG, "[After set] current SensorAge=" + currentSensorAge);
 
             currentCommand = GET_NOW_DATA_INDEX_COMMAND;
             m_getNowGlucoseDataIndexCommand = true;//to avoid issue when gotNowDataIndex cmd could be same as getNowGlucoseData (case block=3)
-            Log.i(TAG, "getNowGlucoseDataIndexCommand");
+            UserErrorLog.i(TAG, "getNowGlucoseDataIndexCommand");
 
             /*
              * step 8: determine trend or historic data index
@@ -518,7 +518,7 @@ private static final String GET_TREND_HISTORY_BLOCK_COMMAND = READ_SINGLE_BLOCK_
 
             // check time range for valid backfilling
             if ((m_minutesDiffToLastReading > 7) && (m_minutesDiffToLastReading < (8 * 60))) {
-                Log.i(TAG, "start backfilling");
+                UserErrorLog.i(TAG, "start backfilling");
                 m_getOlderReading = true;
             } else {
                 m_getOlderReading = false;
@@ -530,7 +530,7 @@ private static final String GET_TREND_HISTORY_BLOCK_COMMAND = READ_SINGLE_BLOCK_
             if (!m_getOlderReading) {
                 currentCommand = READ_SINGLE_BLOCK_COMMAND_PREFIX + Integer.toHexString(m_currentBlockNumber);//getNowGlucoseData
                 m_nowGlucoseOffset = m_currentOffset;
-                Log.i(TAG, "getNowGlucoseData");
+                UserErrorLog.i(TAG, "getNowGlucoseData");
             } else {
                 m_minutesBack = m_minutesDiffToLastReading;
                 int delayedTrendIndex = m_currentTrendIndex;
@@ -542,14 +542,14 @@ private static final String GET_TREND_HISTORY_BLOCK_COMMAND = READ_SINGLE_BLOCK_
                 } else if (m_minutesBack > 7) {
                     m_minutesBack = 5;
                 }
-                Log.i(TAG, "read " + m_minutesBack + " mins old trend data");
+                UserErrorLog.i(TAG, "read " + m_minutesBack + " mins old trend data");
                 for (int i = 0; i < m_minutesBack; i++) {
                     if (--delayedTrendIndex < 0)
                         delayedTrendIndex = 15;
                 }
                 int delayedBlockNumber = blockNumberForNowGlucoseDataDelayed(delayedTrendIndex);
                 currentCommand = READ_SINGLE_BLOCK_COMMAND_PREFIX + Integer.toHexString(delayedBlockNumber);//getNowGlucoseData
-                Log.i(TAG, "getNowGlucoseData backfilling");
+                UserErrorLog.i(TAG, "getNowGlucoseData backfilling");
             }
             m_getNowGlucoseDataIndexCommand = false;
             m_getNowGlucoseDataCommand = true;
@@ -558,13 +558,13 @@ private static final String GET_TREND_HISTORY_BLOCK_COMMAND = READ_SINGLE_BLOCK_
              * step 9: calculate fro current index the block number next to read
              */
         } else if (currentCommand.startsWith(READ_SINGLE_BLOCK_COMMAND_PREFIX_SHORT) /*getNowGlucoseData*/ && m_getNowGlucoseDataCommand == true && strRecCmd.startsWith(SINGLE_BLOCK_INFO_RESPONSE_PREFIX)) {
-            Log.d(TAG, "Before Saving data: + currentCommand = " + currentCommand);
+            UserErrorLog.d(TAG, "Before Saving data: + currentCommand = " + currentCommand);
             String blockId = currentCommand.substring(READ_SINGLE_BLOCK_COMMAND_PREFIX_SHORT.length());
             long now = JoH.tsl();
             if (!blockId.isEmpty()) {
                 int blockNum = JoH.parseIntWithDefault(blockId, 16, -1);
                 if (blockNum != -1) {
-                    Log.d(TAG, "Saving data: + blockid = " + blockNum);
+                    UserErrorLog.d(TAG, "Saving data: + blockid = " + blockNum);
                     LibreBlock.createAndSave("blukon", now, buffer, blockNum * 8, false, patchUID, patchInfo);
                 }
             }
@@ -572,12 +572,12 @@ private static final String GET_TREND_HISTORY_BLOCK_COMMAND = READ_SINGLE_BLOCK_
             cmdFound = 1;
             int currentGlucose = nowGetGlucoseValue(buffer);
 
-            Log.i(TAG, "********got getNowGlucoseData=" + currentGlucose);
+            UserErrorLog.i(TAG, "********got getNowGlucoseData=" + currentGlucose);
 
             if (!m_getOlderReading) {
 
                 m_minutesDiffToLastReading = (int) (JoH.msSince(m_persistentTimeLastBg) / Constants.MINUTE_IN_MS);
-                Log.i(TAG, "m_minutesDiffToLastReading (no rounding)=" + m_minutesDiffToLastReading + ", last reading: " + JoH.dateTimeText(m_persistentTimeLastBg));
+                UserErrorLog.i(TAG, "m_minutesDiffToLastReading (no rounding)=" + m_minutesDiffToLastReading + ", last reading: " + JoH.dateTimeText(m_persistentTimeLastBg));
 
                 if (m_minutesDiffToLastReading >= 4) {
                     processNewTransmitterData(TransmitterData.create(currentGlucose, currentGlucose, 0 /*battery level force to 0 as unknown*/, now));
@@ -585,27 +585,27 @@ private static final String GET_TREND_HISTORY_BLOCK_COMMAND = READ_SINGLE_BLOCK_
                     m_timeLastBg = now;
 
                     PersistentStore.setLong("blukon-time-of-last-reading", m_timeLastBg);
-                    Log.i(TAG, "time of current reading: " + JoH.dateTimeText(m_timeLastBg));
+                    UserErrorLog.i(TAG, "time of current reading: " + JoH.dateTimeText(m_timeLastBg));
                 } else {
-                    Log.e(TAG, "New Cmd received too early, send blukon to sleep and ignore BG value");
+                    UserErrorLog.e(TAG, "New Cmd received too early, send blukon to sleep and ignore BG value");
                 }
 
                 /*
                  * step 10: send sleep command
                  */
                 currentCommand = SLEEP_COMMAND;
-                Log.i(TAG, "Send sleep cmd");
+                UserErrorLog.i(TAG, "Send sleep cmd");
                 m_communicationStarted = false;
                 m_getNowGlucoseDataCommand = false;
             } else {
-                Log.i(TAG, "bf: processNewTransmitterData with delayed timestamp of " + m_minutesBack + " min");
+                UserErrorLog.i(TAG, "bf: processNewTransmitterData with delayed timestamp of " + m_minutesBack + " min");
                 processNewTransmitterData(TransmitterData.create(currentGlucose, currentGlucose, 0 /*battery level force to 0 as unknown*/, now - (m_minutesBack * 60 * 1000)));
                 // @keencave - count down for next backfilling entry
                 m_minutesBack -= 5;
                 if (m_minutesBack < 5) {
                     m_getOlderReading = false;
                 }
-                Log.i(TAG, "bf: calculate next trend buffer with " + m_minutesBack + " min timestamp");
+                UserErrorLog.i(TAG, "bf: calculate next trend buffer with " + m_minutesBack + " min timestamp");
                 int delayedTrendIndex = m_currentTrendIndex;
                 for (int i = 0; i < m_minutesBack; i++) {
                     if (--delayedTrendIndex < 0)
@@ -613,7 +613,7 @@ private static final String GET_TREND_HISTORY_BLOCK_COMMAND = READ_SINGLE_BLOCK_
                 }
                 int delayedBlockNumber = blockNumberForNowGlucoseDataDelayed(delayedTrendIndex);
                 currentCommand = READ_SINGLE_BLOCK_COMMAND_PREFIX + Integer.toHexString(delayedBlockNumber);//getNowGlucoseData
-                Log.i(TAG, "bf: read next block: " + currentCommand);
+                UserErrorLog.i(TAG, "bf: read next block: " + currentCommand);
 
 
             }
@@ -622,12 +622,12 @@ private static final String GET_TREND_HISTORY_BLOCK_COMMAND = READ_SINGLE_BLOCK_
             handlegetHistoricDataResponse(buffer);
         } else if (strRecCmd.startsWith(BLUCON_BATTERY_LOW_INDICATION1)) {
             cmdFound = 1;
-            Log.e(TAG, "is bridge battery low????!");
+            UserErrorLog.e(TAG, "is bridge battery low????!");
             Pref.setInt("bridge_battery", 3);
             gotLowBat = true;
         } else if (strRecCmd.startsWith(BLUCON_BATTERY_LOW_INDICATION2)) {
             cmdFound = 1;
-            Log.e(TAG, "is bridge battery really low????!");
+            UserErrorLog.e(TAG, "is bridge battery really low????!");
             Pref.setInt("bridge_battery", 2);
             gotLowBat = true;
         }
@@ -639,11 +639,11 @@ private static final String GET_TREND_HISTORY_BLOCK_COMMAND = READ_SINGLE_BLOCK_
         CheckBridgeBattery.checkBridgeBattery();
 
         if (currentCommand.length() > 0 && cmdFound == 1) {
-            Log.i(TAG, "Sending reply: " + currentCommand);
+            UserErrorLog.i(TAG, "Sending reply: " + currentCommand);
             return CipherUtils.hexToBytes(currentCommand);
         } else {
             if (cmdFound == 0) {
-                Log.e(TAG, "***COMMAND NOT FOUND! -> " + strRecCmd + " on currentCmd=" + currentCommand);
+                UserErrorLog.e(TAG, "***COMMAND NOT FOUND! -> " + strRecCmd + " on currentCmd=" + currentCommand);
             }
             currentCommand = "";
             return null;
@@ -652,24 +652,24 @@ private static final String GET_TREND_HISTORY_BLOCK_COMMAND = READ_SINGLE_BLOCK_
     }
 
     private static void handlegetHistoricDataResponse(byte[] buffer) {
-        Log.e(TAG, "recieved historic data, m_block_number = " + m_blockNumber);
+        UserErrorLog.e(TAG, "recieved historic data, m_block_number = " + m_blockNumber);
         // We are looking for 43 blocks of 8 bytes.
         // The bluekon will send them as 21 blocks of 16 bytes, and the last one of 8 bytes. 
         // The packet will look like "0x8b 0xdf 0xblocknumber 0x02 DATA" (so data starts at place 4)
         if (m_blockNumber > 42) {
-            Log.e(TAG, "recieved historic data, but block number is too big " + m_blockNumber);
+            UserErrorLog.e(TAG, "recieved historic data, but block number is too big " + m_blockNumber);
             return;
         }
 
         int len = buffer.length - 4;
-        Log.e(TAG, "len = " + len + " " + len + " blocknum " + buffer[2]);
+        UserErrorLog.e(TAG, "len = " + len + " " + len + " blocknum " + buffer[2]);
 
         if (buffer[2] != m_blockNumber) {
-            Log.e(TAG, "We have recieved a bad block number buffer[2] = " + buffer[2] + " m_blockNumber = " + m_blockNumber);
+            UserErrorLog.e(TAG, "We have recieved a bad block number buffer[2] = " + buffer[2] + " m_blockNumber = " + m_blockNumber);
             return;
         }
         if (8 * m_blockNumber + len > m_full_data.length) {
-            Log.e(TAG, "We have recieved too much data  m_blockNumber = " + m_blockNumber + " len = " + len +
+            UserErrorLog.e(TAG, "We have recieved too much data  m_blockNumber = " + m_blockNumber + " len = " + len +
                     " m_full_data.length = " + m_full_data.length);
             return;
         }
@@ -680,20 +680,20 @@ private static final String GET_TREND_HISTORY_BLOCK_COMMAND = READ_SINGLE_BLOCK_
         if (m_blockNumber >= 43) {
             long now = JoH.tsl();
             currentCommand = SLEEP_COMMAND;
-            Log.i(TAG, "Send sleep cmd");
+            UserErrorLog.i(TAG, "Send sleep cmd");
             m_communicationStarted = false;
 
-            Log.i(TAG, "Full data that was received is " + HexDump.dumpHexString(m_full_data));
+            UserErrorLog.i(TAG, "Full data that was received is " + HexDump.dumpHexString(m_full_data));
 
             final String tagId = PersistentStore.getString("LibreSN");
-            Log.i(TAG, "calling HandleGoodReading");
+            UserErrorLog.i(TAG, "calling HandleGoodReading");
 
             // Set the time of the current reading
             PersistentStore.setLong("libre-reading-timestamp", JoH.tsl());
             NFCReaderX.HandleGoodReading(tagId, m_full_data, now, false, patchUID, patchInfo);
 
             PersistentStore.setLong("blukon-time-of-last-reading", now);
-            Log.i(TAG, "time of current reading: " + JoH.dateTimeText(now));
+            UserErrorLog.i(TAG, "time of current reading: " + JoH.dateTimeText(now));
         } else {
             currentCommand = "";
         }
@@ -702,18 +702,18 @@ private static final String GET_TREND_HISTORY_BLOCK_COMMAND = READ_SINGLE_BLOCK_
 
     private static synchronized void processNewTransmitterData(TransmitterData transmitterData) {
         if (transmitterData == null) {
-            Log.e(TAG, "Got duplicated data! Last BG at " + JoH.dateTimeText(m_timeLastBg));
+            UserErrorLog.e(TAG, "Got duplicated data! Last BG at " + JoH.dateTimeText(m_timeLastBg));
             return;
         }
 
         final Sensor sensor = Sensor.currentSensor();
         if (sensor == null) {
-            Log.i(TAG, "processNewTransmitterData: No Active Sensor, Data only stored in Transmitter Data");
+            UserErrorLog.i(TAG, "processNewTransmitterData: No Active Sensor, Data only stored in Transmitter Data");
             return;
         }
 
         DexCollectionService.last_transmitter_Data = transmitterData;
-        Log.d(TAG, "BgReading.create: new BG reading at " + transmitterData.timestamp);
+        UserErrorLog.d(TAG, "BgReading.create: new BG reading at " + transmitterData.timestamp);
         BgReading.create(transmitterData.raw_data, transmitterData.filtered_data, xdrip.getAppContext(), transmitterData.timestamp);
     }
 
@@ -747,7 +747,7 @@ private static final String GET_TREND_HISTORY_BLOCK_COMMAND = READ_SINGLE_BLOCK_
         // calculate offset of the 2 bytes in the block
         m_nowGlucoseOffset = nowGlucoseIndex2 % 8;
 
-        Log.i(TAG, "++++++++currentTrendData: index " + m_currentTrendIndex + ", block " + nowGlucoseIndex3 + ", offset " + m_nowGlucoseOffset);
+        UserErrorLog.i(TAG, "++++++++currentTrendData: index " + m_currentTrendIndex + ", block " + nowGlucoseIndex3 + ", offset " + m_nowGlucoseOffset);
 
         return (nowGlucoseIndex3);
     }
@@ -769,7 +769,7 @@ private static final String GET_TREND_HISTORY_BLOCK_COMMAND = READ_SINGLE_BLOCK_
 
         // calculate the offset in the block
         m_nowGlucoseOffset = ngi2 % 8;
-        Log.i(TAG, "++++++++backfillingTrendData: index " + delayedIndex + ", block " + ngi3 + ", offset " + m_nowGlucoseOffset);
+        UserErrorLog.i(TAG, "++++++++backfillingTrendData: index " + delayedIndex + ", block " + ngi3 + ", offset " + m_nowGlucoseOffset);
 
         return (ngi3);
     }
@@ -801,7 +801,7 @@ private static final String GET_TREND_HISTORY_BLOCK_COMMAND = READ_SINGLE_BLOCK_
         final boolean thirteen_bit_mask = true;
         // grep 2 bytes with BG data from input bytearray, mask out 12 LSB bits and rescale for xDrip+
         rawGlucose = ((input[3 + m_nowGlucoseOffset + 1] & (thirteen_bit_mask ? 0x1F : 0x0F)) << 8) | (input[3 + m_nowGlucoseOffset] & 0xFF);
-        Log.i(TAG, "rawGlucose=" + rawGlucose + ", m_nowGlucoseOffset=" + m_nowGlucoseOffset);
+        UserErrorLog.i(TAG, "rawGlucose=" + rawGlucose + ", m_nowGlucoseOffset=" + m_nowGlucoseOffset);
 
         // rescale
         curGluc = getGlucose(rawGlucose);
@@ -812,7 +812,7 @@ private static final String GET_TREND_HISTORY_BLOCK_COMMAND = READ_SINGLE_BLOCK_
 
     private static int sensorAge(byte[] input) {
         int sensorAge = ((input[3 + 5] & 0xFF) << 8) | (input[3 + 4] & 0xFF);
-        Log.i(TAG, "sensorAge=" + sensorAge);
+        UserErrorLog.i(TAG, "sensorAge=" + sensorAge);
 
         return sensorAge;
     }
@@ -850,7 +850,7 @@ private static final String GET_TREND_HISTORY_BLOCK_COMMAND = READ_SINGLE_BLOCK_
         try {
             dialog.show();
         } catch (IllegalStateException e) {
-            Log.e(TAG, e.toString());
+            UserErrorLog.e(TAG, e.toString());
             JoH.static_toast_long("Error displaying PIN entry. Please contact us if this keeps happening");
         }
     }

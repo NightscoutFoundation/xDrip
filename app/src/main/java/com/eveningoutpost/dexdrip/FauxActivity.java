@@ -1,10 +1,11 @@
 package com.eveningoutpost.dexdrip;
 
+
 import android.content.Intent;
 import android.os.Bundle;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 
 /**
  * Created by jamorham on 09/01/2017.
@@ -17,15 +18,15 @@ abstract class FauxActivity {
     private final static String TAG = "FauxActivity";
 
     protected void onCreate(Bundle savedInstanceState) {
-        UserError.Log.d(TAG, "onCreate called: " + JoH.backTrace());
+        UserErrorLog.d(TAG, "onCreate called: " + JoH.backTrace());
     }
 
     protected void onResume() {
-        UserError.Log.d(TAG, "onResume called: " + JoH.backTrace());
+        UserErrorLog.d(TAG, "onResume called: " + JoH.backTrace());
     }
 
     protected void onPause() {
-        UserError.Log.d(TAG, "onPause called: " + JoH.backTrace());
+        UserErrorLog.d(TAG, "onPause called: " + JoH.backTrace());
     }
 
     protected void startService(Intent intent) {
@@ -33,6 +34,6 @@ abstract class FauxActivity {
     }
 
     protected void finish() {
-        UserError.Log.d(TAG, "finish() called: " + JoH.backTrace());
+        UserErrorLog.d(TAG, "finish() called: " + JoH.backTrace());
     }
 }

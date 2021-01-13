@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.Models;
 
+
 import android.provider.BaseColumns;
 
 import com.activeandroid.Model;
@@ -7,6 +8,7 @@ import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 
 import java.util.List;
 
@@ -68,7 +70,7 @@ public class CalibrationRequest extends Model {
         BgReading bgReading = BgReading.last(true);
         if (bgReading == null) return false;
         if (JoH.msSince(bgReading.timestamp) > Home.stale_data_millis()) {
-            UserError.Log.d(TAG, "Slope cannot be flat enough as data is stale");
+            UserErrorLog.d(TAG, "Slope cannot be flat enough as data is stale");
             return false;
         }
         // TODO check if stale, check previous slope also, check that reading parameters also

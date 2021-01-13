@@ -1,10 +1,11 @@
 package com.eveningoutpost.dexdrip.utils;
 
+
 import android.content.Context;
 import android.telephony.SmsManager;
 import android.telephony.TelephonyManager;
 
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.ArrayList;
@@ -25,9 +26,9 @@ public class SMS {
         final TelephonyManager manager = (TelephonyManager) xdrip.getAppContext()
                 .getSystemService(Context.TELEPHONY_SERVICE);
         if (manager != null) {
-            UserError.Log.d(TAG, "Phone type: " + manager.getPhoneType());
+            UserErrorLog.d(TAG, "Phone type: " + manager.getPhoneType());
 
-            UserError.Log.d(TAG, "Sim State: " + manager.getSimState());
+            UserErrorLog.d(TAG, "Sim State: " + manager.getSimState());
 
             if (manager.getSimState() == SIM_STATE_READY) {
                 return true;
@@ -35,7 +36,7 @@ public class SMS {
 
 
         } else {
-            UserError.Log.e(TAG, "Could not get telephony manager");
+            UserErrorLog.e(TAG, "Could not get telephony manager");
         }
         //  if (manager.getPhoneType() == TelephonyManager.PHONE_TYPE_NONE) {
         //
@@ -59,7 +60,7 @@ public class SMS {
             }
             return true;
         } catch (SecurityException e) {
-            UserError.Log.wtf(TAG, "Error sending SMS! no permission? " + e);
+            UserErrorLog.wtf(TAG, "Error sending SMS! no permission? " + e);
             // warn user? disable feature?
         }
         return false;

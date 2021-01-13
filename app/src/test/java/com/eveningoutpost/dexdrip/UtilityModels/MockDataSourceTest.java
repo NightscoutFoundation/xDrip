@@ -1,8 +1,5 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
-/**
- * Created by jamorham on 10/10/2017.
- */
 
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
 import com.eveningoutpost.dexdrip.Services.TransmitterRawData;
@@ -13,6 +10,10 @@ import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+
+/**
+ * Created by jamorham on 10/10/2017.
+ */
 
 public class MockDataSourceTest extends RobolectricTestWithConfig {
 

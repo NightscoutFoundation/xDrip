@@ -1,9 +1,5 @@
 package com.eveningoutpost.dexdrip.Models;
 
-/**
- * Created by jamorham on 01/02/2017.
- */
-
 
 import android.provider.BaseColumns;
 
@@ -11,6 +7,7 @@ import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.BestGlucose;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.google.gson.annotations.Expose;
@@ -19,6 +16,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+/**
+ * Created by jamorham on 01/02/2017.
+ */
 
 @Table(name = "Accuracy", id = BaseColumns._ID)
 public class Accuracy extends PlusModel {
@@ -85,7 +86,7 @@ public class Accuracy extends PlusModel {
         if ((bloodTest == null) || (bgReading == null)) return null;
         patched = fixUpTable(schema, patched);
         if (getForPreciseTimestamp(bgReading.timestamp, Constants.MINUTE_IN_MS, plugin) != null) {
-            UserError.Log.d(TAG, "Duplicate accuracy timestamp for: " + JoH.dateTimeText(bgReading.timestamp));
+            UserErrorLog.d(TAG, "Duplicate accuracy timestamp for: " + JoH.dateTimeText(bgReading.timestamp));
             return null;
         }
         final Accuracy ac = new Accuracy();
@@ -165,9 +166,9 @@ public class Accuracy extends PlusModel {
             // calculate the bias ratio. 0% means totally unbiased, 100% means all data skewed towards signed mean
             final double signed_ratio = (Math.abs(signed_mean) / this_mean) * 100;
 
-            if (d) UserError.Log.d(TAG, plugin + ": total: " + JoH.qs(this_total) + " count: " + this_count + " avg: " + JoH.qs(this_mean) + " mmol: " + JoH.qs((this_mean) * Constants.MGDL_TO_MMOLL) + " bias: " + JoH.qs(signed_mean) + " " + JoH.qs(signed_ratio, 0) + "%");
+            if (d) UserErrorLog.d(TAG, plugin + ": total: " + JoH.qs(this_total) + " count: " + this_count + " avg: " + JoH.qs(this_mean) + " mmol: " + JoH.qs((this_mean) * Constants.MGDL_TO_MMOLL) + " bias: " + JoH.qs(signed_mean) + " " + JoH.qs(signed_ratio, 0) + "%");
             String plugin_result = plugin.substring(0, 1).toLowerCase() + ": " + asString(this_mean, signed_mean, signed_ratio, domgdl);
-            UserError.Log.d(TAG, plugin_result);
+            UserErrorLog.d(TAG, plugin_result);
             if (result.length() > 0) result += " ";
             result += plugin_result;
         }

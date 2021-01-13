@@ -1,6 +1,5 @@
 package com.eveningoutpost.dexdrip.watch.thinjam;
 
-// jamorham
 
 import android.content.Intent;
 
@@ -10,6 +9,8 @@ import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import lombok.val;
 
 import static com.eveningoutpost.dexdrip.xdrip.getAppContext;
+
+// jamorham
 
 public class BlueJayEmit {
 

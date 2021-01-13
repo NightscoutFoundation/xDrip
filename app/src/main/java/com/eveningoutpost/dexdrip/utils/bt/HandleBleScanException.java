@@ -1,12 +1,24 @@
 package com.eveningoutpost.dexdrip.utils.bt;
 
-import com.eveningoutpost.dexdrip.Models.UserError;
+
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 
 import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-import static com.polidea.rxandroidble2.exceptions.BleScanException.*;
+import static com.polidea.rxandroidble2.exceptions.BleScanException.BLUETOOTH_CANNOT_START;
+import static com.polidea.rxandroidble2.exceptions.BleScanException.BLUETOOTH_DISABLED;
+import static com.polidea.rxandroidble2.exceptions.BleScanException.BLUETOOTH_NOT_AVAILABLE;
+import static com.polidea.rxandroidble2.exceptions.BleScanException.LOCATION_PERMISSION_MISSING;
+import static com.polidea.rxandroidble2.exceptions.BleScanException.LOCATION_SERVICES_DISABLED;
+import static com.polidea.rxandroidble2.exceptions.BleScanException.SCAN_FAILED_ALREADY_STARTED;
+import static com.polidea.rxandroidble2.exceptions.BleScanException.SCAN_FAILED_APPLICATION_REGISTRATION_FAILED;
+import static com.polidea.rxandroidble2.exceptions.BleScanException.SCAN_FAILED_FEATURE_UNSUPPORTED;
+import static com.polidea.rxandroidble2.exceptions.BleScanException.SCAN_FAILED_INTERNAL_ERROR;
+import static com.polidea.rxandroidble2.exceptions.BleScanException.SCAN_FAILED_OUT_OF_HARDWARE_RESOURCES;
+import static com.polidea.rxandroidble2.exceptions.BleScanException.UNDOCUMENTED_SCAN_THROTTLE;
+import static com.polidea.rxandroidble2.exceptions.BleScanException.UNKNOWN_ERROR_CODE;
 
 public class HandleBleScanException {
 
@@ -54,7 +66,7 @@ public class HandleBleScanException {
                 text = "Unable to start scanning";
                 break;
         }
-        UserError.Log.w(TAG, text + " " + bleScanException);
+        UserErrorLog.w(TAG, text + " " + bleScanException);
         return text;
     }
     private static long secondsTill(Date retryDateSuggestion) {

@@ -1,6 +1,7 @@
 package com.eveningoutpost.dexdrip.tidepool;
 
-import com.eveningoutpost.dexdrip.Models.UserError;
+
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.store.FastStore;
 
 import lombok.RequiredArgsConstructor;
@@ -29,7 +30,7 @@ class TidepoolCallback<T> implements Callback<T> {
     @Override
     public void onResponse(Call<T> call, Response<T> response) {
         if (response.isSuccessful() && response.body() != null) {
-            UserError.Log.d(TidepoolUploader.TAG, name + " success");
+            UserErrorLog.d(TidepoolUploader.TAG, name + " success");
             session.populateBody(response.body());
             session.populateHeaders(response.headers());
             if (onSuccess != null) {
@@ -37,7 +38,7 @@ class TidepoolCallback<T> implements Callback<T> {
             }
         } else {
             final String msg = name + " was not successful: " + response.code() + " " + response.message();
-            UserError.Log.e(TidepoolUploader.TAG, msg);
+            UserErrorLog.e(TidepoolUploader.TAG, msg);
             status(msg);
             if (onFailure != null) {
                 onFailure.run();
@@ -48,7 +49,7 @@ class TidepoolCallback<T> implements Callback<T> {
     @Override
     public void onFailure(Call<T> call, Throwable t) {
         final String msg = name + " Failed: " + t;
-        UserError.Log.e(TidepoolUploader.TAG, msg);
+        UserErrorLog.e(TidepoolUploader.TAG, msg);
         status(msg);
         if (onFailure != null) {
             onFailure.run();

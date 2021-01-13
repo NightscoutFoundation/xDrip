@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.watch.miband.message;
 
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.UUID;

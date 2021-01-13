@@ -16,6 +16,7 @@
 
 package com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util;
 
+
 /**
  * Clone of Android's HexDump class, for use in debugging. Cosmetic changes
  * only.

@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.UtilityModels.pebble;
 
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -9,7 +10,7 @@ import android.preference.PreferenceManager;
 import com.eveningoutpost.dexdrip.BestGlucose;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.ParakeetHelper;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
@@ -114,13 +115,13 @@ public abstract class PebbleDisplayAbstract implements PebbleDisplayInterface {
                 if (!JoH.isOngoingCall()) {
                     last_seen_timestamp = JoH.tsl();
                     if (Pref.getBooleanDefaultFalse("bluetooth_watchdog")) {
-                        UserError.Log.e(tag, "Triggering pebble watchdog reset!");
+                        UserErrorLog.e(tag, "Triggering pebble watchdog reset!");
                         JoH.restartBluetooth(xdrip.getAppContext());
                     } else {
-                        UserError.Log.e(tag, "Would have Triggered pebble watchdog reset but bluetooth watchdog is disabled");
+                        UserErrorLog.e(tag, "Would have Triggered pebble watchdog reset but bluetooth watchdog is disabled");
                     }
                 } else {
-                    UserError.Log.d(tag, "Ongoing call blocking pebble watchdog reset");
+                    UserErrorLog.d(tag, "Ongoing call blocking pebble watchdog reset");
                 }
             }
         }

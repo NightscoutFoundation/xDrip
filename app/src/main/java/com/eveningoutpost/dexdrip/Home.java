@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip;
 
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
@@ -69,7 +70,7 @@ import com.eveningoutpost.dexdrip.Models.ProcessInitialDataQuality;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.StepCounter;
 import com.eveningoutpost.dexdrip.Models.Treatments;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
@@ -642,7 +643,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                             } catch (ActivityNotFoundException e) {
                                 final String msg = "Device does not appear to support battery optimization whitelisting!";
                                 JoH.static_toast_short(msg);
-                                UserError.Log.wtf(TAG, msg);
+                                UserErrorLog.wtf(TAG, msg);
                             }
                         }
                     });
@@ -699,7 +700,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     // handle sending the intent
     private synchronized void processFingerStickCalibration(final double glucosenumber, final double timeoffset, boolean dontask) {
         JoH.clearCache();
-        UserError.Log.uel(TAG, "Processing Finger stick Calibration with values: glucose: " + glucosenumber + " timeoffset: " + timeoffset + " full auto: " + dontask);
+        UserErrorLog.uel(TAG, "Processing Finger stick Calibration with values: glucose: " + glucosenumber + " timeoffset: " + timeoffset + " full auto: " + dontask);
         if (glucosenumber > 0) {
 
             if (timeoffset < 0) {
@@ -718,7 +719,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
             if (dontask) {
                 if (PersistentStore.getDouble("last-auto-calibration-value") == glucosenumber) {
-                    UserError.Log.wtf(TAG, "Rejecting auto calibration as it is the same as last: " + glucosenumber);
+                    UserErrorLog.wtf(TAG, "Rejecting auto calibration as it is the same as last: " + glucosenumber);
                 } else {
                     PersistentStore.setDouble("last-auto-calibration-value", glucosenumber);
                     Log.d(TAG, "Proceeding with calibration intent without asking");
@@ -1559,7 +1560,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             default:
                 if (MultipleInsulins.isEnabled()) {
                     final Insulin insulin = InsulinManager.getProfile(thisword);
-                    UserError.Log.d("TREATMENTS", "Processing for: " + (insulin != null ? insulin.getName() : "null"));
+                    UserErrorLog.d("TREATMENTS", "Processing for: " + (insulin != null ? insulin.getName() : "null"));
                     int number = 0;
                     for (number = 0; number < maxInsulinProfiles; number++)
                         if ((thisinsulinprofile[number] == null) || (thisinsulinprofile[number] == insulin)) {
@@ -1657,7 +1658,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
     public static void toaststaticnext(final String msg) {
         nexttoast = msg;
-        UserError.Log.uel(TAG, "Home toast message next: " + msg);
+        UserErrorLog.uel(TAG, "Home toast message next: " + msg);
     }
 
     public void toast(final String msg) {
@@ -2060,14 +2061,14 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             try {
                 unregisterReceiver(_broadcastReceiver);
             } catch (IllegalArgumentException e) {
-                UserError.Log.e(TAG, "_broadcast_receiver not registered", e);
+                UserErrorLog.e(TAG, "_broadcast_receiver not registered", e);
             }
         }
         if (newDataReceiver != null) {
             try {
                 unregisterReceiver(newDataReceiver);
             } catch (IllegalArgumentException e) {
-                UserError.Log.e(TAG, "newDataReceiver not registered", e);
+                UserErrorLog.e(TAG, "newDataReceiver not registered", e);
             }
         }
 
@@ -2588,7 +2589,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                         }
                     }
                 } else {
-                    UserError.Log.d(TAG, "NOT ENOUGH CALCULATED READINGS: " + calculatedBgReadingsCount);
+                    UserErrorLog.d(TAG, "NOT ENOUGH CALCULATED READINGS: " + calculatedBgReadingsCount);
                     if (!BgReading.isDataSuitableForDoubleCalibration() && (!Ob1G5CollectionService.usingNativeMode() || Ob1G5CollectionService.fallbackToXdripAlgorithm())) {
                         notificationText.setText(R.string.please_wait_need_two_readings_first);
                         showInitialStatusHelper();
@@ -2643,7 +2644,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             try {
                 status_helper_dialog.show();
             } catch (Exception e) {
-                UserError.Log.e(TAG, "Could not display calibration prompt helper: " + e);
+                UserErrorLog.e(TAG, "Could not display calibration prompt helper: " + e);
             }
             keepScreenOn();
         }
@@ -2672,7 +2673,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             try {
                 helper_dialog.show();
             } catch (Exception e) {
-                UserError.Log.e(TAG, "Could not display calibration prompt helper: " + e);
+                UserErrorLog.e(TAG, "Could not display calibration prompt helper: " + e);
             }
             if (Pref.getBooleanDefaultFalse("play_sound_for_initial_calibration")) {
                 if (JoH.ratelimit("play_calibration_sound", 280)) {
@@ -3338,12 +3339,12 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                             AlertPlayer.getPlayer().Snooze(xdrip.getAppContext(), -1);
                             final String msg = "Snoozing alert due to volume button press";
                             JoH.static_toast_long(msg);
-                            UserError.Log.ueh(TAG, msg);
+                            UserErrorLog.ueh(TAG, msg);
                         } else {
-                            if (d) UserError.Log.d(TAG, "no active alert to snooze");
+                            if (d) UserErrorLog.d(TAG, "no active alert to snooze");
                         }
                     } else {
-                        if (d) UserError.Log.d(TAG, "No action as preference is disabled");
+                        if (d) UserErrorLog.d(TAG, "No action as preference is disabled");
                     }
                 }
                 break;

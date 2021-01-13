@@ -1,13 +1,14 @@
 package com.eveningoutpost.dexdrip.utils.framework;
 
-// jamorham
 
 import android.app.Service;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
+
+// jamorham
 
 public abstract class ForegroundService extends Service {
 
@@ -16,7 +17,7 @@ public abstract class ForegroundService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        UserError.Log.d("FOREGROUND-Service", "Current Service: " + this.getClass().getSimpleName());
+        UserErrorLog.d("FOREGROUND-Service", "Current Service: " + this.getClass().getSimpleName());
         startInForeground();
     }
 
@@ -34,6 +35,6 @@ public abstract class ForegroundService extends Service {
 
 
     protected void foregroundStatus() {
-        Inevitable.task("foreground-status", 2000, () -> UserError.Log.d("FOREGROUND-Service", this.getClass().getSimpleName() + (JoH.isServiceRunningInForeground(this.getClass()) ? " is running in foreground" : " is not running in foreground")));
+        Inevitable.task("foreground-status", 2000, () -> UserErrorLog.d("FOREGROUND-Service", this.getClass().getSimpleName() + (JoH.isServiceRunningInForeground(this.getClass()) ? " is running in foreground" : " is not running in foreground")));
     }
 }

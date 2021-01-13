@@ -1,5 +1,14 @@
 package com.eveningoutpost.dexdrip.utils;
 
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.zip.CRC32;
+import java.util.zip.Deflater;
+import java.util.zip.DeflaterOutputStream;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.ZipOutputStream;
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -16,14 +25,6 @@ package com.eveningoutpost.dexdrip.utils;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.zip.CRC32;
-import java.util.zip.Deflater;
-import java.util.zip.DeflaterOutputStream;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.ZipOutputStream;
 
 // jamorham: overly complex way to increase compression efficiency, would be better to override
 // the constructor or if it had parameters to support this.

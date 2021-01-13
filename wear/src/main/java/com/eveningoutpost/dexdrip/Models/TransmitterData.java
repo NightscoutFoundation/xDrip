@@ -3,10 +3,9 @@ package com.eveningoutpost.dexdrip.Models;
 import android.os.AsyncTask;
 import android.provider.BaseColumns;
 
-import com.eveningoutpost.dexdrip.G5Model.Transmitter;
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
@@ -62,7 +61,7 @@ public class TransmitterData extends Model {
         try {
             if ((buffer[0] == 0x11 || buffer[0] == 0x15) && buffer[1] == 0x00) {
                 //this is a dexbridge packet.  Process accordingly.
-                Log.i(TAG, "create Processing a Dexbridge packet");
+                UserErrorLog.i(TAG, "create Processing a Dexbridge packet");
                 final ByteBuffer txData = ByteBuffer.allocate(len);
                 txData.order(ByteOrder.LITTLE_ENDIAN);
                 txData.put(buffer, 0, len);
@@ -71,14 +70,14 @@ public class TransmitterData extends Model {
                 //  bitwise and with 0xff (1111....1) to avoid that the byte is treated as signed.
                 transmitterData.sensor_battery_level = txData.get(10) & 0xff;
                 if (buffer[0] == 0x15) {
-                    Log.i(TAG, "create Processing a Dexbridge packet includes delay information");
+                    UserErrorLog.i(TAG, "create Processing a Dexbridge packet includes delay information");
                     transmitterData.timestamp = timestamp - txData.getInt(16);
                 } else {
                     transmitterData.timestamp = timestamp;
                 }
-                Log.i(TAG, "Created transmitterData record with Raw value of " + transmitterData.raw_data + " and Filtered value of " + transmitterData.filtered_data + " at " + timestamp + " with timestamp " + transmitterData.timestamp);
+                UserErrorLog.i(TAG, "Created transmitterData record with Raw value of " + transmitterData.raw_data + " and Filtered value of " + transmitterData.filtered_data + " at " + timestamp + " with timestamp " + transmitterData.timestamp);
             } else { //this is NOT a dexbridge packet.  Process accordingly.
-                Log.i(TAG, "create Processing a BTWixel or IPWixel packet");
+                UserErrorLog.i(TAG, "create Processing a BTWixel or IPWixel packet");
                 StringBuilder data_string = new StringBuilder();
                 for (int i = 0; i < len; ++i) {
                     data_string.append((char) buffer[i]);
@@ -95,7 +94,7 @@ public class TransmitterData extends Model {
                             }
                             CheckBridgeBattery.checkBridgeBattery();
                         } catch (Exception e) {
-                            Log.e(TAG, "Got exception processing classic wixel or limitter battery value: " + e.toString());
+                            UserErrorLog.e(TAG, "Got exception processing classic wixel or limitter battery value: " + e.toString());
                         }
                         if (data.length > 3) {
                             if ((DexCollectionType.getDexCollectionType() == DexCollectionType.LimiTTer)
@@ -106,7 +105,7 @@ public class TransmitterData extends Model {
                                     if ((sensorAge > 0) && (sensorAge < 200000))
                                         Pref.setInt("nfc_sensor_age", sensorAge);
                                 } catch (Exception e) {
-                                    Log.e(TAG, "Got exception processing field 4 in classic limitter protocol: " + e);
+                                    UserErrorLog.e(TAG, "Got exception processing field 4 in classic limitter protocol: " + e);
                                 }
                             }
                         }
@@ -121,16 +120,16 @@ public class TransmitterData extends Model {
             //Stop allowing readings that are older than the last one - or duplicate data, its bad! (from savek-cc)
             final TransmitterData lastTransmitterData = TransmitterData.last();
             if (lastTransmitterData != null && lastTransmitterData.timestamp >= transmitterData.timestamp) {
-                Log.e(TAG, "Rejecting TransmitterData constraint: last: " + JoH.dateTimeText(lastTransmitterData.timestamp) + " >= this: " + JoH.dateTimeText(transmitterData.timestamp));
+                UserErrorLog.e(TAG, "Rejecting TransmitterData constraint: last: " + JoH.dateTimeText(lastTransmitterData.timestamp) + " >= this: " + JoH.dateTimeText(transmitterData.timestamp));
                 return null;
             }
             if (lastTransmitterData != null && lastTransmitterData.raw_data == transmitterData.raw_data && Math.abs(lastTransmitterData.timestamp - transmitterData.timestamp) < (Constants.MINUTE_IN_MS * 2)) {
-                Log.e(TAG, "Rejecting identical TransmitterData constraint: last: " + JoH.dateTimeText(lastTransmitterData.timestamp) + " due to 2 minute rule this: " + JoH.dateTimeText(transmitterData.timestamp));
+                UserErrorLog.e(TAG, "Rejecting identical TransmitterData constraint: last: " + JoH.dateTimeText(lastTransmitterData.timestamp) + " due to 2 minute rule this: " + JoH.dateTimeText(transmitterData.timestamp));
                 return null;
             }
             final Calibration lastCalibration = Calibration.lastValid();
             if (lastCalibration != null && lastCalibration.timestamp > transmitterData.timestamp) {
-                Log.e(TAG, "Rejecting historical TransmitterData constraint: calib: " + JoH.dateTimeText(lastCalibration.timestamp) + " > this: " + JoH.dateTimeText(transmitterData.timestamp));
+                UserErrorLog.e(TAG, "Rejecting historical TransmitterData constraint: calib: " + JoH.dateTimeText(lastCalibration.timestamp) + " > this: " + JoH.dateTimeText(transmitterData.timestamp));
                 return null;
             }
 
@@ -139,7 +138,7 @@ public class TransmitterData extends Model {
             return transmitterData;
         }catch(Exception e)
         {
-            Log.e(TAG, "Got exception processing fields in protocol: " + e);
+            UserErrorLog.e(TAG, "Got exception processing fields in protocol: " + e);
         }
         return null;
     }
@@ -166,7 +165,7 @@ public class TransmitterData extends Model {
     private static void saveWearBattery() {
 
         int wearBatteryLevel = CheckBridgeBattery.getBatteryLevel(Home.getAppContext());
-        Log.i(TAG, "create wearBatteryLevel=" + wearBatteryLevel);
+        UserErrorLog.i(TAG, "create wearBatteryLevel=" + wearBatteryLevel);
         Pref.setInt("bridge_battery", wearBatteryLevel);//TODO confirm wear battery should be used as bridge
         CheckBridgeBattery.checkBridgeBattery();
 
@@ -237,15 +236,15 @@ public class TransmitterData extends Model {
                         .orderBy("timestamp desc")
                         .executeSingle();
                 if (bgReading != null && Math.abs(bgReading.timestamp - timestamp) < (3 * 60 * 1000)) { //cool, so was it actually within 4 minutes of that bg reading?
-                    Log.i(TAG, "getForTimestamp: Found a BG timestamp match");
+                    UserErrorLog.i(TAG, "getForTimestamp: Found a BG timestamp match");
                     return bgReading;
                 }
             }
         } catch (Exception e) {
-            Log.e(TAG,"getForTimestamp() Got exception on Select : "+e.toString());
+            UserErrorLog.e(TAG,"getForTimestamp() Got exception on Select : "+e.toString());
             return null;
         }
-        Log.d(TAG, "getForTimestamp: No luck finding a BG timestamp match");
+        UserErrorLog.d(TAG, "getForTimestamp: No luck finding a BG timestamp match");
         return null;
     }
 
@@ -255,7 +254,7 @@ public class TransmitterData extends Model {
                 .where("timestamp < ?", timestamp)
                 .orderBy("timestamp desc")
                 .execute();
-        if (transmitterData != null) Log.d(TAG, "cleanup TransmitterData size=" + transmitterData.size());
+        if (transmitterData != null) UserErrorLog.d(TAG, "cleanup TransmitterData size=" + transmitterData.size());
         new Cleanup().execute(transmitterData);
 
     }
@@ -267,7 +266,7 @@ public class TransmitterData extends Model {
                     .where("uuid = ?", uuid)
                     .executeSingle();
         } catch (Exception e) {
-            Log.e(TAG,"findByUuid() Got exception on Select : "+e.toString());
+            UserErrorLog.e(TAG,"findByUuid() Got exception on Select : "+e.toString());
             return null;
         }
     }
@@ -303,19 +302,19 @@ public class TransmitterData extends Model {
             if ((td == null) || (td.raw_data!=0))
             {
                 td=TransmitterData.create(0,battery_level,(long)JoH.ts());
-                Log.d(TAG,"Created new fake transmitter data record for battery sync");
+                UserErrorLog.d(TAG,"Created new fake transmitter data record for battery sync");
                 if (td==null) return;
             }
             if ((battery_level != td.sensor_battery_level) || ((JoH.ts()-td.timestamp)>(1000*60*60))) {
                 td.sensor_battery_level = battery_level;
                 td.timestamp = (long)JoH.ts(); // freshen timestamp on this bogus record for system status
-                Log.d(TAG,"Saving synced sensor battery, new level: "+battery_level);
+                UserErrorLog.d(TAG,"Saving synced sensor battery, new level: "+battery_level);
                 td.save();
             } else {
-                Log.d(TAG,"Synced sensor battery level same as existing: "+battery_level);
+                UserErrorLog.d(TAG,"Synced sensor battery level same as existing: "+battery_level);
             }
         } catch (Exception e) {
-            Log.e(TAG,"Got exception updating sensor battery from sync: "+e.toString());
+            UserErrorLog.e(TAG,"Got exception updating sensor battery from sync: "+e.toString());
         }
     }
 

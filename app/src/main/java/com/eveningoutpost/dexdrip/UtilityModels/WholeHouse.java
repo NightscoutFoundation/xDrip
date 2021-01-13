@@ -1,12 +1,13 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
-// jamorham
 
 import android.content.pm.PackageManager;
 import android.os.Build;
 
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.xdrip;
+
+// jamorham
 
 public class WholeHouse {
 
@@ -27,7 +28,7 @@ public class WholeHouse {
 
     private static boolean isAndroidTV() {
         if (xdrip.getAppContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_ETHERNET)) {
-            UserError.Log.d(TAG, "Android TV Detected");
+            UserErrorLog.d(TAG, "Android TV Detected");
             return true;
         }
         return false;

@@ -2,37 +2,6 @@
 //package com.yourcompany.yoursetting;
 package com.eveningoutpost.dexdrip.localeTasker;
 
-// Constants and functions for Tasker *extensions* to the plugin protocol
-// See Also: http://tasker.dinglisch.net/plugins.html
-
-// Release Notes
-
-// v1.1 20140202
-// added function variableNameValid()
-// fixed some javadoc entries (thanks to David Stone)
-
-// v1.2 20140211
-// added ACTION_EDIT_EVENT
-
-// v1.3 20140227
-// added REQUESTED_TIMEOUT_MS_NONE, REQUESTED_TIMEOUT_MS_MAX and REQUESTED_TIMEOUT_MS_NEVER
-// requestTimeoutMS(): added range check
-
-// v1.4 20140516
-// support for data pass through in REQUEST_QUERY intent
-// some javadoc entries fixed (thanks again David :-))
-
-// v1.5 20141120
-// added RESULT_CODE_FAILED_PLUGIN_FIRST
-// added Setting.VARNAME_ERROR_MESSAGE
-
-// v1.6 20150213
-// added Setting.getHintTimeoutMS()
-// added Host.addHintTimeoutMS()
-
-import java.net.URISyntaxException;
-import java.security.SecureRandom;
-import java.util.regex.Pattern;
 
 import android.app.Activity;
 import android.content.Context;
@@ -42,6 +11,31 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+
+import java.net.URISyntaxException;
+import java.security.SecureRandom;
+import java.util.regex.Pattern;
+
+// Constants and functions for Tasker *extensions* to the plugin protocol
+// See Also: http://tasker.dinglisch.net/plugins.html
+// Release Notes
+// v1.1 20140202
+// added function variableNameValid()
+// fixed some javadoc entries (thanks to David Stone)
+// v1.2 20140211
+// added ACTION_EDIT_EVENT
+// v1.3 20140227
+// added REQUESTED_TIMEOUT_MS_NONE, REQUESTED_TIMEOUT_MS_MAX and REQUESTED_TIMEOUT_MS_NEVER
+// requestTimeoutMS(): added range check
+// v1.4 20140516
+// support for data pass through in REQUEST_QUERY intent
+// some javadoc entries fixed (thanks again David :-))
+// v1.5 20141120
+// added RESULT_CODE_FAILED_PLUGIN_FIRST
+// added Setting.VARNAME_ERROR_MESSAGE
+// v1.6 20150213
+// added Setting.getHintTimeoutMS()
+// added Host.addHintTimeoutMS()
  
 public class TaskerPlugin {
 

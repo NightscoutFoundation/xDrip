@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.stats;
 
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -7,13 +8,13 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Dex_Constants;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.R;
 
 import java.text.DecimalFormat;
@@ -30,7 +31,7 @@ public class FirstPageFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        Log.d("DrawStats", "FirstPageFragment onCreateView");
+        UserErrorLog.d("DrawStats", "FirstPageFragment onCreateView");
 
         myView = inflater.inflate(
                 R.layout.stats_general, container, false);
@@ -61,13 +62,13 @@ public class FirstPageFragment extends Fragment {
         @Override
         public void run() {
             super.run();
-            Log.d("DrawStats", "FirstPageFragment CalculationThread started");
+            UserErrorLog.d("DrawStats", "FirstPageFragment CalculationThread started");
 
             SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
             boolean mgdl = "mgdl".equals(settings.getString("units", "mgdl"));
 
             if (context == null) {
-                Log.d("DrawStats", "FirstPageFragment context == null, do not calculate if fragment is not attached");
+                UserErrorLog.d("DrawStats", "FirstPageFragment context == null, do not calculate if fragment is not attached");
                 return;
             }
 
@@ -170,11 +171,11 @@ public class FirstPageFragment extends Fragment {
                 double gviDelta = Math.abs(glucoseLast - glucoseFirst);//Math.floor(glucose_data[0].bgValue,glucose_data[glucose_data.length-1].bgValue);
                 double gviIdeal = Math.sqrt(Math.pow(usedRecords*5,2) + Math.pow(gviDelta,2));
                 double gvi = (gviTotal / gviIdeal * 100) / 100;
-                Log.d("DrawStats", "GVI=" + gvi + " GVIIdeal=" + gviIdeal + " GVITotal=" + gviTotal + " GVIDelta=" + gviDelta + " usedRecords=" + usedRecords);
+                UserErrorLog.d("DrawStats", "GVI=" + gvi + " GVIIdeal=" + gviIdeal + " GVITotal=" + gviTotal + " GVIDelta=" + gviDelta + " usedRecords=" + usedRecords);
                 double glucoseMean = Math.floor(glucoseTotal / usedRecords);
                 double tirMultiplier = normalReadingspct / 100.0;
                 double PGS = (gvi * glucoseMean * (1-tirMultiplier) * 100) / 100;
-                Log.d("DrawStats", "NormalReadingspct=" + normalReadingspct + " glucoseMean=" + glucoseMean + " tirMultiplier=" + tirMultiplier + " PGS=" + PGS);
+                UserErrorLog.d("DrawStats", "NormalReadingspct=" + normalReadingspct + " glucoseMean=" + glucoseMean + " tirMultiplier=" + tirMultiplier + " PGS=" + PGS);
                 TextView gviView = (TextView) localView.findViewById(R.id.textView_gvi);
                 DecimalFormat df = new DecimalFormat("#.00");
                 updateText(localView, gviView,  df.format(gvi) + "  PGS:  " + df.format(PGS));
@@ -183,7 +184,7 @@ public class FirstPageFragment extends Fragment {
         }
 
         private void updateText(final View localView, final TextView tv, final String s) {
-            Log.d("DrawStats", "updateText: " + s);
+            UserErrorLog.d("DrawStats", "updateText: " + s);
             Thread thread = new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -201,7 +202,7 @@ public class FirstPageFragment extends Fragment {
                     }
 
                     if (localView.getHandler() == null) {
-                        Log.d("DrawStats", "no Handler found - stopping to update view");
+                        UserErrorLog.d("DrawStats", "no Handler found - stopping to update view");
                         return;
                     }
 
@@ -210,11 +211,11 @@ public class FirstPageFragment extends Fragment {
                         @Override
                         public void run() {
                             tv.setText(s);
-                            Log.d("DrawStats", "setText actually called: " + s);
+                            UserErrorLog.d("DrawStats", "setText actually called: " + s);
 
                         }
                     });
-                    Log.d("DrawStats", "updateText: " + s + " success: " + success);
+                    UserErrorLog.d("DrawStats", "updateText: " + s + " success: " + success);
                 }
             });
             thread.start();

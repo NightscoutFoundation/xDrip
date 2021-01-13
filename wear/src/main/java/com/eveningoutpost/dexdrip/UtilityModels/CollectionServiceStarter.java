@@ -8,8 +8,7 @@ import android.content.SharedPreferences;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 
-import com.eveningoutpost.dexdrip.Home;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 //KS import com.eveningoutpost.dexdrip.Services.DailyIntentService;
 import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.Services.DexShareCollectionService;
@@ -150,7 +149,7 @@ public class CollectionServiceStarter {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.mContext);
 
         if (isBTWixel(collection_method) || isDexbridgeWixel(collection_method)) {
-            Log.d("DexDrip", "Starting bt wixel collector");
+            UserErrorLog.d("DexDrip", "Starting bt wixel collector");
             //KS stopWifWixelThread();
             stopBtShareService();
             //KS stopFollowerThread();
@@ -158,7 +157,7 @@ public class CollectionServiceStarter {
 
             startBtWixelService();
         } else if (isWifiWixel(collection_method)) {
-            Log.d("DexDrip", "Starting wifi wixel collector");
+            UserErrorLog.d("DexDrip", "Starting wifi wixel collector");
             stopBtWixelService();
             //KS stopFollowerThread();
             stopBtShareService();
@@ -166,7 +165,7 @@ public class CollectionServiceStarter {
 
             //KS startWifWixelThread();
         } else if (isBTShare(collection_method)) {
-            Log.d("DexDrip", "Starting bt share collector");
+            UserErrorLog.d("DexDrip", "Starting bt share collector");
             stopBtWixelService();
             //KS stopFollowerThread();
             //KS stopWifWixelThread();
@@ -175,7 +174,7 @@ public class CollectionServiceStarter {
             startBtShareService();
 
         } else if (isBTG5(collection_method)) {
-            Log.d("DexDrip", "Starting G5 share collector");
+            UserErrorLog.d("DexDrip", "Starting G5 share collector");
             stopBtWixelService();
             //KS stopWifWixelThread();
             stopBtShareService();
@@ -193,7 +192,7 @@ public class CollectionServiceStarter {
             }
 
         } else if (isWifiandBTWixel(context) || isWifiandDexBridge()) {
-            Log.d("DexDrip", "Starting wifi and bt wixel collector");
+            UserErrorLog.d("DexDrip", "Starting wifi and bt wixel collector");
             stopBtWixelService();
             //KS stopFollowerThread();
             //KS stopWifWixelThread();
@@ -201,11 +200,11 @@ public class CollectionServiceStarter {
             stopG5ShareService();
 
             // start both
-            //KS Log.d("DexDrip", "Starting wifi wixel collector first");
+            //KS UserErrorLog.d("DexDrip", "Starting wifi wixel collector first");
             //KS startWifWixelThread();
-            Log.d("DexDrip", "Starting bt wixel collector second");
+            UserErrorLog.d("DexDrip", "Starting bt wixel collector second");
             startBtWixelService();
-            Log.d("DexDrip", "Started wifi and bt wixel collector");
+            UserErrorLog.d("DexDrip", "Started wifi and bt wixel collector");
         } else if (isFollower(collection_method)) {
             //KS stopWifWixelThread();
             stopBtShareService();
@@ -221,7 +220,7 @@ public class CollectionServiceStarter {
 
         //KS startSyncService();
         //KS startDailyIntentService();
-        Log.d(TAG, collection_method);
+        UserErrorLog.d(TAG, collection_method);
 
         // Start logging to logcat
         if (prefs.getBoolean("store_logs", false)) {
@@ -231,7 +230,7 @@ public class CollectionServiceStarter {
                         " -v threadtime AlertPlayer:V com.eveningoutpost.dexdrip.Services.WixelReader:V *:E "};
                 Runtime.getRuntime().exec(cmd);
             } catch (IOException e2) {
-                Log.e(TAG, "running logcat failed, is the device rooted?", e2);
+                UserErrorLog.e(TAG, "running logcat failed, is the device rooted?", e2);
             }
         }
 
@@ -264,7 +263,7 @@ public class CollectionServiceStarter {
     }
 
     public static void restartCollectionService(Context context, String collection_method) {
-        Log.d(TAG, "restartCollectionService: " + collection_method);
+        UserErrorLog.d(TAG, "restartCollectionService: " + collection_method);
         CollectionServiceStarter collectionServiceStarter = new CollectionServiceStarter(context);
         collectionServiceStarter.stopBtShareService();
         collectionServiceStarter.stopBtWixelService();
@@ -275,7 +274,7 @@ public class CollectionServiceStarter {
     }
 
     public static void startBtService(Context context) {
-        Log.d(TAG, "startBtService: " + DexCollectionType.getDexCollectionType());
+        UserErrorLog.d(TAG, "startBtService: " + DexCollectionType.getDexCollectionType());
         //stopBtService(context);
         CollectionServiceStarter collectionServiceStarter = new CollectionServiceStarter(context);
         collectionServiceStarter.stopBtShareService();
@@ -295,33 +294,33 @@ public class CollectionServiceStarter {
     }
 
     public static void stopBtService(Context context) {
-        Log.d(TAG, "stopBtService call stopService");
+        UserErrorLog.d(TAG, "stopBtService call stopService");
         PersistentStore.setBoolean(pref_run_wear_collector, false);
         CollectionServiceStarter collectionServiceStarter = new CollectionServiceStarter(context);
         collectionServiceStarter.stopBtWixelService();
         collectionServiceStarter.stopBtShareService();
         collectionServiceStarter.stopG5ShareService();
-        Log.d(TAG, "stopBtService should have called onDestroy");
+        UserErrorLog.d(TAG, "stopBtService should have called onDestroy");
     }
 
     public void startBtWixelService() {//private
-        Log.d(TAG, "starting bt wixel service");
+        UserErrorLog.d(TAG, "starting bt wixel service");
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            Log.d(TAG, "SDK_INT >=JELLY_BEAN_MR2");
+            UserErrorLog.d(TAG, "SDK_INT >=JELLY_BEAN_MR2");
             PersistentStore.setBoolean(pref_run_wear_collector, true);
             this.mContext.startService(new Intent(this.mContext, DexCollectionService.class));
-            Log.d(TAG, "After startService");
+            UserErrorLog.d(TAG, "After startService");
         }
-        Log.d(TAG, "exit");
+        UserErrorLog.d(TAG, "exit");
     }
 
     public void stopBtWixelService() {//private
-        Log.d(TAG, "stopping bt wixel service");
+        UserErrorLog.d(TAG, "stopping bt wixel service");
         this.mContext.stopService(new Intent(this.mContext, DexCollectionService.class));
     }
 
     public void startBtShareService() {//private
-        Log.d(TAG, "starting bt share service");
+        UserErrorLog.d(TAG, "starting bt share service");
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
             PersistentStore.setBoolean(pref_run_wear_collector, true);
             this.mContext.startService(new Intent(this.mContext, DexShareCollectionService.class));
@@ -329,7 +328,7 @@ public class CollectionServiceStarter {
     }
 
     public void startBtG5Service() {//private
-        Log.d(TAG, "starting G5 service");
+        UserErrorLog.d(TAG, "starting G5 service");
         //if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
         PersistentStore.setBoolean(pref_run_wear_collector, true);
 
@@ -345,12 +344,12 @@ public class CollectionServiceStarter {
 
     /* KS not needed on wear
     private void startPebbleSyncService() {
-        Log.d(TAG, "starting PebbleWatchSync service");
+        UserErrorLog.d(TAG, "starting PebbleWatchSync service");
         this.mContext.startService(new Intent(this.mContext, PebbleWatchSync.class));
     }
 
     private void startSyncService() {
-        Log.d(TAG, "starting Sync service");
+        UserErrorLog.d(TAG, "starting Sync service");
         this.mContext.startService(new Intent(this.mContext, SyncService.class));
     }
 
@@ -367,34 +366,34 @@ public class CollectionServiceStarter {
     */
 
     private void stopBtShareService() {
-        Log.d(TAG, "stopping bt share service");
+        UserErrorLog.d(TAG, "stopping bt share service");
         this.mContext.stopService(new Intent(this.mContext, DexShareCollectionService.class));
     }
 
     /* KS not needed on wear
     private void startWifWixelThread() {
-        Log.d(TAG, "starting wifi wixel service");
+        UserErrorLog.d(TAG, "starting wifi wixel service");
         this.mContext.startService(new Intent(this.mContext, WifiCollectionService.class));
     }
 
     private void stopWifWixelThread() {
-        Log.d(TAG, "stopping wifi wixel service");
+        UserErrorLog.d(TAG, "stopping wifi wixel service");
         this.mContext.stopService(new Intent(this.mContext, WifiCollectionService.class));
     }
 
     private void startFollowerThread() {
-        Log.d(TAG, "starting follower service");
+        UserErrorLog.d(TAG, "starting follower service");
         this.mContext.startService(new Intent(this.mContext, DoNothingService.class));
     }
 
     private void stopFollowerThread() {
-        Log.d(TAG, "stopping follower service");
+        UserErrorLog.d(TAG, "stopping follower service");
         this.mContext.stopService(new Intent(this.mContext, DoNothingService.class));
     }
     */
 
     private void stopG5ShareService() {
-        Log.d(TAG, "stopping G5 service");
+        UserErrorLog.d(TAG, "stopping G5 service");
         G5CollectionService.keep_running = false; // ensure zombie stays down
         this.mContext.stopService(new Intent(this.mContext, G5CollectionService.class));
         Ob1G5CollectionService.keep_running = false; // ensure zombie stays down

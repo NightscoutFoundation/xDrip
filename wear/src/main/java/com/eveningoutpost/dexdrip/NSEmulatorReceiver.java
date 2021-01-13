@@ -12,7 +12,7 @@ import android.preference.PreferenceManager;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.LibreOOPAlgorithm;
 import com.eveningoutpost.dexdrip.Models.Sensor;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.Intents;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
@@ -49,7 +49,7 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
                 synchronized (lock) {
                     try {
 
-                        Log.d(TAG, "NSEmulator onReceiver: " + intent.getAction());
+                        UserErrorLog.d(TAG, "NSEmulator onReceiver: " + intent.getAction());
                         JoH.benchmark(null);
                         // check source
                         if (prefs == null)
@@ -69,7 +69,7 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
                                 // in future this could have its own data source perhaps instead of follower
                                 if (!Home.get_follower() && DexCollectionType.getDexCollectionType() != DexCollectionType.NSEmulator &&
                                     !Pref.getBooleanDefaultFalse("external_blukon_algorithm")) { //???DexCollectionType
-                                    Log.e(TAG, "Received NSEmulator data but we are not a follower or emulator receiver");
+                                    UserErrorLog.e(TAG, "Received NSEmulator data but we are not a follower or emulator receiver");
                                     return;
                                 }
 
@@ -83,7 +83,7 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
 
                                 if (bundle == null) break;
 
-                                Log.d(TAG, "Receiving NSEmulator broadcast");
+                                UserErrorLog.d(TAG, "Receiving NSEmulator broadcast");
 
                                 final String collection = bundle.getString("collection");
                                 if (collection == null) return;
@@ -107,13 +107,13 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
 
                                                             break;
                                                         default:
-                                                            Log.e(TAG, "Unknown entries type: " + type);
+                                                            UserErrorLog.e(TAG, "Unknown entries type: " + type);
                                                     }
                                                 }
 
 
                                             } catch (JSONException e) {
-                                                Log.e(TAG, "Got JSON exception: " + e);
+                                                UserErrorLog.e(TAG, "Got JSON exception: " + e);
                                             }
 
                                         }
@@ -122,14 +122,14 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
                                     // device status removed on wear
 
                                     default:
-                                        Log.d(TAG, "Unprocessed collection: " + collection);
+                                        UserErrorLog.d(TAG, "Unprocessed collection: " + collection);
 
                                 }
 
                                 break;
 
                             default:
-                                Log.e(TAG, "Unknown action! " + action);
+                                UserErrorLog.e(TAG, "Unknown action! " + action);
                                 break;
                         }
                     } finally {
@@ -141,7 +141,7 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
         }.start();
     }
     static public void bgReadingInsertFromData(long timestamp, double sgv, boolean do_notification) {
-        Log.e(TAG, "bgReadingInsertFromData called timestamp = " + timestamp+ " bg = " + sgv + " time =" +  JoH.dateTimeText(timestamp));
+        UserErrorLog.e(TAG, "bgReadingInsertFromData called timestamp = " + timestamp+ " bg = " + sgv + " time =" +  JoH.dateTimeText(timestamp));
         JSONObject faux_bgr = new JSONObject();
         try {
         faux_bgr.put("timestamp", timestamp);
@@ -156,11 +156,11 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
             faux_bgr.put("uuid", UUID.randomUUID().toString());
         } catch (JSONException e) {
             // TODO Auto-generated catch block
-            Log.e(TAG, "Got JSON exception: " + e);
+            UserErrorLog.e(TAG, "Got JSON exception: " + e);
             return;
         }
          
-        Log.d(TAG, "Received NSEmulator SGV: " + faux_bgr);
+        UserErrorLog.d(TAG, "Received NSEmulator SGV: " + faux_bgr);
         bgReadingInsertFromJson(faux_bgr.toString(), do_notification, true); // notify and force sensor
     }
 }

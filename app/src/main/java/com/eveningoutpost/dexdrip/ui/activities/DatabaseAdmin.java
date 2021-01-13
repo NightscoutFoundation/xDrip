@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.ui.activities;
 
+
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.databinding.ObservableField;
@@ -8,7 +9,7 @@ import android.os.Bundle;
 import com.activeandroid.Cache;
 import com.eveningoutpost.dexdrip.BaseAppCompatActivity;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.databinding.ActivityDatabaseAdminBinding;
 
@@ -111,11 +112,11 @@ public class DatabaseAdmin extends BaseAppCompatActivity {
         if (transaction) db.beginTransaction();
         try {
             final Cursor cursor = db.rawQuery(query, null);
-            Log.d(TAG, "Got query results: " + query + " " + cursor.getCount());
+            UserErrorLog.d(TAG, "Got query results: " + query + " " + cursor.getCount());
 
             while (cursor.moveToNext()) {
                 for (int c = 0; c < cursor.getColumnCount(); c++) {
-                    if (D) Log.d(TAG, "Column: " + cursor.getColumnName(c));
+                    if (D) UserErrorLog.d(TAG, "Column: " + cursor.getColumnName(c));
                     results.add(cursor.getString(c));
                 }
             }
@@ -202,11 +203,11 @@ public class DatabaseAdmin extends BaseAppCompatActivity {
                             try {
                                 final int firstValue = JoH.tolerantParseInt(result.substring(0, result.indexOf(" ")), 0);
                                 if (!output.containsKey(table) || output.get(table) < firstValue) {
-                                    Log.d(TAG, "New high value: " + table + " " + firstValue);
+                                    UserErrorLog.d(TAG, "New high value: " + table + " " + firstValue);
                                     output.put(table, firstValue);
                                 }
                             } catch (Exception e) {
-                                Log.e(TAG, "Exception in statistics: " + e);
+                                UserErrorLog.e(TAG, "Exception in statistics: " + e);
                             }
                             break;
                     }
@@ -251,7 +252,7 @@ public class DatabaseAdmin extends BaseAppCompatActivity {
         @Override
         public synchronized void process(final List<String> results) {
             if (queries == null || processors == null) {
-                Log.e(TAG, this.getClass().getSimpleName() + " not properly initialized");
+                UserErrorLog.e(TAG, this.getClass().getSimpleName() + " not properly initialized");
                 return;
             }
             try {
@@ -260,14 +261,14 @@ public class DatabaseAdmin extends BaseAppCompatActivity {
 
                 if (runState > 0) {
                     if (D)
-                        Log.d(TAG, "Using processor: " + processors[runState - 1].getClass().getSimpleName());
+                        UserErrorLog.d(TAG, "Using processor: " + processors[runState - 1].getClass().getSimpleName());
                     processors[runState - 1].process(results);
                 } else {
                     // no results on first item
                     console.set(startMessage + "\n");
                 }
                 if (runState < queries.length) {
-                    if (D) Log.d(TAG, "Running query: " + queries[runState]);
+                    if (D) UserErrorLog.d(TAG, "Running query: " + queries[runState]);
                     dbTask(false, this, queries[runState]);
                 } else {
                     consoleAppend(endMessage + "\n");

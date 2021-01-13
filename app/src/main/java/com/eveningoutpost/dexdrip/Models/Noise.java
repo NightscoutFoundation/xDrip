@@ -1,5 +1,7 @@
 package com.eveningoutpost.dexdrip.Models;
 
+
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 
 /**
@@ -17,7 +19,7 @@ public class Noise {
         try {
             value = Integer.parseInt(Pref.getString("noise_block_level", "200"));
         } catch (NumberFormatException e) {
-            UserError.Log.e(TAG, "Cannot process noise block level: " + e);
+            UserErrorLog.e(TAG, "Cannot process noise block level: " + e);
         }
         return value;
 

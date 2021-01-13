@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.insulin.pendiq;
 
+
 import android.bluetooth.BluetoothGattService;
 import android.content.Intent;
 import android.os.PowerManager;
@@ -8,7 +9,7 @@ import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Treatments;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.JamBaseBluetoothService;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
@@ -40,15 +41,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import lombok.RequiredArgsConstructor;
-/*
-import rx.Subscription;
-import rx.schedulers.Schedulers;
-*/
-import io.reactivex.Observable;
-import io.reactivex.Scheduler;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+import lombok.RequiredArgsConstructor;
 
 import static com.eveningoutpost.dexdrip.Models.JoH.msSince;
 import static com.eveningoutpost.dexdrip.Models.JoH.ratelimit;
@@ -79,6 +73,11 @@ import static com.eveningoutpost.dexdrip.insulin.pendiq.PendiqService.STATE.GET_
 import static com.eveningoutpost.dexdrip.insulin.pendiq.PendiqService.STATE.INIT;
 import static com.eveningoutpost.dexdrip.insulin.pendiq.PendiqService.STATE.SCAN;
 import static com.eveningoutpost.dexdrip.insulin.pendiq.PendiqService.STATE.SET_TIME;
+
+/*
+import rx.Subscription;
+import rx.schedulers.Schedulers;
+*/
 
 // Jamorham
 
@@ -183,14 +182,14 @@ public class PendiqService extends JamBaseBluetoothService {
         if (state == null) return;
         if ((state == new_state) && (state != INIT)) {
             if (state != CLOSE) {
-                UserError.Log.d(TAG, "Already in state: " + new_state + " changing to CLOSE");
+                UserErrorLog.d(TAG, "Already in state: " + new_state + " changing to CLOSE");
                 changeState(CLOSE);
             }
         } else {
             if ((state == CLOSED || state == CLOSE) && new_state == CLOSE) {
-                UserError.Log.d(TAG, "Not closing as already closed");
+                UserErrorLog.d(TAG, "Not closing as already closed");
             } else {
-                UserError.Log.d(TAG, "Changing state from: " + state + " to " + new_state);
+                UserErrorLog.d(TAG, "Changing state from: " + state + " to " + new_state);
                 state = new_state;
                 background_automata();
             }
@@ -201,7 +200,7 @@ public class PendiqService extends JamBaseBluetoothService {
     @Override
     protected synchronized boolean automata() {
 
-        UserError.Log.d(TAG, "automata state: " + state);
+        UserErrorLog.d(TAG, "automata state: " + state);
         extendWakeLock(3000);
         try {
             switch (state) {
@@ -263,12 +262,12 @@ public class PendiqService extends JamBaseBluetoothService {
         if (Pendiq.enabled()) {
             final PowerManager.WakeLock wl = JoH.getWakeLock("pendiq-start-service", 600000);
             try {
-                UserError.Log.d(TAG, "WAKE UP WAKE UP WAKE UP WAKE UP @ " + JoH.dateTimeText(JoH.tsl()));
+                UserErrorLog.d(TAG, "WAKE UP WAKE UP WAKE UP WAKE UP @ " + JoH.dateTimeText(JoH.tsl()));
                 if (intent != null) {
                     final String action = intent.getAction();
                     if (action != null && action.equals(PENDIQ_ACTION)) {
                         final String command = intent.getStringExtra(PENDIQ_INSTRUCTION);
-                        UserError.Log.d(TAG, "Processing remote command: " + command);
+                        UserErrorLog.d(TAG, "Processing remote command: " + command);
                         if (JoH.msSince(intent.getLongExtra(PENDIQ_TIMESTAMP, 0)) < Constants.SECOND_IN_MS * 10) {
 
                             switch (command) {
@@ -277,15 +276,15 @@ public class PendiqService extends JamBaseBluetoothService {
                                         dose_prep_waiting = Double.parseDouble(intent.getStringExtra(PENDIQ_PARAMETER));
                                         decideServiceStartStateChange();
                                     } catch (NumberFormatException e) {
-                                        UserError.Log.wtf(TAG, "Could not process dosage prep: " + intent.getStringExtra(PENDIQ_PARAMETER));
+                                        UserErrorLog.wtf(TAG, "Could not process dosage prep: " + intent.getStringExtra(PENDIQ_PARAMETER));
                                     }
                                     break;
                                 default:
-                                    UserError.Log.e(TAG, "Unknown remote command: " + command);
+                                    UserErrorLog.e(TAG, "Unknown remote command: " + command);
 
                             }
                         } else {
-                            UserError.Log.wtf(TAG, "Received service start request out of time: " + action);
+                            UserErrorLog.wtf(TAG, "Received service start request out of time: " + action);
                         }
                     } else {
                         decideServiceStartStateChange();
@@ -297,7 +296,7 @@ public class PendiqService extends JamBaseBluetoothService {
             }
             return START_STICKY;
         } else {
-            UserError.Log.d(TAG, "Should not be running so shutting down");
+            UserErrorLog.d(TAG, "Should not be running so shutting down");
             stopSelf();
             return START_NOT_STICKY;
         }
@@ -347,10 +346,10 @@ public class PendiqService extends JamBaseBluetoothService {
     }
 
     private synchronized void stopScan() {
-        UserError.Log.d(TAG, "stopScan called");
+        UserErrorLog.d(TAG, "stopScan called");
         if (scanSubscription != null) {
             scanSubscription.unsubscribe();
-            UserError.Log.d(TAG, "stopScan stopped scan");
+            UserErrorLog.d(TAG, "stopScan stopped scan");
             scanSubscription = null;
             Inevitable.kill("stop_pendiq_scan");
         }
@@ -361,7 +360,7 @@ public class PendiqService extends JamBaseBluetoothService {
 
     private synchronized void stopConnect() {
 
-        UserError.Log.d(TAG, "Stopping connection with: " + address);
+        UserErrorLog.d(TAG, "Stopping connection with: " + address);
 
         if (connectionSubscription != null) {
             connectionSubscription.unsubscribe();
@@ -387,12 +386,12 @@ public class PendiqService extends JamBaseBluetoothService {
 
             // TODO build list of candidates for processing and start inevitable task to poll them
             // TODO use AutoConnect if only one?
-            UserError.Log.d(TAG, "Found a device with name: " + this_name + " rssi: " + rssi + "  " + (matches ? "-> MATCH" : ""));
+            UserErrorLog.d(TAG, "Found a device with name: " + this_name + " rssi: " + rssi + "  " + (matches ? "-> MATCH" : ""));
             if (matches) {
                 stopScan();
                 address = bleScanResult.getBleDevice().getMacAddress();
                 name = this_name;
-                UserError.Log.d(TAG, "Set address to: " + address);
+                UserErrorLog.d(TAG, "Set address to: " + address);
                 if (auto_connect) {
                     changeState(CONNECT);
                 } else {
@@ -401,7 +400,7 @@ public class PendiqService extends JamBaseBluetoothService {
             }
         } else {
             if (JoH.quietratelimit("log-low-rssi", 2)) {
-                UserError.Log.d(TAG, "Low rssi device: " + bleScanResult.getBleDevice().getMacAddress());
+                UserErrorLog.d(TAG, "Low rssi device: " + bleScanResult.getBleDevice().getMacAddress());
             }
         }
     }
@@ -409,21 +408,21 @@ public class PendiqService extends JamBaseBluetoothService {
 
     // Failed result from our bluetooth scan
     private synchronized void onScanFailure(Throwable throwable) {
-        UserError.Log.d(TAG, "onScanFailure: " + throwable);
+        UserErrorLog.d(TAG, "onScanFailure: " + throwable);
         if (throwable instanceof BleScanException) {
             final String info = handleBleScanException((BleScanException) throwable);
             //   lastScanError = info;
-            UserError.Log.d(TAG, info);
+            UserErrorLog.d(TAG, info);
             if (((BleScanException) throwable).getReason() == BleScanException.BLUETOOTH_DISABLED) {
                 // Attempt to turn bluetooth on
                 if (ratelimit("bluetooth_toggle_on", 30)) {
-                    UserError.Log.d(TAG, "Pause before Turn Bluetooth on");
+                    UserErrorLog.d(TAG, "Pause before Turn Bluetooth on");
                     try {
                         Thread.sleep(2000);
                     } catch (InterruptedException e) {
                         //
                     }
-                    UserError.Log.e(TAG, "Trying to Turn Bluetooth on");
+                    UserErrorLog.e(TAG, "Trying to Turn Bluetooth on");
                     JoH.setBluetoothEnabled(xdrip.getAppContext(), true);
                 }
             }
@@ -445,7 +444,7 @@ public class PendiqService extends JamBaseBluetoothService {
                     connection_linger = JoH.getWakeLock("jam-pendiq-pconnect", 60000);
                 }
                 //if (d)
-                //    UserError.Log.d(TAG, "Local bonding state: " + (isDeviceLocallyBonded() ? "BONDED" : "NOT Bonded"));
+                //    UserErrorLog.d(TAG, "Local bonding state: " + (isDeviceLocallyBonded() ? "BONDED" : "NOT Bonded"));
                 stopConnect();
 
                 bleDevice = rxBleClient.getBleDevice(address);
@@ -455,7 +454,7 @@ public class PendiqService extends JamBaseBluetoothService {
                         // .observeOn(AndroidSchedulers.mainThread())
                         .subscribeOn(Schedulers.io())
                         .subscribe(this::onConnectionStateChange, throwable -> {
-                            UserError.Log.wtf(TAG, "Got Error from state subscription: " + throwable);
+                            UserErrorLog.wtf(TAG, "Got Error from state subscription: " + throwable);
                         }));
 
                 // Attempt to establish a connection
@@ -469,7 +468,7 @@ public class PendiqService extends JamBaseBluetoothService {
                         .subscribe(this::onConnectionReceived, this::onConnectionFailure));
 
             } else {
-                UserError.Log.wtf(TAG, "No transmitter mac address!");
+                UserErrorLog.wtf(TAG, "No transmitter mac address!");
 
                 changeState(SCAN);
                 //state = STATE.SCAN;
@@ -477,7 +476,7 @@ public class PendiqService extends JamBaseBluetoothService {
             }
 
         } else {
-            UserError.Log.wtf(TAG, "Attempt to connect when not in CONNECT state");
+            UserErrorLog.wtf(TAG, "Attempt to connect when not in CONNECT state");
         }
     }
 
@@ -500,9 +499,9 @@ public class PendiqService extends JamBaseBluetoothService {
                 // JoH.releaseWakeLock(floatingWakeLock);
                 break;
         }
-        UserError.Log.d(TAG, connection_state);
+        UserErrorLog.d(TAG, connection_state);
         //static_connection_state = connection_state;
-        // UserError.Log.d(TAG, "Bluetooth connection: " + static_connection_state);
+        // UserErrorLog.d(TAG, "Bluetooth connection: " + static_connection_state);
         if (connection_state.equals("Disconnecting")) {
             //tryGattRefresh();
         }
@@ -525,7 +524,7 @@ public class PendiqService extends JamBaseBluetoothService {
     private void onConnectionFailure(Throwable throwable) {
         // msg("Connection failure");
         // TODO under what circumstances should we change state or do something here?
-        UserError.Log.d(TAG, "Connection Disconnected/Failed: " + throwable);
+        UserErrorLog.d(TAG, "Connection Disconnected/Failed: " + throwable);
         stopConnect();
 
         changeState(CLOSE);
@@ -537,42 +536,42 @@ public class PendiqService extends JamBaseBluetoothService {
         if (state == DISCOVER) {
             if (connection != null) {
                 //   if (d)
-                //        UserError.Log.d(TAG, "Local bonding state: " + (isDeviceLocallyBonded() ? "BONDED" : "NOT Bonded"));
+                //        UserErrorLog.d(TAG, "Local bonding state: " + (isDeviceLocallyBonded() ? "BONDED" : "NOT Bonded"));
                 stopDiscover();
                 discoverSubscription = new Subscription(connection.discoverServices(10, TimeUnit.SECONDS)
                         .subscribe(this::onServicesDiscovered, this::onDiscoverFailed));
             } else {
-                UserError.Log.e(TAG, "No connection when in DISCOVER state - reset");
+                UserErrorLog.e(TAG, "No connection when in DISCOVER state - reset");
                 changeState(INIT);
 
             }
         } else {
-            UserError.Log.wtf(TAG, "Attempt to discover when not in DISCOVER state");
+            UserErrorLog.wtf(TAG, "Attempt to discover when not in DISCOVER state");
         }
     }
 
 
     private void onServicesDiscovered(RxBleDeviceServices services) {
         for (BluetoothGattService service : services.getBluetoothGattServices()) {
-            //  UserError.Log.d(TAG, "Service: " + getUUIDName(service.getUuid()));
+            //  UserErrorLog.d(TAG, "Service: " + getUUIDName(service.getUuid()));
             if (service.getUuid().equals(Const.PENDIQ_SERVICE)) {
 
                 enableNotification();
                 return;
             }
         }
-        UserError.Log.e(TAG, "Could not locate Pendiq service during discovery on " + address + " called: " + name);
+        UserErrorLog.e(TAG, "Could not locate Pendiq service during discovery on " + address + " called: " + name);
     }
 
     private void onDiscoverFailed(Throwable throwable) {
-        UserError.Log.e(TAG, "Discover failure: " + throwable.toString());
+        UserErrorLog.e(TAG, "Discover failure: " + throwable.toString());
         stopConnect();
         changeState(CLOSE);
         // incrementErrors();
     }
 
     private void enableNotification() {
-        UserError.Log.d(TAG, "Enabling notifications");
+        UserErrorLog.d(TAG, "Enabling notifications");
         connection.setupNotification(INCOMING_CHAR)
                 // .timeout(10, TimeUnit.SECONDS)
                 .timeout(15, TimeUnit.SECONDS) // WARN
@@ -586,15 +585,15 @@ public class PendiqService extends JamBaseBluetoothService {
                 .subscribe(bytes -> {
                             // incoming notifications
                             if (d)
-                                UserError.Log.d(TAG, "Received data notification bytes: " + HexDump.dumpHexString(bytes));
+                                UserErrorLog.d(TAG, "Received data notification bytes: " + HexDump.dumpHexString(bytes));
 
                             processAndAction(bytes);
 
                         }, throwable -> {
                             if (!(throwable instanceof TimeoutException)) {
-                                UserError.Log.e(TAG, "Throwable inside setup notification: " + throwable);
+                                UserErrorLog.e(TAG, "Throwable inside setup notification: " + throwable);
                             } else {
-                                UserError.Log.d(TAG, "OUTER TIMEOUT INSIDE NOTIFICATION LISTENER");
+                                UserErrorLog.d(TAG, "OUTER TIMEOUT INSIDE NOTIFICATION LISTENER");
                             }
                             stopConnect();
                         }
@@ -614,10 +613,10 @@ public class PendiqService extends JamBaseBluetoothService {
             for (byte[] result : results) {
                 if (result != null) {
 
-                    UserError.Log.d(TAG, "Received decoded: " + HexDump.dumpHexString(result) + " " + result.length);
+                    UserErrorLog.d(TAG, "Received decoded: " + HexDump.dumpHexString(result) + " " + result.length);
                     final int code = getErrorCode(result);
                     if (code > 0) {
-                        UserError.Log.e(TAG, "Got error code: " + code + " on " + HexDump.dumpHexString(result));
+                        UserErrorLog.e(TAG, "Got error code: " + code + " on " + HexDump.dumpHexString(result));
                     } else {
                         // packet ok
                         if (isResultPacket(result)) {
@@ -631,18 +630,18 @@ public class PendiqService extends JamBaseBluetoothService {
                                     Inevitable.task("pendiq-logs-done", 2000, () -> changeState(state.next()));
                                     break;
                                 default:
-                                    UserError.Log.e(TAG, "Unhandled result packet type: " + getResultPacketType(result) + " " + HexDump.dumpHexString(result));
+                                    UserErrorLog.e(TAG, "Unhandled result packet type: " + getResultPacketType(result) + " " + HexDump.dumpHexString(result));
                                     changeState(state.next());
                             }
 
                         } else if (isProgressPacket(result)) {
-                            UserError.Log.d(TAG, "Progress packet classified - success");
+                            UserErrorLog.d(TAG, "Progress packet classified - success");
                             changeState(state.next());
 
                         } else if (isReportPacket(result)) {
-                            UserError.Log.d(TAG, "Live report packet received");
+                            UserErrorLog.d(TAG, "Live report packet received");
                             if (ratelimit("pendiq-restart-poll", 60)) {
-                                UserError.Log.d(TAG, "Retstarting sequence in 5 seconds");
+                                UserErrorLog.d(TAG, "Retstarting sequence in 5 seconds");
                                 Inevitable.task("pendiq-restart-sequence", 5000, () -> changeState(GET_STATUS));
                             }
                         }
@@ -656,9 +655,9 @@ public class PendiqService extends JamBaseBluetoothService {
     }
 
     private void handleStatusRecord(byte[] result) {
-        UserError.Log.d(TAG, "Received status record");
+        UserErrorLog.d(TAG, "Received status record");
         final StatusRx status = new StatusRx(result);
-        UserError.Log.d(TAG, status.getLastDateString() + status.toS());
+        UserErrorLog.d(TAG, status.getLastDateString() + status.toS());
 
         if (checkPin(status.pin)) {
             if (ratelimit("status-record-no-wakeup-dupe", 2)) {
@@ -668,11 +667,11 @@ public class PendiqService extends JamBaseBluetoothService {
                     changeState(SET_TIME); // because wake-up can duplicate
                 }
             } else {
-                UserError.Log.d(TAG, "Ignoring duplicate status transition due to possible dupe from wake up");
+                UserErrorLog.d(TAG, "Ignoring duplicate status transition due to possible dupe from wake up");
             }
         } else {
             if (ratelimit("pendiq pin mismatch", 600)) {
-                UserError.Log.wtf(TAG, "Pin doesn't match on device: " + address + " called: " + name);
+                UserErrorLog.wtf(TAG, "Pin doesn't match on device: " + address + " called: " + name);
                 changeState(CLOSE);
             }
         }
@@ -684,12 +683,12 @@ public class PendiqService extends JamBaseBluetoothService {
 
     private void handleInsulinRecord(final byte[] result) {
         final boolean recordOk = isResultPacketOk(result);
-        UserError.Log.d(TAG, "Received " + (recordOk ? "OK" : "NOT OK") + " insulin record");
+        UserErrorLog.d(TAG, "Received " + (recordOk ? "OK" : "NOT OK") + " insulin record");
         if (recordOk) {
             final InsulinLogRx record = new InsulinLogRx(result);
-            UserError.Log.d(TAG, record.getTimeStampString() + record.toS());
+            UserErrorLog.d(TAG, record.getTimeStampString() + record.toS());
             if (record.timestamp > JoH.tsl()) {
-                UserError.Log.wtf(TAG, "Rejecting injection record in the future! " + record.getSummary());
+                UserErrorLog.wtf(TAG, "Rejecting injection record in the future! " + record.getSummary());
             } else {
                 if (JoH.msSince(record.timestamp) < (Constants.DAY_IN_MS * 2)) {
 
@@ -698,7 +697,7 @@ public class PendiqService extends JamBaseBluetoothService {
                     final String suggested_uuid = UUID.nameUUIDFromBytes(uuid_template.getBytes(Charset.forName("UTF-8"))).toString();
                     Treatments existing_by_uuid = Treatments.byuuid(suggested_uuid);
                     if (existing_by_uuid != null) {
-                        UserError.Log.d(TAG, "Existing record matching uuid: " + suggested_uuid);
+                        UserErrorLog.d(TAG, "Existing record matching uuid: " + suggested_uuid);
                         return;
                     }
                     // Search for nearby reading not synced by this function
@@ -706,9 +705,9 @@ public class PendiqService extends JamBaseBluetoothService {
 
                     if (existing != null && (Math.abs(existing.insulin - record.insulin) < 0.01)
                             && !existing.enteredBy.contains(PENDIQ_TAG)) {
-                        UserError.Log.d(TAG, "Record: " + record.getSummary() + " already processed");
+                        UserErrorLog.d(TAG, "Record: " + record.getSummary() + " already processed");
                     } else {
-                        UserError.Log.d(TAG, "NEW record: " + record.getSummary());
+                        UserErrorLog.d(TAG, "NEW record: " + record.getSummary());
 
                         getInsulinLog(); // ask for next record
 
@@ -717,7 +716,7 @@ public class PendiqService extends JamBaseBluetoothService {
                             treatment.enteredBy += " " + PENDIQ_TAG;
                             treatment.save();
                         } else {
-                            UserError.Log.wtf(TAG, "Could not create treatment entry, possible dupe: " + suggested_uuid);
+                            UserErrorLog.wtf(TAG, "Could not create treatment entry, possible dupe: " + suggested_uuid);
                         }
                         if (ratelimit("pendiq-data-in-sound", 1)) {
                             JoH.playResourceAudio(R.raw.bt_meter_data_in); // might want a new sound for pen records
@@ -725,7 +724,7 @@ public class PendiqService extends JamBaseBluetoothService {
                         Home.staticRefreshBGChartsOnIdle();
                     }
                 } else {
-                    UserError.Log.d(TAG, "Rejecting injection record too far in the past >2 days: " + record.getSummary());
+                    UserErrorLog.d(TAG, "Rejecting injection record too far in the past >2 days: " + record.getSummary());
                 }
             }
         }
@@ -763,7 +762,7 @@ public class PendiqService extends JamBaseBluetoothService {
             // tracked with most recent updated with inevitable delay.
             addToWriteQueueWithWakeup(new InsulinLogTx(0).getFragmentStream(), 50, 10, true, "Get Insulin Log");
         } else {
-            UserError.Log.wtf(TAG, "Attempted to exceed maximum record loading");
+            UserErrorLog.wtf(TAG, "Attempted to exceed maximum record loading");
         }
     }
 
@@ -815,7 +814,7 @@ public class PendiqService extends JamBaseBluetoothService {
         if (item != null) {
             writeQueueItem(queue, item);
         } else {
-            UserError.Log.d(TAG, "write queue empty");
+            UserErrorLog.d(TAG, "write queue empty");
         }
 
     }
@@ -826,30 +825,30 @@ public class PendiqService extends JamBaseBluetoothService {
         connection.writeCharacteristic(OUTGOING_CHAR, item.data)
                 .timeout(item.timeoutSeconds, TimeUnit.SECONDS)
                 .subscribe(Value -> {
-                    UserError.Log.d(TAG, "Wrote request: " + item.description + " -> " + JoH.bytesToHex(Value));
+                    UserErrorLog.d(TAG, "Wrote request: " + item.description + " -> " + JoH.bytesToHex(Value));
                     expectReply(queue, item);
                     if (item.post_delay > 0) {
                         // always sleep if set as new item might appear in queue
                         final long sleep_time = item.post_delay + (item.description.contains("WAKE UP") ? 2000 : 0);
-                        UserError.Log.d(TAG, "sleeping " + sleep_time);
+                        UserErrorLog.d(TAG, "sleeping " + sleep_time);
                         JoH.threadSleep(sleep_time);
                     }
                     writeMultipleFromQueue(queue); // recurse
                     throw new OperationSuccess("write complete: " + item.description);
                 }, throwable -> {
                     if (!(throwable instanceof OperationSuccess)) {
-                        UserError.Log.d(TAG, "Throwable in: " + item.description + " -> " + throwable);
+                        UserErrorLog.d(TAG, "Throwable in: " + item.description + " -> " + throwable);
                         item.retries++;
                         if (!(throwable instanceof BleDisconnectedException)) {
                             if (item.retries > MAX_QUEUE_RETRIES) {
-                                UserError.Log.d(TAG, item.description + " failed max retries @ " + item.retries + " shutting down queue");
+                                UserErrorLog.d(TAG, item.description + " failed max retries @ " + item.retries + " shutting down queue");
                                 queue.clear();
                                 changeState(CLOSE);
                             } else {
                                 writeQueueItem(queue, item);
                             }
                         } else {
-                            UserError.Log.d(TAG, "Disconnected so not attempting retries");
+                            UserErrorLog.d(TAG, "Disconnected so not attempting retries");
                         }
                     } else {
                         // not disconnecting on success
@@ -863,10 +862,10 @@ public class PendiqService extends JamBaseBluetoothService {
             @Override
             public void run() {
                 if (JoH.msSince(lastProcessedIncomingData) > wait_time) {
-                    UserError.Log.d(TAG, "GOT NO REPLY FOR: " + item.description + " @ " + item.retries);
+                    UserErrorLog.d(TAG, "GOT NO REPLY FOR: " + item.description + " @ " + item.retries);
                     item.retries++;
                     if (item.retries <= MAX_QUEUE_RETRIES) {
-                        UserError.Log.d(TAG, "Retrying due to no reply: " + item.description);
+                        UserErrorLog.d(TAG, "Retrying due to no reply: " + item.description);
                         writeQueueItem(queue, item);
                     }
                 }

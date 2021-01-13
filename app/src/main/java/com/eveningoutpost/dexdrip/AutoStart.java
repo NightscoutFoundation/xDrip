@@ -1,10 +1,11 @@
 package com.eveningoutpost.dexdrip;
 
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.Services.PlusSyncService;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
@@ -22,7 +23,7 @@ public class AutoStart extends BroadcastReceiver {
         // TODO add intent action filter
 
         try {
-            UserError.Log.ueh(TAG, "Device Rebooted - Auto Start: " + intent.getAction());
+            UserErrorLog.ueh(TAG, "Device Rebooted - Auto Start: " + intent.getAction());
         } catch (Exception e) {
             //
         }
@@ -31,7 +32,7 @@ public class AutoStart extends BroadcastReceiver {
         try {
             CollectionServiceStarter.restartCollectionServiceBackground();
         } catch (Exception e) {
-            UserError.Log.wtf(TAG, "Failed to start collector: " + e);
+            UserErrorLog.wtf(TAG, "Failed to start collector: " + e);
         }
 
 
@@ -39,7 +40,7 @@ public class AutoStart extends BroadcastReceiver {
             PlusSyncService.startSyncService(context, "AutoStart");
 
         } catch (Exception e) {
-            UserError.Log.wtf(TAG, "Failed to start sync service: " + e);
+            UserErrorLog.wtf(TAG, "Failed to start sync service: " + e);
         }
 
 
@@ -53,7 +54,7 @@ public class AutoStart extends BroadcastReceiver {
                 });
             }
         } catch (Exception e) {
-            UserError.Log.wtf(TAG, "Failed to start home: " + e);
+            UserErrorLog.wtf(TAG, "Failed to start home: " + e);
         }
     }
 }

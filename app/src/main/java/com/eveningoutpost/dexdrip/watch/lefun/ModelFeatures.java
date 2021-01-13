@@ -1,8 +1,9 @@
 package com.eveningoutpost.dexdrip.watch.lefun;
 
-// jamorham
 
 import static com.eveningoutpost.dexdrip.Models.JoH.emptyString;
+
+// jamorham
 
 public class ModelFeatures {
 

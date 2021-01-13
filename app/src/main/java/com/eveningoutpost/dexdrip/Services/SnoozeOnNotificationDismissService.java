@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.Services;
 
+
 import android.app.IntentService;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -9,9 +10,8 @@ import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
 import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.Models.UserNotification;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.SnoozeActivity;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
@@ -40,10 +40,10 @@ public class SnoozeOnNotificationDismissService extends IntentService {
         if (alertType == null) alertType = "null";
         final long time_showing = (intent != null) ? JoH.msSince(intent.getLongExtra("raisedTimeStamp", JoH.tsl() - 10 * Constants.MINUTE_IN_MS)) : 10 * Constants.MINUTE_IN_MS;
         if (time_showing <= MINIMUM_CANCEL_DELAY) {
-            UserError.Log.wtf(TAG, "Attempt to cancel alert (" + alertType + ") within minimum limit of: " + JoH.niceTimeScalar(MINIMUM_CANCEL_DELAY));
+            UserErrorLog.wtf(TAG, "Attempt to cancel alert (" + alertType + ") within minimum limit of: " + JoH.niceTimeScalar(MINIMUM_CANCEL_DELAY));
             Home.startHomeWithExtra(xdrip.getAppContext(),"confirmsnooze","simpleconfirm");
         }
-        Log.e(TAG, "SnoozeOnNotificationDismissService called source = " + alertType + " shown for: " + JoH.niceTimeScalar(time_showing));
+        UserErrorLog.e(TAG, "SnoozeOnNotificationDismissService called source = " + alertType + " shown for: " + JoH.niceTimeScalar(time_showing));
         if (alertType.equals("bg_alerts") && (time_showing > MINIMUM_CANCEL_DELAY)) {
             snoozeBgAlert();
             return;
@@ -61,11 +61,11 @@ public class SnoozeOnNotificationDismissService extends IntentService {
 
         if (alertType.equals("bg_predict_alert") ||
                 alertType.equals("persistent_high_alert")) {
-            Log.wtf(TAG, "SnoozeOnNotificationDismissService called for unsupported type!!! source = " + alertType);
+            UserErrorLog.wtf(TAG, "SnoozeOnNotificationDismissService called for unsupported type!!! source = " + alertType);
 
         }
 
-        Log.e(TAG, "SnoozeOnNotificationDismissService called for unknown source = " + alertType);
+        UserErrorLog.e(TAG, "SnoozeOnNotificationDismissService called for unknown source = " + alertType);
     }
     
     private void snoozeBgAlert() {
@@ -86,7 +86,7 @@ public class SnoozeOnNotificationDismissService extends IntentService {
     private void snoozeOtherAlert(String alertType) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         long snoozeMinutes = MissedReadingService.getOtherAlertSnoozeMinutes(prefs, alertType);
-        Log.i(TAG, "snoozeOtherAlert calling snooze alert alert = " + alertType + " snoozeMinutes = " + snoozeMinutes);
+        UserErrorLog.i(TAG, "snoozeOtherAlert calling snooze alert alert = " + alertType + " snoozeMinutes = " + snoozeMinutes);
         UserNotification.snoozeAlert(alertType, snoozeMinutes);
 
         if (Pref.getBooleanDefaultFalse("pref_amazfit_enable_key")

@@ -1,6 +1,7 @@
 package com.eveningoutpost.dexdrip.webservices;
 
-import com.eveningoutpost.dexdrip.Models.UserError;
+
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 
 import java.io.UnsupportedEncodingException;
 
@@ -26,7 +27,7 @@ public class WebResponse {
         try {
             bytes = str.getBytes("UTF-8");
         } catch (UnsupportedEncodingException e) {
-            UserError.Log.wtf(TAG, "UTF8 is unsupported!");
+            UserErrorLog.wtf(TAG, "UTF8 is unsupported!");
         }
         this.mimeType = mimeType;
         this.resultCode = resultCode;

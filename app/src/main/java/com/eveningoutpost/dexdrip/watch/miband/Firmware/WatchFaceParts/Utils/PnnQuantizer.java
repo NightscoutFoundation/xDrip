@@ -1,8 +1,4 @@
 package com.eveningoutpost.dexdrip.watch.miband.Firmware.WatchFaceParts.Utils;
-/* Fast pairwise nearest neighbor based algorithm for multilevel thresholding
-Copyright (C) 2004-2016 Mark Tyler and Dmitry Groshev
-Copyright (c) 2018-2019 Miller Cy Chan
-* error measure; time used is proportional to number of bins squared - WJ */
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -15,6 +11,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+
+/* Fast pairwise nearest neighbor based algorithm for multilevel thresholding
+Copyright (C) 2004-2016 Mark Tyler and Dmitry Groshev
+Copyright (c) 2018-2019 Miller Cy Chan
+* error measure; time used is proportional to number of bins squared - WJ */
 
 public class PnnQuantizer {
     protected final short SHORT_MAX = Short.MAX_VALUE;

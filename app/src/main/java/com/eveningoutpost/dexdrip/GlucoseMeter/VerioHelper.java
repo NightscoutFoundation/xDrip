@@ -1,7 +1,8 @@
 package com.eveningoutpost.dexdrip.GlucoseMeter;
 
+
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.Services.BluetoothGlucoseMeter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
@@ -44,18 +45,18 @@ public class VerioHelper {
         if (message.length == 1) {
             if ((message[0] & (byte) 0x81) == (byte) 0x81) {
                 BluetoothGlucoseMeter.awaiting_ack = false;
-                UserError.Log.d(TAG, "ACK received: " + JoH.bytesToHex(message));
+                UserErrorLog.d(TAG, "ACK received: " + JoH.bytesToHex(message));
                 return null;
             }
         } else {
             if (message.length > 5) {
                 // Multibyte replies
                 if ((message[0] != 0x01) && (message[1] != 0x02)) {
-                    UserError.Log.e(TAG, "Invalid protocol header");
+                    UserErrorLog.e(TAG, "Invalid protocol header");
                 }
 
                 if (message[2] != (message.length - 1)) {
-                    UserError.Log.e(TAG, "length field problem " + message.length + " vs " + message[2]);
+                    UserErrorLog.e(TAG, "length field problem " + message.length + " vs " + message[2]);
                     return null;
                 }
 
@@ -67,41 +68,41 @@ public class VerioHelper {
                         final byte[] result = new byte[message.length - 9];
                         System.arraycopy(message, 6, result, 0, result.length);
                         if (d)
-                            UserError.Log.d(TAG, "Returning byte array: " + JoH.bytesToHex(result));
+                            UserErrorLog.d(TAG, "Returning byte array: " + JoH.bytesToHex(result));
                         final ByteBuffer data = ByteBuffer.wrap(result).order(ByteOrder.LITTLE_ENDIAN);
                         if (d)
-                            UserError.Log.d(TAG, "Wrapped buffer result length: " + result.length);
+                            UserErrorLog.d(TAG, "Wrapped buffer result length: " + result.length);
                         if (result.length == 4) {
                             long val = data.getInt(0);
                             if (val > 100000) {
                                 long tval = (val + TIME_OFFSET) * 1000; // warning signed
                                 meter_time_offset = JoH.msSince(tval);
 
-                                UserError.Log.d(TAG, "Time offset: " + meter_time_offset);
-                                UserError.Log.d(TAG, JoH.dateTimeText(tval));
+                                UserErrorLog.d(TAG, "Time offset: " + meter_time_offset);
+                                UserErrorLog.d(TAG, JoH.dateTimeText(tval));
                                 statusUpdate("Received Verio Time");
                             } else {
-                                UserError.Log.d(TAG, "Reading counter: " + val);
+                                UserErrorLog.d(TAG, "Reading counter: " + val);
                                 highest_record_number = (int) val;
                                 statusUpdate("Verio Record Counter: " + val);
                             }
 
                         } else if (result.length == 2) {
                             int val = data.getShort(0);
-                            UserError.Log.d(TAG, " Num records: Int16 value: " + val);
+                            UserErrorLog.d(TAG, " Num records: Int16 value: " + val);
                             number_of_records = val;
                             requestRecords(); // ask for record download
 
                         } else if (result.length == 11) {
                             if (last_request_record > 0) {
                                 final long info = data.getInt(6) + data.get(10);
-                                //UserError.Log.d(TAG, "Bgreading sanity check: " + info);
+                                //UserErrorLog.d(TAG, "Bgreading sanity check: " + info);
                                 if (info == 0) {
                                     if (meter_time_offset != null) {
                                         final long tval = ((data.getInt(0) + TIME_OFFSET) * 1000) + meter_time_offset;
-                                        UserError.Log.d(TAG, "BGreading time: " + JoH.dateTimeText(tval));
+                                        UserErrorLog.d(TAG, "BGreading time: " + JoH.dateTimeText(tval));
                                         final int mgdl = data.getShort(4);
-                                        UserError.Log.d(TAG, "BGreading mgdl: " + mgdl + " mmol:" + JoH.qs(((double) mgdl) * Constants.MGDL_TO_MMOLL, 1));
+                                        UserErrorLog.d(TAG, "BGreading mgdl: " + mgdl + " mmol:" + JoH.qs(((double) mgdl) * Constants.MGDL_TO_MMOLL, 1));
                                         last_received_record = last_request_record;
                                         statusUpdate("Received Verio BG record: " + last_received_record);
                                         setHighestRecord(last_received_record);
@@ -113,13 +114,13 @@ public class VerioHelper {
                                         gtb.data = data;
                                         gtb.sequence = last_received_record;
                                     } else {
-                                        UserError.Log.wtf(TAG, "We don't have the meter time so cannot process any records");
+                                        UserErrorLog.wtf(TAG, "We don't have the meter time so cannot process any records");
                                     }
                                 } else {
-                                    UserError.Log.d(TAG, "Bg packet " + last_request_record + " failed sanity test: " + JoH.bytesToHex(message));
+                                    UserErrorLog.d(TAG, "Bg packet " + last_request_record + " failed sanity test: " + JoH.bytesToHex(message));
                                 }
                             } else {
-                                UserError.Log.wtf(TAG, "Received a bg record we did not request");
+                                UserErrorLog.wtf(TAG, "Received a bg record we did not request");
                             }
 
                         }
@@ -129,34 +130,34 @@ public class VerioHelper {
                         // error state
                     } else if (message[5] == 0x07) {
                         if (message[6] == 0x03) {
-                            UserError.Log.e(TAG, "Verio: Command not allowed!");
+                            UserErrorLog.e(TAG, "Verio: Command not allowed!");
                             statusUpdate("Verio Command rejected - check pairing");
                         }
                     } else if (message[5] == 0x08) {
                         if (message[6] == 0x03) {
-                            UserError.Log.e(TAG, "Verio: Command not supported!");
+                            UserErrorLog.e(TAG, "Verio: Command not supported!");
                         }
                     } else if (message[5] == 0x09) {
                         if (message[6] == 0x03) {
-                            UserError.Log.e(TAG, "Verio: Command not understood!");
+                            UserErrorLog.e(TAG, "Verio: Command not understood!");
                         }
                     }
                 } else {
-                    UserError.Log.wtf(TAG, "Checksum failure on packet: " + JoH.bytesToHex(message));
+                    UserErrorLog.wtf(TAG, "Checksum failure on packet: " + JoH.bytesToHex(message));
                 }
 
             } else {
-                UserError.Log.d(TAG, "Unexpected message size");
+                UserErrorLog.d(TAG, "Unexpected message size");
             }
         }
 
-        UserError.Log.e(TAG, "Unable to parse!! " + JoH.bytesToHex(message));
+        UserErrorLog.e(TAG, "Unable to parse!! " + JoH.bytesToHex(message));
         return null; // ERROR
     }
 
     private static void requestRecords() {
         if ((highest_record_number == -1) || (number_of_records == -1)) {
-            UserError.Log.wtf(TAG, "Cannot request records as counter information is missing");
+            UserErrorLog.wtf(TAG, "Cannot request records as counter information is missing");
             return;
         }
         if (number_of_records == 0) {
@@ -170,11 +171,11 @@ public class VerioHelper {
         for (i = highest_record_number; i > reqmin; i--) {
 
             if (i > t || d) {
-                UserError.Log.d(TAG, "Requesting record number: " + i);
+                UserErrorLog.d(TAG, "Requesting record number: " + i);
                 BluetoothGlucoseMeter.verioScheduleRequestBg(i);
                 requested_something = true;
             } else {
-                UserError.Log.d(TAG, "Not requesting record as it is less than highest: " + i + " vs " + t);
+                UserErrorLog.d(TAG, "Not requesting record as it is less than highest: " + i + " vs " + t);
             }
         }
         if (!requested_something)
@@ -183,7 +184,7 @@ public class VerioHelper {
 
     private static void setHighestRecord(int m) {
         if (mBluetoothDeviceAddress == null) {
-            UserError.Log.wtf(TAG, "Null BT address in setHighestRecord");
+            UserErrorLog.wtf(TAG, "Null BT address in setHighestRecord");
             return;
         }
         if (getHighestRecord() >= m) return; // not higher
@@ -192,7 +193,7 @@ public class VerioHelper {
 
     private static int getHighestRecord() {
         if (mBluetoothDeviceAddress == null) {
-            UserError.Log.wtf(TAG, "Null BT address in getHighestRecord");
+            UserErrorLog.wtf(TAG, "Null BT address in getHighestRecord");
             return 0;
         }
         return (int) PersistentStore.getLong(BluetoothGlucoseMeter.mBluetoothDeviceAddress + "-verio-highest");
@@ -242,7 +243,7 @@ public class VerioHelper {
         System.arraycopy(payload, 0, template, 4, payload.length);
         template[4 + payload.length] = DATA_DELIMITER;
         System.arraycopy(crc16ccitt(template, true, false), 0, template, 5 + payload.length, 2);
-        if (d) UserError.Log.d(TAG, "template output: " + JoH.bytesToHex(template));
+        if (d) UserErrorLog.d(TAG, "template output: " + JoH.bytesToHex(template));
         return template;
     }
 

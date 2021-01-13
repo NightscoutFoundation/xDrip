@@ -1,9 +1,10 @@
 package com.eveningoutpost.dexdrip.utils.jobs;
 
+
 import android.support.annotation.NonNull;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.Services.DailyIntentService;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.evernote.android.job.Job;
@@ -27,13 +28,13 @@ public class DailyJob extends Job {
     protected Result onRunJob(@NonNull Job.Params params) {
         final long startTime = JoH.tsl();
         DailyIntentService.work();
-        UserError.Log.uel(TAG, JoH.dateTimeText(JoH.tsl()) + " Job Ran - finished, duration: " + JoH.niceTimeScalar(JoH.msSince(startTime)));
+        UserErrorLog.uel(TAG, JoH.dateTimeText(JoH.tsl()) + " Job Ran - finished, duration: " + JoH.niceTimeScalar(JoH.msSince(startTime)));
         return Result.SUCCESS;
     }
 
     public static void schedule() {
         if (JoH.pratelimit("daily-job-schedule", 60000)) {
-            UserError.Log.uel(TAG, JoH.dateTimeText(JoH.tsl()) + " Job Scheduled"); // Debug only
+            UserErrorLog.uel(TAG, JoH.dateTimeText(JoH.tsl()) + " Job Scheduled"); // Debug only
             new JobRequest.Builder(TAG)
                     .setPeriodic(Constants.DAY_IN_MS, Constants.HOUR_IN_MS * 12)
                     .setRequiresDeviceIdle(true)

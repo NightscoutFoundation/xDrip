@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.ShareModels.Models;
 
+
 import com.eveningoutpost.dexdrip.ShareModels.ShareUploadableBg;
 import com.google.gson.annotations.Expose;
 

@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.utils.bt;
 
+
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
@@ -9,14 +10,14 @@ import android.content.Context;
 import android.os.Build;
 import android.os.Handler;
 
+import androidx.annotation.RequiresApi;
+
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.lang.reflect.Method;
-
-import androidx.annotation.RequiresApi;
 
 import static android.bluetooth.BluetoothDevice.TRANSPORT_LE;
 
@@ -37,18 +38,18 @@ public class BtReconnect extends BluetoothGattCallback {
 
     public static void checkReconnect(final BluetoothDevice device) {
         if (Pref.getBoolean("bluetooth_check_reconnect", true)) {
-            UserError.Log.d(TAG, device.getAddress());
+            UserErrorLog.d(TAG, device.getAddress());
             if (!isConnectedToDevice(device.getAddress())) {
-                UserError.Log.d(TAG, "We're not connected to: " + device.getAddress() + " when we should be - trying to correct");
+                UserErrorLog.d(TAG, "We're not connected to: " + device.getAddress() + " when we should be - trying to correct");
                 reconnect(device);
             } else {
-                UserError.Log.d(TAG, "Seems we are connected as reported");
+                UserErrorLog.d(TAG, "Seems we are connected as reported");
             }
         }
     }
 
     private static boolean isConnectedToDevice(final String mac) {
-        UserError.Log.d(TAG, "isConnected to device: " + mac);
+        UserErrorLog.d(TAG, "isConnected to device: " + mac);
         if (JoH.emptyString(mac)) {
             return false;
         }
@@ -57,9 +58,9 @@ public class BtReconnect extends BluetoothGattCallback {
             return false;
         }
         boolean foundConnectedDevice = false;
-        UserError.Log.d(TAG, "isConnected to device iterate: " + mac);
+        UserErrorLog.d(TAG, "isConnected to device iterate: " + mac);
         for (BluetoothDevice bluetoothDevice : bluetoothManager.getConnectedDevices(BluetoothProfile.GATT)) {
-            //UserError.Log.d(TAG, "Connected device: " + bluetoothDevice.getAddress() + " " + bluetoothDevice.getName());
+            //UserErrorLog.d(TAG, "Connected device: " + bluetoothDevice.getAddress() + " " + bluetoothDevice.getName());
             if (bluetoothDevice.getAddress().equalsIgnoreCase(mac)) {
                 foundConnectedDevice = true;
                 break;
@@ -70,7 +71,7 @@ public class BtReconnect extends BluetoothGattCallback {
 
 
     public void onConnectionStateChange(final BluetoothGatt gatt, final int status, final int newState) {
-        UserError.Log.d(TAG, "Connection state change: " + status + " -> " + newState);
+        UserErrorLog.d(TAG, "Connection state change: " + status + " -> " + newState);
     }
 
     private static void reconnect(final BluetoothDevice bluetoothDevice) {
@@ -85,10 +86,10 @@ public class BtReconnect extends BluetoothGattCallback {
     private static BluetoothGatt connectGattApi26(final BluetoothDevice bluetoothDevice, final int type) {
         try {
             final Method method = bluetoothDevice.getClass().getMethod("connectGatt", Context.class, Boolean.TYPE, BluetoothGattCallback.class, Integer.TYPE, Boolean.TYPE, Integer.TYPE, Handler.class);
-            UserError.Log.d(TAG, "Trying reconnect");
+            UserErrorLog.d(TAG, "Trying reconnect");
             return (BluetoothGatt) method.invoke(bluetoothDevice, null, mAutoConnect, getInstance(), TRANSPORT_LE, Boolean.TRUE, type, null);
         } catch (Exception e) {
-            UserError.Log.d(TAG, "Received exception: " + e + " falling back");
+            UserErrorLog.d(TAG, "Received exception: " + e + " falling back");
             return bluetoothDevice.connectGatt(xdrip.getAppContext(), mAutoConnect, getInstance(), TRANSPORT_LE, type);
         }
     }
@@ -96,10 +97,10 @@ public class BtReconnect extends BluetoothGattCallback {
     private static BluetoothGatt connectGattApi21(final BluetoothDevice bluetoothDevice) {
         try {
             final Method method = bluetoothDevice.getClass().getMethod("connectGatt", Context.class, Boolean.TYPE, BluetoothGattCallback.class, Integer.TYPE);
-            UserError.Log.d(TAG, "Trying connect with api21");
+            UserErrorLog.d(TAG, "Trying connect with api21");
             return (BluetoothGatt) method.invoke(bluetoothDevice, null, mAutoConnect, getInstance(), TRANSPORT_LE);
         } catch (Exception e) {
-            UserError.Log.d(TAG, "Connection failed: " + e);
+            UserErrorLog.d(TAG, "Connection failed: " + e);
             return bluetoothDevice.connectGatt(xdrip.getAppContext(), mAutoConnect, getInstance());
         }
     }

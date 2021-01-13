@@ -1,9 +1,10 @@
 package com.eveningoutpost.dexdrip.G5Model;
 
-// jamorham
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+
+// jamorham
 
 public class InvalidRxMessage extends BaseMessage {
 

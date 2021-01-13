@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.stats;
 
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -11,10 +12,9 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
-
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import android.view.View;
 
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
@@ -89,13 +89,13 @@ public class PercentileView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        Log.d("DrawStats", "PercentileView - onDraw");
+        UserErrorLog.d("DrawStats", "PercentileView - onDraw");
         super.onDraw(canvas);
 
         CalculatedData rd = getMaybeCalculatedData();
 
         if (rd == null) {
-            Log.d("DrawStats", "PercentileView - onDraw if");
+            UserErrorLog.d("DrawStats", "PercentileView - onDraw if");
 
             Paint myPaint = new Paint();
             myPaint.setColor(Color.WHITE);
@@ -104,7 +104,7 @@ public class PercentileView extends View {
             myPaint.setTextSize(dp2px(15));
             canvas.drawText("Calculating...", dp2px(30), canvas.getHeight() / 2, myPaint);
         } else {
-            Log.d("DrawStats", "PercentileView - onDraw else");
+            UserErrorLog.d("DrawStats", "PercentileView - onDraw else");
             drawPolygon(canvas, rd.q10, rd.q90, outerPaint);
             drawPolygon(canvas, rd.q25, rd.q75, innerPaint);
             drawPolygon(canvas, rd.q50, rd.q50, medianPaint);

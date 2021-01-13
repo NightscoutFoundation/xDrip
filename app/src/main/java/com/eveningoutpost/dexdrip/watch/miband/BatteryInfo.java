@@ -1,4 +1,7 @@
 package com.eveningoutpost.dexdrip.watch.miband;
+
+import java.util.GregorianCalendar;
+
 //00000006-0000-3512-2118-0009af100700
 //
 //        f			= ?
@@ -20,7 +23,6 @@ package com.eveningoutpost.dexdrip.watch.miband;
 //        3b		= 59
 //        04		= 4   // num charges??
 //        64		= 100 // how much was charged
-import java.util.GregorianCalendar;
 
 public class BatteryInfo {
     enum BatteryState {

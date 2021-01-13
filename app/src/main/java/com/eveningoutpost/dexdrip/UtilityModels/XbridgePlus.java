@@ -3,7 +3,7 @@ package com.eveningoutpost.dexdrip.UtilityModels;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.LIBRE_MULTIPLIER;
@@ -72,20 +72,20 @@ public class XbridgePlus {
             switch (buffer[SUB]) {
 
                 case REQUESTED_LAST15_PART1:
-                    UserError.Log.d(TAG, "Received last 15 minute part A reply packet");
+                    UserErrorLog.d(TAG, "Received last 15 minute part A reply packet");
                     process15minData(buffer, TREND, 0, 8);
                     break;
                 case REQUESTED_LAST15_PART2:
-                    UserError.Log.d(TAG, "Received last 15 minute part B reply packet");
+                    UserErrorLog.d(TAG, "Received last 15 minute part B reply packet");
                     process15minData(buffer, TREND, 7, 8);
                     if (JoH.ratelimit("last-requested-xbridge-part1", 120)) {
-                        UserError.Log.d(TAG, "Requesting Last15 part 1");
+                        UserErrorLog.d(TAG, "Requesting Last15 part 1");
                         return sendLast15ARequestPacket();
                     }
                     break;
 
                 default:
-                    UserError.Log.d(TAG, "Unrecoginized xBridge+ packet type: " + unsignedByteToInt(buffer[SUB]));
+                    UserErrorLog.d(TAG, "Unrecoginized xBridge+ packet type: " + unsignedByteToInt(buffer[SUB]));
             }
         }
         return null;
@@ -95,15 +95,15 @@ public class XbridgePlus {
         long timestamp = JoH.tsl();
         for (int i = src_offset; i < (src_offset + (count * 2)); i = i + 2) {
             double val = LIBRE_MULTIPLIER * (unsignedBytesToInt(buffer[i], buffer[i + 1]) & 0xFFF);
-            UserError.Log.d(TAG, "Received 15 min value: " + JoH.qs(val, 4) + " for minute: " + min_offset);
+            UserErrorLog.d(TAG, "Received 15 min value: " + JoH.qs(val, 4) + " for minute: " + min_offset);
 
             final long this_timestamp = timestamp - (min_offset * Constants.MINUTE_IN_MS);
             // TODO we may want to use getForPreciseTimestamp instead..
             if (BgReading.readingNearTimeStamp(this_timestamp) == null) {
-                UserError.Log.d(TAG, "Creating a new reading at: " + JoH.dateTimeText(this_timestamp));
+                UserErrorLog.d(TAG, "Creating a new reading at: " + JoH.dateTimeText(this_timestamp));
                 BgReading.create(val, val, xdrip.getAppContext(), this_timestamp, min_offset != 0);
             } else {
-                UserError.Log.d(TAG, "Already a reading for minute offset: " + min_offset);
+                UserErrorLog.d(TAG, "Already a reading for minute offset: " + min_offset);
             }
 
             min_offset++;

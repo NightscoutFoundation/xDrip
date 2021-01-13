@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.Models;
 
+
 import android.provider.BaseColumns;
 
 import com.activeandroid.Model;
@@ -8,6 +9,7 @@ import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Delete;
 import com.activeandroid.query.Select;
 import com.activeandroid.util.SQLiteUtils;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
@@ -62,13 +64,13 @@ public class StepCounter extends Model {
         if ((pm == null) || (data < pm.metric) || ((timestamp_ms - pm.timestamp) > (1000 * 30 * 5))) {
             pm = new StepCounter();
             pm.timestamp = timestamp_ms;
-            if (d) UserError.Log.d(TAG,"Creating new record for timestamp: "+JoH.dateTimeText(timestamp_ms));
+            if (d) UserErrorLog.d(TAG,"Creating new record for timestamp: "+JoH.dateTimeText(timestamp_ms));
         } else {
-            if (d) UserError.Log.d(TAG,"Merging pebble movement record: "+JoH.dateTimeText(timestamp_ms)+" vs old "+JoH.dateTimeText(pm.timestamp));
+            if (d) UserErrorLog.d(TAG,"Merging pebble movement record: "+JoH.dateTimeText(timestamp_ms)+" vs old "+JoH.dateTimeText(pm.timestamp));
         }
 
         pm.metric = (int) (long) data;
-        if(d) UserError.Log.d(TAG, "Saving Movement: " + pm.toS());
+        if(d) UserErrorLog.d(TAG, "Saving Movement: " + pm.toS());
         pm.saveit();
         return pm;
     }
@@ -151,9 +153,9 @@ public class StepCounter extends Model {
         for (String patch : patchup) {
             try {
                 SQLiteUtils.execSql(patch);
-                //  UserError.Log.e(TAG, "Processed patch should not have succeeded!!: " + patch);
+                //  UserErrorLog.e(TAG, "Processed patch should not have succeeded!!: " + patch);
             } catch (Exception e) {
-                //  UserError.Log.d(TAG, "Patch: " + patch + " generated exception as it should: " + e.toString());
+                //  UserErrorLog.d(TAG, "Patch: " + patch + " generated exception as it should: " + e.toString());
             }
         }
         patched = true;

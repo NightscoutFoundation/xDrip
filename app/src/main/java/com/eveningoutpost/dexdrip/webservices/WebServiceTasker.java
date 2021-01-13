@@ -1,10 +1,10 @@
 package com.eveningoutpost.dexdrip.webservices;
 
+
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.localeTasker.bundle.PluginBundleManager;
 import com.eveningoutpost.dexdrip.xdrip;
 
@@ -30,7 +30,7 @@ public class WebServiceTasker extends BaseWebService {
 
         query = stripFirstComponent(query);
         if (query.length() > 0) {
-            UserError.Log.d(TAG, "Processing " + query);
+            UserErrorLog.d(TAG, "Processing " + query);
 
             // package up the string and send it to the tasker interface
             final Bundle bundle = new Bundle();

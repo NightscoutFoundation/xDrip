@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -32,7 +33,7 @@ import com.eveningoutpost.dexdrip.Models.Prediction;
 import com.eveningoutpost.dexdrip.Models.Profile;
 import com.eveningoutpost.dexdrip.Models.StepCounter;
 import com.eveningoutpost.dexdrip.Models.Treatments;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.calibrations.CalibrationAbstract;
@@ -482,10 +483,10 @@ public class BgGraphBuilder {
             float ypos; //
 
             final List<PointValue> new_points = new ArrayList<>();
-            if (d) UserError.Log.d("HEARTRATE", "Size " + condensedHeartRateList.size());
+            if (d) UserErrorLog.d("HEARTRATE", "Size " + condensedHeartRateList.size());
 
             for (HeartRate pm : condensedHeartRateList) {
-                if (d) UserError.Log.d("HEARTRATE: ", JoH.dateTimeText(pm.timestamp) + " \tHR: " + pm.bpm);
+                if (d) UserErrorLog.d("HEARTRATE: ", JoH.dateTimeText(pm.timestamp) + " \tHR: " + pm.bpm);
 
                 ypos = (pm.bpm * yscale) / 10;
                 final PointValue this_point = new PointValue((float) pm.timestamp / FUZZER, ypos);
@@ -787,7 +788,7 @@ public class BgGraphBuilder {
     
     public void debugPrintPoints(List<PointValue> mypoints) {
         for (PointValue thispoint : mypoints) {
-            UserError.Log.i(TAG, "Debug Points: " + thispoint.toString());
+            UserErrorLog.i(TAG, "Debug Points: " + thispoint.toString());
         }
     }
 
@@ -855,11 +856,11 @@ public class BgGraphBuilder {
                 thesepoints.add(thispoint); // grow current line list
             }
         } else {
-            UserError.Log.i(TAG, "Raw points size is zero");
+            UserErrorLog.i(TAG, "Raw points size is zero");
         }
 
 
-        //UserError.Log.i(TAG, "Returning linearray: " + Integer.toString(linearray.size()));
+        //UserErrorLog.i(TAG, "Returning linearray: " + Integer.toString(linearray.size()));
         return linearray;
     }
 
@@ -1508,7 +1509,7 @@ public class BgGraphBuilder {
                                 smbValues.add(pv);
                                 continue;
                             } else {
-                                UserError.Log.d(TAG, "Could not determine a good position to use for SMB");
+                                UserErrorLog.d(TAG, "Could not determine a good position to use for SMB");
                             }
                         }
 

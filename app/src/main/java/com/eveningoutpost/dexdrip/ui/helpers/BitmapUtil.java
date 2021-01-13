@@ -1,6 +1,5 @@
 package com.eveningoutpost.dexdrip.ui.helpers;
 
-// jamorham
 
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -18,6 +17,8 @@ import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.io.FileDescriptor;
+
+// jamorham
 
 public class BitmapUtil {
 

@@ -1,13 +1,13 @@
 package com.eveningoutpost.dexdrip.watch.lefun;
 
-// jamorham
 
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
 
 import java.util.Calendar;
 
 import lombok.AllArgsConstructor;
+
+// jamorham
 
 public class FunAlmanac {
 

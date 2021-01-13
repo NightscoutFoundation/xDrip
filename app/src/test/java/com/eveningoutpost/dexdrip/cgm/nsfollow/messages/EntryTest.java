@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.cgm.nsfollow.messages;
 
+
 import org.junit.Before;
 import org.junit.Test;
 

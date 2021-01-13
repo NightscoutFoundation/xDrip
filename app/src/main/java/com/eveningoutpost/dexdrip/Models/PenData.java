@@ -1,11 +1,13 @@
 package com.eveningoutpost.dexdrip.Models;
 
+
 import android.provider.BaseColumns;
 
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.google.gson.annotations.Expose;
 
@@ -90,7 +92,7 @@ public class PenData extends Model {
         // TODO baulk on very old records
 
         if (mac == null || type == null || index < 0 || units == -1 || timestamp < 0) {
-            UserError.Log.wtf(TAG, "Invalid data sent to PenData.create() - skipping");
+            UserErrorLog.wtf(TAG, "Invalid data sent to PenData.create() - skipping");
             return null;
         }
 
@@ -130,7 +132,7 @@ public class PenData extends Model {
         long got = -1;
         for (final PenData pd : list) {
             if (got != -1 && pd.index != got - 1) {
-                UserError.Log.d(TAG, "Tripped missing index on: " + got + " vs " + pd.index);
+                UserErrorLog.d(TAG, "Tripped missing index on: " + got + " vs " + pd.index);
                 return got - 1;
             }
             got = pd.index;

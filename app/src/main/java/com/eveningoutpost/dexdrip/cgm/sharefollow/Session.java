@@ -1,7 +1,8 @@
 package com.eveningoutpost.dexdrip.cgm.sharefollow;
 
+
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 
 import java.io.IOException;
@@ -53,16 +54,16 @@ public class Session {
                 results = (List<ShareGlucoseRecord>) object;
 
             } catch (ClassCastException e) {
-                UserError.Log.e(TAG, "Couldn't parse results: " + e);
+                UserErrorLog.e(TAG, "Couldn't parse results: " + e);
             }
             // is this a uuid string reply?
         } else if (object instanceof String) {
             sessionId = (String) object;
             if (sessionId.length() != 36) {
-                UserError.Log.d(TAG, "Got invalid session id: " + sessionId);
+                UserErrorLog.d(TAG, "Got invalid session id: " + sessionId);
                 sessionId = "";
             } else {
-                UserError.Log.d(TAG, "Got valid looking session id: " + sessionId);
+                UserErrorLog.d(TAG, "Got valid looking session id: " + sessionId);
                 sessionId_timestamp = JoH.tsl();
             }
             saveSessionId();
@@ -103,7 +104,7 @@ public class Session {
         if (emptyString(sessionId)) {
             sessionId = null;
         } else {
-            UserError.Log.d(TAG, "Loaded session id: " + sessionId + " age: " + JoH.msSince(sessionId_timestamp) + " valid: " + sessionIdValid());
+            UserErrorLog.d(TAG, "Loaded session id: " + sessionId + " age: " + JoH.msSince(sessionId_timestamp) + " valid: " + sessionIdValid());
         }
     }
 

@@ -1,11 +1,12 @@
 package com.eveningoutpost.dexdrip.UtilityModels.pebble;
 
+
 import android.content.Intent;
 
 import com.eveningoutpost.dexdrip.BestGlucose;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.getpebble.android.kit.PebbleKit;
 import com.getpebble.android.kit.util.PebbleDictionary;
 
@@ -31,14 +32,14 @@ public class PebbleDisplayStandard extends PebbleDisplayAbstract {
 
 
     public void receiveData(int transactionId, PebbleDictionary data) {
-        Log.d(TAG, "receiveData: transactionId is " + String.valueOf(transactionId));
+        UserErrorLog.d(TAG, "receiveData: transactionId is " + String.valueOf(transactionId));
         if (PebbleWatchSync.lastTransactionId == 0 || transactionId != PebbleWatchSync.lastTransactionId) {
             PebbleWatchSync.lastTransactionId = transactionId;
-            Log.d(TAG, "Received Query. data: " + data.size() + ". sending ACK and data");
+            UserErrorLog.d(TAG, "Received Query. data: " + data.size() + ". sending ACK and data");
             PebbleKit.sendAckToPebble(this.context, transactionId);
             sendData();
         } else {
-            Log.d(TAG, "receiveData: lastTransactionId is " + String.valueOf(PebbleWatchSync.lastTransactionId) + ", sending NACK");
+            UserErrorLog.d(TAG, "receiveData: lastTransactionId is " + String.valueOf(PebbleWatchSync.lastTransactionId) + ", sending NACK");
             PebbleKit.sendNackToPebble(this.context, transactionId);
         }
     }
@@ -56,12 +57,12 @@ public class PebbleDisplayStandard extends PebbleDisplayAbstract {
         //boolean no_signal;
 
         if (use_best_glucose) {
-            Log.v(TAG, "buildDictionary: slopeOrdinal-" + slopeOrdinal + " bgReading-" + bgReadingS + //
+            UserErrorLog.v(TAG, "buildDictionary: slopeOrdinal-" + slopeOrdinal + " bgReading-" + bgReadingS + //
                     " now-" + (int) now.getTime() / 1000 + " bgTime-" + (int) (dg.timestamp / 1000) + //
                     " phoneTime-" + (int) (new Date().getTime() / 1000) + " getBgDelta-" + getBgDelta());
             //   no_signal = (dg.mssince > Home.stale_data_millis());
         } else {
-            Log.v(TAG, "buildDictionary: slopeOrdinal-" + slopeOrdinal + " bgReading-" + bgReadingS + //
+            UserErrorLog.v(TAG, "buildDictionary: slopeOrdinal-" + slopeOrdinal + " bgReading-" + bgReadingS + //
                     " now-" + (int) now.getTime() / 1000 + " bgTime-" + (int) (this.bgReading.timestamp / 1000) + //
                     " phoneTime-" + (int) (new Date().getTime() / 1000) + " getBgDelta-" + getBgDelta());
             //   no_signal = ((new Date().getTime()) - Home.stale_data_millis() - this.bgReading.timestamp > 0);
@@ -109,7 +110,7 @@ public class PebbleDisplayStandard extends PebbleDisplayAbstract {
             PebbleDictionary dictionary = buildDictionary();
 
             if (dictionary != null && this.context != null) {
-                Log.d(TAG, "sendDownload: Sending data to pebble");
+                UserErrorLog.d(TAG, "sendDownload: Sending data to pebble");
                 sendDataToPebble(dictionary);
                 last_time_seen = JoH.ts();
             }
@@ -126,7 +127,7 @@ public class PebbleDisplayStandard extends PebbleDisplayAbstract {
             if (this.context != null)
                 this.context.sendBroadcast(i);
 
-            Log.i(TAG, "Sending pebble fixup");
+            UserErrorLog.i(TAG, "Sending pebble fixup");
             last_time_seen = JoH.ts();
         }
     }

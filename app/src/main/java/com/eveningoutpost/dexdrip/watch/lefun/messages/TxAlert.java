@@ -1,8 +1,9 @@
 package com.eveningoutpost.dexdrip.watch.lefun.messages;
 
-// jamorham
 
 import java.io.UnsupportedEncodingException;
+
+// jamorham
 
 public class TxAlert extends BaseTx {
 

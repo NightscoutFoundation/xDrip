@@ -1,21 +1,25 @@
 package com.eveningoutpost.dexdrip.Models;
 
+
 import android.text.format.DateFormat;
+
 import com.eveningoutpost.dexdrip.Home;
-import java.nio.ByteBuffer;
-import java.util.Date;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
+import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.DexCollectionService;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.xdrip;
-import com.eveningoutpost.dexdrip.R;
+
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.regex.*;
+import java.nio.ByteBuffer;
+import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.eveningoutpost.dexdrip.utils.FileUtils.getExternalDir;
 import static com.eveningoutpost.dexdrip.utils.FileUtils.makeSureDirectoryExists;
@@ -63,16 +67,16 @@ public class blueReader {
         String bufferstring;
         //Log.w(TAG, "Packet: " + bufferstring);
         if (buffer == null) {
-            Log.e(TAG, "null buffer passed to decodeblueReaderPacket");
+            UserErrorLog.e(TAG, "null buffer passed to decodeblueReaderPacket");
             return null;
         } else {
             bufferstring=new String(buffer);
         }
         if (bufferstring.startsWith("not ready for") ) { //delete the trans_failed, because its normal only if the bluereader could not read the sensor.
             counterHibernated++;
-            Log.e(TAG, "Found blueReader in a ugly State (" + counterHibernated + "/3), send hibernate to reset! If this does not help in the next 5 Minutes, then turn the bluereader manually off and on!");
+            UserErrorLog.e(TAG, "Found blueReader in a ugly State (" + counterHibernated + "/3), send hibernate to reset! If this does not help in the next 5 Minutes, then turn the bluereader manually off and on!");
             if (counterHibernated > 2) {
-                Log.wtf(TAG, "Ugly state not resolveable. Bluereader will be shut down! Please restart it!");
+                UserErrorLog.wtf(TAG, "Ugly state not resolveable. Bluereader will be shut down! Please restart it!");
                 Home.toaststatic("BlueReader ugly state not resolveable, bluereader will be shut down. Please restart it!");
                 if (!Pref.getBooleanDefaultFalse("blueReader_suppressuglystatemsg")) {
                     Notifications.RiseDropAlert(xdrip.getAppContext(),true,"BlueReader Alarm", xdrip.getAppContext().getString(R.string.bluereaderuglystate),1);
@@ -83,42 +87,42 @@ public class blueReader {
                 return goHybernate; //send hard hibernate, because blueReader is in a ugly state
             }
         } else if (bufferstring.startsWith("IDR")){
-            Log.i(TAG, bufferstring);
+            UserErrorLog.i(TAG, bufferstring);
             PersistentStore.setString("blueReaderFirmware", bufferstring );
             tempVers=Pattern.compile(".*\\|blue(.*)-.*").matcher(bufferstring);
             tempVers.find();
             PersistentStore.setDouble("blueReaderFirmwareValue",Double.parseDouble(tempVers.group(1)));
-            Log.i(TAG, "bluereader-Firmware-Version: " + tempVers);
+            UserErrorLog.i(TAG, "bluereader-Firmware-Version: " + tempVers);
             if (BgReading.last() == null || BgReading.last().timestamp + (4 * 60 * 1000) < System.currentTimeMillis()) {
                 return requestValue;
             } else {
                 return null;
             }
         } else if (bufferstring.startsWith("WAKE")) {
-            Log.d (TAG, "blueReader was set to wakeup-mode manually...");
+            UserErrorLog.d (TAG, "blueReader was set to wakeup-mode manually...");
             return null;
         } else if (bufferstring.startsWith("ECHO")) {
-            Log.d (TAG, "blueReader was set to Echo-Mode manually...");
+            UserErrorLog.d (TAG, "blueReader was set to Echo-Mode manually...");
             return null;
         } else if (bufferstring.startsWith("NFC READY")) {
-            Log.d (TAG, "blueReader notice that NFC is active...");
+            UserErrorLog.d (TAG, "blueReader notice that NFC is active...");
             return null;
         } else if (bufferstring.startsWith("NFC_DISABLED")) {
-            Log.d (TAG, "blueReader notice that NFC is now hibernated...");
+            UserErrorLog.d (TAG, "blueReader notice that NFC is now hibernated...");
             return null;
         } else if (bufferstring.startsWith("HYBERNATE SUCCESS")) {
-            Log.i (TAG, "blueReader notice that NFC is now really hibernated...");
+            UserErrorLog.i (TAG, "blueReader notice that NFC is now really hibernated...");
             if (counterHibernated > 0) {
-                Log.w (TAG,"Found hibernation after wrong read. Resend read-command...");
+                UserErrorLog.w (TAG,"Found hibernation after wrong read. Resend read-command...");
                 return requestValue;
             } else {
                 return null;
             }
         } else if (bufferstring.startsWith("-r 0:")) {
-            Log.d (TAG, "blueReader sends an unknown reaction: '" + bufferstring + "'");
+            UserErrorLog.d (TAG, "blueReader sends an unknown reaction: '" + bufferstring + "'");
             return null;
         } else if (bufferstring.startsWith("TRANS_FAILED")) {
-            Log.w (TAG, "Attention: check position of blueReader on the sensor, as it was not able to read!");
+            UserErrorLog.w (TAG, "Attention: check position of blueReader on the sensor, as it was not able to read!");
             Home.toaststatic(xdrip.getAppContext().getString(R.string.bluereader_position));
             return null;
         } else if (bufferstring.startsWith("battery: ")) {
@@ -131,7 +135,7 @@ public class blueReader {
             // check for shutdown blueReader if Battery is too low
             if (Pref.getBooleanDefaultFalse("blueReader_turn_off")) {
                 if (Pref.getInt("blueReader_turn_off_value",5) > Pref.getInt("bridge_battery",100)) {
-                    Log.w (TAG, "blueReader will be turn off, as the battery is lower then " + Pref.getInt("blueReader_turn_off_value",5) +"%");
+                    UserErrorLog.w (TAG, "blueReader will be turn off, as the battery is lower then " + Pref.getInt("blueReader_turn_off_value",5) +"%");
                     Home.toaststatic(xdrip.getAppContext().getString(R.string.bluereaderoff) + Pref.getInt("blueReader_turn_off_value",5) +"%");
                     return shutdown;
                 }
@@ -148,7 +152,7 @@ public class blueReader {
 
         final Sensor sensor = Sensor.currentSensor();
         if (sensor == null) {
-            Log.i(TAG, "setSerialDataToTransmitterRawData: No Active Sensor, Data only stored in Transmitter Data");
+            UserErrorLog.i(TAG, "setSerialDataToTransmitterRawData: No Active Sensor, Data only stored in Transmitter Data");
             return;
         }
 
@@ -158,7 +162,7 @@ public class blueReader {
         double blueReaderDays =0;
         if (transmitterData.sensor_battery_level > PersistentStore.getLong("blueReader_Full_Battery")) {
             PersistentStore.setLong("blueReader_Full_Battery", transmitterData.sensor_battery_level);
-            Log.i(TAG, "blueReader_Full_Battery set to: " + transmitterData.sensor_battery_level) ;
+            UserErrorLog.i(TAG, "blueReader_Full_Battery set to: " + transmitterData.sensor_battery_level) ;
         }
         int localBridgeBattery =((transmitterData.sensor_battery_level - 3300) * 100 / (((int) (long) PersistentStore.getLong("blueReader_Full_Battery"))-3300));
         Pref.setInt("bridge_battery", localBridgeBattery);
@@ -183,14 +187,14 @@ public class blueReader {
             );
         }
         DexCollectionService.last_transmitter_Data = transmitterData;
-        Log.d(TAG, "BgReading.create: new BG reading at " + timestamp + " with a timestamp of " + transmitterData.timestamp);
+        UserErrorLog.d(TAG, "BgReading.create: new BG reading at " + timestamp + " with a timestamp of " + transmitterData.timestamp);
         BgReading.create(transmitterData.raw_data, transmitterData.filtered_data, xdrip.getAppContext(), transmitterData.timestamp);
 
     }
 
 
     public static ByteBuffer initialize() {
-        Log.i(TAG, "initialize blueReader!");
+        UserErrorLog.i(TAG, "initialize blueReader!");
         Pref.setInt("bridge_battery", 0);
         PersistentStore.setDouble("blueReaderFirmwareValue", 0);
 
@@ -208,7 +212,7 @@ public class blueReader {
             pWriter = new PrintWriter(new BufferedWriter(new FileWriter(logFile, true)));
             pWriter.println(logLine);
         } catch (IOException ioe) {
-            Log.w(TAG, "log write error: " + ioe.toString());
+            UserErrorLog.w(TAG, "log write error: " + ioe.toString());
         } finally {
             if (pWriter != null){
                 pWriter.flush();

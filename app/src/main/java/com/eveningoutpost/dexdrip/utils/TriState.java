@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.utils;
 
+
 // jamorham TriState Boolean
 
 public class TriState {

@@ -1,12 +1,13 @@
 package com.eveningoutpost.dexdrip.watch.thinjam;
 
-// jamorham
 
 import android.preference.Preference;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.xdrip;
+
+// jamorham
 
 public class BlueJayAdapter {
 

@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.ui.helpers;
 
+
 import android.support.annotation.ColorInt;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;

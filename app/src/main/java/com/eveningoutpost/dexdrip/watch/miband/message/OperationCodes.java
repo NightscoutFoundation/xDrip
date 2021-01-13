@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.watch.miband.message;
 
+
 import java.nio.ByteBuffer;
 
 public class OperationCodes {

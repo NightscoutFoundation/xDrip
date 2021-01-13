@@ -1,9 +1,10 @@
 package com.eveningoutpost.dexdrip.watch.thinjam.utils;
 
+
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -52,9 +53,9 @@ public class BitmapTools {
             readAllToBuffer(fileInputStream, buffer);
             return buffer;
         } catch (FileNotFoundException e) {
-            UserError.Log.e(TAG, "Could not find: " + path);
+            UserErrorLog.e(TAG, "Could not find: " + path);
         } catch (IOException e) {
-            UserError.Log.e(TAG, "IO Error: " + e);
+            UserErrorLog.e(TAG, "IO Error: " + e);
         }
         return null;
     }
@@ -83,7 +84,7 @@ public class BitmapTools {
             bitmap.recycle();
             return new Wrapper(TJ_BitmapType.RGB565, width, height, byteSwapRGB565(buffer.array()));
         } catch (Exception e) {
-            UserError.Log.e(TAG, "loadPNGBytesToRGB565: exception " + e);
+            UserErrorLog.e(TAG, "loadPNGBytesToRGB565: exception " + e);
             return null;
         }
     }
@@ -93,7 +94,7 @@ public class BitmapTools {
             if (image.type == TJ_BitmapType.RGB565) {
                 return new Wrapper(TJ_BitmapType.Mono, image.width, image.height, packRGB565bytesToMono(image.body));
             } else {
-                UserError.Log.wtf(TAG, "convertWrappedToMono: unsupported image type in conversion: " + image.type);
+                UserErrorLog.wtf(TAG, "convertWrappedToMono: unsupported image type in conversion: " + image.type);
             }
         }
         return null;

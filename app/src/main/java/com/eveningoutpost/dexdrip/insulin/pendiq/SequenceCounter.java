@@ -1,6 +1,7 @@
 package com.eveningoutpost.dexdrip.insulin.pendiq;
 
-import com.eveningoutpost.dexdrip.Models.UserError;
+
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 
@@ -19,7 +20,7 @@ public class SequenceCounter {
 
     public static short getNext() {
         final short value = (short) (counter.incrementAndGet() % 9999);
-        UserError.Log.d("Pendiq", "Returning sequence number: " + value);
+        UserErrorLog.d("Pendiq", "Returning sequence number: " + value);
         Inevitable.task("save-pendiq-counter", 5000, () -> PersistentStore.setLong(STORE_REF, counter.get()));
         return value;
     }

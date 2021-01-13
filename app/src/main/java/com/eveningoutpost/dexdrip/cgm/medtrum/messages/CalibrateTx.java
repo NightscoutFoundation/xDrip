@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.cgm.medtrum.messages;
 
+
 import com.eveningoutpost.dexdrip.cgm.medtrum.TimeKeeper;
 
 import java.security.InvalidAlgorithmParameterException;

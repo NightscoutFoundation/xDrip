@@ -7,7 +7,7 @@ import android.bluetooth.BluetoothGattService;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
 */
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.CalRecord;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.EGVRecord;
@@ -201,7 +201,7 @@ public class ReadDataShare {
         final Action1<byte[]> databasePageReader = new Action1<byte[]>() {
             @Override
             public void call(byte[] s) {
-                Log.d("ReadDataShare", "Database Page Reader received SIZE: " + s.length);
+                UserErrorLog.d("ReadDataShare", "Database Page Reader received SIZE: " + s.length);
                 byte[] temp = s;
                 if (accumulatedResponse == null) {
                     accumulatedResponse = s;
@@ -211,7 +211,7 @@ public class ReadDataShare {
                         outputStream.write(accumulatedResponse);
                         outputStream.write(temp);
                         accumulatedResponse = outputStream.toByteArray();
-                        Log.d("ReadDataShare", "Combined Response length: " + accumulatedResponse.length);
+                        UserErrorLog.d("ReadDataShare", "Combined Response length: " + accumulatedResponse.length);
                     } catch (Exception e) { e.printStackTrace(); }
                 }
                 if (temp.length < 20) { Observable.just(accumulatedResponse).subscribe(fullPageListener).unsubscribe(); }

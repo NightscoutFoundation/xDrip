@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.tidepool;
 
+
 import com.google.gson.annotations.Expose;
 
 import lombok.AllArgsConstructor;

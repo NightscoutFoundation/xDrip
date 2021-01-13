@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.stats;
 
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
@@ -7,8 +8,9 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.util.DisplayMetrics;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import android.view.View;
+
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 
 /**
  * Created by adrian on 30/06/15.
@@ -27,13 +29,13 @@ public class ChartView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        Log.d("DrawStats", "onDraw - ChartView");
+        UserErrorLog.d("DrawStats", "onDraw - ChartView");
         super.onDraw(canvas);
 
         RangeData rd = getMaybeRangeData();
 
         if (rd == null) {
-            Log.d("DrawStats", "ChartView - onDraw if");
+            UserErrorLog.d("DrawStats", "ChartView - onDraw if");
 
             Paint myPaint = new Paint();
             myPaint.setColor(Color.WHITE);
@@ -42,7 +44,7 @@ public class ChartView extends View {
             myPaint.setTextSize(dp2px(15));
             canvas.drawText("Calculating...", dp2px(30), canvas.getHeight() / 2, myPaint);
         } else {
-            Log.d("DrawStats", "onDraw else");
+            UserErrorLog.d("DrawStats", "onDraw else");
 
             if ((rd.aboveRange + rd.belowRange + rd.inRange) == 0) {
                 Paint myPaint = new Paint();
@@ -65,7 +67,7 @@ public class ChartView extends View {
             float lowDeg = rd.belowRange * 360f / (rd.inRange + rd.belowRange + rd.aboveRange);
             float highDeg = rd.aboveRange * 360f / (rd.inRange + rd.belowRange + rd.aboveRange);
 
-            Log.d("DrawStats", "in,low, high degree: " + inDeg + " " + lowDeg + " " + highDeg);
+            UserErrorLog.d("DrawStats", "in,low, high degree: " + inDeg + " " + lowDeg + " " + highDeg);
 
             myPaint.setColor(android.graphics.Color.RED);
             canvas.drawArc(rect, -90, lowDeg, true, myPaint);

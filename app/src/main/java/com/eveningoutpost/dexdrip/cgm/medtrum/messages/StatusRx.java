@@ -1,12 +1,13 @@
 package com.eveningoutpost.dexdrip.cgm.medtrum.messages;
 
-// jamorham
 
 import com.google.gson.annotations.Expose;
 
 import lombok.Getter;
 
 import static com.eveningoutpost.dexdrip.cgm.medtrum.Const.OPCODE_STAT_REPLY;
+
+// jamorham
 
 public class StatusRx extends BaseMessage {
 

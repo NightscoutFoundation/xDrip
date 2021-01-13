@@ -1,7 +1,8 @@
 package com.eveningoutpost.dexdrip.G5Model;
 
+
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -51,7 +52,7 @@ public class SessionStartTxMessage extends BaseMessage {
             data.putShort((short) 0x0000);
         }
         appendCRC();
-        UserError.Log.d(TAG, "SessionStartTxMessage dbg: " + JoH.bytesToHex(byteSequence));
+        UserErrorLog.d(TAG, "SessionStartTxMessage dbg: " + JoH.bytesToHex(byteSequence));
     }
 
 }

@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.watch.miband.message;
 
+
 public class DeviceEvent {
     public static final byte FELL_ASLEEP = 0x01;
     public static final byte WOKE_UP = 0x02;

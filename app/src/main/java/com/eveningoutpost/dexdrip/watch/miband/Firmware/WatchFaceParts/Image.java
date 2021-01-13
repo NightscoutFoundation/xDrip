@@ -1,9 +1,10 @@
 package com.eveningoutpost.dexdrip.watch.miband.Firmware.WatchFaceParts;
 
+
 import android.graphics.Bitmap;
 import android.graphics.Color;
 
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.watch.miband.Firmware.WatchFaceGenerator;
 import com.eveningoutpost.dexdrip.watch.miband.Firmware.WatchFaceParts.Utils.PnnQuantizer;
 
@@ -97,7 +98,7 @@ public class Image {
 
     private void extractPalette() throws Exception {
         if (d)
-            UserError.Log.e(TAG, "Extracting palette");
+            UserErrorLog.e(TAG, "Extracting palette");
 
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
@@ -116,7 +117,7 @@ public class Image {
         paletteColors = palette.size();
         bitsPerPixel = (int) Math.ceil(Math.log(paletteColors) / Math.log(2));
         if (d)
-            UserError.Log.e(TAG, String.format("Extracted: %d palette colors, bitsPerPixel:%d", paletteColors, bitsPerPixel));
+            UserErrorLog.e(TAG, String.format("Extracted: %d palette colors, bitsPerPixel:%d", paletteColors, bitsPerPixel));
 
         if (palette.size() > MAX_PALETTE_COLORS)
             throw new Exception("Too many colors for palette mode, stopping execution");
@@ -146,15 +147,15 @@ public class Image {
             paletteColors = palette.size();
             bitsPerPixel = (int) Math.ceil(Math.log(paletteColors) / Math.log(2));
             if (d)
-                UserError.Log.e(TAG, String.format("palette was expanded to: %d palette colors", paletteColors));
+                UserErrorLog.e(TAG, String.format("palette was expanded to: %d palette colors", paletteColors));
         }
     }
 
     private void writeHeader() throws IOException {
         if (d) {
-            UserError.Log.e(TAG, "Writing image header");
-            UserError.Log.e(TAG, String.format("Width: %d, Height: %d, RowLength: %d", width, height, rowLengthInBytes));
-            UserError.Log.e(TAG, String.format("BPP: %d, PaletteColors: %d, Transaparency: %d", bitsPerPixel, paletteColors, transparency));
+            UserErrorLog.e(TAG, "Writing image header");
+            UserErrorLog.e(TAG, String.format("Width: %d, Height: %d, RowLength: %d", width, height, rowLengthInBytes));
+            UserErrorLog.e(TAG, String.format("BPP: %d, PaletteColors: %d, Transaparency: %d", bitsPerPixel, paletteColors, transparency));
         }
         writer.write(fromUint16(width));
         writer.write(fromUint16(height));
@@ -166,7 +167,7 @@ public class Image {
 
     private void writePalette() throws IOException {
         if (d)
-            UserError.Log.e(TAG, "Writing palette");
+            UserErrorLog.e(TAG, "Writing palette");
         for (int color : palette) {
             writer.write(Color.red(color));
             writer.write(Color.green(color));
@@ -177,7 +178,7 @@ public class Image {
 
     private void writeImage() throws IOException {
         if (d)
-            UserError.Log.e(TAG, "Writing image");
+            UserErrorLog.e(TAG, "Writing image");
 
         HashMap<Integer, Integer> paletteHash = new HashMap<>();
         int i = 0;

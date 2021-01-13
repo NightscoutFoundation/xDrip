@@ -24,7 +24,7 @@ import android.os.PowerManager;
 import android.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.ReadDataShare;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.CalRecord;
@@ -114,7 +114,7 @@ public class DexShareCollectionService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.d(TAG, "onCreate: ENTER");
+        UserErrorLog.d(TAG, "onCreate: ENTER");
         readData = new ReadDataShare(this);
         service = this;
         //KS foregroundServiceStarter = new ForegroundServiceStarter(getApplicationContext(), service);
@@ -132,7 +132,7 @@ public class DexShareCollectionService extends Service {
         final PowerManager powerManager = (PowerManager) getApplicationContext().getSystemService(POWER_SERVICE);
         final PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "DexShareCollectionStart");
         wakeLock.acquire(40000);
-        Log.d(TAG, "onStartCommand");
+        UserErrorLog.d(TAG, "onStartCommand");
         try {
 
             if (shouldServiceRun(getApplicationContext())) {
@@ -145,7 +145,7 @@ public class DexShareCollectionService extends Service {
                 setRetryTimer();
                 return START_NOT_STICKY;
             }
-            Log.i(TAG, "STARTING SERVICE");
+            UserErrorLog.i(TAG, "STARTING SERVICE");
             attemptConnection();
         } finally {
             if(wakeLock != null && wakeLock.isHeld()) wakeLock.release();
@@ -156,7 +156,7 @@ public class DexShareCollectionService extends Service {
     private static boolean shouldServiceRun(Context context) {
         if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) return false;
         final boolean result = CollectionServiceStarter.isBTShare(context) && PersistentStore.getBoolean(CollectionServiceStarter.pref_run_wear_collector);
-        Log.d(TAG, "shouldServiceRun() returning: " + result);
+        UserErrorLog.d(TAG, "shouldServiceRun() returning: " + result);
         return result;
     }
 
@@ -169,7 +169,7 @@ public class DexShareCollectionService extends Service {
         }
         else {//onDestroy triggered by CollectionServiceStart.stopBtService
             if (pendingIntent != null) {
-                Log.d(TAG, "onDestroy stop Alarm serviceIntent");
+                UserErrorLog.d(TAG, "onDestroy stop Alarm serviceIntent");
                 AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
                 alarm.cancel(pendingIntent);
             }
@@ -177,20 +177,20 @@ public class DexShareCollectionService extends Service {
         //KS foregroundServiceStarter.stop();
         unregisterReceiver(mPairReceiver);
         //KS BgToSpeech.tearDownTTS();
-        Log.i(TAG, "SERVICE STOPPED");
+        UserErrorLog.i(TAG, "SERVICE STOPPED");
     }
 
     public SharedPreferences.OnSharedPreferenceChangeListener prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
         public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
             if(key.compareTo("run_service_in_foreground") == 0) {
-                Log.d("FOREGROUND", "run_service_in_foreground changed!");
+                UserErrorLog.d("FOREGROUND", "run_service_in_foreground changed!");
                 if (prefs.getBoolean("run_service_in_foreground", false)) {
                     //KS foregroundServiceStarter = new ForegroundServiceStarter(getApplicationContext(), service);
                     //KS foregroundServiceStarter.start();
-                    Log.i(TAG, "Moving to foreground");
+                    UserErrorLog.i(TAG, "Moving to foreground");
                 } else {
                     //KS service.stopForeground(true);
-                    Log.i(TAG, "Removing from foreground");
+                    UserErrorLog.i(TAG, "Removing from foreground");
                 }
             }
         }
@@ -209,7 +209,7 @@ public class DexShareCollectionService extends Service {
             } else {
                 retry_in = (1000 * 20);
             }
-            Log.d(TAG, "Restarting in: " + (retry_in / (60 * 1000)) + " minutes");
+            UserErrorLog.d(TAG, "Restarting in: " + (retry_in / (60 * 1000)) + " minutes");
             Calendar calendar = Calendar.getInstance();
             AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
             if (pendingIntent != null)
@@ -228,7 +228,7 @@ public class DexShareCollectionService extends Service {
     public void setFailoverTimer() { //Sometimes it gets stuck in limbo on 4.4, this should make it try again
         if (CollectionServiceStarter.isBTShare(getApplicationContext())) {
             long retry_in = (1000 * 60 * 5);
-            Log.d(TAG, "Fallover Restarting in: " + (retry_in / (60 * 1000)) + " minutes");
+            UserErrorLog.d(TAG, "Fallover Restarting in: " + (retry_in / (60 * 1000)) + " minutes");
             Calendar calendar = Calendar.getInstance();
             AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
             if (pendingIntent != null)
@@ -262,7 +262,7 @@ public class DexShareCollectionService extends Service {
                     }
                 }
             }
-            Log.i(TAG, "Connection state: " + mConnectionState);
+            UserErrorLog.i(TAG, "Connection state: " + mConnectionState);
             if (mConnectionState == STATE_DISCONNECTED || mConnectionState == STATE_DISCONNECTING) {
                 ActiveBluetoothDevice btDevice = ActiveBluetoothDevice.first();
                 if (btDevice != null) {
@@ -274,22 +274,22 @@ public class DexShareCollectionService extends Service {
                             connect(mDeviceAddress);
                             return;
                         } else {
-                            Log.w(TAG, "Bluetooth is disabled or BT device cant be found");
+                            UserErrorLog.w(TAG, "Bluetooth is disabled or BT device cant be found");
                             setRetryTimer();
                             return;
                         }
                     } catch (IllegalArgumentException e) {
                         if (JoH.ratelimit("dex-share-error-log", 180)) {
-                            Log.wtf(TAG, "Error connecting: " + e);
+                            UserErrorLog.wtf(TAG, "Error connecting: " + e);
                         }
                     }
                 } else {
-                    Log.w(TAG, "No bluetooth device to try and connect to");
+                    UserErrorLog.w(TAG, "No bluetooth device to try and connect to");
                     setRetryTimer();
                     return;
                 }
             } else if (mConnectionState == STATE_CONNECTED) {
-                Log.i(TAG, "Looks like we are already connected, going to read!");
+                UserErrorLog.i(TAG, "Looks like we are already connected, going to read!");
                 attemptRead();
                 return;
             } else {
@@ -320,35 +320,35 @@ public class DexShareCollectionService extends Service {
                 "ReadingShareData");
         wakeLock1.acquire(60000);
         requestHighPriority();
-        Log.d(TAG, "Attempting to read data");
+        UserErrorLog.d(TAG, "Attempting to read data");
         final Action1<Long> systemTimeListener = new Action1<Long>() {
             @Override
             public void call(Long s) {
                 if (s != null) {
-                    Log.d(TAG, "Made the full round trip, got " + s + " as the system time");
+                    UserErrorLog.d(TAG, "Made the full round trip, got " + s + " as the system time");
                     final long additiveSystemTimeOffset = new Date().getTime() - s;
 
                     final Action1<Long> dislpayTimeListener = new Action1<Long>() {
                         @Override
                         public void call(Long s) {
                             if (s != null) {
-                                Log.d(TAG, "Made the full round trip, got " + s + " as the display time offset");
+                                UserErrorLog.d(TAG, "Made the full round trip, got " + s + " as the display time offset");
                                 final long addativeDisplayTimeOffset = additiveSystemTimeOffset - (s * 1000);
 
-                                Log.d(TAG, "Making " + addativeDisplayTimeOffset + " the the total time offset");
+                                UserErrorLog.d(TAG, "Making " + addativeDisplayTimeOffset + " the the total time offset");
 
                                 final Action1<EGVRecord[]> evgRecordListener = new Action1<EGVRecord[]>() {
                                     @Override
                                     public void call(EGVRecord[] egvRecords) {
                                         if (egvRecords != null) {
-                                            Log.d(TAG, "Made the full round trip, got " + egvRecords.length + " EVG Records");
+                                            UserErrorLog.d(TAG, "Made the full round trip, got " + egvRecords.length + " EVG Records");
                                             BgReading.create(egvRecords, additiveSystemTimeOffset, getApplicationContext());
                                             statusErrors=0;
                                             {
-                                                Log.d(TAG, "Releasing wl in egv");
+                                                UserErrorLog.d(TAG, "Releasing wl in egv");
                                                 requestLowPriority();
                                                 if(wakeLock1 != null && wakeLock1.isHeld()) wakeLock1.release();
-                                                Log.d(TAG, "released");
+                                                UserErrorLog.d(TAG, "released");
                                             }
                                             if (shouldDisconnect) {
                                                 stopSelf();
@@ -363,7 +363,7 @@ public class DexShareCollectionService extends Service {
                                     @Override
                                     public void call(SensorRecord[] sensorRecords) {
                                         if (sensorRecords != null) {
-                                            Log.d(TAG, "Made the full round trip, got " + sensorRecords.length + " Sensor Records");
+                                            UserErrorLog.d(TAG, "Made the full round trip, got " + sensorRecords.length + " Sensor Records");
                                             BgReading.create(sensorRecords, additiveSystemTimeOffset, getApplicationContext());
                                             statusErrors=0;
                                             readData.getRecentEGVs(evgRecordListener);
@@ -375,7 +375,7 @@ public class DexShareCollectionService extends Service {
                                     @Override
                                     public void call(CalRecord[] calRecords) {
                                         if (calRecords != null) {
-                                            Log.d(TAG, "Made the full round trip, got " + calRecords.length + " Cal Records");
+                                            UserErrorLog.d(TAG, "Made the full round trip, got " + calRecords.length + " Cal Records");
                                             Calibration.create(calRecords, addativeDisplayTimeOffset, getApplicationContext());
                                             statusErrors=0;
                                             readData.getRecentSensorRecords(sensorRecordListener);
@@ -401,24 +401,24 @@ public class DexShareCollectionService extends Service {
         PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
                 "DexShareCollectionStart");
         wakeLock.acquire(30000);
-        Log.i(TAG, "going to connect to device at address" + address);
+        UserErrorLog.i(TAG, "going to connect to device at address" + address);
         if (mBluetoothAdapter == null || address == null) {
-            Log.w(TAG, "BluetoothAdapter not initialized or unspecified address.");
+            UserErrorLog.w(TAG, "BluetoothAdapter not initialized or unspecified address.");
             setRetryTimer();
             return false;
         }
         if (mBluetoothGatt != null) {
-            Log.i(TAG, "BGatt isnt null, Closing.");
+            UserErrorLog.i(TAG, "BGatt isnt null, Closing.");
             try {
                 mBluetoothGatt.close();
             } catch (NullPointerException e) {
-                Log.d(TAG, "concurrency related null pointer exception in connect");
+                UserErrorLog.d(TAG, "concurrency related null pointer exception in connect");
             }
             mBluetoothGatt = null;
         }
         for (BluetoothDevice bluetoothDevice : mBluetoothAdapter.getBondedDevices()) {
             if (bluetoothDevice.getAddress().compareTo(address) == 0) {
-                Log.v(TAG, "Device found, already bonded, going to connect");
+                UserErrorLog.v(TAG, "Device found, already bonded, going to connect");
                if(mBluetoothAdapter.getRemoteDevice(bluetoothDevice.getAddress()) != null) {
                    device = bluetoothDevice;
                    mBluetoothGatt = device.connectGatt(getApplicationContext(), false, mGattCallback);
@@ -428,18 +428,18 @@ public class DexShareCollectionService extends Service {
         }
         device = mBluetoothAdapter.getRemoteDevice(address);
         if (device == null) {
-            Log.w(TAG, "Device not found.  Unable to connect.");
+            UserErrorLog.w(TAG, "Device not found.  Unable to connect.");
             setRetryTimer();
             return false;
         }
-        Log.i(TAG, "Trying to create a new connection.");
+        UserErrorLog.i(TAG, "Trying to create a new connection.");
         mBluetoothGatt = device.connectGatt(getApplicationContext(), false, mGattCallback);
         mConnectionState = STATE_CONNECTING;
         return true;
     }
 
     public void authenticateConnection() {
-        Log.i(TAG, "Trying to auth");
+        UserErrorLog.i(TAG, "Trying to auth");
         String receiverSn = prefs.getString("share_key", "SM00000000").toUpperCase() + "000000";
         if(receiverSn.compareTo("SM00000000000000") == 0) { // They havnt set their serial number, dont bond!
             setRetryTimer();
@@ -454,18 +454,18 @@ public class DexShareCollectionService extends Service {
                     mAuthenticationCharacteristic = mShareService.getCharacteristic(DexShareAttributes.AuthenticationCode2);
                 }
                 if (mAuthenticationCharacteristic != null) {
-                    Log.v(TAG, "Auth Characteristic found: " + mAuthenticationCharacteristic.toString());
+                    UserErrorLog.v(TAG, "Auth Characteristic found: " + mAuthenticationCharacteristic.toString());
                     if (mAuthenticationCharacteristic.setValue(bondkey)) {
                         mBluetoothGatt.writeCharacteristic(mAuthenticationCharacteristic);
                     } else {
                         setRetryTimer();
                     }
                 } else {
-                    Log.w(TAG, "Authentication Characteristic IS NULL");
+                    UserErrorLog.w(TAG, "Authentication Characteristic IS NULL");
                     setRetryTimer();
                 }
             } else {
-                Log.w(TAG, "CRADLE SERVICE IS NULL");
+                UserErrorLog.w(TAG, "CRADLE SERVICE IS NULL");
             }
         } else {
             setRetryTimer();
@@ -474,14 +474,14 @@ public class DexShareCollectionService extends Service {
 
     public void assignCharacteristics() {
         if(!share2) {
-            Log.d(TAG, "Setting #1 characteristics");
+            UserErrorLog.d(TAG, "Setting #1 characteristics");
             mSendDataCharacteristic = mShareService.getCharacteristic(DexShareAttributes.ShareMessageReceiver);
             mReceiveDataCharacteristic = mShareService.getCharacteristic(DexShareAttributes.ShareMessageResponse);
             mCommandCharacteristic = mShareService.getCharacteristic(DexShareAttributes.Command);
             mResponseCharacteristic = mShareService.getCharacteristic(DexShareAttributes.Response);
             mHeartBeatCharacteristic = mShareService.getCharacteristic(DexShareAttributes.HeartBeat);
         } else {
-            Log.d(TAG, "Setting #1 characteristics");
+            UserErrorLog.d(TAG, "Setting #1 characteristics");
             mSendDataCharacteristic = mShareService.getCharacteristic(DexShareAttributes.ShareMessageReceiver2);
             mReceiveDataCharacteristic = mShareService.getCharacteristic(DexShareAttributes.ShareMessageResponse2);
             mCommandCharacteristic = mShareService.getCharacteristic(DexShareAttributes.Command2);
@@ -491,7 +491,7 @@ public class DexShareCollectionService extends Service {
     }
 
     public void setListeners(int listener_number) {
-        Log.i(TAG, "Setting Listener: #" + listener_number);
+        UserErrorLog.i(TAG, "Setting Listener: #" + listener_number);
         if (listener_number == 1) {
             step = 2;
             setCharacteristicIndication(mReceiveDataCharacteristic);
@@ -509,12 +509,12 @@ public class DexShareCollectionService extends Service {
         try {
             mBluetoothGatt.close();
         } catch (NullPointerException e) {
-            Log.d(TAG, "concurrency related null pointer exception in close");
+            UserErrorLog.d(TAG, "concurrency related null pointer exception in close");
         }
         setRetryTimer();
         mBluetoothGatt = null;
         mConnectionState = STATE_DISCONNECTED;
-        Log.i(TAG, "bt Disconnected");
+        UserErrorLog.i(TAG, "bt Disconnected");
     }
 
     public void setCharacteristicNotification(BluetoothGattCharacteristic characteristic) {
@@ -522,11 +522,11 @@ public class DexShareCollectionService extends Service {
     }
 
     public void setCharacteristicNotification(BluetoothGattCharacteristic characteristic, boolean enabled) {
-        Log.i(TAG, "Characteristic setting notification");
+        UserErrorLog.i(TAG, "Characteristic setting notification");
         if (mBluetoothGatt != null) {
             mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
             BluetoothGattDescriptor descriptor = characteristic.getDescriptor(UUID.fromString(HM10Attributes.CLIENT_CHARACTERISTIC_CONFIG));
-            Log.i(TAG, "Descriptor found: " + descriptor.getUuid());
+            UserErrorLog.i(TAG, "Descriptor found: " + descriptor.getUuid());
             descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
             mBluetoothGatt.writeDescriptor(descriptor);
         }
@@ -537,11 +537,11 @@ public class DexShareCollectionService extends Service {
     }
 
     public void setCharacteristicIndication(BluetoothGattCharacteristic characteristic, boolean enabled) {
-        Log.i(TAG, "Characteristic setting indication");
+        UserErrorLog.i(TAG, "Characteristic setting indication");
         if (mBluetoothGatt != null) {
             mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
             BluetoothGattDescriptor descriptor = characteristic.getDescriptor(UUID.fromString(HM10Attributes.CLIENT_CHARACTERISTIC_CONFIG));
-            Log.i(TAG, "Descriptor found: " + descriptor.getUuid());
+            UserErrorLog.i(TAG, "Descriptor found: " + descriptor.getUuid());
             descriptor.setValue(BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
             mBluetoothGatt.writeDescriptor(descriptor);
         }
@@ -569,18 +569,18 @@ public class DexShareCollectionService extends Service {
     }
 
     private void gattWritingStep() {
-        Log.d(TAG, "Writing command to the Gatt, step: " + step);
+        UserErrorLog.d(TAG, "Writing command to the Gatt, step: " + step);
         int index = step;
         if (index <= (writePackets.size() - 1)) {
-            Log.d(TAG, "Writing: " + writePackets.get(index) + " index: " + index);
+            UserErrorLog.d(TAG, "Writing: " + writePackets.get(index) + " index: " + index);
             if(mSendDataCharacteristic != null && writePackets != null) {
                 mSendDataCharacteristic.setValue(writePackets.get(index));
                 if (mBluetoothGatt != null && mBluetoothGatt.writeCharacteristic(mSendDataCharacteristic)) {
-                    Log.d(TAG, "Wrote Successfully");
+                    UserErrorLog.d(TAG, "Wrote Successfully");
                 }
             }
         } else {
-            Log.d(TAG, "Done Writing commands");
+            UserErrorLog.d(TAG, "Done Writing commands");
             clearGattTask();
         }
     }
@@ -592,7 +592,7 @@ public class DexShareCollectionService extends Service {
 
             if (mBluetoothGatt != null && mBluetoothGatt.getDevice() != null && bondDevice != null) {
                 if (!bondDevice.getAddress().equals(mBluetoothGatt.getDevice().getAddress())) {
-                    Log.d(TAG, "Bond state wrong device");
+                    UserErrorLog.d(TAG, "Bond state wrong device");
                     return; // That wasnt a device we care about!!
                 }
             }
@@ -609,13 +609,13 @@ public class DexShareCollectionService extends Service {
     private final BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
-            Log.i(TAG, "Gatt state change status: " + status + " new state: " + newState);
+            UserErrorLog.i(TAG, "Gatt state change status: " + status + " new state: " + newState);
             if (status == 133) {
                 statusErrors++;
-                Log.e(TAG, "Got the status 133 bug, bad news! count:"+statusErrors+" - Might require devices to forget each other: instance uptime: "+JoH.qs((JoH.ts()-instance)/1000,0));
+                UserErrorLog.e(TAG, "Got the status 133 bug, bad news! count:"+statusErrors+" - Might require devices to forget each other: instance uptime: "+JoH.qs((JoH.ts()-instance)/1000,0));
                 if (statusErrors>4)
                 {
-                    Log.wtf(TAG,"Forcing bluetooth reset to try to combat errors");
+                    UserErrorLog.wtf(TAG,"Forcing bluetooth reset to try to combat errors");
                     statusErrors=0;
                     JoH.niceRestartBluetooth(getApplicationContext());
                     setRetryTimer();
@@ -629,12 +629,12 @@ public class DexShareCollectionService extends Service {
                 device = mBluetoothGatt.getDevice();
                 mConnectionState = STATE_CONNECTED;
                 ActiveBluetoothDevice.connected();
-                Log.i(TAG, "Connected to GATT server.");
+                UserErrorLog.i(TAG, "Connected to GATT server.");
 
-                Log.i(TAG, "discovering services");
+                UserErrorLog.i(TAG, "discovering services");
                 currentGattTask = GATT_SETUP;
                 if (mBluetoothGatt == null || !mBluetoothGatt.discoverServices()) {
-                    Log.w(TAG, "discovering failed");
+                    UserErrorLog.w(TAG, "discovering failed");
                     if(shouldDisconnect) {
                         stopSelf();
                     } else {
@@ -649,15 +649,15 @@ public class DexShareCollectionService extends Service {
                 } else {
                     setRetryTimer();
                 }
-                Log.d(TAG, "Disconnected from GATT server.");
+                UserErrorLog.d(TAG, "Disconnected from GATT server.");
             } else {
-                Log.d(TAG, "Gatt callback... strange state.");
+                UserErrorLog.d(TAG, "Gatt callback... strange state.");
             }
         }
 
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
-            Log.d(TAG, "services discovered " + status);
+            UserErrorLog.d(TAG, "services discovered " + status);
            if (status == BluetoothGatt.GATT_SUCCESS && mBluetoothGatt != null) {
                mShareService = mBluetoothGatt.getService(DexShareAttributes.CradleService);
                if(mShareService == null) {
@@ -670,39 +670,39 @@ public class DexShareCollectionService extends Service {
                 authenticateConnection();
                 gattSetupStep();
             } else {
-                Log.w(TAG, "No Services Discovered!");
+                UserErrorLog.w(TAG, "No Services Discovered!");
             }
         }
 
         @Override
         public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                Log.v(TAG, "Characteristic Read " + characteristic.getUuid());
+                UserErrorLog.v(TAG, "Characteristic Read " + characteristic.getUuid());
                 if(mHeartBeatCharacteristic.getUuid().equals(characteristic.getUuid())) {
-                    Log.v(TAG, "Characteristic Read " + characteristic.getUuid() + " " + characteristic.getValue());
+                    UserErrorLog.v(TAG, "Characteristic Read " + characteristic.getUuid() + " " + characteristic.getValue());
                     setCharacteristicNotification(mHeartBeatCharacteristic);
                 }
                 gatt.readCharacteristic(mHeartBeatCharacteristic);
             } else {
-                Log.e(TAG, "Characteristic failed to read");
+                UserErrorLog.e(TAG, "Characteristic failed to read");
             }
         }
 
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
             UUID charUuid = characteristic.getUuid();
-            Log.d(TAG, "Characteristic Update Received: " + charUuid);
+            UserErrorLog.d(TAG, "Characteristic Update Received: " + charUuid);
             if (charUuid.compareTo(mReceiveDataCharacteristic.getUuid()) == 0) {
-                Log.d(TAG, "mCharReceiveData Update");
+                UserErrorLog.d(TAG, "mCharReceiveData Update");
                 byte[] value = characteristic.getValue();
                 if (value != null) {
                     Observable.just(characteristic.getValue()).subscribe(mDataResponseListener);
                 }
             } else if (charUuid.compareTo(mHeartBeatCharacteristic.getUuid()) == 0) {
                 long heartbeat = System.currentTimeMillis();
-                Log.d(TAG, "Heartbeat delta: " + (heartbeat - lastHeartbeat));
+                UserErrorLog.d(TAG, "Heartbeat delta: " + (heartbeat - lastHeartbeat));
                 if ((heartbeat-lastHeartbeat < 59000) || heartbeatCount > 5) {
-                    Log.d(TAG, "Early heartbeat.  Fetching data.");
+                    UserErrorLog.d(TAG, "Early heartbeat.  Fetching data.");
                     AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
                     alarm.cancel(pendingIntent);
                     heartbeatCount = 0;
@@ -717,7 +717,7 @@ public class DexShareCollectionService extends Service {
         public void onDescriptorWrite(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 BluetoothGattCharacteristic characteristic = descriptor.getCharacteristic();
-                Log.d(TAG, "Characteristic onDescriptorWrite ch " + characteristic.getUuid());
+                UserErrorLog.d(TAG, "Characteristic onDescriptorWrite ch " + characteristic.getUuid());
                 if(mHeartBeatCharacteristic.getUuid().equals(characteristic.getUuid())) {
                     state_notifSetupSucess = true;
                     setCharacteristicIndication(mReceiveDataCharacteristic);
@@ -734,18 +734,18 @@ public class DexShareCollectionService extends Service {
                     state_authInProgress = true;
                     bondDevice();
                 } else {
-                    Log.e(TAG, "The phone is trying to read from paired device without encryption. Android Bug? Have the dexcom forget whatever device it was previously paired to: ondescriptorwrite code: "+status+ "bond: "+gatt.getDevice().getBondState());
+                    UserErrorLog.e(TAG, "The phone is trying to read from paired device without encryption. Android Bug? Have the dexcom forget whatever device it was previously paired to: ondescriptorwrite code: "+status+ "bond: "+gatt.getDevice().getBondState());
                 }
             } else {
-                Log.e(TAG, "Unknown error writing descriptor");
+                UserErrorLog.e(TAG, "Unknown error writing descriptor");
             }
         }
 
         @Override
         public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
-            Log.d(TAG, "characteristic wrote " + status);
+            UserErrorLog.d(TAG, "characteristic wrote " + status);
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                Log.d(TAG, "Wrote a characteristic successfully " + characteristic.getUuid());
+                UserErrorLog.d(TAG, "Wrote a characteristic successfully " + characteristic.getUuid());
                 if (mAuthenticationCharacteristic.getUuid().equals(characteristic.getUuid())) {
                     state_authSucess = true;
                     gatt.readCharacteristic(mHeartBeatCharacteristic);
@@ -756,10 +756,10 @@ public class DexShareCollectionService extends Service {
                     state_authInProgress = true;
                     bondDevice();
                 } else {
-                    Log.e(TAG, "The phone is trying to read from paired device without encryption. Android Bug? Have the dexcom forget whatever device it was previously paired to: oncharacteristicwrite code: "+status+ "bond: "+gatt.getDevice().getBondState());
+                    UserErrorLog.e(TAG, "The phone is trying to read from paired device without encryption. Android Bug? Have the dexcom forget whatever device it was previously paired to: oncharacteristicwrite code: "+status+ "bond: "+gatt.getDevice().getBondState());
                 }
             } else {
-                Log.e(TAG, "Unknown error writing Characteristic");
+                UserErrorLog.e(TAG, "Unknown error writing Characteristic");
             }
         }
     };

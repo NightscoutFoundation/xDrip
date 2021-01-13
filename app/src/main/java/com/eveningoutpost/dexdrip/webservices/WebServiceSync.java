@@ -1,7 +1,8 @@
 package com.eveningoutpost.dexdrip.webservices;
 
+
 import com.eveningoutpost.dexdrip.Models.DesertSync;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 
 import java.net.InetAddress;
 import java.util.List;
@@ -24,7 +25,7 @@ public class WebServiceSync extends BaseWebService {
     @Override
     public WebResponse request(String query, final InetAddress address) {
 
-        UserError.Log.d(TAG, query);
+        UserErrorLog.d(TAG, query);
 
         if (!DesertSync.isEnabled()) {
             return webError("Desert Sync option not enabled in Sync Settings");
@@ -35,7 +36,7 @@ public class WebServiceSync extends BaseWebService {
         final List<String> components = getUrlComponents(query);
 
         if (components.size() > 0) {
-            UserError.Log.d(TAG, "Processing " + query);
+            UserErrorLog.d(TAG, "Processing " + query);
             switch (components.get(0)) {
 
                 case "id":

@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.Models;
 
+
 import android.os.Bundle;
 import android.provider.BaseColumns;
 
@@ -11,6 +12,7 @@ import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.GcmListenerSvc;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.JamListenerSvc;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
@@ -238,7 +240,7 @@ public class DesertSync extends PlusModel {
         if (payload.length() > 0) {
             return new DesertSync(JoH.tsl(), data.getString("identity", getTopic()), mySender(), data.getString("action") + "^" + payload, true);
         } else {
-            UserError.Log.d(TAG, "Invalid bundle");
+            UserErrorLog.d(TAG, "Invalid bundle");
             return null;
         }
     }
@@ -250,7 +252,7 @@ public class DesertSync extends PlusModel {
                 DesertComms.pushToOasis(ds.topic, ds.sender, ds.transmissionPayload());
                 ds.save();
             } else {
-                UserError.Log.d(TAG, "Not pushing entry without payload / duplicate");
+                UserErrorLog.d(TAG, "Not pushing entry without payload / duplicate");
                 return false;
             }
         }
@@ -260,7 +262,7 @@ public class DesertSync extends PlusModel {
     public static boolean fromPush(String topic, String sender, String payload) {
         if (isEnabled()) {
 
-            UserError.Log.d(TAG, String.format("sender: %s, topic: %s, payload: %s", sender, topic, payload));
+            UserErrorLog.d(TAG, String.format("sender: %s, topic: %s, payload: %s", sender, topic, payload));
             if (sender == null || sender.length() != 32 || sender.equals(mySender())) return false;
             if (topic == null || topic.length() != 32) return false;
             if (payload == null || payload.length() == 0) return false;
@@ -279,18 +281,18 @@ public class DesertSync extends PlusModel {
         if (item != null) {
             if (item.topic != null && item.topic.equals(getTopic())) {
                 if (!item.alreadyInDatabase(false)) {
-                    UserError.Log.d(TAG, "New item: " + item.payload);
+                    UserErrorLog.d(TAG, "New item: " + item.payload);
                     item.save();
                     new Thread(() -> onMessageReceived(item.getMessage())).start();
                 } else {
                     duplicateIndicator++;
-                    UserError.Log.d(TAG, "Duplicate item: " + duplicateIndicator);
+                    UserErrorLog.d(TAG, "Duplicate item: " + duplicateIndicator);
                 }
             } else {
-                UserError.Log.d(TAG, "Invalid topic");
+                UserErrorLog.d(TAG, "Invalid topic");
             }
         } else {
-            UserError.Log.d(TAG, "processItem NULL");
+            UserErrorLog.d(TAG, "processItem NULL");
         }
     }
 
@@ -306,13 +308,13 @@ public class DesertSync extends PlusModel {
                         if (item.timestamp > highestPullTimeStamp) {
                             highestPullTimeStamp = item.timestamp;
                             Inevitable.task("desert-sync-timestamp", 500, () -> {
-                                UserError.Log.d(TAG, "Synced up till: " + JoH.dateTimeText(highestPullTimeStamp));
+                                UserErrorLog.d(TAG, "Synced up till: " + JoH.dateTimeText(highestPullTimeStamp));
                             });
                         }
                         processItem(item);
                     }
                     if (items.size() == MAX_ITEMS) {
-                        UserError.Log.d(TAG, "Attempting to catch up as all history is duplicates or max size: " + catchupCounter);
+                        UserErrorLog.d(TAG, "Attempting to catch up as all history is duplicates or max size: " + catchupCounter);
                         if (catchupCounter < MAX_CATCHUP) {
                             catchupCounter++;
                             Inevitable.task("Desert catchup", 6000, DesertSync::pullAsEnabled);
@@ -322,35 +324,35 @@ public class DesertSync extends PlusModel {
                     }
                 }
             } catch (JsonSyntaxException e) {
-                UserError.Log.e(TAG, "fromPull error: " + e + "\n" + json);
+                UserErrorLog.e(TAG, "fromPull error: " + e + "\n" + json);
             }
         } else {
-            UserError.Log.d(TAG, "Web service reported no data matching our query - either we are synced or other mismatch");
+            UserErrorLog.d(TAG, "Web service reported no data matching our query - either we are synced or other mismatch");
         }
     }
 
     public static void pullFailed(final String host) {
-        UserError.Log.d(TAG, "Pull failed: host: " + host);
+        UserErrorLog.d(TAG, "Pull failed: host: " + host);
         if (host == null) return;
         final String hint = RollCall.getBestMasterHintIP();
-        UserError.Log.d(TAG, "Best hint: " + hint);
+        UserErrorLog.d(TAG, "Best hint: " + hint);
         if (hint == null) return;
         if (host.equals(hint)) {
-            UserError.Log.d(TAG, "Looking for hint but master is still the same: " + hint);
+            UserErrorLog.d(TAG, "Looking for hint but master is still the same: " + hint);
             final String backupIP = DesertComms.getOasisBackupIP();
             if (!emptyString(backupIP) && !backupIP.equals(host)) {
-                UserError.Log.d(TAG, "Trying backup: " + backupIP);
+                UserErrorLog.d(TAG, "Trying backup: " + backupIP);
                 takeMasterHint(backupIP);
             }
         } else {
-            UserError.Log.d(TAG, "Got master hint for: " + hint);
+            UserErrorLog.d(TAG, "Got master hint for: " + hint);
             takeMasterHint(hint);
         }
     }
 
     private static void takeMasterHint(String hint) {
         if (RouteTools.reachable(hint)) {
-            UserError.Log.d(TAG, "Master hint of: " + hint + " is reachable - setting up probe");
+            UserErrorLog.d(TAG, "Master hint of: " + hint + " is reachable - setting up probe");
             DesertComms.probeOasis(getTopic(), hint);
         }
     }
@@ -361,20 +363,20 @@ public class DesertSync extends PlusModel {
 
     public static void checkIpChange(final String result) {
         // failed to reach peer
-        UserError.Log.d(TAG, "CheckIpChange enter: " + result);
+        UserErrorLog.d(TAG, "CheckIpChange enter: " + result);
         if (result == null || (JoH.ratelimit("desert-check-ip-change", 60))) {
             final String currentIP = getBestInterfaceAddress();
-            UserError.Log.d(TAG, "check ip change: current: " + currentIP);
+            UserErrorLog.d(TAG, "check ip change: current: " + currentIP);
 
             if (!emptyString(currentIP)) {
                 if (lastUsedIP == null) {
                     lastUsedIP = PersistentStore.getString(PREF_LAST_DESERT_MY_IP);
                 }
-                UserError.Log.d(TAG, "check ip change last: " + lastUsedIP);
+                UserErrorLog.d(TAG, "check ip change last: " + lastUsedIP);
                 if (emptyString(lastUsedIP) || !currentIP.equals(lastUsedIP)) {
                     if (!emptyString(lastUsedIP)) {
-                        UserError.Log.uel(TAG, "Our IP appears to have changed from: " + lastUsedIP + " to " + currentIP + " sending notification to peers");
-                        UserError.Log.d(TAG, "check ip change send ping");
+                        UserErrorLog.uel(TAG, "Our IP appears to have changed from: " + lastUsedIP + " to " + currentIP + " sending notification to peers");
+                        UserErrorLog.d(TAG, "check ip change send ping");
                         GcmActivity.desertPing();
                     }
                     lastUsedIP = currentIP;
@@ -399,7 +401,7 @@ public class DesertSync extends PlusModel {
                 pullAsEnabled();
             }
         } else {
-            UserError.Log.e(TAG, "Refusing to process id reply as we are not a follower");
+            UserErrorLog.e(TAG, "Refusing to process id reply as we are not a follower");
         }
 
 
@@ -410,17 +412,17 @@ public class DesertSync extends PlusModel {
             synchronized (DesertSync.class) {
                 if (static_sender == null) {
                     String sender = PersistentStore.getString(PREF_SENDER_UUID);
-                    //UserError.Log.d(TAG, "From store: " + sender);
+                    //UserErrorLog.d(TAG, "From store: " + sender);
                     if (sender.length() != 32) {
                         sender = CipherUtils.getRandomHexKey();
-                        UserError.Log.d(TAG, "From key: " + sender);
+                        UserErrorLog.d(TAG, "From key: " + sender);
                         PersistentStore.setString(PREF_SENDER_UUID, sender);
                     }
                     static_sender = sender;
                 }
             }
         }
-        UserError.Log.d(TAG, "Returning sender: " + static_sender);
+        UserErrorLog.d(TAG, "Returning sender: " + static_sender);
         return static_sender;
     }
 
@@ -447,7 +449,7 @@ public class DesertSync extends PlusModel {
 
     private static void onMessageReceived(final RemoteMessage message) {
         if (sequence_lock.getQueueLength() > 0) {
-            UserError.Log.d(TAG, "Sequence lock has: " + sequence_lock.getQueueLength() + " waiting");
+            UserErrorLog.d(TAG, "Sequence lock has: " + sequence_lock.getQueueLength() + " waiting");
         }
         try {
             sequence_lock.tryLock(20, TimeUnit.SECONDS);
@@ -469,9 +471,9 @@ public class DesertSync extends PlusModel {
         }
         if (!peers.containsKey(address)) {
             if (RouteTools.isLocal(address)) {
-                UserError.Log.d(TAG, "Learned new peer: " + ip(address));
+                UserErrorLog.d(TAG, "Learned new peer: " + ip(address));
             } else {
-                UserError.Log.d(TAG, "Refusing to Learn new peer: " + ip(address));
+                UserErrorLog.d(TAG, "Refusing to Learn new peer: " + ip(address));
                 return;
             }
         }
@@ -548,7 +550,7 @@ public class DesertSync extends PlusModel {
                     .where("timestamp < ?", JoH.tsl() - 86400000L)
                     .execute();
         } catch (Exception e) {
-            UserError.Log.d(TAG, "Exception cleaning uploader queue: " + e);
+            UserErrorLog.d(TAG, "Exception cleaning uploader queue: " + e);
         }
     }
 

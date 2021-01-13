@@ -1,14 +1,15 @@
 package com.eveningoutpost.dexdrip.tidepool;
 
-/**
- * jamorham
- *
- * Date utilities for preparing items for Tidepool upload
- */
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.TimeZone;
+
+/**
+ * jamorham
+ * <p>
+ * Date utilities for preparing items for Tidepool upload
+ */
 
 public class DateUtil {
 

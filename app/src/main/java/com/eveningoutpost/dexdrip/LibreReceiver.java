@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip;
 
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -13,7 +14,7 @@ import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Libre2RawValue;
 import com.eveningoutpost.dexdrip.Models.Sensor;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.Intents;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
@@ -52,7 +53,7 @@ public class LibreReceiver extends BroadcastReceiver {
                 synchronized (lock) {
                     try {
 
-                        Log.d(TAG, "libre onReceiver: " + intent.getAction());
+                        UserErrorLog.d(TAG, "libre onReceiver: " + intent.getAction());
                         JoH.benchmark(null);
                         // check source
                         if (prefs == null)
@@ -68,18 +69,18 @@ public class LibreReceiver extends BroadcastReceiver {
 
                         switch (action) {
                             case Intents.LIBRE2_ACTIVATION:
-                                Log.v(TAG, "Receiving LibreData activation");
+                                UserErrorLog.v(TAG, "Receiving LibreData activation");
                                 try {
                                     saveSensorStartTime(intent.getBundleExtra("sensor"), intent.getBundleExtra("bleManager").getString("sensorSerial"));
                                 } catch (NullPointerException e) {
-                                    Log.e(TAG, "Null pointer in LIBRE2_ACTIVATION: " + e);
+                                    UserErrorLog.e(TAG, "Null pointer in LIBRE2_ACTIVATION: " + e);
                                 }
                                 break;
 
                             case Intents.LIBRE2_BG:
                                 Libre2RawValue currentRawValue = processIntent(intent);
                                 if (currentRawValue == null) return;
-                                Log.v(TAG,"got bg reading: from sensor:"+currentRawValue.serial+" rawValue:"+currentRawValue.glucose+" at:"+currentRawValue.timestamp);
+                                UserErrorLog.v(TAG,"got bg reading: from sensor:"+currentRawValue.serial+" rawValue:"+currentRawValue.glucose+" at:"+currentRawValue.timestamp);
                                 // period of 4.5 minutes to collect 5 readings
                                 if(!BgReading.last_within_millis(45 * 6 * 1000 )) {
                                     List<Libre2RawValue> smoothingValues = Libre2RawValue.last20Minutes();
@@ -91,7 +92,7 @@ public class LibreReceiver extends BroadcastReceiver {
                                 break;
 
                             default:
-                                Log.e(TAG, "Unknown action! " + action);
+                                UserErrorLog.e(TAG, "Unknown action! " + action);
                                 break;
                         }
                     } finally {
@@ -109,10 +110,10 @@ public class LibreReceiver extends BroadcastReceiver {
             if (sas != null)
                 saveSensorStartTime(sas.getBundle("currentSensor"), intent.getBundleExtra("bleManager").getString("sensorSerial"));
         } catch (NullPointerException e) {
-            Log.e(TAG,"Null pointer exception in processIntent: " + e);
+            UserErrorLog.e(TAG,"Null pointer exception in processIntent: " + e);
         }
         if (!intent.hasExtra("glucose") || !intent.hasExtra("timestamp") || !intent.hasExtra("bleManager")) {
-            Log.e(TAG,"Received faulty intent from LibreLink.");
+            UserErrorLog.e(TAG,"Received faulty intent from LibreLink.");
             return null;
         }
         double glucose = intent.getDoubleExtra("glucose", 0);
@@ -120,7 +121,7 @@ public class LibreReceiver extends BroadcastReceiver {
         last_reading = timestamp;
         String serial = intent.getBundleExtra("bleManager").getString("sensorSerial");
         if (serial == null) {
-            Log.e(TAG,"Received faulty intent from LibreLink.");
+            UserErrorLog.e(TAG,"Received faulty intent from LibreLink.");
             return null;
         }
         Libre2RawValue rawValue = new Libre2RawValue();
@@ -187,7 +188,7 @@ public class LibreReceiver extends BroadcastReceiver {
             lastReading = DateFormat.format("dd.MM.yyyy kk:mm:ss", last_reading).toString();
             l.add(new StatusItem("Last Reading", lastReading));
         } catch (Exception e) {
-            Log.e(TAG, "Error readlast: " + e);
+            UserErrorLog.e(TAG, "Error readlast: " + e);
         }
         if (get_engineering_mode()) {
             l.add(new StatusItem("Last Calc.", libre_calc_doku));

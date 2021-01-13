@@ -1,14 +1,14 @@
 package com.eveningoutpost.dexdrip.Models;
 
 
-        import android.provider.BaseColumns;
+import android.provider.BaseColumns;
 
-        import com.activeandroid.annotation.Column;
-        import com.activeandroid.annotation.Table;
-        import com.activeandroid.query.Select;
+import com.activeandroid.annotation.Column;
+import com.activeandroid.annotation.Table;
+import com.activeandroid.query.Select;
 
-        import java.util.Date;
-        import java.util.List;
+import java.util.Date;
+import java.util.List;
 
 @Table(name = "Libre2RawValue2", id = BaseColumns._ID)
 public class Libre2RawValue extends PlusModel {

@@ -1,9 +1,10 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+
 import android.os.PowerManager;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -35,14 +36,14 @@ public class Inevitable {
             task.extendTime(idle_for);
 
             if (d)
-                UserError.Log.d(TAG, "Extending time for: " + id + " to " + JoH.dateTimeText(task.when));
+                UserErrorLog.d(TAG, "Extending time for: " + id + " to " + JoH.dateTimeText(task.when));
         } else {
             // otherwise create new task
             if (runnable == null) return; // extension only if already exists
             tasks.put(id, new Task(id, idle_for, runnable));
 
             if (d)
-                UserError.Log.d(TAG, "Creating task: " + id + " due: " + JoH.dateTimeText(tasks.get(id).when));
+                UserErrorLog.d(TAG, "Creating task: " + id + " due: " + JoH.dateTimeText(tasks.get(id).when));
 
             // create a thread to wait and execute in background
             final Thread t = new Thread(() -> {
@@ -75,7 +76,7 @@ public class Inevitable {
             stack++;
         }
         if (stack > 0) {
-            UserError.Log.d(TAG, "Task stacked to: " + id);
+            UserErrorLog.d(TAG, "Task stacked to: " + id);
         }
         task(id, idle_for, runnable);
     }
@@ -109,12 +110,12 @@ public class Inevitable {
         public boolean poll() {
             final long till = JoH.msTill(when);
             if (till < 1) {
-                if (d) UserError.Log.d(TAG, "Executing task! " + this.id);
+                if (d) UserErrorLog.d(TAG, "Executing task! " + this.id);
                 tasks.remove(this.id); // early remove to allow overlapping scheduling
                 what.run();
                 return true;
             } else if (till > MAX_QUEUE_TIME) {
-                UserError.Log.wtf(TAG, "Task: " + this.id + " In queue too long: " + till);
+                UserErrorLog.wtf(TAG, "Task: " + this.id + " In queue too long: " + till);
                 tasks.remove(this.id);
                 return true;
             }

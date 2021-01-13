@@ -1,6 +1,5 @@
 package com.eveningoutpost.dexdrip.ImportedLibraries.dexcom;
 
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.CalRecord;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.EGVRecord;
@@ -8,6 +7,7 @@ import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.GenericXMLRec
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.MeterRecord;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.PageHeader;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.SensorRecord;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.Services.DexShareCollectionService;
 import com.eveningoutpost.dexdrip.ShareTest;
 
@@ -190,7 +190,7 @@ public class ReadDataShare {
         final Action1<byte[]> databasePageReader = new Action1<byte[]>() {
             @Override
             public void call(byte[] s) {
-                Log.d("ShareTest", "Database Page Reader received SIZE: " + s.length);
+                UserErrorLog.d("ShareTest", "Database Page Reader received SIZE: " + s.length);
                 byte[] temp = s;
                 if (accumulatedResponse == null) {
                     accumulatedResponse = s;
@@ -200,7 +200,7 @@ public class ReadDataShare {
                         outputStream.write(accumulatedResponse);
                         outputStream.write(temp);
                         accumulatedResponse = outputStream.toByteArray();
-                        Log.d("ShareTest", "Combined Response length: " + accumulatedResponse.length);
+                        UserErrorLog.d("ShareTest", "Combined Response length: " + accumulatedResponse.length);
                     } catch (Exception e) { e.printStackTrace(); }
                 }
                 if (temp.length < 20) { Observable.just(accumulatedResponse).subscribe(fullPageListener).unsubscribe(); }

@@ -1,10 +1,10 @@
 package com.eveningoutpost.dexdrip.utils.bt;
 
-// jamorham
-
-// interface for providing bluetooth status callbacks
 
 import android.os.Bundle;
+
+// jamorham
+// interface for providing bluetooth status callbacks
 
 public interface BtCallBack2 {
 

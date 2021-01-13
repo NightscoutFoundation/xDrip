@@ -1,6 +1,5 @@
 package com.eveningoutpost.dexdrip.watch.lefun;
 
-// jamorham
 
 import android.util.SparseArray;
 
@@ -8,6 +7,8 @@ import com.eveningoutpost.dexdrip.watch.lefun.messages.BaseRx;
 import com.eveningoutpost.dexdrip.watch.lefun.messages.RxFind;
 import com.eveningoutpost.dexdrip.watch.lefun.messages.RxPong;
 import com.eveningoutpost.dexdrip.watch.lefun.messages.RxShake;
+
+// jamorham
 
 public class Classifier {
 

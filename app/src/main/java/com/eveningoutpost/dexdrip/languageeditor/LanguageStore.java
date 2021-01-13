@@ -1,8 +1,9 @@
 package com.eveningoutpost.dexdrip.languageeditor;
 
+
 import android.content.Context;
 
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.Locale;
@@ -18,7 +19,7 @@ public class LanguageStore {
 
     public static String getString(String key) {
         if (key == null) {
-            UserError.Log.e(JAMORHAM_LANGUAGE, "getString key is null!");
+            UserErrorLog.e(JAMORHAM_LANGUAGE, "getString key is null!");
             return "";
         }
         return xdrip.getAppContext()
@@ -28,11 +29,11 @@ public class LanguageStore {
 
     public static void putString(String key, String value) {
         if (key == null) {
-            UserError.Log.e(JAMORHAM_LANGUAGE, "putString key is null!");
+            UserErrorLog.e(JAMORHAM_LANGUAGE, "putString key is null!");
             return;
         }
         if (value == null) {
-            UserError.Log.e(JAMORHAM_LANGUAGE, "putString key is null!");
+            UserErrorLog.e(JAMORHAM_LANGUAGE, "putString key is null!");
             return;
         }
         xdrip.getAppContext()

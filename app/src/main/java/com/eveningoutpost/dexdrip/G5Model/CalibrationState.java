@@ -1,15 +1,16 @@
 package com.eveningoutpost.dexdrip.G5Model;
 
-// created by jamorham
 
 import android.util.SparseArray;
 
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.google.common.collect.ImmutableSet;
 
 import lombok.Getter;
 
 import static com.eveningoutpost.dexdrip.Services.G5CollectionService.TAG;
+
+// created by jamorham
 
 public enum CalibrationState {
 
@@ -63,7 +64,7 @@ public enum CalibrationState {
 
     public static CalibrationState parse(byte state) {
         final CalibrationState result = lookup.get(state);
-        if (result == null) UserError.Log.e(TAG, "Unknown calibration state: " + state);
+        if (result == null) UserErrorLog.e(TAG, "Unknown calibration state: " + state);
         return result != null ? result : Unknown;
     }
 

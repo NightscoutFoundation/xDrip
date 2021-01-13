@@ -1,12 +1,13 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BloodTest;
 import com.eveningoutpost.dexdrip.Models.DateUtil;
 import com.eveningoutpost.dexdrip.Models.InsulinInjection;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Treatments;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -40,17 +41,17 @@ public class NightscoutTreatments {
             final String uuid = (tr.has("uuid") && (tr.getString("uuid") != null)) ? tr.getString("uuid") : UUID.nameUUIDFromBytes(tr.getString("_id").getBytes("UTF-8")).toString();
             final String nightscout_id = (tr.getString("_id") == null) ? uuid : tr.getString("_id");
             if (bad_uuids.contains(nightscout_id)) {
-                UserError.Log.d(TAG, "Skipping previously baulked uuid: " + nightscout_id);
+                UserErrorLog.d(TAG, "Skipping previously baulked uuid: " + nightscout_id);
                 continue;
             }
             if (d)
-                UserError.Log.d(TAG, "event: " + etype + "_id: " + nightscout_id + " uuid:" + uuid);
+                UserErrorLog.d(TAG, "event: " + etype + "_id: " + nightscout_id + " uuid:" + uuid);
 
             boolean from_xdrip = false;
             try {
                 if (tr.getString("enteredBy").startsWith(Treatments.XDRIP_TAG)) {
                     from_xdrip = true;
-                    if (d) UserError.Log.d(TAG, "This record came from xDrip");
+                    if (d) UserErrorLog.d(TAG, "This record came from xDrip");
                 }
             } catch (JSONException e) {
                 //
@@ -60,7 +61,7 @@ public class NightscoutTreatments {
                 if (!from_xdrip) {
                     if (tr.getString("glucoseType").equals("Finger")) {
                         if (bad_bloodtest_uuids.contains(nightscout_id)) {
-                            UserError.Log.d(TAG, "Skipping baulked bloodtest nightscout id: " + nightscout_id);
+                            UserErrorLog.d(TAG, "Skipping baulked bloodtest nightscout id: " + nightscout_id);
                             continue;
                         }
                         final BloodTest existing = BloodTest.byUUID(uuid);
@@ -74,18 +75,18 @@ public class NightscoutTreatments {
                                 bt.uuid = uuid; // override random uuid with nightscout one
                                 bt.saveit();
                                 new_data = true;
-                                UserError.Log.ueh(TAG, "Received new Bloodtest data from Nightscout: " + BgGraphBuilder.unitized_string_with_units_static(mgdl) + " @ " + JoH.dateTimeText(timestamp));
+                                UserErrorLog.ueh(TAG, "Received new Bloodtest data from Nightscout: " + BgGraphBuilder.unitized_string_with_units_static(mgdl) + " @ " + JoH.dateTimeText(timestamp));
                             } else {
-                                UserError.Log.d(TAG, "Error creating bloodtest record: " + mgdl + " mgdl " + tr.toString());
+                                UserErrorLog.d(TAG, "Error creating bloodtest record: " + mgdl + " mgdl " + tr.toString());
                                 bad_bloodtest_uuids.add(nightscout_id);
                             }
                         } else {
                             if (d)
-                                UserError.Log.d(TAG, "Already a bloodtest with uuid: " + uuid);
+                                UserErrorLog.d(TAG, "Already a bloodtest with uuid: " + uuid);
                         }
                     } else {
                         if (JoH.quietratelimit("blood-test-type-finger", 2)) {
-                            UserError.Log.e(TAG, "Cannot use bloodtest which is not type Finger: " + tr.getString("glucoseType"));
+                            UserErrorLog.e(TAG, "Cannot use bloodtest which is not type Finger: " + tr.getString("glucoseType"));
                         }
                     }
                 }
@@ -126,7 +127,7 @@ public class NightscoutTreatments {
                 final long timestamp = DateUtil.tolerantFromISODateString(tr.getString("created_at")).getTime();
                 if (timestamp > 0) {
                     if (d)
-                        UserError.Log.d(TAG, "Treatment: Carbs: " + carbs + " Insulin: " + insulin + " timestamp: " + timestamp);
+                        UserErrorLog.d(TAG, "Treatment: Carbs: " + carbs + " Insulin: " + insulin + " timestamp: " + timestamp);
                     Treatments existing = Treatments.byuuid(nightscout_id);
                     if (existing == null)
                         existing = Treatments.byuuid(uuid);
@@ -137,7 +138,7 @@ public class NightscoutTreatments {
                                 && (JoH.roundDouble(existing.carbs, 2) == JoH.roundDouble(carbs, 2))
                                 && ((existing.notes == null && notes == null) || ((existing.notes != null) && existing.notes.equals(notes != null ? notes : ""))))) {
 
-                            UserError.Log.ueh(TAG, "New Treatment from Nightscout: Carbs: " + carbs + " Insulin: " + insulin + " timestamp: " + JoH.dateTimeText(timestamp) + ((notes != null) ? " Note: " + notes : ""));
+                            UserErrorLog.ueh(TAG, "New Treatment from Nightscout: Carbs: " + carbs + " Insulin: " + insulin + " timestamp: " + JoH.dateTimeText(timestamp) + ((notes != null) ? " Note: " + notes : ""));
                             final Treatments t;
                             if ((carbs > 0) || (insulin > 0)) {
                                 t = Treatments.create(carbs, insulin, new ArrayList<InsulinInjection>(), timestamp, nightscout_id);
@@ -148,7 +149,7 @@ public class NightscoutTreatments {
                             } else {
                                 t = Treatments.create_note(notes, timestamp, -1, nightscout_id);
                                 if (t == null) {
-                                    UserError.Log.d(TAG, "Create note baulked and returned null, so skipping");
+                                    UserErrorLog.d(TAG, "Create note baulked and returned null, so skipping");
                                     bad_uuids.add(nightscout_id);
                                     continue;
                                 }
@@ -168,17 +169,17 @@ public class NightscoutTreatments {
                                 pushTreatmentSyncToWatch(t, true);
                             new_data = true;
                         } else {
-                            UserError.Log.d(TAG, "Skipping treatment as it appears identical to one we already have: " + JoH.dateTimeText(timestamp) + " " + insulin + " " + carbs + " " + notes);
+                            UserErrorLog.d(TAG, "Skipping treatment as it appears identical to one we already have: " + JoH.dateTimeText(timestamp) + " " + insulin + " " + carbs + " " + notes);
                         }
                     } else {
                         if (existing != null) {
                             if (d)
-                                UserError.Log.d(TAG, "Treatment with uuid: " + uuid + " / " + nightscout_id + " already exists");
+                                UserErrorLog.d(TAG, "Treatment with uuid: " + uuid + " / " + nightscout_id + " already exists");
                             if (notes == null) notes = "";
                             if (existing.notes == null) existing.notes = "";
                             if ((existing.carbs != carbs) || (existing.insulin != insulin) || ((existing.timestamp / Constants.SECOND_IN_MS) != (timestamp / Constants.SECOND_IN_MS))
                                     || (!existing.notes.contains(notes))) {
-                                UserError.Log.ueh(TAG, "Treatment changes from Nightscout: " + carbs + " Insulin: " + insulin + " timestamp: " + JoH.dateTimeText(timestamp) + " " + notes + " " + " vs " + existing.carbs + " " + existing.insulin + " " + JoH.dateTimeText(existing.timestamp) + " " + existing.notes);
+                                UserErrorLog.ueh(TAG, "Treatment changes from Nightscout: " + carbs + " Insulin: " + insulin + " timestamp: " + JoH.dateTimeText(timestamp) + " " + notes + " " + " vs " + existing.carbs + " " + existing.insulin + " " + JoH.dateTimeText(existing.timestamp) + " " + existing.notes);
                                 existing.carbs = carbs;
                                 existing.insulin = insulin;
                                 if (insulin > 0)
@@ -196,7 +197,7 @@ public class NightscoutTreatments {
                                 new_data = true;
                             }
                         } else {
-                            UserError.Log.d(TAG, "Skipping record creation as original source is xDrip");
+                            UserErrorLog.d(TAG, "Skipping record creation as original source is xDrip");
                         }
                     }
                 }

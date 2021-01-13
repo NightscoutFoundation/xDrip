@@ -1,15 +1,16 @@
 package com.eveningoutpost.dexdrip.cgm.medtrum.messages;
 
-// jamorham
 
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.cgm.medtrum.Crypt;
 import com.eveningoutpost.dexdrip.cgm.medtrum.DeviceType;
 import com.eveningoutpost.dexdrip.cgm.medtrum.Medtrum;
 import com.google.gson.annotations.Expose;
 
 import lombok.Getter;
+
+// jamorham
 
 public class AdvertRx extends BaseMessage {
 
@@ -36,7 +37,7 @@ public class AdvertRx extends BaseMessage {
         // device specific
         if (!Medtrum.isDeviceTypeSupported(deviceType)) {
             if (JoH.quietratelimit("medtrum-low-error", 120)) {
-                UserError.Log.wtf(TAG, "Unknown device type: " + deviceType);
+                UserErrorLog.wtf(TAG, "Unknown device type: " + deviceType);
             }
             // continue anyway for now
         }

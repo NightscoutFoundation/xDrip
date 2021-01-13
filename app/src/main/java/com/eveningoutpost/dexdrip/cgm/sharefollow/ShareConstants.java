@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.cgm.sharefollow;
 
+
 public class ShareConstants {
 
     public static final String US_SHARE_BASE_URL = "https://share2.dexcom.com/ShareWebServices/Services/";

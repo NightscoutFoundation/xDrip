@@ -1,9 +1,10 @@
 package com.eveningoutpost.dexdrip.webservices;
 
+
 import android.util.Log;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 
@@ -52,7 +53,7 @@ public class WebServiceStatus extends BaseWebService {
 
             Log.d(TAG, "Output: " + reply.toString());
         } catch (JSONException e) {
-            UserError.Log.wtf(TAG, "Got json exception: " + e);
+            UserErrorLog.wtf(TAG, "Got json exception: " + e);
         }
 
         return new WebResponse(reply.toString());

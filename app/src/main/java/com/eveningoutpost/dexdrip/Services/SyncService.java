@@ -1,11 +1,12 @@
 package com.eveningoutpost.dexdrip.Services;
 
+
 import android.app.IntentService;
 import android.app.PendingIntent;
 import android.content.Intent;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.UploaderTask;
@@ -22,7 +23,7 @@ public class SyncService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        Log.d(TAG, "STARTING INTENT SERVICE");
+        UserErrorLog.d(TAG, "STARTING INTENT SERVICE");
         attemptSend();
     }
 
@@ -42,7 +43,7 @@ public class SyncService extends IntentService {
     }
 
     public static void startSyncService(long delay) {
-        Log.d("SyncService", "static starting Sync service delay: " + delay);
+        UserErrorLog.d("SyncService", "static starting Sync service delay: " + delay);
         if (delay == 0) {
             xdrip.getAppContext().startService(new Intent(xdrip.getAppContext(), SyncService.class));
         } else {

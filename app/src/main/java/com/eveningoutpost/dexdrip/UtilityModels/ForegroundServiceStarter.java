@@ -1,13 +1,13 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+
 import android.app.Service;
 import android.content.Context;
 import android.os.Build;
 
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 
 import static android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION;
 import static com.eveningoutpost.dexdrip.UtilityModels.Notifications.ongoingNotificationId;
@@ -42,11 +42,11 @@ public class ForegroundServiceStarter {
 
     public void start() {
         if (mService == null) {
-            Log.e(TAG, "SERVICE IS NULL - CANNOT START!");
+            UserErrorLog.e(TAG, "SERVICE IS NULL - CANNOT START!");
             return;
         }
         if (run_service_in_foreground) {
-            Log.d(TAG, "should be moving to foreground");
+            UserErrorLog.d(TAG, "should be moving to foreground");
             // mHandler.post(new Runnable() {
             //     @Override
             //     public void run() {
@@ -54,7 +54,7 @@ public class ForegroundServiceStarter {
             final long end = System.currentTimeMillis() + (60000 * 5);
             final long start = end - (60000 * 60 * 3) - (60000 * 10);
             foregroundStatus();
-            Log.d(TAG, "CALLING START FOREGROUND: " + mService.getClass().getSimpleName());
+            UserErrorLog.d(TAG, "CALLING START FOREGROUND: " + mService.getClass().getSimpleName());
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 /*
                   When is a foreground service not a foreground service?
@@ -67,7 +67,7 @@ public class ForegroundServiceStarter {
                 try {
                     mService.startForeground(ongoingNotificationId, new Notifications().createOngoingNotification(new BgGraphBuilder(mContext, start, end), mContext), FOREGROUND_SERVICE_TYPE_LOCATION);
                 } catch (IllegalArgumentException e) {
-                    UserError.Log.e(TAG, "Got exception trying to use Android 10+ service starting for " + mService.getClass().getSimpleName() + " " + e);
+                    UserErrorLog.e(TAG, "Got exception trying to use Android 10+ service starting for " + mService.getClass().getSimpleName() + " " + e);
                     mService.startForeground(ongoingNotificationId, new Notifications().createOngoingNotification(new BgGraphBuilder(mContext, start, end), mContext));
                 }
             } else {
@@ -81,13 +81,13 @@ public class ForegroundServiceStarter {
 
     public void stop() {
         if (run_service_in_foreground) {
-            Log.d(TAG, "should be moving out of foreground");
+            UserErrorLog.d(TAG, "should be moving out of foreground");
             mService.stopForeground(true);
         }
     }
 
     protected void foregroundStatus() {
-        Inevitable.task("foreground-status", 2000, () -> UserError.Log.d("XFOREGROUND", mService.getClass().getSimpleName() + (JoH.isServiceRunningInForeground(mService.getClass()) ? " is running in foreground" : " is not running in foreground")));
+        Inevitable.task("foreground-status", 2000, () -> UserErrorLog.d("XFOREGROUND", mService.getClass().getSimpleName() + (JoH.isServiceRunningInForeground(mService.getClass()) ? " is running in foreground" : " is not running in foreground")));
     }
 
 }

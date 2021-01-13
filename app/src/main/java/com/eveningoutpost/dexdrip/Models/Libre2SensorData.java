@@ -1,9 +1,9 @@
 package com.eveningoutpost.dexdrip.Models;
 
-import com.google.gson.annotations.Expose;
 
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.google.gson.annotations.Expose;
 
 public class Libre2SensorData {
 
@@ -29,7 +29,7 @@ public class Libre2SensorData {
         currentSensorData.enableTime_ = enableTime;
         currentSensorData.connectionIndex_ = connectionIndex;
         currentSensorData.deviceName_ = deviceName;
-        Log.e(TAG, "persisting sensor data");
+        UserErrorLog.e(TAG, "persisting sensor data");
         PersistentStore.setString(SENSOR_DATA_KAY, currentSensorData.toJson());
     }
     
@@ -51,7 +51,7 @@ public class Libre2SensorData {
         libre2SensorData.deviceName_ = currentSensorData.deviceName_;
         if(increaseConnectionIndex) {
             currentSensorData.connectionIndex_++;
-            Log.e(TAG, "persisting sensor data");
+            UserErrorLog.e(TAG, "persisting sensor data");
             PersistentStore.setString(SENSOR_DATA_KAY, currentSensorData.toJson());
         }
         return libre2SensorData;
@@ -69,10 +69,10 @@ public class Libre2SensorData {
         try {
             fresh = JoH.defaultGsonInstance().fromJson(json, Libre2SensorData.class);
         } catch (Exception e) {
-            Log.e(TAG, "Libre2SensorData Got exception processing json msg: " + e );
+            UserErrorLog.e(TAG, "Libre2SensorData Got exception processing json msg: " + e );
             return null;
         }
-        Log.e(TAG, "Successfuly created Libre2SensorData value " + json);
+        UserErrorLog.e(TAG, "Successfuly created Libre2SensorData value " + json);
         return fresh;
     }
     

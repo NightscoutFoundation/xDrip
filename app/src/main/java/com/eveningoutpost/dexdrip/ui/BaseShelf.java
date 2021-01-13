@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.ui;
 
+
 import android.databinding.ObservableArrayMap;
 
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;

@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip;
 
-import android.app.Activity;
+
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
@@ -30,7 +30,7 @@ import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.SensorRecord;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.DexShareAttributes;
 import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.HM10Attributes;
@@ -118,7 +118,7 @@ public class ShareTest extends BaseActivity {
     public void onDestroy() {
         super.onDestroy();
         close();
-        Log.i(TAG, "CLOSING CONNECTION");
+        UserErrorLog.i(TAG, "CLOSING CONNECTION");
     }
 
     public void addListenerOnButton() {
@@ -155,8 +155,8 @@ public class ShareTest extends BaseActivity {
                 mBluetoothGatt = gatt;
                 mConnectionState = STATE_CONNECTED;
                 ActiveBluetoothDevice.connected();
-                Log.i(TAG, "Connected to GATT server.");
-                Log.i(TAG, "Connection state: Bonded - " + device.getBondState());
+                UserErrorLog.i(TAG, "Connected to GATT server.");
+                UserErrorLog.i(TAG, "Connection state: Bonded - " + device.getBondState());
 
                 if (device.getBondState() == BluetoothDevice.BOND_BONDED) {
                     currentGattTask = GATT_SETUP;
@@ -169,14 +169,14 @@ public class ShareTest extends BaseActivity {
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 mConnectionState = STATE_DISCONNECTED;
                 ActiveBluetoothDevice.disconnected();
-                Log.w(TAG, "Disconnected from GATT server.");
+                UserErrorLog.w(TAG, "Disconnected from GATT server.");
             }
         }
 
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                Log.i(TAG, "Services Discovered: " + status);
+                UserErrorLog.i(TAG, "Services Discovered: " + status);
                 authenticateConnection(gatt);
 
             }
@@ -185,52 +185,52 @@ public class ShareTest extends BaseActivity {
         @Override
         public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                Log.i(TAG, "Characteristic Read");
+                UserErrorLog.i(TAG, "Characteristic Read");
                 byte[] value = characteristic.getValue();
                 if(value != null) {
-                    Log.i(TAG, "VALUE" + value);
+                    UserErrorLog.i(TAG, "VALUE" + value);
                 } else {
-                    Log.w(TAG, "Characteristic was null");
+                    UserErrorLog.w(TAG, "Characteristic was null");
                 }
                 nextGattStep();
             } else {
-                Log.w(TAG, "Characteristic failed to read");
+                UserErrorLog.w(TAG, "Characteristic failed to read");
             }
         }
 
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
-            Log.i(TAG, "Characteristic changed");
+            UserErrorLog.i(TAG, "Characteristic changed");
             UUID charUuid = characteristic.getUuid();
-            Log.i(TAG, "Characteristic Update Received: " + charUuid);
+            UserErrorLog.i(TAG, "Characteristic Update Received: " + charUuid);
             if(charUuid.compareTo(mResponseCharacteristic.getUuid()) == 0) {
-                Log.i(TAG, "mResponseCharacteristic Update");
+                UserErrorLog.i(TAG, "mResponseCharacteristic Update");
             }
             if(charUuid.compareTo(mCommandCharacteristic.getUuid()) == 0) {
-                Log.i(TAG, "mCommandCharacteristic Update");
+                UserErrorLog.i(TAG, "mCommandCharacteristic Update");
             }
             if(charUuid.compareTo(mHeartBeatCharacteristic.getUuid()) == 0) {
-                Log.i(TAG, "mHeartBeatCharacteristic Update");
+                UserErrorLog.i(TAG, "mHeartBeatCharacteristic Update");
             }
             if(charUuid.compareTo(mReceiveDataCharacteristic.getUuid()) == 0) {
-                Log.i(TAG, "mReceiveDataCharacteristic Update");
+                UserErrorLog.i(TAG, "mReceiveDataCharacteristic Update");
                 byte[] value = characteristic.getValue();
                 if(value != null) {
-                    Log.i(TAG, "Characteristic: " + value);
-                    Log.i(TAG, "Characteristic: " + value.toString());
-                    Log.i(TAG, "Characteristic getstring: " + characteristic.getStringValue(0));
-                    Log.i(TAG, "SUBSCRIBED TO RESPONSE LISTENER");
+                    UserErrorLog.i(TAG, "Characteristic: " + value);
+                    UserErrorLog.i(TAG, "Characteristic: " + value.toString());
+                    UserErrorLog.i(TAG, "Characteristic getstring: " + characteristic.getStringValue(0));
+                    UserErrorLog.i(TAG, "SUBSCRIBED TO RESPONSE LISTENER");
                     Observable.just(characteristic.getValue()).subscribe(mDataResponseListener);
                 } else {
-                    Log.w(TAG, "Characteristic was null");
+                    UserErrorLog.w(TAG, "Characteristic was null");
                 }
             }
-            Log.i(TAG, "NEW VALUE: " + characteristic.getValue().toString());
+            UserErrorLog.i(TAG, "NEW VALUE: " + characteristic.getValue().toString());
         }
 
         @Override
         public void onDescriptorWrite(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
-            Log.i(TAG, "Wrote a discriptor, status: " + status);
+            UserErrorLog.i(TAG, "Wrote a discriptor, status: " + status);
             if(step == 2 && currentGattTask == GATT_SETUP) {
                 setListeners(2);
             } else if(step == 3) {
@@ -238,13 +238,13 @@ public class ShareTest extends BaseActivity {
             } else if(step == 4) {
                 setListeners(4);
             } else if(step == 5) {
-                Log.i(TAG, "Done setting Listeners");
+                UserErrorLog.i(TAG, "Done setting Listeners");
             }
         }
 
         @Override
         public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
-            Log.i(TAG, "Wrote a characteristic: " + status);
+            UserErrorLog.i(TAG, "Wrote a characteristic: " + status);
             nextGattStep();
         }
     };
@@ -256,7 +256,7 @@ public class ShareTest extends BaseActivity {
             mConnectionState = mBluetoothManager.getConnectionState(device, BluetoothProfile.GATT);
         }
 
-        Log.i(TAG, "Connection state: " + mConnectionState);
+        UserErrorLog.i(TAG, "Connection state: " + mConnectionState);
         details.append("\nConnection state: " + mConnectionState);
         if (mConnectionState == STATE_DISCONNECTED || mConnectionState == STATE_DISCONNECTING) {
             ActiveBluetoothDevice btDevice = new Select().from(ActiveBluetoothDevice.class)
@@ -282,28 +282,28 @@ public class ShareTest extends BaseActivity {
             @Override
             public void call(Long s) {
 
-                Log.d(TAG, "Made the full round trip, got " + s + " as the system time");
-                Log.d("SYSTTIME", "Made the full round trip, got " + s + " as the system time");
+                UserErrorLog.d(TAG, "Made the full round trip, got " + s + " as the system time");
+                UserErrorLog.d("SYSTTIME", "Made the full round trip, got " + s + " as the system time");
                 final long addativeSystemTimeOffset = new Date().getTime() - s;
-                Log.d(TAG, "Made the full round trip, got " + addativeSystemTimeOffset + " offset");
-                Log.d("SYSTTIME", "Made the full round trip, got " + addativeSystemTimeOffset + " offset");
+                UserErrorLog.d(TAG, "Made the full round trip, got " + addativeSystemTimeOffset + " offset");
+                UserErrorLog.d("SYSTTIME", "Made the full round trip, got " + addativeSystemTimeOffset + " offset");
 
                 final Action1<CalRecord[]> calRecordListener = new Action1<CalRecord[]>() {
                     @Override
                     public void call(CalRecord[] calRecords) {
-                        Log.d(TAG, "Made the full round trip, got " + calRecords.length + " Cal Records");
+                        UserErrorLog.d(TAG, "Made the full round trip, got " + calRecords.length + " Cal Records");
                         Calibration.create(calRecords, addativeSystemTimeOffset, getApplicationContext());
 
                         final Action1<SensorRecord[]> sensorRecordListener = new Action1<SensorRecord[]>() {
                             @Override
                             public void call(SensorRecord[] sensorRecords) {
-                                Log.d(TAG, "Made the full round trip, got " + sensorRecords.length + " Sensor Records");
+                                UserErrorLog.d(TAG, "Made the full round trip, got " + sensorRecords.length + " Sensor Records");
                                 BgReading.create(sensorRecords, addativeSystemTimeOffset, getApplicationContext());
 
                                 final Action1<EGVRecord[]> evgRecordListener = new Action1<EGVRecord[]>() {
                                     @Override
                                     public void call(EGVRecord[] egvRecords) {
-                                        Log.d(TAG, "Made the full round trip, got " + egvRecords.length + " EVG Records");
+                                        UserErrorLog.d(TAG, "Made the full round trip, got " + egvRecords.length + " EVG Records");
                                         BgReading.create(egvRecords, addativeSystemTimeOffset, getApplicationContext());
                                     }
                                 };
@@ -327,10 +327,10 @@ public class ShareTest extends BaseActivity {
     public boolean connect(final String address) {
 
         details.append("\nConnecting to device");
-        Log.i(TAG, "CONNECTING TO DEVICE");
+        UserErrorLog.i(TAG, "CONNECTING TO DEVICE");
         if (mBluetoothAdapter == null || address == null) {
             details.append("\nBT adapter is null");
-            Log.w(TAG, "BluetoothAdapter not initialized or unspecified address.");
+            UserErrorLog.w(TAG, "BluetoothAdapter not initialized or unspecified address.");
             return false;
         }
         if (mBluetoothDeviceAddress != null && address.equals(mBluetoothDeviceAddress) && mBluetoothGatt != null) {
@@ -345,12 +345,12 @@ public class ShareTest extends BaseActivity {
             device = mBluetoothAdapter.getRemoteDevice(address);
             device.setPin("000000".getBytes());
             if (device == null) {
-                Log.w(TAG, "Device not found.  Unable to connect.");
+                UserErrorLog.w(TAG, "Device not found.  Unable to connect.");
                 details.append("\nDevice not found.  Unable to connect.");
                 return false;
             }
             mBluetoothGatt = device.connectGatt(getApplicationContext(), true, mGattCallback);
-            Log.i(TAG, "Trying to create a new connection.");
+            UserErrorLog.i(TAG, "Trying to create a new connection.");
             details.append("\nTrying to create a new connection to device");
             mConnectionState = STATE_CONNECTING;
             return true;
@@ -358,7 +358,7 @@ public class ShareTest extends BaseActivity {
     }
 
     public void authenticateConnection(BluetoothGatt bluetoothGatt) {
-        Log.i(TAG, "Trying to auth");
+        UserErrorLog.i(TAG, "Trying to auth");
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         String receiverSn = prefs.getString("share_key", "SM00000000").toUpperCase();
         if(bluetoothGatt != null) {
@@ -367,16 +367,16 @@ public class ShareTest extends BaseActivity {
             if (mShareService != null) {
                 mAuthenticationCharacteristic = mShareService.getCharacteristic(DexShareAttributes.AuthenticationCode);
                 if(mAuthenticationCharacteristic != null) {
-                    Log.i(TAG, "Auth Characteristic found: " + mAuthenticationCharacteristic.toString());
+                    UserErrorLog.i(TAG, "Auth Characteristic found: " + mAuthenticationCharacteristic.toString());
                     mAuthenticationCharacteristic.setValue((receiverSn + "000000").getBytes(StandardCharsets.US_ASCII));
                     currentGattTask = GATT_SETUP;
                     step = 1;
                     bluetoothGatt.writeCharacteristic(mAuthenticationCharacteristic);
                 } else {
-                    Log.w(TAG, "Authentication Characteristic IS NULL");
+                    UserErrorLog.w(TAG, "Authentication Characteristic IS NULL");
                 }
             } else {
-                Log.w(TAG, "CRADLE SERVICE IS NULL");
+                UserErrorLog.w(TAG, "CRADLE SERVICE IS NULL");
             }
         }
     }
@@ -391,7 +391,7 @@ public class ShareTest extends BaseActivity {
 
     public void setListeners(int listener_number) {
 
-        Log.i(TAG, "Setting Listener: #" + listener_number);
+        UserErrorLog.i(TAG, "Setting Listener: #" + listener_number);
         if(listener_number == 1) {
             step = 3;
             setCharacteristicIndication(mReceiveDataCharacteristic);
@@ -403,7 +403,7 @@ public class ShareTest extends BaseActivity {
 
     public void disconnect() {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
-            Log.w(TAG, "BluetoothAdapter not initialized");
+            UserErrorLog.w(TAG, "BluetoothAdapter not initialized");
             return;
         }
         mBluetoothGatt.disconnect();
@@ -417,12 +417,12 @@ public class ShareTest extends BaseActivity {
         mBluetoothGatt.close();
         mBluetoothGatt = null;
         mConnectionState = STATE_DISCONNECTED;
-        Log.w(TAG, "bt Disconnected");
+        UserErrorLog.w(TAG, "bt Disconnected");
     }
 
     public void readCharacteristic(BluetoothGattCharacteristic characteristic) {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
-            Log.w(TAG, "BluetoothAdapter not initialized");
+            UserErrorLog.w(TAG, "BluetoothAdapter not initialized");
             return;
         }
         mBluetoothGatt.readCharacteristic(characteristic);
@@ -430,22 +430,22 @@ public class ShareTest extends BaseActivity {
 
     public void setCharacteristicNotification(BluetoothGattCharacteristic characteristic){ setCharacteristicNotification(characteristic, true);}
     public void setCharacteristicNotification(BluetoothGattCharacteristic characteristic, boolean enabled) {
-        Log.i(TAG, "Characteristic setting notification");
+        UserErrorLog.i(TAG, "Characteristic setting notification");
         mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
-        Log.i(TAG, "UUID FOUND: " + characteristic.getUuid());
+        UserErrorLog.i(TAG, "UUID FOUND: " + characteristic.getUuid());
         BluetoothGattDescriptor descriptor = characteristic.getDescriptor(UUID.fromString(HM10Attributes.CLIENT_CHARACTERISTIC_CONFIG));
-        Log.i(TAG, "Descriptor found: " + descriptor.getUuid());
+        UserErrorLog.i(TAG, "Descriptor found: " + descriptor.getUuid());
         descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
         mBluetoothGatt.writeDescriptor(descriptor);
     }
 
     public void setCharacteristicIndication(BluetoothGattCharacteristic characteristic){ setCharacteristicIndication(characteristic, true);}
     public void setCharacteristicIndication(BluetoothGattCharacteristic characteristic, boolean enabled) {
-        Log.i(TAG, "Characteristic setting notification");
+        UserErrorLog.i(TAG, "Characteristic setting notification");
         mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
-        Log.i(TAG, "UUID FOUND: " + characteristic.getUuid());
+        UserErrorLog.i(TAG, "UUID FOUND: " + characteristic.getUuid());
         BluetoothGattDescriptor descriptor = characteristic.getDescriptor(UUID.fromString(HM10Attributes.CLIENT_CHARACTERISTIC_CONFIG));
-        Log.i(TAG, "Descriptor found: " + descriptor.getUuid());
+        UserErrorLog.i(TAG, "Descriptor found: " + descriptor.getUuid());
         descriptor.setValue(BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
         mBluetoothGatt.writeDescriptor(descriptor);
     }
@@ -458,14 +458,14 @@ public class ShareTest extends BaseActivity {
                 final int state        = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, BluetoothDevice.ERROR);
                 final int prevState    = intent.getIntExtra(BluetoothDevice.EXTRA_PREVIOUS_BOND_STATE, BluetoothDevice.ERROR);
                 if (state == BluetoothDevice.BOND_BONDED) {
-                    Log.d(TAG, "CALLBACK RECIEVED Bonded");
+                    UserErrorLog.d(TAG, "CALLBACK RECIEVED Bonded");
                     currentGattTask = GATT_SETUP;
                     mBluetoothGatt.discoverServices();
                 } else if (state == BluetoothDevice.BOND_NONE){
-                    Log.d(TAG, "CALLBACK RECIEVED: Not Bonded");
+                    UserErrorLog.d(TAG, "CALLBACK RECIEVED: Not Bonded");
                     Toast.makeText(getApplicationContext(), "unBonded", Toast.LENGTH_LONG).show();
                 } else if (state == BluetoothDevice.BOND_BONDING) {
-                    Log.d(TAG, "CALLBACK RECIEVED: Trying to bond");
+                    UserErrorLog.d(TAG, "CALLBACK RECIEVED: Trying to bond");
                     Toast.makeText(getApplicationContext(), "trying to bond", Toast.LENGTH_LONG).show();
                 }
             }
@@ -483,18 +483,18 @@ public class ShareTest extends BaseActivity {
     }
 
     private void nextGattStep() {
-        Log.d(TAG, "Next Gatt Step");
+        UserErrorLog.d(TAG, "Next Gatt Step");
         step++;
         switch (currentGattTask) {
         case GATT_NOTHING:
-            Log.d(TAG, "Next NOTHING: " + step);
+            UserErrorLog.d(TAG, "Next NOTHING: " + step);
             break;
         case GATT_SETUP:
-            Log.d(TAG, "Next GATT SETUP: " + step);
+            UserErrorLog.d(TAG, "Next GATT SETUP: " + step);
             gattSetupStep();
             break;
         case GATT_WRITING_COMMANDS:
-            Log.d(TAG, "Next GATT WRITING: " + step);
+            UserErrorLog.d(TAG, "Next GATT WRITING: " + step);
             gattWritingStep();
             break;
         }
@@ -512,10 +512,10 @@ public class ShareTest extends BaseActivity {
     }
 
     private void gattWritingStep() {
-        Log.d(TAG, "Writing command to the Gatt, step: " + step);
+        UserErrorLog.d(TAG, "Writing command to the Gatt, step: " + step);
         int index = step;
         if (index <= (writePackets.size() - 1)) {
-            Log.d(TAG, "Writing: " + writePackets.get(index) + " index: " + index);
+            UserErrorLog.d(TAG, "Writing: " + writePackets.get(index) + " index: " + index);
             mSendDataCharacteristic.setValue(writePackets.get(index));
             mBluetoothGatt.writeCharacteristic(mSendDataCharacteristic);
         } else {

@@ -1,15 +1,14 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Matrix;
-import android.util.DisplayMetrics;
 import android.view.View;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -255,7 +254,7 @@ public class BgSparklineBuilder {
             chart.setBottom(height*2);
         }
 
-            Log.d(TAG,"pebble debug: w:"+width+" h:"+height+" start:"+start+" end:"+end+" ");
+            UserErrorLog.d(TAG,"pebble debug: w:"+width+" h:"+height+" start:"+start+" end:"+end+" ");
 
         if (height>SCALE_TRIGGER) {
             return getViewBitmap(chart);

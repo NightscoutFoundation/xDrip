@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.cgm.sharefollow;
 
+
 import android.content.Intent;
 import android.os.IBinder;
 import android.os.PowerManager;
@@ -8,7 +9,7 @@ import android.text.SpannableString;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
@@ -68,10 +69,10 @@ public class ShareFollowService extends ForegroundService {
         final PowerManager.WakeLock wl = JoH.getWakeLock("SHFollow-osc", 60_000);
         try {
 
-            UserError.Log.d(TAG, "WAKE UP WAKE UP WAKE UP");
+            UserErrorLog.d(TAG, "WAKE UP WAKE UP WAKE UP");
             // Check service should be running
             if (!shouldServiceRun()) {
-                UserError.Log.d(TAG, "Stopping service due to shouldServiceRun() result");
+                UserErrorLog.d(TAG, "Stopping service due to shouldServiceRun() result");
                 stopSelf();
                 return START_NOT_STICKY;
             }
@@ -97,13 +98,13 @@ public class ShareFollowService extends ForegroundService {
                         try {
                             downloader.doEverything(MAX_RECORDS_TO_ASK_FOR);
                         } catch (NullPointerException e) {
-                            UserError.Log.e(TAG, "Caught concurrency exception when trying to run doeverything");
+                            UserErrorLog.e(TAG, "Caught concurrency exception when trying to run doeverything");
                         }
                     });
                     lastPoll = JoH.tsl();
                 }
             } else {
-                UserError.Log.d(TAG, "Already have recent reading: " + msSince(lastBg.timestamp));
+                UserErrorLog.d(TAG, "Already have recent reading: " + msSince(lastBg.timestamp));
             }
 
             scheduleWakeUp();
@@ -120,7 +121,7 @@ public class ShareFollowService extends ForegroundService {
         final long grace = Constants.SECOND_IN_MS * 10;
         final long next = Anticipate.next(JoH.tsl(), last, SAMPLE_PERIOD, grace) + grace;
         wakeup_time = next;
-        UserError.Log.d(TAG, "Anticipate next: " + JoH.dateTimeText(next) + "  last: " + JoH.dateTimeText(last));
+        UserErrorLog.d(TAG, "Anticipate next: " + JoH.dateTimeText(next) + "  last: " + JoH.dateTimeText(last));
 
         JoH.wakeUpIntent(xdrip.getAppContext(), JoH.msTill(next), WakeLockTrampoline.getPendingIntent(ShareFollowService.class, Constants.SHFOLLOW_SERVICE_FAILOVER_ID));
     }

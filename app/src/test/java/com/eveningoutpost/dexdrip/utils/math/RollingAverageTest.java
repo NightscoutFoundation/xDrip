@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.utils.math;
 
+
 import org.junit.Test;
 
 import static com.google.common.truth.Truth.assertWithMessage;

@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.cgm.nsfollow;
 
+
 import com.eveningoutpost.dexdrip.cgm.nsfollow.messages.Entry;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

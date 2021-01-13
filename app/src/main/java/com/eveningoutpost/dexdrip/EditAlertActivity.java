@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip;
 
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -40,7 +41,7 @@ import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
@@ -248,7 +249,7 @@ public class EditAlertActivity extends ActivityWithMenu {
             // We are editing an alert
             AlertType alertType = AlertType.get_alert(uuid);
             if(alertType==null) {
-                Log.wtf(TAG, "Error editing alert, when that alert does not exist...");
+                UserErrorLog.wtf(TAG, "Error editing alert, when that alert does not exist...");
                 Intent returnIntent = new Intent();
                 setResult(RESULT_CANCELED, returnIntent);
                 finish();
@@ -458,11 +459,11 @@ public class EditAlertActivity extends ActivityWithMenu {
             final DecimalFormat numberFormatter = getNumberFormatter(doMgdl);
             return numberFormatter.parse(str).doubleValue();
         } catch (NumberFormatException nfe) {
-            Log.e(TAG, "Invalid number", nfe);
+            UserErrorLog.e(TAG, "Invalid number", nfe);
             Toast.makeText(getApplicationContext(), "Invalid number: " + str, Toast.LENGTH_LONG).show();
             return Double.NaN;
         } catch (ParseException e) {
-            Log.e(TAG, "Invalid number", e);
+            UserErrorLog.e(TAG, "Invalid number", e);
             Toast.makeText(getApplicationContext(), "Invalid number: " + str, Toast.LENGTH_LONG).show();
             return Double.NaN;
         }
@@ -475,7 +476,7 @@ public class EditAlertActivity extends ActivityWithMenu {
         try {
             defaultSnooze = parseInt(editSnooze.getText().toString());
         } catch (NullPointerException e) {
-            Log.wtf(TAG,"Got null pointer exception unboxing parseInt: ",e);
+            UserErrorLog.wtf(TAG,"Got null pointer exception unboxing parseInt: ",e);
             defaultSnooze = SnoozeActivity.getDefaultSnooze(above);
         }
         return defaultSnooze;
@@ -486,7 +487,7 @@ public class EditAlertActivity extends ActivityWithMenu {
             return Integer.parseInt(str);
         }
         catch (NumberFormatException nfe) {
-            Log.e(TAG, "Invalid number", nfe);
+            UserErrorLog.e(TAG, "Invalid number", nfe);
             Toast.makeText(getApplicationContext(), "Invalid number: " + str, Toast.LENGTH_LONG).show();
             return null;
         }
@@ -567,7 +568,7 @@ public class EditAlertActivity extends ActivityWithMenu {
 
 
                 if (uuid == null) {
-                    Log.wtf(TAG, "Error remove pressed, while we were adding an alert");
+                    UserErrorLog.wtf(TAG, "Error remove pressed, while we were adding an alert");
                 }  else {
                     AlertType.remove_alert(uuid);
                     startWatchUpdaterService(mContext, WatchUpdaterService.ACTION_SYNC_ALERTTYPE, TAG);
@@ -741,7 +742,7 @@ public class EditAlertActivity extends ActivityWithMenu {
             try {
                 column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
             } catch ( IllegalArgumentException e) {
-                Log.e(TAG, "cursor.getColumnIndexOrThrow failed", e);
+                UserErrorLog.e(TAG, "cursor.getColumnIndexOrThrow failed", e);
                 return null;
             }
             cursor.moveToFirst();

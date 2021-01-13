@@ -1,6 +1,5 @@
 package com.eveningoutpost.dexdrip.watch.thinjam.messages;
 
-// jamorham
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 
@@ -9,6 +8,8 @@ import java.nio.ByteOrder;
 
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.ERROR_OK;
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.errorText;
+
+// jamorham
 
 public abstract class BaseTx {
 

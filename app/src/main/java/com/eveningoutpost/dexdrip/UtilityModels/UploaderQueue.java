@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+
 import android.database.Cursor;
 import android.provider.BaseColumns;
 import android.util.Log;
@@ -12,7 +13,6 @@ import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Delete;
 import com.activeandroid.query.Select;
 import com.activeandroid.util.SQLiteUtils;
-import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.BloodTest;
 import com.eveningoutpost.dexdrip.Models.Calibration;
@@ -20,7 +20,7 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.LibreBlock;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.Treatments;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.tidepool.TidepoolEntry;
 import com.eveningoutpost.dexdrip.tidepool.TidepoolStatus;
 import com.eveningoutpost.dexdrip.tidepool.TidepoolUploader;
@@ -133,7 +133,7 @@ public class UploaderQueue extends Model {
     }
 
     public Long completed(long bitfield) {
-        UserError.Log.d(TAG, "Marking bitfield " + bitfield + " completed on: " + getId() + " / " + action + " " + type + " " + reference_id);
+        UserErrorLog.d(TAG, "Marking bitfield " + bitfield + " completed on: " + getId() + " / " + action + " " + type + " " + reference_id);
         bitfield_complete |= bitfield;
         return saveit();
     }
@@ -148,7 +148,7 @@ public class UploaderQueue extends Model {
     //////////////////////////////////////////
 
     public static UploaderQueue newEntry(String action, Model obj) {
-        UserError.Log.d(TAG, "new entry called");
+        UserErrorLog.d(TAG, "new entry called");
         final UploaderQueue result = new UploaderQueue();
         result.bitfield_wanted = DEFAULT_UPLOAD_CIRCUITS
                 | (Pref.getBooleanDefaultFalse("cloud_storage_mongodb_enable") ? MONGO_DIRECT : 0)
@@ -178,7 +178,7 @@ public class UploaderQueue extends Model {
         }
 
         if (result.reference_id < 0) {
-            UserError.Log.wtf(TAG, "ERROR ref id was: " + result.reference_id + " for uuid: " + result.reference_uuid + " refusing to create");
+            UserErrorLog.wtf(TAG, "ERROR ref id was: " + result.reference_id + " for uuid: " + result.reference_uuid + " refusing to create");
             return null;
         }
 
@@ -187,7 +187,7 @@ public class UploaderQueue extends Model {
         result.bitfield_complete = 0;
         result.type = obj.getClass().getSimpleName();
         result.saveit();
-        if (d) UserError.Log.d(TAG, result.toS());
+        if (d) UserErrorLog.d(TAG, result.toS());
         last_new_entry = JoH.tsl();
         return result;
     }
@@ -204,7 +204,7 @@ public class UploaderQueue extends Model {
     
     // TODO remove duplicated functionality, replace with generic multi-purpose method
     public static UploaderQueue newEntryForWatch(String action, Model obj) {
-        UserError.Log.d(TAG, "new entry called for watch");
+        UserErrorLog.d(TAG, "new entry called for watch");
         final UploaderQueue result = new UploaderQueue();
         result.bitfield_wanted = DEFAULT_UPLOAD_CIRCUITS
                 | (Pref.getBooleanDefaultFalse("wear_sync") ? WATCH_WEARAPI : 0);
@@ -227,7 +227,7 @@ public class UploaderQueue extends Model {
         }
 
         if (result.reference_id < 0) {
-            UserError.Log.wtf(TAG, "Watch ERROR ref id was: " + result.reference_id + " for uuid: " + result.reference_uuid + " refusing to create");
+            UserErrorLog.wtf(TAG, "Watch ERROR ref id was: " + result.reference_id + " for uuid: " + result.reference_uuid + " refusing to create");
             return null;
         }
 
@@ -236,7 +236,7 @@ public class UploaderQueue extends Model {
         result.bitfield_complete = 0;
         result.type = obj.getClass().getSimpleName();
         result.saveit();
-        if (d) UserError.Log.d(TAG, result.toS());
+        if (d) UserErrorLog.d(TAG, result.toS());
         last_new_entry = JoH.tsl();
         return result;
     }
@@ -246,7 +246,7 @@ public class UploaderQueue extends Model {
     }
 
     public static List<UploaderQueue> getPendingbyType(String className, long bitfield, int limit) {
-        if (d) UserError.Log.d(TAG, "get Pending by type: " + className);
+        if (d) UserErrorLog.d(TAG, "get Pending by type: " + className);
         last_query = JoH.tsl();
         try {
             final String bitfields = Long.toString(bitfield);
@@ -259,7 +259,7 @@ public class UploaderQueue extends Model {
                     .limit(limit)
                     .execute();
         } catch (android.database.sqlite.SQLiteException e) {
-            if (d) UserError.Log.d(TAG, "Exception: " + e.toString());
+            if (d) UserErrorLog.d(TAG, "Exception: " + e.toString());
             fixUpTable();
             return new ArrayList<UploaderQueue>();
         }
@@ -322,12 +322,12 @@ public class UploaderQueue extends Model {
 
     public static int getQueueSizeByType(String className, long bitfield, boolean completed) {
         fixUpTable();
-        if (d) UserError.Log.d(TAG, "get Pending count by type: " + className);
+        if (d) UserErrorLog.d(TAG, "get Pending count by type: " + className);
         try {
             final String bitfields = Long.toString(bitfield);
             return getCount(" where otype = '" + className + "'" + " and (bitfield_wanted & " + bitfields + ") == " + bitfields + " and (bitfield_complete & " + bitfields + ") " + (completed ? "== " : "!= ") + bitfields);
         } catch (android.database.sqlite.SQLiteException e) {
-            if (d) UserError.Log.d(TAG, "Exception: " + e.toString());
+            if (d) UserErrorLog.d(TAG, "Exception: " + e.toString());
             fixUpTable();
             return 0;
         }
@@ -343,7 +343,7 @@ public class UploaderQueue extends Model {
             last_cleanup = JoH.tsl();
             JoH.static_toast_long("Uploader queue emptied!");
         } catch (Exception e) {
-            UserError.Log.d(TAG, "Exception cleaning uploader queue: " + e);
+            UserErrorLog.d(TAG, "Exception cleaning uploader queue: " + e);
         }
     }
 
@@ -364,7 +364,7 @@ public class UploaderQueue extends Model {
                     .where("timestamp < ?", JoH.tsl() - 86400000L * 7L)
                     .execute();
         } catch (Exception e) {
-            UserError.Log.d(TAG, "Exception cleaning uploader queue: " + e);
+            UserErrorLog.d(TAG, "Exception cleaning uploader queue: " + e);
         }
         last_cleanup = JoH.tsl();
     }
@@ -378,7 +378,7 @@ public class UploaderQueue extends Model {
                 SQLiteUtils.execSql(patch);
             } catch (Exception e) {
                 if (d)
-                    UserError.Log.d(TAG, "Patch: " + patch + " generated exception as it should: " + e.toString());
+                    UserErrorLog.d(TAG, "Patch: " + patch + " generated exception as it should: " + e.toString());
             }
         }
         patched = true;

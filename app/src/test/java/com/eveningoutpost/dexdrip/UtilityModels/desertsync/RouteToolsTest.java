@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.UtilityModels.desertsync;
 
+
 import org.junit.Test;
 
 import static com.eveningoutpost.dexdrip.UtilityModels.desertsync.RouteTools.inSameNetwork;

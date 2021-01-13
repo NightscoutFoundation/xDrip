@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.Services;
 
+
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
@@ -15,7 +16,8 @@ import com.eveningoutpost.dexdrip.GcmListenerSvc;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
+import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
@@ -25,7 +27,6 @@ import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.ui.helpers.Span;
 import com.eveningoutpost.dexdrip.utils.framework.WakeLockTrampoline;
-import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.ArrayList;
@@ -45,14 +46,14 @@ public class DoNothingService extends Service {
     public SharedPreferences.OnSharedPreferenceChangeListener prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
         public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
             if (key.compareTo("run_service_in_foreground") == 0) {
-                UserError.Log.d("FOREGROUND", "run_service_in_foreground changed!");
+                UserErrorLog.d("FOREGROUND", "run_service_in_foreground changed!");
                 if (prefs.getBoolean("run_service_in_foreground", false)) {
                     foregroundServiceStarter = new ForegroundServiceStarter(getApplicationContext(), dexCollectionService);
                     foregroundServiceStarter.start();
-                    UserError.Log.d(TAG, "Moving to foreground");
+                    UserErrorLog.d(TAG, "Moving to foreground");
                 } else {
                     dexCollectionService.stopForeground(true);
-                    UserError.Log.d(TAG, "Removing from foreground");
+                    UserErrorLog.d(TAG, "Removing from foreground");
                 }
             }
         }
@@ -80,7 +81,7 @@ public class DoNothingService extends Service {
         dexCollectionService = this;
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         listenForChangeInSettings();
-        UserError.Log.i(TAG, "onCreate: STARTING SERVICE");
+        UserErrorLog.i(TAG, "onCreate: STARTING SERVICE");
     }
 
     private static final long TOLERABLE_JITTER = 10000;
@@ -100,12 +101,12 @@ public class DoNothingService extends Service {
         if (nextWakeUpTime > 0) {
             wake_time_difference = Calendar.getInstance().getTimeInMillis() - nextWakeUpTime;
             if (wake_time_difference > TOLERABLE_JITTER) {
-                UserError.Log.e(TAG, "Slow Wake up! time difference in ms: " + wake_time_difference);
+                UserErrorLog.e(TAG, "Slow Wake up! time difference in ms: " + wake_time_difference);
                 wakeUpErrors = wakeUpErrors + 3;
                 max_wake_time_difference = Math.max(max_wake_time_difference, wake_time_difference);
 
                 if (!JoH.buggy_samsung && JoH.isSamsung()) {
-                    UserError.Log.wtf(TAG, "Enabled Buggy Samsung workaround due to jitter of: " + JoH.niceTimeScalar(wake_time_difference));
+                    UserErrorLog.wtf(TAG, "Enabled Buggy Samsung workaround due to jitter of: " + JoH.niceTimeScalar(wake_time_difference));
                     JoH.setBuggySamsungEnabled();
                 }
 
@@ -124,7 +125,7 @@ public class DoNothingService extends Service {
 
                     if ((minsago > 60) && (minsago < 70)) {
                         if (JoH.ratelimit("slow-service-restart", 60)) {
-                            UserError.Log.e(TAG, "Restarting collection service + full wakeup due to minsago: " + minsago + " !!!");
+                            UserErrorLog.e(TAG, "Restarting collection service + full wakeup due to minsago: " + minsago + " !!!");
                             Home.startHomeWithExtra(getApplicationContext(), Home.HOME_FULL_WAKEUP, "1");
                             CollectionServiceStarter.restartCollectionService(getApplicationContext());
                         }
@@ -158,16 +159,16 @@ public class DoNothingService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        UserError.Log.d(TAG, "onDestroy entered");
+        UserErrorLog.d(TAG, "onDestroy entered");
         foregroundServiceStarter.stop();
-        UserError.Log.i(TAG, "SERVICE STOPPED");
+        UserErrorLog.i(TAG, "SERVICE STOPPED");
         lastState = "Stopped " + JoH.hourMinuteString();
     }
 
     private void setFailOverTimer() {
         if (Home.get_follower()) {
             final long retry_in = (5 * 60 * 1000);
-            UserError.Log.d(TAG, "setFailoverTimer: Restarting in: " + (retry_in / (60 * 1000)) + " minutes");
+            UserErrorLog.d(TAG, "setFailoverTimer: Restarting in: " + (retry_in / (60 * 1000)) + " minutes");
             nextWakeUpTime = JoH.tsl() + retry_in;
             //final PendingIntent wakeIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), 0);
             final PendingIntent wakeIntent = WakeLockTrampoline.getPendingIntent(this.getClass());

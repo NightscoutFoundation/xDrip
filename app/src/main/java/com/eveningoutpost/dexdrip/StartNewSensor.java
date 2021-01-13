@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip;
 
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -17,8 +18,7 @@ import com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.Treatments;
-import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Experience;
@@ -177,7 +177,7 @@ public class StartNewSensor extends ActivityWithMenu {
 
     public static void startSensorForTime(long startTime) {
         Sensor.create(startTime);
-        UserError.Log.ueh("NEW SENSOR", "Sensor started at " + JoH.dateTimeText(startTime));
+        UserErrorLog.ueh("NEW SENSOR", "Sensor started at " + JoH.dateTimeText(startTime));
 
         JoH.static_toast_long(gs(R.string.new_sensor_started));
 
@@ -200,7 +200,7 @@ public class StartNewSensor extends ActivityWithMenu {
 
     private void realRealStartSensor() {
         long startTime = ucalendar.getTime().getTime();
-        Log.d(TAG, "Starting sensor time: " + JoH.dateTimeText(ucalendar.getTime().getTime()));
+        UserErrorLog.d(TAG, "Starting sensor time: " + JoH.dateTimeText(ucalendar.getTime().getTime()));
 
         if (new Date().getTime() + 15 * 60000 < startTime) {
             Toast.makeText(this, gs(R.string.error_sensor_start_time_in_future), Toast.LENGTH_LONG).show();

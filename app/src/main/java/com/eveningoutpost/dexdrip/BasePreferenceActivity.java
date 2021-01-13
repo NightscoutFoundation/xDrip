@@ -1,9 +1,10 @@
 package com.eveningoutpost.dexdrip;
 
-// jamorham
 
 import android.content.Context;
 import android.preference.PreferenceActivity;
+
+// jamorham
 
 public abstract class BasePreferenceActivity extends PreferenceActivity {
 

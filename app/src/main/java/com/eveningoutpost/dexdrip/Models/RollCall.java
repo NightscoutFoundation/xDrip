@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.Models;
 
+
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.BatteryManager;
@@ -7,6 +8,7 @@ import android.os.Build;
 
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.BridgeBattery;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
@@ -180,18 +182,18 @@ public class RollCall {
         try {
             return gson.fromJson(json, RollCall.class);
         } catch (Exception e) {
-            UserError.Log.e(TAG, "Got exception processing fromJson() " + e);
-            UserError.Log.e(TAG, "json = " + json);
+            UserErrorLog.e(TAG, "Got exception processing fromJson() " + e);
+            UserErrorLog.e(TAG, "json = " + json);
             return null;
         }
     }
 
     public synchronized static void Seen(String item_json) {
         try {
-            UserError.Log.d(TAG, "Processing Seen: " + item_json);
+            UserErrorLog.d(TAG, "Processing Seen: " + item_json);
             Seen(fromJson(item_json));
         } catch (Exception e) {
-            UserError.Log.e(TAG, "Got exception processing Seen() " + e);
+            UserErrorLog.e(TAG, "Got exception processing Seen() " + e);
         }
     }
 
@@ -215,11 +217,11 @@ public class RollCall {
             array[i++] = (((RollCall) entry.getValue()).toS());
         }
         PersistentStore.setString(ROLLCALL_SAVED_INDEX, gson.toJson(array));
-        UserError.Log.d(TAG, "Saving");
+        UserErrorLog.d(TAG, "Saving");
     }
 
     private synchronized static void loadIndex() {
-        UserError.Log.d(TAG, "Loading index");
+        UserErrorLog.d(TAG, "Loading index");
         final String loaded = PersistentStore.getString(ROLLCALL_SAVED_INDEX);
         final HashMap<String, RollCall> hashmap = new HashMap<>();
         try {
@@ -234,10 +236,10 @@ public class RollCall {
                 }
             }
         } catch (Exception e) {
-            UserError.Log.e(TAG, "Error loading index: " + e);
+            UserErrorLog.e(TAG, "Error loading index: " + e);
         }
         indexed = hashmap;
-        UserError.Log.d(TAG, "Loaded: count: " + hashmap.size());
+        UserErrorLog.d(TAG, "Loaded: count: " + hashmap.size());
     }
 
     public static String getBestMasterHintIP() {
@@ -253,7 +255,7 @@ public class RollCall {
                 bestMatch = rc;
             }
         }
-        UserError.Log.d(TAG, "Returning best master hint ip: " + (bestMatch != null ? bestMatch.toS() : "no match"));
+        UserErrorLog.d(TAG, "Returning best master hint ip: " + (bestMatch != null ? bestMatch.toS() : "no match"));
         return bestMatch != null ? bestMatch.mhint : null;
     }
 
@@ -267,7 +269,7 @@ public class RollCall {
             long since = JoH.msSince(rc.last_seen);
 
             if ((since < 0) || (since > (1000 * 60 * 60 * 24))) {
-                UserError.Log.d(TAG, "Pruning entry: " + rc.bestName());
+                UserErrorLog.d(TAG, "Pruning entry: " + rc.bestName());
                 indexed.remove(entry.getKey().toString());
                 changed = true;
                 break;

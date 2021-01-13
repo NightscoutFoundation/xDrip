@@ -1,11 +1,13 @@
 package com.eveningoutpost.dexdrip.Models;
 
+
 import android.provider.BaseColumns;
 
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Delete;
 import com.activeandroid.query.Select;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.wearintegration.ExternalStatusService;
 import com.google.gson.annotations.Expose;
@@ -58,7 +60,7 @@ public class APStatus extends PlusModel {
         if (existing == null || (existing.basal_percent != basal_percent)) {
 
             if (existing != null && existing.timestamp > timestamp_ms) {
-                UserError.Log.e(TAG, "Refusing to create record older than current: " + JoH.dateTimeText(timestamp_ms) + " vs " + JoH.dateTimeText(existing.timestamp));
+                UserErrorLog.e(TAG, "Refusing to create record older than current: " + JoH.dateTimeText(timestamp_ms) + " vs " + JoH.dateTimeText(existing.timestamp));
                 return null;
             }
 
@@ -67,7 +69,7 @@ public class APStatus extends PlusModel {
                     .basal_percent(basal_percent)
                     .build();
 
-            UserError.Log.d(TAG, "New record created: " + fresh.toS());
+            UserErrorLog.d(TAG, "New record created: " + fresh.toS());
 
             fresh.save();
             return fresh;
@@ -120,7 +122,7 @@ public class APStatus extends PlusModel {
                                 && (JoH.msSince(last.timestamp) < Constants.HOUR_IN_MS * 3)
                                 && (JoH.msSince(ExternalStatusService.getLastStatusLineTime()) < Constants.MINUTE_IN_MS * 20)) {
                             results.add(new APStatus(JoH.tsl(), last_recorded_tbr));
-                            UserError.Log.d(TAG, "Adding extension record");
+                            UserErrorLog.d(TAG, "Adding extension record");
                         }
                     }
                 }

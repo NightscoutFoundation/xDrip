@@ -4,8 +4,6 @@ package com.eveningoutpost.dexdrip.Models;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import java.util.List;
-
 class HistoricBg {
 
     public int quality;

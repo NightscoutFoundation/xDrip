@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.utils;
 
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -12,7 +13,7 @@ import android.os.PowerManager;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.MegaStatus;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.JamorhamShowcaseDrawer;
@@ -124,7 +125,7 @@ public class Mdns {
     private void hunt() {
         final PowerManager.WakeLock wl = JoH.getWakeLock("mdns-hunt", 30000);
         if (hunt_running) {
-            UserError.Log.wtf(TAG, "Hunt already running");
+            UserErrorLog.wtf(TAG, "Hunt already running");
         }
         hunt_running = true;
         mNsdManager = (NsdManager) (xdrip.getAppContext().getSystemService(Context.NSD_SERVICE));
@@ -144,11 +145,11 @@ public class Mdns {
                         //
                     }
                 }
-                UserError.Log.d(TAG, "Shutting down");
+                UserErrorLog.d(TAG, "Shutting down");
                 try {
                     mNsdManager.stopServiceDiscovery(mDiscoveryListener);
                 } catch (IllegalArgumentException | IllegalStateException e) {
-                    UserError.Log.e(TAG, "Could not stop timed service discovery: " + e);
+                    UserErrorLog.e(TAG, "Could not stop timed service discovery: " + e);
                 }
                 hunt_running = false;
                 JoH.releaseWakeLock(wl);
@@ -161,13 +162,13 @@ public class Mdns {
         try {
 
             if ((d) && (outstanding.get() != 0))
-                UserError.Log.d(TAG, "Current outstanding requests: " + outstanding.get());
+                UserErrorLog.d(TAG, "Current outstanding requests: " + outstanding.get());
             int spinner = 0;
             while (locked_until > JoH.tsl()) {
                 PowerManager.WakeLock wlx = JoH.getWakeLock("mdns-resolve", 200);
                 spinner++;
                 if ((spinner % 10) == 0)
-                    UserError.Log.d(TAG, "Waiting on Lock: " + JoH.niceTimeTill(locked_until));
+                    UserErrorLog.d(TAG, "Waiting on Lock: " + JoH.niceTimeTill(locked_until));
                 Thread.sleep(100);
                 JoH.releaseWakeLock(wlx);
             }
@@ -175,16 +176,16 @@ public class Mdns {
             PowerManager.WakeLock wly = JoH.getWakeLock("mdns-resolve-x", 2000);
             if (locked_until != 0) {
                 mResolveListener = initializeResolveListener();
-                UserError.Log.d(TAG, "Creating additional listener");
+                UserErrorLog.d(TAG, "Creating additional listener");
             }
             locked_until = JoH.tsl() + WAIT_FOR_REPLIES_TIMEOUT_MS;
             outstanding.incrementAndGet();
             mNsdManager.resolveService(service, mResolveListener);
 
         } catch (InterruptedException e) {
-            UserError.Log.e(TAG, "Interrupted waiting to resolver lock!");
+            UserErrorLog.e(TAG, "Interrupted waiting to resolver lock!");
         } catch (IllegalArgumentException e) {
-            UserError.Log.e(TAG, "got illegal argument exception in singleResolveService: ", e);
+            UserErrorLog.e(TAG, "got illegal argument exception in singleResolveService: ", e);
         }
     }
 
@@ -201,9 +202,9 @@ public class Mdns {
         if (mDiscoveryListener != null) {
             try {
                 mNsdManager.stopServiceDiscovery(mDiscoveryListener);
-                UserError.Log.wtf(TAG, "Discovery service was active when it shouldn't be!");
+                UserErrorLog.wtf(TAG, "Discovery service was active when it shouldn't be!");
             } catch (Exception e) {
-                UserError.Log.d(TAG, "Could not stop service during initialization: " + e);
+                UserErrorLog.d(TAG, "Could not stop service during initialization: " + e);
             }
         }
         mDiscoveryListener = new NsdManager.DiscoveryListener() {
@@ -218,7 +219,7 @@ public class Mdns {
 
                 final String type = service.getServiceType();
 
-                UserError.Log.d(TAG, "onServiceFound " + type + service.getServiceName());
+                UserErrorLog.d(TAG, "onServiceFound " + type + service.getServiceName());
                 if (type.equals(SERVICE_TYPE)) {
                     final String name = service.getServiceName();
                     final LookUpInfo li = iplookup.get(shortenName(name));
@@ -230,7 +231,7 @@ public class Mdns {
                             }
                         }).start();
                     } else {
-                        UserError.Log.d(TAG, "Already have recent data for: " + name + " => " + li.address);
+                        UserErrorLog.d(TAG, "Already have recent data for: " + name + " => " + li.address);
                     }
                 }
             }
@@ -260,7 +261,7 @@ public class Mdns {
                 try {
                     mNsdManager.stopServiceDiscovery(this);
                 } catch (IllegalArgumentException | IllegalStateException e) {
-                    UserError.Log.e(TAG, "Could not stop service discovery: " + e);
+                    UserErrorLog.e(TAG, "Could not stop service discovery: " + e);
                 }
             }
         };
@@ -272,13 +273,13 @@ public class Mdns {
             @Override
             public void onResolveFailed(NsdServiceInfo serviceInfo, int errorCode) {
                 if (JoH.quietratelimit("mdns-error", 30))
-                    UserError.Log.e(TAG, "Resolve failed " + errorCode);
+                    UserErrorLog.e(TAG, "Resolve failed " + errorCode);
                 if (errorCode == 3) {
                     errorCounter++;
                     if (errorCounter > 5) {
                         errorCounter = 0;
                         if (JoH.pratelimit("mdns-total-restart", 86400)) {
-                            UserError.Log.wtf(TAG, "Had to do a complete restart due to MDNS failures");
+                            UserErrorLog.wtf(TAG, "Had to do a complete restart due to MDNS failures");
                             android.os.Process.killProcess(android.os.Process.myPid());
                         }
                     }
@@ -286,7 +287,7 @@ public class Mdns {
                 try {
                     mNsdManager.stopServiceDiscovery(mDiscoveryListener);
                 } catch (Exception e) {
-                    UserError.Log.d(TAG, "Failed to stop service discovery on failure: " + e);
+                    UserErrorLog.d(TAG, "Failed to stop service discovery on failure: " + e);
                 }
                 outstanding.decrementAndGet();
                 locked_until = 0;
@@ -297,12 +298,12 @@ public class Mdns {
 
                 final InetAddress host = serviceInfo.getHost();
                 final String address = host.getHostAddress();
-                UserError.Log.d(TAG, serviceInfo.getServiceName() + " Resolved address = " + address);
+                UserErrorLog.d(TAG, serviceInfo.getServiceName() + " Resolved address = " + address);
                 final String short_name = shortenName(serviceInfo.getServiceName().toLowerCase());
                 if (!address.contains(":") || (iplookup.get(short_name) == null) || (JoH.msSince(iplookup.get(short_name).received) > 60000)) {
                     iplookup.put(short_name, new LookUpInfo(address, JoH.tsl(), serviceInfo));
                 } else {
-                    UserError.Log.d(TAG, "Skipping overwrite of " + short_name + " with " + address + " due to ipv4 priority");
+                    UserErrorLog.d(TAG, "Skipping overwrite of " + short_name + " with " + address + " due to ipv4 priority");
                 }
                 outstanding.decrementAndGet();
                 locked_until = 0;
@@ -340,7 +341,7 @@ public class Mdns {
                                             switch (which) {
                                                 case DialogInterface.BUTTON_POSITIVE:
                                                     String new_receiver_list = (receiver_list.length() > 0) ? receiver_list + "," + new_receiver : new_receiver;
-                                                    UserError.Log.d(TAG, "Updating receiver list to: " + new_receiver_list);
+                                                    UserErrorLog.d(TAG, "Updating receiver list to: " + new_receiver_list);
                                                     Pref.setString("wifi_recievers_addresses", new_receiver_list);
                                                     JoH.static_toast_long("Added receiver: " + JoH.ucFirst(entry.getKey()));
                                                     break;
@@ -359,7 +360,7 @@ public class Mdns {
                                             switch (which) {
                                                 case DialogInterface.BUTTON_POSITIVE:
                                                     String new_receiver_list = receiver_list.replace(new_receiver, "").replace(",,", ",").replaceFirst(",$", "").replaceFirst("^,", "");
-                                                    UserError.Log.d(TAG, "Updating receiver list to: " + new_receiver_list);
+                                                    UserErrorLog.d(TAG, "Updating receiver list to: " + new_receiver_list);
                                                     Pref.setString("wifi_recievers_addresses", new_receiver_list);
                                                     JoH.static_toast_long("Removed receiver: " + JoH.ucFirst(entry.getKey()));
                                                     break;

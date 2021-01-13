@@ -1,9 +1,10 @@
 package com.eveningoutpost.dexdrip.Services;
 
-import java.util.Arrays;
 
 import com.google.gson.annotations.Expose;
 import com.mongodb.BasicDBObject;
+
+import java.util.Arrays;
 
 // This class contains data that is received for all house coverage.
 // The must fields are the raw data read from the sensor, and timestamp (and relative time).

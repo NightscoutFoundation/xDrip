@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
@@ -16,14 +17,12 @@ import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.NewDataObserver;
 import com.eveningoutpost.dexdrip.Services.SyncService;
 import com.eveningoutpost.dexdrip.WidgetUpdateService;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.xDripWidget;
-import com.rits.cloning.Cloner;
 
 import java.util.List;
 
@@ -95,7 +94,7 @@ public class BgSendQueue extends Model {
         bgSendQueue.success = false;
         bgSendQueue.mongo_success = false;
         bgSendQueue.save();
-        Log.d("BGQueue", "New value added to queue!");
+        UserErrorLog.d("BGQueue", "New value added to queue!");
     }
 
     public static void handleNewBgReading(BgReading bgReading, String operation_type, Context context) {
@@ -109,7 +108,7 @@ public class BgSendQueue extends Model {
     // TODO extract to non depreciated class
     public static void handleNewBgReading(final BgReading bgReading, String operation_type, Context context, boolean is_follower, boolean quick) {
         if (bgReading == null) {
-            UserError.Log.wtf("BgSendQueue", "handleNewBgReading called with null bgReading!");
+            UserErrorLog.wtf("BgSendQueue", "handleNewBgReading called with null bgReading!");
             return;
         }
         final PowerManager.WakeLock wakeLock = JoH.getWakeLock("sendQueue", 120000);

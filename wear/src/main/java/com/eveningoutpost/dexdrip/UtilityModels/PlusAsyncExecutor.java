@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 
 import java.util.ArrayDeque;
 import java.util.HashMap;
@@ -41,7 +41,7 @@ public class PlusAsyncExecutor implements Executor {
 
         // Create the queue if it doesn't exist yet
         if (!taskQueues.containsKey(queueId)) {
-            Log.d(TAG, "New task queue for: " + queueId);
+            UserErrorLog.d(TAG, "New task queue for: " + queueId);
             taskQueues.put(queueId, new ArrayDeque<>());
             currentTask.remove(queueId);
         }
@@ -50,7 +50,7 @@ public class PlusAsyncExecutor implements Executor {
 
         // Log if tasks are backlogged
         if (qsize > 0) {
-            Log.i(TAG, "Task queue size: " + qsize + " on queue: " + queueId);
+            UserErrorLog.i(TAG, "Task queue size: " + qsize + " on queue: " + queueId);
         }
 
         // if queue isnt broken then add task to it
@@ -65,7 +65,7 @@ public class PlusAsyncExecutor implements Executor {
                         //wl.acquire(3600000); // failsafe value = 60 mins
                         final int locksnow = wlocks.incrementAndGet();
                         if (locksnow > 1)
-                            Log.d(TAG, queueId + " Acquire Wakelocks total: " + locksnow);
+                            UserErrorLog.d(TAG, queueId + " Acquire Wakelocks total: " + locksnow);
                         r.run();
                     } finally {
                         // each task will try to call the next when done
@@ -73,13 +73,13 @@ public class PlusAsyncExecutor implements Executor {
                         JoH.releaseWakeLock(wl); // will stack wakelocks
                         final int locksnow = wlocks.decrementAndGet();
                         if (locksnow != 0)
-                            Log.d(TAG, queueId + " Release Wakelocks total: " + locksnow);
+                            UserErrorLog.d(TAG, queueId + " Release Wakelocks total: " + locksnow);
                     }
                 }
             });
 
         } else {
-            Log.e(TAG, "Queue so backlogged we are not extending! " + queueId);
+            UserErrorLog.e(TAG, "Queue so backlogged we are not extending! " + queueId);
         }
 
         // if we are not busy then run the queue
@@ -88,7 +88,7 @@ public class PlusAsyncExecutor implements Executor {
         } else if (qsize > 2) {
             // report deadlock if queue is stacking up
             final String err = JoH.hourMinuteString() + " Task deadlock on: " + queueId + "! @" + qsize;
-            Log.e(TAG, err);
+            UserErrorLog.e(TAG, err);
             Home.toaststaticnext(err);
         }
 
@@ -100,12 +100,12 @@ public class PlusAsyncExecutor implements Executor {
         currentTask.put(queueId, taskQueues.get(queueId).poll());
         final Runnable task = currentTask.get(queueId);
         if (task != null) {
-            Log.d(TAG, " New thread: " + queueId);
+            UserErrorLog.d(TAG, " New thread: " + queueId);
             final Thread t = (new Thread(task));
             t.setPriority(NORM_PRIORITY - 1);
             t.start();
         } else {
-            Log.d(TAG, "Queue empty: " + queueId);
+            UserErrorLog.d(TAG, "Queue empty: " + queueId);
         }
 
     }

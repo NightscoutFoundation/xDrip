@@ -1,12 +1,13 @@
 package com.eveningoutpost.dexdrip;
 
-/**
- * Created by jamorham on 11/01/16.
- */
 
 import android.content.Intent;
 
 import com.google.firebase.iid.FirebaseInstanceIdService;
+
+/**
+ * Created by jamorham on 11/01/16.
+ */
 
 public class MyInstanceIDListenerService extends FirebaseInstanceIdService {
     private static final String TAG = "jamorham MyInstanceIDLS";

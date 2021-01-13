@@ -1,12 +1,12 @@
 package com.eveningoutpost.dexdrip.tidepool;
 
-// jamorham
-
-// Manages the session data
 
 import java.util.List;
 
 import okhttp3.Headers;
+
+// jamorham
+// Manages the session data
 
 public class Session {
 

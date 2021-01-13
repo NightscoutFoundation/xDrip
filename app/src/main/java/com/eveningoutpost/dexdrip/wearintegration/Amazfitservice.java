@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.wearintegration;
 
+
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -26,7 +27,7 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.StepCounter;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.Treatments;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSparklineBuilder;
@@ -90,7 +91,7 @@ public class Amazfitservice extends Service {
                 //Transporter is ready if ready is true, send an action now. This will **NOT** work before the transporter is ready!
                 //You can change the action to whatever you want, there's also an option for a data bundle to be added (see below)
                 if (ready)
-                    UserError.Log.e("Amazfitservice", "channel changed - trying automatic resend ");
+                    UserErrorLog.e("Amazfitservice", "channel changed - trying automatic resend ");
                 Amazfitservice.start("xDrip_synced_SGV_data");
             }
 
@@ -104,11 +105,11 @@ public class Amazfitservice extends Service {
                 //Confirmation that watch received SGV Data
                 if (item.getAction().equals("SGVDataConfirmation")) {
                     DataBundle db = item.getData();
-                    //UserError.Log.e("Amazfitservice", db.getString("reply_message"));
+                    //UserErrorLog.e("Amazfitservice", db.getString("reply_message"));
                 }
                 if (item.getAction().equals("CancelConfirmation")) {
                     DataBundle db = item.getData();
-                    //UserError.Log.e("Amazfitservice", db.getString("reply_message"));
+                    //UserErrorLog.e("Amazfitservice", db.getString("reply_message"));
                 }
 
                 // In case of getting a remote Snooze from watch check for an active alert and confirm snooze in case of
@@ -116,17 +117,17 @@ public class Amazfitservice extends Service {
                     DataBundle db = item.getData();
 
 
-                    UserError.Log.e("Amazfitservice", "Remote SNOOZE recieved for " + db.getInt("snoozetime") + " mins");
+                    UserErrorLog.e("Amazfitservice", "Remote SNOOZE recieved for " + db.getInt("snoozetime") + " mins");
 
                     if (ActiveBgAlert.currentlyAlerting() && db.getInt("snoozetime") > 0) {
-                        UserError.Log.e("Amazfitservice", "snoozing all alarms");
+                        UserErrorLog.e("Amazfitservice", "snoozing all alarms");
                         AlertPlayer.getPlayer().Snooze(xdrip.getAppContext(), db.getInt("snoozetime"), true);
                         db.putString("reply_message", "Snooze accepted by Phone");
                     } else if (ActiveBgAlert.currentlyAlerting()) {
                         AlertPlayer.defaultSnooze();
                         db.putString("reply_message", "Snooze accepted by Phone");
                     } else {
-                        UserError.Log.e("Amazfitservice", "No Alarms found to snooze");
+                        UserErrorLog.e("Amazfitservice", "No Alarms found to snooze");
                         db.putString("reply_message", "No alert found");
                     }
 
@@ -164,7 +165,7 @@ public class Amazfitservice extends Service {
         if (transporter != null) {
             transporter.disconnectTransportService();
         }
-        UserError.Log.e("Amazfitservice", "killing service ");
+        UserErrorLog.e("Amazfitservice", "killing service ");
 
         super.onDestroy();
     }
@@ -176,23 +177,23 @@ public class Amazfitservice extends Service {
             @Override
             public void onResultBack(DataTransportResult dataTransportResult) {
 
-                UserError.Log.e("Amazfitservice", dataTransportResult.toString());
+                UserErrorLog.e("Amazfitservice", dataTransportResult.toString());
             }
         };
         if (!transporter.isTransportServiceConnected()) {
-            UserError.Log.e("Amazfitservice", "Service not connected - trying to reconnect ");
+            UserErrorLog.e("Amazfitservice", "Service not connected - trying to reconnect ");
             transporter.connectTransportService();
 
         }
 
         if (!transporter.isTransportServiceConnected()) {
-            UserError.Log.e("Amazfitservice", "Service is not connectable ");
+            UserErrorLog.e("Amazfitservice", "Service is not connectable ");
 
         } else {
             DataBundle db = new DataBundle();
             db.putString("Data", getDatatosend());
             transporter.send(getAction(), db, test);
-            //UserError.Log.e("Amazfitservice", "trying to send Data to watch " + action);
+            //UserErrorLog.e("Amazfitservice", "trying to send Data to watch " + action);
         }
 
         return START_STICKY;

@@ -1,7 +1,8 @@
 package com.eveningoutpost.dexdrip.watch.thinjam.firmware;
 
+
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.watch.thinjam.BlueJay;
 import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayInfo;
@@ -35,14 +36,14 @@ public class FirmwareDownload {
             val manifest = getURL(String.format(Locale.US, "%s%s%s?p=%s&m=%s&rr=%d", UPDATE_URL, fwid, "-manifest", mac.replace(":", "-"), metrics, JoH.tsl() / CACHE_MS));
 
             if (manifest != null) {
-                UserError.Log.d(TAG, "Manifest: " + manifest);
+                UserErrorLog.d(TAG, "Manifest: " + manifest);
                 return BlueJayManifest.parseToList(manifest);
             } else {
-                UserError.Log.d(TAG, "No manifest found");
+                UserErrorLog.d(TAG, "No manifest found");
             }
 
         } else {
-            UserError.Log.d(TAG, "Insufficient information to look for firmware");
+            UserErrorLog.d(TAG, "Insufficient information to look for firmware");
         }
         return null;
     }
@@ -50,9 +51,9 @@ public class FirmwareDownload {
     public static byte[] getLatestFirmwareBytes(final String mac, final int type) {
         val available = checkAvailability(mac);
         if (available != null) {
-            UserError.Log.d(TAG, "Parsing available list: " + available.size());
+            UserErrorLog.d(TAG, "Parsing available list: " + available.size());
             val filename = getHighestVersionFilename(available, type);
-            UserError.Log.d(TAG, "Download Filename: " + filename);
+            UserErrorLog.d(TAG, "Download Filename: " + filename);
             if (filename != null) {
                 return GetURL.getURLbytes(String.format(Locale.US, "%s%s", UPDATE_URL, filename));
             }
@@ -64,7 +65,7 @@ public class FirmwareDownload {
         BlueJayManifest result = null;
         if (list != null) {
             for (val item : list) {
-                UserError.Log.d(TAG, item.fileName + " " + item.type + " " + item.version);
+                UserErrorLog.d(TAG, item.fileName + " " + item.type + " " + item.version);
                 if (item.type == type) {
                     if (result == null || result.version < item.version) {
                         result = item;

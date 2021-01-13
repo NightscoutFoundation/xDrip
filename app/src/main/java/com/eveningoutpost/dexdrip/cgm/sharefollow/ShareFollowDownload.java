@@ -1,9 +1,10 @@
 package com.eveningoutpost.dexdrip.cgm.sharefollow;
 
+
 import android.os.PowerManager;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
@@ -56,14 +57,14 @@ public class ShareFollowDownload extends RetrofitBase {
     }
 
     public boolean doEverything(final int record_request_size) {
-        if (D) UserError.Log.e(TAG, "doEverything called");
+        if (D) UserErrorLog.e(TAG, "doEverything called");
         if (loginDataLooksOkay) {
             requestCount = Math.min(record_request_size, MAX_RECORDS_TO_ASK_FOR);
             return loginAndGetData();
         } else {
             final String invalid = xdrip.gs(R.string.share_login_data_isnt_valid);
             msg(invalid);
-            UserError.Log.e(TAG, invalid);
+            UserErrorLog.e(TAG, invalid);
             return false;
         }
     }
@@ -81,17 +82,17 @@ public class ShareFollowDownload extends RetrofitBase {
                         .enqueue(new ShareFollowCallback<String>("Login", session, this::getData)
                                 .setOnFailure(this::handleLoginFailure));
             } else {
-                UserError.Log.e(TAG, "Not trying to login due to backoff timer for login failures until: " + JoH.dateTimeText(loginBlockedTill));
+                UserErrorLog.e(TAG, "Not trying to login due to backoff timer for login failures until: " + JoH.dateTimeText(loginBlockedTill));
             }
         } else {
-            UserError.Log.d(TAG, "Session id appears valid so going direct to get data");
+            UserErrorLog.d(TAG, "Session id appears valid so going direct to get data");
             getData();
         }
         return true;
     }
 
     private void handleLoginFailure() {
-        UserError.Log.d(TAG, "Login failure: " + session.getErrorString() + " code: " + session.getLastResponseCode());
+        UserErrorLog.d(TAG, "Login failure: " + session.getErrorString() + " code: " + session.getLastResponseCode());
         if (session.getLastResponseCode() == 0) {
             msg(xdrip.gs(R.string.connectivity_problem_reaching_share_servers));
         } else {
@@ -112,19 +113,19 @@ public class ShareFollowDownload extends RetrofitBase {
                         .enqueue(new ShareFollowCallback<List<ShareGlucoseRecord>>("Get Share Data", session,
                                 this::backgroundProcessGlucoseResults).setOnFailure(this::handleGetDataFailure));
             } else {
-                UserError.Log.d(TAG, "Cannot get data as sessionID is null");
+                UserErrorLog.d(TAG, "Cannot get data as sessionID is null");
                 return false;
             }
             return true;
         } catch (Exception e) {
-            UserError.Log.e(TAG, "Got exception in getData() " + e);
+            UserErrorLog.e(TAG, "Got exception in getData() " + e);
             releaseWakeLock();
             return false;
         }
     }
 
     private void handleGetDataFailure() {
-        UserError.Log.d(TAG, "Last response code: " + session.getLastResponseCode());
+        UserErrorLog.d(TAG, "Last response code: " + session.getLastResponseCode());
         if (session.getLastResponseCode() == 0) {
             msg(xdrip.gs(R.string.connectivity_problem_reaching_share_servers));
         } else {
@@ -142,13 +143,13 @@ public class ShareFollowDownload extends RetrofitBase {
     // don't call this directly unless you are also handling the wakelock release
     private void processGlucoseResults() {
         if (session.results != null) {
-            UserError.Log.d(TAG, "Success get data");
+            UserErrorLog.d(TAG, "Success get data");
             EntryProcessor.processEntries(session.results, true);
             ShareFollowService.updateBgReceiveDelay();
             session.results = null;
             msg(null); // clear any error msg
         } else {
-            UserError.Log.d(TAG, "Nothing to process");
+            UserErrorLog.d(TAG, "Nothing to process");
         }
     }
 
@@ -157,7 +158,7 @@ public class ShareFollowDownload extends RetrofitBase {
             try {
                 service = getRetrofitInstance(TAG, serverUrl, false).create(DexcomShareInterface.class);
             } catch (NullPointerException e) {
-                UserError.Log.e(TAG, "Null pointer trying to getService()");
+                UserErrorLog.e(TAG, "Null pointer trying to getService()");
             }
         }
         return service;
@@ -178,22 +179,22 @@ public class ShareFollowDownload extends RetrofitBase {
 
     private void msg(final String msg) {
         status = msg != null ? JoH.hourMinuteString() + ": " + msg : null;
-        if (msg != null) UserError.Log.d(TAG, "Setting message: " + status);
+        if (msg != null) UserErrorLog.d(TAG, "Setting message: " + status);
     }
 
     private static synchronized void extendWakeLock(final long ms) {
         if (wl == null) {
-            if (D) UserError.Log.d(TAG,"Creating wakelock");
+            if (D) UserErrorLog.d(TAG,"Creating wakelock");
             wl = JoH.getWakeLock("SHFollow-download", (int) ms);
         } else {
             JoH.releaseWakeLock(wl); // lets not get too messy
             wl.acquire(ms);
-            if (D) UserError.Log.d(TAG,"Extending wakelock");
+            if (D) UserErrorLog.d(TAG,"Extending wakelock");
         }
     }
 
     protected static synchronized void releaseWakeLock() {
-        if (D) UserError.Log.d(TAG, "Releasing wakelock");
+        if (D) UserErrorLog.d(TAG, "Releasing wakelock");
         JoH.releaseWakeLock(wl);
     }
 

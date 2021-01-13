@@ -1,9 +1,10 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+
 import android.annotation.SuppressLint;
 import android.os.Build;
 
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +35,7 @@ public class OkHttpWrapper {
                 specs.add(cs);
                 client.connectionSpecs(specs);
             } catch (Exception e) {
-                UserError.Log.e("OkHttpTLSCompat", "Error while setting TLS 1.2", e);
+                UserErrorLog.e("OkHttpTLSCompat", "Error while setting TLS 1.2", e);
             }
         }
 

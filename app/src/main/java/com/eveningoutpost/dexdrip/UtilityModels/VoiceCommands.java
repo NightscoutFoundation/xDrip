@@ -1,6 +1,5 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
-// jamorham
 
 import android.app.Activity;
 
@@ -24,6 +23,8 @@ import com.eveningoutpost.dexdrip.utils.SdcardImportExport;
 
 import static com.eveningoutpost.dexdrip.Home.get_engineering_mode;
 import static com.eveningoutpost.dexdrip.Home.staticRefreshBGCharts;
+
+// jamorham
 
 public class VoiceCommands {
 

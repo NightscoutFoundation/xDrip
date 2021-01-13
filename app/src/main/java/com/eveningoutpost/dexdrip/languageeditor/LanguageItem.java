@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.languageeditor;
 
+
 import com.google.gson.annotations.Expose;
 
 /**

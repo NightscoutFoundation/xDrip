@@ -5,12 +5,11 @@ import android.provider.BaseColumns;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
 import com.google.gson.annotations.Expose;
 
-import java.text.DecimalFormat;
 import java.util.List;
 import java.util.UUID;
 /**
@@ -85,7 +84,7 @@ public class LibreBlock extends PlusModel {
         if (lb != null) {
             lb.save();
             if(byte_start == 0 && blocks.length == 344 && allowUpload) {
-                Log.d(TAG, "sending new item to queue");
+                UserErrorLog.d(TAG, "sending new item to queue");
                 UploaderQueue.newTransmitterDataEntry("create" ,lb);
             }
         }
@@ -158,7 +157,7 @@ public class LibreBlock extends PlusModel {
         if (libreBlock == null) {
             return;
         }
-        Log.e(TAG, "Updating bg for timestamp " + timestamp);
+        UserErrorLog.e(TAG, "Updating bg for timestamp " + timestamp);
         libreBlock.calculated_bg = calculated_value;
         libreBlock.save();
     }
@@ -170,7 +169,7 @@ public class LibreBlock extends PlusModel {
                 .where("uuid = ?", uuid)
                 .executeSingle();
         } catch (Exception e) {
-            Log.e(TAG,"findByUuid() Got exception on Select : "+e.toString());
+            UserErrorLog.e(TAG,"findByUuid() Got exception on Select : "+e.toString());
             return null;
         }
     }

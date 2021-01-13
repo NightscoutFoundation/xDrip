@@ -1,11 +1,12 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
-// jamorham
 
 import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Getter;
+
+// jamorham
 
 public class WearSyncBooleans {
 

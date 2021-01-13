@@ -1,6 +1,5 @@
 package com.eveningoutpost.dexdrip;
 
-// jamorham
 
 import android.app.Activity;
 import android.content.Intent;
@@ -23,6 +22,8 @@ import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.ArrayList;
 import java.util.List;
+
+// jamorham
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 

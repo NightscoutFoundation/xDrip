@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.GlucoseMeter;
 
+
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
@@ -26,7 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.BluetoothGlucoseMeter;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
@@ -92,7 +93,7 @@ public class BTGlucoseMeterActivity extends ListActivityWithMenu {
                 @Override
                 public void onReceive(Context ctx, Intent intent) {
                     final String action = intent.getAction();
-                    UserError.Log.d(TAG, "Got receive:" + action + " :: " + intent.getStringExtra("data"));
+                    UserErrorLog.d(TAG, "Got receive:" + action + " :: " + intent.getStringExtra("data"));
                     switch (action) {
                         case BluetoothGlucoseMeter.ACTION_BLUETOOTH_GLUCOSE_METER_SERVICE_UPDATE:
                             statusText.setText(intent.getStringExtra("data"));
@@ -152,7 +153,7 @@ public class BTGlucoseMeterActivity extends ListActivityWithMenu {
                         AlertDialog alert = builder.create();
                         alert.show();
                     } else {
-                        UserError.Log.wtf(TAG, "Null pointer on list item long click");
+                        UserErrorLog.wtf(TAG, "Null pointer on list item long click");
                     }
 
                     return true;
@@ -182,7 +183,7 @@ public class BTGlucoseMeterActivity extends ListActivityWithMenu {
             try {
                 LocalBroadcastManager.getInstance(this).unregisterReceiver(serviceDataReceiver);
             } catch (IllegalArgumentException e) {
-                UserError.Log.e(TAG, "broadcast receiver not registered", e);
+                UserErrorLog.e(TAG, "broadcast receiver not registered", e);
             }
         }
     }
@@ -205,11 +206,11 @@ public class BTGlucoseMeterActivity extends ListActivityWithMenu {
             case R.id.menu_scan:
                 check_and_enable_bluetooth();
                 if (JoH.ratelimit("bluetooth-scan-button", 4)) {
-                    UserError.Log.d(TAG, "Starting Bluetooth Glucose Meter Service");
+                    UserErrorLog.d(TAG, "Starting Bluetooth Glucose Meter Service");
                     mLeDeviceListAdapter.clear();
                     BluetoothGlucoseMeter.start_service(null);
                 } else {
-                    UserError.Log.d(TAG, "Rate limited scan button");
+                    UserErrorLog.d(TAG, "Rate limited scan button");
                 }
                 return true;
 
@@ -244,11 +245,11 @@ public class BTGlucoseMeterActivity extends ListActivityWithMenu {
         final MyBluetoothDevice device = mLeDeviceListAdapter.getDevice(position);
         if (device != null) {
             if (JoH.ratelimit("bt-meter-item-clicked", 7)) {
-                UserError.Log.d(TAG, "Item Clicked: " + device.address);
+                UserErrorLog.d(TAG, "Item Clicked: " + device.address);
                 BluetoothGlucoseMeter.start_service(device.address);
             }
         } else {
-            UserError.Log.wtf(TAG, "Null pointer on list item click");
+            UserErrorLog.wtf(TAG, "Null pointer on list item click");
         }
     }
 
@@ -312,7 +313,7 @@ public class BTGlucoseMeterActivity extends ListActivityWithMenu {
             if (!isDupeDevice(device)) {
                 mLeDevices.add(device);
                 notifyDataSetChanged();
-                UserError.Log.d(TAG, "New list device added - data set changed");
+                UserErrorLog.d(TAG, "New list device added - data set changed");
             }
         }
 

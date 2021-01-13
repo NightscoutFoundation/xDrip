@@ -1,9 +1,10 @@
 package com.eveningoutpost.dexdrip.insulin.inpen;
 
+
 import android.os.ParcelUuid;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
@@ -32,7 +33,7 @@ public class InPenScanMeister extends ScanMeister {
 
         extendWakeLock((scanSeconds + 1) * Constants.SECOND_IN_MS);
         stopScan("Scan start");
-        UserError.Log.d(TAG, "startScan called: hunting: " + address + " " + name);
+        UserErrorLog.d(TAG, "startScan called: hunting: " + address + " " + name);
         scanSubscription = new Subscription(rxBleClient.scanBleDevices(
                 new ScanSettings.Builder()
                         .setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES)
@@ -53,7 +54,7 @@ public class InPenScanMeister extends ScanMeister {
         final String this_address = bleScanResult.getBleDevice().getMacAddress();
         final byte[] scanRecordBytes = bleScanResult.getScanRecord().getBytes();
 
-        if (D) UserError.Log.d(TAG, JoH.bytesToHex(bleScanResult.getScanRecord().getBytes()));
+        if (D) UserErrorLog.d(TAG, JoH.bytesToHex(bleScanResult.getScanRecord().getBytes()));
 
         if (scanRecordBytes != null && scanRecordBytes.length > 0) {
             PersistentStore.setBytes(STORE_INPEN_ADVERT + this_address, scanRecordBytes);

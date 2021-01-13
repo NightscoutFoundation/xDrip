@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.adapters;
 
+
 import android.databinding.BaseObservable;
 import android.databinding.BindingAdapter;
 import android.graphics.Bitmap;

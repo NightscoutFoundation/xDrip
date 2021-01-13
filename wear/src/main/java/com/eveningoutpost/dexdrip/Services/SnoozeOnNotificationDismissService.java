@@ -2,16 +2,13 @@ package com.eveningoutpost.dexdrip.Services;
 
 import android.app.IntentService;
 import android.content.Intent;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 
-import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.SnoozeActivity;
 import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
 import com.eveningoutpost.dexdrip.Models.AlertType;
-import com.eveningoutpost.dexdrip.Models.UserNotification;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 
 /**
@@ -31,7 +28,7 @@ public class SnoozeOnNotificationDismissService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         final String alertType = (intent != null) ? intent.getStringExtra("alertType") : "null intent"; // Replace by constant
-        Log.e(TAG, "SnoozeOnNotificationDismissService called source = " + alertType);
+        UserErrorLog.e(TAG, "SnoozeOnNotificationDismissService called source = " + alertType);
         if(alertType.equals("bg_alerts")  ) {
             snoozeBgAlert();
             return;
@@ -49,11 +46,11 @@ public class SnoozeOnNotificationDismissService extends IntentService {
         
         if(alertType.equals("bg_predict_alert") ||
                 alertType.equals("persistent_high_alert")) {
-            Log.wtf(TAG, "SnoozeOnNotificationDismissService called for unsupported type!!! source = " + alertType);
+            UserErrorLog.wtf(TAG, "SnoozeOnNotificationDismissService called for unsupported type!!! source = " + alertType);
             
         }
         
-        Log.e(TAG, "SnoozeOnNotificationDismissService called for unknown source = " + alertType);
+        UserErrorLog.e(TAG, "SnoozeOnNotificationDismissService called for unknown source = " + alertType);
     }
     
     private void snoozeBgAlert() {
@@ -74,7 +71,7 @@ public class SnoozeOnNotificationDismissService extends IntentService {
     private void snoozeOtherAlert(String alertType) {//KS TODO not implemented
         /*SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         long snoozeMinutes = MissedReadingService.getOtherAlertSnoozeMinutes(prefs, alertType);
-        Log.i(TAG, "snoozeOtherAlert calling snooze alert alert = " + alertType + " snoozeMinutes = " + snoozeMinutes);
+        UserErrorLog.i(TAG, "snoozeOtherAlert calling snooze alert alert = " + alertType + " snoozeMinutes = " + snoozeMinutes);
         UserNotification.snoozeAlert(alertType, snoozeMinutes);*/
     }
 }

@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.ShareModels.UserAgentInfo;
 
+
 import com.google.gson.annotations.Expose;
 
 /**

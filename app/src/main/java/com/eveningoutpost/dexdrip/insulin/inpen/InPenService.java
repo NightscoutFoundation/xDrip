@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.insulin.inpen;
 
+
 import android.annotation.TargetApi;
 import android.app.PendingIntent;
 import android.bluetooth.BluetoothDevice;
@@ -12,7 +13,7 @@ import android.os.PowerManager;
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.PenData;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.JamBaseBluetoothSequencer;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
@@ -50,13 +51,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 
-//import rx.schedulers.Schedulers;
-
-import io.reactivex.Observable;
-import io.reactivex.Scheduler;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-
 
 import static android.bluetooth.BluetoothDevice.BOND_BONDED;
 import static android.bluetooth.BluetoothDevice.BOND_NONE;
@@ -109,6 +104,8 @@ import static com.eveningoutpost.dexdrip.insulin.inpen.InPenService.InPenState.G
 import static com.eveningoutpost.dexdrip.insulin.inpen.InPenService.InPenState.GET_TIME;
 import static com.eveningoutpost.dexdrip.insulin.inpen.InPenService.InPenState.KEEP_ALIVE;
 import static com.eveningoutpost.dexdrip.utils.bt.Helper.getCharactersticName;
+
+//import rx.schedulers.Schedulers;
 
 /** jamorham
  *
@@ -198,7 +195,7 @@ public class InPenService extends JamBaseBluetoothSequencer {
     @Override
     protected synchronized boolean automata() {
         extendWakeLock(1000);
-        if (D) UserError.Log.d(TAG, "Automata called in InPen");
+        if (D) UserErrorLog.d(TAG, "Automata called in InPen");
         msg(I.state);
 
         switch (I.state) {
@@ -245,7 +242,7 @@ public class InPenService extends JamBaseBluetoothSequencer {
                     }
                     return super.automata();
                 } else {
-                    UserError.Log.d(TAG, "Service should be shut down so stopping automata");
+                    UserErrorLog.d(TAG, "Service should be shut down so stopping automata");
                 }
         }
         return true; // lies
@@ -258,7 +255,7 @@ public class InPenService extends JamBaseBluetoothSequencer {
         final PowerManager.WakeLock wl = JoH.getWakeLock("inpen service", 60000);
         try {
             InPenEntry.started_at = JoH.tsl();
-            UserError.Log.d(TAG, "WAKE UP WAKE UP WAKE UP");
+            UserErrorLog.d(TAG, "WAKE UP WAKE UP WAKE UP");
             if (shouldServiceRun()) {
 
                 final String mac = InPen.getMac(); // load from settings class
@@ -297,7 +294,7 @@ public class InPenService extends JamBaseBluetoothSequencer {
                 setFailOverTimer();
                 return START_STICKY;
             } else {
-                UserError.Log.d(TAG, "Service is NOT set be active - shutting down");
+                UserErrorLog.d(TAG, "Service is NOT set be active - shutting down");
                 stopSelf();
                 return START_NOT_STICKY;
             }
@@ -323,21 +320,21 @@ public class InPenService extends JamBaseBluetoothSequencer {
     private void getAuthState() {
         I.connection.readCharacteristic(AUTHENTICATION).subscribe(
                 readValue -> {
-                    UserError.Log.d(TAG, "Authentication result: " + dumpHexString(readValue));
+                    UserErrorLog.d(TAG, "Authentication result: " + dumpHexString(readValue));
                     authenticationProcessor(readValue);
                 }, throwable -> {
-                    UserError.Log.e(TAG, "Could not read after Authentication status: " + throwable);
+                    UserErrorLog.e(TAG, "Could not read after Authentication status: " + throwable);
                     changeState(CLOSE);
                 });
     }
 
     private void authenticationProcessor(final byte[] value) {
         if (value == null || value.length < 1 || value[0] != 0) { // "U" = unbonded?
-            UserError.Log.d(TAG, "authenticationProcessor: not authenticated: " + bytesToHex(value));
+            UserErrorLog.d(TAG, "authenticationProcessor: not authenticated: " + bytesToHex(value));
             needsAuthentication = true;
             changeNextState(); // not authenticated
         } else {
-            UserError.Log.d(TAG, "authenticationProcessor: we are authenticated: " + bytesToHex(value));
+            UserErrorLog.d(TAG, "authenticationProcessor: we are authenticated: " + bytesToHex(value));
             // we are authenticated!
             needsAuthentication = false;
             changeState(GET_INDEX);
@@ -348,7 +345,7 @@ public class InPenService extends JamBaseBluetoothSequencer {
     private boolean checkMissingIndex() {
         final long missingIndex = PenData.getMissingIndex(I.address);
         if (missingIndex != -1) {
-            UserError.Log.d(TAG, "Index: " + missingIndex + " is missing");
+            UserErrorLog.d(TAG, "Index: " + missingIndex + " is missing");
             getRecords((int) missingIndex, (int) missingIndex);
             return true;
         }
@@ -358,19 +355,19 @@ public class InPenService extends JamBaseBluetoothSequencer {
     private void getIndex() {
         I.connection.readCharacteristic(RECORD_INDEX).subscribe(
                 indexValue -> {
-                    UserError.Log.d(TAG, "GetIndex result: " + dumpHexString(indexValue));
+                    UserErrorLog.d(TAG, "GetIndex result: " + dumpHexString(indexValue));
                     lastReceivedData = JoH.tsl();
                     I.connection.readCharacteristic(REMAINING_INDEX).subscribe(
                             remainingValue -> indexProcessor(indexValue, remainingValue),
-                            throwable -> UserError.Log.e(TAG, "Could not read after Remaining status: " + throwable));
-                }, throwable -> UserError.Log.e(TAG, "Could not read after Index status: " + throwable));
+                            throwable -> UserErrorLog.e(TAG, "Could not read after Remaining status: " + throwable));
+                }, throwable -> UserErrorLog.e(TAG, "Could not read after Index status: " + throwable));
     }
 
     private void indexProcessor(final byte[] indexValue, final byte[] remainingValue) {
         lastIndex = Converters.unsignedBytesToInt(indexValue);
         gotAll = lastIndex == gotIndex;
-        UserError.Log.d(TAG, "Index value: " + lastIndex);
-        UserError.Log.d(TAG, "Remain value: " + Converters.unsignedBytesToInt(remainingValue));
+        UserErrorLog.d(TAG, "Index value: " + lastIndex);
+        UserErrorLog.d(TAG, "Remain value: " + Converters.unsignedBytesToInt(remainingValue));
         changeNextState();
     }
 
@@ -380,18 +377,18 @@ public class InPenService extends JamBaseBluetoothSequencer {
         if (currentPenTime == null || ratelimit("inpen-get-time", 10000)) {
             I.connection.readCharacteristic(PEN_TIME).subscribe(
                     timeValue -> {
-                        UserError.Log.d(TAG, "GetTime result: " + dumpHexString(timeValue));
+                        UserErrorLog.d(TAG, "GetTime result: " + dumpHexString(timeValue));
                         currentPenTime = new TimeRx().fromBytes(timeValue);
                         if (currentPenTime != null) {
-                            UserError.Log.d(TAG, "Current pen epoch: " + JoH.dateTimeText(currentPenTime.getPenEpoch()));
+                            UserErrorLog.d(TAG, "Current pen epoch: " + JoH.dateTimeText(currentPenTime.getPenEpoch()));
                             changeNextState();
                         } else {
-                            UserError.Log.e(TAG, "Current pen time invalid");
+                            UserErrorLog.e(TAG, "Current pen time invalid");
                         }
-                    }, throwable -> UserError.Log.e(TAG, "Could not read after get time status: " + throwable));
+                    }, throwable -> UserErrorLog.e(TAG, "Could not read after get time status: " + throwable));
 
         } else {
-            UserError.Log.d(TAG, "Skipping get time, already have epoch");
+            UserErrorLog.d(TAG, "Skipping get time, already have epoch");
             changeNextState();
         }
     }
@@ -402,16 +399,16 @@ public class InPenService extends JamBaseBluetoothSequencer {
         if (currentPenAttachTime == null || ratelimit("inpen-get-time", 180000)) {
             I.connection.readCharacteristic(PEN_ATTACH_TIME).subscribe(
                     timeValue -> {
-                        UserError.Log.d(TAG, "GetAttachTime result: " + dumpHexString(timeValue));
+                        UserErrorLog.d(TAG, "GetAttachTime result: " + dumpHexString(timeValue));
                         currentPenAttachTime = new TimeRx().fromBytes(timeValue);
                         if (currentPenAttachTime != null) {
-                            UserError.Log.d(TAG, "Current pen attach epoch: " + currentPenAttachTime.getPenTime());
+                            UserErrorLog.d(TAG, "Current pen attach epoch: " + currentPenAttachTime.getPenTime());
                             changeNextState();
                         } else {
-                            UserError.Log.e(TAG, "Current pen attach time invalid");
+                            UserErrorLog.e(TAG, "Current pen attach time invalid");
                         }
                     }, throwable -> {
-                        UserError.Log.e(TAG, "Could not read after get attach time status: " + throwable);
+                        UserErrorLog.e(TAG, "Could not read after get attach time status: " + throwable);
                         if (throwable instanceof BleDisconnectedException) {
                             changeState(CLOSE);
                         } else {
@@ -420,7 +417,7 @@ public class InPenService extends JamBaseBluetoothSequencer {
                     });
 
         } else {
-            UserError.Log.d(TAG, "Skipping get attach time, already have epoch");
+            UserErrorLog.d(TAG, "Skipping get attach time, already have epoch");
             changeNextState();
         }
     }
@@ -434,26 +431,26 @@ public class InPenService extends JamBaseBluetoothSequencer {
                         if (battery != null) {
                             lastBattery = battery.getBatteryPercent();
                             PersistentStore.setLong(STORE_INPEN_BATTERY + I.address, lastBattery);
-                            UserError.Log.d(TAG, "GetBattery result: " + battery.getBatteryPercent());
+                            UserErrorLog.d(TAG, "GetBattery result: " + battery.getBatteryPercent());
                             changeNextState();
                         } else {
-                            UserError.Log.e(TAG, "Invalid GetBattery result: " + dumpHexString(batteryValue));
+                            UserErrorLog.e(TAG, "Invalid GetBattery result: " + dumpHexString(batteryValue));
                             changeNextState();
                         }
 
                     }, throwable -> {
-                        UserError.Log.e(TAG, "Could not read after Battery status: " + throwable);
+                        UserErrorLog.e(TAG, "Could not read after Battery status: " + throwable);
                         changeNextState();
                     });
 
         } else {
-            UserError.Log.d(TAG, "Skipping battery read");
+            UserErrorLog.d(TAG, "Skipping battery read");
             if (lastBattery == -1) {
                 lastBattery = (int) PersistentStore.getLong(STORE_INPEN_BATTERY + I.address);
                 if (lastBattery == 0) {
                     lastBattery = -1;
                 } else {
-                    UserError.Log.d(TAG, "Loaded battery from store: " + lastBattery);
+                    UserErrorLog.d(TAG, "Loaded battery from store: " + lastBattery);
                 }
 
             }
@@ -465,7 +462,7 @@ public class InPenService extends JamBaseBluetoothSequencer {
     private void getIdentity(final Queue<UUID> queue) {
         // CHECK IF WE ALREADY HAVE
         if (queue == null) {
-            UserError.Log.d(TAG, "IDENTITY: creating queue: " + I.characteristics.size());
+            UserErrorLog.d(TAG, "IDENTITY: creating queue: " + I.characteristics.size());
             loadInfos();
             final ConcurrentLinkedQueue<UUID> newQueue = new ConcurrentLinkedQueue<>();
             for (final UUID uuid : INFO_CHARACTERISTICS) {
@@ -473,10 +470,10 @@ public class InPenService extends JamBaseBluetoothSequencer {
                     if (!(I.characteristics.get(uuid) instanceof byte[])) {
                         newQueue.add(uuid);
                     } else {
-                        UserError.Log.d(TAG, "Already have value for: " + getCharactersticName(uuid.toString()));
+                        UserErrorLog.d(TAG, "Already have value for: " + getCharactersticName(uuid.toString()));
                     }
                 } else {
-                    UserError.Log.d(TAG, "Characteristic not found in discover services: " + getCharactersticName(uuid.toString()));
+                    UserErrorLog.d(TAG, "Characteristic not found in discover services: " + getCharactersticName(uuid.toString()));
                 }
             }
 
@@ -491,21 +488,21 @@ public class InPenService extends JamBaseBluetoothSequencer {
         if (!queue.isEmpty()) {
 
             final UUID uuid = queue.poll();
-            UserError.Log.d(TAG, "IDENTITY: list not empty: uuid: " + uuid);
+            UserErrorLog.d(TAG, "IDENTITY: list not empty: uuid: " + uuid);
             I.connection.readCharacteristic(uuid).timeout(5, TimeUnit.SECONDS).subscribe(
                     infoValue -> {
-                        UserError.Log.d(TAG, getCharactersticName(uuid.toString()) + " result: " + dumpHexString(infoValue));
+                        UserErrorLog.d(TAG, getCharactersticName(uuid.toString()) + " result: " + dumpHexString(infoValue));
                         I.characteristics.put(uuid, infoValue);
                         staticCharacteristics = I.characteristics;
                         getIdentity(queue);
                     }, throwable ->
                     {
-                        UserError.Log.e(TAG, "Could not read after " + getCharactersticName(uuid.toString()) + " status: " + throwable);
+                        UserErrorLog.e(TAG, "Could not read after " + getCharactersticName(uuid.toString()) + " status: " + throwable);
                         changeNextState();
                     });
 
         } else {
-            UserError.Log.d(TAG, "Info Queue empty");
+            UserErrorLog.d(TAG, "Info Queue empty");
             saveInfos();
             changeNextState();
 
@@ -517,35 +514,35 @@ public class InPenService extends JamBaseBluetoothSequencer {
             if (infosLoaded) return;
             for (Map.Entry<UUID, Object> entrySet : I.characteristics.entrySet()) {
                 if (entrySet.getValue() instanceof byte[]) {
-                    UserError.Log.d(TAG, "Found item skipping load infos");
+                    UserErrorLog.d(TAG, "Found item skipping load infos");
                     return;
                 }
             }
             final Gson gson = new GsonBuilder().create();
             final String json = PersistentStore.getString(STORE_INPEN_INFOS + I.address);
-            if (D) UserError.Log.d(TAG, "JSON: " + json);
+            if (D) UserErrorLog.d(TAG, "JSON: " + json);
             if (json.length() > 10) {
                 final HashMap<UUID, Object> loaded = gson.fromJson(json, new TypeToken<Map<UUID, Object>>() {
                 }.getType());
                 for (Map.Entry<UUID, Object> entry : loaded.entrySet()) {
                     // this seems like an excessive amount of gymnastics to deserialize..
                     if (entry.getValue() instanceof ArrayList) {
-                        if (D) UserError.Log.d(TAG, "Populating for: " + (entry.getKey()));
+                        if (D) UserErrorLog.d(TAG, "Populating for: " + (entry.getKey()));
                         final ArrayList<Double> bytelist = ((ArrayList<Double>) entry.getValue());
                         final byte[] bytes = new byte[bytelist.size()];
                         for (int i = 0; i < bytes.length; i++) {
                             bytes[i] = bytelist.get(i).byteValue();
                         }
-                        if (D) UserError.Log.d(TAG, entry.getKey() + " " + JoH.bytesToHex(bytes));
+                        if (D) UserErrorLog.d(TAG, entry.getKey() + " " + JoH.bytesToHex(bytes));
                         I.characteristics.put(entry.getKey(), bytes);
                     }
                 }
             }
             staticCharacteristics = I.characteristics;
             infosLoaded = true;
-            UserError.Log.d(TAG, "loadInfos() loaded");
+            UserErrorLog.d(TAG, "loadInfos() loaded");
         } catch (Exception e) {
-            UserError.Log.wtf(TAG, "Got exception in loadInfos " + e);
+            UserErrorLog.wtf(TAG, "Got exception in loadInfos " + e);
         }
     }
 
@@ -553,7 +550,7 @@ public class InPenService extends JamBaseBluetoothSequencer {
         final Gson gson = new GsonBuilder().create();
         final String json = gson.toJson(staticCharacteristics);
         PersistentStore.setString(STORE_INPEN_INFOS + I.address, json);
-        UserError.Log.d(TAG, json);
+        UserErrorLog.d(TAG, json);
     }
 
 
@@ -562,21 +559,21 @@ public class InPenService extends JamBaseBluetoothSequencer {
         if (checkMissingIndex()) return; // processing from there instead
 
         if (lastIndex < 0) {
-            UserError.Log.e(TAG, "Cannot get records as index is not defined");
+            UserErrorLog.e(TAG, "Cannot get records as index is not defined");
             return;
 
         }
         final long highest = PenData.getHighestIndex(I.address);
         int firstIndex = highest > 0 ? (int) highest + 1 : 1;
         if (firstIndex > lastIndex) {
-            UserError.Log.e(TAG, "First index is greater than last index: " + firstIndex + " " + lastIndex);
+            UserErrorLog.e(TAG, "First index is greater than last index: " + firstIndex + " " + lastIndex);
             return;
         }
 
         final int count = lastIndex - firstIndex;
         if (count > MAX_BACKLOG) {
             firstIndex = lastIndex - MAX_BACKLOG;
-            UserError.Log.d(TAG, "Restricting first index to: " + firstIndex);
+            UserErrorLog.d(TAG, "Restricting first index to: " + firstIndex);
         }
 
         getRecords(firstIndex, lastIndex);
@@ -588,37 +585,37 @@ public class InPenService extends JamBaseBluetoothSequencer {
         if (numberOfRecords > 30) {
             I.connection.writeCharacteristic(KEEPALIVE, new KeepAliveTx().getBytes()).subscribe(
                     value -> {
-                        UserError.Log.d(TAG, "Wrote keep alive for " + numberOfRecords);
+                        UserErrorLog.d(TAG, "Wrote keep alive for " + numberOfRecords);
                     }, throwable -> {
-                        UserError.Log.d(TAG, "Got exception in keep alive" + throwable);
+                        UserErrorLog.d(TAG, "Got exception in keep alive" + throwable);
                     });
         }
 
         final RecordTx packet = new RecordTx(firstIndex, lastIndex);
-        UserError.Log.d(TAG, "getRecords called, loading: " + firstIndex + " to " + lastIndex);
+        UserErrorLog.d(TAG, "getRecords called, loading: " + firstIndex + " to " + lastIndex);
         I.connection.setupIndication(RECORD_INDICATE).doOnNext(notificationObservable -> {
 
             I.connection.writeCharacteristic(RECORD_START, packet.startBytes()).subscribe(valueS -> {
-                UserError.Log.d(TAG, "Wrote record start: " + bytesToHex(valueS));
+                UserErrorLog.d(TAG, "Wrote record start: " + bytesToHex(valueS));
                 I.connection.writeCharacteristic(RECORD_END, packet.endBytes()).subscribe(valueE -> {
-                    UserError.Log.d(TAG, "Wrote record end: " + bytesToHex(valueE));
+                    UserErrorLog.d(TAG, "Wrote record end: " + bytesToHex(valueE));
                     I.connection.writeCharacteristic(RECORD_REQUEST, packet.triggerBytes()).subscribe(
                             characteristicValue -> {
 
                                 if (D)
-                                    UserError.Log.d(TAG, "Wrote record request request: " + bytesToHex(characteristicValue));
+                                    UserErrorLog.d(TAG, "Wrote record request request: " + bytesToHex(characteristicValue));
                             }, throwable -> {
-                                UserError.Log.e(TAG, "Failed to write record request: " + throwable);
+                                UserErrorLog.e(TAG, "Failed to write record request: " + throwable);
                                 if (throwable instanceof BleGattCharacteristicException) {
                                     final int status = ((BleGattCharacteristicException) throwable).getStatus();
-                                    UserError.Log.e(TAG, "Got status message: " + Helper.getStatusName(status));
+                                    UserErrorLog.e(TAG, "Got status message: " + Helper.getStatusName(status));
                                 }
                             });
                 }, throwable -> {
-                    UserError.Log.d(TAG, "Throwable in Record End write: " + throwable);
+                    UserErrorLog.d(TAG, "Throwable in Record End write: " + throwable);
                 });
             }, throwable -> {
-                UserError.Log.d(TAG, "Throwable in Record Start write: " + throwable);
+                UserErrorLog.d(TAG, "Throwable in Record Start write: " + throwable);
                 // throws BleGattCharacteristicException status = 128 for "no resources" eg nothing matches
             });
         })
@@ -628,15 +625,15 @@ public class InPenService extends JamBaseBluetoothSequencer {
                 .subscribe(bytes -> {
 
                     records.add(bytes);
-                    UserError.Log.d(TAG, "INDICATE INDICATE: " + HexDump.dumpHexString(bytes));
+                    UserErrorLog.d(TAG, "INDICATE INDICATE: " + HexDump.dumpHexString(bytes));
 
                 }, throwable -> {
                     if (!(throwable instanceof OperationSuccess)) {
                         if (throwable instanceof BleDisconnectedException) {
-                            UserError.Log.d(TAG, "Disconnected when waiting to receive indication: " + throwable);
+                            UserErrorLog.d(TAG, "Disconnected when waiting to receive indication: " + throwable);
 
                         } else {
-                            UserError.Log.e(TAG, "Error receiving indication: " + throwable);
+                            UserErrorLog.e(TAG, "Error receiving indication: " + throwable);
 
                         }
                         Inevitable.task("check-records-queue", 100, this::processRecordsQueue);
@@ -652,14 +649,14 @@ public class InPenService extends JamBaseBluetoothSequencer {
             if (record != null) {
                 final RecordRx recordRx = new RecordRx(currentPenTime).fromBytes(record);
                 if (recordRx != null) {
-                    UserError.Log.d(TAG, "RECORD RECORD: " + recordRx.toS());
+                    UserErrorLog.d(TAG, "RECORD RECORD: " + recordRx.toS());
                     final PenData penData = PenData.create(I.address, ID_INPEN, recordRx.index, recordRx.units, recordRx.getRealTimeStamp(), recordRx.temperature, record);
                     if (penData == null) {
-                        UserError.Log.wtf(TAG, "Error creating PenData record from " + HexDump.dumpHexString(record));
+                        UserErrorLog.wtf(TAG, "Error creating PenData record from " + HexDump.dumpHexString(record));
                     } else {
                         penData.battery = recordRx.battery;
                         penData.flags = recordRx.flags;
-                        UserError.Log.d(TAG, "Saving Record index: " + penData.index);
+                        UserErrorLog.d(TAG, "Saving Record index: " + penData.index);
                         penData.save();
                         newRecord = true;
                         gotIndex = (int) penData.index;
@@ -670,7 +667,7 @@ public class InPenService extends JamBaseBluetoothSequencer {
                         lastPenData = penData;
                     }
                 } else {
-                    UserError.Log.e(TAG, "Error creating record from: " + HexDump.dumpHexString(record));
+                    UserErrorLog.e(TAG, "Error creating record from: " + HexDump.dumpHexString(record));
                 }
             }
         }
@@ -682,10 +679,10 @@ public class InPenService extends JamBaseBluetoothSequencer {
     private void keepAlive() {
         I.connection.writeCharacteristic(KEEPALIVE, new KeepAliveTx().getBytes()).subscribe(
                 value -> {
-                    UserError.Log.d(TAG, "Sent KeepAlive ok: ");
+                    UserErrorLog.d(TAG, "Sent KeepAlive ok: ");
                     changeNextState();
                 }, throwable -> {
-                    UserError.Log.e(TAG, "Could not write keepAlive " + throwable);
+                    UserErrorLog.e(TAG, "Could not write keepAlive " + throwable);
                 });
     }
 
@@ -696,7 +693,7 @@ public class InPenService extends JamBaseBluetoothSequencer {
             final BondTx btx = new BondTx(bondUnits, adv.getFlagBytes());
             I.connection.writeCharacteristic(BONDCONTROL, btx.getBytes()).subscribe(
                     value -> {
-                        UserError.Log.d(TAG, "Sent BondAuthority ok: " + bytesToHex(value));
+                        UserErrorLog.d(TAG, "Sent BondAuthority ok: " + bytesToHex(value));
                         changeNextState();
                     }, throwable -> {
                         if (isErrorResponse(throwable)) {
@@ -704,7 +701,7 @@ public class InPenService extends JamBaseBluetoothSequencer {
                             err("Cannot bond with pen as incorrect number of units dialed up for pairing. Should be " + bondUnits + " or other error");
                             bondAsRequired(false);
                         } else {
-                            UserError.Log.e(TAG, "Could not write BondAuthority " + throwable);
+                            UserErrorLog.e(TAG, "Could not write BondAuthority " + throwable);
                         }
                     });
         } else {
@@ -718,19 +715,19 @@ public class InPenService extends JamBaseBluetoothSequencer {
         final int bondState = device.getBondState();
         if (bondState == BOND_NONE) {
             final boolean bondResultCode = device.createBond();
-            UserError.Log.d(TAG, "Attempted create bond: result: " + bondResultCode);
+            UserErrorLog.d(TAG, "Attempted create bond: result: " + bondResultCode);
         } else {
-            UserError.Log.d(TAG, "Device is already in bonding state: " + Helper.bondStateToString(bondState));
+            UserErrorLog.d(TAG, "Device is already in bonding state: " + Helper.bondStateToString(bondState));
         }
 
         if (wait) {
             for (int c = 0; c < 10; c++) {
                 if (device.getBondState() == BOND_BONDED) {
-                    UserError.Log.d(TAG, "Bond created!");
+                    UserErrorLog.d(TAG, "Bond created!");
                     changeNextState();
                     break;
                 } else {
-                    UserError.Log.d(TAG, "Sleeping waiting for bond: " + c);
+                    UserErrorLog.d(TAG, "Sleeping waiting for bond: " + c);
                     JoH.threadSleep(1000);
                 }
             }
@@ -742,20 +739,20 @@ public class InPenService extends JamBaseBluetoothSequencer {
             if (Pref.getBoolean("use_gatt_refresh", true)) {
                 try {
                     if (I.connection != null)
-                        UserError.Log.d(TAG, "Trying gatt refresh queue");
+                        UserErrorLog.d(TAG, "Trying gatt refresh queue");
                     I.connection.queue((new GattRefreshOperation(0))).timeout(2, TimeUnit.SECONDS).subscribe(
                             readValue -> {
-                                UserError.Log.d(TAG, "Refresh OK: " + readValue);
+                                UserErrorLog.d(TAG, "Refresh OK: " + readValue);
                             }, throwable -> {
-                                UserError.Log.d(TAG, "Refresh exception: " + throwable);
+                                UserErrorLog.d(TAG, "Refresh exception: " + throwable);
                             });
                 } catch (NullPointerException e) {
-                    UserError.Log.d(TAG, "Probably harmless gatt refresh exception: " + e);
+                    UserErrorLog.d(TAG, "Probably harmless gatt refresh exception: " + e);
                 } catch (Exception e) {
-                    UserError.Log.d(TAG, "Got exception trying gatt refresh: " + e);
+                    UserErrorLog.d(TAG, "Got exception trying gatt refresh: " + e);
                 }
             } else {
-                UserError.Log.d(TAG, "Gatt refresh rate limited");
+                UserErrorLog.d(TAG, "Gatt refresh rate limited");
             }
         }
     }
@@ -774,10 +771,10 @@ public class InPenService extends JamBaseBluetoothSequencer {
         boolean found = false;
         super.onServicesDiscovered(services);
         for (BluetoothGattService service : services.getBluetoothGattServices()) {
-            if (D) UserError.Log.d(TAG, "Service: " + getUUIDName(service.getUuid()));
+            if (D) UserErrorLog.d(TAG, "Service: " + getUUIDName(service.getUuid()));
             for (BluetoothGattCharacteristic characteristic : service.getCharacteristics()) {
                 if (D)
-                    UserError.Log.d(TAG, "-- Character: " + getUUIDName(characteristic.getUuid()));
+                    UserErrorLog.d(TAG, "-- Character: " + getUUIDName(characteristic.getUuid()));
 
                 for (final UUID check : huntCharacterstics) {
                     if (characteristic.getUuid().equals(check)) {
@@ -793,7 +790,7 @@ public class InPenService extends JamBaseBluetoothSequencer {
             loadInfos();
             changeState(mState.next());
         } else {
-            UserError.Log.e(TAG, "Could not find characteristic during service discovery. This is very unusual");
+            UserErrorLog.e(TAG, "Could not find characteristic during service discovery. This is very unusual");
             tryGattRefresh();
         }
     }
@@ -807,13 +804,13 @@ public class InPenService extends JamBaseBluetoothSequencer {
         if (shouldServiceRun()) {
             if (quietratelimit("inpen-failover-cooldown", 30)) {
                 final long retry_in = MINUTE_IN_MS * 45;
-                UserError.Log.d(TAG, "setFailOverTimer: Restarting in: " + (retry_in / SECOND_IN_MS) + " seconds");
+                UserErrorLog.d(TAG, "setFailOverTimer: Restarting in: " + (retry_in / SECOND_IN_MS) + " seconds");
 
                 serviceFailoverIntent = WakeLockTrampoline.getPendingIntent(this.getClass(), INPEN_SERVICE_FAILOVER_ID, "failover");
                 failover_time = JoH.wakeUpIntent(this, retry_in, serviceFailoverIntent);
             }
         } else {
-            UserError.Log.d(TAG, "Not setting retry timer as service should not be running");
+            UserErrorLog.d(TAG, "Not setting retry timer as service should not be running");
         }
     }
 
@@ -828,7 +825,7 @@ public class InPenService extends JamBaseBluetoothSequencer {
 
     private void err(final String msg) {
         lastError = msg + " " + hourMinuteString();
-        UserError.Log.wtf(TAG, msg);
+        UserErrorLog.wtf(TAG, msg);
     }
 
 

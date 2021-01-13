@@ -1,10 +1,11 @@
 package com.eveningoutpost.dexdrip.watch.miband.message;
 
+
 import android.os.Environment;
 
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
 import com.eveningoutpost.dexdrip.watch.miband.Const;
 import com.eveningoutpost.dexdrip.watch.miband.MiBand;
@@ -59,7 +60,7 @@ public class AuthMessages extends BaseMessage {
             cipher.init(Cipher.ENCRYPT_MODE, newKey);
             return cipher.doFinal(keyBytes);
         } catch (Exception e) {
-            UserError.Log.e(TAG, "Error during encryption: " + e.toString());
+            UserErrorLog.e(TAG, "Error during encryption: " + e.toString());
             return null;
         }
     }
@@ -124,10 +125,10 @@ public class AuthMessages extends BaseMessage {
     }
 
     public byte[] calculateAuthReply(byte[] responseAuthKey) {
-        UserError.Log.d(TAG, "Calculating localKey reply for: " + JoH.bytesToHex(localKey));
+        UserErrorLog.d(TAG, "Calculating localKey reply for: " + JoH.bytesToHex(localKey));
         final byte[] result = encrypt(responseAuthKey);
         if (result == null) throw new RuntimeException("Cannot calculate auth reply");
-        UserError.Log.d(TAG, "Derived: " + JoH.bytesToHex(result));
+        UserErrorLog.d(TAG, "Derived: " + JoH.bytesToHex(result));
         init(18);
         putData((byte) (AUTH_SEND_ENCRYPTED_AUTH_NUMBER | cryptFlags));
         putData(authFlags);

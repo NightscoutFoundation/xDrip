@@ -12,7 +12,7 @@ import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
@@ -51,7 +51,7 @@ public class PersistentHigh {
                 if (last.get(0).getDg_mgdl() > highMarkMgDl) {
 
                     final double this_slope = last.get(0).getDg_slope() * MINUTE_IN_MS;
-                    Log.d(TAG, "CheckForPersistentHigh: Slope: " + JoH.qs(this_slope)+ " "+JoH.dateTimeText(last.get(0).timestamp));
+                    UserErrorLog.d(TAG, "CheckForPersistentHigh: Slope: " + JoH.qs(this_slope)+ " "+JoH.dateTimeText(last.get(0).timestamp));
 
                     // if not falling
                     if (this_slope > 0 && !last.get(0).hide_slope) {
@@ -59,7 +59,7 @@ public class PersistentHigh {
                         if (high_since == 0) {
                             // no previous persistent high so set start as now
                             Pref.setLong(PERSISTENT_HIGH_SINCE, now);
-                            Log.d(TAG, "Registering start of persistent high at time now");
+                            UserErrorLog.d(TAG, "Registering start of persistent high at time now");
                         } else {
                             final long high_for_mins = (now - high_since) / MINUTE_IN_MS;
                             long threshold_mins;
@@ -74,27 +74,27 @@ public class PersistentHigh {
 
                                 // except if alerts are disabled
                                 if (Pref.getLong("alerts_disabled_until", 0) > new Date().getTime()) {
-                                    Log.i(TAG, "checkforPersistentHigh: Notifications are currently disabled cannot alert!!");
+                                    UserErrorLog.i(TAG, "checkforPersistentHigh: Notifications are currently disabled cannot alert!!");
                                     return false;
                                 }
 
                                 if (!dataQualityCheck(high_since, highMarkMgDl)) {
-                                    Log.d(TAG, "Insufficient data quality to raise persistent high alert");
+                                    UserErrorLog.d(TAG, "Insufficient data quality to raise persistent high alert");
                                     return false;
                                 }
 
-                                Log.i(TAG, "Persistent high for: " + high_for_mins + " mins -> alerting");
+                                UserErrorLog.i(TAG, "Persistent high for: " + high_for_mins + " mins -> alerting");
                                 Notifications.persistentHighAlert(xdrip.getAppContext(), true, xdrip.getAppContext().getString(R.string.persistent_high_for_greater_than) + (int) high_for_mins + xdrip.getAppContext().getString(R.string.space_mins));
                                 return true;
                             } else {
-                                Log.d(TAG, "Persistent high below time threshold at: " + high_for_mins);
+                                UserErrorLog.d(TAG, "Persistent high below time threshold at: " + high_for_mins);
                             }
                         }
                     }
                 } else {
                     // not high - cancel any existing
                     if (Pref.getLong(PERSISTENT_HIGH_SINCE, 0) != 0) {
-                        Log.i(TAG, "Cancelling previous persistent high as we are no longer high");
+                        UserErrorLog.i(TAG, "Cancelling previous persistent high as we are no longer high");
                         Pref.setLong(PERSISTENT_HIGH_SINCE, 0); // clear it
                         Notifications.persistentHighAlert(xdrip.getAppContext(), false, ""); // cancel it
                     }
@@ -108,42 +108,42 @@ public class PersistentHigh {
 
         final Sensor sensor = Sensor.currentSensor();
         if (sensor == null) {
-            Log.e(TAG, "Cannot raise persistent high alert as no active sensor!");
+            UserErrorLog.e(TAG, "Cannot raise persistent high alert as no active sensor!");
             return false;
         }
         if (since < sensor.started_at) {
-            Log.e(TAG, "Cannot raise persistent high alert as high time pre-dates sensor start");
+            UserErrorLog.e(TAG, "Cannot raise persistent high alert as high time pre-dates sensor start");
             return false;
         }
         final long duration = msSince(since);
         if (duration > Constants.DAY_IN_MS || duration < 0) {
-            Log.e(TAG, "Cannot raise persistent high alert as duration doesn't make sense: " + JoH.niceTimeScalar(duration));
+            UserErrorLog.e(TAG, "Cannot raise persistent high alert as duration doesn't make sense: " + JoH.niceTimeScalar(duration));
             return false;
         }
 
         final List<BgReading> readings = BgReading.latestForSensorAsc(2000, since, JoH.tsl(), Home.get_follower());
         if (readings == null) {
-            Log.e(TAG, "Cannot raise persistent high alert as there are no readings for this sensor!");
+            UserErrorLog.e(TAG, "Cannot raise persistent high alert as there are no readings for this sensor!");
             return false;
         }
 
         final int numberOfReadings = readings.size();
 
         if (numberOfReadings == 0) {
-            Log.e(TAG, "Cannot raise persistent high alert as there are 0 readings for this sensor!");
+            UserErrorLog.e(TAG, "Cannot raise persistent high alert as there are 0 readings for this sensor!");
             return false;
         }
 
         final long frequency = duration / numberOfReadings;
         //Log.d(TAG, "Frequency Calculated as: " + frequency);
         if (frequency > MINUTE_IN_MS * 15) {
-            Log.e(TAG, "Cannot raise persistent high alert as readings frequency is: " + niceTimeScalar(frequency));
+            UserErrorLog.e(TAG, "Cannot raise persistent high alert as readings frequency is: " + niceTimeScalar(frequency));
             return false;
         }
 
         for (final BgReading bgr : readings) {
             if (bgr.getDg_mgdl() < highMarkMgDl) {
-                Log.e(TAG, "High not persistent as reading at: " + JoH.dateTimeText(bgr.timestamp) + " does not exceed " + JoH.qs(highMarkMgDl) + " mgdl / high mark");
+                UserErrorLog.e(TAG, "High not persistent as reading at: " + JoH.dateTimeText(bgr.timestamp) + " does not exceed " + JoH.qs(highMarkMgDl) + " mgdl / high mark");
                 return false;
             }
         }

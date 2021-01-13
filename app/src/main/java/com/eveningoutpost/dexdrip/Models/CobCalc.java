@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.Models;
 
+
 /**
  * Created by jamorham on 04/01/16.
  */

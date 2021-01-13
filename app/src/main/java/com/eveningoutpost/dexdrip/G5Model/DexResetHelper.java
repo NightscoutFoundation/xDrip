@@ -1,7 +1,8 @@
 package com.eveningoutpost.dexdrip.G5Model;
 
+
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.CompatibleApps;
 
 import static com.eveningoutpost.dexdrip.UtilityModels.CompatibleApps.createActionIntent;
@@ -29,7 +30,7 @@ public class DexResetHelper {
                     createChoiceIntent(id, id + 3, CompatibleApps.Feature.HARD_RESET_TRANSMITTER, title, reason),
                     id);
         } else {
-            UserError.Log.d(TAG, "Not offering reset as within rate limit");
+            UserErrorLog.d(TAG, "Not offering reset as within rate limit");
         }
     }
 

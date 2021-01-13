@@ -1,6 +1,5 @@
 package com.eveningoutpost.dexdrip.ui.graphic;
 
-// jamorham
 
 import android.graphics.ColorFilter;
 import android.view.View;
@@ -17,6 +16,8 @@ import com.eveningoutpost.dexdrip.xdrip;
 
 import static com.eveningoutpost.dexdrip.ui.helpers.ColorUtil.hueFilter;
 import static com.eveningoutpost.dexdrip.ui.helpers.UiHelper.convertDpToPixel;
+
+// jamorham
 
 public class JamTrendArrowImpl extends TrendArrowBase {
 

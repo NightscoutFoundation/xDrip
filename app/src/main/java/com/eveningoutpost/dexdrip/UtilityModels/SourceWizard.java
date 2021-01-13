@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -10,7 +11,7 @@ import android.support.annotation.StringRes;
 import android.view.View;
 
 import com.eveningoutpost.dexdrip.BR;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.databinding.DialogTreeSelectorBinding;
 import com.eveningoutpost.dexdrip.utils.DexCollectionHelper;
@@ -25,12 +26,9 @@ import static com.eveningoutpost.dexdrip.ui.helpers.UiHelper.convertDpToPixel;
 
 /**
  * Created by jamorham on 20/12/2017.
- *
+ * <p>
  * Guides the user through the process of selecting a source from a hierarchical menu.
- *
  */
-
-import static com.eveningoutpost.dexdrip.xdrip.gs;
 public class SourceWizard {
     @SuppressLint("StaticFieldLeak")
     private static final String TAG = "SourceWizard";
@@ -170,7 +168,7 @@ public class SourceWizard {
         try {
             dialog.show();
         } catch (Exception e) {
-            UserError.Log.e(TAG, "Exception when trying to show source wizard: " + e);
+            UserErrorLog.e(TAG, "Exception when trying to show source wizard: " + e);
         }
     }
 

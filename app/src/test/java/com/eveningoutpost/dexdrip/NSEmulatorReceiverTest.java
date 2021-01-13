@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip;
 
+
 import com.eveningoutpost.dexdrip.Models.BgReading;
 
 import org.json.JSONException;

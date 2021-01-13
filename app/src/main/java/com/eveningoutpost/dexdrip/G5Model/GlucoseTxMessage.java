@@ -1,7 +1,8 @@
 package com.eveningoutpost.dexdrip.G5Model;
 
+
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.Services.G5CollectionService;
 
 /**
@@ -15,7 +16,7 @@ public class GlucoseTxMessage extends BaseMessage {
 
     public GlucoseTxMessage() {
         init(opcode, 3);
-        UserError.Log.d(TAG, "GlucoseTx dbg: " + JoH.bytesToHex(byteSequence));
+        UserErrorLog.d(TAG, "GlucoseTx dbg: " + JoH.bytesToHex(byteSequence));
     }
 }
 

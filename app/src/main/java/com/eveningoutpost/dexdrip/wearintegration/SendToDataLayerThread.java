@@ -1,11 +1,12 @@
 package com.eveningoutpost.dexdrip.wearintegration;
 
+
 import android.os.AsyncTask;
 import android.util.Log;
 
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.DataMap;
@@ -16,7 +17,6 @@ import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
 
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -45,24 +45,24 @@ class SendToDataLayerThread extends AsyncTask<DataMap,Void,Void> {
             // error if 9 concurrent threads or lock held for >5 minutes with concurrency of 4
             final String err = "Wear Integration deadlock detected!! "+((lastlock !=0) ? "locked" : "")+" state:"+state+" @"+ JoH.hourMinuteString();
             Home.toaststaticnext(err);
-            UserError.Log.e(TAG,err);
+            UserErrorLog.e(TAG,err);
         }
         if (concurrency<0) Home.toaststaticnext("Wear Integration impossible concurrency!!");
-        UserError.Log.d(TAG, "SendDataToLayerThread pre-execute concurrency: " + concurrency);
+        UserErrorLog.d(TAG, "SendDataToLayerThread pre-execute concurrency: " + concurrency);
     }
 
     @Override
     protected Void doInBackground(DataMap... params) {
         if (testlockup) {
             try {
-                UserError.Log.e(TAG,"WARNING RUNNING TEST LOCK UP CODE - NEVER FOR PRODUCTION");
+                UserErrorLog.e(TAG,"WARNING RUNNING TEST LOCK UP CODE - NEVER FOR PRODUCTION");
                 Thread.sleep(1000000); // DEEEBBUUGGGG
             } catch (Exception e) {
             }
         }
         sendToWear(params);
         concurrency--;
-        UserError.Log.d(TAG, "SendDataToLayerThread post-execute concurrency: " + concurrency);
+        UserErrorLog.d(TAG, "SendDataToLayerThread post-execute concurrency: " + concurrency);
         return null;
     }
 
@@ -76,7 +76,7 @@ class SendToDataLayerThread extends AsyncTask<DataMap,Void,Void> {
         lastlock=JoH.tsl();
         try {
             if (state != 0) {
-                UserError.Log.e(TAG, "WEAR STATE ERROR: state=" + state);
+                UserErrorLog.e(TAG, "WEAR STATE ERROR: state=" + state);
             }
             state = 1;
             final NodeApi.GetConnectedNodesResult nodes = Wearable.NodeApi.getConnectedNodes(googleApiClient).await(15, TimeUnit.SECONDS);
@@ -96,14 +96,14 @@ class SendToDataLayerThread extends AsyncTask<DataMap,Void,Void> {
                     DataApi.DataItemResult result = Wearable.DataApi.putDataItem(googleApiClient, request).await(15, TimeUnit.SECONDS);
                     state = 8;
                     if (result.getStatus().isSuccess()) {
-                        UserError.Log.d(TAG, "DataMap: " + dataMap + " sent to: " + node.getDisplayName());
+                        UserErrorLog.d(TAG, "DataMap: " + dataMap + " sent to: " + node.getDisplayName());
                     } else {
-                        UserError.Log.e(TAG, "ERROR: failed to send DataMap");
+                        UserErrorLog.e(TAG, "ERROR: failed to send DataMap");
                         result = Wearable.DataApi.putDataItem(googleApiClient, request).await(30, TimeUnit.SECONDS);
                         if (result.getStatus().isSuccess()) {
-                            UserError.Log.d(TAG, "DataMap retry: " + dataMap + " sent to: " + node.getDisplayName());
+                            UserErrorLog.d(TAG, "DataMap retry: " + dataMap + " sent to: " + node.getDisplayName());
                         } else {
-                            UserError.Log.e(TAG, "ERROR on retry: failed to send DataMap: " + result.getStatus().toString());
+                            UserErrorLog.e(TAG, "ERROR on retry: failed to send DataMap: " + result.getStatus().toString());
                         }
                     }
                     state = 9;
@@ -111,7 +111,7 @@ class SendToDataLayerThread extends AsyncTask<DataMap,Void,Void> {
             }
             state = 0;
         } catch (Exception e) {
-            UserError.Log.e(TAG, "Got exception in sendToWear: " + e.toString());
+            UserErrorLog.e(TAG, "Got exception in sendToWear: " + e.toString());
         } finally {
             lastlock=0;
             lock.unlock();

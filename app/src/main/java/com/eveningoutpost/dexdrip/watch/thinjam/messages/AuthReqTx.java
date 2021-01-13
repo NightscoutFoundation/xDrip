@@ -1,9 +1,10 @@
 package com.eveningoutpost.dexdrip.watch.thinjam.messages;
 
+
 import android.annotation.SuppressLint;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.watch.thinjam.BlueJay;
 
 import java.util.Arrays;
@@ -50,7 +51,7 @@ public class AuthReqTx extends BaseTx {
             cipher.init(Cipher.ENCRYPT_MODE, newKey);
             return cipher.doFinal(clearBytes);
         } catch (Exception e) {
-            UserError.Log.e(TAG, "Error during encryption: " + e.toString());
+            UserErrorLog.e(TAG, "Error during encryption: " + e.toString());
             return null;
         }
     }
@@ -72,29 +73,29 @@ public class AuthReqTx extends BaseTx {
         val dChallenge = new byte[16];
         System.arraycopy(challenge, 0, dChallenge, 0, 8);
         System.arraycopy(challenge, 0, dChallenge, 8, 8);
-        UserError.Log.d(TAG, "Full challenge: " + JoH.bytesToHex(dChallenge));
+        UserErrorLog.d(TAG, "Full challenge: " + JoH.bytesToHex(dChallenge));
         return dChallenge;
     }
 
     private static byte[] calculateChallengeReply(final byte[] challenge) {
-        UserError.Log.d(TAG, "Calculating challenge reply for: " + JoH.bytesToHex(challenge));
+        UserErrorLog.d(TAG, "Calculating challenge reply for: " + JoH.bytesToHex(challenge));
         final String mac = BlueJay.getMac();
         if (mac == null || mac.length() != 17) {
-            UserError.Log.e(TAG, "No mac stored to use for auth");
+            UserErrorLog.e(TAG, "No mac stored to use for auth");
         } else {
             val authKeyString = BlueJay.getAuthKey(mac);
             if (authKeyString != null) {
-                UserError.Log.d(TAG, "Using auth key: " + authKeyString);
+                UserErrorLog.d(TAG, "Using auth key: " + authKeyString);
                 final byte[] authKey = JoH.tolerantHexStringToByteArray(authKeyString);
                 if (authKey.length == 16) {
                     final byte[] result = ecbEncrypt(authKey, doubleChallenge(challenge));
-                    UserError.Log.d(TAG, "Derived: " + JoH.bytesToHex(result));
+                    UserErrorLog.d(TAG, "Derived: " + JoH.bytesToHex(result));
                     return result != null ? Arrays.copyOfRange(result, 0, 8) : null;
                 } else {
-                    UserError.Log.e(TAG, "Invalid or missing authentication key for: " + BlueJay.getMac());
+                    UserErrorLog.e(TAG, "Invalid or missing authentication key for: " + BlueJay.getMac());
                 }
             } else {
-                UserError.Log.e(TAG, "Auth key was null for: " + mac);
+                UserErrorLog.e(TAG, "Auth key was null for: " + mac);
             }
         }
         return null;
@@ -109,7 +110,7 @@ public class AuthReqTx extends BaseTx {
                 if (state == Hello2U2.value) {
                     final byte[] challengeFromDevice = Arrays.copyOfRange(packet, 2, 10);
                     final byte[] challengeReply = calculateChallengeReply(challengeFromDevice);
-                    UserError.Log.d(TAG, "Device challenge: " + JoH.bytesToHex(challengeFromDevice) + " our reply: " + JoH.bytesToHex(challengeReply));
+                    UserErrorLog.d(TAG, "Device challenge: " + JoH.bytesToHex(challengeFromDevice) + " our reply: " + JoH.bytesToHex(challengeReply));
                     return challengeReply != null ? new AuthReqTx(ThePassWordIs, challengeReply) : null;
                 }
             }

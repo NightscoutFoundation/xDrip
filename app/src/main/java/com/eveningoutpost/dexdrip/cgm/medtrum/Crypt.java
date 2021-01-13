@@ -1,11 +1,12 @@
 package com.eveningoutpost.dexdrip.cgm.medtrum;
 
-// jamorham
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 import static com.eveningoutpost.dexdrip.cgm.medtrum.Const.CIPHER_BIT_FLIP;
+
+// jamorham
 
 public class Crypt {
 

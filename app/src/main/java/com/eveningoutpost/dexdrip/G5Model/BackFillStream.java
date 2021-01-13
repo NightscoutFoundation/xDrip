@@ -1,9 +1,8 @@
 package com.eveningoutpost.dexdrip.G5Model;
 
-// created by jamorham
 
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 
 import java.nio.ByteBuffer;
@@ -15,6 +14,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import static com.eveningoutpost.dexdrip.G5Model.DexTimeKeeper.fromDexTimeCached;
+
+// created by jamorham
 
 public class BackFillStream extends BaseMessage {
 
@@ -36,11 +37,11 @@ public class BackFillStream extends BaseMessage {
                 if (data.position() < data.limit()) {
                     data.put(packet[i]);
                 } else {
-                    UserError.Log.wtf(TAG, "Reached limit for backfill stream size");
+                    UserErrorLog.wtf(TAG, "Reached limit for backfill stream size");
                 }
             }
         } else {
-            UserError.Log.wtf(TAG, "Received backfill packet out of sequence: " + this_sequence + " vs " + (last_sequence + 1));
+            UserErrorLog.wtf(TAG, "Received backfill packet out of sequence: " + this_sequence + " vs " + (last_sequence + 1));
         }
     }
 
@@ -89,7 +90,7 @@ public class BackFillStream extends BaseMessage {
                     break;
 
                 default:
-                    UserError.Log.wtf(TAG, "Encountered backfill data we don't recognise: " + type + " " + glucose + " " + trend + " " + " " + JoH.dateTimeText(fromDexTimeCached(dexTime)));
+                    UserErrorLog.wtf(TAG, "Encountered backfill data we don't recognise: " + type + " " + glucose + " " + trend + " " + " " + JoH.dateTimeText(fromDexTimeCached(dexTime)));
                     break;
 
             }

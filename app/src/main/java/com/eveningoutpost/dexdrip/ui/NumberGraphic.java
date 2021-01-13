@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.ui;
 
+
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.graphics.Bitmap;
@@ -12,7 +13,7 @@ import android.graphics.drawable.Icon;
 import android.os.Build;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.ColorCache;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
@@ -118,7 +119,7 @@ public class NumberGraphic {
             return getBitmap(text, fillColor, arrow, width, height);
         } catch (Exception e) {
             if (JoH.ratelimit("icon-failure", 60)) {
-                UserError.Log.e(TAG, "Cannot create number icon dimensions: " + e);
+                UserErrorLog.e(TAG, "Cannot create number icon dimensions: " + e);
             }
             return null;
         }
@@ -166,7 +167,7 @@ public class NumberGraphic {
                 return bitmap;
             } catch (Exception e) {
                 if (JoH.ratelimit("icon-failure", 60)) {
-                    UserError.Log.e(TAG, "Cannot create number icon: " + e);
+                    UserErrorLog.e(TAG, "Cannot create number icon: " + e);
                 }
                 return null;
             }

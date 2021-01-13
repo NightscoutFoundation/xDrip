@@ -1,8 +1,7 @@
 package com.eveningoutpost.dexdrip.UtilityModels.pebble;
 
-import android.content.SharedPreferences;
 
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 
 
@@ -21,7 +20,7 @@ public class PebbleUtil {
         try {
             value = Pref.getString("broadcast_to_pebble_type", Pref.getBoolean("broadcast_to_pebble", false) ? "2" : "1");
         } catch (ClassCastException ex) {
-          //  UserError.Log.w(TAG, "");
+          //  UserErrorLog.w(TAG, "");
         }
 
 
@@ -48,7 +47,7 @@ public class PebbleUtil {
         } else if (value instanceof Boolean) {
             return ((Boolean) value) ? 2 : 1;
         } else {
-            UserError.Log.e(TAG, "Pebble Sync Type from configuration is in wrong type: " + value + ", type=" + value.getClass().getSimpleName());
+            UserErrorLog.e(TAG, "Pebble Sync Type from configuration is in wrong type: " + value + ", type=" + value.getClass().getSimpleName());
         }
 
         return -1;

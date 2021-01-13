@@ -1,14 +1,14 @@
 package com.eveningoutpost.dexdrip.Models;
 
-import android.provider.BaseColumns;
 
-import com.activeandroid.util.SQLiteUtils;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import android.provider.BaseColumns;
 
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
+import com.activeandroid.util.SQLiteUtils;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 
 import java.text.DateFormat;
@@ -57,7 +57,7 @@ public class ActiveBgAlert extends Model {
         ActiveBgAlert activeBgAlert = getOnly();
         if (activeBgAlert == null) {
             // no alert exists, so snoozing is over... (this should not happen)
-            Log.wtf(TAG, "ActiveBgAlert getOnly returning null (we have just checked it)");
+            UserErrorLog.wtf(TAG, "ActiveBgAlert getOnly returning null (we have just checked it)");
             return true;
         }
         return activeBgAlert.ready_to_alarm();
@@ -66,7 +66,7 @@ public class ActiveBgAlert extends Model {
     public void snooze(int minutes) {
         next_alert_at = new Date().getTime() + minutes * 60000;
         is_snoozed = true;
-        Log.ueh("Snoozed Alert","Snoozed until: "+JoH.dateTimeText(next_alert_at));
+        UserErrorLog.ueh("Snoozed Alert","Snoozed until: "+JoH.dateTimeText(next_alert_at));
         save();
     }
 
@@ -86,7 +86,7 @@ public class ActiveBgAlert extends Model {
             return alert_uuid + " " + is_snoozed + " " + last_alerted_at + " " + next_alert_at + " " + alert_started_at;
 
         } catch (NullPointerException e) {
-            Log.e(TAG, "Got Nullpointer exception in toString()! " + e);
+            UserErrorLog.e(TAG, "Got Nullpointer exception in toString()! " + e);
             return "Nullpointer exception in toString!";
         }
     }
@@ -102,9 +102,9 @@ public class ActiveBgAlert extends Model {
                 .executeSingle();
 
         if (aba != null) {
-            Log.v(TAG, "ActiveBgAlert getOnly aba = " + aba.toString());
+            UserErrorLog.v(TAG, "ActiveBgAlert getOnly aba = " + aba.toString());
         } else {
-            Log.v(TAG, "ActiveBgAlert getOnly returning null");
+            UserErrorLog.v(TAG, "ActiveBgAlert getOnly returning null");
         }
 
         return aba;
@@ -117,25 +117,25 @@ public class ActiveBgAlert extends Model {
     public static AlertType alertTypegetOnly(final ActiveBgAlert aba) {
 
         if (aba == null) {
-            Log.v(TAG, "ActiveBgAlert: alertTypegetOnly returning null");
+            UserErrorLog.v(TAG, "ActiveBgAlert: alertTypegetOnly returning null");
             return null;
         }
 
         AlertType alert = AlertType.get_alert(aba.alert_uuid);
         if(alert == null) {
-            Log.d(TAG, "alertTypegetOnly did not find the active alert as part of existing alerts. returning null");
+            UserErrorLog.d(TAG, "alertTypegetOnly did not find the active alert as part of existing alerts. returning null");
             // removing the alert to be in a better state.
             ClearData();
             return null;
         }
         if(!alert.uuid.equals(aba.alert_uuid)) {
-            Log.wtf(TAG, "AlertType.get_alert did not return the correct alert");
+            UserErrorLog.wtf(TAG, "AlertType.get_alert did not return the correct alert");
         }
         return alert;
     }
 
     public static void Create(String alert_uuid, boolean is_snoozed, Long next_alert_at) {
-        Log.d(TAG, "ActiveBgAlert Create called");
+        UserErrorLog.d(TAG, "ActiveBgAlert Create called");
         fixUpTable();
         ActiveBgAlert aba = getOnly();
         if (aba == null) {
@@ -150,7 +150,7 @@ public class ActiveBgAlert extends Model {
     }
 
     public static void ClearData() {
-        Log.d(TAG, "ActiveBgAlert ClearData called");
+        UserErrorLog.d(TAG, "ActiveBgAlert ClearData called");
         ActiveBgAlert aba = getOnly();
         if (aba != null) {
             aba.delete();
@@ -158,11 +158,11 @@ public class ActiveBgAlert extends Model {
     }
 
     public static void ClearIfSnoozeFinished() {
-        Log.d(TAG, "ActiveBgAlert ClearIfSnoozeFinished called");
+        UserErrorLog.d(TAG, "ActiveBgAlert ClearIfSnoozeFinished called");
         ActiveBgAlert aba = getOnly();
         if (aba != null) {
             if(new Date().getTime() > aba.next_alert_at) {
-                Log.d(TAG, "ActiveBgAlert ClearIfSnoozeFinished deleting allert");
+                UserErrorLog.d(TAG, "ActiveBgAlert ClearIfSnoozeFinished deleting allert");
                 aba.delete();
             }
         }
@@ -195,9 +195,9 @@ public class ActiveBgAlert extends Model {
         for (String patch : patchup) {
             try {
                 SQLiteUtils.execSql(patch);
-                Log.e(TAG, "Processed patch should not have succeeded!!: " + patch);
+                UserErrorLog.e(TAG, "Processed patch should not have succeeded!!: " + patch);
             } catch (Exception e) {
-                // Log.d(TAG, "Patch: " + patch + " generated exception as it should: " + e.toString());
+                // UserErrorLog.d(TAG, "Patch: " + patch + " generated exception as it should: " + e.toString());
             }
         }
         patched = true;

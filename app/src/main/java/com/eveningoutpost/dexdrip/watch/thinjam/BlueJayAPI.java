@@ -1,11 +1,12 @@
 package com.eveningoutpost.dexdrip.watch.thinjam;
 
-// jamorham
 
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.THINJAM_NOTIFY_TYPE_DIALOG;
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.THINJAM_NOTIFY_TYPE_TEXTBOX1;
+
+// jamorham
 
 public class BlueJayAPI {
 
@@ -32,10 +33,10 @@ public class BlueJayAPI {
                     BlueJayEntry.sendPngIfEnabled(bytes, parameter, "mono");
                     break;
                 default:
-                    UserError.Log.d(TAG, "Unknown command: " + command);
+                    UserErrorLog.d(TAG, "Unknown command: " + command);
             }
         } else {
-            UserError.Log.e(TAG, "Ignoring API command as remote API feature is disabled");
+            UserErrorLog.e(TAG, "Ignoring API command as remote API feature is disabled");
         }
     }
 }
