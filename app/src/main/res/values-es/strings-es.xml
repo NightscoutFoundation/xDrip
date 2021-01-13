@@ -171,7 +171,7 @@
     <string name="space_minute_ago">" Minuto antes"</string>
     <string name="show_parakeet_map">Ver mapa periquito</string>
     <string name="switch_parakeet_to_setup_mode">Parakeet cambiar al modo de configuración</string>
-    <string name="view_events_log">Ver Eventos Entrar</string>
+    <string name="view_events_log">Ver registro de eventos</string>
     <string name="show_libre_trend">Mostrar tendencias del Libre</string>
     <string name="libre_15_minutes_graph">Gráfica de 15 minutos del Libre</string>
     <string name="libre_last_x_minutes_graph">Gráfica últimos %d minutos del Libre</string>
@@ -244,7 +244,7 @@
     <string name="extra_tags_dialog_message">Las etiquetas introducidas aquí serán registradas en xDrip. El formato es \'etiqueta:nivel\'. El nivel puede ser v,d,i. Por ejemplo bgreading:i, DexCollectionService:v. Estás etiquetas serán registradas con prioridad baja en las listas de errores y de eventos.</string>
     <string name="extra_tags_dialog_title">Introducir más etiquetas para iniciar sesión</string>
     <string name="data_source_settings">Configuración de la fuente de datos</string>
-    <string name="smart_watch_features">Características inteligentes del reloj</string>
+    <string name="smart_watch_features">Funciones de SmartWatch</string>
     <string name="wear_integration">Integración desgaste</string>
     <string name="send_data_to_android_wear_watch">Enviar datos a Android su esfera de desgaste.</string>
     <string name="android_wear_integration">Integración con Android Wear</string>
@@ -277,13 +277,13 @@
     <string name="special_value">Valor especial</string>
     <string name="history">Historia</string>
     <string name="statistics">Estadística</string>
-    <string name="snooze_alert">Alerta de repetición</string>
+    <string name="snooze_alert">Silenciar Alarmas</string>
     <string name="less_common_settings">Ajustes menos comunes</string>
     <string name="view_recent_errors_warnings">Ver Recientes Errores / Advertencias</string>
     <string name="other_settings">Otros ajustes</string>
     <string name="older_gratuitous_wakelocks">Wakelocks gratuitos antiguos que pueden gastar más batería, pero podrían ser necesarios para la NightWatch o Android Wear</string>
     <string name="use_excessive_wakelocks">Utilice Wakelocks excesivas</string>
-    <string name="speak_readings">Habla Lecturas</string>
+    <string name="speak_readings">Lecturas Habladas</string>
     <string name="extra_status_line">Linea de estado extra</string>
     <string name="dexcom_share_server_upload">Dexcom Share Subir al Servidor</string>
     <string name="upload_data_to_dex_servers">Cargar datos en servidores Dexcoms para que pueda utilizar sus datos con aplicaciones Dexcoms</string>
@@ -458,7 +458,7 @@
     <string name="show_on_widget">Mostrar en el widget de</string>
     <string name="calibration_data_long">Datos de calibración (largo)</string>
     <string name="calibration_data_short">Datos de calibración (corto)</string>
-    <string name="store_sensor_location_to_help">Locaton la sonda de acumulador para ayudar a mejorar el algoritmo</string>
+    <string name="store_sensor_location_to_help">Guarda la posición del sensor para ayudar a mejorar el algoritmo</string>
     <string name="help_the_developers_improve_the_algorithm">Ayudan a los desarrolladores a mejorar el algoritmo xDrip.</string>
     <string name="help_the_community">Ayuda a la comunidad</string>
     <string name="double_tap_or_pinch_to_zoom">Doble toque o pellizcar para ampliar.</string>
@@ -627,7 +627,7 @@
     <string name="set_logging_appid">Crea Bitácora de appID</string>
     <string name="only_enable_on_trouble">Activar sólo si tienes problemas con la aplicación.</string>
     <string name="store_logs">Guardar logs para resolución de problemas</string>
-    <string name="show_datatables_in_app_drawer">Mostrar tablas de calibración in BG en el cajón de la aplicación.</string>
+    <string name="show_datatables_in_app_drawer">Mostrar tablas de calibración y de Glucosa en el cajón de la aplicación.</string>
     <string name="disable_log_transmitter_battery_warning">Desactivar la advertencia de estado de batería baja del colector en la pantalla de inicio. (Sólo relevante para receptores de bricolaje).</string>
     <string name="engineering_mode">Modo de Ingeniería</string>
     <string name="allow_unsafe_settings">Permite cambiar los ajustes inseguros que pueden romperlo todo!</string>
@@ -643,7 +643,7 @@
     <string name="show_standard_deviation">Mostrar desviación estándar de valores.</string>
     <string name="standard_deviation">Desviación estándar</string>
     <string name="show_total_carbs">Mostrar carbohidratos totales del tratamiento</string>
-    <string name="total_carbs">Carcohidratos Totales</string>
+    <string name="total_carbs">Carbohidratos Totales</string>
     <string name="show_total_insulin">Mostrar insulina total del tratamiento</string>
     <string name="total_insulin">Insulina Total</string>
     <string name="received_readings_percentage">Porcentaje de lecturas del sensor recibidas</string>
@@ -920,7 +920,7 @@
     <string name="other">Otros</string>
     <string name="which_software_is_the_wixel_running">¿Qué software esta ejecutando el Wixel?</string>
     <string name="start_source_setup_wizard">Iniciar Asistente Origen Datos</string>
-    <string name="hour_format">%s Hora</string>
+    <string name="hour_format">%s Horas</string>
     <string name="enter_your_transmitter_id_exactly">Introduzca la ID del transmisor exactamente como está impresa</string>
     <string name="which_type_of_device">¿Qué tipo de dispositivo?</string>
     <string name="enable_local_broadcast">¿Habilitar emisión local?</string>
@@ -1443,7 +1443,7 @@
     <string name="libre">Libre</string>
     <string name="what_type_of_libre_bridge_device_do_you_use">¿Qué tipo de dispositivo colector Libre usa?</string>
     <string name="bluetooth_bridge_device_blucon_limitter_bluereader_tomato_etc">Dispositivo Colector Bluetooth: Blucon, Bubble, LimiTTer, Bluereader, Tomato, etc</string>
-    <string name="libre_patched">Libre2 Parchado</string>
+    <string name="libre_patched">Libre2 Parcheado</string>
     <string name="librealarm_app_using_sony_smartwatch">LibreAlarm App: usando Sony Smartwatch</string>
     <string name="__data_source_disabled">\n FUENTE DE DATOS DESHABILITADA</string>
     <string name="data_source_is_set_to_">Fuente de datos configurada a: </string>
