@@ -332,7 +332,7 @@
     <string name="all_alerts_disabled_until">"Alle waarschuwingen uitgeschakeld tot "</string>
     <string name="low_alerts_disabled_until">"Lage waarschuwing uitgeschakeld tot "</string>
     <string name="high_alerts_disabled_until">"Hoge waarschuwingen uitgeschakeld tot "</string>
-    <string name="default_snooze">Standaard Snooze</string>
+    <string name="default_snooze">Sluimertijd</string>
     <string name="until_you_reenable">Totdat je weer inschakelen</string>
     <string name="set">Instellen</string>
     <string name="disable_low_alerts">Schakel lage waarschuwingen uit</string>
@@ -505,7 +505,7 @@
     <string name="handset_sync_grouping_key">Handset sync groepering key</string>
     <string name="alert_name_colon">Alert Naam:</string>
     <string name="threshold_colon">Drempel:</string>
-    <string name="default_snooze_colon">Standaard Snooze:</string>
+    <string name="default_snooze_colon">Sluimertijd:</string>
     <string name="re_raise_every_x_minutes_if_unaknowledged">Re-raise elke\nx minuten als\nunaknowledged:</string>
     <string name="alert_tone_colon">Waarschuwingstoon:</string>
     <string name="choose_file">Kies bestand</string>
