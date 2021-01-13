@@ -124,26 +124,27 @@ public class EventLogActivity extends BaseAppCompatActivity {
 
     // load in bulk of remaining data
     private void getOlderData() {
+        if (model.initial_items != null && model.initial_items.size() > 0) {
+            final long highestId = model.initial_items.get(model.initial_items.size() - 1).getId();
 
-        final long highestId = model.initial_items.get(model.initial_items.size() - 1).getId();
-
-        final Thread t = new Thread(() -> {
-            JoH.threadSleep(300);
-            // show loading spinner if load time takes > 1s and has non-default filter
-            Inevitable.task("show-events-loading-if-slow", 1000, () -> {
-                if (loading && !model.isDefaultFilters()) {
-                    model.showLoading.set(loading);
-                }
-            });
-            loading = true;
-            model.older_items.addAll(UserErrorStore.get().olderThanID(highestId, 100000));
-            model.refresh();
-            loading = false;
-            model.showLoading.set(false);
+            final Thread t = new Thread(() -> {
+                JoH.threadSleep(300);
+                // show loading spinner if load time takes > 1s and has non-default filter
+                Inevitable.task("show-events-loading-if-slow", 1000, () -> {
+                    if (loading && !model.isDefaultFilters()) {
+                        model.showLoading.set(loading);
+                    }
+                });
+                loading = true;
+                model.older_items.addAll(UserErrorStore.get().olderThanID(highestId, 100000));
+                model.refresh();
+                loading = false;
+                model.showLoading.set(false);
+            }
+            );
+            t.setPriority(Thread.MIN_PRIORITY);
+            t.start();
         }
-        );
-        t.setPriority(Thread.MIN_PRIORITY);
-        t.start();
     }
 
     @Override
