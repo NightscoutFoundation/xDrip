@@ -16,8 +16,7 @@ import com.activeandroid.query.Select;
 import com.activeandroid.util.SQLiteUtils;
 //KS import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
-import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 //KS import com.eveningoutpost.dexdrip.Services.SyncService;
 //KS import com.eveningoutpost.dexdrip.UtilityModels.UndoRedo;
 //KS import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
@@ -29,13 +28,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
 import java.util.UUID;
 
 // TODO Switchable Carb models

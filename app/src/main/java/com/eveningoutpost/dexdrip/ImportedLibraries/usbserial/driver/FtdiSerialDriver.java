@@ -21,14 +21,15 @@
 
 package com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.driver;
 
+
 import android.hardware.usb.UsbConstants;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbEndpoint;
 import android.hardware.usb.UsbRequest;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -295,7 +296,7 @@ public class FtdiSerialDriver implements UsbSerialDriver {
             try {
                 for (int i = 0; i < mDevice.getInterfaceCount(); i++) {
                     if (connection.claimInterface(mDevice.getInterface(i), true)) {
-                        Log.d(TAG, "claimInterface " + i + " SUCCESS");
+                        UserErrorLog.d(TAG, "claimInterface " + i + " SUCCESS");
                     } else {
                         throw new IOException("Error claiming interface " + i);
                     }
@@ -348,7 +349,7 @@ public class FtdiSerialDriver implements UsbSerialDriver {
 
                 final int payloadBytesRead = buf.position() - MODEM_STATUS_HEADER_LENGTH;
                 if (payloadBytesRead > 0) {
-                    Log.d(TAG, HexDump.dumpHexString(dest, 0, Math.min(32, dest.length)));
+                    UserErrorLog.d(TAG, HexDump.dumpHexString(dest, 0, Math.min(32, dest.length)));
                     return payloadBytesRead;
                 } else {
                     return 0;
@@ -400,7 +401,7 @@ public class FtdiSerialDriver implements UsbSerialDriver {
                             + " bytes at offset " + offset + " length=" + src.length);
                 }
 
-                Log.d(TAG, "Wrote amtWritten=" + amtWritten + " attempted=" + writeLength);
+                UserErrorLog.d(TAG, "Wrote amtWritten=" + amtWritten + " attempted=" + writeLength);
                 offset += amtWritten;
             }
             return offset;

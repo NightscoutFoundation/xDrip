@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.utils;
 
+
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -32,8 +33,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.eveningoutpost.dexdrip.utils.FileUtils.getExternalDir;
-
-
 import static com.eveningoutpost.dexdrip.xdrip.gs;
 public class SdcardImportExport extends BaseAppCompatActivity {
 

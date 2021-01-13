@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -18,14 +19,13 @@ import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.DateUtil;
 import com.eveningoutpost.dexdrip.Models.HeartRate;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.LibreBlock;
 import com.eveningoutpost.dexdrip.Models.StepCounter;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.Treatments;
-import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
-import com.eveningoutpost.dexdrip.Models.LibreBlock;
-import com.eveningoutpost.dexdrip.Services.DexCollectionService;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
+import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.Mdns;
@@ -34,11 +34,11 @@ import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
-import com.mongodb.WriteResult;
 import com.mongodb.DBCollection;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import com.mongodb.WriteConcern;
+import com.mongodb.WriteResult;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -212,20 +212,20 @@ public class NightscoutUploader {
                 r = nightscoutService.getStatus(hashedSecret).execute();
                 if ((r != null) && (r.isSuccessful())) {
                     final String response = r.body().string();
-                    if (d) Log.d(TAG, "Status Response: " + response);
+                    if (d) UserErrorLog.d(TAG, "Status Response: " + response);
                     // TODO do we need to parse json here or should we just store string?
                     final JSONObject tr = new JSONObject(response);
-                    if (d) Log.d(TAG, url + " " + tr.toString());
+                    if (d) UserErrorLog.d(TAG, url + " " + tr.toString());
                     PersistentStore.setString(store_marker, tr.toString());
                     checkGzipSupport(r);
                 } else {
                     PersistentStore.setString(store_marker, "error");
-                    Log.d(TAG, "Failure to get status data from: " + url + " " + ((r != null) ? r.message() : ""));
+                    UserErrorLog.d(TAG, "Failure to get status data from: " + url + " " + ((r != null) ? r.message() : ""));
                 }
             } catch (JSONException e) {
-                Log.e(TAG, "Got json exception in status update parsing: " + e);
+                UserErrorLog.e(TAG, "Got json exception in status update parsing: " + e);
             } catch (IOException e) {
-                Log.e(TAG, "Got exception attempting status update: " + e);
+                UserErrorLog.e(TAG, "Got exception attempting status update: " + e);
             }
         }
     }
@@ -263,9 +263,9 @@ public class NightscoutUploader {
 
         if (enableRESTUpload) {
             long start = System.currentTimeMillis();
-            Log.i(TAG, String.format("Starting upload of %s record using a REST API", glucoseDataSets.size()));
+            UserErrorLog.i(TAG, String.format("Starting upload of %s record using a REST API", glucoseDataSets.size()));
             apiStatus = doRESTUpload(prefs, glucoseDataSets, meterRecords, calRecords);
-            Log.i(TAG, String.format("Finished upload of %s record using a REST API in %s ms result: %b", glucoseDataSets.size(), System.currentTimeMillis() - start, apiStatus));
+            UserErrorLog.i(TAG, String.format("Finished upload of %s record using a REST API in %s ms result: %b", glucoseDataSets.size(), System.currentTimeMillis() - start, apiStatus));
 
             if (prefs.getBoolean("cloud_storage_api_download_enable", false)) {
                 start = System.currentTimeMillis();
@@ -273,7 +273,7 @@ public class NightscoutUploader {
                 if (substatus) {
                     Home.staticRefreshBGCharts();
                 }
-                Log.i(TAG, String.format("Finished download using a REST API in %s ms result: %b", System.currentTimeMillis() - start, substatus));
+                UserErrorLog.i(TAG, String.format("Finished download using a REST API in %s ms result: %b", System.currentTimeMillis() - start, substatus));
             }
         }
         return apiStatus;
@@ -286,7 +286,7 @@ public class NightscoutUploader {
         if (enableMongoUpload) {
             double start = new Date().getTime();
             mongoStatus = doMongoUpload(prefs, glucoseDataSets, meterRecords, calRecords, transmittersData, libreBlock);
-            Log.i(TAG, String.format("Finished upload of %s record using a Mongo in %s ms result: %b", 
+            UserErrorLog.i(TAG, String.format("Finished upload of %s record using a Mongo in %s ms result: %b", 
                     glucoseDataSets.size() + meterRecords.size() + calRecords.size() + transmittersData.size() + libreBlock.size(), System.currentTimeMillis() - start, mongoStatus));
         }
 
@@ -294,16 +294,16 @@ public class NightscoutUploader {
     }
     
     private String TryResolveName(String baseURI) {
-        Log.d(TAG,  "Resolveing name" );
+        UserErrorLog.d(TAG,  "Resolveing name" );
         URI uri;
         try {
             uri = new URI(baseURI);
         } catch (URISyntaxException e) {
-            Log.e(TAG, "Error URISyntaxException for " + baseURI, e);
+            UserErrorLog.e(TAG, "Error URISyntaxException for " + baseURI, e);
             return baseURI;
         }
         String host = uri.getHost();
-        Log.d(TAG, "host = " + host);
+        UserErrorLog.d(TAG, "host = " + host);
         // Host has either to end with .local, or be one word (with no dots) for us to try and resolve it.
         if (host == null ||  (host.contains(".") && (!host.endsWith(".local")))) {
             return baseURI;
@@ -316,17 +316,17 @@ public class NightscoutUploader {
             }
             String ip = Mdns.genericResolver(fullHost);
             if(ip == null) {
-                Log.d(TAG, "Recieved null resolving " + fullHost);
+                UserErrorLog.d(TAG, "Recieved null resolving " + fullHost);
                 return baseURI;
             }
             // Resolve succeeded, replace host, with the resovled address.
             String newUri = baseURI.replace(host, ip);
-            Log.d(TAG, "Returning new uri " + newUri);
+            UserErrorLog.d(TAG, "Returning new uri " + newUri);
             return newUri;
             
             
         } catch (UnknownHostException e) {
-            Log.w(TAG, "UnknownHostException error nanme not resovled" + fullHost);
+            UserErrorLog.w(TAG, "UnknownHostException error nanme not resovled" + fullHost);
             return baseURI;
         }
     }
@@ -336,7 +336,7 @@ public class NightscoutUploader {
         final ArrayList<String> baseURIs = new ArrayList<>();
 
         boolean new_data = false;
-        Log.d(TAG, "doRESTtreatmentDownload() starting run");
+        UserErrorLog.d(TAG, "doRESTtreatmentDownload() starting run");
 
         try {
             for (String baseURLSetting : baseURLSettings.split(" ")) {
@@ -345,7 +345,7 @@ public class NightscoutUploader {
                 baseURIs.add(baseURL + (baseURL.endsWith("/") ? "" : "/"));
             }
         } catch (Exception e) {
-            Log.e(TAG, "Unable to process API Base URL: " + e);
+            UserErrorLog.e(TAG, "Unable to process API Base URL: " + e);
             return false;
         }
 
@@ -358,7 +358,7 @@ public class NightscoutUploader {
                 int apiVersion = 0;
                 URI uri = new URI(baseURI);
                 if ((uri.getHost().startsWith("192.168.")) && prefs.getBoolean("skip_lan_uploads_when_no_lan", true) && (!JoH.isLANConnected())) {
-                    Log.d(TAG, "Skipping Nighscout download from: " + uri.getHost() + " due to no LAN connection");
+                    UserErrorLog.d(TAG, "Skipping Nighscout download from: " + uri.getHost() + " due to no LAN connection");
                     continue;
                 }
 
@@ -380,7 +380,7 @@ public class NightscoutUploader {
 
                 final String checkurl = retrofit.baseUrl().url().toString();
                 if (!isNightscoutCompatible(checkurl)) {
-                    Log.e(TAG, "Nightscout version: " + getNightscoutVersion(checkurl) + " on " + checkurl + " is not compatible with the Rest-API download feature!");
+                    UserErrorLog.e(TAG, "Nightscout version: " + getNightscoutVersion(checkurl) + " on " + checkurl + " is not compatible with the Rest-API download feature!");
                     continue;
                 }
 
@@ -396,7 +396,7 @@ public class NightscoutUploader {
                         r = nightscoutService.downloadTreatments(hashedSecret, last_modified_string).execute();
 
                         if ((r != null) && (r.raw().networkResponse().code() == HttpURLConnection.HTTP_NOT_MODIFIED)) {
-                            Log.d(TAG, "Treatments on " + uri.getHost() + ":" + uri.getPort() + " not modified since: " + last_modified_string);
+                            UserErrorLog.d(TAG, "Treatments on " + uri.getHost() + ":" + uri.getPort() + " not modified since: " + last_modified_string);
                             continue; // skip further processing of this url
                         }
 
@@ -407,23 +407,23 @@ public class NightscoutUploader {
                             if (this_etag.length() > 0) {
                                 // older versions of nightscout don't support if-modified-since so check the etag for duplication
                                 if (this_etag.equals(PersistentStore.getString(ETAG + LAST_MODIFIED_KEY))) {
-                                    Log.d(TAG, "Skipping Treatments on " + uri.getHost() + ":" + uri.getPort() + " due to etag duplicate: " + this_etag);
+                                    UserErrorLog.d(TAG, "Skipping Treatments on " + uri.getHost() + ":" + uri.getPort() + " due to etag duplicate: " + this_etag);
                                     continue;
                                 }
                                 PersistentStore.setString(ETAG + LAST_MODIFIED_KEY, this_etag);
                             }
                             final String response = r.body().string();
-                            if (d) Log.d(TAG, "Response: " + response);
+                            if (d) UserErrorLog.d(TAG, "Response: " + response);
 
                             new_data = NightscoutTreatments.processTreatmentResponse(response);
                             PersistentStore.setString(LAST_MODIFIED_KEY, last_modified_string);
                             checkGzipSupport(r);
                         } else {
-                            Log.d(TAG, "Failed to get treatments from: " + baseURI);
+                            UserErrorLog.d(TAG, "Failed to get treatments from: " + baseURI);
                         }
 
                     } else {
-                        Log.d(TAG, "Old api version not supported");
+                        UserErrorLog.d(TAG, "Old api version not supported");
                     }
                 }
 
@@ -433,7 +433,7 @@ public class NightscoutUploader {
                 handleRestFailure(msg);
             }
         }
-        Log.d(TAG, "doRESTtreatmentDownload() finishing run");
+        UserErrorLog.d(TAG, "doRESTtreatmentDownload() finishing run");
         return new_data;
     }
 
@@ -448,7 +448,7 @@ public class NightscoutUploader {
                     baseURIs.add(baseURL + (baseURL.endsWith("/") ? "" : "/"));
                 }
             } catch (Exception e) {
-                Log.e(TAG, "Unable to process API Base URL: "+e);
+                UserErrorLog.e(TAG, "Unable to process API Base URL: "+e);
                 return false;
             }
             boolean any_successes = false;
@@ -459,7 +459,7 @@ public class NightscoutUploader {
                     URI uri = new URI(baseURI);
                     if ((uri.getHost().startsWith("192.168.")) && prefs.getBoolean("skip_lan_uploads_when_no_lan", true) && (!JoH.isLANConnected()))
                     {
-                        Log.d(TAG,"Skipping Nighscout upload to: "+uri.getHost()+" due to no LAN connection");
+                        UserErrorLog.d(TAG,"Skipping Nighscout upload to: "+uri.getHost()+" due to no LAN connection");
                         continue;
                     }
                     if (uri.getPath().endsWith("/v1/")) apiVersion = 1;
@@ -505,7 +505,7 @@ public class NightscoutUploader {
             try {
                 postDeviceStatus(nightscoutService, null);
             } catch (Exception e) {
-                Log.e(TAG, "Ignoring legacy devicestatus post exception: " + e);
+                UserErrorLog.e(TAG, "Ignoring legacy devicestatus post exception: " + e);
             }
         }
 
@@ -523,7 +523,7 @@ public class NightscoutUploader {
                 if (dupe == null) {
                     populateV1APIMeterReadingEntry(array, record); // also add calibrations as meter records
                 } else {
-                    Log.d(TAG, "Found duplicate blood test entry for this calibration record: " + record.bg + " vs " + dupe.mgdl + " mg/dl");
+                    UserErrorLog.d(TAG, "Found duplicate blood test entry for this calibration record: " + record.bg + " vs " + dupe.mgdl + " mg/dl");
                 }
                 populateV1APICalibrationEntry(array, record);
             }
@@ -536,7 +536,7 @@ public class NightscoutUploader {
                 try {
                     postDeviceStatus(nightscoutService, secret);
                 } catch (Exception e) {
-                    Log.e(TAG, "Ignoring devicestatus post exception: " + e);
+                    UserErrorLog.e(TAG, "Ignoring devicestatus post exception: " + e);
                 }
             }
 
@@ -544,13 +544,13 @@ public class NightscoutUploader {
                 if (Pref.getBooleanDefaultFalse("send_treatments_to_nightscout")) {
                     postTreatments(nightscoutService, secret);
                 } else {
-                    Log.d(TAG,"Skipping treatment upload due to preference disabled");
+                    UserErrorLog.d(TAG,"Skipping treatment upload due to preference disabled");
                 }
             } catch (Exception e) {
-                Log.e(TAG, "Exception uploading REST API treatments: " + e.getMessage());
+                UserErrorLog.e(TAG, "Exception uploading REST API treatments: " + e.getMessage());
                 if (e.getMessage().equals("Not Found")) {
                     final String msg = "Please ensure careportal plugin is enabled on nightscout for treatment upload!";
-                    Log.wtf(TAG, msg);
+                    UserErrorLog.wtf(TAG, msg);
                     Home.toaststaticnext(msg);
                     handleRestFailure(msg);
                 }
@@ -564,7 +564,7 @@ public class NightscoutUploader {
                     postMotionTracking(nightscoutService, secret);
                 } catch (Exception e) {
                   if (JoH.ratelimit("heartrate-upload-exception", 3600)) {
-                      Log.e(TAG, "Exception uploading REST API heartrate: " + e.getMessage());
+                      UserErrorLog.e(TAG, "Exception uploading REST API heartrate: " + e.getMessage());
                   }
                 }
             }
@@ -584,7 +584,7 @@ public class NightscoutUploader {
                             MegaStatus.getStatusPendingIntent("Uploaders"), Constants.NIGHTSCOUT_ERROR_NOTIFICATION_ID, NotificationChannels.NIGHTSCOUT_UPLOADER_CHANNEL, true, true, null, null, msg);
                 }
             } else {
-                Log.e(TAG, "Cannot alert for nightscout failures as preference setting is disabled");
+                UserErrorLog.e(TAG, "Cannot alert for nightscout failures as preference setting is disabled");
             }
         } else {
             if (notification_shown) {
@@ -592,7 +592,7 @@ public class NightscoutUploader {
                 notification_shown = false;
             }
         }
-        Log.e(TAG, msg);
+        UserErrorLog.e(TAG, msg);
     }
 
     private String getDeviceString(BgReading record) {
@@ -619,7 +619,7 @@ public class NightscoutUploader {
                 try {
                     json.put("delta", new BigDecimal(record.getDg_slope() * 5 * 60 * 1000).setScale(3, BigDecimal.ROUND_HALF_UP));
                 } catch (NumberFormatException e) {
-                        UserError.Log.e(TAG, "Problem calculating delta from getDg_slope() for Nightscout REST Upload, skipping");
+                        UserErrorLog.e(TAG, "Problem calculating delta from getDg_slope() for Nightscout REST Upload, skipping");
                 }
                 json.put("direction", record.getDg_deltaName());
             } else {
@@ -627,7 +627,7 @@ public class NightscoutUploader {
                 try {
                     json.put("delta", new BigDecimal(record.currentSlope() * 5 * 60 * 1000).setScale(3, BigDecimal.ROUND_HALF_UP)); // jamorham for automation
                 } catch (NumberFormatException e) {
-                        UserError.Log.e(TAG, "Problem calculating delta from currentSlope() for Nightscout REST Upload, skipping");
+                        UserErrorLog.e(TAG, "Problem calculating delta from currentSlope() for Nightscout REST Upload, skipping");
                 }
                 json.put("direction", record.slopeName());
             }
@@ -640,7 +640,7 @@ public class NightscoutUploader {
             array.put(json);
         }
         else
-            Log.e(TAG, "doRESTUploadTo BG record is null.");
+            UserErrorLog.e(TAG, "doRESTUploadTo BG record is null.");
     }
 
         private RequestBody populateLegacyAPIEntry(BgReading record) throws Exception {
@@ -657,7 +657,7 @@ public class NightscoutUploader {
 
         private void populateV1APIMeterReadingEntry(JSONArray array, Calibration record) throws Exception {
             if (record == null) {
-                Log.e(TAG, "Received null calibration record in populateV1ApiMeterReadingEntry !");
+                UserErrorLog.e(TAG, "Received null calibration record in populateV1ApiMeterReadingEntry !");
                 return;
             }
             JSONObject json = new JSONObject();
@@ -674,7 +674,7 @@ public class NightscoutUploader {
 
         private void populateV1APIMeterReadingEntry(JSONArray array, BloodTest record) throws Exception {
             if (record == null) {
-                Log.e(TAG, "Received null bloodtest record in populateV1ApiMeterReadingEntry !");
+                UserErrorLog.e(TAG, "Received null bloodtest record in populateV1ApiMeterReadingEntry !");
                 return;
             }
             JSONObject json = new JSONObject();
@@ -692,7 +692,7 @@ public class NightscoutUploader {
 
         private void populateV1APICalibrationEntry(JSONArray array, Calibration record) throws Exception {
             if (record == null) {
-                Log.e(TAG, "Received null calibration record in populateV1ApiCalibrationEntry !");
+                UserErrorLog.e(TAG, "Received null calibration record in populateV1ApiCalibrationEntry !");
                 return;
             }
             //do not upload undefined slopes
@@ -740,7 +740,7 @@ public class NightscoutUploader {
     }
 
     private void postTreatments(NightscoutService nightscoutService, String apiSecret) throws Exception {
-        Log.d(TAG, "Processing treatments for RESTAPI");
+        UserErrorLog.d(TAG, "Processing treatments for RESTAPI");
         final long THIS_QUEUE = UploaderQueue.NIGHTSCOUT_RESTAPI;
         final List<UploaderQueue> tups = UploaderQueue.getPendingbyType(Treatments.class.getSimpleName(), THIS_QUEUE);
         if (tups != null) {
@@ -778,7 +778,7 @@ public class NightscoutUploader {
                                         final JSONObject tr = (JSONObject) jsonArray.get(0); // can only be one
                                         this_id = tr.getString("_id");
                                     } catch (Exception e) {
-                                        Log.e(TAG, "Got exception parsing treatment lookup response: " + e);
+                                        UserErrorLog.e(TAG, "Got exception parsing treatment lookup response: " + e);
                                     }
                                 }
                                 // is the id valid now?
@@ -788,19 +788,19 @@ public class NightscoutUploader {
                                         throw new UploaderException(r.message(), r.code());
                                     } else {
                                         up.completed(THIS_QUEUE);
-                                        Log.d(TAG, "Success for RESTAPI treatment delete: " + up.reference_uuid + " _id: " + this_id);
+                                        UserErrorLog.d(TAG, "Success for RESTAPI treatment delete: " + up.reference_uuid + " _id: " + this_id);
                                     }
                                 } else {
-                                    Log.wtf(TAG, "Couldn't find a reference _id for uuid: " + up.reference_uuid + " got: " + this_id);
+                                    UserErrorLog.wtf(TAG, "Couldn't find a reference _id for uuid: " + up.reference_uuid + " got: " + this_id);
                                     up.completed(THIS_QUEUE); // don't retry
                                 }
                             }
                         } else {
-                            Log.wtf(TAG, "Cannot delete treatments without api secret being set");
+                            UserErrorLog.wtf(TAG, "Cannot delete treatments without api secret being set");
                         }
                     }
                 } else {
-                    Log.wtf(TAG, "Unsupported operation type for treatment: " + up.action);
+                    UserErrorLog.wtf(TAG, "Unsupported operation type for treatment: " + up.action);
                     up.completed(THIS_QUEUE); // don't retry it
                 }
             }
@@ -813,7 +813,7 @@ public class NightscoutUploader {
                     if (!r.isSuccessful()) {
                         throw new UploaderException(r.message(), r.code());
                     } else {
-                        Log.d(TAG, "Success for RESTAPI treatment insert upload");
+                        UserErrorLog.d(TAG, "Success for RESTAPI treatment insert upload");
                         for (UploaderQueue up : tups) {
                             if (up.action.equals("insert")) {
                                 up.completed(THIS_QUEUE); // approve all types for this queue
@@ -822,7 +822,7 @@ public class NightscoutUploader {
                         checkGzipSupport(r);
                     }
                 } else {
-                    Log.wtf(TAG, "Cannot upload treatments without api secret being set");
+                    UserErrorLog.wtf(TAG, "Cannot upload treatments without api secret being set");
                 }
             }
             // handle upsert types
@@ -838,13 +838,13 @@ public class NightscoutUploader {
                         if (!r.isSuccessful()) {
                             throw new UploaderException(r.message(), r.code());
                         } else {
-                            Log.d(TAG, "Success for RESTAPI treatment upsert upload: " + match_uuid);
+                            UserErrorLog.d(TAG, "Success for RESTAPI treatment upsert upload: " + match_uuid);
 
                             for (UploaderQueue up : tups) {
-                                if (d) Log.d(TAG, "upsert: " + match_uuid + " / " + up.reference_uuid + " " + up.action + " " + up.reference_id);
+                                if (d) UserErrorLog.d(TAG, "upsert: " + match_uuid + " / " + up.reference_uuid + " " + up.action + " " + up.reference_id);
                                 if ((up.action.equals("update") || (up.action.equals("insert")))
                                         && (up.reference_uuid.equals(match_uuid) || (uuid_to_id(up.reference_uuid).equals(match_uuid)))) {
-                                    if( d) Log.d(TAG, "upsert: matched");
+                                    if( d) UserErrorLog.d(TAG, "upsert: matched");
                                     up.completed(THIS_QUEUE); // approve all types for this queue
                                     break;
                                 }
@@ -852,13 +852,13 @@ public class NightscoutUploader {
                             checkGzipSupport(r);
                         }
                     } else {
-                        Log.wtf(TAG, "Cannot upload treatments without api secret being set");
+                        UserErrorLog.wtf(TAG, "Cannot upload treatments without api secret being set");
                         return;
                     }
                 }
                 // if we got this far without exception then mark everything as completed to fix harmless erroneous queue entries
                 for (UploaderQueue up : tups) {
-                    if (d) Log.d(TAG, "Marking all items completed");
+                    if (d) UserErrorLog.d(TAG, "Marking all items completed");
                     up.completed(THIS_QUEUE);
                 }
             }
@@ -869,7 +869,7 @@ public class NightscoutUploader {
     private static final int MAX_ACTIVITY_RECORDS = 500;
 
     private void postHeartRate(NightscoutService nightscoutService, String apiSecret) throws Exception {
-        Log.d(TAG, "Processing heartrate for RESTAPI");
+        UserErrorLog.d(TAG, "Processing heartrate for RESTAPI");
         if (apiSecret != null) {
             final String STORE_COUNTER = "nightscout-rest-heartrate-synced-time";
             final long syncedTillTime = Math.max(PersistentStore.getLong(STORE_COUNTER), JoH.tsl() - Constants.DAY_IN_MS * 7);
@@ -902,24 +902,24 @@ public class NightscoutUploader {
                 if (!r.isSuccessful()) {
                     activityErrorCount++;
                    if (JoH.ratelimit("heartrate-unable-upload",3600)) {
-                       UserError.Log.e(TAG, "Unable to upload heart-rate data to Nightscout - check nightscout version");
+                       UserErrorLog.e(TAG, "Unable to upload heart-rate data to Nightscout - check nightscout version");
                    }
                     throw new UploaderException(r.message(), r.code());
                 } else {
                     PersistentStore.setLong(STORE_COUNTER, highest_timestamp);
-                    UserError.Log.d(TAG, "Updating heartrate synced record count (success) " + JoH.dateTimeText(highest_timestamp) + " Processed: " + readings.size() + " records");
+                    UserErrorLog.d(TAG, "Updating heartrate synced record count (success) " + JoH.dateTimeText(highest_timestamp) + " Processed: " + readings.size() + " records");
                     checkGzipSupport(r);
                 }
             }
         } else {
-            UserError.Log.e(TAG, "Api secret is null");
+            UserErrorLog.e(TAG, "Api secret is null");
         }
     }
 
 
 
     private void postStepsCount(NightscoutService nightscoutService, String apiSecret) throws Exception {
-        Log.d(TAG, "Processing steps for RESTAPI");
+        UserErrorLog.d(TAG, "Processing steps for RESTAPI");
         final String STORE_COUNTER = "nightscout-rest-steps-synced-time";
         if (apiSecret != null) {
             final long syncedTillTime = Math.max(PersistentStore.getLong(STORE_COUNTER), JoH.tsl() - Constants.DAY_IN_MS * 7);
@@ -950,21 +950,21 @@ public class NightscoutUploader {
 
                 if (!r.isSuccessful()) {
                     activityErrorCount++;
-                    UserError.Log.e(TAG, "Unable to upload steps data to Nightscout - check nightscout version");
+                    UserErrorLog.e(TAG, "Unable to upload steps data to Nightscout - check nightscout version");
                     throw new UploaderException(r.message(), r.code());
                 } else {
                     PersistentStore.setLong(STORE_COUNTER, highest_timestamp);
-                    UserError.Log.e(TAG, "Updating steps synced record count (success) " + JoH.dateTimeText(highest_timestamp) + " Processed: " + readings.size() + " records");
+                    UserErrorLog.e(TAG, "Updating steps synced record count (success) " + JoH.dateTimeText(highest_timestamp) + " Processed: " + readings.size() + " records");
                     checkGzipSupport(r);
                 }
             }
         } else {
-            UserError.Log.e(TAG, "Api secret is null");
+            UserErrorLog.e(TAG, "Api secret is null");
         }
     }
 
     private void postMotionTracking(NightscoutService nightscoutService, String apiSecret) throws Exception {
-        Log.d(TAG, "Processing motion tracking for RESTAPI");
+        UserErrorLog.d(TAG, "Processing motion tracking for RESTAPI");
         final String STORE_COUNTER = "nightscout-rest-motion-synced-time";
         if (apiSecret != null) {
             final long syncedTillTime = Math.max(PersistentStore.getLong(STORE_COUNTER), JoH.tsl() - Constants.DAY_IN_MS * 7);
@@ -1000,16 +1000,16 @@ public class NightscoutUploader {
 
                 if (!r.isSuccessful()) {
                     activityErrorCount++;
-                    UserError.Log.e(TAG, "Unable to upload motion data to Nightscout - check nightscout version");
+                    UserErrorLog.e(TAG, "Unable to upload motion data to Nightscout - check nightscout version");
                     throw new UploaderException(r.message(), r.code());
                 } else {
                     PersistentStore.setLong(STORE_COUNTER, highest_timestamp);
-                    UserError.Log.e(TAG, "Updating motion synced record count (success) " + JoH.dateTimeText(highest_timestamp) + " Processed: " + readings.size() + " records");
+                    UserErrorLog.e(TAG, "Updating motion synced record count (success) " + JoH.dateTimeText(highest_timestamp) + " Processed: " + readings.size() + " records");
                     checkGzipSupport(r);
                 }
             }
         } else {
-            UserError.Log.e(TAG, "Api secret is null");
+            UserErrorLog.e(TAG, "Api secret is null");
         }
     }
 
@@ -1042,12 +1042,12 @@ public class NightscoutUploader {
                     setSupportsGzip(r.raw().request().url().uri().getHost() + r.raw().request().url().uri().getPort(), true);
                 } catch (Exception e) {
                     // unprocessable
-                    UserError.Log.d(TAG, "check gzip: E1 :" + e);
+                    UserErrorLog.d(TAG, "check gzip: E1 :" + e);
                 }
             }
         } catch (Exception e) {
             // unprocessable
-            UserError.Log.d(TAG, "check gzip: E2 :" + e);
+            UserErrorLog.d(TAG, "check gzip: E2 :" + e);
         }
     }
 
@@ -1095,7 +1095,7 @@ public class NightscoutUploader {
 
             if ((battery_level > 0) && (battery_level != last_battery_level || always_send_battery)) {
                 PersistentStore.setLong(LAST_NIGHTSCOUT_BATTERY_LEVEL, battery_level);
-                // UserError.Log.d(TAG, "Uploading battery detail: " + battery_level);
+                // UserErrorLog.d(TAG, "Uploading battery detail: " + battery_level);
                 // json.put("uploaderBattery", battery_level); // old style
 
                 uploader.put("battery", battery_level);
@@ -1123,7 +1123,7 @@ public class NightscoutUploader {
                     r = nightscoutService.uploadDeviceStatus(body).execute();
                 if (!r.isSuccessful()) throw new UploaderException(r.message(), r.code());
                 // } else {
-                //     UserError.Log.d(TAG, "Battery level is same as previous - not uploading: " + battery_level);
+                //     UserErrorLog.d(TAG, "Battery level is same as previous - not uploading: " + battery_level);
                 checkGzipSupport(r);
             }
         }
@@ -1141,11 +1141,11 @@ public class NightscoutUploader {
                 try {
                     final URI uri = new URI(dbURI.trim());
                     if ((uri.getHost().startsWith("192.168.")) && prefs.getBoolean("skip_lan_uploads_when_no_lan", true) && (!JoH.isLANConnected())) {
-                        Log.d(TAG, "Skipping mongo upload to: " + dbURI + " due to no LAN connection");
+                        UserErrorLog.d(TAG, "Skipping mongo upload to: " + dbURI + " due to no LAN connection");
                         return false;
                     }
                 } catch (URISyntaxException e) {
-                    UserError.Log.e(TAG, "Invalid mongo URI: " + e);
+                    UserErrorLog.e(TAG, "Invalid mongo URI: " + e);
                 }
             }
 
@@ -1166,7 +1166,7 @@ public class NightscoutUploader {
                     DBCollection dexcomData = db.getCollection(collectionName.trim());
 
                     try {
-                        Log.i(TAG, "The number of EGV records being sent to MongoDB is " + glucoseDataSets.size());
+                        UserErrorLog.i(TAG, "The number of EGV records being sent to MongoDB is " + glucoseDataSets.size());
                         for (BgReading record : glucoseDataSets) {
                             // make db object
                             BasicDBObject testData = new BasicDBObject();
@@ -1184,10 +1184,10 @@ public class NightscoutUploader {
                                 dexcomData.insert(testData, WriteConcern.UNACKNOWLEDGED);
                             }
                             else
-                                Log.e(TAG, "MongoDB BG record is null.");
+                                UserErrorLog.e(TAG, "MongoDB BG record is null.");
                         }
 
-                        Log.i(TAG, "REST - The number of MBG records being sent to MongoDB is " + meterRecords.size());
+                        UserErrorLog.i(TAG, "REST - The number of MBG records being sent to MongoDB is " + meterRecords.size());
                         for (Calibration meterRecord : meterRecords) {
                             // make db object
                             BasicDBObject testData = new BasicDBObject();
@@ -1198,7 +1198,7 @@ public class NightscoutUploader {
                             testData.put("mbg", meterRecord.bg);
                             dexcomData.insert(testData, WriteConcern.UNACKNOWLEDGED);
                         }
-                        Log.i(TAG, "REST - Finshed upload of mbg");
+                        UserErrorLog.i(TAG, "REST - Finshed upload of mbg");
 
                         for (Calibration calRecord : calRecords) {
                             //do not upload undefined slopes
@@ -1224,7 +1224,7 @@ public class NightscoutUploader {
                         for (LibreBlock libreBlockEntry : libreBlock) {
                             
                             
-                            Log.d(TAG, "uploading new item to mongo");
+                            UserErrorLog.d(TAG, "uploading new item to mongo");
                             // Checksum might be wrong, for libre 2 or libre us 14 days.
                             boolean ChecksumOk = LibreUtils.verify(libreBlockEntry.blockbytes);
                             
@@ -1247,13 +1247,13 @@ public class NightscoutUploader {
                             try {
                                 testData.put("TomatoBatteryLife", Integer.parseInt(PersistentStore.getString("Tomatobattery")));
                             } catch (NumberFormatException e) {
-                                Log.e(TAG, "Error reading battery daya" + PersistentStore.getString("Tomatobattery") );
+                                UserErrorLog.e(TAG, "Error reading battery daya" + PersistentStore.getString("Tomatobattery") );
                             }
                             testData.put("FwVersion", PersistentStore.getString("TomatoFirmware"));
                             testData.put("HwVersion", PersistentStore.getString("TomatoHArdware"));
                             
                             WriteResult wr = libreCollection.insert(testData, WriteConcern.ACKNOWLEDGED);
-                            Log.d(TAG, "uploaded libreblock data with " + new Date(libreBlockEntry.timestamp).toLocaleString()+ " wr = " + wr);
+                            UserErrorLog.d(TAG, "uploaded libreblock data with " + new Date(libreBlockEntry.timestamp).toLocaleString()+ " wr = " + wr);
                         }
 
                         // TODO: quick port from original code, revisit before release
@@ -1264,7 +1264,7 @@ public class NightscoutUploader {
                         dsCollection.insert(devicestatus, WriteConcern.UNACKNOWLEDGED);
 
                         // treatments mongo sync using unified queue
-                        Log.d(TAG,"Starting treatments mongo direct");
+                        UserErrorLog.d(TAG,"Starting treatments mongo direct");
                         final long THIS_QUEUE = UploaderQueue.MONGO_DIRECT;
                         final DBCollection treatmentDb = db.getCollection("treatments");
                         final List<UploaderQueue> tups = UploaderQueue.getPendingbyType(Treatments.class.getSimpleName(), THIS_QUEUE);
@@ -1287,25 +1287,25 @@ public class NightscoutUploader {
                                         record.put("created_at", treatment.created_at);
                                         final BasicDBObject searchQuery = new BasicDBObject().append("uuid", treatment.uuid);
                                         //treatmentDb.insert(record, WriteConcern.UNACKNOWLEDGED);
-                                        Log.d(TAG, "Sending upsert for: " + treatment.toJSON());
+                                        UserErrorLog.d(TAG, "Sending upsert for: " + treatment.toJSON());
                                         treatmentDb.update(searchQuery, record, true, false);
                                     } else {
-                                        Log.d(TAG, "Got null for treatment id: " + up.reference_id);
+                                        UserErrorLog.d(TAG, "Got null for treatment id: " + up.reference_id);
                                     }
                                     up.completed(THIS_QUEUE);
                                 } else if (up.action.equals("delete")) {
                                     if (up.reference_uuid != null) {
-                                        Log.d(TAG,"Processing treatment delete mongo sync for: "+up.reference_uuid);
+                                        UserErrorLog.d(TAG,"Processing treatment delete mongo sync for: "+up.reference_uuid);
                                         final BasicDBObject searchQuery = new BasicDBObject().append("uuid", up.reference_uuid);
-                                        Log.d(TAG,treatmentDb.remove(searchQuery, WriteConcern.UNACKNOWLEDGED).toString());
+                                        UserErrorLog.d(TAG,treatmentDb.remove(searchQuery, WriteConcern.UNACKNOWLEDGED).toString());
 
                                     }
                                     up.completed(THIS_QUEUE);
                                 } else {
-                                    Log.e(TAG, "Unsupported operation type for treatment: " + up.action);
+                                    UserErrorLog.e(TAG, "Unsupported operation type for treatment: " + up.action);
                                 }
                             }
-                            Log.d(TAG, "Processed " + tups.size() + " Treatment mongo direct upload records");
+                            UserErrorLog.d(TAG, "Processed " + tups.size() + " Treatment mongo direct upload records");
                         }
 
                         client.close();
@@ -1314,7 +1314,7 @@ public class NightscoutUploader {
                         return true;
 
                     } catch (Exception e) {
-                        Log.e(TAG, "Unable to upload data to mongo " + e.getMessage());
+                        UserErrorLog.e(TAG, "Unable to upload data to mongo " + e.getMessage());
                         failurecount++;
                         if (failurecount>4)
                         {
@@ -1324,7 +1324,7 @@ public class NightscoutUploader {
                         if(client != null) { client.close(); }
                     }
                 } catch (Exception e) {
-                    Log.e(TAG, "Unable to upload data to mongo " + e.getMessage());
+                    UserErrorLog.e(TAG, "Unable to upload data to mongo " + e.getMessage());
                 }
             }
             return false;
@@ -1353,7 +1353,7 @@ public class NightscoutUploader {
 
     private static void setSupportsGzip(String id, boolean value) {
         if (supportsGzip(id) != value) {
-            UserError.Log.e(TAG, "Setting GZIP support: " + id + " " + value);
+            UserErrorLog.e(TAG, "Setting GZIP support: " + id + " " + value);
             PersistentStore.setBoolean(END_SUPPORTS_GZIP_MARKER + id, value);
         }
     }

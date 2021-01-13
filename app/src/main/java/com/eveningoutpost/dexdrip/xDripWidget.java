@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip;
 
+
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
@@ -15,7 +16,7 @@ import android.widget.RemoteViews;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSparklineBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.ColorCache;
@@ -51,19 +52,19 @@ public class xDripWidget extends AppWidgetProvider {
 
     @Override
     public void onEnabled(Context context) {
-        Log.d(TAG, "Widget enabled");
+        UserErrorLog.d(TAG, "Widget enabled");
         context.startService(new Intent(context, WidgetUpdateService.class));
     }
 
     @Override
     public void onDisabled(Context context) {
-        Log.d(TAG, "Widget disabled");
+        UserErrorLog.d(TAG, "Widget disabled");
         // Enter relevant functionality for when the last widget is disabled
     }
 
     private static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.x_drip_widget);
-        Log.d(TAG, "Update widget signal received");
+        UserErrorLog.d(TAG, "Update widget signal received");
 
         //Add behaviour: open xDrip on click
         Intent intent = new Intent(context, Home.class);
@@ -74,7 +75,7 @@ public class xDripWidget extends AppWidgetProvider {
             appWidgetManager.updateAppWidget(appWidgetId, views);
             // needed to catch RuntimeException and DeadObjectException
         } catch (Exception e) {
-            Log.e(TAG, "Got Rexception in widget update: " + e);
+            UserErrorLog.e(TAG, "Got Rexception in widget update: " + e);
         }
     }
 
@@ -91,7 +92,7 @@ public class xDripWidget extends AppWidgetProvider {
             appWidgetManager.updateAppWidget(appWidgetId, views);
             // needed to catch RuntimeException and DeadObjectException
         } catch (Exception e) {
-            Log.e(TAG, "Got Rexception in widget update: " + e);
+            UserErrorLog.e(TAG, "Got Rexception in widget update: " + e);
         }
     }
 
@@ -160,7 +161,7 @@ public class xDripWidget extends AppWidgetProvider {
                 // TODO use dg stale calculation and/or preformatted text
                 if ((new Date().getTime()) - Home.stale_data_millis() - lastBgreading.timestamp > 0) {
 //                estimate = lastBgreading.calculated_value;
-                    Log.d(TAG, "old value, estimate " + estimate);
+                    UserErrorLog.d(TAG, "old value, estimate " + estimate);
                     stringEstimate = bgGraphBuilder.unitized_string(estimate);
 
                     //views.setTextViewText(R.id.widgetArrow, "--");
@@ -173,7 +174,7 @@ public class xDripWidget extends AppWidgetProvider {
                     if (lastBgreading.hide_slope) {
                         slope_arrow = "--";
                     }
-                    Log.d(TAG, "newish value, estimate " + stringEstimate + slope_arrow);
+                    UserErrorLog.d(TAG, "newish value, estimate " + stringEstimate + slope_arrow);
 
 
                     views.setInt(R.id.widgetBg, "setPaintFlags", 0);
@@ -240,7 +241,7 @@ public class xDripWidget extends AppWidgetProvider {
                     views.setTextColor(R.id.widgetArrow, Color.WHITE);
                 }
             } catch (RuntimeException e) {
-                Log.e(TAG, "Got exception in displaycurrentinfo: " + e);
+                UserErrorLog.e(TAG, "Got exception in displaycurrentinfo: " + e);
             }
         }
     }

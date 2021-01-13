@@ -1,12 +1,13 @@
 package com.eveningoutpost.dexdrip.webservices;
 
+
 import android.os.Build;
 import android.os.PowerManager;
 import android.text.TextUtils;
 import android.util.Log;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
@@ -26,12 +27,11 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
-import java.net.URLDecoder;
-import java.time.format.DateTimeFormatter;
-import java.time.ZonedDateTime;
 import java.time.ZoneOffset;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.SSLServerSocketFactory;
@@ -107,7 +107,7 @@ public class XdripWebService implements Runnable {
     // robustly shut down and erase the instance
     private static synchronized void easyStop() {
         try {
-            UserError.Log.d(TAG, "running easyStop()");
+            UserErrorLog.d(TAG, "running easyStop()");
             instance.stop();
             instance = null;
             ssl_instance.stop();
@@ -120,7 +120,7 @@ public class XdripWebService implements Runnable {
     // start up if needed
     private static synchronized void easyStart() {
         if (instance == null) {
-            UserError.Log.d(TAG, "easyStart() Starting new instance");
+            UserErrorLog.d(TAG, "easyStart() Starting new instance");
             instance = new XdripWebService(17580, false);
             ssl_instance = new XdripWebService(17581, true);
         }
@@ -131,10 +131,10 @@ public class XdripWebService implements Runnable {
     // start thread if needed
     private void startIfNotRunning() {
         if (!isRunning) {
-            UserError.Log.d(TAG, "Not running so starting");
+            UserErrorLog.d(TAG, "Not running so starting");
             start();
         } else {
-            // UserError.Log.d(TAG, "Already running");
+            // UserErrorLog.d(TAG, "Already running");
         }
     }
 
@@ -172,7 +172,7 @@ public class XdripWebService implements Runnable {
             final boolean open_service = Pref.getBooleanDefaultFalse("xdrip_webservice_open");
             if (useSSL) {
                 // SSL type
-                UserError.Log.d(TAG, "Attempting to initialize SSL");
+                UserErrorLog.d(TAG, "Attempting to initialize SSL");
                 final SSLServerSocketFactory ssocketFactory = SSLServerSocketHelper.makeSSLSocketFactory(
                         new BufferedInputStream(xdrip.getAppContext().getResources().openRawResource(R.raw.localhost_cert)),
                         "password".toCharArray());
@@ -205,7 +205,7 @@ public class XdripWebService implements Runnable {
                     }).start();
                 } else {
                     if (JoH.ratelimit("webservice-thread-overheat", 60)) {
-                        UserError.Log.wtf(TAG, "Web service jammed with too many connections > " + runningThreads);
+                        UserErrorLog.wtf(TAG, "Web service jammed with too many connections > " + runningThreads);
                     }
                     socket.close();
                 }
@@ -233,21 +233,21 @@ public class XdripWebService implements Runnable {
             try {
                 if (socket instanceof SSLSocket) {
                     // if ssl
-                    UserError.Log.d(TAG, "Attempting SSL handshake");
+                    UserErrorLog.d(TAG, "Attempting SSL handshake");
                     final SSLSocket sslSocket = (SSLSocket) socket;
 
                     sslSocket.startHandshake();
                     final SSLSession sslSession = sslSocket.getSession();
 
-                    UserError.Log.d(TAG, "SSLSession :");
-                    UserError.Log.d(TAG, "\tProtocol : " + sslSession.getProtocol());
-                    UserError.Log.d(TAG, "\tCipher suite : " + sslSession.getCipherSuite());
+                    UserErrorLog.d(TAG, "SSLSession :");
+                    UserErrorLog.d(TAG, "\tProtocol : " + sslSession.getProtocol());
+                    UserErrorLog.d(TAG, "\tCipher suite : " + sslSession.getCipherSuite());
                 }
             } catch (SSLHandshakeException e) {
-                UserError.Log.e(TAG, "SSL ERROR: " + e.toString());
+                UserErrorLog.e(TAG, "SSL ERROR: " + e.toString());
                 return;
             } catch (Exception e) {
-                UserError.Log.e(TAG, "SSL unknown error: " + e);
+                UserErrorLog.e(TAG, "SSL unknown error: " + e);
                 return;
             }
 
@@ -274,7 +274,7 @@ public class XdripWebService implements Runnable {
                     int end = line.indexOf(' ', start);
                     if (start < line.length()) {
                         route = line.substring(start, end);
-                        UserError.Log.d(TAG, "Received request for: " + route);
+                        UserErrorLog.d(TAG, "Received request for: " + route);
                         //if (hashedSecret == null) break; // we can't optimize as we always need to look for api-secret even if server doesn't use it
                     }
 
@@ -306,7 +306,7 @@ public class XdripWebService implements Runnable {
                         + "\n" + "Your address: " + socket.getInetAddress().toString()
                         + "\n\n";
                 if (JoH.ratelimit("web-auth-failure", 10)) {
-                    UserError.Log.e(TAG, failureMessage);
+                    UserErrorLog.e(TAG, failureMessage);
                 }
                 response = new WebResponse(failureMessage, 403, "text/plain");
                 JoH.threadSleep(1000 + (300 * thread_count.get()));
@@ -339,12 +339,12 @@ public class XdripWebService implements Runnable {
             }
             output.flush();
 
-            UserError.Log.d(TAG, "Sent response: " + response.bytes.length + " bytes, code: " + response.resultCode + " mimetype: " + response.mimeType);
+            UserErrorLog.d(TAG, "Sent response: " + response.bytes.length + " bytes, code: " + response.resultCode + " mimetype: " + response.mimeType);
 
         } catch (SocketTimeoutException e) {
-            UserError.Log.d(TAG, "Got socket timeout: " + e);
+            UserErrorLog.d(TAG, "Got socket timeout: " + e);
         } catch (NullPointerException e) {
-            UserError.Log.wtf(TAG, "Got null pointer exception: " + e);
+            UserErrorLog.wtf(TAG, "Got null pointer exception: " + e);
 
         } finally {
             if (output != null) {
@@ -366,7 +366,7 @@ public class XdripWebService implements Runnable {
     private void writeServerError(final PrintStream output) {
         output.println("HTTP/1.0 500 Internal Server Error");
         output.flush();
-        UserError.Log.e(TAG, "Internal server error reply");
+        UserErrorLog.e(TAG, "Internal server error reply");
     }
 
     public static String hashPassword(final String secret) {

@@ -5,7 +5,7 @@ import android.os.Bundle;
 
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.LibreAlarmReceiver;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.CompatibleApps;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Intents;

@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.Models;
 
+
 // class from LibreAlarm
 
 public class PredictionData extends GlucoseData {

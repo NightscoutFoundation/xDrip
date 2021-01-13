@@ -1,6 +1,5 @@
 package com.eveningoutpost.dexdrip.watch.thinjam.io;
 
-// jamorham
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -8,13 +7,15 @@ import android.content.Intent;
 import android.os.PowerManager;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayAPI;
 
 import lombok.val;
 
 import static com.eveningoutpost.dexdrip.Models.JoH.emptyString;
 import static com.eveningoutpost.dexdrip.UtilityModels.Intents.BLUEJAY_THINJAM_API;
+
+// jamorham
 
 public class ThinJamApiReceiver extends BroadcastReceiver {
 
@@ -29,7 +30,7 @@ public class ThinJamApiReceiver extends BroadcastReceiver {
         if (intent == null || intent.getAction() == null) return;
         final PowerManager.WakeLock wl = JoH.getWakeLock("thinjam-receiver", 60000);
         try {
-            UserError.Log.d(TAG, "onReceiver: " + intent.getAction());
+            UserErrorLog.d(TAG, "onReceiver: " + intent.getAction());
             if (intent.getAction().equals(BLUEJAY_THINJAM_API)) {
                 val command = intent.getStringExtra(API_COMMAND);
                 if (!emptyString(command)) {
@@ -37,13 +38,13 @@ public class ThinJamApiReceiver extends BroadcastReceiver {
                     val bytes = intent.getByteArrayExtra(API_BYTES);
                     BlueJayAPI.processAPI(command, parameter, bytes);
                 } else {
-                    UserError.Log.e(TAG, "Empty command received in api");
+                    UserErrorLog.e(TAG, "Empty command received in api");
                 }
             } else {
-                UserError.Log.wtf(TAG, "Invalid action received: " + intent.getAction());
+                UserErrorLog.wtf(TAG, "Invalid action received: " + intent.getAction());
             }
         } catch (Exception e) {
-            UserError.Log.e(TAG, "Exception processing api receive: " + e);
+            UserErrorLog.e(TAG, "Exception processing api receive: " + e);
 
         } finally {
             JoH.releaseWakeLock(wl);

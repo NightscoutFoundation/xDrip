@@ -1,6 +1,5 @@
 package com.eveningoutpost.dexdrip.watch;
 
-// jamorham
 
 import android.util.Pair;
 
@@ -10,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Getter;
+
+// jamorham
 
 interface PrefBindingInit{
     void initialize();

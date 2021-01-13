@@ -1,10 +1,5 @@
 package com.eveningoutpost.dexdrip;
 
-/**
- * Created by jamorham on 14/01/2017.
- * <p>
- * Multi-page plugin style status entry lists
- */
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -34,7 +29,7 @@ import android.widget.TextView;
 import com.eveningoutpost.dexdrip.Models.DesertSync;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.RollCall;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.Services.DoNothingService;
 import com.eveningoutpost.dexdrip.Services.G5CollectionService;
@@ -73,6 +68,12 @@ import static com.eveningoutpost.dexdrip.utils.DexCollectionType.DexcomG5;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.Medtrum;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.NSFollow;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.SHFollow;
+
+/**
+ * Created by jamorham on 14/01/2017.
+ * <p>
+ * Multi-page plugin style status entry lists
+ */
 
 public class MegaStatus extends ActivityWithMenu {
 
@@ -139,7 +140,7 @@ public class MegaStatus extends ActivityWithMenu {
         try {
             getStatusPendingIntent(section_name).send();
         } catch (PendingIntent.CanceledException e) {
-            UserError.Log.e(TAG, "Unable to start status: " + e);
+            UserErrorLog.e(TAG, "Unable to start status: " + e);
         }
     }
 
@@ -203,13 +204,13 @@ public class MegaStatus extends ActivityWithMenu {
             //addAsection("Misc", "Currently Empty");
 
         } else {
-            UserError.Log.d(TAG, "Section list already populated");
+            UserErrorLog.d(TAG, "Section list already populated");
         }
     }
 
     private static void populate(MegaStatusListAdapter la, String section) {
         if ((la == null) || (section == null)) {
-            UserError.Log.e(TAG, "Adapter or Section were null in populate()");
+            UserErrorLog.e(TAG, "Adapter or Section were null in populate()");
             return;
         }
 
@@ -307,7 +308,7 @@ public class MegaStatus extends ActivityWithMenu {
         mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
-                UserError.Log.d(TAG, "Page selected: " + position);
+                UserErrorLog.d(TAG, "Page selected: " + position);
                 runnableView = null;
                 currentPage = position;
                 startAutoFresh();
@@ -328,7 +329,7 @@ public class MegaStatus extends ActivityWithMenu {
                     DataMap dataMap = DataMap.fromBundle(bundle);
                     String lastState = dataMap.getString("lastState", "");
                     long last_timestamp = dataMap.getLong("timestamp", 0);
-                    UserError.Log.d(TAG, "serviceDataReceiver onReceive:" + action + " :: " + lastState + " last_timestamp :: " + last_timestamp);
+                    UserErrorLog.d(TAG, "serviceDataReceiver onReceive:" + action + " :: " + lastState + " last_timestamp :: " + last_timestamp);
                     switch (action) {
                         case WatchUpdaterService.ACTION_BLUETOOTH_COLLECTION_SERVICE_UPDATE:
                             switch (DexCollectionType.getDexCollectionType()) {
@@ -373,7 +374,7 @@ public class MegaStatus extends ActivityWithMenu {
             try {
                 LocalBroadcastManager.getInstance(xdrip.getAppContext()).unregisterReceiver(serviceDataReceiver);
             } catch (IllegalArgumentException e) {
-                UserError.Log.e(TAG, "broadcast receiver not registered", e);
+                UserErrorLog.e(TAG, "broadcast receiver not registered", e);
             }
         }
         runnableView = null; // gc
@@ -461,7 +462,7 @@ public class MegaStatus extends ActivityWithMenu {
                 getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             }
         } catch (Exception e) {
-            UserError.Log.d(TAG, "Exception setting window flags: " + e);
+            UserErrorLog.d(TAG, "Exception setting window flags: " + e);
         }
     }
 
@@ -478,11 +479,11 @@ public class MegaStatus extends ActivityWithMenu {
                         requestWearCollectorStatus();
                         JoH.runOnUiThreadDelayed(autoRunnable, autoFreshDelay);
                     } else {
-                        UserError.Log.d(TAG, "AutoFresh shutting down");
+                        UserErrorLog.d(TAG, "AutoFresh shutting down");
                         autoFreshRunning = false;
                     }
                 } catch (Exception e) {
-                    UserError.Log.e(TAG, "Exception in auto-fresh: " + e);
+                    UserErrorLog.e(TAG, "Exception in auto-fresh: " + e);
                     autoFreshRunning = false;
                 }
             }
@@ -519,7 +520,7 @@ public class MegaStatus extends ActivityWithMenu {
             View rootView = inflater.inflate(R.layout.fragment_mega_status, container, false);
             TextView textView = (TextView) rootView.findViewById(R.id.section_label);
             ListView listView = (ListView) rootView.findViewById(R.id.list_label);
-            UserError.Log.d(TAG, "Setting Section " + index);
+            UserErrorLog.d(TAG, "Setting Section " + index);
 
             textView.setText(sectionTitles.get(index));
 

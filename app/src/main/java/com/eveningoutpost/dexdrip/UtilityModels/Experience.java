@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -9,7 +10,7 @@ import com.eveningoutpost.dexdrip.BuildConfig;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.utils.Preferences;
 import com.eveningoutpost.dexdrip.utils.SdcardImportExport;
@@ -41,14 +42,14 @@ public class Experience {
         if (not_newbie) return false;
         final long installed_time = Pref.getLong(MARKER, -1);
         if (installed_time > 0) {
-            UserError.Log.d(TAG, "First Installed " + JoH.niceTimeSince(installed_time) + " ago");
+            UserErrorLog.d(TAG, "First Installed " + JoH.niceTimeSince(installed_time) + " ago");
             not_newbie = true;
             return false;
         } else {
             // probably newbie
 
             if (gotData()) return false;
-            UserError.Log.d(TAG, "Looks like a Newbie");
+            UserErrorLog.d(TAG, "Looks like a Newbie");
             return true;
         }
     }
@@ -93,10 +94,10 @@ public class Experience {
         try {
             final String country = Locale.getDefault().getCountry();
             final String units = mmol_countries.contains(country) ? "mmol/l" : "mg/dl";
-            UserError.Log.d(TAG, "Country: " + country + " default units: " + units);
+            UserErrorLog.d(TAG, "Country: " + country + " default units: " + units);
             return units;
         } catch (Exception e) {
-            UserError.Log.e(TAG, "Exception trying to determine locale units: " + e);
+            UserErrorLog.e(TAG, "Exception trying to determine locale units: " + e);
             return "mg/dl";
         }
     }
@@ -109,7 +110,7 @@ public class Experience {
     public static boolean processSteps(final Activity activity) {
 
         if (stepState == null) advanceStep();
-        UserError.Log.d(TAG, "Step: " + stepState);
+        UserErrorLog.d(TAG, "Step: " + stepState);
         switch (stepState) {
             case CHECK_BACKUP:
                 if (!SdcardImportExport.handleBackup(activity)) {

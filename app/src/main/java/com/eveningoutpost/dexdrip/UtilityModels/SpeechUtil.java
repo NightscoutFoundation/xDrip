@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -8,7 +9,7 @@ import android.os.PowerManager;
 import android.speech.tts.TextToSpeech;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.Locale;
@@ -59,7 +60,7 @@ public class SpeechUtil {
                 }
 
                 if (isOngoingCall()) {
-                    UserError.Log.e(TAG, "Cannot speak due to ongoing call: " + text);
+                    UserErrorLog.e(TAG, "Cannot speak due to ongoing call: " + text);
                     return;
                 }
 
@@ -82,7 +83,7 @@ public class SpeechUtil {
                     tts.setSpeechRate(speed);
                     tts.setPitch(pitch);
                 } catch (Exception e) {
-                    UserError.Log.e(TAG, "Deep TTS problem setting speech rates: " + e);
+                    UserErrorLog.e(TAG, "Deep TTS problem setting speech rates: " + e);
                 }
                 // handle repeat everything twice feature. We could queue it twice instead of expanding the string but then each block of speech is not a single transaction
                 final boolean double_up_text_flag = (!text.contains(TWICE_DELIMITER)) && Pref.getBooleanDefaultFalse("speak_twice");
@@ -93,22 +94,22 @@ public class SpeechUtil {
                     result = tts.speak(final_text_to_speak, TextToSpeech.QUEUE_ADD, null);
                 } catch (NullPointerException e) {
                     result = TextToSpeech.ERROR;
-                    UserError.Log.e(TAG, "Got null pointer trying to speak! concurrency issue");
+                    UserErrorLog.e(TAG, "Got null pointer trying to speak! concurrency issue");
                 }
-                UserError.Log.d(TAG, "Speak result: " + result);
+                UserErrorLog.d(TAG, "Speak result: " + result);
 
                 // speech randomly fails, usually due to the service not being bound so quick after being initialized, so we wait and retry recursively
                 if ((result != TextToSpeech.SUCCESS) && (retry < 5)) {
-                    UserError.Log.d(TAG, "Failed to speak: retrying in 2s: " + retry);
+                    UserErrorLog.d(TAG, "Failed to speak: retrying in 2s: " + retry);
                     say(text, delay + 2000, retry + 1);
                     return;
                 }
                 // only get here if retries exceeded
                 if (result != TextToSpeech.SUCCESS) {
-                    UserError.Log.wtf(TAG, "Failed to speak after: " + retry + " retries!!!");
+                    UserErrorLog.wtf(TAG, "Failed to speak after: " + retry + " retries!!!");
 
                 } else {
-                    UserError.Log.d(TAG, "Successfully spoke: " + text);
+                    UserErrorLog.d(TAG, "Successfully spoke: " + text);
                 }
 
             } finally {
@@ -147,7 +148,7 @@ public class SpeechUtil {
                 speech_locale = new Locale(lang_components[0], country, "");
             }
         } catch (Exception e) {
-            UserError.Log.e(TAG, "Exception trying to use custom language: " + e);
+            UserErrorLog.e(TAG, "Exception trying to use custom language: " + e);
         }
         return speech_locale;
     }
@@ -158,11 +159,11 @@ public class SpeechUtil {
         tts = new TextToSpeech(xdrip.getAppContext(), status -> {
 
             if (status == TextToSpeech.SUCCESS && tts != null) {
-                UserError.Log.d(TAG, "Initializing, successful result code: " + status);
+                UserErrorLog.d(TAG, "Initializing, successful result code: " + status);
 
                 final Locale speech_locale = chosenLocale();
 
-                UserError.Log.d(TAG, "Chosen locale: " + speech_locale);
+                UserErrorLog.d(TAG, "Chosen locale: " + speech_locale);
 
                 int set_language_result;
                 // try setting the language we want
@@ -170,38 +171,38 @@ public class SpeechUtil {
                     set_language_result = tts.setLanguage(speech_locale);
                 } catch (IllegalArgumentException e) {
                     // can end up here with Locales like "OS"
-                    UserError.Log.e(TAG, "Got TTS set language error: " + e.toString());
+                    UserErrorLog.e(TAG, "Got TTS set language error: " + e.toString());
                     set_language_result = TextToSpeech.LANG_MISSING_DATA;
                 } catch (Exception e) {
                     // can end up here with deep errors from tts system
-                    UserError.Log.e(TAG, "Got TTS set language deep error: " + e.toString());
+                    UserErrorLog.e(TAG, "Got TTS set language deep error: " + e.toString());
                     set_language_result = TextToSpeech.LANG_MISSING_DATA;
                 }
 
                 // try various fallbacks
                 if (set_language_result == TextToSpeech.LANG_MISSING_DATA
                         || set_language_result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                    UserError.Log.e(TAG, "Default system language is not supported");
+                    UserErrorLog.e(TAG, "Default system language is not supported");
                     try {
                         set_language_result = tts.setLanguage(Locale.ENGLISH);
                     } catch (IllegalArgumentException e) {
                         // can end up here with parcel Locales like "OS"
-                        UserError.Log.e(TAG, "Got TTS set default language error: " + e.toString());
+                        UserErrorLog.e(TAG, "Got TTS set default language error: " + e.toString());
                         set_language_result = TextToSpeech.LANG_MISSING_DATA;
                     } catch (Exception e) {
                         // can end up here with deep errors from tts system
-                        UserError.Log.e(TAG, "Got TTS set default language deep error: " + e.toString());
+                        UserErrorLog.e(TAG, "Got TTS set default language deep error: " + e.toString());
                         set_language_result = TextToSpeech.LANG_MISSING_DATA;
                     }
                 }
                 //try any english as last resort
                 if (set_language_result == TextToSpeech.LANG_MISSING_DATA
                         || set_language_result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                    UserError.Log.e(TAG, "English is not supported! total failure");
+                    UserErrorLog.e(TAG, "English is not supported! total failure");
                     tts = null;
                 }
             } else {
-                UserError.Log.e(TAG, "Initialize status code indicates failure, code: " + status);
+                UserErrorLog.e(TAG, "Initialize status code indicates failure, code: " + status);
                 tts = null;
             }
         });
@@ -213,7 +214,7 @@ public class SpeechUtil {
             try {
                 tts.shutdown();
             } catch (IllegalArgumentException e) {
-                UserError.Log.e(TAG, "Got exception shutting down service: " + e);
+                UserErrorLog.e(TAG, "Got exception shutting down service: " + e);
             }
             tts = null;
         }
@@ -250,7 +251,7 @@ public class SpeechUtil {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(intent);
         } catch (ActivityNotFoundException e) {
-            UserError.Log.e(TAG, "Could not install TTS data: " + e.toString());
+            UserErrorLog.e(TAG, "Could not install TTS data: " + e.toString());
         }
     }
 

@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+
 import android.content.Intent;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
@@ -9,7 +10,7 @@ import android.support.annotation.StringRes;
 import android.text.SpannableString;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.ui.helpers.Span;
 import com.eveningoutpost.dexdrip.utils.usb.MtpTools.MtpDeviceHelper;
 import com.eveningoutpost.dexdrip.utils.usb.UsbTools;
@@ -63,18 +64,18 @@ public class MtpConfigure {
 
         if (device != null) {
             if (Build.VERSION.SDK_INT < 24) {
-                Log.e(TAG, "Doesn't work below android 7");
+                UserErrorLog.e(TAG, "Doesn't work below android 7");
                 return;
             }
             if (JoH.ratelimit("mtp-request-perms", 25)) {
                 msg("Requesting permission");
-                Log.d(TAG, "Processing handleConnect()");
+                UserErrorLog.d(TAG, "Processing handleConnect()");
 
                 UsbTools.requestPermission(device, new UsbTools.PermissionReceiver() {
                     @Override
                     public void onGranted(final UsbDevice device) {
                         msg("Permission granted");
-                        Log.d(TAG, "Permission granted - executing in background");
+                        UserErrorLog.d(TAG, "Permission granted - executing in background");
                         Inevitable.task("mtp-configure-action", 1000, () -> openDevice(device));
                     }
                 });
@@ -89,30 +90,30 @@ public class MtpConfigure {
             return;
         }
         msg("Opening device");
-        Log.d(TAG, "Attempting to open MTP device");
+        UserErrorLog.d(TAG, "Attempting to open MTP device");
         final MtpDeviceHelper mtp = new MtpDeviceHelper(device);
         if (!mtp.ok()) {
             msg("Cannot connect to device");
-            Log.e(TAG, "Cannot open MTP device");
+            UserErrorLog.e(TAG, "Cannot open MTP device");
             return;
         }
 
         try {
             msg("Device: " + mtp.name());
-            Log.d(TAG, "mtp name: " + mtp.name());
+            UserErrorLog.d(TAG, "mtp name: " + mtp.name());
 
             if (mtp.hash().startsWith("eb3b2846")) {
 
                 if (mtp.numberOfStorageIds() != 1) {
                     err("Problem with device storage");
-                    Log.e(TAG, "Invalid Size of storage ids: " + mtp.numberOfStorageIds()); // baulk if not 1
+                    UserErrorLog.e(TAG, "Invalid Size of storage ids: " + mtp.numberOfStorageIds()); // baulk if not 1
                     return;
                 }
 
                 final int storageID = mtp.getFirstStorageId();
                 if (storageID == -1) {
                     err("Cannot open device storage");
-                    Log.e(TAG, "Cannot get first storage id");
+                    UserErrorLog.e(TAG, "Cannot get first storage id");
                     return;
                 }
 
@@ -128,7 +129,7 @@ public class MtpConfigure {
 
             } else {
                 err("Device type not known - cannot proceed");
-                Log.e(TAG, "Device doesn't match");
+                UserErrorLog.e(TAG, "Device doesn't match");
             }
         } finally {
             mtp.close();

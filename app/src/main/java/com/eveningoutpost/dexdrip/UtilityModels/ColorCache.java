@@ -1,9 +1,10 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+
 import android.graphics.Color;
 import android.util.Log;
 
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 
 import java.util.EnumMap;
 
@@ -30,11 +31,11 @@ public class ColorCache {
             try {
                 the_cache.put(color, Pref.getInt(color.internalName, 0xABCDEF));
             } catch (ClassCastException e) {
-                UserError.Log.wtf(TAG, "Cannot set initial value - preference type likely wrong for: " + color.internalName + " " + e);
+                UserErrorLog.wtf(TAG, "Cannot set initial value - preference type likely wrong for: " + color.internalName + " " + e);
                 the_cache.put(color, Color.GRAY);
             }
             if (debug)
-                UserError.Log.d(TAG, "Setting cache for color: " + color.internalName + " / " + Pref.getInt(color.internalName, 1234));
+                UserErrorLog.d(TAG, "Setting cache for color: " + color.internalName + " / " + Pref.getInt(color.internalName, 1234));
         }
         return the_cache.get(color);
     }

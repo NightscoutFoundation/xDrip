@@ -1,19 +1,11 @@
 package com.eveningoutpost.dexdrip;
 
-import java.text.DateFormat;
-import java.text.MessageFormat;
-import java.util.Date;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
-
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
@@ -22,12 +14,17 @@ import android.widget.TextView;
 
 import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
 import com.eveningoutpost.dexdrip.Models.AlertType;
+import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.Services.MissedReadingService;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
+
+import java.text.MessageFormat;
+import java.util.Date;
 
 import static com.eveningoutpost.dexdrip.xdrip.gs;
 
@@ -320,11 +317,11 @@ public class SnoozeActivity extends ActivityWithMenu {
 
         // aba and activeBgAlert should both either exist ot not exist. all other cases are a bug in another place
         if(aba == null && activeBgAlert!= null) {
-            Log.wtf(TAG, "ERRRO displayStatus: aba == null, but activeBgAlert != null exiting...");
+            UserErrorLog.wtf(TAG, "ERRRO displayStatus: aba == null, but activeBgAlert != null exiting...");
             return;
         }
         if(aba != null && activeBgAlert== null) {
-            Log.wtf(TAG, "ERRRO displayStatus: aba != null, but activeBgAlert == null exiting...");
+            UserErrorLog.wtf(TAG, "ERRRO displayStatus: aba != null, but activeBgAlert == null exiting...");
             return;
         }
         long now = new Date().getTime();

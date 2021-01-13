@@ -1,7 +1,8 @@
 package com.eveningoutpost.dexdrip.watch.thinjam;
 
+
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusLine;
@@ -49,11 +50,11 @@ public class BlueJay {
         if (barcodeBytes != null && barcodeBytes.length > 2
                 && barcodeBytes[0] == (byte) 0x41 && (barcodeBytes[1] == (byte) 0x80) && barcodeBytes.length >= 26) {
             barcodeBytes = Arrays.copyOfRange(QRnibbleShift(barcodeBytes), 2, 26);
-            UserError.Log.d(TAG, "PROCESS BARCODE2: " + JoH.bytesToHex(barcodeBytes) + " " + barcodeBytes.length);
+            UserErrorLog.d(TAG, "PROCESS BARCODE2: " + JoH.bytesToHex(barcodeBytes) + " " + barcodeBytes.length);
             if ((barcodeBytes[0] == (byte) 0x04) && (barcodeBytes[1] == (byte) 0x21)) {
                 // bluejay init
                 if (barcodeBytes.length == 24) {
-                    UserError.Log.d(TAG, "QR bytes: " + JoH.bytesToHex(barcodeBytes));
+                    UserErrorLog.d(TAG, "QR bytes: " + JoH.bytesToHex(barcodeBytes));
                     final byte[] macBytes = Arrays.copyOfRange(barcodeBytes, 2, 8);
                     final byte[] keyBytes = Arrays.copyOfRange(barcodeBytes, 8, 24);
                     BlueJay.storeAuthKey(JoH.bytesToHex(macBytes), JoH.bytesToHex(keyBytes));
@@ -63,10 +64,10 @@ public class BlueJay {
                     ThinJamActivity.refreshFromStoredMac();
                     return true;
                 } else {
-                    UserError.Log.e(TAG, "QR code Length doesn't match @ " + barcodeBytes.length);
+                    UserErrorLog.e(TAG, "QR code Length doesn't match @ " + barcodeBytes.length);
                 }
             } else {
-                UserError.Log.d(TAG, "Can't find magic in qr code");
+                UserErrorLog.d(TAG, "Can't find magic in qr code");
             }
         }
         return false;
@@ -89,12 +90,12 @@ public class BlueJay {
 
     public static void storeAuthKey(String mac, final String key) {
         mac = JoH.macFormat(mac);
-        UserError.Log.d(TAG, "STORE AUTH: " + mac + " " + key);
+        UserErrorLog.d(TAG, "STORE AUTH: " + mac + " " + key);
         if (mac != null && mac.length() == 17
                 && key != null && key.length() == 32) {
             Pref.setString(PREF_BLUEJAY_AUTH + mac.toUpperCase(), key);
         } else {
-            UserError.Log.e(TAG, "Cannot store auth key as may be invalid");
+            UserErrorLog.e(TAG, "Cannot store auth key as may be invalid");
         }
     }
 
@@ -110,12 +111,12 @@ public class BlueJay {
 
     public static void storeIdentityKey(String mac, final String key) {
         mac = JoH.macFormat(mac);
-        UserError.Log.d(TAG, "STORE IDENTITY: " + mac + " " + key);
+        UserErrorLog.d(TAG, "STORE IDENTITY: " + mac + " " + key);
         if (mac != null && mac.length() == 17
                 && key != null && key.length() == 32) {
             Pref.setString(PREF_BLUEJAY_IDENTITY + mac.toUpperCase(), key);
         } else {
-            UserError.Log.e(TAG, "Cannot store identity key as may be invalid");
+            UserErrorLog.e(TAG, "Cannot store identity key as may be invalid");
         }
     }
 
@@ -194,7 +195,7 @@ public class BlueJay {
             case FEATURE_TJ_AUDIO_O:
                 return version > 2100;
             default:
-                UserError.Log.e(TAG, "Request for unknown feature " + feature);
+                UserErrorLog.e(TAG, "Request for unknown feature " + feature);
                 return false;
         }
     }

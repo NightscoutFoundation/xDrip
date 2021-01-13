@@ -1,10 +1,11 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.xdrip;
 
 /**
@@ -26,11 +27,11 @@ public class Pref {
             if (xdrip.getAppContext() != null) {
                 prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
                 if ((prefs == null) && (JoH.ratelimit("prefs-failure1", 20))) {
-                    UserError.Log.wtf(TAG, "Could not initialize preferences due to init failure!!");
+                    UserErrorLog.wtf(TAG, "Could not initialize preferences due to init failure!!");
                 }
             } else {
                 if (JoH.ratelimit("prefs-failure2", 20)) {
-                    UserError.Log.wtf(TAG, "Could not initialize preferences due to missing context!!");
+                    UserErrorLog.wtf(TAG, "Could not initialize preferences due to missing context!!");
                 }
             }
         }

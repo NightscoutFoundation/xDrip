@@ -9,7 +9,7 @@ import android.util.DisplayMetrics;
 import android.view.View;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 
 import java.util.ArrayList;
 import java.util.Date;

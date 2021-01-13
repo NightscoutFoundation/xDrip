@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+
 import android.support.annotation.NonNull;
 
 import com.eveningoutpost.dexdrip.Models.Accuracy;
@@ -7,7 +8,7 @@ import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.BloodTest;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.calibrations.CalibrationAbstract;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.stats.StatsResult;
@@ -35,9 +36,9 @@ public class StatusLine {
         if (JoH.msSince(cacheTime) > Constants.SECOND_IN_MS * 5) {
             cache = extraStatusLineReal();
             cacheTime = JoH.tsl();
-            if (D) UserError.Log.d(TAG, "Cache Miss");
+            if (D) UserErrorLog.d(TAG, "Cache Miss");
         } else {
-            if (D) UserError.Log.d(TAG, "Cache Hit");
+            if (D) UserErrorLog.d(TAG, "Cache Hit");
         }
         return cache;
     }
@@ -84,7 +85,7 @@ public class StatusLine {
                 || Pref.getBoolean("status_line_realtime_capture_percentage", false)) {
 
 
-            if (D) UserError.Log.d(TAG, "Getting StatsResult");
+            if (D) UserErrorLog.d(TAG, "Getting StatsResult");
 
             final StatsResult statsResult = new StatsResult(Pref.getInstance(), Pref.getBooleanDefaultFalse("extra_status_stats_24h"));
 

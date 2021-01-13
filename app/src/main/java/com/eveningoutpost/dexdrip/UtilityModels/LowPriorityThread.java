@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+
 import android.os.PowerManager;
 
 import com.eveningoutpost.dexdrip.Models.JoH;

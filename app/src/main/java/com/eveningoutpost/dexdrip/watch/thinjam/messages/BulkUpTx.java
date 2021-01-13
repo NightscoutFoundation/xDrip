@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.watch.thinjam.messages;
 
+
 import java.util.Arrays;
 
 import lombok.Getter;

@@ -1,8 +1,5 @@
 package com.eveningoutpost.dexdrip;
 
-/**
- * Created by jamorham on 11/01/16.
- */
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -23,6 +20,10 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import org.json.JSONObject;
 
 import java.io.IOException;
+
+/**
+ * Created by jamorham on 11/01/16.
+ */
 
 public class RegistrationIntentService extends IntentService {
     private static final String TAG = "jamorham regService";

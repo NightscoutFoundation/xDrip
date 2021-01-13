@@ -1,8 +1,9 @@
 package com.eveningoutpost.dexdrip.cgm.sharefollow;
 
+
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Sensor;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 
 import java.util.Collections;
@@ -32,13 +33,13 @@ public class EntryProcessor {
 
         for (final ShareGlucoseRecord entry : entries) {
             if (entry != null) {
-                if (D) UserError.Log.d(TAG, "ENTRY: " + entry.toS());
+                if (D) UserErrorLog.d(TAG, "ENTRY: " + entry.toS());
 
                 final long recordTimestamp = entry.getTimestamp();
                 if (recordTimestamp > 0) {
                     final BgReading existing = BgReading.getForPreciseTimestamp(recordTimestamp, 10_000);
                     if (existing == null) {
-                        UserError.Log.d(TAG, "NEW NEW NEW New entry: " + entry.toS());
+                        UserErrorLog.d(TAG, "NEW NEW NEW New entry: " + entry.toS());
 
                         if (live) {
                             final BgReading bg = new BgReading();
@@ -64,11 +65,11 @@ public class EntryProcessor {
                         // break; // stop if we have this reading TODO are entries always in order?
                     }
                 } else {
-                    UserError.Log.e(TAG, "Could not parse a timestamp from: " + entry.toS());
+                    UserErrorLog.e(TAG, "Could not parse a timestamp from: " + entry.toS());
                 }
 
             } else {
-                UserError.Log.d(TAG, "Entry is null");
+                UserErrorLog.d(TAG, "Entry is null");
             }
         }
     }

@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip.ShareModels.UserAgentInfo;
 
-import com.eveningoutpost.dexdrip.ShareModels.UserAgentInfo.RuntimeInfo;
+
 import com.google.gson.annotations.Expose;
 
 /**

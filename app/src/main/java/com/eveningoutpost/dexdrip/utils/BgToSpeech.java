@@ -1,10 +1,10 @@
 package com.eveningoutpost.dexdrip.utils;
 
+
 import com.eveningoutpost.dexdrip.BestGlucose;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
@@ -61,16 +61,16 @@ public class BgToSpeech implements NamedSliderProcessor {
         boolean conditions_met = false;
 
         if (lastSpokenSince() < change_time) {
-            UserError.Log.d(TAG, "Not speaking due to change time threshold: " + JoH.niceTimeScalar(change_time) + " vs " + JoH.niceTimeScalar(lastSpokenSince()));
+            UserErrorLog.d(TAG, "Not speaking due to change time threshold: " + JoH.niceTimeScalar(change_time) + " vs " + JoH.niceTimeScalar(lastSpokenSince()));
 
         } else {
-            UserError.Log.d(TAG, "Speaking due to change time threshold: " + JoH.niceTimeScalar(change_time) + " vs " + JoH.niceTimeScalar(lastSpokenSince()));
+            UserErrorLog.d(TAG, "Speaking due to change time threshold: " + JoH.niceTimeScalar(change_time) + " vs " + JoH.niceTimeScalar(lastSpokenSince()));
             conditions_met = true;
         }
 
         if (!conditions_met) {
             if (!thresholdExceeded(value)) {
-                UserError.Log.d(TAG, "Not speaking due to change delta threshold: " + value);
+                UserErrorLog.d(TAG, "Not speaking due to change delta threshold: " + value);
                 return;
             }
         }
@@ -97,18 +97,18 @@ public class BgToSpeech implements NamedSliderProcessor {
         final long change_delta = getThresholdSliderValue(Pref.getInt("speak_readings_change_threshold", 0));
         final double abs_delta = Math.abs(value - PersistentStore.getDouble(LAST_SPOKEN_VALUE));
         if (abs_delta > change_delta) {
-            UserError.Log.uel(TAG, "Threshold EXCEEDED: Current change delta: " + abs_delta + " vs " + change_delta + " @ " + value);
+            UserErrorLog.uel(TAG, "Threshold EXCEEDED: Current change delta: " + abs_delta + " vs " + change_delta + " @ " + value);
             PersistentStore.setDouble(LAST_SPOKEN_VALUE, value);
             return true;
         }
-        UserError.Log.d(TAG, "Threshold not exceeded: Current change delta: " + abs_delta + " vs " + change_delta + " @ " + value);
+        UserErrorLog.d(TAG, "Threshold not exceeded: Current change delta: " + abs_delta + " vs " + change_delta + " @ " + value);
         return false;
     }
 
     // always speak the value passed
     public static void realSpeakNow(final double value, long timestamp, String delta_name) {
         final String text_to_speak = calculateText(value, Pref.getBooleanDefaultFalse("bg_to_speech_trend") ? delta_name : null);
-        UserError.Log.d(TAG, "Attempting to speak BG reading of: " + text_to_speak);
+        UserErrorLog.d(TAG, "Attempting to speak BG reading of: " + text_to_speak);
 
         SpeechUtil.say(text_to_speak);
     }
@@ -172,7 +172,7 @@ public class BgToSpeech implements NamedSliderProcessor {
                         text = text.replace(",", ".");
                     }
                 } catch (NullPointerException e) {
-                    Log.e(TAG, "Null pointer for TTS in calculateText");
+                    UserErrorLog.e(TAG, "Null pointer for TTS in calculateText");
                 }
             }
             if (delta_name != null) text += " " + mungeDeltaName(delta_name);
@@ -182,7 +182,7 @@ public class BgToSpeech implements NamedSliderProcessor {
         } else {
             text = xdrip.getAppContext().getString(R.string.error);
         }
-        Log.d(TAG, "calculated text: " + text);
+        UserErrorLog.d(TAG, "calculated text: " + text);
         return text;
     }
 

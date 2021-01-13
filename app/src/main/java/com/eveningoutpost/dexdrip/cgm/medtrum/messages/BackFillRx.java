@@ -1,8 +1,7 @@
 package com.eveningoutpost.dexdrip.cgm.medtrum.messages;
 
-// jamorham
 
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.google.gson.annotations.Expose;
 
 import java.nio.BufferUnderflowException;
@@ -12,6 +11,8 @@ import java.util.List;
 import lombok.Getter;
 
 import static com.eveningoutpost.dexdrip.cgm.medtrum.Const.OPCODE_BACK_REPLY;
+
+// jamorham
 
 public class BackFillRx extends BaseMessage {
 
@@ -94,10 +95,10 @@ public class BackFillRx extends BaseMessage {
                     raw.add(getUnsignedShort());
                 }
                 if (data.remaining() > 0) {
-                    UserError.Log.e(TAG, "Excess data received in backfill packet: " + data.remaining() + " remaining");
+                    UserErrorLog.e(TAG, "Excess data received in backfill packet: " + data.remaining() + " remaining");
                 }
             } catch (BufferUnderflowException e) {
-                UserError.Log.e(TAG, "Insufficient data received in broken backfill packet: " + toS());
+                UserErrorLog.e(TAG, "Insufficient data received in broken backfill packet: " + toS());
                 valid = false;
                 return null;
             }

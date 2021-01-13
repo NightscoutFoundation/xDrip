@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip;
 
+
 import android.content.Intent;
 import android.databinding.ObservableArrayList;
 import android.databinding.ObservableBoolean;
@@ -27,7 +28,9 @@ import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
@@ -133,7 +136,7 @@ public class EventLogActivity extends BaseAppCompatActivity {
                 }
             });
             loading = true;
-            model.older_items.addAll(UserError.olderThanID(highestId, 100000));
+            model.older_items.addAll(UserErrorStore.get().olderThanID(highestId, 100000));
             model.refresh();
             loading = false;
             model.showLoading.set(false);
@@ -166,7 +169,7 @@ public class EventLogActivity extends BaseAppCompatActivity {
             final boolean streamWearLogs = shouldStreamWearLogs();
 
             while (runRefresh) {
-                if (D) UserError.Log.d(TAG, "refreshing data " + highest_id);
+                if (D) UserErrorLog.d(TAG, "refreshing data " + highest_id);
                 if (refreshData()) {
                     turbo = 60;
                 }
@@ -196,10 +199,10 @@ public class EventLogActivity extends BaseAppCompatActivity {
 
     private boolean refreshData() {
 
-        final List<UserError> new_entries = UserError.newerThanID(highest_id, 500);
+        final List<UserError> new_entries = UserErrorStore.get().newerThanID(highest_id, 500);
         if ((new_entries != null) && (new_entries.size() > 0)) {
             final long new_highest = new_entries.get(0).getId();
-            UserError.Log.d(TAG, "New streamed data size: " + new_entries.size() + " Highest: " + new_highest);
+            UserErrorLog.d(TAG, "New streamed data size: " + new_entries.size() + " Highest: " + new_highest);
             if (highest_id == 0) {
                 model.newData(new_entries);
             } else {
@@ -261,7 +264,7 @@ public class EventLogActivity extends BaseAppCompatActivity {
             searchView.setQuery(query, submit);
             searchView.clearFocus();
         } else {
-            UserError.Log.e(TAG, "SearchView is null!");
+            UserErrorLog.e(TAG, "SearchView is null!");
         }
     }
 
@@ -269,7 +272,7 @@ public class EventLogActivity extends BaseAppCompatActivity {
     private boolean isAtTop() {
         if (recyclerView != null) {
             int first_visible_item = ((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstVisibleItemPosition();
-            if (D) UserError.Log.d(TAG, " First visible item position: " + first_visible_item);
+            if (D) UserErrorLog.d(TAG, " First visible item position: " + first_visible_item);
             if (first_visible_item > 1) return false;
         }
         return true;
@@ -450,8 +453,8 @@ public class EventLogActivity extends BaseAppCompatActivity {
 
         // check severity enabled and case insensitive contains match using optimized extension method
         public boolean filterMatch(final UserError item) {
-            return severities.get(item.severity)
-                    && (item.shortError.containsIgnoreCaseF(currentFilter) || (item.message.containsIgnoreCaseF(currentFilter)));
+            return severities.get(item.getSeverity())
+                    && (item.getShortError().containsIgnoreCaseF(currentFilter) || (item.getMessage().containsIgnoreCaseF(currentFilter)));
         }
 
 
@@ -461,7 +464,7 @@ public class EventLogActivity extends BaseAppCompatActivity {
             try {
                 final int location = visible.indexOf(item); // cpu intensive?? add cache?
                 // if the previous item is the same title then don't show the header
-                if (visible.get(location - 1).shortError.equals(item.shortError)) {
+                if (visible.get(location - 1).getShortError().equals(item.getShortError())) {
                     return false;
                 }
             } catch (IndexOutOfBoundsException e) {

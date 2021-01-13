@@ -1,11 +1,12 @@
 package com.eveningoutpost.dexdrip.utils.bt;
 
+
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,7 +28,7 @@ public class ConnectReceiver extends BroadcastReceiver {
 
     private synchronized void processCallBacks(String address, String status, BluetoothDevice device) {
         for (Map.Entry<String, BtCallBack3> entry : callbacks.entrySet()) {
-            UserError.Log.d(TAG, "Callback: " + entry.getKey());
+            UserErrorLog.d(TAG, "Callback: " + entry.getKey());
             entry.getValue().btCallback3(address, status, null, null, device);
         }
     }
@@ -41,13 +42,13 @@ public class ConnectReceiver extends BroadcastReceiver {
                 if (device != null) {
                     final String address = device.getAddress();
                     if (address != null) {
-                        UserError.Log.d(TAG, "Connection notice: " + address);
+                        UserErrorLog.d(TAG, "Connection notice: " + address);
                         processCallBacks(address, "CONNECTED", device);
                     }
                 }
             }
         } catch (NullPointerException e) {
-            UserError.Log.e(TAG, "NPE in onReceive: " + e);
+            UserErrorLog.e(TAG, "NPE in onReceive: " + e);
         }
     }
 }

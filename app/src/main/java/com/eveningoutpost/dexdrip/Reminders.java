@@ -1,8 +1,5 @@
 package com.eveningoutpost.dexdrip;
 
-// TODO Pagenate for upcoming
-// TODO stop alert notification for swiped alerts
-
 
 import android.animation.ValueAnimator;
 import android.app.Activity;
@@ -58,7 +55,7 @@ import android.widget.TextView;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Reminder;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.JamorhamShowcaseDrawer;
 import com.eveningoutpost.dexdrip.UtilityModels.NotificationChannels;
@@ -84,6 +81,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.eveningoutpost.dexdrip.Home.SHOWCASE_REMINDER3;
 import static lecho.lib.hellocharts.animation.ChartDataAnimator.DEFAULT_ANIMATION_DURATION;
+
+// TODO Pagenate for upcoming
+// TODO stop alert notification for swiped alerts
 
 // TODO swipe right reschedule options
 // TODO wake up option
@@ -1089,7 +1089,7 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
     public static void doAlert(final Reminder reminder) {
         final PowerManager.WakeLock wl = JoH.getWakeLock("reminder-alert-wakeup", 20000);
         if (JoH.isOngoingCall()) {
-            UserError.Log.uel(TAG, "Not alerting due to ongoing call");
+            UserErrorLog.uel(TAG, "Not alerting due to ongoing call");
             return;
         }
         Log.d(TAG, "Scheduling alert reminder in 10 seconds time");
@@ -1116,7 +1116,7 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
                 JoH.showNotification(reminder.getTitle(), xdrip.getAppContext().getString(R.string.reminder_due) + " " + JoH.hourMinuteString(reminder.next_due), pendingIntent, NOTIFICATION_ID, NotificationChannels.REMINDER_CHANNEL, true, true, deleteIntent, JoH.isOngoingCall() ? null : (reminder.sound_uri != null) ? Uri.parse(reminder.sound_uri) : Uri.parse(JoH.getResourceURI(R.raw.reminder_default_notification)), null);
 
                 //    JoH.showNotification(reminder.getTitle(), "Reminder due " + JoH.hourMinuteString(reminder.next_due), pendingIntent, NOTIFICATION_ID, true, true, deleteIntent, JoH.isOngoingCall() ? null : (reminder.sound_uri != null) ? Uri.parse(reminder.sound_uri) : Uri.parse(JoH.getResourceURI(R.raw.reminder_default_notification)));
-                UserError.Log.ueh("Reminder Alert", reminder.getTitle() + " due: " + JoH.dateTimeText(reminder.next_due) + ((reminder.snoozed_till > reminder.next_due) ? " snoozed till: " + JoH.dateTimeText(reminder.snoozed_till) : ""));
+                UserErrorLog.ueh("Reminder Alert", reminder.getTitle() + " due: " + JoH.dateTimeText(reminder.next_due) + ((reminder.snoozed_till > reminder.next_due) ? " snoozed till: " + JoH.dateTimeText(reminder.snoozed_till) : ""));
                 if (reminder.speak) {
                     SpeechUtil.say(reminder.getTitle(),1000,3);
                 }

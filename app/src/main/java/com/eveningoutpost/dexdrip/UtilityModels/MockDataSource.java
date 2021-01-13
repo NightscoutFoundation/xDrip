@@ -1,7 +1,8 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -45,7 +46,7 @@ public class MockDataSource {
             json.put("TransmissionId", 1);
 
         } catch (JSONException e) {
-            UserError.Log.e(TAG, "Got weird Json exception: ", e);
+            UserErrorLog.e(TAG, "Got weird Json exception: ", e);
         }
         return json.toString();
     }

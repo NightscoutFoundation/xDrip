@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.utils;
 
+
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -12,7 +13,7 @@ import android.widget.Toast;
 import com.activeandroid.Cache;
 import com.activeandroid.Configuration;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 
 import java.io.BufferedInputStream;
@@ -101,28 +102,28 @@ public class DatabaseUtil {
                         Pref.setString("last-saved-database-zip", zipFilename);
                 } else {
                     toastText(context, "Problem: No current DB found!");
-                    Log.d(TAG, "Problem: No current DB found");
+                    UserErrorLog.d(TAG, "Problem: No current DB found");
                 }
             } else {
                 toastText(context, "SD card not writable!");
-                Log.d(TAG, "SD card not writable!");
+                UserErrorLog.d(TAG, "SD card not writable!");
                 zipFilename = null;
             }
 
         } catch (IOException e) {
             toastText(context, "SD card not writable!");
-            Log.e(TAG, "Exception while writing DB", e);
+            UserErrorLog.e(TAG, "Exception while writing DB", e);
             zipFilename = null;
         } finally {
             if (biStream != null) try {
                 biStream.close();
             } catch (IOException e1) {
-                Log.e(TAG, "Something went wrong closing: ", e1);
+                UserErrorLog.e(TAG, "Something went wrong closing: ", e1);
             }
             if (zipOutputStream != null) try {
                 zipOutputStream.close();
             } catch (IOException e1) {
-                Log.e(TAG, "Something went wrong closing: ", e1);
+                UserErrorLog.e(TAG, "Something went wrong closing: ", e1);
             }
         }
         JoH.clearCache();
@@ -163,36 +164,36 @@ public class DatabaseUtil {
                     dst.transferFrom(src, 0, src.size());
                 } else {
                     toastText(context, "Problem: No current DB found!");
-                    Log.d(TAG, "Problem: No current DB found");
+                    UserErrorLog.d(TAG, "Problem: No current DB found");
                 }
             } else {
                 toastText(context, "SD card not writable!");
-                Log.d(TAG, "SD card not writable!");
+                UserErrorLog.d(TAG, "SD card not writable!");
             }
 
         } catch (IOException e) {
             toastText(context, "SD card not writable!");
-            Log.e(TAG, "Exception while writing DB", e);
+            UserErrorLog.e(TAG, "Exception while writing DB", e);
         } finally {
             if (src != null) try {
                 src.close();
             } catch (IOException e1) {
-                Log.e(TAG, "Something went wrong closing: ", e1);
+                UserErrorLog.e(TAG, "Something went wrong closing: ", e1);
             }
             if (destStream != null) try {
                 destStream.close();
             } catch (IOException e1) {
-                Log.e(TAG, "Something went wrong closing: ", e1);
+                UserErrorLog.e(TAG, "Something went wrong closing: ", e1);
             }
             if (srcStream != null) try {
                 srcStream.close();
             } catch (IOException e1) {
-                Log.e(TAG, "Something went wrong closing: ", e1);
+                UserErrorLog.e(TAG, "Something went wrong closing: ", e1);
             }
             if (dst != null) try {
                 dst.close();
             } catch (IOException e1) {
-                Log.e(TAG, "Something went wrong closing: ", e1);
+                UserErrorLog.e(TAG, "Something went wrong closing: ", e1);
             }
         }
         return filename;
@@ -298,12 +299,12 @@ public class DatabaseUtil {
 
             } else {
                 toastText(context, "SD card not writable!");
-                Log.d(TAG, "SD card not writable!");
+                UserErrorLog.d(TAG, "SD card not writable!");
             }
 
         } catch (IOException e) {
             toastText(context, "SD card not writable!");
-            Log.e(TAG, "Exception while writing DB", e);
+            UserErrorLog.e(TAG, "Exception while writing DB", e);
         } finally {
             if (printStream != null) {
                 printStream.close();
@@ -311,7 +312,7 @@ public class DatabaseUtil {
             if (zipOutputStream != null) try {
                 zipOutputStream.close();
             } catch (IOException e1) {
-                Log.e(TAG, "Something went wrong closing: ", e1);
+                UserErrorLog.e(TAG, "Something went wrong closing: ", e1);
             }
         }
         return zipFilename;
@@ -345,7 +346,7 @@ public class DatabaseUtil {
             }
             File replacement = new File(path);
             if (!replacement.exists()) {
-                Log.d(TAG, "File does not exist: " + path);
+                UserErrorLog.d(TAG, "File does not exist: " + path);
                 return "File does not exist: " + path;
             }
             if (currentDB.canWrite()) {
@@ -359,11 +360,11 @@ public class DatabaseUtil {
                 currentDBold.delete();
                 returnString = "Successfully imported database";
             } else {
-                Log.v(TAG, "loadSql: No Write access");
+                UserErrorLog.v(TAG, "loadSql: No Write access");
                 returnString = "loadSql: No Write access";
             }
         } catch (IOException e) {
-            Log.e(TAG, "Something went wrong importing Database", e);
+            UserErrorLog.e(TAG, "Something went wrong importing Database", e);
             returnString = "Something went wrong importing database";
 
 
@@ -371,22 +372,22 @@ public class DatabaseUtil {
             if (src != null) try {
                 src.close();
             } catch (IOException e1) {
-                Log.e(TAG, "Something went wrong closing: ", e1);
+                UserErrorLog.e(TAG, "Something went wrong closing: ", e1);
             }
             if (destStream != null) try {
                 destStream.close();
             } catch (IOException e1) {
-                Log.e(TAG, "Something went wrong closing: ", e1);
+                UserErrorLog.e(TAG, "Something went wrong closing: ", e1);
             }
             if (srcStream != null) try {
                 srcStream.close();
             } catch (IOException e1) {
-                Log.e(TAG, "Something went wrong closing: ", e1);
+                UserErrorLog.e(TAG, "Something went wrong closing: ", e1);
             }
             if (dst != null) try {
                 dst.close();
             } catch (IOException e1) {
-                Log.e(TAG, "Something went wrong closing: ", e1);
+                UserErrorLog.e(TAG, "Something went wrong closing: ", e1);
 
             }
             JoH.fullDatabaseReset();

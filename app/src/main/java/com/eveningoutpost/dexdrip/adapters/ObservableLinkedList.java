@@ -1,5 +1,12 @@
 package com.eveningoutpost.dexdrip.adapters;
 
+
+import android.databinding.ListChangeRegistry;
+import android.databinding.ObservableList;
+
+import java.util.Collection;
+import java.util.LinkedList;
+
 /*
  * Copyright (C) 2015 The Android Open Source Project
  *
@@ -15,13 +22,6 @@ package com.eveningoutpost.dexdrip.adapters;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import android.databinding.ListChangeRegistry;
-import android.databinding.ObservableList;
-
-
-import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * An {@link ObservableList} implementation using LinkedList as an implementation.

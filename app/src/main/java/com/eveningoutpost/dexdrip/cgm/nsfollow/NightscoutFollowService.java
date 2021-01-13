@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.cgm.nsfollow;
 
+
 import android.content.Intent;
 import android.os.IBinder;
 import android.os.PowerManager;
@@ -9,10 +10,9 @@ import android.text.SpannableString;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Treatments;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
-import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem.Highlight;
 import com.eveningoutpost.dexdrip.cgm.nsfollow.utils.Anticipate;
@@ -25,7 +25,6 @@ import com.eveningoutpost.dexdrip.xdrip;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder.DEXCOM_PERIOD;
@@ -71,11 +70,11 @@ public class NightscoutFollowService extends ForegroundService {
         final PowerManager.WakeLock wl = JoH.getWakeLock("NSFollow-osc", 60000);
         try {
 
-            UserError.Log.d(TAG, "WAKE UP WAKE UP WAKE UP");
+            UserErrorLog.d(TAG, "WAKE UP WAKE UP WAKE UP");
 
             // Check service should be running
             if (!shouldServiceRun()) {
-                UserError.Log.d(TAG, "Stopping service due to shouldServiceRun() result");
+                UserErrorLog.d(TAG, "Stopping service due to shouldServiceRun() result");
                 //       msg("Stopping");
                 stopSelf();
                 return START_NOT_STICKY;
@@ -95,7 +94,7 @@ public class NightscoutFollowService extends ForegroundService {
                     });
                 }
             } else {
-                UserError.Log.d(TAG, "Already have recent reading: " + JoH.msSince(lastBg.timestamp));
+                UserErrorLog.d(TAG, "Already have recent reading: " + JoH.msSince(lastBg.timestamp));
             }
 
             scheduleWakeUp();
@@ -131,7 +130,7 @@ public class NightscoutFollowService extends ForegroundService {
         final long grace = Constants.SECOND_IN_MS * 10;
         final long next = Anticipate.next(JoH.tsl(), last, SAMPLE_PERIOD, grace) + grace;
         wakeup_time = next;
-        UserError.Log.d(TAG, "Anticipate next: " + JoH.dateTimeText(next) + "  last: " + JoH.dateTimeText(last));
+        UserErrorLog.d(TAG, "Anticipate next: " + JoH.dateTimeText(next) + "  last: " + JoH.dateTimeText(last));
 
         JoH.wakeUpIntent(xdrip.getAppContext(), JoH.msTill(next), WakeLockTrampoline.getPendingIntent(NightscoutFollowService.class, Constants.NSFOLLOW_SERVICE_FAILOVER_ID));
 

@@ -1,8 +1,9 @@
 package com.eveningoutpost.dexdrip.calibrations;
 
+
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.google.gson.Gson;
@@ -173,7 +174,7 @@ public abstract class CalibrationAbstract {
 
     private void recordSanityFailure(final CalibrationData pcalibration) {
         if (JoH.pratelimit("best-sanity-failure", 600)) {
-            UserError.Log.wtf(getAlgorithmName(), "Unable to produce data due to plugin failing sanity check: " + pcalibration.toS());
+            UserErrorLog.wtf(getAlgorithmName(), "Unable to produce data due to plugin failing sanity check: " + pcalibration.toS());
         }
     }
 

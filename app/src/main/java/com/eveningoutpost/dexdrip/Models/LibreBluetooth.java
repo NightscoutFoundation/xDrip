@@ -1,19 +1,12 @@
 package com.eveningoutpost.dexdrip.Models;
 
+
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.NFCReaderX;
-import com.eveningoutpost.dexdrip.R;
-import com.eveningoutpost.dexdrip.UtilityModels.Blukon;
 import com.eveningoutpost.dexdrip.UtilityModels.BridgeResponse;
-import com.eveningoutpost.dexdrip.UtilityModels.LibreUtils;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
-
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import static com.eveningoutpost.dexdrip.xdrip.gs;
 /**
  * Created by Tzachi Dar on 7.3.2018.
  */
@@ -42,14 +35,14 @@ public class LibreBluetooth {
         long now = JoH.tsl();
         if(now - s_lastReceiveTimestamp > 3*1000) {
             // We did not receive data in 3 seconds, moving to init state again
-            Log.e(TAG, "Recieved a buffer after " + (now - s_lastReceiveTimestamp) / 1000 +  " seconds, starting again. "+
+            UserErrorLog.e(TAG, "Recieved a buffer after " + (now - s_lastReceiveTimestamp) / 1000 +  " seconds, starting again. "+
             "already acumulated " + s_acumulatedSize + " bytes.");
             s_acumulatedSize = 0;
         }
         
         s_lastReceiveTimestamp = now;
         if (buffer == null) {
-            Log.e(TAG, "null buffer passed to decodeTomatoPacket");
+            UserErrorLog.e(TAG, "null buffer passed to decodeTomatoPacket");
             return reply;
         } 
         
@@ -59,7 +52,7 @@ public class LibreBluetooth {
     
     static void addData(byte[] buffer) {
         if(s_acumulatedSize + buffer.length > s_full_data.length) {
-            Log.e(TAG, "Error recieving too much data. exiting. s_acumulatedSize = " + s_acumulatedSize + 
+            UserErrorLog.e(TAG, "Error recieving too much data. exiting. s_acumulatedSize = " + s_acumulatedSize +
                     " buffer.length = " + buffer.length + " s_full_data.length " + s_full_data.length);
             return;
             
@@ -77,15 +70,15 @@ public class LibreBluetooth {
         
 
         PersistentStore.setLong("libre-reading-timestamp", JoH.tsl());
-        
-        Log.e(TAG, "We have all the data that we need " + s_acumulatedSize + HexDump.dumpHexString(s_full_data));
+
+        UserErrorLog.e(TAG, "We have all the data that we need " + s_acumulatedSize + HexDump.dumpHexString(s_full_data));
         if( !Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
             // Send to OOP2 for drcryption.
             LibreOOPAlgorithm.logIfOOP2NotAlive();
             
             Libre2SensorData currentSensorData = Libre2SensorData.getSensorData(false);
             if(currentSensorData == null || currentSensorData.patchUid_ == null) {
-                Log.e(TAG, "areWeDone - we have the data but patchUid == null");
+                UserErrorLog.e(TAG, "areWeDone - we have the data but patchUid == null");
                 return;
             }
 
@@ -93,8 +86,8 @@ public class LibreBluetooth {
             if(NFCReaderX.use_fake_de_data()) {
                 patchUid =  new byte[]{(byte)0xEC, (byte)0x0B, (byte)0x48, (byte)0x00, (byte)0x00, (byte)0xa4, (byte)0x07, (byte)0xe0}; //EC0B480000A407E0
             }
-            
-            Log.e(TAG, "areWeDone patchUid = " + HexDump.dumpHexString(patchUid));
+
+            UserErrorLog.e(TAG, "areWeDone patchUid = " + HexDump.dumpHexString(patchUid));
             
             LibreOOPAlgorithm.sendBleData(s_full_data, JoH.tsl(), patchUid);
         }
@@ -110,11 +103,11 @@ public class LibreBluetooth {
     }
 
     public static byte[] initialize() {
-        Log.i(TAG, "initialize!");
+        UserErrorLog.i(TAG, "initialize!");
         initBuffer(LIBRE_DATA_LENGTH);
         UnlockBuffers unlockBuffers =  LibreOOPAlgorithm.sendGetBlutoothEnablePayload(true);
         if(unlockBuffers == null) {
-            Log.e(TAG, "sendGetBlutoothEnablePayload returned null");
+            UserErrorLog.e(TAG, "sendGetBlutoothEnablePayload returned null");
             return null;
         }
         return unlockBuffers.btUnlockBuffer;

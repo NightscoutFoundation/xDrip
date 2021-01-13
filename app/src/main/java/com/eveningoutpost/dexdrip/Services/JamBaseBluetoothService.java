@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.Services;
 
+
 import android.app.Service;
 import android.bluetooth.BluetoothGatt;
 import android.content.Intent;
@@ -8,7 +9,7 @@ import android.os.PowerManager;
 import android.support.annotation.NonNull;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
@@ -51,10 +52,10 @@ public abstract class JamBaseBluetoothService extends Service {
         RxJavaPlugins.setErrorHandler(e -> {
             if (e instanceof UndeliverableException) {
                 if (!e.getCause().toString().contains("OperationSuccess")) {
-                    UserError.Log.e(TAG, "RxJavaError: " + e.getMessage());
+                    UserErrorLog.e(TAG, "RxJavaError: " + e.getMessage());
                 }
             } else {
-                UserError.Log.wtf(TAG, "RxJavaError2:" + e.getClass().getCanonicalName() + " " + e.getMessage() + " " + JoH.backTrace(3));
+                UserErrorLog.wtf(TAG, "RxJavaError2:" + e.getClass().getCanonicalName() + " " + e.getMessage() + " " + JoH.backTrace(3));
             }
         });
 
@@ -67,7 +68,7 @@ public abstract class JamBaseBluetoothService extends Service {
     }
 
     protected void foregroundStatus() {
-        Inevitable.task("jam-base-foreground-status", 2000, () -> UserError.Log.d("FOREGROUND", service.getClass().getSimpleName() + (JoH.isServiceRunningInForeground(service.getClass()) ? " is running in foreground" : " is not running in foreground")));
+        Inevitable.task("jam-base-foreground-status", 2000, () -> UserErrorLog.d("FOREGROUND", service.getClass().getSimpleName() + (JoH.isServiceRunningInForeground(service.getClass()) ? " is running in foreground" : " is not running in foreground")));
     }
 
     public void background_automata() {
@@ -76,7 +77,7 @@ public abstract class JamBaseBluetoothService extends Service {
 
     public synchronized void background_automata(final int timeout) {
         if (background_launch_waiting) {
-            UserError.Log.d(TAG, "Blocked by existing background automata pending");
+            UserErrorLog.d(TAG, "Blocked by existing background automata pending");
             return;
         }
         final PowerManager.WakeLock wl = JoH.getWakeLock(TAG + "-background", timeout + 1000);
@@ -106,7 +107,7 @@ public abstract class JamBaseBluetoothService extends Service {
     protected class OperationSuccess extends RuntimeException {
         public OperationSuccess(String message) {
             super(message);
-            UserError.Log.d(TAG, "Operation Success: " + message);
+            UserErrorLog.d(TAG, "Operation Success: " + message);
         }
     }
 
@@ -121,20 +122,20 @@ public abstract class JamBaseBluetoothService extends Service {
             if (Pref.getBoolean("use_gatt_refresh", true)) {
                 try {
                     if (connection != null)
-                        UserError.Log.d(TAG, "Trying gatt refresh queue");
+                        UserErrorLog.d(TAG, "Trying gatt refresh queue");
                     connection.queue((new GattRefreshOperation(0))).timeout(2, TimeUnit.SECONDS).subscribe(
                             readValue -> {
-                                UserError.Log.d(TAG, "Refresh OK: " + readValue);
+                                UserErrorLog.d(TAG, "Refresh OK: " + readValue);
                             }, throwable -> {
-                                UserError.Log.d(TAG, "Refresh exception: " + throwable);
+                                UserErrorLog.d(TAG, "Refresh exception: " + throwable);
                             });
                 } catch (NullPointerException e) {
-                    UserError.Log.d(TAG, "Probably harmless gatt refresh exception: " + e);
+                    UserErrorLog.d(TAG, "Probably harmless gatt refresh exception: " + e);
                 } catch (Exception e) {
-                    UserError.Log.d(TAG, "Got exception trying gatt refresh: " + e);
+                    UserErrorLog.d(TAG, "Got exception trying gatt refresh: " + e);
                 }
             } else {
-                UserError.Log.d(TAG, "Gatt refresh rate limited");
+                UserErrorLog.d(TAG, "Gatt refresh rate limited");
             }
         }
     }
@@ -161,7 +162,7 @@ public abstract class JamBaseBluetoothService extends Service {
         }
 
         private Void refreshDeviceCache(final BluetoothGatt gatt) {
-            UserError.Log.d("BaseBluetooth", "Gatt Refresh " + (JoH.refreshDeviceCache("BaseBluetooth", gatt) ? "succeeded" : "failed"));
+            UserErrorLog.d("BaseBluetooth", "Gatt Refresh " + (JoH.refreshDeviceCache("BaseBluetooth", gatt) ? "succeeded" : "failed"));
             return null;
         }
     }
@@ -169,7 +170,7 @@ public abstract class JamBaseBluetoothService extends Service {
     protected static byte[] nn(final byte[] array) {
         if (array == null) {
             if (JoH.ratelimit("never-null", 60)) {
-                UserError.Log.wtf("NeverNull", "Attempt to pass null!!! " + JoH.backTrace());
+                UserErrorLog.wtf("NeverNull", "Attempt to pass null!!! " + JoH.backTrace());
                 return new byte[1];
             }
         }
@@ -178,7 +179,7 @@ public abstract class JamBaseBluetoothService extends Service {
 
     protected static void enableBuggySamsungIfNeeded(final String TAG) {
         if ((JoH.isSamsung() && PersistentStore.getLong(BUGGY_SAMSUNG_ENABLED) > 4)) {
-            UserError.Log.d(TAG, "Enabling buggy samsung due to persistent metric");
+            UserErrorLog.d(TAG, "Enabling buggy samsung due to persistent metric");
             JoH.buggy_samsung = true;
         }
     }
@@ -187,7 +188,7 @@ public abstract class JamBaseBluetoothService extends Service {
     public void onCreate() {
         super.onCreate();
         service = this;
-        UserError.Log.d("FOREGROUND", "Current Service: " + service.getClass().getSimpleName());
+        UserErrorLog.d("FOREGROUND", "Current Service: " + service.getClass().getSimpleName());
         startInForeground();
     }
 

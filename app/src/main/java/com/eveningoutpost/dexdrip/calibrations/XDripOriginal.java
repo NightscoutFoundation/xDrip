@@ -1,7 +1,8 @@
 package com.eveningoutpost.dexdrip.calibrations;
 
+
 import com.eveningoutpost.dexdrip.Models.Calibration;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 
 import java.util.List;
 
@@ -33,7 +34,7 @@ public class XDripOriginal extends CalibrationAbstract {
         // TODO cache must understand until
         CalibrationData cd = loadDataFromCache(TAG);
         if (cd == null) {
-            UserError.Log.d(TAG, "Regenerating Calibration data cache");
+            UserErrorLog.d(TAG, "Regenerating Calibration data cache");
             final List<Calibration> calibrationl = Calibration.latestValid(1, until);
             if ((calibrationl != null) && (calibrationl.size() > 0)) {
                 final Calibration calibration = calibrationl.get(0); // first and only

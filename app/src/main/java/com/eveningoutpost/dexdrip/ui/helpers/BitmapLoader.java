@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.ui.helpers;
 
+
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -12,7 +13,7 @@ import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.content.res.AppCompatResources;
 import android.util.LruCache;
 
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import lecho.lib.hellocharts.model.PointValue;
@@ -91,7 +92,7 @@ public class BitmapLoader implements BitmapCacheProvider {
                 // cache.put(cacheName, result);
                 saveBitmapAsBundle(cacheName, result);
             } catch (Exception e) {
-                UserError.Log.wtf(TAG, "Could not load vector drawable!");
+                UserErrorLog.wtf(TAG, "Could not load vector drawable!");
             }
         } else {
 

@@ -1,7 +1,8 @@
 package com.eveningoutpost.dexdrip.watch.thinjam;
 
+
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.watch.thinjam.io.GetURL;
 
@@ -20,10 +21,10 @@ public class DebugUnitTestLogger {
 
     public void processTestSuite(final String cmd) {
         JoH.static_toast_long("Test Suite: " + cmd);
-        UserError.Log.d(TAG, "Process called with: " + cmd);
+        UserErrorLog.d(TAG, "Process called with: " + cmd);
 
         if (cmd == null) {
-            UserError.Log.d(TAG, "Null process command received!");
+            UserErrorLog.d(TAG, "Null process command received!");
             return;
         }
 
@@ -35,7 +36,7 @@ public class DebugUnitTestLogger {
             @Override
             public void run() {
                 final String result = GetURL.getURL(SERVER_ADDRESS + "mass/batch/schedule/" + cmd + "/" + BlueJay.getMac());
-                UserError.Log.d(TAG, "Unit test schedule result for " + cmd + ": " + result);
+                UserErrorLog.d(TAG, "Unit test schedule result for " + cmd + ": " + result);
             }
         });
     }

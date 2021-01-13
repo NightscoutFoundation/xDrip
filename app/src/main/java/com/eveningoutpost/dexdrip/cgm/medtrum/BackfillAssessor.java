@@ -1,10 +1,11 @@
 package com.eveningoutpost.dexdrip.cgm.medtrum;
 
+
 import android.util.Pair;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 
 import java.util.List;
@@ -35,7 +36,7 @@ public class BackfillAssessor {
     public static Pair<Long, Long> check() {
 
         final int check_readings = nextBackFillCheckSize;
-        UserError.Log.d(TAG, "Checking " + check_readings + " for backfill requirement");
+        UserErrorLog.d(TAG, "Checking " + check_readings + " for backfill requirement");
         final List<BgReading> lastReadings = BgReading.latest_by_size(check_readings); // newest first
         boolean ask_for_backfill = false;
         long check_timestamp = JoH.tsl(); // TODO can this be merged with latest timestamp??
@@ -54,9 +55,9 @@ public class BackfillAssessor {
                         earliest_timestamp = reading.timestamp;
                     }
                     if (reading != null) {
-                        UserError.Log.d(TAG, "Flagging backfill tripped by reading: " + i + " at time: " + JoH.dateTimeText(reading.timestamp) + " creating backfill window: " + JoH.dateTimeText(earliest_timestamp));
+                        UserErrorLog.d(TAG, "Flagging backfill tripped by reading: " + i + " at time: " + JoH.dateTimeText(reading.timestamp) + " creating backfill window: " + JoH.dateTimeText(earliest_timestamp));
                     } else {
-                        UserError.Log.d(TAG, "Flagging backfill tripped by null reading: " + i);
+                        UserErrorLog.d(TAG, "Flagging backfill tripped by null reading: " + i);
                     }
                     break;
                 } else {
@@ -72,7 +73,7 @@ public class BackfillAssessor {
 
             final long startTime = earliest_timestamp - (Constants.MINUTE_IN_MS * 5);
             final long endTime = latest_timestamp + (Constants.MINUTE_IN_MS * 5);
-            UserError.Log.d(TAG, "Requesting backfill between: " + JoH.dateTimeText(startTime) + " " + JoH.dateTimeText(endTime));
+            UserErrorLog.d(TAG, "Requesting backfill between: " + JoH.dateTimeText(startTime) + " " + JoH.dateTimeText(endTime));
             return new Pair<>(startTime, endTime);
         } else {
             nextBackFillCheckSize = BACKFILL_CHECK_SMALL;

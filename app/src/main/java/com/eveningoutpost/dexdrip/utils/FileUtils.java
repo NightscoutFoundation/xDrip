@@ -1,16 +1,17 @@
 package com.eveningoutpost.dexdrip.utils;
 
+
 import android.content.Context;
 import android.os.Environment;
+
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
+import com.eveningoutpost.dexdrip.xdrip;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import com.eveningoutpost.dexdrip.xdrip;
-import com.eveningoutpost.dexdrip.Models.UserError;
 
 public class FileUtils {
 
@@ -48,7 +49,7 @@ public class FileUtils {
     public static void writeToFile(String TAG, String fileName, byte []data) {
 
         
-        UserError.Log.i(TAG, "Writing to file" + fileName);
+        UserErrorLog.i(TAG, "Writing to file" + fileName);
         try {
             FileOutputStream f = new FileOutputStream(new File(fileName));
             if(data != null) {
@@ -57,7 +58,7 @@ public class FileUtils {
             }
             f.close();
         }catch (IOException e) {
-        	UserError.Log.e(TAG, "Cought exception when trying to write file", e);
+        	UserErrorLog.e(TAG, "Cought exception when trying to write file", e);
         }
     }
 }

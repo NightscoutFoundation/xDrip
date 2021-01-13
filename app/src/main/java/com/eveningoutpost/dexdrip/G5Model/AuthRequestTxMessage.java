@@ -1,7 +1,8 @@
 package com.eveningoutpost.dexdrip.G5Model;
 
+
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
@@ -44,7 +45,7 @@ public class AuthRequestTxMessage extends BaseMessage {
         data.put(alt ? endByteAlt : endByteStd);
 
         byteSequence = data.array();
-        UserError.Log.d(TAG, "New AuthRequestTxMessage: " + JoH.bytesToHex(byteSequence));
+        UserErrorLog.d(TAG, "New AuthRequestTxMessage: " + JoH.bytesToHex(byteSequence));
     }
 }
 

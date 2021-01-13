@@ -1,12 +1,13 @@
 package com.eveningoutpost.dexdrip.Services;
 
+
 import android.app.Service;
 import android.bluetooth.BluetoothDevice;
 import android.content.SharedPreferences;
 import android.os.PowerManager;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
@@ -58,7 +59,7 @@ public abstract class G5BaseService extends Service {
     public void onCreate() {
         super.onCreate();
         service = this;
-        UserError.Log.d("FOREGROUND", "Current Service: " + service.getClass().getSimpleName());
+        UserErrorLog.d("FOREGROUND", "Current Service: " + service.getClass().getSimpleName());
         startInForeground();
     }
 
@@ -125,13 +126,13 @@ public abstract class G5BaseService extends Service {
 
     protected void checkPreferenceKey(final String key, final SharedPreferences prefs) {
         if (key.equals("run_service_in_foreground")) {
-            UserError.Log.d("FOREGROUND", "run_service_in_foreground changed!");
+            UserErrorLog.d("FOREGROUND", "run_service_in_foreground changed!");
             if (prefs.getBoolean("run_service_in_foreground", false)) {
                 startInForeground();
-                UserError.Log.i(service.getClass().getSimpleName(), "Moving to foreground");
+                UserErrorLog.i(service.getClass().getSimpleName(), "Moving to foreground");
             } else {
                 stopInForeground();
-                UserError.Log.i(service.getClass().getSimpleName(), "Removing from foreground");
+                UserErrorLog.i(service.getClass().getSimpleName(), "Removing from foreground");
             }
         }
     }
@@ -147,19 +148,19 @@ public abstract class G5BaseService extends Service {
         if (service != null) {
             service.stopForeground(true);
         } else {
-            UserError.Log.e("FOREGROUND", "Cannot stop foreground as service is null");
+            UserErrorLog.e("FOREGROUND", "Cannot stop foreground as service is null");
         }
         foregroundStatus();
     }
 
     protected void foregroundStatus() {
-        Inevitable.task("foreground-status", 2000, () -> UserError.Log.d("FOREGROUND", service.getClass().getSimpleName() + (JoH.isServiceRunningInForeground(service.getClass()) ? " is running in foreground" : " is not running in foreground")));
+        Inevitable.task("foreground-status", 2000, () -> UserErrorLog.d("FOREGROUND", service.getClass().getSimpleName() + (JoH.isServiceRunningInForeground(service.getClass()) ? " is running in foreground" : " is not running in foreground")));
     }
 
     protected static byte[] nn(final byte[] array) {
         if (array == null) {
             if (JoH.ratelimit("never-null", 60)) {
-                UserError.Log.wtf("NeverNullG5Base", "Attempt to pass null!!! " + JoH.backTrace());
+                UserErrorLog.wtf("NeverNullG5Base", "Attempt to pass null!!! " + JoH.backTrace());
                 return new byte[1];
             }
         }

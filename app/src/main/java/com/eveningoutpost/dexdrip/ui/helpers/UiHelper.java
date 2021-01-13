@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.ui.helpers;
 
+
 import android.content.res.Resources;
 import android.util.DisplayMetrics;
 

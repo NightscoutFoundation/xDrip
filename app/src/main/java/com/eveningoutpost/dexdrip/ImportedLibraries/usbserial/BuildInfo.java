@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.ImportedLibraries.usbserial;
 
+
 /**
  * Static container of information about this library.
  */

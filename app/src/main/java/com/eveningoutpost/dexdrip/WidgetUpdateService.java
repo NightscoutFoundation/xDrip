@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip;
 
+
 import android.app.Service;
 import android.appwidget.AppWidgetManager;
 import android.content.BroadcastReceiver;
@@ -12,7 +13,7 @@ import android.os.IBinder;
 import android.os.PowerManager;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 
 public class WidgetUpdateService extends Service {
     private static final String TAG = "WidgetUpdateService";
@@ -28,7 +29,7 @@ public class WidgetUpdateService extends Service {
             }
         } catch (Exception e)
         {
-            Log.e(TAG,"Got exception in staticRefreshWidgets: "+e);
+            UserErrorLog.e(TAG,"Got exception in staticRefreshWidgets: "+e);
         }
     }
 
@@ -57,7 +58,7 @@ public class WidgetUpdateService extends Service {
     public void onCreate() {
         super.onCreate();
         PowerManager pm = (PowerManager) getSystemService(Service.POWER_SERVICE);
-        Log.d(TAG, "onCreate");
+        UserErrorLog.d(TAG, "onCreate");
         if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && pm.isInteractive()) ||
                 (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP && pm.isScreenOn()))
             enableClockTicks();
@@ -66,7 +67,7 @@ public class WidgetUpdateService extends Service {
     }
 
     private void enableClockTicks() {
-        Log.d(TAG, "enableClockTicks");
+        UserErrorLog.d(TAG, "enableClockTicks");
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(Intent.ACTION_TIME_TICK);
         intentFilter.addAction(Intent.ACTION_SCREEN_ON);
@@ -78,7 +79,7 @@ public class WidgetUpdateService extends Service {
     }
 
     private void disableClockTicks() {
-        Log.d(TAG, "disableClockTicks");
+        UserErrorLog.d(TAG, "disableClockTicks");
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(Intent.ACTION_SCREEN_ON);
         intentFilter.addAction(Intent.ACTION_SCREEN_OFF);
@@ -104,9 +105,9 @@ public class WidgetUpdateService extends Service {
     }
 
     public void updateCurrentBgInfo() {
-        Log.d(TAG, "Sending update flag to widget");
+        UserErrorLog.d(TAG, "Sending update flag to widget");
         int ids[] = AppWidgetManager.getInstance(getApplication()).getAppWidgetIds(new ComponentName(getApplication(), xDripWidget.class));
-        Log.d(TAG, "Updating " + ids.length + " widgets");
+        UserErrorLog.d(TAG, "Updating " + ids.length + " widgets");
         Intent intent = new Intent(this,xDripWidget.class);
         intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS,ids);

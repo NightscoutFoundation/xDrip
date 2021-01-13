@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.insulin.inpen.messages;
 
+
 import com.google.gson.annotations.Expose;
 
 import java.nio.ByteBuffer;

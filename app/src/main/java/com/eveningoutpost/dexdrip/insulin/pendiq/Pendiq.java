@@ -1,8 +1,5 @@
 package com.eveningoutpost.dexdrip.insulin.pendiq;
 
-// Jamorham
-
-// Pendiq 2.0 driver control and utility class
 
 import android.content.Intent;
 
@@ -17,6 +14,9 @@ import static com.eveningoutpost.dexdrip.insulin.pendiq.Const.OK;
 import static com.eveningoutpost.dexdrip.insulin.pendiq.Const.PROGRESS_PACKET;
 import static com.eveningoutpost.dexdrip.insulin.pendiq.Const.REPORT_PACKET;
 import static com.eveningoutpost.dexdrip.insulin.pendiq.Const.RESULT_PACKET;
+
+// Jamorham
+// Pendiq 2.0 driver control and utility class
 
 public class Pendiq {
 

@@ -26,7 +26,7 @@ import android.widget.TextView;
 
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.JamorhamShowcaseDrawer;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
@@ -337,7 +337,7 @@ public class StatsActivity extends ActivityWithMenu {
         }
         } catch (Exception e)
         {
-            Log.e(TAG,"Got exception sharing statistics: "+e);
+            UserErrorLog.e(TAG,"Got exception sharing statistics: "+e);
             JoH.static_toast_long("Got an error: "+e);
         }
     }
@@ -390,7 +390,7 @@ public class StatsActivity extends ActivityWithMenu {
                     state = D90;
                 }
 
-                Log.d("DrawStats", "button pressed, invalidating");
+                UserErrorLog.d("DrawStats", "button pressed, invalidating");
                 mStatisticsPageAdapter.notifyDataSetChanged();
                 mViewPager.invalidate();
                 setButtonColors();

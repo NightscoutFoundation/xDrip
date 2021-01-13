@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.Models;
 
+
 import android.provider.BaseColumns;
 
 import com.activeandroid.Model;
@@ -102,9 +103,9 @@ public class HeartRate extends Model {
         for (String patch : patchup) {
             try {
                 SQLiteUtils.execSql(patch);
-                //  UserError.Log.e(TAG, "Processed patch should not have succeeded!!: " + patch);
+                //  UserErrorLog.e(TAG, "Processed patch should not have succeeded!!: " + patch);
             } catch (Exception e) {
-                //  UserError.Log.d(TAG, "Patch: " + patch + " generated exception as it should: " + e.toString());
+                //  UserErrorLog.d(TAG, "Patch: " + patch + " generated exception as it should: " + e.toString());
             }
         }
         patched = true;

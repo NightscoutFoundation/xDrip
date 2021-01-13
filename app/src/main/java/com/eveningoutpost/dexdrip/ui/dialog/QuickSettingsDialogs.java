@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.ui.dialog;
 
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -8,7 +9,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 
@@ -55,7 +56,7 @@ public class QuickSettingsDialogs {
         try {
             dialog.show();
         } catch (Exception e) {
-            UserError.Log.e(TAG, "Could not show dialog: " + e);
+            UserErrorLog.e(TAG, "Could not show dialog: " + e);
         }
     }
 
@@ -100,7 +101,7 @@ public class QuickSettingsDialogs {
         try {
             dialog.show();
         } catch (Exception e) {
-            UserError.Log.e(TAG, "Could not show dialog: " + e);
+            UserErrorLog.e(TAG, "Could not show dialog: " + e);
         }
     }
 

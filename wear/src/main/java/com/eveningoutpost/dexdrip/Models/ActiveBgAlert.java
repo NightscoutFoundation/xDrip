@@ -3,7 +3,7 @@ package com.eveningoutpost.dexdrip.Models;
 import android.provider.BaseColumns;
 
 import com.activeandroid.util.SQLiteUtils;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;

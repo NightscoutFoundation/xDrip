@@ -1,8 +1,9 @@
 package com.eveningoutpost.dexdrip.utils.bt;
 
+
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.WholeHouse;
@@ -71,7 +72,7 @@ public class Mimeograph {
 
     private static String extractBtMac() {
         if (!enabled()) {
-            UserError.Log.d(TAG, "Not tested except on RPI - skipping");
+            UserErrorLog.d(TAG, "Not tested except on RPI - skipping");
             return null;
         }
         return readSystemFileContent(MAC_STORE);
@@ -79,7 +80,7 @@ public class Mimeograph {
 
     private static String extractConfig() {
         if (!enabled()) {
-            UserError.Log.d(TAG, "Not tested except on RPI - skipping");
+            UserErrorLog.d(TAG, "Not tested except on RPI - skipping");
             return null;
         }
         return readSystemFileContent(KEY_STORE);
@@ -95,13 +96,13 @@ public class Mimeograph {
         final String result = getExtractedXferJson();
         if (result != null) {
             if (result.equals(lastBroadcast) && JoH.pratelimit("mimeograph last bcast", 3600)) {
-                UserError.Log.d(TAG, "Data unchanged since last broadcast");
+                UserErrorLog.d(TAG, "Data unchanged since last broadcast");
             } else {
                 GcmActivity.sendMimeoGraphUpdate(result);
                 lastBroadcast = result;
             }
         } else {
-            UserError.Log.d(TAG, "No valid Xfer on poll");
+            UserErrorLog.d(TAG, "No valid Xfer on poll");
         }
     }
 
@@ -109,16 +110,16 @@ public class Mimeograph {
         try (final FileInputStream fileInputStream = new FileInputStream(path)) {
             final int length = fileInputStream.available();
             if (length > MAX_BYTES) {
-                UserError.Log.e(TAG, "File too large: " + path + " vs " + MAX_BYTES);
+                UserErrorLog.e(TAG, "File too large: " + path + " vs " + MAX_BYTES);
                 return null;
             }
             final byte[] buffer = new byte[length];
             readAllToBuffer(fileInputStream, buffer);
             return new String(buffer, "UTF-8");
         } catch (FileNotFoundException e) {
-            UserError.Log.e(TAG, "Could not find: " + path);
+            UserErrorLog.e(TAG, "Could not find: " + path);
         } catch (IOException e) {
-            UserError.Log.e(TAG, "IO Error: " + e);
+            UserErrorLog.e(TAG, "IO Error: " + e);
         }
         return null;
     }
@@ -132,11 +133,11 @@ public class Mimeograph {
             final File file = new File(path);
             return file.length() == bytes.length;
         } catch (FileNotFoundException e) {
-            UserError.Log.e(TAG, "Could not find: " + path);
+            UserErrorLog.e(TAG, "Could not find: " + path);
         } catch (IOException e) {
-            UserError.Log.e(TAG, "IO Error: " + e);
+            UserErrorLog.e(TAG, "IO Error: " + e);
         } catch (IllegalCharsetNameException e) {
-            UserError.Log.e(TAG, "Could not find charset in write");
+            UserErrorLog.e(TAG, "Could not find charset in write");
         }
         return false;
     }
@@ -160,11 +161,11 @@ public class Mimeograph {
 
         final String deviceMac = Ob1G5CollectionService.getMac();
         if (deviceMac == null) {
-            UserError.Log.d(TAG, "OB1 device mac not known");
+            UserErrorLog.d(TAG, "OB1 device mac not known");
             return null;
         }
         final String deviceHunt = String.format("[%s]", deviceMac).toLowerCase();
-        UserError.Log.d(TAG, "Hunting for: " + deviceHunt);
+        UserErrorLog.d(TAG, "Hunting for: " + deviceHunt);
         for (final String line : array) {
             if (line.startsWith(ADAPTER_MARKER)) {
                 state = COPY_COLLISION_KEY;
@@ -190,25 +191,25 @@ public class Mimeograph {
 
     private synchronized static void mergeXfer(final Xfer xfer) {
         if (xfer == null) return;
-        UserError.Log.d(TAG, "Merging");
+        UserErrorLog.d(TAG, "Merging");
         if (!xfer.valid()) {
-            UserError.Log.e(TAG, "Xfer is not valid");
+            UserErrorLog.e(TAG, "Xfer is not valid");
             return;
         }
 
         final String data = extractConfig();
         if (data == null) {
-            UserError.Log.e(TAG, "Cannot extract local config for merge");
+            UserErrorLog.e(TAG, "Cannot extract local config for merge");
             return;
         }
 
         if (xfer.lastRecord == 0) {
-            UserError.Log.d(TAG, "Sender has not processed a record - rejecting");
+            UserErrorLog.d(TAG, "Sender has not processed a record - rejecting");
             return;
         }
 
         if (xfer.lastRecord <= lastLocalReception) {
-            UserError.Log.d(TAG, "Sender has not processed a record newer than ours");
+            UserErrorLog.d(TAG, "Sender has not processed a record newer than ours");
             return;
         }
         final String sourceHash = CipherUtils.getSHA256(data);
@@ -254,18 +255,18 @@ public class Mimeograph {
         }
 
         if (processedSections == 0) {
-            UserError.Log.e(TAG, "Could not process merge as there were no hits");
+            UserErrorLog.e(TAG, "Could not process merge as there were no hits");
             return;
         } else if (processedSections > 2) {
-            UserError.Log.e(TAG, "Too many processed sections: " + processedSections);
+            UserErrorLog.e(TAG, "Too many processed sections: " + processedSections);
             return;
         } else if (processedSections == 1) {
             if (processedAdapter) {
-                UserError.Log.d(TAG, "No current device - appending");
+                UserErrorLog.d(TAG, "No current device - appending");
                 output.append("\n");
                 addAll(deviceArray, output);
             } else {
-                UserError.Log.e(TAG, "Device section without adapter");
+                UserErrorLog.e(TAG, "Device section without adapter");
                 return;
             }
         }
@@ -276,13 +277,13 @@ public class Mimeograph {
             //noinspection ConstantConditions
             if (!destHash.equals(sourceHash)) {
                 writeSystemFileContent(KEY_STORE, fOutput);
-                UserError.Log.d(TAG, "Merge probably successful - restarting bluetooth");
+                UserErrorLog.d(TAG, "Merge probably successful - restarting bluetooth");
                 JoH.restartBluetooth(xdrip.getAppContext());
             } else {
-                UserError.Log.d(TAG, "Merge successful but no update required");
+                UserErrorLog.d(TAG, "Merge successful but no update required");
             }
         } catch (NullPointerException e) {
-            UserError.Log.wtf(TAG, "Got null pointer in write: " + e);
+            UserErrorLog.wtf(TAG, "Got null pointer in write: " + e);
         }
     }
 
@@ -300,7 +301,7 @@ public class Mimeograph {
     private static synchronized boolean writeSystemFileContent(final String path, final String content) {
         final String tmpPath = getUniqueTmpFileName();
         if (!writeFileContent(tmpPath, content)) {
-            UserError.Log.e(TAG, "Failed to write to: " + path);
+            UserErrorLog.e(TAG, "Failed to write to: " + path);
             return false;
         }
         // TODO detect failure??

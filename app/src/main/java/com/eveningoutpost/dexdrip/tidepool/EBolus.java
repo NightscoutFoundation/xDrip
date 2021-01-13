@@ -1,7 +1,8 @@
 package com.eveningoutpost.dexdrip.tidepool;
 
+
 import com.eveningoutpost.dexdrip.Models.Treatments;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.google.gson.annotations.Expose;
 
 // jamorham
@@ -30,7 +31,7 @@ public class EBolus extends BaseElement {
         if(treatment.insulin >= 0 && treatment.insulin <= 100) {
             return true;
         }
-        UserError.Log.e(TAG, "Ignoring invalid treatment " + treatment.toS());
+        UserErrorLog.e(TAG, "Ignoring invalid treatment " + treatment.toS());
         return false;
     }
 

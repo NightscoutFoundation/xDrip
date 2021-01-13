@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip;
 
+
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
@@ -27,7 +28,7 @@ import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.Services.G5CollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
@@ -38,6 +39,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+
 import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 public class SystemStatus extends ActivityWithMenu {
@@ -191,7 +193,7 @@ public class SystemStatus extends ActivityWithMenu {
             version_name_view.setText(versionName);
         } catch (PackageManager.NameNotFoundException e) {
             //e.printStackTrace();
-            Log.e(this.getClass().getSimpleName(),"PackageManager.NameNotFoundException:" + e.getMessage());
+            UserErrorLog.e(this.getClass().getSimpleName(),"PackageManager.NameNotFoundException:" + e.getMessage());
         }
     }
 
@@ -307,7 +309,7 @@ public class SystemStatus extends ActivityWithMenu {
             }
         } catch (NullPointerException e)
         {
-            Log.e(TAG,"Got nullpointer exception in setNotes ",e);
+            UserErrorLog.e(TAG,"Got nullpointer exception in setNotes ",e);
         }
     }
 
@@ -374,7 +376,7 @@ public class SystemStatus extends ActivityWithMenu {
                                     m.invoke(bluetoothDevice, (Object[]) null);
                                     notes.append("\n- Bluetooth unbonded, if using share tell it to forget your device.");
                                     notes.append("\n- Scan for devices again to set connection back up!");
-                                } catch (Exception e) { Log.e("SystemStatus", e.getMessage(), e); }
+                                } catch (Exception e) { UserErrorLog.e("SystemStatus", e.getMessage(), e); }
                             }
                         }
 
@@ -415,7 +417,7 @@ public class SystemStatus extends ActivityWithMenu {
                                         Method m = device.getClass().getMethod("removeBond", (Class[]) null);
                                         m.invoke(device, (Object[]) null);
                                         notes.append("\nG5 Transmitter unbonded, switch device mode to prevent re-pairing to G5.");
-                                    } catch (Exception e) { Log.e("SystemStatus", e.getMessage(), e); }
+                                    } catch (Exception e) { UserErrorLog.e("SystemStatus", e.getMessage(), e); }
                                 }
 
                             }

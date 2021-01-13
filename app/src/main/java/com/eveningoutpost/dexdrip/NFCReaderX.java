@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip;
 
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -34,17 +35,15 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Libre2SensorData;
 import com.eveningoutpost.dexdrip.Models.LibreBlock;
 import com.eveningoutpost.dexdrip.Models.LibreOOPAlgorithm;
+import com.eveningoutpost.dexdrip.Models.LibreOOPAlgorithm.SensorType;
 import com.eveningoutpost.dexdrip.Models.ReadingData;
 import com.eveningoutpost.dexdrip.Models.SensorSanity;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.LibreUtils;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
-
-import com.eveningoutpost.dexdrip.Models.LibreOOPAlgorithm.SensorType;
-
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -100,7 +99,7 @@ public class NFCReaderX {
             try {
                 NfcAdapter.getDefaultAdapter(context).disableForegroundDispatch(context);
             } catch (Exception e) {
-                Log.d(TAG, "Got exception disabling foregrond dispatch");
+                UserErrorLog.d(TAG, "Got exception disabling foregrond dispatch");
             }
             foreground_enabled = false;
         }
@@ -115,7 +114,7 @@ public class NFCReaderX {
         if (nfc_enabled) {
             try {
                 if ((Build.VERSION.SDK_INT >= 19) && (useReaderMode)) {
-                    Log.d(TAG, "Shutting down NFC reader mode");
+                    UserErrorLog.d(TAG, "Shutting down NFC reader mode");
                     mNfcAdapter.disableReaderMode(context);
                     nfc_enabled = false;
                 }
@@ -177,12 +176,12 @@ public class NFCReaderX {
                     mNfcAdapter.enableReaderMode(context, new NfcAdapter.ReaderCallback() {
                         @Override
                         public void onTagDiscovered(Tag tag) {
-                            Log.d(TAG, "Reader mode tag discovered");
+                            UserErrorLog.d(TAG, "Reader mode tag discovered");
                             doTheScan(context, tag, false);
                         }
                     }, NfcAdapter.FLAG_READER_NFC_V | NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK | NfcAdapter.FLAG_READER_NO_PLATFORM_SOUNDS, options);
                 } catch (NullPointerException e) {
-                    Log.wtf(TAG, "Null pointer exception from NFC subsystem: " + e.toString());
+                    UserErrorLog.wtf(TAG, "Null pointer exception from NFC subsystem: " + e.toString());
                 }
             } else {
                 PendingIntent pi = context.createPendingResult(REQ_CODE_NFC_TAG_FOUND, new Intent(), 0);
@@ -223,7 +222,7 @@ public class NFCReaderX {
                         JoH.static_toast_short(gs(R.string.scanning));
                     }
                     if (d)
-                        Log.d(TAG, "NFC tag discovered - going to read data");
+                        UserErrorLog.d(TAG, "NFC tag discovered - going to read data");
                     new NfcVReaderTask(context).executeOnExecutor(xdrip.executor, tag);
                 } else {
                     if (JoH.tsl() - last_tag_discovered > 5000) {
@@ -232,7 +231,7 @@ public class NFCReaderX {
                     }
                 }
             } else {
-                Log.d(TAG, "Tag already discovered!");
+                UserErrorLog.d(TAG, "Tag already discovered!");
                 if (JoH.tsl() - last_tag_discovered > 60000)
                     tag_discovered = false; // don't lock too long
             }
@@ -261,7 +260,7 @@ public class NFCReaderX {
         // Create the object to send
         libreBlock = LibreBlock.create(tagId, CaptureDateTime, data1, 0, patchUid, patchInfo);
         if(libreBlock == null) {
-            Log.e(TAG, "Error could not create libreBlock for libre-allhouse");
+            UserErrorLog.e(TAG, "Error could not create libreBlock for libre-allhouse");
             return;
         }
         final String json = libreBlock.toExtendedJson();
@@ -277,7 +276,7 @@ public class NFCReaderX {
     
     // returns true if checksum passed.
     public static boolean HandleGoodReading(final String tagId, byte[] data1, final long CaptureDateTime, final boolean allowUpload, byte []patchUid,  byte []patchInfo, boolean decripted_data ) {
-        Log.e(TAG, "HandleGoodReading called");
+        UserErrorLog.e(TAG, "HandleGoodReading called");
         SendLibrereading(tagId, data1, CaptureDateTime, patchUid, patchInfo);
         
         if(LibreOOPAlgorithm.isDecodeableData(patchInfo) && decripted_data == false 
@@ -297,13 +296,13 @@ public class NFCReaderX {
         } else {
             final boolean checksum_ok = LibreUtils.verify(data1);
             if (!checksum_ok) {
-                Log.e(TAG, "bad cs");
+                UserErrorLog.e(TAG, "bad cs");
                 return false;
             }
             
             // The 4'th byte is where the sensor status is.
             if(!LibreUtils.isSensorReady(data1[4])) {
-                Log.e(TAG, "Sensor is not ready, Ignoring reading!");
+                UserErrorLog.e(TAG, "Sensor is not ready, Ignoring reading!");
                 return true;
             }
             
@@ -380,7 +379,7 @@ public class NFCReaderX {
                     return ENABLE_BLUETOOTH_SET.ASK;
 
             }
-            Log.e(TAG, "libre2_enable_bluetooth_streaming bad value - not connecting" + enable_streaming);
+            UserErrorLog.e(TAG, "libre2_enable_bluetooth_streaming bad value - not connecting" + enable_streaming);
             return ENABLE_BLUETOOTH_SET.NEVER_ALLOW;
         }
 
@@ -419,7 +418,7 @@ public class NFCReaderX {
 
         @Override
         protected void onPostExecute(Tag tag) {
-        	Log.d(TAG, "onPostExecute called");
+        	UserErrorLog.d(TAG, "onPostExecute called");
             try {
                 if (tag == null) return;
                 if (!NFCReaderX.useNFC()) return;
@@ -428,7 +427,7 @@ public class NFCReaderX {
                     String SensorSn = LibreUtils.decodeSerialNumberKey(tag.getId());
                     
                     if (SensorSanity.checkLibreSensorChangeIfEnabled(SensorSn)) {
-                        Log.e(TAG, "Problem with Libre Serial Number - not processing");
+                        UserErrorLog.e(TAG, "Problem with Libre Serial Number - not processing");
                         return;
                     }
                     // Set the time of the current reading
@@ -441,13 +440,13 @@ public class NFCReaderX {
                         checksum_ok = HandleGoodReading(SensorSn, data, now, false, tag.getId(), patchInfo);
                     }
                     if(checksum_ok == false) {
-                        Log.e(TAG, "Read data but checksum is wrong");
+                        UserErrorLog.e(TAG, "Read data but checksum is wrong");
                     }
                     PersistentStore.setString("LibreSN", SensorSn);
                 } else {
-                    Log.d(TAG, "Scan did not succeed so ignoring buffer");
+                    UserErrorLog.d(TAG, "Scan did not succeed so ignoring buffer");
                 }
-                Log.d(TAG,"calling startHomeWithExtra");
+                UserErrorLog.d(TAG,"calling startHomeWithExtra");
                 if (enable_bluetooth_ask_user) {
                     Home.startHomeWithExtra(context, Home.ENABLE_STREAMING_DIALOG, "");
                 } else {
@@ -455,7 +454,7 @@ public class NFCReaderX {
                 }
 
             } catch (IllegalStateException e) {
-                Log.e(TAG, "Illegal state exception in postExecute: " + e);
+                UserErrorLog.e(TAG, "Illegal state exception in postExecute: " + e);
 
             } finally {
                 tag_discovered = false; // right place?
@@ -465,10 +464,10 @@ public class NFCReaderX {
 
         void startLibre2Streaming(NfcV nfcvTag, byte[] patchUid, byte[] patchInfo) throws InterruptedException {
             if(!enableBluetoothAllowed(context)) {
-                Log.e(TAG, "Sensor is libre 2, enabeling BT not allowed");
+                UserErrorLog.e(TAG, "Sensor is libre 2, enabeling BT not allowed");
                 return;
             }
-            Log.e(TAG, "Sensor is libre 2, enabeling BT");
+            UserErrorLog.e(TAG, "Sensor is libre 2, enabeling BT");
             
             String SensorSN = LibreUtils.decodeSerialNumberKey(patchUid);
 
@@ -476,7 +475,7 @@ public class NFCReaderX {
             // This is the nfc command to enable streaming
             Pair<byte[], String> unlockData = LibreOOPAlgorithm.nfcSendgetBlutoothEnablePayload();
             if (unlockData == null) {
-                Log.e(TAG, "unlockData is null, not enabeling streaming");
+                UserErrorLog.e(TAG, "unlockData is null, not enabeling streaming");
                 return;
             }
             Libre2SensorData.setLibre2SensorData(patchUid, patchInfo, 42, 1 , unlockData.second);
@@ -487,7 +486,7 @@ public class NFCReaderX {
             System.arraycopy(cmd, 0, full_cmd, 0, cmd.length);
             System.arraycopy(nfc_command, 0, full_cmd, cmd.length, nfc_command.length);
 
-            Log.e(TAG, "nfc_command to enable streaming = " + HexDump.dumpHexString(full_cmd));
+            UserErrorLog.e(TAG, "nfc_command to enable streaming = " + HexDump.dumpHexString(full_cmd));
 
             Long time_patch = System.currentTimeMillis();
             byte[] res = null;
@@ -498,11 +497,11 @@ public class NFCReaderX {
                         // DC:A6:32:0F:4F:92
                         res = new byte[]{(byte)0x12, (byte)0x92, (byte)0x4f, (byte)0x0f, (byte)0x32, (byte)0xa6, (byte)0xdc};
                     }
-                    Log.e(TAG, "enable streaming command returned: " + HexDump.dumpHexString(res));
+                    UserErrorLog.e(TAG, "enable streaming command returned: " + HexDump.dumpHexString(res));
                     break;
                 } catch (IOException e) {
                     if ((System.currentTimeMillis() > time_patch + 2000)) {
-                        Log.e(TAG, "enablestraming command read timeout");
+                        UserErrorLog.e(TAG, "enablestraming command read timeout");
                         JoH.static_toast_short(gs(R.string.nfc_read_timeout));
                         vibrate(context, 3);
                         return;
@@ -518,7 +517,7 @@ public class NFCReaderX {
                 ActiveBluetoothDevice.setDevice(LibreOOPAlgorithm.getLibreDeviceName() + SensorSN, JoH.bytesToHexMacFormat(res));
                 CollectionServiceStarter.restartCollectionServiceBackground();
             } else {
-                Log.e(TAG, "enable streaming returned bad data. BT will not work." + HexDump.dumpHexString(res));
+                UserErrorLog.e(TAG, "enable streaming returned bad data. BT will not work." + HexDump.dumpHexString(res));
             }
         }
 
@@ -536,13 +535,13 @@ public class NFCReaderX {
                     //      //
                     //  }
                     NfcV nfcvTag = NfcV.get(tag);
-                    if (d) Log.d(TAG, "Attempting to read tag data");
+                    if (d) UserErrorLog.d(TAG, "Attempting to read tag data");
                     try {
                         //boolean connected = false;
                         try {
                             nfcvTag.connect();
                         } catch (IOException e) {
-                            Log.d(TAG, "Trying second nfc connect");
+                            UserErrorLog.d(TAG, "Trying second nfc connect");
                             Thread.sleep(250);
                             nfcvTag.connect();
                         }
@@ -551,7 +550,7 @@ public class NFCReaderX {
                         try {
                             final byte[] diag = JoH.hexStringToByteArray(Pref.getStringDefaultBlank("nfc_test_diagnostic"));
                             if ((diag != null) && (diag.length > 0)) {
-                                Log.d(TAG, "Diagnostic ->: " + HexDump.dumpHexString(diag, 0, diag.length).trim() + " len: " + diag.length);
+                                UserErrorLog.d(TAG, "Diagnostic ->: " + HexDump.dumpHexString(diag, 0, diag.length).trim() + " len: " + diag.length);
                                 Long time = System.currentTimeMillis();
                                 byte[] replyBlock;
                                 while (true) {
@@ -560,7 +559,7 @@ public class NFCReaderX {
                                         break;
                                     } catch (IOException e) {
                                         if ((System.currentTimeMillis() > time + 2000)) {
-                                            Log.e(TAG, "tag diagnostic read timeout");
+                                            UserErrorLog.e(TAG, "tag diagnostic read timeout");
                                             JoH.static_toast_short(gs(R.string.nfc_diag_timeout));
                                             vibrate(context, 3);
                                             return null;
@@ -568,10 +567,10 @@ public class NFCReaderX {
                                         Thread.sleep(100);
                                     }
                                 }
-                                Log.d(TAG, "Diagnostic <-: " + HexDump.dumpHexString(replyBlock, 0, replyBlock.length).trim() + " len: " + replyBlock.length);
+                                UserErrorLog.d(TAG, "Diagnostic <-: " + HexDump.dumpHexString(replyBlock, 0, replyBlock.length).trim() + " len: " + replyBlock.length);
                             }
                         } catch (Exception e) {
-                            Log.e(TAG, "Exception in NFC Diagnostic: " + e);
+                            UserErrorLog.e(TAG, "Exception in NFC Diagnostic: " + e);
                             Pref.setString("nfc_test_diagnostic", "");
                         }
 
@@ -593,7 +592,7 @@ public class NFCReaderX {
                                 break;
                             } catch (IOException e) {
                                 if ((System.currentTimeMillis() > time_patch + 2000)) {
-                                    Log.e(TAG, "patchInfo tag read timeout");
+                                    UserErrorLog.e(TAG, "patchInfo tag read timeout");
                                     JoH.static_toast_short(gs(R.string.nfc_read_timeout));
                                     vibrate(context, 3);
                                     return null;
@@ -601,7 +600,7 @@ public class NFCReaderX {
                                 Thread.sleep(100);
                             }
                         }
-                        Log.d(TAG, "patchInfo = " + HexDump.dumpHexString(patchInfo));
+                        UserErrorLog.d(TAG, "patchInfo = " + HexDump.dumpHexString(patchInfo));
                         byte []patchUid = tag.getId();
                         if(use_fake_de_data()) {
                             patchUid = de_new_patch_uid;
@@ -610,7 +609,7 @@ public class NFCReaderX {
                         
                         SensorType sensorType = LibreOOPAlgorithm.getSensorType(patchInfo);
                         if(addressed && sensorType != SensorType.Libre1 ) {
-                            Log.d(TAG, "Not using addressed mode since not a libre 1 sensor");
+                            UserErrorLog.d(TAG, "Not using addressed mode since not a libre 1 sensor");
                             addressed = false;
                         }
                         if(sensorType == SensorType.Libre2) {
@@ -618,7 +617,7 @@ public class NFCReaderX {
                         }
                         
                         if (multiblock) {
-                            Log.e(TAG, "starting multiple blobk reads");
+                            UserErrorLog.e(TAG, "starting multiple blobk reads");
                             final int correct_reply_size = addressed ? 28 : 25;
                             for (int i = 0; i <= 43; i = i + 3) {
                                 final byte[] cmd;
@@ -637,7 +636,7 @@ public class NFCReaderX {
                                         break;
                                     } catch (IOException e) {
                                         if ((System.currentTimeMillis() > time + 2000)) {
-                                            Log.e(TAG, "tag read timeout");
+                                            UserErrorLog.e(TAG, "tag read timeout");
                                             JoH.static_toast_short(gs(R.string.nfc_read_timeout));
                                             vibrate(context, 3);
                                             return null;
@@ -647,11 +646,11 @@ public class NFCReaderX {
                                 }
 
                                 if (d)
-                                    Log.d(TAG, "Received multiblock reply, offset: " + i + " sized: " + replyBlock.length);
+                                    UserErrorLog.d(TAG, "Received multiblock reply, offset: " + i + " sized: " + replyBlock.length);
                                 if (d)
-                                    Log.d(TAG, HexDump.dumpHexString(replyBlock, 0, replyBlock.length));
+                                    UserErrorLog.d(TAG, HexDump.dumpHexString(replyBlock, 0, replyBlock.length));
                                 if (replyBlock.length != correct_reply_size) {
-                                    Log.e(TAG, "Incorrect block size: " + replyBlock.length + " vs " + correct_reply_size);
+                                    UserErrorLog.e(TAG, "Incorrect block size: " + replyBlock.length + " vs " + correct_reply_size);
                                     JoH.static_toast_short(gs(R.string.nfc_invalid_data__try_again));
                                     if (!addressed) {
                                         if (PersistentStore.incrementLong("nfc-address-failures") > 2) {
@@ -672,7 +671,7 @@ public class NFCReaderX {
                             }
                         } else {
                             // always addressed
-                            Log.e(TAG, "starting single blobk reads");
+                            UserErrorLog.e(TAG, "starting single blobk reads");
                             int correct_reply_size;
                             for (int i = 0; i < 43; i++) {
                                 final byte[] cmd;
@@ -693,12 +692,12 @@ public class NFCReaderX {
                                 Long time = System.currentTimeMillis();
                                 while (true) {
                                     try {
-                                        Log.e(TAG, "sending command " + HexDump.toHexString(cmd));
+                                        UserErrorLog.e(TAG, "sending command " + HexDump.toHexString(cmd));
                                         oneBlock = nfcvTag.transceive(cmd);
                                         break;
                                     } catch (IOException e) {
                                         if ((System.currentTimeMillis() > time + 2000)) {
-                                            Log.e(TAG, "tag read timeout");
+                                            UserErrorLog.e(TAG, "tag read timeout");
                                             JoH.static_toast_short(gs(R.string.nfc_read_timeout));
                                             vibrate(context, 3);
                                             return null;
@@ -707,9 +706,9 @@ public class NFCReaderX {
                                     }
                                 }
                                 if (d)
-                                    Log.e(TAG, HexDump.dumpHexString(oneBlock, 0, oneBlock.length));
+                                    UserErrorLog.e(TAG, HexDump.dumpHexString(oneBlock, 0, oneBlock.length));
                                 if (oneBlock.length != correct_reply_size) {
-                                    Log.e(TAG, "Incorrect block size: " + oneBlock.length + " vs " + correct_reply_size);
+                                    UserErrorLog.e(TAG, "Incorrect block size: " + oneBlock.length + " vs " + correct_reply_size);
                                     JoH.static_toast_short(gs(R.string.nfc_invalid_data));
                                     vibrate(context, 3);
                                     return null;
@@ -718,7 +717,7 @@ public class NFCReaderX {
                             }
                         }
                         JoH.benchmark("Tag read");
-                        Log.d(TAG, "GOT TAG DATA!\n" + HexDump.toHexString(data));
+                        UserErrorLog.d(TAG, "GOT TAG DATA!\n" + HexDump.toHexString(data));
                         last_read_succeeded = true;
                         succeeded = true;
                         used_nfc_successfully = true;
@@ -730,25 +729,25 @@ public class NFCReaderX {
                         JoH.static_toast_short(gs(R.string.nfc_io_error));
                         vibrate(context, 3);
                     } catch (Exception e) {
-                        Log.e(TAG, "Got exception reading nfc in background: ",e);
+                        UserErrorLog.e(TAG, "Got exception reading nfc in background: ",e);
                         return null;
                     } finally {
                         try {
                             nfcvTag.close();
                         } catch (Exception e) {
-                            Log.e(TAG, "Error closing tag!");
+                            UserErrorLog.e(TAG, "Error closing tag!");
                             JoH.static_toast_short(gs(R.string.nfc_error));
                             vibrate(context, 3);
                         }
                     }
-                    if (d) Log.d(TAG, "Tag data reader exiting");
+                    if (d) UserErrorLog.d(TAG, "Tag data reader exiting");
                     return tag;
                 } finally {
                     read_lock.unlock();
                     Home.staticBlockUI(context, false);
                 }
             } else {
-                Log.d(TAG, "Already read_locked! - skipping");
+                UserErrorLog.d(TAG, "Already read_locked! - skipping");
                 return null;
             }
 
@@ -841,11 +840,11 @@ public class NFCReaderX {
             final Vibrator vibrate = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
             if ((vibrate == null) || (!vibrate.hasVibrator())) return;
             vibrate.cancel();
-            if (d) Log.d(TAG, "About to vibrate, pattern: " + pattern);
+            if (d) UserErrorLog.d(TAG, "About to vibrate, pattern: " + pattern);
             try {
                 vibrate.vibrate(patterns[pattern], -1);
             } catch (Exception e) {
-                Log.d(TAG, "Exception in vibrate: " + e);
+                UserErrorLog.d(TAG, "Exception in vibrate: " + e);
             }
         }
     }
@@ -856,12 +855,12 @@ public class NFCReaderX {
 
     public static void handleHomeScreenScanPreference(Context context, boolean state) {
         try {
-            Log.d(TAG, "HomeScreen Scan State: " + (state ? "enable" : "disable"));
+            UserErrorLog.d(TAG, "HomeScreen Scan State: " + (state ? "enable" : "disable"));
             context.getPackageManager().setComponentEnabledSetting(new ComponentName(context, NFCFilterX.class),
                     state ? PackageManager.COMPONENT_ENABLED_STATE_ENABLED : PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
                     PackageManager.DONT_KILL_APP);
         } catch (Exception e) {
-            Log.wtf(TAG, "Exception in handleHomeScreenScanPreference: " + e);
+            UserErrorLog.wtf(TAG, "Exception in handleHomeScreenScanPreference: " + e);
         }
     }
 
@@ -884,7 +883,7 @@ public class NFCReaderX {
 
                 NFCReaderX.tagFound(context, intent);
             } else {
-                Log.e(TAG, "Rate limited start nfc-filterx");
+                UserErrorLog.e(TAG, "Rate limited start nfc-filterx");
             }
         } else {
             context.finish();
@@ -926,12 +925,12 @@ public class NFCReaderX {
     
     static public ReadingData getTrend(LibreBlock libreBlock) {
         if(libreBlock.byte_start != 0 || libreBlock.byte_end < 344) {
-            Log.i(TAG, "libreBlock exists but does not have enough data " + libreBlock.timestamp);
+            UserErrorLog.i(TAG, "libreBlock exists but does not have enough data " + libreBlock.timestamp);
             return null;
         }
         ReadingData result = parseData(0, "", libreBlock.blockbytes, JoH.tsl());
         if(result.trend.size() == 0 || result.trend.get(0).glucoseLevelRaw == 0) {
-            Log.i(TAG, "libreBlock exists but no trend data exists, or first value is zero " + libreBlock.timestamp);
+            UserErrorLog.i(TAG, "libreBlock exists but no trend data exists, or first value is zero " + libreBlock.timestamp);
             return null;
         }
         

@@ -1,14 +1,14 @@
 package com.eveningoutpost.dexdrip.tidepool;
 
-// jamorham
-
-// lightweight class entry point
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 
 import static com.eveningoutpost.dexdrip.Models.JoH.isLANConnected;
 import static com.eveningoutpost.dexdrip.utils.PowerStateReceiver.is_power_connected;
+
+// jamorham
+// lightweight class entry point
 
 public class TidepoolEntry {
 

@@ -1,11 +1,12 @@
 package com.eveningoutpost.dexdrip.UtilityModels.desertsync;
 
+
 import android.os.PowerManager;
 
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.DesertSync;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
@@ -70,19 +71,19 @@ public class DesertComms {
                     .addPathSegment(topic).addPathSegment(sender).addEncodedPathSegment(urlEncode(payload)) // workaround okhttp bug with path encoding containing +
                     .build().toString();
 
-            UserError.Log.d(TAG, "To master: " + url);
+            UserErrorLog.d(TAG, "To master: " + url);
             queue.add(new QueueItem(url));
             runInBackground();
         } else if (Home.get_master()) {
-            UserError.Log.d(TAG, "We are master so push to followers.");
+            UserErrorLog.d(TAG, "We are master so push to followers.");
             for (final String address : DesertSync.getActivePeers()) {
-                UserError.Log.d(TAG, "Master attempting to push to follower: " + address);
+                UserErrorLog.d(TAG, "Master attempting to push to follower: " + address);
                 final String url = HttpUrl.parse(getInitialUrl(address)).newBuilder()
                         .addPathSegment("sync").addPathSegment("push")
                         .addPathSegment(topic).addPathSegment(sender).addEncodedPathSegment(urlEncode(payload)) // workaround okhttp bug with path encoding containing +
                         .build().toString();
 
-                UserError.Log.d(TAG, "To follower: " + url);
+                UserErrorLog.d(TAG, "To follower: " + url);
                 queue.add(new QueueItem(url).setHandler(ToFollower));
 
             }
@@ -101,12 +102,12 @@ public class DesertComms {
                     .addPathSegment(topic)
                     .build().toString();
 
-            UserError.Log.d(TAG, url);
+            UserErrorLog.d(TAG, url);
             queue.add(new QueueItem(url).setHandler(Pull));
             runInBackground();
             return true;
         } catch (NullPointerException e) {
-            UserError.Log.e(TAG, "Exception parsing url: -" + oasisIP + "- probably invalid ip");
+            UserErrorLog.e(TAG, "Exception parsing url: -" + oasisIP + "- probably invalid ip");
             return false;
         }
     }
@@ -118,11 +119,11 @@ public class DesertComms {
                     .addPathSegment(topic)
                     .build().toString();
 
-            UserError.Log.d(TAG, "PROBE: " + url);
+            UserErrorLog.d(TAG, "PROBE: " + url);
             queue.add(new QueueItem(url).setHandler(MasterPing));
             runInBackground();
         } else {
-            UserError.Log.e(TAG, "Probe cancelled as not follower");
+            UserErrorLog.e(TAG, "Probe cancelled as not follower");
         }
         return true;
     }
@@ -146,7 +147,7 @@ public class DesertComms {
         setCurrentToBackup(ip, null);
 
         Pref.setString("desert_sync_master_ip", ip);
-        UserError.Log.uel(TAG, "Master IP updated to: " + ip);
+        UserErrorLog.uel(TAG, "Master IP updated to: " + ip);
     }
 
     private static void setCurrentToBackup(final String newIP, String toSave) {
@@ -157,7 +158,7 @@ public class DesertComms {
         final String backup = PersistentStore.getString(PREF_OASISIP);
         if (!toSave.equals(backup) && (!emptyString(toSave))) {
             PersistentStore.setString(PREF_OASISIP, toSave);
-            UserError.Log.d(TAG, "Saving to backup: " + toSave);
+            UserErrorLog.d(TAG, "Saving to backup: " + toSave);
         }
     }
 
@@ -173,10 +174,10 @@ public class DesertComms {
         new Thread(() -> {
             if (queue.size() == 0) return;
             final PowerManager.WakeLock wl = getWakeLock("DesertComms send", 60000);
-            UserError.Log.d(TAG, "Queue size: " + queue.size());
+            UserErrorLog.d(TAG, "Queue size: " + queue.size());
             try {
                 final String result = httpNext();
-                //UserError.Log.d(TAG, "Result: " + result);
+                //UserErrorLog.d(TAG, "Result: " + result);
                 checkCommsFailures(result == null);
                 if (((result != null) && queue.size() > 0) || Home.get_master()) {
                     runInBackground();
@@ -194,7 +195,7 @@ public class DesertComms {
             final QueueItem item = queue.takeFirst(); // removes from queue
             item.retried++;
             item.updateLastProcessed();
-            UserError.Log.d(TAG, "Next item: " + item.toS());
+            UserErrorLog.d(TAG, "Next item: " + item.toS());
             final String result = httpGet(item.getUrl(Home.get_follower() ? item.handler != MasterPing ? getOasisIP() : null : null));
             // if (result != null) {
             item.result = result;
@@ -207,7 +208,7 @@ public class DesertComms {
             }
             return result;
         } catch (InterruptedException e) {
-            UserError.Log.e(TAG, "Got interrupted");
+            UserErrorLog.e(TAG, "Got interrupted");
             return null;
         }
     }
@@ -223,7 +224,7 @@ public class DesertComms {
                 return response.body().string();
             } else {
                 if (JoH.ratelimit("desert-error-response", 180)) {
-                    UserError.Log.wtf(TAG, "Got error code: " + response.code() + " " + response.message() + " " + response.body().toString());
+                    UserErrorLog.wtf(TAG, "Got error code: " + response.code() + " " + response.message() + " " + response.body().toString());
                 }
                 return null;
             }
@@ -241,7 +242,7 @@ public class DesertComms {
             try {
                 b.sslSocketFactory(TrustManager.getSSLSocketFactory(), TrustManager.getNaiveTrustManager());
             } catch (Exception e) {
-                UserError.Log.wtf(TAG, "Failed to set up https!");
+                UserErrorLog.wtf(TAG, "Failed to set up https!");
             }
             b.hostnameVerifier(TrustManager.getXdripHostVerifier());
 
@@ -263,13 +264,13 @@ public class DesertComms {
     private static void checkCommsFailures(boolean failed) {
         if (failed) {
             comms_failures++;
-            UserError.Log.d(TAG, "Comms failures increased to: " + comms_failures);
+            UserErrorLog.d(TAG, "Comms failures increased to: " + comms_failures);
 
             if (!Home.get_master()) {
                 if (comms_failures > COMM_FAILURE_NOTIFICATION_THRESHOLD) {
                     if (pratelimit("desert-check-comms", 1800)) {
                         if (!RouteTools.reachable(getOasisIP())) {
-                            UserError.Log.e(TAG, "Oasis master IP appears unreachable: " + getOasisIP());
+                            UserErrorLog.e(TAG, "Oasis master IP appears unreachable: " + getOasisIP());
                             showNotification("Desert Sync Failure", "Master unreachable: " + getOasisIP() + " changed?", null, DESERT_MASTER_UNREACHABLE, false, true, false);
                         }
                     }
@@ -278,7 +279,7 @@ public class DesertComms {
         } else {
             if (!Home.get_master()) {
                 if (comms_failures > 0) {
-                    UserError.Log.d(TAG, "Comms restored after " + comms_failures + " failures");
+                    UserErrorLog.d(TAG, "Comms restored after " + comms_failures + " failures");
                     if (comms_failures > COMM_FAILURE_NOTIFICATION_THRESHOLD) {
                         cancelNotification(DESERT_MASTER_UNREACHABLE);
                     }

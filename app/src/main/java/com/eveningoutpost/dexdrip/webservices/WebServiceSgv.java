@@ -1,11 +1,12 @@
 package com.eveningoutpost.dexdrip.webservices;
 
+
 import android.util.Log;
 
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.DateUtil;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.NanoStatus;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.SensorStatus;
@@ -59,40 +60,40 @@ public class WebServiceSgv extends BaseWebService {
                 count = Integer.valueOf(cgi.get("count"));
                 count = Math.min(count, 1000);
                 count = Math.max(count, 1);
-                UserError.Log.d(TAG, "SGV count request for: " + count + " entries");
+                UserErrorLog.d(TAG, "SGV count request for: " + count + " entries");
             } catch (Exception e) {
                 // meh
             }
         }
 
         if (cgi.containsKey("steps")) {
-            UserError.Log.d(TAG, "Received steps request: " + cgi.get("steps"));
+            UserErrorLog.d(TAG, "Received steps request: " + cgi.get("steps"));
             // forward steps request to steps route
             final WebResponse steps_reply_wr = ((RouteFinder) Singleton.get("RouteFinder")).handleRoute("steps/set/" + cgi.get("steps"));
             steps_result_code = steps_reply_wr.resultCode;
         }
 
         if (cgi.containsKey("heart")) {
-            UserError.Log.d(TAG, "Received heart request: " + cgi.get("heart"));
+            UserErrorLog.d(TAG, "Received heart request: " + cgi.get("heart"));
             // forward steps request to heart route
             final WebResponse heart_reply_wr = ((RouteFinder) Singleton.get("RouteFinder")).handleRoute("heart/set/" + cgi.get("heart") + "/1"); // accuracy currently ignored (always 1) - TODO review
             heart_result_code = heart_reply_wr.resultCode;
         }
 
         if (cgi.containsKey("tasker")) {
-            UserError.Log.d(TAG, "Received tasker request: " + cgi.get("tasker"));
+            UserErrorLog.d(TAG, "Received tasker request: " + cgi.get("tasker"));
             // forward steps request to heart route
             final WebResponse tasker_reply_wr = ((RouteFinder) Singleton.get("RouteFinder")).handleRoute("tasker/" + cgi.get("tasker")); // send single word command to tasker, eg snooze or osnooze
             tasker_result_code = tasker_reply_wr.resultCode;
         }
 
         if (cgi.containsKey("collector")) {
-            UserError.Log.d(TAG,"Received collector status request");
+            UserErrorLog.d(TAG,"Received collector status request");
             collector_status_string = NanoStatus.nanoStatus("collector");
         }
 
         if (cgi.containsKey("sensor")) {
-            UserError.Log.d(TAG,"Received sensor status request");
+            UserErrorLog.d(TAG,"Received sensor status request");
             sensor_status_string = SensorStatus.status();
         }
 
@@ -129,7 +130,7 @@ public class WebServiceSgv extends BaseWebService {
                     try {
                         item.put("delta", new BigDecimal(reading.getDg_slope() * 5 * 60 * 1000).setScale(3, BigDecimal.ROUND_HALF_UP));
                     } catch (NumberFormatException e) {
-                        UserError.Log.e(TAG, "Could not pass delta to webservice as was invalid number");
+                        UserErrorLog.e(TAG, "Could not pass delta to webservice as was invalid number");
                     }
                     item.put("direction", reading.getDg_deltaName());
                     item.put("noise", reading.noiseValue());
@@ -189,7 +190,7 @@ public class WebServiceSgv extends BaseWebService {
 
                 Log.d(TAG, "Output: " + reply.toString());
             } catch (JSONException e) {
-                UserError.Log.wtf(TAG, "Got json exception: " + e);
+                UserErrorLog.wtf(TAG, "Got json exception: " + e);
             }
         }
 

@@ -21,10 +21,11 @@
 
 package com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.driver;
 
+
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -98,7 +99,7 @@ public class UsbSerialProber {
                 driver = ctor.newInstance(usbDevice);
             } catch (NoSuchMethodException e) {
                 //throw new RuntimeException(e);
-                UserError.Log.e("UsbSerialProber", "No such method exception");
+                UserErrorLog.e("UsbSerialProber", "No such method exception");
                 return null;
             } catch (IllegalArgumentException e) {
                 throw new RuntimeException(e);

@@ -1,21 +1,21 @@
 package com.eveningoutpost.dexdrip.Models;
 
+
 import android.provider.BaseColumns;
 
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
 import com.google.gson.annotations.Expose;
-import java.text.DecimalFormat;
+
 import java.util.List;
 import java.util.UUID;
 
-import org.json.JSONObject;
 /**
  * Created by jamorham on 19/10/2017.
  */
@@ -91,7 +91,7 @@ public class LibreBlock  extends PlusModel {
         if (lb != null) {
             lb.save();
             if(byte_start == 0 && blocks.length == 344 && allowUpload) {
-                Log.d(TAG, "sending new item to queue");
+                UserErrorLog.d(TAG, "sending new item to queue");
                 UploaderQueue.newTransmitterDataEntry("create" ,lb);
             }
         }
@@ -103,13 +103,13 @@ public class LibreBlock  extends PlusModel {
     }
 
     public static LibreBlock create(String reference, long timestamp, byte[] blocks, int byte_start, byte[] patchUid, byte[] patchInfo) {
-        UserError.Log.e(TAG,"Backtrack: "+JoH.backTrace());
+        UserErrorLog.e(TAG,"Backtrack: "+JoH.backTrace());
         if (reference == null) {
-            UserError.Log.e(TAG, "Cannot save block with null reference");
+            UserErrorLog.e(TAG, "Cannot save block with null reference");
             return null;
         }
         if (blocks == null) {
-            UserError.Log.e(TAG, "Cannot save block with null data");
+            UserErrorLog.e(TAG, "Cannot save block with null data");
             return null;
         }
 
@@ -168,7 +168,7 @@ public class LibreBlock  extends PlusModel {
         if (libreBlock == null) {
             return;
         }
-        Log.e(TAG, "Updating bg for timestamp " + timestamp);
+        UserErrorLog.e(TAG, "Updating bg for timestamp " + timestamp);
         libreBlock.calculated_bg = calculated_value;
         libreBlock.save();
     }
@@ -180,7 +180,7 @@ public class LibreBlock  extends PlusModel {
                 .where("uuid = ?", uuid)
                 .executeSingle();
         } catch (Exception e) {
-            Log.e(TAG,"findByUuid() Got exception on Select : "+e.toString());
+            UserErrorLog.e(TAG,"findByUuid() Got exception on Select : "+e.toString());
             return null;
         }
     }
@@ -199,10 +199,10 @@ public class LibreBlock  extends PlusModel {
         try {
             fresh = JoH.defaultGsonInstance().fromJson(json, LibreBlock.class);
         } catch (Exception e) {
-            Log.e(TAG, "Got exception processing json msg: " + e );
+            UserErrorLog.e(TAG, "Got exception processing json msg: " + e );
             return null;
         }
-        Log.e(TAG, "Successfuly created LibreBlock value " + json);
+        UserErrorLog.e(TAG, "Successfuly created LibreBlock value " + json);
         return fresh;
     }
 
@@ -238,10 +238,10 @@ public class LibreBlock  extends PlusModel {
         try {
             elb = JoH.defaultGsonInstance().fromJson(json, ExtendedLibreBlock.class);
         } catch (Exception e) {
-            Log.e(TAG, "Got exception processing json msg: " + e );
+            UserErrorLog.e(TAG, "Got exception processing json msg: " + e );
             return null;
         }
-        Log.e(TAG, "Successfuly created LibreBlock value " + json);
+        UserErrorLog.e(TAG, "Successfuly created LibreBlock value " + json);
         Pref.setInt("bridge_battery", elb.bridge_battery);
         PersistentStore.setString("Tomatobattery", Integer.toString(elb.Tomatobattery));
         PersistentStore.setString("Bubblebattery", Integer.toString(elb.Bubblebattery));

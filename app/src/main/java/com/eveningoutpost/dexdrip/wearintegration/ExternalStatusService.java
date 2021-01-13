@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.wearintegration;
 
+
 import android.app.IntentService;
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -7,7 +8,7 @@ import android.support.v4.content.WakefulBroadcastReceiver;
 
 import com.eveningoutpost.dexdrip.Models.APStatus;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.NewDataObserver;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
@@ -89,7 +90,7 @@ public class ExternalStatusService extends IntentService {
                 if (percent != null) {
                     APStatus.createEfficientRecord(timestamp, percent);
                 } else {
-                    UserError.Log.wtf(TAG, "Could not parse TBR from: " + statusline);
+                    UserErrorLog.wtf(TAG, "Could not parse TBR from: " + statusline);
                 }
             }
 
@@ -105,10 +106,10 @@ public class ExternalStatusService extends IntentService {
         if (statusLine.length() == 0) return "";
         final String check = statusLine.replaceAll("[^%]", "");
         if (check.length() > 0) {
-            UserError.Log.v(TAG, statusLine);
+            UserErrorLog.v(TAG, statusLine);
             return statusLine.substring((statusLine.lastIndexOf('%') + 2), (statusLine.lastIndexOf('%') + 6));
         } else if (check.length() == 0) {
-            UserError.Log.v(TAG, statusLine);
+            UserErrorLog.v(TAG, statusLine);
             return statusLine.substring(0, 4);
         } else return "???";
     }
@@ -120,7 +121,7 @@ public class ExternalStatusService extends IntentService {
         final String check = statusLine.replaceAll("[^%]", "");
         if (check.length() > 0) {
             int index1 = 0, index2 = 4;
-            UserError.Log.v(TAG, statusLine);
+            UserErrorLog.v(TAG, statusLine);
             if (statusLine.lastIndexOf('%') == 3) index2 = 4;
             else if (statusLine.lastIndexOf('%') == 2) index2 = 3;
             else if (statusLine.lastIndexOf('%') == 1) index2 = 2;

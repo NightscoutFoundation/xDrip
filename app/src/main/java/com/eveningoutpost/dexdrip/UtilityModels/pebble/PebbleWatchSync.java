@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.UtilityModels.pebble;
 
+
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.Intent;
@@ -10,8 +11,7 @@ import android.os.PowerManager;
 import com.eveningoutpost.dexdrip.Models.HeartRate;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.StepCounter;
-import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.BroadcastSnooze;
@@ -74,7 +74,7 @@ public class PebbleWatchSync extends ForegroundService {
 
         initPebbleDisplays();
         PebbleUtil.pebbleDisplayType = getCurrentBroadcastToPebbleSetting();
-        Log.d(TAG,"onCreate for: "+PebbleUtil.pebbleDisplayType.toString());
+        UserErrorLog.d(TAG,"onCreate for: "+PebbleUtil.pebbleDisplayType.toString());
 
         currentWatchFaceUUID = getActivePebbleDisplay().watchfaceUUID();
 
@@ -122,7 +122,7 @@ public class PebbleWatchSync extends ForegroundService {
                     }
                 }
             } catch (Exception e) {
-                UserError.Log.e(TAG, "Error checking/enabling bluetooth: " + e);
+                UserErrorLog.e(TAG, "Error checking/enabling bluetooth: " + e);
             }
         }
     }
@@ -137,7 +137,7 @@ public class PebbleWatchSync extends ForegroundService {
 
         final PowerManager.WakeLock wl = JoH.getWakeLock("pebble_service_start", 60000);
         try {
-            Log.i(TAG, "STARTING SERVICE PebbleWatchSync");
+            UserErrorLog.i(TAG, "STARTING SERVICE PebbleWatchSync");
             check_and_enable_bluetooth();
             getActivePebbleDisplay().startDeviceCommand();
         } finally {
@@ -148,7 +148,7 @@ public class PebbleWatchSync extends ForegroundService {
 
     @Override
     public void onDestroy() {
-        Log.d(TAG, "onDestroy called");
+        UserErrorLog.d(TAG, "onDestroy called");
         super.onDestroy();
     }
 
@@ -158,8 +158,8 @@ public class PebbleWatchSync extends ForegroundService {
     }
 
     protected void init() {
-        Log.i(TAG, "Initialising...");
-        Log.i(TAG, "configuring PebbleDataReceiver for: "+currentWatchFaceUUID.toString());
+        UserErrorLog.i(TAG, "Initialising...");
+        UserErrorLog.i(TAG, "configuring PebbleDataReceiver for: "+currentWatchFaceUUID.toString());
 
 
         PebbleKit.registerReceivedDataHandler(context, new PebbleKit.PebbleDataReceiver(currentWatchFaceUUID) {
@@ -188,13 +188,13 @@ public class PebbleWatchSync extends ForegroundService {
             public void receiveData(Context context, UUID logUuid, Long timestamp,
                                     Long tag, int data) {
                 if (d)
-                    Log.d(TAG, "receiveLogData: uuid:" + logUuid + " " + JoH.dateTimeText(timestamp * 1000) + " tag:" + tag + " data: " + data);
+                    UserErrorLog.d(TAG, "receiveLogData: uuid:" + logUuid + " " + JoH.dateTimeText(timestamp * 1000) + " tag:" + tag + " data: " + data);
             }
 
             @Override
             public void receiveData(Context context, UUID logUuid, Long timestamp,
                                     Long tag, Long data) {
-                Log.d(TAG, "receiveLogData: uuid:" + logUuid + " started: " + JoH.dateTimeText(timestamp * 1000) + " tag:" + tag + " data: " + data);
+                UserErrorLog.d(TAG, "receiveLogData: uuid:" + logUuid + " started: " + JoH.dateTimeText(timestamp * 1000) + " tag:" + tag + " data: " + data);
                 if (Pref.getBoolean("use_pebble_health", true)) {
                     if ((tag != null) && (data != null)) {
                         final int s = ((int) (long) tag) & 0xfffffff7; // alternator
@@ -203,7 +203,7 @@ public class PebbleWatchSync extends ForegroundService {
                             case HEARTRATE_LOG:
                                 if (data > sanity_timestamp) {
                                     if (last_heartrate_timestamp > 0) {
-                                        Log.e(TAG, "Out of sequence heartrate timestamp received!");
+                                        UserErrorLog.e(TAG, "Out of sequence heartrate timestamp received!");
                                     }
                                     last_heartrate_timestamp = data;
                                 } else {
@@ -212,11 +212,11 @@ public class PebbleWatchSync extends ForegroundService {
                                             final HeartRate hr = new HeartRate();
                                             hr.timestamp = last_heartrate_timestamp * 1000;
                                             hr.bpm = (int) (long) data;
-                                            Log.d(TAG, "Saving HeartRate: " + hr.toS());
+                                            UserErrorLog.d(TAG, "Saving HeartRate: " + hr.toS());
                                             hr.saveit();
                                             last_heartrate_timestamp = 0; // reset state
                                         } else {
-                                            Log.e(TAG, "Out of sequence heartrate value received!");
+                                            UserErrorLog.e(TAG, "Out of sequence heartrate value received!");
                                         }
                                     }
                                 }
@@ -225,29 +225,29 @@ public class PebbleWatchSync extends ForegroundService {
                             case MOVEMENT_LOG:
                                 if (data > sanity_timestamp) {
                                     if (last_movement_timestamp > 0) {
-                                        Log.e(TAG, "Out of sequence movement timestamp received!");
+                                        UserErrorLog.e(TAG, "Out of sequence movement timestamp received!");
                                     }
                                     last_movement_timestamp = data;
                                 } else {
                                     if (data > 0) {
                                         if (last_movement_timestamp > 0) {
                                             final StepCounter pm = StepCounter.createEfficientRecord(last_movement_timestamp * 1000, (int)(long) data);
-                                            Log.d(TAG, "Saving Movement: " + pm.toS());
+                                            UserErrorLog.d(TAG, "Saving Movement: " + pm.toS());
                                             last_movement_timestamp = 0; // reset state
                                         } else {
-                                            Log.e(TAG, "Out of sequence movement value received!");
+                                            UserErrorLog.e(TAG, "Out of sequence movement value received!");
                                         }
                                     }
                                 }
                                 break;
 
                             default:
-                                Log.e(TAG, "Unknown pebble data log type received: " + s);
+                                UserErrorLog.e(TAG, "Unknown pebble data log type received: " + s);
                                 break;
 
                         }
                     } else {
-                        Log.e(TAG, "Got null Long in receive data");
+                        UserErrorLog.e(TAG, "Got null Long in receive data");
                     }
                 }
             }
@@ -256,13 +256,13 @@ public class PebbleWatchSync extends ForegroundService {
             @Override
             public void receiveData(Context context, UUID logUuid, Long timestamp,
                                     Long tag, byte[] data) {
-               if (d) Log.d(TAG,"receiveLogData: uuid:"+logUuid+" "+JoH.dateTimeText(timestamp*1000)+" tag:"+tag+" hexdata: "+JoH.bytesToHex(data));
+               if (d) UserErrorLog.d(TAG,"receiveLogData: uuid:"+logUuid+" "+JoH.dateTimeText(timestamp*1000)+" tag:"+tag+" hexdata: "+JoH.bytesToHex(data));
             }
 
             @Override
             public void onFinishSession(Context context, UUID logUuid, Long timestamp,
                                         Long tag) {
-                if (d) Log.i(TAG, "Session " + tag + " finished!");
+                if (d) UserErrorLog.i(TAG, "Session " + tag + " finished!");
             }
 
         });
@@ -280,7 +280,7 @@ public class PebbleWatchSync extends ForegroundService {
     }
 
     public static void receiveAppData(int transactionId, PebbleDictionary data) {
-        Log.d(TAG, "receiveAppData: transactionId is " + String.valueOf(transactionId));
+        UserErrorLog.d(TAG, "receiveAppData: transactionId is " + String.valueOf(transactionId));
 
         AlertPlayer.getPlayer().Snooze(xdrip.getAppContext(), -1);
 

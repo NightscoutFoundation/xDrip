@@ -1,7 +1,8 @@
 package com.eveningoutpost.dexdrip.cgm.medtrum;
 
+
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.MINUTE_IN_MS;
@@ -39,12 +40,12 @@ public class TimeKeeper {
         if (serial != 0) {
             if (time >= 1530198145000L) {
                 PersistentStore.setLong(getPrefTag(serial), time);
-                UserError.Log.d(TAG, "Reference Time updated: " + JoH.dateTimeText(time));
+                UserErrorLog.d(TAG, "Reference Time updated: " + JoH.dateTimeText(time));
             } else {
-                UserError.Log.e(TAG, "Time is too far in past: " + JoH.dateText(time));
+                UserErrorLog.e(TAG, "Time is too far in past: " + JoH.dateText(time));
             }
         } else {
-            UserError.Log.e(TAG, "Serial is not set");
+            UserErrorLog.e(TAG, "Serial is not set");
         }
     }
 

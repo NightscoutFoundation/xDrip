@@ -1,6 +1,7 @@
 package com.eveningoutpost.dexdrip.utils;
 
-import com.eveningoutpost.dexdrip.Models.UserError;
+
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.WholeHouse;
 
 import java.io.DataOutputStream;
@@ -56,7 +57,7 @@ public class Root {
 
             process.waitFor();
 
-            UserError.Log.d(TAG, "Process exited code: " + process.exitValue());
+            UserErrorLog.d(TAG, "Process exited code: " + process.exitValue());
             try {
                 dataOutputStream.close();
             } catch (IOException e) {
@@ -67,9 +68,9 @@ public class Root {
             process.destroy();
 
         } catch (InterruptedException e) {
-            UserError.Log.d(TAG, "Interrupted exception: " + e);
+            UserErrorLog.d(TAG, "Interrupted exception: " + e);
         } catch (IOException e) {
-            UserError.Log.d(TAG, "IO exception: " + e);
+            UserErrorLog.d(TAG, "IO exception: " + e);
             return null;
         }
         return res;

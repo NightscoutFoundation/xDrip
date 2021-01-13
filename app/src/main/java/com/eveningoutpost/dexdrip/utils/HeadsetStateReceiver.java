@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.utils;
 
+
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothHeadset;
@@ -10,7 +11,7 @@ import android.content.Intent;
 
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
@@ -44,29 +45,29 @@ public class HeadsetStateReceiver extends BroadcastReceiver {
                 final int state = intent.getIntExtra(BluetoothHeadset.EXTRA_STATE, -1);
                 final int previousState = intent.getIntExtra(BluetoothHeadset.EXTRA_PREVIOUS_STATE, -1);
                 final String deviceInfo = device.getName() + "\n" + device.getAddress() + " " + (device.getBluetoothClass() != null ? device.getBluetoothClass() : "<unknown class>");
-                //UserError.Log.uel(TAG, "Bluetooth audio connection state change: " + state + " was " + previousState + " " + device.getAddress() + " " + device.getName());
+                //UserErrorLog.uel(TAG, "Bluetooth audio connection state change: " + state + " was " + previousState + " " + device.getAddress() + " " + device.getName());
                 if (state == BluetoothProfile.STATE_CONNECTED && previousState != BluetoothProfile.STATE_CONNECTED) {
                     PersistentStore.setString(PREF_LAST_CONNECTED_MAC, device.getAddress());
                     PersistentStore.setString(PREF_LAST_CONNECTED_NAME, device.getName());
-                    UserError.Log.uel(TAG, "Bluetooth Audio connected: " + deviceInfo);
+                    UserErrorLog.uel(TAG, "Bluetooth Audio connected: " + deviceInfo);
                     processDevice(device.getAddress(), true);
 
                 } else if (state == BluetoothProfile.STATE_DISCONNECTED && previousState == BluetoothProfile.STATE_CONNECTED) {
-                    UserError.Log.uel(TAG, "Bluetooth Audio disconnected: " + deviceInfo);
+                    UserErrorLog.uel(TAG, "Bluetooth Audio disconnected: " + deviceInfo);
                     processDevice(device.getAddress(), false);
                 }
 
             } else {
-                UserError.Log.d(TAG, "Device was null in intent!");
+                UserErrorLog.d(TAG, "Device was null in intent!");
             }
         } else if (BluetoothHeadset.ACTION_AUDIO_STATE_CHANGED.equals(action)) {
             // TODO this probably just for debugging could remove later
             final int state = intent.getIntExtra(BluetoothHeadset.EXTRA_STATE, -1);
-            UserError.Log.e(TAG, "audio state changed: " + state);
+            UserErrorLog.e(TAG, "audio state changed: " + state);
 
         } else if (BluetoothHeadset.ACTION_VENDOR_SPECIFIC_HEADSET_EVENT.equals(action)) {
             // TODO this will probably never fire due to manifest intent filter - check if there is any use for it
-            UserError.Log.e(TAG, "Vendor specific command event received");
+            UserErrorLog.e(TAG, "Vendor specific command event received");
         }
     }
 
@@ -75,7 +76,7 @@ public class HeadsetStateReceiver extends BroadcastReceiver {
     private static void processDevice(final String mac, final boolean connected) {
         if (VehicleMode.isEnabled() && VehicleMode.viaCarAudio() && SelectAudioDevice.getAudioMac().equals(mac)) {
             VehicleMode.setVehicleModeActive(connected);
-            UserError.Log.ueh(TAG, "Vehicle mode: " + (connected ? "Enabled" : "Disabled"));
+            UserErrorLog.ueh(TAG, "Vehicle mode: " + (connected ? "Enabled" : "Disabled"));
             if (connected) {
                 Inevitable.task("xdrip-vehicle-mode", NOISE_DELAY, HeadsetStateReceiver::audioNotification);
             }
@@ -129,7 +130,7 @@ public class HeadsetStateReceiver extends BroadcastReceiver {
                 for (BluetoothDevice device : proxy.getConnectedDevices()) {
                     if (device.getAddress().equals(mac)) {
                         final boolean isConnected = proxy.getConnectionState(device) == BluetoothProfile.STATE_CONNECTED;
-                        UserError.Log.uel(TAG, "Found: " + device.getName() + " " + device.getAddress() + " " + (isConnected ? "Connected" : "Not connected"));
+                        UserErrorLog.uel(TAG, "Found: " + device.getName() + " " + device.getAddress() + " " + (isConnected ? "Connected" : "Not connected"));
                         if (isConnected) {
                             if (runnable != null) runnable.run();
                         }

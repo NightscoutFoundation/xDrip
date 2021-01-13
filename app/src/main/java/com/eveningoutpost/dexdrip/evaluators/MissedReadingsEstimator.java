@@ -1,12 +1,13 @@
 package com.eveningoutpost.dexdrip.evaluators;
 
-// jamorham
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 
 import static com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder.DEXCOM_PERIOD;
+
+// jamorham
 
 public class MissedReadingsEstimator {
 

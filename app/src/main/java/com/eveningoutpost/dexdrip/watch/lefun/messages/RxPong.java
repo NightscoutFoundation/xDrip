@@ -1,8 +1,9 @@
 package com.eveningoutpost.dexdrip.watch.lefun.messages;
 
-// jamorham
 
 import lombok.Getter;
+
+// jamorham
 
 public class RxPong extends BaseRx {
 

@@ -2,7 +2,7 @@ package com.eveningoutpost.dexdrip.Models;
 
 // class from LibreAlarm
 
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import java.util.ArrayList;
 import java.util.List;
 

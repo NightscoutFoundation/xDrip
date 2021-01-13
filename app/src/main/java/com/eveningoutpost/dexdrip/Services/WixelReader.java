@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.Services;
 
+
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.PowerManager;
@@ -12,7 +13,7 @@ import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.ParakeetHelper;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.MockDataSource;
@@ -62,7 +63,7 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
     static int added = 5;
 
     WixelReader(Context ctx) {
-        Log.d(TAG, "WixelReader init");
+        UserErrorLog.d(TAG, "WixelReader init");
     }
 
     public static boolean IsConfigured() {
@@ -143,11 +144,11 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
     private static List<TransmitterRawData> ReadHost(String hostAndIp, int numberOfRecords) {
         int port;
         //System.out.println("Reading From " + hostAndIp);
-        Log.i(TAG, "Reading From " + hostAndIp);
+        UserErrorLog.i(TAG, "Reading From " + hostAndIp);
         String[] hosts = hostAndIp.split(":");
         if (hosts.length != 2) {
           //  System.out.println("Invalid hostAndIp " + hostAndIp);
-            Log.e(TAG, "Invalid hostAndIp " + hostAndIp);
+            UserErrorLog.e(TAG, "Invalid hostAndIp " + hostAndIp);
 
             return null;
         }
@@ -155,14 +156,14 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
             port = Integer.parseInt(hosts[1]);
         } catch (NumberFormatException nfe) {
             System.out.println("Invalid port " + hosts[1]);
-            Log.e(TAG, "Invalid hostAndIp " + hostAndIp, nfe);
+            UserErrorLog.e(TAG, "Invalid hostAndIp " + hostAndIp, nfe);
             statusLog(hosts[0], JoH.hourMinuteString() + " Invalid Port: " + hostAndIp);
             return null;
 
         }
         if (port < 10 || port > 65535) {
             System.out.println("Invalid port " + hosts[1]);
-            Log.e(TAG, "Invalid hostAndIp " + hostAndIp);
+            UserErrorLog.e(TAG, "Invalid hostAndIp " + hostAndIp);
             statusLog(hosts[0], JoH.hourMinuteString() + " Invalid Host/Port: " + hostAndIp);
             return null;
 
@@ -174,7 +175,7 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
         } catch (Exception e) {
             // We had some error, need to move on...
             System.out.println("read from host failed cought expation" + hostAndIp);
-            Log.e(TAG, "read from host failed " + hostAndIp, e);
+            UserErrorLog.e(TAG, "read from host failed " + hostAndIp, e);
 
             return null;
 
@@ -183,13 +184,13 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
     }
 
     private static List<TransmitterRawData> ReadFromMongo(String dbury, int numberOfRecords) {
-        Log.i(TAG, "Reading From " + dbury);
+        UserErrorLog.i(TAG, "Reading From " + dbury);
         List<TransmitterRawData> tmpList;
         // format is dburi/db/collection. We need to find the collection and strip it from the dburi.
         int indexOfSlash = dbury.lastIndexOf('/');
         if (indexOfSlash == -1) {
             // We can not find a collection name
-            Log.e(TAG, "Error bad dburi. Did not find a collection name starting with / " + dbury);
+            UserErrorLog.e(TAG, "Error bad dburi. Did not find a collection name starting with / " + dbury);
             // in order for the user to understand that there is a problem, we return null
             return null;
 
@@ -201,7 +202,7 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
         indexOfSlash = dbury.lastIndexOf('/');
         if (indexOfSlash == -1) {
             // We can not find a collection name
-            Log.e(TAG, "Error bad dburi. Did not find a collection name starting with / " + dbury);
+            UserErrorLog.e(TAG, "Error bad dburi. Did not find a collection name starting with / " + dbury);
             // in order for the user to understand that there is a problem, we return null
             return null;
         }
@@ -262,11 +263,11 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
                 for (String data : lines) {
 
                     if (data == null) {
-                        Log.d(TAG, "received null continuing");
+                        UserErrorLog.d(TAG, "received null continuing");
                         continue;
                     }
                     if (data.equals("")) {
-                        Log.d(TAG, "received \"\" continuing");
+                        UserErrorLog.d(TAG, "received \"\" continuing");
                         continue;
                     }
 
@@ -286,7 +287,7 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
                             try {
                                 MapsActivity.newMapLocation(trd.GeoLocation, trd.CaptureDateTime);
                             } catch (Exception e) {
-                                Log.e(TAG, "Exception with maps activity: " + e.toString());
+                                UserErrorLog.e(TAG, "Exception with maps activity: " + e.toString());
                             }
                         } else {
                             // look a little further if we see usb-wixel data on parakeet app engine
@@ -305,11 +306,11 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
                     }
                 }
 
-                Log.i(TAG, "Success getting http json with end size: " + Integer.toString(trd_list.size()));
+                UserErrorLog.i(TAG, "Success getting http json with end size: " + Integer.toString(trd_list.size()));
             }
 
         } catch (Exception e) {
-            Log.e(TAG, "caught Exception in reading http json data " + e.toString());
+            UserErrorLog.e(TAG, "caught Exception in reading http json data " + e.toString());
         }
         return trd_list;
     }
@@ -318,7 +319,7 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
     public static TransmitterRawData[] Read(String hostsNames, int numberOfRecords) {
         String[] hosts = hostsNames.split(",");
         if (hosts.length == 0) {
-            Log.e(TAG, "Error no hosts were found " + hostsNames);
+            UserErrorLog.e(TAG, "Error no hosts were found " + hostsNames);
             return null;
         }
         List<List<TransmitterRawData>> allTransmitterRawData = new LinkedList<List<TransmitterRawData>>();
@@ -346,7 +347,7 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
         // merge the information
         if (allTransmitterRawData.size() == 0) {
             //System.out.println("Could not read anything from " + hostsNames);
-            Log.e(TAG, "Could not read anything from " + hostsNames);
+            UserErrorLog.e(TAG, "Could not read anything from " + hostsNames);
             return null;
 
         }
@@ -366,12 +367,12 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
 
     public static List<TransmitterRawData> Read(String hostName, int port, int numberOfRecords) {
         final List<TransmitterRawData> trd_list = new LinkedList<TransmitterRawData>();
-        Log.i(TAG, "Read called: " + hostName + " port: " + port);
+        UserErrorLog.i(TAG, "Read called: " + hostName + " port: " + port);
 
         final boolean skip_lan = Pref.getBooleanDefaultFalse("skip_lan_uploads_when_no_lan");
 
         if (skip_lan && (hostName.endsWith(".local")) && !JoH.isLANConnected()) {
-            Log.d(TAG, "Skipping due to no lan: " + hostName);
+            UserErrorLog.d(TAG, "Skipping due to no lan: " + hostName);
             statusLog(hostName, "Skipping, no LAN");
             return trd_list; // blank
         }
@@ -395,7 +396,7 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
             final InetSocketAddress ServerAddress = new InetSocketAddress(Mdns.genericResolver(hostName), port);
             currentAddress = ServerAddress.getAddress().getHostAddress();
             if (skip_lan && currentAddress.startsWith("192.168.") && !JoH.isLANConnected()) {
-                Log.d(TAG, "Skipping due to no lan: " + hostName);
+                UserErrorLog.d(TAG, "Skipping due to no lan: " + hostName);
                 statusLog(hostName, "Skipping, no LAN");
                 return trd_list; // blank
             }
@@ -416,11 +417,11 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
             while (true) {
                 String data = in.readLine();
                 if (data == null) {
-                    Log.d(TAG, "recieved null exiting");
+                    UserErrorLog.d(TAG, "recieved null exiting");
                     break;
                 }
                 if (data.equals("")) {
-                    Log.d(TAG, "recieved \"\" exiting");
+                    UserErrorLog.d(TAG, "recieved \"\" exiting");
                     break;
                 }
 
@@ -446,15 +447,15 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
             MySocket.close();
             return trd_list;
         } catch (SocketTimeoutException s) {
-            Log.e(TAG, "Socket timed out! " + hostName + " : " + currentAddress + " : " + s.toString() + " after: " + JoH.msSince(time_start));
+            UserErrorLog.e(TAG, "Socket timed out! " + hostName + " : " + currentAddress + " : " + s.toString() + " after: " + JoH.msSince(time_start));
             statusLog(hostName, JoH.hourMinuteString() + " " + s.toString());
         } catch (IOException e) {
-            Log.e(TAG, "caught IOException! " + hostName + " : " + currentAddress + " : " + " : " + e.toString());
+            UserErrorLog.e(TAG, "caught IOException! " + hostName + " : " + currentAddress + " : " + " : " + e.toString());
             statusLog(hostName, JoH.hourMinuteString() + " " + e.toString());
         } catch (IllegalArgumentException e) {
-            Log.e(TAG, "Argument error on: " + hostName + " " + e.toString());
+            UserErrorLog.e(TAG, "Argument error on: " + hostName + " " + e.toString());
         } catch (NullPointerException e) {
-            Log.e(TAG, "Got null pointer exception " + hostName + " " + e.toString());
+            UserErrorLog.e(TAG, "Got null pointer exception " + hostName + " " + e.toString());
         }
         return trd_list;
     }
@@ -464,14 +465,14 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
         TransmitterData lastTransmitterData = TransmitterData.last();
         if (lastTransmitterData == null) {
             // We did not receive a packet, well someone hopefully is looking at data, return relatively fast
-            Log.e(TAG, "lastTransmitterData == null returning 60000");
+            UserErrorLog.e(TAG, "lastTransmitterData == null returning 60000");
             return 60 * 1000L;
         }
         Long gapTime = new Date().getTime() - lastTransmitterData.timestamp;
-        Log.d(TAG, "gapTime = " + gapTime);
+        UserErrorLog.d(TAG, "gapTime = " + gapTime);
         if (gapTime < 0) {
             // There is some confusion here (clock was readjusted?)
-            Log.e(TAG, "gapTime <= null returning 60000");
+            UserErrorLog.e(TAG, "gapTime <= null returning 60000");
             return 60 * 1000L;
         }
 
@@ -482,7 +483,7 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
         }
 
         gapTime = gapTime % DEXCOM_PERIOD;
-        Log.d(TAG, "modulus gapTime = " + gapTime);
+        UserErrorLog.d(TAG, "modulus gapTime = " + gapTime);
         if (gapTime < 10000) {
             // A new packet should arrive any second now
             return 10000L;
@@ -507,7 +508,7 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
             readData();
         } finally {
             JoH.releaseWakeLock(wl);
-           // Log.d(TAG, "wakelock released " + lockCounter);
+           // UserErrorLog.d(TAG, "wakelock released " + lockCounter);
         }
         return null;
     }
@@ -521,7 +522,7 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
 
             // jamorham fix to avoid going twice to network when we just got a packet
             if ((new Date().getTime() - LastReportedTime) < DEXCOM_PERIOD - 2000) {
-                Log.d(TAG, "Already have a recent packet - returning");
+                UserErrorLog.d(TAG, "Already have a recent packet - returning");
                 if (JoH.ratelimit("deferred-msg", 60)) {
                     statusLog(" Deferred", "Already have recent reading");
                 }
@@ -535,7 +536,7 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
         Long startReadTime = LastReportedTime;
 
         TransmitterRawData LastReportedReading = null;
-        Log.d(TAG, "Starting... LastReportedReading " + LastReportedReading);
+        UserErrorLog.d(TAG, "Starting... LastReportedReading " + LastReportedReading);
         // try to read one object...
         TransmitterRawData[] LastReadingArr = null;
 
@@ -564,7 +565,7 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
         packetsToRead = Math.max(packetsToRead, 1);
 
 
-        Log.d(TAG, "reading " + packetsToRead + " packets");
+        UserErrorLog.d(TAG, "reading " + packetsToRead + " packets");
         LastReadingArr = Read(recieversIpAddresses, packetsToRead);
 
         if (LastReadingArr == null || LastReadingArr.length == 0) {
@@ -582,7 +583,7 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
                     (!almostEquals(LastReading, LastReportedReading)) &&
                     LastReading.CaptureDateTime < new Date().getTime() + 120000) {
                 // We have a real new reading...
-                Log.d(TAG, "calling setSerialDataToTransmitterRawData " + LastReading.RawValue +
+                UserErrorLog.d(TAG, "calling setSerialDataToTransmitterRawData " + LastReading.RawValue +
                         " LastReading.CaptureDateTime " + LastReading.CaptureDateTime + " " + LastReading.TransmissionId);
                 setSerialDataToTransmitterRawData(LastReading.RawValue, LastReading.FilteredValue, LastReading.BatteryLife, LastReading.CaptureDateTime);
                 LastReportedReading = LastReading;
@@ -614,7 +615,7 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
                 sensor.latest_battery_level = transmitterData.sensor_battery_level; // don't lock it only going downwards
                 sensor.save();
             } else {
-                Log.d(TAG, "No Active Sensor, Data only stored in Transmitter Data");
+                UserErrorLog.d(TAG, "No Active Sensor, Data only stored in Transmitter Data");
             }
         }
     }
@@ -634,9 +635,9 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
         }
 
         int fakedRaw = 100000 + i * 3000;
-        Log.d(TAG, "calling setSerialDataToTransmitterRawData " + fakedRaw);
+        UserErrorLog.d(TAG, "calling setSerialDataToTransmitterRawData " + fakedRaw);
         setSerialDataToTransmitterRawData(fakedRaw, fakedRaw ,215, new Date().getTime());
-        Log.d(TAG, "returned from setSerialDataToTransmitterRawData " + fakedRaw);
+        UserErrorLog.d(TAG, "returned from setSerialDataToTransmitterRawData " + fakedRaw);
     }*/
 
     // data for MegaStatus

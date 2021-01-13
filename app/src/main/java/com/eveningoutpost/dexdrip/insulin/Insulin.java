@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.insulin;
 
+
 import android.util.Log;
 
 import com.google.gson.JsonObject;

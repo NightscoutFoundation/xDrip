@@ -1,11 +1,10 @@
 package com.eveningoutpost.dexdrip.watch.thinjam;
 
-// jamorham
 
 import android.content.Intent;
 
 import com.eveningoutpost.dexdrip.BestGlucose;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.Intents;
 import com.eveningoutpost.dexdrip.watch.thinjam.io.ThinJamApiReceiver;
 
@@ -14,6 +13,8 @@ import lombok.val;
 import static com.eveningoutpost.dexdrip.Models.JoH.msSince;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.MINUTE_IN_MS;
 import static com.eveningoutpost.dexdrip.xdrip.getAppContext;
+
+// jamorham
 
 public class BlueJayRemote {
 
@@ -53,7 +54,7 @@ public class BlueJayRemote {
             }
 
             val finalMessage = sb.toString();
-            UserError.Log.d(TAG, "Broadcasting: " + finalMessage);
+            UserErrorLog.d(TAG, "Broadcasting: " + finalMessage);
             sendTextFit(finalMessage);
         }
     }

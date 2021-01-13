@@ -1,11 +1,12 @@
 package com.eveningoutpost.dexdrip.watch.lefun.messages;
 
-// jamorham
 
 import com.eveningoutpost.dexdrip.watch.lefun.LeFun;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
+
+// jamorham
 
 public abstract class BaseRx {
 

@@ -1,15 +1,16 @@
 package com.eveningoutpost.dexdrip.utils;
 
-// created by jamorham
 
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.activeandroid.Cache;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 
 import lombok.NonNull;
+
+// created by jamorham
 
 
 /* Wouldn't it be nice if you could search and replace inside an sqlite schema?
@@ -27,7 +28,7 @@ public class SqliteRejigger {
 
         final String existing_schema = getSchema(table_name);
 
-        if (d) UserError.Log.d(TAG, existing_schema);
+        if (d) UserErrorLog.d(TAG, existing_schema);
 
         if (existing_schema.contains(search)) {
             final String sql =
@@ -40,18 +41,18 @@ public class SqliteRejigger {
                             "DROP TABLE " + temp_table + ";\n" +
                             "COMMIT;\n" +
                             "PRAGMA foreign_keys=on;\n";
-            if (d) UserError.Log.d(TAG, sql);
+            if (d) UserErrorLog.d(TAG, sql);
             try {
                 executeBatchSQL(sql);
-                UserError.Log.d(TAG, "Rejig probably successful for " + table_name + " " + replace);
+                UserErrorLog.d(TAG, "Rejig probably successful for " + table_name + " " + replace);
                 return true;
             } catch (SQLException e) {
-                UserError.Log.e(TAG, "Unable to rejig " + e + " on " + table_name + " " + replace);
+                UserErrorLog.e(TAG, "Unable to rejig " + e + " on " + table_name + " " + replace);
                 return false;
             }
 
         } else {
-            UserError.Log.d(TAG, search + " not found in schema for " + table_name + " presumably this patch has already been applied");
+            UserErrorLog.d(TAG, search + " not found in schema for " + table_name + " presumably this patch has already been applied");
             return false;
         }
 

@@ -1,9 +1,10 @@
 package com.eveningoutpost.dexdrip;
 
-// jamorham
 
 import android.app.Activity;
 import android.content.Context;
+
+// jamorham
 
 public abstract class BaseActivity extends Activity {
 

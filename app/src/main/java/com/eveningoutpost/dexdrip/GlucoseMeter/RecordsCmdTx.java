@@ -1,9 +1,10 @@
 package com.eveningoutpost.dexdrip.GlucoseMeter;
 
-// jamorham
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+
+// jamorham
 
 public class RecordsCmdTx {
 

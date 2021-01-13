@@ -1,6 +1,7 @@
 package com.eveningoutpost.dexdrip.G5Model;
 
-import com.eveningoutpost.dexdrip.Models.UserError;
+
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.Services.G5CollectionService;
 
 import java.nio.ByteBuffer;
@@ -124,16 +125,18 @@ public class BatteryInfoRxMessage extends BaseMessage {
             if (bytes != null) {
                 switch(bytes.length) {
                     case(0):
-                        UserError.Log.wtf(TAG, "0 bytes sent to BatteryInfoRxMessage ");
+                        UserErrorLog.wtf(TAG, "0 bytes sent to BatteryInfoRxMessage ");
                         break;
                     case(10):
                     case(12):
-                        return bytes[0] == opcode;
+                        if (bytes[0] == opcode) {
+                            return true;
+                        }
                     default:
-                        UserError.Log.e(TAG, "Unknown BattteryInfoRxMessage packet opcode: 0x" + Integer.toHexString(bytes[0]) + " and length was " + bytes.length + ", expected is 10 or 12");
+                        UserErrorLog.e(TAG, "Unknown BattteryInfoRxMessage packet opcode: 0x" + Integer.toHexString(bytes[0]) + " and length was " + bytes.length + ", expected is 10 or 12");
                 }
             } else {
-                UserError.Log.e(TAG, "a null byte array sent to BatteryInfoRxMessage ");
+                UserErrorLog.e(TAG, "a null byte array sent to BatteryInfoRxMessage ");
             }
             return false;
         }

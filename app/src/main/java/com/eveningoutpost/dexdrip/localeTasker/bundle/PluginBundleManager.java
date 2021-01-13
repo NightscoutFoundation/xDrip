@@ -12,6 +12,7 @@
 
 package com.eveningoutpost.dexdrip.localeTasker.bundle;
 
+
 import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;

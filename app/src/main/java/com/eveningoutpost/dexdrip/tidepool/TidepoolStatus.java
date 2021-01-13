@@ -1,6 +1,5 @@
 package com.eveningoutpost.dexdrip.tidepool;
 
-// jamorham
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
@@ -12,6 +11,8 @@ import java.util.List;
 
 import static com.eveningoutpost.dexdrip.Models.JoH.msSince;
 import static com.eveningoutpost.dexdrip.Models.JoH.niceTimeScalar;
+
+// jamorham
 
 public class TidepoolStatus {
 

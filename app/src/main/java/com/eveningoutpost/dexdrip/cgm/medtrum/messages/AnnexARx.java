@@ -1,7 +1,8 @@
 package com.eveningoutpost.dexdrip.cgm.medtrum.messages;
 
+
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.cgm.medtrum.SensorState;
 import com.eveningoutpost.dexdrip.cgm.medtrum.TimeKeeper;
@@ -175,11 +176,11 @@ public class AnnexARx extends BaseMessage {
     public boolean processForTimeKeeper(long serial) {
         if (referenceMs > 0) {
             final long time = JoH.tsl() - referenceMs;
-            UserError.Log.d(TAG, "ReferenceMS equates to: " + JoH.dateTimeText(time));
+            UserErrorLog.d(TAG, "ReferenceMS equates to: " + JoH.dateTimeText(time));
             TimeKeeper.setTime(serial, time);
             return true;
         } else {
-            UserError.Log.d(TAG, "ReferenceMS invalid at: " + referenceMs);
+            UserErrorLog.d(TAG, "ReferenceMS invalid at: " + referenceMs);
         }
         return false;
     }

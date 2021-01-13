@@ -1,30 +1,22 @@
 package com.eveningoutpost.dexdrip.Services;
 
+
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.PowerManager;
 import android.util.Base64;
 
-import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
-import com.eveningoutpost.dexdrip.MapsActivity;
-import com.eveningoutpost.dexdrip.NFCReaderX;
-import com.eveningoutpost.dexdrip.Models.BgReading;
-import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.LibreBlock;
-import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.SensorSanity;
-import com.eveningoutpost.dexdrip.Models.TransmitterData;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
-import com.eveningoutpost.dexdrip.ParakeetHelper;
-import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
+import com.eveningoutpost.dexdrip.NFCReaderX;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.MockDataSource;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
-import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.Mdns;
 import com.google.gson.Gson;
@@ -42,7 +34,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 
 // Important note, this class is based on the fact that android will always run it one thread, which means it does not
@@ -64,7 +55,7 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
     static int added = 5;
 
     LibreWifiReader(Context ctx) {
-        Log.d(TAG, "LibreWifiReader init");
+        UserErrorLog.d(TAG, "LibreWifiReader init");
     }
 
     static boolean almostEquals(LibreWifiData e1, LibreWifiData e2) {
@@ -137,11 +128,11 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
     private static List<LibreWifiData> ReadHost(String hostAndIp, int numberOfRecords) {
         int port;
         //System.out.println("Reading From " + hostAndIp);
-        Log.i(TAG, "Reading From " + hostAndIp);
+        UserErrorLog.i(TAG, "Reading From " + hostAndIp);
         String[] hosts = hostAndIp.split(":");
         if (hosts.length != 2) {
           //  System.out.println("Invalid hostAndIp " + hostAndIp);
-            Log.e(TAG, "Invalid hostAndIp " + hostAndIp);
+            UserErrorLog.e(TAG, "Invalid hostAndIp " + hostAndIp);
 
             return null;
         }
@@ -149,14 +140,14 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
             port = Integer.parseInt(hosts[1]);
         } catch (NumberFormatException nfe) {
             System.out.println("Invalid port " + hosts[1]);
-            Log.e(TAG, "Invalid hostAndIp " + hostAndIp, nfe);
+            UserErrorLog.e(TAG, "Invalid hostAndIp " + hostAndIp, nfe);
             statusLog(hosts[0], JoH.hourMinuteString() + " Invalid Port: " + hostAndIp);
             return null;
 
         }
         if (port < 10 || port > 65535) {
             System.out.println("Invalid port " + hosts[1]);
-            Log.e(TAG, "Invalid hostAndIp " + hostAndIp);
+            UserErrorLog.e(TAG, "Invalid hostAndIp " + hostAndIp);
             statusLog(hosts[0], JoH.hourMinuteString() + " Invalid Host/Port: " + hostAndIp);
             return null;
 
@@ -168,7 +159,7 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
         } catch (Exception e) {
             // We had some error, need to move on...
             System.out.println("read from host failed cought expation" + hostAndIp);
-            Log.e(TAG, "read from host failed " + hostAndIp, e);
+            UserErrorLog.e(TAG, "read from host failed " + hostAndIp, e);
 
             return null;
 
@@ -180,12 +171,12 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
     
     private static List<LibreWifiData> ReadFromMongo(String dbury, int numberOfRecords) {
        
-        Log.i(TAG, "Reading From " + dbury);
+        UserErrorLog.i(TAG, "Reading From " + dbury);
         // format is dburi/db/collection. We need to find the collection and strip it from the dburi.
         int indexOfSlash = dbury.lastIndexOf('/');
         if (indexOfSlash == -1) {
             // We can not find a collection name
-            Log.e(TAG, "Error bad dburi. Did not find a collection name starting with / " + dbury);
+            UserErrorLog.e(TAG, "Error bad dburi. Did not find a collection name starting with / " + dbury);
             // in order for the user to understand that there is a problem, we return null
             return null;
 
@@ -197,7 +188,7 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
         indexOfSlash = dbury.lastIndexOf('/');
         if (indexOfSlash == -1) {
             // We can not find a collection name
-            Log.e(TAG, "Error bad dburi. Did not find a collection name starting with / " + dbury);
+            UserErrorLog.e(TAG, "Error bad dburi. Did not find a collection name starting with / " + dbury);
             // in order for the user to understand that there is a problem, we return null
             return null;
         }
@@ -221,7 +212,7 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
     public static LibreWifiData[] Read(String hostsNames, int numberOfRecords) {
         String[] hosts = hostsNames.split(",");
         if (hosts.length == 0) {
-            Log.e(TAG, "Error no hosts were found " + hostsNames);
+            UserErrorLog.e(TAG, "Error no hosts were found " + hostsNames);
             return null;
         }
         List<List<LibreWifiData>> allTransmitterRawData = new LinkedList<List<LibreWifiData>>();
@@ -246,7 +237,7 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
         // merge the information
         if (allTransmitterRawData.size() == 0) {
             //System.out.println("Could not read anything from " + hostsNames);
-            Log.e(TAG, "Could not read anything from " + hostsNames);
+            UserErrorLog.e(TAG, "Could not read anything from " + hostsNames);
             return null;
 
         }
@@ -267,12 +258,12 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
     public static List<LibreWifiData> ReadV2(String hostName, int port, int numberOfRecords) {
         
         final List<LibreWifiData> trd_list = new LinkedList<LibreWifiData>();
-        Log.i(TAG, "Read called: " + hostName + " port: " + port);
+        UserErrorLog.i(TAG, "Read called: " + hostName + " port: " + port);
         
         final boolean skip_lan = Pref.getBooleanDefaultFalse("skip_lan_uploads_when_no_lan");
 
         if (skip_lan && (hostName.endsWith(".local")) && !JoH.isLANConnected()) {
-            Log.d(TAG, "Skipping due to no lan: " + hostName);
+            UserErrorLog.d(TAG, "Skipping due to no lan: " + hostName);
             statusLog(hostName, "Skipping, no LAN");
             return trd_list; // blank
         }
@@ -296,7 +287,7 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
             final InetSocketAddress ServerAddress = new InetSocketAddress(Mdns.genericResolver(hostName), port);
             currentAddress = ServerAddress.getAddress().getHostAddress();
             if (skip_lan && currentAddress.startsWith("192.168.") && !JoH.isLANConnected()) {
-                Log.d(TAG, "Skipping due to no lan: " + hostName);
+                UserErrorLog.d(TAG, "Skipping due to no lan: " + hostName);
                 statusLog(hostName, "Skipping, no LAN");
                 return trd_list; // blank
             }
@@ -318,22 +309,22 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
             while (true) {
                 String data = in.readLine();
                 if (data == null) {
-                    Log.d(TAG, "recieved null exiting");
+                    UserErrorLog.d(TAG, "recieved null exiting");
                     break;
                 }
                 if (data.equals("")) {
-                    Log.d(TAG, "recieved \"\" exiting");
+                    UserErrorLog.d(TAG, "recieved \"\" exiting");
                     break;
                 }
 
-                Log.e(TAG,  "data size " +data.length() + " data = "+ data);
+                UserErrorLog.e(TAG,  "data size " +data.length() + " data = "+ data);
                 full_data += data; 
             }
             
             MySocket.close();
             
             final LibreWifiHeader libre_Wifi_header = gson.fromJson(full_data, LibreWifiHeader.class);
-            Log.e(TAG, "LibreWifiHeader = " + libre_Wifi_header);
+            UserErrorLog.e(TAG, "LibreWifiHeader = " + libre_Wifi_header);
             
             for (LibreWifiData libre_wifi_data : libre_Wifi_header.libre_wifi_data) {
                 libre_wifi_data.CaptureDateTime = System.currentTimeMillis() - libre_wifi_data.RelativeTime;
@@ -353,15 +344,15 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
             }
             return trd_list;
         } catch (SocketTimeoutException s) {
-            Log.e(TAG, "Socket timed out! " + hostName + " : " + currentAddress + " : " + s.toString() + " after: " + JoH.msSince(time_start));
+            UserErrorLog.e(TAG, "Socket timed out! " + hostName + " : " + currentAddress + " : " + s.toString() + " after: " + JoH.msSince(time_start));
             statusLog(hostName, JoH.hourMinuteString() + " " + s.toString());
         } catch (IOException e) {
-            Log.e(TAG, "caught IOException! " + hostName + " : " + currentAddress + " : " + " : " + e.toString());
+            UserErrorLog.e(TAG, "caught IOException! " + hostName + " : " + currentAddress + " : " + " : " + e.toString());
             statusLog(hostName, JoH.hourMinuteString() + " " + e.toString());
         } catch (IllegalArgumentException e) {
-            Log.e(TAG, "Argument error on: " + hostName + " " + e.toString());
+            UserErrorLog.e(TAG, "Argument error on: " + hostName + " " + e.toString());
         } catch (NullPointerException e) {
-            Log.e(TAG, "Got null pointer exception " + hostName + " " + e.toString());
+            UserErrorLog.e(TAG, "Got null pointer exception " + hostName + " " + e.toString());
         }
         
         return trd_list;
@@ -373,14 +364,14 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
         
         if (libreBlock == null) {
             // We did not receive a packet, well someone hopefully is looking at data, return relatively fast
-            Log.e(TAG, "libreBlock == null returning 60000");
+            UserErrorLog.e(TAG, "libreBlock == null returning 60000");
             return 60 * 1000L;
         }
         Long gapTime = new Date().getTime() - libreBlock.timestamp;
-        Log.d(TAG, "gapTime = " + gapTime);
+        UserErrorLog.d(TAG, "gapTime = " + gapTime);
         if (gapTime < 0) {
             // There is some confusion here (clock was readjusted?)
-            Log.e(TAG, "gapTime <= null returning 60000");
+            UserErrorLog.e(TAG, "gapTime <= null returning 60000");
             return 60 * 1000L;
         }
 
@@ -391,7 +382,7 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
         }
 
         gapTime = gapTime % DEXCOM_PERIOD;
-        Log.d(TAG, "modulus gapTime = " + gapTime);
+        UserErrorLog.d(TAG, "modulus gapTime = " + gapTime);
         if (gapTime < 10000) {
             // A new packet should arrive any second now
             return 10000L;
@@ -406,32 +397,32 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
 
     public Void doInBackground(String... urls) {
         final PowerManager.WakeLock wl = JoH.getWakeLock("LibreWifiReader", 120000);
-        Log.e(TAG, "doInBackground called");
+        UserErrorLog.e(TAG, "doInBackground called");
         try {
             synchronized (LibreWifiReader.class) {
                 readData();
             }
         } finally {
             JoH.releaseWakeLock(wl);
-           // Log.d(TAG, "wakelock released " + lockCounter);
+           // UserErrorLog.d(TAG, "wakelock released " + lockCounter);
         }
         return null;
     }
 
     private void readData() {
         // Start very simply by getting only one object and using it.
-        Log.e(TAG, "readData called");
+        UserErrorLog.e(TAG, "readData called");
         Long LastReportedTime = 0L;
         
         // TODO change that to work based on readings as well ???
         LibreBlock libreBlock = LibreBlock.getLatestForTrend(0L, JoH.tsl() + 5 * 60000); // Allow some packets from the future.
         if (libreBlock != null) {
             LastReportedTime = libreBlock.timestamp;
-            Log.e(TAG, "LastReportedTime = " + JoH.dateTimeText(LastReportedTime));
+            UserErrorLog.e(TAG, "LastReportedTime = " + JoH.dateTimeText(LastReportedTime));
 
             // jamorham fix to avoid going twice to network when we just got a packet
             if ((new Date().getTime() - LastReportedTime) < DEXCOM_PERIOD - 2000) {
-                Log.d(TAG, "Already have a recent packet - returning");
+                UserErrorLog.d(TAG, "Already have a recent packet - returning");
                 if (JoH.ratelimit("deferred-msg", 60)) {
                     statusLog(" Deferred", "Already have recent reading");
                 }
@@ -444,7 +435,7 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
 
         // This is the same ip location as for the wixelreader.
         if (!WixelReader.IsConfigured()) {
-            Log.e(TAG, "LibreWifiReader not configured");
+            UserErrorLog.e(TAG, "LibreWifiReader not configured");
             return;
         }
 
@@ -454,15 +445,15 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
             recieversIpAddresses = Pref.getString("wifi_recievers_addresses", "");
         }
         int packetsToRead = 1;
-        Log.d(TAG, "reading " + packetsToRead + " packets");
+        UserErrorLog.d(TAG, "reading " + packetsToRead + " packets");
         LibreWifiData[] LibreWifiDataArr = Read(recieversIpAddresses, packetsToRead);
         
-        Log.d(TAG, "After reading ..." + LibreWifiDataArr);
+        UserErrorLog.d(TAG, "After reading ..." + LibreWifiDataArr);
 
         if (LibreWifiDataArr == null || LibreWifiDataArr.length == 0) {
             return;
         }
-        Log.d(TAG, "After verification ..." + LibreWifiDataArr);
+        UserErrorLog.d(TAG, "After verification ..." + LibreWifiDataArr);
         // Last in the array is the most updated reading we have.
         for (LibreWifiData LastReading : LibreWifiDataArr) {
             // Last in the array is the most updated reading we have.
@@ -471,12 +462,12 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
             //if (LastReading.CaptureDateTime > LastReportedReading + 5000) {
             // Make sure we do not report packets from the far future...
             
-            Log.d(TAG, "checking packet from " +  JoH.dateTimeText(LastReading.CaptureDateTime ));
+            UserErrorLog.d(TAG, "checking packet from " +  JoH.dateTimeText(LastReading.CaptureDateTime ));
             
             if ((LastReading.CaptureDateTime > LastReportedTime + 4 * 60000) &&
                     LastReading.CaptureDateTime < new Date().getTime() + 120000) {
                 // We have a real new reading...
-                Log.d(TAG, "will call with packet from " +  JoH.dateTimeText(LastReading.CaptureDateTime ));
+                UserErrorLog.d(TAG, "will call with packet from " +  JoH.dateTimeText(LastReading.CaptureDateTime ));
 
                 byte data[] = Base64.decode(LastReading.BlockBytes, Base64.DEFAULT);
 
@@ -490,7 +481,7 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
                 }
                 boolean checksum_ok = NFCReaderX.HandleGoodReading(LastReading.SensorId, data, LastReading.CaptureDateTime, false, patchUid, patchInfo);
                 if (checksum_ok) {
-                    Log.d(TAG, "checksum ok updating LastReportedTime to " +  JoH.dateTimeText(LastReading.CaptureDateTime ));
+                    UserErrorLog.d(TAG, "checksum ok updating LastReportedTime to " +  JoH.dateTimeText(LastReading.CaptureDateTime ));
                     // TODO use battery, and other interesting data.
                     LastReportedTime = LastReading.CaptureDateTime;
                     
@@ -498,17 +489,17 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
                     Pref.setInt("bridge_battery", LastReading.TomatoBatteryLife);
                     PersistentStore.setString("TomatoHArdware", LastReading.HwVersion);
                     PersistentStore.setString("TomatoFirmware",LastReading.FwVersion);
-                    Log.i(TAG, "LastReading.SensorId " + LastReading.SensorId);
+                    UserErrorLog.i(TAG, "LastReading.SensorId " + LastReading.SensorId);
                     PersistentStore.setString("LibreSN", LastReading.SensorId);
                     
                     if (SensorSanity.checkLibreSensorChangeIfEnabled(LastReading.SensorId)) {
-                        Log.e(TAG, "Problem with Libre Serial Number - not processing");
+                        UserErrorLog.e(TAG, "Problem with Libre Serial Number - not processing");
                         return;
                     }
                     
                     
                 } else {
-                    Log.e(TAG, "Recieved a pacjet with bad checksum");
+                    UserErrorLog.e(TAG, "Recieved a pacjet with bad checksum");
                 }
             }
         }

@@ -1,6 +1,8 @@
 /*
 package com.eveningoutpost.dexdrip;
 
+
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import android.util.Log;
 
 import com.google.android.gms.drive.DriveId;

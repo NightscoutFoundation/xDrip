@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -20,8 +21,7 @@ import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
 import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.SnoozeOnNotificationDismissService;
 import com.eveningoutpost.dexdrip.SnoozeActivity;
@@ -66,7 +66,7 @@ class MediaPlayerCreaterHelper {
                 synchronized(creationThreadLock) {
                     try {
                         mediaPlayer_ = new MediaPlayer();
-                        Log.i(TAG, "media player created");
+                        UserErrorLog.i(TAG, "media player created");
                     } finally {
                         mplayerCreated_ = true;
                         creationThreadLock.notifyAll();
@@ -86,7 +86,7 @@ class MediaPlayerCreaterHelper {
                 }
             } 
         }catch (InterruptedException e){
-             Log.e(TAG, "Cought exception", e);
+             UserErrorLog.e(TAG, "Cought exception", e);
         }
         return mediaPlayer_;
     }
@@ -120,10 +120,10 @@ public class AlertPlayer {
 
     public static synchronized AlertPlayer getPlayer() {
         if(alertPlayerInstance == null) {
-            Log.i(TAG,"getPlayer: Creating a new AlertPlayer");
+            UserErrorLog.i(TAG,"getPlayer: Creating a new AlertPlayer");
             alertPlayerInstance = new AlertPlayer();
         } else {
-            Log.i(TAG,"getPlayer: Using existing AlertPlayer");
+            UserErrorLog.i(TAG,"getPlayer: Using existing AlertPlayer");
         }
         return alertPlayerInstance;
     }
@@ -137,9 +137,9 @@ public class AlertPlayer {
     }
 
     public synchronized  void startAlert(Context ctx, boolean trendingToAlertEnd, AlertType newAlert, String bgValue , boolean start_snoozed)  {
-        Log.d(TAG, "startAlert called, Threadid " + Thread.currentThread().getId());
+        UserErrorLog.d(TAG, "startAlert called, Threadid " + Thread.currentThread().getId());
         if (trendingToAlertEnd) {
-            Log.d(TAG, "startAlert: This alert is trending to it's end will not do anything");
+            UserErrorLog.d(TAG, "startAlert: This alert is trending to it's end will not do anything");
             return;
         }
 
@@ -158,7 +158,7 @@ public class AlertPlayer {
 
     public synchronized void stopAlert(Context ctx, boolean ClearData, boolean clearIfSnoozeFinished, boolean cancelNotification) {
 
-        Log.d(TAG, "stopAlert: stop called ClearData " + ClearData + "  ThreadID " + Thread.currentThread().getId());
+        UserErrorLog.d(TAG, "stopAlert: stop called ClearData " + ClearData + "  ThreadID " + Thread.currentThread().getId());
         if (ClearData) {
             ActiveBgAlert.ClearData();
         }
@@ -172,12 +172,12 @@ public class AlertPlayer {
             try {
                 mediaPlayer.stop();
             } catch (IllegalStateException e) {
-                UserError.Log.e(TAG, "Exception when stopping media player: " + e);
+                UserErrorLog.e(TAG, "Exception when stopping media player: " + e);
             }
             try {
                 mediaPlayer.release();
             } catch (IllegalStateException e) {
-                UserError.Log.e(TAG, "Exception releasing media player: " + e);
+                UserErrorLog.e(TAG, "Exception releasing media player: " + e);
             }
             mediaPlayer = null;
         }
@@ -189,7 +189,7 @@ public class AlertPlayer {
         if (JoH.ratelimit("opp-snooze-check", 3)) {
             if (ActiveBgAlert.getOnly() != null) {
                 // there is an alert so do something
-                UserError.Log.ueh(TAG, "Opportunistic snooze attempted to snooze alert");
+                UserErrorLog.ueh(TAG, "Opportunistic snooze attempted to snooze alert");
                 Snooze(xdrip.getAppContext(), -1);
                 if (JoH.ratelimit("opportunistic-snooze-toast", 300)) {
                     JoH.static_toast_long("Opportunistic Snooze");
@@ -216,11 +216,11 @@ public class AlertPlayer {
     }
 
     public synchronized void Snooze(Context ctx, int repeatTime, boolean from_interactive) {
-        Log.i(TAG, "Snooze called repeatTime = " + repeatTime);
+        UserErrorLog.i(TAG, "Snooze called repeatTime = " + repeatTime);
         stopAlert(ctx, false, false);
         ActiveBgAlert activeBgAlert = ActiveBgAlert.getOnly();
         if (activeBgAlert == null) {
-            Log.e(TAG, "Error, snooze was called but no alert is active.");
+            UserErrorLog.e(TAG, "Error, snooze was called but no alert is active.");
             if (from_interactive) GcmActivity.sendSnoozeToRemote();
             return;
         }
@@ -229,10 +229,10 @@ public class AlertPlayer {
             AlertType alert = ActiveBgAlert.alertTypegetOnly();
             if (alert != null) {
                 repeatTime = alert.default_snooze;
-                Log.d(TAG, "Selecting default snooze time: " + repeatTime);
+                UserErrorLog.d(TAG, "Selecting default snooze time: " + repeatTime);
             } else {
                 repeatTime = 30; // pick a number if we cannot even find the default
-                Log.e(TAG, "Cannot even find default snooze time so going with: " + repeatTime);
+                UserErrorLog.e(TAG, "Cannot even find default snooze time so going with: " + repeatTime);
             }
         }
         activeBgAlert.snooze(repeatTime);
@@ -240,12 +240,12 @@ public class AlertPlayer {
     }
 
     public synchronized void PreSnooze(Context ctx, String uuid, int repeatTime) {
-        Log.i(TAG, "PreSnooze called repeatTime = "+ repeatTime);
+        UserErrorLog.i(TAG, "PreSnooze called repeatTime = "+ repeatTime);
         stopAlert(ctx, true, false);
         ActiveBgAlert.Create(uuid, true, new Date().getTime() + repeatTime * 60000);
         ActiveBgAlert activeBgAlert = ActiveBgAlert.getOnly();
         if (activeBgAlert  == null) {
-            Log.wtf(TAG, "Just created the alert, where did it go...");
+            UserErrorLog.wtf(TAG, "Just created the alert, where did it go...");
             return;
         }
         activeBgAlert.snooze(repeatTime);
@@ -255,7 +255,7 @@ public class AlertPlayer {
     public void ClockTick(Context ctx, boolean trendingToAlertEnd, String bgValue)
     {
         if (trendingToAlertEnd) {
-            Log.d(TAG,"ClockTick: This alert is trending to it's end will not do anything");
+            UserErrorLog.d(TAG,"ClockTick: This alert is trending to it's end will not do anything");
             return;
         }
         ActiveBgAlert activeBgAlert = ActiveBgAlert.getOnly();
@@ -269,11 +269,11 @@ public class AlertPlayer {
             final int minutesFromStartPlaying = activeBgAlert.getAndUpdateAlertingMinutes();
             final AlertType alert = AlertType.get_alert(activeBgAlert.alert_uuid);
             if (alert == null) {
-                Log.d(TAG, "ClockTick: The alert was already deleted... will not play");
+                UserErrorLog.d(TAG, "ClockTick: The alert was already deleted... will not play");
                 ActiveBgAlert.ClearData();
                 return;
             }
-            Log.d(TAG,"ClockTick: Playing the alert again");
+            UserErrorLog.d(TAG,"ClockTick: Playing the alert again");
             long nextAlertTime = alert.getNextAlertTime(ctx);
             activeBgAlert.updateNextAlertAt(nextAlertTime);
             
@@ -290,7 +290,7 @@ public class AlertPlayer {
             mp.setDataSource(context, uri);
             return true;
         } catch (IOException | NullPointerException | IllegalArgumentException | SecurityException ex) {
-            Log.e(TAG, "setMediaDataSource from uri failed:", ex);
+            UserErrorLog.e(TAG, "setMediaDataSource from uri failed:", ex);
             // fall through
         }
         return false;
@@ -307,20 +307,20 @@ public class AlertPlayer {
 
             return true;
         } catch (IOException | NullPointerException | IllegalArgumentException | SecurityException ex) {
-            Log.e(TAG, "setMediaDataSource from resource id failed:", ex);
+            UserErrorLog.e(TAG, "setMediaDataSource from resource id failed:", ex);
         }
         return false;
     }
 
     private synchronized void playFile(final Context ctx, final String fileName, final float volumeFrac, final boolean forceSpeaker, final boolean overrideSilentMode) {
-        Log.i(TAG, "playFile: called fileName = " + fileName);
+        UserErrorLog.i(TAG, "playFile: called fileName = " + fileName);
         if (volumeFrac <= 0) {
-            UserError.Log.e(TAG, "Not playing file " + fileName + " as requested volume is " + volumeFrac);
+            UserErrorLog.e(TAG, "Not playing file " + fileName + " as requested volume is " + volumeFrac);
             return;
         }
 
         if (mediaPlayer != null) {
-            Log.i(TAG, "ERROR, playFile:going to leak a mediaplayer !!!");
+            UserErrorLog.i(TAG, "ERROR, playFile:going to leak a mediaplayer !!!");
             try {
                 mediaPlayer.release();
             } catch (IllegalStateException e) {
@@ -331,7 +331,7 @@ public class AlertPlayer {
 
         mediaPlayer = new MediaPlayerCreaterHelper().createMediaPlayer(ctx);
         if (mediaPlayer == null) {
-            Log.wtf(TAG, "MediaPlayerCreaterHelper().createMediaPlayer failed !!");
+            UserErrorLog.wtf(TAG, "MediaPlayerCreaterHelper().createMediaPlayer failed !!");
             return;
         }
 
@@ -343,7 +343,7 @@ public class AlertPlayer {
             setDataSourceSucceeded = setMediaDataSource(ctx, mediaPlayer, R.raw.default_alert);
         }
         if (!setDataSourceSucceeded) {
-            Log.wtf(TAG, "setMediaDataSource failed - cannot play!");
+            UserErrorLog.wtf(TAG, "setMediaDataSource failed - cannot play!");
             return;
         }
 
@@ -357,7 +357,7 @@ public class AlertPlayer {
             });
 
             mediaPlayer.setOnCompletionListener(mp -> {
-                Log.i(TAG, "playFile: onCompletion called (finished playing) ");
+                UserErrorLog.i(TAG, "playFile: onCompletion called (finished playing) ");
                 try {
                     mediaPlayer.stop();
                 } catch (IllegalStateException e) {
@@ -374,21 +374,21 @@ public class AlertPlayer {
 
             mediaPlayer.prepareAsync();
         } catch (NullPointerException e) {
-            Log.wtf(TAG, "Playfile: Concurrency related null pointer exception: " + e.toString());
+            UserErrorLog.wtf(TAG, "Playfile: Concurrency related null pointer exception: " + e.toString());
         } catch (IllegalStateException e) {
-            Log.wtf(TAG, "Playfile: Concurrency related illegal state exception: " + e.toString());
+            UserErrorLog.wtf(TAG, "Playfile: Concurrency related illegal state exception: " + e.toString());
         }
     }
 
     private synchronized void adjustCurrentVolumeForAlert(final int streamType, final float volumeFrac, final boolean overrideSilentMode) {
         final int maxVolume = getMaxVolume(streamType);
         if (maxVolume < 0) {
-            UserError.Log.wtf(TAG, "Cannot get max volume to adjust current volume!");
+            UserErrorLog.wtf(TAG, "Cannot get max volume to adjust current volume!");
             return;
         }
         volumeBeforeAlert = getVolume(streamType);
         volumeForThisAlert = (int) (maxVolume * volumeFrac);
-        Log.d(TAG, "before playing volumeBeforeAlert " + volumeBeforeAlert + " volumeForThisAlert " + volumeForThisAlert);
+        UserErrorLog.d(TAG, "before playing volumeBeforeAlert " + volumeBeforeAlert + " volumeForThisAlert " + volumeForThisAlert);
         // adjust volume if we are allowed and it needs adjusting
         if (volumeForThisAlert != 0
                 && (volumeBeforeAlert <= 0 && overrideSilentMode)
@@ -400,7 +400,7 @@ public class AlertPlayer {
 
     private synchronized void revertCurrentVolume(final int streamType) {
         final int currentVolume = getVolume(streamType);
-        Log.d(TAG, "revertCurrentVolume volumeBeforeAlert " + volumeBeforeAlert + " volumeForThisAlert " + volumeForThisAlert
+        UserErrorLog.d(TAG, "revertCurrentVolume volumeBeforeAlert " + volumeBeforeAlert + " volumeForThisAlert " + volumeForThisAlert
                 + " currentVolume " + currentVolume);
         if (volumeForThisAlert == currentVolume && volumeBeforeAlert != -1 && volumeForThisAlert != -1) {
             // If the user has changed the volume, don't change it again.
@@ -414,7 +414,7 @@ public class AlertPlayer {
         try {
             return manager.getStreamVolume(streamType);
         } catch (Exception e) {
-            UserError.Log.wtf(TAG, "Exception getting volume: " + e);
+            UserErrorLog.wtf(TAG, "Exception getting volume: " + e);
             return -1;
         }
     }
@@ -423,22 +423,22 @@ public class AlertPlayer {
         try {
             return manager.getStreamMaxVolume(streamType);
         } catch (Exception e) {
-            UserError.Log.wtf(TAG, "Exception getting max volume: " + e);
+            UserErrorLog.wtf(TAG, "Exception getting max volume: " + e);
             return -1;
         }
     }
 
     private void setVolume(final int streamType, final int volume) {
         if (manager == null) {
-            UserError.Log.e(TAG, "AudioManager was null when doing setVolume!");
+            UserErrorLog.e(TAG, "AudioManager was null when doing setVolume!");
             return;
         }
         try {
             manager.setStreamVolume(streamType, volume, 0);
-            Log.d(TAG, "Adjusted volume to: " + volume);
+            UserErrorLog.d(TAG, "Adjusted volume to: " + volume);
         } catch (SecurityException e) {
             if (JoH.ratelimit("sound volume error", 12000)) {
-                UserError.Log.wtf(TAG, "This device does not allow us to modify the sound volume");
+                UserErrorLog.wtf(TAG, "This device does not allow us to modify the sound volume");
             }
         }
     }
@@ -459,32 +459,32 @@ public class AlertPlayer {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
         String profile = prefs.getString("bg_alert_profile", "ascending");
         if(profile.equals("High")) {
-            Log.i(TAG, "getAlertProfile returning ALERT_PROFILE_HIGH");
+            UserErrorLog.i(TAG, "getAlertProfile returning ALERT_PROFILE_HIGH");
             return ALERT_PROFILE_HIGH;
         }
         if(profile.equals("ascending")) {
-            Log.i(TAG, "getAlertProfile returning ALERT_PROFILE_ASCENDING");
+            UserErrorLog.i(TAG, "getAlertProfile returning ALERT_PROFILE_ASCENDING");
             return ALERT_PROFILE_ASCENDING;
         }
         if(profile.equals("medium")) {
-            Log.i(TAG, "getAlertProfile returning ALERT_PROFILE_MEDIUM");
+            UserErrorLog.i(TAG, "getAlertProfile returning ALERT_PROFILE_MEDIUM");
             return ALERT_PROFILE_MEDIUM;
         }
         if(profile.equals("vibrate only")) {
-            Log.i(TAG, "getAlertProfile returning ALERT_PROFILE_VIBRATE_ONLY");
+            UserErrorLog.i(TAG, "getAlertProfile returning ALERT_PROFILE_VIBRATE_ONLY");
             return ALERT_PROFILE_VIBRATE_ONLY;
         }
         if(profile.equals("Silent")) {
-            Log.i(TAG, "getAlertProfile returning ALERT_PROFILE_SILENT");
+            UserErrorLog.i(TAG, "getAlertProfile returning ALERT_PROFILE_SILENT");
             return ALERT_PROFILE_SILENT;
         }
-        Log.wtf(TAG, "getAlertProfile unknown value " + profile + " ALERT_PROFILE_ASCENDING");
+        UserErrorLog.wtf(TAG, "getAlertProfile unknown value " + profile + " ALERT_PROFILE_ASCENDING");
         return ALERT_PROFILE_ASCENDING;
 
     }
     
     public static boolean isAscendingMode(Context ctx){
-        Log.d("Adrian", "(getAlertProfile(ctx) == ALERT_PROFILE_ASCENDING): " + (getAlertProfile(ctx) == ALERT_PROFILE_ASCENDING));
+        UserErrorLog.d("Adrian", "(getAlertProfile(ctx) == ALERT_PROFILE_ASCENDING): " + (getAlertProfile(ctx) == ALERT_PROFILE_ASCENDING));
         return getAlertProfile(ctx) == ALERT_PROFILE_ASCENDING;
     }
 
@@ -493,8 +493,8 @@ public class AlertPlayer {
     }
 
     private void VibrateNotifyMakeNoise(Context context, AlertType alert, String bgValue, int minsFromStartPlaying) {
-        Log.d(TAG, "VibrateNotifyMakeNoise called minsFromStartedPlaying = " + minsFromStartPlaying);
-        Log.d("ALARM", "setting vibrate alarm");
+        UserErrorLog.d(TAG, "VibrateNotifyMakeNoise called minsFromStartedPlaying = " + minsFromStartPlaying);
+        UserErrorLog.d("ALARM", "setting vibrate alarm");
         int profile = getAlertProfile(context);
         if (alert.uuid.equals(AlertType.LOW_ALERT_55)) {
             // boost alerts...
@@ -514,7 +514,7 @@ public class AlertPlayer {
         final Intent intent = new Intent(context, SnoozeActivity.class);
 
         boolean localOnly = (Home.get_forced_wear() && PersistentStore.getBoolean("bg_notifications_watch"));
-        Log.d(TAG, "NotificationCompat.Builder localOnly=" + localOnly);
+        UserErrorLog.d(TAG, "NotificationCompat.Builder localOnly=" + localOnly);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, NotificationChannels.BG_ALERT_CHANNEL)//KS Notification
                 .setSmallIcon(R.drawable.ic_action_communication_invert_colors_on)
                 .setContentTitle(title)
@@ -534,7 +534,7 @@ public class AlertPlayer {
                 if (profile == ALERT_PROFILE_MEDIUM) {
                     volumeFrac = (float) 0.7;
                 }
-                Log.d(TAG, "VibrateNotifyMakeNoise volumeFrac = " + volumeFrac);
+                UserErrorLog.d(TAG, "VibrateNotifyMakeNoise volumeFrac = " + volumeFrac);
                 boolean overrideSilent = alert.override_silent_mode;
                 boolean forceSpeaker = alert.force_speaker;
                 if (notSilencedDueToCall()) {
@@ -542,7 +542,7 @@ public class AlertPlayer {
                         playFile(context, alert.mp3_file, volumeFrac, forceSpeaker, overrideSilent);
                     }
                 } else {
-                    Log.i(TAG, "Silenced Alert Noise due to ongoing call");
+                    UserErrorLog.i(TAG, "Silenced Alert Noise due to ongoing call");
                 }
             }
         }
@@ -550,14 +550,14 @@ public class AlertPlayer {
             if (notSilencedDueToCall()) {
                 builder.setVibrate(Notifications.vibratePattern);
             } else {
-                Log.i(TAG, "Vibration silenced due to ongoing call");
+                UserErrorLog.i(TAG, "Vibration silenced due to ongoing call");
             }
         } else {
             // In order to still show on all android wear watches, either a sound or a vibrate pattern
             // seems to be needed. This pattern basically does not vibrate:
             builder.setVibrate(new long[]{1, 0});
         }
-        Log.ueh("Alerting", content);
+        UserErrorLog.ueh("Alerting", content);
         final NotificationManager mNotifyMgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         //mNotifyMgr.cancel(Notifications.exportAlertNotificationId); // this appears to confuse android wear version 2.0.0.141773014.gms even though it shouldn't - can we survive without this?
         mNotifyMgr.notify(Notifications.exportAlertNotificationId, XdripNotificationCompat.build(builder));
@@ -597,7 +597,7 @@ public class AlertPlayer {
         try {
             mNotifyMgr.cancel(Notifications.exportAlertNotificationId);
         } catch (NullPointerException e) {
-            UserError.Log.e(TAG,"Got null pointer in notificationDismiss !!");
+            UserErrorLog.e(TAG,"Got null pointer in notificationDismiss !!");
         }
     }
 
@@ -614,7 +614,7 @@ public class AlertPlayer {
                     return true;
             }
         } catch (NullPointerException e) {
-            UserError.Log.e(TAG,"Got null pointer exception from isLoudPhone");
+            UserErrorLog.e(TAG,"Got null pointer exception from isLoudPhone");
         }
         // unknown mode, not sure let's play just in any case.
         return true;

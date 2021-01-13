@@ -1,9 +1,10 @@
 package com.eveningoutpost.dexdrip;
 
+
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.LibreBlock;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.ShareModels.BgUploader;
 import com.eveningoutpost.dexdrip.ShareModels.Models.ShareUploadPayload;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
@@ -157,7 +158,7 @@ public class NewDataObserver {
     private static void uploadToShare(BgReading bgReading, boolean is_follower) {
         if ((!is_follower) && (Pref.getBooleanDefaultFalse("share_upload"))) {
             if (JoH.ratelimit("sending-to-share-upload", 10)) {
-                UserError.Log.d("ShareRest", "About to call ShareRest!!");
+                UserErrorLog.d("ShareRest", "About to call ShareRest!!");
                 String receiverSn = Pref.getString("share_key", "SM00000000").toUpperCase();
                 BgUploader bgUploader = new BgUploader(xdrip.getAppContext());
                 bgUploader.upload(new ShareUploadPayload(receiverSn, bgReading));

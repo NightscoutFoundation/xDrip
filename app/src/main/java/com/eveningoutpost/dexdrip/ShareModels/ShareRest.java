@@ -1,12 +1,13 @@
 package com.eveningoutpost.dexdrip.ShareModels;
 
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.ShareModels.Models.ExistingFollower;
 import com.eveningoutpost.dexdrip.ShareModels.Models.InvitationPayload;
 import com.eveningoutpost.dexdrip.ShareModels.Models.ShareAuthenticationBody;
@@ -160,7 +161,7 @@ public class ShareRest {
                         Log.e(TAG, "Got null pointer exception: " + e);
                         return null;
                     } catch (IllegalStateException e) {
-                        UserError.Log.wtf(TAG,"Got illegal state exception: " + e);
+                        UserErrorLog.wtf(TAG,"Got illegal state exception: " + e);
                         return null;
                     }
                 }
@@ -197,7 +198,7 @@ public class ShareRest {
                 } catch (IOException e) {
                     return null;
                 } catch (RuntimeException e) {
-                    UserError.Log.wtf(TAG, "Painful exception processing response in updateAuthenticationParams " + e);
+                    UserErrorLog.wtf(TAG, "Painful exception processing response in updateAuthenticationParams " + e);
                     return null;
                 }
             }

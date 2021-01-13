@@ -1,14 +1,14 @@
 package com.eveningoutpost.dexdrip.tidepool;
 
-// jamorham
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.google.gson.annotations.Expose;
-
 
 import java.util.LinkedList;
 import java.util.List;
+
+// jamorham
 
 public class ESensorGlucose extends BaseElement {
 
@@ -28,7 +28,7 @@ public class ESensorGlucose extends BaseElement {
         if(bgReading.calculated_value >= 39 && bgReading.calculated_value <= 500) {
             return true;
         }
-        UserError.Log.e(TAG, "Ignoring invalid bg " + bgReading.toS());
+        UserErrorLog.e(TAG, "Ignoring invalid bg " + bgReading.toS());
         return false;
     }
 

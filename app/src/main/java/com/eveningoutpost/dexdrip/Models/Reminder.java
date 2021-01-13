@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.Models;
 
+
 import android.content.Context;
 import android.provider.BaseColumns;
 
@@ -8,7 +9,7 @@ import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 import com.activeandroid.util.SQLiteUtils;
-import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.Reminders;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
@@ -221,7 +222,7 @@ public class Reminder extends Model {
         last_fired = JoH.tsl();
         if (chime_only) {
             if (repeating) {
-                UserError.Log.d(TAG, "Rescheduling next");
+                UserErrorLog.d(TAG, "Rescheduling next");
                 schedule_next();
             } else {
                 enabled = false;
@@ -304,7 +305,7 @@ public class Reminder extends Model {
                     && (!Pref.getBooleanDefaultFalse(REMINDERS_NIGHT_DISABLED) || !isNight())) {
                 final Reminder due_reminder = getNextActiveReminder();
                 if (due_reminder != null) {
-                    UserError.Log.d(TAG, "Found due reminder! " + due_reminder.title);
+                    UserErrorLog.d(TAG, "Found due reminder! " + due_reminder.title);
                     due_reminder.reminder_alert();
                 }
             } else {
@@ -314,7 +315,7 @@ public class Reminder extends Model {
                     final int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
                     if (hour == 10) {
                         if (JoH.pratelimit("restart-reminders", 7200)) {
-                            UserError.Log.d(TAG, "Re-enabling reminders as its morning time");
+                            UserErrorLog.d(TAG, "Re-enabling reminders as its morning time");
                             Pref.setBoolean(REMINDERS_ALL_DISABLED, false);
                         }
                     }
@@ -363,10 +364,10 @@ public class Reminder extends Model {
                         // PendingIntent serviceIntent = PendingIntent.getService(xdrip.getAppContext(), 0, new Intent(xdrip.getAppContext(), MissedReadingService.class), PendingIntent.FLAG_UPDATE_CURRENT);
                         // PendingIntent serviceIntent = WakeLockTrampoline.getPendingIntent(MissedReadingService.class);
                         //  JoH.wakeUpIntent(xdrip.getAppContext(), Constants.MINUTE_IN_MS, serviceIntent);
-                        //  UserError.Log.ueh(TAG, "Starting missed readings service");
+                        //  UserErrorLog.ueh(TAG, "Starting missed readings service");
                     }
                 } catch (NullPointerException e) {
-                    UserError.Log.wtf(TAG, "Got nasty initial concurrency exception: " + e);
+                    UserErrorLog.wtf(TAG, "Got nasty initial concurrency exception: " + e);
                 }
             }
         });

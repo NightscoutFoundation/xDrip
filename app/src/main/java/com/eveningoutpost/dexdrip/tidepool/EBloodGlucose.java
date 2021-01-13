@@ -1,14 +1,14 @@
 package com.eveningoutpost.dexdrip.tidepool;
 
-// jamorham
 
 import com.eveningoutpost.dexdrip.Models.BloodTest;
-import com.eveningoutpost.dexdrip.Models.Treatments;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.google.gson.annotations.Expose;
 
 import java.util.LinkedList;
 import java.util.List;
+
+// jamorham
 
 class EBloodGlucose extends BaseElement {
     private static final String TAG = "BaseElement";
@@ -29,7 +29,7 @@ class EBloodGlucose extends BaseElement {
         if(bloodtest.mgdl > 0 && bloodtest.mgdl <= 1000) {
             return true;
         }
-        UserError.Log.e(TAG, "Ignoring invalid treatment " + bloodtest.toS());
+        UserErrorLog.e(TAG, "Ignoring invalid treatment " + bloodtest.toS());
         return false;
     }
     

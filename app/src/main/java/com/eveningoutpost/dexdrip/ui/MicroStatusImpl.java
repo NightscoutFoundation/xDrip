@@ -1,13 +1,13 @@
 package com.eveningoutpost.dexdrip.ui;
 
+
+import android.databinding.BaseObservable;
+
+import com.eveningoutpost.dexdrip.utils.DexCollectionType;
+
 /**
  * Created by jamorham on 29/09/2017.
  */
-
-import android.databinding.BaseObservable;
-import android.databinding.Bindable;
-
-import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
 public class MicroStatusImpl extends BaseObservable implements MicroStatus {
 

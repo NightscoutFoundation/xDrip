@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.cgm.sharefollow;
 
+
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.UtilityModels.Unitized;

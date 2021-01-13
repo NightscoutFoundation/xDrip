@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip;
 
+
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.preference.PreferenceManager;
@@ -11,7 +12,7 @@ import android.util.Log;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.SensorSanity;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.calibrations.CalibrationAbstract;
@@ -282,7 +283,7 @@ public class BestGlucose {
             dg.unitized_delta = "";
             dg.slope = 0;
             if (JoH.ratelimit("exceeding_max_raw", 120)) {
-                UserError.Log.wtf(TAG, "Failing raw bounds validation: " + lastBgReading.raw_data);
+                UserErrorLog.wtf(TAG, "Failing raw bounds validation: " + lastBgReading.raw_data);
             }
         }
 

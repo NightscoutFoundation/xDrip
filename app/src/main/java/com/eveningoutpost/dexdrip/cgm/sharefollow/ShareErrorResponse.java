@@ -1,7 +1,8 @@
 package com.eveningoutpost.dexdrip.cgm.sharefollow;
 
+
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.gson.annotations.Expose;
@@ -38,8 +39,8 @@ public class ShareErrorResponse {
         try {
             return JoH.defaultGsonInstance().fromJson(json, ShareErrorResponse.class);
         } catch (Exception e) {
-            UserError.Log.e(TAG, "Got exception processing fromJson() " + e);
-            UserError.Log.e(TAG, "json = " + json);
+            UserErrorLog.e(TAG, "Got exception processing fromJson() " + e);
+            UserErrorLog.e(TAG, "json = " + json);
             return null;
         }
     }

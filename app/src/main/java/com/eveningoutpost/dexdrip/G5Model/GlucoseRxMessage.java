@@ -1,7 +1,8 @@
 package com.eveningoutpost.dexdrip.G5Model;
 
+
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.Services.G5CollectionService;
 
 import java.nio.ByteBuffer;
@@ -26,7 +27,7 @@ public class GlucoseRxMessage extends BaseGlucoseRxMessage {
 
 
     public GlucoseRxMessage(byte[] packet) {
-        UserError.Log.d(TAG, "GlucoseRX dbg: " + JoH.bytesToHex(packet));
+        UserErrorLog.d(TAG, "GlucoseRX dbg: " + JoH.bytesToHex(packet));
         if (packet.length >= 14) {
             data = ByteBuffer.wrap(packet).order(ByteOrder.LITTLE_ENDIAN);
             if ((data.get() == opcode) && checkCRC(packet)) {
@@ -53,11 +54,11 @@ public class GlucoseRxMessage extends BaseGlucoseRxMessage {
                     unfiltered = glucose;
                 }
 
-                UserError.Log.d(TAG, "GlucoseRX: seq:" + sequence + " ts:" + timestamp + " sg:" + glucose + " do:" + glucoseIsDisplayOnly + " ss:" + status + " sr:" + status_raw + " st:" + CalibrationState.parse(state) + " tr:" + getTrend());
+                UserErrorLog.d(TAG, "GlucoseRX: seq:" + sequence + " ts:" + timestamp + " sg:" + glucose + " do:" + glucoseIsDisplayOnly + " ss:" + status + " sr:" + status_raw + " st:" + CalibrationState.parse(state) + " tr:" + getTrend());
 
             }
         } else {
-            UserError.Log.d(TAG, "GlucoseRxMessage packet length received wrong: " + packet.length);
+            UserErrorLog.d(TAG, "GlucoseRxMessage packet length received wrong: " + packet.length);
         }
 
     }

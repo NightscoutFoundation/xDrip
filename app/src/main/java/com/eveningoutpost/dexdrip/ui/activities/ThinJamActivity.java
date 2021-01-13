@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.ui.activities;
 
+
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -25,7 +26,7 @@ import android.widget.TextView;
 import com.eveningoutpost.dexdrip.BR;
 import com.eveningoutpost.dexdrip.MegaStatus;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
@@ -95,7 +96,7 @@ public class ThinJamActivity extends AppCompatActivity implements BtCallBack2 {
             thinJam.stringObservableField.removeOnPropertyChangedCallback(changeRelayAdapter);
             thinJam.stringObservableField.addOnPropertyChangedCallback(changeRelayAdapter); // TODO can this leak? Better way to use same observable field?
             mBound = true;
-            UserError.Log.d(TAG, "Connected to service");
+            UserErrorLog.d(TAG, "Connected to service");
             processIncomingBundle(savedExtras);
         }
 
@@ -177,7 +178,7 @@ public class ThinJamActivity extends AppCompatActivity implements BtCallBack2 {
   */
     @Override
     public void btCallback2(String mac, String status, String name, Bundle bundle) {
-        UserError.Log.d(TAG, "BT scan: " + mac + " " + status + " " + name);
+        UserErrorLog.d(TAG, "BT scan: " + mac + " " + status + " " + name);
         if (status.equals("SCAN_FOUND")) {
             binding.getVm().addToList(mac, name);
         }
@@ -192,7 +193,7 @@ public class ThinJamActivity extends AppCompatActivity implements BtCallBack2 {
         public ViewModel model;
 
         public void onClick(View v) {
-            UserError.Log.d(TAG, "Clicked: " + mac);
+            UserErrorLog.d(TAG, "Clicked: " + mac);
             binding.getVm().stopScan();
 
             binding.getVm().items.clear();
@@ -296,7 +297,7 @@ public class ThinJamActivity extends AppCompatActivity implements BtCallBack2 {
         }
 
         public boolean scan(boolean legacy) {
-            UserError.Log.d(TAG, "Start scan");
+            UserErrorLog.d(TAG, "Start scan");
             if (JoH.ratelimit("bj-scan-startb",5)) {
                 if (legacy) {
                     scanMeister.setFilter(nullFilter).scan();
@@ -372,7 +373,7 @@ public class ThinJamActivity extends AppCompatActivity implements BtCallBack2 {
         }
 
         public void stopScan() {
-            UserError.Log.d(TAG, "Stop scan");
+            UserErrorLog.d(TAG, "Stop scan");
             scanMeister.stop();
         }
 
@@ -382,7 +383,7 @@ public class ThinJamActivity extends AppCompatActivity implements BtCallBack2 {
             synchronized (items) {
                 if (!macInList(mac)) {
                     items.add(new TjItem(mac, name));
-                    UserError.Log.d(TAG, "Added item " + mac + " " + name + " total:" + items.size());
+                    UserErrorLog.d(TAG, "Added item " + mac + " " + name + " total:" + items.size());
                 }
             }
         }
@@ -421,7 +422,7 @@ public class ThinJamActivity extends AppCompatActivity implements BtCallBack2 {
             } catch (Exception e) {
                 //
             }
-            UserError.Log.d(TAG, "Mac loaded in as: " + mac);
+            UserErrorLog.d(TAG, "Mac loaded in as: " + mac);
         }
 
         private void setMac(final String mac) {

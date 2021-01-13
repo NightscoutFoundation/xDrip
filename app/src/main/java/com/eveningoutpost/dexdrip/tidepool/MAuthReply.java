@@ -1,6 +1,5 @@
 package com.eveningoutpost.dexdrip.tidepool;
 
-// jamorham
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.google.gson.annotations.Expose;
@@ -9,6 +8,8 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
+
+// jamorham
 
 @AllArgsConstructor
 public class MAuthReply {

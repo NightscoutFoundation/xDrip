@@ -1,7 +1,8 @@
 package com.eveningoutpost.dexdrip.cgm.medtrum;
 
+
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.utils.bt.ScanMeister;
 import com.polidea.rxandroidble2.scan.ScanResult;
 
@@ -17,7 +18,7 @@ public class Scanner extends ScanMeister {
     protected synchronized void onScanResult(ScanResult bleScanResult) {
 
         if (address == null) {
-            UserError.Log.d(TAG, "Address has been set to null, stopping scan.");
+            UserErrorLog.d(TAG, "Address has been set to null, stopping scan.");
             stopScan("Address nulled");
             return;
         }
@@ -37,7 +38,7 @@ public class Scanner extends ScanMeister {
         }
 
         if (JoH.quietratelimit("scan-debug-result", 5)) {
-            UserError.Log.d(TAG, "Found device: " + this_address + (matches ? "  MATCH" : ""));
+            UserErrorLog.d(TAG, "Found device: " + this_address + (matches ? "  MATCH" : ""));
         }
 
     }

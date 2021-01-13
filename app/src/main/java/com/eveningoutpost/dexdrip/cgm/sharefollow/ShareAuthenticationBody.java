@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.cgm.sharefollow;
 
+
 import com.google.gson.annotations.Expose;
 
 /**

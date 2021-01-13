@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip;
 
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -14,7 +15,9 @@ import android.widget.Switch;
 import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorStore;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.SendFeedBack;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
@@ -182,24 +185,24 @@ public class ErrorsActivity extends ActivityWithMenu {
         if (userEventLowCheckboxView.isChecked()) severitiesList.add(5);
         if (userEventHighCheckboxView.isChecked()) severitiesList.add(6);
         if(errors == null) {
-            errors = UserError.bySeverity(severitiesList.toArray(new Integer[severitiesList.size()]));
+            errors = UserErrorStore.get().bySeverity(severitiesList.toArray(new Integer[severitiesList.size()]));
             if (adapter != null) adapter.notifyDataSetChanged();
         } else {
             if (from_timer) {
                 errors_tmp.clear();
-                errors_tmp.addAll(UserError.bySeverity(severitiesList.toArray(new Integer[severitiesList.size()])));
+                errors_tmp.addAll(UserErrorStore.get().bySeverity(severitiesList.toArray(new Integer[severitiesList.size()])));
                 if (errors_tmp.size()!=errors.size())
                 {
                     errors.clear();
                     errors.addAll(errors_tmp);
                     if (adapter != null) adapter.notifyDataSetChanged();
-                    if (d) UserError.Log.d(TAG,"Updating list with new data");
+                    if (d) UserErrorLog.d(TAG,"Updating list with new data");
                 } else {
-                    if (d) UserError.Log.d(TAG,"List sizes the same: "+errors.size());
+                    if (d) UserErrorLog.d(TAG,"List sizes the same: "+errors.size());
                 }
             } else {
                 errors.clear();
-                errors.addAll(UserError.bySeverity(severitiesList.toArray(new Integer[severitiesList.size()])));
+                errors.addAll(UserErrorStore.get().bySeverity(severitiesList.toArray(new Integer[severitiesList.size()])));
                 if (adapter != null) adapter.notifyDataSetChanged();
             }
         }

@@ -1,10 +1,11 @@
 package com.eveningoutpost.dexdrip.eassist;
 
+
 import android.databinding.ObservableField;
 import android.os.PowerManager;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
@@ -64,7 +65,7 @@ public class EmergencyAssist {
         if (isEnabled(reason)) {
             if (since > timeThreshold(reason)) {
                 if (JoH.pratelimit("ea-check-and-activate-limit", MIN_MESSAGE_FREQUENCY)) {
-                    UserError.Log.e(TAG, "Triggering " + reason + " since: " + JoH.niceTimeScalar(since) + " " + extra);
+                    UserErrorLog.e(TAG, "Triggering " + reason + " since: " + JoH.niceTimeScalar(since) + " " + extra);
                     new EmergencyAssist(reason, since, extra).activate();
                 }
             }
@@ -91,7 +92,7 @@ public class EmergencyAssist {
             case TESTING_FEATURE:
             case UNSPECIFIED:
             default:
-                UserError.Log.e(TAG, "Unknown reason in isEnabled: " + reason);
+                UserErrorLog.e(TAG, "Unknown reason in isEnabled: " + reason);
                 return false;
         }
     }
@@ -147,7 +148,7 @@ public class EmergencyAssist {
     }
 
     private void activate() {
-        UserError.Log.ueh(TAG, "Emergency Assist activated: reason: " + reason);
+        UserErrorLog.ueh(TAG, "Emergency Assist activated: reason: " + reason);
         if (destinationsDefined()) {
             final PowerManager.WakeLock wl = JoH.getWakeLock("emergency-activate", 120000); // linger
             JoH.static_toast_long("Sending assistance message in 15 seconds");
@@ -157,7 +158,7 @@ public class EmergencyAssist {
         } else {
             final String err = "No emergency contacts defined! Cannot activate!";
             JoH.static_toast_long(err);
-            UserError.Log.wtf(TAG, err);
+            UserErrorLog.wtf(TAG, err);
         }
     }
 
@@ -176,11 +177,11 @@ public class EmergencyAssist {
     private boolean sendMessageReal(String msg) {
         final List<EmergencyContact> destinations = EmergencyContact.load();
         for (EmergencyContact dest : destinations) {
-            UserError.Log.wtf(TAG, "Sending SMS to: " + dest.number + " :: " + msg);
+            UserErrorLog.wtf(TAG, "Sending SMS to: " + dest.number + " :: " + msg);
             try {
                 SMS.sendSMS(dest.number, msg);
             } catch (Exception e) {
-                UserError.Log.wtf(TAG, "Exception sending sms: " + e);
+                UserErrorLog.wtf(TAG, "Exception sending sms: " + e);
             }
         }
         return true;
@@ -190,16 +191,16 @@ public class EmergencyAssist {
         final String locationText = GetLocation.getBestLocation();
         final String msg = getExtendedReasonText();
 
-        UserError.Log.wtf(TAG, "Sending Assistance message: " + msg);
+        UserErrorLog.wtf(TAG, "Sending Assistance message: " + msg);
         sendMessageReal(msg);
 
         if (firstRun) {
             Inevitable.task("check-emergency-location", GetLocation.getGPS_ACTIVE_TIME(), () -> {
                 if (!locationText.equals(GetLocation.getBestLocation())) {
-                    UserError.Log.d(TAG, "Location has changed: " + locationText + " vs " + GetLocation.getBestLocation());
+                    UserErrorLog.d(TAG, "Location has changed: " + locationText + " vs " + GetLocation.getBestLocation());
                     sendAssistMessage(false);
                 } else {
-                    UserError.Log.d(TAG, "Location has not changed from: " + locationText);
+                    UserErrorLog.d(TAG, "Location has not changed from: " + locationText);
                 }
             });
         }

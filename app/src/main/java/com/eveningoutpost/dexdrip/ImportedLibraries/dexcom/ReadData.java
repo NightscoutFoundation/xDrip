@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.ImportedLibraries.dexcom;
 
+
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
 
@@ -10,7 +11,7 @@ import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.MeterRecord;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.PageHeader;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.SensorRecord;
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.driver.UsbSerialDriver;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 
 import org.w3c.dom.Element;
 
@@ -46,7 +47,7 @@ public class ReadData {
         try {
       mSerialDevice.getPorts().get(0).open(connection);
         } catch(IOException e) {
-            Log.d("FAILED WHILE", "trying to open");
+            UserErrorLog.d("FAILED WHILE", "trying to open");
         }
 //        }
     }
@@ -61,21 +62,21 @@ public class ReadData {
         if (numOfRecentPages < 1) {
             throw new IllegalArgumentException("Number of pages must be greater than 1.");
         }
-        Log.d(TAG, "Reading EGV page range...");
+        UserErrorLog.d(TAG, "Reading EGV page range...");
         int recordType = Dex_Constants.RECORD_TYPES.EGV_DATA.ordinal();
         int endPage = readDataBasePageRange(recordType);
-        Log.d(TAG, "Reading " + numOfRecentPages + " EGV page(s)...");
+        UserErrorLog.d(TAG, "Reading " + numOfRecentPages + " EGV page(s)...");
         numOfRecentPages = numOfRecentPages - 1;
         EGVRecord[] allPages = new EGVRecord[0];
         for (int i = Math.min(numOfRecentPages,endPage); i >= 0; i--) {
             int nextPage = endPage - i;
-            Log.d(TAG, "Reading #" + i + " EGV pages (page number " + nextPage + ")");
+            UserErrorLog.d(TAG, "Reading #" + i + " EGV pages (page number " + nextPage + ")");
             EGVRecord[] ithEGVRecordPage = readDataBasePage(recordType, nextPage);
             EGVRecord[] result = Arrays.copyOf(allPages, allPages.length + ithEGVRecordPage.length);
             System.arraycopy(ithEGVRecordPage, 0, result, allPages.length, ithEGVRecordPage.length);
             allPages = result;
         }
-        Log.d(TAG, "Read complete of EGV pages.");
+        UserErrorLog.d(TAG, "Read complete of EGV pages.");
         return allPages;
     }
 
@@ -84,7 +85,7 @@ public class ReadData {
     }
 
     public MeterRecord[] getRecentMeterRecords() {
-        Log.d(TAG, "Reading Meter page...");
+        UserErrorLog.d(TAG, "Reading Meter page...");
         int recordType = Dex_Constants.RECORD_TYPES.METER_DATA.ordinal();
         int endPage = readDataBasePageRange(recordType);
         return readDataBasePage(recordType, endPage);
@@ -94,36 +95,36 @@ public class ReadData {
         if (numOfRecentPages < 1) {
             throw new IllegalArgumentException("Number of pages must be greater than 1.");
         }
-        Log.d(TAG, "Reading Sensor page range...");
+        UserErrorLog.d(TAG, "Reading Sensor page range...");
         int recordType = Dex_Constants.RECORD_TYPES.SENSOR_DATA.ordinal();
         int endPage = readDataBasePageRange(recordType);
-        Log.d(TAG, "Reading " + numOfRecentPages + " Sensor page(s)...");
+        UserErrorLog.d(TAG, "Reading " + numOfRecentPages + " Sensor page(s)...");
         numOfRecentPages = numOfRecentPages - 1;
         SensorRecord[] allPages = new SensorRecord[0];
         for (int i = Math.min(numOfRecentPages,endPage); i >= 0; i--) {
             int nextPage = endPage - i;
-            Log.d(TAG, "Reading #" + i + " Sensor pages (page number " + nextPage + ")");
+            UserErrorLog.d(TAG, "Reading #" + i + " Sensor pages (page number " + nextPage + ")");
             SensorRecord[] ithSensorRecordPage = readDataBasePage(recordType, nextPage);
             SensorRecord[] result = Arrays.copyOf(allPages, allPages.length + ithSensorRecordPage.length);
             System.arraycopy(ithSensorRecordPage, 0, result, allPages.length, ithSensorRecordPage.length);
             allPages = result;
         }
-        Log.d(TAG, "Read complete of Sensor pages.");
+        UserErrorLog.d(TAG, "Read complete of Sensor pages.");
         return allPages;
     }
 
     public CalRecord[] getRecentCalRecords() {
-        Log.d(TAG, "Reading Cal Records page range...");
+        UserErrorLog.d(TAG, "Reading Cal Records page range...");
         int recordType = Dex_Constants.RECORD_TYPES.CAL_SET.ordinal();
         int endPage = readDataBasePageRange(recordType);
-        Log.d(TAG, "Reading Cal Records page...");
+        UserErrorLog.d(TAG, "Reading Cal Records page...");
         return readDataBasePage(recordType, endPage);
     }
     public byte[] getRecentCalRecordsTest() {
-        Log.d(TAG, "Reading Cal Records page range...");
+        UserErrorLog.d(TAG, "Reading Cal Records page range...");
         int recordType = Dex_Constants.RECORD_TYPES.CAL_SET.ordinal();
         int endPage = readDataBasePageRange(recordType);
-        Log.d(TAG, "Reading Cal Records page...");
+        UserErrorLog.d(TAG, "Reading Cal Records page...");
         return readDataBasePageTest(recordType, endPage);
     }
 
@@ -133,7 +134,7 @@ public class ReadData {
     }
 
     public int readBatteryLevel() {
-        Log.d(TAG, "Reading battery level...");
+        UserErrorLog.d(TAG, "Reading battery level...");
         writeCommand(Dex_Constants.READ_BATTERY_LEVEL);
         byte[] readData = read(MIN_LEN).getData();
         return ByteBuffer.wrap(readData).order(ByteOrder.LITTLE_ENDIAN).getInt();
@@ -151,14 +152,14 @@ public class ReadData {
     }
 
     public long readSystemTime() {
-        Log.d(TAG, "Reading system time...");
+        UserErrorLog.d(TAG, "Reading system time...");
         writeCommand(Dex_Constants.READ_SYSTEM_TIME);
         byte[] readData = read(MIN_LEN).getData();
         return ByteBuffer.wrap(readData).order(ByteOrder.LITTLE_ENDIAN).getInt() & 0xffffffff;
     }
 
     public int readDisplayTimeOffset() {
-        Log.d(TAG, "Reading display time offset...");
+        UserErrorLog.d(TAG, "Reading display time offset...");
         writeCommand(Dex_Constants.READ_DISPLAY_TIME_OFFSET);
         byte[] readData = read(MIN_LEN).getData();
         return ByteBuffer.wrap(readData).order(ByteOrder.LITTLE_ENDIAN).getInt() & 0xffffffff;
@@ -166,13 +167,13 @@ public class ReadData {
 
     private int readDataBasePageRange(int recordType) {
         ArrayList<Byte> payload = new ArrayList<Byte>();
-        Log.d(TAG, "adding Payload");
+        UserErrorLog.d(TAG, "adding Payload");
         payload.add((byte) recordType);
-        Log.d(TAG, "Sending write command");
+        UserErrorLog.d(TAG, "Sending write command");
         writeCommand(Dex_Constants.READ_DATABASE_PAGE_RANGE, payload);
-        Log.d(TAG, "About to call getdata");
+        UserErrorLog.d(TAG, "About to call getdata");
         byte[] readData = read(MIN_LEN).getData();
-        Log.d(TAG, "Going to return");
+        UserErrorLog.d(TAG, "Going to return");
         return ByteBuffer.wrap(readData).order(ByteOrder.LITTLE_ENDIAN).getInt(4);
     }
 
@@ -218,7 +219,7 @@ public class ReadData {
 //                mConnection.bulkTransfer(mWriteEndpoint, packet, packet.length, IO_TIMEOUT);
                   mSerialDevice.getPorts().get(0).write(packet, IO_TIMEOUT);
             } catch (Exception e) {
-                Log.e(TAG, "Unable to write to serial device.", e);
+                UserErrorLog.e(TAG, "Unable to write to serial device.", e);
             }
         }
     }
@@ -235,7 +236,7 @@ public class ReadData {
 //                mConnection.bulkTransfer(mWriteEndpoint, packet, packet.length, IO_TIMEOUT);
                 mSerialDevice.getPorts().get(0).write(packet, IO_TIMEOUT);
             } catch (Exception e) {
-                Log.e(TAG, "Unable to write to serial device.", e);
+                UserErrorLog.e(TAG, "Unable to write to serial device.", e);
             }
         }
     }
@@ -253,7 +254,7 @@ public class ReadData {
 //            synchronized (mReadBufferLock) {
 //
 //
-//                Log.d(TAG, "Read about to call bulk transfer.");
+//                UserErrorLog.d(TAG, "Read about to call bulk transfer.");
 //                if (len < 0) {
 //                    // This sucks: we get -1 on timeout, not 0 as preferred.
 //                    // We *should* use UsbRequest, except it has a bug/api oversight
@@ -272,7 +273,7 @@ public class ReadData {
 
             len = mSerialDevice.getPorts().get(0).read(readData, IO_TIMEOUT);
 
-            Log.d(TAG, "Read " + len + " byte(s) complete.");
+            UserErrorLog.d(TAG, "Read " + len + " byte(s) complete.");
 
             // Add a 100ms delay for when multiple write/reads are occurring in series
             Thread.sleep(100);
@@ -282,11 +283,11 @@ public class ReadData {
             String bytes = "";
             int readAmount = len;
             for (int i = 0; i < readAmount; i++) bytes += String.format("%02x", readData[i]) + " ";
-            Log.d(TAG, "Read data: " + bytes);
+            UserErrorLog.d(TAG, "Read data: " + bytes);
             ////////////////////////////////////////////////////////////////////////////////////////
 
         } catch (Exception e) {
-            Log.e(TAG, "Unable to read from serial device.", e);
+            UserErrorLog.e(TAG, "Unable to read from serial device.", e);
         }
         byte[] data = Arrays.copyOfRange(readData, 0, len);
         return new ReadPacket(data);

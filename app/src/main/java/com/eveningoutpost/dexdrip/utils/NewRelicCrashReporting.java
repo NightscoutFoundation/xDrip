@@ -1,8 +1,9 @@
 package com.eveningoutpost.dexdrip.utils;
 
+
 import com.eveningoutpost.dexdrip.BuildConfig;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.newrelic.agent.android.FeatureFlag;
@@ -61,7 +62,7 @@ public class NewRelicCrashReporting {
 
         } else {
             if (JoH.pratelimit("crash-reporting-start-failure", 3600)) {
-                UserError.Log.wtf(TAG, "Unable to start crash reporter as app is restarting too frequently");
+                UserErrorLog.wtf(TAG, "Unable to start crash reporter as app is restarting too frequently");
             }
         }
     }
@@ -102,10 +103,10 @@ public class NewRelicCrashReporting {
                         log.info("Reporting interval is fine");
                     }
                 } else {
-                    UserError.Log.e(TAG, "Cannot get configuration");
+                    UserErrorLog.e(TAG, "Cannot get configuration");
                 }
             } else {
-                UserError.Log.e(TAG, "Cannot get instance");
+                UserErrorLog.e(TAG, "Cannot get instance");
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.UtilityModels.pebble;
 
+
 import android.graphics.Bitmap;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
@@ -9,7 +10,7 @@ import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSparklineBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
@@ -107,14 +108,14 @@ public class PebbleDisplayTrend extends PebbleDisplayAbstract {
         sendingData = false;
         sendData();
         } else {
-            Log.d(TAG, "SendData ratelimited!");
+            UserErrorLog.d(TAG, "SendData ratelimited!");
         }
     }
 
 
     @Override
     public void receiveNack(int transactionId) {
-        Log.i(TAG, "receiveNack: Got an Nack for transactionId " + transactionId + ". Waiting and retrying.");
+        UserErrorLog.i(TAG, "receiveNack: Got an Nack for transactionId " + transactionId + ". Waiting and retrying.");
 
         if (retries < 3) {
             transactionFailed = true;
@@ -123,7 +124,7 @@ public class PebbleDisplayTrend extends PebbleDisplayAbstract {
             retries++;
             sendData();
         } else {
-            Log.i(TAG, "recieveNAck: exceeded retries.  Giving Up");
+            UserErrorLog.i(TAG, "recieveNAck: exceeded retries.  Giving Up");
             transactionFailed = false;
             transactionOk = false;
             messageInTransit = false;
@@ -137,7 +138,7 @@ public class PebbleDisplayTrend extends PebbleDisplayAbstract {
     @Override
     public void receiveAck(int transactionId) {
 
-        if (d) Log.i(TAG, "receiveAck: Got an Ack for transactionId " + transactionId);
+        if (d) UserErrorLog.i(TAG, "receiveAck: Got an Ack for transactionId " + transactionId);
         messageInTransit = false;
         transactionOk = true;
         transactionFailed = false;
@@ -150,9 +151,9 @@ public class PebbleDisplayTrend extends PebbleDisplayAbstract {
 
     @Override
     public void receiveData(int transactionId, PebbleDictionary data) {
-        Log.d(TAG, "receiveData: transactionId is " + String.valueOf(transactionId));
+        UserErrorLog.d(TAG, "receiveData: transactionId is " + String.valueOf(transactionId));
         this.pebbleWatchSync.lastTransactionId = transactionId;
-        Log.d(TAG, "Received Query. data: " + data.size() + ".");
+        UserErrorLog.d(TAG, "Received Query. data: " + data.size() + ".");
         PebbleKit.sendAckToPebble(this.context, transactionId);
         evaluateDataFromPebble(data);
         transactionFailed = false;
@@ -169,23 +170,23 @@ public class PebbleDisplayTrend extends PebbleDisplayAbstract {
             pebble_sync_value = data.getUnsignedIntegerAsLong(SYNC_KEY);
             pebble_platform = data.getUnsignedIntegerAsLong(PLATFORM_KEY);
             pebble_app_version = data.getString(VERSION_KEY);
-            Log.d(TAG, "receiveData: pebble_sync_value=" + pebble_sync_value + ", pebble_platform=" + pebble_platform + ", pebble_app_version=" + pebble_app_version);
+            UserErrorLog.d(TAG, "receiveData: pebble_sync_value=" + pebble_sync_value + ", pebble_platform=" + pebble_platform + ", pebble_app_version=" + pebble_app_version);
 
                 switch ((int) pebble_platform) {
                     case 0:
                         if (PebbleUtil.pebbleDisplayType != PebbleDisplayType.TrendClassic) {
                             PebbleUtil.pebbleDisplayType = PebbleDisplayType.TrendClassic;
                             //JoH.static_toast_short("Switching to Pebble Classic Trend");
-                            Log.d(TAG, "Changing to Classic Trend due to platform id");
+                            UserErrorLog.d(TAG, "Changing to Classic Trend due to platform id");
                         }
                         break;
                 }
 
         } else {
-            Log.d(TAG, "receiveData: pebble_app_version not known");
+            UserErrorLog.d(TAG, "receiveData: pebble_app_version not known");
         }
         } catch (NullPointerException e) {
-            Log.e(TAG, "Got exception trying to parse data from pebble: " + e);
+            UserErrorLog.e(TAG, "Got exception trying to parse data from pebble: " + e);
     }
     }
 
@@ -210,12 +211,12 @@ public class PebbleDisplayTrend extends PebbleDisplayAbstract {
 
             if (use_best_glucose)
             {
-                Log.v(TAG, "buildDictionary: slopeOrdinal-" + slopeOrdinal + " bgReading-" + bgReadingS + //
+                UserErrorLog.v(TAG, "buildDictionary: slopeOrdinal-" + slopeOrdinal + " bgReading-" + bgReadingS + //
                         " now-" + (int) now.getTime() / 1000 + " bgTime-" + (int) (dg.timestamp / 1000) + //
                         " phoneTime-" + (int) (new Date().getTime() / 1000) + " getBgDelta-" + getBgDelta());
                 no_signal = (dg.mssince > Home.stale_data_millis());
         } else {
-                Log.v(TAG, "buildDictionary: slopeOrdinal-" + slopeOrdinal + " bgReading-" + bgReadingS + //
+                UserErrorLog.v(TAG, "buildDictionary: slopeOrdinal-" + slopeOrdinal + " bgReading-" + bgReadingS + //
                         " now-" + (int) now.getTime() / 1000 + " bgTime-" + (int) (this.bgReading.timestamp / 1000) + //
                         " phoneTime-" + (int) (new Date().getTime() / 1000) + " getBgDelta-" + getBgDelta());
                 no_signal = ((new Date().getTime()) - Home.stale_data_millis() - this.bgReading.timestamp > 0);
@@ -287,7 +288,7 @@ public class PebbleDisplayTrend extends PebbleDisplayAbstract {
                 this.dictionary.addString(MESSAGE_KEY, "");
         }
         } else {
-            Log.v(TAG, "buildDictionary: latest mBgReading is null, so sending default values");
+            UserErrorLog.v(TAG, "buildDictionary: latest mBgReading is null, so sending default values");
             this.dictionary.addString(ICON_KEY, getSlopeOrdinal());
             this.dictionary.addString(BG_KEY, "?SN");
             this.dictionary.addUint32(RECORD_TIME_KEY, (int) ((new Date().getTime() + offsetFromUTC / 1000)));
@@ -310,10 +311,10 @@ public class PebbleDisplayTrend extends PebbleDisplayAbstract {
         //create a sparkline bitmap to send to the pebble
 
         final Bitmap blankTrend;
-        if (clearTrend) { blankTrend = Bitmap.createBitmap(1,1,Bitmap.Config.ARGB_8888); Log.d(TAG,"Attempting to blank trend"); } else { blankTrend = null; didTrend=true; }
+        if (clearTrend) { blankTrend = Bitmap.createBitmap(1,1,Bitmap.Config.ARGB_8888); UserErrorLog.d(TAG,"Attempting to blank trend"); } else { blankTrend = null; didTrend=true; }
 
 
-        Log.i(TAG, "sendTrendToPebble called: sendStep= " + sendStep + ", messageInTransit= " + messageInTransit + //
+        UserErrorLog.i(TAG, "sendTrendToPebble called: sendStep= " + sendStep + ", messageInTransit= " + messageInTransit + //
                 ", transactionFailed= " + transactionFailed + ", sendStep= " + sendStep);
         if (!done && (sendStep == 1 && ((!messageInTransit && !transactionOk && !transactionFailed) || //
                 (messageInTransit && !transactionOk && transactionFailed)))) {
@@ -344,7 +345,7 @@ public class PebbleDisplayTrend extends PebbleDisplayAbstract {
                 }
 
 
-                Log.d(TAG, "sendTrendToPebble: highLine is " + highLine + ", lowLine is " + lowLine + ",trendPeriod is " + trendPeriod);
+                UserErrorLog.d(TAG, "sendTrendToPebble: highLine is " + highLine + ", lowLine is " + lowLine + ",trendPeriod is " + trendPeriod);
                 Bitmap bgTrend = new BgSparklineBuilder(this.context)
                         .setBgGraphBuilder(this.bgGraphBuilder)
                             .setStart(System.currentTimeMillis() - 60000 * 60 * trendPeriod)
@@ -396,9 +397,9 @@ public class PebbleDisplayTrend extends PebbleDisplayAbstract {
                     //    this.dictionary = new PebbleDictionary();
                     //}
                     this.dictionary.addInt16(TREND_BEGIN_KEY, (short) image_size);
-                    Log.d(TAG, "sendTrendToPebble: Sending TREND_BEGIN_KEY to pebble, image size is " + image_size);
+                    UserErrorLog.d(TAG, "sendTrendToPebble: Sending TREND_BEGIN_KEY to pebble, image size is " + image_size);
                 } else {
-                    Log.d(TAG, "sendTrendToPebble: Error converting stream to ByteBuffer, buff is null.");
+                    UserErrorLog.d(TAG, "sendTrendToPebble: Error converting stream to ByteBuffer, buff is null.");
                     sendStep = 4;
                     return;
                 }
@@ -411,7 +412,7 @@ public class PebbleDisplayTrend extends PebbleDisplayAbstract {
         }
 
         if (sendStep == 1 && !done && !messageInTransit && transactionOk && !transactionFailed) {
-            Log.i(TAG, "sendTrendToPebble: sendStep " + sendStep + " complete.");
+            UserErrorLog.i(TAG, "sendTrendToPebble: sendStep " + sendStep + " complete.");
             this.dictionary.remove(TREND_BEGIN_KEY);
             current_size = 0;
             sendStep = 2;
@@ -421,24 +422,24 @@ public class PebbleDisplayTrend extends PebbleDisplayAbstract {
         if (!done && ((sendStep == 2 && !messageInTransit) || sendStep == 3 && transactionFailed)) {
             if (!transactionFailed && !messageInTransit) {
                 // send image chunks to Pebble.
-                if (d) Log.d(TAG, "sendTrendToPebble: current_size is " + current_size + ", image_size is " + image_size);
+                if (d) UserErrorLog.d(TAG, "sendTrendToPebble: current_size is " + current_size + ", image_size is " + image_size);
                 if (current_size < image_size) {
                     this.dictionary.remove(TREND_DATA_KEY);
                     if ((image_size <= (current_size + CHUNK_SIZE))) {
                         chunk = new byte[image_size - current_size];
-                        if (d) Log.d(TAG, "sendTrendToPebble: sending chunk of size " + (image_size - current_size));
+                        if (d) UserErrorLog.d(TAG, "sendTrendToPebble: sending chunk of size " + (image_size - current_size));
                         buff.get(chunk, 0, image_size - current_size);
                         sendStep = 3;
                     } else {
                         chunk = new byte[CHUNK_SIZE];
-                        if (d) Log.d(TAG, "sendTrendToPebble: sending chunk of size " + CHUNK_SIZE);
+                        if (d) UserErrorLog.d(TAG, "sendTrendToPebble: sending chunk of size " + CHUNK_SIZE);
                         buff.get(chunk, 0, CHUNK_SIZE);
                         current_size += CHUNK_SIZE;
                     }
                     this.dictionary.addBytes(TREND_DATA_KEY, chunk);
                 }
             }
-            Log.d(TAG, "sendTrendToPebble: Sending TREND_DATA_KEY to pebble, current_size is " + current_size);
+            UserErrorLog.d(TAG, "sendTrendToPebble: Sending TREND_DATA_KEY to pebble, current_size is " + current_size);
             transactionFailed = false;
             transactionOk = false;
             messageInTransit = true;
@@ -446,7 +447,7 @@ public class PebbleDisplayTrend extends PebbleDisplayAbstract {
         }
 
         if (sendStep == 3 && !done && !messageInTransit && transactionOk && !transactionFailed) {
-            Log.i(TAG, "sendTrendToPebble: sendStep " + sendStep + " complete.");
+            UserErrorLog.i(TAG, "sendTrendToPebble: sendStep " + sendStep + " complete.");
             this.dictionary.remove(TREND_DATA_KEY);
             sendStep = 4;
             transactionOk = false;
@@ -459,7 +460,7 @@ public class PebbleDisplayTrend extends PebbleDisplayAbstract {
             if (!transactionFailed) {
                 // prepare the TREND_END_KEY dictionary and send it.
                 this.dictionary.addUint8(TREND_END_KEY, (byte) 0);
-                Log.d(TAG, "sendTrendToPebble: Sending TREND_END_KEY to pebble.");
+                UserErrorLog.d(TAG, "sendTrendToPebble: Sending TREND_END_KEY to pebble.");
             }
 
             transactionFailed = false;
@@ -469,7 +470,7 @@ public class PebbleDisplayTrend extends PebbleDisplayAbstract {
         }
 
         if (sendStep == 4 && !done && transactionOk && !messageInTransit && !transactionFailed) {
-            Log.i(TAG, "sendTrendToPebble: sendStep " + sendStep + " complete.");
+            UserErrorLog.i(TAG, "sendTrendToPebble: sendStep " + sendStep + " complete.");
             this.dictionary.remove(TREND_END_KEY);
             sendStep = 5;
             transactionFailed = false;
@@ -518,14 +519,14 @@ public class PebbleDisplayTrend extends PebbleDisplayAbstract {
                 try {
 
                     if (PebbleKit.isWatchConnected(this.context)) {
-                        if (d) Log.d(TAG, "Sendstep: " + sendStep);
+                        if (d) UserErrorLog.d(TAG, "Sendstep: " + sendStep);
                         if (sendStep == 5) {
                             sendStep = 0;
                             done = false;
                             clearDictionary();
                         }
 
-                        if (d) Log.i(TAG, "sendData: messageInTransit= " + messageInTransit + ", transactionFailed= " + transactionFailed + ", sendStep= " + sendStep);
+                        if (d) UserErrorLog.i(TAG, "sendData: messageInTransit= " + messageInTransit + ", transactionFailed= " + transactionFailed + ", sendStep= " + sendStep);
                         if (sendStep == 0 && !messageInTransit && !transactionOk && !transactionFailed) {
 
                             if (use_best_glucose) {
@@ -541,7 +542,7 @@ public class PebbleDisplayTrend extends PebbleDisplayAbstract {
 
 
                         if (sendStep == 0 && !messageInTransit && transactionOk && !transactionFailed) {
-                            if (d) Log.i(TAG, "sendData: sendStep 0 complete, clearing dictionary");
+                            if (d) UserErrorLog.i(TAG, "sendData: sendStep 0 complete, clearing dictionary");
                             clearDictionary();
                             transactionOk = false;
                             sendStep = 1;
@@ -559,7 +560,7 @@ public class PebbleDisplayTrend extends PebbleDisplayAbstract {
                         }
 
                         if (sendStep == 5) {
-                            if (d) Log.i(TAG, "sendData: finished sending.  sendStep = " + sendStep);
+                            if (d) UserErrorLog.i(TAG, "sendData: finished sending.  sendStep = " + sendStep);
                             done = true;
                             transactionFailed = false;
                             transactionOk = false;
@@ -572,11 +573,11 @@ public class PebbleDisplayTrend extends PebbleDisplayAbstract {
                     lock.unlock();
                 }
             } else {
-                Log.w(TAG, "Could not acquire lock within timeout!");
+                UserErrorLog.w(TAG, "Could not acquire lock within timeout!");
             }
         } catch (InterruptedException e)
         {
-            Log.w(TAG,"Got interrupted while waiting to acquire lock!");
+            UserErrorLog.w(TAG,"Got interrupted while waiting to acquire lock!");
         } finally {
             JoH.releaseWakeLock(wl);
         }
@@ -599,9 +600,9 @@ public class PebbleDisplayTrend extends PebbleDisplayAbstract {
 
 
     public void sendDownload() {
-        Log.d(TAG,"send download called");
+        UserErrorLog.d(TAG,"send download called");
         if (this.dictionary != null && this.context != null) {
-            Log.d(TAG, "sendDownload: Sending data to pebble");
+            UserErrorLog.d(TAG, "sendDownload: Sending data to pebble");
             messageInTransit = true;
             transactionFailed = false;
             transactionOk = false;

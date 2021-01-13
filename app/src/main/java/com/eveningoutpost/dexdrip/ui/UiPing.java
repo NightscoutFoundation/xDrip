@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.ui;
 
+
 import android.databinding.BaseObservable;
 import android.databinding.ObservableInt;
 

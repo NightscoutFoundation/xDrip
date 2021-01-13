@@ -1,13 +1,14 @@
 package com.eveningoutpost.dexdrip.G5Model;
 
-// jamorham
 
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 
 import static com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder.DEXCOM_PERIOD;
+
+// jamorham
 
 public class DexSyncKeeper {
 
@@ -27,22 +28,22 @@ public class DexSyncKeeper {
     public static void store(final String transmitterId, final long when) {
 
         if ((transmitterId == null) || (transmitterId.length() != 6)) {
-            UserError.Log.e(TAG, "Invalid dex transmitter in store: " + transmitterId);
+            UserErrorLog.e(TAG, "Invalid dex transmitter in store: " + transmitterId);
             return;
         }
 
         if (when < OLDEST_POSSIBLE) {
-            UserError.Log.wtf(TAG, "Invalid timestamp to store: " + JoH.dateTimeText(when));
+            UserErrorLog.wtf(TAG, "Invalid timestamp to store: " + JoH.dateTimeText(when));
             return;
         }
 
         PersistentStore.setLong(DEX_SYNC_STORE + transmitterId, when);
-        UserError.Log.d(TAG, "Sync time updated to: " + JoH.dateTimeText(when));
+        UserErrorLog.d(TAG, "Sync time updated to: " + JoH.dateTimeText(when));
     }
 
     public static void clear(final String transmitterId) {
         if (PersistentStore.getLong(DEX_SYNC_STORE + transmitterId) > 0) {
-            UserError.Log.e(TAG, "Clearing stored timing sync information for: " + transmitterId);
+            UserErrorLog.e(TAG, "Clearing stored timing sync information for: " + transmitterId);
             PersistentStore.setLong(DEX_SYNC_STORE + transmitterId, 0);
         }
     }
@@ -60,12 +61,12 @@ public class DexSyncKeeper {
             return -1;
         }
         if (last > now) {
-            UserError.Log.e(TAG, "Anticipation time in the future! cannot use: " + JoH.dateTimeText(last));
+            UserErrorLog.e(TAG, "Anticipation time in the future! cannot use: " + JoH.dateTimeText(last));
             return -1; // can't be in the future
         }
 
         if (now - last > VALIDITY_PERIOD) {
-            UserError.Log.e(TAG, "Anticipation time too old to use: " + JoH.dateTimeText(last));
+            UserErrorLog.e(TAG, "Anticipation time too old to use: " + JoH.dateTimeText(last));
             return -1;
         }
 

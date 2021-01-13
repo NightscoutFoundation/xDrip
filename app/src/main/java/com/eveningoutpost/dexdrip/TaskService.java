@@ -1,8 +1,5 @@
 package com.eveningoutpost.dexdrip;
 
-/**
- * Created by jamorham on 04/02/2016.
- */
 
 import android.content.Intent;
 import android.util.Log;
@@ -12,6 +9,10 @@ import com.eveningoutpost.dexdrip.UtilityModels.UpdateActivity;
 import com.google.android.gms.gcm.GcmNetworkManager;
 import com.google.android.gms.gcm.GcmTaskService;
 import com.google.android.gms.gcm.TaskParams;
+
+/**
+ * Created by jamorham on 04/02/2016.
+ */
 
 
 public class TaskService extends GcmTaskService {

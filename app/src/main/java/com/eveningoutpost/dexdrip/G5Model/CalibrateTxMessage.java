@@ -1,10 +1,10 @@
 package com.eveningoutpost.dexdrip.G5Model;
 
 
-// created by jamorham
-
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
+
+// created by jamorham
 
 public class CalibrateTxMessage extends BaseMessage {
 
@@ -19,7 +19,7 @@ public class CalibrateTxMessage extends BaseMessage {
         data.putShort((short) glucose);
         data.putInt(dexTime);
         appendCRC();
-        UserError.Log.d(TAG, "CalibrateGlucoseTxMessage dbg: " + JoH.bytesToHex(byteSequence));
+        UserErrorLog.d(TAG, "CalibrateGlucoseTxMessage dbg: " + JoH.bytesToHex(byteSequence));
     }
 
 }

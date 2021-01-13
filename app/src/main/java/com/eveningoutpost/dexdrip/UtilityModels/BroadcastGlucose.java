@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -9,9 +10,8 @@ import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Noise;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
-import com.eveningoutpost.dexdrip.utils.PowerStateReceiver;
 
 // created by jamorham
 
@@ -24,14 +24,14 @@ public class BroadcastGlucose {
             final Bundle bundle = new Bundle();
             if (bgReading != null) {
                 if (bgReading.calculated_value == 0) {
-                    UserError.Log.wtf(TAG, "Refusing to broadcast reading with calculated value of 0");
+                    UserErrorLog.wtf(TAG, "Refusing to broadcast reading with calculated value of 0");
                     return;
                 }
 
 
                 BestGlucose.DisplayGlucose dg;
 
-                UserError.Log.i("SENSOR QUEUE:", "Broadcast data");
+                UserErrorLog.i("SENSOR QUEUE:", "Broadcast data");
 
                 String collectorName = DexCollectionType.getBestCollectorHardwareName();
                 if (collectorName.equals("G6 Native")) {
@@ -85,7 +85,7 @@ public class BroadcastGlucose {
 
                     } else {
                         final String msg = "Not locally broadcasting due to noise block level of: " + noiseBlockLevel + " and noise of; " + JoH.roundDouble(dg.noise, 1);
-                        UserError.Log.e("LocalBroadcast", msg);
+                        UserErrorLog.e("LocalBroadcast", msg);
                         JoH.static_toast_long(msg);
                     }
                 } else {
@@ -107,7 +107,7 @@ public class BroadcastGlucose {
                         }
                     } else {
                         final String msg = "Not locally broadcasting due to noise block level of: " + noiseBlockLevel + " and noise of; " + JoH.roundDouble(BgGraphBuilder.last_noise, 1);
-                        UserError.Log.e("LocalBroadcast", msg);
+                        UserErrorLog.e("LocalBroadcast", msg);
                         JoH.static_toast_long(msg);
                     }
                 }

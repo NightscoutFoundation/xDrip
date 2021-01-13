@@ -1,6 +1,7 @@
 package com.eveningoutpost.dexdrip.cgm.nsfollow;
 
-import com.eveningoutpost.dexdrip.Models.UserError;
+
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.store.FastStore;
 
 import lombok.RequiredArgsConstructor;
@@ -37,13 +38,13 @@ public class BaseCallback<T> implements Callback<T> {
     @Override
     public void onResponse(Call<T> call, Response<T> response) {
         if (response.isSuccessful() && response.body() != null) {
-            UserError.Log.d(TAG, name + " success");
+            UserErrorLog.d(TAG, name + " success");
             if (onSuccess != null) {
                 onSuccess.run();
             }
         } else {
             final String msg = name + " was not successful: " + response.code() + " " + response.message();
-            UserError.Log.e(TAG, msg);
+            UserErrorLog.e(TAG, msg);
             status(msg);
             if (onFailure != null) {
                 onFailure.run();
@@ -54,7 +55,7 @@ public class BaseCallback<T> implements Callback<T> {
     @Override
     public void onFailure(Call<T> call, Throwable t) {
         final String msg = name + " Failed: " + t;
-        UserError.Log.e(TAG, msg);
+        UserErrorLog.e(TAG, msg);
         status(msg);
         if (onFailure != null) {
             onFailure.run();

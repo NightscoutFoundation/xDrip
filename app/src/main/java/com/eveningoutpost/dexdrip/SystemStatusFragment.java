@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip;
 
+
 import android.app.Fragment;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -35,10 +36,8 @@ import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
-import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.Services.G5CollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
@@ -51,9 +50,6 @@ import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.google.android.gms.wearable.DataMap;
 
 import java.lang.reflect.Method;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -101,7 +97,7 @@ public class SystemStatusFragment extends Fragment {
                     DataMap dataMap = DataMap.fromBundle(bundle);
                     String lastState = dataMap.getString("lastState", "");
                     long last_timestamp = dataMap.getLong("timestamp", 0);
-                    UserError.Log.d(TAG, "serviceDataReceiver onReceive:" + action + " :: " + lastState + " last_timestamp :: " + last_timestamp);
+                    UserErrorLog.d(TAG, "serviceDataReceiver onReceive:" + action + " :: " + lastState + " last_timestamp :: " + last_timestamp);
                     switch (action) {
                         case WatchUpdaterService.ACTION_BLUETOOTH_COLLECTION_SERVICE_UPDATE:
                             switch (DexCollectionType.getDexCollectionType()) {
@@ -151,7 +147,7 @@ public class SystemStatusFragment extends Fragment {
             try {
                 LocalBroadcastManager.getInstance(safeGetContext()).unregisterReceiver(serviceDataReceiver);
             } catch (IllegalArgumentException e) {
-                UserError.Log.e(TAG, "broadcast receiver not registered", e);
+                UserErrorLog.e(TAG, "broadcast receiver not registered", e);
             }
         }
         super.onPause();
@@ -290,7 +286,7 @@ public class SystemStatusFragment extends Fragment {
             version_name_view.setText(versionName);
         } catch (PackageManager.NameNotFoundException e) {
             //e.printStackTrace();
-            Log.e(this.getClass().getSimpleName(), "PackageManager.NameNotFoundException:" + e.getMessage());
+            UserErrorLog.e(this.getClass().getSimpleName(), "PackageManager.NameNotFoundException:" + e.getMessage());
         }
     }
 
@@ -414,7 +410,7 @@ public class SystemStatusFragment extends Fragment {
                 }
             }
         } catch (NullPointerException e) {
-            Log.e(TAG, "Got nullpointer exception in setNotes ", e);
+            UserErrorLog.e(TAG, "Got nullpointer exception in setNotes ", e);
         }
     }
 
@@ -483,7 +479,7 @@ public class SystemStatusFragment extends Fragment {
                                     notes.append("\n- Bluetooth unbonded, if using share tell it to forget your device.");
                                     notes.append("\n- Scan for devices again to set connection back up!");
                                 } catch (Exception e) {
-                                    Log.e("SystemStatus", e.getMessage(), e);
+                                    UserErrorLog.e("SystemStatus", e.getMessage(), e);
                                 }
                             }
                         }
@@ -526,7 +522,7 @@ public class SystemStatusFragment extends Fragment {
                                         m.invoke(device, (Object[]) null);
                                         notes.append("\nG5 Transmitter unbonded, switch device mode to prevent re-pairing to G5.");
                                     } catch (Exception e) {
-                                        Log.e("SystemStatus", e.getMessage(), e);
+                                        UserErrorLog.e("SystemStatus", e.getMessage(), e);
                                     }
                                 }
 

@@ -1,7 +1,8 @@
 package com.eveningoutpost.dexdrip.G5Model;
 
+
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 
 /**
  * Created by jamorham on 25/11/2016.
@@ -32,7 +33,7 @@ public class VersionRequestTxMessage extends BaseMessage {
 
         }
         init(this_opcode, 3);
-        UserError.Log.d(TAG, "VersionTx (" + version + ") dbg: " + JoH.bytesToHex(byteSequence));
+        UserErrorLog.d(TAG, "VersionTx (" + version + ") dbg: " + JoH.bytesToHex(byteSequence));
     }
 }
 

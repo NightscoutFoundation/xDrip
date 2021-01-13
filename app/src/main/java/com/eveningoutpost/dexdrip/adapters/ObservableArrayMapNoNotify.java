@@ -1,4 +1,11 @@
 package com.eveningoutpost.dexdrip.adapters;
+
+import android.databinding.MapChangeRegistry;
+import android.databinding.ObservableMap;
+import android.support.v4.util.ArrayMap;
+
+import java.util.Collection;
+
 /*
  * Copyright (C) 2015 The Android Open Source Project
  *
@@ -14,12 +21,6 @@ package com.eveningoutpost.dexdrip.adapters;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import android.databinding.MapChangeRegistry;
-import android.databinding.ObservableMap;
-import android.support.v4.util.ArrayMap;
-
-import java.util.Collection;
 
 public class ObservableArrayMapNoNotify<K, V> extends ArrayMap<K, V> implements ObservableMap<K, V> {
 

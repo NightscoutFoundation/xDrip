@@ -1,16 +1,15 @@
 package com.eveningoutpost.dexdrip.webservices;
 
-import android.support.annotation.NonNull;
+
 import android.util.Log;
 
 import com.eveningoutpost.dexdrip.BestGlucose;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.dagger.Injectors;
 import com.eveningoutpost.dexdrip.ui.MicroStatus;
-import com.eveningoutpost.dexdrip.ui.MicroStatusImpl;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -105,7 +104,7 @@ public class WebServicePebble extends BaseWebService {
             Log.d(TAG, "Output: " + reply.toString());
 
         } catch (JSONException e) {
-            UserError.Log.wtf(TAG, "Got json exception: " + e);
+            UserErrorLog.wtf(TAG, "Got json exception: " + e);
         }
         // {"status":[{"now":1515263236782}],"bgs":[{"sgv":"16.8","trend":3,"direction":"FortyFiveUp","datetime":1515263092650,"filtered":292672,"unfiltered":296384,"noise":1,"bgdelta":"0.3","battery":"72","iob":0,"bwp":"29.50","bwpo":303}],"cals":[{"slope":1000,"intercept":13056.86000000003,"scale":1}]}
 

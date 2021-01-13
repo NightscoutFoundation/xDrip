@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.utils;
 
+
 import android.app.Activity;
 import android.content.Intent;
 import android.text.InputType;

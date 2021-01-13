@@ -1,9 +1,8 @@
 package com.eveningoutpost.dexdrip.watch.thinjam.firmware;
 
-// jamorham
 
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.annotations.Expose;
 import com.google.gson.reflect.TypeToken;
@@ -13,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.eveningoutpost.dexdrip.Models.JoH.emptyString;
+
+// jamorham
 
 public class BlueJayManifest {
 
@@ -34,7 +35,7 @@ public class BlueJayManifest {
                 }.getType();
                 return JoH.defaultGsonInstance().fromJson(manifestString, queueType);
             } catch (JsonSyntaxException e) {
-                UserError.Log.e(TAG, "Exception parsing manifest: " + e);
+                UserErrorLog.e(TAG, "Exception parsing manifest: " + e);
             }
         }
         return null;

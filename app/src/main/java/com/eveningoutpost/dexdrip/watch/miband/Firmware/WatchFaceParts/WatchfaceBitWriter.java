@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.watch.miband.Firmware.WatchFaceParts;
 
+
 import java.io.ByteArrayOutputStream;
 
 public class WatchfaceBitWriter {

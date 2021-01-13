@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip;
 
+
 import android.annotation.TargetApi;
 import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
@@ -33,8 +34,7 @@ import android.widget.Toast;
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.Blukon;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
@@ -205,7 +205,7 @@ public class BluetoothScan extends ListActivityWithMenu {
     private synchronized void scanLeDevice(final boolean enable) {
         if (enable) {
             // Stops scanning after a pre-defined scan period.
-            Log.d(TAG, "Start scan 19");
+            UserErrorLog.d(TAG, "Start scan 19");
             mHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -238,7 +238,7 @@ public class BluetoothScan extends ListActivityWithMenu {
 
     @TargetApi(21)
     private void initializeScannerCallback() {
-        Log.d(TAG, "initializeScannerCallback");
+        UserErrorLog.d(TAG, "initializeScannerCallback");
         mScanCallback = new ScanCallback() {
             @Override
             public void onBatchScanResults(final List<ScanResult> results) {
@@ -292,7 +292,7 @@ public class BluetoothScan extends ListActivityWithMenu {
                 lollipopScanner = bluetooth_adapter.getBluetoothLeScanner();
             }
             if (lollipopScanner != null) {
-                Log.d(TAG, "Starting scanner 21");
+                UserErrorLog.d(TAG, "Starting scanner 21");
                 // Stops scanning after a pre-defined scan period.
                 mHandler.postDelayed(new Runnable() {
                     @Override
@@ -303,7 +303,7 @@ public class BluetoothScan extends ListActivityWithMenu {
                                 lollipopScanner.stopScan(mScanCallback);
                             } catch (IllegalStateException e) {
                                 JoH.static_toast_long(e.toString());
-                                UserError.Log.e(TAG, "error stopping scan: " + e.toString());
+                                UserErrorLog.e(TAG, "error stopping scan: " + e.toString());
                             }
                         }
                         invalidateOptionsMenu();
@@ -320,7 +320,7 @@ public class BluetoothScan extends ListActivityWithMenu {
                 try {
                     scanLeDevice(true);
                 } catch (Exception e) {
-                    Log.e(TAG, "Failed to scan for ble device", e);
+                    UserErrorLog.e(TAG, "Failed to scan for ble device", e);
                 }
             }
         } else {
@@ -340,7 +340,7 @@ public class BluetoothScan extends ListActivityWithMenu {
             return;
         }
         if (scanResult.getFormatName().equals("CODE_128")) {
-            Log.d(TAG, "Setting serial number to: " + scanResult.getContents());
+            UserErrorLog.d(TAG, "Setting serial number to: " + scanResult.getContents());
             prefs.edit().putString("share_key", scanResult.getContents()).apply();
             returnToHome();
         }
@@ -348,7 +348,7 @@ public class BluetoothScan extends ListActivityWithMenu {
 
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
-        Log.d(TAG, "Item Clicked");
+        UserErrorLog.d(TAG, "Item Clicked");
         final BluetoothDevice device = mLeDeviceListAdapter.getDevice(position);
         if (device == null || device.getName() == null) return;
         Toast.makeText(this, R.string.connecting_to_device, Toast.LENGTH_LONG).show();
@@ -388,7 +388,7 @@ public class BluetoothScan extends ListActivityWithMenu {
                     || (new String(adverts.get(device.getAddress()), "UTF-8").contains("data"))))||
                     device.getName().toLowerCase().contains("limitterd")) {
                 String msg = "Auto-detected transmiter_pl device!";
-                Log.e(TAG, msg);
+                UserErrorLog.e(TAG, msg);
                 JoH.static_toast_long(msg);
                 using_transmiter = true;
             }
@@ -399,7 +399,7 @@ public class BluetoothScan extends ListActivityWithMenu {
             if (device.getName().toLowerCase().contains("xbridge")
                     && (adverts.containsKey(device.getAddress()) && (new String(adverts.get(device.getAddress()), "UTF-8").contains("rfduino")))) {
                 String msg = "Auto-detected rfduino device!";
-                Log.e(TAG, msg);
+                UserErrorLog.e(TAG, msg);
                 JoH.static_toast_long(msg);
                 using_rfduino = true;
             }
@@ -477,7 +477,7 @@ public class BluetoothScan extends ListActivityWithMenu {
             }
 
         } catch (UnsupportedEncodingException | NullPointerException e) {
-            Log.d(TAG, "Got exception in listitemclick: " + Arrays.toString(e.getStackTrace()));
+            UserErrorLog.d(TAG, "Got exception in listitemclick: " + Arrays.toString(e.getStackTrace()));
         }
     }
 

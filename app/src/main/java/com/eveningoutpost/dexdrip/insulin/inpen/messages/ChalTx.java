@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.insulin.inpen.messages;
 
+
 import java.nio.ByteBuffer;
 
 import static com.eveningoutpost.dexdrip.insulin.inpen.Constants.COUNTER_START;

@@ -1,18 +1,18 @@
 package com.eveningoutpost.dexdrip;
 
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.CheckBox;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.google.android.gms.common.GoogleApiAvailability;
 
 
@@ -49,7 +49,7 @@ public class LicenseAgreementActivity extends BaseAppCompatActivity {
                 findViewById(R.id.googlelicenses).setVisibility(View.GONE);
             }
         } catch (Exception e) {
-            UserError.Log.e(TAG, "Got exception: " + e.toString());
+            UserErrorLog.e(TAG, "Got exception: " + e.toString());
         }*/
     }
 
@@ -69,7 +69,7 @@ public class LicenseAgreementActivity extends BaseAppCompatActivity {
                     findViewById(R.id.webView).setVisibility(View.VISIBLE);
 
                 } else {
-                    UserError.Log.d(TAG, "Nullpointer getting Google License: errorcode:" + GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(getApplicationContext()));
+                    UserErrorLog.d(TAG, "Nullpointer getting Google License: errorcode:" + GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(getApplicationContext()));
                     findViewById(R.id.googlelicenses).setVisibility(View.INVISIBLE);
                 }
             }

@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.adapters;
 
+
 import android.databinding.BindingAdapter;
 import android.databinding.InverseBindingAdapter;
 import android.databinding.InverseBindingListener;

@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.languageeditor;
 
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -13,7 +14,6 @@ import android.os.Handler;
 import android.support.annotation.IdRes;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;

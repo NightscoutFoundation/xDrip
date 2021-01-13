@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip;
 
+
 import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -9,7 +10,7 @@ import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserError;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -56,10 +57,10 @@ public class ErrorListAdapter  extends BaseAdapter {
 
         UserError error = list.get(position);
 
-        row.setBackgroundColor(backgroundFor(error.severity));
-        shortText.setText(error.shortError);
-        longText.setText(error.message);
-        timestamp.setText(dateformatter(error.timestamp));
+        row.setBackgroundColor(backgroundFor(error.getSeverity()));
+        shortText.setText(error.getShortError());
+        longText.setText(error.getMessage());
+        timestamp.setText(dateformatter(error.getTimestamp()));
         return view;
     }
 

@@ -1,7 +1,8 @@
 package com.eveningoutpost.dexdrip.insulin.pendiq.messages;
 
+
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.utils.CRC16ccitt;
 import com.google.gson.annotations.Expose;
@@ -111,7 +112,7 @@ public class BaseMessage {
             }
             return output.toByteArray();
         } catch (ArrayIndexOutOfBoundsException e) {
-            UserError.Log.e("Pendiq", "Array index out of bounds when unescaping: " + JoH.bytesToHex(source));
+            UserErrorLog.e("Pendiq", "Array index out of bounds when unescaping: " + JoH.bytesToHex(source));
             return null;
         }
     }
@@ -168,7 +169,7 @@ public class BaseMessage {
 
     static int getTimeZoneOffsetSeconds() {
         int offset_seconds = TimeZone.getDefault().getRawOffset() / 1000;
-        UserError.Log.d("Pendiq", "Timezone Offset seconds: " + offset_seconds);
+        UserErrorLog.d("Pendiq", "Timezone Offset seconds: " + offset_seconds);
         return offset_seconds;
     }
 

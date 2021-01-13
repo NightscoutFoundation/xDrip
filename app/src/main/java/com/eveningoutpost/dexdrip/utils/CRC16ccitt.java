@@ -1,9 +1,10 @@
 package com.eveningoutpost.dexdrip.utils;
 
-// jamorham
 
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
+
+// jamorham
 
 public class CRC16ccitt {
 
@@ -47,7 +48,7 @@ public class CRC16ccitt {
         final byte[] ret = new byte[2];
         ret[0] = (byte) (crc & 0xff);
         ret[1] = (byte) (crc >> 8 & 0xff); // little endian
-        if (d) UserError.Log.d(TAG, "CCITT checksum: " + JoH.bytesToHex(ret));
+        if (d) UserErrorLog.d(TAG, "CCITT checksum: " + JoH.bytesToHex(ret));
         return ret;
     }
 

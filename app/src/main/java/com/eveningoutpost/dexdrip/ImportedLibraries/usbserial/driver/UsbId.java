@@ -21,6 +21,7 @@
 
 package com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.driver;
 
+
 /**
  * Registry of USB vendor/product ID constants.
  *

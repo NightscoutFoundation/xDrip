@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.G5Model;
 
+
 // jamorham
 
 public class BondRequestTxMessage extends BaseMessage {

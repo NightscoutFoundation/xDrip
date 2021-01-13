@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+
 import android.animation.TimeAnimator;
 import android.content.Context;
 import android.graphics.Bitmap;

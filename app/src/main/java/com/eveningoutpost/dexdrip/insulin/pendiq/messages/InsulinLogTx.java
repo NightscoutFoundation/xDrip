@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.insulin.pendiq.messages;
 
+
 import com.eveningoutpost.dexdrip.insulin.pendiq.Const;
 
 import static com.eveningoutpost.dexdrip.insulin.pendiq.SequenceCounter.getNext;

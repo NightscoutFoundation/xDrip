@@ -1,8 +1,5 @@
 package com.eveningoutpost.dexdrip.utils;
 
-/**
- * Created by jamorham on 06/01/16.
- */
 
 import android.util.Base64;
 import android.util.Log;
@@ -20,6 +17,10 @@ import java.security.spec.AlgorithmParameterSpec;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+
+/**
+ * Created by jamorham on 06/01/16.
+ */
 
 public class CipherUtils {
 

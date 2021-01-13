@@ -1,12 +1,13 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
-/**
- * Created by jamorham on 20/06/2016.
- */
 
 import android.content.Context;
 
 import com.eveningoutpost.dexdrip.xdrip;
+
+/**
+ * Created by jamorham on 20/06/2016.
+ */
 
 public class ShotStateStore {
 

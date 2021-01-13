@@ -1,12 +1,13 @@
 package com.eveningoutpost.dexdrip.stats;
 
+
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.activeandroid.Cache;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 
@@ -159,12 +160,12 @@ public class StatsResult {
                 double GVIDelta = Math.abs(glucoseLast - glucoseFirst);//Math.floor(glucose_data[0].bgValue,glucose_data[glucose_data.length-1].bgValue);
                 double GVIIdeal = Math.sqrt(Math.pow(usedRecords*5,2) + Math.pow(GVIDelta,2));
                 GVI = (GVITotal / GVIIdeal * 100) / 100;
-                UserError.Log.d(TAG, "from=" + from + " " + JoH.dateTimeText(from) + " to=" + to + " " + JoH.dateTimeText(to) + " Below=" + getBelow() + " " + getLowPercentage() + " in=" + getIn() + " " + getInPercentage() + " Above=" + getAbove() + " " + getHighPercentage() + " TotalReadings=" + getTotalReadings());
-                UserError.Log.d(TAG, "GVI=" + GVI + " GVIIdeal=" + GVIIdeal + " GVITotal=" + GVITotal + " GVIDelta=" + GVIDelta + " usedRecords=" + usedRecords);
+                UserErrorLog.d(TAG, "from=" + from + " " + JoH.dateTimeText(from) + " to=" + to + " " + JoH.dateTimeText(to) + " Below=" + getBelow() + " " + getLowPercentage() + " in=" + getIn() + " " + getInPercentage() + " Above=" + getAbove() + " " + getHighPercentage() + " TotalReadings=" + getTotalReadings());
+                UserErrorLog.d(TAG, "GVI=" + GVI + " GVIIdeal=" + GVIIdeal + " GVITotal=" + GVITotal + " GVIDelta=" + GVIDelta + " usedRecords=" + usedRecords);
                 double glucoseMean = Math.floor(glucoseTotal / usedRecords);
                 double tirMultiplier = NormalReadingspct / 100.0;
                 PGS = (GVI * glucoseMean * (1-tirMultiplier) * 100) / 100;
-                UserError.Log.d(TAG, "NormalReadingspct=" + NormalReadingspct + " glucoseMean=" + glucoseMean + " tirMultiplier=" + tirMultiplier + " PGS=" + PGS);
+                UserErrorLog.d(TAG, "NormalReadingspct=" + NormalReadingspct + " glucoseMean=" + glucoseMean + " tirMultiplier=" + tirMultiplier + " PGS=" + PGS);
                 cursor.close();
             } else {
                 GVI = 0;

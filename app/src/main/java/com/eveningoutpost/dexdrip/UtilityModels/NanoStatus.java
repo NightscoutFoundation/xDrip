@@ -1,16 +1,5 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
-/**
- * NanoStatus allows access to a static class based status interface
- *
- * It can push to observable fields, ui elements and remote followers
- *
- * Use of dovetailing means runnables can also be attached
- *
- * This allows us to provide dynamic UI updates behind a layer of abstraction for classes and
- * services which have not yet been instantiated or which maintain a static singleton state
- *
- */
 
 import android.databinding.ObservableField;
 import android.text.SpannableString;
@@ -21,7 +10,7 @@ import com.eveningoutpost.dexdrip.G5Model.SensorDays;
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.adapters.SpannableSerializer;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
@@ -32,6 +21,17 @@ import lombok.Setter;
 import lombok.val;
 
 import static com.eveningoutpost.dexdrip.Models.JoH.emptyString;
+
+/**
+ * NanoStatus allows access to a static class based status interface
+ * <p>
+ * It can push to observable fields, ui elements and remote followers
+ * <p>
+ * Use of dovetailing means runnables can also be attached
+ * <p>
+ * This allows us to provide dynamic UI updates behind a layer of abstraction for classes and
+ * services which have not yet been instantiated or which maintain a static singleton state
+ */
 
 public class NanoStatus {
 
@@ -71,13 +71,13 @@ public class NanoStatus {
     }
 
     private synchronized void startRefresh() {
-        UserError.Log.d(TAG, "startRefresh");
+        UserErrorLog.d(TAG, "startRefresh");
         if (myThread != null) {
             try {
-                if (D) UserError.Log.d(TAG, "sending interrupt");
+                if (D) UserErrorLog.d(TAG, "sending interrupt");
                 myThread.interrupt();
             } catch (Exception e) {
-                if (D) UserError.Log.d(TAG, " interrupt exception " + e);
+                if (D) UserErrorLog.d(TAG, " interrupt exception " + e);
             }
         }
         myThread = new Thread(new Runnable() {
@@ -88,16 +88,16 @@ public class NanoStatus {
                         Thread.sleep(freqMs);
                     } catch (InterruptedException e) {
                         //
-                        if (D) UserError.Log.d(TAG, "Sleep interrupted - quiting");
+                        if (D) UserErrorLog.d(TAG, "Sleep interrupted - quiting");
                         return;
                     }
-                    if (D) UserError.Log.d(TAG, "Updating");
+                    if (D) UserErrorLog.d(TAG, "Updating");
                     updateWatch();
                     if (doveTail != null) {
                         doveTail.run();
                     }
                 }
-                if (D) UserError.Log.d(TAG, "Stopping");
+                if (D) UserErrorLog.d(TAG, "Stopping");
             }
         });
         myThread.setPriority(Thread.NORM_PRIORITY - 1);
@@ -170,7 +170,7 @@ public class NanoStatus {
     public static void keepFollowerUpdated(final String prefix, final int rateLimit) {
         try {
             if (Home.get_master()) {
-                UserError.Log.d(TAG, "keepfollower updated called: " + prefix + " " + rateLimit);
+                UserErrorLog.d(TAG, "keepfollower updated called: " + prefix + " " + rateLimit);
                 if (rateLimit == 0 || JoH.pratelimit("keep-follower-updated" + prefix, rateLimit)) {
                     final String serialized = SpannableSerializer.serializeSpannableString(nanoStatusColor(prefix.equals("") ? "collector" : prefix));
                     if (PersistentStore.updateStringIfDifferent(LAST_COLLECTOR_STATUS_STORE + prefix, serialized)) {
@@ -178,11 +178,11 @@ public class NanoStatus {
                                 GcmActivity.sendNanoStatusUpdate(prefix, PersistentStore.getString(LAST_COLLECTOR_STATUS_STORE + prefix)));
                     }
                 } else {
-                    UserError.Log.d(TAG, "Ratelimiting keepFollowerUpdated check on " + prefix + " @ " + rateLimit);
+                    UserErrorLog.d(TAG, "Ratelimiting keepFollowerUpdated check on " + prefix + " @ " + rateLimit);
                 }
             }
         } catch (Exception e) {
-            UserError.Log.wtf(TAG, "Got exception serializing: " + e);
+            UserErrorLog.wtf(TAG, "Got exception serializing: " + e);
         }
     }
 

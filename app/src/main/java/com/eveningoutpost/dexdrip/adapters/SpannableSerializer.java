@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.adapters;
 
+
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.BackgroundColorSpan;

@@ -1,7 +1,8 @@
 package com.eveningoutpost.dexdrip.G5Model;
 
+
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 
 /**
@@ -26,11 +27,11 @@ public class DexTimeKeeper {
     public static void updateAge(final String transmitterId, final int dexTimeStamp, final boolean absolute) {
 
         if ((transmitterId == null) || (transmitterId.length() != 6)) {
-            UserError.Log.e(TAG, "Invalid dex transmitter in updateAge: " + transmitterId);
+            UserErrorLog.e(TAG, "Invalid dex transmitter in updateAge: " + transmitterId);
             return;
         }
         if (dexTimeStamp < 1) {
-            UserError.Log.e(TAG, "Invalid dex timestamp in updateAge: " + dexTimeStamp);
+            UserErrorLog.e(TAG, "Invalid dex timestamp in updateAge: " + dexTimeStamp);
             if (dexTimeStamp == 0 && absolute) {
                 DexResetHelper.offer("Your transmitter clock has stopped or never started. Do you want to hard reset it?");
             }
@@ -40,11 +41,11 @@ public class DexTimeKeeper {
         final long activation_time = JoH.tsl() - (longDexTimeStamp * 1000L);
 
         if (activation_time > JoH.tsl()) {
-            UserError.Log.wtf(TAG, "Transmitter activation time is in the future. Not possible to update: " + dexTimeStamp);
+            UserErrorLog.wtf(TAG, "Transmitter activation time is in the future. Not possible to update: " + dexTimeStamp);
             return;
         }
 
-        UserError.Log.d(TAG, "Activation time updated to: " + JoH.dateTimeText(activation_time));
+        UserErrorLog.d(TAG, "Activation time updated to: " + JoH.dateTimeText(activation_time));
         PersistentStore.setLong(DEX_XMIT_START + transmitterId, activation_time);
 
     }
@@ -52,11 +53,11 @@ public class DexTimeKeeper {
     public static int getDexTime(String transmitterId, long timestamp) {
 
         if ((transmitterId == null) || (transmitterId.length() != 6)) {
-            UserError.Log.e(TAG, "Invalid dex transmitter in getDexTime: " + transmitterId);
+            UserErrorLog.e(TAG, "Invalid dex transmitter in getDexTime: " + transmitterId);
             return -3;
         }
         if (timestamp < OLDEST_ALLOWED) {
-            UserError.Log.e(TAG, "Invalid timestamp in getDexTime: " + timestamp);
+            UserErrorLog.e(TAG, "Invalid timestamp in getDexTime: " + timestamp);
             return -2;
         }
 
@@ -64,14 +65,14 @@ public class DexTimeKeeper {
 
         if (transmitter_start_timestamp < OLDEST_ALLOWED) {
             if (JoH.ratelimit("no-valid-dex-timestamp-log", 60)) {
-                UserError.Log.e(TAG, "No valid timestamp stored for transmitter: " + transmitterId);
+                UserErrorLog.e(TAG, "No valid timestamp stored for transmitter: " + transmitterId);
             }
             return -1;
         }
 
         final long ms_since = timestamp - transmitter_start_timestamp;
         if (ms_since < 0) {
-            UserError.Log.e(TAG, "Invalid timestamp comparison for transmitter id: " + transmitterId + " since: " + ms_since + "  requested ts: " + JoH.dateTimeText(timestamp) + " with tx start: " + JoH.dateTimeText(transmitter_start_timestamp));
+            UserErrorLog.e(TAG, "Invalid timestamp comparison for transmitter id: " + transmitterId + " since: " + ms_since + "  requested ts: " + JoH.dateTimeText(timestamp) + " with tx start: " + JoH.dateTimeText(transmitter_start_timestamp));
             return -4;
         }
         lastTransmitterId = transmitterId;
@@ -85,7 +86,7 @@ public class DexTimeKeeper {
 
     public static long fromDexTime(String transmitterId, int dexTimeStamp) {
         if ((transmitterId == null) || (transmitterId.length() != 6)) {
-            UserError.Log.e(TAG, "Invalid dex transmitter in fromDexTime: " + transmitterId);
+            UserErrorLog.e(TAG, "Invalid dex transmitter in fromDexTime: " + transmitterId);
             return -3;
         }
         lastTransmitterId = transmitterId;
@@ -124,15 +125,15 @@ public class DexTimeKeeper {
                 final long time_stamp = Long.parseLong(components[1]);
                 if (time_stamp > OLDEST_ALLOWED) {
                     PersistentStore.setLong(DEX_XMIT_START + components[0], time_stamp);
-                    UserError.Log.d(TAG, "Updating time keeper: " + components[0] + " " + JoH.dateTimeText(time_stamp));
+                    UserErrorLog.d(TAG, "Updating time keeper: " + components[0] + " " + JoH.dateTimeText(time_stamp));
                 } else {
-                    UserError.Log.wtf(TAG, "Dex Timestamp doesn't meet criteria: " + time_stamp);
+                    UserErrorLog.wtf(TAG, "Dex Timestamp doesn't meet criteria: " + time_stamp);
                 }
             } else {
-                UserError.Log.e(TAG, "Invalid injectFromStream length: " + stream);
+                UserErrorLog.e(TAG, "Invalid injectFromStream length: " + stream);
             }
         } catch (NumberFormatException e) {
-            UserError.Log.e(TAG, "Invalid injectFromStream: " + stream + " " + e);
+            UserErrorLog.e(TAG, "Invalid injectFromStream: " + stream + " " + e);
         }
     }
 

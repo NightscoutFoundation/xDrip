@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -8,7 +9,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.util.Log;
 
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 
 import java.util.List;
 
@@ -44,7 +45,7 @@ public class InstalledApps {
         final Intent search = new Intent("android.intent.action.MAIN");
         final List<ResolveInfo> activityList = pm.queryIntentActivities(search, 0);
         for (final ResolveInfo app : activityList) {
-            UserError.Log.d(TAG, app.activityInfo.packageName);
+            UserErrorLog.d(TAG, app.activityInfo.packageName);
         }
     }
 

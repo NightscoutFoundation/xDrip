@@ -1,6 +1,5 @@
 package com.eveningoutpost.dexdrip.utils.framework;
 
-// jamorham
 
 import android.Manifest;
 import android.app.Activity;
@@ -18,7 +17,7 @@ import android.telephony.PhoneNumberUtils;
 import android.telephony.TelephonyManager;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.watch.lefun.LeFun;
@@ -33,7 +32,8 @@ import lombok.Getter;
 import static com.eveningoutpost.dexdrip.watch.miband.Const.MIBAND_NOTIFY_TYPE_CALL;
 import static com.eveningoutpost.dexdrip.watch.miband.Const.MIBAND_NOTIFY_TYPE_CANCEL;
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.THINJAM_NOTIFY_TYPE_CALL;
-import static com.eveningoutpost.dexdrip.watch.thinjam.Const.THINJAM_NOTIFY_TYPE_CANCEL;
+
+// jamorham
 
 public class IncomingCallsReceiver extends BroadcastReceiver {
 
@@ -67,14 +67,14 @@ public class IncomingCallsReceiver extends BroadcastReceiver {
         final String number = intent.getExtras().getString(TelephonyManager.EXTRA_INCOMING_NUMBER);
 
         // TODO lookup contacts
-        UserError.Log.d(TAG, "Call State: " + stateExtra + " " + number);
+        UserErrorLog.d(TAG, "Call State: " + stateExtra + " " + number);
         if (stateExtra != null && stateExtra.equals(TelephonyManager.EXTRA_STATE_RINGING)) {
             ringingNow = true;
 
             // Lefun
             if (JoH.quietratelimit("lefun-call-debounce", 10)) {
                 if (LeFunEntry.areCallAlertsEnabled()) {
-                    UserError.Log.d(TAG, "Sending call alert: " + number);
+                    UserErrorLog.d(TAG, "Sending call alert: " + number);
                     // TODO extract to generic notifier
                     final String caller = number != null ? number.substring(Math.max(0, number.length() - 8)) : "CALL";
                     LeFun.sendAlert(true, caller);
@@ -85,7 +85,7 @@ public class IncomingCallsReceiver extends BroadcastReceiver {
                 if (MiBandEntry.areCallAlertsEnabled()) {
                     // TODO extract to generic notifier
                     final String caller = number != null ? "Incoming Call " + getContactDisplayNameByNumber(number) + " " + bestPhoneNumberFormatter(number) + " " : "CALL";
-                    UserError.Log.d(TAG, "Sending call alert: " + caller);
+                    UserErrorLog.d(TAG, "Sending call alert: " + caller);
                     MiBand.sendCall(MIBAND_NOTIFY_TYPE_CALL, caller);
                 }
             }
@@ -95,7 +95,7 @@ public class IncomingCallsReceiver extends BroadcastReceiver {
                 if (BlueJayEntry.areCallAlertsEnabled()) {
                     // TODO extract to generic notifier
                     final String caller = number != null ? "Incoming Call " + getContactDisplayNameByNumber(number) + " " + bestPhoneNumberFormatter(number) + " " : "CALL";
-                    UserError.Log.d(TAG, "Sending call alert: " + caller);
+                    UserErrorLog.d(TAG, "Sending call alert: " + caller);
                     final String task_reference = "bluejay-wait-caller-id";
                     Inevitable.kill(task_reference);
                     Inevitable.task(task_reference, 200, () -> BlueJayEntry.sendNotifyIfEnabled(THINJAM_NOTIFY_TYPE_CALL, caller));
@@ -105,7 +105,7 @@ public class IncomingCallsReceiver extends BroadcastReceiver {
         } else {
             if (ringingNow) {
                 ringingNow = false;
-                UserError.Log.d(TAG, "Ringing stopped: " + stateExtra);
+                UserErrorLog.d(TAG, "Ringing stopped: " + stateExtra);
                 if (JoH.ratelimit("incoming-call-stopped", 10)) {
                     if (BlueJayEntry.areCallAlertsEnabled()) {
                         BlueJayEntry.cancelNotifyIfEnabled();

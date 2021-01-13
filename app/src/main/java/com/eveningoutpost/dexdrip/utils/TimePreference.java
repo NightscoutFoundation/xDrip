@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.utils;
 
+
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.preference.DialogPreference;

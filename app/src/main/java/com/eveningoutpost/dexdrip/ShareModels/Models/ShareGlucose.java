@@ -1,15 +1,16 @@
 package com.eveningoutpost.dexdrip.ShareModels.Models;
 
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.BatteryManager;
 import android.provider.BaseColumns;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.google.gson.annotations.Expose;
 
 /**
@@ -39,15 +40,15 @@ public class ShareGlucose extends Model {
     public String WT;
 
     public void processShareData(Context context) {
-        Log.d("SHARE", "Share Data being processed!"); // TODO maybe set this up??
+        UserErrorLog.d("SHARE", "Share Data being processed!"); // TODO maybe set this up??
 //        mContext = context;
-//        Log.d("SHARE", "Timestamp before parsing: " + WT);
-//        Log.d("SHARE", "Timestamp before parsing: " + WT.replaceAll("[^\\d.]", ""));
+//        UserErrorLog.d("SHARE", "Timestamp before parsing: " + WT);
+//        UserErrorLog.d("SHARE", "Timestamp before parsing: " + WT.replaceAll("[^\\d.]", ""));
 //
 //        double timestamp = (Double.parseDouble(WT.replaceAll("[^\\d.]", "")));
-//        Log.d("SHARE", "Timestamp: " + timestamp);
+//        UserErrorLog.d("SHARE", "Timestamp: " + timestamp);
 //        if (!Bg.alreadyExists(timestamp)) {
-//            Log.d("SHARE", "Data looks new!!");
+//            UserErrorLog.d("SHARE", "Data looks new!!");
 //            Bg bg = new Bg();
 //            bg.direction = slopeDirection();
 //            bg.battery = Integer.toString(getBatteryLevel());
@@ -56,9 +57,9 @@ public class ShareGlucose extends Model {
 //            bg.sgv = Integer.toString((int) Value);
 //            bg.save();
 //            DataCollectionService.newDataArrived(mContext, true);
-//            Log.d("SHARE", "Share Data Processed Successfully!");
+//            UserErrorLog.d("SHARE", "Share Data Processed Successfully!");
 //        } else {
-//            Log.d("SHARE", "A Bg Value similar to this timestamp already exists.");
+//            UserErrorLog.d("SHARE", "A Bg Value similar to this timestamp already exists.");
 //        }
     }
 

@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip;
 
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -27,7 +28,7 @@ import android.widget.TextView;
 
 import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 
@@ -90,7 +91,7 @@ public class AlertList extends ActivityWithMenu {
 
         List<AlertType> alerts = AlertType.getAll(above);
         for (AlertType alert : alerts) {
-            Log.d(TAG, alert.toString());
+            UserErrorLog.d(TAG, alert.toString());
             feedList.add(createAlertMap(alert));
         }
         return feedList;
@@ -107,7 +108,7 @@ public class AlertList extends ActivityWithMenu {
                     ListView lv = (ListView) parent;
                     @SuppressWarnings("unchecked")
                     HashMap<String, String> item = (HashMap<String, String>) lv.getItemAtPosition(position);
-                    Log.d(TAG, "Item clicked " + lv.getItemAtPosition(position) + item.get("uuid"));
+                    UserErrorLog.d(TAG, "Item clicked " + lv.getItemAtPosition(position) + item.get("uuid"));
 
                     //The XML for each item in the list (should you use a custom XML) must have android:longClickable="true"
                     // as well (or you can use the convenience method lv.setLongClickable(true);). This way you can have a list
@@ -212,13 +213,13 @@ public class AlertList extends ActivityWithMenu {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d(TAG, "onActivityResult called request code  = " + requestCode + " result code " + resultCode);
+        UserErrorLog.d(TAG, "onActivityResult called request code  = " + requestCode + " result code " + resultCode);
         if (!AlertType.activeLowAlertExists()) {
             displayWarning();
         }
         if (requestCode == ADD_ALERT || requestCode == EDIT_ALERT) {
             if (resultCode == RESULT_OK) {
-                Log.d(TAG, "onActivityResult called invalidating...");
+                UserErrorLog.d(TAG, "onActivityResult called invalidating...");
                 FillLists();
             }
             if (resultCode == RESULT_CANCELED) {

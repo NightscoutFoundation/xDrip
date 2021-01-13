@@ -1,7 +1,8 @@
 package com.eveningoutpost.dexdrip.G5Model;
 
+
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.Services.G5CollectionService;
 
 import java.nio.ByteBuffer;
@@ -23,7 +24,7 @@ public class KeepAliveTxMessage extends BaseMessage {
         data.put(new byte[]{(byte) opcode, (byte) this.time});
         byteSequence = data.order(ByteOrder.LITTLE_ENDIAN).array();
 
-        UserError.Log.d(TAG, "New KeepAliveRequestTxMessage: " + JoH.bytesToHex(byteSequence));
+        UserErrorLog.d(TAG, "New KeepAliveRequestTxMessage: " + JoH.bytesToHex(byteSequence));
 
     }
 }

@@ -1,10 +1,11 @@
 package com.eveningoutpost.dexdrip.tidepool;
 
+
 import android.os.PowerManager;
 
 import com.eveningoutpost.dexdrip.BuildConfig;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.store.FastStore;
@@ -112,7 +113,7 @@ public class TidepoolUploader {
 
     public static void resetInstance() {
         retrofit = null;
-        UserError.Log.d(TAG, "Instance reset");
+        UserErrorLog.d(TAG, "Instance reset");
     }
 
     public static void doLoginFromUi() {
@@ -121,7 +122,7 @@ public class TidepoolUploader {
 
     public static synchronized void doLogin(final boolean fromUi) {
         if (!TidepoolEntry.enabled()) {
-            UserError.Log.d(TAG, "Cannot login as disabled by preference");
+            UserErrorLog.d(TAG, "Cannot login as disabled by preference");
             if (fromUi) {
                 JoH.static_toast_long("Cannot login as Tidepool feature not enabled");
             }
@@ -141,7 +142,7 @@ public class TidepoolUploader {
                 call.enqueue(new TidepoolCallback<MAuthReply>(session, "Login", () -> startSession(session, fromUi))
                         .setOnFailure(() -> loginFailed(fromUi)));
             } else {
-                UserError.Log.e(TAG, "Cannot do login as user credentials have not been set correctly");
+                UserErrorLog.e(TAG, "Cannot do login as user credentials have not been set correctly");
                 status("Invalid credentials");
                 if (fromUi) {
                     JoH.static_toast_long("Cannot login as Tidepool credentials have not been set correctly");
@@ -170,13 +171,13 @@ public class TidepoolUploader {
 
                 try {
                     Response<MAuthReply> response = call.execute();
-                    UserError.Log.e(TAG, "Header: " + response.code());
+                    UserErrorLog.e(TAG, "Header: " + response.code());
                     message = "Successfully logged into Tidepool.";
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             } else {
-                UserError.Log.e(TAG,"Cannot do login as user credentials have not been set correctly");
+                UserErrorLog.e(TAG,"Cannot do login as user credentials have not been set correctly");
             }
 
             AlertDialog.Builder builder = new AlertDialog.Builder(rootContext);
@@ -213,7 +214,7 @@ public class TidepoolUploader {
                         call.enqueue(new TidepoolCallback<MDatasetReply>(session, "Open New Dataset", () -> doUpload(session))
                                 .setOnFailure(TidepoolUploader::releaseWakeLock));
                     } else {
-                        UserError.Log.d(TAG, "Existing Dataset: " + session.datasetReply.getUploadId());
+                        UserErrorLog.d(TAG, "Existing Dataset: " + session.datasetReply.getUploadId());
                         // TODO: Wouldn't need to do this if we could block on the above `call.enqueue`.
                         // ie, do the openDataSet conditionally, and then do `doUpload` either way.
                         status("Appending");
@@ -224,7 +225,7 @@ public class TidepoolUploader {
                     }
                 }).setOnFailure(TidepoolUploader::releaseWakeLock));
             } else {
-                UserError.Log.wtf(TAG, "Got login response but cannot determine userid - cannot proceed");
+                UserErrorLog.wtf(TAG, "Got login response but cannot determine userid - cannot proceed");
                 if (fromUi) {
                     JoH.static_toast_long("Error: Cannot determine userid");
                 }
@@ -242,7 +243,7 @@ public class TidepoolUploader {
 
     private static void doUpload(final Session session) {
         if (!TidepoolEntry.enabled()) {
-            UserError.Log.e(TAG, "Cannot upload - preference disabled");
+            UserErrorLog.e(TAG, "Cannot upload - preference disabled");
             return;
         }
         extendWakeLock(60000);
@@ -250,7 +251,7 @@ public class TidepoolUploader {
         final String chunk = UploadChunk.getNext(session);
         if (chunk != null) {
             if (chunk.length() == 2) {
-                UserError.Log.d(TAG, "Empty data set - marking as succeeded");
+                UserErrorLog.d(TAG, "Empty data set - marking as succeeded");
                 doCompleted(session);
             } else {
                 final RequestBody body = RequestBody.create(MediaType.parse("application/json"), chunk);
@@ -262,7 +263,7 @@ public class TidepoolUploader {
 
                     if (REPEAT && !session.exceededIterations()) {
                         status("Queued Next");
-                        UserError.Log.d(TAG, "Scheduling next upload");
+                        UserErrorLog.d(TAG, "Scheduling next upload");
                         Inevitable.task("Tidepool-next", 10000, () -> doUpload(session));
                     } else {
 
@@ -275,7 +276,7 @@ public class TidepoolUploader {
                 }).setOnFailure(TidepoolUploader::releaseWakeLock));
             }
         } else {
-            UserError.Log.e(TAG, "Upload chunk is null, cannot proceed");
+            UserErrorLog.e(TAG, "Upload chunk is null, cannot proceed");
             releaseWakeLock();
         }
     }
@@ -290,13 +291,13 @@ public class TidepoolUploader {
 
     private static void closeSuccess() {
         status("Closed");
-        UserError.Log.d(TAG, "Close success");
+        UserErrorLog.d(TAG, "Close success");
         releaseWakeLock();
     }
 
     private static void doCompleted(final Session session) {
         status("Completed OK");
-        UserError.Log.d(TAG, "ALL COMPLETED OK!");
+        UserErrorLog.d(TAG, "ALL COMPLETED OK!");
         releaseWakeLock();
     }
 
@@ -314,7 +315,7 @@ public class TidepoolUploader {
     }
 
     protected static synchronized void releaseWakeLock() {
-        UserError.Log.d(TAG, "Releasing wakelock");
+        UserErrorLog.d(TAG, "Releasing wakelock");
         JoH.releaseWakeLock(wl);
     }
 
@@ -325,7 +326,7 @@ public class TidepoolUploader {
             Call<MDatasetReply> call = session.service.deleteAllData(session.token, session.authReply.userid);
             call.enqueue(new TidepoolCallback<>(session, "Delete Data", null));
         } else {
-            UserError.Log.wtf(TAG, "Got login response but cannot determine userid - cannot proceed");
+            UserErrorLog.wtf(TAG, "Got login response but cannot determine userid - cannot proceed");
         }
     }
 

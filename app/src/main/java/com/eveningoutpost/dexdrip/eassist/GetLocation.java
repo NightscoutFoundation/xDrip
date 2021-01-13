@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.eassist;
 
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -11,7 +12,7 @@ import android.os.Looper;
 import android.support.v4.app.ActivityCompat;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -90,7 +91,7 @@ public class GetLocation {
             //                                          int[] grantResults)
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
-            UserError.Log.wtf(TAG, "No permission to obtain location");
+            UserErrorLog.wtf(TAG, "No permission to obtain location");
             return;
         }
 
@@ -110,21 +111,21 @@ public class GetLocation {
                 @SuppressLint("MissingPermission") final Location location = LocationServices.FusedLocationApi.getLastLocation(mApiClient);
                 if (location != null) {
                     lastLocation = location;
-                    UserError.Log.d(TAG, location.toString());
+                    UserErrorLog.d(TAG, location.toString());
                     lastAddress = getStreetLocation(location.getLatitude(), location.getLongitude());
-                    UserError.Log.d(TAG, "Address: " + lastAddress);
+                    UserErrorLog.d(TAG, "Address: " + lastAddress);
                     addressUpdated = JoH.tsl();
 
                     if (ActivityCompat.checkSelfPermission(xdrip.getAppContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                             && ActivityCompat.checkSelfPermission(xdrip.getAppContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                        UserError.Log.wtf(TAG, "Could not determine location as permission has been removed!");
+                        UserErrorLog.wtf(TAG, "Could not determine location as permission has been removed!");
                         return;
                     }
 
                     final LocationCallback callback = getLocationCallback();
 
                     Inevitable.task("update gps location", 200, () -> {
-                        UserError.Log.d(TAG, "Requesting live GPS updates");
+                        UserErrorLog.d(TAG, "Requesting live GPS updates");
                         LocationServices.FusedLocationApi.requestLocationUpdates(mApiClient,
                                 getLocationRequest(), callback, Looper.getMainLooper());
                     });
@@ -132,18 +133,18 @@ public class GetLocation {
                             () -> LocationServices.FusedLocationApi.removeLocationUpdates(mApiClient, callback));
 
                 } else {
-                    UserError.Log.e(TAG, "Location result was null");
+                    UserErrorLog.e(TAG, "Location result was null");
                     // TODO retry ?
                 }
             } else {
-                UserError.Log.e(TAG, "Could not connect google api");
+                UserErrorLog.e(TAG, "Could not connect google api");
             }
         };
 
 
         if (!mApiClient.isConnected()) {
             mApiClient.connect();
-            UserError.Log.d(TAG, "Delaying location request as api not connected");
+            UserErrorLog.d(TAG, "Delaying location request as api not connected");
             Inevitable.task("get location", 5000, runnable);
         } else {
             runnable.run();
@@ -170,13 +171,13 @@ public class GetLocation {
                     return;
                 }
                 final Location thisLocation = locationResult.getLastLocation();
-                UserError.Log.d(TAG, "Got location update callback!! " + thisLocation);
+                UserErrorLog.d(TAG, "Got location update callback!! " + thisLocation);
                 if ((lastLocation == null)
                         || thisLocation.getAccuracy() < lastLocation.getAccuracy()
                         || ((thisLocation.getAccuracy() < SKIP_DISTANCE) && (thisLocation.distanceTo(lastLocation) > SKIP_DISTANCE))) {
 
                     lastLocation = thisLocation;
-                    UserError.Log.d(TAG, "Got location UPDATED element: " + lastLocation);
+                    UserErrorLog.d(TAG, "Got location UPDATED element: " + lastLocation);
                     Inevitable.task("update-street-location", 6000, () -> lastAddress = getStreetLocation(lastLocation.getLatitude(), lastLocation.getLongitude()));
                 }
             }
@@ -189,15 +190,15 @@ public class GetLocation {
             final Geocoder geocoder = new Geocoder(xdrip.getAppContext(), Locale.getDefault());
             final List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
 
-            UserError.Log.d(TAG, addresses.toString());
+            UserErrorLog.d(TAG, addresses.toString());
             final String address = addresses.get(0).getAddressLine(0);
-            UserError.Log.d(TAG, "Street address: " + address);
+            UserErrorLog.d(TAG, "Street address: " + address);
             return address;
 
         } catch (IndexOutOfBoundsException | NullPointerException e) {
-            UserError.Log.e(TAG, "Couldn't isolate street address");
+            UserErrorLog.e(TAG, "Couldn't isolate street address");
         } catch (IOException e) {
-            UserError.Log.e(TAG, "Location error (reboot sometimes helps fix geocoding): " + e);
+            UserErrorLog.e(TAG, "Location error (reboot sometimes helps fix geocoding): " + e);
 
         }
         return null;

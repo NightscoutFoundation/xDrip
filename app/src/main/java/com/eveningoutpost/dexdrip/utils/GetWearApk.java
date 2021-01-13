@@ -1,9 +1,10 @@
 package com.eveningoutpost.dexdrip.utils;
 
+
 import android.content.pm.ApplicationInfo;
 
 import com.eveningoutpost.dexdrip.BuildConfig;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.io.BufferedInputStream;
@@ -30,11 +31,11 @@ public class GetWearApk {
 
     public static byte[] getBytes() {
         if (isFindable()) {
-            UserError.Log.d(TAG, "Outer apk found - extracting");
+            UserErrorLog.d(TAG, "Outer apk found - extracting");
             final String path = findOuterApkPath();
             return path != null ? extractFromApk(new File(path)) : null;
         } else {
-            UserError.Log.e(TAG, "Cannot find file");
+            UserErrorLog.e(TAG, "Cannot find file");
             return null;
         }
     }
@@ -45,7 +46,7 @@ public class GetWearApk {
             final ApplicationInfo applicationInfo = xdrip.getAppContext().getPackageManager().getApplicationInfo(BuildConfig.APPLICATION_ID, 0);
             return applicationInfo.publicSourceDir;
         } catch (Exception e) {
-            UserError.Log.e(TAG, "Got exception getting apk file: " + e);
+            UserErrorLog.e(TAG, "Got exception getting apk file: " + e);
             //
         }
         return findOuterApkPathLegacy();
@@ -74,7 +75,7 @@ public class GetWearApk {
 
     private static byte[] extractFromApk(File file) {
         if (file == null) {
-            UserError.Log.d(TAG, "null file passed to extractFromApk");
+            UserErrorLog.d(TAG, "null file passed to extractFromApk");
             return null;
         }
         try {
@@ -90,16 +91,16 @@ public class GetWearApk {
                     if (read_bytes != buffer.length) {
                         throw new IOException("Read incorrect number of bytes: " + read_bytes + " vs " + buffer.length);
                     }
-                    UserError.Log.d(TAG, "Got match: " + filename + " " + read_bytes);
+                    UserErrorLog.d(TAG, "Got match: " + filename + " " + read_bytes);
                     return buffer; // got the data
                 }
                 //zip_stream.closeEntry();
             }
-            UserError.Log.wtf(TAG, "Could not find Wear mini-apk");
+            UserErrorLog.wtf(TAG, "Could not find Wear mini-apk");
             zip_stream.close();
             fileInputStream.close();
         } catch (IOException e) {
-            UserError.Log.e(TAG, "Got exception: " + e);
+            UserErrorLog.e(TAG, "Got exception: " + e);
             return null;
         }
         return null;

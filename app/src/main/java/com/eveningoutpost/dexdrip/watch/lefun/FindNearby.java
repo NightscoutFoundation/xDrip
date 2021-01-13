@@ -1,10 +1,11 @@
 package com.eveningoutpost.dexdrip.watch.lefun;
 
-// jamorham
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.utils.BtCallBack;
 import com.eveningoutpost.dexdrip.utils.bt.ScanMeister;
+
+// jamorham
 
 public class FindNearby implements BtCallBack {
 

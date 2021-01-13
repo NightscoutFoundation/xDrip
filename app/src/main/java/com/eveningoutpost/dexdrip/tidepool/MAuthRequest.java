@@ -1,12 +1,13 @@
 package com.eveningoutpost.dexdrip.tidepool;
 
-// jamorham
 
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 
 import okhttp3.Credentials;
 
 import static com.eveningoutpost.dexdrip.Models.JoH.emptyString;
+
+// jamorham
 
 public class MAuthRequest extends BaseMessage {
 

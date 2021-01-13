@@ -1,17 +1,18 @@
 package com.eveningoutpost.dexdrip;
 
-/**
- * Created by jamorham on 08/01/16.
- */
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
 import com.google.android.gms.common.api.GoogleApiClient;
+
+/**
+ * Created by jamorham on 08/01/16.
+ */
 
 //import com.google.android.gms.drive.Drive;
 //import com.google.android.gms.drive.DriveApi.DriveContentsResult;
@@ -335,7 +336,7 @@ public class GoogleDriveInterface extends FauxActivity {
         //      return "";
         //  }
         if (ourFolderResourceID == null) {
-            UserError.Log.wtf(TAG, "Invalid null sync key!!!");
+            UserErrorLog.wtf(TAG, "Invalid null sync key!!!");
             return CipherUtils.getRandomHexKey();
         }
         if (ourFolderResourceKeyHash == null) {

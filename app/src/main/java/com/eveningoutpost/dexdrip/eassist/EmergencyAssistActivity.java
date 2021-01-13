@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.eassist;
 
+
 import android.Manifest;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
@@ -20,7 +21,7 @@ import android.view.View;
 import com.eveningoutpost.dexdrip.BR;
 import com.eveningoutpost.dexdrip.BaseAppCompatActivity;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
@@ -39,7 +40,6 @@ import static android.provider.ContactsContract.CommonDataKinds.Phone;
 import static com.eveningoutpost.dexdrip.eassist.EmergencyAssist.EMERGENCY_ASSIST_PREF;
 import static com.eveningoutpost.dexdrip.eassist.EmergencyAssist.EMERGENCY_HIGH_MINS_PREF;
 import static com.eveningoutpost.dexdrip.eassist.EmergencyAssist.EMERGENCY_LOW_MINS_PREF;
-
 import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 /*
@@ -187,7 +187,7 @@ public class EmergencyAssistActivity extends BaseAppCompatActivity {
                 JoH.startActivity(EmergencyAssistActivity.class);
             }
             final String msg = "NEED SMS PERMISSION! - EMERGENCY FEATURE CANNOT WORK!!!";
-            UserError.Log.wtf(TAG, msg);
+            UserErrorLog.wtf(TAG, msg);
             JoH.static_toast_long(msg);
         }
     }
@@ -234,7 +234,7 @@ public class EmergencyAssistActivity extends BaseAppCompatActivity {
                         }
                     } catch (Exception e) {
                         final String msg = "Got error trying to read contact information: " + e;
-                        UserError.Log.wtf(TAG, msg);
+                        UserErrorLog.wtf(TAG, msg);
                         JoH.static_toast_long(msg);
                     }
                 } else {

@@ -1,8 +1,8 @@
 package com.eveningoutpost.dexdrip.Models;
 
+
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
-import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 
 import org.junit.Test;
 

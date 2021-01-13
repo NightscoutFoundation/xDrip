@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.utils.usb;
 
+
 import android.content.Context;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
@@ -12,7 +13,7 @@ import android.os.ParcelFileDescriptor;
 import android.support.annotation.RequiresApi;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -39,7 +40,7 @@ public class MtpTools {
         final UsbManager usbManager = (UsbManager) xdrip.getAppContext().getSystemService(Context.USB_SERVICE);
 
         if (usbManager == null) {
-            Log.d(TAG, "usbmanager is null in openMTP");
+            UserErrorLog.d(TAG, "usbmanager is null in openMTP");
             return null;
         }
 
@@ -63,10 +64,10 @@ public class MtpTools {
 
         final MtpObjectInfo sendObjectInfoResult = device.sendObjectInfo(objectInfo);
         if (sendObjectInfoResult == null) {
-            Log.e(TAG, "Null sendObjectInfoResult in create document :(");
+            UserErrorLog.e(TAG, "Null sendObjectInfoResult in create document :(");
             return -1;
         }
-        Log.d(TAG, "Send object info result: " + sendObjectInfoResult.getName());
+        UserErrorLog.d(TAG, "Send object info result: " + sendObjectInfoResult.getName());
 
         // Association is what passes for a folder within mtp
         if (objectInfo.getFormat() != MtpConstants.FORMAT_ASSOCIATION) {
@@ -75,7 +76,7 @@ public class MtpTools {
                 return -1;
             }
         }
-        Log.d(TAG, "Success indicated with handle: " + sendObjectInfoResult.getObjectHandle());
+        UserErrorLog.d(TAG, "Success indicated with handle: " + sendObjectInfoResult.getObjectHandle());
         return sendObjectInfoResult.getObjectHandle();
 
     }
@@ -83,7 +84,7 @@ public class MtpTools {
     public static boolean deleteIfExistsInRoot(final MtpDevice mtpDevice, final int storageId, final String filename) {
         final int handle = existsInRoot(mtpDevice, storageId, filename);
         if (handle != -1) {
-            Log.d(TAG, "Deleting: " + filename + " at " + handle);
+            UserErrorLog.d(TAG, "Deleting: " + filename + " at " + handle);
             return mtpDevice.deleteObject(handle);
         }
         return false;
@@ -110,7 +111,7 @@ public class MtpTools {
         }
 
         if (objectHandles.length > 20 || objectHandles.length < 1) {
-            Log.d(TAG, "existsInRoot() Got object handles count: " + objectHandles.length);
+            UserErrorLog.d(TAG, "existsInRoot() Got object handles count: " + objectHandles.length);
         }
         for (int objectHandle : objectHandles) {
 
@@ -136,7 +137,7 @@ public class MtpTools {
             return null;
         }
 
-        Log.d(TAG, "FoldersInRoot() Got object handles count: " + objectHandles.length);
+        UserErrorLog.d(TAG, "FoldersInRoot() Got object handles count: " + objectHandles.length);
 
         final HashMap<String, Integer> results = new HashMap<>();
 
@@ -164,7 +165,7 @@ public class MtpTools {
 
     public static int createFile(final String fileName, final byte[] outputBytes, final MtpDevice mtpDevice, final int storage_id, final int parent_id) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            Log.e(TAG, "createFile cannot work below Android 7");
+            UserErrorLog.e(TAG, "createFile cannot work below Android 7");
             return -1;
         }
 
@@ -176,22 +177,22 @@ public class MtpTools {
                 final FileOutputStream out = new FileOutputStream(pipe[1].getFileDescriptor());
                 Inevitable.stackableTask("write-mtp-bytes", 200, () -> {
                     try {
-                        Log.d(TAG, "Attempting to write: " + outputBytes.length + " bytes to: " + fileName);
+                        UserErrorLog.d(TAG, "Attempting to write: " + outputBytes.length + " bytes to: " + fileName);
                         out.write(outputBytes);
                         out.flush();
 
                     } catch (IOException e) {
-                        Log.e(TAG, "Got io exception in writing thread");
+                        UserErrorLog.e(TAG, "Got io exception in writing thread");
                     } finally {
                         try {
                             out.close();
                         } catch (IOException e) {
-                            Log.e(TAG, "got io exception closing in writing thread");
+                            UserErrorLog.e(TAG, "got io exception closing in writing thread");
                         }
                     }
                 });
             } catch (NullPointerException | IOException e) {
-                Log.e(TAG, "IO exception or null in pipe creation: " + e);
+                UserErrorLog.e(TAG, "IO exception or null in pipe creation: " + e);
             }
 
             if (pipe != null) {
@@ -207,24 +208,24 @@ public class MtpTools {
                     try {
                         pipe[1].close();
                     } catch (NullPointerException | IOException e) {
-                        Log.d(TAG, "Exception closing pipe 1: " + e);
+                        UserErrorLog.d(TAG, "Exception closing pipe 1: " + e);
                     }
                     try {
                         pipe[0].close();
                     } catch (NullPointerException | IOException e) {
-                        Log.d(TAG, "Exception closing pipe 0: " + e);
+                        UserErrorLog.d(TAG, "Exception closing pipe 0: " + e);
                     }
                 }
             }
         } else {
-            Log.e(TAG,"Output bytes null");
+            UserErrorLog.e(TAG,"Output bytes null");
         }
         return -1;
     }
 
     public static int createFolder(final String fileName, final MtpDevice mtpDevice, final int storage_id) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            Log.e(TAG, "createFolder cannot work below Android 7");
+            UserErrorLog.e(TAG, "createFolder cannot work below Android 7");
             return -1;
         }
 
@@ -232,7 +233,7 @@ public class MtpTools {
         try {
             pipe = ParcelFileDescriptor.createReliablePipe();
         } catch (NullPointerException | IOException e) {
-            Log.e(TAG, "IO exception or null in pipe creation: " + e);
+            UserErrorLog.e(TAG, "IO exception or null in pipe creation: " + e);
         }
 
         if (pipe != null) {
@@ -247,12 +248,12 @@ public class MtpTools {
                 try {
                     pipe[1].close();
                 } catch (NullPointerException | IOException e) {
-                    Log.e(TAG, "Exception closing pipe 1: " + e);
+                    UserErrorLog.e(TAG, "Exception closing pipe 1: " + e);
                 }
                 try {
                     pipe[0].close();
                 } catch (NullPointerException | IOException e) {
-                    Log.e(TAG, "Exception closing pipe 0: " + e);
+                    UserErrorLog.e(TAG, "Exception closing pipe 0: " + e);
                 }
             }
         }
@@ -274,10 +275,10 @@ public class MtpTools {
                 try {
                     this.storageVolumeIds = this.device.getStorageIds();
                 } catch (Exception e) {
-                    Log.e(TAG, "Got exception in MtpDeviceHelper constructor: " + e);
+                    UserErrorLog.e(TAG, "Got exception in MtpDeviceHelper constructor: " + e);
                 }
             } else {
-                Log.e(TAG, "Mtp device null in MtpDeviceHelper constructor");
+                UserErrorLog.e(TAG, "Mtp device null in MtpDeviceHelper constructor");
             }
         }
 

@@ -7,7 +7,7 @@ import com.eveningoutpost.dexdrip.Models.BloodTest;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Profile;
 import com.eveningoutpost.dexdrip.Models.Treatments;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
@@ -42,7 +42,7 @@ public class UploadChunk implements NamedSliderProcessor {
 
         final String result = get(session.start, session.end);
         if (result != null && result.length() < 3) {
-            UserError.Log.d(TAG, "No records in this time period, setting start to best end time");
+            UserErrorLog.d(TAG, "No records in this time period, setting start to best end time");
             setLastEnd(Math.max(session.end, getOldestRecordTimeStamp()));
         }
         return result;
@@ -50,13 +50,13 @@ public class UploadChunk implements NamedSliderProcessor {
 
     public static String get(final long start, final long end) {
 
-        UserError.Log.uel(TAG, "Syncing data between: " + dateTimeText(start) + " -> " + dateTimeText(end));
+        UserErrorLog.uel(TAG, "Syncing data between: " + dateTimeText(start) + " -> " + dateTimeText(end));
         if (end <= start) {
-            UserError.Log.e(TAG, "End is <= start: " + dateTimeText(start) + " " + dateTimeText(end));
+            UserErrorLog.e(TAG, "End is <= start: " + dateTimeText(start) + " " + dateTimeText(end));
             return null;
         }
         if (end - start > MAX_UPLOAD_SIZE) {
-            UserError.Log.e(TAG, "More than max range - rejecting");
+            UserErrorLog.e(TAG, "More than max range - rejecting");
             return null;
         }
 
@@ -77,13 +77,13 @@ public class UploadChunk implements NamedSliderProcessor {
             long value = (long) getLatencySliderValue(Pref.getInt("tidepool_window_latency", 0));
             return Math.max(value * Constants.MINUTE_IN_MS, DEFAULT_WINDOW_OFFSET);
         } catch (Exception e) {
-            UserError.Log.e(TAG, "Reverting to default of 15 minutes due to Window Size exception: " + e);
+            UserErrorLog.e(TAG, "Reverting to default of 15 minutes due to Window Size exception: " + e);
             return DEFAULT_WINDOW_OFFSET; // default
         }
     }
 
     private static long maxWindow(final long last_end) {
-        //UserError.Log.d(TAG, "Max window is: " + getWindowSizePreference());
+        //UserErrorLog.d(TAG, "Max window is: " + getWindowSizePreference());
         return Math.min(last_end + MAX_UPLOAD_SIZE, JoH.tsl() - getWindowSizePreference());
     }
 
@@ -95,9 +95,9 @@ public class UploadChunk implements NamedSliderProcessor {
     public static void setLastEnd(final long when) {
         if (when > getLastEnd()) {
             PersistentStore.setLong(LAST_UPLOAD_END_PREF, when);
-            UserError.Log.d(TAG, "Updating last end to: " + dateTimeText(when));
+            UserErrorLog.d(TAG, "Updating last end to: " + dateTimeText(when));
         } else {
-            UserError.Log.e(TAG, "Cannot set last end to: " + dateTimeText(when) + " vs " + dateTimeText(getLastEnd()));
+            UserErrorLog.e(TAG, "Cannot set last end to: " + dateTimeText(when) + " vs " + dateTimeText(getLastEnd()));
         }
     }
 
@@ -156,15 +156,15 @@ public class UploadChunk implements NamedSliderProcessor {
             if (current != null) {
                 if (this_rate != current.rate) {
                     current.duration = apStatus.timestamp - current.timestamp;
-                    UserError.Log.d(TAG, "Adding current: " + current.toS());
+                    UserErrorLog.d(TAG, "Adding current: " + current.toS());
                     if (current.isValid()) {
                         basals.add(current);
                     } else {
-                        UserError.Log.e(TAG, "Current basal is invalid: " + current.toS());
+                        UserErrorLog.e(TAG, "Current basal is invalid: " + current.toS());
                     }
                     current = null;
                 } else {
-                    UserError.Log.d(TAG, "Same rate as previous basal record: " + current.rate + " " + apStatus.toS());
+                    UserErrorLog.d(TAG, "Same rate as previous basal record: " + current.rate + " " + apStatus.toS());
                 }
             }
             if (current == null) {

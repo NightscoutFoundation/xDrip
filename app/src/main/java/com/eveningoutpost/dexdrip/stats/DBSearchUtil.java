@@ -1,17 +1,17 @@
 package com.eveningoutpost.dexdrip.stats;
 
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
-
 import com.activeandroid.Cache;
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 
 import java.util.Calendar;
@@ -45,7 +45,7 @@ public class DBSearchUtil {
                 .where("calculated_value > " + CUTOFF)
                 .where("calculated_value > " + high)
                 .where("snyced == 0").count();
-        Log.d("DrawStats", "High count: " + count);
+        UserErrorLog.d("DrawStats", "High count: " + count);
         return count;
     }
 
@@ -129,7 +129,7 @@ public class DBSearchUtil {
                 .where("calculated_value >= " + low)
                 .where("snyced == 0")
                 .count();
-        Log.d("DrawStats", "In count: " + count);
+        UserErrorLog.d("DrawStats", "In count: " + count);
 
         return count;
     }
@@ -153,7 +153,7 @@ public class DBSearchUtil {
                 .where("calculated_value < " + low)
                 .where("snyced == 0")
                 .count();
-        Log.d("DrawStats", "Low count: " + count);
+        UserErrorLog.d("DrawStats", "Low count: " + count);
 
         return count;
     }

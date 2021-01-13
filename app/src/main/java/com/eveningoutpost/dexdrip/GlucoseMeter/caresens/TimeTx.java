@@ -1,12 +1,13 @@
 package com.eveningoutpost.dexdrip.GlucoseMeter.caresens;
 
-// jamorham
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Calendar;
 
 import lombok.Getter;
+
+// jamorham
 
 public class TimeTx {
 

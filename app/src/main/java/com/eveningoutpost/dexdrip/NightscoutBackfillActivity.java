@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip;
 
+
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.v4.widget.DrawerLayout;
@@ -12,15 +13,16 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Services.SyncService;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
-import com.eveningoutpost.dexdrip.UtilityModels.UploaderTask;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
+import com.eveningoutpost.dexdrip.UtilityModels.UploaderTask;
 import com.eveningoutpost.dexdrip.profileeditor.DatePickerFragment;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileAdapter;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
+
 import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 /**

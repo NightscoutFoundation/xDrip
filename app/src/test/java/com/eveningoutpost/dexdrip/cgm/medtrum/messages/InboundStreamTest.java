@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.cgm.medtrum.messages;
 
+
 import com.eveningoutpost.dexdrip.HexTestTools;
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
 

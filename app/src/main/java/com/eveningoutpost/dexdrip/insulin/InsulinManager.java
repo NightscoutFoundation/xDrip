@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.insulin;
 
+
 import android.util.Log;
 
 import com.eveningoutpost.dexdrip.R;
@@ -7,7 +8,6 @@ import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.io.ByteArrayOutputStream;

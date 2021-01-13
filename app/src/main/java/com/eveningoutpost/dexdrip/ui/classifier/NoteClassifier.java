@@ -1,6 +1,5 @@
 package com.eveningoutpost.dexdrip.ui.classifier;
 
-// jamorham
 
 import android.graphics.Color;
 import android.support.annotation.ColorInt;
@@ -12,6 +11,8 @@ import com.eveningoutpost.dexdrip.ui.helpers.BitmapLoader;
 import com.eveningoutpost.dexdrip.ui.helpers.ColorUtil;
 
 import lecho.lib.hellocharts.model.PointValue;
+
+// jamorham
 
 public class NoteClassifier {
 

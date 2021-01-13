@@ -2,6 +2,7 @@
 // Source file: BgReadingMessage.proto at 9:1
 package com.eveningoutpost.dexdrip.messages;
 
+
 import com.squareup.wire.FieldEncoding;
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoAdapter;
@@ -9,14 +10,9 @@ import com.squareup.wire.ProtoReader;
 import com.squareup.wire.ProtoWriter;
 import com.squareup.wire.WireField;
 import com.squareup.wire.internal.Internal;
+
 import java.io.IOException;
-import java.lang.Boolean;
-import java.lang.Double;
-import java.lang.Long;
-import java.lang.Object;
-import java.lang.Override;
-import java.lang.String;
-import java.lang.StringBuilder;
+
 import okio.ByteString;
 
 public final class BgReadingMessage extends Message<BgReadingMessage, BgReadingMessage.Builder> {

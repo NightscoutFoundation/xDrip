@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.cgm.medtrum;
 
+
 import android.util.SparseArray;
 
 import static com.eveningoutpost.dexdrip.cgm.medtrum.Const.DEVICE_TYPE_A6;

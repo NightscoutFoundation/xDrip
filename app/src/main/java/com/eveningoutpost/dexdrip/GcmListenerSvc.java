@@ -1,10 +1,5 @@
 package com.eveningoutpost.dexdrip;
 
-import android.R.integer;
-
-/**
- * Created by jamorham on 11/01/16.
- */
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -29,8 +24,7 @@ import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.SensorSanity;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.Treatments;
-import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
@@ -59,6 +53,10 @@ import java.util.Map;
 import static android.support.v4.content.WakefulBroadcastReceiver.completeWakefulIntent;
 import static com.eveningoutpost.dexdrip.Models.JoH.isAnyNetworkConnected;
 import static com.eveningoutpost.dexdrip.Models.JoH.showNotification;
+
+/**
+ * Created by jamorham on 11/01/16.
+ */
 
 public class GcmListenerSvc extends JamListenerSvc {
 
@@ -89,7 +87,7 @@ public class GcmListenerSvc extends JamListenerSvc {
                 if (extras != null) extras.remove(EXTRA_WAKE_LOCK_ID);
             }
         } catch (Exception e) {
-            UserError.Log.wtf(TAG, "Error patching play services: " + e);
+            UserErrorLog.wtf(TAG, "Error patching play services: " + e);
         }
         return super.zzD(inteceptedIntent);
     }
@@ -104,7 +102,7 @@ public class GcmListenerSvc extends JamListenerSvc {
             unexpected = false;
         }
         if (unexpected || JoH.ratelimit("gcm-expected-error", 86400)) {
-            Log.e(TAG, "onSendError called" + msgID, exception);
+            UserErrorLog.e(TAG, "onSendError called" + msgID, exception);
         }
     }
 
@@ -115,12 +113,12 @@ public class GcmListenerSvc extends JamListenerSvc {
 
     @Override
     public void onDeletedMessages() {
-        Log.e(TAG, "onDeletedMessages: ");
+        UserErrorLog.e(TAG, "onDeletedMessages: ");
     }
 
     @Override
     public void onMessageSent(String msgID) {
-        Log.i(TAG, "onMessageSent: " + msgID);
+        UserErrorLog.i(TAG, "onMessageSent: " + msgID);
     }
 
     @Override
@@ -146,20 +144,20 @@ public class GcmListenerSvc extends JamListenerSvc {
             }
             String message = data.getString("message");
 
-            Log.d(TAG, "From: " + from);
+            UserErrorLog.d(TAG, "From: " + from);
             if (message != null) {
-                Log.d(TAG, "Message: " + message);
+                UserErrorLog.d(TAG, "Message: " + message);
             } else {
                 message = "null";
             }
 
             final Bundle notification = data.getBundle("notification");
             if (notification != null) {
-                Log.d(TAG, "Processing notification bundle");
+                UserErrorLog.d(TAG, "Processing notification bundle");
                 try {
                     sendNotification(notification.getString("body"), notification.getString("title"));
                 } catch (NullPointerException e) {
-                    Log.d(TAG, "Null pointer exception within sendnotification");
+                    UserErrorLog.d(TAG, "Null pointer exception within sendnotification");
                 }
             }
 
@@ -176,12 +174,12 @@ public class GcmListenerSvc extends JamListenerSvc {
 
                 String[] tpca = from.split("/");
                 if ((tpca[2] != null) && (tpca[2].length() > 30) && (!tpca[2].equals(GcmActivity.myIdentity()))) {
-                    Log.e(TAG, "Received invalid channel: " + from + " instead of: " + GcmActivity.myIdentity());
+                    UserErrorLog.e(TAG, "Received invalid channel: " + from + " instead of: " + GcmActivity.myIdentity());
                     if ((GcmActivity.myIdentity() != null) && (GcmActivity.myIdentity().length() > 30)) {
                         try {
                             FirebaseMessaging.getInstance().unsubscribeFromTopic(tpca[2]);
                         } catch (Exception e) {
-                            Log.e(TAG, "Exception unsubscribing: " + e.toString());
+                            UserErrorLog.e(TAG, "Exception unsubscribing: " + e.toString());
                         }
                     }
                     return;
@@ -189,7 +187,7 @@ public class GcmListenerSvc extends JamListenerSvc {
 
                 if (!isInjectable()) {
                     if (!DesertSync.fromGCM(data)) {
-                        UserError.Log.d(TAG, "Skipping inbound data due to duplicate detection");
+                        UserErrorLog.d(TAG, "Skipping inbound data due to duplicate detection");
                         return;
                     }
                 }
@@ -209,9 +207,9 @@ public class GcmListenerSvc extends JamListenerSvc {
                                 bpayload = CipherUtils.decryptStringToBytes(payload);
                                 if (JoH.checkChecksum(bpayload)) {
                                     bpayload = Arrays.copyOfRange(bpayload, 0, bpayload.length - 4);
-                                    Log.d(TAG, "Binary payload received: length: " + bpayload.length + " orig: " + payload.length());
+                                    UserErrorLog.d(TAG, "Binary payload received: length: " + bpayload.length + " orig: " + payload.length());
                                 } else {
-                                    Log.e(TAG, "Invalid binary payload received, possible key mismatch: ");
+                                    UserErrorLog.e(TAG, "Invalid binary payload received, possible key mismatch: ");
                                     bpayload = null;
                                 }
                                 payload = "binary";
@@ -221,13 +219,13 @@ public class GcmListenerSvc extends JamListenerSvc {
 
                                 if (action.equals("sensorupdate")) {
                                     try {
-                                        Log.i(TAG, "payload for sensorupdate " + payload);
+                                        UserErrorLog.i(TAG, "payload for sensorupdate " + payload);
                                         byte[] inbytes = Base64.decode(payload, Base64.NO_WRAP);
                                         byte[] inbytes1 = JoH.decompressBytesToBytes(CipherUtils.decryptBytes(inbytes));
                                         payload = new String(inbytes1, "UTF-8");
-                                        Log.d(TAG, "inbytes size = " + inbytes.length + " inbytes1 size " + inbytes1.length + "payload len " + payload.length());
+                                        UserErrorLog.d(TAG, "inbytes size = " + inbytes.length + " inbytes1 size " + inbytes1.length + "payload len " + payload.length());
                                     } catch (UnsupportedEncodingException e) {
-                                        Log.e(TAG, "Got unsupported encoding on UTF8 " + e.toString());
+                                        UserErrorLog.e(TAG, "Got unsupported encoding on UTF8 " + e.toString());
                                         payload = "";
                                     }
                                 } else {
@@ -235,40 +233,40 @@ public class GcmListenerSvc extends JamListenerSvc {
                                     if (decrypted_payload.length() > 0) {
                                         payload = decrypted_payload;
                                     } else {
-                                        Log.e(TAG, "Couldn't decrypt payload!");
+                                        UserErrorLog.e(TAG, "Couldn't decrypt payload!");
                                         payload = "";
                                         Home.toaststaticnext("Having problems decrypting incoming data - check keys");
                                     }
                                 }
                         }
                     } else {
-                        Log.e(TAG, "Couldn't decrypt as key not initialized");
+                        UserErrorLog.e(TAG, "Couldn't decrypt as key not initialized");
                         payload = "";
                     }
                 } else {
                     if (payload.length() > 0)
-                        UserError.Log.wtf(TAG, "Got short payload: " + payload + " on action: " + action);
+                        UserErrorLog.wtf(TAG, "Got short payload: " + payload + " on action: " + action);
                 }
 
-                Log.i(TAG, "Got action: " + action + " with payload: " + payload);
+                UserErrorLog.i(TAG, "Got action: " + action + " with payload: " + payload);
                 lastMessageReceived = JoH.tsl();
 
 
                 // new treatment
                 if (action.equals("nt")) {
-                    Log.i(TAG, "Attempting GCM push to Treatment");
+                    UserErrorLog.i(TAG, "Attempting GCM push to Treatment");
                     if (Home.get_master_or_follower() && Home.follower_or_accept_follower())
                         GcmActivity.pushTreatmentFromPayloadString(payload);
                 } else if (action.equals("dat")) {
-                    Log.i(TAG, "Attempting GCM delete all treatments");
+                    UserErrorLog.i(TAG, "Attempting GCM delete all treatments");
                     if (Home.get_master_or_follower() && Home.follower_or_accept_follower())
                         Treatments.delete_all();
                 } else if (action.equals("dt")) {
-                    Log.i(TAG, "Attempting GCM delete specific treatment");
+                    UserErrorLog.i(TAG, "Attempting GCM delete specific treatment");
                     if (Home.get_master_or_follower() && Home.follower_or_accept_follower())
                         Treatments.delete_by_uuid(filter(payload));
                 } else if (action.equals("clc")) {
-                    Log.i(TAG, "Attempting to clear last calibration");
+                    UserErrorLog.i(TAG, "Attempting to clear last calibration");
                     if (Home.get_master_or_follower() && Home.follower_or_accept_follower()) {
                         if (payload.length() > 0) {
                             Calibration.clearCalibrationByUUID(payload);
@@ -287,11 +285,11 @@ public class GcmListenerSvc extends JamListenerSvc {
                             calintent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
                             long timediff = (long) ((new Date().getTime() - Double.parseDouble(message_array[0])) / 1000);
-                            Log.i(TAG, "Remote calibration latency calculated as: " + Long.toString(timediff) + " seconds");
+                            UserErrorLog.i(TAG, "Remote calibration latency calculated as: " + Long.toString(timediff) + " seconds");
                             if (timediff > 0) {
                                 message_array[2] = Long.toString(Long.parseLong(message_array[2]) + timediff);
                             }
-                            Log.i(TAG, "Processing remote CAL " + message_array[1] + " age: " + message_array[2]);
+                            UserErrorLog.i(TAG, "Processing remote CAL " + message_array[1] + " age: " + message_array[2]);
                             calintent.putExtra("timestamp", JoH.tsl());
                             calintent.putExtra("bg_string", message_array[1]);
                             calintent.putExtra("bg_age", message_array[2]);
@@ -300,11 +298,11 @@ public class GcmListenerSvc extends JamListenerSvc {
                                 getApplicationContext().startActivity(calintent);
                             }
                         } else {
-                            Log.e(TAG, "Invalid CAL payload");
+                            UserErrorLog.e(TAG, "Invalid CAL payload");
                         }
                     }
                 } else if (action.equals("cal2")) {
-                    Log.i(TAG, "Received cal2 packet");
+                    UserErrorLog.i(TAG, "Received cal2 packet");
                     if (Home.get_master() && Home.follower_or_accept_follower()) {
                         final NewCalibration newCalibration = GcmActivity.getNewCalibration(payload);
                         if (newCalibration != null) {
@@ -313,12 +311,12 @@ public class GcmListenerSvc extends JamListenerSvc {
                             calintent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
                             long timediff = (long) ((new Date().getTime() - newCalibration.timestamp) / 1000);
-                            Log.i(TAG, "Remote calibration latency calculated as: " + timediff + " seconds");
+                            UserErrorLog.i(TAG, "Remote calibration latency calculated as: " + timediff + " seconds");
                             Long bg_age = newCalibration.offset;
                             if (timediff > 0) {
                                 bg_age += timediff;
                             }
-                            Log.i(TAG, "Processing remote CAL " + newCalibration.bgValue + " age: " + bg_age);
+                            UserErrorLog.i(TAG, "Processing remote CAL " + newCalibration.bgValue + " age: " + bg_age);
                             calintent.putExtra("timestamp", JoH.tsl());
                             calintent.putExtra("bg_string", "" + (Pref.getString("units", "mgdl").equals("mgdl") ? newCalibration.bgValue : newCalibration.bgValue * Constants.MGDL_TO_MMOLL));
                             calintent.putExtra("bg_age", "" + bg_age);
@@ -326,11 +324,11 @@ public class GcmListenerSvc extends JamListenerSvc {
                             if (timediff < 3600) {
                                 getApplicationContext().startActivity(calintent);
                             } else {
-                                Log.w(TAG, "warninig ignoring calibration because timediff is " + timediff);
+                                UserErrorLog.w(TAG, "warninig ignoring calibration because timediff is " + timediff);
                             }
                         }
                     } else {
-                        Log.e(TAG, "Received cal2 packet packet but we are not a master, so ignoring it");
+                        UserErrorLog.e(TAG, "Received cal2 packet packet but we are not a master, so ignoring it");
                     }
 
                 } else if (action.equals("ping")) {
@@ -356,30 +354,30 @@ public class GcmListenerSvc extends JamListenerSvc {
                     }
                 } else if (action.equals("sbu")) {
                     if (Home.get_follower()) {
-                        Log.i(TAG, "Received sensor battery level update");
+                        UserErrorLog.i(TAG, "Received sensor battery level update");
                         Sensor.updateBatteryLevel(Integer.parseInt(payload), true);
                         TransmitterData.updateTransmitterBatteryFromSync(Integer.parseInt(payload));
                     }
                 } else if (action.equals("bbu")) {
                     if (Home.get_follower()) {
-                        Log.i(TAG, "Received bridge battery level update");
+                        UserErrorLog.i(TAG, "Received bridge battery level update");
                         Pref.setInt("bridge_battery", Integer.parseInt(payload));
                         CheckBridgeBattery.checkBridgeBattery();
                     }
                 } else if (action.equals("pbu")) {
                     if (Home.get_follower()) {
-                        Log.i(TAG, "Received parakeet battery level update");
+                        UserErrorLog.i(TAG, "Received parakeet battery level update");
                         Pref.setInt("parakeet_battery", Integer.parseInt(payload));
                         CheckBridgeBattery.checkParakeetBattery();
                     }
                 } else if (action.equals("psu")) {
                     if (Home.get_follower()) {
-                        Log.i(TAG, "Received pump status update");
+                        UserErrorLog.i(TAG, "Received pump status update");
                         PumpStatus.fromJson(payload);
                     }
                 } else if (action.startsWith("nscu")) {
                     if (Home.get_follower()) {
-                        Log.i(TAG, "Received nanostatus update: " + action);
+                        UserErrorLog.i(TAG, "Received nanostatus update: " + action);
                         NanoStatus.setRemote(action.replaceAll("^nscu", ""), payload);
                     }
                 } else if (action.equals("not")) {
@@ -392,12 +390,12 @@ public class GcmListenerSvc extends JamListenerSvc {
                             final PendingIntent pendingIntent = android.app.PendingIntent.getActivity(xdrip.getAppContext(), 0, new Intent(xdrip.getAppContext(), Home.class), android.app.PendingIntent.FLAG_UPDATE_CURRENT);
                             showNotification(title, body, pendingIntent, GCM_NOTIFICATION_ITEM, true, true, false);
                         } catch (Exception e) {
-                            UserError.Log.e(TAG, "Error showing follower notification with payload: " + payload);
+                            UserErrorLog.e(TAG, "Error showing follower notification with payload: " + payload);
                         }
                     }
                 } else if (action.equals("sbr")) {
                     if ((Home.get_master()) && JoH.ratelimit("gcm-sbr", 300)) {
-                        Log.i(TAG, "Received sensor battery request");
+                        UserErrorLog.i(TAG, "Received sensor battery request");
                         if (Sensor.currentSensor() != null) {
                             try {
                                 TransmitterData td = TransmitterData.last();
@@ -407,10 +405,10 @@ public class GcmListenerSvc extends JamListenerSvc {
                                     GcmActivity.sendSensorBattery(Sensor.currentSensor().latest_battery_level);
                                 }
                             } catch (NullPointerException e) {
-                                Log.e(TAG, "Cannot send sensor battery as sensor is null");
+                                UserErrorLog.e(TAG, "Cannot send sensor battery as sensor is null");
                             }
                         } else {
-                            Log.d(TAG, "No active sensor so not sending anything.");
+                            UserErrorLog.d(TAG, "No active sensor so not sending anything.");
                         }
                     }
                 } else if (action.equals("amu")) {
@@ -438,26 +436,26 @@ public class GcmListenerSvc extends JamListenerSvc {
                                     if (Math.abs(JoH.tsl() - snoozed_time) < 300000) {
                                         if (JoH.pratelimit("received-remote-snooze", 30)) {
                                             AlertPlayer.getPlayer().Snooze(xdrip.getAppContext(), -1, false);
-                                            UserError.Log.ueh(TAG, "Accepted remote snooze");
+                                            UserErrorLog.ueh(TAG, "Accepted remote snooze");
                                             JoH.static_toast_long("Received remote snooze!");
                                         } else {
-                                            Log.e(TAG, "Rate limited remote snooze");
+                                            UserErrorLog.e(TAG, "Rate limited remote snooze");
                                         }
                                     } else {
-                                        UserError.Log.uel(TAG, "Ignoring snooze as outside 5 minute window, sync lag or clock difference");
+                                        UserErrorLog.uel(TAG, "Ignoring snooze as outside 5 minute window, sync lag or clock difference");
                                     }
                                 } else {
-                                    UserError.Log.uel(TAG, "Ignoring snooze as wifi network names do not match closely enough");
+                                    UserErrorLog.uel(TAG, "Ignoring snooze as wifi network names do not match closely enough");
                                 }
                             } catch (Exception e) {
-                                UserError.Log.e(TAG, "Exception processing remote snooze: " + e);
+                                UserErrorLog.e(TAG, "Exception processing remote snooze: " + e);
                             }
                         } else {
-                            UserError.Log.uel(TAG, "Rejecting remote snooze");
+                            UserErrorLog.uel(TAG, "Rejecting remote snooze");
                         }
                     }
                 } else if (action.equals("bgs")) {
-                    Log.i(TAG, "Received BG packet(s)");
+                    UserErrorLog.i(TAG, "Received BG packet(s)");
                     if (Home.get_follower() || WholeHouse.isEnabled()) {
                         final String bgs[] = payload.split("\\^");
                         for (String bgr : bgs) {
@@ -467,13 +465,13 @@ public class GcmListenerSvc extends JamListenerSvc {
                             JoH.showNotification("New glucose data @" + JoH.hourMinuteString(), "Follower Chime: will alert whenever it has been more than 20 minutes since last", null, 60311, true, true, true);
                         }
                     } else {
-                        Log.e(TAG, "Received remote BG packet but we are not set as a follower");
+                        UserErrorLog.e(TAG, "Received remote BG packet but we are not set as a follower");
                     }
                     // Home.staticRefreshBGCharts();
                 } else if (action.equals("bfb")) {
                     final String bfb[] = payload.split("\\^");
                     if (Pref.getString("dex_collection_method", "").equals("Follower")) {
-                        Log.i(TAG, "Processing backfill location packet as we are a follower");
+                        UserErrorLog.i(TAG, "Processing backfill location packet as we are a follower");
                         staticKey = CipherUtils.hexToBytes(bfb[1]);
                         final Handler mainHandler = new Handler(getMainLooper());
                         final Runnable myRunnable = new Runnable() {
@@ -482,36 +480,36 @@ public class GcmListenerSvc extends JamListenerSvc {
                                 try {
                                     new WebAppHelper(new GcmListenerSvc.ServiceCallback()).executeOnExecutor(xdrip.executor, getString(R.string.wserviceurl) + "/joh-getsw/" + bfb[0]);
                                 } catch (Exception e) {
-                                    Log.e(TAG, "Exception processing run on ui thread: " + e);
+                                    UserErrorLog.e(TAG, "Exception processing run on ui thread: " + e);
                                 }
                             }
                         };
                         mainHandler.post(myRunnable);
                     } else {
-                        Log.i(TAG, "Ignoring backfill location packet as we are not follower");
+                        UserErrorLog.i(TAG, "Ignoring backfill location packet as we are not follower");
                     }
                 } else if (action.equals("bfr")) {
                     if (Pref.getBooleanDefaultFalse("plus_follow_master")) {
-                        Log.i(TAG, "Processing backfill location request as we are master");
+                        UserErrorLog.i(TAG, "Processing backfill location request as we are master");
                         final long remoteRecent = JoH.tolerantParseLong(payload, 0);
                         final BgReading bgReading = BgReading.last();
                         if (bgReading != null && bgReading.timestamp > remoteRecent) {
                             GcmActivity.syncBGTable2();
                         } else {
                             // TODO reduce logging priority
-                            UserError.Log.e(TAG, "We do not have any more recent data to offer than: " + (bgReading != null ? JoH.dateTimeText(bgReading.timestamp) : "no data"));
+                            UserErrorLog.e(TAG, "We do not have any more recent data to offer than: " + (bgReading != null ? JoH.dateTimeText(bgReading.timestamp) : "no data"));
                         }
                     }
                 } else if (action.equals("sensorupdate")) {
-                    Log.i(TAG, "Received sensorupdate packet(s)");
+                    UserErrorLog.i(TAG, "Received sensorupdate packet(s)");
                     if (Home.get_follower() || WholeHouse.isEnabled()) {
                         GcmActivity.upsertSensorCalibratonsFromJson(payload);
                     } else {
-                        Log.e(TAG, "Received sensorupdate packets but we are not set as a follower");
+                        UserErrorLog.e(TAG, "Received sensorupdate packets but we are not set as a follower");
                     }
                 } else if (action.equals("sensor_calibrations_update")) {
                     if (Home.get_master()) {
-                        Log.i(TAG, "Received request for sensor calibration update");
+                        UserErrorLog.i(TAG, "Received request for sensor calibration update");
                         GcmActivity.syncSensor(Sensor.currentSensor(), false);
                     }
                 } else if (action.equals("mimg")) {
@@ -522,13 +520,13 @@ public class GcmListenerSvc extends JamListenerSvc {
                     if (Home.get_master_or_follower() && Home.follower_or_accept_follower()) {
                         BloodTest.processFromMultiMessage(bpayload);
                     } else {
-                        Log.i(TAG, "Receive multi blood test but we are neither master or follower");
+                        UserErrorLog.i(TAG, "Receive multi blood test but we are neither master or follower");
                     }
                 } else if (action.equals("bgmm")) {
                     if (Home.get_follower()) {
                         BgReading.processFromMultiMessage(bpayload);
                     } else {
-                        Log.i(TAG, "Receive multi glucose readings but we are not a follower");
+                        UserErrorLog.i(TAG, "Receive multi glucose readings but we are not a follower");
                     }
                 } else if (action.equals("esup")) {
                     if (Home.get_master_or_follower()) {
@@ -536,16 +534,16 @@ public class GcmListenerSvc extends JamListenerSvc {
                         try {
                             ExternalStatusService.update(Long.parseLong(segments[0]), segments[1], false);
                         } catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
-                            UserError.Log.wtf(TAG, "Could not split esup payload");
+                            UserErrorLog.wtf(TAG, "Could not split esup payload");
                         }
                     }
                 } else if (action.equals("ssom")) {
                     if (Home.get_master()) {
                         if (payload.equals("challenge string")) {
-                            UserError.Log.e(TAG, "Stopping sensor by remote");
+                            UserErrorLog.e(TAG, "Stopping sensor by remote");
                             StopSensor.stop();
                         } else {
-                            UserError.Log.wtf(TAG, "Challenge string failed in ssom");
+                            UserErrorLog.wtf(TAG, "Challenge string failed in ssom");
                         }
                     }
                 } else if (action.equals("rsom")) {
@@ -554,17 +552,17 @@ public class GcmListenerSvc extends JamListenerSvc {
                             final Long timestamp = Long.parseLong(payload);
                             StartNewSensor.startSensorForTime(timestamp);
                         } catch (NumberFormatException | NullPointerException e) {
-                            UserError.Log.wtf(TAG, "Exception processing rsom timestamp");
+                            UserErrorLog.wtf(TAG, "Exception processing rsom timestamp");
                         }
                     }
                 } else if (action.equals("libreBlock")) {
                     HandleLibreBlock(payload);
                 } else {
-                    Log.e(TAG, "Received message action we don't know about: " + action);
+                    UserErrorLog.e(TAG, "Received message action we don't know about: " + action);
                 }
             } else {
                 // direct downstream message.
-                Log.i(TAG, "Received downstream message: " + message);
+                UserErrorLog.i(TAG, "Received downstream message: " + message);
             }
         } finally {
             JoH.releaseWakeLock(wl);
@@ -586,7 +584,7 @@ public class GcmListenerSvc extends JamListenerSvc {
         
         if(Home.get_master()) {
             if (SensorSanity.checkLibreSensorChangeIfEnabled(lb.reference)) {
-                Log.e(TAG, "Problem with Libre Serial Number - not processing");
+                UserErrorLog.e(TAG, "Problem with Libre Serial Number - not processing");
             }
             
             NFCReaderX.HandleGoodReading(lb.reference, lb.blockbytes, lb.timestamp, false, lb.patchUid,  lb.patchInfo);
@@ -626,22 +624,22 @@ public class GcmListenerSvc extends JamListenerSvc {
             try {
                 if (result.length > 0) {
                     if ((staticKey == null) || (staticKey.length != 16)) {
-                        Log.e(TAG, "Error processing security key");
+                        UserErrorLog.e(TAG, "Error processing security key");
                     } else {
                         byte[] plainbytes = JoH.decompressBytesToBytes(CipherUtils.decryptBytes(result, staticKey));
                         staticKey = null;
-                        UserError.Log.d(TAG, "Plain bytes size: " + plainbytes.length);
+                        UserErrorLog.d(TAG, "Plain bytes size: " + plainbytes.length);
                         if (plainbytes.length > 0) {
                             GcmActivity.processBFPbundle(new String(plainbytes, 0, plainbytes.length, "UTF-8"));
                         } else {
-                            Log.e(TAG, "Error processing data - empty");
+                            UserErrorLog.e(TAG, "Error processing data - empty");
                         }
                     }
                 } else {
-                    Log.e(TAG, "Error processing - no data - try again?");
+                    UserErrorLog.e(TAG, "Error processing - no data - try again?");
                 }
             } catch (Exception e) {
-                Log.e(TAG, "Got error in BFP callback: " + e.toString());
+                UserErrorLog.e(TAG, "Got error in BFP callback: " + e.toString());
             } finally {
                 JoH.releaseWakeLock(wl);
             }

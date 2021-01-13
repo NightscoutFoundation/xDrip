@@ -1,10 +1,11 @@
 package com.eveningoutpost.dexdrip.cgm.medtrum.messages;
 
-// jamorham
 
 import lombok.Getter;
 
 import static com.eveningoutpost.dexdrip.cgm.medtrum.Const.OPCODE_TIME_REPLY;
+
+// jamorham
 
 public class TimeRx extends BaseMessage {
 

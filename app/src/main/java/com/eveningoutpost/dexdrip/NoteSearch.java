@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip;
 
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
@@ -31,7 +32,6 @@ import android.widget.TextView;
 import com.activeandroid.Cache;
 import com.activeandroid.util.SQLiteUtils;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.utils.ListActivityWithMenu;
 
 import java.text.DateFormat;
@@ -203,7 +203,7 @@ public class NoteSearch extends ListActivityWithMenu {
 
     private void doSearch(boolean from_interactive) {
 
-        //UserError.Log.d(TAG,"Do search: "+from_interactive);
+        //UserErrorLog.d(TAG,"Do search: "+from_interactive);
         if (from_interactive) hideKeyboard();
 
         // filter whitespace

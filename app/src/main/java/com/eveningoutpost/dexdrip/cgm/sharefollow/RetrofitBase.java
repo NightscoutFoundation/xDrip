@@ -1,8 +1,9 @@
 package com.eveningoutpost.dexdrip.cgm.sharefollow;
 
+
 import android.support.annotation.NonNull;
 
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.cgm.nsfollow.GzipRequestInterceptor;
 import com.eveningoutpost.dexdrip.tidepool.InfoInterceptor;
 
@@ -41,10 +42,10 @@ public class RetrofitBase {
         if (instance == null || !urls.get(TAG).equals(url)) {
             synchronized (instances) {
                 if (emptyString(url)) {
-                    UserError.Log.d(TAG, "Empty url - cannot create instance");
+                    UserErrorLog.d(TAG, "Empty url - cannot create instance");
                     return null;
                 }
-                UserError.Log.d(TAG, "Creating new instance for: " + url);
+                UserErrorLog.d(TAG, "Creating new instance for: " + url);
                 final HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
                 if (D) {
                     httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);

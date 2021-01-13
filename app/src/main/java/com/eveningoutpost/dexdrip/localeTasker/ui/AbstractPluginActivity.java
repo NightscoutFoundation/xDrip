@@ -12,6 +12,7 @@
 
 package com.eveningoutpost.dexdrip.localeTasker.ui;
 
+
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -21,10 +22,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-
-import com.twofortyfouram.locale.BreadCrumber;
-import com.eveningoutpost.dexdrip.localeTasker.Constants;
 import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.localeTasker.Constants;
+import com.twofortyfouram.locale.BreadCrumber;
 
 /**
  * Superclass for plug-in Activities. This class takes care of initializing aspects of the plug-in's UI to

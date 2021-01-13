@@ -1,6 +1,5 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
-// jamorham
 
 import android.Manifest;
 import android.app.DownloadManager;
@@ -17,7 +16,6 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
@@ -30,7 +28,7 @@ import android.widget.TextView;
 import com.eveningoutpost.dexdrip.BaseAppCompatActivity;
 import com.eveningoutpost.dexdrip.BuildConfig;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.xdrip;
 
@@ -52,6 +50,8 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 import static com.eveningoutpost.dexdrip.UtilityModels.OkHttpWrapper.enableTls12OnPreLollipop;
+
+// jamorham
 
 public class UpdateActivity extends BaseAppCompatActivity {
 
@@ -180,7 +180,7 @@ public class UpdateActivity extends BaseAppCompatActivity {
                         Log.d(TAG, "Failure getting update URL data: code: " + response.code());
                     }
                 } catch (Exception e) {
-                    UserError.Log.e(TAG, "Exception in reading http update version " + e.toString());
+                    UserErrorLog.e(TAG, "Exception in reading http update version " + e.toString());
                 }
                 httpClient = null; // for GC
             }).start();

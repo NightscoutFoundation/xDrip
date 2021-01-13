@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip;
 
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,10 +20,11 @@ import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
 
+import static com.eveningoutpost.dexdrip.xdrip.gs;
+
 /**
  * Created by Emma Black on 8/11/15.
  */
-import static com.eveningoutpost.dexdrip.xdrip.gs;
 public class FollowerListAdapter extends BaseAdapter {
     private List<ExistingFollower> list;
     private Context context;

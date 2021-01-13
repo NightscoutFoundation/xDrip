@@ -1,13 +1,13 @@
 package com.eveningoutpost.dexdrip.cgm.nsfollow.messages;
 
-// jamorham
-
-// Nightscout Entry data item
 
 import com.eveningoutpost.dexdrip.Models.DateUtil;
 import com.google.gson.annotations.Expose;
 
 import java.util.Date;
+
+// jamorham
+// Nightscout Entry data item
 
 public class Entry extends BaseMessage {
 

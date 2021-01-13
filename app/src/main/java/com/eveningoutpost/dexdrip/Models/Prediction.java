@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.Models;
 
+
 import android.provider.BaseColumns;
 
 import com.activeandroid.annotation.Column;

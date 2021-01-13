@@ -1,6 +1,7 @@
 package com.eveningoutpost.dexdrip.cgm.medtrum.messages;
 
-import com.eveningoutpost.dexdrip.Models.UserError;
+
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -23,7 +24,7 @@ public class InboundStream extends BaseMessage {
     public synchronized void push(final byte[] raw_packet) {
         if (raw_packet == null) return;
         if (isComplete()) {
-            UserError.Log.e(TAG, "Cannot push as stream is complete");
+            UserErrorLog.e(TAG, "Cannot push as stream is complete");
             return;
         }
         final ByteBuffer packet = ByteBuffer.wrap(raw_packet).order(ByteOrder.LITTLE_ENDIAN);
@@ -41,7 +42,7 @@ public class InboundStream extends BaseMessage {
         }
 
         if (packet.remaining() != 0) {
-            UserError.Log.e(TAG, "Excess data in packet fragment: remaining: " + packet.remaining());
+            UserErrorLog.e(TAG, "Excess data in packet fragment: remaining: " + packet.remaining());
         }
 
     }

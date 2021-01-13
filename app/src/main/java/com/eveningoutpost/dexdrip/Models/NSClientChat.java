@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.Models;
 
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;

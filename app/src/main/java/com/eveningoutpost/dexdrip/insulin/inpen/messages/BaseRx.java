@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.insulin.inpen.messages;
 
+
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.utils.math.SkeletonCRC16;
 

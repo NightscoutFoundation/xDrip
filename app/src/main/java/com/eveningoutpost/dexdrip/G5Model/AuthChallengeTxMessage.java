@@ -1,11 +1,9 @@
 package com.eveningoutpost.dexdrip.G5Model;
-import com.eveningoutpost.dexdrip.G5Model.TransmitterMessage;
+
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.Services.G5CollectionService;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
 /**
  * Created by joeginley on 3/16/16.
@@ -22,6 +20,6 @@ public class AuthChallengeTxMessage extends TransmitterMessage {
         data.put(challengeHash);
 
         byteSequence = data.array();
-        UserError.Log.d(TAG,"AuthChallengeTX: "+ JoH.bytesToHex(byteSequence));
+        UserErrorLog.d(TAG,"AuthChallengeTX: "+ JoH.bytesToHex(byteSequence));
     }
 }

@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.cgm.medtrum;
 
+
 import android.annotation.SuppressLint;
 import android.app.PendingIntent;
 import android.content.Intent;
@@ -15,7 +16,7 @@ import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Prediction;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.JamBaseBluetoothService;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
@@ -56,14 +57,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-//import rx.Subscription;
-//import rx.schedulers.Schedulers;
-
-import io.reactivex.Observable;
-import io.reactivex.Scheduler;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-
 
 import static com.eveningoutpost.dexdrip.Models.BgReading.bgReadingInsertMedtrum;
 import static com.eveningoutpost.dexdrip.Models.JoH.msSince;
@@ -96,8 +90,10 @@ import static com.eveningoutpost.dexdrip.cgm.medtrum.MedtrumCollectionService.ST
 import static com.eveningoutpost.dexdrip.cgm.medtrum.SensorState.NotCalibrated;
 import static com.eveningoutpost.dexdrip.cgm.medtrum.SensorState.Ok;
 import static com.eveningoutpost.dexdrip.cgm.medtrum.TimeKeeper.timeStampFromTickCounter;
-
 import static com.eveningoutpost.dexdrip.xdrip.gs;
+
+//import rx.Subscription;
+//import rx.schedulers.Schedulers;
 /**
  *
  * jamorham
@@ -271,7 +267,7 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
                 JoH.releaseWakeLock(wl);
             }
         } else {
-            UserError.Log.d(TAG, "Ignoring duplicate automata state within 2 seconds: " + state);
+            UserErrorLog.d(TAG, "Ignoring duplicate automata state within 2 seconds: " + state);
         }
         return true;
     }
@@ -285,7 +281,7 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
         } else {
             final String msg = "Medtrum cannot start without serial number - please rescan";
             if (JoH.ratelimit("medtrum-cannot-start", 120)) {
-                UserError.Log.e(TAG, msg);
+                UserErrorLog.e(TAG, msg);
             }
             JoH.static_toast_long(msg);
         }
@@ -293,14 +289,14 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
 
     private void scan_for_device() {
         status(gs(R.string.scanning));
-        UserError.Log.d(TAG, "Scanning for device");
+        UserErrorLog.d(TAG, "Scanning for device");
         scanner.setAddress(address).scan();
     }
 
     private void connect_to_device() {
         if (JoH.quietratelimit("medtrum-connect-cooldown", 2)) {
             status("Connecting");
-            UserError.Log.d(TAG, "Connecting to device: " + address);
+            UserErrorLog.d(TAG, "Connecting to device: " + address);
             connect_to_device(false);
         }
 
@@ -308,7 +304,7 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
 
 
     private synchronized void enable_features_and_listen() {
-        UserError.Log.d(TAG, "enable features - enter");
+        UserErrorLog.d(TAG, "enable features - enter");
         stopListening();
         if (connection != null) {
             notificationSubscription = new Subscription(connection.setupNotification(Const.CGM_CHARACTERISTIC_NOTIFY)
@@ -316,7 +312,7 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
                     .observeOn(Schedulers.newThread())
                     .doOnNext(notificationObservable -> {
 
-                        UserError.Log.d(TAG, "Notifications enabled");
+                        UserErrorLog.d(TAG, "Notifications enabled");
 
 
                     })
@@ -324,11 +320,11 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
                     .subscribe(bytes -> {
                                 final PowerManager.WakeLock wl = JoH.getWakeLock("medtrum-receive-n", 60000);
                                 try {
-                                    UserError.Log.d(TAG, "Received notification bytes: " + JoH.bytesToHex(bytes));
+                                    UserErrorLog.d(TAG, "Received notification bytes: " + JoH.bytesToHex(bytes));
                                     lastInteractionTime = JoH.tsl();
                                     setFailOverTimer();
                                     lastAnnex = new AnnexARx(bytes);
-                                    UserError.Log.d(TAG, "Notification: " + lastAnnex.toS());
+                                    UserErrorLog.d(TAG, "Notification: " + lastAnnex.toS());
                                     createRecordFromAnnexData(lastAnnex);
                                     backFillIfNeeded(lastAnnex);
 
@@ -336,7 +332,7 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
                                     JoH.releaseWakeLock(wl);
                                 }
                             }, throwable -> {
-                                UserError.Log.d(TAG, "notification throwable: " + throwable);
+                                UserErrorLog.d(TAG, "notification throwable: " + throwable);
                             }
                     ));
 
@@ -348,7 +344,7 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
                     .observeOn(Schedulers.newThread())
                     .doOnNext(notificationObservable -> {
 
-                        UserError.Log.d(TAG, "Indications enabled");
+                        UserErrorLog.d(TAG, "Indications enabled");
 
                         sendTx(new AuthTx(serial));
 
@@ -358,16 +354,16 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
 
                                 final PowerManager.WakeLock wl = JoH.getWakeLock("medtrum-receive-i", 60000);
                                 try {
-                                    UserError.Log.d(TAG, "Received indication bytes: " + JoH.bytesToHex(bytes));
+                                    UserErrorLog.d(TAG, "Received indication bytes: " + JoH.bytesToHex(bytes));
                                     if (inboundStream.hasSomeData() && msSince(lastInteractionTime) > Constants.SECOND_IN_MS * 10) {
-                                        UserError.Log.d(TAG, "Resetting stream due to earlier timeout");
+                                        UserErrorLog.d(TAG, "Resetting stream due to earlier timeout");
                                     }
                                     lastInteractionTime = JoH.tsl();
                                     inboundStream.push(bytes);
                                     if (!checkAndProcessInboundStream(inboundStream)) {
                                         Inevitable.task("mt-reset-stream-no-data", 3000, () -> {
                                             if (inboundStream.hasSomeData()) {
-                                                UserError.Log.d(TAG, "Resetting stream as incomplete after 3s");
+                                                UserErrorLog.d(TAG, "Resetting stream as incomplete after 3s");
                                                 inboundStream.reset();
                                             }
                                         });
@@ -377,11 +373,11 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
                                     JoH.releaseWakeLock(wl);
                                 }
                             }, throwable -> {
-                                UserError.Log.d(TAG, "indication throwable: " + throwable);
+                                UserErrorLog.d(TAG, "indication throwable: " + throwable);
                             }
                     ));
         } else {
-            UserError.Log.e(TAG, "Connection null when trying to set notifications");
+            UserErrorLog.e(TAG, "Connection null when trying to set notifications");
         }
 
     }
@@ -399,7 +395,7 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
     private synchronized void connect_to_device(boolean auto) {
         if (state == CONNECT) {
             // TODO check mac
-            //UserError.Log.d(TAG, "Address length: " + address.length());
+            //UserErrorLog.d(TAG, "Address length: " + address.length());
             if (address != null && address.length() > 6) {
                 status("Connecting");
 
@@ -412,7 +408,7 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
                         // .observeOn(AndroidSchedulers.mainThread())
                         .subscribeOn(Schedulers.io())
                         .subscribe(this::onConnectionStateChange, throwable -> {
-                            UserError.Log.wtf(TAG, "Got Error from state subscription: " + throwable);
+                            UserErrorLog.wtf(TAG, "Got Error from state subscription: " + throwable);
                         }));
 
                 // Attempt to establish a connection
@@ -428,12 +424,12 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
                         .subscribe(this::onConnectionReceived, this::onConnectionFailure));
 
             } else {
-                UserError.Log.wtf(TAG, "No transmitter mac address!");
+                UserErrorLog.wtf(TAG, "No transmitter mac address!");
                 changeState(SCAN);
             }
 
         } else {
-            UserError.Log.wtf(TAG, "Attempt to connect when not in CONNECT state");
+            UserErrorLog.wtf(TAG, "Attempt to connect when not in CONNECT state");
         }
     }
 
@@ -449,7 +445,7 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
             try {
                 sendTx(new CalibrateTx(serial, calibration.first, calibration.second));
             } catch (InvalidAlgorithmParameterException e) {
-                UserError.Log.wtf(TAG, "Cannot calibrate: " + e);
+                UserErrorLog.wtf(TAG, "Cannot calibrate: " + e);
             }
 
 
@@ -464,12 +460,12 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
                 connection.writeCharacteristic(CGM_CHARACTERISTIC_INDICATE, nn(msg.getByteSequence()))
                         .subscribe(
                                 characteristicValue -> {
-                                    UserError.Log.d(TAG, "Wrote " + msg.getClass().getSimpleName() + " request: ");
+                                    UserErrorLog.d(TAG, "Wrote " + msg.getClass().getSimpleName() + " request: ");
                                 }, throwable -> {
-                                    UserError.Log.e(TAG, "Failed to write " + msg.getClass().getSimpleName() + " " + throwable);
+                                    UserErrorLog.e(TAG, "Failed to write " + msg.getClass().getSimpleName() + " " + throwable);
                                 });
             } catch (NullPointerException e) {
-                UserError.Log.e(TAG, "Race condition when writing characteristic: " + e);
+                UserErrorLog.e(TAG, "Race condition when writing characteristic: " + e);
             }
         }
     }
@@ -478,13 +474,13 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
 
     private void parseInboundPacket(byte[] packet) {
         if (packet == null) {
-            UserError.Log.e(TAG, "Was passed null in parseInbound");
+            UserErrorLog.e(TAG, "Was passed null in parseInbound");
             return;
         }
         //
 
         if (packet.length < 2) {
-            UserError.Log.e(TAG, "Packet too short");
+            UserErrorLog.e(TAG, "Packet too short");
             return;
         }
 
@@ -499,7 +495,7 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
                 } else {
                     errorStatus("AUTHENTICATION FAILED!");
                     if (JoH.ratelimit("medtrum-auth-fail", 600)) {
-                        UserError.Log.wtf(TAG, "Auth packet failure: " + serial + authrx.toS());
+                        UserErrorLog.wtf(TAG, "Auth packet failure: " + serial + authrx.toS());
                     }
                 }
                 changeState(state.next());
@@ -507,7 +503,7 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
 
             case OPCODE_STAT_REPLY:
                 final StatusRx statusrx = new StatusRx(packet);
-                UserError.Log.d(TAG, statusrx.toS());
+                UserErrorLog.d(TAG, statusrx.toS());
                 boolean asking_backfill = false;
                 if (statusrx.isValid()) {
                     lastAnnex = statusrx.getAnnex();
@@ -525,26 +521,26 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
                 final String msg = "Got time set reply: " + (timeRx.isValid() ? "VALID" : "INVALID");
                 if (timeRx.isValid()) {
                     status("Set time");
-                    UserError.Log.d(TAG, msg);
+                    UserErrorLog.d(TAG, msg);
                 } else {
                     status("Error setting time");
-                    UserError.Log.e(TAG, msg);
+                    UserErrorLog.e(TAG, msg);
                 }
                 changeState(SET_CONN_PARAM);
                 break;
 
             case OPCODE_CONN_REPLY:
-                UserError.Log.d(TAG, "Got connection parameter reply");
+                UserErrorLog.d(TAG, "Got connection parameter reply");
                 final ConnParamRx connParamRx = new ConnParamRx(packet);
                 status("Parameter reply");
                 if (!connParamRx.isValid()) {
-                    UserError.Log.e(TAG, "Got invalid connection parameter reply msg");
+                    UserErrorLog.e(TAG, "Got invalid connection parameter reply msg");
                 }
                 changeState(state.next());
                 break;
 
             case OPCODE_CALI_REPLY:
-                UserError.Log.d(TAG, "Got calibration reply");
+                UserErrorLog.d(TAG, "Got calibration reply");
 
                 Medtrum.clearCalibration();
 
@@ -556,38 +552,38 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
                     thismsg = "Calibration Error " + calibrateRx.getErrorCode();
                 }
                 status(thismsg);
-                UserError.Log.ueh(TAG, thismsg);
+                UserErrorLog.ueh(TAG, thismsg);
                 JoH.static_toast_long(thismsg);
                 changeState(state.next());
                 break;
 
 
             case OPCODE_BACK_REPLY:
-                UserError.Log.d(TAG, "Got backfill reply");
+                UserErrorLog.d(TAG, "Got backfill reply");
                 status("Got back fill");
                 processBackFillPacket(packet);
                 break;
 
             default:
-                UserError.Log.d(TAG, "Unknown inbound opcode: " + opcode);
-                UserError.Log.e(TAG, "Received unknown inbound packet: " + HexDump.dumpHexString(packet));
+                UserErrorLog.d(TAG, "Unknown inbound opcode: " + opcode);
+                UserErrorLog.e(TAG, "Received unknown inbound packet: " + HexDump.dumpHexString(packet));
         }
     }
 
 
     private void processBackFillPacket(final byte[] packet) {
         final BackFillRx backFillRx = new BackFillRx(packet);
-        UserError.Log.d(TAG, backFillRx.toS());
+        UserErrorLog.d(TAG, backFillRx.toS());
         if (backFillRx.isOk()) {
             boolean changed = false;
             final List<Integer> backsies = backFillRx.getRawList();
             if (backsies != null) {
                 for (int index = 0; index < backsies.size(); index++) {
                     final long timestamp = timeStampFromTickCounter(serial, backFillRx.sequenceStart + index);
-                    UserError.Log.d(TAG, "Backsie:  id:" + (backFillRx.sequenceStart + index) + " raw:" + backsies.get(index) + " @ " + JoH.dateTimeText(timestamp));
+                    UserErrorLog.d(TAG, "Backsie:  id:" + (backFillRx.sequenceStart + index) + " raw:" + backsies.get(index) + " @ " + JoH.dateTimeText(timestamp));
                     final long since = msSince(timestamp);
                     if ((since > HOUR_IN_MS * 6) || (since < 0)) {
-                        UserError.Log.wtf(TAG, "Backfill timestamp unrealistic: " + JoH.dateTimeText(timestamp) + " (ignored)");
+                        UserErrorLog.wtf(TAG, "Backfill timestamp unrealistic: " + JoH.dateTimeText(timestamp) + " (ignored)");
                     } else {
 
                         final double glucose = backFillRx.getGlucose(backsies.get(index));
@@ -598,7 +594,7 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
                                 // Native version
                                 if (glucose > 0) {
                                     BgReading.bgReadingInsertMedtrum(glucose, timestamp, "Backfill", scaled_raw_data);
-                                    UserError.Log.d(TAG, "Adding native backfilled reading: " + JoH.dateTimeText(timestamp) + " " + BgGraphBuilder.unitized_string_static(glucose));
+                                    UserErrorLog.d(TAG, "Adding native backfilled reading: " + JoH.dateTimeText(timestamp) + " " + BgGraphBuilder.unitized_string_static(glucose));
 
                                 }
                                 final BgReading bgReadingTemp = BgReading.createFromRawNoSave(null, null, scaled_raw_data, scaled_raw_data, timestamp);
@@ -612,9 +608,9 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
                                 // xDrip as primary
                                 final BgReading bgreading = BgReading.create(scaled_raw_data, scaled_raw_data, xdrip.getAppContext(), timestamp);
                                 if (bgreading != null) {
-                                    UserError.Log.d(TAG, "Backfilled BgReading created: " + bgreading.uuid + " " + JoH.dateTimeText(bgreading.timestamp));
+                                    UserErrorLog.d(TAG, "Backfilled BgReading created: " + bgreading.uuid + " " + JoH.dateTimeText(bgreading.timestamp));
                                 } else {
-                                    UserError.Log.d(TAG, "BgReading null!");
+                                    UserErrorLog.d(TAG, "BgReading null!");
                                 }
                             }
 
@@ -625,13 +621,13 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
                 }
                 if (!changed && backsies.size() < requestedBackfillSize) {
                     if (JoH.ratelimit("mt-backfill-repeat", 60)) {
-                        UserError.Log.d(TAG, "Requesting additional backfill with offset: " + backsies.size());
+                        UserErrorLog.d(TAG, "Requesting additional backfill with offset: " + backsies.size());
                         backFillIfNeeded(lastAnnex, backsies.size());
                     }
                 }
             }
         } else {
-            UserError.Log.e(TAG, "Backfill data reports not ok");
+            UserErrorLog.e(TAG, "Backfill data reports not ok");
         }
     }
 
@@ -656,12 +652,12 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
                 if (endTick - startTick > MAX_BACKFILL_ENTRIES) {
                     endTick = startTick + MAX_BACKFILL_ENTRIES; // only ask this many at once
                 }
-                UserError.Log.d(TAG, "Ask backfill: start: " + startTick + "  end: " + endTick);
+                UserErrorLog.d(TAG, "Ask backfill: start: " + startTick + "  end: " + endTick);
                 requestedBackfillSize = endTick - startTick;
                 sendTx(new BackFillTx(startTick, endTick));
                 return true;
             } else {
-                UserError.Log.d(TAG, "Not backfilling with start and end tick at: " + startTick + " " + endTick);
+                UserErrorLog.d(TAG, "Not backfilling with start and end tick at: " + startTick + " " + endTick);
             }
         }
         return false;
@@ -682,7 +678,7 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
             lastRecordTime = PersistentStore.getLong(LAST_RECORD_TIME);
         }
         if (msSince(lastRecordTime) > MINIMUM_RECORD_INTERVAL) {
-            UserError.Log.d(TAG, "Creating transmitter data from record annex");
+            UserErrorLog.d(TAG, "Creating transmitter data from record annex");
             final TransmitterData transmitterData = TransmitterData.create(annex.getSensorRawEmulateDex(), annex.getSensorRawEmulateDex(), annex.getBatteryPercent(), JoH.tsl());
             if (transmitterData != null) {
                 lastRecordTime = transmitterData.timestamp;
@@ -699,7 +695,7 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
                             } else {
                                 if (annex.getState() == NotCalibrated) {
                                     // just add raw data
-                                    UserError.Log.d(TAG,"Just adding raw data");
+                                    UserErrorLog.d(TAG,"Just adding raw data");
                                     final BgReading bgreading = BgReading.create(transmitterData.raw_data, transmitterData.filtered_data, xdrip.getAppContext(), transmitterData.timestamp);
                                 }
                             }
@@ -707,31 +703,31 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
                             final BgReading bgReadingTemp = BgReading.createFromRawNoSave(null, null, transmitterData.raw_data, transmitterData.raw_data, transmitterData.timestamp);
                             if (bgReadingTemp.calculated_value > 0) {
                                 Prediction.create(bgReadingTemp.timestamp, (int) bgReadingTemp.calculated_value, "Medtrum2nd").save();
-                                UserError.Log.d(TAG, "Created secondary trace for value: " + bgReadingTemp.calculated_value);
+                                UserErrorLog.d(TAG, "Created secondary trace for value: " + bgReadingTemp.calculated_value);
                             }
                         } else {
 
                             if (glucose > 0) {
                                 Prediction.create(JoH.tsl(), (int) glucose, "Medtrum2nd").save();
-                                UserError.Log.d(TAG, "Saving extra data");
+                                UserErrorLog.d(TAG, "Saving extra data");
                             }
                             // xDrip as primary
                             final BgReading bgreading = BgReading.create(transmitterData.raw_data, transmitterData.filtered_data, xdrip.getAppContext(), transmitterData.timestamp);
                             if (bgreading != null) {
-                                UserError.Log.d(TAG, "BgReading created: " + bgreading.uuid + " " + JoH.dateTimeText(bgreading.timestamp));
+                                UserErrorLog.d(TAG, "BgReading created: " + bgreading.uuid + " " + JoH.dateTimeText(bgreading.timestamp));
                             } else {
-                                UserError.Log.d(TAG, "BgReading null!");
+                                UserErrorLog.d(TAG, "BgReading null!");
                             }
                         }
                     } else {
-                        UserError.Log.d(TAG, "Ignoring due to sensor state: " + annex.getState());
+                        UserErrorLog.d(TAG, "Ignoring due to sensor state: " + annex.getState());
                     }
                 } else {
-                    UserError.Log.d(TAG, "Raw data was invalid so not proceeding");
+                    UserErrorLog.d(TAG, "Raw data was invalid so not proceeding");
                 }
             }
         } else {
-            UserError.Log.d(TAG, "Not creating data record so close to previous");
+            UserErrorLog.d(TAG, "Not creating data record so close to previous");
         }
     }
 
@@ -775,7 +771,7 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
         if (this_connection != null) {
             changeState(ENABLE);
         } else {
-            UserError.Log.d(TAG, "New connection null!");
+            UserErrorLog.d(TAG, "New connection null!");
             changeState(CLOSE);
         }
     }
@@ -787,7 +783,7 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
             status("Connection failure");
         }
         // TODO under what circumstances should we change state or do something here?
-        UserError.Log.d(TAG, "Connection Disconnected/Failed: " + throwable);
+        UserErrorLog.d(TAG, "Connection Disconnected/Failed: " + throwable);
         stopConnect();
         changeState(CLOSE);
         setRetryTimer();
@@ -795,7 +791,7 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
 
     private synchronized void stopConnect() {
 
-        UserError.Log.d(TAG, "Stopping connection with: " + address);
+        UserErrorLog.d(TAG, "Stopping connection with: " + address);
         stopListening();
 
         if (connectionSubscription != null) {
@@ -826,14 +822,14 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
 
     public void changeState(STATE new_state, int timeout) {
         if ((state == CLOSED || state == CLOSE) && new_state == CLOSE) {
-            UserError.Log.d(TAG, "Not closing as already closed");
+            UserErrorLog.d(TAG, "Not closing as already closed");
         } else {
             if (new_state != state) {
-                UserError.Log.d(TAG, "Changing state from: " + state + " to " + new_state);
+                UserErrorLog.d(TAG, "Changing state from: " + state + " to " + new_state);
                 state = new_state;
                 background_automata(timeout);
             } else {
-                UserError.Log.d(TAG, "Not changing state as already in state: " + new_state);
+                UserErrorLog.d(TAG, "Not changing state as already in state: " + new_state);
             }
         }
     }
@@ -847,7 +843,7 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
         scanner.setTag(TAG);
         scanner.addCallBack(this, TAG);
         DisconnectReceiver.addCallBack(this, TAG);
-        UserError.Log.d(TAG, "SERVICE CREATED - SERVICE CREATED");
+        UserErrorLog.d(TAG, "SERVICE CREATED - SERVICE CREATED");
         enableBuggySamsungIfNeeded(TAG);
     }
 
@@ -873,18 +869,18 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
         if (shouldServiceRun()) {
             final PowerManager.WakeLock wl = JoH.getWakeLock("medtrum-start-service", 600000);
             try {
-                UserError.Log.d(TAG, "WAKE UP WAKE UP WAKE UP WAKE UP @ " + JoH.dateTimeText(JoH.tsl()) + " State: " + state);
+                UserErrorLog.d(TAG, "WAKE UP WAKE UP WAKE UP WAKE UP @ " + JoH.dateTimeText(JoH.tsl()) + " State: " + state);
                 setFailOverTimer();
 
                 if (wakeup_time > 0) {
                     wakeup_jitter = JoH.msSince(wakeup_time);
                     if (wakeup_jitter < 0) {
-                        UserError.Log.d(TAG, "Woke up Early..");
+                        UserErrorLog.d(TAG, "Woke up Early..");
                     } else {
                         if (wakeup_jitter > 1000) {
-                            UserError.Log.d(TAG, "Wake up, time jitter: " + JoH.niceTimeScalar(wakeup_jitter));
+                            UserErrorLog.d(TAG, "Wake up, time jitter: " + JoH.niceTimeScalar(wakeup_jitter));
                             if ((wakeup_jitter > TOLERABLE_JITTER) && (!JoH.buggy_samsung) && JoH.isSamsung()) {
-                                UserError.Log.wtf(TAG, "Enabled Buggy Samsung workaround due to jitter of: " + JoH.niceTimeScalar(wakeup_jitter));
+                                UserErrorLog.wtf(TAG, "Enabled Buggy Samsung workaround due to jitter of: " + JoH.niceTimeScalar(wakeup_jitter));
                                 JoH.buggy_samsung = true;
                                 PersistentStore.incrementLong(BUGGY_SAMSUNG_ENABLED);
                                 max_wakeup_jitter = 0;
@@ -917,7 +913,7 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
             }
             return START_STICKY;
         } else {
-            UserError.Log.d(TAG, "Should not be running so shutting down");
+            UserErrorLog.d(TAG, "Should not be running so shutting down");
             stopSelf();
             return START_NOT_STICKY;
         }
@@ -930,19 +926,19 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
                 return;
             case CLOSE:
             case CLOSED:
-                UserError.Log.d(TAG, "Changing from initial state of " + state + " to INIT");
+                UserErrorLog.d(TAG, "Changing from initial state of " + state + " to INIT");
                 state = INIT;
                 return;
         }
         if (msSince(lastInteractionTime) > MINUTE_IN_MS * 5) {
-            UserError.Log.d(TAG, "Changing from initial state of " + state + " to INIT due to interaction timeout");
+            UserErrorLog.d(TAG, "Changing from initial state of " + state + " to INIT due to interaction timeout");
             state = INIT;
         }
     }
 
     @Override
     public void btCallback(String address, String status) {
-        UserError.Log.d(TAG, "Processing callback: " + address + " :: " + status);
+        UserErrorLog.d(TAG, "Processing callback: " + address + " :: " + status);
         if (address.equals(MedtrumCollectionService.address)) {
             switch (status) {
                 case "DISCONNECTED":
@@ -962,22 +958,22 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
                     break;
 
                 default:
-                    UserError.Log.e(TAG, "Unknown status callback for: " + address + " with " + status);
+                    UserErrorLog.e(TAG, "Unknown status callback for: " + address + " with " + status);
             }
         } else {
-            UserError.Log.d(TAG, "Ignoring: " + status + " for " + address + " as we are using: " + MedtrumCollectionService.address);
+            UserErrorLog.d(TAG, "Ignoring: " + status + " for " + address + " as we are using: " + MedtrumCollectionService.address);
         }
     }
 
 
     private static void status(String msg) {
         lastState = msg + " " + JoH.hourMinuteString();
-        UserError.Log.d(STATIC_TAG, "Status: " + lastState);
+        UserErrorLog.d(STATIC_TAG, "Status: " + lastState);
     }
 
     private static void errorStatus(String msg) {
         lastErrorState = msg + " " + JoH.hourMinuteString();
-        UserError.Log.e(STATIC_TAG, lastErrorState);
+        UserErrorLog.e(STATIC_TAG, lastErrorState);
     }
 
 
@@ -994,14 +990,14 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
     private void setRetryTimerReal() {
         if (shouldServiceRun()) {
             final long retry_in = whenToRetryNext();
-            UserError.Log.d(TAG, "setRetryTimer: Restarting in: " + (retry_in / Constants.SECOND_IN_MS) + " seconds");
+            UserErrorLog.d(TAG, "setRetryTimer: Restarting in: " + (retry_in / Constants.SECOND_IN_MS) + " seconds");
             // serviceIntent = PendingIntent.getService(this, MEDTRUM_SERVICE_RETRY_ID,
             //         new Intent(this, this.getClass()), 0);
             serviceIntent = WakeLockTrampoline.getPendingIntent(this.getClass(), MEDTRUM_SERVICE_RETRY_ID);
             retry_time = JoH.wakeUpIntent(this, retry_in, serviceIntent);
             wakeup_time = JoH.tsl() + retry_in;
         } else {
-            UserError.Log.d(TAG, "Not setting retry timer as service should not be running");
+            UserErrorLog.d(TAG, "Not setting retry timer as service should not be running");
         }
     }
 
@@ -1009,14 +1005,14 @@ public class MedtrumCollectionService extends JamBaseBluetoothService implements
         if (shouldServiceRun()) {
             if (quietratelimit("mt-failover-cooldown", 30)) {
                 final long retry_in = Constants.MINUTE_IN_MS * 7;
-                UserError.Log.d(TAG, "setFailOverTimer: Restarting in: " + (retry_in / Constants.SECOND_IN_MS) + " seconds");
+                UserErrorLog.d(TAG, "setFailOverTimer: Restarting in: " + (retry_in / Constants.SECOND_IN_MS) + " seconds");
              //   serviceFailoverIntent = PendingIntent.getService(this, MEDTRUM_SERVICE_FAILOVER_ID,
              //           new Intent(this, this.getClass()), 0);
                 serviceFailoverIntent = WakeLockTrampoline.getPendingIntent(this.getClass(), MEDTRUM_SERVICE_FAILOVER_ID);
                 failover_time = JoH.wakeUpIntent(this, retry_in, serviceFailoverIntent);
             }
         } else {
-            UserError.Log.d(TAG, "Not setting retry timer as service should not be running");
+            UserErrorLog.d(TAG, "Not setting retry timer as service should not be running");
         }
     }
 

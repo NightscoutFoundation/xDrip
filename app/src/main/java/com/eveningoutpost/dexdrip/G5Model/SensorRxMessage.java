@@ -1,7 +1,8 @@
 package com.eveningoutpost.dexdrip.G5Model;
 
+
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.Services.G5CollectionService;
 
 import java.nio.ByteBuffer;
@@ -19,7 +20,7 @@ public class SensorRxMessage extends BaseMessage {
     private final static String TAG = G5CollectionService.TAG; // meh
 
     public SensorRxMessage(byte[] packet) {
-        UserError.Log.d(TAG, "SensorRX dbg: " + JoH.bytesToHex(packet));
+        UserErrorLog.d(TAG, "SensorRX dbg: " + JoH.bytesToHex(packet));
         if (packet.length >= 14) {
             if (packet[0] == opcode) {
                 data = ByteBuffer.wrap(packet).order(ByteOrder.LITTLE_ENDIAN);

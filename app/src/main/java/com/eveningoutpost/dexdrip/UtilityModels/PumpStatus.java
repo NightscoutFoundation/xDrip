@@ -1,11 +1,12 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+
 import android.util.Log;
 
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -98,7 +99,7 @@ public class PumpStatus {
             json.put("bolusiob", getBolusIoB());
             json.put("battery", getBattery());
         } catch (JSONException e) {
-            UserError.Log.e(TAG, "Got exception building PumpStatus " + e);
+            UserErrorLog.e(TAG, "Got exception building PumpStatus " + e);
         }
         return json.toString();
     }

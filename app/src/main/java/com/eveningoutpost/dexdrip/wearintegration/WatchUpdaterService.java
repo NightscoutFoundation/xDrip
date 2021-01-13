@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.wearintegration;
 
+
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.PendingIntent;
@@ -30,7 +31,9 @@ import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.StepCounter;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.Treatments;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorStore;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.G5CollectionService;
 import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
@@ -390,7 +393,7 @@ public class WatchUpdaterService extends WearableListenerService implements
 
                 final Sensor current_sensor = Sensor.currentSensor();
                 if (current_sensor == null) {
-                    UserError.Log.e(TAG, "Cannot sync wear BG readings because sensor is marked stopped on phone");
+                    UserErrorLog.e(TAG, "Cannot sync wear BG readings because sensor is marked stopped on phone");
                     return;
                 }
 
@@ -428,10 +431,10 @@ public class WatchUpdaterService extends WearableListenerService implements
                 sendDataReceived(DATA_ITEM_RECEIVED_PATH, "DATA_RECEIVED_BGS count=" + entries.size(), timeOfLastBG, "BG", -1);
 
             } else {
-                UserError.Log.e(TAG, "Not acknowledging wear BG readings as count was 0");
+                UserErrorLog.e(TAG, "Not acknowledging wear BG readings as count was 0");
             }
         } else {
-            UserError.Log.d(TAG, "Null entries list - should only happen with native status update only");
+            UserErrorLog.d(TAG, "Null entries list - should only happen with native status update only");
         }
     }
 
@@ -530,15 +533,16 @@ public class WatchUpdaterService extends WearableListenerService implements
                     if (record != null) {
                         UserError data = gson.fromJson(record, UserError.class);
                         if (data != null) {
-                            timeOfLastEntry = (long) data.timestamp + 1;
-                            if (data.shortError != null && !data.shortError.isEmpty()) { //add wear prefix
-                                if (!data.shortError.startsWith("wear")) {
-                                    data.shortError = mPrefs.getString("wear_logs_prefix", "wear") + data.shortError;
+                            timeOfLastEntry = (long) data.getTimestamp() + 1;
+                            if (data.getShortError() != null && !data.getShortError().isEmpty()) { //add wear prefix
+                                if (!data.getShortError().startsWith("wear")) {
+                                    //no overwriting oh no
+                                    UserErrorStore.get().setShortError(data, mPrefs.getString("wear_logs_prefix", "wear") + data.getShortError());
                                 }
                             }
-                            UserError exists = UserError.getForTimestamp(data);
+                            UserError exists = UserErrorStore.get().getForTimestamp(data);
                             if (exists == null && !bBenchmark) {
-                                data.save();
+                                UserErrorStore.get().save(data);
                                 saved++;
                             } else {
                                 //Log.d(TAG, "syncLogData Log entry already exists with shortError=" + data.shortError + " timestamp=" + JoH.dateTimeText((long)data.timestamp));
@@ -648,7 +652,7 @@ public class WatchUpdaterService extends WearableListenerService implements
                         final long since = JoH.msSince(timestamp);
                         if ((since < -(Constants.SECOND_IN_MS * 5)) || (since > Constants.HOUR_IN_MS * 72)) {
                             JoH.static_toast_long("Rejecting wear treatment as time out of range!");
-                            UserError.Log.e(TAG, "Rejecting wear treatment due to time: " + record + " since: " + since);
+                            UserErrorLog.e(TAG, "Rejecting wear treatment due to time: " + record + " since: " + since);
                         } else {
                             if (record.contains("uuid null")) {
                                 Log.e(TAG, "Skipping xx uuid null record!");
@@ -905,7 +909,7 @@ public class WatchUpdaterService extends WearableListenerService implements
     }
 
     public static void startServiceAndResendData(long since) {
-        UserError.Log.d(TAG, "Requesting to resend data");
+        UserErrorLog.d(TAG, "Requesting to resend data");
         xdrip.getAppContext().startService(new Intent(xdrip.getAppContext(), WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_RESEND).putExtra("resend-since", since));
     }
 
@@ -1085,7 +1089,7 @@ public class WatchUpdaterService extends WearableListenerService implements
         NodeApi.GetLocalNodeResult localnodes = Wearable.NodeApi.getLocalNode(googleApiClient).await(60, TimeUnit.SECONDS);
         Node getnode = localnodes.getNode();
         localnode = getnode != null ? getnode.getDisplayName() + "|" + getnode.getId() : "";
-        UserError.Log.d(TAG, "setLocalNodeName.  localnode=" + localnode);
+        UserErrorLog.d(TAG, "setLocalNodeName.  localnode=" + localnode);
     }
 
     @Override
@@ -1443,7 +1447,7 @@ public class WatchUpdaterService extends WearableListenerService implements
                                     startAt = Integer.parseInt(split[1]);
                                 }
                                 if (startAt == 0) {
-                                    UserError.Log.uel(TAG, "VUP: Sending latest apk version to watch");
+                                    UserErrorLog.uel(TAG, "VUP: Sending latest apk version to watch");
                                     JoH.static_toast_long("Sending latest version to watch");
                                 }
                                 final int finalStartAt = startAt;
@@ -1451,19 +1455,19 @@ public class WatchUpdaterService extends WearableListenerService implements
                                     @Override
                                     public void run() {
                                         if (mWearNodeId == null) {
-                                            UserError.Log.d(TAG, "VUP: nodeid is null");
+                                            UserErrorLog.d(TAG, "VUP: nodeid is null");
                                             updateWearSyncBgsCapability(); // try to populate
                                         }
 
                                         if (mWearNodeId != null) {
                                             // TODO limit to 120
-                                            UserError.Log.d(TAG, "VUP: nodeid is now not null");
+                                            UserErrorLog.d(TAG, "VUP: nodeid is now not null");
                                             if (apkBytes == null) {
-                                                UserError.Log.d(TAG, "VUP: getting bytes");
+                                                UserErrorLog.d(TAG, "VUP: getting bytes");
                                                 apkBytes = GetWearApk.getBytes();
                                             }
                                             if (apkBytes != null) {
-                                                UserError.Log.d(TAG, "VUP: Trying to open channel to send apk");
+                                                UserErrorLog.d(TAG, "VUP: Trying to open channel to send apk");
                                                 ChannelApi.OpenChannelResult result = Wearable.ChannelApi.openChannel(googleApiClient, mWearNodeId, "/updated-apk").await();
 
                                                 final Channel channel = result.getChannel();
@@ -1518,7 +1522,7 @@ public class WatchUpdaterService extends WearableListenerService implements
                                                         }
                                                     });
                                                 } else {
-                                                    UserError.Log.d(TAG, "VUP: Could not send wearable apk as Channel result was null!");
+                                                    UserErrorLog.d(TAG, "VUP: Could not send wearable apk as Channel result was null!");
                                                 }
                                             }
                                         } else {
@@ -1687,9 +1691,9 @@ public class WatchUpdaterService extends WearableListenerService implements
                 @Override
                 public void onResult(DataApi.DataItemResult sendMessageResult) {
                     if (!sendMessageResult.getStatus().isSuccess()) {
-                        UserError.Log.e(TAG, "ERROR: failed to sendblob Status=" + sendMessageResult.getStatus().getStatusMessage());
+                        UserErrorLog.e(TAG, "ERROR: failed to sendblob Status=" + sendMessageResult.getStatus().getStatusMessage());
                     } else {
-                        UserError.Log.i(TAG, "Sendblob  Status=: " + sendMessageResult.getStatus().getStatusMessage());
+                        UserErrorLog.i(TAG, "Sendblob  Status=: " + sendMessageResult.getStatus().getStatusMessage());
                     }
                 }
             });

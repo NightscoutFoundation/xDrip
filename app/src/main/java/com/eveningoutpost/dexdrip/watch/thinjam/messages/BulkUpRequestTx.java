@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.watch.thinjam.messages;
 
+
 import lombok.Getter;
 
 import static com.eveningoutpost.dexdrip.watch.thinjam.Const.ERROR_OK_WITH_PARAMETER;

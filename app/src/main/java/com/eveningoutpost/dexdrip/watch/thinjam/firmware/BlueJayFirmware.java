@@ -1,7 +1,8 @@
 package com.eveningoutpost.dexdrip.watch.thinjam.firmware;
 
+
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.usererror.UserErrorLog;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
 
 import java.nio.ByteBuffer;
@@ -31,63 +32,63 @@ public class BlueJayFirmware {
 
             val magic = buffer.getLong();
             if (magic != BLUEJAY_OTA_FILE_MAGIC) {
-                UserError.Log.e(TAG, String.format("Firmware magic doesn't match: %x vs %x", magic, BLUEJAY_OTA_FILE_MAGIC));
+                UserErrorLog.e(TAG, String.format("Firmware magic doesn't match: %x vs %x", magic, BLUEJAY_OTA_FILE_MAGIC));
                 return null;
             }
 
             val ota_file_version = buffer.getInt();
             if (ota_file_version != BLUEJAY_OTA_FILE_VERSION) {
-                UserError.Log.e(TAG, "Unsupported OTA file version: " + ota_file_version);
+                UserErrorLog.e(TAG, "Unsupported OTA file version: " + ota_file_version);
                 return null;
             }
 
             val hardwareType = buffer.getInt();
-            UserError.Log.d(TAG, "Hardware type: " + hardwareType);
+            UserErrorLog.d(TAG, "Hardware type: " + hardwareType);
             val version = buffer.getInt();
-            UserError.Log.d(TAG, "Version: " + version);
+            UserErrorLog.d(TAG, "Version: " + version);
             val type = buffer.getInt();
-            UserError.Log.d(TAG, "Type: " + type);
+            UserErrorLog.d(TAG, "Type: " + type);
             val ota_byte_length = buffer.getInt();
-            UserError.Log.d(TAG, "ota byte length: " + ota_byte_length);
+            UserErrorLog.d(TAG, "ota byte length: " + ota_byte_length);
             val final_bytes_length = buffer.getInt();
-            UserError.Log.d(TAG, "final byte length: " + final_bytes_length);
+            UserErrorLog.d(TAG, "final byte length: " + final_bytes_length);
             val outer_signature_length = buffer.getInt();
 
             if (outer_signature_length < 10 || outer_signature_length > 512) {
-                UserError.Log.e(TAG, "Signature length out of range: " + outer_signature_length);
+                UserErrorLog.e(TAG, "Signature length out of range: " + outer_signature_length);
                 return null;
             }
 
             val identity = buffer.getLong();
-            UserError.Log.d(TAG, String.format("Identity: %x", identity));
+            UserErrorLog.d(TAG, String.format("Identity: %x", identity));
 
             val signature_bytes = new byte[outer_signature_length];
             buffer.get(signature_bytes, 0, signature_bytes.length);
 
             if (final_bytes_length < 1000 || final_bytes_length > 1024 * 1024 * 16) {
-                UserError.Log.e(TAG, "Payload bytesize out of range: " + final_bytes_length);
+                UserErrorLog.e(TAG, "Payload bytesize out of range: " + final_bytes_length);
                 return null;
             }
             val final_bytes = new byte[final_bytes_length];
             buffer.get(final_bytes, 0, final_bytes_length);
 
             if (DigitalSignature.firstCheck(final_bytes, signature_bytes)) {
-                UserError.Log.d(TAG, "Early stage outer signature check passed");
+                UserErrorLog.d(TAG, "Early stage outer signature check passed");
             } else {
-                UserError.Log.e(TAG, "Signature invalid");
+                UserErrorLog.e(TAG, "Signature invalid");
                 return null;
             }
 
             val firmware = CipherUtils.decryptBytes(final_bytes, BLUEJAY_OTA_FILE_KEY);
             if (firmware == null || firmware.length != ota_byte_length) {
-                UserError.Log.e(TAG, "Failed to decode firmware file: " + (firmware == null ? "null" : firmware.length + " vs " + ota_byte_length));
+                UserErrorLog.e(TAG, "Failed to decode firmware file: " + (firmware == null ? "null" : firmware.length + " vs " + ota_byte_length));
                 return null;
             }
 
             return firmware;
 
         } catch (Exception e) {
-            UserError.Log.e(TAG, "Got exception processing: " + e);
+            UserErrorLog.e(TAG, "Got exception processing: " + e);
         }
         return null;
     }
