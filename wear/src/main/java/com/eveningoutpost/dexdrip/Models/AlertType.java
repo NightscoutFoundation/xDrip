@@ -140,9 +140,9 @@ public class AlertType extends Model {
         for (String patch : patchup) {
             try {
                 SQLiteUtils.execSql(patch);
-                Log.e(TAG, "Processed patch should not have succeeded!!: " + patch);
+                UserErrorLog.e(TAG, "Processed patch should not have succeeded!!: " + patch);
             } catch (Exception e) {
-                // Log.d(TAG, "Patch: " + patch + " generated exception as it should: " + e.toString());
+                // UserErrorLog.d(TAG, "Patch: " + patch + " generated exception as it should: " + e.toString());
             }
         }
         patched = true;
@@ -171,7 +171,7 @@ public class AlertType extends Model {
     public static AlertType get_highest_active_alert(Context context, double bg) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if(prefs.getLong("alerts_disabled_until", 0) > new Date().getTime()){
-            Log.d("NOTIFICATIONS", "Notifications are currently disabled!!");
+            UserErrorLog.d("NOTIFICATIONS", "Notifications are currently disabled!!");
             return null;
         }
 
@@ -182,9 +182,9 @@ public class AlertType extends Model {
         AlertType at;
         at = get_highest_active_alert_helper(bg, prefs);
         if (at != null) {
-            Log.d(TAG_ALERT, "get_highest_active_alert_helper returned alert uuid = " + at.uuid + " alert name = " + at.name);
+            UserErrorLog.d(TAG_ALERT, "get_highest_active_alert_helper returned alert uuid = " + at.uuid + " alert name = " + at.name);
         } else {
-            Log.d(TAG_ALERT, "get_highest_active_alert_helper returned NULL");
+            UserErrorLog.d(TAG_ALERT, "get_highest_active_alert_helper returned NULL");
         }
         return at;
     }
@@ -195,7 +195,7 @@ public class AlertType extends Model {
         if (prefs.getBoolean("disable_alerts_stale_data", false)) {
             final int stale_minutes = Math.max(6, Integer.parseInt(prefs.getString("disable_alerts_stale_data_minutes", "15")) + 2);
             if (!BgReading.last_within_minutes(stale_minutes)) {
-                Log.w(TAG, "Blocking alarm raise as data older than: " + stale_minutes);
+                UserErrorLog.w(TAG, "Blocking alarm raise as data older than: " + stale_minutes);
                 return null; // block
             }
         }
@@ -209,7 +209,7 @@ public class AlertType extends Model {
         final double offset = 0;//KS TODO ActivityRecognizedService.raise_limit_due_to_vehicle_mode() ? ActivityRecognizedService.getVehicle_mode_adjust_mgdl() : 0;
 
         if(prefs.getLong("low_alerts_disabled_until", 0) > new Date().getTime()){
-            Log.i("NOTIFICATIONS", "get_highest_active_alert_helper: Low alerts are currently disabled!! Skipping low alerts");
+            UserErrorLog.i("NOTIFICATIONS", "get_highest_active_alert_helper: Low alerts are currently disabled!! Skipping low alerts");
 
         } else {
             List<AlertType> lowAlerts  = new Select()
@@ -229,7 +229,7 @@ public class AlertType extends Model {
 
         // If no low alert found or low alerts disabled, check higher alert.
         if(prefs.getLong("high_alerts_disabled_until", 0) > new Date().getTime()){
-            Log.i("NOTIFICATIONS", "get_highest_active_alert_helper: High alerts are currently disabled!! Skipping high alerts");
+            UserErrorLog.i("NOTIFICATIONS", "get_highest_active_alert_helper: High alerts are currently disabled!! Skipping high alerts");
             ;
         } else {
             List<AlertType> HighAlerts  = new Select()
@@ -275,7 +275,7 @@ public class AlertType extends Model {
             }
         }
         if (a1.above || a2.above) {
-            Log.wtf(TAG, "a1.above and a2.above must be false");
+            UserErrorLog.wtf(TAG, "a1.above and a2.above must be false");
         }
         // both are low, the lower the better
         if (a1.threshold < a2.threshold) {
@@ -347,7 +347,7 @@ public class AlertType extends Model {
 
         final AlertType at = get_alert(uuid);
         if (at == null) {
-            Log.e(TAG, "Alert Type null during update");
+            UserErrorLog.e(TAG, "Alert Type null during update");
             return;
         }
         at.name = name;
@@ -390,9 +390,9 @@ public class AlertType extends Model {
             .from(AlertType.class)
             .execute();
 
-        Log.d(TAG,"List of all alerts");
+        UserErrorLog.d(TAG,"List of all alerts");
         for (AlertType alert : Alerts) {
-            Log.d(TAG, alert.toString());
+            UserErrorLog.d(TAG, alert.toString());
         }
     }
 
@@ -459,28 +459,28 @@ public class AlertType extends Model {
         add_alert(null, "high alert 3", true, 220, true, 10, null, 0, 0, true, 20, true, true);
         print_all();
         AlertType a1 = get_highest_active_alert(context, 190);
-        Log.d(TAG, "a1 = " + a1.toString());
+        UserErrorLog.d(TAG, "a1 = " + a1.toString());
         AlertType a2 = get_highest_active_alert(context, 210);
-        Log.d(TAG, "a2 = " + a2.toString());
+        UserErrorLog.d(TAG, "a2 = " + a2.toString());
 
 
         AlertType a3 = get_alert(a1.uuid);
-        Log.d(TAG, "a1 == a3 ? need to see true " + (a1==a3) + a1 + " " + a3);
+        UserErrorLog.d(TAG, "a1 == a3 ? need to see true " + (a1==a3) + a1 + " " + a3);
 
         add_alert(null, "low alert 1", false, 80, true, 10, null, 0, 0, true, 20, true, true);
         add_alert(null, "low alert 2", false, 60, true, 10, null, 0, 0, true, 20, true, true);
 
         AlertType al1 = get_highest_active_alert(context, 90);
-        Log.d(TAG, "al1 should be null  " + al1);
+        UserErrorLog.d(TAG, "al1 should be null  " + al1);
         al1 = get_highest_active_alert(context, 80);
-        Log.d(TAG, "al1 = " + al1.toString());
+        UserErrorLog.d(TAG, "al1 = " + al1.toString());
         AlertType al2 = get_highest_active_alert(context, 50);
-        Log.d(TAG, "al2 = " + al2.toString());
+        UserErrorLog.d(TAG, "al2 = " + al2.toString());
 
-        Log.d(TAG, "HigherAlert(a1, a2) = a1?" +  (HigherAlert(a1,a2) == a2));
-        Log.d(TAG, "HigherAlert(al1, al2) = al1?" +  (HigherAlert(al1,al2) == al2));
-        Log.d(TAG, "HigherAlert(a1, al1) = al1?" +  (HigherAlert(a1,al1) == al1));
-        Log.d(TAG, "HigherAlert(al1, a2) = al1?" +  (HigherAlert(al1,a2) == al1));
+        UserErrorLog.d(TAG, "HigherAlert(a1, a2) = a1?" +  (HigherAlert(a1,a2) == a2));
+        UserErrorLog.d(TAG, "HigherAlert(al1, al2) = al1?" +  (HigherAlert(al1,al2) == al2));
+        UserErrorLog.d(TAG, "HigherAlert(a1, al1) = al1?" +  (HigherAlert(a1,al1) == al1));
+        UserErrorLog.d(TAG, "HigherAlert(al1, a2) = al1?" +  (HigherAlert(al1,a2) == al1));
 
         // Make sure we do not influance on real data...
         remove_all();
@@ -500,7 +500,7 @@ public class AlertType extends Model {
         // time_now is the number of minutes that have passed from the start of the day.
         Calendar rightNow = Calendar.getInstance();
         int time_now = toTime(rightNow.get(Calendar.HOUR_OF_DAY), rightNow.get(Calendar.MINUTE));
-        Log.d(TAG, "time_now is " + time_now + " minutes" + " start_time " + s_start_time_minutes + " end_time " + s_end_time_minutes);
+        UserErrorLog.d(TAG, "time_now is " + time_now + " minutes" + " start_time " + s_start_time_minutes + " end_time " + s_end_time_minutes);
         if(s_start_time_minutes < s_end_time_minutes) {
             if (time_now >= s_start_time_minutes && time_now <= s_end_time_minutes) {
                 return true;
@@ -515,7 +515,7 @@ public class AlertType extends Model {
 
     private boolean beyond_threshold(double bg) {
         if (above && bg >= threshold) {
-//            Log.e(TAG, "beyond_threshold returning true " );
+//            UserErrorLog.e(TAG, "beyond_threshold returning true " );
             return true;
         } else if (!above && bg <= threshold) {
             return true;
@@ -543,7 +543,7 @@ public class AlertType extends Model {
      }
 
     public boolean should_alarm(double bg) {
-//        Log.e(TAG, "should_alarm called active =  " + active );
+//        UserErrorLog.e(TAG, "should_alarm called active =  " + active );
         if(in_time_frame() && active && (beyond_threshold(bg) || trending_to_threshold(bg))) {
             return true;
         } else {
@@ -617,7 +617,7 @@ public class AlertType extends Model {
                 .serializeSpecialFloatingPointValues()
                 .create();
         String output =  gson.toJson(alerts);
-        Log.e(TAG, "Created the string " + output);
+        UserErrorLog.e(TAG, "Created the string " + output);
         prefs.edit().putString("saved_alerts", output).commit();
 
         return true;
@@ -630,18 +630,18 @@ public class AlertType extends Model {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String savedAlerts = prefs.getString("saved_alerts", "");
         if (savedAlerts.isEmpty()) {
-            Log.i(TAG, "read saved_alerts string and it is empty");
+            UserErrorLog.i(TAG, "read saved_alerts string and it is empty");
             return true;
         }
-        Log.i(TAG, "read alerts string " + savedAlerts);
+        UserErrorLog.i(TAG, "read alerts string " + savedAlerts);
 
         AlertType[] newAlerts = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create().fromJson(savedAlerts, AlertType[].class);
         if (newAlerts == null) {
-            Log.e(TAG, "newAlerts is null");
+            UserErrorLog.e(TAG, "newAlerts is null");
             return true;
         }
 
-        Log.i(TAG, "read successfuly " + newAlerts.length);
+        UserErrorLog.i(TAG, "read successfuly " + newAlerts.length);
         // Now delete all existing alerts if we managed to unpack the json
         try {
             List<AlertType> alerts = new Select()
@@ -651,16 +651,16 @@ public class AlertType extends Model {
                 alert.delete();
             }
         } catch (NullPointerException e) {
-            Log.e(TAG, "Got null pointer exception: " + e);
+            UserErrorLog.e(TAG, "Got null pointer exception: " + e);
         }
 
         try {
             for (AlertType alert : newAlerts) {
-                Log.e(TAG, "Saving alert " + alert.name);
+                UserErrorLog.e(TAG, "Saving alert " + alert.name);
                 alert.save();
             }
         } catch (NullPointerException e) {
-            Log.e(TAG, "Got null pointer exception 2: " + e);
+            UserErrorLog.e(TAG, "Got null pointer exception 2: " + e);
         }
         // Delete the string, so next time we will not load the data
         prefs.edit().putString("saved_alerts", "").apply();

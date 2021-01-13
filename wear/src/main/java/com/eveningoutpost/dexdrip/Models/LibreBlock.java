@@ -84,7 +84,7 @@ public class LibreBlock extends PlusModel {
         if (lb != null) {
             lb.save();
             if(byte_start == 0 && blocks.length == 344 && allowUpload) {
-                Log.d(TAG, "sending new item to queue");
+                UserErrorLog.d(TAG, "sending new item to queue");
                 UploaderQueue.newTransmitterDataEntry("create" ,lb);
             }
         }
@@ -157,7 +157,7 @@ public class LibreBlock extends PlusModel {
         if (libreBlock == null) {
             return;
         }
-        Log.e(TAG, "Updating bg for timestamp " + timestamp);
+        UserErrorLog.e(TAG, "Updating bg for timestamp " + timestamp);
         libreBlock.calculated_bg = calculated_value;
         libreBlock.save();
     }
@@ -169,7 +169,7 @@ public class LibreBlock extends PlusModel {
                 .where("uuid = ?", uuid)
                 .executeSingle();
         } catch (Exception e) {
-            Log.e(TAG,"findByUuid() Got exception on Select : "+e.toString());
+            UserErrorLog.e(TAG,"findByUuid() Got exception on Select : "+e.toString());
             return null;
         }
     }

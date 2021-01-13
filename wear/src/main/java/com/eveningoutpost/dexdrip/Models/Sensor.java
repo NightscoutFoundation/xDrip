@@ -57,7 +57,7 @@ public class Sensor extends Model {
 
         sensor.save();
         SensorSendQueue.addToQueue(sensor);
-        Log.d("SENSOR MODEL:", sensor.toString());
+        UserErrorLog.d("SENSOR MODEL:", sensor.toString());
         return sensor;
     }
 
@@ -69,12 +69,12 @@ public class Sensor extends Model {
 
             sensor.save();
             SensorSendQueue.addToQueue(sensor);
-            Log.d("SENSOR MODEL:", sensor.toString());
+            UserErrorLog.d("SENSOR MODEL:", sensor.toString());
             return sensor;
         }
         catch (Exception e)
         {
-            Log.d("SENSOR create new error ", uuid);
+            UserErrorLog.d("SENSOR create new error ", uuid);
             return null;
         }
     }
@@ -92,9 +92,9 @@ public class Sensor extends Model {
 
         Sensor sensor = getByTimestamp(started_at);
         if (sensor != null) {
-            Log.d("SENSOR", "updating an existing sensor");
+            UserErrorLog.d("SENSOR", "updating an existing sensor");
         } else {
-            Log.d("SENSOR", "creating a new sensor");
+            UserErrorLog.d("SENSOR", "creating a new sensor");
             sensor = new Sensor();
         }
         sensor.started_at = started_at;
@@ -108,9 +108,9 @@ public class Sensor extends Model {
 
         Sensor sensor = currentSensor();
         if (sensor != null) {
-            Log.d("SENSOR", "updating an existing sensor");
+            UserErrorLog.d("SENSOR", "updating an existing sensor");
         } else {
-            Log.d("SENSOR", "creating a new sensor");
+            UserErrorLog.d("SENSOR", "creating a new sensor");
             sensor = new Sensor();
         }
         sensor.started_at = started_at;
@@ -127,7 +127,7 @@ public class Sensor extends Model {
             return;
         }
         sensor.stopped_at = new Date().getTime();
-        Log.i("SENSOR", "Sensor stopped at " + sensor.stopped_at);
+        UserErrorLog.i("SENSOR", "Sensor stopped at " + sensor.stopped_at);
         sensor.save();
         SensorSendQueue.addToQueue(sensor);
 
@@ -139,7 +139,7 @@ public class Sensor extends Model {
                 .registerTypeAdapter(Date.class, new DateTypeAdapter())
                 .serializeSpecialFloatingPointValues()
                 .create();
-        Log.d("SENSOR", "Sensor toS uuid=" + this.uuid + " started_at=" + this.started_at + " active=" + this.isActive() + " battery=" + this.latest_battery_level + " location=" + this.sensor_location + " stopped_at=" + this.stopped_at);
+        UserErrorLog.d("SENSOR", "Sensor toS uuid=" + this.uuid + " started_at=" + this.started_at + " active=" + this.isActive() + " battery=" + this.latest_battery_level + " location=" + this.sensor_location + " stopped_at=" + this.stopped_at);
         return gson.toJson(this);
     }
 
@@ -149,9 +149,9 @@ public class Sensor extends Model {
             ActiveAndroid.dispose();
             context.deleteDatabase("DexDrip.db");
             //ActiveAndroid.initialize(dbConfiguration);
-            Log.d("wearSENSOR", "DeleteAndInitDb DexDrip.db deleted and initialized.");
+            UserErrorLog.d("wearSENSOR", "DeleteAndInitDb DexDrip.db deleted and initialized.");
         } catch (Exception e) {
-            Log.e("wearSENSOR", "DeleteAndInitDb CATCH Error.");
+            UserErrorLog.e("wearSENSOR", "DeleteAndInitDb CATCH Error.");
         }
     }
 
@@ -160,15 +160,15 @@ public class Sensor extends Model {
         try {
             SQLiteDatabase db = Cache.openDatabase();
             if (db != null) {
-                Log.d("wearSENSOR", "InitDb DB exists");
+                UserErrorLog.d("wearSENSOR", "InitDb DB exists");
             }
             else {
                 ActiveAndroid.initialize(dbConfiguration);
-                Log.d("wearSENSOR", "InitDb DB does NOT exist. Call ActiveAndroid.initialize()");
+                UserErrorLog.d("wearSENSOR", "InitDb DB does NOT exist. Call ActiveAndroid.initialize()");
             }
         } catch (Exception e) {
             ActiveAndroid.initialize(dbConfiguration);
-            Log.d("wearSENSOR", "InitDb CATCH: DB does NOT exist. Call ActiveAndroid.initialize()");
+            UserErrorLog.d("wearSENSOR", "InitDb CATCH: DB does NOT exist. Call ActiveAndroid.initialize()");
         }
     }
 
@@ -177,15 +177,15 @@ public class Sensor extends Model {
             SQLiteDatabase db = Cache.openDatabase();
             if (db != null) {
                 db.rawQuery("SELECT * FROM " + table, null);
-                Log.d("wearSENSOR", "TableExists table does NOT exist:" + table);
+                UserErrorLog.d("wearSENSOR", "TableExists table does NOT exist:" + table);
                 return true;
             }
             else {
-                Log.d("wearSENSOR", "TableExists Cache.openDatabase() failed.");
+                UserErrorLog.d("wearSENSOR", "TableExists Cache.openDatabase() failed.");
                 return false;
             }
         } catch (Exception e) {
-            Log.d("wearSENSOR", "TableExists CATCH error table:" + table);
+            UserErrorLog.d("wearSENSOR", "TableExists CATCH error table:" + table);
             return false;
         }
     }
@@ -242,10 +242,10 @@ public class Sensor extends Model {
 
     public static Sensor getByUuid(String xDrip_sensor_uuid) {
         if(xDrip_sensor_uuid == null) {
-            Log.d("wearSENSOR", "getByUuid xDrip_sensor_uuid is null");
+            UserErrorLog.d("wearSENSOR", "getByUuid xDrip_sensor_uuid is null");
             return null;
         }
-        Log.d("wearSENSOR", "getByUuid xDrip_sensor_uuid is " + xDrip_sensor_uuid);
+        UserErrorLog.d("wearSENSOR", "getByUuid xDrip_sensor_uuid is " + xDrip_sensor_uuid);
 
         //if (TableExists("Sensor")) {//com.eveningoutpost.dexdrip.Models.Sensor
             try {//KS
@@ -255,7 +255,7 @@ public class Sensor extends Model {
                         .executeSingle();
                 return sensor;
             } catch (Exception e) {
-                Log.d("wearSENSOR", "getByUuid CATCH Select error xDrip_sensor_uuid is " + xDrip_sensor_uuid);
+                UserErrorLog.d("wearSENSOR", "getByUuid CATCH Select error xDrip_sensor_uuid is " + xDrip_sensor_uuid);
                 return null;
             }
         //}
@@ -267,7 +267,7 @@ public class Sensor extends Model {
         Sensor sensor = Sensor.currentSensor();
         if (sensor == null)
         {
-            Log.d("Sensor","Cant sync battery level from master as sensor data is null");
+            UserErrorLog.d("Sensor","Cant sync battery level from master as sensor data is null");
             return;
         }
         updateBatteryLevel(sensor, sensorBatteryLevel, from_sync);
@@ -301,7 +301,7 @@ public class Sensor extends Model {
     public static void updateSensorLocation(String sensor_location) {
         Sensor sensor = currentSensor();
         if (sensor == null) {
-            Log.e("SENSOR MODEL:", "updateSensorLocation called but sensor is null");
+            UserErrorLog.e("SENSOR MODEL:", "updateSensorLocation called but sensor is null");
             return;
         }
         sensor.sensor_location = sensor_location;

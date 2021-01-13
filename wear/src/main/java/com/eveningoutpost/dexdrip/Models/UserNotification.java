@@ -146,7 +146,7 @@ public class UserNotification extends Model {
             UserNotification userNotification = new UserNotification();
             userNotification.timestamp = Double.parseDouble(timestamp);
             userNotification.message = message;
-            Log.d(TAG, "Workaround for: " + type + " " + userNotification.message + " timestamp: " + userNotification.timestamp);
+            UserErrorLog.d(TAG, "Workaround for: " + type + " " + userNotification.message + " timestamp: " + userNotification.timestamp);
             return userNotification;
         }
     }
@@ -166,7 +166,7 @@ public class UserNotification extends Model {
     public static void snoozeAlert(String type, long snoozeMinutes) {
         UserNotification userNotification = GetNotificationByType(type);
         if(userNotification == null) {
-            Log.e(TAG, "Error snoozeAlert did not find an alert for type " + type);
+            UserErrorLog.e(TAG, "Error snoozeAlert did not find an alert for type " + type);
             return;
         }
         userNotification.timestamp = new Date().getTime() + snoozeMinutes * 60000;
@@ -204,7 +204,7 @@ public class UserNotification extends Model {
                 userNotification.bg_fall_alert = true;
                 break;
             default:
-                Log.d(TAG, "Saving workaround for: " + type + " " + message);
+                UserErrorLog.d(TAG, "Saving workaround for: " + type + " " + message);
                 PersistentStore.setString("UserNotification:timestamp:" + type, JoH.qs(timestamp));
                 PersistentStore.setString("UserNotification:message:" + type, message);
                 return null;

@@ -37,7 +37,7 @@ public class GenericXMLRecord extends GenericTimestampRecord {
             document = builder.parse(new InputSource(new StringReader(xml)));
             xmlElement = document.getDocumentElement();
         } catch (Exception e) {
-            Log.e(TAG, "Unable to build xml element", e);
+            UserErrorLog.e(TAG, "Unable to build xml element", e);
         }
     }
 

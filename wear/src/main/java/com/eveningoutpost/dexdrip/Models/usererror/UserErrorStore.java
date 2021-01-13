@@ -8,7 +8,6 @@ import com.activeandroid.query.Delete;
 import com.activeandroid.query.From;
 import com.activeandroid.query.Select;
 import com.activeandroid.query.Sqlable;
-import com.eveningoutpost.dexdrip.Models.Cleanup;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.utils.validation.Ensure;
@@ -18,7 +17,6 @@ import java.util.Comparator;
 import java.util.List;
 
 import javax.annotation.Nullable;
-import javax.inject.Singleton;
 
 import static com.eveningoutpost.dexdrip.Models.usererror.UserEvent.ERROR_HIGH;
 import static com.eveningoutpost.dexdrip.Models.usererror.UserEvent.ERROR_LOW;
@@ -27,7 +25,6 @@ import static com.eveningoutpost.dexdrip.Models.usererror.UserEvent.EVENT_HIGH;
 import static com.eveningoutpost.dexdrip.Models.usererror.UserEvent.EVENT_LOW;
 
 
-@Singleton
 public class UserErrorStore {
 
     private final static UserErrorStore store = new UserErrorStore();

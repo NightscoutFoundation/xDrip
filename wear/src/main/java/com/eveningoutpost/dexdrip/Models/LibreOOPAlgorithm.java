@@ -26,18 +26,18 @@ public class LibreOOPAlgorithm {
     
     static public void SendData(byte[] fullData, long timestamp, byte []patchUid,  byte []patchInfo) {
         if(fullData == null) {
-            Log.e(TAG, "SendData called with null data");
+            UserErrorLog.e(TAG, "SendData called with null data");
             return;
         }
         
         if(fullData.length < 344) {
-            Log.e(TAG, "SendData called with data size too small. " + fullData.length);
+            UserErrorLog.e(TAG, "SendData called with data size too small. " + fullData.length);
             return;
         }
-        Log.i(TAG, "Sending full data to OOP Algorithm data-len = " + fullData.length);
+        UserErrorLog.i(TAG, "Sending full data to OOP Algorithm data-len = " + fullData.length);
         
         fullData = java.util.Arrays.copyOfRange(fullData, 0, 0x158);
-        Log.i(TAG, "Data that will be sent is " + HexDump.dumpHexString(fullData));
+        UserErrorLog.i(TAG, "Data that will be sent is " + HexDump.dumpHexString(fullData));
         
         Intent intent = new Intent(Intents.XDRIP_PLUS_LIBRE_DATA);
         Bundle bundle = new Bundle();
@@ -60,36 +60,36 @@ public class LibreOOPAlgorithm {
             for (final String destination : packagesE) {
                 if (destination.length() > 3) {
                     intent.setPackage(destination);
-                    Log.d(TAG, "Sending to package: " + destination);
+                    UserErrorLog.d(TAG, "Sending to package: " + destination);
                     xdrip.getAppContext().sendBroadcast(intent);
                 }
             }
         } else {
-            Log.d(TAG, "Sending to generic package");
+            UserErrorLog.d(TAG, "Sending to generic package");
             xdrip.getAppContext().sendBroadcast(intent);
         }
     }
     
     
     static public void HandleData(String oopData) {
-        Log.e(TAG, "HandleData called with " + oopData);
+        UserErrorLog.e(TAG, "HandleData called with " + oopData);
         OOPResults oOPResults = null;
         try {
             final Gson gson = new GsonBuilder().create();
             OOPResultsContainer oOPResultsContainer = gson.fromJson(oopData, OOPResultsContainer.class);
             
             if(oOPResultsContainer.Message != null) {
-                Log.e(TAG, "recieved a message from oop algorithm:" + oOPResultsContainer.Message);
+                UserErrorLog.e(TAG, "recieved a message from oop algorithm:" + oOPResultsContainer.Message);
             }
             
             if(oOPResultsContainer.oOPResultsArray.length > 0) {
                 oOPResults =  oOPResultsContainer.oOPResultsArray[0];
             } else {
-                Log.e(TAG, "oOPResultsArray exists, but size is zero");
+                UserErrorLog.e(TAG, "oOPResultsArray exists, but size is zero");
                 return;
             }
         } catch (Exception  e) { //TODO: what exception should we catch here.
-            Log.e(TAG, "HandleData cought exception ", e);
+            UserErrorLog.e(TAG, "HandleData cought exception ", e);
             return;
         }
         boolean use_raw = Pref.getBooleanDefaultFalse("calibrate_external_libre_algorithm");
@@ -136,7 +136,7 @@ public class LibreOOPAlgorithm {
         glucoseData.glucoseLevelRaw = (int)(oOPResults.currentBg * factor);
         libreAlarmObject.data.history.add(glucoseData);
         
-        Log.e(TAG, "HandleData Created the following object " + libreAlarmObject.toString());
+        UserErrorLog.e(TAG, "HandleData Created the following object " + libreAlarmObject.toString());
         LibreAlarmReceiver.CalculateFromDataTransferObject(libreAlarmObject, use_raw);
         
     }

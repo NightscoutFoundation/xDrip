@@ -345,7 +345,7 @@ public class Calibration extends Model {
 
     public static void create(CalRecord[] calRecords, Context context, boolean override, long addativeOffset) {
         //TODO: Change calibration.last and other queries to order calibrations by timestamp rather than ID
-        Log.i("CALIBRATION-CHECK-IN: ", "Creating Calibration Record");
+        UserErrorLog.i("CALIBRATION-CHECK-IN: ", "Creating Calibration Record");
         Sensor sensor = Sensor.currentSensor();
         CalRecord firstCalRecord = calRecords[0];
         CalRecord secondCalRecord = calRecords[0];
@@ -364,7 +364,7 @@ public class Calibration extends Model {
                     calibration.timestamp = calSubrecord.getDateEntered().getTime() + addativeOffset;
                     calibration.raw_timestamp = calibration.timestamp;
                     if (calibration.timestamp > new Date().getTime()) {
-                        Log.d(TAG, "ERROR - Calibration timestamp is from the future, wont save!");
+                        UserErrorLog.d(TAG, "ERROR - Calibration timestamp is from the future, wont save!");
                         return;
                     }
                     calibration.raw_value = calSubrecord.getCalRaw() / 1000;
@@ -416,10 +416,10 @@ public class Calibration extends Model {
                 .orderBy("timestamp desc")
                 .executeSingle();
         if (calibration != null && Math.abs(calibration.timestamp - (calSubrecord.getDateEntered().getTime() + addativeOffset)) < (4 * 60 * 1000)) {
-            Log.d("CAL CHECK IN ", "Already have that calibration!");
+            UserErrorLog.d("CAL CHECK IN ", "Already have that calibration!");
             return false;
         } else {
-            Log.d("CAL CHECK IN ", "Looks like a new calibration!");
+            UserErrorLog.d("CAL CHECK IN ", "Looks like a new calibration!");
             return true;
         }
     }
@@ -475,7 +475,7 @@ public class Calibration extends Model {
         }
 
         if ((bg < 40) || (bg > 400)) {
-            Log.wtf(TAG, "Invalid out of range calibration glucose mg/dl value of: " + bg);
+            UserErrorLog.wtf(TAG, "Invalid out of range calibration glucose mg/dl value of: " + bg);
             JoH.static_toast_long("Calibration out of range: " + bg + " mg/dl");
             return null;
         }
@@ -544,7 +544,7 @@ public class Calibration extends Model {
                     Calibration.requestCalibrationIfRangeTooNarrow();
                     //KS newFingerStickData();
                 } else {
-                    Log.d(TAG, "Follower mode or note so not processing calibration deeply");
+                    UserErrorLog.d(TAG, "Follower mode or note so not processing calibration deeply");
                 }
             } else {
                 // we couldn't get a reading close enough to the calibration timestamp
@@ -553,7 +553,7 @@ public class Calibration extends Model {
                 }
             }
         } else {
-            Log.d("CALIBRATION", "No sensor, cant save!");
+            UserErrorLog.d("CALIBRATION", "No sensor, cant save!");
         }
         return Calibration.last();
     }
@@ -591,7 +591,7 @@ public class Calibration extends Model {
             List<Calibration> calibrations = allForSensorInLastFourDays(); //5 days was a bit much, dropped this to 4
 
             if (calibrations == null) {
-                Log.e(TAG, "Somehow ended up with null calibration list!");
+                UserErrorLog.e(TAG, "Somehow ended up with null calibration list!");
                 Home.toaststatic("Somehow ended up with null calibration list!");
                 return;
             }
@@ -640,11 +640,11 @@ public class Calibration extends Model {
                 ActiveAndroid.clearCache();
                 calibration.intercept = ((n * p) - (m * q)) / d;
                 calibration.slope = ((l * q) - (m * p)) / d;
-                Log.d(TAG, "Calibration slope debug: slope:" + calibration.slope + " q:" + q + " m:" + m + " p:" + p + " d:" + d);
+                UserErrorLog.d(TAG, "Calibration slope debug: slope:" + calibration.slope + " q:" + q + " m:" + m + " p:" + p + " d:" + d);
                 if ((calibrations.size() == 2 && calibration.slope < sParams.getLowSlope1()) || (calibration.slope < sParams.getLowSlope2())) { // I have not seen a case where a value below 7.5 proved to be accurate but we should keep an eye on this
-                    Log.d(TAG, "calibration.slope 1 : " + calibration.slope);
+                    UserErrorLog.d(TAG, "calibration.slope 1 : " + calibration.slope);
                     calibration.slope = calibration.slopeOOBHandler(0);
-                    Log.d(TAG, "calibration.slope 2 : " + calibration.slope);
+                    UserErrorLog.d(TAG, "calibration.slope 2 : " + calibration.slope);
                     if (calibrations.size() > 2) {
                         calibration.possible_bad = true;
                     }
@@ -652,17 +652,17 @@ public class Calibration extends Model {
                     CalibrationRequest.createOffset(calibration.bg, 25);
                 }
                 if ((calibrations.size() == 2 && calibration.slope > sParams.getHighSlope1()) || (calibration.slope > sParams.getHighSlope2())) {
-                    Log.d(TAG, "calibration.slope 3 : " + calibration.slope);
+                    UserErrorLog.d(TAG, "calibration.slope 3 : " + calibration.slope);
                     calibration.slope = calibration.slopeOOBHandler(1);
-                    Log.d(TAG, "calibration.slope 4 : " + calibration.slope);
+                    UserErrorLog.d(TAG, "calibration.slope 4 : " + calibration.slope);
                     if (calibrations.size() > 2) {
                         calibration.possible_bad = true;
                     }
                     calibration.intercept = calibration.bg - (calibration.estimate_raw_at_time_of_calibration * calibration.slope);
                     CalibrationRequest.createOffset(calibration.bg, 25);
                 }
-                Log.d(TAG, "Calculated Calibration Slope: " + calibration.slope);
-                Log.d(TAG, "Calculated Calibration intercept: " + calibration.intercept);
+                UserErrorLog.d(TAG, "Calculated Calibration Slope: " + calibration.slope);
+                UserErrorLog.d(TAG, "Calculated Calibration intercept: " + calibration.intercept);
 
                 if ((calibration.slope == 0) && (calibration.intercept == 0)) {
                     calibration.sensor_confidence = 0;
@@ -676,7 +676,7 @@ public class Calibration extends Model {
                 }
             }
         } else {
-            Log.d(TAG, "NO Current active sensor found!!");
+            UserErrorLog.d(TAG, "NO Current active sensor found!!");
         }
     }
 
@@ -748,7 +748,7 @@ public class Calibration extends Model {
         double lastTimeStarted = Calibration.last().sensor_age_at_time_of_estimation;
         double time_percentage = Math.min(((sensor_age_at_time_of_estimation - firstTimeStarted) / (lastTimeStarted - firstTimeStarted)) / (.85), 1);
         time_percentage = (time_percentage + .01);
-        Log.i(TAG, "CALIBRATIONS TIME PERCENTAGE WEIGHT: " + time_percentage);
+        UserErrorLog.i(TAG, "CALIBRATIONS TIME PERCENTAGE WEIGHT: " + time_percentage);
         return Math.max((((((slope_confidence + sensor_confidence) * (time_percentage))) / 2) * 100), 1);
     }
 
@@ -761,13 +761,13 @@ public class Calibration extends Model {
         //TODO: add some handling around calibration overrides as they come out looking a bit funky
         final List<Calibration> calibrations = Calibration.latest(3);
         if (calibrations == null) {
-            Log.wtf(TAG, "Calibrations is null in adjustRecentBgReadings");
+            UserErrorLog.wtf(TAG, "Calibrations is null in adjustRecentBgReadings");
             return;
         }
 
         final List<BgReading> bgReadings = BgReading.latestUnCalculated(adjustCount);
         if (bgReadings == null) {
-            Log.wtf(TAG, "bgReadings is null in adjustRecentBgReadings");
+            UserErrorLog.wtf(TAG, "bgReadings is null in adjustRecentBgReadings");
             return;
         }
 
@@ -792,7 +792,7 @@ public class Calibration extends Model {
                     i += 1;
                 }
             } catch (NullPointerException e) {
-                Log.wtf(TAG, "Null pointer in AdjustRecentReadings >=3: " + e);
+                UserErrorLog.wtf(TAG, "Null pointer in AdjustRecentReadings >=3: " + e);
             }
             // initial calibration
         } else if (calibrations.size() == 2) {
@@ -809,7 +809,7 @@ public class Calibration extends Model {
                     bgReading.save();
                 }
             } catch (NullPointerException e) {
-                Log.wtf(TAG, "Null pointer in AdjustRecentReadings ==2: " + e);
+                UserErrorLog.wtf(TAG, "Null pointer in AdjustRecentReadings ==2: " + e);
             }
         }
 
@@ -818,7 +818,7 @@ public class Calibration extends Model {
             bgReadings.get(0).find_new_raw_curve();
             bgReadings.get(0).find_new_curve();
         } catch (NullPointerException e) {
-            Log.wtf(TAG, "Got null pointer exception in adjustRecentBgReadings");
+            UserErrorLog.wtf(TAG, "Got null pointer exception in adjustRecentBgReadings");
         }
     }
 
@@ -863,12 +863,12 @@ public class Calibration extends Model {
         try {
             SQLiteUtils.execSql("delete from CalibrationRequest");
             SQLiteUtils.execSql("delete from Calibration");
-            Log.d(TAG, "Deleting all Calibration");
+            UserErrorLog.d(TAG, "Deleting all Calibration");
         } catch (android.database.sqlite.SQLiteConstraintException e) {
-            Log.wtf(TAG, "Resetting database due to foreign key constraint: " + e.toString());
+            UserErrorLog.wtf(TAG, "Resetting database due to foreign key constraint: " + e.toString());
             ListenerService.resetDatabase();
         } catch (Exception e) {
-            Log.e(TAG, "Got exception running deleteALL " + e.toString());
+            UserErrorLog.e(TAG, "Got exception running deleteALL " + e.toString());
         }
     }
 
@@ -880,10 +880,10 @@ public class Calibration extends Model {
                     .where("timestamp < ?", timestamp)
                     .orderBy("timestamp desc")
                     .execute();
-            if (data != null) Log.d(TAG, "cleanup Calibration size=" + data.size());
+            if (data != null) UserErrorLog.d(TAG, "cleanup Calibration size=" + data.size());
             new Calibration.Cleanup().execute(data);
         } catch (Exception e) {
-            Log.e(TAG, "Got exception running cleanup " + e.toString());
+            UserErrorLog.e(TAG, "Got exception running cleanup " + e.toString());
         }
     }
 
@@ -903,7 +903,7 @@ public class Calibration extends Model {
 
     public static void clearLastCalibration() {
         CalibrationRequest.clearAll();
-        Log.d(TAG, "Trying to clear last calibration");
+        UserErrorLog.d(TAG, "Trying to clear last calibration");
         Calibration calibration = Calibration.last();
         if (calibration != null) {
             calibration.invalidate();
@@ -953,22 +953,22 @@ public class Calibration extends Model {
     public static void upsertFromMaster(Calibration jsonCalibration) {
         
         if (jsonCalibration == null) {
-            Log.wtf(TAG,"Got null calibration from json");
+            UserErrorLog.wtf(TAG,"Got null calibration from json");
             return;
         }
         try {
             Sensor sensor = Sensor.getByUuid(jsonCalibration.sensor_uuid);
             if (sensor == null) {
-                Log.e(TAG, "No sensor found, ignoring cailbration " + jsonCalibration.sensor_uuid);
+                UserErrorLog.e(TAG, "No sensor found, ignoring cailbration " + jsonCalibration.sensor_uuid);
                 return;
             }
             Calibration existingCalibration = byuuid(jsonCalibration.uuid);
             if (existingCalibration == null) {
-                Log.d(TAG, "saving new calibration record. sensor uuid =" + jsonCalibration.sensor_uuid + " calibration uuid = " + jsonCalibration.uuid);
+                UserErrorLog.d(TAG, "saving new calibration record. sensor uuid =" + jsonCalibration.sensor_uuid + " calibration uuid = " + jsonCalibration.uuid);
                 jsonCalibration.sensor = sensor;
                 jsonCalibration.save();
             } else {
-                Log.d(TAG, "updating existing calibration record: " + jsonCalibration.uuid);
+                UserErrorLog.d(TAG, "updating existing calibration record: " + jsonCalibration.uuid);
                 existingCalibration.sensor = sensor;
                 existingCalibration.timestamp = jsonCalibration.timestamp;
                 existingCalibration.sensor_age_at_time_of_estimation = jsonCalibration.sensor_age_at_time_of_estimation;
@@ -999,7 +999,7 @@ public class Calibration extends Model {
                 existingCalibration.save();
             }
         } catch (Exception e) {
-            Log.e(TAG, "Could not save Calibration: " + e.toString());
+            UserErrorLog.e(TAG, "Could not save Calibration: " + e.toString());
         }
     }
     
@@ -1229,7 +1229,7 @@ public class Calibration extends Model {
             }
         }
         String msg = "Deleted all calibrations for sensor";
-        Log.ueh(TAG, msg);
+        UserErrorLog.ueh(TAG, msg);
         JoH.static_toast_long(msg);
     }
 

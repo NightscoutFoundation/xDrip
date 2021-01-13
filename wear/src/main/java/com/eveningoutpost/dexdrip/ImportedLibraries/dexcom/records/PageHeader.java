@@ -38,7 +38,7 @@ public class PageHeader {
 
 
     public PageHeader(byte[] packet) {
-        Log.d("ShareTest", "Header Packet Data Length: " + packet.length);
+        UserErrorLog.d("ShareTest", "Header Packet Data Length: " + packet.length);
 
         firstRecordIndex = ByteBuffer.wrap(packet).order(ByteOrder.LITTLE_ENDIAN).getInt(FIRSTRECORDINDEX_OFFSET);
         numOfRecords = ByteBuffer.wrap(packet).order(ByteOrder.LITTLE_ENDIAN).getInt(NUMRECS_OFFSET);

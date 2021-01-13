@@ -1,7 +1,5 @@
 package com.eveningoutpost.dexdrip.utils.validation;
 
-
-
 public class Ensure {
     public static void notNull(Object o) {
         notNull(o,"Argument supplied was null");

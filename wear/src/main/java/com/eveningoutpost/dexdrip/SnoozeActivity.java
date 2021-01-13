@@ -158,7 +158,7 @@ public class SnoozeActivity extends Activity {//ActivityWithMenu {
                 AlertPlayer.getPlayer().Snooze(getApplicationContext(), intValue);
                 Intent intent = new Intent(getApplicationContext(), Home.class);
                 if (ActiveBgAlert.getOnly() != null) {
-                    Log.e(TAG, "Snoozed!  ActiveBgAlert.getOnly() != null TODO restart Home.class - watchface?");
+                    UserErrorLog.e(TAG, "Snoozed!  ActiveBgAlert.getOnly() != null TODO restart Home.class - watchface?");
                     //KS TODO startActivity(intent);
                 }
                 finish();
@@ -319,11 +319,11 @@ public class SnoozeActivity extends Activity {//ActivityWithMenu {
 
         // aba and activeBgAlert should both either exist ot not exist. all other cases are a bug in another place
         if(aba == null && activeBgAlert!= null) {
-            Log.wtf(TAG, "ERRRO displayStatus: aba == null, but activeBgAlert != null exiting...");
+            UserErrorLog.wtf(TAG, "ERRRO displayStatus: aba == null, but activeBgAlert != null exiting...");
             return;
         }
         if(aba != null && activeBgAlert== null) {
-            Log.wtf(TAG, "ERRRO displayStatus: aba != null, but activeBgAlert == null exiting...");
+            UserErrorLog.wtf(TAG, "ERRRO displayStatus: aba != null, but activeBgAlert == null exiting...");
             return;
         }
         long now = new Date().getTime();

@@ -105,7 +105,7 @@ public class ReadingData {
         CalculateSmothedData5Points();
         // print the values, remove before release
         for (int i=0; i < trend.size() ; i++) {
-            Log.e("xxx","" + i + " raw val " +  trend.get(i).glucoseLevelRaw + " smoothed " +  trend.get(i).glucoseLevelRawSmoothed);
+            UserErrorLog.e("xxx","" + i + " raw val " +  trend.get(i).glucoseLevelRaw + " smoothed " +  trend.get(i).glucoseLevelRawSmoothed);
         }
     }
 }

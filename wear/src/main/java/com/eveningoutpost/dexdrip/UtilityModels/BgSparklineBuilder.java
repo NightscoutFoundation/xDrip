@@ -260,7 +260,7 @@ public class BgSparklineBuilder {
             chart.setBottom(height*2);
         }
 
-            Log.d(TAG,"pebble debug: w:"+width+" h:"+height+" start:"+start+" end:"+end+" ");
+            UserErrorLog.d(TAG,"pebble debug: w:"+width+" h:"+height+" start:"+start+" end:"+end+" ");
 
         if (height>SCALE_TRIGGER) {
             return getViewBitmap(chart);

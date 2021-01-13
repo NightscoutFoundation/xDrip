@@ -1,4 +1,4 @@
-package com.eveningoutpost.dexdrip.Models;
+package com.eveningoutpost.dexdrip.Models.usererror;
 
 
 import android.os.AsyncTask;
