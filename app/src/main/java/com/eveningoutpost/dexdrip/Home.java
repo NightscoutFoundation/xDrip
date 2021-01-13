@@ -736,7 +736,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                     dialog.dismiss();
                 });
 
-                builder.setNegativeButton("NO", (dialog, which) -> dialog.dismiss());
+                builder.setNegativeButton(gs(R.string.no), (dialog, which) -> dialog.dismiss());
 
                 AlertDialog alert = builder.create();
                 alert.show();
@@ -776,7 +776,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                     dialog.dismiss();
                 });
 
-                builder.setNegativeButton("NO", (dialog, which) -> {
+                builder.setNegativeButton(gs(R.string.no), (dialog, which) -> {
                     // TODO make this a blood test entry xx
                     calintent.putExtra("note_only", "true");
                     startIntentThreadWithDelayedRefresh(calintent);
@@ -803,7 +803,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                         dialog.dismiss();
                     });
 
-                    builder.setNegativeButton("NO", (dialog, which) -> dialog.dismiss());
+                    builder.setNegativeButton(gs(R.string.no), (dialog, which) -> dialog.dismiss());
 
                     final AlertDialog alert = builder.create();
                     alert.show();
@@ -1046,7 +1046,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                                 staticRefreshBGCharts();
                                 JoH.static_toast_short(gs(R.string.deleted));
                             });
-                            builder1.setNegativeButton("No", (dialog1, which1) -> dialog1.dismiss());
+                            builder1.setNegativeButton(gs(R.string.no), (dialog1, which1) -> dialog1.dismiss());
                             final AlertDialog alert = builder1.create();
                             alert.show();
                         });
@@ -2504,7 +2504,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                     final Context context = this;
                     builder.setTitle(gs(R.string.restore_backup));
                     builder.setMessage(gs(R.string.do_you_want_to_restore_the_backup_file_) + Pref.getString("last-saved-database-zip", "ERROR").replaceFirst("^.*/", ""));
-                    builder.setNegativeButton("No", (dialog, which) -> dialog.dismiss());
+                    builder.setNegativeButton(gs(R.string.no), (dialog, which) -> dialog.dismiss());
                     builder.setPositiveButton(gs(R.string.restore), (dialog, which) -> {
                         dialog.dismiss();
                         startActivity(new Intent(context, ImportDatabaseActivity.class).putExtra("importit", Pref.getString("last-saved-database-zip", "")).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
@@ -2659,7 +2659,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             final Context context = this;
             builder.setTitle(gs(R.string.calibrate_sensor));
             builder.setMessage(gs(R.string.we_have_some_readings__next_we_need_the_first_calibration_blood_test__ready_to_calibrate_now));
-            builder.setNegativeButton("No", (dialog, which) -> {
+            builder.setNegativeButton(gs(R.string.no), (dialog, which) -> {
                 dialog.dismiss();
                 helper_dialog = null;
             });
@@ -3288,7 +3288,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                     staticRefreshBGCharts();
                     JoH.static_toast_short(gs(R.string.deleted));
                 });
-                builder.setNegativeButton("No", (dialog12, which) -> dialog12.dismiss());
+                builder.setNegativeButton(gs(R.string.no), (dialog12, which) -> dialog12.dismiss());
                 final AlertDialog alert = builder.create();
                 alert.show();
             });
