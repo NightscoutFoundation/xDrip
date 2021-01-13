@@ -61,6 +61,7 @@ import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.NotificationChannels;
@@ -95,6 +96,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.getUUIDName;
 import static com.eveningoutpost.dexdrip.utils.bt.Helper.getStatusName;
+import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class G5CollectionService extends G5BaseService {
@@ -1896,7 +1898,7 @@ public class G5CollectionService extends G5BaseService {
             if (static_device_address != null) {
                 if (Home.get_engineering_mode())
                     l.add(new StatusItem("Bluetooth Device", static_device_address));
-                l.add(new StatusItem("Bonded", static_is_bonded ? "Yes" : "No", static_is_bonded ? StatusItem.Highlight.GOOD : StatusItem.Highlight.NOTICE));
+                l.add(new StatusItem("Bonded", static_is_bonded ? gs(R.string.yes) : gs(R.string.no), static_is_bonded ? StatusItem.Highlight.GOOD : StatusItem.Highlight.NOTICE));
             } else {
                 l.add(new StatusItem("Bluetooth Device", "Not yet found"));
             }
