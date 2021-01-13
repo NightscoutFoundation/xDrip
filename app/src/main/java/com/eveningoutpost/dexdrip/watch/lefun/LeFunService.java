@@ -10,6 +10,7 @@ import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.JamBaseBluetoothSequencer;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
@@ -61,6 +62,7 @@ import static com.eveningoutpost.dexdrip.watch.lefun.LeFunService.LeFunState.PRO
 import static com.eveningoutpost.dexdrip.watch.lefun.LeFunService.LeFunState.QUEUE_MESSAGE;
 import static com.eveningoutpost.dexdrip.watch.lefun.LeFunService.LeFunState.SEND_SETTINGS;
 import static com.eveningoutpost.dexdrip.watch.lefun.LeFunService.LeFunState.SET_TIME;
+import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 /**
  * Jamorham
@@ -523,7 +525,7 @@ public class LeFunService extends JamBaseBluetoothSequencer {
         l.add(new StatusItem("Model", LeFun.getModel()));
         l.add(new StatusItem("Mac address", LeFun.getMac()));
 
-        l.add(new StatusItem("Connected", II.isConnected ? "Yes" : "No"));
+        l.add(new StatusItem("Connected", II.isConnected ? gs(R.string.yes) : gs(R.string.no)));
         if (II.wakeup_time != 0) {
             final long till = msTill(II.wakeup_time);
             if (till > 0) l.add(new StatusItem("Wake Up", niceTimeScalar(till)));
