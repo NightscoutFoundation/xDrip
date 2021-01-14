@@ -31,6 +31,7 @@ localeapi/lint.xml
 gradle/native
 gradle/wrapper/dists
 gradle/caches
+gradle/daemon
 
 # Local configuration file (sdk path, etc)
 local.properties
