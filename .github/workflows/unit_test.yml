@@ -23,3 +23,5 @@ jobs:
       run: ./gradlew test
     - name: Run Compile Tests
       run: ./gradlew assembleRelease
+    - name: Check Output
+      run: bash ./etc/CheckBuild/check-release.sh test

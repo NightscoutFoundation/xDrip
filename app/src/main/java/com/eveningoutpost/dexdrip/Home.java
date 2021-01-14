@@ -1559,23 +1559,25 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             default:
                 if (MultipleInsulins.isEnabled()) {
                     final Insulin insulin = InsulinManager.getProfile(thisword);
-                    UserError.Log.d("TREATMENTS", "Processing for: " + (insulin != null ? insulin.getName() : "null"));
-                    int number = 0;
-                    for (number = 0; number < maxInsulinProfiles; number++)
-                        if ((thisinsulinprofile[number] == null) || (thisinsulinprofile[number] == insulin)) {
-                            thisinsulinprofile[number] = insulin;
-                            break;
+                    if (insulin != null) {
+                        UserError.Log.d("TREATMENTS", "Processing for: " + insulin.getName());
+                        int number = 0;
+                        for (number = 0; number < maxInsulinProfiles; number++)
+                            if ((thisinsulinprofile[number] == null) || (thisinsulinprofile[number] == insulin)) {
+                                thisinsulinprofile[number] = insulin;
+                                break;
+                            }
+                        if (!insulinset[number] && (thisnumber > 0)) {
+                            thisinsulinnumber[number] = thisnumber;
+                            textInsulinDose[number].setText(Double.toString(thisnumber) + " " + insulin.getName());
+                            Log.d(TAG, insulin.getName() + " dose: " + Double.toString(thisnumber));
+                            insulinset[number] = true;
+                            btnInsulinDose[number].setVisibility(View.VISIBLE);
+                            textInsulinDose[number].setVisibility(View.VISIBLE);
+                        } else {
+                            Log.d(TAG, insulin.getName() + " dose already set");
+                            preserve = true;
                         }
-                    if (!insulinset[number] && (thisnumber > 0)) {
-                        thisinsulinnumber[number] = thisnumber;
-                        textInsulinDose[number].setText(Double.toString(thisnumber) + " " + insulin.getName());
-                        Log.d(TAG, insulin.getName() + " dose: " + Double.toString(thisnumber));
-                        insulinset[number] = true;
-                        btnInsulinDose[number].setVisibility(View.VISIBLE);
-                        textInsulinDose[number].setVisibility(View.VISIBLE);
-                    } else {
-                        Log.d(TAG, insulin.getName() + " dose already set");
-                        preserve = true;
                     }
                 }
                 break;

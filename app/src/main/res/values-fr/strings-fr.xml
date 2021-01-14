@@ -768,7 +768,7 @@
     <string name="rising_threshold">seuil d\'augmentation</string>
     <string name="set_sound_for_bg_alerts">Définir le son utilisé pour les alertes BG.</string>
     <string name="alert_sound">Son d\'alerte</string>
-    <string name="override_silent_mode_these">Substituer le mode silencieux sur ces alertes</string>
+    <string name="override_silent_mode_these">Substituer le mode silencieux pour ces alertes</string>
     <string name="persistent_repeat_max">Répétition maximum toutes les (minutes)</string>
     <string name="momentum_indicates_low">Quand l\'impulsion de tendance indique qu\'une valeur Basse serait prédite</string>
     <string name="notify_on_low_battery_level">Avertir lorsque le niveau de la batterie descend en dessous</string>
