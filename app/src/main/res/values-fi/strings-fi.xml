@@ -129,7 +129,7 @@
     <string name="showcase_redo">Tee uudelleen-napilla voi siirtyä eteenpäin hoitotapahtumien simulaatioissa, kalibroinneissa ja merkinnöistä\n\nNappi häviää 30 minuutin kuluttua</string>
     <string name="undo_button">Kumoa-painike</string>
     <string name="showcase_undo">Kumoa-napilla voi siirtyä taaksepäin hoitotapahtumien simulaatioissa, kalibroinneissa ja merkinnöistä\n\nNappi häviää 30 minuutin kuluttua</string>
-    <string name="add_note">Lisätä merkintä</string>
+    <string name="add_note">Lisää merkintä</string>
     <string name="blood_test">Verinäyte</string>
     <string name="share">Jaa</string>
     <string name="title_activity_profile_editor">Hoitoprofiilin muokkain</string>
