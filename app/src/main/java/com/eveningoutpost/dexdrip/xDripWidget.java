@@ -74,7 +74,7 @@ public class xDripWidget extends AppWidgetProvider {
             appWidgetManager.updateAppWidget(appWidgetId, views);
             // needed to catch RuntimeException and DeadObjectException
         } catch (Exception e) {
-            Log.e(TAG, "Got Rexception in widget update: " + e);
+            Log.e(TAG, "Got exception in widget update: " + e);
         }
     }
 
@@ -91,7 +91,7 @@ public class xDripWidget extends AppWidgetProvider {
             appWidgetManager.updateAppWidget(appWidgetId, views);
             // needed to catch RuntimeException and DeadObjectException
         } catch (Exception e) {
-            Log.e(TAG, "Got Rexception in widget update: " + e);
+            Log.e(TAG, "Got exception in widget update: " + e);
         }
     }
 
@@ -104,7 +104,7 @@ public class xDripWidget extends AppWidgetProvider {
         BgReading lastBgreading = BgReading.lastNoSenssor();
 
         final boolean showLines = Pref.getBoolean("widget_range_lines", false);
-        final boolean showExstraStatus = Pref.getBoolean("extra_status_line", false) && Pref.getBoolean("widget_status_line", false);
+        final boolean showExtraStatus = Pref.getBoolean("extra_status_line", false) && Pref.getBoolean("widget_status_line", false);
 
         if (lastBgreading != null) {
             double estimate = 0;
@@ -112,7 +112,7 @@ public class xDripWidget extends AppWidgetProvider {
             try {
                 int height = maxHeight == -1 ? appWidgetManager.getAppWidgetOptions(appWidgetId).getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT) : maxHeight;
                 int width = maxWidth == -1 ? appWidgetManager.getAppWidgetOptions(appWidgetId).getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH) : maxWidth;
-                if (width >= 337) {
+                if (width >= 100) {
                     // render bg graph if the widget has enough space to be useful
                     views.setImageViewBitmap(R.id.widgetGraph, new BgSparklineBuilder(context)
                             .setBgGraphBuilder(bgGraphBuilder)
@@ -219,7 +219,7 @@ public class xDripWidget extends AppWidgetProvider {
                     views.setTextColor(R.id.readingAge, Color.WHITE);
                 }
 
-                if (showExstraStatus) {
+                if (showExtraStatus) {
                     views.setTextViewText(R.id.widgetStatusLine, StatusLine.extraStatusLine());
                     views.setViewVisibility(R.id.widgetStatusLine, View.VISIBLE);
                 } else {
