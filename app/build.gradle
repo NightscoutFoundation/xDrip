@@ -12,6 +12,13 @@ buildscript {
     }
 }
 apply plugin: 'com.android.application'
+
+
+if (project.file('local.gradle').exists()) {
+    apply from: 'local.gradle'
+}
+
+
 if (getGradle().getStartParameter().getTaskRequests().toString().endsWith("Release")) {
     apply plugin: 'newrelic'
     newrelic {
@@ -251,24 +258,7 @@ android {
 
 }
 
-// auto test rig
-task AutoInstall(type: Exec) {
-    commandLine "bash", "$projectDir/autoinstallviausb"
-}
 
-// auto tester
-tasks.whenTaskAdded { task ->
-    if (task.name == 'assembleRelease') {
-        if (System.getenv('USERDOMAIN') == "PC-PC") {
-            task.finalizedBy 'AutoTestRig'
-            AutoTestRig.outputs.upToDateWhen { false }
-        }
-    }
-}
-
-task AutoTestRig()  {
-    dependsOn(AutoInstall)
-}
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
