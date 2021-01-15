@@ -146,7 +146,7 @@
     <string name="now_choose_start_sensor_in_settings">כעת בחר \'התחל סנסור\' מההגדרות</string>
     <string name="double_check_dex_receiver_serial_number">בדקו מחדש את המספר הסידורי של מקלט דקסקום, עליו להיות באורך 10 תווים, כולל אותיות</string>
     <string name="please_set_dex_receiver_serial_number">אנא הזינו את מספר מקלט הדקסקום שלכם בהגדרות האפליקציה</string>
-    <string name="unfortunately_andoird_version_no_blueooth_low_energy">לצערנו גרסת האנדרויד שלכם לא תומכת בBluetooth Low Energy</string>
+    <string name="unfortunately_andoird_version_no_blueooth_low_energy">לצערנו גרסת האנדרואיד שלכם לא תומכת ב-Bluetooth Low Energy</string>
     <string name="waiting_for_packet">ממתין לחבילת נתונים</string>
     <string name="persistent_high_for_greater_than">התראת סוכר גבוה מתמשכת עבור &gt; </string>
     <string name="space_mins">" דקות"</string>
@@ -888,9 +888,13 @@
     <string name="bluereader_position">בדוק את המיקום של ה-blueReader על הסנסור, אחרת יצליח לקרוא!</string>
     <string name="offical_msg">האפליקציה הרשמית</string>
     <string name="yes">כן</string>
+    <string name="garmin">Garmin</string>
     <string name="fitbit">Fitbit</string>
+    <string name="enable_local_web_server_feature">לאפשר תכונת שרת web מקומי עבור פני שעוני Garmin?</string>
+    <string name="enable_local_web_server_feature_fitbit">לאפשר תכונת שרת web מקומי עבור פני שעוני Fitbit?</string>
     <string name="set_data_source_to">לקבוע את סוג הסנסור ל%s ?</string>
     <string name="are_you_sure">אתם בטוחים?</string>
+    <string name="g4_share_receiver">מקלט G4 Share</string>
     <string name="bluetooth_wixel">Wixel - בלוטות\'</string>
     <string name="parakeet_wifi">Parakeet / Wifi</string>
     <string name="other">אחר</string>
@@ -899,6 +903,7 @@
     <string name="enter_your_transmitter_id_exactly">הזן את מספר המשדר בדיוק כפי שהוא מודפס על הקופסא או המשדר עצמו</string>
     <string name="which_type_of_device">מה סוג המכשיר?</string>
     <string name="enable_local_broadcast">לאפשר הפצה מקומית?</string>
+    <string name="androidaps">AndroidAPS</string>
     <string name="androidwear">Android Wear OS</string>
     <string name="librealarm">LibreAlarm</string>
     <string name="use_librealarm">להשתמש בLibreAlarm בתור מקור הנתונים?</string>
@@ -910,9 +915,12 @@
     <string name="external_calibration_app">אפליקציית כיול חיצונית</string>
     <string name="use_app_for_calibration">השתמש באפליקציה לכיול?</string>
     <string name="code_accepted">הקוד התקבל</string>
+    <string name="invalid_or_unsupported_code">קוד לא נתמך או בלתי חוקי!</string>
     <string name="g6_sensor_code">קוד חיישן G6</string>
     <string name="please_enter_printed_calibration_code">אנא הזן את קוד הכיול המודפס, 4 ספרות, לדוגמא: 5678</string>
+    <string name="enable_update_checks">לאפשר בדיקות עדכונים?</string>
     <string name="hey_fam">היי פאם...</string>
+    <string name="update_checking_enabled">בדיקות עדכונים מופעלות!</string>
     <string name="cancel_alarm">לבטל את ההתראה?</string>
     <string name="please_confirm_to_cancel_the_alert">אנא אשרו את השתקת ההתראה</string>
     <string name="yes_cancel">כן, בטל.</string>
@@ -920,6 +928,7 @@
     <string name="zero_zero_zero_zero">0000</string>
     <string name="emergency_messages">הודעות חירום</string>
     <string name="your_name">שמכם</string>
+    <string name="choose_when_to_send_messages">בחרו מתי לשלוח הודעות:</string>
     <string name="test_message_sending">נסה שליחת הודעות</string>
     <string name="select_device">בחירת מכשיר</string>
     <string name="detect_car_audio">זהה אודיו ברכב</string>
@@ -932,8 +941,12 @@
     <string name="summary_Operate_a_local_web_server_for_interacting_with_Fitbit_Ionic_etc">הפעל שרת מקומי לאינטראקציה עם Fitbit Ionic וכו\'</string>
     <string name="summary_Accept_connections_from_any_network_instead_of_just_internally">אפשר התחברות מכל רשת ולא רק באופן פנימי מתוך הטלפון. יש לכך השלכות אבטחה! המפתח הסודי המשותף יידרש, אם הוגדר.</string>
     <string name="summary_Shared_Secret_for_open_web_service">Shared Secret for open web service (should match your Nightcout API secret)</string>
+    <string name="title_xDrip_Web_Service_Secret">סוד לשירות הווב של xDrip</string>
+    <string name="summary_Display_status_from_other_apps_like_AndroidAPS">מציג סטטוס מאפליקציות אחרות כמו AndroidAPS</string>
     <string name="title_External_Status">סטאטוס חיצוני</string>
+    <string name="summary_Display_pump_status_information_if_available">מציג מידע על סטטוס המשאבה אם זמין</string>
     <string name="title_Pump_Status">סטטוס המשאבה</string>
+    <string name="summary_Show_treatment_carb_insulin_ratio">מציג יחס הפחמימות\\אינסולין</string>
     <string name="title_Carb_Insulin_Ratio">יחס פחמ\'\\אינסולין</string>
     <string name="summary_Ask_for_a_second_optional_initial_calibration_blood_test">מבקש בדיקת דם שניה אופציונלית לכיול ראשוני</string>
     <string name="title_Double_Calibrations">כיולים כפולים</string>
@@ -1020,7 +1033,7 @@
     <string name="no_data">אין נתונים</string>
     <string name="no_bluetooth">אין בלוטות\'</string>
     <string name="connection_status_long">מצב החיבור:   </string>
-    <string name="without_location_scan_doesnt_work">בלי הרשאה למיקום אנדרואיד לא מאפשר סריקת בלוטות\'</string>
+    <string name="without_location_scan_doesnt_work">סריקת בלוטות\' לא אפשרית בלי הרשאה למיקום באנדרואיד</string>
     <string name="android_10_need_background_location">גרסאות אנרואיד 10 ומעלה דורשות רשות למיקום ברקע כדי שבלוטות\' יעבוד</string>
     <string name="without_location_permission_emergency_cannot_get_location">הודעות חירום לא יכולות להשתמש בנתוני מיקום אם לא תינתן רשות לקבלת מיקום</string>
     <string name="force_speaker_colon">אלץ שימוש ברמקול</string>
