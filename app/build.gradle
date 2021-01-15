@@ -5,7 +5,7 @@ buildscript {
     }
 
     dependencies {
-        if (getGradle().getStartParameter().getTaskRequests().toString().endsWith("Release")) {
+        if (getGradle().getStartParameter().getTaskRequests().toString().contains("Release]")) {
             println("Enabling New Relic")
             classpath "com.newrelic.agent.android:agent-gradle-plugin:5.27.1"
         }
@@ -19,7 +19,7 @@ if (project.file('local.gradle').exists()) {
 }
 
 
-if (getGradle().getStartParameter().getTaskRequests().toString().endsWith("Release")) {
+if (getGradle().getStartParameter().getTaskRequests().toString().contains("Release]")) {
     apply plugin: 'newrelic'
     newrelic {
         variantMapsEnabled false
