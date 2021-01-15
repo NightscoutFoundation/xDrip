@@ -112,7 +112,7 @@ public class xDripWidget extends AppWidgetProvider {
             try {
                 int height = maxHeight == -1 ? appWidgetManager.getAppWidgetOptions(appWidgetId).getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT) : maxHeight;
                 int width = maxWidth == -1 ? appWidgetManager.getAppWidgetOptions(appWidgetId).getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH) : maxWidth;
-                if (width >= 337) {
+                if (width >= 100 && !Pref.getBooleanDefaultFalse("widget_hide_graph")) {
                     // render bg graph if the widget has enough space to be useful
                     views.setImageViewBitmap(R.id.widgetGraph, new BgSparklineBuilder(context)
                             .setBgGraphBuilder(bgGraphBuilder)
@@ -181,8 +181,8 @@ public class xDripWidget extends AppWidgetProvider {
                 if (Sensor.isActive() || Home.get_follower()) {
                     views.setTextViewText(R.id.widgetBg, stringEstimate);
                     views.setTextViewText(R.id.widgetArrow, slope_arrow);
-                    if (stringEstimate.length() > 3) {
-                        views.setFloat(R.id.widgetBg, "setTextSize", 35);
+                    if (stringEstimate.length() > 3) {  // affects mmol xx.x
+                        views.setFloat(R.id.widgetBg, "setTextSize", 45);
                     } else {
                         views.setFloat(R.id.widgetBg, "setTextSize", 55);
                     }
