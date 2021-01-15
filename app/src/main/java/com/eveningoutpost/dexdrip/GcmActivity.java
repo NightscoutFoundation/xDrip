@@ -167,7 +167,7 @@ public class GcmActivity extends FauxActivity {
                 String thisref = datum.bundle.getString("action") + datum.bundle.getString("payload");
                 if (thisref.equals(reference)) {
                     gcm_queue.remove(gcm_queue.indexOf(datum));
-                    Log.d(TAG, "Removing acked queue item: " + reference);
+                    Log.d(TAG, "Removing acked queue item: " + reference + " Queue size now: " + gcm_queue.size());
                     break;
                 }
             }
@@ -192,8 +192,8 @@ public class GcmActivity extends FauxActivity {
         }
 
         final long MAX_QUEUE_AGE = (5 * 60 * 60 * 1000); // 5 hours
-        final long MIN_QUEUE_AGE = (15000);
-        final long MAX_RESENT = 10;
+        final long MIN_QUEUE_AGE = (30000);
+        final long MAX_RESENT = 7;
         final long timenow = JoH.tsl();
         boolean queuechanged = false;
         if (!recursive) recursion_depth = 0;
@@ -693,7 +693,7 @@ public class GcmActivity extends FauxActivity {
         if (!Home.get_master()) {
             return;
         }
-        if (!JoH.pratelimit("libre-allhouse", 5)) {
+        if (!JoH.pratelimit("libre-allhouse", 10)) {
             // Do not create storm of packets.
             Log.e(TAG, "Rate limited start libre-allhouse");
             return;
@@ -773,7 +773,8 @@ public class GcmActivity extends FauxActivity {
         return msg;
     }
 
-    private static boolean shouldAddQueue(Bundle data) {
+    private static boolean shouldAddQueue(final Bundle data) {
+        if (data == null) return false;
         final String action = data.getString("action");
         if (action == null) return false;
         switch (action) {
@@ -782,11 +783,15 @@ public class GcmActivity extends FauxActivity {
             case "rlcl":
             case "sbr":
             case "bfr":
+            case "nscu":
+            case "nscusensor-expiry":
+            case "esup":
                 synchronized (queue_lock) {
                     for (GCM_data qdata : gcm_queue) {
                         try {
                             if (qdata.bundle.getString("action").equals(action)) {
                                 Log.d(TAG, "Skipping queue add for duplicate action: " + action);
+                                qdata.bundle = data; // update with latest
                                 return false;
                             }
                         } catch (NullPointerException e) {
