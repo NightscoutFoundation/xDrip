@@ -5,14 +5,21 @@ buildscript {
     }
 
     dependencies {
-        if (getGradle().getStartParameter().getTaskRequests().toString().endsWith("Release")) {
+        if (getGradle().getStartParameter().getTaskRequests().toString().contains("Release]")) {
             println("Enabling New Relic")
             classpath "com.newrelic.agent.android:agent-gradle-plugin:5.27.1"
         }
     }
 }
 apply plugin: 'com.android.application'
-if (getGradle().getStartParameter().getTaskRequests().toString().endsWith("Release")) {
+
+
+if (project.file('local.gradle').exists()) {
+    apply from: 'local.gradle'
+}
+
+
+if (getGradle().getStartParameter().getTaskRequests().toString().contains("Release]")) {
     apply plugin: 'newrelic'
     newrelic {
         variantMapsEnabled false
@@ -251,24 +258,7 @@ android {
 
 }
 
-// auto test rig
-task AutoInstall(type: Exec) {
-    commandLine "bash", "$projectDir/autoinstallviausb"
-}
 
-// auto tester
-tasks.whenTaskAdded { task ->
-    if (task.name == 'assembleRelease') {
-        if (System.getenv('USERDOMAIN') == "PC-PC") {
-            task.finalizedBy 'AutoTestRig'
-            AutoTestRig.outputs.upToDateWhen { false }
-        }
-    }
-}
-
-task AutoTestRig()  {
-    dependsOn(AutoInstall)
-}
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
