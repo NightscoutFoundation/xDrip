@@ -28,7 +28,7 @@
     <string name="cancel">Cancelar</string>
     <string name="no">No</string>
     <string name="pref_sensor_location_dont_ask_again"> ¡No me pregunte de nuevo</string>
-    <string name="title_activity_error">"Error y Lista de eventos"</string>
+    <string name="title_activity_error">"Lista de errores y eventos"</string>
     <string name="title_activity_main">Actividad principal</string>
     <string name="title_activity_fake_numbers">Números falsos</string>
     <string name="title_activity_edit_alert">Editar alerta</string>
@@ -187,7 +187,7 @@
     <string name="high_value">Valor Alta</string>
     <string name="low_value">Valor bajo</string>
     <string name="end_user_license_agreement">Acuerdo de licencia de usuario final</string>
-    <string name="save">Salvar</string>
+    <string name="save">Guardar</string>
     <string name="view_important_warning">Ver Aviso Importante</string>
     <string name="view_google_licenses">Ver licencias de Google</string>
     <string name="not_for_medical_use">No para uso médico - única herramienta de investigación</string>
@@ -259,8 +259,8 @@
     <string name="pref_disable_wearG5_on_missedreadings_level">Minutos desde última lectura desde Wear</string>
     <string name="pref_node_wearG5">Dispositivo que ejecuta el servicio de recolección</string>
     <string name="pref_summary_node_wearG5">Forzar el teléfono para usar el servicio de recolección de Wear</string>
-    <string name="pref_sync_wear_logs">Sincronizar bitácoras Wear</string>
-    <string name="pref_summary_sync_wear_logs">Enviar bitácora Wear a vista previa de eventos</string>
+    <string name="pref_sync_wear_logs">Sincronizar registros Wear</string>
+    <string name="pref_summary_sync_wear_logs">Enviar registos Wear al Visualizador de Eventos</string>
     <string name="pref_wear_logs_prefix">Prefijos de la bitácora Wear</string>
     <string name="pref_summary_wear_logs_prefix">Prefijos usados para las entradas de la bitácora Wear</string>
     <string name="pref_show_treatments">Mostrar tratamientos</string>
@@ -1187,7 +1187,7 @@
     <string name="debugging_test_feature">Características de prueba de depuración</string>
     <string name="sync_treatments">Sincronizar Tratamientos</string>
     <string name="send_bg_readings_to_backfill">Enviar lecturas de glucemia a rellenar</string>
-    <string name="view_old_error_log">Ver bitácoras de errores anteriores</string>
+    <string name="view_old_error_log">Ver registro de errores anteriores</string>
     <string name="return_to_home_screen">Regresar a la pantalla de Inicio</string>
     <string name="title_miband">MiBand</string>
     <string name="summary_miband_enable">Sincronizar datos con las pulseras de actividad MiBand</string>
