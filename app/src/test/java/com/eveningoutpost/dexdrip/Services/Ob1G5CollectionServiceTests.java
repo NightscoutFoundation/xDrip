@@ -2,7 +2,6 @@ package com.eveningoutpost.dexdrip.Services;
 
 import android.widget.ListView;
 
-import androidx.annotation.AttrRes;
 import androidx.annotation.NonNull;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
@@ -15,8 +14,6 @@ import org.robolectric.util.Logger;
 
 import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.RunnableFuture;
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
