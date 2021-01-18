@@ -103,6 +103,7 @@ public class Ob1G5StateMachine {
     public static final String PREF_QUEUE_DRAINED = "OB1-QUEUE-DRAINED";
     public static final String CLOSED_OK_TEXT = "Closed OK";
 
+    private static final int LOW_BATTERY_WARNING_LEVEL = Pref.getStringToInt("g5-battery-warning-level", 300); // voltage a < this value raises warnings;
     private static final long BATTERY_READ_PERIOD_MS = HOUR_IN_MS * 12; // how often to poll battery data (12 hours)
     private static final long MAX_BACKFILL_PERIOD_MS = HOUR_IN_MS * 3; // how far back to request backfill data
     private static final int BACKFILL_CHECK_SMALL = 3;
@@ -1059,22 +1060,6 @@ public class Ob1G5StateMachine {
         }
     }
 
-    public static void twoPartUpdate() {
-        if (acceptCommands()) {
-            new Thread(() -> {
-                for (int part = 0; part < 2; part++) {
-                    final String code = G6CalibrationParameters.getCurrentSensorCode();
-                    if (code != null) {
-                        final long n = tsl();
-                        final int d = DexTimeKeeper.getDexTime(getTransmitterID(), n);
-                        enqueueCommand(new SessionStopTxMessage(d), "Part " + part + " A");
-                        enqueueCommand(new SessionStartTxMessage(n, d, code), "Part " + part + " B");
-                        threadSleep(30_000);
-                    }
-                }
-            }).start();
-        }
-    }
 
     public static void stopSensor() {
         if (acceptCommands()) {
