@@ -39,6 +39,8 @@
     <string name="scan_share2_barcode">Skanowanie kodów kreskowych Share</string>
     <string name="pref_share2_scan_barcode_summary">Lub zeskanować kod kreskowy na odbiorniku share</string>
     <!-- MongoDB Settings -->
+    <string name="pref_title_mongodb">MongoDB</string>
+    <string name="pref_title_mongodb_uri">URI</string>
     <string name="pref_dialog_mongodb_uri">Wprowadź MongoDB URI\"</string>
     <string name="pref_message_mongodb_uri">Zamoeń przykładowe wartości w {} \' swoimi prawdziwymi wartościami</string>
     <string name="pref_default_mongodb_uri">MongoDB: // {user}: {hasło} @ {} .mongolab.com hosta: {11111} / {} baza</string>
@@ -437,7 +439,7 @@
     <string name="choose_file">Wybierz plik</string>
     <string name="select_time_for_alert_colon">Wybierz czas dla wpisu:</string>
     <string name="all_day">cały dzień</string>
-    <string name="tap_to_change">(Stuknij, aby zmienić)</string>
+    <string name="tap_to_change">(dotknij, aby zmienić)</string>
     <string name="override_phone_silent_mode_colon">Zastąp Tryb cichy:</string>
     <string name="vibrate_on_alert">Wibracje podczas alarmu</string>
     <string name="test_alert">Testowy alarm</string>
@@ -467,7 +469,10 @@
     <string name="predictive_model_inner_workings">Predictive Model wewnętrzne funkcjonowanie</string>
     <string name="noise_model_inner_workings">Hałas wewnętrzne funkcjonowanie modelu</string>
     <string name="glucose_number_from_filtered">Numer Glukoza z filtrowanego</string>
-    <string name="if_the_phone_has_text_to_speech">Jeśli telefon posiada funkcje zamiany tekstu na mowe to będzie mówić każdy nowy odczyt.</string>
+    <string name="if_the_phone_has_text_to_speech">Jeśli telefon posiada funkcje zamiany tekstu na mowe to będzie odczytywał każdy nowy pomiar.</string>
     <string name="upload_logs">Dodaj Dzienniki</string>
+    <string name="split">Podziel</string>
+    <string name="delete">Usuń</string>
+    <string name="bluetooth_settings">Ustawienia Bluetooth</string>
     <!-- trend arrow for speak -->
 </resources>
