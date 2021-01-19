@@ -112,7 +112,7 @@
     <string name="add_widget">Añadir Widget</string>
     <string name="title_activity_alert_list">Lista de alertas</string>
     <string name="speaktreatment">Habla de tratamiento</string>
-    <string name="title_activity_update">xDrip+ Actualización disponible</string>
+    <string name="title_activity_update">Actualización de xDrip+ disponible</string>
     <string name="title_activity_display_qrcode">Configuración de uso compartido a través del código QR</string>
     <string name="title_activity_send_feed_back">Enviar comentarios a Jamorham</string>
     <string name="title_activity_maps">Parakeet Mapa</string>
@@ -176,7 +176,7 @@
     <string name="libre_15_minutes_graph">Gráfica de 15 minutos del Libre</string>
     <string name="libre_last_x_minutes_graph">Gráfica últimos %d minutos del Libre</string>
     <string name="share_config_via_qr_code">Compartir config a través de código QR</string>
-    <string name="check_for_updated_version">Comprobar nueva versión disponible</string>
+    <string name="check_for_updated_version">Comprobar actualizaciones</string>
     <string name="send_feedback_to_developer">Envíe sus comentarios al desarrollador</string>
     <string name="home_screen">Pantalla de inicio</string>
     <string name="event_logs">Registros de eventos</string>
@@ -194,10 +194,10 @@
     <string name="deel_settings_for_algs">Ajustes avanzados para los algoritmos</string>
     <string name="low_level_prediction_values">Los valores de predicción de bajo nivel</string>
     <string name="glucose_drop_for_one_unit">Caída de glucosa para 1 Unidad</string>
-    <string name="xdrip_plus_prediction_settings">xDrip+ ajustes de simulación predictiva</string>
+    <string name="xdrip_plus_prediction_settings">xDrip+ Ajustes de simulación predictiva</string>
     <string name="settings_for_syncing">Ajustes para la sincronización entre dispositivos</string>
-    <string name="xdrip_plus_sync_settings">Ajustes xDrip+ Sync</string>
-    <string name="xdrip_plus_update_settings">xDrip+ Configuración de la actualización</string>
+    <string name="xdrip_plus_sync_settings">xDrip+ Ajustes de Sicronización</string>
+    <string name="xdrip_plus_update_settings">xDrip+ Ajustes de actualizaciones</string>
     <string name="automatic_update_check">Comprobación automática de actualizaciones</string>
     <string name="update_channel">Actualizar canal</string>
     <string name="send_crash_errors_to_developer">Enviar a errores de choque desarrollador</string>
@@ -205,7 +205,7 @@
     <string name="send_feedback_message">Enviar Mensaje Comentarios</string>
     <string name="copying_settings">Copia de ajustes</string>
     <string name="show_settings_qr_codes">Mostrar códigos QR Ajustes</string>
-    <string name="load_save_settings_to_sdcard">Cargar / Guardar configuración para tarjeta SD</string>
+    <string name="load_save_settings_to_sdcard">Cargar/Guardar ajustes en tarjeta SD</string>
     <string name="alarms_and_alerts">Alarmas y alertas</string>
     <string name="alerts_and_notifications">Alertas y notificaciones</string>
     <string name="glucose_level_alerts_list">Lista de Alertas de niveles de glucosa</string>
@@ -220,7 +220,7 @@
     <string name="extrapolate_data_to_try_to_predict_lows">Extrapolar datos para tratar de predecir los mínimos</string>
     <string name="alarm_at_forecasted_low_mins">Alarma en minutos bajas pronosticadas</string>
     <string name="other_xdrip_plus_alerts">Otros alertas xDrip+</string>
-    <string name="xdrip_plus_display_settings">xDrip+ Configuración de pantalla</string>
+    <string name="xdrip_plus_display_settings">xDrip+ Ajustes de pantalla</string>
     <string name="display_customisations">Personalizaciones de pantalla</string>
     <string name="insulin_carb_ratios_etc_for_models">Insulina, ratios de carbohidratos, etc para los modelos</string>
     <string name="grams_of_carbohydrate_one_unit_covers">Gramos de carbohidratos cubiertos por 1 Unidad</string>
@@ -279,7 +279,7 @@
     <string name="statistics">Estadística</string>
     <string name="snooze_alert">Silenciar Alarmas</string>
     <string name="less_common_settings">Ajustes menos comunes</string>
-    <string name="view_recent_errors_warnings">Ver Recientes Errores / Advertencias</string>
+    <string name="view_recent_errors_warnings">Ver Errores/Advertencias recientes</string>
     <string name="other_settings">Otros ajustes</string>
     <string name="older_gratuitous_wakelocks">Wakelocks gratuitos antiguos que pueden gastar más batería, pero podrían ser necesarios para la NightWatch o Android Wear</string>
     <string name="use_excessive_wakelocks">Utilice Wakelocks excesivas</string>
@@ -303,7 +303,7 @@
     <string name="high_glucose_values">Valores altos de glucosa</string>
     <string name="in_range_glucose_values">Dentro de la gama de valores de glucosa</string>
     <string name="default_color_selected">Color por defecto seleccionado</string>
-    <string name="xdrip_plus_extra_settings">xDrip+ configuraciones adicionales</string>
+    <string name="xdrip_plus_extra_settings">xDrip+ Ajustes adicionales</string>
     <string name="example_chart">Ejemplo gráfico</string>
     <string name="treatments_prediction_curves">Tratamientos / curvas de predicción</string>
     <string name="carbs_per_unit">Hidratos de carbono por unidad</string>
@@ -346,7 +346,7 @@
     <string name="a_new_version_is_available">Nueva versión está disponible</string>
     <string name="version_details">Detalles versión</string>
     <string name="download_now">Descargar ahora</string>
-    <string name="automatically_check_for_updates">Comprobar automáticamente si hay actualizaciones</string>
+    <string name="automatically_check_for_updates">Comprobar actualizaciones automáticamente</string>
     <string name="here_you_can_save_the_settings_to_the_external_storage_sdcard">Aquí puede guardar la configuración en la memoria externa (tarjeta sd).\n\nUna vez guardado en el almacenamiento externo es potencialmente posible para cualquier aplicación lea la configuración que podría contener información sensible.\n\nSe recomienda eliminar la configuración una vez que se haya importado de nuevo si usted está preocupado por esto.</string>
     <string name="save_all_settings_to_sdcard">Guardar todos los ajustes a tarjeta SD</string>
     <string name="load_all_settings_from_sdcard">Cargar todos los ajustes de tarjeta SD</string>
@@ -762,8 +762,8 @@
     <string name="reraise_not_snoozed_sooner">Regenerar alerta si no se difiere antes</string>
     <string name="alert_reraise_time">Tiempo de redisparo alarma</string>
     <string name="alert_seconds_reraise">Número de SEGUNDOS que deben pasar antes de enviar la misma alerta.</string>
-    <string name="bg_falling_fast">BG bajando rápido</string>
-    <string name="bg_rising_fast">BG subiendo rápido</string>
+    <string name="bg_falling_fast">Glucosa bajando rápido</string>
+    <string name="bg_rising_fast">Glucosa subiendo rápido</string>
     <string name="falling_threshold">Umbral bajando</string>
     <string name="rising_threshold">Umbral subiendo</string>
     <string name="set_sound_for_bg_alerts">Establecer el sonido usado para las alertas de glucosa.</string>
