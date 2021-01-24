@@ -12,7 +12,29 @@ buildscript {
     }
 }
 apply plugin: 'com.android.application'
+apply plugin: 'com.github.jamorham.android.replace.token.preprocessor'
 
+replaceAndroidTokenPreprocessorSettings {
+
+    // Adjust package names
+    replace 'com.eveningoutpost.dexdrip.Services': "com.eveningoutpost.dexdrip.services"
+    replace 'com.eveningoutpost.dexdrip.UtilityModels': "com.eveningoutpost.dexdrip.utilitymodels"
+    replace 'com.eveningoutpost.dexdrip.Models': "com.eveningoutpost.dexdrip.models"
+    replace 'com.eveningoutpost.dexdrip.Tables': "com.eveningoutpost.dexdrip.tables"
+    replace 'com.eveningoutpost.dexdrip.G5Model': "com.eveningoutpost.dexdrip.g5model"
+    replace 'com.eveningoutpost.dexdrip.GlucoseMeter': "com.eveningoutpost.dexdrip.glucosemeter"
+    replace 'com.eveningoutpost.dexdrip.localeTasker': "com.eveningoutpost.dexdrip.localetasker"
+    replace 'com.eveningoutpost.dexdrip.ImportedLibraries': "com.eveningoutpost.dexdrip.importedlibraries"
+    replace 'com.eveningoutpost.dexdrip.ImportedLibraries': "com.eveningoutpost.dexdrip.importedlibraries"
+
+    // For AndroidManifest shorthand format
+    replace '".UtilityModels.': '".utilitymodels.'
+    replace '".localeTasker.': '".localetasker.'
+    replace '".GlucoseMeter.': '".glucosemeter.'
+    replace '".Services.': '".services.'
+    replace '".Models.': '".models.'
+
+}
 
 if (project.file('local.gradle').exists()) {
     apply from: 'local.gradle'
@@ -276,11 +298,11 @@ dependencies {
 
     // use specific version of data binding until google resolves the bugs with mixed case package names
     //noinspection GradleDependency
-    implementation 'com.android.databinding:adapters:3.1.4'
+    //implementation 'com.android.databinding:adapters:3.1.4'
     //noinspection GradleDependency
-    implementation 'com.android.databinding:library:3.1.4'
+    //implementation 'com.android.databinding:library:3.1.4'
     //noinspection GradleDependency
-    implementation 'com.android.databinding:baseLibrary:3.1.4'
+    //implementation 'com.android.databinding:baseLibrary:3.1.4'
     //////
 
     implementation 'com.android.support:appcompat-v7:26.1.0'
