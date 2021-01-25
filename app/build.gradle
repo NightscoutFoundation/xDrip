@@ -25,7 +25,6 @@ replaceAndroidTokenPreprocessorSettings {
     replace 'com.eveningoutpost.dexdrip.GlucoseMeter': "com.eveningoutpost.dexdrip.glucosemeter"
     replace 'com.eveningoutpost.dexdrip.localeTasker': "com.eveningoutpost.dexdrip.localetasker"
     replace 'com.eveningoutpost.dexdrip.ImportedLibraries': "com.eveningoutpost.dexdrip.importedlibraries"
-    replace 'com.eveningoutpost.dexdrip.ImportedLibraries': "com.eveningoutpost.dexdrip.importedlibraries"
 
     // For AndroidManifest shorthand format
     replace '".UtilityModels.': '".utilitymodels.'
