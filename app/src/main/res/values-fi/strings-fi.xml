@@ -161,7 +161,7 @@
     <string name="cancel_do_nothing">Peruuta - älä tee mitään</string>
     <string name="added">Lisätty</string>
     <string name="checking_for_update">Tarkistetaan onko päivitystä saatavilla  ...</string>
-    <string name="signal_missed">Signaali hukattu</string>
+    <string name="signal_missed">Signaali katkennut</string>
     <string name="minutes_ago">{0, choice,0#{0, number, integer} minuuttia sitten|1#{0, number, integer} minuuttia sitten|1&lt;{0, number, integer} minuuttia sitten}</string>
     <string name="expires_days">{0, choice,0#Sensori loppunut!|1#Päättyy {0, number} päivässä|1&lt;Päättyy {0, number} päivässä}</string>
     <string name="expires_at">Päättyy {0}</string>
