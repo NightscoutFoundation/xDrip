@@ -244,7 +244,7 @@
     <string name="extra_tags_dialog_message">De tags die hier wordt ingevoerd zal bewaard worden in xDrip. Formaat is tag: level. Niveau kan worden v, d, i. Bijvoorbeeld bgreading: i, DexCollectionService: v. Deze labels zal bewaard worden met een lage prioriteit aan fouten en event lijst.</string>
     <string name="extra_tags_dialog_title">Voer meer tags aangemeld zijn</string>
     <string name="data_source_settings">Data broninstellingen</string>
-    <string name="smart_watch_features">Smart Let op Kenmerken</string>
+    <string name="smart_watch_features">Smart Watch-functies</string>
     <string name="wear_integration">Integratie met Wear</string>
     <string name="send_data_to_android_wear_watch">Stuur gegevens naar Android Wear wijzerplaat.</string>
     <string name="android_wear_integration">Android Wear Integratie</string>
@@ -281,7 +281,7 @@
     <string name="less_common_settings">Minder vaak voorkomende instellingen</string>
     <string name="view_recent_errors_warnings">Bekijk recente fouten / waarschuwingen</string>
     <string name="other_settings">Andere instellingen</string>
-    <string name="older_gratuitous_wakelocks">Oudere gratuite wakelocks die extra accu kan worden afgevoerd, maar vereist voor Nachtwacht of Android Wear</string>
+    <string name="older_gratuitous_wakelocks">Oudere wake locks die mogelijk nodig zijn voor Nightwatch of Android Wear (hoger energieverbruik)</string>
     <string name="use_excessive_wakelocks">Gebruik Overmatig Wakelocks</string>
     <string name="speak_readings">Spreek Lezingen</string>
     <string name="extra_status_line">Extra Statusregel</string>
@@ -318,7 +318,7 @@
     <string name="when">wanneer</string>
     <string name="speak_your_treatment">Spreek uw behandeling bijvoorbeeld:\nxx eenheden insuline / xx gram koolhydraten</string>
     <string name="speech_recognition_is_not_supported">Spraakherkenning wordt niet ondersteund</string>
-    <string name="treatment_note">Behandeling Note</string>
+    <string name="treatment_note">Behandeling Opmerking</string>
     <string name="could_not_export_database">Kon database niet exporteren :(</string>
     <string name="exported_to">"Uitgevoerd naar "</string>
     <string name="default_to_voice_input_next_time">Standaard naar voice-ingang de volgende keer</string>
@@ -343,7 +343,7 @@
     <string name="re_enable_all_alerts">Alle waarschuwingen opnieuw inschakelen</string>
     <string name="alert_snoozed_by_watch">Alarm gesluimerd door horloge</string>
     <string name="update_channel_colon_space">"Kanaal bijwerken: "</string>
-    <string name="a_new_version_is_available">Een nieuwe versie is beschikbaar</string>
+    <string name="a_new_version_is_available">Er is een nieuwe versie beschikbaar</string>
     <string name="version_details">Versie informatie</string>
     <string name="download_now">Download nu</string>
     <string name="automatically_check_for_updates">Automatisch controleren op updates</string>
@@ -351,7 +351,7 @@
     <string name="save_all_settings_to_sdcard">Sla alle instellingen op SD-kaart</string>
     <string name="load_all_settings_from_sdcard">Laad alle instellingen van SDcard</string>
     <string name="delete_any_settings_on_sdcard">Verwijder alle instellingen op de SD-kaart</string>
-    <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[Gebruik de QR-codes over te dragen instellingen met instellingen-&gt; Auto Configure functie]]></string>
+    <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[Gebruik QR-codes om instellingen over te dragen met de functie Instellingen-> Auto Configureren]]></string>
     <string name="xdrip_plus_security_key_settings_only">alleen xDrip Plus Security Key Settings</string>
     <string name="show_general_and_collection_settings">Toon algemene en Collection Settings</string>
     <string name="copy_all_settings">Kopieer alle instellingen</string>
@@ -436,7 +436,7 @@
     <string name="display_delta_units">Tonen Delta Units</string>
     <string name="displays_the_slope_arrows">Geeft de Helling Arrows</string>
     <string name="display_slope_arrows">Beeldscherm Helling Arrows</string>
-    <string name="vibrate_watch_to_alert_no_data">Trillen horloge om te waarschuwen als we niet krijgen van een glucose-gegevens</string>
+    <string name="vibrate_watch_to_alert_no_data">Tril de horloge om te waarschuwen wanneer we geen glucosegegevens meer ontvangen</string>
     <string name="vibrate_when_missed_signal">Trillen wanneer gemiste signaal</string>
     <string name="vibrate_watch_to_alert_no_bluetooth">Tril horloge om te waarschuwen wanneer de bluetooth geen verbinding meer maakt</string>
     <string name="vibrate_when_no_bluetooth">Trillen wanneer geen bluetooth</string>
@@ -445,7 +445,7 @@
     <string name="compatible_broadcast">Compatibele Broadcast</string>
     <string name="show_datatables">Show DataTables</string>
     <string name="display_bridge_battery">Beeldscherm Bridge Battery</string>
-    <string name="close_gatt_on_ble_disconnect">Sluiten GATT op BLE disconnect</string>
+    <string name="close_gatt_on_ble_disconnect">Sluit GATT op verbreken van BLE</string>
     <string name="disable_battery_warning">Uitschakelen Batterijwaarschuwing</string>
     <string name="additional_text_status">Extra tekst-status</string>
     <string name="average">Gemiddelde</string>
@@ -548,7 +548,7 @@
     <string name="short_off_text_for_switches">UIT</string>
     <string name="short_on_text_for_switches">OP</string>
     <string name="install_pebble_apps">Installeer Pebble Apps</string>
-    <string name="sliding_24_hour_window_summary">Gebruik laatste 24 uur in plaats van de tijd sinds middernacht voor de statistiek.</string>
+    <string name="sliding_24_hour_window_summary">Gebruik voor statistieken de laatste 24 uur in plaats van de tijd sinds middernacht.</string>
     <string name="sliding_24_hour_window">Schuifraam</string>
     <string name="split">Spleet</string>
     <string name="delete">Verwijder</string>
@@ -966,8 +966,8 @@
     <string name="is_testing_the_assistance_request_feature">%s test de functie voor hulpverzoeken</string>
     <string name="emergency_message_near_format_string">%s in de buurt van %s %s %s %s</string>
     <string name="choose_when_to_send_messages">Kies wanneer u berichten wilt verzenden:</string>
-    <string name="low_alert_not_acknowledged">Lage melding niet herkend</string>
-    <string name="high_alert_not_acknowledged">Hoge melding niet herkend</string>
+    <string name="low_alert_not_acknowledged">Lage waarschuwing niet herkend</string>
+    <string name="high_alert_not_acknowledged">Hoge waarschuwing niet herkend</string>
     <string name="device_inactivity">Inactiviteit van het apparaat</string>
     <string name="test_message_sending">Testbericht verzenden</string>
     <string name="d_selected_contacts_for_text_messages_format">%d geselecteerde contacten voor tekstberichten</string>
