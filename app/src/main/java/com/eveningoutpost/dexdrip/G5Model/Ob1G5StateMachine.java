@@ -155,7 +155,7 @@ public class Ob1G5StateMachine {
                                                 readValue -> {
                                                     authenticationProcessor(parent, connection, readValue);
                                                 }, throwable -> {
-                                                    UserError.Log.e(TAG, "Could not read after AuthRequestTX: " + throwable);
+                                                    UserError.Log.d(TAG, "Could not read after AuthRequestTX: " + throwable);
                                                 });
                                         //parent.background_automata();
                                     },
