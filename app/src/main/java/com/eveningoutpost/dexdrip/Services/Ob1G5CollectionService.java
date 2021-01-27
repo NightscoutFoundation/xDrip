@@ -96,6 +96,7 @@ import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.pendingStop;
 import static com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine.usingAlt;
 import static com.eveningoutpost.dexdrip.Models.JoH.niceTimeScalar;
 import static com.eveningoutpost.dexdrip.Models.JoH.tsl;
+import static com.eveningoutpost.dexdrip.Models.JoH.upForAtLeastMins;
 import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.STATE.BOND;
 import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.STATE.CLOSE;
 import static com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService.STATE.CLOSED;
@@ -207,12 +208,12 @@ public class Ob1G5CollectionService extends G5BaseService {
     private static volatile long last_scan_started = -1;
     private static volatile long last_connect_started = -1;
     private static volatile long last_mega_status_read = -1;
-    private static int error_count = 0;
-    private static int connectNowFailures = 0;
-    private static int connectFailures = 0;
+    private static volatile int error_count = 0;
+    private static volatile int connectNowFailures = 0;
+    private static volatile int connectFailures = 0;
     private static volatile int scanTimeouts = 0;
-    private static boolean lastConnectFailed = false;
-    private static boolean preScanFailureMarker = false;
+    private static volatile boolean lastConnectFailed = false;
+    private static volatile boolean preScanFailureMarker = false;
     private static boolean auth_succeeded = false;
     private int error_backoff_ms = 1000;
     private static final int max_error_backoff_ms = 10000;
@@ -416,9 +417,21 @@ public class Ob1G5CollectionService extends G5BaseService {
             estimateAnticipateFromLinkedData();
             alwaysMinimize = !preScanFailureMarker;
         }
-        //if (!alwaysMinimize) {
-        // alwaysMinimize = Pref.getBooleanDefaultFalse("ob1_avoid_scanning"); // TODO this maybe should be removed now
-        // }
+        if (!alwaysMinimize) {
+            alwaysMinimize = Pref.getBooleanDefaultFalse("ob1_avoid_scanning");
+            if (alwaysMinimize && !upForAtLeastMins(15)) {
+                UserError.Log.d(TAG, "Not avoiding scanning as phone has recently rebooted and clock may be inaccurate");
+                alwaysMinimize = false;
+            }
+            if (alwaysMinimize && connectNowFailures > 4 && connectNowFailures % 10 == 1) {
+                alwaysMinimize = false;
+                UserError.Log.d(TAG, "Not avoiding scanning due to connect failure level: " + connectNowFailures);
+                connectNowFailures++;
+            }
+        }
+        if (transmitterMAC == null) {
+            UserError.Log.d(TAG, "Do not know transmitter mac inside minimize scanning!!");
+        }
         return minimize_scanning && transmitterMAC != null && (!lastConnectFailed || (modulo == 1) || alwaysMinimize)
                 && (DexSyncKeeper.isReady(transmitterID));
     }
@@ -518,8 +531,8 @@ public class Ob1G5CollectionService extends G5BaseService {
                                 //.setScanMode(static_last_timestamp < 1 ? ScanSettings.SCAN_MODE_LOW_LATENCY : ScanSettings.SCAN_MODE_BALANCED)
                                 //.setCallbackType(ScanSettings.CALLBACK_TYPE_FIRST_MATCH)
                                 .setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES)
-                                // TODO revisit scan mode
                                 .setScanMode(android_wear ? ScanSettings.SCAN_MODE_BALANCED :
+                                        historicalTransmitterMAC.length() <= 5 ? ScanSettings.SCAN_MODE_LOW_LATENCY :
                                         minimize_scanning ? ScanSettings.SCAN_MODE_BALANCED : ScanSettings.SCAN_MODE_LOW_LATENCY)
                                 // .setScanMode(ScanSettings.SCAN_MODE_BALANCED)
                                 .build(),
@@ -1069,6 +1082,7 @@ public class Ob1G5CollectionService extends G5BaseService {
         if (scanWakeLock != null) {
             JoH.releaseWakeLock(scanWakeLock);
         }
+        last_scan_started = 0;
     }
 
     private synchronized void stopConnect() {

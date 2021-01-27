@@ -48,6 +48,9 @@ public class VoiceCommands {
             MockDataSource.fixRaw();
         } else if (allWords.contentEquals("set sensor code")) {
             G6CalibrationCodeDialog.ask(mActivity, null);
+        } else if (allWords.contentEquals("multiple start")) {
+                Ob1G5StateMachine.twoPartUpdate();
+                JoH.static_toast_long("Multiple start test");
         } else if (allWords.contentEquals("hard reset transmitter")) {
             G5BaseService.setHardResetTransmitterNow();
             JoH.static_toast_long("Will attempt to reset transmitter on next poll!! Can take 15 minutes to process");
