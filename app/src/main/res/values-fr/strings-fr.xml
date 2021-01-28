@@ -642,7 +642,7 @@
     <string name="percentage_above_range">Pourcentage des valeurs plus haute que la plage.</string>
     <string name="show_standard_deviation">Voir la déviation standard des valeurs.</string>
     <string name="standard_deviation">Écart-type</string>
-    <string name="show_total_carbs">Montrer le total des Traitements de glucides</string>
+    <string name="show_total_carbs">Afficher le total de glucides saisis par traitements</string>
     <string name="total_carbs">Glucides totaux</string>
     <string name="show_total_insulin">Montrer le total de traitements d\'insuline</string>
     <string name="total_insulin">Insuline total</string>
