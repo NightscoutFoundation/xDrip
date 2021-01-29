@@ -502,7 +502,7 @@
     <string name="key_is_used_instead_of_google_account">Key est utilisé au lieu du compte Google</string>
     <string name="sync_using_custom_security_key">Synchroniser en utilisant la clé de sécurité personnalisé</string>
     <string name="handset_group_security_key">Clé de sécurité de groupe de dispositifs</string>
-    <string name="handset_sync_grouping_key">Clé de synchronisation des de groupes de dispositifs</string>
+    <string name="handset_sync_grouping_key">Clé de regroupement de synchronisation des appareils</string>
     <string name="alert_name_colon">Nom de l\'alerte:</string>
     <string name="threshold_colon">Seuil:</string>
     <string name="default_snooze_colon">Mise en veille par défaut:</string>
@@ -644,7 +644,7 @@
     <string name="standard_deviation">Écart-type</string>
     <string name="show_total_carbs">Afficher le total de glucides saisis par traitements</string>
     <string name="total_carbs">Glucides totaux</string>
-    <string name="show_total_insulin">Montrer le total de traitements d\'insuline</string>
+    <string name="show_total_insulin">Afficher le total d\'insuline saisis par traitements</string>
     <string name="total_insulin">Insuline total</string>
     <string name="received_readings_percentage">Pourcentage des lectures du capteur reçus</string>
     <string name="received_realtime_readings_percentage">Pourcentage des lectures du capteur reçus en temps réel (non récupérées). Mode natif G5 seulement</string>
@@ -652,7 +652,7 @@
     <string name="realtime_capture_percentage">Pourcentage de capture de paquets en temps réel</string>
     <string name="show_calibration_accuracy">Afficher l\'évaluation de précision de calibration des 3 derniers jours</string>
     <string name="accuracy_evaluation">Évaluation de la précision</string>
-    <string name="show_extra_status_on_widget">Montrer aussi la ligne d\'état supplémentaire sur le widget</string>
+    <string name="show_extra_status_on_widget">Afficher aussi la ligne d\'état supplémentaire sur le widget</string>
     <string name="show_long_calibration_data">Voir la pente et l\'ordonnée à l\'origine en format long.</string>
     <string name="show_short_calibration_data">Voir la pente et l\'ordonnée à l\'origine en format court.</string>
     <string name="show_plugin_data">Afficher les données de pente et le glucose du plugin actif</string>
@@ -800,7 +800,7 @@
     <string name="display_calculations_everytime">Afficher les calculs de l\'insuline/glucides en permanence</string>
     <string name="always_show_bolus_wizard_preview">Toujours afficher l’aperçu d’assistant de Bolus</string>
     <string name="show_test_features">Afficher les fonctionnalités de test en alpha et supplémentaires</string>
-    <string name="show_reminder_features">Montrer les caractéristiques et menus de rappels</string>
+    <string name="show_reminder_features">Afficher les menus et fonctionnalités de Rappel</string>
     <string name="enable_reminder_features">Activer les fonctionnalités de rappel</string>
     <string name="display_mathamatical_simulations">Afficher les simulations mathématiques basées sur les données de profil et les logs de glucides/insuline</string>
     <string name="predictive_simulations">Simulations prédictives</string>
@@ -813,7 +813,7 @@
     <string name="send_snooze_to_all">Envoyer la mise en veille vers tous</string>
     <string name="confirm_remote_snoozes">Ouvrir une boîte de dialogue pour confirmer l\'envoi de chaque veille distante</string>
     <string name="confirm_sensing_snooze">Confirmer l\'envoi de mise en veille</string>
-    <string name="allow_remotes_silence">Autoriser les combinés distants à mettre sous silence les alarmes sur celle-ci</string>
+    <string name="allow_remotes_silence">Autoriser les appareils distants à mettre sous silence les alarmes sur celle-ci</string>
     <string name="acccept_remote_snoozes">Accepter les mises en veille distantes</string>
     <string name="send_remote_snooze">Envoyer une mise en veille à distance</string>
     <string name="only_accept_same_network">Accepter uniquement si le nom du réseau wifi distant commence par les mêmes lettres que les nôtres et correspond très étroitement</string>
@@ -829,7 +829,7 @@
     <string name="log_and_plot_motion">Loguer et grapher les déplacements</string>
     <string name="use_remote_motion_data">Données de mouvement prises à distance plutôt que depuis le téléphone local</string>
     <string name="use_remote_motion">Utiliser les données de mouvement distantes</string>
-    <string name="be_motion_master">Être le maître des données de mouvement, même si nous sommes un suiveur. Positionner ceci sur un seul combiné !</string>
+    <string name="be_motion_master">Être le maître des données de mouvement, même si nous sommes un suiveur. Ne positionner que sur un seul appareil!</string>
     <string name="act_as_motion_master">Agir comme maître du mouvement</string>
     <string name="vehicle_motion_extras">Lorsqu\'un véhicule est détecté, activer des fonctionnalités supplémentaires</string>
     <string name="enable_vehicle_mode">Activer le Mode Véhicule</string>
@@ -1034,7 +1034,7 @@
     <string name="summary_write_Battery_Information_for_additional_analytic">écrire les informations sur la batterie pour une analyse supplémentaire dans un fichier. Veuillez utiliser ceci uniquement si cela sera demandé par un développeur !</string>
     <string name="title_Batterylog">Log batterie</string>
     <string name="summary_Choose_to_display_the_bridge_battery_level">Choisir pour afficher le niveau de batterie du transmetteur</string>
-    <string name="title_Glucose_Retention">Rétention de glucose</string>
+    <string name="title_Glucose_Retention">Rétention des glycémies</string>
     <string name="summary_Erase_data_older_than_this_many_days">Effacer les données antérieures à ce nombre de jours. 0 = ne rien effacer</string>
     <string name="title_Other_misc_options">Autres options diverses</string>
     <string name="summary_allow_testing_with_dead_sensor">permet de tester avec un capteur mort</string>
@@ -1260,8 +1260,8 @@
     <string name="title_lefun_screen_heart_pressure">Afficher la pression cardiaque</string>
     <string name="title_lefun_screen_find_phone">Afficher Trouver le téléphone / Mettre en veille</string>
     <string name="title_lefun_screen_mac_address">Afficher l\'adresse MAC</string>
-    <string name="summary_allow_samsung_workaround">Utiliser des améliorations pour éviter le comportement androïd non standard des combinés Samsung. Sans cela, les collecteurs ne peuvent pas obtenir les données.</string>
-    <string name="title_allow_samsung_workaround">Améliorations Samsung</string>
+    <string name="summary_allow_samsung_workaround">Utiliser des contournements pour éviter le comportement android non standard des terminaux Samsung. Sans cela, les collecteurs ne peuvent pas obtenir les données.</string>
+    <string name="title_allow_samsung_workaround">Solutions de contournement Samsung</string>
     <string name="summary_medtrum_use_native">Utiliser la calibration de l\'émetteur au lieu de xDrip comme primaire</string>
     <string name="title_medtrum_use_native">Medtrum Natif</string>
     <string name="summary_medtrum_a_hex">Valeur hexa de test de diagnostic</string>
