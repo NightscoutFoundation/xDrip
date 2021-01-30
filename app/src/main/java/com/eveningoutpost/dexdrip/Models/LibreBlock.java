@@ -7,18 +7,21 @@ import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
+import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
 import com.google.gson.annotations.Expose;
-
 import java.text.DecimalFormat;
 import java.util.List;
 import java.util.UUID;
+
+import org.json.JSONObject;
 /**
  * Created by jamorham on 19/10/2017.
  */
 
 @Table(name = "LibreBlock", id = BaseColumns._ID)
-public class LibreBlock extends PlusModel {
+public class LibreBlock  extends PlusModel {
 
     private static final String TAG = "LibreBlock";
     static final String[] schema = {
@@ -30,6 +33,8 @@ public class LibreBlock extends PlusModel {
             "ALTER TABLE LibreBlock ADD COLUMN byteend INTEGER;",
             "ALTER TABLE LibreBlock ADD COLUMN calculatedbg REAL;",
             "ALTER TABLE LibreBlock ADD COLUMN uuid TEXT;",
+            "ALTER TABLE LibreBlock ADD COLUMN patchUid BLOB;",
+            "ALTER TABLE LibreBlock ADD COLUMN patchInfo BLOB;",
             "CREATE INDEX index_LibreBlock_timestamp on LibreBlock(timestamp);",
             "CREATE INDEX index_LibreBlock_bytestart on LibreBlock(bytestart);",
             "CREATE INDEX index_LibreBlock_byteend on LibreBlock(byteend);",
@@ -65,13 +70,24 @@ public class LibreBlock extends PlusModel {
     @Column(name = "uuid", index = true)
     public String uuid;
     
+    @Expose
+    @Column(name = "patchUid")
+    public byte[] patchUid;
+    
+    @Expose
+    @Column(name = "patchInfo")
+    public byte[] patchInfo;
+    
+    // Fields to store battery value. Not persistent in the DB.
+
+    // Only called by blucon with partial data.
     public static LibreBlock createAndSave(String reference, long timestamp, byte[] blocks, int byte_start) {
-        return createAndSave(reference, timestamp, blocks, byte_start, false);
+        return createAndSave(reference, timestamp, blocks, byte_start, false, null, null);
     }
     
     // if you are indexing by block then just * 8 to get byte start
-    public static LibreBlock createAndSave(String reference, long timestamp, byte[] blocks, int byte_start, boolean allowUpload) {
-        final LibreBlock lb = create(reference, timestamp, blocks, byte_start);
+    public static LibreBlock createAndSave(String reference, long timestamp, byte[] blocks, int byte_start, boolean allowUpload, byte[] patchUid, byte[] patchInfo) {
+        final LibreBlock lb = create(reference, timestamp, blocks, byte_start, patchUid, patchInfo);
         if (lb != null) {
             lb.save();
             if(byte_start == 0 && blocks.length == 344 && allowUpload) {
@@ -81,8 +97,12 @@ public class LibreBlock extends PlusModel {
         }
         return lb;
     }
+    
+    public static void Save(LibreBlock lb){
+        lb.save();
+    }
 
-    private static LibreBlock create(String reference, long timestamp, byte[] blocks, int byte_start) {
+    public static LibreBlock create(String reference, long timestamp, byte[] blocks, int byte_start, byte[] patchUid, byte[] patchInfo) {
         UserError.Log.e(TAG,"Backtrack: "+JoH.backTrace());
         if (reference == null) {
             UserError.Log.e(TAG, "Cannot save block with null reference");
@@ -99,6 +119,8 @@ public class LibreBlock extends PlusModel {
         lb.byte_start = byte_start;
         lb.byte_end = byte_start + blocks.length;
         lb.timestamp = timestamp;
+        lb.patchUid = patchUid;
+        lb.patchInfo = patchInfo;
         lb.uuid = UUID.randomUUID().toString();
         return lb;
     }
@@ -165,6 +187,68 @@ public class LibreBlock extends PlusModel {
     
     private static final boolean d = false;
 
+    public String toJson() {
+        return JoH.defaultGsonInstance().toJson(this);        
+    }
+
+    public static LibreBlock createFromJson(String json) {
+        if (json == null) {
+            return null;
+        }
+        LibreBlock fresh;
+        try {
+            fresh = JoH.defaultGsonInstance().fromJson(json, LibreBlock.class);
+        } catch (Exception e) {
+            Log.e(TAG, "Got exception processing json msg: " + e );
+            return null;
+        }
+        Log.e(TAG, "Successfuly created LibreBlock value " + json);
+        return fresh;
+    }
+
+     class ExtendedLibreBlock {
+         @Expose
+         public int bridge_battery;
+         @Expose
+         public int Tomatobattery;
+         @Expose
+         public int Bubblebattery;
+         @Expose
+         public int nfc_sensor_age;
+         @Expose
+         public LibreBlock libreBlock;
+     }
+
+     public String toExtendedJson() {
+        ExtendedLibreBlock elb = new ExtendedLibreBlock();
+        elb.bridge_battery = Pref.getInt("bridge_battery", 0);
+        elb.Tomatobattery = PersistentStore.getStringToInt("Tomatobattery", 0);
+        elb.Bubblebattery = PersistentStore.getStringToInt("Bubblebattery", 0);
+        elb.nfc_sensor_age = Pref.getInt("nfc_sensor_age", 0);
+        elb.libreBlock = this;
+        return JoH.defaultGsonInstance().toJson(elb);
+    }
+    
+    // This also saves the batteries data to the global state.
+    public static LibreBlock createFromExtendedJson(String json) {
+        if (json == null) {
+            return null;
+        }
+        ExtendedLibreBlock elb;
+        try {
+            elb = JoH.defaultGsonInstance().fromJson(json, ExtendedLibreBlock.class);
+        } catch (Exception e) {
+            Log.e(TAG, "Got exception processing json msg: " + e );
+            return null;
+        }
+        Log.e(TAG, "Successfuly created LibreBlock value " + json);
+        Pref.setInt("bridge_battery", elb.bridge_battery);
+        PersistentStore.setString("Tomatobattery", Integer.toString(elb.Tomatobattery));
+        PersistentStore.setString("Bubblebattery", Integer.toString(elb.Bubblebattery));
+        Pref.setInt("nfc_sensor_age", elb.nfc_sensor_age);
+        return elb.libreBlock;
+    }
+    
     public static void updateDB() {
         fixUpTable(schema, false);
     }

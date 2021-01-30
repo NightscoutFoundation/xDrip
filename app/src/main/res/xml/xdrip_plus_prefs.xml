@@ -181,7 +181,7 @@
                         app:colorpicker_showHex="false" />
 
                     <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
-                        android:defaultValue="#00000000"
+                        android:defaultValue="#B3000000"
                         android:key="color_widget_chart_background"
                         android:title="@string/widget_chart_background"
                         app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
@@ -418,6 +418,10 @@
                     android:summary="@string/summary_illustrate_backfilled_data"
                     android:title="@string/title_illustrate_backfilled_data" />
                 <CheckBoxPreference
+                    android:key="widget_hide_graph"
+                    android:summary="Hide the graph on widgets (shows on next reading)"
+                    android:title="Hide widget graph" />
+                <CheckBoxPreference
                     android:dependency="engineering_mode"
                     android:key="illustrate_remote_data"
                     android:summary="Show data received remotely (diagnostic only)"
@@ -600,6 +604,35 @@
                 android:switchTextOn="@string/short_on_text_for_switches"
                 android:title="@string/predictive_simulations" />
 
+            <PreferenceScreen
+                android:title="Multiple Insulin Types"
+                android:summary="Options for working with multiple insulin types">
+                <SwitchPreference
+                    android:defaultValue="false"
+                    android:key="multiple_insulin_types"
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
+                    android:title="Multiple Insulin Types" />
+            <Preference
+                android:key="insulin_profiles"
+                android:dependency="multiple_insulin_types"
+                android:summary="@string/desc_enable_dedicated_insulin_profiles"
+                android:title="@string/enable_dedicated_insulin_profiles">
+                <intent
+                    android:action="android.intent.action.MAIN"
+                    android:targetClass="com.eveningoutpost.dexdrip.insulin.InsulinProfileEditor"
+                    android:targetPackage="@string/local_target_package" />
+            </Preference>
+
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="multiple_insulin_use_basal_activity"
+                    android:summary="Plot Basal activity on graph and incorporate in predictive model"
+                    android:title="Use Basal Activity"/>
+
+            </PreferenceScreen>
+
+
             <Preference
                 android:key="profile_carb_ratio_default"
                 android:summary="@string/grams_of_carbohydrate_one_unit_covers"
@@ -609,6 +642,7 @@
                     android:targetClass="com.eveningoutpost.dexdrip.profileeditor.ProfileEditor"
                     android:targetPackage="@string/local_target_package" />
             </Preference>
+
             <Preference
                 android:key="profile_insulin_sensitivity_default"
                 android:summary="@string/glucose_drop_for_one_unit"
@@ -728,6 +762,14 @@
                 android:switchTextOff="@string/short_off_text_for_switches"
                 android:switchTextOn="@string/short_on_text_for_switches"
                 android:title="@string/title_plus_whole_house" />
+            <SwitchPreference
+                android:defaultValue="false"
+                android:dependency="plus_follow_master"
+                android:key="libre_whole_house_collector"
+                android:summary="@string/summary_libre_whole_house_collector"
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
+                android:title="@string/title_libre_whole_house_collector" />
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:dependency="plus_follow_master"

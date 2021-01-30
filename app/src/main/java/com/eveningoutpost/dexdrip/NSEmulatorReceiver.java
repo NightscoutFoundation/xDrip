@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
+import android.util.Base64;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
@@ -72,7 +73,7 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
 
                                 // in future this could have its own data source perhaps instead of follower
                                 if (!Home.get_follower() && DexCollectionType.getDexCollectionType() != DexCollectionType.NSEmulator &&
-                                        !Pref.getBooleanDefaultFalse("external_blukon_algorithm")) { //???DexCollectionType
+                                        !Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
                                     Log.e(TAG, "Received NSEmulator data but we are not a follower or emulator receiver");
                                     return;
                                 }
@@ -102,7 +103,19 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
                                                 final JSONArray json_array = new JSONArray(data);
                                                 // if this array is >1 in length then it is from OOP otherwise something like AAPS
                                                 if (json_array.length() > 1) {
-                                                    LibreOOPAlgorithm.HandleData(json_array.getString(1));
+                                                    final JSONObject json_object = json_array.getJSONObject(0);
+                                                    int process_id = -1;
+                                                    try {
+                                                        process_id = json_object.getInt("ROW_ID");
+                                                    }   catch (JSONException e) {
+                                                        // Intentionly ignoring ecxeption.
+                                                    }
+                                                    if(process_id == -1 || process_id == android.os.Process.myPid()) {
+                                                        LibreOOPAlgorithm.handleData(json_array.getString(1));    
+                                                    } else {
+                                                        Log.d(TAG, "Ignoring OOP result since process id is wrong " + process_id);
+                                                    }
+                                                    
                                                 } else {
                                                     final JSONObject json_object = json_array.getJSONObject(0);
                                                     final String type = json_object.getString("type");
@@ -182,6 +195,20 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
                                 }
 
                                 break;
+                            case Intents.XDRIP_DECODE_FARM_RESULT:
+                                Log.e(TAG, "recieved message XDRIP_DECODE_FARM_RESULT");
+                                handleOop2DecodeFarmResult(bundle);
+                                break;
+                                
+                            case Intents.XDRIP_DECODE_BLE_RESULT:
+                                Log.e(TAG, "recieved message XDRIP_DECODE_BLE_RESULT");
+                                handleOop2DecodeBleResult(bundle);
+                                break;
+                                
+                            case Intents.XDRIP_BLUETOOTH_ENABLE_RESULT:
+                                Log.e(TAG, "recieved message XDRIP_BLUETOOTH_ENABLE_RESULT");
+                                handleOop2BlutoothEnableResult(bundle);
+                                break;
 
                             default:
                                 Log.e(TAG, "Unknown action! " + action);
@@ -195,6 +222,131 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
             }
         }.start();
     }
+    private JSONObject extractParams(Bundle bundle) {
+        final String json = bundle.getString("json");
+        if (json == null) {
+            Log.e(TAG, "json == null returning");
+            return null;
+        }
+        JSONObject json_object;
+        try {
+            json_object = new JSONObject(json);
+            int process_id = json_object.getInt("ROW_ID");
+            if(process_id != android.os.Process.myPid()) {
+                Log.d(TAG, "Ignoring OOP result since process id is wrong " + process_id);
+                return null;
+            }
+
+        } catch (JSONException e) {
+            Log.e(TAG, "Got JSON exception: " + e);
+            return null;
+        }
+        return json_object;
+        
+    }
+    
+    private void handleOop2DecodeFarmResult(Bundle bundle) {
+        if(Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
+            Log.e(TAG, "External OOP algorithm is on, ignoring decoded data.");
+            return;
+        }
+        JSONObject json_object = extractParams(bundle);
+        if(json_object == null) {
+            return;
+        }
+        String decoded_buffer;
+        String patchUidString;
+        String patchInfoString;
+        String tagId;
+        long CaptureDateTime;
+        try {
+            decoded_buffer = json_object.getString(Intents.DECODED_BUFFER);
+            patchUidString = json_object.getString(Intents.PATCH_UID);
+            patchInfoString = json_object.getString(Intents.PATCH_INFO);
+            tagId = json_object.getString(Intents.TAG_ID);
+            CaptureDateTime = json_object.getLong(Intents.LIBRE_DATA_TIMESTAMP);
+        } catch (JSONException e) {
+            Log.e(TAG, "Error JSONException ", e);
+            return;
+        }
+        if(decoded_buffer == null) {
+            Log.e(TAG, "Error could not get decoded_buffer");
+            return;
+        }
+        
+        // Does this throws exception???
+        byte[] farm_data = Base64.decode(decoded_buffer, Base64.NO_WRAP);
+        byte []patchUid = Base64.decode(patchUidString, Base64.NO_WRAP);
+        byte []patchInfo = Base64.decode(patchInfoString, Base64.NO_WRAP);
+        LibreOOPAlgorithm.handleOop2DecryptFarmResult(tagId, CaptureDateTime, farm_data, patchUid, patchInfo);
+    }
+    
+    private void handleOop2DecodeBleResult(Bundle bundle) {
+        if(Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
+            Log.e(TAG, "External OOP algorithm is on, ignoring ble decrypted data.");
+            return;
+        }
+        JSONObject json_object = extractParams(bundle);
+        if(json_object == null) {
+            return;
+        }
+        String decoded_buffer;
+        String patchUidString;
+        long CaptureDateTime;
+        try {
+            decoded_buffer = json_object.getString(Intents.DECODED_BUFFER);
+            patchUidString = json_object.getString(Intents.PATCH_UID);
+            CaptureDateTime = json_object.getLong(Intents.LIBRE_DATA_TIMESTAMP);
+        } catch (JSONException e) {
+            Log.e(TAG, "Error JSONException ", e);
+            return;
+        }
+        if(decoded_buffer == null) {
+            Log.e(TAG, "Error could not get decoded_buffer");
+            return;
+        }
+        
+        // Does this throws exception???
+        byte[] ble_data = Base64.decode(decoded_buffer, Base64.NO_WRAP);
+        byte []patchUid = Base64.decode(patchUidString, Base64.NO_WRAP);
+        LibreOOPAlgorithm.handleDecodedBleResult(CaptureDateTime, ble_data, patchUid);
+    }
+    
+    private void handleOop2BlutoothEnableResult(Bundle bundle) {
+        if(Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
+            Log.e(TAG, "External OOP algorithm is on, ignoring data.");
+            return;
+        }
+        JSONObject json_object = extractParams(bundle);
+        if(json_object == null) {
+            return;
+        }
+        String btUunlockBufferString;
+        String nfcUnlockBufferString;
+        String patchUidString;
+        String patchInfoString;
+        String deviceName;
+
+        
+        try {
+            btUunlockBufferString = json_object.getString(Intents.BT_UNLOCK_BUFFER);
+            nfcUnlockBufferString = json_object.getString(Intents.NFC_UNLOCK_BUFFER);
+            patchUidString = json_object.getString(Intents.PATCH_UID);
+            patchInfoString = json_object.getString(Intents.PATCH_INFO);
+            deviceName = json_object.getString(Intents.DEVICE_NAME);
+        } catch (JSONException e) {
+            Log.e(TAG, "Error JSONException ", e);
+            return;
+        }
+
+        // Does this throws exception???
+        byte[] bt_unlock_buffer = Base64.decode(btUunlockBufferString, Base64.NO_WRAP);
+        byte[] nfc_unlock_buffer = Base64.decode(nfcUnlockBufferString, Base64.NO_WRAP);
+        byte []patchUid = Base64.decode(patchUidString, Base64.NO_WRAP);
+        byte []patchInfo = Base64.decode(patchInfoString, Base64.NO_WRAP);
+        LibreOOPAlgorithm.handleOop2BlutoothEnableResult(bt_unlock_buffer, nfc_unlock_buffer, patchUid, patchInfo, deviceName);
+    }
+
 
     public static BgReading bgReadingInsertFromData(long timestamp, double sgv, double slope, boolean do_notification) {
         Log.d(TAG, "bgReadingInsertFromData called timestamp = " + timestamp + " bg = " + sgv + " time =" + JoH.dateTimeText(timestamp));

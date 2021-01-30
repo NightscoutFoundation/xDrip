@@ -46,3 +46,16 @@
 
 -dontwarn com.google.devtools.build
 -dontwarn com.google.devtools.build.android.desugar.runtime.**
+
+-keep class com.eveningoutpost.dexdrip.test.**
+-keep class android.support.test.internal** { *; }
+-keep class android.support.test.** { *; }
+-keep class com.schibsted.spain.barista.** { *; }
+-keep class org.junit.** { *; }
+-keep @org.junit.runner.RunWith public class *
+-keep class androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
+-keep class org.robolectric.RobolectricTestRunner
+
+-keep class com.newrelic.** { *; }
+-dontwarn com.newrelic.**
+-keepattributes Exceptions, Signature, InnerClasses, LineNumberTable, SourceFile, EnclosingMethod

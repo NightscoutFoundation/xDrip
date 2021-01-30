@@ -47,6 +47,13 @@
             android:onClick="@{() -> vs.ptoggle(`collector_nano_status`)}"
             android:text="Show Collector Status" />
 
+        <Switch
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="@{safeUnbox(vs.included[`sensor_expiry`])}"
+            android:onClick="@{() -> vs.ptoggle(`sensor_expiry`)}"
+            android:text="Show Sensor Expiry" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"

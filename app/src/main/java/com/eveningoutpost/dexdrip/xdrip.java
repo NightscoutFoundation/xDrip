@@ -8,10 +8,9 @@ import android.content.res.Configuration;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.annotation.StringRes;
+import android.support.multidex.MultiDexApplication;
 import android.util.Log;
 
-import com.crashlytics.android.Crashlytics;
-import com.crashlytics.android.core.CrashlyticsCore;
 import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Reminder;
@@ -19,30 +18,32 @@ import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.Services.BluetoothGlucoseMeter;
 import com.eveningoutpost.dexdrip.Services.MissedReadingService;
 import com.eveningoutpost.dexdrip.Services.PlusSyncService;
-import com.eveningoutpost.dexdrip.Services.SyncService;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.IdempotentMigrations;
 import com.eveningoutpost.dexdrip.UtilityModels.PlusAsyncExecutor;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.VersionTracker;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
+import com.eveningoutpost.dexdrip.utils.NewRelicCrashReporting;
 import com.eveningoutpost.dexdrip.utils.jobs.DailyJob;
 import com.eveningoutpost.dexdrip.utils.jobs.XDripJobCreator;
 import com.eveningoutpost.dexdrip.watch.lefun.LeFunEntry;
+import com.eveningoutpost.dexdrip.watch.miband.MiBandEntry;
+import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry;
 import com.eveningoutpost.dexdrip.webservices.XdripWebService;
 import com.evernote.android.job.JobManager;
 
+import net.danlew.android.joda.JodaTimeAndroid;
+
 import java.util.Locale;
 
-import io.fabric.sdk.android.Fabric;
 
-//import com.bugfender.sdk.Bugfender;
 
 /**
  * Created by Emma Black on 3/21/15.
  */
 
-public class xdrip extends Application {
+public class xdrip extends MultiDexApplication {
 
     private static final String TAG = "xdrip.java";
     @SuppressLint("StaticFieldLeak")
@@ -59,10 +60,10 @@ public class xdrip extends Application {
     public void onCreate() {
         xdrip.context = getApplicationContext();
         super.onCreate();
+        JodaTimeAndroid.init(this);
         try {
             if (PreferenceManager.getDefaultSharedPreferences(xdrip.context).getBoolean("enable_crashlytics", true)) {
-                initCrashlytics(this);
-                initBF();
+                NewRelicCrashReporting.start();
             }
         } catch (Exception e) {
             Log.e(TAG, e.toString());
@@ -98,6 +99,8 @@ public class xdrip extends Application {
             }
             BluetoothGlucoseMeter.startIfEnabled();
             LeFunEntry.initialStartIfEnabled();
+            MiBandEntry.initialStartIfEnabled();
+            BlueJayEntry.initialStartIfEnabled();
             XdripWebService.immortality();
             VersionTracker.updateDevice();
 
@@ -108,19 +111,6 @@ public class xdrip extends Application {
         PluggableCalibration.invalidateCache();
     }
 
-    public synchronized static void initCrashlytics(Context context) {
-        if ((!fabricInited) && !isRunningTest()) {
-            try {
-                Crashlytics crashlyticsKit = new Crashlytics.Builder()
-                        .core(new CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build())
-                        .build();
-                Fabric.with(context, crashlyticsKit);
-            } catch (Exception e) {
-                Log.e(TAG, e.toString());
-            }
-            fabricInited = true;
-        }
-    }
 
     public static synchronized boolean isRunningTest() {
         if (null == isRunningTestCache) {

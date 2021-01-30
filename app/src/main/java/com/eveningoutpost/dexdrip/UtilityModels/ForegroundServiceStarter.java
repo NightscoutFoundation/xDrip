@@ -3,14 +3,13 @@ package com.eveningoutpost.dexdrip.UtilityModels;
 import android.app.Service;
 import android.content.Context;
 import android.os.Build;
-import android.os.Handler;
-import android.os.Looper;
 
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
+import static android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION;
 import static com.eveningoutpost.dexdrip.UtilityModels.Notifications.ongoingNotificationId;
 
 /**
@@ -56,7 +55,24 @@ public class ForegroundServiceStarter {
             final long start = end - (60000 * 60 * 3) - (60000 * 10);
             foregroundStatus();
             Log.d(TAG, "CALLING START FOREGROUND: " + mService.getClass().getSimpleName());
-            mService.startForeground(ongoingNotificationId, new Notifications().createOngoingNotification(new BgGraphBuilder(mContext, start, end), mContext));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                /*
+                  When is a foreground service not a foreground service?
+                  When it's started from the background of course!
+                  On android 11, even though the user explicitly grants us permission to use
+                  background location, we still have to request to use it on a foreground
+                  service, but only when it isn't re-started with the app open.
+                  Even then the restrictions seem to be applied inconsistently!
+                 */
+                try {
+                    mService.startForeground(ongoingNotificationId, new Notifications().createOngoingNotification(new BgGraphBuilder(mContext, start, end), mContext), FOREGROUND_SERVICE_TYPE_LOCATION);
+                } catch (IllegalArgumentException e) {
+                    UserError.Log.e(TAG, "Got exception trying to use Android 10+ service starting for " + mService.getClass().getSimpleName() + " " + e);
+                    mService.startForeground(ongoingNotificationId, new Notifications().createOngoingNotification(new BgGraphBuilder(mContext, start, end), mContext));
+                }
+            } else {
+                mService.startForeground(ongoingNotificationId, new Notifications().createOngoingNotification(new BgGraphBuilder(mContext, start, end), mContext));
+            }
 
             //     }
             // });

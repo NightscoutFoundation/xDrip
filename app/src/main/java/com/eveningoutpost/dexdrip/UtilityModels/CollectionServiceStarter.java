@@ -26,6 +26,7 @@ import com.eveningoutpost.dexdrip.xdrip;
 
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.Medtrum;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.NSFollow;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.SHFollow;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getCollectorServiceClass;
 
 /**
@@ -114,6 +115,9 @@ public class CollectionServiceStarter {
     // TODO refactor with dexcollection type
     public static boolean isFollower(Context context) {
         return Pref.getString("dex_collection_method", "").equals("Follower");
+    }
+    public static boolean isLibre2App(Context context) {
+        return Pref.getString("dex_collection_method", "").equals("LibreReceiver");
     }
 
     public static boolean isWifiandBTWixel(Context context) {
@@ -207,6 +211,9 @@ public class CollectionServiceStarter {
     private static boolean isFollower(String collection_method) {
         return collection_method.equals("Follower");
     }
+    private static boolean isLibre2App(String collection_method) {
+        return collection_method.equals("LibreReceiver");
+    }
 
     //  private static void newStart(final Context context) {
     //       new CollectionServiceStarter(context).start(context);
@@ -221,6 +228,7 @@ public class CollectionServiceStarter {
         stopG5Service();
         JoH.stopService(getCollectorServiceClass(Medtrum));
         JoH.stopService(getCollectorServiceClass(NSFollow));
+        JoH.stopService(getCollectorServiceClass(SHFollow));
     }
 
     private void start(Context context, String collection_method) {
@@ -314,7 +322,7 @@ public class CollectionServiceStarter {
                 startBtWixelService();
             }
             Log.d("DexDrip", "Started wifi and bt wixel collector");
-        } else if (isFollower(collection_method)) {
+        } else if (isFollower(collection_method) || isLibre2App(collection_method)) {
             stopWifWixelThread();
             stopBtShareService();
             stopBtWixelService();
@@ -322,7 +330,8 @@ public class CollectionServiceStarter {
 
             startFollowerThread();
         } else {
-            if (DexCollectionType.hasBluetooth() || DexCollectionType.getDexCollectionType() == NSFollow) {
+            // TODO newer item startups should be consolidated in to a DexCollectionType has set to avoid duplicating logic
+            if (DexCollectionType.hasBluetooth() || DexCollectionType.getDexCollectionType() == NSFollow || DexCollectionType.getDexCollectionType() == SHFollow) {
                 Log.d(TAG, "Starting service based on collector lookup");
                 startServiceCompat(new Intent(context, DexCollectionType.getCollectorServiceClass()));
             }

@@ -6,9 +6,11 @@ package com.eveningoutpost.dexdrip.UtilityModels;
 
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.xdrip;
-import com.polidea.rxandroidble.RxBleClient;
+import com.polidea.rxandroidble2.RxBleClient;
 
 import java.util.concurrent.ConcurrentHashMap;
+
+import io.reactivex.plugins.RxJavaPlugins;
 
 public class RxBleProvider {
     private static final ConcurrentHashMap<String, RxBleClient> singletons = new ConcurrentHashMap<>();
@@ -16,8 +18,10 @@ public class RxBleProvider {
     public static synchronized RxBleClient getSingleton(final String name) {
         final RxBleClient cached = singletons.get(name);
         if (cached != null) return cached;
+        //UserError.Log.wtf("RxBleProvider", "Creating new instance for: " + name); // TODO DEBUG ONLY
         final RxBleClient created = RxBleClient.create(xdrip.getAppContext());
         singletons.put(name, created);
+        RxJavaPlugins.setErrorHandler(e -> UserError.Log.d("RXBLE" + name, "RxJavaError: " + e.getMessage()));
         return created;
     }
 

@@ -52,7 +52,7 @@ public class SensorSanity {
         // checks for each type of data source
 
         if (DexCollectionType.hasDexcomRaw(type)) {
-            if ((raw_value != BgReading.SPECIAL_G5_PLACEHOLDER) || hard_check) {
+            if (!BgReading.isRawMarkerValue(raw_value) || hard_check) {
                 if (Pref.getBooleanDefaultFalse("using_g6")) {
                     if (raw_value < DEXCOM_G6_MIN_RAW) state = false;
                     else if (raw_value > DEXCOM_G6_MAX_RAW) state = false;
@@ -101,10 +101,10 @@ public class SensorSanity {
         return Pref.getBoolean("detect_libre_sn_changes", true) && checkLibreSensorChange(sn);
     }
 
-    public synchronized static boolean checkLibreSensorChange(final String sn) {
-        if ((sn == null) || sn.length() < 4) return false;
+    public synchronized static boolean checkLibreSensorChange(final String currentSerial) {
+        if ((currentSerial == null) || currentSerial.length() < 4) return false;
         final String lastSn = PersistentStore.getString(PREF_LIBRE_SN);
-        if (!sn.equals(lastSn)) {
+        if (!currentSerial.equals(lastSn)) {
             final Sensor this_sensor = Sensor.currentSensor();
             if ((lastSn.length() > 3) && (this_sensor != null)) {
 
@@ -112,7 +112,7 @@ public class SensorSanity {
 
                 if (last_uuid.equals(this_sensor.uuid)) {
                     if (last_uuid.length() > 3) {
-                        UserError.Log.wtf(TAG, String.format("Different sensor serial number for same sensor uuid: %s :: %s vs %s", last_uuid, last_uuid, this_sensor.uuid));
+                        UserError.Log.wtf(TAG, String.format("Different sensor serial number for same sensor uuid: %s :: %s vs %s", last_uuid, lastSn, currentSerial));
                         Sensor.stopSensor();
                         JoH.static_toast_long("Stopping sensor due to serial number change");
                         Sensor.stopSensor();
@@ -122,7 +122,7 @@ public class SensorSanity {
                     PersistentStore.setString(PREF_LIBRE_SENSOR_UUID, this_sensor.uuid);
                 }
             }
-            PersistentStore.setString(PREF_LIBRE_SN, sn);
+            PersistentStore.setString(PREF_LIBRE_SN, currentSerial);
         }
         return false;
     }

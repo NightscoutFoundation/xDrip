@@ -62,7 +62,9 @@ public class UploadChunk implements NamedSliderProcessor {
 
         final List<BaseElement> records = new LinkedList<>();
 
-        records.addAll(getTreatments(start, end));
+        if (!Pref.getBooleanDefaultFalse("tidepool_no_treatments")) {
+            records.addAll(getTreatments(start, end));
+        }
         records.addAll(getBloodTests(start, end));
         records.addAll(getBasals(start, end));
         records.addAll(getBgReadings(start, end));
@@ -104,9 +106,15 @@ public class UploadChunk implements NamedSliderProcessor {
         final List<Treatments> treatments = Treatments.latestForGraph(1800, start, end);
         for (Treatments treatment : treatments) {
             if (treatment.carbs > 0) {
-                result.add(EWizard.fromTreatment(treatment));
+                EWizard eWizard = EWizard.fromTreatment(treatment);
+                if(eWizard != null) {
+                    result.add(eWizard);
+                }
             } else if (treatment.insulin > 0) {
-                result.add(EBolus.fromTreatment(treatment));
+                EBolus eBolus = EBolus.fromTreatment(treatment);
+                if(eBolus != null) {
+                  result.add(eBolus);
+                }
             } else {
                 // note only TODO
             }

@@ -31,6 +31,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.eveningoutpost.dexdrip.xdrip.gs;
+
 /**
  * Created by jamorham on 18/02/2017.
  */
@@ -69,6 +71,10 @@ public class Mdns {
     private static final long NORMAL_RESOLVE_TIMEOUT_MS = 5000;
     private static final long WAIT_FOR_REPLIES_TIMEOUT_MS = 10000;
 
+    // In order for this to work on a rpi do:
+    // On the file /etc/avahi/avahi-daemon.conf change
+    // publish-workstation=yes
+    // and restart the service (sudo /etc/init.d/avahi-daemon restart)
     private static final String SERVICE_TYPE = "_workstation._tcp.";
     private static final String TAG = "Mdns-discovery";
     private static final boolean d = true;
@@ -214,6 +220,7 @@ public class Mdns {
 
                 final String type = service.getServiceType();
 
+                UserError.Log.d(TAG, "onServiceFound " + type + service.getServiceName());
                 if (type.equals(SERVICE_TYPE)) {
                     final String name = service.getServiceName();
                     final LookUpInfo li = iplookup.get(shortenName(name));
@@ -345,7 +352,7 @@ public class Mdns {
                                     AlertDialog.Builder builder = new AlertDialog.Builder(context);
                                     builder.setTitle("Add " + JoH.ucFirst(entry.getKey()) + " to list of receivers?");
                                     builder.setMessage("Is this device running a collector?\n\n" + entry.getKey() + ".local can be automatically added to list of receivers").setPositiveButton("Add", dialogClickListener)
-                                            .setNegativeButton("No", dialogClickListener).show();
+                                            .setNegativeButton(gs(R.string.no), dialogClickListener).show();
                                 } else {
                                     // remove item
                                     final DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
@@ -364,7 +371,7 @@ public class Mdns {
                                     AlertDialog.Builder builder = new AlertDialog.Builder(context);
                                     builder.setTitle("Remove " + JoH.ucFirst(entry.getKey()) + " from list of receivers?");
                                     builder.setPositiveButton("Remove", dialogClickListener)
-                                            .setNegativeButton("No", dialogClickListener).show();
+                                            .setNegativeButton(gs(R.string.no), dialogClickListener).show();
                                 }
 
 

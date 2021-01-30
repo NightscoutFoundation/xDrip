@@ -3,23 +3,21 @@ package com.eveningoutpost.dexdrip.UtilityModels;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
 
-import com.eveningoutpost.dexdrip.Home;
-import com.eveningoutpost.dexdrip.NFCReaderX;
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.LibreBlock;
 import com.eveningoutpost.dexdrip.Models.Sensor;
+import com.eveningoutpost.dexdrip.Models.SensorSanity;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.NFCReaderX;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
@@ -56,8 +54,6 @@ public class Blukon {
     private static boolean m_getNowGlucoseDataIndexCommand = false;
     private static final int GET_SENSOR_AGE_DELAY = 3 * 3600;
     private static final String BLUKON_GETSENSORAGE_TIMER = "blukon-getSensorAge-timer";
-    private static final String BLUKON_DECODE_SERIAL_TIMER = "blukon-decodeSerial-timer";
-    private static final int GET_DECODE_SERIAL_DELAY = 12 * 3600;
     private static boolean m_getNowGlucoseDataCommand = false;// to be sure we wait for a GlucoseData Block and not using another block
     private static long m_timeLastBg = 0;
     private static long m_persistentTimeLastBg;
@@ -104,7 +100,6 @@ public class Blukon {
     public static void initialize() {
             Log.i(TAG, "initialize Blukon!");
             JoH.clearRatelimit(BLUKON_GETSENSORAGE_TIMER);
-            JoH.clearRatelimit(BLUKON_DECODE_SERIAL_TIMER);// set to current time to force timer to be set back
             m_getNowGlucoseDataCommand = false;
             m_getNowGlucoseDataIndexCommand = false;
 
@@ -348,8 +343,17 @@ private static final int POSITION_OF_SENSOR_STATUS_BYTE = 17;
                 Remark: Byte #17 (0 indexing) contains the SensorStatusByte.
             */
 
-            if (JoH.pratelimit(BLUKON_DECODE_SERIAL_TIMER, GET_DECODE_SERIAL_DELAY)) {
-                String SensorSn = LibreUtils.decodeSerialNumber(buffer);
+            if (!LibreUtils.validatePatchInfo(buffer)) {
+                Log.e(TAG, "Patch info doesn't look valid - read error? " + JoH.bytesToHex(buffer));
+            } else {
+
+                final String SensorSn = LibreUtils.decodeSerialNumber(buffer);
+
+                if (SensorSanity.checkLibreSensorChangeIfEnabled(SensorSn)) {
+                    Log.e(TAG, "Problem with Libre Serial Number - not processing");
+                    return null;
+                }
+
                 // TODO: Only write this after checksum was verified
                 PersistentStore.setString("LibreSN", SensorSn);
             }
@@ -434,7 +438,6 @@ private static final int POSITION_OF_SENSOR_STATUS_BYTE = 17;
             //This is a new sensor, force read from serial
             if (sensorAge < currentSensorAge) {
                 Log.i(TAG, "new sensor?");
-                JoH.clearRatelimit(BLUKON_DECODE_SERIAL_TIMER);// set to current time to force timer to be set back
             }
 
             if ((sensorAge >= 0) && (sensorAge < 200000)) {

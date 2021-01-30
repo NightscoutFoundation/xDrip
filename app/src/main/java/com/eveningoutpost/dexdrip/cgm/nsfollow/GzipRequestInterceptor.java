@@ -12,7 +12,7 @@ import okio.Okio;
 
 // TODO make reusable
 
-class GzipRequestInterceptor implements Interceptor {
+public class GzipRequestInterceptor implements Interceptor {
     @Override
     public okhttp3.Response intercept(Chain chain) throws IOException {
         final Request originalRequest = chain.request();

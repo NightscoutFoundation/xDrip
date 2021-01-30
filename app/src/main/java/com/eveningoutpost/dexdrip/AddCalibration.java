@@ -10,7 +10,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
@@ -117,8 +116,17 @@ public class AddCalibration extends AppCompatActivity implements NavigationDrawe
                                                     lastExternalCalibrationValue = calValue;
                                                     PersistentStore.setDouble(LAST_EXTERNAL_CALIBRATION, calValue);
                                                     UserError.Log.uel(TAG, "Creating auto calibration from: " + calValue + " requested: " + JoH.dateTimeText(timestamp) + " from source: " + cal_source);
+
+                                                    // feed calibration to native pipe without trying to create an old style calibration record
+                                                    final Double convertedBg = Calibration.getConvertedBg(calValue);
+                                                    if (convertedBg != null) {
+                                                        final long calibration_timestamp = JoH.tsl() - (bgAgeNumber * 1000);
+                                                        NativeCalibrationPipe.addCalibration(convertedBg.intValue(), calibration_timestamp);
+                                                        UserError.Log.uel(TAG, "Sending native calibration pipe value: " + convertedBg.intValue() + " mg/dl taken at timestamp: " + JoH.dateTimeText(calibration_timestamp) + " source: " + cal_source);
+                                                    }
+
                                                     final Calibration calibration = Calibration.create(calValue, bgAgeNumber, getApplicationContext(), (note_only.equals("true")), localEstimatedInterstitialLagSeconds);
-                                                    if ((calibration != null) && allow_undo.equals("true")) {
+                                                    if ((calibration != null) && allow_undo.equals("true") && (JoH.msSince(calibration.timestamp) < Constants.HOUR_IN_MS)) {
                                                         UndoRedo.addUndoCalibration(calibration.uuid);
                                                     }
                                                     if (calibration != null) {

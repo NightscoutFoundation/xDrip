@@ -1,5 +1,8 @@
 package com.eveningoutpost.dexdrip.utils.bt;
 
+import android.os.Build;
+import android.os.Bundle;
+import android.os.ParcelUuid;
 import android.os.PowerManager;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
@@ -9,11 +12,11 @@ import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
 import com.eveningoutpost.dexdrip.UtilityModels.RxBleProvider;
 import com.eveningoutpost.dexdrip.utils.BtCallBack;
 import com.eveningoutpost.dexdrip.xdrip;
-import com.polidea.rxandroidble.RxBleClient;
-import com.polidea.rxandroidble.exceptions.BleScanException;
-import com.polidea.rxandroidble.scan.ScanFilter;
-import com.polidea.rxandroidble.scan.ScanResult;
-import com.polidea.rxandroidble.scan.ScanSettings;
+import com.polidea.rxandroidble2.RxBleClient;
+import com.polidea.rxandroidble2.exceptions.BleScanException;
+import com.polidea.rxandroidble2.scan.ScanFilter;
+import com.polidea.rxandroidble2.scan.ScanResult;
+import com.polidea.rxandroidble2.scan.ScanSettings;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,9 +25,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import io.reactivex.schedulers.Schedulers;
 import lombok.NoArgsConstructor;
-import rx.Subscription;
-import rx.schedulers.Schedulers;
 
 import static com.eveningoutpost.dexdrip.Models.JoH.ratelimit;
 
@@ -46,16 +48,22 @@ public class ScanMeister {
     protected static volatile Subscription scanSubscription;
     protected final RxBleClient rxBleClient = RxBleProvider.getSingleton();
     private final ConcurrentHashMap<String, BtCallBack> callbacks = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, BtCallBack2> callbacks2 = new ConcurrentHashMap<>();
     private final PowerManager.WakeLock wl = JoH.getWakeLock("jam-bluetooth-meister", 1000);
     protected int scanSeconds = DEFAULT_SCAN_SECONDS;
+    protected volatile boolean stopOnFirstMatch = true;
     protected volatile String address;
     protected volatile List<String> name;
+    protected volatile ScanFilter customFilter;
     protected boolean wideSearch = false;
+    protected boolean legacyNoFilterWorkaround = false;
     private static String lastFailureReason = "";
 
     public static final String SCAN_TIMEOUT_CALLBACK = "SCAN_TIMEOUT";
     public static final String SCAN_FAILED_CALLBACK = "SCAN_FAILED";
     public static final String SCAN_FOUND_CALLBACK = "SCAN_FOUND";
+
+    private static final String[] cannotFilterModels = {"Ticwatch E", "Ticwatch S"};
 
     // TODO Log errors when location disabled etc
 
@@ -81,28 +89,74 @@ public class ScanMeister {
         return this;
     }
 
+    public ScanMeister setFilter(final ScanFilter filter) {
+        this.customFilter = filter;
+        return this;
+    }
+
+    public ScanMeister unlimitedMatches() {
+        this.stopOnFirstMatch = false;
+        return this;
+    }
+
     public ScanMeister allowWide() {
         this.wideSearch = true;
         return this;
     }
 
-    // Callback boiler plate
+    public ScanMeister legacyNoFilterWorkaround() {
+        this.legacyNoFilterWorkaround = true;
+        return this;
+    }
+
+    // Callback boiler plate v1 callbacks
     public ScanMeister addCallBack(BtCallBack callback, String name) {
         callbacks.put(name, callback);
         return this;
     }
+
+    // Callback boiler plate v2 callbacks
+    public ScanMeister addCallBack2(BtCallBack2 callback, String name) {
+        callbacks2.put(name, callback);
+        return this;
+    }
+
+    // TODO this may need to be smarter in the future to account for different android versions of the same model, but for now it has only been implemented for devices which are not expecting to get future updates
+    public ScanMeister applyKnownWorkarounds() {
+        if (Build.MODEL != null) {
+            UserError.Log.d(TAG, "Checking if workarounds needed for: " + Build.MODEL);
+            for (final String model : cannotFilterModels) {
+                if (Build.MODEL.equalsIgnoreCase(model)) {
+                    UserError.Log.d(TAG, "Activating workaround for model: " + Build.MODEL);
+                    legacyNoFilterWorkaround();
+                    break;
+                }
+            }
+        }
+        return this;
+    }
+
 
     public void removeCallBack(String name) {
         callbacks.remove(name);
     }
 
     protected synchronized void processCallBacks(String address, String status) {
+        processCallBacks(address, status, null, null);
+    }
+
+    protected synchronized void processCallBacks(String address, String status, String name, Bundle bundle) {
         if (address == null) address = "NULL";
         boolean called_back = false;
         UserError.Log.d(TAG, "Processing callbacks for " + address + " " + status);
         for (Map.Entry<String, BtCallBack> entry : callbacks.entrySet()) {
             UserError.Log.d(TAG, "Callback: " + entry.getKey());
             entry.getValue().btCallback(address, status);
+            called_back = true;
+        }
+        for (Map.Entry<String, BtCallBack2> entry : callbacks2.entrySet()) {
+            UserError.Log.d(TAG, "Callback2: " + entry.getKey());
+            entry.getValue().btCallback2(address, status, name, null);
             called_back = true;
         }
         if (!called_back) {
@@ -117,25 +171,30 @@ public class ScanMeister {
         stopScan("Scan start");
         UserError.Log.d(TAG, "startScan called: hunting: " + address + " " + name);
 
-        final ScanFilter.Builder builder = new ScanFilter.Builder();
-        if (address != null) {
-            try {
-                builder.setDeviceAddress(address);
-            } catch (IllegalArgumentException e) {
-                UserError.Log.wtf(TAG, "Invalid bluetooth address: " + address);
+        ScanFilter filter = this.customFilter;
+        if (filter == null) {
+            final ScanFilter.Builder builder = new ScanFilter.Builder();
+            if (address != null) {
+                try {
+                    builder.setDeviceAddress(address);
+                } catch (IllegalArgumentException e) {
+                    UserError.Log.wtf(TAG, "Invalid bluetooth address: " + address);
+                }
             }
+            // TODO scanning by name doesn't build a filter
+            filter = builder.build();
+        } else {
+            UserError.Log.d(TAG,"Overriding with custom filter");
         }
-        // TODO scanning by name doesn't build a filter
-        final ScanFilter filter = builder.build();
 
-        scanSubscription = rxBleClient.scanBleDevices(
+        scanSubscription = new Subscription(rxBleClient.scanBleDevices(
                 new ScanSettings.Builder()
                         .setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES)
                         .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
-                        .build(), filter)
+                        .build(), legacyNoFilterWorkaround ? ScanFilter.empty() : filter)
                 .timeout(scanSeconds, TimeUnit.SECONDS) // is unreliable
                 .subscribeOn(Schedulers.io())
-                .subscribe(this::onScanResult, this::onScanFailure);
+                .subscribe(this::onScanResult, this::onScanFailure));
 
         Inevitable.task(STOP_SCAN_TASK_ID, scanSeconds * Constants.SECOND_IN_MS, this::stopScanWithTimeoutCallback);
     }
@@ -169,24 +228,37 @@ public class ScanMeister {
             return;
         }
 
+        try {
+            for (ParcelUuid p : bleScanResult.getScanRecord().getServiceUuids()) {
+                UserError.Log.d(TAG,"SERVICE: "+p.getUuid());
+            }
+
+        } catch (Exception e) {
+            //
+        }
         final int rssi = bleScanResult.getRssi();
         if (rssi > MINIMUM_RSSI) {
             //final String this_name = bleScanResult.getBleDevice().getName();
             final String this_address = bleScanResult.getBleDevice().getMacAddress();
             String this_name = "";
-            if (name != null) {
+            if (name != null || customFilter != null) {
                 this_name = bleScanResult.getBleDevice().getName();
             }
-            final boolean matches = (address != null && address.equalsIgnoreCase(this_address))
-                    || (name != null && this_name != null && name.contains(this_name));
+            final boolean matches = (customFilter != null)
+                    || ((address != null && address.equalsIgnoreCase(this_address))
+                    || (name != null && this_name != null && name.contains(this_name)));
             if (matches || JoH.quietratelimit("scanmeister-show-result", 2)) {
                 UserError.Log.d(TAG, "Found a device: " + this_address + " " + this_name + " rssi: " + rssi + "  " + (matches ? "-> MATCH" : ""));
             }
-            if (matches) {
+            if (matches && stopOnFirstMatch) {
                 stopScan("Got match");
                 JoH.threadSleep(500);
                 processCallBacks(this_address, SCAN_FOUND_CALLBACK);
                 releaseWakeLock();
+            }
+            if (matches && !stopOnFirstMatch) {
+                // TODO deposit good information in bundle - TODO: dry
+                processCallBacks(this_address, SCAN_FOUND_CALLBACK, this_name, null);
             }
 
         } else {

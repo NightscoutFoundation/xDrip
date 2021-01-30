@@ -56,6 +56,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
+import static com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Dex_Constants.TREND_ARROW_VALUES.*;
 import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.getCalibrationPluginFromPreferences;
 import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.newCloseSensorData;
 
@@ -602,8 +603,13 @@ public class BgReading extends Model implements ShareUploadableBg {
 
                 if ((plugin != null) && ((pcalibration = plugin.getCalibrationData()) != null) && (Pref.getBoolean("use_pluggable_alg_as_primary", false))) {
                     Log.d(TAG, "USING CALIBRATION PLUGIN AS PRIMARY!!!");
-                    bgReading.calculated_value = (pcalibration.slope * bgReading.age_adjusted_raw_value) + pcalibration.intercept;
-                    bgReading.filtered_calculated_value = (pcalibration.slope * bgReading.ageAdjustedFiltered()) + calibration.intercept;
+                    if (plugin.isCalibrationSane(pcalibration)) {
+                        bgReading.calculated_value = (pcalibration.slope * bgReading.age_adjusted_raw_value) + pcalibration.intercept;
+                        bgReading.filtered_calculated_value = (pcalibration.slope * bgReading.ageAdjustedFiltered()) + calibration.intercept;
+                    } else {
+                        UserError.Log.wtf(TAG, "Calibration plugin failed intercept sanity check: " + pcalibration.toS());
+                        Home.toaststaticnext("Calibration plugin failed intercept sanity check");
+                    }
                 } else {
                     bgReading.calculated_value = ((calibration.slope * bgReading.age_adjusted_raw_value) + calibration.intercept);
                     bgReading.filtered_calculated_value = ((calibration.slope * bgReading.ageAdjustedFiltered()) + calibration.intercept);
@@ -622,6 +628,11 @@ public class BgReading extends Model implements ShareUploadableBg {
         return  bgReading;
     }
 
+    public static boolean isRawMarkerValue(final double raw_data) {
+        return raw_data == BgReading.SPECIAL_G5_PLACEHOLDER
+                || raw_data == BgReading.SPECIAL_RAW_NOT_AVAILABLE;
+    }
+
 
     static void updateCalculatedValueToWithinMinMax(BgReading bgReading) {
         // TODO should this really be <10 other values also special??
@@ -632,55 +643,6 @@ public class BgReading extends Model implements ShareUploadableBg {
             bgReading.calculated_value = Math.min(BG_READING_MAXIMUM_VALUE, Math.max(BG_READING_MINIMUM_VALUE, bgReading.calculated_value));
         }
         Log.i(TAG, "NEW VALUE CALCULATED AT: " + bgReading.calculated_value);
-    }
-
-    // Used by xDripViewer
-    public static void create(Context context, double raw_data, double age_adjusted_raw_value, double filtered_data, Long timestamp,
-                              double calculated_bg, double calculated_current_slope, boolean hide_slope) {
-
-        BgReading bgReading = new BgReading();
-        Sensor sensor = Sensor.currentSensor();
-        if (sensor == null) {
-            Log.w(TAG, "No sensor, ignoring this bg reading");
-            return;
-        }
-
-        Calibration calibration = Calibration.lastValid();
-        if (calibration == null) {
-            Log.d(TAG, "create: No calibration yet");
-            bgReading.sensor = sensor;
-            bgReading.sensor_uuid = sensor.uuid;
-            bgReading.raw_data = (raw_data / 1000);
-            bgReading.age_adjusted_raw_value = age_adjusted_raw_value;
-            bgReading.filtered_data = (filtered_data / 1000);
-            bgReading.timestamp = timestamp;
-            bgReading.uuid = UUID.randomUUID().toString();
-            bgReading.calculated_value = calculated_bg;
-            bgReading.calculated_value_slope = calculated_current_slope;
-            bgReading.hide_slope = hide_slope;
-
-            bgReading.save();
-            bgReading.perform_calculations();
-        } else {
-            Log.d(TAG, "Calibrations, so doing everything bgReading = " + bgReading);
-            bgReading.sensor = sensor;
-            bgReading.sensor_uuid = sensor.uuid;
-            bgReading.calibration = calibration;
-            bgReading.calibration_uuid = calibration.uuid;
-            bgReading.raw_data = (raw_data / 1000);
-            bgReading.age_adjusted_raw_value = age_adjusted_raw_value;
-            bgReading.filtered_data = (filtered_data / 1000);
-            bgReading.timestamp = timestamp;
-            bgReading.uuid = UUID.randomUUID().toString();
-            bgReading.calculated_value = calculated_bg;
-            bgReading.calculated_value_slope = calculated_current_slope;
-            bgReading.hide_slope = hide_slope;
-
-            bgReading.save();
-        }
-        BgSendQueue.handleNewBgReading(bgReading, "create", context);
-
-        Log.i("BG GSON: ", bgReading.toS());
     }
 
     public static void pushBgReadingSyncToWatch(BgReading bgReading, boolean is_new) {
@@ -702,21 +664,7 @@ public class BgReading extends Model implements ShareUploadableBg {
     }
 
     public static String slopeToArrowSymbol(double slope) {
-        if (slope <= (-3.5)) {
-            return "\u21ca";// ⇊
-        } else if (slope <= (-2)) {
-            return "\u2193"; // ↓
-        } else if (slope <= (-1)) {
-            return "\u2198"; // ↘
-        } else if (slope <= (1)) {
-            return "\u2192"; // →
-        } else if (slope <= (2)) {
-            return "\u2197"; // ↗
-        } else if (slope <= (3.5)) {
-            return "\u2191"; // ↑
-        } else {
-            return "\u21c8"; // ⇈
-        }
+        return getTrend(slope).Symbol();
     }
 
     public String slopeArrow() {
@@ -724,47 +672,12 @@ public class BgReading extends Model implements ShareUploadableBg {
     }
 
     public  String slopeName() {
-        double slope_by_minute = calculated_value_slope * 60000;
-        String arrow = "NONE";
-        if (slope_by_minute <= (-3.5)) {
-            arrow = "DoubleDown";
-        } else if (slope_by_minute <= (-2)) {
-            arrow = "SingleDown";
-        } else if (slope_by_minute <= (-1)) {
-            arrow = "FortyFiveDown";
-        } else if (slope_by_minute <= (1)) {
-            arrow = "Flat";
-        } else if (slope_by_minute <= (2)) {
-            arrow = "FortyFiveUp";
-        } else if (slope_by_minute <= (3.5)) {
-            arrow = "SingleUp";
-        } else if (slope_by_minute <= (40)) {
-            arrow = "DoubleUp";
-        }
-        if (hide_slope) {
-            arrow = "NOT COMPUTABLE";
-        }
-        return arrow;
+        return hide_slope ? NOT_COMPUTABLE.trendName().replace("_", " ") :
+            slopeName(calculated_value_slope * 60000);
     }
 
     public static String slopeName(double slope_by_minute) {
-        String arrow = "NONE";
-        if (slope_by_minute <= (-3.5)) {
-            arrow = "DoubleDown";
-        } else if (slope_by_minute <= (-2)) {
-            arrow = "SingleDown";
-        } else if (slope_by_minute <= (-1)) {
-            arrow = "FortyFiveDown";
-        } else if (slope_by_minute <= (1)) {
-            arrow = "Flat";
-        } else if (slope_by_minute <= (2)) {
-            arrow = "FortyFiveUp";
-        } else if (slope_by_minute <= (3.5)) {
-            arrow = "SingleUp";
-        } else if (slope_by_minute <= (40)) {
-            arrow = "DoubleUp";
-        }
-        return arrow;
+        return getTrend(slope_by_minute).friendlyTrendName();
     }
 
     public static double slopefromName(String slope_name) {
@@ -1120,6 +1033,12 @@ public class BgReading extends Model implements ShareUploadableBg {
         }
     }
 
+    public BgReading noRawWillBeAvailable() {
+        raw_data = SPECIAL_RAW_NOT_AVAILABLE;
+        save();
+        return this;
+    }
+
     public BgReading appendSourceInfo(String info) {
         if ((source_info == null) || (source_info.length() == 0)) {
             source_info = info;
@@ -1141,7 +1060,7 @@ public class BgReading extends Model implements ShareUploadableBg {
         return filtered_data == SPECIAL_REMOTE_PLACEHOLDER;
     }
 
-
+    public static final double SPECIAL_RAW_NOT_AVAILABLE = -0.1279;
     public static final double SPECIAL_G5_PLACEHOLDER = -0.1597;
     public static final double SPECIAL_FOLLOWER_PLACEHOLDER = -0.1486;
     public static final double SPECIAL_REMOTE_PLACEHOLDER = -0.1375;
@@ -1222,6 +1141,70 @@ public class BgReading extends Model implements ShareUploadableBg {
                 handleResyncWearAfterBackfill(bgr.timestamp);
             }
             return bgr;
+        } else {
+            return existing;
+        }
+    }
+    public static synchronized BgReading bgReadingInsertLibre2(double calculated_value, long timestamp, double raw_data) {
+
+        final Sensor sensor = Sensor.currentSensor();
+        if (sensor == null) {
+            Log.w(TAG, "No sensor, ignoring this bg reading");
+            return null;
+        }
+        // TODO slope!!
+        final BgReading existing = getForPreciseTimestamp(timestamp, Constants.MINUTE_IN_MS);
+        if (existing == null) {
+            Calibration calibration = Calibration.lastValid();
+            final BgReading bgReading = new BgReading();
+            if (calibration == null) {
+                Log.d(TAG, "create: No calibration yet");
+                bgReading.sensor = sensor;
+                bgReading.sensor_uuid = sensor.uuid;
+                bgReading.raw_data = raw_data;
+                bgReading.age_adjusted_raw_value = raw_data;
+                bgReading.filtered_data = raw_data;
+                bgReading.timestamp = timestamp;
+                bgReading.uuid = UUID.randomUUID().toString();
+                bgReading.calculated_value = calculated_value;
+                bgReading.calculated_value_slope = 0;
+                bgReading.hide_slope = false;
+                bgReading.appendSourceInfo("Libre2 Native");
+                bgReading.find_slope();
+
+                bgReading.save();
+                bgReading.perform_calculations();
+                bgReading.postProcess(false);
+
+            } else {
+                Log.d(TAG, "Calibrations, so doing everything bgReading = " + bgReading);
+                bgReading.sensor = sensor;
+                bgReading.sensor_uuid = sensor.uuid;
+                bgReading.calibration = calibration;
+                bgReading.calibration_uuid = calibration.uuid;
+                bgReading.raw_data = raw_data ;
+                bgReading.age_adjusted_raw_value = raw_data;
+                bgReading.filtered_data = raw_data;
+                bgReading.timestamp = timestamp;
+                bgReading.uuid = UUID.randomUUID().toString();
+
+                bgReading.calculated_value = ((calibration.slope * calculated_value) + calibration.intercept);
+                bgReading.filtered_calculated_value = ((calibration.slope * bgReading.ageAdjustedFiltered()) + calibration.intercept);
+
+                bgReading.calculated_value_slope = 0;
+                bgReading.hide_slope = false;
+                bgReading.appendSourceInfo("Libre2 Native");
+
+                BgReading.updateCalculatedValueToWithinMinMax(bgReading);
+
+                bgReading.find_slope();
+                bgReading.save();
+
+                bgReading.postProcess(false);
+
+            }
+
+           return bgReading;
         } else {
             return existing;
         }
@@ -1746,7 +1729,7 @@ public class BgReading extends Model implements ShareUploadableBg {
     }
 
     public int noiseValue() {
-        if(noise == null || noise.compareTo("") == 0) {
+        if (noise == null || noise.compareTo("") == 0 || noise.compareToIgnoreCase("null") == 0) {
             return 1;
         } else {
             return Integer.valueOf(noise);

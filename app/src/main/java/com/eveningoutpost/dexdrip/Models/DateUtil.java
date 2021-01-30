@@ -6,6 +6,9 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.ISODateTimeFormat;
+
 // from package info.nightscout.client.utils;
 
 /**
@@ -19,7 +22,7 @@ import java.util.TimeZone;
 public class DateUtil {
 
     private static final String FORMAT_DATE_ISO = "yyyy-MM-dd'T'HH:mm:ss'Z'"; // eg 2017-03-24T22:03:27Z
-    private static final String FORMAT_DATE_ISO2 = "yyyy-MM-dd'T'HH:mm:ssZ"; // eg 2017-03-27T17:38:14+03:00
+    private static final String FORMAT_DATE_ISO2 = "yyyy-MM-dd'T'HH:mm:ssZ"; // eg 2017-03-27T17:38:14+0300
     private static final String FORMAT_DATE_ISO3 = "yyyy-MM-dd'T'HH:mmZ"; // eg 2017-05-12T08:16-0400
 
     /**
@@ -37,11 +40,23 @@ public class DateUtil {
         return f.parse(isoDateString);
     }
 
+    
+    private static Date fromISODateString4(String isoDateString)
+            throws Exception {
+        DateTime dt = ISODateTimeFormat.dateTime().parseDateTime(isoDateString);
+        return dt.toDate();
+    }
+    
     private static Date fromISODateString3(String isoDateString)
             throws Exception {
-        SimpleDateFormat f = new SimpleDateFormat(FORMAT_DATE_ISO3);
-        f.setTimeZone(TimeZone.getTimeZone("UTC"));
-        return f.parse(isoDateString);
+        try {
+            SimpleDateFormat f = new SimpleDateFormat(FORMAT_DATE_ISO3);
+            f.setTimeZone(TimeZone.getTimeZone("UTC"));
+            return f.parse(isoDateString);
+        } catch (java.text.ParseException e) {
+            return fromISODateString4(isoDateString);
+        }
+        
     }
 
     private static Date fromISODateString2(String isoDateString)

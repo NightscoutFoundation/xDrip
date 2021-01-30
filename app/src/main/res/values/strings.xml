@@ -181,7 +181,11 @@
     <string name="checking_for_update">Checking for update..</string>
     <string name="signal_missed">Signal Missed</string>
     <string name="minutes_ago">{0, choice,0#{0, number, integer} Minutes ago|1#{0, number, integer} Minute ago|1&lt;{0, number, integer} Minutes ago}</string>
+    <string name="expires_days">{0, choice,0#Sensor Expired!|1#Ends in {0, number} day|1&lt;Ends in {0, number} days}</string>
+    <string name="expires_at">Ends {0}</string>
     <string name="space_minutes_ago">" Minutes ago"</string>
+    <string name="in_libre_all_house_mode_no_readings_collected_yet">"In libre all house mode: no readings collected yet."</string>
+    <string name="in_libre_all_house_mode_last_data_collected">"In libre all house mode: Last reading "</string>
     <string name="space_minute_ago">" Minute ago"</string>
     <string name="show_parakeet_map">Show Parakeet map</string>
     <string name="switch_parakeet_to_setup_mode">Switch Parakeet to Setup mode</string>
@@ -335,6 +339,7 @@
     <string name="speak_your_treatment">Speak your treatment eg:\nx.x units insulin / xx grams carbs</string>
     <string name="speech_recognition_is_not_supported">Speech recognition is not supported</string>
     <string name="treatment_note">Treatment Note</string>
+    <string name="accessibility_description">xDrip uses the Accessibility feature just to adjust the screen when the device is locked. This is likely only useful if you have a phone with the Always On Display feature and have it enabled. xDrip does not interact with Android in any other way.</string>
     <string name="could_not_export_database">Could not export Database :(</string>
     <string name="exported_to">"Exported to "</string>
     <string name="default_to_voice_input_next_time">Default to voice input next time</string>
@@ -431,7 +436,7 @@
     <string name="choose_sound_used_for_predicted_low_alarm">Choose sound used for predicted low alarm.</string>
     <string name="notify_when_parakeet_device_stops_checking_in">Notify when parakeet device stops checking in</string>
     <string name="parakeet_related_alerts">Parakeet related alerts</string>
-    <string name="raise_parakeet_notification_silently_when_charging">Raise parakeet notifiction silently when charging</string>
+    <string name="raise_parakeet_notification_silently_when_charging">Raise parakeet notification silently when charging</string>
     <string name="silent_alert_when_charging">Silent alert when charging</string>
     <string name="alerts_start_out_snoozed_and_must_persist_for_a_while">Alerts start out snoozed and must persist for a while to actually trigger</string>
     <string name="alarms_silenced_during_telephone_calls">Alarms silenced during telephone calls</string>
@@ -803,6 +808,8 @@
     <string name="notify_data_arrives_master"><![CDATA[Notify when data arrives from the master if the interval is > 20 mins.]]></string>
     <string name="follower_chime_new">Follower Chime New</string>
     <string name="carb_ratio">Carb Ratio</string>
+    <string name="enable_dedicated_insulin_profiles">Config Insulin profiles</string>
+    <string name="desc_enable_dedicated_insulin_profiles">Here one can enable or configure various insulin profiles</string>
     <string name="insulin_sensitivity">Insulin Sensitivity</string>
     <string name="secondary_plugin_glucose_value">Secondary Plugin Glucose value</string>
     <string name="step_counter_1st_color">Step counter 1st Color</string>
@@ -845,8 +852,8 @@
     <string name="confirm_remote_snooze">Confirm Remote Snooze</string>
     <string name="are_you_sure_you_wish_to_snooze_all_other_devices_in_your_sync_group">Are you sure you wish to snooze all other devices in your sync group?</string>
     <string name="yes_send_it">YES, send it!</string>
-    
-    
+
+
     <string name="movement_detection_and_vehicle_mode">Movement detection and vehicle mode</string>
     <string name="xdrip_motion_tracking">xDrip+ Motion Tracking</string>
     <string name="detect_motion_types">Use sensors to detect types of motion</string>
@@ -871,6 +878,7 @@
     <string name="sidiary_date_title">Export starting from when?</string>
     <string name="blukon">Blucon</string>
     <string name="tomato">Tomato</string>
+    <string name="bubble">Bubble</string>
     <string name="use_gravity_sensor_to_rotate_items">Use Gravity Sensor to rotate items</string>
     <string name="low_bridge_battery">Low bridge battery</string>
     <string name="reminders">Reminders</string>
@@ -1080,7 +1088,7 @@
     <string name="title_snooze_times">Reminder Snooze Panel - Times</string>
     <string name="message_snooze_times">The various buttons quickly change from the default snooze to a different snooze period.</string>
     <string name="title_which_day">Which day?</string>
-    <string name ="title_what_time_day">What time of day?</string>
+    <string name="title_what_time_day">What time of day?</string>
     <string name="reminder_due">Reminder due</string>
     <string name="title_add_reminder">Add Reminder</string>
     <string name="title_edit_reminder">Edit Reminder</string>
@@ -1161,6 +1169,7 @@
     <string name="connection_status_long">Connection Status:   </string>
 
     <string name="without_location_scan_doesnt_work">Without Location permission Android Bluetooth scan doesn\'t work</string>
+    <string name="android_10_need_background_location">Android 10 and above need background location for Bluetooth to work</string>
     <string name="without_location_permission_emergency_cannot_get_location">Without Location permission emergency messages cannot use location data</string>
     <string name="force_speaker_colon">Force Speaker</string>
     <string name="choose_data_source">Choose Data Source</string>
@@ -1218,6 +1227,62 @@
     <string name="send_bg_readings_to_backfill">Send BG readings to backfill</string>
     <string name="view_old_error_log">View old Error Log</string>
     <string name="return_to_home_screen">Return to Home Screen</string>
+    <string name="title_miband">MiBand</string>
+    <string name="summary_miband_enable">Sync Data with MiBand fitness bands</string>
+    <string name="title_miband_enable">Use MiBand Band</string>
+    <string name="title_miband_screens_features">MiBand Screens / Features</string>
+    <string name="title_miband_screen_battery">Show Battery</string>
+    <string name="title_miband_show_date">Show date on the screen</string>
+    <string name="title_miband_visibility">MiBand visibility</string>
+    <string name="summary_miband_visibility">Miband will be visible for other devices</string>
+    <string name="title_miband_switch_display_on_wrist">Switch display on wrist</string>
+    <string name="title_miband_units">Units</string>
+    <string name="summary_miband_units">Choose the distance unit used on band </string>
+    <string name="title_miband_goal_notification">Goal notification</string>
+    <string name="summary_miband_goal_notification">Miband will vibrate when you reach a goal</string>
+    <string name="title_miband_locale_24_hour">24 Hour clock</string>
+    <string name="summary_miband_locale_24_hour">Show 24 Hour clock</string>
+
+    <string name="title_miband_nightmode_category">Night mode settings</string>
+    <string name="title_miband_nightmode_enabled">Enable night mode settings</string>
+    <string name="summary_miband_nightmode_enabled">Reduce band screen brightness during custom time</string>
+    <string name="title_miband_nightmode_start">Night mode start</string>
+    <string name="title_miband_nightmode_end">Night mode end</string>
+    <string name="title_miband_interval_in_nightmode">Interval</string>
+    <string name="summary_miband_interval_in_nightmode">Defines how often BG would be synchronized in the night mode</string>
+    <string name="title_miband_colect_heartrate">Collect HR</string>
+    <string name="summary_miband_colect_heartrate">Would collect heart rate data from band. Update interval can be configured in MiFit or any thirdparty application</string>
+
+    <string name="title_miband_authkey">Auth Key</string>
+    <string name="summary_miband_authkey">Set the auth key for miband4 (To get auth key, follow the instructions on https://www.freemyband.com/)</string>
+    <string name="summary_miband_mac">Leave empty for auto search</string>
+    <string name="title_miband_send_readings_as_notification">BG readings as notification</string>
+    <string name="summary_miband_send_readings_as_notification">Will use a notifications to send BG readings. The date wouldn\'t be changed so all band features can be used.
+        Need to disable if you want to use xdrip watchface(It is required to delete official MiFit application to avoid date overrides)</string>
+    <string name="title_miband_vibrate_on_readings">Vibrate on readings</string>
+    <string name="title_miband_send_calls">Send Calls</string>
+    <string name="summary_miband_send_calls">Send call notifications to the band (Android 6+)</string>
+
+    <string name="title_miband_graph_category">Graph options</string>
+    <string name="title_miband_graph_enable">Enable graph</string>
+    <string name="title_miband_graph_treatment_enable">Show bolus</string>
+
+    <string name="title_miband_update_bg">Update BG manually</string>
+    <string name="title_miband_general_settings_category">General settings</string>
+
+    <string name="title_miband_screen_notifications">Show Notifications</string>
+    <string name="title_miband_screen_weather">Show Weather</string>
+    <string name="title_miband_screen_activity">Show Activity</string>
+    <string name="title_miband_screen_more">Show More</string>
+    <string name="title_miband_screen_status">Show Status</string>
+    <string name="title_miband_screen_heart_rate">Show Heart rate</string>
+    <string name="title_miband_screen_timer">Show Timer</string>
+    <string name="title_miband_screen_nfc">Show NFC(if available)</string>
+
+    <string name="miband_watchface_istall_success">MiBand watchface has been uploaded successfully!</string>
+    <string name="miband_watchface_istall_error">Error while uploading MiBand watchface</string>
+    <string name="miband_bg_dialog_title">Update bg data now?</string>
+
     <string name="title_lefun_band">Lefun Band</string>
     <string name="summary_lefun_enable">Sync Data with LeFun fitness bands</string>
     <string name="title_lefun_enable">Use LeFun Band</string>
@@ -1325,6 +1390,8 @@
     <string name="title_plus_accept_follower_actions">Accept follower actions</string>
     <string name="summary_plus_whole_house">Participate in a Whole House Network</string>
     <string name="title_plus_whole_house">Whole House</string>
+    <string name="summary_libre_whole_house_collector">This phone will be a collector in a whole house network</string>
+    <string name="title_libre_whole_house_collector">Libre Whole House</string>
     <string name="summary_xdrip_plus_desert_sync_settings">Off-Grid following</string>
     <string name="title_xdrip_plus_desert_sync_settings">Desert Sync</string>
     <string name="summary_desert_sync_enabled">Enabled local non-internet sync facilities</string>
@@ -1420,7 +1487,8 @@
     <string name="classic_simple">Classic simple</string>
     <string name="libre">Libre</string>
     <string name="what_type_of_libre_bridge_device_do_you_use">What type of Libre bridge device do you use?</string>
-    <string name="bluetooth_bridge_device_blucon_limitter_bluereader_tomato_etc">Bluetooth Bridge device: Blucon, LimiTTer, Bluereader, Tomato etc</string>
+    <string name="bluetooth_bridge_device_blucon_limitter_bluereader_tomato_etc">Bluetooth Bridge device: Blucon, Bubble, LimiTTer, Bluereader, Tomato etc</string>
+    <string name="libre_patched">Libre2 Patched</string>
     <string name="librealarm_app_using_sony_smartwatch">LibreAlarm App: using Sony Smartwatch</string>
     <string name="__data_source_disabled">\n DATA SOURCE DISABLED</string>
     <string name="data_source_is_set_to_">Data Source is set to: </string>
@@ -1464,6 +1532,7 @@
     <string name="unusual_internal_context_problem__please_report">Unusual internal context problem - please report</string>
     <string name="cannot_start__please_report_context_problem">Cannot start - please report context problem</string>
     <string name="xdrip_will_not_work_below_android_version_42">xDrip+ will not work below Android version 4.2</string>
+    <string name="xdrip_oop2_not_installed">xDrip+ needs oop2 to handle libre2/libre us sensors.</string>
     <string name="this_app_needs_battery_optimization_whitelisting_or_it_will_not_work_well_please_reset_app_preferences">This app needs battery optimization whitelisting or it will not work well. Please reset app preferences</string>
     <string name="setting_disabled_">Setting disabled :)</string>
     <string name="yes_please">YES, Please</string>
@@ -1506,4 +1575,31 @@
     <string name="no_sensor_found">No sensor found</string>
     <string name="checksum_failed__retrying">Checksum failed - retrying</string>
     <string name="scanning">Scanning</string>
+    <string name="authentication_failed_wrong_password">Authentication Failed. Wrong password?</string>
+    <string name="share_login_data_isnt_valid">Share Login data isn\'t valid - check username / password</string>
+    <string name="connectivity_problem_reaching_share_servers">Connectivity problem reaching Share servers</string>
+    <string name="ob1_session_restarted_title">Sensor session restarted</string>
+    <string name="ob1_session_restarted_msg">The sensor session was preemptively restarted. Please check if the next readings are off and calibrate if needed</string>
+    <string name="ob1_session_restarted_note">Sensor session was restarted</string>
+    <string name="title_ob1_g5_preemptive_restart_extended_time_travel">Extended time-travel</string>
+    <string name="summary_ob1_g5_preemptive_restart_extended_time_travel">Restart the session to start at day 3 to avoid causing jumps</string>
+    <string name="title_ob1_g5_preemptive_restart_extended_time_travel_all_firmwares">Always allow extended time-travel</string>
+    <string name="summary_ob1_g5_preemptive_restart_extended_time_travel_all_firmwares">Allow extended time-travel with all firmware versions (engineering mode only) </string>
+    <string name="collection_summary_ob1_g5_preemptive_restart">Automatically restart a sensor before it stops</string>
+    <string name="title_ob1_g5_preemptive_restart_alert">Alert on preemptive restart</string>
+    <string name="summary_ob1_g5_preemptive_restart_alert">Raise an alert when preemptively restarting the session</string>
+    <string name="blood_glucose_graph">Blood Glucose Graph</string>
+    <string name="pref_enable_insulinprofiles">enable at least one max three profiles</string>
+    <string name="pref_select_basal_insulinprofiles">choose basal insulin profile.</string>
+    <string name="pref_select_bolus_insulinprofiles">choose bolus insulin profile. also used for pump and pen...</string>
+    <string name="enable_streaming_summary">connect to libre 2 sensors after scanning them. This will stop libre reader and libre link from receiving alerts</string>
+    <string name="enable_streaming_title">Starting bluetooth connection with libre 2 sensors</string>
+    <string name="enable_streaming_always_allow">Always connect to libre2 sensors</string>
+    <string name="enable_streaming_ask_each_time">ask each time</string>
+    <string name="enable_streaming_never">Never connect to libre2 sensors</string>
+    <string name="enable_streaming_dialog_yes">connect to this libre2 sensor</string>
+    <string name="enable_streaming_dialog_no">Don\'t connect to this libre2 sensor </string>
+    <string name="enable_streaming_dialog_dont_ask_again">Don\'t ask me that again</string>
+    <string name="enable_streaming_dialog_title">Connecting libre sensor to bluetooth</string>
+    <string name="enable_streaming_dialog_text">Do you want to connect xDrip with this sensor? This will stop libre reader and libre link from receiving alerts. Press yes and scan again to connect (choose don\'t connect if you want to run xDrip with the patched app)</string>
 </resources>

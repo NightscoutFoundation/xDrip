@@ -13,9 +13,11 @@
         <item>Libre wifi</item>
         <item>xDrip+ Sync Follower</item>
         <item>LibreAlarm</item>
+        <item>Libre2 (patched App)</item>
         <item>640G / EverSense</item>
         <item>Medtrum A6</item>
         <item>Nightscout Follower</item>
+        <item>Dex Share Follower</item>
         <item>Disable Collection</item>
     </string-array>
 
@@ -32,12 +34,26 @@
         <item>LibreWifi</item>
         <item>Follower</item>
         <item>LibreAlarm</item>
+        <item>LibreReceiver</item>
         <item>NSEmulator</item>
         <item>Medtrum</item>
         <item>NSFollower</item>
+        <item>SHFollower</item>
         <item>Disabled</item>
     </string-array>
 
+     <string-array name="EnableStreamingMethods">
+        <item>@string/enable_streaming_always_allow</item>
+        <item>@string/enable_streaming_ask_each_time</item>
+        <item>@string/enable_streaming_never</item>
+    </string-array>
+
+    <string-array name="EnableStreamingValues">
+        <item>enable_streaming_always</item>
+        <item>enable_streaming_ask</item>
+        <item>enable_streaming_never</item>
+    </string-array>
+    
     <string-array name="SendToPebbleChoice">
 
         <item>Standard Watchface (old)</item>

@@ -14,6 +14,7 @@ import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
+import com.eveningoutpost.dexdrip.UtilityModels.NanoStatus;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
@@ -24,7 +25,7 @@ public class StopSensor extends ActivityWithMenu {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(Sensor.isActive() == false) {
+        if(!Sensor.isActive()) {
             Intent intent = new Intent(this, StartNewSensor.class);
             startActivity(intent);
             finish();
@@ -69,6 +70,7 @@ public class StopSensor extends ActivityWithMenu {
 
         CollectionServiceStarter.restartCollectionServiceBackground();
         Home.staticRefreshBGCharts();
+        NanoStatus.keepFollowerUpdated(false);
     }
 
     public void resetAllCalibrations(View v) {
@@ -77,14 +79,14 @@ public class StopSensor extends ActivityWithMenu {
         builder.setTitle(gs(R.string.are_you_sure));
         builder.setMessage(gs(R.string.do_you_want_to_delete_and_reset_the_calibrations_for_this_sensor));
 
-        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(gs(R.string.no), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
 
             }
         });
 
-        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(gs(R.string.yes), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 Calibration.invalidateAllForSensor();

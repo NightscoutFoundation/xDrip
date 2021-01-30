@@ -2,13 +2,14 @@
     android:id="@+id/xDripwidget"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="@android:color/transparent">
+    android:background="#B3000000"
+    >
 
     <ImageView
         android:id="@+id/widgetGraph"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:contentDescription="Blood Glucose Graph"
+        android:contentDescription="@string/blood_glucose_graph"
         android:scaleType="centerInside" />
 
     <LinearLayout

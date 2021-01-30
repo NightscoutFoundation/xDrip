@@ -1,13 +1,31 @@
 buildscript {
     repositories {
-        maven { url 'https://maven.fabric.io/public' }
+        google()
+        jcenter()
     }
 
     dependencies {
-        classpath 'io.fabric.tools:gradle:1.+'
+        if (getGradle().getStartParameter().getTaskRequests().toString().contains("Release]")) {
+            println("Enabling New Relic")
+            classpath "com.newrelic.agent.android:agent-gradle-plugin:5.27.1"
+        }
     }
 }
 apply plugin: 'com.android.application'
+
+
+if (project.file('local.gradle').exists()) {
+    apply from: 'local.gradle'
+}
+
+
+if (getGradle().getStartParameter().getTaskRequests().toString().contains("Release]")) {
+    apply plugin: 'newrelic'
+    newrelic {
+        variantMapsEnabled false
+        uploadMapsForVariant ''
+    }
+}
 //apply plugin: 'me.tatarka.retrolambda'
 //apply plugin: 'io.fabric'
 
@@ -22,7 +40,6 @@ repositories {
     maven {
         url "https://maven.google.com"
     }
-    maven { url 'https://maven.fabric.io/public' }
     maven {
         url "https://raw.github.com/embarkmobile/zxing-android-minimal/mvn-repo/maven-repository/"
     }
@@ -112,17 +129,22 @@ def generateVersionName = { ->
 
 }
 
-
-
 android {
-    compileSdkVersion 26
-    buildToolsVersion '27.0.3'
+    compileSdkVersion 29
 
+    dexOptions {
+        javaMaxHeapSize "3g"
+    }
+
+    configurations.all {
+        resolutionStrategy.force 'com.google.code.findbugs:jsr305:1.3.9'
+    }
 
     defaultConfig {
         applicationId "com.eveningoutpost.dexdrip"
         minSdkVersion 18
         // increasing target SDK version can cause compatibility issues with Android 7+
+        //noinspection ExpiredTargetSdkVersion
         targetSdkVersion 23
         // change versionCode only when downgrade should be prevented
         // eg, when data structures are incompatible
@@ -132,9 +154,26 @@ android {
         buildConfigField "String", "buildUUID", generateRandomUUID()
         buildConfigField "long", "buildTimestamp", generateTimestamp()
         buildConfigField "int", "targetSDK", targetSdkVersion.mApiLevel.toString()
-        vectorDrawables.useSupportLibrary = true
+        //vectorDrawables.useSupportLibrary = true // broken in newer gradle versions
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
+        // workaround till #1596 gets merged
+        resValue "string", "google_maps_key", "AIzaSyDOa0FJV2h2qf0tJ-kSeX1Sk2f1-IbUOz4"
     }
+
+    // The defaultConfig values above are fixed, so your incremental builds don't
+    // need to rebuild the manifest (and therefore the whole APK, slowing build times).
+    // But for release builds, it's okay. So the following script iterates through
+    // all the known variants, finds those that are "release" build types, and
+    // changes those properties to something dynamic.
+    applicationVariants.all { variant ->
+        if (variant.buildType.name == "release") {
+            variant.outputs.each { output ->
+                output.versionNameOverride = generateVersionName()
+            }
+        }
+    }
+
     testOptions {
         animationsDisabled = true
         unitTests {
@@ -173,36 +212,57 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'),
                     'proguard-rules.pro'
             testProguardFile 'proguard-debug.pro'
+            multiDexKeepProguard file('proguard-debug.pro')
             ext.enableCrashlytics = false
             //      applicationIdSuffix ".debug"
             versionNameSuffix "-debug"
             debuggable true
         }
-    }
-}
-
-// auto test rig
-task AutoInstall(type: Exec) {
-    commandLine "bash", "$projectDir/autoinstallviausb"
-}
-
-// auto tester
-tasks.whenTaskAdded { task ->
-    if (task.name == 'assembleRelease') {
-        if (System.getenv('USERDOMAIN') == "PC-PC") {
-            task.finalizedBy 'AutoTestRig'
-            AutoTestRig.outputs.upToDateWhen { false }
+        dev {
+            minifyEnabled false
+            shrinkResources false
+            useProguard false
+            ext.enableCrashlytics = false
+            ext.alwaysUpdateBuildId = false
+            versionNameSuffix "-debug"
+            debuggable true
+            signingConfig debug.signingConfig
+            matchingFallbacks = ['debug', 'release']
         }
     }
+
+    flavorDimensions "version"
+    productFlavors {
+        // When building a variant that uses this flavor, the following configurations
+        // override those in the defaultConfig block.
+        fast {
+            // To avoid using legacy multidex when building from the command line,
+            // set minSdkVersion to 21 or higher. When using Android Studio 2.3 or higher,
+            // the build automatically avoids legacy multidex when deploying to a device running
+            // API level 21 or higher—regardless of what you set as your minSdkVersion.
+            minSdkVersion 21
+            versionNameSuffix "-dev"
+            buildConfigField "int", "buildVersion", "2021010100"
+            buildConfigField "String", "buildUUID", "\"0f79a60a-5616-99be-8eb1-a430edcfd9fd\""
+            buildConfigField "long", "buildTimestamp", "1609459200L"
+            resConfigs "en", "xxhdpi"
+        }
+
+        prod {
+            // If you've configured the defaultConfig block for the release version of
+            // your app, you can leave this block empty and Gradle uses configurations in
+            // the defaultConfig block instead. You still need to create this flavor.
+            // Otherwise, all variants use the "dev" flavor configurations.
+        }
+    }
+
 }
 
-task AutoTestRig() doLast {
-    AutoInstall.execute()
-}
+
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
     wearApp project(':wear')
     //weapApp files('../wear/build/outputs/apk/wear_release.apk')
     //testimplementation 'com.squareup.okhttp:mockwebserver:2.5.0'
@@ -237,23 +297,24 @@ dependencies {
     implementation "com.google.android.gms:play-services-gcm:10.2.1"
     implementation 'com.squareup.wire:wire-runtime:2.2.0'
     implementation 'com.squareup.okhttp:okhttp:2.7.5'
-    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
+    implementation 'com.squareup.okhttp3:okhttp:3.12.1'
     implementation 'com.squareup.okhttp3:logging-interceptor:3.10.0'
+    implementation "com.newrelic.agent.android:android-agent:5.27.1"
     //implementation 'com.jakewharton.retrofit:retrofit1-okhttp3-client:1.1.0'
     implementation 'com.squareup.retrofit2:retrofit:2.4.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
     implementation 'com.squareup.retrofit2:converter-moshi:2.4.0'
-    implementation 'com.squareup.moshi:moshi:1.4.0'
+    implementation 'com.squareup.moshi:moshi:1.9.2'
     //implementation 'org.influxdb:influxdb-java:2.6'
-    implementation 'com.google.code.gson:gson:2.4'
+    implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'com.squareup.retrofit:converter-gson:2.0.0-beta2'
     implementation 'com.getpebble:pebblekit:3.1.0'
     implementation 'com.github.jamorham:amazfitcommunication:master-SNAPSHOT'
     implementation 'io.reactivex:rxjava:1.3.3'
     implementation 'com.activeandroid:thread-safe-active-android:3.1.1'
     //implementation 'com.github.lecho:hellocharts-android:v1.5.8'
-    implementation "com.polidea.rxandroidble:rxandroidble:1.7.0"
-    implementation 'com.google.guava:guava:20.0'
+    implementation "com.polidea.rxandroidble2:rxandroidble:1.11.1"
+    implementation 'com.google.guava:guava:24.1-android'
     implementation 'com.embarkmobile:zxing-android-minimal:2.0.0@aar'
     implementation 'com.embarkmobile:zxing-android-integration:2.0.0@aar'
     //implementation 'com.embarkmobile:zxing-android-legacy:2.0.0@aar'
@@ -264,13 +325,10 @@ dependencies {
     implementation 'me.tatarka.bindingcollectionadapter2:bindingcollectionadapter-recyclerview:2.2.0'
     implementation 'org.slf4j:slf4j-api:1.7.7'
     implementation 'org.apache.commons:commons-math3:3.6'
-    implementation('com.crashlytics.sdk.android:crashlytics:2.6.6@aar') {
-        transitive = true
-    }
     implementation 'uk.com.robust-it:cloning:1.9.5'
     implementation 'com.github.amlcurran.showcaseview:library:5.4.3'
     // implementation 'com.itextpdf:itextg:5.5.9'
-
+    implementation 'com.github.jamorham:QR-Code-generator:d0454644af'
     // Pebble-Trend, needs to be checked if really needed
     //implementation 'com.android.support:multidex:1.0.1'
     implementation 'ar.com.hjg:pngj:2.1.0'
@@ -280,15 +338,17 @@ dependencies {
     implementation(name: 'hellocharts-library-release', ext: 'aar')
     implementation(name: 'search-preference', ext: 'aar')
     implementation 'org.apache.commons:commons-text:1.3'
-    implementation 'com.google.dagger:dagger:2.11'
+    implementation 'com.google.dagger:dagger:2.25.4'
     implementation "com.evernote:android-job:1.2.6"
+    implementation 'com.android.support:multidex:1.0.3'
     //implementation 'com.google.dagger:dagger-android-support:2.x' // if you use the support libraries
-    annotationProcessor 'com.google.dagger:dagger-compiler:2.11'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.25.4'
+    implementation 'net.danlew:android.joda:2.10.6.1'
 
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.objenesis:objenesis:2.5.1'
     testImplementation 'org.hamcrest:hamcrest-library:1.3'
-    testImplementation "org.robolectric:robolectric:3.8"
+    testImplementation "org.robolectric:robolectric:4.2.1"
     testImplementation "com.google.truth:truth:0.39"
 
     testImplementation 'org.mockito:mockito-core:2.4.0'
@@ -316,9 +376,21 @@ dependencies {
     //androidTestImplementation 'com.android.support.test.espresso:espresso-web:3.0.1'
 
     // you will want to install the android studio lombok plugin
-    compileOnly 'org.projectlombok:lombok:1.16.20'
+    compileOnly 'org.projectlombok:lombok:1.18.10'
     //  compileOnly 'javax.annotation:javax.annotation-api:1.3.2'
-    annotationProcessor "org.projectlombok:lombok:1.16.20"
+    annotationProcessor "org.projectlombok:lombok:1.18.10"
+
+    // use lombok in unit tests
+    testCompileOnly 'org.projectlombok:lombok:1.18.10'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.10'
+}
+
+tasks.withType(Test) { 
+  testLogging {
+    exceptionFormat "full"
+    events "started", "skipped", "passed", "failed"
+    showStandardStreams true
+  }
 }
 
 apply plugin: 'com.google.gms.google-services'

@@ -951,4 +951,8 @@ public class Notifications extends IntentService {
         }
     }
 
+    public static void ob1SessionRestartRequested() {
+        // stub
+    }
+
 }

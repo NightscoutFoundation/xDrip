@@ -18,7 +18,7 @@ import com.eveningoutpost.dexdrip.cgm.medtrum.messages.AdvertRx;
 import com.eveningoutpost.dexdrip.cgm.medtrum.messages.AnnexARx;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.bt.ScanRecordFromLegacy;
-import com.polidea.rxandroidble.scan.ScanRecord;
+import com.polidea.rxandroidble2.scan.ScanRecord;
 
 import lombok.Getter;
 

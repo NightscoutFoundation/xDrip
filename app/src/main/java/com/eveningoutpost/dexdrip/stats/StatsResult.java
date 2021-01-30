@@ -210,15 +210,19 @@ public class StatsResult {
     public long getPossibleCaptures() {return possibleCaptures;}
 
     public String getInPercentage(){
-        return "in:" +  ((getTotalReadings()>0)?(in*100/getTotalReadings()) + "%":"-%");
+        return "in:" +  ((getTotalReadings()>0)? (100 - getHighPercentageInt() - getLowPercentageInt()) + "%":"-%");
     }
+
+    public int getLowPercentageInt() { return (int) (below * 100.0 / getTotalReadings() + 0.5);}
 
     public String getLowPercentage(){
-        return "lo:" +  ((getTotalReadings()>0)?(below*100/getTotalReadings()) + "%":"-%");
+        return "lo:" +  ((getTotalReadings()>0)? getLowPercentageInt() + "%":"-%");
     }
 
+    public int getHighPercentageInt() { return (int) (above * 100.0 / getTotalReadings() + 0.5);}
+
     public String getHighPercentage(){
-        return "hi:" +  ((getTotalReadings()>0)?(above*100/getTotalReadings()) + "%":"-%");
+        return "hi:" +  ((getTotalReadings()>0)? getHighPercentageInt() + "%":"-%");
     }
 
     public String getA1cDCCT(){

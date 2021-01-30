@@ -4,16 +4,15 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.eveningoutpost.dexdrip.G5Model.DexSyncKeeper;
 import com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
@@ -38,7 +37,6 @@ import java.util.Date;
 
 import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
 import static com.eveningoutpost.dexdrip.Models.BgReading.AGE_ADJUSTMENT_TIME;
-
 import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 public class StartNewSensor extends ActivityWithMenu {
@@ -80,12 +78,7 @@ public class StartNewSensor extends ActivityWithMenu {
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && DexCollectionType.hasBluetooth()) {
                     if (!LocationHelper.locationPermission(StartNewSensor.this)) {
-                        JoH.show_ok_dialog(activity, gs(R.string.please_allow_permission), gs(R.string.location_permission_needed_to_use_bluetooth), new Runnable() {
-                            @Override
-                            public void run() {
-                                activity.requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 0);
-                            }
-                        });
+                        LocationHelper.requestLocationForBluetooth(StartNewSensor.this);
                     } else {
                         sensorButtonClick();
                     }
@@ -99,48 +92,56 @@ public class StartNewSensor extends ActivityWithMenu {
 
     private void sensorButtonClick() {
 
-
         ucalendar = Calendar.getInstance();
-        final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-        builder.setTitle(gs(R.string.did_you_insert_it_today));
-        builder.setMessage(gs(R.string.we_need_to_know_when_the_sensor_was_inserted_to_improve_calculation_accuracy__was_it_inserted_today));
-        builder.setPositiveButton(gs(R.string.yes_today), new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-                askSesorInsertionTime();
+        if (Ob1G5CollectionService.usingNativeMode()) {
+            if (!DexSyncKeeper.isReady(Pref.getString("dex_txid", "NULL"))) {
+                JoH.static_toast_long("Need to connect to transmitter once before we can start sensor");
+                MegaStatus.startStatus(MegaStatus.G5_STATUS);
+            } else {
+                realStartSensor();   // If we're using native mode, don't bother asking about insertion time
             }
-        });
-        builder.setNegativeButton(gs(R.string.not_today), new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-                if (DexCollectionType.hasLibre()) {
-                    ucalendar.add(Calendar.DAY_OF_MONTH, -1);
-                    realStartSensor();
-                } else {
-                    final DatePickerFragment datePickerFragment = new DatePickerFragment();
-                    datePickerFragment.setAllowFuture(false);
-                    if (!Home.get_engineering_mode()) {
-                        datePickerFragment.setEarliestDate(JoH.tsl() - (30L * 24 * 60 * 60 * 1000)); // 30 days
-                    }
-                    datePickerFragment.setTitle(gs(R.string.which_day_was_it_inserted));
-                    datePickerFragment.setDateCallback(new ProfileAdapter.DatePickerCallbacks() {
-                        @Override
-                        public void onDateSet(int year, int month, int day) {
-                            ucalendar.set(year, month, day);
-                            // Long enough in the past for age adjustment to be meaningless? Skip asking time
-                            if ((!Home.get_engineering_mode()) && (JoH.tsl() - ucalendar.getTimeInMillis() > (AGE_ADJUSTMENT_TIME + (1000 * 60 * 60 * 24)))) {
-                                realStartSensor();
-                            } else {
-                                askSesorInsertionTime();
-                            }
-                        }
-                    });
-
-                    datePickerFragment.show(activity.getFragmentManager(), "DatePicker");
+        } else {
+            final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+            builder.setTitle(gs(R.string.did_you_insert_it_today));
+            builder.setMessage(gs(R.string.we_need_to_know_when_the_sensor_was_inserted_to_improve_calculation_accuracy__was_it_inserted_today));
+            builder.setPositiveButton(gs(R.string.yes_today), new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    askSesorInsertionTime();
                 }
-            }
-        });
-        builder.create().show();
+            });
+            builder.setNegativeButton(gs(R.string.not_today), new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    if (DexCollectionType.hasLibre()) {
+                        ucalendar.add(Calendar.DAY_OF_MONTH, -1);
+                        realStartSensor();
+                    } else {
+                        final DatePickerFragment datePickerFragment = new DatePickerFragment();
+                        datePickerFragment.setAllowFuture(false);
+                        if (!Home.get_engineering_mode()) {
+                            datePickerFragment.setEarliestDate(JoH.tsl() - (30L * 24 * 60 * 60 * 1000)); // 30 days
+                        }
+                        datePickerFragment.setTitle(gs(R.string.which_day_was_it_inserted));
+                        datePickerFragment.setDateCallback(new ProfileAdapter.DatePickerCallbacks() {
+                            @Override
+                            public void onDateSet(int year, int month, int day) {
+                                ucalendar.set(year, month, day);
+                                // Long enough in the past for age adjustment to be meaningless? Skip asking time
+                                if ((!Home.get_engineering_mode()) && (JoH.tsl() - ucalendar.getTimeInMillis() > (AGE_ADJUSTMENT_TIME + (1000 * 60 * 60 * 24)))) {
+                                    realStartSensor();
+                                } else {
+                                    askSesorInsertionTime();
+                                }
+                            }
+                        });
+
+                        datePickerFragment.show(activity.getFragmentManager(), "DatePicker");
+                    }
+                }
+            });
+            builder.create().show();
+        }
     }
 
     private void askSesorInsertionTime() {

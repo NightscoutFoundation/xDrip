@@ -4,7 +4,7 @@
  <img align="right" src="Documentation/images/download-xdrip-plus-qr-code.png">
  Info page and APK download: https://jamorham.github.io/#xdrip-plus
 
-<img align="right" src="https://travis-ci.org/jamorham/xDrip-plus.svg?branch=master">
+<img align="right" src="https://travis-ci.org/jamorham/xDrip-plus.svg?branch=master"><a align="right" title="Crowdin" target="_blank" href="https://crowdin.com/project/xdrip"><img align="right" src="https://badges.crowdin.net/xdrip/localized.svg"></a>
 
 ## Features
 * Voice, Keypad or Watch input of Treatments (Insulin/Carbs/Notes)
@@ -50,7 +50,7 @@ Your data is yours and can be exported in many different ways. xDrip also interc
 * More Nightscout and APS integration
 
 ## Collaboration
-We are very happy if people want to collaborate with this project. Please contact us if you want to get involved and study the collaboration guidelines before submitting any patches or pull requests.
+We are very happy if people want to collaborate with this project. Please contact us if you want to get involved and study the [collaboration guidelines](CONTRIBUTING.md) before submitting any patches or pull requests.
 
 ## Thanks
 None of this would be possible without all the hard work of the xDrip and Nightscout communities who have developed such excellent software and allowed us to build upon it.

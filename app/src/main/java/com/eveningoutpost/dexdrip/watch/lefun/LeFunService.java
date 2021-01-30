@@ -10,6 +10,7 @@ import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.JamBaseBluetoothSequencer;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
@@ -19,6 +20,7 @@ import com.eveningoutpost.dexdrip.store.FastStore;
 import com.eveningoutpost.dexdrip.store.KeyStore;
 import com.eveningoutpost.dexdrip.utils.framework.IncomingCallsReceiver;
 import com.eveningoutpost.dexdrip.utils.framework.WakeLockTrampoline;
+import com.eveningoutpost.dexdrip.watch.PrefBindingFactory;
 import com.eveningoutpost.dexdrip.watch.lefun.messages.BaseRx;
 import com.eveningoutpost.dexdrip.watch.lefun.messages.BaseTx;
 import com.eveningoutpost.dexdrip.watch.lefun.messages.RxFind;
@@ -32,7 +34,7 @@ import com.eveningoutpost.dexdrip.watch.lefun.messages.TxSetScreens;
 import com.eveningoutpost.dexdrip.watch.lefun.messages.TxSetTime;
 import com.eveningoutpost.dexdrip.watch.lefun.messages.TxShakeDetect;
 import com.eveningoutpost.dexdrip.xdrip;
-import com.polidea.rxandroidble.RxBleDeviceServices;
+import com.polidea.rxandroidble2.RxBleDeviceServices;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +42,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import rx.schedulers.Schedulers;
+import io.reactivex.schedulers.Schedulers;
 
 import static com.eveningoutpost.dexdrip.Models.ActiveBgAlert.currentlyAlerting;
 import static com.eveningoutpost.dexdrip.Models.JoH.bytesToHex;
@@ -60,6 +62,7 @@ import static com.eveningoutpost.dexdrip.watch.lefun.LeFunService.LeFunState.PRO
 import static com.eveningoutpost.dexdrip.watch.lefun.LeFunService.LeFunState.QUEUE_MESSAGE;
 import static com.eveningoutpost.dexdrip.watch.lefun.LeFunService.LeFunState.SEND_SETTINGS;
 import static com.eveningoutpost.dexdrip.watch.lefun.LeFunService.LeFunState.SET_TIME;
+import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 /**
  * Jamorham
@@ -258,7 +261,7 @@ public class LeFunService extends JamBaseBluetoothSequencer {
 
         probeModelTypeIfUnknown();
 
-        for (Pair<Integer, Boolean> lState : PrefBinding.getInstance().getStates("lefun_locale_")) {
+        for (Pair<Integer, Boolean> lState : PrefBindingFactory.getInstance(LefunPrefBinding.class).getStates("lefun_locale_")) {
             new QueueMe()
                     .setBytes(new TxSetLocaleFeature(lState.first, lState.second).getBytes())
                     .setDescription("Set Locale Features")
@@ -268,7 +271,7 @@ public class LeFunService extends JamBaseBluetoothSequencer {
 
         BaseTx screens = new TxSetScreens();
 
-        for (int screen : PrefBinding.getInstance().getEnabled("lefun_screen")) {
+        for (int screen : PrefBindingFactory.getInstance(LefunPrefBinding.class).getEnabled("lefun_screen")) {
             screens.enable(screen);
         }
         new QueueMe()
@@ -278,7 +281,7 @@ public class LeFunService extends JamBaseBluetoothSequencer {
                 .queue();
 
         BaseTx features = new TxSetFeatures();
-        for (int feature : PrefBinding.getInstance().getEnabled("lefun_feature")) {
+        for (int feature : PrefBindingFactory.getInstance(LefunPrefBinding.class).getEnabled("lefun_feature")) {
             features.enable(feature);
         }
         new QueueMe()
@@ -522,7 +525,7 @@ public class LeFunService extends JamBaseBluetoothSequencer {
         l.add(new StatusItem("Model", LeFun.getModel()));
         l.add(new StatusItem("Mac address", LeFun.getMac()));
 
-        l.add(new StatusItem("Connected", II.isConnected ? "Yes" : "No"));
+        l.add(new StatusItem("Connected", II.isConnected ? gs(R.string.yes) : gs(R.string.no)));
         if (II.wakeup_time != 0) {
             final long till = msTill(II.wakeup_time);
             if (till > 0) l.add(new StatusItem("Wake Up", niceTimeScalar(till)));

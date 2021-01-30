@@ -204,6 +204,7 @@
     <string name="ok">OK</string>
     <string name="enable_permission">Enable Permission</string>
     <string name="tomato">Tomato</string>
+    <string name="bubble">Bubble</string>
     <string name="space_minutes_ago">" Minutes ago"</string>
     <string name="space_minute_ago">" Minute ago"</string>
     <string name="snooze_alert">Snooze Alert</string>
@@ -236,7 +237,7 @@
     <string name="xdrip_scanning_nfc">xDrip+ Scanning NFC</string>
     <string name="still_processing_previous_backfill_request">Still processing previous back-fill request!</string>
     <string name="please_wait">Please wait..</string>
-    <string name="didnt_find_any_glucose_readings_in_that_time_period">Didn't find any glucose readings in that time period</string>
+    <string name="didnt_find_any_glucose_readings_in_that_time_period">Didn\'t find any glucose readings in that time period</string>
     <string name="got_calibration_in_the_future__cannot_process">Got calibration in the future - cannot process!</string>
     <string name="remote_snooze">Remote snooze..</string>
     <string name="sensor_stopped">Sensor stopped</string>
@@ -264,5 +265,7 @@
     <string name="scanned_ok">Scanned OK!</string>
     <string name="nfc_io_error">NFC IO Error</string>
     <string name="nfc_error">NFC Error</string>
-
+    <string name="ob1_session_restarted_title">Sensor session restarted</string>
+    <string name="ob1_session_restarted_msg">The sensor session was preemptively restarted and set to 3 days, please check if next readings are off and calibrate if needed</string>
+    <string name="ob1_session_restarted_note">Transmitter session was restarted</string>
 </resources>
