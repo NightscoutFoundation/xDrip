@@ -642,7 +642,7 @@
     <string name="use_external_blukon_algorithm">Out of process libre algorithm.</string>
     <string name="calibrate_external_libre_algorithm_summary">Apply xDrip calibration methods on OOP data.</string>
     <string name="calibrate_external_libre_algorithm_title">OOP algorithm calibration.</string>
-    <string name="libre_use_smoothed_data_summary">Use averatge of 5 points to get smoother libre data.</string>
+    <string name="libre_use_smoothed_data_summary">Use average of 5 points to get smoother libre data.</string>
     <string name="libre_use_smoothed_data_title">Smooth libre data.</string>
     <string name="retrieve_blukon_history_title">Retrieve Libre history</string>
     <string name="retrieve_blukon_history_summary">Retrieve missed history from Blukon device when reconnecting to sensor.</string>
