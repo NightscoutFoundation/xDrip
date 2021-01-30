@@ -166,13 +166,10 @@
     <string name="expires_days">{0, choice,0#Sensor abgelaufen!|1#Endet in {0, number} Tag|1&lt;Endet in {0, number} Tagen}</string>
     <string name="expires_at">Endet {0}</string>
     <string name="space_minutes_ago">" Minuten her"</string>
-    <string name="in_libre_all_house_mode_no_readings_collected_yet">"Im Libre-Whole-House-Modus: noch keine Messungen gesammelt."</string>
-    <string name="in_libre_all_house_mode_last_data_collected">"In Libre-Whole-House-Modus: Letzter Werteempfang "</string>
     <string name="space_minute_ago">" Minute her"</string>
     <string name="show_parakeet_map">Parakeet Map anzeigen</string>
     <string name="switch_parakeet_to_setup_mode">Parakeet in Setup-Modus starten</string>
     <string name="view_events_log">Log anzeigen</string>
-    <string name="show_libre_trend">Libre-Trend anzeigen</string>
     <string name="libre_15_minutes_graph">Libre 15 Minuten Kurve</string>
     <string name="libre_last_x_minutes_graph">Libre-Kurve der letzten %d Minuten</string>
     <string name="share_config_via_qr_code">Einstellungen per QR-Code senden</string>
@@ -608,13 +605,9 @@
     <string name="repeatedly_restart_collection_service">Den Kollektor-Dienst automatisch neu starten, sobald es Anzeichen für verpasste Werte gibt. Aktiviere dies nur, wenn du Datenverluste hast.</string>
     <string name="aggressive_service_restarts">Aggressive Dienstneustarts</string>
     <string name="predictive_readings_old">Alte Methode - Nicht empfohlen! Versucht jede Minute einen Wert - basierend auf den letzten paar Werten - vorherzusagen.</string>
-    <string name="use_external_blukon_algorithm_summary">Verwende externen Libre Algorithmus (bluecon/NFC/LibreAlarm)</string>
     <string name="display_predictive_values">Vorhergesagte Werte anzeigen.</string>
-    <string name="use_external_blukon_algorithm">Externer Libre-Algorithmus.</string>
     <string name="calibrate_external_libre_algorithm_summary">Verwende xDrip-Kalibrierungsmethoden für OOP-Daten.</string>
     <string name="calibrate_external_libre_algorithm_title">OOP Kalibrierungsalgorithmus.</string>
-    <string name="libre_use_smoothed_data_summary">Verwende Durchschnittswerte von 5 Punkten, um geglättete Libre-Daten zu erhalten.</string>
-    <string name="libre_use_smoothed_data_title">Glättung Libre-Daten.</string>
     <string name="retrieve_blukon_history_title">Empfange historische Libre-Daten</string>
     <string name="retrieve_blukon_history_summary">Empfange verpasste Werte vom Bluekon-Empfänger wenn er sich wieder verbindet.</string>
     <string name="interpret_share_raw">Falls du Share benutzt, wird xDrip Werte anzeigen, die normalerweise auf dem Empfänger versteckt sind.</string>
@@ -707,8 +700,6 @@
     <string name="mongo_db_uri">Mongo DB URI</string>
     <string name="skip_local_lan">Überspringe Uploads für lokale Server mit 192.168.x.x Adressen, wenn keine Verbindung zu einem lokalen Netzwerk besteht.</string>
     <string name="skip_lan_uploads">LAN-Uploads überspringen</string>
-    <string name="mongo_load_transmitter_data_title">Libre Sender Daten hochladen</string>
-    <string name="mongo_load_transmitter_data_summary">Erlauben Sie mehr als einer xDrip-App, eine Verbindung zu Bluetooth-Geräten herzustellen und die Daten, die sie empfangen, in der Cloud zu speichern. Dies sollte die vollständige Abdeckung für Libre mit MiaoMiao-Transmitter oder zwei Eltern ermöglichen, die dasselbe Bluetooth-Gerät verwenden.</string>
     <string name="influxdb_sync">InfluxDB Synchronisation aktivieren</string>
     <string name="influxdb_uri">InfluxDB URI</string>
     <string name="influxdb_database_name">InfluxDB Datenbankname</string>
@@ -841,7 +832,6 @@
     <string name="repeat_sound">Ton wiederholen</string>
     <string name="enable_telemetry">Telemetrie aktivieren</string>
     <string name="send_data_to_developers">Sende die Daten zu den Entwickler über die Erfolgsquote verschiedener Geräte.</string>
-    <string name="try_to_work_around_noisy_readings_ultrasensitive">Starte den Workaround für verrauschte Werte, auch bei kleinen Abweichungen (nur Entwicklermodus)</string>
     <string name="sidiary_date_title">Export Startdatum?</string>
     <string name="blukon">BluCon</string>
     <string name="tomato">Tomato</string>
@@ -1396,7 +1386,6 @@
     <string name="your_display_name">Dein angezeigter Name:</string>
     <string name="followers_email">E-Mail-Adresse des Followers:</string>
     <string name="send_invite">Einladung senden</string>
-    <string name="description_sensor_location">In Zukunft möchte xDrip anonyme Sensordaten an die Entwickler senden, um den Kalibrierungsalgorithmus zu verbessern. Wenn du einverstanden bist, wirst du vor jeder Datenübertragung um eine Bestätigung gebeten. Ohne deine Erlaubnis werden niemals Daten gesendet. Um die Kalibrierung zu verstehen und zu optimieren, möchten wir wissen, an welcher Stelle der Sensor platziert wurde. Verwende die Zurück-Taste, um abzubrechen.</string>
     <string name="save_sensor_location">Sensorposition speichern</string>
     <string name="alerts">Alarme</string>
     <string name="use_internal_downloader">Internen Downloader verwenden</string>
@@ -1469,7 +1458,6 @@
     <string name="after_you_click_ok_look_for_a_number_icon_in_the_notification_area_if_you_see_123_then_the_test_has_succeeded__on_some_phones_this_test_will_crash_the_phone__after_30_seconds_we_will_shut_off_the_notification_if_your_phone_does_not_recover_after_this_then_hold_the_power_button_to_reboot_it">Suche nach einem Nummern-Symbol im Benachrichtigungsbereich, nachdem du auf OK geklickt hast.\nWenn du 123 entdeckst, dann ist der Test erfolgreich.\n\nAuf einigen Geräten führt dieser Test zum Absturz.\n\nNach 30 Sekunden wird die Benachrichtigung abgeschaltet. Wenn dein Gerät sich nicht erholt, dann halte die Ein-/Aus-Taste gedrückt für einen Neustart.</string>
     <string name="running_test_with_number_123">Test mit Nummer: 123</string>
     <string name="xdrip_will_not_work_below_android_version_42">xDrip+ funktioniert nicht mit Android-Versionen vor 4.2</string>
-    <string name="xdrip_oop2_not_installed">xDrip+ benötigt oop2, um mit Libre2/LibreUS Sensoren umzugehen.</string>
     <string name="this_app_needs_battery_optimization_whitelisting_or_it_will_not_work_well_please_reset_app_preferences">Diese App benötigt eine Whitelisting für die Akku-Optimierung, anderenfalls wird sie nicht gut funktionieren. Bitte passe die App-Einstellungen an</string>
     <string name="setting_disabled_">Einstellung deaktiviert :)</string>
     <string name="yes_please">JA, bitte</string>
@@ -1482,7 +1470,6 @@
     <string name="starting_sync_to_other_devices">Synchronisierung mit anderen Geräten starten</string>
     <string name="deleting_all_bg_readings">Alle BZ-Werte löschen!</string>
     <string name="could_not_export_csv_">Konnte CSV nicht exportieren :-(</string>
-    <string name="librealarm_data_format_appears_incompatible_protocol_changed_or_no_data">LibreAlarm-Datenformat erscheint inkompatibel! Protokoll geändert oder keine Daten?</string>
     <string name="please_update_librealarm_to_use_oop_algorithm">Bitte aktualisieren Sie LibreAlarm um den OOP-Algorithmus zu verwenden</string>
     <string name="sensor_clock_has_not_advanced">Sensoruhr ist stehen geblieben!</string>
     <string name="sensor_age_has_gone_backwards">Das Sensoralter hat sich verringert!!</string>
@@ -1517,7 +1504,6 @@
     <string name="blood_glucose_graph">Blutzuckerdiagramm</string>
     <string name="pref_enable_insulinprofiles">aktiviere mindestens ein Profil, maximal drei</string>
     <string name="pref_select_basal_insulinprofiles">wähle das Basalratenprofil.</string>
-    <string name="enable_streaming_summary">verbinde Libre2-Sensoren nach dem Scannen. Das Libre-Lesegerät und die Libre Link-App werden dann keine Alarme mehr empfangen</string>
     <string name="enable_streaming_title">Starte Bluetooth-Verbindung mit Libre2-Sensoren</string>
     <string name="enable_streaming_always_allow">Immer mit Libre2-Sensoren verbinden</string>
     <string name="enable_streaming_ask_each_time">jedes Mal nachfragen</string>
