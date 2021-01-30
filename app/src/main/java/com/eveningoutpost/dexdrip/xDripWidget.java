@@ -95,6 +95,12 @@ public class xDripWidget extends AppWidgetProvider {
         }
     }
 
+    public static RemoteViews displayCurrentInfo(final Context context, final int maxWidth, final int maxHeight) {
+        final RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.x_drip_widget);
+        displayCurrentInfo(null, 0, context, views, maxWidth, maxHeight);
+        return views;
+    }
+
     private static void displayCurrentInfo(AppWidgetManager appWidgetManager, int appWidgetId, Context context, RemoteViews views) {
         displayCurrentInfo(appWidgetManager, appWidgetId, context, views, -1, -1);
     }
