@@ -148,7 +148,6 @@
     <string name="show_parakeet_map">Zobraziť mapu zariadení Parakeet</string>
     <string name="switch_parakeet_to_setup_mode">Prepnúť Parakeet do módu nastavovania</string>
     <string name="view_events_log">Zobraziť log udalostí</string>
-    <string name="show_libre_trend">Zobrazovať trend z Libre</string>
     <string name="libre_15_minutes_graph">15 minútový graf Libre</string>
     <string name="libre_last_x_minutes_graph">Graf Libre za posledných %d minút</string>
     <string name="share_config_via_qr_code">Zdieľať konfiguráciu cez QR kód</string>
@@ -568,13 +567,9 @@
     <string name="rfduino_support">Podpora RFDUINO</string>
     <string name="repeatedly_restart_collection_service">Opakovaně restartovat kolektor, pokud nejsou přijata data. Povolit pouze pokud nepřijímáte data</string>
     <string name="aggressive_service_restarts">Agresívny reštart služby</string>
-    <string name="use_external_blukon_algorithm_summary">Používat externí (Blukon/NFC/LibreAlarm) algoritmus</string>
     <string name="display_predictive_values">Zobrazovať predikciu</string>
-    <string name="use_external_blukon_algorithm">Externí libre algoritmus</string>
     <string name="calibrate_external_libre_algorithm_summary">Aplikovat xDrip kalibrační algoritmus na OOP data</string>
     <string name="calibrate_external_libre_algorithm_title">OOP kalibrační algoritmus</string>
-    <string name="libre_use_smoothed_data_summary">Hladšie hodnoty z Libre za použitia priemeru 5 bodov.</string>
-    <string name="libre_use_smoothed_data_title">Vyrovnávať dáta z Libre.</string>
     <string name="retrieve_blukon_history_title">Načíst historii z Libre</string>
     <string name="retrieve_blukon_history_summary">Načíst chybějící hodnoty z Blukonu při připojení senzoru</string>
     <string name="interpret_share_raw">Pri použití Share, xDrip bude zobrazovať hodnoty bežne na prijímači skryté.</string>
@@ -665,7 +660,6 @@
     <string name="mongo_db_uri">Adresa URI pre MongoDB</string>
     <string name="skip_local_lan">Pre miestne adresy 192.168.x.x preskočiť nahrávanie, ak neexistuje pripojenie cez LAN</string>
     <string name="skip_lan_uploads">Preskočiť nahrávanie po LAN</string>
-    <string name="mongo_load_transmitter_data_title">Odosielaj hodnoty z Libre vysielača</string>
     <string name="influxdb_sync">Povoliť synchronizáciu s InfluxDB</string>
     <string name="influxdb_uri">InfluxDB Uri</string>
     <string name="influxdb_database_name">Názov InfluxDB databázy</string>
