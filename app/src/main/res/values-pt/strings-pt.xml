@@ -254,7 +254,7 @@
     <string name="pref_summary_force_wearG5">Forçar telefone a usar Wear Collection Service</string>
     <string name="pref_disable_wearG5_on_lowbattery">Desactivar o Force quando a carga da bateria estiver fraca</string>
     <string name="pref_summary_disable_wearG5_on_lowbattery">Desligar o serviço de recolha de dados do Force Wear quando a bateria estiver fraca</string>
-    <string name="pref_disable_wearG5_on_missedreadings">Desligar o Force quando há falha de leituras</string>
+    <string name="pref_disable_wearG5_on_missedreadings">Desligar o Force quando há leituras perdidas</string>
     <string name="pref_summary_disable_wearG5_on_missedreadings">Desligar o serviço de recolha de dados do Force Wear para a função \"minutos desde a ultima leitura vinda do Wear\"</string>
     <string name="pref_disable_wearG5_on_missedreadings_level">Minutos desde a última Leitura do Wear</string>
     <string name="pref_node_wearG5">Dispositivo a correr Collection Service</string>
@@ -319,6 +319,7 @@
     <string name="speak_your_treatment">Fale o seu tratamento ex:\nx.x unidades insulina / xx gramas hidratos</string>
     <string name="speech_recognition_is_not_supported">Reconhecimento de fala não suportado</string>
     <string name="treatment_note">Nota de Tratamento</string>
+    <string name="accessibility_description">O xDrip usa o recurso Acessibilidade apenas para ajustar o ecrã quando o dispositivo está bloqueado. Isso provavelmente só é útil se tiver um telefone com o recurso Always On Display e ele estiver activado. O xDrip não interage com o Android de outra forma.</string>
     <string name="could_not_export_database">Impossível exportar base de dados :(</string>
     <string name="exported_to">"Exportada para "</string>
     <string name="default_to_voice_input_next_time">Pré-definir introdução por voz para a próxima vez</string>
@@ -419,7 +420,7 @@
     <string name="silent_alert_when_charging">Alerta silencioso enquanto carrega</string>
     <string name="alerts_start_out_snoozed_and_must_persist_for_a_while">Alerta inicia em silêncio e deverá persistir durante uns momentos até ser activado</string>
     <string name="alarms_silenced_during_telephone_calls">Alarmes silenciados durante chamadas</string>
-    <string name="suppress_alerts_if_missed_readings">Suprimir alertas se leituras estão em falta</string>
+    <string name="suppress_alerts_if_missed_readings">Suprimir alertas se leituras perdidas</string>
     <string name="bad_noisy_value_alerts">Alerta de más leituras (noisy)</string>
     <string name="keep_snoozing_if_glucose_is_heading_in_right_direction">Mantenha Silenciar se a glicose estiver a ir na direcção certa</string>
     <string name="dont_alert_if_glucose_in_right_direction">Não alertar se a glicose estiver a ir na direcção certa</string>
@@ -610,11 +611,11 @@
     <string name="predictive_readings_old">Método antigo - Não recomendado! Tenta prever leituras a cada minuto baseado nos últimos valores.</string>
     <string name="use_external_blukon_algorithm_summary">Usar um algoritmo do Libre que esteja fora de processo. (Blucon/NFC/LibreAlarm)</string>
     <string name="display_predictive_values">Mostrar Previsão de Valores</string>
-    <string name="use_external_blukon_algorithm">Algoritmo Externo para o Libre.</string>
+    <string name="use_external_blukon_algorithm">Algoritmo do Libre fora do processo.</string>
     <string name="calibrate_external_libre_algorithm_summary">Aplica métodos de calibração xDrip em dados OOP.</string>
     <string name="calibrate_external_libre_algorithm_title">Algoritmo de Calibração OOP.</string>
     <string name="libre_use_smoothed_data_summary">Usa a média de 5 pontos para obter dados do Libre mais suaves.</string>
-    <string name="libre_use_smoothed_data_title">Dados do Libre suave.</string>
+    <string name="libre_use_smoothed_data_title">Suavizar dados Libre.</string>
     <string name="retrieve_blukon_history_title">Recuperar histórico do Libre</string>
     <string name="retrieve_blukon_history_summary">Recuperar as leituras perdidas do Blucon ao ligar-se novamente ao sensor.</string>
     <string name="interpret_share_raw">Se estiver a usar Partilha, o xDrip irá mostrar os valores que normalmente estão escondidos no receptor.</string>
@@ -742,7 +743,7 @@
     <string name="buttons_silence_alarms">Botões silenciar alarmes</string>
     <string name="create_shortcut">Criar atalho do menu de navegação para o ecrã do nível de glicose</string>
     <string name="shortcut_to_bg_alerts">Atalho para Níveis de Alerta Glic</string>
-    <string name="suppress_alerts_missed_readings">Suprimir alertas após um período pré-definido de falhas de leitura</string>
+    <string name="suppress_alerts_missed_readings">Suprimir alertas após um período pré-definido de leituras perdidas</string>
     <string name="suppress_alerts_after">Suprimir o silêncio e alertas activos após .. minutos (mínimo 10)</string>
     <string name="alert_calibration_request">Alertar quando uma calibração é solicitada</string>
     <string name="calibrations_request_time_time_difference">Quantas horas entre as solicitações de calibração</string>
@@ -841,7 +842,7 @@
     <string name="repeat_sound">Repetir som</string>
     <string name="enable_telemetry">Activar Telemetria</string>
     <string name="send_data_to_developers">Enviar dados para os programadores sobre as taxas de sucesso de diferentes dispositivos</string>
-    <string name="try_to_work_around_noisy_readings_ultrasensitive">Começar a trabalhar sobre leituras com ruído mesmo em níveis de ruído muito baixos (apenas no modo engenheiro)</string>
+    <string name="try_to_work_around_noisy_readings_ultrasensitive">Começar a trabalhar sobre leituras irregulares mesmo em níveis de ruído muito baixos (apenas no modo engenheiro)</string>
     <string name="sidiary_date_title">Exportar a partir de?</string>
     <string name="blukon">Blucon</string>
     <string name="tomato">Tomato</string>
@@ -1020,7 +1021,7 @@
     <string name="summary_Allow_initial_calibration_no_good_enough_data">Permitir calibração inicial mesmo que não existam dados bons e suficientes. Atenção que pode resultar numa calibração incorrecta!</string>
     <string name="title_Bypass_quality_check">Ignorar Controlo de Qualidade</string>
     <string name="summary_Scan_before_connecting_on_xBridge_and_Libre_bluetooth">Pesquisar antes da ligação ao xBridge e Libre Bluetooth</string>
-    <string name="title_Use_scanning">Usar Procura</string>
+    <string name="title_Use_scanning">Usar Pesquisa</string>
     <string name="summary_Use_and_trust_Android_bluetooth_auto_connect_feature">Usar e confiar na função automática de ligação bluetooth Android</string>
     <string name="title_Trust_Auto_Connect">Confiar Auto-Connect</string>
     <string name="summary_Experimental_support_for_xBridge_polling_feature">Suporte experimental para função procura do xBridge+</string>
@@ -1125,7 +1126,7 @@
     <string name="low_and_high_alerts_currently_disabled">ALERTAS HIPO E HIPER ACTUALMENTE DESACTIVADOS</string>
     <string name="low_alerts_currently_disabled">ALERTAS HIPO ACTUALMENTE DESACTIVADOS</string>
     <string name="high_alerts_currently_disabled">ALERTAS HIPER ACTUALMENTE DESACTIVADOS</string>
-    <string name="bg_reading_missed">Leituras da Glicemia em falta</string>
+    <string name="bg_reading_missed">Leituras da Glicemia Perdidas</string>
     <string name="not_connected">Não Ligado</string>
     <string name="no_data">Sem dados</string>
     <string name="no_bluetooth">Sem Bluetooth</string>
@@ -1284,7 +1285,7 @@
     <string name="summary_ob1_g5_fallback_to_xdrip">Reverter para o algoritmo xDrip se o G5 não fornecer dados de glicose (potencialmente arriscado!)</string>
     <string name="title_ob1_g5_fallback_to_xdrip">Retorno para xDrip</string>
     <string name="summary_ob1_minimize_scanning">Usar heurística para minimizar a procura bluetooth + poupar energia</string>
-    <string name="title_ob1_minimize_scanning">Minimizar a Procura</string>
+    <string name="title_ob1_minimize_scanning">Minimizar a Pesquisa</string>
     <string name="summary_using_g6">A usar um Sensor G6</string>
     <string name="title_using_g6">Suporte G6</string>
     <string name="summary_ob1_g5_allow_resetbond">O Dispostivo OB1 pode desagregar se acha que a encripatação falhou. Se tiver problemas com ele, desemparelhe e depois desactive esta opção. Se perder totalmente a ligação, certifique-se de que isto está activado.</string>
@@ -1487,7 +1488,7 @@
     <string name="unusual_internal_context_problem__please_report">Problema de contexto interno incomum - reporte-o</string>
     <string name="cannot_start__please_report_context_problem">Não pode iniciar - reporte o problema de contexto</string>
     <string name="xdrip_will_not_work_below_android_version_42">xDrip+ não funcionará em versões inferiores a Android 4.2</string>
-    <string name="xdrip_oop2_not_installed">xDrip+ precisa do OOP2 para lidar com sensores Libre2/LibreUS.</string>
+    <string name="xdrip_oop2_not_installed">xDrip+ precisa do oop2 para lidar com sensores Libre2/LibreUS.</string>
     <string name="this_app_needs_battery_optimization_whitelisting_or_it_will_not_work_well_please_reset_app_preferences">Esta aplicação precisa da permissão de otimização de bateria ou não funcionará bem. Por favor, redefina as preferências da aplicação</string>
     <string name="setting_disabled_">Configuração desactivada :)</string>
     <string name="yes_please">SIM, Por Favor</string>
@@ -1500,7 +1501,7 @@
     <string name="starting_sync_to_other_devices">A Iniciar a Sincronização com Outros Dispositivos</string>
     <string name="deleting_all_bg_readings">Eliminar Todas as leituras da Glicemia!</string>
     <string name="could_not_export_csv_">Não Foi Possível exportar CSV :(</string>
-    <string name="librealarm_data_format_appears_incompatible_protocol_changed_or_no_data">Formato de Dados LibreAlarm afigura incompatível!? Protocolo alterado ou sem Dados?</string>
+    <string name="librealarm_data_format_appears_incompatible_protocol_changed_or_no_data">Formato de Dados LibreAlarm afigura incompatível!? Protocolo alterado ou sem dados?</string>
     <string name="please_update_librealarm_to_use_oop_algorithm">Actualize LibreAlarm para Usar Algoritmo OOP</string>
     <string name="sensor_clock_has_not_advanced">Relógio do Sensor Não Avançou!</string>
     <string name="sensor_age_has_gone_backwards">A Idade do Sensor foi para trás!!</string>
@@ -1529,7 +1530,7 @@
     <string name="cancelled">Cancelado!</string>
     <string name="no_sensor_found">Sensor Não Encontrado</string>
     <string name="checksum_failed__retrying">Falha na Verificação - a tentar novamente</string>
-    <string name="scanning">A Procurar</string>
+    <string name="scanning">A Pesquisar</string>
     <string name="authentication_failed_wrong_password">Autenticação falhou. Palavra-passe inválida?</string>
     <string name="share_login_data_isnt_valid">Dados Login Partilhado não são válidos - verifique utilizador / palavra-passe</string>
     <string name="connectivity_problem_reaching_share_servers">Problema de ligação ao alcançar servidores de Partilha</string>
