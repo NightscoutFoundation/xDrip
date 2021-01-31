@@ -212,7 +212,7 @@
     <string name="glucose_alerts_settings">Definições de Alertas de Glicemia</string>
     <string name="smart_snoozing">Silenciar Inteligente</string>
     <string name="calibration_alerts">Alertas de Calibração</string>
-    <string name="missed_reading_alert">Alerta de Falha de Leitura</string>
+    <string name="missed_reading_alert">Alerta de Leituras Perdidas</string>
     <string name="other_alerts">Outros Alertas</string>
     <string name="extra_alerts_xdrip_plus">Alertas Extra (xDrip+)</string>
     <string name="persistent_high_alert">Alerta de Hiper Persistente</string>
@@ -254,7 +254,7 @@
     <string name="pref_summary_force_wearG5">Forçar telefone a usar Wear Collection Service</string>
     <string name="pref_disable_wearG5_on_lowbattery">Desactivar o Force quando a carga da bateria estiver fraca</string>
     <string name="pref_summary_disable_wearG5_on_lowbattery">Desligar o serviço de recolha de dados do Force Wear quando a bateria estiver fraca</string>
-    <string name="pref_disable_wearG5_on_missedreadings">Desligar o Force quando há leituras perdidas</string>
+    <string name="pref_disable_wearG5_on_missedreadings">Desligar o Force quando há Leituras Perdidas</string>
     <string name="pref_summary_disable_wearG5_on_missedreadings">Desligar o serviço de recolha de dados do Force Wear para a função \"minutos desde a ultima leitura vinda do Wear\"</string>
     <string name="pref_disable_wearG5_on_missedreadings_level">Minutos desde a última Leitura do Wear</string>
     <string name="pref_node_wearG5">Dispositivo a correr Collection Service</string>
@@ -438,7 +438,7 @@
     <string name="displays_the_slope_arrows">Mostra Setas de Inclinação</string>
     <string name="display_slope_arrows">Mostrar Setas de Inclinação</string>
     <string name="vibrate_watch_to_alert_no_data">Vibrar relógio para alertar quando não não há recepção de dados de glicose</string>
-    <string name="vibrate_when_missed_signal">Vibrar quando há falha de leitura</string>
+    <string name="vibrate_when_missed_signal">Vibrar quando há sinal perdido</string>
     <string name="vibrate_watch_to_alert_no_bluetooth">Vibrar o relógio para alertar quando o Bluetooth perde ligação</string>
     <string name="vibrate_when_no_bluetooth">Vibrar quando não há Bluetooth</string>
     <string name="special_glucose_value_to_display_message">Valor de glicemia para mostrar na mensagem abaixo</string>
@@ -803,7 +803,7 @@
     <string name="show_test_features">Mostrar funções extra e teste alpha</string>
     <string name="show_reminder_features">Mostrar funções e menus de Lembretes</string>
     <string name="enable_reminder_features">Activar funções de Lembretes</string>
-    <string name="display_mathamatical_simulations">Mostrar simulações matemáticas baseadas nos dados de perfil e registos de hidratos/insulina</string>
+    <string name="display_mathamatical_simulations">Mostrar simulações matemáticas baseadas nos dados de perfil e registos de insulina/hidratos</string>
     <string name="predictive_simulations">Simulações Preditivas</string>
     <string name="low_prediction_values">Valores de previsão de hipos</string>
     <string name="target_glucose_default">Alvo Padrão da Glicose</string>
@@ -1012,8 +1012,8 @@
     <string name="title_External_Status">Estado Externo</string>
     <string name="summary_Display_pump_status_information_if_available">Exibir informação do estado da bomba se disponível</string>
     <string name="title_Pump_Status">Estado da Bomba</string>
-    <string name="summary_Show_treatment_carb_insulin_ratio">Mostrar Rácio Hidratos/Insulina</string>
-    <string name="title_Carb_Insulin_Ratio">Rácio Hidratos/Insulina</string>
+    <string name="summary_Show_treatment_carb_insulin_ratio">Mostrar Rácio Insulina/Hidratos</string>
+    <string name="title_Carb_Insulin_Ratio">Rácio Insulina/Hidratos</string>
     <string name="summary_Ask_for_a_second_optional_initial_calibration_blood_test">Perguntar por segunda leitura na calibração inicial do teste capilar</string>
     <string name="title_Double_Calibrations">Calibrações Duplas</string>
     <string name="summary_Enable_to_allow_variable_slopes_with_Libre_collection_methods">Activar para permitir inclinações variáveis com os métodos de recolha do Libre</string>
