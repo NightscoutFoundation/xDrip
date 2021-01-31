@@ -383,7 +383,7 @@
     <string name="this_device_will_send_data_to_followers">Este dispositivo vai enviar dados para os seguidores</string>
     <string name="send_parakeet_map_location_to_followers">Enviar localização mapa Parakeet para os seguidores</string>
     <string name="sync_parakeet_geolocation">Sincronizar GeoLocalização Parakeet</string>
-    <string name="disable_all_sync_features">Desativar todas as sincronizações</string>
+    <string name="disable_all_sync_features">Desactivar todas as sincronizações</string>
     <string name="temporary_work_around_disable_all_sync_detail">Alternativa temporária opcional, pára por completo toda a sincronização. Pode necessitar de reiniciar após ser ligado novamente. Use com cuidado!</string>
     <string name="automatic_updates_crash_reports_and_feedback">Actualizações Automáticas, Relatórios de Erro e Envio de Opiniões para os Programadores</string>
     <string name="crowd_sourced_translation">Traduções comunitárias</string>
@@ -1429,7 +1429,7 @@
     <string name="range_in_high_low">Interv.:(dentro/hiper/hipo)</string>
     <string name="absolute_s">Nº absoluto:</string>
     <string name="median_bg">Glicemia mediana:</string>
-    <string name="mean_bg">Glicemia média:</string>
+    <string name="mean_bg">Glicemia Média:</string>
     <string name="hba1c_est">HbA1c est.:</string>
     <string name="stddev">DesvioPadr:</string>
     <string name="relative_sd_cv">DP relativo (CV):</string>
