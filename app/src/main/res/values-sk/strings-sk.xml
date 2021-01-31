@@ -559,11 +559,11 @@
     <string name="reset_bluetooth">Resetovať BT vypnutím a zapnutím, ak neprišli posledných 20 minút merania</string>
     <string name="bluetooth_watchdog">Strážiť stav Bluetooth</string>
     <string name="reset_bluetooth_g5">Resetovať BT vypnutím a zapnutím, za účelom udržania funkčného G5 senzora. Bez tohto môže G5 vypadávať.</string>
-    <string name="g5_bluetooth_watchdog">Strážiť stav G5 Bloetooth</string>
+    <string name="g5_bluetooth_watchdog">Strážiť stav G5 Bluetooth</string>
     <string name="close_gatt">Pokiaľ sa Bluetooth príliš často reštartuje, tak môžete túto voľbu skúsiť vypnúť, možno to pomôže</string>
     <string name="older_bluetooth_wakelocks">Staršie nadmerné zámky prebudenia Androidu môžu zbytočne vybíjať batériu, ale môžu byť potrebné pre dobrú príjem z Bluetooth</string>
-    <string name="reset_bluetooth_on_off">Resetovat BT vypnutím a zapnutím každých pár minut. Používat pouze pro testování! Může kolidovat s ostatními aplikacemi používajícími BT</string>
-    <string name="constantly_reset_bluetooth">Trvale resetovat BT</string>
+    <string name="reset_bluetooth_on_off">Resetovať Bluetooth vypnutím a zapnutím každých pár minút! Používať len pri testovaní! Môže prerušovať fungovanie iných aplikácií používajúcich Bluetooth.</string>
+    <string name="constantly_reset_bluetooth">Neustále resetovať bluetooth</string>
     <string name="rfduino_support">Podpora RFDUINO</string>
     <string name="repeatedly_restart_collection_service">Opakovaně restartovat kolektor, pokud nejsou přijata data. Povolit pouze pokud nepřijímáte data</string>
     <string name="aggressive_service_restarts">Agresívny reštart služby</string>
