@@ -170,6 +170,7 @@
     <string name="show_parakeet_map">Näytä Parakeet kartta</string>
     <string name="switch_parakeet_to_setup_mode">Vaihda Parakeet asetustilaan</string>
     <string name="view_events_log">Katso tapahtumaloki</string>
+    <string name="show_libre_trend">Näytä Libren trendi</string>
     <string name="libre_15_minutes_graph">Libren 15 minuutin kuvaaja</string>
     <string name="libre_last_x_minutes_graph">Libren viimeisen %d minuutin kuvaaja</string>
     <string name="share_config_via_qr_code">Jaa asetukset QR koodilla</string>
@@ -332,11 +333,11 @@
     <string name="default_snooze">Oletustorkku</string>
     <string name="until_you_reenable">Kunnes otat uudelleen käyttöön</string>
     <string name="set">Aseta</string>
-    <string name="disable_low_alerts">Poista matalat hälytykset</string>
+    <string name="disable_low_alerts">Torkuta matalat hälytykset</string>
     <string name="re_enable_low_alerts">Ota matalat hälytykset käyttöön</string>
-    <string name="disable_high_alerts">Poista korkeat hälytykset</string>
+    <string name="disable_high_alerts">Torkuta korkeat hälytykset</string>
     <string name="re_enable_high_alerts">Ota korkeat hälytykset käyttöön</string>
-    <string name="disable_all_alerts">Estä kaikki hälytykset</string>
+    <string name="disable_all_alerts">Torkuta kaikki hälytykset</string>
     <string name="re_enable_all_alerts">Ota kaikki hälytykset käyttöön</string>
     <string name="alert_snoozed_by_watch">Kello torkutti hälytyksen</string>
     <string name="update_channel_colon_space">"Päivityskanava: "</string>
@@ -375,7 +376,7 @@
     <string name="get_notified_of_new_apk_releases">Ota vastaan ilmoitus uusista APK-versioista</string>
     <string name="choose_stable_beta_or_alpha_releases">Valitse Vakaa, Beta tai Alpha versio</string>
     <string name="web_feedback_form_for_sending_messages">Web palautelomake viestien lähettämiseen  xDrip+ kehittäjille</string>
-    <string name="be_master_for_followers">Aseta pääkäyttäjäksi seuraajia varten</string>
+    <string name="be_master_for_followers">Aseta päälaitteeksi seuraajia varten</string>
     <string name="this_device_will_send_data_to_followers">Tämä laite lähettää tiedot seuraajille</string>
     <string name="send_parakeet_map_location_to_followers">Lähetä Parakeetin sijainti seuraajille</string>
     <string name="sync_parakeet_geolocation">Synkronoi Parakeetin sijainti</string>
@@ -605,9 +606,13 @@
     <string name="repeatedly_restart_collection_service">Käynnistä keräyspalvelu toistuvasti uudelleen, jos tietokatkoksia esiintyy. Ota käyttöön vain, jos tietoja jää puuttumaan.</string>
     <string name="aggressive_service_restarts">Aggressiivinen palvelun uudelleenkäynnistys</string>
     <string name="predictive_readings_old">Vanha menetelmä. Ei suositella! Yrittää ennustaa lukemia minuutin välein edellisten arvojen perusteella.</string>
+    <string name="use_external_blukon_algorithm_summary">Käytä Libren OOP-algoritmia. (Blucon/NFC/LibreAlarm)</string>
     <string name="display_predictive_values">Näytä ennakoidut lukemat</string>
+    <string name="use_external_blukon_algorithm">Libren OOP-algoritmi.</string>
     <string name="calibrate_external_libre_algorithm_summary">Kalibroi OOP-tiedot xDripin kalibrointimenetelmillä.</string>
     <string name="calibrate_external_libre_algorithm_title">OOP-algoritmin kalibrointi</string>
+    <string name="libre_use_smoothed_data_summary">Tasoita Libren kuvaajaa laskemalla tulos 5 edellisen lukeman perusteella.</string>
+    <string name="libre_use_smoothed_data_title">Tasoita Libren kuvaajaa.</string>
     <string name="retrieve_blukon_history_title">Hae Libren vanhemmat tiedot</string>
     <string name="retrieve_blukon_history_summary">Kerää puuttuvat vanhemmat tiedot Bluconista, kun muodostat yhteyden sensoriin uudelleen.</string>
     <string name="interpret_share_raw">Jos käytät Share-palvelua, xDrip näyttää arvot, jotka on tavallisesti piilotettu vastaanottimeen.</string>
@@ -699,6 +704,8 @@
     <string name="mongo_db_uri">Mongo DB Uri</string>
     <string name="skip_local_lan">Älä yritä lähettää tietoja paikalliselle palvelimelle, joilla on 192.168.x.x osoite, ellet ole yhteydessä siihen.</string>
     <string name="skip_lan_uploads">Ohita lähetykset lähiverkkoon</string>
+    <string name="mongo_load_transmitter_data_title">Lähetä Libren lähettimien tiedot</string>
+    <string name="mongo_load_transmitter_data_summary">Salli useamman xDripin muodostaa yhteys Bluetooth-laitteisiin ja tallentaa tiedot, jotka ne saavat pilvestä. Näin Libreen pitäisi saada yhteys koko talossa Miaomiaon avulla, tai kun vanhemmat käyttävät samaa Bluetooth-lukijaa.</string>
     <string name="influxdb_sync">Käytä InfluxDB-synkronointia</string>
     <string name="influxdb_uri">InfluxDB Uri</string>
     <string name="influxdb_database_name">InfluxDB tietokannan nimi</string>
@@ -764,7 +771,7 @@
     <string name="notify_on_low_battery_level">Ilmoita kun akun varaus laskee alle</string>
     <string name="collector_battery_alerts">Kerääjän akun varaushälytykset</string>
     <string name="low_battery_percentage">Matala varaus prosentteina</string>
-    <string name="notify_data_arrives_master"><![CDATA[Ilmoita, kun tieto saapuu pääkäyttäjältä, jos aikaväli on yli 20 min.]]></string>
+    <string name="notify_data_arrives_master"><![CDATA[Ilmoita, kun tieto saapuu päälaitteelta, jos aikaväli on yli 20 min.]]></string>
     <string name="follower_chime_new">Uuden seuraajan merkkiääni</string>
     <string name="carb_ratio">Hiilihydraattisuhde</string>
     <string name="enable_dedicated_insulin_profiles">Insuliinin vaikutusajan määrittely</string>
@@ -819,8 +826,8 @@
     <string name="log_and_plot_motion">Kirjaa ja piirrä liikkuminen</string>
     <string name="use_remote_motion_data">Liikkumisen tiedot luetaan mieluummin etänä kuin puhelimen antureista</string>
     <string name="use_remote_motion">Käytä liikettä toisesta laitteesta</string>
-    <string name="be_motion_master">Ole liikkumistiedon pääkäyttäjä vaikka olisit seuraaja. Aseta tämä vain yhteen puhelimeen!</string>
-    <string name="act_as_motion_master">Toimi liikkumisen pääkäyttäjänä</string>
+    <string name="be_motion_master">Toimi päälaitteena liikkumistiedolle, vaikka olisit seuraaja. Aseta tämä vain yhteen puhelimeen!</string>
+    <string name="act_as_motion_master">Toimi liikkumisen päälaitteena</string>
     <string name="vehicle_motion_extras">Kun ajoneuvo tunnistetaan, ota käyttöön lisäominaisuuksia</string>
     <string name="enable_vehicle_mode">Salli ajoneuvotila</string>
     <string name="increase_low_alarms_vehicle_mode">Nosta matalan hälytysrajaa ajoneuvotilassa</string>
@@ -831,6 +838,7 @@
     <string name="repeat_sound">Toista ääni</string>
     <string name="enable_telemetry">Salli telemetria</string>
     <string name="send_data_to_developers">Lähetä tietoja sovelluskehittäjille eri laitteiden onnistumisasteista</string>
+    <string name="try_to_work_around_noisy_readings_ultrasensitive">Aloita sensorin häiriölukemien korjaaminen jo hyvin pienillä häiriötasoilla (vain ohjelmistokehitystila)</string>
     <string name="sidiary_date_title">Tietojen vienti mistä alkaen?</string>
     <string name="blukon">BluCon</string>
     <string name="tomato">Tomato</string>
@@ -1336,7 +1344,7 @@
     <string name="title_xdrip_plus_desert_sync_settings">Katvealueella synkronointi</string>
     <string name="summary_desert_sync_enabled">Synkronointitoiminnot ilman internet-yhteyttä otettu käyttöön</string>
     <string name="title_desert_sync_enabled">Katvealueella synkronointi</string>
-    <string name="title_desert_sync_master_ip">Pääkäyttäjän IP-osoite</string>
+    <string name="title_desert_sync_master_ip">Päälaitteen IP-osoite</string>
     <string name="summary_send_sync_show_qr">Viivakoodi seuraajien skannattavaksi, säätää asetukset automaattisesti</string>
     <string name="title_send_sync_show_qr">Näytä QR-koodi</string>
     <string name="summary_desert_use_https">Lisää toinen salauskerros jaetuille verkoille, esim. julkiseen wifi-verkkoon</string>
@@ -1463,14 +1471,15 @@
     <string name="calibrate">Kalibroi</string>
     <string name="confirm_delete">Vahvista poistaminen</string>
     <string name="are_you_sure_you_want_to_delete_this_treatment">Oletko varma että haluat poistaa tämän hoidon?</string>
-    <string name="no_data_received_from_master_yet">Pääkäyttäjältä ei ole vielä saatu tietoja</string>
-    <string name="last_from_master_">Viimeisin tieto pääkäyttäjältä: </string>
+    <string name="no_data_received_from_master_yet">Päälaitteelta ei ole vielä saatu tietoja</string>
+    <string name="last_from_master_">Viimeisin tieto päälaitteelta: </string>
     <string name="prepare_to_test">Valmistaudu testaamaan!</string>
     <string name="after_you_click_ok_look_for_a_number_icon_in_the_notification_area_if_you_see_123_then_the_test_has_succeeded__on_some_phones_this_test_will_crash_the_phone__after_30_seconds_we_will_shut_off_the_notification_if_your_phone_does_not_recover_after_this_then_hold_the_power_button_to_reboot_it">Kun olet napauttanut OK, etsi ilmoitusalueelta numerokuvake.\nJos näet 123, testi on onnistunut.\n\nJotkin puhelimet kaatuvat tässä testissä.\n\n30 sekunnin kuluttua ilmoitusalueen numero poistetaan. Jos puhelin ei reagoi tämän jälkeen, pidä virtapainiketta pohjassa käynnistääksesi sen uudelleen.</string>
     <string name="running_test_with_number_123">Testi käynnistetään numerolla: 123</string>
     <string name="unusual_internal_context_problem__please_report">Harvinainen sisäinen ongelma kohdattu - raportoi sovelluskehittäjille</string>
     <string name="cannot_start__please_report_context_problem">Ei voida käynnistää - ilmoita ongelmasta</string>
     <string name="xdrip_will_not_work_below_android_version_42">xDrip+ toimii vain Android 4.2:ssa tai uudemmissa</string>
+    <string name="xdrip_oop2_not_installed">xDrip+ tarvitsee OOP2-sovellusta lukeakseen Libre2- tai LibreUS -sensoria.</string>
     <string name="this_app_needs_battery_optimization_whitelisting_or_it_will_not_work_well_please_reset_app_preferences">Tämä sovellus tarvitsee virrankäyttöoikeuden myös taustalla, muuten se ei toimi oikein. Poista sovelluksen akkukäytön optimointi puhelimen asetuksista</string>
     <string name="setting_disabled_">Asetus poistettu käytöstä :)</string>
     <string name="yes_please">KYLLÄ, kiitos</string>
@@ -1483,6 +1492,7 @@
     <string name="starting_sync_to_other_devices">Aloitetaan synkronointi muiden laitteiden kanssa</string>
     <string name="deleting_all_bg_readings">Poistetaan KAIKKI VS-lukemat!</string>
     <string name="could_not_export_csv_">CSV:n vienti epäonnistui :(</string>
+    <string name="librealarm_data_format_appears_incompatible_protocol_changed_or_no_data">LibreAlarmin tietomuoto vaikuttaa yhteensopimattomalta! Protokollaa on muutettu tai se ei sisällä tietoja?</string>
     <string name="please_update_librealarm_to_use_oop_algorithm">Päivitä LibreAlarm, jotta voit käyttää OOP-algoritmia</string>
     <string name="sensor_clock_has_not_advanced">Sensorin kello ei ole edennyt!</string>
     <string name="sensor_age_has_gone_backwards">Sensorin ikä on mennyt ajassa taaksepäin!!</string>
@@ -1527,6 +1537,7 @@
     <string name="pref_enable_insulinprofiles">ota käyttöön vähintään yksi ja enintään kolme profiilia</string>
     <string name="pref_select_basal_insulinprofiles">valitse basaalin profiili.</string>
     <string name="pref_select_bolus_insulinprofiles">valitse boluksen profiili. käytetään pumppua ja kyniä varten...</string>
+    <string name="enable_streaming_summary">Yhdistä Libre2-sensoriin skannaamisen jälkeen. Tämä lopettaa hälytykset Libren lukijassa ja LibreLinkissä.</string>
     <string name="enable_streaming_title">Aloitetaan Bluetooth-yhteys Libre 2 -sensoriin</string>
     <string name="enable_streaming_always_allow">Yhdistä aina libre2-sensoriin</string>
     <string name="enable_streaming_ask_each_time">kysy aina</string>
