@@ -166,10 +166,13 @@
     <string name="expires_days">{0, choice,0#¡El sensor expiró!|1#Termina en {0, number} día|1&lt;Termina en {0, number} días}</string>
     <string name="expires_at">Finaliza {0}</string>
     <string name="space_minutes_ago">" Minutos antes"</string>
+    <string name="in_libre_all_house_mode_no_readings_collected_yet">"En modo Libre red casera: no se han recopilado lecturas."</string>
+    <string name="in_libre_all_house_mode_last_data_collected">"En modo Libre red casera: Última lectura "</string>
     <string name="space_minute_ago">" Minuto antes"</string>
     <string name="show_parakeet_map">Ver mapa periquito</string>
     <string name="switch_parakeet_to_setup_mode">Parakeet cambiar al modo de configuración</string>
     <string name="view_events_log">Ver registro de eventos</string>
+    <string name="show_libre_trend">Mostrar tendencias del Libre</string>
     <string name="libre_15_minutes_graph">Gráfica de 15 minutos del Libre</string>
     <string name="libre_last_x_minutes_graph">Gráfica últimos %d minutos del Libre</string>
     <string name="share_config_via_qr_code">Compartir config a través de código QR</string>
@@ -316,6 +319,7 @@
     <string name="speak_your_treatment">Habla de su tratamiento, por ejemplo:\nxx / xx unidades de insulina gramos de carbohidratos</string>
     <string name="speech_recognition_is_not_supported">El reconocimiento de voz no es compatible</string>
     <string name="treatment_note">Tratamiento Nota</string>
+    <string name="accessibility_description">xDrip utiliza la función de Accesibilidad sólo para ajustar la pantalla cuando el dispositivo está bloqueado. Es probable que sólo sea útil si tiene un teléfono con la función Always On Display y la tiene activada. xDrip no interactúa con Android de ninguna otra manera.</string>
     <string name="could_not_export_database">No se pudo exportar base de datos :(</string>
     <string name="exported_to">"Exportados a "</string>
     <string name="default_to_voice_input_next_time">Entrada de voz por defecto próxima vez</string>
@@ -605,9 +609,13 @@
     <string name="repeatedly_restart_collection_service">Reinicia repetidamente el servicio de recolección ante cualquier atisbo de datos faltantes. Activar sólo si hay pérdida de datos.</string>
     <string name="aggressive_service_restarts">Reinicio agresivo del servicio</string>
     <string name="predictive_readings_old">¡Método antiguo - no recomendado! Intenta predecir las lecturas cada minuto basado en los últimos valores.</string>
+    <string name="use_external_blukon_algorithm_summary">Utilizar un algoritmo externo para el Libre. (blukon/NFC/LibreAlarm)</string>
     <string name="display_predictive_values">Mostrar valores predicción</string>
+    <string name="use_external_blukon_algorithm">Algoritmo externo para el Libre.</string>
     <string name="calibrate_external_libre_algorithm_summary">Aplica métodos de calibración de xDrip con los datos del algoritmo externo para el Libre.</string>
     <string name="calibrate_external_libre_algorithm_title">Calibracion del algoritmo OOP.</string>
+    <string name="libre_use_smoothed_data_summary">Utilizar una media de 5 puntos para obtener datos del libre más suaves.</string>
+    <string name="libre_use_smoothed_data_title">Suavizar Datos de Libre.</string>
     <string name="retrieve_blukon_history_title">Recuperar el historial del Libre</string>
     <string name="retrieve_blukon_history_summary">Recuperar histórico pendiente de Blukon cuando se reconecte al sensor</string>
     <string name="interpret_share_raw">Si usa Compartir, xDrip mostrará los valores cuando están normalmente ocultos en el receptor.</string>
@@ -700,6 +708,8 @@
     <string name="mongo_db_uri">IUR de la BD Mongo</string>
     <string name="skip_local_lan">Para servidores locales con direcciones 192.168.x.x , omitir subidas cuando no hay conectividad de red local.</string>
     <string name="skip_lan_uploads">Omitir subidas LAN</string>
+    <string name="mongo_load_transmitter_data_title">Cargar datos de transmisores Libre</string>
+    <string name="mongo_load_transmitter_data_summary">Permite que más de un xDrip se conecte a los dispositivos BT y almacene los datos que reciben en la nube. Esto debería permitir la cobertura en toda la casa para libre con miaomiao, o 2 padres utilizando el mismo dispositivo BT transparentemente.</string>
     <string name="influxdb_sync">Habilitar la sincronización de InfluxDB</string>
     <string name="influxdb_uri">IUR de InfluxDB</string>
     <string name="influxdb_database_name">Nombre de la base de datos de InfluxDB</string>
@@ -832,6 +842,7 @@
     <string name="repeat_sound">Repetir sonido</string>
     <string name="enable_telemetry">Habilitar Telemetría</string>
     <string name="send_data_to_developers">Enviar datos a los desarrolladores sobre las tasas de éxito de los diferentes dispositivos</string>
+    <string name="try_to_work_around_noisy_readings_ultrasensitive">Empezar a solucionar las lecturas ruidosas incluso en niveles de ruido muy bajos (sólo en modo ingeniería)</string>
     <string name="sidiary_date_title">¿Desde cuando se exporta?</string>
     <string name="blukon">Blucon</string>
     <string name="tomato">Tomato</string>
@@ -1397,6 +1408,7 @@
     <string name="your_display_name">Su nombre para mostrar:</string>
     <string name="followers_email">Correo electrónico de Seguidores:</string>
     <string name="send_invite">Enviar Invitación</string>
+    <string name="description_sensor_location">En el futuro, xDrip desearía enviar datos anónimos de los sensores a los desarrolladores para mejorar el algoritmo de calibración... Si decide aceptar, se le pedirá confirmación antes de cada transferencia de datos. Los datos nunca se enviarán sin su permiso. Para ayudarnos a entender y afinar la calibración, nos gustaría saber dónde se ha colocado este sensor. Pulse el botón de retroceso para cancelar.</string>
     <string name="save_sensor_location">Guardar ubicación el sensor</string>
     <string name="alerts">Alertas</string>
     <string name="use_internal_downloader">Usar descarga interna</string>
@@ -1476,6 +1488,7 @@
     <string name="unusual_internal_context_problem__please_report">Problema inusual de contexto interno: infórmenos</string>
     <string name="cannot_start__please_report_context_problem">No se puede iniciar. Reporte el contexto del problema</string>
     <string name="xdrip_will_not_work_below_android_version_42">xDrip+ no funcionará con una versión anterior a la 4.2 de Android</string>
+    <string name="xdrip_oop2_not_installed">xDrip+ necesita OOP2 para manejar sensores Libre2/LibreUS.</string>
     <string name="this_app_needs_battery_optimization_whitelisting_or_it_will_not_work_well_please_reset_app_preferences">Esta aplicación necesita que la optimización de la batería esté en una lista blanca o no funcionará bien. Restablezca las preferencias de la aplicación</string>
     <string name="setting_disabled_">Configuración deshabilitada :)</string>
     <string name="yes_please">SÍ, por favor</string>
@@ -1488,6 +1501,7 @@
     <string name="starting_sync_to_other_devices">Iniciando sincronización con otros dispositivos</string>
     <string name="deleting_all_bg_readings">¡Borrando TODAS las lecturas de glucosa!</string>
     <string name="could_not_export_csv_">No se pudo exportar a CSV:(</string>
+    <string name="librealarm_data_format_appears_incompatible_protocol_changed_or_no_data">El formato de datos de LibreAlarm parece incompatible. ¿El protocolo cambió o no hay datos?</string>
     <string name="please_update_librealarm_to_use_oop_algorithm">Actualice LibreAlarm para usar el algoritmo OOP</string>
     <string name="sensor_clock_has_not_advanced">¡El reloj del sensor no ha avanzado!</string>
     <string name="sensor_age_has_gone_backwards">¡La edad del sensor ha retrocedido!</string>
@@ -1534,6 +1548,7 @@
     <string name="pref_enable_insulinprofiles">habilitar al menos un máximo de tres perfiles</string>
     <string name="pref_select_basal_insulinprofiles">elija perfil de insulina basal.</string>
     <string name="pref_select_bolus_insulinprofiles">elija perfil de insulina para bolo. También se utiliza para la bomba y pluma...</string>
+    <string name="enable_streaming_summary">conectarse a sensores Libre2 después de buscarlos. Esto hará que el lector Libre y LibreLink no reciban alertas</string>
     <string name="enable_streaming_title">Iniciando la conexión Bluetooth con sensores Libre2</string>
     <string name="enable_streaming_always_allow">Conectar siempre a sensores Libre2</string>
     <string name="enable_streaming_ask_each_time">preguntar cada vez</string>
