@@ -74,7 +74,7 @@
     <string name="title_activity_share_test">בדיקת Share</string>
     <!-- pebble settings -->
     <string name="pref_pebble_trend_watchface">השתמש בפני שעון מסוג מגמה ב-Pebble</string>
-    <string name="pref_summary_pebble_trend_watchface">השתמש\התקן פני שעון מסוג מגמה ב-Pebble (ניסיוני)</string>
+    <string name="pref_summary_pebble_trend_watchface">השתמש\\התקן פני שעון מסוג מגמה ב-Pebble (ניסיוני)</string>
     <string name="pref_pebble_display_trend">הצג מגמה</string>
     <string name="pref_summary_display_trend">מציג את מגמת הסוכר בפני שעון ה-Pebble.</string>
     <string name="pref_pebble_display_high_line">הצג קו גבוה</string>
@@ -127,13 +127,9 @@
     <string name="note_button">כפתור הערה</string>
     <string name="showcase_note_long">כפתור ההערות ישמש להזנת קול.\n\nלחיצה ארוכה עליו תשמש להזנת טקסט או הגדרות.</string>
     <string name="redo_button">לחצן בצע שוב</string>
-    <string name="showcase_redo">לחצן הבצע-שוב יכול לאפשר הוספה של סימלצית טיפול, כיולים והערות
-
-אחרי 30 דקות הוא יוסתר שוב</string>
+    <string name="showcase_redo">לחצן הבצע-שוב יכול לאפשר הוספה של סימולציית טיפול, כיולים והערות \n\nאחרי 30 דקות הוא יוסתר שוב</string>
     <string name="undo_button">לחצן ביטול</string>
-    <string name="showcase_undo">לחצן הביטול יכול לאפשר מחיקה של סימלצית טיפול, כיולים והערות
-
-אחרי 30 דקות הוא יוסתר שוב</string>
+    <string name="showcase_undo">לחצן הביטול יכול לאפשר מחיקה של סימלצית טיפול, כיולים והערות\n\nאחרי 30 דקות הוא יוסתר שוב</string>
     <string name="add_note">הוסף הערה</string>
     <string name="blood_test">בדיקת דם</string>
     <string name="share">שיתוף</string>
@@ -150,7 +146,7 @@
     <string name="now_choose_start_sensor_in_settings">כעת בחר \'התחל סנסור\' מההגדרות</string>
     <string name="double_check_dex_receiver_serial_number">בדקו מחדש את המספר הסידורי של מקלט דקסקום, עליו להיות באורך 10 תווים, כולל אותיות</string>
     <string name="please_set_dex_receiver_serial_number">אנא הזינו את מספר מקלט הדקסקום שלכם בהגדרות האפליקציה</string>
-    <string name="unfortunately_andoird_version_no_blueooth_low_energy">לצערנו גרסת האנדרויד שלכם לא תומכת בBluetooth Low Energy</string>
+    <string name="unfortunately_andoird_version_no_blueooth_low_energy">לצערנו גרסת האנדרואיד שלכם לא תומכת ב-Bluetooth Low Energy</string>
     <string name="waiting_for_packet">ממתין לחבילת נתונים</string>
     <string name="persistent_high_for_greater_than">התראת סוכר גבוה מתמשכת עבור &gt; </string>
     <string name="space_mins">" דקות"</string>
@@ -168,7 +164,6 @@
     <string name="checking_for_update">מחפש עדכונים..</string>
     <string name="signal_missed">אין קליטה</string>
     <string name="minutes_ago">{0, choice,0# לפני {0, number, integer} דקות |1# לפני דקה|1&lt; לפני {0, number, integer} דקות }</string>
-    <string name="expires_days">{0, בחירה,0#חיישן פג תוקף!|1#מסתיים בעוד {0, number} יום|1&lt; {0, number} ימים}</string>
     <string name="expires_at">מסתיים {0}</string>
     <string name="space_minutes_ago">" דקות"</string>
     <string name="in_libre_all_house_mode_no_readings_collected_yet">"במצב רשת ליברה כלל ביתית: לא נקלטו קריאות."</string>
@@ -210,7 +205,7 @@
     <string name="send_feedback_message">שלח משוב</string>
     <string name="copying_settings">מעתיק הגדרות</string>
     <string name="show_settings_qr_codes">הצג קוד QR של ההגדרות</string>
-    <string name="load_save_settings_to_sdcard">שמור \ טען הגדרות לכרטיס זכרון</string>
+    <string name="load_save_settings_to_sdcard">שמור \\ טען הגדרות לכרטיס זכרון</string>
     <string name="alarms_and_alerts">התראות ואזעקות</string>
     <string name="alerts_and_notifications">התראות והודעות</string>
     <string name="glucose_level_alerts_list">רשימת התראות על רמת סוכר</string>
@@ -284,7 +279,7 @@
     <string name="statistics">סטטיסטיקות</string>
     <string name="snooze_alert">השתק התראה (נודניק)</string>
     <string name="less_common_settings">הגדרות פחות נפוצות</string>
-    <string name="view_recent_errors_warnings">ראה אזהרות \ שגיאות אחרות</string>
+    <string name="view_recent_errors_warnings">ראה אזהרות \\ שגיאות אחרות</string>
     <string name="other_settings">הגדרות אחרות</string>
     <string name="older_gratuitous_wakelocks">Wakelocks מיותרים וישנים שיכולים לצרוך יותר סוללה עשויים להיות הכרחיים לפעילות נייטסקאוט או Android Wear</string>
     <string name="use_excessive_wakelocks">השתמש ב-Wakelocks עודפים</string>
@@ -310,7 +305,7 @@
     <string name="default_color_selected">נבחר צבע ברירת מחדל</string>
     <string name="xdrip_plus_extra_settings">הגדרות נוספות</string>
     <string name="example_chart">גרף לדוגמה</string>
-    <string name="treatments_prediction_curves">טיפולים \ עקומות חיזוי</string>
+    <string name="treatments_prediction_curves">טיפולים \\ עקומות חיזוי</string>
     <string name="carbs_per_unit">פחמ\' ליחידה</string>
     <string name="everyday">כל יום</string>
     <string name="insulin_sensitivity_glucose_drop_per_unit">רגישות לאינסולין: ירידת סוכר ליח\'</string>
@@ -321,7 +316,7 @@
     <string name="units">יחידות</string>
     <string name="carbs">פחמימות</string>
     <string name="when">כאשר</string>
-    <string name="speak_your_treatment">הקרא טיפול בקול לדוגמה:\nיחידות אינסולין \ xx גרם פחמימות</string>
+    <string name="speak_your_treatment">הקרא טיפול בקול לדוגמה:\nיחידות אינסולין \\ xx גרם פחמימות</string>
     <string name="speech_recognition_is_not_supported">זיהוי דיבור אינו נתמך</string>
     <string name="treatment_note">הערה על טיפול</string>
     <string name="could_not_export_database">יצוא מסד הנתונים נכשל :(</string>
@@ -352,7 +347,7 @@
     <string name="version_details">פרטי הגרסה</string>
     <string name="download_now">הורד עכשיו</string>
     <string name="automatically_check_for_updates">בדוק עדכונים אוטומטית</string>
-    <string name="here_you_can_save_the_settings_to_the_external_storage_sdcard">כאן תוכלו לשמור את ההגדרות באחסון חיצוני (sdcard). \n\n אחרי ששמרתם את הנתונים, אפליקציות אחרות יכולות לקרוא את ההגדרות שעשויות להכיל מידע רגיש. \n\n אם אתם מוטרד מכך, מומלץ למחוק את ההגדרות לאחר שיצאת אותם.</string>
+    <string name="here_you_can_save_the_settings_to_the_external_storage_sdcard">כאן תוכלו לשמור את ההגדרות באחסון חיצוני (SDcard). \n\n אחרי ששמרתם את הנתונים, אפליקציות אחרות יכולות לקרוא את ההגדרות שעשויות להכיל מידע רגיש. \n\n אם אתם מוטרד מכך, מומלץ למחוק את ההגדרות לאחר שיצאת אותם.</string>
     <string name="save_all_settings_to_sdcard">שמור את כל ההגדרות לכרטיס הזיכרון</string>
     <string name="load_all_settings_from_sdcard">טען את כל ההגדרות מכרטיס הזיכרון</string>
     <string name="delete_any_settings_on_sdcard">מחק את כל ההגדרות על כרטיס הזיכרון</string>
@@ -443,7 +438,7 @@
     <string name="display_slope_arrows">הצג חץ מגמה</string>
     <string name="vibrate_watch_to_alert_no_data">השעון יירטוט כאשר אין קליטה של ערכי סוכר</string>
     <string name="vibrate_when_missed_signal">השעון יירטוט כאשר אין קליטה</string>
-    <string name="vibrate_watch_to_alert_no_bluetooth">השעון יירטוט כאשר הבלוטוס מתנתק</string>
+    <string name="vibrate_watch_to_alert_no_bluetooth">השעון יירטוט כאשר הבלוטות\' מתנתק</string>
     <string name="vibrate_when_no_bluetooth">רטוט כאשר אין בלוטות\'</string>
     <string name="special_glucose_value_to_display_message">ערך גלוקוז מיוחד להצגה בהודעה שלמטה</string>
     <string name="bluetooth_wakelocks">Bluetooth Wakelocks</string>
@@ -490,7 +485,7 @@
     <string name="notification_chart_background">רקע גרף ההודעות</string>
     <string name="widget_chart_background">רקע גרף הווידג\'ט</string>
     <string name="try_to_work_around_noisy_readings">נסה לעבוד מסביב לקריאות משובשות</string>
-    <string name="show_tips_hints">הצג טיפים\רמזים לתיאור פונקציות של כפתורים וכו\'. בטלו את הסימון ובחרו מחדש כדי לאתחל את ההגדרה</string>
+    <string name="show_tips_hints">הצג טיפים\\רמזים לתיאור פונקציות של כפתורים וכו\'. בטלו את הסימון ובחרו מחדש כדי לאתחל את ההגדרה</string>
     <string name="show_interface_hints">הצג רמזים של הממשק</string>
     <string name="show_graph_time_lines">הצג קווי רשת לשעות בגרף</string>
     <string name="show_graph_glucose_lines">הצג קווי רשת לערכי הסוכר בגרף</string>
@@ -562,7 +557,7 @@
     <string name="notify_disable_wearG5_on_missedreadings">מפסיק את אילוץ שירות האיסוף של Wear בגלל החמצת %1$d דקות של קריאות מהשעון!</string>
     <string name="label_show_insulin">אינסולין: %1$s יח\'</string>
     <string name="label_show_carbs">פחמ\':%1$s גר\'</string>
-    <string name="label_show_royceratio">פחמ\'\אינס\':%1$s</string>
+    <string name="label_show_royceratio">פחמ\'\\אינס\':%1$s</string>
     <string name="label_show_steps">צעדים:%1$d</string>
     <string name="label_show_steps_km">ק\"מ:%1$s</string>
     <string name="label_show_steps_mi">מייל:%1$s</string>
@@ -676,7 +671,7 @@
     <string name="all_new_glucose_data_plugin">כל נתוני סוכר חדשים יחושבו ויישמרו מתוך התוסף ולא מאלגוריתם xDrip הסטנדרטי. פעולה זו לא נוסתה ועלולה להיות בעייתית. השתמשו בזהירות רבה.</string>
     <string name="old_school_calibrations">טווח השיפועים המקורי צר יותר באלגוריתם xDrip הקלאסי (לפני 2017). ברירת המחדל של השיפועים סבירה יותר! (מצב מהנדסים בלבד)</string>
     <string name="old_school_calibration_mode">מצב כיול מהאסכולה הישנה</string>
-    <string name="how_receive_data">באיזה אופן תקבלו נתונים מהדקסקום\משדר אחר?</string>
+    <string name="how_receive_data">באיזה אופן תקבלו נתונים מהדקסקום\\משדר אחר?</string>
     <string name="nfc_options">אפשרויות סריקת חיישנים מבוססי NFC</string>
     <string name="nfc_scan_features">תכונות סריקת NFC</string>
     <string name="use_nfc_feature">השתמש בתכונת NFC</string>
@@ -691,7 +686,7 @@
     <string name="vibrate_scanning_status">רטוט כדי לסמן את מצב הסריקה</string>
     <string name="beep_when_scanning_within_app">צפצף כשסורקים בתוך xDrip+</string>
     <string name="use_multi_block">השתמש בשיטת קריאה Multi-block המהירה יותר</string>
-    <string name="low_level_value">ערך אבטיפוס\דיאגנוסטיקה ברמה נמוכה</string>
+    <string name="low_level_value">ערך אבטיפוס\\דיאגנוסטיקה ברמה נמוכה</string>
     <string name="transmitter_id">מספר המשדר של הדקסקום, לדוגמה 12AB3</string>
     <string name="advanced_g5_settings">הגדרות G5 מתקדמות עבור מצבים נדירים</string>
     <string name="g5_debug_settings">הגדרות דיבאג של G5/G6</string>
@@ -797,13 +792,13 @@
     <string name="show_range_on_widget">הצג קווי סף עליון ותחתון בווידג\'ט.</string>
     <string name="delayed_but_more_stable">מעוכב אבל יציב יותר כשהנתונים משובשים (לא מומלץ)</string>
     <string name="show_bolus_wizard_preview">הצג תצוגה מקדימה לאשף הבולוסים</string>
-    <string name="display_calculations">הצג חישובי אינסולין\פחמימות</string>
-    <string name="display_calculations_everytime">הצג חישובי אינסולין\פחמימות כל הזמן</string>
+    <string name="display_calculations">הצג חישובי אינסולין\\פחמימות</string>
+    <string name="display_calculations_everytime">הצג חישובי אינסולין\\פחמימות כל הזמן</string>
     <string name="always_show_bolus_wizard_preview">תמיד הצג תצוגה מקדימה לאשף הבולוסים</string>
     <string name="show_test_features">הצג תכונות נוספות ונסיוניות</string>
     <string name="show_reminder_features">הצג תכונות ותפריטים עבור תזכורות</string>
     <string name="enable_reminder_features">אפשר תכונות של תזכורות</string>
-    <string name="display_mathamatical_simulations">הצג סימולציות מתמטיות בהתבסס על נתוני הפרופיל ורשומות הפחמימות\אינסולין</string>
+    <string name="display_mathamatical_simulations">הצג סימולציות מתמטיות בהתבסס על נתוני הפרופיל ורשומות הפחמימות\\אינסולין</string>
     <string name="predictive_simulations">הדמיות חיזוי</string>
     <string name="low_prediction_values">ערכים חזויים נמוכים</string>
     <string name="target_glucose_default">ברירת המחדל לערך מטרת הסוכר</string>
@@ -893,9 +888,13 @@
     <string name="bluereader_position">בדוק את המיקום של ה-blueReader על הסנסור, אחרת יצליח לקרוא!</string>
     <string name="offical_msg">האפליקציה הרשמית</string>
     <string name="yes">כן</string>
+    <string name="garmin">Garmin</string>
     <string name="fitbit">Fitbit</string>
+    <string name="enable_local_web_server_feature">לאפשר תכונת שרת web מקומי עבור פני שעוני Garmin?</string>
+    <string name="enable_local_web_server_feature_fitbit">לאפשר תכונת שרת web מקומי עבור פני שעוני Fitbit?</string>
     <string name="set_data_source_to">לקבוע את סוג הסנסור ל%s ?</string>
     <string name="are_you_sure">אתם בטוחים?</string>
+    <string name="g4_share_receiver">מקלט G4 Share</string>
     <string name="bluetooth_wixel">Wixel - בלוטות\'</string>
     <string name="parakeet_wifi">Parakeet / Wifi</string>
     <string name="other">אחר</string>
@@ -904,6 +903,7 @@
     <string name="enter_your_transmitter_id_exactly">הזן את מספר המשדר בדיוק כפי שהוא מודפס על הקופסא או המשדר עצמו</string>
     <string name="which_type_of_device">מה סוג המכשיר?</string>
     <string name="enable_local_broadcast">לאפשר הפצה מקומית?</string>
+    <string name="androidaps">AndroidAPS</string>
     <string name="androidwear">Android Wear OS</string>
     <string name="librealarm">LibreAlarm</string>
     <string name="use_librealarm">להשתמש בLibreAlarm בתור מקור הנתונים?</string>
@@ -915,9 +915,12 @@
     <string name="external_calibration_app">אפליקציית כיול חיצונית</string>
     <string name="use_app_for_calibration">השתמש באפליקציה לכיול?</string>
     <string name="code_accepted">הקוד התקבל</string>
+    <string name="invalid_or_unsupported_code">קוד לא נתמך או בלתי חוקי!</string>
     <string name="g6_sensor_code">קוד חיישן G6</string>
     <string name="please_enter_printed_calibration_code">אנא הזן את קוד הכיול המודפס, 4 ספרות, לדוגמא: 5678</string>
+    <string name="enable_update_checks">לאפשר בדיקות עדכונים?</string>
     <string name="hey_fam">היי פאם...</string>
+    <string name="update_checking_enabled">בדיקות עדכונים מופעלות!</string>
     <string name="cancel_alarm">לבטל את ההתראה?</string>
     <string name="please_confirm_to_cancel_the_alert">אנא אשרו את השתקת ההתראה</string>
     <string name="yes_cancel">כן, בטל.</string>
@@ -925,6 +928,7 @@
     <string name="zero_zero_zero_zero">0000</string>
     <string name="emergency_messages">הודעות חירום</string>
     <string name="your_name">שמכם</string>
+    <string name="choose_when_to_send_messages">בחרו מתי לשלוח הודעות:</string>
     <string name="test_message_sending">נסה שליחת הודעות</string>
     <string name="select_device">בחירת מכשיר</string>
     <string name="detect_car_audio">זהה אודיו ברכב</string>
@@ -937,9 +941,13 @@
     <string name="summary_Operate_a_local_web_server_for_interacting_with_Fitbit_Ionic_etc">הפעל שרת מקומי לאינטראקציה עם Fitbit Ionic וכו\'</string>
     <string name="summary_Accept_connections_from_any_network_instead_of_just_internally">אפשר התחברות מכל רשת ולא רק באופן פנימי מתוך הטלפון. יש לכך השלכות אבטחה! המפתח הסודי המשותף יידרש, אם הוגדר.</string>
     <string name="summary_Shared_Secret_for_open_web_service">Shared Secret for open web service (should match your Nightcout API secret)</string>
+    <string name="title_xDrip_Web_Service_Secret">סוד לשירות הווב של xDrip</string>
+    <string name="summary_Display_status_from_other_apps_like_AndroidAPS">מציג סטטוס מאפליקציות אחרות כמו AndroidAPS</string>
     <string name="title_External_Status">סטאטוס חיצוני</string>
+    <string name="summary_Display_pump_status_information_if_available">מציג מידע על סטטוס המשאבה אם זמין</string>
     <string name="title_Pump_Status">סטטוס המשאבה</string>
-    <string name="title_Carb_Insulin_Ratio">יחס פחמ\'\אינסולין</string>
+    <string name="summary_Show_treatment_carb_insulin_ratio">מציג יחס הפחמימות\\אינסולין</string>
+    <string name="title_Carb_Insulin_Ratio">יחס פחמ\'\\אינסולין</string>
     <string name="summary_Ask_for_a_second_optional_initial_calibration_blood_test">מבקש בדיקת דם שניה אופציונלית לכיול ראשוני</string>
     <string name="title_Double_Calibrations">כיולים כפולים</string>
     <string name="title_Non_fixed_Libre_slopes">שיפועי ליברה לא קבועים</string>
@@ -1025,7 +1033,7 @@
     <string name="no_data">אין נתונים</string>
     <string name="no_bluetooth">אין בלוטות\'</string>
     <string name="connection_status_long">מצב החיבור:   </string>
-    <string name="without_location_scan_doesnt_work">בלי הרשאה למיקום אנדרואיד לא מאפשר סריקת בלוטות\'</string>
+    <string name="without_location_scan_doesnt_work">סריקת בלוטות\' לא אפשרית בלי הרשאה למיקום באנדרואיד</string>
     <string name="android_10_need_background_location">גרסאות אנרואיד 10 ומעלה דורשות רשות למיקום ברקע כדי שבלוטות\' יעבוד</string>
     <string name="without_location_permission_emergency_cannot_get_location">הודעות חירום לא יכולות להשתמש בנתוני מיקום אם לא תינתן רשות לקבלת מיקום</string>
     <string name="force_speaker_colon">אלץ שימוש ברמקול</string>
@@ -1059,7 +1067,7 @@
     <string name="title_tidepool_window_latency">גיל הנתונים (דק\')</string>
     <string name="title_tidepool">Tidepool</string>
     <string name="show_help">הצג עזרה</string>
-    <string name="load_save_settings_on_sdcard">שמור \ טען הגדרות לכרטיס זכרון (SDcard)</string>
+    <string name="load_save_settings_on_sdcard">שמור \\ טען הגדרות לכרטיס זכרון (SDcard)</string>
     <string name="delete_all_bg_readings">מחק את כל קריאות הסוכר</string>
     <string name="sync_treatments">סנכרן טיפולים</string>
     <string name="send_bg_readings_to_backfill">שלח השלמות נתונים של קריאות הסוכר</string>
@@ -1112,7 +1120,7 @@
     <string name="title_lefun_screen_step_calories">הצג קלוריות מצעידה</string>
     <string name="title_lefun_screen_heart_rate">הצג קצב לב</string>
     <string name="title_lefun_screen_heart_pressure">הצג לחץ דם</string>
-    <string name="title_lefun_screen_find_phone">הצג חיפוש טלפון \ נודניק</string>
+    <string name="title_lefun_screen_find_phone">הצג חיפוש טלפון \\ נודניק</string>
     <string name="title_lefun_screen_mac_address">הצג כתובת MAC</string>
     <string name="summary_allow_samsung_workaround">משתמש במעקפים כדי להימנע מהתנהגות לא סטנדרטית של אנדרואיד במכשירי סמסונג. בלי אפשרות זו האוספים בדר\"כ נכשלים.</string>
     <string name="title_allow_samsung_workaround">מעקפים לסמסונג</string>
@@ -1139,7 +1147,7 @@
     <string name="title_ob1_g5_fallback_to_xdrip">חזור ל-xDrip</string>
     <string name="summary_ob1_minimize_scanning">השתמש בהיוריסטיקה כדי לצמצם סריקות בלוטות\' ולחסוך בחשמל</string>
     <string name="title_ob1_minimize_scanning">צמצם סריקה</string>
-    <string name="summary_using_g6">אני משתמש\ת בחיישן G6</string>
+    <string name="summary_using_g6">אני משתמש\\ת בחיישן G6</string>
     <string name="title_using_g6">תמיכה ב-G6</string>
     <string name="summary_ob1_g5_allow_resetbond">OB1 יכול להיפרד אם הוא חושב שההצפנה נכשלה. אם אתם חווים בעיות עם הפרדה אז כבו אפשרות זו. אם אתם מאבדים חיבור לחלוטין, השאירו את אפשרו זו מופעלת.</string>
     <string name="title_ob1_g5_allow_resetbond">אפשר הפרדת OB1</string>
@@ -1221,12 +1229,12 @@
     <string name="title_use_notification_channels">ערוצי התראות</string>
     <string name="title_play_sound_for_initial_calibration">התראה ראשונית</string>
     <string name="category_noisy_readings">קריאות רועשות</string>
-    <string name="category_falling_rising_bg">סוכר יורד\עולה</string>
+    <string name="category_falling_rising_bg">סוכר יורד\\עולה</string>
     <string name="note_search_button">חיפוש</string>
     <string name="all_note_button">הכל</string>
     <string name="title_full_screen_mode">מצב מסך מלא</string>
     <string name="title_colors_for_printing">צבעים להדפסה</string>
-    <string name="title_share_save_this_screen">שיתוף \ שמירת מסך זה</string>
+    <string name="title_share_save_this_screen">שיתוף \\ שמירת מסך זה</string>
     <string name="search_phrase">ביטוי לחיפוש</string>
     <string name="load_more">טען עוד</string>
     <string name="searching">מחפש...</string>
@@ -1264,7 +1272,7 @@
     <string name="stddev">סטיית תקן:</string>
     <string name="relative_sd_cv">סטיית תקן יחסית (CV):</string>
     <string name="important_warning">אזהרה חשובה!</string>
-    <string name="i_agree">אני מסכימ\ה</string>
+    <string name="i_agree">אני מסכימ\\ה</string>
     <string name="backup_detected">גיבוי נמצא</string>
     <string name="it_looks_like_you_maybe_have_a_settings_backup_shall_we_try_to_restore_it">נראה כי יש לך גיבוי של ההגדרות, האם לנסות לשחזר אותו?</string>
     <string name="restore_settings">שחזור הגדרות</string>
@@ -1281,7 +1289,7 @@
     <string name="__do_you_want_to_change_settings_or_start_sensor">\n\n ברצונכם לשנות הגדרות או להתחיל את הסנסור?</string>
     <string name="change_settings">שנה את ההגדרות</string>
     <string name="do_you_want_to_delete_and_reset_the_calibrations_for_this_sensor">האם ברצונכם למחוק ולאפס את הכיולים עבור סנסור זה?</string>
-    <string name="you_have_an_old_experimental_glucose_prediction_setting_enabled__this_is_not_recommended_and_could_mess_things_up_badly__shall_i_disable_this_for_you">אתם משתמשים באלגוריתם ישן לחיזוי הסוכר.\n\n זה מאוד לא מומלץ, ועלול לגרום לבעיות\n\n האם לבטל את זה בשבילכם\ן?</string>
+    <string name="you_have_an_old_experimental_glucose_prediction_setting_enabled__this_is_not_recommended_and_could_mess_things_up_badly__shall_i_disable_this_for_you">אתם משתמשים באלגוריתם ישן לחיזוי הסוכר.\n\n זה מאוד לא מומלץ, ועלול לגרום לבעיות\n\n האם לבטל את זה בשבילכם\\ן?</string>
     <string name="settings_issue">בעיה בהגדרות!</string>
     <string name="use_bg_for_calibration">להשתמש בבדיקת דם לכיול?</string>
     <string name="do_you_want_to_use_this_entered_fingerstick_blood_glucose_test_to_calibrate_with__you_can_change_when_this_dialog_is_displayed_in_settings">האם ברצונכם להשתמש בבדיקת דם זו לכיול?\n\n(אתם יכולים לשנות מתי הודעה זו מופיעה בהגדרות)</string>

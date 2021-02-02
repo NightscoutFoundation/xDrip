@@ -1335,6 +1335,7 @@
     <string name="title_use_number_icon_large">Verwende großes Nummernsymbol</string>
     <string name="summary_number_icon_large_arrow">Zeigt den Trendpfeil im großen Symbol an</string>
     <string name="title_number_icon_large_arrow">Pfeil in großem Symbol anzeigen</string>
+    <string name="summary_show_home_on_boot">Zeige den xDrip-Bildschirm automatisch nach dem Start des Geräts</string>
     <string name="title_show_home_on_boot">Zeige xDrip beim Booten</string>
     <string name="eula">EULA</string>
     <string name="summary_plus_accept_follower_actions">Behandlungen und Kalibrierung von Followern werden akzeptiert</string>
@@ -1514,6 +1515,8 @@
     <string name="summary_ob1_g5_preemptive_restart_extended_time_travel_all_firmwares">Ermöglicht verlängerten Nutzungszeitraum mit allen Firmware-Versionen (nur im Entwicklermodus) </string>
     <string name="collection_summary_ob1_g5_preemptive_restart">Einen Sensor automatisch neu starten, bevor er gestoppt wird</string>
     <string name="blood_glucose_graph">Blutzuckerdiagramm</string>
+    <string name="pref_enable_insulinprofiles">aktiviere mindestens ein Profil, maximal drei</string>
+    <string name="pref_select_basal_insulinprofiles">wähle das Basalratenprofil.</string>
     <string name="enable_streaming_summary">verbinde Libre2-Sensoren nach dem Scannen. Das Libre-Lesegerät und die Libre Link-App werden dann keine Alarme mehr empfangen</string>
     <string name="enable_streaming_title">Starte Bluetooth-Verbindung mit Libre2-Sensoren</string>
     <string name="enable_streaming_always_allow">Immer mit Libre2-Sensoren verbinden</string>

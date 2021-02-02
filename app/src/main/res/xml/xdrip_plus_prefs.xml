@@ -418,6 +418,10 @@
                     android:summary="@string/summary_illustrate_backfilled_data"
                     android:title="@string/title_illustrate_backfilled_data" />
                 <CheckBoxPreference
+                    android:key="widget_hide_graph"
+                    android:summary="Hide the graph on widgets (shows on next reading)"
+                    android:title="Hide widget graph" />
+                <CheckBoxPreference
                     android:dependency="engineering_mode"
                     android:key="illustrate_remote_data"
                     android:summary="Show data received remotely (diagnostic only)"

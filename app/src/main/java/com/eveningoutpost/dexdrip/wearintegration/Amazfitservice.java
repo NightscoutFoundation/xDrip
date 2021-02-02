@@ -329,7 +329,7 @@ public class Amazfitservice extends Service {
 
 
             return json_data.toString();
-        } catch (JSONException e) {
+        } catch (NullPointerException | JSONException e) {
             Log.w("AmazfitService", e.toString());
         }
         return "";

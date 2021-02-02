@@ -5,11 +5,27 @@ buildscript {
     }
 
     dependencies {
-        classpath "com.newrelic.agent.android:agent-gradle-plugin:5.27.1"
+        if (getGradle().getStartParameter().getTaskRequests().toString().contains("Release]")) {
+            println("Enabling New Relic")
+            classpath "com.newrelic.agent.android:agent-gradle-plugin:5.27.1"
+        }
     }
 }
 apply plugin: 'com.android.application'
-apply plugin: 'newrelic'
+
+
+if (project.file('local.gradle').exists()) {
+    apply from: 'local.gradle'
+}
+
+
+if (getGradle().getStartParameter().getTaskRequests().toString().contains("Release]")) {
+    apply plugin: 'newrelic'
+    newrelic {
+        variantMapsEnabled false
+        uploadMapsForVariant ''
+    }
+}
 //apply plugin: 'me.tatarka.retrolambda'
 //apply plugin: 'io.fabric'
 
@@ -113,11 +129,6 @@ def generateVersionName = { ->
 
 }
 
-newrelic {
-    variantMapsEnabled false
-    uploadMapsForVariant ''
-}
-
 android {
     compileSdkVersion 29
 
@@ -146,7 +157,21 @@ android {
         //vectorDrawables.useSupportLibrary = true // broken in newer gradle versions
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
+        // workaround till #1596 gets merged
+        resValue "string", "google_maps_key", "AIzaSyDOa0FJV2h2qf0tJ-kSeX1Sk2f1-IbUOz4"
+    }
 
+    // The defaultConfig values above are fixed, so your incremental builds don't
+    // need to rebuild the manifest (and therefore the whole APK, slowing build times).
+    // But for release builds, it's okay. So the following script iterates through
+    // all the known variants, finds those that are "release" build types, and
+    // changes those properties to something dynamic.
+    applicationVariants.all { variant ->
+        if (variant.buildType.name == "release") {
+            variant.outputs.each { output ->
+                output.versionNameOverride = generateVersionName()
+            }
+        }
     }
 
     testOptions {
@@ -193,27 +218,47 @@ android {
             versionNameSuffix "-debug"
             debuggable true
         }
-    }
-}
-
-// auto test rig
-task AutoInstall(type: Exec) {
-    commandLine "bash", "$projectDir/autoinstallviausb"
-}
-
-// auto tester
-tasks.whenTaskAdded { task ->
-    if (task.name == 'assembleRelease') {
-        if (System.getenv('USERDOMAIN') == "PC-PC") {
-            task.finalizedBy 'AutoTestRig'
-            AutoTestRig.outputs.upToDateWhen { false }
+        dev {
+            minifyEnabled false
+            shrinkResources false
+            useProguard false
+            ext.enableCrashlytics = false
+            ext.alwaysUpdateBuildId = false
+            versionNameSuffix "-debug"
+            debuggable true
+            signingConfig debug.signingConfig
+            matchingFallbacks = ['debug', 'release']
         }
     }
+
+    flavorDimensions "version"
+    productFlavors {
+        // When building a variant that uses this flavor, the following configurations
+        // override those in the defaultConfig block.
+        fast {
+            // To avoid using legacy multidex when building from the command line,
+            // set minSdkVersion to 21 or higher. When using Android Studio 2.3 or higher,
+            // the build automatically avoids legacy multidex when deploying to a device running
+            // API level 21 or higher—regardless of what you set as your minSdkVersion.
+            minSdkVersion 21
+            versionNameSuffix "-dev"
+            buildConfigField "int", "buildVersion", "2021010100"
+            buildConfigField "String", "buildUUID", "\"0f79a60a-5616-99be-8eb1-a430edcfd9fd\""
+            buildConfigField "long", "buildTimestamp", "1609459200L"
+            resConfigs "en", "xxhdpi"
+        }
+
+        prod {
+            // If you've configured the defaultConfig block for the release version of
+            // your app, you can leave this block empty and Gradle uses configurations in
+            // the defaultConfig block instead. You still need to create this flavor.
+            // Otherwise, all variants use the "dev" flavor configurations.
+        }
+    }
+
 }
 
-task AutoTestRig()  {
-    dependsOn(AutoInstall)
-}
+
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
