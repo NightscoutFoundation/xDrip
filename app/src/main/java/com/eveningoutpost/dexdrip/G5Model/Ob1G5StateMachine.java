@@ -61,6 +61,7 @@ import io.reactivex.schedulers.Schedulers;
 import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.Authentication;
 import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.Control;
 import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.ProbablyBackfill;
+import static com.eveningoutpost.dexdrip.G5Model.FirmwareCapability.isG6Rev2;
 import static com.eveningoutpost.dexdrip.Models.JoH.msSince;
 import static com.eveningoutpost.dexdrip.Models.JoH.pratelimit;
 import static com.eveningoutpost.dexdrip.Models.JoH.tsl;
@@ -121,6 +122,7 @@ public class Ob1G5StateMachine {
 
     private static volatile long lastGlucosePacket = 0;
     private static volatile long lastUsableGlucosePacket = 0;
+    private static volatile long lastAuthenticationStream = 0;
     private static volatile BgReading lastGlucoseBgReading;
     private static volatile boolean backup_loaded = false;
 
@@ -151,13 +153,15 @@ public class Ob1G5StateMachine {
                                         if (d)
                                             UserError.Log.d(TAG, "Wrote authrequest, got: " + JoH.bytesToHex(characteristicValue));
                                         speakSlowly();
-                                        connection.readCharacteristic(Authentication).subscribe(
-                                                readValue -> {
-                                                    authenticationProcessor(parent, connection, readValue);
-                                                }, throwable -> {
-                                                    UserError.Log.d(TAG, "Could not read after AuthRequestTX: " + throwable);
-                                                });
-                                        //parent.background_automata();
+                                        if ((msSince(lastAuthenticationStream) > 500) && !isG6Rev2(getTransmitterID())) {
+                                            connection.readCharacteristic(Authentication).subscribe(
+                                                    readValue -> {
+                                                        authenticationProcessor(parent, connection, readValue);
+                                                    }, throwable -> {
+                                                        UserError.Log.d(TAG, "Could not read after AuthRequestTX: " + throwable);
+                                                    });
+                                            //parent.background_automata();
+                                        }
                                     },
                                     throwable -> {
                                         UserError.Log.e(TAG, "Could not write AuthRequestTX: " + throwable);
@@ -170,6 +174,7 @@ public class Ob1G5StateMachine {
                 //.observeOn(Schedulers.newThread())
                 .subscribe(bytes -> {
                     // incoming notifications
+                    lastAuthenticationStream = tsl();
                     UserError.Log.d(TAG, "Received Authentication notification bytes: " + JoH.bytesToHex(bytes));
                     authenticationProcessor(parent, connection, bytes);
 
@@ -230,22 +235,23 @@ public class Ob1G5StateMachine {
                                     challenge_value -> {
 
                                         speakSlowly();
-
-                                        connection.readCharacteristic(Authentication)
-                                                //.observeOn(Schedulers.io())
-                                                .subscribe(
-                                                        status_value -> {
-                                                            // interpret authentication response
-                                                            authenticationProcessor(parent, connection, status_value);
-                                                        }, throwable -> {
-                                                            if (throwable instanceof OperationSuccess) {
-                                                                UserError.Log.d(TAG, "Stopping auth challenge listener due to success");
-                                                            } else {
-                                                                UserError.Log.e(TAG, "Could not read reply to auth challenge: " + throwable);
-                                                                parent.incrementErrors();
-                                                                speakSlowly = true;
-                                                            }
-                                                        });
+                                        if (msSince(lastAuthenticationStream) > 500) {
+                                            connection.readCharacteristic(Authentication)
+                                                    //.observeOn(Schedulers.io())
+                                                    .subscribe(
+                                                            status_value -> {
+                                                                // interpret authentication response
+                                                                authenticationProcessor(parent, connection, status_value);
+                                                            }, throwable -> {
+                                                                if (throwable instanceof OperationSuccess) {
+                                                                    UserError.Log.d(TAG, "Stopping auth challenge listener due to success");
+                                                                } else {
+                                                                    UserError.Log.e(TAG, "Could not read reply to auth challenge: " + throwable);
+                                                                    parent.incrementErrors();
+                                                                    speakSlowly = true;
+                                                                }
+                                                            });
+                                        }
                                     }, throwable -> {
                                         UserError.Log.e(TAG, "Could not write auth challenge reply: " + throwable);
                                         parent.incrementErrors();
@@ -692,13 +698,7 @@ public class Ob1G5StateMachine {
 
                         case F2DUnknownRxMessage:
                             UserError.Log.d(TAG,"Received F2D message");
-                            try {
-                                checkVersionAndBattery(parent, connection);
-                            } finally {
-                                parent.msg("Got no raw");
-                                parent.updateLast(tsl());       // TODO verify if this is ok to do here
-                                parent.clearErrors();           // TODO verify if this is ok to do here
-                            }
+                            handleNonSensorRxState(parent, connection);
                             break;
 
                         default:
@@ -727,11 +727,23 @@ public class Ob1G5StateMachine {
         return true;
     }
 
+    private static void handleNonSensorRxState(final Ob1G5CollectionService parent, final RxBleConnection connection) {
+        try {
+            checkVersionAndBattery(parent, connection);
+        } finally {
+            parent.msg("Got needed");
+            parent.updateLast(tsl());       // TODO verify if this is ok to do here
+            parent.clearErrors();           // TODO verify if this is ok to do here
+        }
+    }
+
     private static void glucoseRxCommon(final BaseGlucoseRxMessage glucose, final Ob1G5CollectionService parent, final RxBleConnection connection) {
         if (JoH.ratelimit("ob1-g5-also-read-raw", 20)) {
-            //if (FirmwareCapability.isTransmitterRawCapable(getTransmitterID())) {
+            if (FirmwareCapability.isTransmitterRawCapable(getTransmitterID())) {
                 enqueueUniqueCommand(new SensorTxMessage(), "Also read raw");
-          //  }
+            } else {
+                handleNonSensorRxState(parent, connection);
+            }
         }
 
         if (JoH.pratelimit("g5-tx-time-since", 7200)
