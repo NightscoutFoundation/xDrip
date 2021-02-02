@@ -61,7 +61,7 @@ import io.reactivex.schedulers.Schedulers;
 import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.Authentication;
 import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.Control;
 import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.ProbablyBackfill;
-import static com.eveningoutpost.dexdrip.G5Model.FirmwareCapability.isG6Rev2;
+import static com.eveningoutpost.dexdrip.G5Model.FirmwareCapability.isTransmitterG6Rev2;
 import static com.eveningoutpost.dexdrip.Models.JoH.msSince;
 import static com.eveningoutpost.dexdrip.Models.JoH.pratelimit;
 import static com.eveningoutpost.dexdrip.Models.JoH.tsl;
@@ -153,7 +153,7 @@ public class Ob1G5StateMachine {
                                         if (d)
                                             UserError.Log.d(TAG, "Wrote authrequest, got: " + JoH.bytesToHex(characteristicValue));
                                         speakSlowly();
-                                        if ((msSince(lastAuthenticationStream) > 500) && !isG6Rev2(getTransmitterID())) {
+                                        if ((msSince(lastAuthenticationStream) > 500) && !isTransmitterG6Rev2(getTransmitterID())) {
                                             connection.readCharacteristic(Authentication).subscribe(
                                                     readValue -> {
                                                         authenticationProcessor(parent, connection, readValue);
