@@ -282,7 +282,7 @@
     <string name="view_recent_errors_warnings">Bekijk recente fouten / waarschuwingen</string>
     <string name="other_settings">Andere instellingen</string>
     <string name="older_gratuitous_wakelocks">Oudere wake locks die mogelijk nodig zijn voor Nightwatch of Android Wear (hoger energieverbruik)</string>
-    <string name="use_excessive_wakelocks">Gebruik Overmatig Wakelocks</string>
+    <string name="use_excessive_wakelocks">Gebruik overmatig veel Wakelocks</string>
     <string name="speak_readings">Spreek Lezingen</string>
     <string name="extra_status_line">Extra Statusregel</string>
     <string name="dexcom_share_server_upload">Dexcom Share Server upload</string>
@@ -459,12 +459,12 @@
     <string name="show_on_widget">Toon op widget</string>
     <string name="calibration_data_long">Calibration Data (lang)</string>
     <string name="calibration_data_short">Calibration Data (kort)</string>
-    <string name="store_sensor_location_to_help">Store sensor locaton om algoritme verbetering helpen</string>
-    <string name="help_the_developers_improve_the_algorithm">Help de ontwikkelaars het verbeteren van de xDrip algoritme.</string>
+    <string name="store_sensor_location_to_help">Sla de sensorlocatie op om algoritme te verbeteren</string>
+    <string name="help_the_developers_improve_the_algorithm">Help de ontwikkelaars het xDrip-algoritme te verbeteren.</string>
     <string name="help_the_community">Steun de gemeenschap</string>
     <string name="double_tap_or_pinch_to_zoom">Dubbele tik of knijpen om te zoomen.</string>
     <string name="start_sensor">Start Nieuwe Sensor</string>
-    <string name="debug_and_other_misc_options">Debuggen en andere misc opties</string>
+    <string name="debug_and_other_misc_options">Foutopsporing en andere diverse opties</string>
     <string name="low_glucose_values">Lage glucosewaarden</string>
     <string name="revert_to_default">Terugzetten naar Standaard</string>
     <string name="filtered_values">Gefilterd Waarden</string>
