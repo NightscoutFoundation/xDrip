@@ -306,7 +306,6 @@
     <string name="xdrip_plus_extra_settings">Дополнительные настройки xDrip+</string>
     <string name="example_chart">Пример графика</string>
     <string name="treatments_prediction_curves">Введённые значения / Прогнозные кривые</string>
-    <string name="carbs_per_unit">Углеводов на 1 единицу инсулина</string>
     <string name="everyday">Ежедневно</string>
     <string name="insulin_sensitivity_glucose_drop_per_unit">Чувствительность к инсулину: спад глюкозы от 1 ед. инсулина</string>
     <string name="transmitter_battery">Батарея трансмиттера</string>
@@ -842,7 +841,7 @@
     <string name="repeat_sound">Повторять звуковое уведомление</string>
     <string name="enable_telemetry">Включить телеметрию</string>
     <string name="send_data_to_developers">Отправлять информацию об использовании разработчика в целях улучшения качества приложения</string>
-    <string name="try_to_work_around_noisy_readings_ultrasensitive">Фильтровать некорректные значения даже при низком уровне шума (только в инженерном режиме)</string>
+    <string name="try_to_work_around_noisy_readings_ultrasensitive">Фильтровать некорректные значения даже при низком уровне шумов (только в инженерном режиме)</string>
     <string name="sidiary_date_title">Экспортировать начиная с?</string>
     <string name="blukon">Blucon</string>
     <string name="tomato">Tomato</string>
