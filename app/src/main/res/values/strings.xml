@@ -459,8 +459,8 @@
     <string name="display_slope_arrows">Display Slope Arrows</string>
     <string name="vibrate_watch_to_alert_no_data">Vibrate watch to alert when we are not getting any glucose data</string>
     <string name="vibrate_when_missed_signal">Vibrate when missed signal</string>
-    <string name="vibrate_watch_to_alert_no_bluetooth">Vibrate watch to alert when bluetooth disconnects</string>
-    <string name="vibrate_when_no_bluetooth">Vibrate when no bluetooth</string>
+    <string name="vibrate_watch_to_alert_no_bluetooth">Vibrate watch to alert when Bluetooth disconnects</string>
+    <string name="vibrate_when_no_bluetooth">Vibrate when no Bluetooth</string>
     <string name="special_glucose_value_to_display_message">Special glucose value to display the message below</string>
     <string name="bluetooth_wakelocks">Bluetooth Wakelocks</string>
     <string name="compatible_broadcast">Compatible Broadcast</string>
@@ -620,16 +620,16 @@
     <string name="battery_optimization_prompt">Battery Optimization prompt</string>
     <string name="advanced_bluetooth_settings">Advanced Bluetooth Settings</string>
     <string name="bluetooth_settings">Bluetooth Settings</string>
-    <string name="auto_turn_on_bluetooth">Automatically enable bluetooth if it is switched off when we try to connect to a bluetooth device</string>
+    <string name="auto_turn_on_bluetooth">Automatically enable Bluetooth if it is switched off when we try to connect to a Bluetooth device</string>
     <string name="turn_bluetooth_on">Turn Bluetooth on</string>
     <string name="reset_bluetooth">Reset Bluetooth by turning it off and on if we don\'t get anything in 20 minutes</string>
     <string name="bluetooth_watchdog">Bluetooth Watchdog</string>
     <string name="reset_bluetooth_g5">Reset Bluetooth by turning it off and on as a way to keep the G5 data source working. Without this the G5 collector may fail.</string>
     <string name="g5_bluetooth_watchdog">G5 Bluetooth Watchdog</string>
-    <string name="close_gatt">If the bluetooth watchdog activates often then you can try unchecking this option to see if it helps</string>
-    <string name="older_bluetooth_wakelocks">Older bluetooth wakelocks which can drain extra battery but might be needed for bluetooth reception</string>
-    <string name="reset_bluetooth_on_off">Reset Bluetooth by turning it off and on every few minutes! Only select if you are testing. It may disrupt anything else using bluetooth.</string>
-    <string name="constantly_reset_bluetooth">Constantly reset bluetooth</string>
+    <string name="close_gatt">If the Bluetooth watchdog activates often then you can try unchecking this option to see if it helps</string>
+    <string name="older_bluetooth_wakelocks">Older Bluetooth wakelocks which can drain extra battery but might be needed for Bluetooth reception</string>
+    <string name="reset_bluetooth_on_off">Reset Bluetooth by turning it off and on every few minutes! Only select if you are testing. It may disrupt anything else using Bluetooth.</string>
+    <string name="constantly_reset_bluetooth">Constantly reset Bluetooth</string>
     <string name="experimental_transmitter_fpv_uav">Experimental support for \'Transmitter\' device from @FPV-UAV - test only</string>
     <string name="transmitter_pl_support">Transmiter (PL) support</string>
     <string name="experimental_rdfuino_support">Experimental support for rfduino from Tomasz Stachowicz</string>
@@ -1009,11 +1009,11 @@
     <string name="xdrip_software_changed_format">xDrip software version changed from: %s to %s</string>
     <string name="when_connected_to_the_audio_device_shown_below_switch_to_vehicle_mode">Switch to Vehicle Mode when connected to the audio device shown below.</string>
     <string name="select_device">Select Device</string>
-    <string name="no_bluetooth_audio_found">No bluetooth audio found</string>
+    <string name="no_bluetooth_audio_found">No Bluetooth audio found</string>
     <string name="tap_to_set_current_car_audio_device">Tap to set the currently connected car audio device</string>
     <string name="learn_current_car_audio">Learn current car audio</string>
     <string name="detect_car_audio">Detect car audio</string>
-    <string name="automatically_enable_when_connected_to_car_bluetooth">Automatically enable vehicle mode when connected to car bluetooth</string>
+    <string name="automatically_enable_when_connected_to_car_bluetooth">Automatically enable vehicle mode when connected to car Bluetooth</string>
     <string name="enable_speak_readings_when_in_vehicle">Enable speak readings feature when in vehicle mode</string>
     <string name="bluetooth_watchdog_timers">Timer value for BT watchdog</string>
     <string name="bluetooth_watchdog_timer_sums">Input value in minutes</string>
@@ -1054,9 +1054,9 @@
     <string name="title_Non_fixed_Libre_slopes">Non-fixed Libre slopes</string>
     <string name="summary_Allow_initial_calibration_no_good_enough_data">Allow initial calibration even if we don\'t have good enough data. Beware could result in inaccurate calibration!</string>
     <string name="title_Bypass_quality_check">Bypass quality check</string>
-    <string name="summary_Scan_before_connecting_on_xBridge_and_Libre_bluetooth">Scan before connecting on xBridge and Libre bluetooth</string>
+    <string name="summary_Scan_before_connecting_on_xBridge_and_Libre_bluetooth">Scan before connecting on xBridge and Libre Bluetooth</string>
     <string name="title_Use_scanning">Use scanning</string>
-    <string name="summary_Use_and_trust_Android_bluetooth_auto_connect_feature">Use and trust Android bluetooth auto connect feature</string>
+    <string name="summary_Use_and_trust_Android_bluetooth_auto_connect_feature">Use and trust Android Bluetooth auto connect feature</string>
     <string name="title_Trust_Auto_Connect">Trust Auto-Connect</string>
     <string name="summary_Experimental_support_for_xBridge_polling_feature">Experimental support for xBridge+ polling feature</string>
     <string name="title_xBridge_Polling_Mode">xBridge+ Polling Mode</string>
@@ -1165,7 +1165,7 @@
     <string name="bg_reading_missed">BG Readings Missed</string>
     <string name="not_connected">Not Connected</string>
     <string name="no_data">No data</string>
-    <string name="no_bluetooth">No bluetooth</string>
+    <string name="no_bluetooth">No Bluetooth</string>
     <string name="connection_status_long">Connection Status:   </string>
 
     <string name="without_location_scan_doesnt_work">Without Location permission Android Bluetooth scan doesn\'t work</string>
@@ -1328,7 +1328,7 @@
     <string name="title_ob1_g5_use_insufficiently_calibrated">Go on without calibrations</string>
     <string name="summary_ob1_g5_fallback_to_xdrip">Revert to xDrip algorithm if G5 doesn\'t provide glucose data (Potentially risky!)</string>
     <string name="title_ob1_g5_fallback_to_xdrip">Fallback to xDrip</string>
-    <string name="summary_ob1_minimize_scanning">Use heuristics to minimize bluetooth scanning + save power</string>
+    <string name="summary_ob1_minimize_scanning">Use heuristics to minimize Bluetooth scanning + save power</string>
     <string name="title_ob1_minimize_scanning">Minimize Scanning</string>
     <string name="summary_using_g6">I am using a G6 Sensor</string>
     <string name="title_using_g6">G6 Support</string>
@@ -1600,6 +1600,6 @@
     <string name="enable_streaming_dialog_yes">connect to this libre2 sensor</string>
     <string name="enable_streaming_dialog_no">Don\'t connect to this libre2 sensor </string>
     <string name="enable_streaming_dialog_dont_ask_again">Don\'t ask me that again</string>
-    <string name="enable_streaming_dialog_title">Connecting libre sensor to bluetooth</string>
     <string name="enable_streaming_dialog_text">Do you want to connect xDrip with this sensor? This will stop libre reader and libre link from receiving alerts. Press yes and scan again to connect (choose don\'t connect if you want to run xDrip with the patched app)</string>
+    <string name="enable_streaming_dialog_title">Connecting libre sensor to Bluetooth</string>
 </resources>
