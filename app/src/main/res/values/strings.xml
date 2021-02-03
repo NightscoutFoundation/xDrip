@@ -389,7 +389,7 @@
     <string name="glucose_history">Glucose History</string>
     <string name="import_database">Import Database</string>
     <string name="sensor_table">Sensor Table</string>
-    <string name="bg_readings_table">Bg Readings Table</string>
+    <string name="bg_readings_table">BG Readings Table</string>
     <string name="long_press_to_split_or_delete">Long Press to Split or Delete</string>
     <string name="press_and_hold_on_the_background_to_split_or_delete">Press and Hold on the background to Split or Delete a time block</string>
     <string name="search">Search</string>
@@ -771,8 +771,8 @@
     <string name="minimum_value">The minimum value you consider to be in range.</string>
     <string name="volume_buttons_snooze">Pressing the volume up or down button will snooze an active alarm when in the app</string>
     <string name="buttons_silence_alarms">Buttons silence alarms</string>
-    <string name="create_shortcut">Create a shortcut from main navigation to bg level screen</string>
-    <string name="shortcut_to_bg_alerts">Shortcut to Bg Level Alerts</string>
+    <string name="create_shortcut">Create a shortcut from main navigation to BG level screen</string>
+    <string name="shortcut_to_bg_alerts">Shortcut to BG Level Alerts</string>
     <string name="suppress_alerts_missed_readings">Suppress snoozed and active alerts after predefined period of missed readings</string>
     <string name="suppress_alerts_after">Suppress snoozed and active alerts after .. minutes (minimum 10)</string>
     <string name="alert_calibration_request">Alert when a calibration is requested</string>
@@ -793,8 +793,8 @@
     <string name="reraise_not_snoozed_sooner">Reraise the alert if not snoozed sooner</string>
     <string name="alert_reraise_time">Alert Reraise time</string>
     <string name="alert_seconds_reraise">Number of SECONDS to pass before raising the same alert.</string>
-    <string name="bg_falling_fast">Bg falling fast</string>
-    <string name="bg_rising_fast">Bg rising fast</string>
+    <string name="bg_falling_fast">BG falling fast</string>
+    <string name="bg_rising_fast">BG rising fast</string>
     <string name="falling_threshold">falling threshold</string>
     <string name="rising_threshold">rising threshold</string>
     <string name="set_sound_for_bg_alerts">Set sound used for BG Alerts.</string>
@@ -1281,7 +1281,7 @@
 
     <string name="miband_watchface_istall_success">MiBand watchface has been uploaded successfully!</string>
     <string name="miband_watchface_istall_error">Error while uploading MiBand watchface</string>
-    <string name="miband_bg_dialog_title">Update bg data now?</string>
+    <string name="miband_bg_dialog_title">Update BG data now?</string>
 
     <string name="title_lefun_band">Lefun Band</string>
     <string name="summary_lefun_enable">Sync Data with LeFun fitness bands</string>
