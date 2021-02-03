@@ -67,8 +67,8 @@
     <string name="pref_default_api_url">https://yourpassphrase@{YOUR-SITE}.azurewebsites.net/api/v1/</string>
 
     <!-- wifi Settings -->
-    <string name="wifi_recievers_dialog_message">Comma separated list of ip:port (for example 37.142.132.220:50005,37.142.132.220:50010,mongodb://user:pass@ds053958.mongolab.com:53958/db/collection)</string>
-    <string name="wifi_recievers_dialog_title">Enter ip addresses and ports of receivers (including mongodb addresses if needed)</string>
+    <string name="wifi_recievers_dialog_message">Comma separated list of IP:port (for example 37.142.132.220:50005,37.142.132.220:50010,mongodb://user:pass@ds053958.mongolab.com:53958/db/collection)</string>
+    <string name="wifi_recievers_dialog_title">Enter IP addresses and ports of receivers (including mongodb addresses if needed)</string>
 
     <!-- Location Settings -->
     <string name="location_not_found_title">Location Is Not Enabled</string>
@@ -152,7 +152,7 @@
     <string name="share">Share</string>
     <string name="title_activity_profile_editor">Treatment Profile Editor</string>
     <string name="first_use_menu_to_scan">First use the menu to scan for your BT device or change the Data Source in Settings!</string>
-    <string name="first_configure_ip_address">First configure your wifi wixel reader ip addresses or parakeet url</string>
+    <string name="first_configure_ip_address">First configure your wifi wixel reader IP addresses or parakeet url</string>
     <string name="now_start_your_sensor">Now start your sensor or check Settings</string>
     <string name="please_wait_while_sensor_warms_up">Please wait while sensor warms up! (</string>
     <string name="minutes_with_bracket">" minutes)"</string>
