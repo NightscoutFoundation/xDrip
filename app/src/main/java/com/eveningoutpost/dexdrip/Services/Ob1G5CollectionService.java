@@ -140,13 +140,11 @@ import com.polidea.rxandroidble.scan.ScanSettings;
 //import rx.schedulers.Schedulers;
 
 
-
 /**
  * OB1 G5/G6 collector
  * Created by jamorham on 16/09/2017.
- *
+ * <p>
  * App version is master, best to avoid editing wear version directly
- *
  */
 
 
@@ -533,7 +531,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                                 .setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES)
                                 .setScanMode(android_wear ? ScanSettings.SCAN_MODE_BALANCED :
                                         historicalTransmitterMAC.length() <= 5 ? ScanSettings.SCAN_MODE_LOW_LATENCY :
-                                        minimize_scanning ? ScanSettings.SCAN_MODE_BALANCED : ScanSettings.SCAN_MODE_LOW_LATENCY)
+                                                minimize_scanning ? ScanSettings.SCAN_MODE_BALANCED : ScanSettings.SCAN_MODE_LOW_LATENCY)
                                 // .setScanMode(ScanSettings.SCAN_MODE_BALANCED)
                                 .build(),
 
@@ -754,7 +752,7 @@ public class Ob1G5CollectionService extends G5BaseService {
             }
 
             if (BlueJayEntry.isPhoneCollectorDisabled()) {
-                UserError.Log.d(TAG,"Not running as BlueJay is collector");
+                UserError.Log.d(TAG, "Not running as BlueJay is collector");
                 return false;
             }
 
@@ -887,7 +885,7 @@ public class Ob1G5CollectionService extends G5BaseService {
         if (future <= 0) future = 5000;
         UserError.Log.d(TAG, "Scheduling wakeup @ " + JoH.dateTimeText(tsl() + future) + " (" + info + ")");
         if (pendingIntent == null)
-           //pendingIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), 0);
+            //pendingIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), 0);
             pendingIntent = WakeLockTrampoline.getPendingIntent(this.getClass());
         wakeup_time = tsl() + future;
         JoH.wakeUpIntent(this, future, pendingIntent);
@@ -1179,13 +1177,13 @@ public class Ob1G5CollectionService extends G5BaseService {
                         //
                     }
 
-                   if (WholeHouse.isRpi()) {
-                       UserError.Log.e(TAG,"Trying to turn off/on bluetooth");
-                       JoH.niceRestartBluetooth(xdrip.getAppContext());
-                   } else {
-                       UserError.Log.e(TAG, "Trying to Turn Bluetooth on");
-                       JoH.setBluetoothEnabled(xdrip.getAppContext(), true);
-                   }
+                    if (WholeHouse.isRpi()) {
+                        UserError.Log.e(TAG, "Trying to turn off/on bluetooth");
+                        JoH.niceRestartBluetooth(xdrip.getAppContext());
+                    } else {
+                        UserError.Log.e(TAG, "Trying to Turn Bluetooth on");
+                        JoH.setBluetoothEnabled(xdrip.getAppContext(), true);
+                    }
                 }
             }
             // TODO count scan duration
@@ -1679,16 +1677,21 @@ public class Ob1G5CollectionService extends G5BaseService {
 
 
         if (!is_started && was_started) {
-            if (Pref.getBooleanDefaultFalse("ob1_g5_restart_sensor") && (Sensor.isActive())) {
-                if (state.ended()) {
-                    UserError.Log.uel(TAG, "Requesting time-travel restart");
-                    Ob1G5StateMachine.restartSensorWithTimeTravel();
+            if (Sensor.isActive()) {
+                if (Pref.getBooleanDefaultFalse("ob1_g5_restart_sensor")) {
+                    if (state.ended()) {
+                        UserError.Log.uel(TAG, "Requesting time-travel restart");
+                        Ob1G5StateMachine.restartSensorWithTimeTravel();
+                    } else {
+                        UserError.Log.uel(TAG, "Attempting to auto-start sensor");
+                        Ob1G5StateMachine.startSensor(tsl());
+                    }
+                    final PendingIntent pi = PendingIntent.getActivity(xdrip.getAppContext(), G5_SENSOR_RESTARTED, JoH.getStartActivityIntent(Home.class), PendingIntent.FLAG_UPDATE_CURRENT);
+                    JoH.showNotification("Auto Start", "Sensor Requesting Restart", pi, G5_SENSOR_RESTARTED, true, true, false);
                 } else {
-                    UserError.Log.uel(TAG, "Attempting to auto-start sensor");
-                    Ob1G5StateMachine.startSensor(tsl());
+                    UserError.Log.uel(TAG, "Marking sensor session as stopped");
+                    Sensor.stopSensor();
                 }
-                final PendingIntent pi = PendingIntent.getActivity(xdrip.getAppContext(), G5_SENSOR_RESTARTED, JoH.getStartActivityIntent(Home.class), PendingIntent.FLAG_UPDATE_CURRENT);
-                JoH.showNotification("Auto Start", "Sensor Requesting Restart", pi, G5_SENSOR_RESTARTED, true, true, false);
             }
             final PendingIntent pi = PendingIntent.getActivity(xdrip.getAppContext(), G5_SENSOR_STARTED, JoH.getStartActivityIntent(Home.class), PendingIntent.FLAG_UPDATE_CURRENT);
             JoH.showNotification(state.getText(), "Sensor Stopped", pi, G5_SENSOR_STARTED, true, true, false);
@@ -1765,6 +1768,10 @@ public class Ob1G5CollectionService extends G5BaseService {
         return pendingStart() && usingNativeMode();
     }
 
+    public static boolean isPendingStop() {
+        return pendingStop() && usingNativeMode();
+    }
+
     public static boolean isPendingCalibration() {
         return pendingCalibration() && usingNativeMode();
     }
@@ -1835,7 +1842,13 @@ public class Ob1G5CollectionService extends G5BaseService {
             return new SpannableString(builder);
         } else {
             if (lastSensorState != null && lastSensorState != CalibrationState.Ok) {
-                return Span.colorSpan(lastSensorState.getExtendedText(), lastSensorState == CalibrationState.WarmingUp ? NOTICE.color() : lastSensorState.sensorFailed() ? CRITICAL.color() : BAD.color());
+                if (!lastSensorState.sensorStarted() && isPendingStart()) {
+                    return Span.colorSpan("Starting Sensor", NOTICE.color());
+                } else if (lastSensorState.sensorStarted() && isPendingStop()) {
+                    return Span.colorSpan("Stopping Sensor", NOTICE.color());
+                } else {
+                    return Span.colorSpan(lastSensorState.getExtendedText(), lastSensorState == CalibrationState.WarmingUp ? NOTICE.color() : lastSensorState.sensorFailed() ? CRITICAL.color() : BAD.color());
+                }
             } else {
                 return null;
             }
@@ -1979,7 +1992,7 @@ public class Ob1G5CollectionService extends G5BaseService {
         }
 
         // firmware hardware details
-        final VersionRequestRxMessage vr = (VersionRequestRxMessage) Ob1G5StateMachine.getFirmwareXDetails(tx_id,0);
+        final VersionRequestRxMessage vr = (VersionRequestRxMessage) Ob1G5StateMachine.getFirmwareXDetails(tx_id, 0);
         try {
             if ((vr != null) && (vr.firmware_version_string.length() > 0)) {
 
