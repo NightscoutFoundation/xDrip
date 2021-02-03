@@ -558,9 +558,7 @@
     <string name="repeatedly_restart_collection_service">Opetovano isponova pokreći kolektorski servis na svaku najavu propuštenih podataka. Omogućiti samo ukoliko dolazi do propuštanja podataka.</string>
     <string name="aggressive_service_restarts">Agresivno ponovno pokretanja servisa</string>
     <string name="predictive_readings_old">Stara metoda - nije preporučeno! Pokušava prediktirati očitanja svake minute bazirano na nekoliko posljednjih vrijednosti.</string>
-    <string name="use_external_blukon_algorithm_summary">Korištenje blukon algoritma izvan procesa.</string>
     <string name="display_predictive_values">Prikaži prediktirane vrijednosti</string>
-    <string name="use_external_blukon_algorithm">Blukon algoritam izvan procesa.</string>
     <string name="interpret_share_raw">Ukoliko se koristi Share, xDrip će prikazati vrijednosti koje su uobičajeno skrivene na primaču (receiveru).</string>
     <string name="interpret_raw">Interpretiraj sirove vrijednosti</string>
     <string name="use_infrequent_calibrations">Ukoliko je potrebno, kolisti baždarenja iz prijeašnjeg vremena, npr. ako su baždarenja rijetko rađena.</string>

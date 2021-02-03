@@ -168,7 +168,6 @@
     <string name="show_parakeet_map">显示学习地图</string>
     <string name="switch_parakeet_to_setup_mode">从学习模式切换到设置模式</string>
     <string name="view_events_log">查看事件日志</string>
-    <string name="show_libre_trend">显示瞬感趋势</string>
     <string name="libre_15_minutes_graph">瞬感15分钟图</string>
     <string name="libre_last_x_minutes_graph">瞬感最近 %d分钟图表</string>
     <string name="share_config_via_qr_code">通过二维码分享配置</string>
@@ -604,13 +603,9 @@
     <string name="repeatedly_restart_collection_service">在缺少数据的任何提示下重复重新启动收集服务。仅当您正在获取数据失败时才启用。</string>
     <string name="aggressive_service_restarts">主动服务重新启动</string>
     <string name="predictive_readings_old">老方法-不推荐! 试图根据过去的几个值来预测每分钟的读数。</string>
-    <string name="use_external_blukon_algorithm_summary">使用 out of process 瞬感算法. (blukon/NFC/LibreAlarm)</string>
     <string name="display_predictive_values">显示预测值</string>
-    <string name="use_external_blukon_algorithm">Out of process 瞬感算法</string>
     <string name="calibrate_external_libre_algorithm_summary">对 OOP 数据应用 xDrip 校准方法。</string>
     <string name="calibrate_external_libre_algorithm_title">OOP 算法校准。</string>
-    <string name="libre_use_smoothed_data_summary">使用五个点的平均数来得到更平滑的数据</string>
-    <string name="libre_use_smoothed_data_title">平滑均衡数据</string>
     <string name="retrieve_blukon_history_title">检索瞬感历史记录</string>
     <string name="retrieve_blukon_history_summary">重新连接到传感器时, 从 Blukon 设备获取遗漏的历史记录。</string>
     <string name="interpret_share_raw">如果使用dexcom share, xDrip 将显示通常隐藏在接收器上的值,。</string>
@@ -703,8 +698,6 @@
     <string name="mongo_db_uri">Mongo DB Uri</string>
     <string name="skip_local_lan">对于 192.168.x.x IP地址的本地服务器, 当没有本地连接时，忽略上传</string>
     <string name="skip_lan_uploads">忽略局域网上传</string>
-    <string name="mongo_load_transmitter_data_title">上传瞬感发射器数据</string>
-    <string name="mongo_load_transmitter_data_summary">允许多个xDrip 连接到蓝牙设备并存储它们在云端接收的数据。这应该允许所有房间覆盖带有喵喵的瞬感, 或2个父母 同时使用同一个蓝牙设备。</string>
     <string name="influxdb_sync">启用 InfluxDB 同步</string>
     <string name="influxdb_uri">InfluxDB Uri</string>
     <string name="influxdb_database_name">InfluxDB 数据库名称</string>
@@ -835,7 +828,6 @@
     <string name="repeat_sound">重复播放声音</string>
     <string name="enable_telemetry">启用遥测</string>
     <string name="send_data_to_developers">将不同设备的成功率数据发送给开发者</string>
-    <string name="try_to_work_around_noisy_readings_ultrasensitive">即使有很小的嘈杂数据，也启用临时解决方法 (此功能只在工程师模式下可用)</string>
     <string name="sidiary_date_title">从何时开始导出？</string>
     <string name="blukon">Blucon</string>
     <string name="tomato">番茄</string>
@@ -1348,7 +1340,6 @@
     <string name="your_display_name">您的显示名称：</string>
     <string name="followers_email">关注者邮箱：</string>
     <string name="send_invite">发送邀请</string>
-    <string name="description_sensor_location">在未来，xDrip想要给开发者匿名发送传感器数据，以改进校准算法。如果您决定选择启用，您将会在每次数据传输前被请求确认。未经您的允许，数据不会被发送。为了帮助我们理解和调整算法，我们想要知道传感器的位置。按下后退按钮取消。</string>
     <string name="save_sensor_location">保存传感器位置。</string>
     <string name="alerts">警报</string>
     <string name="use_internal_downloader">使用内置下载器</string>
@@ -1439,7 +1430,6 @@
     <string name="starting_sync_to_other_devices">开始同步到其他设备</string>
     <string name="deleting_all_bg_readings">删除所有血糖读数</string>
     <string name="could_not_export_csv_">无法导出CSV:(</string>
-    <string name="librealarm_data_format_appears_incompatible_protocol_changed_or_no_data">LibreAlram 数据格式似乎不兼容？更改协议或放弃数据？</string>
     <string name="please_update_librealarm_to_use_oop_algorithm">请更新Libre报警以使用OOP算法</string>
     <string name="sensor_clock_has_not_advanced">传感器适中没有被提前</string>
     <string name="sensor_age_has_gone_backwards">传感器年龄已经落后了！</string>

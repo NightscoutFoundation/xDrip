@@ -166,13 +166,10 @@
     <string name="minutes_ago">{0, choice,0# לפני {0, number, integer} דקות |1# לפני דקה|1&lt; לפני {0, number, integer} דקות }</string>
     <string name="expires_at">מסתיים {0}</string>
     <string name="space_minutes_ago">" דקות"</string>
-    <string name="in_libre_all_house_mode_no_readings_collected_yet">"במצב רשת ליברה כלל ביתית: לא נקלטו קריאות."</string>
-    <string name="in_libre_all_house_mode_last_data_collected">"במצב רשת ליברה כלל ביתית: קריאה אחרונה "</string>
     <string name="space_minute_ago">" דקה"</string>
     <string name="show_parakeet_map">הראה מפה של ה-Parakeet</string>
     <string name="switch_parakeet_to_setup_mode">העבר את הParakeet למצב הגדרות</string>
     <string name="view_events_log">הצג יומן אירועים</string>
-    <string name="show_libre_trend">הראה מגמת הליברה</string>
     <string name="libre_15_minutes_graph">גרף 15 דקות של הליברה</string>
     <string name="libre_last_x_minutes_graph">גרף %d דקות אחרונות של הליברה</string>
     <string name="share_config_via_qr_code">שיתוף הגדרות באמצעות קוד QR</string>
@@ -609,12 +606,12 @@
 אפשרו רק אם אתם חווים איבוד נתונים.</string>
     <string name="aggressive_service_restarts">אתחול שירות אגרסיבי</string>
     <string name="predictive_readings_old">שיטה ישנה - לא מומלצת! מנסה לחזות קריאות כל דקה לפי קריאות האחרונות.</string>
-    <string name="use_external_blukon_algorithm_summary">השתמש באלגוריתם חיצוני של ליברה. (בלוקון/NFC/LibreAlarm/מיאומיאו)</string>
+    <string name="use_external_blukon_algorithm_summary">השתמש באלגוריתם ליברה חיצוני. (בלוקון/NFC/LibreAlarm/מיאומיאו)</string>
     <string name="display_predictive_values">הצג ערכים חזויים</string>
     <string name="use_external_blukon_algorithm">אלגוריתם חיצוני של ליברה.</string>
     <string name="calibrate_external_libre_algorithm_summary">יישום שיטות כיול של xDrip על נתוני OOP.</string>
     <string name="calibrate_external_libre_algorithm_title">כיול אלגוריתם OOP</string>
-    <string name="libre_use_smoothed_data_summary">משתמש בממוצע 5 נק\' מדידה לקבלת נתוני ליברה חלקים יותר</string>
+    <string name="libre_use_smoothed_data_summary">משתמש בממוצע 5 נק\' מדידה לקבלת נתוני ליברה חלקים יותר.</string>
     <string name="libre_use_smoothed_data_title">שפע את נתוני ליברה.</string>
     <string name="retrieve_blukon_history_title">קבל היסטוריה של הליברה</string>
     <string name="retrieve_blukon_history_summary">משוך נתוני היסטוריה ממכשיר ה-Blucon בעת חיבורו מחדש לחיישן.</string>
@@ -708,7 +705,7 @@
     <string name="skip_local_lan">בשרתים מקומיים שכתובתם 192.168.x.x, מדלג על העלאה כשאין חיבור רשת מקומי.</string>
     <string name="skip_lan_uploads">דלג על העלאות ברשת מקומית</string>
     <string name="mongo_load_transmitter_data_title">העלה את נתוני הליברה</string>
-    <string name="mongo_load_transmitter_data_summary">אפשר ליותר מ-xDrip אחד להתחבר להתקן הבלוטוס ולשמור את הנתונים בענן. זה מאפשר כיסוי של כל הבית לליברה עם מיאומיאו, או לשני הורים להשתמש באותו התקן בלוטות\' בצורה שקופה.</string>
+    <string name="mongo_load_transmitter_data_summary">אפשר ליותר מ-xDrip אחד להתחבר להתקן הבלוטות\' ולשמור את הנתונים בענן. זה מאפשר כיסוי של כל הבית לליברה עם מיאומיאו, או לשני הורים להשתמש באותו התקן בלוטות\' בצורה שקופה.</string>
     <string name="influxdb_sync">אפשר סינכרון InfluxDB</string>
     <string name="influxdb_uri">InfluxDB URI</string>
     <string name="influxdb_database_name">שם מסד נתונים InfluxDB</string>
@@ -1249,7 +1246,7 @@
     <string name="your_display_name">שם התצוגה שלכם:</string>
     <string name="followers_email">כתובת דוא\"ל של העוקב:</string>
     <string name="send_invite">שלח הזמנה</string>
-    <string name="description_sensor_location">בעתיד xDrip ישלח נתונים אנונימיים למפתחים בשביל לשפר את דיוק אלגוריתם הכיול. אם תחליטו להצטרף תתבקשו לאשר כל שליחה של נתונים. לעולם לא יישלח מידע בלי רשותכם. בכדי לעזור לנו להבין ולשפר את אלגוריתם הכיול נרצה לדעת איפה הסנסור ממוקם. לחצו על כפתור החזרה בשביל לבטל.</string>
+    <string name="description_sensor_location">בעתיד xDrip ישלח נתונים אנונימיים למפתחים בשביל לשפר את דיוק אלגוריתם הכיול... אם תחליט להצטרף תתבקש לאשר כל שליחה של נתונים. לעולם לא ישלח מידע בלי רשותך. בכדי לעזור לנו להבין ולשפר את אלגוריתם הכיול נרצה לדעת איפה הסנסור ממוקם. לחץ על כפתור החזרה בשביל לבטל.</string>
     <string name="save_sensor_location">שמור מיקום החיישן</string>
     <string name="alerts">התראות</string>
     <string name="use_internal_downloader">השתמש בהורדה פנימית</string>
@@ -1336,7 +1333,7 @@
     <string name="starting_sync_to_other_devices">מתחיל לסנכרן התקנים אחרים</string>
     <string name="deleting_all_bg_readings">מוחק את כל קריאות הסוכר!</string>
     <string name="could_not_export_csv_">יצוא מסד הנתונים נכשל :(</string>
-    <string name="librealarm_data_format_appears_incompatible_protocol_changed_or_no_data">הנתונים של LibreAlarm אינם מתאימים! הפרוטוקול השתנה או שאין קליטה?</string>
+    <string name="librealarm_data_format_appears_incompatible_protocol_changed_or_no_data">הנתונים של LibreAlarm אינם מתאימים?! הפרוטוקול השתנה או שאין קליטה?</string>
     <string name="please_update_librealarm_to_use_oop_algorithm">אנא עדכן את LibreAlarm בכדי להשתמש באלגוריתם OOP</string>
     <string name="sensor_clock_has_not_advanced">השעון הפנימי של הסנסור לא התקדם!</string>
     <string name="sensor_age_has_gone_backwards">גיל החיישן התקדם אחורנית!!</string>
