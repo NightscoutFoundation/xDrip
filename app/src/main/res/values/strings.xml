@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
     <string name="title_activity_bluetooth_scan">Bluetooth Scan</string>
@@ -100,7 +100,7 @@
     <string name="pref_amazfit_other_alert_enable">Enable</string>
     <string name="pref_amazfit_other_alert_title">Other Alerts</string>
     <string name="pref_amazfit_watchface_graph_dots_title">Watchface Graph Dots</string>
-    <string name="pref_amazfit_watchface_graph_dots_summary">Shows tinyz dots instead of small</string>
+    <string name="pref_amazfit_watchface_graph_dots_summary">Shows tiny dots instead of small</string>
     <string name="pref_amazfit_watchface_graph_enable">Enable</string>
     <string name="pref_amazfit_watchface_graph_title">Watchface Graph</string>
     <string name="pref_amazfit_watchface_graph_enable_summary">Shows graph in watchfaces background</string>
@@ -346,7 +346,7 @@
     <string name="done">Done</string>
     <string name="entering_a_calibration_now_will_override_your_previously_entered_calibration">Entering a calibration now will override your previously entered calibration.</string>
     <string name="enter_blood_glucose_value">Enter Blood Glucose Value</string>
-    <string name="this_does_not_get_used_for_anything_its_just_to_keep_track_of_differences_for_algorithem_improvement_purposes">This does not get used for anything, its just to keep track of differences for algorithem improvement purposes</string>
+    <string name="this_does_not_get_used_for_anything_its_just_to_keep_track_of_differences_for_algorithem_improvement_purposes">This does not get used for anything, its just to keep track of differences for algorithm improvement purposes</string>
     <string name="no_active_alert_exists">No active alert exists</string>
     <string name="active_alert_exists_named">Active alert exists named</string>
     <string name="bracket_not_snoozed">(not snoozed)</string>
@@ -479,7 +479,7 @@
     <string name="show_on_widget">Show on widget</string>
     <string name="calibration_data_long">Calibration Data (long)</string>
     <string name="calibration_data_short">Calibration Data (short)</string>
-    <string name="store_sensor_location_to_help">Store sensor locaton to help algorithm improvement</string>
+    <string name="store_sensor_location_to_help">Store sensor location to help algorithm improvement</string>
     <string name="help_the_developers_improve_the_algorithm">Help the developers improve the xDrip algorithm.</string>
     <string name="help_the_community">Help the community</string>
     <string name="double_tap_or_pinch_to_zoom">Double tap or pinch to zoom.</string>
@@ -599,7 +599,7 @@
     <string name="pref_message_influxdb_password">Password for authentication. It is recommended to not allow usage without authentication.</string>
     <string name="pref_dialog_influxdb_password">Password</string>
 
-    <string name="use_tiny_dots">Use Tiny dot size</string>
+    <string name="use_tiny_dots">Use tiny dot size</string>
     <string name="watch_vibrate_active_alerts">Vibrate watch on active glucose alerts</string>
     <string name="vibrate_alerts">Vibrate on Alerts</string>
     <string name="attach_to_button">Attach it to a pebble button to instantly Snooze any active alert from your watch. Also for Remote Snooze feature.</string>
@@ -630,7 +630,7 @@
     <string name="older_bluetooth_wakelocks">Older bluetooth wakelocks which can drain extra battery but might be needed for bluetooth reception</string>
     <string name="reset_bluetooth_on_off">Reset Bluetooth by turning it off and on every few minutes! Only select if you are testing. It may disrupt anything else using bluetooth.</string>
     <string name="constantly_reset_bluetooth">Constantly reset bluetooth</string>
-    <string name="experimental_transmitter_fpv_uav">Experimental support for \'Transmiter\' device from @FPV-UAV - test only</string>
+    <string name="experimental_transmitter_fpv_uav">Experimental support for \'Transmitter\' device from @FPV-UAV - test only</string>
     <string name="transmitter_pl_support">Transmiter (PL) support</string>
     <string name="experimental_rdfuino_support">Experimental support for rfduino from Tomasz Stachowicz</string>
     <string name="rfduino_support">RFDUINO support</string>
@@ -705,7 +705,7 @@
     <string name="nfc_options">Options for scanning NFC based sensors with the phone handset</string>
     <string name="nfc_scan_features">NFC Scan features</string>
     <string name="use_nfc_feature">Use NFC feature</string>
-    <string name="allow_sensor_scanning">Allow sensors to be scanned when app is open. Historic data will be back-filled. Highly experiemental! Beware this can maybe break a sensor. Test phone compatibility with an almost expired sensor first. You have been warned!</string>
+    <string name="allow_sensor_scanning">Allow sensors to be scanned when app is open. Historic data will be back-filled. Highly experimental! Beware this can maybe break a sensor. Test phone compatibility with an almost expired sensor first. You have been warned!</string>
     <string name="sensor_age_or_expiry">Sensor Age or Expiry</string>
     <string name="show_expiry_time">Show the sensor expiry time based on 14.5 days</string>
     <string name="show_sensor_age">Show the sensor age on the main screen</string>
@@ -1251,7 +1251,7 @@
     <string name="title_miband_interval_in_nightmode">Interval</string>
     <string name="summary_miband_interval_in_nightmode">Defines how often BG would be synchronized in the night mode</string>
     <string name="title_miband_colect_heartrate">Collect HR</string>
-    <string name="summary_miband_colect_heartrate">Would collect heart rate data from band. Update interval can be configured in MiFit or any thirdparty application</string>
+    <string name="summary_miband_colect_heartrate">Would collect heart rate data from band. Update interval can be configured in MiFit or any third-party application</string>
 
     <string name="title_miband_authkey">Auth Key</string>
     <string name="summary_miband_authkey">Set the auth key for miband4 (To get auth key, follow the instructions on https://www.freemyband.com/)</string>
@@ -1316,7 +1316,7 @@
     <string name="summary_nsfollow_download_treatments">Also download treatments from Nightscout as follower</string>
     <string name="title_nsfollow_download_treatments">Download Treatments</string>
     <string name="title_ob1_options">OB1 G5/G6 Collector Settings</string>
-    <string name="summary_use_ob1_g5_collector_service">Complete re-write, should work on Android 4.4-9, supports native mode and more</string>
+    <string name="summary_use_ob1_g5_collector_service">Complete re-write, should work on Android 4.4 - 9, supports native mode and more</string>
     <string name="title_use_ob1_g5_collector_service">Use the OB1 Collector</string>
     <string name="summary_ob1_g5_use_transmitter_alg">Use the transmitter\'s internal algorithm to calculate glucose values when possible.</string>
     <string name="title_ob1_g5_use_transmitter_alg">Native Algorithm</string>
@@ -1447,7 +1447,7 @@
     <string name="do_not_hit_start_long">Do not hit start sensor unless the sensor is already embedded and the transmitter is connected.</string>
     <string name="calibration_graph_no_calibration">calibration graph (no calibration)</string>
     <string name="calibration_plugin_header">calibration plugin header</string>
-    <string name="usb_device_was_not_recognized">USB-Device was not recognized</string>
+    <string name="usb_device_was_not_recognized">USB device was not recognized</string>
     <string name="followers_name">Followers Name:</string>
     <string name="your_display_name">Your display name:</string>
     <string name="followers_email">Followers Email:</string>
@@ -1462,7 +1462,7 @@
     <string name="set_up_desert_sync_follower">Set up Desert Sync follower</string>
     <string name="version">Version:</string>
     <string name="sensor_start">Sensor Start:</string>
-    <string name="plug_in_your_dexcom_reciever">Plug in your dexcom reciever then hit this button and cross your fingers!</string>
+    <string name="plug_in_your_dexcom_reciever">Plug in your dexcom receiver then hit this button and cross your fingers!</string>
     <string name="check_in_dexcom_calibrations">Check in Dexcom calibrations</string>
     <string name="progress">progress</string>
     <string name="bluetooth_device">Bluetooth Device:   </string>
@@ -1568,7 +1568,7 @@
     <string name="remote_snooze">Remote snooze..</string>
     <string name="sensor_stopped">Sensor stopped</string>
     <string name="restarting_collector">Restarting Collector!</string>
-    <string name="follower_deleted_succesfully">Follower deleted succesfully</string>
+    <string name="follower_deleted_succesfully">Follower deleted successfully</string>
     <string name="failed_to_delete_follower">Failed to delete follower</string>
     <string name="input_not_found_cancelled">Input not found! Cancelled!</string>
     <string name="cancelled">Cancelled!</string>
