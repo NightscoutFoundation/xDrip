@@ -771,7 +771,6 @@
     <string name="act_as_motion_master">Byť zdrojom pohybu</string>
     <string name="play_sound">Prehrať zvuk</string>
     <string name="repeat_sound">Zopakovať zvuk</string>
-    <string name="try_to_work_around_noisy_readings_ultrasensitive">Obchádzať prudké zmeny hodnôt meraní aj pri veľmi nízkom šume (len vo vývojárskom režime)</string>
     <string name="reminders">Pripomenutia</string>
     <string name="error">chyba</string>
     <string name="after_installation_of_languages_you_might_have_to">(Po inštalácii jazykov môže byť potrebné kliknúť \"Reštartovať zberač dát\" v Stave systému.)</string>
