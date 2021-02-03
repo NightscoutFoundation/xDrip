@@ -874,7 +874,7 @@
     <string name="repeat_sound">Repeat sound</string>
     <string name="enable_telemetry">Enable Telemetry</string>
     <string name="send_data_to_developers">Send data to developers about success rates of different devices</string>
-    <string name="try_to_work_around_noisy_readings_ultrasensitive">Start to work around noisy readings even on very low noise levels (engineering mode ony)</string>
+    <string name="try_to_work_around_noisy_readings_ultrasensitive">Start to work around noisy readings even on very low noise levels (engineering mode only)</string>
     <string name="sidiary_date_title">Export starting from when?</string>
     <string name="blukon">BluCon</string>
     <string name="tomato">Tomato</string>
@@ -1065,7 +1065,7 @@
     <string name="summary_Only_suitable_for_phones_which_support_automatic_pairing">Only suitable for phones which support automatic pairing</string>
     <string name="title_Allow_blucon_unbonding">Allow BluCon unbonding</string>
     <string name="summary_Suppress_the_ugly_state_message_if_Problem_appears">Suppress the ugly state message if Problem appears</string>
-    <string name="title_supress_ugly_state_message">supress ugly state message</string>
+    <string name="title_supress_ugly_state_message">suppress ugly state message</string>
     <string name="summary_write_Battery_Information_for_additional_analytic">write the Battery-Information for additional analytic in a file. Please only use this, if you will be asked by a developer!</string>
     <string name="title_Batterylog">Batterylog</string>
     <string name="summary_Choose_to_display_the_bridge_battery_level">Choose to display the bridge battery level</string>
@@ -1584,7 +1584,7 @@
     <string name="title_ob1_g5_preemptive_restart_extended_time_travel">Extended time-travel</string>
     <string name="summary_ob1_g5_preemptive_restart_extended_time_travel">Restart the session to start at day 3 to avoid causing jumps</string>
     <string name="title_ob1_g5_preemptive_restart_extended_time_travel_all_firmwares">Always allow extended time-travel</string>
-    <string name="summary_ob1_g5_preemptive_restart_extended_time_travel_all_firmwares">Allow extended time-travel with all firmware versions (engineering mode only) </string>
+    <string name="summary_ob1_g5_preemptive_restart_extended_time_travel_all_firmwares">Allow extended time-travel with all firmware versions (engineering mode only)</string>
     <string name="collection_summary_ob1_g5_preemptive_restart">Automatically restart a sensor before it stops</string>
     <string name="title_ob1_g5_preemptive_restart_alert">Alert on preemptive restart</string>
     <string name="summary_ob1_g5_preemptive_restart_alert">Raise an alert when preemptively restarting the session</string>
