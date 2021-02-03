@@ -59,7 +59,7 @@
     <string name="pref_title_api_url">Basis URL</string>
     <string name="pref_dialog_api_url">Voer Basis API URL in</string>
     <string name="pref_message_api_url">Dit is alleen de basis-URL, de uploader zal automatisch / items voor de POST toevoegen.  API_SECRET op de server moet overeenkomen met uw wachtwoordzin in deze instelling.</string>
-    <string name="pref_default_api_url">https: // yourpassphrase @ {UW-SITE} .azurewebsites.net / api / v1 /</string>
+    <string name="pref_default_api_url">https://yourpassphrase@{UW-SITE}.azurewebsites.net/api/v1/</string>
     <!-- wifi Settings -->
     <string name="wifi_recievers_dialog_message">Door komma\'s gescheiden lijst van ip: poort (bijvoorbeeld 37.142.132.220:50005,37.142.132.220:50010,mongodb://user:pass@ds053958.mongolab.com:53958/db/collection)</string>
     <string name="wifi_recievers_dialog_title">Voer Ip-adressen en poorten van de ontvangers in(met inbegrip van MongoDB adressen indien nodig)</string>
@@ -842,7 +842,6 @@
     <string name="repeat_sound">Herhaal geluid</string>
     <string name="enable_telemetry">Schakel telemetrie in</string>
     <string name="send_data_to_developers">Stuur gegevens naar ontwikkelaars over slagingspercentages van verschillende apparaten</string>
-    <string name="try_to_work_around_noisy_readings_ultrasensitive">Begin met het omzeilen van luidruchtige metingen, zelfs bij zeer lage geluidsniveaus (alleen in ontwikkelaars modus)</string>
     <string name="sidiary_date_title">Vanaf wanneer exporteren?</string>
     <string name="blukon">Blucon</string>
     <string name="tomato">Tomato</string>
