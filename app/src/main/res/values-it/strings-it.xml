@@ -59,7 +59,7 @@
     <string name="pref_title_api_url">URL di base</string>
     <string name="pref_dialog_api_url">Inserisci l\'API URL</string>
     <string name="pref_message_api_url">Questo solo l\'URL di base, l\'uploader aggiungerà automaticamente i valori del POST. API_SECRET sul server. La tua  passphrase deve corrispondere.</string>
-    <string name="pref_default_api_url">https: // yourpassphrase @ {TUO SITO} .azurewebsites.net / api / v1 /</string>
+    <string name="pref_default_api_url">https://tuapassword@{tuosito}.azurewebsites.net/api/v1/</string>
     <!-- wifi Settings -->
     <string name="wifi_recievers_dialog_message">Comma elenco di ip separati: porta (ad esempio 37.142.132.220:50005,37.142.132.220:50010,mongodb://user:pass@ds053958.mongolab.com:53958/db/collection)</string>
     <string name="wifi_recievers_dialog_title">Immettere gli indirizzi IP e le porte dei ricevitori (compresi gli indirizzi mongodb se necessario)</string>
