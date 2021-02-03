@@ -163,7 +163,7 @@
     <string name="now_choose_start_sensor_in_settings">Now choose start your sensor in your settings</string>
     <string name="double_check_dex_receiver_serial_number">Double Check Dex Receiver Serial Number, should be 10 characters, don\'t forget the letters</string>
     <string name="please_set_dex_receiver_serial_number">Please set your Dex Receiver Serial Number in App Settings</string>
-    <string name="unfortunately_andoird_version_no_blueooth_low_energy">Unfortunately your android version does not support Bluetooth Low Energy</string>
+    <string name="unfortunately_andoird_version_no_blueooth_low_energy">Unfortunately your Android version does not support Bluetooth Low Energy</string>
     <string name="waiting_for_packet">Waiting for packet</string>
     <string name="persistent_high_for_greater_than">Persistent High for > </string>
     <string name="space_mins">" mins"</string>
@@ -256,7 +256,7 @@
     <string name="enter_ten_character_dexcom_receiver_serial">Enter 10 Character Dexcom Receiver Serial Number</string>
     <string name="dexcom_transmitter_id">Dexcom Transmitter ID</string>
     <string name="run_collector_in_foreground">Run Collector in foreground</string>
-    <string name="shows_a_persistent_notification">Shows a persistent notification graph, visible on lock-screen and prevents android killing the service.</string>
+    <string name="shows_a_persistent_notification">Shows a persistent notification graph, visible on lock-screen and prevents Android killing the service.</string>
     <string name="list_of_receivers">List of receivers</string>
     <string name="extra_tags_for_logging">Extra tags for logging</string>
     <string name="extra_tags_dialog_message">The tags entered here will be logged into xDrip. Format is tag:level. Level can be v,d,i. For example bgreading:i,DexCollectionService:v. This tags will be logged with low priority to Error and event list.</string>
@@ -1305,7 +1305,7 @@
     <string name="title_lefun_screen_heart_pressure">Show Heart Pressure</string>
     <string name="title_lefun_screen_find_phone">Show Find Phone / Snooze</string>
     <string name="title_lefun_screen_mac_address">Show MAC Address</string>
-    <string name="summary_allow_samsung_workaround">Use workarounds to avoid non-standard android behavior of Samsung handsets. Without this collectors usually fail to get data.</string>
+    <string name="summary_allow_samsung_workaround">Use workarounds to avoid non-standard Android behavior of Samsung handsets. Without this collectors usually fail to get data.</string>
     <string name="title_allow_samsung_workaround">Samsung Workarounds</string>
     <string name="summary_medtrum_use_native">Use transmitter calibration instead of xDrip for primary</string>
     <string name="title_medtrum_use_native">Medtrum Native</string>
