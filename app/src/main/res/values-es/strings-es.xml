@@ -113,7 +113,7 @@
     <string name="title_activity_alert_list">Lista de alertas</string>
     <string name="speaktreatment">Habla de tratamiento</string>
     <string name="title_activity_update">Actualización de xDrip+ disponible</string>
-    <string name="title_activity_display_qrcode">Configuración de uso compartido a través del código QR</string>
+    <string name="title_activity_display_qrcode">Compartir Ajustes a través de código QR</string>
     <string name="title_activity_send_feed_back">Enviar comentarios a Jamorham</string>
     <string name="title_activity_maps">Parakeet Mapa</string>
     <string name="title_activity_display_preferences">Preferencias de visualización</string>
@@ -204,7 +204,7 @@
     <string name="automatic_crash_reporting">Informes de error automáticos</string>
     <string name="send_feedback_message">Enviar Mensaje Comentarios</string>
     <string name="copying_settings">Copia de ajustes</string>
-    <string name="show_settings_qr_codes">Mostrar códigos QR Ajustes</string>
+    <string name="show_settings_qr_codes">Mostrar códigos QR de Ajustes</string>
     <string name="load_save_settings_to_sdcard">Cargar/Guardar ajustes en tarjeta SD</string>
     <string name="alarms_and_alerts">Alarmas y alertas</string>
     <string name="alerts_and_notifications">Alertas y notificaciones</string>
@@ -275,8 +275,8 @@
     <string name="message_to_display_when_bgl_hits">Mensaje a mostrar cuando BGL golpea el valor especial por encima de</string>
     <string name="text_to_display_when_hitting_special_value">Texto que se mostrará con un valor especial</string>
     <string name="special_value">Valor especial</string>
-    <string name="history">Historia</string>
-    <string name="statistics">Estadística</string>
+    <string name="history">Historial</string>
+    <string name="statistics">Estadísticas</string>
     <string name="snooze_alert">Silenciar Alarmas</string>
     <string name="less_common_settings">Ajustes menos comunes</string>
     <string name="view_recent_errors_warnings">Ver Errores/Advertencias recientes</string>
@@ -352,9 +352,9 @@
     <string name="save_all_settings_to_sdcard">Guardar todos los ajustes a tarjeta SD</string>
     <string name="load_all_settings_from_sdcard">Cargar todos los ajustes de tarjeta SD</string>
     <string name="delete_any_settings_on_sdcard">Eliminar cualquier configuración de tarjeta SD</string>
-    <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[Utilizar códigos QR para transferir la configuración usando Preferencias-&gt; Configurar función Auto]]></string>
+    <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[Utilizar códigos QR para transferir la configuración usando Preferencias->Función Auto configuración]]></string>
     <string name="xdrip_plus_security_key_settings_only">Sólo Configuración de clave de seguridad xDrip Plus</string>
-    <string name="show_general_and_collection_settings">Mostrar general y configuración de la colección</string>
+    <string name="show_general_and_collection_settings">Mostrar Ajustes Generales y de recolección</string>
     <string name="copy_all_settings">Copiar todos los ajustes</string>
     <string name="sensor_is_ready_please_enter_double_calibration">El sensor está listo, por favor, introduzca una doble calibración</string>
     <string name="in_order_to_get_started_please_perform_two_finger">Para empezar, por favor realizar dos pruebas de pinchazo en el dedo e introduzca los valores aquí!</string>
@@ -444,7 +444,7 @@
     <string name="special_glucose_value_to_display_message">Valor especial de glucosa para que aparezca el siguiente mensaje</string>
     <string name="bluetooth_wakelocks">Wakelocks Bluetooth</string>
     <string name="compatible_broadcast">Broadcast compatibles</string>
-    <string name="show_datatables">Mostrar DataTables</string>
+    <string name="show_datatables">Mostrar Tablas de datos</string>
     <string name="display_bridge_battery">Mostrar batería Bridge</string>
     <string name="close_gatt_on_ble_disconnect">Cerca del GATT sobre desconexión BLE</string>
     <string name="disable_battery_warning">Desactivar la advertencia de batería</string>
@@ -533,7 +533,7 @@
     <string name="limitter_battery">Limitador de la batería</string>
     <string name="parakeet_battery">Batería Parakeet</string>
     <string name="after_calibration_rewrite_history">Después de la calibración, ajuste reciente gráfico prima para suavizar a la nueva calibración</string>
-    <string name="rewrite_history">Historia de reescritura</string>
+    <string name="rewrite_history">Reescribir historial</string>
     <string name="grid_time_lines_visible">Líneas de rejilla de tiempo visibles</string>
     <string name="grid_glucose_lines_visible">Líneas de rejilla de glucosa visibles</string>
     <string name="useful_for_noise_and_missed_readings">Útil para el ruido y las lecturas perdidas</string>
@@ -576,7 +576,7 @@
     <string name="vibrate_alerts">Vibrar en alertas</string>
     <string name="attach_to_button">Adjuntarlo a un botón Pebble para diferir instantáneamente cualquier alerta activa de su reloj. También para la función Diferir a Distancia.</string>
     <string name="for_interacting_compatible_apps">Para interacciones con aplicaciones compatibles</string>
-    <string name="interapp_settings">Ajustes Interaplicaciones</string>
+    <string name="interapp_settings">Ajustes entre aplicaciones</string>
     <string name="use_plugins_for_brodcast">Usar valores suavizados de complementos (si están habilitados) para valores de emisión</string>
     <string name="send_display_glucose">Enviar Glucosa Mostrada</string>
     <string name="send_broadcasts_old_permission_model">Enviar transmisiones sin bloqueo al modelo de permiso anterior</string>
@@ -705,7 +705,7 @@
     <string name="options_for_upload">Opciones para subida de datos de Nightscout, MongoDB o Dexcom Share</string>
     <string name="cloud_upload">Subir a la nube</string>
     <string name="enable_mongo_sync">Habilitar la sincronización de la BD Nightscout Mongo</string>
-    <string name="mongo_db_uri">IUR de la BD Mongo</string>
+    <string name="mongo_db_uri">Mongo DB Uri</string>
     <string name="skip_local_lan">Para servidores locales con direcciones 192.168.x.x , omitir subidas cuando no hay conectividad de red local.</string>
     <string name="skip_lan_uploads">Omitir subidas LAN</string>
     <string name="mongo_load_transmitter_data_title">Cargar datos de transmisores Libre</string>
@@ -823,9 +823,9 @@
     <string name="are_you_sure_you_wish_to_snooze_all_other_devices_in_your_sync_group">¿Está seguro de que desea diferir todos los demás móviles de su grupo de sincronización?</string>
     <string name="yes_send_it">SÍ, ¡enviar!</string>
     <string name="movement_detection_and_vehicle_mode">Detección de movimientos y modo vehículo</string>
-    <string name="xdrip_motion_tracking">xDrip+ seguimiento de movimientos</string>
+    <string name="xdrip_motion_tracking">xDrip+ Rastreo de movimientos</string>
     <string name="detect_motion_types">Usar los sensores para detectar tipos de movimiento</string>
-    <string name="enable_motion_tracking">Habilitar seguimiento de movimientos</string>
+    <string name="enable_motion_tracking">Habilitar rastreo de movimientos</string>
     <string name="display_motion_types">Almacenar los tipos de movimiento recientes y trazarlos en el gráfico principal</string>
     <string name="log_and_plot_motion">Registrar y dibujar movimiento</string>
     <string name="use_remote_motion_data">Datos de movimiento provienen de dispositivo remoto en vez del local</string>
@@ -842,7 +842,6 @@
     <string name="repeat_sound">Repetir sonido</string>
     <string name="enable_telemetry">Habilitar Telemetría</string>
     <string name="send_data_to_developers">Enviar datos a los desarrolladores sobre las tasas de éxito de los diferentes dispositivos</string>
-    <string name="try_to_work_around_noisy_readings_ultrasensitive">Empezar a solucionar las lecturas ruidosas incluso en niveles de ruido muy bajos (sólo en modo ingeniería)</string>
     <string name="sidiary_date_title">¿Desde cuando se exporta?</string>
     <string name="blukon">Blucon</string>
     <string name="tomato">Tomato</string>
@@ -1122,8 +1121,8 @@
     <string name="advanced_mode">Modo Avanzado</string>
     <string name="reminder_title">Título del recordatorio</string>
     <string name="what_time_of_day_question">¿A qué hora del día?</string>
-    <string name="all_alerts_currently_disabled">TODAS LAS ALERTAS ACTUALMENTE DESACTIVADAS</string>
-    <string name="low_and_high_alerts_currently_disabled">ALERTAS DE BAJAS Y ALTAS ACTUALMENTE DESACTIVADAS</string>
+    <string name="all_alerts_currently_disabled">TODAS LAS ALERTAS DESACTIVADAS</string>
+    <string name="low_and_high_alerts_currently_disabled">ALERTAS DE BAJAS Y ALTAS DESACTIVADAS</string>
     <string name="low_alerts_currently_disabled">ALERTAS DE BAJA ACTUALMENTE DESACTIVADAS</string>
     <string name="high_alerts_currently_disabled">ALERTAS DE ALTA ACTUALMENTE DESACTIVADAS</string>
     <string name="bg_reading_missed">Lecturas de glucemia no realizadas</string>
@@ -1178,7 +1177,7 @@
     <string name="summary_tidepool_password">Contraseña de Tidepool</string>
     <string name="title_tidepool_password">Contraseña</string>
     <string name="title_tidepool_test_login">Probar sesión en Tidepool</string>
-    <string name="title_tidepool_window_latency">Edad Datos (min).</string>
+    <string name="title_tidepool_window_latency">Minutos de antiguedad de datos</string>
     <string name="summary_tidepool_dev_servers">Si habilita, los datos subidos irán a https://int-app.tidepool.org en lugar de a https://app.tidepool.org/</string>
     <string name="title_tidepool_dev_servers">Usar servidores de Integración (prueba)</string>
     <string name="title_tidepool">Tidepool</string>
