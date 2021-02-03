@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
     <string name="title_activity_bluetooth_scan">Bluetooth Scan</string>
@@ -195,7 +195,7 @@
     <string name="libre_last_x_minutes_graph">Libre last %d minutes graph</string>
     <string name="share_config_via_qr_code">Share config via QR code</string>
     <string name="check_for_updated_version">Check for updated version</string>
-    <string name="send_feedback_to_developer">Send Feedback to developer</string>
+    <string name="send_feedback_to_developer">Send Feedback to developers</string>
     <string name="home_screen">Home Screen</string>
     <string name="event_logs">Event Logs</string>
     <string name="calibration_graph">Calibration Graph</string>
@@ -615,8 +615,8 @@
     <string name="speak_glucose_twice">Speak the glucose value twice each time</string>
     <string name="short_speak_readings_shortcut">Show a shortcut in the ☰ menu to toggle Speak Readings</string>
     <string name="speak_readings_shortcut">Speak Readings Shortcut</string>
-    <string name="battery_optimization_off">On Android 6+ ensure battery optimization is switched off. Recommended</string>
-    <string name="battery_optimization_on">Don\'t keep asking about battery optimization. Not recommended</string>
+    <string name="battery_optimization_off">On Android 6+ ensure battery optimization is switched off (recommended).</string>
+    <string name="battery_optimization_on">Don\'t keep asking about battery optimization (not recommended).</string>
     <string name="battery_optimization_prompt">Battery Optimization prompt</string>
     <string name="advanced_bluetooth_settings">Advanced Bluetooth Settings</string>
     <string name="bluetooth_settings">Bluetooth Settings</string>
@@ -1258,7 +1258,7 @@
     <string name="summary_miband_mac">Leave empty for auto search</string>
     <string name="title_miband_send_readings_as_notification">BG readings as notification</string>
     <string name="summary_miband_send_readings_as_notification">Will use a notifications to send BG readings. The date wouldn\'t be changed so all band features can be used.
-        Need to disable if you want to use xdrip watchface(It is required to delete official MiFit application to avoid date overrides)</string>
+        Need to disable if you want to use xDrip watchface (It is required to delete official MiFit application to avoid date overrides)</string>
     <string name="title_miband_vibrate_on_readings">Vibrate on readings</string>
     <string name="title_miband_send_calls">Send Calls</string>
     <string name="summary_miband_send_calls">Send call notifications to the band (Android 6+)</string>
@@ -1277,7 +1277,7 @@
     <string name="title_miband_screen_status">Show Status</string>
     <string name="title_miband_screen_heart_rate">Show Heart rate</string>
     <string name="title_miband_screen_timer">Show Timer</string>
-    <string name="title_miband_screen_nfc">Show NFC(if available)</string>
+    <string name="title_miband_screen_nfc">Show NFC (if available)</string>
 
     <string name="miband_watchface_istall_success">MiBand watchface has been uploaded successfully!</string>
     <string name="miband_watchface_istall_error">Error while uploading MiBand watchface</string>
