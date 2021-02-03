@@ -22,7 +22,7 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="title_activity_calibration_check_in">Calibration Activity</string>
-    <string name="title_activity_usb_connected">Usb Connected Activity</string>
+    <string name="title_activity_usb_connected">USB Connected Activity</string>
     <string name="snooze">Snooze</string>
     <string name="snooze_hint">Snooze alert for x minutes</string>
     <string name="ok">OK</string>
@@ -128,7 +128,7 @@
     <string name="speaktreatment">Speak treatment</string>
 
     <string name="title_activity_update">xDrip+ Update Available</string>
-    <string name="title_activity_display_qrcode">Share Settings Via QR code</string>
+    <string name="title_activity_display_qrcode">Share Settings via QR code</string>
     <string name="title_activity_send_feed_back">Send Feedback to Jamorham</string>
     <string name="title_activity_maps">Parakeet Map</string>
     <string name="title_activity_display_preferences">Display Preferences</string>
@@ -161,8 +161,8 @@
     <string name="please_enter_two_calibrations_to_get_started">Please enter two calibrations to get started!</string>
     <string name="now_pair_with_your_dexcom_share">Now pair with your Dexcom Share</string>
     <string name="now_choose_start_sensor_in_settings">Now choose start your sensor in your settings</string>
-    <string name="double_check_dex_receiver_serial_number">Double Check Dex Receiver Serial Number, should be 10 characters, don\'t forget the letters</string>
-    <string name="please_set_dex_receiver_serial_number">Please set your Dex Receiver Serial Number in App Settings</string>
+    <string name="double_check_dex_receiver_serial_number">Double check Dex Receiver serial number, should be 10 characters, don\'t forget the letters</string>
+    <string name="please_set_dex_receiver_serial_number">Please set your Dex Receiver serial number in App Settings</string>
     <string name="unfortunately_andoird_version_no_blueooth_low_energy">Unfortunately your Android version does not support Bluetooth Low Energy</string>
     <string name="waiting_for_packet">Waiting for packet</string>
     <string name="persistent_high_for_greater_than">Persistent High for > </string>
@@ -253,7 +253,7 @@
     <string name="bg_data_table">BG Data Table</string>
     <string name="cannot_calibrate_right_now">Cannot Calibrate right now</string>
     <string name="hardware_data_source">Hardware Data Source</string>
-    <string name="enter_ten_character_dexcom_receiver_serial">Enter 10 Character Dexcom Receiver Serial Number</string>
+    <string name="enter_ten_character_dexcom_receiver_serial">Enter 10 character Dexcom Receiver serial number</string>
     <string name="dexcom_transmitter_id">Dexcom Transmitter ID</string>
     <string name="run_collector_in_foreground">Run Collector in foreground</string>
     <string name="shows_a_persistent_notification">Shows a persistent notification graph, visible on lock-screen and prevents Android killing the service.</string>
@@ -734,15 +734,15 @@
     <string name="data_sync">Data Sync</string>
     <string name="options_for_upload">Options for Nightscout, MongoDB or Dexcom Share uploading</string>
     <string name="cloud_upload">Cloud Upload</string>
-    <string name="enable_mongo_sync">Enable Nightscout Mongo DB sync</string>
-    <string name="mongo_db_uri">Mongo DB Uri</string>
+    <string name="enable_mongo_sync">Enable Nightscout MongoDB sync</string>
+    <string name="mongo_db_uri">MongoDB URI</string>
     <string name="skip_local_lan">For local servers with 192.168.x.x addresses, skip uploads when there is no local network connectivity.</string>
     <string name="skip_lan_uploads">Skip LAN uploads</string>
     <string name="mongo_load_transmitter_data_title">Upload libre transmitters data</string>
     <string name="mongo_load_transmitter_data_summary">Allow More than one xDrip to connect to BT devices and store the data that they receive in the cloud. This should allow all house coverage for libre with miaomiao, or 2 parents using the same BT device transperantly.</string>
     <string name="influxdb_sync">Enable InfluxDB sync</string>
-    <string name="influxdb_uri">InfluxDB Uri</string>
-    <string name="influxdb_database_name">InfluxDB Database Name</string>
+    <string name="influxdb_uri">InfluxDB URI</string>
+    <string name="influxdb_database_name">InfluxDB database name</string>
     <string name="user">User</string>
     <string name="password">Password</string>
     <string name="upload_to_dexcom">Enable this to upload to Dexcom\'s servers</string>
@@ -754,8 +754,8 @@
     <string name="dexcom_user">Dexcom Account Login</string>
     <string name="dexcom_login_password">Your password for Dexcom\'s Website</string>
     <string name="dexcom_password">Dexcom Account Password</string>
-    <string name="dexcom_receiver_serial">10 Character Dexcom Receiver Serial Number</string>
-    <string name="dexcom_test_mode_serial">10 Character Test Mode Serial Number</string>
+    <string name="dexcom_receiver_serial">10 Character Dexcom Receiver serial number</string>
+    <string name="dexcom_test_mode_serial">10 Character Test Mode serial number</string>
     <string name="glucose_meters">Glucose Meters</string>
     <string name="glucose_meter_options">Options for wireless glucose meters</string>
     <string name="auto_connect_to_meter">Automatically connect and retrieve data from a standards compliant glucose meter like the Contour Next One</string>
@@ -1589,9 +1589,9 @@
     <string name="title_ob1_g5_preemptive_restart_alert">Alert on preemptive restart</string>
     <string name="summary_ob1_g5_preemptive_restart_alert">Raise an alert when preemptively restarting the session</string>
     <string name="blood_glucose_graph">Blood Glucose Graph</string>
-    <string name="pref_enable_insulinprofiles">enable at least one max three profiles</string>
-    <string name="pref_select_basal_insulinprofiles">choose basal insulin profile.</string>
-    <string name="pref_select_bolus_insulinprofiles">choose bolus insulin profile. also used for pump and pen...</string>
+    <string name="pref_enable_insulinprofiles">Enable at least one, max three profiles</string>
+    <string name="pref_select_basal_insulinprofiles">Choose basal insulin profile.</string>
+    <string name="pref_select_bolus_insulinprofiles">Choose bolus insulin profile. Also used for pump and pen...</string>
     <string name="enable_streaming_summary">connect to libre 2 sensors after scanning them. This will stop libre reader and libre link from receiving alerts</string>
     <string name="enable_streaming_title">Starting bluetooth connection with libre 2 sensors</string>
     <string name="enable_streaming_always_allow">Always connect to libre2 sensors</string>
