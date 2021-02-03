@@ -93,7 +93,7 @@
     <string name="pref_amazfit_enable_summary">Enable Amazfit Data support</string>
     <string name="pref_amazfit_enable">Enable</string>
     <string name="pref_amazfit_tile">Amazfit Service</string>
-    <string name="pref_amazfit_BG_alert_enable_summary">Sends active BG Alerts to Smartwatch</string>
+    <string name="pref_amazfit_BG_alert_enable_summary">Sends active BG Alerts to smartwatch</string>
     <string name="pref_amazfit_BG_alert_enable">Enable</string>
     <string name="pref_amazfit_BG_alert_title">BG Alerts</string>
     <string name="pref_amazfit_other_alert_enable_summary">Sends other alerts to smartwatch</string>
@@ -152,7 +152,7 @@
     <string name="share">Share</string>
     <string name="title_activity_profile_editor">Treatment Profile Editor</string>
     <string name="first_use_menu_to_scan">First use the menu to scan for your BT device or change the Data Source in Settings!</string>
-    <string name="first_configure_ip_address">First configure your wifi wixel reader IP addresses or parakeet url</string>
+    <string name="first_configure_ip_address">First configure your WiFi Wixel reader IP addresses or Parakeet URL</string>
     <string name="now_start_your_sensor">Now start your sensor or check Settings</string>
     <string name="please_wait_while_sensor_warms_up">Please wait while sensor warms up! (</string>
     <string name="minutes_with_bracket">" minutes)"</string>
@@ -290,7 +290,7 @@
     <string name="pebble_integration">Pebble Integration</string>
     <string name="send_data_to_pebble_watchface">Send data to Pebble Watchface.</string>
     <string name="pebble_watch_integration">Pebble Watch Integration</string>
-    <string name="standard_or_trend_pebble_watchface">Standard or Trend pebble watchfaces</string>
+    <string name="standard_or_trend_pebble_watchface">Standard or Trend Pebble Watchfaces</string>
     <string name="choose_pebble_watchface">Choose Pebble Watchface</string>
     <string name="message_to_display_when_bgl_hits">Message to display when BGL hits the special value above</string>
     <string name="text_to_display_when_hitting_special_value">Text to display when hitting special value</string>
@@ -434,9 +434,9 @@
     <string name="notify_when_predicted_low_time_reaches_threshold">Notify when predicted low time reaches threshold</string>
     <string name="predicted_low_sound">Predicted Low Sound</string>
     <string name="choose_sound_used_for_predicted_low_alarm">Choose sound used for predicted low alarm.</string>
-    <string name="notify_when_parakeet_device_stops_checking_in">Notify when parakeet device stops checking in</string>
+    <string name="notify_when_parakeet_device_stops_checking_in">Notify when Parakeet device stops checking in</string>
     <string name="parakeet_related_alerts">Parakeet related alerts</string>
-    <string name="raise_parakeet_notification_silently_when_charging">Raise parakeet notification silently when charging</string>
+    <string name="raise_parakeet_notification_silently_when_charging">Raise Parakeet notification silently when charging</string>
     <string name="silent_alert_when_charging">Silent alert when charging</string>
     <string name="alerts_start_out_snoozed_and_must_persist_for_a_while">Alerts start out snoozed and must persist for a while to actually trigger</string>
     <string name="alarms_silenced_during_telephone_calls">Alarms silenced during telephone calls</string>
@@ -632,8 +632,8 @@
     <string name="constantly_reset_bluetooth">Constantly reset Bluetooth</string>
     <string name="experimental_transmitter_fpv_uav">Experimental support for \'Transmitter\' device from @FPV-UAV - test only</string>
     <string name="transmitter_pl_support">Transmiter (PL) support</string>
-    <string name="experimental_rdfuino_support">Experimental support for rfduino from Tomasz Stachowicz</string>
-    <string name="rfduino_support">RFDUINO support</string>
+    <string name="experimental_rdfuino_support">Experimental support for RFduino from Tomasz Stachowicz</string>
+    <string name="rfduino_support">RFduino support</string>
     <string name="repeatedly_restart_collection_service">Repeatedly restart the collection service at any hint of missing data. Enable only if you are getting data loss.</string>
     <string name="aggressive_service_restarts">Aggressive service restarts</string>
     <string name="predictive_readings_old">Old method - Not Recommended! Attempts to predict readings each minute based on the past few values.</string>
@@ -847,8 +847,8 @@
     <string name="allow_remotes_silence">Allow remote handsets to silence alarms on this one</string>
     <string name="acccept_remote_snoozes">Accept remote snoozes</string>
     <string name="send_remote_snooze">Send Remote Snooze</string>
-    <string name="only_accept_same_network">Only accept if the remote wifi network name starts with the same letters as ours and matches very closely</string>
-    <string name="wifi_name_must_match">Wifi name must match</string>
+    <string name="only_accept_same_network">Only accept if the remote WiFi network name starts with the same letters as ours and matches very closely</string>
+    <string name="wifi_name_must_match">WiFi name must match</string>
     <string name="confirm_remote_snooze">Confirm Remote Snooze</string>
     <string name="are_you_sure_you_wish_to_snooze_all_other_devices_in_your_sync_group">Are you sure you wish to snooze all other devices in your sync group?</string>
     <string name="yes_send_it">YES, send it!</string>
@@ -951,7 +951,7 @@
     <string name="are_you_sure">Are you sure?</string>
     <string name="g4_share_receiver">G4 Share Receiver</string>
     <string name="bluetooth_wixel">Bluetooth Wixel</string>
-    <string name="parakeet_wifi">Parakeet / Wifi</string>
+    <string name="parakeet_wifi">Parakeet / WiFi</string>
     <string name="other">Other</string>
     <string name="which_software_is_the_wixel_running">Which software is the Wixel running?</string>
     <string name="start_source_setup_wizard">Start Source Setup Wizard</string>
@@ -1234,12 +1234,12 @@
     <string name="title_miband_screen_battery">Show Battery</string>
     <string name="title_miband_show_date">Show date on the screen</string>
     <string name="title_miband_visibility">MiBand visibility</string>
-    <string name="summary_miband_visibility">Miband will be visible for other devices</string>
+    <string name="summary_miband_visibility">MiBand will be visible for other devices</string>
     <string name="title_miband_switch_display_on_wrist">Switch display on wrist</string>
     <string name="title_miband_units">Units</string>
     <string name="summary_miband_units">Choose the distance unit used on band </string>
     <string name="title_miband_goal_notification">Goal notification</string>
-    <string name="summary_miband_goal_notification">Miband will vibrate when you reach a goal</string>
+    <string name="summary_miband_goal_notification">MiBand will vibrate when you reach a goal</string>
     <string name="title_miband_locale_24_hour">24 Hour clock</string>
     <string name="summary_miband_locale_24_hour">Show 24 Hour clock</string>
 
@@ -1254,7 +1254,7 @@
     <string name="summary_miband_colect_heartrate">Would collect heart rate data from band. Update interval can be configured in MiFit or any third-party application</string>
 
     <string name="title_miband_authkey">Auth Key</string>
-    <string name="summary_miband_authkey">Set the auth key for miband4 (To get auth key, follow the instructions on https://www.freemyband.com/)</string>
+    <string name="summary_miband_authkey">Set the auth key for MiBand4 (To get auth key, follow the instructions on https://www.freemyband.com/)</string>
     <string name="summary_miband_mac">Leave empty for auto search</string>
     <string name="title_miband_send_readings_as_notification">BG readings as notification</string>
     <string name="summary_miband_send_readings_as_notification">Will use a notifications to send BG readings. The date wouldn\'t be changed so all band features can be used.
@@ -1284,8 +1284,8 @@
     <string name="miband_bg_dialog_title">Update BG data now?</string>
 
     <string name="title_lefun_band">Lefun Band</string>
-    <string name="summary_lefun_enable">Sync Data with LeFun fitness bands</string>
-    <string name="title_lefun_enable">Use LeFun Band</string>
+    <string name="summary_lefun_enable">Sync Data with Lefun fitness bands</string>
+    <string name="title_lefun_enable">Use Lefun Band</string>
     <string name="title_lefun_mac">Mac address</string>
     <string name="summary_lefun_send_readings">Appropriate the watch date to represent glucose values. Better with mmol/l - see documentation</string>
     <string name="title_lefun_send_readings">Send Readings</string>
@@ -1399,7 +1399,7 @@
     <string name="title_desert_sync_master_ip">Master IP address</string>
     <string name="summary_send_sync_show_qr">Barcode for followers to scan to auto-configure them</string>
     <string name="title_send_sync_show_qr">Show QR Code</string>
-    <string name="summary_desert_use_https">Add another layer of encryption for shared networks, eg public wifi</string>
+    <string name="summary_desert_use_https">Add another layer of encryption for shared networks, eg public WiFi</string>
     <string name="title_desert_use_https">Use HTTPS</string>
     <string name="title_xdrip_plus_experimental">Experimental Section</string>
     <string name="summary_inpen_screen">Downloading dosages</string>
@@ -1489,7 +1489,7 @@
     <string name="what_type_of_libre_bridge_device_do_you_use">What type of Libre bridge device do you use?</string>
     <string name="bluetooth_bridge_device_blucon_limitter_bluereader_tomato_etc">Bluetooth Bridge device: Blucon, Bubble, LimiTTer, Bluereader, Tomato etc</string>
     <string name="libre_patched">Libre2 Patched</string>
-    <string name="librealarm_app_using_sony_smartwatch">LibreAlarm App: using Sony Smartwatch</string>
+    <string name="librealarm_app_using_sony_smartwatch">LibreAlarm App: using Sony smartwatch</string>
     <string name="__data_source_disabled">\n DATA SOURCE DISABLED</string>
     <string name="data_source_is_set_to_">Data Source is set to: </string>
     <string name="__do_you_want_to_change_settings_or_start_sensor">\n\nDo you want to change settings or start sensor?</string>
@@ -1515,7 +1515,7 @@
     <string name="maybe_later">Maybe Later</string>
     <string name="yes_do_it">YES, Do it</string>
     <string name="recommend_that_you_change_wifi_to_always_be_on_during_sleep">Recommend that you change WiFi to always be on during sleep</string>
-    <string name="ooops_this_device_doesnt_seem_to_have_a_wifi_settings_page">Ooops this device doesn\'t seem to have a wifi settings page!</string>
+    <string name="ooops_this_device_doesnt_seem_to_have_a_wifi_settings_page">Ooops this device doesn\'t seem to have a WiFi settings page!</string>
     <string name="restore_backup">Restore Backup?</string>
     <string name="do_you_want_to_restore_the_backup_file_">Do you want to restore the backup file: </string>
     <string name="restore">Restore</string>
