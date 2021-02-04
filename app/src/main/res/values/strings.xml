@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
     <string name="title_activity_bluetooth_scan">Bluetooth Scan</string>
@@ -121,7 +121,7 @@
 
     <string name="taskerConfigInstruction">Just click the Tick icon here to confirm. You shouldn\'t need to change the configuration string.</string>
     <string name="taskerConfiguration">Tasker Configuration</string>
-    <string name="finish_preferences_activity">finish_preferences_activity</string>
+    <string name="finish_preferences_activity">Finish preferences activity</string>
 
     <string name="add_widget">Add widget</string>
     <string name="title_activity_alert_list">Alert List</string>
@@ -837,7 +837,7 @@
     <string name="predictive_simulations">Predictive Simulations</string>
     <string name="low_prediction_values">Low level prediction values</string>
     <string name="target_glucose_default">Target Glucose Default</string>
-    <string name="default_liver_maximum_impact">Default Liver Maximum Impact (0-1)</string>
+    <string name="default_liver_maximum_impact">Default Liver Maximum Impact (0–1)</string>
     <string name="remote_snoozes">Sending and receiving remote snoozes</string>
     <string name="remote_snoozing">Remote Snoozing</string>
     <string name="snoozes_will_silence_all">Snoozes will silence all handsets in group with the accept setting below enabled on them</string>
