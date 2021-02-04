@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
     <string name="title_activity_bluetooth_scan">Bluetooth Scan</string>
@@ -28,7 +28,7 @@
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="no">No</string>
-    <string name="pref_sensor_location_dont_ask_again"> Don\'t ask me that again</string>
+    <string name="pref_sensor_location_dont_ask_again">Don\'t ask me that again</string>
 
     <string name="title_activity_error">"Error and Event List"</string>
     <string name="title_activity_main">Main Activity</string>
@@ -77,7 +77,7 @@
 
     <!-- broadcast settings -->
     <string name="pref_title_broadcast_enabled">Broadcast locally</string>
-    <string name="pref_summary_broadcast_enabled">Enable local broadcast of data so other apps (eg. NightWatch) can listen on new values</string>
+    <string name="pref_summary_broadcast_enabled">Enable local broadcast of data so other apps (e.g. NightWatch) can listen on new values</string>
     <string name="title_activity_share_test">Share Test</string>
 
     <!-- pebble settings -->
@@ -163,22 +163,22 @@
     <string name="now_choose_start_sensor_in_settings">Now choose start your sensor in your settings</string>
     <string name="double_check_dex_receiver_serial_number">Double check Dex Receiver serial number, should be 10 characters, don\'t forget the letters</string>
     <string name="please_set_dex_receiver_serial_number">Please set your Dex Receiver serial number in App Settings</string>
-    <string name="unfortunately_andoird_version_no_blueooth_low_energy">Unfortunately your Android version does not support Bluetooth Low Energy</string>
+    <string name="unfortunately_andoird_version_no_blueooth_low_energy">Unfortunately, your Android version does not support Bluetooth Low Energy</string>
     <string name="waiting_for_packet">Waiting for packet</string>
     <string name="persistent_high_for_greater_than">Persistent High for > </string>
     <string name="space_mins">" mins"</string>
     <string name="till">till</string>
     <string name="low_predicted">Low predicted</string>
     <string name="in">in</string>
-    <string name="yes_enter_setup_mode">Yes enter setup mode</string>
-    <string name="nokeep_parakeet_as_it_is">No keep Parakeet as it is</string>
-    <string name="are_you_sure_you_want_switch_parakeet_to_setup">Are you sure you want to switch the Parakeet to setup mode?\n\nNormally this is only used to send further text messages to the Parakeet to reconfigure the transmitter it listens for etc.</string>
+    <string name="yes_enter_setup_mode">Yes, enter setup mode</string>
+    <string name="nokeep_parakeet_as_it_is">No, keep Parakeet as it is</string>
+    <string name="are_you_sure_you_want_switch_parakeet_to_setup">Are you sure you want to switch the Parakeet to setup mode?\n\nNormally, this is only used to send further text messages to the Parakeet to reconfigure the transmitter it listens for etc.</string>
     <string name="split_delete_or_do_nothing">Split, delete or do nothing</string>
     <string name="split_this_block_in_two">Split this block in two</string>
     <string name="delete_this_time_block">Delete this time block</string>
     <string name="cancel_do_nothing">Cancel - do nothing</string>
     <string name="added">Added</string>
-    <string name="checking_for_update">Checking for update..</string>
+    <string name="checking_for_update">Checking for update...</string>
     <string name="signal_missed">Signal Missed</string>
     <string name="minutes_ago">{0, choice,0#{0, number, integer} Minutes ago|1#{0, number, integer} Minute ago|1&lt;{0, number, integer} Minutes ago}</string>
     <string name="expires_days">{0, choice,0#Sensor Expired!|1#Ends in {0, number} day|1&lt;Ends in {0, number} days}</string>
@@ -253,7 +253,7 @@
     <string name="bg_data_table">BG Data Table</string>
     <string name="cannot_calibrate_right_now">Cannot Calibrate right now</string>
     <string name="hardware_data_source">Hardware Data Source</string>
-    <string name="enter_ten_character_dexcom_receiver_serial">Enter 10 character Dexcom Receiver serial number</string>
+    <string name="enter_ten_character_dexcom_receiver_serial">Enter 10-character Dexcom Receiver serial number</string>
     <string name="dexcom_transmitter_id">Dexcom Transmitter ID</string>
     <string name="run_collector_in_foreground">Run Collector in foreground</string>
     <string name="shows_a_persistent_notification">Shows a persistent notification graph, visible on lock-screen and prevents Android killing the service.</string>
@@ -336,7 +336,7 @@
     <string name="units">units</string>
     <string name="carbs">carbs</string>
     <string name="when">when</string>
-    <string name="speak_your_treatment">Speak your treatment eg:\nx.x units insulin / xx grams carbs</string>
+    <string name="speak_your_treatment">Speak your treatment e.g.\nx.x units insulin / xx grams carbs</string>
     <string name="speech_recognition_is_not_supported">Speech recognition is not supported</string>
     <string name="treatment_note">Treatment Note</string>
     <string name="accessibility_description">xDrip uses the Accessibility feature just to adjust the screen when the device is locked. This is likely only useful if you have a phone with the Always On Display feature and have it enabled. xDrip does not interact with Android in any other way.</string>
@@ -408,7 +408,7 @@
     <string name="automatic_updates_crash_reports_and_feedback">Automatic Updates, crash reports and Feedback to Developer</string>
     <string name="crowd_sourced_translation">Crowd-sourced translation</string>
     <string name="please_enter_your_question_or_comments_here">Please enter your question or comments here.\n\nIf you supply an email address you may get a response.\n\n</string>
-    <string name="optional_contact_info_here_eg_email">Optional contact info here, eg email</string>
+    <string name="optional_contact_info_here_eg_email">Optional contact info here, e.g. email</string>
     <string name="send_message">Send Message</string>
     <string name="please_indicate_what_you_think_of_the_app_generally">Please indicate what you think of the app generally</string>
     <string name="preferences_saved_in_sdcard_downloads">Preferences saved in SD card Downloads</string>
@@ -484,7 +484,7 @@
     <string name="help_the_community">Help the community</string>
     <string name="double_tap_or_pinch_to_zoom">Double tap or pinch to zoom.</string>
     <string name="start_sensor">Start Sensor</string>
-    <string name="debug_and_other_misc_options">Debug and other misc options</string>
+    <string name="debug_and_other_misc_options">Debug and other misc. options</string>
     <string name="low_glucose_values">Low Glucose Values</string>
     <string name="revert_to_default">Revert to Default</string>
     <string name="filtered_values">Filtered Values</string>
@@ -493,8 +493,8 @@
     <string name="predictive_color">Predictive Color</string>
     <string name="predictive_color_dark">Predictive Color Dark</string>
     <string name="average_and_target_lines">Average and Target Lines</string>
-    <string name="eight_hour_average_line">8 Hour Average Line</string>
-    <string name="twenty_four_hour_average_line">24 Hour Average Line</string>
+    <string name="eight_hour_average_line">8-Hour Average Line</string>
+    <string name="twenty_four_hour_average_line">24-Hour Average Line</string>
     <string name="glucose_target_line">Glucose Target Line</string>
     <string name="annotations_and_dots">Annotations and Dots</string>
     <string name="blood_test_background">Blood Test Background</string>
@@ -559,8 +559,8 @@
     <string name="useful_for_noise_and_missed_readings">Useful for noise and missed readings</string>
     <string name="the_standard_xdrip_calculated_value">The standard xDrip calculated values</string>
     <string name="display_ideal_glucose_target_line">Display ideal glucose target line</string>
-    <string name="display_eight_hour_average_line">Display 8 hour average line</string>
-    <string name="display_twenty_four_hour_average_line">Display 24 hour average line</string>
+    <string name="display_eight_hour_average_line">Display 8-hour average line</string>
+    <string name="display_twenty_four_hour_average_line">Display 24-hour average line</string>
     <string name="predictive_model_inner_workings">Predictive model inner workings</string>
     <string name="noise_model_inner_workings">Noise model inner workings</string>
     <string name="glucose_number_from_filtered">Glucose number from Filtered</string>
@@ -611,7 +611,7 @@
     <string name="process_nsclient_treatments">Process treatment data received from NSClient app</string>
     <string name="accept_treatments">Accept Treatments</string>
     <string name="process_broadcasted_calibrations">Process calibrations received from other apps</string>
-    <string name="spoken_readings_locale">Custom Locale for Spoken Readings, eg: de or en_IN</string>
+    <string name="spoken_readings_locale">Custom Locale for Spoken Readings, e.g. de or en_IN</string>
     <string name="speak_glucose_twice">Speak the glucose value twice each time</string>
     <string name="short_speak_readings_shortcut">Show a shortcut in the ☰ menu to toggle Speak Readings</string>
     <string name="speak_readings_shortcut">Speak Readings Shortcut</string>
@@ -648,7 +648,7 @@
     <string name="retrieve_blukon_history_summary">Retrieve missed history from BluCon device when reconnecting to sensor.</string>
     <string name="interpret_share_raw">If using Share, xDrip will show values when they are normally hidden on the receiver.</string>
     <string name="interpret_raw">Interpret Raw Values</string>
-    <string name="use_infrequent_calibrations">If needed, use calibrations from longer ago, eg if calibrations are supplied infrequently.</string>
+    <string name="use_infrequent_calibrations">If needed, use calibrations from longer ago, e.g. if calibrations are supplied infrequently.</string>
     <string name="infrequent_calibrations">Infrequent Calibration</string>
     <string name="extra_logging">Extra Logging Settings</string>
     <string name="send_logs_to_developer">Send Event and Error List Logs automatically to the developer</string>
@@ -718,7 +718,7 @@
     <string name="use_multi_block">Use faster multi-block reading method</string>
     <string name="use_any_tag">Use any-tag optimized reading method</string>
     <string name="low_level_value">Low level diagnostic/prototype value</string>
-    <string name="transmitter_id">ID of your Dexcom Transmitter, eg 12AB3</string>
+    <string name="transmitter_id">ID of your Dexcom Transmitter, e.g. 12AB3</string>
     <string name="advanced_g5_settings">Advanced G5 settings for rare situations</string>
     <string name="g5_debug_settings">G5/G6 Debug Settings</string>
     <string name="g5_scan_constantly">Some devices work better when scanning constantly, others do not. If reading is reliable when this setting is not selected, you should have improved battery life. Normally best to keep this disabled</string>
@@ -754,11 +754,11 @@
     <string name="dexcom_user">Dexcom Account Login</string>
     <string name="dexcom_login_password">Your password for Dexcom\'s Website</string>
     <string name="dexcom_password">Dexcom Account Password</string>
-    <string name="dexcom_receiver_serial">10 Character Dexcom Receiver serial number</string>
-    <string name="dexcom_test_mode_serial">10 Character Test Mode serial number</string>
+    <string name="dexcom_receiver_serial">10-Character Dexcom Receiver serial number</string>
+    <string name="dexcom_test_mode_serial">10-Character Test Mode serial number</string>
     <string name="glucose_meters">Glucose Meters</string>
     <string name="glucose_meter_options">Options for wireless glucose meters</string>
-    <string name="auto_connect_to_meter">Automatically connect and retrieve data from a standards compliant glucose meter like the Contour Next One</string>
+    <string name="auto_connect_to_meter">Automatically connect and retrieve data from a standard's compliant glucose meter like the Contour Next One</string>
     <string name="use_bluetooth_meter">Use Bluetooth Meter</string>
     <string name="scan_for_bluetooth_meter">Scan for Bluetooth Meter</string>
     <string name="meter_connect_sound">Enable this to play sound effects when the meter connects, disconnects or syncs data</string>
@@ -977,7 +977,7 @@
     <string name="code_accepted">Code accepted</string>
     <string name="invalid_or_unsupported_code">Invalid or unsupported code!</string>
     <string name="g6_sensor_code">G6 Sensor Code</string>
-    <string name="please_enter_printed_calibration_code">Please enter the printed calibration code number, 4 digits, eg: 5678</string>
+    <string name="please_enter_printed_calibration_code">Please enter the printed calibration code number, 4 digits, e.g. 5678</string>
     <string name="enable_update_checks">Enable update checks?</string>
     <string name="you_can_easily_roll_back_dialog_msg">With xDrip you can easily roll back to previous versions just by re-running the APK installer for the old version in your Downloads folder if you don\'t like the new version.\n\nWould you like to enable update checks?</string>
     <string name="hey_fam">Hey Fam...</string>
@@ -1071,7 +1071,7 @@
     <string name="summary_Choose_to_display_the_bridge_battery_level">Choose to display the bridge battery level</string>
     <string name="title_Glucose_Retention">Glucose Retention</string>
     <string name="summary_Erase_data_older_than_this_many_days">Erase data older than this many days. 0 = don\'t erase anything</string>
-    <string name="title_Other_misc_options">Other misc options</string>
+    <string name="title_Other_misc_options">Other misc. options</string>
     <string name="summary_allow_testing_with_dead_sensor">allow testing with dead sensor</string>
     <string name="title_NOT_FOR_PRODUCTION_USE">NOT FOR PRODUCTION USE</string>
 
@@ -1399,7 +1399,7 @@
     <string name="title_desert_sync_master_ip">Master IP address</string>
     <string name="summary_send_sync_show_qr">Barcode for followers to scan to auto-configure them</string>
     <string name="title_send_sync_show_qr">Show QR Code</string>
-    <string name="summary_desert_use_https">Add another layer of encryption for shared networks, eg public WiFi</string>
+    <string name="summary_desert_use_https">Add another layer of encryption for shared networks, e.g. public WiFi</string>
     <string name="title_desert_use_https">Use HTTPS</string>
     <string name="title_xdrip_plus_experimental">Experimental Section</string>
     <string name="summary_inpen_screen">Downloading dosages</string>
@@ -1520,7 +1520,7 @@
     <string name="do_you_want_to_restore_the_backup_file_">Do you want to restore the backup file: </string>
     <string name="restore">Restore</string>
     <string name="calibrate_sensor">Calibrate Sensor?</string>
-    <string name="we_have_some_readings__next_we_need_the_first_calibration_blood_test__ready_to_calibrate_now">We have some readings!\n\nNext we need the first calibration blood test.\n\nReady to calibrate now?</string>
+    <string name="we_have_some_readings__next_we_need_the_first_calibration_blood_test__ready_to_calibrate_now">We have some readings!\n\nNext, we need the first calibration blood test.\n\nReady to calibrate now?</string>
     <string name="calibrate">Calibrate</string>
     <string name="confirm_delete">Confirm Delete</string>
     <string name="are_you_sure_you_want_to_delete_this_treatment">Are you sure you want to delete this Treatment?</string>
@@ -1545,10 +1545,10 @@
     <string name="starting_sync_to_other_devices">Starting sync to other devices</string>
     <string name="deleting_all_bg_readings">Deleting ALL BG readings!</string>
     <string name="could_not_export_csv_">Could not export CSV :(</string>
-    <string name="librealarm_data_format_appears_incompatible_protocol_changed_or_no_data">LibreAlarm data format appears incompatible!? protocol changed or no data?</string>
+    <string name="librealarm_data_format_appears_incompatible_protocol_changed_or_no_data">LibreAlarm data format appears incompatible! Protocol changed or no data?</string>
     <string name="please_update_librealarm_to_use_oop_algorithm">Please update LibreAlarm to use OOP algorithm</string>
     <string name="sensor_clock_has_not_advanced">Sensor clock has not advanced!</string>
-    <string name="sensor_age_has_gone_backwards">Sensor age has gone backwards!!</string>
+    <string name="sensor_age_has_gone_backwards">Sensor age has gone backwards!</string>
     <string name="phone_has_no_nfc_reader">Phone has no NFC reader</string>
     <string name="nfc_is_not_enabled">NFC is not enabled</string>
     <string name="phone_nfc_is_having_problems">Phone NFC is having problems!</string>
@@ -1562,10 +1562,10 @@
     <string name="nfc_io_error">NFC IO Error</string>
     <string name="nfc_error">NFC Error</string>
     <string name="still_processing_previous_backfill_request">Still processing previous back-fill request!</string>
-    <string name="please_wait">Please wait..</string>
+    <string name="please_wait">Please wait...</string>
     <string name="didnt_find_any_glucose_readings_in_that_time_period">Didn\'t find any glucose readings in that time period</string>
     <string name="got_calibration_in_the_future__cannot_process">Got calibration in the future - cannot process!</string>
-    <string name="remote_snooze">Remote snooze..</string>
+    <string name="remote_snooze">Remote snooze...</string>
     <string name="sensor_stopped">Sensor stopped</string>
     <string name="restarting_collector">Restarting Collector!</string>
     <string name="follower_deleted_succesfully">Follower deleted successfully</string>
