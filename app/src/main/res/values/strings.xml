@@ -259,7 +259,7 @@
     <string name="shows_a_persistent_notification">Shows a persistent notification graph, visible on lock-screen and prevents Android killing the service.</string>
     <string name="list_of_receivers">List of receivers</string>
     <string name="extra_tags_for_logging">Extra tags for logging</string>
-    <string name="extra_tags_dialog_message">The tags entered here will be logged into xDrip. Format is tag:level. Level can be v,d,i. For example bgreading:i,DexCollectionService:v. This tags will be logged with low priority to Error and event list.</string>
+    <string name="extra_tags_dialog_message">The tags entered here will be logged into xDrip. Format is tag:level. Level can be v,d,i. For example bgreading:i,DexCollectionService:v. These tags will be logged with low priority to Error and event list.</string>
     <string name="extra_tags_dialog_title">Enter more tags to be logged</string>
     <string name="data_source_settings">Data Source Settings</string>
     <string name="smart_watch_features">Smart Watch Features</string>
@@ -346,7 +346,7 @@
     <string name="done">Done</string>
     <string name="entering_a_calibration_now_will_override_your_previously_entered_calibration">Entering a calibration now will override your previously entered calibration.</string>
     <string name="enter_blood_glucose_value">Enter Blood Glucose Value</string>
-    <string name="this_does_not_get_used_for_anything_its_just_to_keep_track_of_differences_for_algorithem_improvement_purposes">This does not get used for anything, its just to keep track of differences for algorithm improvement purposes</string>
+    <string name="this_does_not_get_used_for_anything_its_just_to_keep_track_of_differences_for_algorithem_improvement_purposes">This does not get used for anything, it\'s just to keep track of differences for algorithm improvement purposes</string>
     <string name="no_active_alert_exists">No active alert exists</string>
     <string name="active_alert_exists_named">Active alert exists named</string>
     <string name="bracket_not_snoozed">(not snoozed)</string>
@@ -605,7 +605,7 @@
     <string name="attach_to_button">Attach it to a pebble button to instantly Snooze any active alert from your watch. Also for Remote Snooze feature.</string>
     <string name="for_interacting_compatible_apps">For interacting with other compatible apps</string>
     <string name="interapp_settings">Inter-app settings</string>
-    <string name="use_plugins_for_brodcast">Use noise smoothing and plugins etc (if enabled) for broadcasted value</string>
+    <string name="use_plugins_for_brodcast">Use noise smoothing and plugins etc. (if enabled) for broadcasted value</string>
     <string name="send_display_glucose">Send Display Glucose</string>
     <string name="send_broadcasts_old_permission_model">Send broadcasts without locking to the older permission model</string>
     <string name="process_nsclient_treatments">Process treatment data received from NSClient app</string>
@@ -631,7 +631,7 @@
     <string name="reset_bluetooth_on_off">Reset Bluetooth by turning it off and on every few minutes! Only select if you are testing. It may disrupt anything else using Bluetooth.</string>
     <string name="constantly_reset_bluetooth">Constantly reset Bluetooth</string>
     <string name="experimental_transmitter_fpv_uav">Experimental support for \'Transmitter\' device from @FPV-UAV - test only</string>
-    <string name="transmitter_pl_support">Transmiter (PL) support</string>
+    <string name="transmitter_pl_support">Transmitter (PL) support</string>
     <string name="experimental_rdfuino_support">Experimental support for RFduino from Tomasz Stachowicz</string>
     <string name="rfduino_support">RFduino support</string>
     <string name="repeatedly_restart_collection_service">Repeatedly restart the collection service at any hint of missing data. Enable only if you are getting data loss.</string>
@@ -739,7 +739,7 @@
     <string name="skip_local_lan">For local servers with 192.168.x.x addresses, skip uploads when there is no local network connectivity.</string>
     <string name="skip_lan_uploads">Skip LAN uploads</string>
     <string name="mongo_load_transmitter_data_title">Upload Libre transmitters data</string>
-    <string name="mongo_load_transmitter_data_summary">Allow More than one xDrip to connect to BT devices and store the data that they receive in the cloud. This should allow all house coverage for Libre with MiaoMiao, or 2 parents using the same BT device transperantly.</string>
+    <string name="mongo_load_transmitter_data_summary">Allow more than one xDrip to connect to BT devices and store the data that they receive in the cloud. This should allow all house coverage for Libre with MiaoMiao, or 2 parents using the same BT device transparently.</string>
     <string name="influxdb_sync">Enable InfluxDB sync</string>
     <string name="influxdb_uri">InfluxDB URI</string>
     <string name="influxdb_database_name">InfluxDB database name</string>
@@ -758,7 +758,7 @@
     <string name="dexcom_test_mode_serial">10-Character Test Mode serial number</string>
     <string name="glucose_meters">Glucose Meters</string>
     <string name="glucose_meter_options">Options for wireless glucose meters</string>
-    <string name="auto_connect_to_meter">Automatically connect and retrieve data from a standard's compliant glucose meter like the Contour Next One</string>
+    <string name="auto_connect_to_meter">Automatically connect and retrieve data from a standard\'s compliant glucose meter like the Contour Next One</string>
     <string name="use_bluetooth_meter">Use Bluetooth Meter</string>
     <string name="scan_for_bluetooth_meter">Scan for Bluetooth Meter</string>
     <string name="meter_connect_sound">Enable this to play sound effects when the meter connects, disconnects or syncs data</string>
@@ -833,7 +833,7 @@
     <string name="show_test_features">Show extra and alpha test features</string>
     <string name="show_reminder_features">Show Reminder menus and features</string>
     <string name="enable_reminder_features">Enable Reminder features</string>
-    <string name="display_mathamatical_simulations">Display mathamatical simulations based on profile data and carbs/insulin logs</string>
+    <string name="display_mathamatical_simulations">Display mathematical simulations based on profile data and carbs/insulin logs</string>
     <string name="predictive_simulations">Predictive Simulations</string>
     <string name="low_prediction_values">Low level prediction values</string>
     <string name="target_glucose_default">Target Glucose Default</string>
@@ -888,7 +888,7 @@
     <string name="stop_sensor">Stop Sensor</string>
     <string name="dont_stop_just_reset_all_calibrations">Don\'t stop, just Reset all Calibrations</string>
     <string name="initial_calibration">Initial Calibration</string>
-    <string name="calibration_can_not_be_blank">Calibration can not be blank</string>
+    <string name="calibration_can_not_be_blank">Calibration cannot be blank</string>
     <string name="invalid_calibration_number">Invalid calibration number!</string>
     <string name="calibration_out_of_range">Calibration out of range</string>
     <string name="note_search">Note Search</string>
@@ -937,7 +937,7 @@
     <string name="days">days</string>
     <string name="bluereaderoff">blueReader will be turn off, as the battery is lower then </string>
     <string name="bluereader_position">check position of blueReader on the sensor, as it was not able to read!</string>
-    <string name="bluereaderuglystate">The blueReader was found in an ugly state! It will be now turn off now, and you turn it back to on (short press of the button). After that the blueReader should work as expectet!</string>
+    <string name="bluereaderuglystate">The blueReader was found in an ugly state! It will be now turn off now, and you turn it back to on (short press of the button). After that the blueReader should work as expected!</string>
     <string name="offical_msg">The official app</string>
     <string name="use_conflict_msg">may try to access the transmitter device too and this can cause problems with both apps</string>
     <string name="use_confict_msg_glimp">You can adjust Glimp Settings: options -> devices -> unselect Bluetooth option</string>
@@ -1256,8 +1256,8 @@
     <string name="title_miband_authkey">Auth Key</string>
     <string name="summary_miband_authkey">Set the auth key for MiBand4 (To get auth key, follow the instructions on https://www.freemyband.com/)</string>
     <string name="summary_miband_mac">Leave empty for auto search</string>
-    <string name="title_miband_send_readings_as_notification">BG readings as notification</string>
-    <string name="summary_miband_send_readings_as_notification">Will use a notifications to send BG readings. The date wouldn\'t be changed so all band features can be used.
+    <string name="title_miband_send_readings_as_notification">BG readings as notifications</string>
+    <string name="summary_miband_send_readings_as_notification">Will use notifications to send BG readings. The date wouldn\'t be changed so all band features can be used.
         Need to disable if you want to use xDrip watchface (It is required to delete official MiFit application to avoid date overrides)</string>
     <string name="title_miband_vibrate_on_readings">Vibrate on readings</string>
     <string name="title_miband_send_calls">Send Calls</string>
@@ -1305,7 +1305,7 @@
     <string name="title_lefun_screen_heart_pressure">Show Heart Pressure</string>
     <string name="title_lefun_screen_find_phone">Show Find Phone / Snooze</string>
     <string name="title_lefun_screen_mac_address">Show MAC Address</string>
-    <string name="summary_allow_samsung_workaround">Use workarounds to avoid non-standard Android behavior of Samsung handsets. Without this collectors usually fail to get data.</string>
+    <string name="summary_allow_samsung_workaround">Use workarounds to avoid non-standard Android behavior of Samsung handsets. Without this, collectors usually fail to get data.</string>
     <string name="title_allow_samsung_workaround">Samsung Workarounds</string>
     <string name="summary_medtrum_use_native">Use transmitter calibration instead of xDrip for primary</string>
     <string name="title_medtrum_use_native">Medtrum Native</string>
