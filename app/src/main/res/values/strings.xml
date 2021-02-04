@@ -402,7 +402,7 @@
     <string name="be_master_for_followers">Be master for followers</string>
     <string name="this_device_will_send_data_to_followers">This device will send data to followers</string>
     <string name="send_parakeet_map_location_to_followers">Send Parakeet map location to followers</string>
-    <string name="sync_parakeet_geolocation">Sync Parakeet GeoLocation</string>
+    <string name="sync_parakeet_geolocation">Sync Parakeet Geolocation</string>
     <string name="disable_all_sync_features">Disable all sync features</string>
     <string name="temporary_work_around_disable_all_sync_detail">Temporary work-around option, completely stops all synchronization. May need reboot after being re-enabled. Use with care!</string>
     <string name="automatic_updates_crash_reports_and_feedback">Automatic Updates, crash reports and Feedback to Developer</string>
@@ -602,7 +602,7 @@
     <string name="use_tiny_dots">Use tiny dot size</string>
     <string name="watch_vibrate_active_alerts">Vibrate watch on active glucose alerts</string>
     <string name="vibrate_alerts">Vibrate on Alerts</string>
-    <string name="attach_to_button">Attach it to a pebble button to instantly Snooze any active alert from your watch. Also for Remote Snooze feature.</string>
+    <string name="attach_to_button">Attach it to a Pebble button to instantly snooze any active alert from your watch; also for Remote Snooze feature.</string>
     <string name="for_interacting_compatible_apps">For interacting with other compatible apps</string>
     <string name="interapp_settings">Inter-app settings</string>
     <string name="use_plugins_for_brodcast">Use noise smoothing and plugins etc. (if enabled) for broadcasted value</string>
@@ -1462,7 +1462,7 @@
     <string name="set_up_desert_sync_follower">Set up Desert Sync follower</string>
     <string name="version">Version:</string>
     <string name="sensor_start">Sensor Start:</string>
-    <string name="plug_in_your_dexcom_reciever">Plug in your dexcom receiver then hit this button and cross your fingers!</string>
+    <string name="plug_in_your_dexcom_reciever">Plug in your Dexcom receiver then hit this button and cross your fingers!</string>
     <string name="check_in_dexcom_calibrations">Check in Dexcom calibrations</string>
     <string name="progress">progress</string>
     <string name="bluetooth_device">Bluetooth Device:   </string>
