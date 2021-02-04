@@ -239,8 +239,8 @@
     <string name="alarm_at_forecasted_low_mins">Alarm at Forecasted Low mins</string>
     <string name="other_xdrip_plus_alerts">Other xDrip+ alerts</string>
     <string name="xdrip_plus_display_settings">xDrip+ Display Settings</string>
-    <string name="display_customisations">Display customisations</string>
-    <string name="insulin_carb_ratios_etc_for_models">Insulin, Carb ratios etc for models</string>
+    <string name="display_customisations">Display customizations</string>
+    <string name="insulin_carb_ratios_etc_for_models">Insulin, Carb ratios etc. for models</string>
     <string name="grams_of_carbohydrate_one_unit_covers">Grams of Carbohydrate 1 Unit covers</string>
     <string name="linear_model_carbs_absorbed_per_hour">Linear model carbs absorbed per hour</string>
     <string name="carb_absorption_rate">Carb Absorption rate</string>
@@ -317,7 +317,7 @@
     <string name="adjust_all_by_a_factor">Adjust all by a factor</string>
     <string name="reset">Reset</string>
     <string name="pebble_and_android_wear_options">Options for different Watches</string>
-    <string name="customize_colours">Customize Colours</string>
+    <string name="customize_colours">Customize Colors</string>
     <string name="xdrip_plus_color_settings">xDrip+ Color Settings</string>
     <string name="glucose_values_and_lines">Glucose Values and Lines</string>
     <string name="high_glucose_values">High Glucose Values</string>
