@@ -26,18 +26,18 @@ public enum CalibrationState {
     CalibrationConfused1(0x08, "Confused Calibration 1"),
     CalibrationConfused2(0x09, "Confused Calibration 2"),
     NeedsDifferentCalibration(0x0a, "Needs More Calibration"),
-    SensorFailed(0x0b, "Sensor Failed"),
-    SensorFailed2(0x0c, "Sensor Failed 2"),
+    SensorFailed(0x0b, "Sensor Failed: Counts Aberration"),
+    SensorFailed2(0x0c, "Sensor Failed: Residual Aberration"),
     UnusualCalibration(0x0d, "Unusual Calibration"),
     InsufficientCalibration(0x0e, "Insufficient Calibration"),
-    Ended(0x0f, "Ended"),
-    SensorFailed3(0x10, "Sensor Failed 3"),
+    Ended(0x0f, "Session Ended"),
+    SensorFailed3(0x10, "Sensor Failed: Unrecoverable Error"),
     TransmitterProblem(0x11, "Transmitter Problem"),
-    Errors(0x12, "Sensor Errors"),
-    SensorFailed4(0x13, "Sensor Failed 4"),
-    SensorFailed5(0x14, "Sensor Failed 5"),
-    SensorFailed6(0x15, "Sensor Failed 6"),
-    SensorFailedStart(0x16, "Sensor Failed Start");
+    Errors(0x12, "Temporary Sensor Errors"),
+    SensorFailed4(0x13, "Sensor Failed: Sensor Decline"),
+    SensorFailed5(0x14, "Sensor Failed: High Counts Aberration"),
+    SensorFailed6(0x15, "Sensor Failed: Low Counts Aberration"),
+    SensorFailedStart(0x16, "Failed Start: Sensor Restart Detected");
 
     @Getter
     byte value;
