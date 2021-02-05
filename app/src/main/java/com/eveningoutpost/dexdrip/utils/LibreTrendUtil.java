@@ -138,13 +138,7 @@ public class LibreTrendUtil {
                     return m_points;
                 }
                 
-                if(m_points.get((int)id).rawSensorValue != 0) {
-                    // Sanity check that we don't have a bad value.
-                    if(m_points.get((int)id).rawSensorValue != glucoseData.glucoseLevelRaw) {
-                        Log.e(TAG, "Error for time " + id + " Existing value" + (m_points.get((int)id).rawSensorValue) + 
-                                " != " + glucoseData.glucoseLevelRaw); 
-                    }
-                } else {
+                if(m_points.get((int)id).rawSensorValue == 0) {
                     m_points.get((int)id).rawSensorValue = glucoseData.glucoseLevelRaw;
                     m_points.get((int)id).sensorTime  = id;
                     if(m_libreTrendLatest.id < id && m_libreTrendLatest.id != 0) {

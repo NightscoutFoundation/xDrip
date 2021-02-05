@@ -68,7 +68,7 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
     private static void createBGfromGD(GlucoseData gd, boolean use_smoothed_data, boolean quick) {
         final double converted;
         if (gd.glucoseLevelRaw > 0) {
-            if(use_smoothed_data) {
+            if(use_smoothed_data && gd.glucoseLevelRawSmoothed > 0) {
                 converted = convert_for_dex(gd.glucoseLevelRawSmoothed);
                 Log.e(TAG,"Using smoothed value " + converted + " instead of " + convert_for_dex(gd.glucoseLevelRaw) );
             } else {
@@ -190,7 +190,7 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
                 JoH.static_toast_long(gs(R.string.please_update_librealarm_to_use_oop_algorithm));
                 return;
             }
-            LibreOOPAlgorithm.SendData(object.data.raw_data, CaptureDateTime);
+            LibreOOPAlgorithm.sendData(object.data.raw_data, CaptureDateTime, tagid);
             return;
         }
         CalculateFromDataTransferObject(object, use_raw_);
