@@ -842,7 +842,6 @@
     <string name="repeat_sound">Repetir som</string>
     <string name="enable_telemetry">Activar Telemetria</string>
     <string name="send_data_to_developers">Enviar dados para os programadores sobre as taxas de sucesso de diferentes dispositivos</string>
-    <string name="try_to_work_around_noisy_readings_ultrasensitive">Começar a trabalhar sobre leituras irregulares mesmo em níveis de ruído muito baixos (apenas no modo engenheiro)</string>
     <string name="sidiary_date_title">Exportar a partir de?</string>
     <string name="blukon">Blucon</string>
     <string name="tomato">Tomato</string>

@@ -838,7 +838,6 @@
     <string name="repeat_sound">Toista ääni</string>
     <string name="enable_telemetry">Salli telemetria</string>
     <string name="send_data_to_developers">Lähetä tietoja sovelluskehittäjille eri laitteiden onnistumisasteista</string>
-    <string name="try_to_work_around_noisy_readings_ultrasensitive">Aloita sensorin häiriölukemien korjaaminen jo hyvin pienillä häiriötasoilla (vain ohjelmistokehitystila)</string>
     <string name="sidiary_date_title">Tietojen vienti mistä alkaen?</string>
     <string name="blukon">BluCon</string>
     <string name="tomato">Tomato</string>
