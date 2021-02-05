@@ -16,6 +16,7 @@ import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.JamBaseBluetoothSequencer;
 import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
@@ -126,6 +127,7 @@ import static com.eveningoutpost.dexdrip.watch.thinjam.Const.THINJAM_WRITE;
 import static com.eveningoutpost.dexdrip.watch.thinjam.firmware.BlueJayFirmware.parse;
 import static com.eveningoutpost.dexdrip.watch.thinjam.firmware.BlueJayFirmware.split;
 import static com.eveningoutpost.dexdrip.watch.thinjam.messages.NotifyTx.getPacketStreamForNotification;
+import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 // jamorham
 
@@ -1939,7 +1941,7 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
             l.add(new StatusItem("Identity", "Not Identified! Tap to pair", CRITICAL, "long-press", () -> ThinJamActivity.requestQrCode()));
         }
 
-        l.add(new StatusItem("Connected", II.isConnected ? "Yes" : "No"));
+        l.add(new StatusItem("Connected", II.isConnected ? gs(R.string.yes) : gs(R.string.no)));
         if (II.wakeup_time != 0 && !II.isConnected) {
             final long till = msTill(II.wakeup_time);
             if (till > 0) l.add(new StatusItem("Retry Wake Up", niceTimeScalar(till)));

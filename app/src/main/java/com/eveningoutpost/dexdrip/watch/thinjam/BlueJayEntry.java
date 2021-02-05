@@ -111,7 +111,7 @@ public class BlueJayEntry {
 
     public static void cancelNotifyIfEnabled() {
         if (isEnabled()) {
-            if (BlueJayEntry.areAlertsEnabled()) {
+            if (BlueJayEntry.areAlertsEnabled() || BlueJayEntry.areCallAlertsEnabled()) {
                 BlueJayEntry.sendNotifyIfEnabled(THINJAM_NOTIFY_TYPE_CANCEL, "C");
             }
         }
