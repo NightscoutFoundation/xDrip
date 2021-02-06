@@ -1294,7 +1294,7 @@ public class Ob1G5StateMachine {
 
         } else {
             // TODO this is duplicated in processCalibrationState()
-            if (glucose.calibrationState().sensorFailed()) {
+            if (glucose.calibrationState().sensorFailed() && Sensor.isActive()) {
                 if (JoH.pratelimit("G5 Sensor Failed", 3600 * 3)) {
                     JoH.showNotification(devName() + " SENSOR FAILED", "Sensor reporting failed", null, Constants.G5_SENSOR_ERROR, true, true, false);
                 }
