@@ -244,9 +244,7 @@
     <string name="extra_tags_dialog_message">Die hier eingegebenen Tags werden in xDrip protokolliert. Format ist tag:Ebene. Stufe kann v, d oder i sein. Zum Beispiel bgreading:i, DexCollectionService:v. Diese Tags werden mit niedriger Priorität protokolliert in der Fehler- und Ereignisliste.</string>
     <string name="extra_tags_dialog_title">Gib weitere Tags ein, die protokolliert werden sollen</string>
     <string name="data_source_settings">Einstellung der Datenquelle</string>
-    <string name="summary_nsfollow_download_treatments">Lade auch Treatments von Nightscout herunter</string>
     <string name="summary_nsfollow_download_treatments_even_xdrip">Lade Treatments von Nightscout herunter auch wenn sie von XDrip+ stammen</string>
-    <string name="title_nsfollow_download_treatments">Download Treatments</string>
     <string name="title_nsfollow_download_treatments_even_xdrip">Download Treatments auch von XDrip+</string>
     <string name="smart_watch_features">Smart Watch Eigenschaften</string>
     <string name="wear_integration">Wear Integration</string>
