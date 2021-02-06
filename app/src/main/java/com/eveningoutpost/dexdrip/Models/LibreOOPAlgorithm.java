@@ -305,15 +305,9 @@ public class LibreOOPAlgorithm {
         libreAlarmObject.data.trend = new ArrayList<GlucoseData>();
 
         libreAlarmObject.data.raw_data = ble_data;
+        libreAlarmObject.data.trend = parseBleDataPerMinute(ble_data, timestamp);
         
-        // Add the first object, that is the current time
-        GlucoseData glucoseData = new GlucoseData();
-        glucoseData.sensorTime = sensorTime;
-        glucoseData.realDate = timestamp;
-        glucoseData.glucoseLevel = raw;
-        glucoseData.glucoseLevelRaw = raw;
-        
-        libreAlarmObject.data.trend.add(glucoseData);
+        libreAlarmObject.data.history = parseBleDataHistory(ble_data, timestamp);
 
         //========= add code here for smmothing and gap closing.
 
@@ -325,9 +319,8 @@ public class LibreOOPAlgorithm {
         LibreAlarmReceiver.processReadingDataTransferObject(libreAlarmObject, timestamp, SensorSN, true /*=allowupload*/, patchUid, null/*=patchInfo*/);   
     }
 
-    public static ReadingData parseBleData(byte[] ble_data, Long CaptureDateTime) {
+    public static ArrayList<GlucoseData> parseBleDataPerMinute(byte[] ble_data, Long captureDateTime) {
         int sensorTime = 256 * (ble_data[41] & 0xFF) + (ble_data[40] & 0xFF);
-        //long sensorStartTime = CaptureDateTime - sensorTime * MINUTE;
         ArrayList<GlucoseData> historyList = new ArrayList<>();
         
         ArrayList<GlucoseData> trendList = new ArrayList<>();
@@ -337,16 +330,45 @@ public class LibreOOPAlgorithm {
             glucoseData.glucoseLevelRaw = LibreOOPAlgorithm.readBits(ble_data, i * 4 , 0 , 0xe);
 
             int relative_time = LIBRE2_SHIFT[i];
-            glucoseData.realDate = CaptureDateTime - relative_time * MINUTE; 
+            glucoseData.realDate = captureDateTime - relative_time * MINUTE; 
             glucoseData.sensorTime = sensorTime - relative_time;
             Log.d(TAG, "Adding value with sensorTime" + glucoseData.sensorTime + " glucoseLevelRaw " + glucoseData.glucoseLevelRaw);
             trendList.add(glucoseData);
         }
-        
-        final ReadingData readingData = new ReadingData(null, trendList, historyList);
-        
-        return readingData;
+        return trendList;
     }
+    
+    public static ArrayList<GlucoseData> parseBleDataHistory(byte[] ble_data, Long captureDateTime) {
+        int sensorTime = 256 * (ble_data[41] & 0xFF) + (ble_data[40] & 0xFF);
+        //System.out.println("sensorTime = " + sensorTime);
+        if(sensorTime < 3) {
+            return new ArrayList<>();
+        }
+        int sensorTimeModulo = (sensorTime - 2) / 15 * 15;
+        //System.out.println("sensorTimeModulo = " + sensorTimeModulo);
+        ArrayList<GlucoseData> historyList = new ArrayList<>();
+
+        for (int i = 0; i < 3; i++) {
+            GlucoseData glucoseData = new GlucoseData();
+
+            glucoseData.glucoseLevelRaw = readBits(ble_data, (i+7) * 4 , 0 , 0xe);
+
+            int relative_time = i*15;
+            int final_time = sensorTimeModulo - relative_time;
+            if(final_time < 0) {
+                break;
+            }
+            glucoseData.realDate = captureDateTime  + (final_time - sensorTime) * MINUTE;
+            glucoseData.sensorTime = final_time;
+            if(i ==0 ) {
+                Log.d(TAG,"sensorTime = " + sensorTime + " sensorTimeModulo " + sensorTimeModulo +
+                        "  point =  " + (sensorTimeModulo - relative_time) + " value = " + glucoseData.glucoseLevelRaw);
+            }
+            historyList.add(glucoseData);
+        }
+        return historyList;
+    }
+
     
     // Functions that are used for an external decoder.
     static public boolean isDecodeableData(byte []patchInfo) {
