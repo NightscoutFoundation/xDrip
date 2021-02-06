@@ -124,14 +124,14 @@ public class LibreTrendUtil {
             }
             if(isLast) {
                 
-                ReadingData readingData = NFCReaderX.getTrend(libreBlock);
-                if(readingData == null || readingData.trend.size() == 0){
+                List<GlucoseData> trend = NFCReaderX.getTrend(libreBlock);
+                if(trend == null || trend.size() == 0){
                     Log.w(TAG, "Error: NFCReaderX.getTrend retuned null for latest block");
                     continue;
                 }
                 // The last object is used to calculate the timestamp and id.
                 isLast = false;
-                m_libreTrendLatest.id = (int)readingData.trend.get(0).sensorTime;
+                m_libreTrendLatest.id = (int)trend.get(0).sensorTime;
                 m_libreTrendLatest.timestamp = libreBlock.timestamp;
             }
 
@@ -139,18 +139,18 @@ public class LibreTrendUtil {
             if(libreBlock.calculated_bg == 0 ) {
                 continue;
             }
-            ReadingData readingData = NFCReaderX.getTrend(libreBlock);
-            if(readingData == null || readingData.trend.size() == 0){
+            List<GlucoseData> trend = NFCReaderX.getTrend(libreBlock);
+            if(trend == null || trend.size() == 0){
                 Log.e(TAG, "Error: NFCReaderX.getTrend returned null for latest block");
                 return null;
             }
-            if(readingData.trend.get(0).glucoseLevelRaw == 0) {
+            if(trend.get(0).glucoseLevelRaw == 0) {
                 continue;
             }
 
-            m_libreTrendLatest.setFactorData(readingData.trend.get(0).glucoseLevelRaw, libreBlock.calculated_bg);
+            m_libreTrendLatest.setFactorData(trend.get(0).glucoseLevelRaw, libreBlock.calculated_bg);
             String time = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(new Date((long) m_libreTrendLatest.timestamp));
-            Log.i(TAG, "Latest values with valid bg " + time + " m_latestId = " + m_libreTrendLatest.id  + " m_libreTrendLatest.m_GlucoseLevelRaw = " + readingData.trend.get(0).glucoseLevelRaw + " bg = " + libreBlock.calculated_bg );
+            Log.i(TAG, "Latest values with valid bg " + time + " m_latestId = " + m_libreTrendLatest.id  + " m_libreTrendLatest.m_GlucoseLevelRaw = " + trend.get(0).glucoseLevelRaw + " bg = " + libreBlock.calculated_bg );
             // We have finished the calculations, so getting out.
             break;
         }
@@ -163,14 +163,14 @@ public class LibreTrendUtil {
                 m_libreTrendLatest.SensorSN = libreBlock.reference;
             }
             
-            ReadingData readingData = NFCReaderX.getTrend(libreBlock);
-            if(readingData == null) {
+            List<GlucoseData> trend = NFCReaderX.getTrend(libreBlock);
+            if(trend == null) {
                 Log.i(TAG, "NFCReaderX.getTrend returned null, ignoring reading");
                 continue;
             }
             // Go over all trend data (from the earlier to the later)
-            for (int i = readingData.trend.size() - 1; i >= 0; i--) {
-                GlucoseData glucoseData = readingData.trend.get(i);
+            for (int i = trend.size() - 1; i >= 0; i--) {
+                GlucoseData glucoseData = trend.get(i);
                 if (debug_per_minute) {
                     Log.i(TAG, "time = " + glucoseData.sensorTime + " = " + glucoseData.glucoseLevelRaw);
                 }
