@@ -83,6 +83,7 @@ import io.reactivex.Observable;
 import io.reactivex.Scheduler;
 import io.reactivex.schedulers.Schedulers;
 import lombok.Setter;
+import lombok.val;
 
 import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.getUUIDName;
 import static com.eveningoutpost.dexdrip.G5Model.CalibrationState.Ok;
@@ -600,6 +601,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                     stateSubscription = new Subscription(bleDevice.observeConnectionStateChanges()
                             // .observeOn(AndroidSchedulers.mainThread())
                             .subscribeOn(Schedulers.io())
+                            .doFinally(this::releaseFloating)
                             .subscribe(this::onConnectionStateChange, throwable -> {
                                 UserError.Log.wtf(TAG, "Got Error from state subscription: " + throwable);
                             }));
@@ -1357,6 +1359,15 @@ public class Ob1G5CollectionService extends G5BaseService {
         UserError.Log.d(TAG, "Bluetooth connection: " + static_connection_state);
         if (connection_state.equals("Disconnecting")) {
             //tryGattRefresh();
+        }
+    }
+
+    private void releaseFloating() {
+        val wl = floatingWakeLock;
+        if (wl != null) {
+            if (wl.isHeld()) {
+                JoH.releaseWakeLock(wl);
+            }
         }
     }
 
