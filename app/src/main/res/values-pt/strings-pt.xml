@@ -628,7 +628,7 @@
     <string name="set_logging_appid">Definir AppID para Registo</string>
     <string name="only_enable_on_trouble">Activar apenas se existem problemas com a app.</string>
     <string name="store_logs">Guardar relatórios para resolução de problemas</string>
-    <string name="show_datatables_in_app_drawer">Mostrar tabelas de dados da Calibração e Glicose na gaveta de aplicações.</string>
+    <string name="show_datatables_in_app_drawer">Mostrar tabelas de dados da Calibração e Glicose no menu de aplicações.</string>
     <string name="disable_log_transmitter_battery_warning">Desactivar o aviso de estado de bateria fraca do transmissor no ecrã inicial. (Só relevante para os receptores autodidatas.)</string>
     <string name="engineering_mode">Modo de Programador</string>
     <string name="allow_unsafe_settings">Permite alterar as configurações mais inseguras e que podem danificar tudo!</string>
@@ -699,7 +699,7 @@
     <string name="g5_full_authentification">Isto tentará uma autenticação completa a cada tentativa de leitura. Necessário para versões mais recentes de firmware de transmissor G5.</string>
     <string name="unbond_g5_before_read">Desagregar G5 antes de cada leitura</string>
     <string name="g5_remove_before_read">Isto removerá o G5 da lista de dispositivos emparelhados do seu dispositivo e tentará uma ligação e autenticação completa a cada tentativa de leitura.</string>
-    <string name="g5_experimental_mode">Modo experimental o qual não usa dados brutos</string>
+    <string name="g5_experimental_mode">Modo experimental o qual não usa dados em bruto</string>
     <string name="use_calibrated_data">Usar dados calibrados como fonte</string>
     <string name="data_sync">Sincronizar Dados</string>
     <string name="options_for_upload">Configurações de envio para Nightscout, MongDB or Dexcom Share</string>
