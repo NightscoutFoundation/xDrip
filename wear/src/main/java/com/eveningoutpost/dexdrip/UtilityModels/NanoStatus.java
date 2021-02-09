@@ -138,7 +138,7 @@ public class NanoStatus {
                 }
 
             } catch (Exception e) {
-                Log.d(TAG, "reflection exception: " + e + " " + service.getSimpleName());
+                //Log.d(TAG, "reflection exception: " + e + " " + service.getSimpleName());
             }
         }
         return null;
