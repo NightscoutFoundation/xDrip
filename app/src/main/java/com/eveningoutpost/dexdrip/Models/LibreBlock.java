@@ -14,6 +14,10 @@ import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
 import com.google.gson.annotations.Expose;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -154,23 +158,22 @@ public class LibreBlock  extends PlusModel {
     public static LibreBlock getLatestForTrend(long start_time, long end_time) {
 
         SQLiteDatabase db = Cache.openDatabase();
-
         // Using this syntex since there is no way to tell the DB which index to use.
         // Using ActiveAndroid method would take up to 8 seconds to complete.
-        Cursor cursor= db.rawQuery("select * from libreblock  INDEXED BY  index_LibreBlock_timestamp "+
-                "where bytestart == 0 AND byteend == 344 OR byteend == 44 " +
+        try (Cursor cursor = db.rawQuery("select * from libreblock  INDEXED BY  index_LibreBlock_timestamp " +
+                "where bytestart == 0 AND (byteend == 344 OR byteend == 44) " +
                 "AND timestamp >= " + start_time + " AND timestamp <= " + end_time +
-                " ORDER BY timestamp desc limit 1", null);
-        if (cursor.getCount() == 0) {
-            cursor.close();
-            return null;
+                " ORDER BY timestamp desc limit 1", null)) {
+
+            if (cursor == null || cursor.getCount() == 0) {
+                return null;
+            }
+            cursor.moveToFirst();
+            LibreBlock libreBlock = getFromCursor(cursor);
+            return libreBlock;
         }
-        cursor.moveToFirst();
-        LibreBlock libreBlock = getFromCursor(cursor);
-        cursor.close();
-        return libreBlock;
     }
-    
+
     public static List<LibreBlock> getForTrend(long start_time, long end_time) {
         List<LibreBlock> res1 =  new Select()
                 .from(LibreBlock.class)
