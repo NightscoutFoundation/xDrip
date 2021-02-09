@@ -12,16 +12,16 @@
     <string name="error_bluetooth_not_supported">Błąd: Bluetooth nie jest obsługiwany przez to urządzenie</string>
     <string name="unknown_device">Nierozpoznane urządzenie</string>
     <string name="connecting_to_device">Łączenie z urządzeniem</string>
-    <string name="title_activity_raw_data_table">Tabela Raw Data</string>
-    <string name="title_activity_calculated_data_table">Tabela danych z Obliczeniami</string>
+    <string name="title_activity_raw_data_table">Tabela danych surowych</string>
+    <string name="title_activity_calculated_data_table">Tabela obliczonych danych</string>
     <string name="title_activity_start_new_sensor">Uruchom nowy czujnik</string>
     <string name="title_activity_new_sensor_location">Lokalizacja nowego czujnika</string>
-    <string name="title_activity_stop_sensor">Zatrzymaj Sensor</string>
-    <string name="title_activity_nav_drawer">Nav szuflady</string>
-    <string name="navigation_drawer_open">Otwórz panel nawigacji</string>
-    <string name="navigation_drawer_close">Zamknij panel nawigacji</string>
-    <string name="title_activity_calibration_check_in">Aktywna Kalibracja</string>
-    <string name="title_activity_usb_connected">Podłącz.USB aktywny</string>
+    <string name="title_activity_stop_sensor">Zatrzymaj czujnik</string>
+    <string name="title_activity_nav_drawer">Menu nawigacyjne</string>
+    <string name="navigation_drawer_open">Otwórz menu nawigacyjne</string>
+    <string name="navigation_drawer_close">Zamknij menu nawigacyjne</string>
+    <string name="title_activity_calibration_check_in">Kalibracja czujnika</string>
+    <string name="title_activity_usb_connected">Łączność przez USB</string>
     <string name="snooze">Uśpij</string>
     <string name="snooze_hint">Uśpij alarmy na x minut</string>
     <string name="ok">Ok</string>
@@ -29,7 +29,7 @@
     <string name="no">Nie</string>
     <string name="pref_sensor_location_dont_ask_again"> Nie pytaj ponownie.</string>
     <string name="title_activity_error">"Lista błędów i zdarzeń"</string>
-    <string name="title_activity_main">Główna aktywność</string>
+    <string name="title_activity_main">Ekran główny</string>
     <string name="title_activity_fake_numbers">Fałszywe Numery</string>
     <string name="title_activity_edit_alert">Edytuj alarm</string>
     <string name="title_activity_double_calibration">Początkowa kalibracja</string>
@@ -65,8 +65,8 @@
     <string name="wifi_recievers_dialog_title">Wpisz adresy IP i porty odbiorników (w tym adresów MongoDB jeśli potrzebne)</string>
     <!-- Location Settings -->
     <string name="location_not_found_title">Lokalizacja nie jest Włączona</string>
-    <string name="location_not_found_message">Aby urchomić odnajdywanie urządzeń Bluetooth lokalizacja musi być aktywna. xDrip nie zapisuje swojej lokalizacji więc można ją wyłączyć po udanym powiązaniu.</string>
-    <string name="location_yes">Włączyć</string>
+    <string name="location_not_found_message">Aby uruchomić wyszukiwanie urządzeń Bluetooth lokalizacja musi być aktywna. xDrip nie potrzebuje twojej lokalizacji poza opcjonalną funkcją wysyłania wiadomości w nagłych przypadkach</string>
+    <string name="location_yes">Włącz</string>
     <!-- broadcast settings -->
     <string name="pref_title_broadcast_enabled">Nadawaj lokalnie</string>
     <string name="pref_summary_broadcast_enabled">Włącz lokalną transmisję danych, dzięki czemu inne aplikacje (np. NightWatch) mogą otrzymać nowe wartości</string>
