@@ -1744,6 +1744,7 @@ public class BgGraphBuilder {
                                         df.setMinimumIntegerDigits(1);
                                         //  iv.setLabel("IoB: " + df.format(iob.iob));
                                         Home.updateStatusLine("iob", df.format(iob.iob));
+
                                         //  annotationValues.add(iv); // needs to be different value list so we can make annotation nicer
 
                                     }

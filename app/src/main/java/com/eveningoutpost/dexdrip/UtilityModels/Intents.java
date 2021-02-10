@@ -67,7 +67,7 @@ public interface Intents {
     String LIBRE2_ACTIVATION = "com.librelink.app.ThirdPartyIntegration.SENSOR_ACTIVATE";
 
 
-    // oop 2 
+    // oop 2
     String XDRIP_DECODE_FARM_RESULT = "com.eveningoutpost.dexdrip.OOP2_DECODE_FARM_RESULT";
     String XDRIP_DECODE_BLE_RESULT = "com.eveningoutpost.dexdrip.OOP2_DECODE_BLE_RESULT";
     String XDRIP_BLUETOOTH_ENABLE_RESULT = "com.eveningoutpost.dexdrip.OOP2_BLUETOOTH_ENABLE_RESULT";
@@ -81,7 +81,7 @@ public interface Intents {
     String BT_UNLOCK_BUFFER = "BtUnlockBuffer";
     String NFC_UNLOCK_BUFFER = "NfcUnlockBuffer";
     String DEVICE_NAME = "DeviceName";
-    
+
     String TAG_ID = "TagId";
     String ROW_ID = "RowId";
 

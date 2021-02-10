@@ -27,6 +27,8 @@
     <string name="snooze_hint">Snooze alert for x minutes</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
+    <string name="proceed">Proceed</string>
+    <string name="confirm">Confirm</string>
     <string name="no">No</string>
     <string name="pref_sensor_location_dont_ask_again"> Don\'t ask me that again</string>
 
@@ -1592,6 +1594,54 @@
     <string name="pref_enable_insulinprofiles">enable at least one max three profiles</string>
     <string name="pref_select_basal_insulinprofiles">choose basal insulin profile.</string>
     <string name="pref_select_bolus_insulinprofiles">choose bolus insulin profile. also used for pump and pen...</string>
+
+    <!--Bolus Calculator Strings-->
+    <string name="navdrawer_boluscalc">Bolus Calculator</string>
+    <string name="title_carbs_boluscalc">Carbs</string>
+    <string name="title_blood_glucose_boluscalc">Blood Glucose</string>
+    <string name="title_correction_bolus">Correction Bolus:</string>
+    <string name="title_meal_bolus">Meal Bolus:</string>
+    <string name="title_total_bolus">Total Bolus:</string>
+    <string name="title_notes">Notes</string>
+    <string name="hint_notes">Enter notes here</string>
+
+    <string name="plus">+</string>
+    <string name="minus">-</string>
+    <string name="recommendation">Recommendation: </string>
+    <string name="number_placeholder">0.00</string>
+    <string name="confirm_button_boluscalc">Confirm</string>
+
+    <!--Dialogs-->
+    <string name="dialog_caution">Proceed with Caution.</string>
+    <string name="dialog_carbs_constraint">Carbs constraint applied!</string>
+    <string name="dialog_bolus_constraint">Bolus constraint applied!</string>
+
+    <string name="dialog_high_glucose">Your blood glucose is incredibly high! Check ketones and seek medical attention</string>
+    <string name="dialog_low_glucose">Your blood glucose is low! Do you wish to proceed?</string>
+
+    <!--Bolus Calculator Settings-->
+    <string name="title_boluscalc_settings">Bolus Calculator Settings</string>
+    <string name="summary_boluscalc_settings">Various settings for the bolus calculator in xDrip+</string>
+
+    <string name="title_enable_boluscalc">Enable Bolus Calculator</string>
+    <string name="title_enable_bolus_recommendations">Enable Bolus Recommendations</string>
+    <string name="summary_bolus_recommendations">Gives recommendations as to how much insulin you should take in the normal treatments tab.</string>
+
+    <string name="title_bolus_increment">Bolus Increment</string>
+    <string name="summary_bolus_increment">The increment at which dosages are rounded to</string>
+    <string name="bolus_increment">0.5</string>
+
+    <string name="title_max_bolus_value">Max Bolus Value</string>
+    <string name="summary_max_bolus_value">The absolute highest dosage allowed in the bolus calculator</string>
+    <string name="max_bolus_value">30</string>
+
+    <string name="title_correct_above">Correct Above</string>
+    <string name="summary_correct_above">At what bg level the calculator will calculate a correction bolus</string>
+    <string name="title_enable_plus_minus_bottons">Enable +/- Buttons in Calculator</string>
+
+    <string name="title_notes_entry">Enable Notes Entry in Bolus Calculator</string>
+    <string name="summary_notes_entry">Shows the text field for inputting notes in the Bolus Calculator</string>
+
     <string name="enable_streaming_summary">connect to libre 2 sensors after scanning them. This will stop libre reader and libre link from receiving alerts</string>
     <string name="enable_streaming_title">Starting bluetooth connection with libre 2 sensors</string>
     <string name="enable_streaming_always_allow">Always connect to libre2 sensors</string>

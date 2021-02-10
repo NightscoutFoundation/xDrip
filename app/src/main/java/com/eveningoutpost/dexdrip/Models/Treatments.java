@@ -46,10 +46,10 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.UUID;
 
+import static com.eveningoutpost.dexdrip.Models.JoH.emptyString;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.HOUR_IN_MS;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.MINUTE_IN_MS;
 import static java.lang.StrictMath.abs;
-import static com.eveningoutpost.dexdrip.Models.JoH.emptyString;
 
 // TODO Switchable Carb models
 // TODO Linear array timeline optimization
@@ -141,7 +141,7 @@ public class Treatments extends Model {
     }
 
     // lazily populate and return InsulinInjection array from json
-    List<InsulinInjection> getInsulinInjections() {
+    public List<InsulinInjection> getInsulinInjections() {
        // Log.d(TAG,"get injections: "+insulinJSON);
         if (insulinInjections == null) {
             if (insulinJSON != null) {
@@ -742,7 +742,7 @@ public class Treatments extends Model {
 */
 
     // when using multiple insulins
-    private static Pair<Double, Double> calculateIobActivityFromTreatmentAtTime(final Treatments treatment, final double time, final boolean useBasal) {
+    public static Pair<Double, Double> calculateIobActivityFromTreatmentAtTime(final Treatments treatment, final double time, final boolean useBasal) {
 
         double iobContrib = 0, activityContrib = 0;
         if (treatment.insulin > 0) {
@@ -767,7 +767,7 @@ public class Treatments extends Model {
     }
 
     // using the original calculation
-    private static Pair<Double, Double> calculateLegacyIobActivityFromTreatmentAtTime(final Treatments treatment, final double time) {
+    public static Pair<Double, Double> calculateLegacyIobActivityFromTreatmentAtTime(final Treatments treatment, final double time) {
 
         final double dia = Profile.insulinActionTime(time); // duration insulin action in hours
         final double peak = 75; // minutes in based on a 3 hour DIA - scaled proportionally (orig 75)
@@ -807,7 +807,7 @@ public class Treatments extends Model {
 
 
 
-    private static Iob calcTreatment(final Treatments treatment, final double time, final boolean useBasal) {
+    public static Iob calcTreatment(final Treatments treatment, final double time, final boolean useBasal) {
         final Iob response = new Iob();
 
         if (MultipleInsulins.isEnabled()) {

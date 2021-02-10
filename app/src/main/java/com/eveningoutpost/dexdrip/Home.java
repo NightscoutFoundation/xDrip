@@ -221,6 +221,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     private ImageButton btnBloodGlucose;
     private ImageButton buttonInsulinSingleDose;
     private ImageButton[] btnInsulinDose = new ImageButton[MAX_INSULIN_PROFILES];
+    private ImageButton btnBolusCalculator;
     private ImageButton btnTime;
     private ImageButton btnUndo;
     private ImageButton btnRedo;
@@ -441,6 +442,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         this.btnTime = (ImageButton) findViewById(R.id.timeButton);
         this.btnUndo = (ImageButton) findViewById(R.id.btnUndo);
         this.btnRedo = (ImageButton) findViewById(R.id.btnRedo);
+        this.btnBolusCalculator = (ImageButton) findViewById(R.id.btnBolusCalculator);
         this.btnVehicleMode = (ImageButton) findViewById(R.id.vehicleModeButton);
 
         hideAllTreatmentButtons();
@@ -474,6 +476,15 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 promptSpeechNoteInput(v);
             }
         });
+
+        btnBolusCalculator.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                Intent myIntent = new Intent(view.getContext(), BolusCalculatorActivity.class);
+                startActivityForResult(myIntent, 0);
+            }
+
+        });
+
 
         btnCancel.setOnClickListener(v -> cancelTreatment());
 
@@ -1143,21 +1154,21 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     }
 
     private void hideAllTreatmentButtons() {
-        textBloodGlucose.setVisibility(View.INVISIBLE);
-        textCarbohydrates.setVisibility(View.INVISIBLE);
-        btnApprove.setVisibility(View.INVISIBLE);
-        btnCancel.setVisibility(View.INVISIBLE);
-        btnCarbohydrates.setVisibility(View.INVISIBLE);
-        textInsulinSumDose.setVisibility(View.INVISIBLE);
+        textBloodGlucose.setVisibility(View.GONE);
+        textCarbohydrates.setVisibility(View.GONE);
+        btnApprove.setVisibility(View.GONE);
+        btnCancel.setVisibility(View.GONE);
+        btnCarbohydrates.setVisibility(View.GONE);
+        textInsulinSumDose.setVisibility(View.GONE);
         for (int i = 0; i < MAX_INSULIN_PROFILES; i++) {
-            textInsulinDose[i].setVisibility(View.INVISIBLE);
-            btnInsulinDose[i].setVisibility(View.INVISIBLE);
+            textInsulinDose[i].setVisibility(View.GONE);
+            btnInsulinDose[i].setVisibility(View.GONE);
         }
-        buttonInsulinSingleDose.setVisibility(View.INVISIBLE);
-        btnBloodGlucose.setVisibility(View.INVISIBLE);
-        voiceRecognitionText.setVisibility(View.INVISIBLE);
-        textTime.setVisibility(View.INVISIBLE);
-        btnTime.setVisibility(View.INVISIBLE);
+        buttonInsulinSingleDose.setVisibility(View.GONE);
+        btnBloodGlucose.setVisibility(View.GONE);
+        voiceRecognitionText.setVisibility(View.GONE);
+        textTime.setVisibility(View.GONE);
+        btnTime.setVisibility(View.GONE);
 
         // zeroing code could be functionalized
         thiscarbsnumber = 0;
@@ -1339,7 +1350,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         return null; // if cannot match
     }
 
-    private void naturalLanguageRecognition(String allWords) {
+    public void naturalLanguageRecognition(String allWords) {
         if (searchWords == null) {
 
             Toast.makeText(getApplicationContext(),
@@ -2297,14 +2308,14 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             btnUndo.setVisibility(View.VISIBLE);
             showcasemenu(SHOWCASE_UNDO);
         } else {
-            btnUndo.setVisibility(View.INVISIBLE);
+            btnUndo.setVisibility(View.GONE);
         }
 
         if (UndoRedo.redoListHasItems()) {
             btnRedo.setVisibility(View.VISIBLE);
             showcasemenu(SHOWCASE_REDO);
         } else {
-            btnRedo.setVisibility(View.INVISIBLE);
+            btnRedo.setVisibility(View.GONE);
         }
 
         final DexCollectionType collector = DexCollectionType.getDexCollectionType();
@@ -2442,7 +2453,13 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         if (ActivityRecognizedService.is_in_vehicle_mode()) {
             btnVehicleMode.setVisibility(View.VISIBLE);
         } else {
-            btnVehicleMode.setVisibility(View.INVISIBLE);
+            btnVehicleMode.setVisibility(View.GONE);
+        }
+
+        if(Pref.getBooleanDefaultFalse("bolus_calculator_enabled")) {
+            btnBolusCalculator.setVisibility(View.VISIBLE);
+        } else {
+            btnBolusCalculator.setVisibility(View.GONE);
         }
 
         //if (isG5Share) showcasemenu(SHOWCASE_G5FIRMWARE); // nov 2016 firmware warning resolved 15/12/2016

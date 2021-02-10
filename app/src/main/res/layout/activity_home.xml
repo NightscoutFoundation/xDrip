@@ -187,89 +187,18 @@
                     android:textColor="#C30909"
                     android:textStyle="bold" />
 
-                <ImageButton
-                    android:id="@+id/btnTreatment"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/layoutCurrentBgValueRealTime"
-                    android:layout_alignEnd="@+id/layoutCurrentBgValueRealTime"
-                    android:layout_marginTop="1dp"
-                    android:layout_marginRight="6dp"
-                    android:background="@android:color/transparent"
-                    android:contentDescription="@string/speaktreatment"
-                    android:gravity="right"
-                    android:nestedScrollingEnabled="false"
-                    android:paddingLeft="2dp"
-                    android:paddingTop="2dp"
-                    android:paddingRight="4dp"
-                    android:paddingBottom="1dp"
-                    android:src="@drawable/ic_eyedropper_variant_grey600_24dp" />
-
-                <ImageButton
-                    android:id="@+id/btnNote"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignEnd="@+id/lowpredict"
-                    android:layout_below="@+id/btnTreatment"
-                    android:layout_marginRight="0dp"
-                    android:layout_marginTop="4dp"
-                    android:background="@android:color/transparent"
-                    android:contentDescription="Add note"
-                    android:gravity="right"
-                    android:onClick="showNoteTextInputDialog"
-                    android:paddingBottom="2dp"
-                    android:paddingLeft="2dp"
-                    android:paddingRight="6dp"
-                    android:paddingTop="2dp"
-                    android:src="@drawable/ic_note_plus_grey600_24dp" />
-
-
-                <ImageButton
-                    android:id="@+id/btnUndo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignStart="@+id/btnNote"
-                    android:layout_below="@+id/btnNote"
-                    android:layout_marginTop="8dp"
-                    android:background="@android:color/transparent"
-
-                    android:contentDescription="Undo last"
-                    android:onClick="undoButtonClick"
-                    android:paddingBottom="3dp"
-                    android:paddingLeft="1dp"
-                    android:paddingRight="3dp"
-                    android:paddingTop="2dp"
-                    android:src="@drawable/ic_undo_variant_grey600_24dp" />
-
-
-                <ImageButton
-                    android:id="@+id/btnRedo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignStart="@+id/btnUndo"
-                    android:layout_below="@+id/btnUndo"
-                    android:layout_marginTop="8dp"
-                    android:background="@android:color/transparent"
-                    android:contentDescription="Redo last"
-                    android:onClick="redoButtonClick"
-                    android:paddingBottom="1dp"
-                    android:paddingLeft="1dp"
-                    android:paddingRight="3dp"
-                    android:paddingTop="1dp"
-                    android:src="@drawable/ic_redo_variant_grey600_24dp" />
-
 
                 <TextView
                     android:id="@+id/treatmentTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignTop="@+id/btnTreatment"
-                    android:layout_marginTop="6dp"
-                    android:layout_toStartOf="@+id/btnTreatment"
+                    android:layout_alignTop="@id/menuOptions"
+                    android:layout_marginTop="2dp"
+
+                    android:layout_toStartOf="@+id/menuOptions"
                     android:background="@android:color/transparent"
                     android:gravity="right"
                     android:shadowColor="@android:color/black"
-
                     android:shadowDx="1"
                     android:shadowDy="1"
                     android:shadowRadius="0"
@@ -278,175 +207,352 @@
                     android:textColor="@android:color/holo_green_light"
                     android:textSize="14dp" />
 
-                <ImageButton
-                    android:id="@+id/approveTreatment"
+                <TableLayout
+                    android:id="@+id/menuOptions"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/layoutCurrentBgValueRealTime"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginTop="20dp">
+
+                    <TableRow
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                        <ImageButton
+                            android:id="@+id/btnTreatment"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@android:color/transparent"
+                            android:contentDescription="@string/speaktreatment"
+                            android:nestedScrollingEnabled="false"
+                            android:paddingBottom="10dp"
+                            android:src="@drawable/ic_eyedropper_variant_grey600_24dp" />
+
+                    </TableRow>
+
+                    <TableRow
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                        <ImageButton
+                            android:id="@+id/btnBolusCalculator"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@android:color/transparent"
+                            android:contentDescription="@string/speaktreatment"
+                            android:nestedScrollingEnabled="false"
+                            android:paddingBottom="10dp"
+                            android:src="@drawable/ic_bolus_calculator" />
+
+                    </TableRow>
+
+                    <TableRow
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                        <ImageButton
+                            android:id="@+id/btnNote"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@android:color/transparent"
+                            android:contentDescription="Add note"
+                            android:onClick="showNoteTextInputDialog"
+                            android:paddingBottom="10dp"
+                            android:src="@drawable/ic_note_plus_grey600_24dp" />
+                    </TableRow>
+
+                    <TableRow
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                        <ImageButton
+                            android:id="@+id/btnUndo"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+
+                            android:background="@android:color/transparent"
+                            android:contentDescription="Undo last"
+                            android:onClick="undoButtonClick"
+                            android:paddingBottom="10dp"
+                            android:src="@drawable/ic_undo_variant_grey600_24dp" />
+                    </TableRow>
+
+                    <TableRow
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                        <ImageButton
+                            android:id="@+id/btnRedo"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@android:color/transparent"
+                            android:contentDescription="Redo last"
+                            android:onClick="redoButtonClick"
+                            android:paddingBottom="10dp"
+                            android:src="@drawable/ic_redo_variant_grey600_24dp" />
+                    </TableRow>
+
+                    <TableRow
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                        <ImageButton
+                            android:id="@+id/vehicleModeButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@android:color/transparent"
+                            android:paddingBottom="10dp"
+                            android:src="@drawable/ic_car_grey600_24dp" />
+                    </TableRow>
+
+                    <TableRow
+                        android:layout_width="56dp"
+                        android:layout_height="match_parent">
+
+                        <Button
+                            android:id="@+id/walkButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@android:color/transparent"
+                            android:drawableTop="@drawable/ic_walk_grey600_24dp"
+                            android:gravity="center_horizontal|center_vertical"
+                            android:onClick="toggleStepsVisibility"
+                            android:paddingBottom="10dp"
+                            android:text="99999"
+                            android:textSize="10sp" />
+
+                    </TableRow>
+
+                    <TableRow
+                        android:layout_width="68dp"
+                        android:layout_height="match_parent">
+
+                        <Button
+                            android:id="@+id/bpmButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@android:color/transparent"
+                            android:drawableTop="@drawable/ic_heart_pulse_grey600_24dp"
+                            android:gravity="center_horizontal|center_vertical"
+                            android:onClick="toggleStepsVisibility"
+                            android:paddingBottom="10dp"
+                            android:text="123"
+                            android:textSize="10sp" />
+                    </TableRow>
+
+                </TableLayout>
+
+                <TableLayout
+                    android:id="@+id/otherOptionsTableLayout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:layout_below="@+id/btnTreatment"
-                    android:layout_marginStart="29dp"
-                    android:contentDescription="Confirm Treatment"
-                    android:src="@android:drawable/ic_input_add" />
+                    android:layout_below="@id/treatmentTextView"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_toStartOf="@+id/treatmentOptions">
 
-                <ImageButton
-                    android:id="@+id/cancelTreatment"
+                    <TableRow
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                        <ImageButton
+                            android:id="@+id/approveTreatment"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:contentDescription="Confirm Treatment"
+                            android:src="@android:drawable/ic_input_add" />
+
+                        <ImageButton
+                            android:id="@+id/cancelTreatment"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@android:drawable/ic_delete" />
+                    </TableRow>
+
+                    <TableRow
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                        <ImageButton
+                            android:id="@+id/timeButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/ic_av_timer_white_36dp" />
+
+                        <TextView
+                            android:id="@+id/textTimeButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="12dp"
+                            android:background="@android:color/transparent"
+                            android:text="00:00"
+                            android:textColor="@android:color/holo_green_light"
+                            android:textSize="22dp"
+                            android:textStyle="bold" />
+                    </TableRow>
+
+                    <TableRow
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                </TableLayout>
+
+                <TableLayout
+                    android:id="@+id/treatmentOptions"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignTop="@+id/approveTreatment"
-                    android:layout_toEndOf="@+id/approveTreatment"
-                    android:src="@android:drawable/ic_delete" />
+                    android:layout_below="@id/treatmentTextView"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="35dp"
+                    android:layout_toStartOf="@+id/menuOptions">
 
-                <ImageButton
-                    android:id="@+id/bloodTestButton"
-                    android:layout_width="wrap_content"
+                    <TableRow
+                        android:id="@+id/bloodTestRow"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
 
-                    android:layout_height="wrap_content"
-                    android:layout_alignBottom="@+id/cancelTreatment"
-                    android:layout_marginStart="29dp"
-                    android:layout_toEndOf="@+id/cancelTreatment"
-                    android:src="@drawable/ic_touch_app_white_48dp" />
+                        <ImageButton
+                            android:id="@+id/bloodTestButton"
+                            android:layout_width="wrap_content"
 
-                <TextView
-                    android:id="@+id/textBloodGlucose"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignBottom="@+id/bloodTestButton"
-                    android:layout_marginBottom="12dp"
-                    android:layout_toEndOf="@+id/bloodTestButton"
-                    android:background="@android:color/transparent"
-                    android:text="102 mg/dl"
-                    android:textColor="@android:color/holo_green_light"
-                    android:textSize="22sp"
-                    android:textStyle="bold" />
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/ic_touch_app_white_48dp" />
 
-                <ImageButton
-                    android:id="@+id/buttonCarbs"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignStart="@+id/bloodTestButton"
-                    android:layout_below="@+id/bloodTestButton"
-                    android:src="@drawable/ic_local_dining_white_48dp" />
+                        <TextView
+                            android:id="@+id/textBloodGlucose"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="12dp"
+                            android:background="@android:color/transparent"
+                            android:text="102 mg/dl"
+                            android:textColor="@android:color/holo_green_light"
+                            android:textSize="22sp"
+                            android:textStyle="bold" />
+                    </TableRow>
 
-                <TextView
-                    android:id="@+id/textCarbohydrate"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignBottom="@+id/buttonCarbs"
-                    android:layout_marginBottom="12dp"
-                    android:layout_toEndOf="@+id/buttonCarbs"
-                    android:background="@android:color/transparent"
-                    android:text="65 grams"
-                    android:textColor="@android:color/holo_green_light"
-                    android:textSize="22dp"
-                    android:textStyle="bold" />
+                    <TableRow
+                        android:id="@+id/carbsRow"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
 
-                <ImageButton
-                    android:id="@+id/buttonInsulin0"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/textCarbohydrate"
-                    android:layout_alignLeft="@+id/buttonCarbs"
-                    android:src="@drawable/ic_colorize_white_48dp" />
+                        <ImageButton
+                            android:id="@+id/buttonCarbs"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/ic_local_dining_white_48dp" />
 
+                        <TextView
+                            android:id="@+id/textCarbohydrate"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="12dp"
+                            android:background="@android:color/transparent"
+                            android:text="65 grams"
+                            android:textColor="@android:color/holo_green_light"
+                            android:textSize="22dp"
+                            android:textStyle="bold" />
+                    </TableRow>
 
-                <TextView
-                    android:id="@+id/textInsulinSumUnits"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/textCarbohydrate"
-                    android:layout_alignLeft="@+id/textCarbohydrate"
-                    android:background="@android:color/transparent"
-                    android:text="14 units"
-                    android:textColor="@android:color/holo_green_light"
-                    android:textSize="22dp"
-                    android:textStyle="bold" />
+                    <TableRow
+                        android:id="@+id/insulin0"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
 
-                <ImageButton
-                    android:id="@+id/buttonInsulin1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/textInsulinSumUnits"
-                    android:layout_alignLeft="@+id/buttonCarbs"
-                    android:src="@drawable/ic_colorize_white_48dp" />
+                        <ImageButton
+                            android:id="@+id/buttonInsulin0"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/ic_colorize_white_48dp" />
 
-                <TextView
-                    android:id="@+id/textInsulin1Units"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignBottom="@+id/buttonInsulin1"
-                    android:layout_marginStart="0dp"
-                    android:layout_marginBottom="12dp"
-                    android:layout_toEndOf="@+id/buttonInsulin1"
-                    android:background="@android:color/transparent"
-                    android:text="14 units"
-                    android:textColor="@android:color/holo_green_light"
-                    android:textSize="18dp"
-                    android:textStyle="bold" />
+                        <TextView
+                            android:id="@+id/textInsulinSumUnits"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@android:color/transparent"
+                            android:text="14 units"
+                            android:textColor="@android:color/holo_green_light"
+                            android:textSize="22dp"
+                            android:textStyle="bold" />
 
-                <ImageButton
-                    android:id="@+id/buttonInsulin2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/buttonInsulin1"
-                    android:layout_alignLeft="@+id/buttonInsulin1"
-                    android:src="@drawable/ic_colorize_white_48dp" />
+                    </TableRow>
 
-                <TextView
-                    android:id="@+id/textInsulin2Units"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignBottom="@+id/buttonInsulin2"
-                    android:layout_marginStart="0dp"
-                    android:layout_marginBottom="12dp"
-                    android:layout_toEndOf="@+id/buttonInsulin2"
-                    android:background="@android:color/transparent"
-                    android:text="14 units"
-                    android:textColor="@android:color/holo_green_light"
-                    android:textSize="18dp"
-                    android:textStyle="bold" />
+                    <TableRow
+                        android:id="@+id/insulin1"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
 
-                <ImageButton
-                    android:id="@+id/buttonInsulin3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/buttonInsulin2"
-                    android:layout_alignLeft="@+id/buttonInsulin2"
-                    android:src="@drawable/ic_colorize_white_48dp" />
+                        <ImageButton
+                            android:id="@+id/buttonInsulin1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/ic_colorize_white_48dp" />
 
-                <TextView
-                    android:id="@+id/textInsulin3Units"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignBottom="@+id/buttonInsulin3"
-                    android:layout_marginStart="0dp"
-                    android:layout_marginBottom="12dp"
-                    android:layout_toEndOf="@+id/buttonInsulin3"
-                    android:background="@android:color/transparent"
-                    android:text="14 units"
-                    android:textColor="@android:color/holo_green_light"
-                    android:textSize="18dp"
-                    android:textStyle="bold" />
+                        <TextView
+                            android:id="@+id/textInsulin1Units"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="0dp"
+                            android:layout_marginBottom="12dp"
+                            android:background="@android:color/transparent"
+                            android:text="14 units"
+                            android:textColor="@android:color/holo_green_light"
+                            android:textSize="18dp"
+                            android:textStyle="bold" />
 
-                <ImageButton
-                    android:id="@+id/timeButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignStart="@+id/approveTreatment"
-                    android:layout_below="@+id/bloodTestButton"
-                    android:src="@drawable/ic_av_timer_white_36dp" />
+                    </TableRow>
 
-                <TextView
-                    android:id="@+id/textTimeButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignBottom="@+id/timeButton"
-                    android:layout_marginBottom="12dp"
-                    android:layout_toEndOf="@+id/timeButton"
-                    android:background="@android:color/transparent"
-                    android:text="00:00"
-                    android:textColor="@android:color/holo_green_light"
-                    android:textSize="22dp"
-                    android:textStyle="bold" />
+                    <TableRow
+                        android:id="@+id/insulin2"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <ImageButton
+                            android:id="@+id/buttonInsulin2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/ic_colorize_white_48dp" />
+
+                        <TextView
+                            android:id="@+id/textInsulin2Units"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="0dp"
+                            android:layout_marginBottom="12dp"
+                            android:background="@android:color/transparent"
+                            android:text="14 units"
+                            android:textColor="@android:color/holo_green_light"
+                            android:textSize="18dp"
+                            android:textStyle="bold" />
+                    </TableRow>
+
+                    <TableRow
+                        android:id="@+id/insulin3"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <ImageButton
+                            android:id="@+id/buttonInsulin3"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/ic_colorize_white_48dp" />
+
+                        <TextView
+                            android:id="@+id/textInsulin3Units"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="0dp"
+                            android:layout_marginBottom="12dp"
+                            android:background="@android:color/transparent"
+                            android:text="14 units"
+                            android:textColor="@android:color/holo_green_light"
+                            android:textSize="18dp"
+                            android:textStyle="bold" />
+                    </TableRow>
+
+                </TableLayout>
+
 
                 <TextView
                     android:id="@+id/parakeetbattery"
@@ -475,57 +581,6 @@
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:textSize="12sp"
                     android:textStyle="normal" />
-
-                <ImageButton
-                    android:id="@+id/vehicleModeButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_below="@+id/btnRedo"
-                    android:layout_marginRight="8dp"
-                    android:layout_marginTop="8dp"
-                    android:background="@android:color/transparent"
-                    android:paddingBottom="2dp"
-                    android:paddingRight="4dp"
-                    android:src="@drawable/ic_car_grey600_24dp" />
-
-                <Button
-                    android:id="@+id/bpmButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:layout_alignStart="@+id/vehicleModeButton"
-                    android:layout_below="@+id/vehicleModeButton"
-                    android:layout_marginBottom="10dp"
-                    android:layout_marginRight="8dp"
-                    android:layout_marginTop="10dp"
-                    android:background="@android:color/transparent"
-                    android:drawableTop="@drawable/ic_heart_pulse_grey600_24dp"
-                    android:gravity="center_horizontal|center_vertical"
-                    android:onClick="toggleStepsVisibility"
-                    android:paddingBottom="2dp"
-                    android:paddingEnd="4dp"
-                    android:text="123"
-                    android:textSize="10sp" />
-
-                <Button
-                    android:id="@+id/walkButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:layout_alignStart="@+id/vehicleModeButton"
-                    android:layout_below="@+id/bpmButton"
-                    android:layout_marginLeft="-10dp"
-                    android:layout_marginRight="0dp"
-                    android:layout_marginTop="0dp"
-                    android:background="@android:color/transparent"
-                    android:drawableTop="@drawable/ic_walk_grey600_24dp"
-                    android:gravity="center_horizontal|center_vertical"
-                    android:onClick="toggleStepsVisibility"
-                    android:paddingBottom="0dp"
-                    android:paddingEnd="0dp"
-                    android:paddingStart="0dp"
-                    android:paddingTop="0dp"
-                    android:text="99999"
-                    android:textSize="10sp" />
 
 
             </RelativeLayout>

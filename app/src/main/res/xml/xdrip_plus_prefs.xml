@@ -593,7 +593,7 @@
         </PreferenceCategory>
     </PreferenceScreen>
 
-    <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    <PreferenceScreen
         android:dependency="I_understand"
         android:icon="@drawable/ic_auto_fix_grey600_48dp"
         android:key="xdrip_plus_profile_settings"
@@ -621,16 +621,16 @@
                     android:switchTextOff="@string/short_off_text_for_switches"
                     android:switchTextOn="@string/short_on_text_for_switches"
                     android:title="Multiple Insulin Types" />
-            <Preference
-                android:key="insulin_profiles"
-                android:dependency="multiple_insulin_types"
-                android:summary="@string/desc_enable_dedicated_insulin_profiles"
-                android:title="@string/enable_dedicated_insulin_profiles">
-                <intent
-                    android:action="android.intent.action.MAIN"
-                    android:targetClass="com.eveningoutpost.dexdrip.insulin.InsulinProfileEditor"
-                    android:targetPackage="@string/local_target_package" />
-            </Preference>
+                <Preference
+                    android:key="insulin_profiles"
+                    android:dependency="multiple_insulin_types"
+                    android:summary="@string/desc_enable_dedicated_insulin_profiles"
+                    android:title="@string/enable_dedicated_insulin_profiles">
+                    <intent
+                        android:action="android.intent.action.MAIN"
+                        android:targetClass="com.eveningoutpost.dexdrip.insulin.InsulinProfileEditor"
+                        android:targetPackage="@string/local_target_package" />
+                </Preference>
 
                 <CheckBoxPreference
                     android:defaultValue="false"
@@ -639,7 +639,6 @@
                     android:title="Use Basal Activity"/>
 
             </PreferenceScreen>
-
 
             <Preference
                 android:key="profile_carb_ratio_default"
@@ -698,12 +697,6 @@
                 android:title="@string/low_level_prediction_values">
 
                 <EditTextPreference
-                    android:defaultValue="100"
-                    android:inputType="numberDecimal"
-                    android:key="plus_target_range"
-                    android:summary=""
-                    android:title="@string/target_glucose_default" />
-                <EditTextPreference
                     android:defaultValue="3.0"
                     android:inputType="numberDecimal"
                     android:key="xplus_insulin_dia"
@@ -724,11 +717,84 @@
                     android:title="@string/default_liver_maximum_impact" />
             </PreferenceCategory>
         </PreferenceScreen>
-
-
     </PreferenceScreen>
 
-    <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    <PreferenceScreen
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:dependency="I_understand"
+        android:icon="@drawable/ic_bolus_calculator"
+        android:key="xdrip_plus_profile_settings"
+        android:summary="@string/summary_boluscalc_settings"
+        android:title="@string/title_boluscalc_settings">
+
+        <PreferenceCategory
+            android:key="xdrip_plus_profile_category"
+            android:title="@string/title_boluscalc_settings">
+
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="bolus_calculator_enabled"
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
+                android:title="@string/title_enable_boluscalc" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="bolus_recommendations_enabled"
+                android:dependency="bolus_calculator_enabled"
+                android:summary="@string/summary_bolus_recommendations"
+                android:title="@string/title_enable_bolus_recommendations" />
+            <ListPreference
+                android:defaultValue="0.05"
+                android:entries="@array/BolusIncrementValues"
+                android:entryValues="@array/BolusIncrementValues"
+                android:key="bolus_increment"
+                android:summary="@string/summary_bolus_increment"
+                android:title="@string/title_bolus_increment" />
+            <EditTextPreference
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:defaultValue="30"
+                android:dependency="bolus_calculator_enabled"
+                android:inputType="numberDecimal"
+                android:key="max_bolus_value"
+                android:maxLength="2"
+                android:summary="@string/summary_max_bolus_value"
+                android:title="@string/title_max_bolus_value" />
+            <EditTextPreference
+                android:defaultValue="100"
+                android:inputType="numberDecimal"
+                android:key="plus_target_range"
+                android:summary=""
+                android:title="@string/target_glucose_default" />
+            <EditTextPreference
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:defaultValue="150"
+                android:dependency="bolus_calculator_enabled"
+                android:inputType="numberDecimal"
+                android:key="correct_above_value"
+                android:maxLength="3"
+                android:summary="@string/summary_correct_above"
+                android:title="@string/title_correct_above" />
+            <CheckBoxPreference
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:defaultValue="false"
+                android:dependency="bolus_calculator_enabled"
+                android:key="plus_minus_buttons_in_calc"
+                android:title="@string/title_enable_plus_minus_bottons" />
+            <CheckBoxPreference
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:defaultValue="true"
+                android:key="notes_entry_enabled"
+                android:summary="@string/summary_notes_entry"
+                android:title="@string/title_notes_entry" />
+        </PreferenceCategory>
+    </PreferenceScreen>
+
+    <PreferenceScreen
         android:dependency="I_understand"
         android:icon="@drawable/ic_google_circles_communities_grey600_48dp"
         android:key="xdrip_plus_sync_settings"
