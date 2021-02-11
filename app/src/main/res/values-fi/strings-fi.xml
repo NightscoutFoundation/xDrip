@@ -166,6 +166,8 @@
     <string name="expires_days">{0, choice,0#Sensori loppunut!|1#Päättyy {0, number} päivässä|1&lt;Päättyy {0, number} päivässä}</string>
     <string name="expires_at">Päättyy {0}</string>
     <string name="space_minutes_ago">" Minuuttia sitten"</string>
+    <string name="in_libre_all_house_mode_no_readings_collected_yet">"Libren koko talo -tilassa: Lukemia ei vielä saatu."</string>
+    <string name="in_libre_all_house_mode_last_data_collected">"Libren koko talo -tilassa: Viimeinen lukema "</string>
     <string name="space_minute_ago">" Minuutti sitten"</string>
     <string name="show_parakeet_map">Näytä Parakeet kartta</string>
     <string name="switch_parakeet_to_setup_mode">Vaihda Parakeet asetustilaan</string>
@@ -617,7 +619,7 @@
     <string name="retrieve_blukon_history_summary">Kerää puuttuvat vanhemmat tiedot Bluconista, kun muodostat yhteyden sensoriin uudelleen.</string>
     <string name="interpret_share_raw">Jos käytät Share-palvelua, xDrip näyttää arvot, jotka on tavallisesti piilotettu vastaanottimeen.</string>
     <string name="interpret_raw">Tulkitse raaka-arvot</string>
-    <string name="use_infrequent_calibrations">Tarvittaessa käytä vanhempia kalibrointeja, esimerkiksi jos kalibroit harvoin.</string>
+    <string name="use_infrequent_calibrations">Tarvittaessa käytä vanhempia kalibrointeja, jos kalibroit harvoin.</string>
     <string name="infrequent_calibrations">Harva kalibrointi</string>
     <string name="extra_logging">Tietojen kirjaamisen lisäasetukset</string>
     <string name="send_logs_to_developer">Lähetä tapahtuma- ja virhelokit sovelluskehittäjille automaattisesti</string>
@@ -854,7 +856,7 @@
     <string name="calibration_can_not_be_blank">Kalibrointi ei voi olla tyhjä</string>
     <string name="invalid_calibration_number">Kalibrointiarvo ei kelpaa!</string>
     <string name="calibration_out_of_range">Kalibrointiarvo ei hyväksytyllä alueella</string>
-    <string name="note_search">Merkinnän haku</string>
+    <string name="note_search">Hae merkintää</string>
     <string name="edit_note">Muokkaa merkintää</string>
     <string name="adjust_note_text_here_there_is_no_undo">Muokkaa merkinnän tekstiä. Tätä ei voi perua</string>
     <string name="no_search_term_found">Hakusanaa ei löytynyt</string>
