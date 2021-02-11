@@ -1368,6 +1368,10 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
         }
         JoH.threadSleep(500);
         UserError.Log.d(TAG, "Requesting to enable notifications");
+        if (I.connection == null) {
+            UserError.Log.d(TAG, "Connection is null so cannot continue");
+            return;
+        }
         notificationSubscription = new Subscription(
                 I.connection.setupNotification(THINJAM_WRITE)
                         // .timeout(15, TimeUnit.SECONDS) // WARN
