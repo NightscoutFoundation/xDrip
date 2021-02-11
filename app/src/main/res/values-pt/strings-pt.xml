@@ -75,7 +75,7 @@
     <string name="pref_pebble_trend_watchface">Usar Pebble Trend Watchface</string>
     <string name="pref_summary_pebble_trend_watchface">Usar/Instalar Pebble Trend Watchface (experimental)</string>
     <string name="pref_pebble_display_trend">Mostrar Tendência</string>
-    <string name="pref_summary_display_trend">Mostrar a tendência glicemica na Watchface xDrip do Pebble.</string>
+    <string name="pref_summary_display_trend">Mostrar a tendência Glicose na Watchface xDrip do Pebble.</string>
     <string name="pref_pebble_display_high_line">Mostrar Linha Hiper</string>
     <string name="pref_pebble_display_low_line">Mostrar Linha Hipo</string>
     <!-- Amazfit Settings -->
@@ -83,9 +83,9 @@
     <string name="pref_amazfit_enable_summary">Activar o suporte de dados do Amazfit</string>
     <string name="pref_amazfit_enable">Activar</string>
     <string name="pref_amazfit_tile">Serviço Amazfit</string>
-    <string name="pref_amazfit_BG_alert_enable_summary">Envia alertas de BG ativos para Smartwatch</string>
+    <string name="pref_amazfit_BG_alert_enable_summary">Envia alertas de Glicose ativos para Smartwatch</string>
     <string name="pref_amazfit_BG_alert_enable">Activar</string>
-    <string name="pref_amazfit_BG_alert_title">Alertas Glicemia</string>
+    <string name="pref_amazfit_BG_alert_title">Alertas Glicose</string>
     <string name="pref_amazfit_other_alert_enable_summary">Envia outros alertas para o smartwatch</string>
     <string name="pref_amazfit_other_alert_enable">Activar</string>
     <string name="pref_amazfit_other_alert_title">Outros Alertas</string>
@@ -232,7 +232,7 @@
     <string name="system_status">Estado de Sistema</string>
     <string name="settings">Definições</string>
     <string name="calibration_data_table">Tabela de Calibração</string>
-    <string name="bg_data_table">Tabela de Glicemia</string>
+    <string name="bg_data_table">Tabela Dados Glicose</string>
     <string name="cannot_calibrate_right_now">Impossível Calibrar agora</string>
     <string name="hardware_data_source">Hardware Fonte de Dados</string>
     <string name="enter_ten_character_dexcom_receiver_serial">Introduza 10 caracteres do número de série do Dexcom Receiver</string>
@@ -272,7 +272,7 @@
     <string name="pebble_watch_integration">Integração Pebble Watch</string>
     <string name="standard_or_trend_pebble_watchface">Watchfaces Standard ou Trend do Pebble</string>
     <string name="choose_pebble_watchface">Escolher Watchface Pebble</string>
-    <string name="message_to_display_when_bgl_hits">Mensagem a mostrar quando Glicemia atinge o valor especial acima</string>
+    <string name="message_to_display_when_bgl_hits">Mensagem a mostrar quando Glicose atinge o valor especial acima</string>
     <string name="text_to_display_when_hitting_special_value">Texto a mostrar quando valor especial é atingido</string>
     <string name="special_value">Valor Especial</string>
     <string name="history">Histórico</string>
@@ -358,8 +358,8 @@
     <string name="copy_all_settings">Copiar todas as Definições</string>
     <string name="sensor_is_ready_please_enter_double_calibration">Sensor pronto, por favor insira calibração inicial</string>
     <string name="in_order_to_get_started_please_perform_two_finger">Para iniciar, por favor efectue um ou dois testes capilares e insira os valores aqui!</string>
-    <string name="enter_first_bg_value">Insira Primeiro Valor de Glicemia</string>
-    <string name="enter_second_bg_value">Insira o Segundo Valor de Glicemia</string>
+    <string name="enter_first_bg_value">Insira Primeiro Valor Glicose</string>
+    <string name="enter_second_bg_value">Insira o Segundo Valor Glicose</string>
     <string name="language_editor">Editor de Idioma</string>
     <string name="configure_missed_readings">Configurar Leituras Perdidas</string>
     <string name="install_pebble_snooze_control_app">Instalar App Pebble Snooze Control</string>
@@ -369,7 +369,7 @@
     <string name="glucose_history">Histórico Glicémico</string>
     <string name="import_database">Importar Base de Dados</string>
     <string name="sensor_table">Tabela de Sensor</string>
-    <string name="bg_readings_table">Tabela de leituras Glic</string>
+    <string name="bg_readings_table">Tabela de Leituras Glicose</string>
     <string name="long_press_to_split_or_delete">Pressione longo para Dividir ou Apagar</string>
     <string name="press_and_hold_on_the_background_to_split_or_delete">Pressione longamente no fundo para Dividir ou Apagar um bloco temporal</string>
     <string name="search">Pesquisar</string>
@@ -628,7 +628,7 @@
     <string name="set_logging_appid">Definir AppID para Registo</string>
     <string name="only_enable_on_trouble">Activar apenas se existem problemas com a app.</string>
     <string name="store_logs">Guardar relatórios para resolução de problemas</string>
-    <string name="show_datatables_in_app_drawer">Mostrar tabelas de dados da Calibração e Glicemia na gaveta de aplicações.</string>
+    <string name="show_datatables_in_app_drawer">Mostrar tabelas de dados da Calibração e Glicose no menu de aplicações.</string>
     <string name="disable_log_transmitter_battery_warning">Desactivar o aviso de estado de bateria fraca do transmissor no ecrã inicial. (Só relevante para os receptores autodidatas.)</string>
     <string name="engineering_mode">Modo de Programador</string>
     <string name="allow_unsafe_settings">Permite alterar as configurações mais inseguras e que podem danificar tudo!</string>
@@ -660,8 +660,8 @@
     <string name="calibration_plugin">Plugin de Calibração</string>
     <string name="advanced_calibration">Calibração Avançada</string>
     <string name="extra_calibration_options">Opções extra relacionadas com calibrações</string>
-    <string name="choose_use_treament_bg">Escolher calibrar com o valor de glicemia capilar ou não, numa entrada de tratamento</string>
-    <string name="usw_treatment_bg">Usar Valores Glicemia do Tratamento</string>
+    <string name="choose_use_treament_bg">Escolher calibrar com o valor de glicose capilar ou não, numa entrada de tratamento</string>
+    <string name="usw_treatment_bg">Usar Valores Glicose do Tratamento</string>
     <string name="experimental_calibration_plugin">Plugin de calibração secundário experimental</string>
     <string name="show_plugin_results_on_graph">Mostrar resultados da glicose do plugin no gráfico principal</string>
     <string name="plugin_plot_on_graph">Plugin traçado no gráfico</string>
@@ -699,7 +699,7 @@
     <string name="g5_full_authentification">Isto tentará uma autenticação completa a cada tentativa de leitura. Necessário para versões mais recentes de firmware de transmissor G5.</string>
     <string name="unbond_g5_before_read">Desagregar G5 antes de cada leitura</string>
     <string name="g5_remove_before_read">Isto removerá o G5 da lista de dispositivos emparelhados do seu dispositivo e tentará uma ligação e autenticação completa a cada tentativa de leitura.</string>
-    <string name="g5_experimental_mode">Modo experimental o qual não usa dados brutos</string>
+    <string name="g5_experimental_mode">Modo experimental o qual não usa dados em bruto</string>
     <string name="use_calibrated_data">Usar dados calibrados como fonte</string>
     <string name="data_sync">Sincronizar Dados</string>
     <string name="options_for_upload">Configurações de envio para Nightscout, MongDB or Dexcom Share</string>
@@ -742,7 +742,7 @@
     <string name="volume_buttons_snooze">Pressionar o botão de volume para cima ou para baixo o alarme activo será silenciado quando a app aberta</string>
     <string name="buttons_silence_alarms">Botões silenciar alarmes</string>
     <string name="create_shortcut">Criar atalho do menu de navegação para o ecrã do nível de glicose</string>
-    <string name="shortcut_to_bg_alerts">Atalho para Níveis de Alerta Glic</string>
+    <string name="shortcut_to_bg_alerts">Atalho para Níveis de Alerta Glicose</string>
     <string name="suppress_alerts_missed_readings">Suprimir alertas após um período pré-definido de leituras perdidas</string>
     <string name="suppress_alerts_after">Suprimir o silêncio e alertas activos após .. minutos (mínimo 10)</string>
     <string name="alert_calibration_request">Alertar quando uma calibração é solicitada</string>
@@ -763,11 +763,11 @@
     <string name="reraise_not_snoozed_sooner">Alertar novamente se não for silenciado mais cedo</string>
     <string name="alert_reraise_time">Duração do Aumento do Alarme</string>
     <string name="alert_seconds_reraise">Número de segundos antes do aumento do mesmo alerta</string>
-    <string name="bg_falling_fast">Glic em descida rápida</string>
-    <string name="bg_rising_fast">Glic em subida rápida</string>
+    <string name="bg_falling_fast">Glicose em descida rápida</string>
+    <string name="bg_rising_fast">Glicose em subida rápida</string>
     <string name="falling_threshold">limite de descida</string>
     <string name="rising_threshold">limite de subida</string>
-    <string name="set_sound_for_bg_alerts">Definir som para Alertas Glic.</string>
+    <string name="set_sound_for_bg_alerts">Definir som para Alertas Glicose.</string>
     <string name="alert_sound">Som do Alerta</string>
     <string name="override_silent_mode_these">Sobrepor o modo Silêncio sobre esses alertas</string>
     <string name="persistent_repeat_max">A repetir máximo cada (minutos)</string>
@@ -842,6 +842,7 @@
     <string name="repeat_sound">Repetir som</string>
     <string name="enable_telemetry">Activar Telemetria</string>
     <string name="send_data_to_developers">Enviar dados para os programadores sobre as taxas de sucesso de diferentes dispositivos</string>
+    <string name="try_to_work_around_noisy_readings_ultrasensitive">Começar a trabalhar sobre leituras irregulares mesmo em níveis de ruído muito baixos (apenas no modo engenheiro)</string>
     <string name="sidiary_date_title">Exportar a partir de?</string>
     <string name="blukon">Blucon</string>
     <string name="tomato">Tomato</string>
@@ -1125,7 +1126,7 @@
     <string name="low_and_high_alerts_currently_disabled">ALERTAS HIPO E HIPER ACTUALMENTE DESACTIVADOS</string>
     <string name="low_alerts_currently_disabled">ALERTAS HIPO ACTUALMENTE DESACTIVADOS</string>
     <string name="high_alerts_currently_disabled">ALERTAS HIPER ACTUALMENTE DESACTIVADOS</string>
-    <string name="bg_reading_missed">Leituras da Glicemia Perdidas</string>
+    <string name="bg_reading_missed">Leituras de Glicose Perdidas</string>
     <string name="not_connected">Não Ligado</string>
     <string name="no_data">Sem dados</string>
     <string name="no_bluetooth">Sem Bluetooth</string>
@@ -1183,10 +1184,10 @@
     <string name="title_tidepool">Tidepool</string>
     <string name="show_help">Mostrar Ajuda</string>
     <string name="load_save_settings_on_sdcard">Carregar / Guardar Definições no Cartão SD</string>
-    <string name="delete_all_bg_readings">Eliminar Todas as leituras da Glicemia</string>
+    <string name="delete_all_bg_readings">Eliminar Todas Leituras da Glicose</string>
     <string name="debugging_test_feature">Função de teste de Depuração</string>
     <string name="sync_treatments">Sincronizar Tratamentos</string>
-    <string name="send_bg_readings_to_backfill">Enviar leituras de glicemia para preenchimento</string>
+    <string name="send_bg_readings_to_backfill">Enviar leituras de Glicose para preenchimento</string>
     <string name="view_old_error_log">Ver Registo de Erro antigo</string>
     <string name="return_to_home_screen">Voltar ao Ecrã Inicial</string>
     <string name="title_miband">MiBand</string>
@@ -1210,14 +1211,14 @@
     <string name="title_miband_nightmode_start">Início do Modo Nocturno</string>
     <string name="title_miband_nightmode_end">Fim do Modo Nocturno</string>
     <string name="title_miband_interval_in_nightmode">Intervalo</string>
-    <string name="summary_miband_interval_in_nightmode">Define com que frequência a Glic será sincronizada no modo nocturno</string>
+    <string name="summary_miband_interval_in_nightmode">Define com que frequência a Glicose será sincronizada no modo nocturno</string>
     <string name="title_miband_colect_heartrate">Obter Ritmo Cardíaco</string>
     <string name="summary_miband_colect_heartrate">Obter dados de frequência cardíaca da banda. Intervalo de actualização pode ser configurado no MiFit ou em qualquer outra aplicação</string>
     <string name="title_miband_authkey">Chave de Autenticação</string>
     <string name="summary_miband_authkey">Defina a chave de autenticação para miband4 (para obter chave de autenticação, siga as instruções em https://www.freemyband.com/)</string>
     <string name="summary_miband_mac">Deixe em branco para pesquisa automática</string>
-    <string name="title_miband_send_readings_as_notification">Leituras Glic como Notificação</string>
-    <string name="summary_miband_send_readings_as_notification">Serão usadas notificações para enviar leituras Glicemia. A data não será alterada para que todos os recursos da banda possam ser usados.
+    <string name="title_miband_send_readings_as_notification">Leituras Glicose como Notificação</string>
+    <string name="summary_miband_send_readings_as_notification">Serão usadas notificações para enviar leituras Glicose. A data não será alterada para que todos os recursos da banda possam ser usados.
         Precisa desactivar se você deseja usar o mostrador xdrip (É necessário eliminar a aplicação oficial MiFit para evitar sobreposição da data)</string>
     <string name="title_miband_vibrate_on_readings">Vibrar nas Leituras</string>
     <string name="title_miband_send_calls">Enviar Chamadas</string>
@@ -1225,7 +1226,7 @@
     <string name="title_miband_graph_category">Opções do Gráfico</string>
     <string name="title_miband_graph_enable">Activar Gráfico</string>
     <string name="title_miband_graph_treatment_enable">Mostrar Bólus</string>
-    <string name="title_miband_update_bg">Actualizar Glic Manualmente</string>
+    <string name="title_miband_update_bg">Actualizar Glicose Manualmente</string>
     <string name="title_miband_general_settings_category">Definições Gerais</string>
     <string name="title_miband_screen_notifications">Mostrar Notificações</string>
     <string name="title_miband_screen_weather">Mostrar Previsão do Tempo</string>
@@ -1237,7 +1238,7 @@
     <string name="title_miband_screen_nfc">Mostrar NFC(se disponível)</string>
     <string name="miband_watchface_istall_success">Os mostradores MiBand foram enviados com sucesso!</string>
     <string name="miband_watchface_istall_error">Erro ao enviar mostrador MiBand</string>
-    <string name="miband_bg_dialog_title">Actualizar Agora Dados Glic?</string>
+    <string name="miband_bg_dialog_title">Actualizar Agora Dados Glicose?</string>
     <string name="title_lefun_band">LeFun Band</string>
     <string name="summary_lefun_enable">Sincronizar Dados com Banda de Fitness LeFun</string>
     <string name="title_lefun_enable">Usar LeFun Band</string>
@@ -1385,7 +1386,7 @@
     <string name="summary_play_sound_for_initial_calibration">Emitir somm quando Calibração inicial é necessária</string>
     <string name="title_play_sound_for_initial_calibration">Alerta Inicial</string>
     <string name="category_noisy_readings">Leituras com Ruído</string>
-    <string name="category_falling_rising_bg">Glicemia A Descer/A Subir</string>
+    <string name="category_falling_rising_bg">Glicose A Descer/A Subir</string>
     <string name="category_alert_prefs">Preferências de alerta (para estes alertas)</string>
     <string name="summary_persistent_high_alert">Quando acima do nível alto por muito tempo e não descer</string>
     <string name="note_search_button">PESQUISA</string>
@@ -1427,8 +1428,8 @@
     <string name="connection_status">Estado da Ligação:</string>
     <string name="range_in_high_low">Interv.:(dentro/hiper/hipo)</string>
     <string name="absolute_s">Nº absoluto:</string>
-    <string name="median_bg">Glicemia mediana:</string>
-    <string name="mean_bg">Glicemia Média:</string>
+    <string name="median_bg">Glicose Mediana:</string>
+    <string name="mean_bg">Glicose Média:</string>
     <string name="hba1c_est">HbA1c est.:</string>
     <string name="stddev">DesvioPadr:</string>
     <string name="relative_sd_cv">DP relativo (CV):</string>
@@ -1453,7 +1454,7 @@
     <string name="you_have_an_old_experimental_glucose_prediction_setting_enabled__this_is_not_recommended_and_could_mess_things_up_badly__shall_i_disable_this_for_you">Possui uma antiga previsão experimental de glicose ativada.\n\nIsso NÃO é RECOMENDADO e pode confundir muito as coisas.\n\nPretende desativar?</string>
     <string name="settings_issue">Problema de Configurações!</string>
     <string name="do_you_want_to_use_this_synced_fingerstick_blood_glucose_result_to_calibrate_with__you_can_change_when_this_dialog_is_displayed_in_settings">Pretende usar este teste capilar inserido para calibrar?\n\n(Pode alterar quando esta caixa de diálogo é exibida nas Configurações)</string>
-    <string name="use_bg_for_calibration">Usar Glicemia para Calibração?</string>
+    <string name="use_bg_for_calibration">Usar Glicose para Calibração?</string>
     <string name="do_you_want_to_use_this_entered_fingerstick_blood_glucose_test_to_calibrate_with__you_can_change_when_this_dialog_is_displayed_in_settings">Pretende usar este teste capilar inserido para calibrar?\n\n(Pode alterar quando esta caixa de diálogo é exibida nas Configurações)</string>
     <string name="yes_calibrate">SIM, Calibrar</string>
     <string name="enable_automatic_calibration">Activar Calibração Automática</string>
@@ -1498,7 +1499,7 @@
     <string name="treatment_processed">Tratamento Processado</string>
     <string name="number_error_">Número do Erro: </string>
     <string name="starting_sync_to_other_devices">A Iniciar a Sincronização com Outros Dispositivos</string>
-    <string name="deleting_all_bg_readings">Eliminar Todas as leituras da Glicemia!</string>
+    <string name="deleting_all_bg_readings">Eliminar Todas as Leituras da Glicose!</string>
     <string name="could_not_export_csv_">Não Foi Possível exportar CSV :(</string>
     <string name="librealarm_data_format_appears_incompatible_protocol_changed_or_no_data">Formato de Dados LibreAlarm afigura incompatível!? Protocolo alterado ou sem dados?</string>
     <string name="please_update_librealarm_to_use_oop_algorithm">Actualize LibreAlarm para Usar Algoritmo OOP</string>

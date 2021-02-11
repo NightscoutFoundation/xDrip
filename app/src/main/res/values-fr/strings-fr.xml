@@ -73,7 +73,7 @@
     <string name="title_activity_share_test">Test Share</string>
     <!-- pebble settings -->
     <string name="pref_pebble_trend_watchface">Utiliser le cadran Pebble Tendances</string>
-    <string name="pref_summary_pebble_trend_watchface">Utilisez/installez le Cadran Pebble Tendances (expérimental)</string>
+    <string name="pref_summary_pebble_trend_watchface">Utiliser/installer le Cadran Pebble Tendances (expérimental)</string>
     <string name="pref_pebble_display_trend">Afficher la Tendance</string>
     <string name="pref_summary_display_trend">Afficher la tendance de glycémie sur le cadran de la montre Pebble xDrip.</string>
     <string name="pref_pebble_display_high_line">Afficher la limite élevée</string>
@@ -166,10 +166,13 @@
     <string name="expires_days">{0, choice,0# Capteur expiré!|1# Finit dans {0, number} jour|1&lt;Finit dans {0, number} jours}</string>
     <string name="expires_at">Finit {0}</string>
     <string name="space_minutes_ago">" Minutes"</string>
+    <string name="in_libre_all_house_mode_no_readings_collected_yet">"Mode Libre dans toute la maison : pas encore de lectures collectées."</string>
+    <string name="in_libre_all_house_mode_last_data_collected">"Mode Libre dans toute la maison : dernière lecture "</string>
     <string name="space_minute_ago">" Minute"</string>
     <string name="show_parakeet_map">Afficher la carte Parakeet</string>
     <string name="switch_parakeet_to_setup_mode">Mettre le Parakeet en mode de configuration</string>
     <string name="view_events_log">Afficher le journal d\'événements</string>
+    <string name="show_libre_trend">Afficher la tendance du Freestyle Libre</string>
     <string name="libre_15_minutes_graph">Graphe 15 minutes du Libre</string>
     <string name="libre_last_x_minutes_graph">Graphe des dernières %d minutes du Libre</string>
     <string name="share_config_via_qr_code">Partager la config via le code QR</string>
@@ -316,6 +319,7 @@
     <string name="speak_your_treatment">Prononcer votre traitement par exemple:\nxx unités d\'insuline / xx grammes de glucides</string>
     <string name="speech_recognition_is_not_supported">La reconnaissance vocale n\'est pas pris en charge</string>
     <string name="treatment_note">Remarque sur le traitement</string>
+    <string name="accessibility_description">xDrip utilise la fonction d\'Accessibilité seulement pour régler l\'écran lorsque l\'appareil est verrouillé. Ceci n\'est probablement utile que si vous avez un téléphone avec la fonction Always On Display et que vous l\'avez activée. xDrip n\'interagit pas avec Android d\'une autre manière.</string>
     <string name="could_not_export_database">Impossible d\'exporter la base de données :(</string>
     <string name="exported_to">"Exporté vers "</string>
     <string name="default_to_voice_input_next_time">Utiliser la saisie vocale la prochaine fois</string>
@@ -358,10 +362,10 @@
     <string name="enter_second_bg_value">Entrer la seconde valeur de glycémie</string>
     <string name="language_editor">Editeur de langue</string>
     <string name="configure_missed_readings">Configurer les lectures manqués</string>
-    <string name="install_pebble_snooze_control_app">Installez l\'application Pebble Snooze Control</string>
-    <string name="install_pebble_classic_trend_watchface">Installez le Cadran Pebble Tendances Classic</string>
-    <string name="install_pebble_trend_watchface">Installez le Cadran Pebble Tendances</string>
-    <string name="install_pebble_watchface">Installez le Cadran Pebble</string>
+    <string name="install_pebble_snooze_control_app">Installer l\'application Pebble Snooze Control</string>
+    <string name="install_pebble_classic_trend_watchface">Installer le Cadran Pebble Tendances Classic</string>
+    <string name="install_pebble_trend_watchface">Installer le Cadran Pebble Tendances</string>
+    <string name="install_pebble_watchface">Installer le Cadran Pebble</string>
     <string name="glucose_history">Historique Glycémie</string>
     <string name="import_database">Importer la base de données</string>
     <string name="sensor_table">Table du Capteur</string>
@@ -544,7 +548,7 @@
     <string name="upload_logs">Télécharger les Logs</string>
     <string name="short_off_text_for_switches">OFF</string>
     <string name="short_on_text_for_switches">ON</string>
-    <string name="install_pebble_apps">Installez Pebble Apps</string>
+    <string name="install_pebble_apps">Installer Pebble Apps</string>
     <string name="sliding_24_hour_window_summary">Utilisez les dernières 24 heures au lieu de temps à partir de minuit pour les statistiques.</string>
     <string name="sliding_24_hour_window">Fenêtre coulissante</string>
     <string name="split">Divisé</string>
@@ -583,7 +587,7 @@
     <string name="speak_glucose_twice">Prononcer la valeur de glycémie deux fois</string>
     <string name="short_speak_readings_shortcut">Afficher un raccourci dans le menu ☰ pour gérer les prononciations de lectures</string>
     <string name="speak_readings_shortcut">Raccourci pour les lectures prononcées</string>
-    <string name="battery_optimization_off">Sur Android 6 + s\'assurer que l’optimisation de la batterie est désactivée. Recommandé</string>
+    <string name="battery_optimization_off">Sur Android 6+ s\'assurer que l’optimisation de la batterie est désactivée. Recommandé</string>
     <string name="battery_optimization_on">Ne pas continuer à demander l’optimisation de la batterie. Non recommandé</string>
     <string name="battery_optimization_prompt">Invité pour l’optimisation de la batterie</string>
     <string name="advanced_bluetooth_settings">Paramètres Bluetooth avancés</string>
@@ -605,9 +609,13 @@
     <string name="repeatedly_restart_collection_service">Redémarrer constamment le service de collecte en cas de soupçon de données manquantes. Activer uniquement si vous observez des pertes de données.</string>
     <string name="aggressive_service_restarts">Redémarrage du service agressif</string>
     <string name="predictive_readings_old">Vieille méthode - non recommandée ! Tente de prédire les lectures chaque minute basé sur les valeurs passées récentes.</string>
+    <string name="use_external_blukon_algorithm_summary">Utiliser un algorithme Libre hors processus. (blukon/NFC/LibreAlarm)</string>
     <string name="display_predictive_values">Afficher les valeurs prédictives</string>
+    <string name="use_external_blukon_algorithm">Algorithme libre hors processus.</string>
     <string name="calibrate_external_libre_algorithm_summary">Appliquer les méthodes de calibration xDrip sur des données OOP.</string>
     <string name="calibrate_external_libre_algorithm_title">Calibration par algorithme OOP.</string>
+    <string name="libre_use_smoothed_data_summary">Utiliser une moyenne de 5 points pour obtenir des données Libre plus lisses.</string>
+    <string name="libre_use_smoothed_data_title">Lissage des données libre.</string>
     <string name="retrieve_blukon_history_title">Récupérer l\'historique du Freestyle Libre</string>
     <string name="retrieve_blukon_history_summary">Extraire l\'historique manqué du périphérique Blucon lors de la reconnexion au capteur.</string>
     <string name="interpret_share_raw">Si vous utilisez Share, xDrip affichera les valeurs quand elles sont normalement cachées sur le récepteur.</string>
@@ -700,6 +708,8 @@
     <string name="mongo_db_uri">Uri Mongo DB</string>
     <string name="skip_local_lan">Pour les serveurs locaux avec des adresses 192.168.x.x, ne pas essayer de charger quand il n’y a aucune connectivité réseau local.</string>
     <string name="skip_lan_uploads">Ne pas effectuer les chargements par LAN</string>
+    <string name="mongo_load_transmitter_data_title">Charger les données de l\'émetteur Libre</string>
+    <string name="mongo_load_transmitter_data_summary">Permettre à plus d\'un xDrip de se connecter aux périphériques BT et stocker les données qu\'ils reçoivent vers le Cloud. Cela devrait permettre une couverture de toute la maison pour le Libre avec miaomiao, ou 2 parents utilisant le même dispositif BT de manière transparente.</string>
     <string name="influxdb_sync">Activer la synchronisation InfluxDB</string>
     <string name="influxdb_uri">InfluxDB Uri</string>
     <string name="influxdb_database_name">Nom de la base de données InfluxDB</string>
@@ -832,6 +842,7 @@
     <string name="repeat_sound">Répéter le son</string>
     <string name="enable_telemetry">Activer la télémétrie</string>
     <string name="send_data_to_developers">Envoyer des données aux développeurs sur les taux de réussite des différents périphériques</string>
+    <string name="try_to_work_around_noisy_readings_ultrasensitive">Commencer à contourner les lectures fluctuantes même sur des niveaux de fluctuation très faibles (mode ingénierie uniquement)</string>
     <string name="sidiary_date_title">Exportation depuis quand?</string>
     <string name="blukon">Blucon</string>
     <string name="tomato">Tomato</string>
@@ -971,7 +982,7 @@
     <string name="automatically_enable_when_connected_to_car_bluetooth">Activer automatiquement le mode véhicule quand connecté au bluetooth de la voiture</string>
     <string name="enable_speak_readings_when_in_vehicle">Activer la fonction de prononciation des valeurs en mode véhicule</string>
     <string name="bluetooth_watchdog_timers">Délai pour le garde-fou BT</string>
-    <string name="bluetooth_watchdog_timer_sums">Valeur d\'entrée en minutes</string>
+    <string name="bluetooth_watchdog_timer_sums">Saisir la valeur en minutes</string>
     <string name="basal_editor">Éditeur de basale - Sélectionner les heures à ajuster</string>
     <string name="sensor_is_still_warming_up_please_wait">Le capteur est encore en initialisation, veuillez patienter</string>
     <string name="number_wall_config">Configuration du mur de valeurs</string>
@@ -1397,6 +1408,7 @@
     <string name="your_display_name">Votre nom d\'affichage :</string>
     <string name="followers_email">Courriel des abonnés :</string>
     <string name="send_invite">Envoyer invitation</string>
+    <string name="description_sensor_location">Dans le futur xDrip voudrait envoyer des données de capteur anonymes aux développeurs pour améliorer l\'algorithme d\'étalonnage... Si vous décidez de vous inscrire, vous serez invité à confirmer avant chaque transfert de données. Les données ne seront jamais envoyées sans votre permission. Pour nous aider à comprendre et à affiner la calibration nous aimerions savoir où ce capteur a été placé. Appuyez sur le bouton de retour pour annuler.</string>
     <string name="save_sensor_location">Enregistrer l\'emplacement du capteur</string>
     <string name="alerts">Alertes</string>
     <string name="use_internal_downloader">Utiliser le téléchargement interne</string>
@@ -1446,7 +1458,7 @@
     <string name="do_you_want_to_use_this_entered_fingerstick_blood_glucose_test_to_calibrate_with__you_can_change_when_this_dialog_is_displayed_in_settings">Voulez-vous utiliser ce résultat de test de glycémie capillaire pour calibrer ?\n\n(vous pouvez changer lorsque cette boîte de dialogue est affichée dans Paramètres)</string>
     <string name="yes_calibrate">OUI, calibrer</string>
     <string name="enable_automatic_calibration">Activer la calibration automatique</string>
-    <string name="entered_blood_tests_which_occur_during_flat_trend_periods_can_automatically_be_used_to_recalibrate_after_20_minutes_this_should_provide_the_most_accurate_method_to_calibrate_with__do_you_want_to_enable_this_feature">Les tests sanguins réalisés durant les périodes stables peuvent être utilisés automatiquement pour recalibrer après 20 minutes. Ceci devrait être la méthode de calibration la plus précise.\n\nVoulez-vous activer cette fonctionnalité ?</string>
+    <string name="entered_blood_tests_which_occur_during_flat_trend_periods_can_automatically_be_used_to_recalibrate_after_20_minutes_this_should_provide_the_most_accurate_method_to_calibrate_with__do_you_want_to_enable_this_feature">Les tests sanguins réalisés durant les périodes stables peuvent être utilisés pour recalibrer automatiquement 20 minutes après leur entrée. Ceci devrait être la méthode de calibration la plus précise.\n\nVoulez-vous activer cette fonctionnalité ?</string>
     <string name="yes_enable">OUI, activer</string>
     <string name="blood_test_action">Action de test sanguin</string>
     <string name="what_would_you_like_to_do">Que voulez-vous faire?</string>
@@ -1476,6 +1488,7 @@
     <string name="unusual_internal_context_problem__please_report">Problème de contexte interne anormal - veuillez le reporter</string>
     <string name="cannot_start__please_report_context_problem">Impossible de démarrer - veuillez signaler le problème du contexte</string>
     <string name="xdrip_will_not_work_below_android_version_42">xDrip+ ne fonctionnera pas sur Android version 4.2 et antérieures</string>
+    <string name="xdrip_oop2_not_installed">xDrip+ a besoin d\'OOP2 pour gérer les capteurs Freestyle Libre2/LibreUS.</string>
     <string name="this_app_needs_battery_optimization_whitelisting_or_it_will_not_work_well_please_reset_app_preferences">Cette application a besoin d\'une liste blanche d\'optimisation de batterie ou elle ne fonctionnera pas correctement. Veuillez réinitialiser les préférences de l\'application</string>
     <string name="setting_disabled_">Paramètre désactivé :)</string>
     <string name="yes_please">OUI, s\'il vous plaît</string>
@@ -1488,6 +1501,7 @@
     <string name="starting_sync_to_other_devices">Démarrage de la synchronisation vers d\'autres appareils</string>
     <string name="deleting_all_bg_readings">Supprimer toutes les lectures BG!</string>
     <string name="could_not_export_csv_">Impossible d\'exporter vers CSV :(</string>
+    <string name="librealarm_data_format_appears_incompatible_protocol_changed_or_no_data">Le format de données de LibreAlarm semble incompatible!? protocole modifié ou pas de données?</string>
     <string name="please_update_librealarm_to_use_oop_algorithm">Veuillez mettre à jour LibreAlarm pour utiliser l\'algorithme OOP</string>
     <string name="sensor_clock_has_not_advanced">L\'horloge du capteur n\'a pas avancé !</string>
     <string name="sensor_age_has_gone_backwards">L\'âge du capteur est allé en arrière !!</string>
@@ -1534,6 +1548,7 @@
     <string name="pref_enable_insulinprofiles">activer au moins un et maximum de trois profils</string>
     <string name="pref_select_basal_insulinprofiles">choisir le profil d\'insuline basale.</string>
     <string name="pref_select_bolus_insulinprofiles">choisir le profil d\'insuline de bolus. Également utilisé pour la pompe et le stylo...</string>
+    <string name="enable_streaming_summary">Se connecter à des capteurs Freestyle Libre 2 après les avoir scannés. Cela empêchera le lecteur Freestyle Libre 2 et l\'application LibreLink de recevoir les alertes</string>
     <string name="enable_streaming_title">Démarrage de la connexion Bluetooth avec le Freestyle Libre 2</string>
     <string name="enable_streaming_always_allow">Toujours se connecter au Freestyle Libre 2</string>
     <string name="enable_streaming_ask_each_time">Demander à chaque fois</string>
