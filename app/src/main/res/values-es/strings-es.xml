@@ -300,7 +300,7 @@
     <string name="customize_colours">Personalizar los colores</string>
     <string name="xdrip_plus_color_settings">xDrip+ Ajustes de color</string>
     <string name="glucose_values_and_lines">Valores de glucosa y Líneas</string>
-    <string name="high_glucose_values">Valores altos de glucosa</string>
+    <string name="high_glucose_values">Valores de glucosa alta</string>
     <string name="in_range_glucose_values">Dentro de la gama de valores de glucosa</string>
     <string name="default_color_selected">Color por defecto seleccionado</string>
     <string name="xdrip_plus_extra_settings">xDrip+ Ajustes adicionales</string>
@@ -343,8 +343,8 @@
     <string name="disable_all_alerts">Desactivar todas las alertas</string>
     <string name="re_enable_all_alerts">Re-habilitar Todas las alertas</string>
     <string name="alert_snoozed_by_watch">Alerta silenciada por reloj</string>
-    <string name="update_channel_colon_space">"Actualización canales: "</string>
-    <string name="a_new_version_is_available">Nueva versión está disponible</string>
+    <string name="update_channel_colon_space">"Canal de Actualización: "</string>
+    <string name="a_new_version_is_available">Hay una nueva versión disponible</string>
     <string name="version_details">Detalles versión</string>
     <string name="download_now">Descargar ahora</string>
     <string name="automatically_check_for_updates">Comprobar actualizaciones automáticamente</string>
@@ -402,7 +402,7 @@
     <string name="sdcard_not_readable">No sdcard legible</string>
     <string name="loading_settings_from_xdrip_mainline">Cargando ajustes de xDrip</string>
     <string name="warning_settings_from_xdrip_and_plus_exist">Configuración de las advertencias de xDrip y xDrip+ existir - carga xDrip+</string>
-    <string name="new_version_date_colon">"Nueva Fecha de la versión: "</string>
+    <string name="new_version_date_colon">"Fecha de la versión nueva: "</string>
     <string name="old_version_date_colon">"Fecha de la versión antigua: "</string>
     <string name="speak_your_note_text">Di tu texto de la nota</string>
     <string name="alarm_if_above_high_value">Alarma si por encima de alto valor</string>
@@ -474,13 +474,13 @@
     <string name="predictive_color_dark">Color oscuro de la Predicción</string>
     <string name="average_and_target_lines">Líneas de Promedio y Objetivo</string>
     <string name="eight_hour_average_line">Línea promedio de 8 horas</string>
-    <string name="twenty_four_hour_average_line">24 horas Línea media</string>
+    <string name="twenty_four_hour_average_line">Línea promedio de 24 horas</string>
     <string name="glucose_target_line">Línea de objetivo de glucosa</string>
     <string name="annotations_and_dots">Anotaciones y puntos</string>
     <string name="blood_test_background">Fondo de Análisis de sangre</string>
-    <string name="blood_test_foreground">Primer plano del análisis de sangre</string>
+    <string name="blood_test_foreground">Primer plano de Análisis de sangre</string>
     <string name="treatment_background">Fondo de Tratamientos</string>
-    <string name="treatment_foreground">Tratamiento primer plano</string>
+    <string name="treatment_foreground">Primer plano de Tratamientos</string>
     <string name="backgrounds">Fondos</string>
     <string name="main_chart_background">Fondo gráfico principal</string>
     <string name="notification_chart_background">Fondo del Gráfico de notificación</string>
@@ -545,7 +545,7 @@
     <string name="noise_model_inner_workings">Modelo de ruido de funcionamiento interno</string>
     <string name="glucose_number_from_filtered">Número de glucosa filtrado</string>
     <string name="if_the_phone_has_text_to_speech">Si el teléfono tiene capacidades de conversión de texto a voz se leerá cada nueva lectura.</string>
-    <string name="upload_logs">Cargar los registros</string>
+    <string name="upload_logs">Subir los registros</string>
     <string name="short_off_text_for_switches">OFF</string>
     <string name="short_on_text_for_switches">ON</string>
     <string name="install_pebble_apps">Instalar aplicaciones Pebble</string>
