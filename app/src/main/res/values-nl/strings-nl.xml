@@ -842,6 +842,7 @@
     <string name="repeat_sound">Herhaal geluid</string>
     <string name="enable_telemetry">Schakel telemetrie in</string>
     <string name="send_data_to_developers">Stuur gegevens naar ontwikkelaars over slagingspercentages van verschillende apparaten</string>
+    <string name="try_to_work_around_noisy_readings_ultrasensitive">Begin met het omzeilen van luidruchtige metingen, zelfs bij zeer lage geluidsniveaus (alleen in ontwikkelaars modus)</string>
     <string name="sidiary_date_title">Vanaf wanneer exporteren?</string>
     <string name="blukon">Blucon</string>
     <string name="tomato">Tomato</string>
