@@ -31,6 +31,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.eveningoutpost.dexdrip.xdrip.gs;
+
 /**
  * Created by jamorham on 18/02/2017.
  */
@@ -350,7 +352,7 @@ public class Mdns {
                                     AlertDialog.Builder builder = new AlertDialog.Builder(context);
                                     builder.setTitle("Add " + JoH.ucFirst(entry.getKey()) + " to list of receivers?");
                                     builder.setMessage("Is this device running a collector?\n\n" + entry.getKey() + ".local can be automatically added to list of receivers").setPositiveButton("Add", dialogClickListener)
-                                            .setNegativeButton("No", dialogClickListener).show();
+                                            .setNegativeButton(gs(R.string.no), dialogClickListener).show();
                                 } else {
                                     // remove item
                                     final DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
@@ -369,7 +371,7 @@ public class Mdns {
                                     AlertDialog.Builder builder = new AlertDialog.Builder(context);
                                     builder.setTitle("Remove " + JoH.ucFirst(entry.getKey()) + " from list of receivers?");
                                     builder.setPositiveButton("Remove", dialogClickListener)
-                                            .setNegativeButton("No", dialogClickListener).show();
+                                            .setNegativeButton(gs(R.string.no), dialogClickListener).show();
                                 }
 
 

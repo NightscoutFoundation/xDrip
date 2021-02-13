@@ -17,6 +17,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -460,10 +461,19 @@ public class UpdateActivity extends BaseAppCompatActivity {
                             } catch (Exception e) {
                                 Log.e(TAG, "Download manager error: " + e);
                             }
-
+                            final String mimeType = "application/vnd.android.package-archive";
                             final Intent installapk = new Intent(Intent.ACTION_VIEW);
                             installapk.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            installapk.setDataAndType(Uri.fromFile(dest_file), "application/vnd.android.package-archive");
+
+                            // despite reference documentation to the contrary this is required
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                                installapk.setDataAndType(FileProvider.getUriForFile(getApplicationContext(),
+                                        BuildConfig.APPLICATION_ID + ".provider", dest_file), mimeType);
+                            } else {
+                                installapk.setDataAndType(Uri.fromFile(dest_file), mimeType);
+                            }
+                            installapk.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                            UserError.Log.d(TAG,"Attempting to install application");
                             startActivity(installapk);
                             finish();
                         } catch (Exception e) {

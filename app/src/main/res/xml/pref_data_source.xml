@@ -227,9 +227,9 @@
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="ob1_minimize_scanning"
-                    android:enabled="false"
+                    android:enabled="true"
                     android:key="ob1_avoid_scanning"
-                    android:summary="Avoid scanning as much as possible (not used in this version)"
+                    android:summary="Avoid scanning as much as possible (reduces battery usage further)"
                     android:title="Avoid Scanning" />
             <CheckBoxPreference
                 android:defaultValue="false"
