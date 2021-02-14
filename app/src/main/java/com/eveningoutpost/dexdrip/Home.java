@@ -2331,7 +2331,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         }
         if (isWifiWixel || isWifiBluetoothWixel || isWifiandBTLibre || isWifiLibre || collector.equals(DexCollectionType.Mock)) {
             updateCurrentBgInfoForWifiWixel(collector, notificationText);
-        } else if (is_follower || collector.equals(DexCollectionType.NSEmulator) || collector.equals(DexCollectionType.NSFollow) || collector.equals(DexCollectionType.SHFollow) ||collector.equals(DexCollectionType.LibreReceiver)) {
+        } else if (is_follower || collector.equals(DexCollectionType.NSEmulator) || collector.equals(DexCollectionType.NSFollow) || collector.equals(DexCollectionType.SHFollow) ||collector.equals(DexCollectionType.LibreReceiver) || collector.equals(DexCollectionType.ConnectFollow)) {
             displayCurrentInfo();
             Inevitable.task("home-notifications-start", 5000, Notifications::start);
         } else if (!alreadyDisplayedBgInfoCommon && (DexCollectionType.getDexCollectionType() == DexCollectionType.LibreAlarm || collector == DexCollectionType.Medtrum)) {
