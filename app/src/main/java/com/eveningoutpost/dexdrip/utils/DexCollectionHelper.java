@@ -12,6 +12,7 @@ import com.eveningoutpost.dexdrip.Services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.cgm.sharefollow.ShareFollowService;
+import com.eveningoutpost.dexdrip.cgm.connectfollow.ConnectFollowService;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import static com.eveningoutpost.dexdrip.ui.dialog.QuickSettingsDialogs.booleanSettingDialog;
@@ -127,6 +128,39 @@ public class DexCollectionHelper {
 
             case Medtrum:
                 bluetoothScanIfNeeded();
+                break;
+
+            case ConnectFollow:
+                textSettingDialog(activity,
+                        "connectfollow_country", "CareLink Country",
+                        "Enter CareLink Country Code",
+                        InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD,
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                textSettingDialog(activity,
+                                        "connectfollow_user", "CareLink Username",
+                                        "Enter CareLink Username",
+                                        InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD,
+                                        new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                textSettingDialog(activity,
+                                                        "connectfollow_pass", "CareLink Password",
+                                                        "Enter CareLink Password",
+                                                        InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD,
+                                                        new Runnable() {
+                                                            @Override
+                                                            public void run() {
+                                                                Home.staticRefreshBGCharts();
+                                                                ConnectFollowService.resetInstanceAndInvalidateSession();
+                                                                CollectionServiceStarter.restartCollectionServiceBackground();
+                                                            }
+                                                        });
+                                            }
+                                        });
+                            }
+                        });
                 break;
 
             // TODO G4 Share Receiver
