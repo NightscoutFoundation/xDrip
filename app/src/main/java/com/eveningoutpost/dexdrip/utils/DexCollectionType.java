@@ -10,6 +10,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.cgm.medtrum.MedtrumCollectionService;
 import com.eveningoutpost.dexdrip.cgm.nsfollow.NightscoutFollowService;
 import com.eveningoutpost.dexdrip.cgm.sharefollow.ShareFollowService;
+import com.eveningoutpost.dexdrip.cgm.connectfollow.ConnectFollowService;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
@@ -39,6 +40,7 @@ public enum DexCollectionType {
     NSEmulator("NSEmulator"),
     NSFollow("NSFollower"),
     SHFollow("SHFollower"),
+    ConnectFollow("ConnectFollower"),
     Medtrum("Medtrum"),
     Disabled("Disabled"),
     Mock("Mock"),
@@ -192,6 +194,8 @@ public enum DexCollectionType {
                 return NightscoutFollowService.class;
             case SHFollow:
                 return ShareFollowService.class;
+            case ConnectFollow:
+                return ConnectFollowService.class;
             default:
                 return DexCollectionService.class;
         }
@@ -267,7 +271,8 @@ public enum DexCollectionType {
                 return "Nightscout";
             case SHFollow:
                 return "Share";
-
+            case ConnectFollow:
+                return "Medtronic Connect";
             default:
                 return dct.name();
         }
