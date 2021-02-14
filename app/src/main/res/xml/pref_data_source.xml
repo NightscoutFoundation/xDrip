@@ -140,7 +140,29 @@
             android:summary="Login password for Dex Share Following"
             android:title="Share Password" />
 
-
+        <EditTextPreference
+            android:defaultValue=""
+            android:inputType="textNoSuggestions|textVisiblePassword"
+            android:key="connectfollow_user"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:summary="@string/summary_connectfollow_user"
+            android:title="@string/title_connectfollow_user" />
+        <EditTextPreference
+            android:defaultValue=""
+            android:inputType="textNoSuggestions|textVisiblePassword"
+            android:key="connectfollow_pass"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:summary="@string/summary_connectfollow_pass"
+            android:title="@string/title_connectfollow_pass" />
+        <ListPreference
+            android:defaultValue="gb"
+            android:entries="@array/connectCountryEntries"
+            android:entryValues="@array/connectCountryValues"
+            android:key="connectfollow_country"
+            android:summary="@string/summary_connectfollow_country"
+            android:title="@string/title_connectfollow_country" />
 
 
         <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
