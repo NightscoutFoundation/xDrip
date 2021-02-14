@@ -714,6 +714,7 @@
             android:foregroundServiceType="connectedDevice|location"
             />
         <service android:name=".cgm.sharefollow.ShareFollowService" />
+        <service android:name=".cgm.connectfollow.ConnectFollowService" />
 
         <activity
             android:name=".EventLogActivity"
