@@ -88,6 +88,7 @@ import com.eveningoutpost.dexdrip.WidgetUpdateService;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.cgm.nsfollow.NightscoutFollow;
 import com.eveningoutpost.dexdrip.cgm.sharefollow.ShareFollowService;
+import com.eveningoutpost.dexdrip.cgm.connectfollow.ConnectFollowService;
 import com.eveningoutpost.dexdrip.insulin.inpen.InPenEntry;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileEditor;
 import com.eveningoutpost.dexdrip.tidepool.TidepoolUploader;
@@ -1187,6 +1188,41 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 }
             }
 
+            //CareLink Follow preferences
+            final Preference connectFollowUser = findPreference("connectfollow_user");
+            final Preference connectFollowPass = findPreference("connectfollow_pass");
+            final Preference connectFollowCountry = findPreference("connectfollow_country");
+            if (collectionType == DexCollectionType.ConnectFollow) {
+                //Add CL prefs
+                collectionCategory.addPreference(connectFollowUser);
+                collectionCategory.addPreference(connectFollowPass);
+                collectionCategory.addPreference(connectFollowCountry);
+                //Create prefChange handler
+                final Preference.OnPreferenceChangeListener connectFollowListener = new Preference.OnPreferenceChangeListener() {
+                    @Override
+                    public boolean onPreferenceChange(Preference preference, Object newValue) {
+                        ConnectFollowService.resetInstanceAndInvalidateSession();
+                        CollectionServiceStarter.restartCollectionServiceBackground();
+                        return true;
+                    }
+                };
+                //Register prefChange handler
+                try {
+                    connectFollowUser.setOnPreferenceChangeListener(connectFollowListener);
+                    connectFollowPass.setOnPreferenceChangeListener(connectFollowListener);
+                    connectFollowCountry.setOnPreferenceChangeListener(connectFollowListener);
+                } catch (Exception e) {
+                    //
+                }
+            } else {
+                try {
+                    collectionCategory.removePreference(connectFollowUser);
+                    collectionCategory.removePreference(connectFollowPass);
+                    collectionCategory.removePreference(connectFollowCountry);
+                } catch (Exception e) {
+                    //
+                }
+            }
 
             final Preference inpen_enabled = findPreference("inpen_enabled");
             try {
@@ -1508,6 +1544,16 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 try {
                     collectionCategory.removePreference(nsFollowUrl);
                     collectionCategory.removePreference(nsFollowDownload);
+                } catch (Exception e) {
+                    //
+                }
+            }
+
+            if (collectionType != DexCollectionType.ConnectFollow) {
+                try {
+                    collectionCategory.removePreference(connectFollowCountry);
+                    collectionCategory.removePreference(connectFollowPass);
+                    collectionCategory.removePreference(connectFollowUser);
                 } catch (Exception e) {
                     //
                 }
