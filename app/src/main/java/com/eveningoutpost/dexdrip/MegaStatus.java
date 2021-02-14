@@ -49,6 +49,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
 import com.eveningoutpost.dexdrip.cgm.medtrum.MedtrumCollectionService;
 import com.eveningoutpost.dexdrip.cgm.nsfollow.NightscoutFollowService;
 import com.eveningoutpost.dexdrip.cgm.sharefollow.ShareFollowService;
+import com.eveningoutpost.dexdrip.cgm.connectfollow.ConnectFollowService;
 import com.eveningoutpost.dexdrip.insulin.inpen.InPenEntry;
 import com.eveningoutpost.dexdrip.insulin.inpen.InPenService;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
@@ -73,6 +74,7 @@ import static com.eveningoutpost.dexdrip.utils.DexCollectionType.DexcomG5;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.Medtrum;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.NSFollow;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.SHFollow;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.ConnectFollow;
 
 public class MegaStatus extends ActivityWithMenu {
 
@@ -123,6 +125,7 @@ public class MegaStatus extends ActivityWithMenu {
     private static final String INPEN_STATUS = "InPen";
     private static final String NIGHTSCOUT_FOLLOW = "Nightscout Follow";
     private static final String SHARE_FOLLOW = "Dex Share Follow";
+    private static final String CONNECT_FOLLOW = "Medtronic Connect";
     private static final String XDRIP_LIBRE2 = "Libre2";
 
     static {
@@ -199,6 +202,9 @@ public class MegaStatus extends ActivityWithMenu {
             if(dexCollectionType.equals(SHFollow)) {
                 addAsection(SHARE_FOLLOW, "Dex Share Follow Status");
             }
+            if(dexCollectionType.equals(ConnectFollow)) {
+                addAsection(CONNECT_FOLLOW, "Medtronic Connect Status");
+            }
 
             //addAsection("Misc", "Currently Empty");
 
@@ -258,6 +264,9 @@ public class MegaStatus extends ActivityWithMenu {
                 break;
             case SHARE_FOLLOW:
                 la.addRows(ShareFollowService.megaStatus());
+                break;
+            case CONNECT_FOLLOW:
+                la.addRows(ConnectFollowService.megaStatus());
                 break;
             case XDRIP_LIBRE2:
                 la.addRows(LibreReceiver.megaStatus());
