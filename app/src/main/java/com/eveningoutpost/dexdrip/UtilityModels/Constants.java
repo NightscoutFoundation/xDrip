@@ -51,6 +51,7 @@ public class Constants {
     public static final int BLUEJAY_SERVICE_RETRY_ID = 1025;
     public static final int MIBAND_SERVICE_RETRY_ID = 1026;
     public static final int MIBAND_SERVICE_BG_RETRY_ID = 1027;
+    public static final int CONNECTFOLLOW_SERVICE_FAILOVER_ID = 1030;
 
     static final int NIGHTSCOUT_ERROR_NOTIFICATION_ID = 2001;
 
