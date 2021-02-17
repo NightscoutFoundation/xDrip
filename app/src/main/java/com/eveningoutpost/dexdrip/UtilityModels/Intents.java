@@ -20,6 +20,7 @@ public interface Intents {
     String EXTRA_NS_NOISE_LEVEL = "com.eveningoutpost.dexdrip.Extras.NsNoiseLevel";
     String XDRIP_DATA_SOURCE_DESCRIPTION = "com.eveningoutpost.dexdrip.Extras.SourceDesc";
     String XDRIP_DATA_SOURCE_INFO = "com.eveningoutpost.dexdrip.Extras.SourceInfo";
+    String XDRIP_DATA_SOURCE_HAS_NOISE_FILTERING = "com.eveningoutpost.dexdrip.Extras.SourceHasNoiseFiltering";
     String XDRIP_VERSION_INFO = "com.eveningoutpost.dexdrip.Extras.VersionInfo";
     String XDRIP_CALIBRATION_INFO = "com.eveningoutpost.dexdrip.Extras.CalibrationInfo";
     String XDRIP_CALIBRATION_PLUGIN = "com.eveningoutpost.dexdrip.Extras.CalibrationPluginInfo";
