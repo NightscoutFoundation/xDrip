@@ -6,7 +6,7 @@
     <string name="menu_scan">Escanear</string>
     <string name="menu_stop">Detener</string>
     <string name="menu_refresh">Refrescar</string>
-    <string name="menu_export_database">Base de datos de exportación</string>
+    <string name="menu_export_database">Exportar base de datos</string>
     <string name="menu_export_csv_sidiary">Exportar CSV (formato SiDiary)</string>
     <string name="menu_import_db">Base de datos de importación</string>
     <string name="error_bluetooth_not_supported">Error: No Bluetooth compatible con este dispositivo</string>
@@ -69,7 +69,7 @@
     <string name="location_yes">Habilitar</string>
     <!-- broadcast settings -->
     <string name="pref_title_broadcast_enabled">Transmitir localmente</string>
-    <string name="pref_summary_broadcast_enabled">Habilitar la difusión local de los datos para otras aplicaciones (por ejemplo. NightWatch) puede escuchar en nuevos valores</string>
+    <string name="pref_summary_broadcast_enabled">Habilitar la difusión local de los datos para que otras aplicaciones (por ejemplo. NightWatch) puedan recibir nuevos valores</string>
     <string name="title_activity_share_test">Compartir prueba</string>
     <!-- pebble settings -->
     <string name="pref_pebble_trend_watchface">Pebble utilizar su esfera de tendencia</string>
@@ -237,7 +237,7 @@
     <string name="hardware_data_source">Fuente de datos de hardware</string>
     <string name="enter_ten_character_dexcom_receiver_serial">Introduzca 10 caracteres Número de serie receptor Dexcom</string>
     <string name="dexcom_transmitter_id">Dexcom transmisor ID</string>
-    <string name="run_collector_in_foreground">Colector ejecutar en primer plano</string>
+    <string name="run_collector_in_foreground">Ejecutar Colector en primer plano</string>
     <string name="shows_a_persistent_notification">Muestra un gráfico de notificación permanente, visible en el bloqueo de pantalla y evita androide matando el servicio.</string>
     <string name="list_of_receivers">Lista de Receptores</string>
     <string name="extra_tags_for_logging">Etiquetas extra para el registro</string>
@@ -246,7 +246,7 @@
     <string name="data_source_settings">Configuración de la fuente de datos</string>
     <string name="smart_watch_features">Funciones de SmartWatch</string>
     <string name="wear_integration">Integración desgaste</string>
-    <string name="send_data_to_android_wear_watch">Enviar datos a Android su esfera de desgaste.</string>
+    <string name="send_data_to_android_wear_watch">Enviar datos a la esfera de Android Wear.</string>
     <string name="android_wear_integration">Integración con Android Wear</string>
     <string name="pref_enable_wearG5">Activar el servicio de recolección Wear</string>
     <string name="pref_summary_enable_wearG5">Conectar Wear al colector de glucosa cuando el teléfono esté fuera de alcance</string>
@@ -261,7 +261,7 @@
     <string name="pref_summary_node_wearG5">Forzar el teléfono para usar el servicio de recolección de Wear</string>
     <string name="pref_sync_wear_logs">Sincronizar registros Wear</string>
     <string name="pref_summary_sync_wear_logs">Enviar registos Wear al Visualizador de Eventos</string>
-    <string name="pref_wear_logs_prefix">Prefijos de la bitácora Wear</string>
+    <string name="pref_wear_logs_prefix">Prefijo del registro Wear</string>
     <string name="pref_summary_wear_logs_prefix">Prefijos usados para las entradas de la bitácora Wear</string>
     <string name="pref_show_treatments">Mostrar tratamientos</string>
     <string name="pref_summary_show_treatments">Mostrar puntos de tratamiento en el gráfico</string>
@@ -285,8 +285,8 @@
     <string name="use_excessive_wakelocks">Utilice Wakelocks excesivas</string>
     <string name="speak_readings">Lecturas Habladas</string>
     <string name="extra_status_line">Linea de estado extra</string>
-    <string name="dexcom_share_server_upload">Dexcom Share Subir al Servidor</string>
-    <string name="upload_data_to_dex_servers">Cargar datos en servidores Dexcoms para que pueda utilizar sus datos con aplicaciones Dexcoms</string>
+    <string name="dexcom_share_server_upload">Subir datos al servidor Dexcom Share</string>
+    <string name="upload_data_to_dex_servers">Subir datos a servidores Dexcom para poder utilizarlos con aplicaciones Dexcom</string>
     <string name="manage_followers">Administrar Seguidores</string>
     <string name="manage_existing_followers">Administrar sus seguidores existentes e invitar a otros nuevos.</string>
     <string name="glucose_calibration_and_other_alerts">Glucosa, Calibración y otras alertas</string>
@@ -309,7 +309,7 @@
     <string name="carbs_per_unit">Hidratos de carbono por unidad</string>
     <string name="everyday">Cada día</string>
     <string name="insulin_sensitivity_glucose_drop_per_unit">Sensibilidad a la insulina: caída de la glucosa por unidad</string>
-    <string name="transmitter_battery">batería del transmisor</string>
+    <string name="transmitter_battery">batería del colector</string>
     <string name="very_low">MUY BAJO</string>
     <string name="low">bajo</string>
     <string name="space_units">" Unidades"</string>
@@ -367,7 +367,7 @@
     <string name="install_pebble_trend_watchface">Instalar Pebble Tendencia su esfera</string>
     <string name="install_pebble_watchface">Instalar Pebble su esfera</string>
     <string name="glucose_history">Historial de glucosa</string>
-    <string name="import_database">Base de datos de importación</string>
+    <string name="import_database">Importar base de datos</string>
     <string name="sensor_table">Tabla sensor</string>
     <string name="bg_readings_table">BG Tabla de Lecturas</string>
     <string name="long_press_to_split_or_delete">Presión larga para dividir o borrar</string>
