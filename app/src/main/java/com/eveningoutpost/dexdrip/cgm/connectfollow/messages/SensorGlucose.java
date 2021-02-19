@@ -5,6 +5,9 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * CareLink SensorGlucose message with helper methods for processing
+ */
 public class SensorGlucose {
 
     public long sg;

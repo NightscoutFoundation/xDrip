@@ -1,5 +1,8 @@
 package com.eveningoutpost.dexdrip.cgm.connectfollow.messages;
 
+/**
+ * CareLink Marker data
+ */
 public class Marker {
 
     public String type;

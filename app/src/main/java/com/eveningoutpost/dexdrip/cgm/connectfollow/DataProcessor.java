@@ -11,6 +11,12 @@ import java.util.Collections;
 
 import static com.eveningoutpost.dexdrip.Models.BgReading.SPECIAL_FOLLOWER_PLACEHOLDER;
 
+
+/**
+ * Medtronic CareLink Connect Data Processor
+ *   - process CareLink data and convert to xDrip internal data
+ *   - update xDrip internal data
+ */
 public class DataProcessor {
 
 

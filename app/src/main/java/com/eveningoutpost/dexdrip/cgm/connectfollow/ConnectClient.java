@@ -13,22 +13,10 @@ import com.eveningoutpost.dexdrip.cgm.connectfollow.messages.ConnectDataResult;
 import com.google.gson.*;
 
 
-
-// TODO list
-// 1) automatic token handling
-//    - request token
-//    - refresh token
-//    - remove fetch data
-// 2) add other CareLink APIs
-//    - get patient data
-//    - get device info (last update???)
-//    - generate report
-//    - others?!
-// 3) optimize getLast24hours
-//    - use device info
-// 4) HTML helper class for data extraction from responses
-// 6) other events, markers, notes
-
+/**
+ * Medtronic CareLink Connect Client
+ *   - API client for communication with CareLink Connect
+ */
 public class ConnectClient {
     protected String carelinkUsername;
     protected String carelinkPassword;

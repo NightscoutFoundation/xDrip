@@ -28,7 +28,10 @@ import static com.eveningoutpost.dexdrip.Models.JoH.msSince;
 import static com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder.DEXCOM_PERIOD;
 
 /**
- * Medtronic CareLink Connect follow
+ * Medtronic CareLink Connect Follow Service
+ *   - main service class for managing CareLink Connect data retrieval
+ *   - start/stop data retrieval
+ *   - provide status infos of follower service
  */
 
 public class ConnectFollowService extends ForegroundService {

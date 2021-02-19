@@ -2,6 +2,9 @@ package com.eveningoutpost.dexdrip.cgm.connectfollow.messages;
 
 import java.util.List;
 
+/**
+ * CareLink ConnectData message
+ */
 public class ConnectData {
 
     public String lastSensorTSAsString;

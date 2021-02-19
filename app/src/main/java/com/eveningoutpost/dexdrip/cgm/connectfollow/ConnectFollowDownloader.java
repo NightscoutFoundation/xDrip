@@ -12,10 +12,10 @@ import com.eveningoutpost.dexdrip.cgm.connectfollow.messages.ConnectDataResult;
 import static com.eveningoutpost.dexdrip.Models.JoH.emptyString;
 
 /**
- * Medtronic CareLink Connect follow
+ * Medtronic CareLink Connect Downloader
+ *   - download data from CareLink
+ *   - execute data conversion and update xDrip data
  */
-
-
 public class ConnectFollowDownloader {
 
     private static final String TAG = "ConnectFollowDL";
@@ -126,7 +126,7 @@ public class ConnectFollowDownloader {
         if (connectClient != null) {
             connectDataResult = getConnectClient().getLast24Hours();
 
-            //Got data
+            //Got CareLink data
             if (connectDataResult.success) {
                 UserError.Log.d(TAG, "Success get data! Response code: " + connectDataResult.responseCode);
                 try {
@@ -136,8 +136,10 @@ public class ConnectFollowDownloader {
                         UserError.Log.d(TAG, "SGs is null!");
                     }
                     if (D) UserError.Log.d(TAG, "Start process data");
+                    //Process CareLink data (conversion and update xDrip data)
                     DataProcessor.processData(connectDataResult.connectData, true);
                     if (D) UserError.Log.d(TAG, "ProcessData finished!");
+                    //Update Service status
                     ConnectFollowService.updateBgReceiveDelay();
                     if (D) UserError.Log.d(TAG, "UpdateBgReceiveDelay finished!");
                     msg(null);
@@ -145,7 +147,7 @@ public class ConnectFollowDownloader {
                 } catch (Exception e) {
                     UserError.Log.e(TAG, "Got exception for data update" + e);
                 }
-                //Request error
+            //Error during data download
             } else {
                 if (!getConnectClient().getLastLoginSuccess()) {
                     UserError.Log.e(TAG, "CareLink login error!");
@@ -158,6 +160,7 @@ public class ConnectFollowDownloader {
                 }
             }
 
+            //Update status message
             if (connectDataResult.success) {
                 msg(null);
             }
