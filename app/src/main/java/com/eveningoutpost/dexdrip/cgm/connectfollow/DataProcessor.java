@@ -76,16 +76,7 @@ public class DataProcessor {
                                             bg.raw_data = SPECIAL_FOLLOWER_PLACEHOLDER;
                                             bg.filtered_data = (double) sg.sg;
                                             bg.noise = "";
-                                            //TODO UUID should be longer? different logic for UUID generation?
-                                            //Needed for NS Uploader
                                             bg.uuid = UUID_CF_PREFIX + UUID_BG_PREFIX + String.valueOf(bg.timestamp);
-                                            //TODO check: slope, hide_slope
-                                            //final Double slope = entry.slopePerMsFromDirection();
-                                            //if (slope != null) {
-                                            //    bg.calculated_value_slope = slope; // this is made up but should match arrow
-                                            //} else {
-                                            //bg.hide_slope = true;
-                                            //}
                                             bg.calculated_value_slope = 0;
                                             bg.sensor = sensor;
                                             bg.sensor_uuid = sensor.uuid;
@@ -94,7 +85,7 @@ public class DataProcessor {
                                             Inevitable.task("entry-proc-post-pr", 500, () -> bg.postProcess(false));
                                         }
                                     } else {
-                                        // break; // stop if we have this reading TODO are entries always in order?
+                                        //existing entry, not needed
                                     }
                                 } else {
                                     UserError.Log.e(TAG, "Could not parse a timestamp from: " + sg.toS());

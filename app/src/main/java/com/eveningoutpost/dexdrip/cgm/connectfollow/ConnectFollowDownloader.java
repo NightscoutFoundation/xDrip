@@ -4,17 +4,10 @@ import android.os.PowerManager;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Inevitable;
-import com.eveningoutpost.dexdrip.cgm.connectfollow.messages.ConnectData;
 import com.eveningoutpost.dexdrip.cgm.connectfollow.messages.ConnectDataResult;
-import com.eveningoutpost.dexdrip.xdrip;
-
-import java.util.List;
-
-import lombok.Getter;
 
 import static com.eveningoutpost.dexdrip.Models.JoH.emptyString;
 
@@ -66,8 +59,6 @@ public class ConnectFollowDownloader {
 
         if (D) UserError.Log.e(TAG, "doEverything called");
         if (loginDataLooksOkay) {
-            //TODO
-            //loginBackoff = 0; // reset backoff timer due to login success
             if (JoH.tsl() > loginBlockedTill) {
                 try {
                     if (getConnectClient() != null) {

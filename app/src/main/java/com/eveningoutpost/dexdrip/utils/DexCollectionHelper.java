@@ -133,7 +133,7 @@ public class DexCollectionHelper {
             case ConnectFollow:
                 textSettingDialog(activity,
                         "connectfollow_country", "CareLink Country",
-                        "Enter CareLink Country Code",
+                        "Two letter country code",
                         InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD,
                         new Runnable() {
                             @Override
