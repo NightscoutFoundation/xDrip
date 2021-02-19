@@ -34,7 +34,7 @@ import com.google.gson.*;
 public class ConnectClient {
     protected String carelinkUsername;
     protected String carelinkPassword;
-    protected Country carelinkCountry;
+    protected String carelinkCountry;
     protected static final String CARELINK_CONNECT_SERVER_EU = "carelink.minimed.eu";
     protected static final String CARELINK_CONNET_SERVER_US = "carelink.minimed.com";
     protected static final String CARELINK_LANGUAGE_EN = "en";
@@ -70,7 +70,7 @@ public class ConnectClient {
         Json()
     }
 
-    public ConnectClient(String carelinkUsername, String carelinkPassword, Country carelinkCountry) {
+    public ConnectClient(String carelinkUsername, String carelinkPassword, String carelinkCountry) {
 
         this.carelinkUsername = carelinkUsername;
         this.carelinkPassword = carelinkPassword;
@@ -87,7 +87,7 @@ public class ConnectClient {
     }
 
     protected String careLinkServer() {
-        return(this.carelinkCountry == Country.UnitedStates ? CARELINK_CONNET_SERVER_US : CARELINK_CONNECT_SERVER_EU );
+        return(this.carelinkCountry == "us" ? CARELINK_CONNET_SERVER_US : CARELINK_CONNECT_SERVER_EU );
     }
 
 
@@ -142,7 +142,7 @@ public class ConnectClient {
                 .scheme("https")
                 .host(this.careLinkServer())
                 .addPathSegments("patient/sso/login")
-                .addQueryParameter("country", this.carelinkCountry.getCountryCode())
+                .addQueryParameter("country", this.carelinkCountry)
                 .addQueryParameter("lang", CARELINK_LANGUAGE_EN)
                 .build();
 
@@ -176,7 +176,7 @@ public class ConnectClient {
                 .host("mdtlogin.medtronic.com")
                 .addPathSegments("mmcl/auth/oauth/v2/authorize/login")
                 .addQueryParameter("locale", CARELINK_LOCALE_EN)
-                .addQueryParameter("country", this.carelinkCountry.getCountryCode())
+                .addQueryParameter("country", this.carelinkCountry)
                 .build();
 
         requestBuilder = new Request.Builder()

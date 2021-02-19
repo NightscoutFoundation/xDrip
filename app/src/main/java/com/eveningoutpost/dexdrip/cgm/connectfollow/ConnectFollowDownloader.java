@@ -30,7 +30,7 @@ public class ConnectFollowDownloader {
 
     private String carelinkUsername;
     private String carelinkPassword;
-    private Country carelinkCountry;
+    private String carelinkCountry;
 
     private ConnectClient connectClient;
 
@@ -47,11 +47,11 @@ public class ConnectFollowDownloader {
         return status;
     }
 
-    ConnectFollowDownloader(String carelinkUsername, String carelinkPassword, Country carelinkCountry) {
+    ConnectFollowDownloader(String carelinkUsername, String carelinkPassword, String carelinkCountry) {
         this.carelinkUsername = carelinkUsername;
         this.carelinkPassword = carelinkPassword;
         this.carelinkCountry = carelinkCountry;
-        loginDataLooksOkay = !emptyString(carelinkUsername) && !emptyString(carelinkPassword) && carelinkCountry != null && carelinkCountry != Country.Invalid;
+        loginDataLooksOkay = !emptyString(carelinkUsername) && !emptyString(carelinkPassword) && carelinkCountry != null && !emptyString(carelinkCountry);
     }
 
     public static void resetInstance() {
@@ -99,8 +99,8 @@ public class ConnectFollowDownloader {
             }
             if(carelinkCountry == null){
                 UserError.Log.e(TAG, "CareLink Country empty!");
-            }else if(carelinkCountry == Country.Invalid){
-                UserError.Log.e(TAG, "CareLink Country invalid!");
+            }else if(!CountryHelper.isSupportedCountry(carelinkCountry)){
+                UserError.Log.e(TAG, "CareLink Country not supported!");
             }
             return false;
         }

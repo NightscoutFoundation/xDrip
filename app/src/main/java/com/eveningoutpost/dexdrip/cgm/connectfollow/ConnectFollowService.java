@@ -132,7 +132,7 @@ public class ConnectFollowService extends ForegroundService {
                     downloader = new ConnectFollowDownloader(
                             Pref.getString("connectfollow_user", ""),
                             Pref.getString("connectfollow_pass", ""),
-                            Country.getCountry(Pref.getString("connectfollow_country", ""))
+                            Pref.getString("connectfollow_country", "").toLowerCase()
                     );
                 }
 
