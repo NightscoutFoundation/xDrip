@@ -3,11 +3,9 @@ package com.eveningoutpost.dexdrip.cgm.connectfollow;
 import android.util.Log;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import lombok.Getter;
 import okhttp3.*;
 
 import com.eveningoutpost.dexdrip.cgm.connectfollow.messages.ConnectData;
@@ -238,17 +236,10 @@ public class ConnectClient {
     protected String getAuthorizationToken() {
 
 
-        //New token is needed: no token or about to expire => execute authentication
-//        if(!((SimpleOkHttpCookieJar) httpClient.cookieJar()).contains(CARELINK_AUTH_TOKEN_COOKIE_NAME) ||
-//                !((SimpleOkHttpCookieJar) httpClient.cookieJar()).contains(CARELINK_TOKEN_VALIDTO_COOKIE_NAME) ||
-//                !((new Date(Date.parse(((SimpleOkHttpCookieJar) httpClient.cookieJar()).getCookies(CARELINK_TOKEN_VALIDTO_COOKIE_NAME).get(0).value())))
-//                        .after(new Date(new Date(System.currentTimeMillis()).getTime() + AUTH_EXPIRE_DEADLINE_MINUTES * 60000))
-//                )){
+
         if(!this.executeAuthenticationProcedure()){
             return null;
         };
-//        }
-
 
         //there can be only one
         return "Bearer" + " " + ((SimpleOkHttpCookieJar) httpClient.cookieJar()).getCookies(CARELINK_AUTH_TOKEN_COOKIE_NAME).get(0).value();
