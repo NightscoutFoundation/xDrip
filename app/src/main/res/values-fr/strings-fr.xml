@@ -218,7 +218,7 @@
     <string name="persistent_high_alert">Alerte Hyper persistante</string>
     <string name="forecasted_low_alert">Alerte de previsions d\'hypoglycémie</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Extrapoler les données pour essayer de prévoir les hypoglycémies</string>
-    <string name="alarm_at_forecasted_low_mins">Alarme pour prévisions d\'hypoglycémies minimum</string>
+    <string name="alarm_at_forecasted_low_mins">Délai de prévisions d\'hypoglycémies en minutes</string>
     <string name="other_xdrip_plus_alerts">Autres alertes xDrip+</string>
     <string name="xdrip_plus_display_settings">xDrip+ Paramètres d\'affichage</string>
     <string name="display_customisations">Afficher les personnalisations</string>
