@@ -8,16 +8,16 @@
     <string name="menu_refresh">Refrescar</string>
     <string name="menu_export_database">Exportar base de datos</string>
     <string name="menu_export_csv_sidiary">Exportar CSV (formato SiDiary)</string>
-    <string name="menu_import_db">Base de datos de importación</string>
+    <string name="menu_import_db">Importar Base de Datos</string>
     <string name="error_bluetooth_not_supported">Error: No Bluetooth compatible con este dispositivo</string>
     <string name="unknown_device">Dispositivo no reconocido</string>
     <string name="connecting_to_device">Conectándose a dispositivo</string>
     <string name="title_activity_raw_data_table">Tabla de datos en bruto</string>
     <string name="title_activity_calculated_data_table">Tabla de Datos calculados</string>
     <string name="title_activity_start_new_sensor">Iniciar nuevo Sensor</string>
-    <string name="title_activity_new_sensor_location">Lugar Nuevo sensor</string>
+    <string name="title_activity_new_sensor_location">Nueva ubicación del sensor</string>
     <string name="title_activity_stop_sensor">Parar sensor</string>
-    <string name="title_activity_nav_drawer">Nav cajón</string>
+    <string name="title_activity_nav_drawer">Panel de navegación</string>
     <string name="navigation_drawer_open">Abrir panel de navegación</string>
     <string name="navigation_drawer_close">Cerrar panel de navegación</string>
     <string name="title_activity_calibration_check_in">Actividad de calibración</string>
@@ -27,25 +27,25 @@
     <string name="ok">OK</string>
     <string name="cancel">Cancelar</string>
     <string name="no">No</string>
-    <string name="pref_sensor_location_dont_ask_again"> ¡No me pregunte de nuevo</string>
+    <string name="pref_sensor_location_dont_ask_again"> No preguntarme de nuevo</string>
     <string name="title_activity_error">"Lista de errores y eventos"</string>
     <string name="title_activity_main">Actividad principal</string>
     <string name="title_activity_fake_numbers">Números falsos</string>
     <string name="title_activity_edit_alert">Editar alerta</string>
-    <string name="title_activity_double_calibration">Calibración doble</string>
+    <string name="title_activity_double_calibration">Calibración Inicial</string>
     <string name="title_activity_calibration_override">Anulación de calibración</string>
     <string name="pref_header_cloud_storage">Almacenamiento en la nube</string>
     <string name="auto_configure_title">Configuración automática</string>
     <string name="prefs_auto_config_summary">Configuración automática usando un código de barras.</string>
-    <string name="scan_share2_barcode">Compartir exploración del código de barras</string>
-    <string name="pref_share2_scan_barcode_summary">O escanear el código de barras en el receptor de la cuota</string>
+    <string name="scan_share2_barcode">Escanear el código de barras compartido</string>
+    <string name="pref_share2_scan_barcode_summary">O escanear el código de barras en el receptor</string>
     <!-- MongoDB Settings -->
     <string name="pref_title_mongodb">MongoDB</string>
     <string name="pref_summary_mongodb_enabled">Subir directamente la base de datos, no recomendado para Nightscout</string>
     <string name="pref_title_mongodb_uri">URI</string>
     <string name="pref_dialog_mongodb_uri">Introduzca MongoDB URI\"</string>
     <string name="pref_message_mongodb_uri">Reemplazar los valores de ejemplo en {} \'s con sus valores correctos</string>
-    <string name="pref_default_mongodb_uri">mongodb://{usuario}:{password}@{host}.mongolab.com:{11111}/{base de datos}</string>
+    <string name="pref_default_mongodb_uri">mongodb://{user}:{password}@{host}.mongolab.com:{11111}/{database}</string>
     <string name="pref_title_mongodb_collection">Nombre de la colección</string>
     <string name="pref_dialog_mongodb_collection">Introduce el nombre de la colección</string>
     <string name="pref_message_mongodb_collection">Este es el nombre de la colección donde se almacenarán los datos CGM</string>
@@ -57,15 +57,15 @@
     <string name="pref_title_api_enabled">Habilitado</string>
     <string name="pref_summary_api_enabled">La API REST es la forma estándar de conectarse a Nightscout</string>
     <string name="pref_title_api_url">URL base</string>
-    <string name="pref_dialog_api_url">Introduzca Base URL de la API</string>
+    <string name="pref_dialog_api_url">Introduzca URL base de la API</string>
     <string name="pref_message_api_url">Esto sólo la URL base, el cargador añadirá automáticamente / entradas para el puesto. API_SECRET en el servidor debe coincidir con yourpassphrase en este entorno.</string>
-    <string name="pref_default_api_url">https://yourpassphrase@{SU SITIO}.azurewebsites.net/api/v1/</string>
+    <string name="pref_default_api_url">https://yourpassphrase@{YOUR-SITE}.azurewebsites.net/api/v1/</string>
     <!-- wifi Settings -->
-    <string name="wifi_recievers_dialog_message">Lista separada por comas de IP separadas: puerto (por ejemplo 37.142.132.220:50005,37.142.132.220:50010,mongodb://user:pass@ds053958.mongolab.com:53958/db/collection)</string>
+    <string name="wifi_recievers_dialog_message">Lista separada por comas de IP:puerto (por ejemplo 37.142.132.220:50005,37.142.132.220:50010,mongodb://user:pass@ds053958.mongolab.com:53958/db/collection)</string>
     <string name="wifi_recievers_dialog_title">Introduzca las direcciones IP y puertos de receptores (incluyendo direcciones de mongodb si es necesario)</string>
     <!-- Location Settings -->
     <string name="location_not_found_title">La ubicación no está habilitada</string>
-    <string name="location_not_found_message">Para buscar Bluetooth en nuevos dispositivos, la ubicación debe estar habilitada. xDrip no hace un seguimiento de su ubicación y se puede desactivar después de la realizada la vinculación.</string>
+    <string name="location_not_found_message">Para que la búsqueda Bluetooth funcione en dispositivos recientes, la ubicación debe estar habilitada. xDrip no hace un seguimiento de su ubicación excepto con la función opcional de Mensaje de Emergencia</string>
     <string name="location_yes">Habilitar</string>
     <!-- broadcast settings -->
     <string name="pref_title_broadcast_enabled">Transmitir localmente</string>
@@ -115,7 +115,7 @@
     <string name="title_activity_update">Actualización de xDrip+ disponible</string>
     <string name="title_activity_display_qrcode">Compartir Ajustes a través de código QR</string>
     <string name="title_activity_send_feed_back">Enviar comentarios a Jamorham</string>
-    <string name="title_activity_maps">Parakeet Mapa</string>
+    <string name="title_activity_maps">Mapa Parakeet</string>
     <string name="title_activity_display_preferences">Preferencias de visualización</string>
     <string name="export_submenu">Funciones de importación / exportación</string>
     <string name="action_resend_to_watch">Reenviar glucosa a reloj</string>
@@ -134,7 +134,7 @@
     <string name="share">Compartir</string>
     <string name="title_activity_profile_editor">Editor Perfil del tratamiento</string>
     <string name="first_use_menu_to_scan">En primer lugar utilizar el menú para explorar en busca de su dispositivo BT o cambiar el origen de datos en la configuración!</string>
-    <string name="first_configure_ip_address">En primer lugar configurar las direcciones IP del lector Wixel wifi o url periquito</string>
+    <string name="first_configure_ip_address">En primer lugar configura las direcciones IP del lector Wixel wifi o la URL parakeet</string>
     <string name="now_start_your_sensor">Iniciar sensor o verificar ajustes</string>
     <string name="please_wait_while_sensor_warms_up">Por favor, espere mientras que el sensor se calienta! (</string>
     <string name="minutes_with_bracket">" minutos)"</string>
@@ -142,7 +142,7 @@
     <string name="please_wait_need_two_readings_first">Por favor espere, necesitarias 2 lecturas del transmisor primero.</string>
     <string name="please_enter_two_calibrations_to_get_started">Por favor, introduzca dos calibraciones para empezar!</string>
     <string name="now_pair_with_your_dexcom_share">Ahora emparejar con su Dexcom Share</string>
-    <string name="now_choose_start_sensor_in_settings">Ahora elige comenzar el sensor en la configuración de</string>
+    <string name="now_choose_start_sensor_in_settings">Ahora elige iniciar el sensor en tus ajustes</string>
     <string name="double_check_dex_receiver_serial_number">Verificar número de serie, debe ser de 10 caracteres, no se olvide de las letras</string>
     <string name="please_set_dex_receiver_serial_number">Por favor, establece el número de serie del receptor Dex en ajustes de la aplicación</string>
     <string name="unfortunately_andoird_version_no_blueooth_low_energy">Desgraciadamente su versión de Android no es compatible con Bluetooth Low Energy</string>
@@ -153,7 +153,7 @@
     <string name="low_predicted">Bajo predicho</string>
     <string name="in">en</string>
     <string name="yes_enter_setup_mode">Sí entrar en el modo de configuración</string>
-    <string name="nokeep_parakeet_as_it_is">No se mantendrá, ya que es Parakeet</string>
+    <string name="nokeep_parakeet_as_it_is">No mantener Parakeet como estaba</string>
     <string name="are_you_sure_you_want_switch_parakeet_to_setup">¿Está seguro de que desea cambiar el Parakeet al modo de configuración?\n\nNormalmente solo se utiliza para enviar mensajes de texto adicionales para el Parakeet para volver a configurar el transmisor espera a la escucha, etc.</string>
     <string name="split_delete_or_do_nothing">Dividir, eliminar o no hacer nada</string>
     <string name="split_this_block_in_two">Dividir este bloque en dos</string>
@@ -169,7 +169,7 @@
     <string name="in_libre_all_house_mode_no_readings_collected_yet">"En modo Libre red casera: no se han recopilado lecturas."</string>
     <string name="in_libre_all_house_mode_last_data_collected">"En modo Libre red casera: Última lectura "</string>
     <string name="space_minute_ago">" Minuto antes"</string>
-    <string name="show_parakeet_map">Ver mapa periquito</string>
+    <string name="show_parakeet_map">Ver mapa Parakeet</string>
     <string name="switch_parakeet_to_setup_mode">Parakeet cambiar al modo de configuración</string>
     <string name="view_events_log">Ver registro de eventos</string>
     <string name="show_libre_trend">Mostrar tendencias del Libre</string>
@@ -381,8 +381,8 @@
     <string name="web_feedback_form_for_sending_messages">Formulario de contacto web para el envío de mensajes y valoraciones de xDrip+ para los desarrolladores</string>
     <string name="be_master_for_followers">Ser aplicación maestro</string>
     <string name="this_device_will_send_data_to_followers">Este dispositivo enviará datos a los seguidores</string>
-    <string name="send_parakeet_map_location_to_followers">Enviar mapa de ubicación periquito a los seguidores</string>
-    <string name="sync_parakeet_geolocation">Parakeet de GeoLocation sincronización</string>
+    <string name="send_parakeet_map_location_to_followers">Enviar mapa de ubicación Parakeet a los seguidores</string>
+    <string name="sync_parakeet_geolocation">Sincronizar GeoLocalización Parakeet</string>
     <string name="disable_all_sync_features">Desactivar todas las funciones de sincronización</string>
     <string name="temporary_work_around_disable_all_sync_detail">Opción de trabajo en torno temporal, se detiene por completo toda la sincronización. Puede ser necesario reiniciar el sistema después de haber sido reactivado. Utilice con cuidado!</string>
     <string name="automatic_updates_crash_reports_and_feedback">Actualizaciones automáticas, informes de fallos y contacto con el desarrollador</string>
@@ -414,9 +414,9 @@
     <string name="notify_when_predicted_low_time_reaches_threshold">Notificar cuando predijo el tiempo de baja alcanza el umbral</string>
     <string name="predicted_low_sound">Predicho sonido de baja</string>
     <string name="choose_sound_used_for_predicted_low_alarm">Permite seleccionar el sonido utilizado para la alarma de baja predicho.</string>
-    <string name="notify_when_parakeet_device_stops_checking_in">Notificar cuando el dispositivo deja de comprobar en periquito</string>
+    <string name="notify_when_parakeet_device_stops_checking_in">Notificar cuando el dispositivo Patakeet deje de registrarse</string>
     <string name="parakeet_related_alerts">Alertas relacionadas con Parakeet</string>
-    <string name="raise_parakeet_notification_silently_when_charging">Activar silenciosamente la notificación de Parakeet al cargar</string>
+    <string name="raise_parakeet_notification_silently_when_charging">Activar la notificación en silenciosa de Parakeet al cargar</string>
     <string name="silent_alert_when_charging">Silenciar alerta cuando carga</string>
     <string name="alerts_start_out_snoozed_and_must_persist_for_a_while">Alertas comienzan silenciadas y deben persistir durante un tiempo para ser activadas</string>
     <string name="alarms_silenced_during_telephone_calls">Alarmas silenciadas durante las llamadas telefónicas</string>
