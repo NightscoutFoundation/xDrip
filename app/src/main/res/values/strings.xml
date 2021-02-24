@@ -1320,7 +1320,7 @@
     <string name="title_connectfollow_pass">CareLink Password</string>
     <string name="summary_connectfollow_pass">CareLink login password</string>
     <string name="title_connectfollow_country">CareLink Country</string>
-    <string name="summary_connectfollow_country">CareLink country code</string>
+    <string name="summary_connectfollow_country">Two letter country ISO code</string>
     <string name="title_connectfollow_lang">CareLink Language</string>
     <string name="summary_connectfollow_lang">CareLink language code</string>
     <string name="title_ob1_options">OB1 G5/G6 Collector Settings</string>
