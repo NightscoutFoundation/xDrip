@@ -138,10 +138,10 @@ public class CompatibleApps extends BroadcastReceiver {
     private static void enableAndroid10Workarounds() {
         if (Build.VERSION.SDK_INT >= 29) {
             if (!PersistentStore.getBoolean(ANDROID_10_WORKAROUND_MARKER, false)) {
-                UserError.Log.ueh(CompatibleApps.class.getSimpleName(),"Enabling default workarounds for Android 10+ setting minimize scanning to enabled");
+                UserError.Log.ueh(CompatibleApps.class.getSimpleName(),"Enabling default workarounds for Android 10+ setting minimize/avoid scanning to enabled");
                 Pref.setBoolean("ob1_minimize_scanning", true);
-               // Pref.setBoolean("ob1_avoid_scanning", true);
-                PersistentStore.setBoolean(ANDROID_10_WORKAROUND_MARKER,true);
+                Pref.setBoolean("ob1_avoid_scanning", true);
+                PersistentStore.setBoolean(ANDROID_10_WORKAROUND_MARKER, true);
             }
         }
     }

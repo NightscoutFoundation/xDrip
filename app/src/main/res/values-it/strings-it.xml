@@ -59,7 +59,7 @@
     <string name="pref_title_api_url">URL di base</string>
     <string name="pref_dialog_api_url">Inserisci l\'API URL</string>
     <string name="pref_message_api_url">Questo solo l\'URL di base, l\'uploader aggiungerà automaticamente i valori del POST. API_SECRET sul server. La tua  passphrase deve corrispondere.</string>
-    <string name="pref_default_api_url">https: // yourpassphrase @ {TUO SITO} .azurewebsites.net / api / v1 /</string>
+    <string name="pref_default_api_url">https://tuapassword@{tuosito}.azurewebsites.net/api/v1/</string>
     <!-- wifi Settings -->
     <string name="wifi_recievers_dialog_message">Comma elenco di ip separati: porta (ad esempio 37.142.132.220:50005,37.142.132.220:50010,mongodb://user:pass@ds053958.mongolab.com:53958/db/collection)</string>
     <string name="wifi_recievers_dialog_title">Immettere gli indirizzi IP e le porte dei ricevitori (compresi gli indirizzi mongodb se necessario)</string>
@@ -165,13 +165,10 @@
     <string name="minutes_ago">{0, choice,0#{0, number, integer} Minuti fa|1#{0, number, integer} Minuto fa|1&lt;{0, number, integer} Minuti fa}</string>
     <string name="expires_at">Termina {0}</string>
     <string name="space_minutes_ago">" Minuti fa"</string>
-    <string name="in_libre_all_house_mode_no_readings_collected_yet">"Modalità Libre copertura casa intera: nessuna lettura raccolta per il momento."</string>
-    <string name="in_libre_all_house_mode_last_data_collected">"Modalità Libre copertura casa intera: Ultima lettura "</string>
     <string name="space_minute_ago">" Minuto fa"</string>
     <string name="show_parakeet_map">Visualizza mappa Parakeet</string>
     <string name="switch_parakeet_to_setup_mode">Passare Parakeet alla modalità di installazione</string>
     <string name="view_events_log">Visualizza eventi Log</string>
-    <string name="show_libre_trend">Mostra tendenza Libre</string>
     <string name="libre_15_minutes_graph">Grafico Libre 15 minuti</string>
     <string name="libre_last_x_minutes_graph">Grafico Libre ultimi %d minuti</string>
     <string name="share_config_via_qr_code">Configura via codice QR</string>
@@ -607,13 +604,9 @@
     <string name="repeatedly_restart_collection_service">Riavvia ripetutamente il servizio di raccolta in qualsiasi dubbio di dati mancanti. Abilitare solo se si perdono dati.</string>
     <string name="aggressive_service_restarts">Riavvio servizio aggressivo</string>
     <string name="predictive_readings_old">Vecchio metodo - Non consigliato! Tenta di prevedere letture ogni minuto sulla base di pochi valori precedenti.</string>
-    <string name="use_external_blukon_algorithm_summary">Usa l\'algoritmo Libre OOP. (BluCon/NFC/LibreAlarm)</string>
     <string name="display_predictive_values">Mostra Valori Predetti</string>
-    <string name="use_external_blukon_algorithm">Algoritmo Libre OOP.</string>
     <string name="calibrate_external_libre_algorithm_summary">Applica metodi di calibrazione xDrip sui dati OOP.</string>
     <string name="calibrate_external_libre_algorithm_title">Calibrazione dell\'algoritmo OOP.</string>
-    <string name="libre_use_smoothed_data_summary">Usa media di 5 punti per ottenere risultati Libre meno rumorosi.</string>
-    <string name="libre_use_smoothed_data_title">Liscia dati Libre.</string>
     <string name="retrieve_blukon_history_title">Recupera cronologia Libre</string>
     <string name="retrieve_blukon_history_summary">Recupera la cronologia dal dispositivo Blukon quando si ricollega al sensore.</string>
     <string name="interpret_share_raw">Se usi Condividi, xDrip mostrerà i valori quando sono normalmente nascosti sul ricevitore.</string>
@@ -706,8 +699,6 @@
     <string name="mongo_db_uri">MongoDB URI</string>
     <string name="skip_local_lan">Per server locali con indirizzi 192.168.x.x, non caricare dati in assenza di connessione di rete locale.</string>
     <string name="skip_lan_uploads">Salta upload LAN</string>
-    <string name="mongo_load_transmitter_data_title">Carica i dati dei trasmettitori Libre</string>
-    <string name="mongo_load_transmitter_data_summary">Consenti a più di un xDrip di connettersi al dispositivo Bluetooth e salvare i dati ricevuti, nel cloud. Ciò dovrebbe consentire la copertura di tutta la casa per Libre con miaomiao, oppure a due genitori di utilizzare lo stesso dispositivo bluetooth di modo trasparente.</string>
     <string name="influxdb_sync">Abilita sincronizzazione InfluxDB</string>
     <string name="influxdb_uri">URI InfluxDB</string>
     <string name="influxdb_database_name">Nome database InfluxDB</string>
@@ -840,7 +831,6 @@
     <string name="repeat_sound">Ripeti il suono</string>
     <string name="enable_telemetry">Attiva telemetria</string>
     <string name="send_data_to_developers">Invia agli sviluppatori i dati sui tassi di successo dei diversi dispositivi</string>
-    <string name="try_to_work_around_noisy_readings_ultrasensitive">Aggirare le letture rumorose anche per livelli di rumore molto bassi (modalità engineering)</string>
     <string name="sidiary_date_title">Esportare a partire da quando?</string>
     <string name="blukon">Blucon</string>
     <string name="tomato">Miaomiao</string>
@@ -1406,7 +1396,6 @@
     <string name="your_display_name">Il tuo nome come visualizzato:</string>
     <string name="followers_email">E-mail dei follower:</string>
     <string name="send_invite">Invia Invito</string>
-    <string name="description_sensor_location">Nel futuro xDrip vorrebbe inviare dati anonimi del sensore agli sviluppatori per migliorare l\'algoritmo di calibrazione. . Se decidi di iscriverti, ti verrà richiesto di confermare prima di ogni trasferimento di dati. I dati non saranno mai inviati senza il tuo permesso. Per aiutarci a capire e migliorare la calibrazione vorremmo sapere dove è stato posizionato questo sensore. Premi il tasto indietro per annullare.</string>
     <string name="save_sensor_location">Salva la posizione del sensore</string>
     <string name="alerts">Allarmi</string>
     <string name="use_internal_downloader">Usa downloader interno</string>
@@ -1486,7 +1475,6 @@
     <string name="unusual_internal_context_problem__please_report">Problema di contesto interno anomalo - segnalare agli sviluppatori</string>
     <string name="cannot_start__please_report_context_problem">Impossibile avviare - segnalare il problema</string>
     <string name="xdrip_will_not_work_below_android_version_42">xDrip+ non funzionerà con una versione Android sotto 4.2</string>
-    <string name="xdrip_oop2_not_installed">xDrip+ ha bisogno di OOP2 per gestire i sensori Libre2/LibreUS.</string>
     <string name="this_app_needs_battery_optimization_whitelisting_or_it_will_not_work_well_please_reset_app_preferences">Questa applicazione necessita che la batteria NON sia ottimizzata o non funzionerà bene. Per favore reimpostare le preferenze delle app</string>
     <string name="setting_disabled_">Impostazione disattivata :)</string>
     <string name="yes_please">SI, per favore</string>
@@ -1499,7 +1487,6 @@
     <string name="starting_sync_to_other_devices">Inizio sincronizzazione con altri dispositivi</string>
     <string name="deleting_all_bg_readings">Cancello TUTTI i valori di glicemia!</string>
     <string name="could_not_export_csv_">Impossibile esportare CSV :(</string>
-    <string name="librealarm_data_format_appears_incompatible_protocol_changed_or_no_data">Il formato dei dati di LibreAlarm sembra incompatibile!? E stato modificato il protocollo o nessun dati?</string>
     <string name="please_update_librealarm_to_use_oop_algorithm">Aggiorna LibreAlarm per utilizzare l\'algoritmo OOP</string>
     <string name="sensor_clock_has_not_advanced">L\'orologio del sensore non ha avanzato!</string>
     <string name="sensor_age_has_gone_backwards">L\'età del sensore è andata indietro!!</string>
@@ -1546,7 +1533,6 @@
     <string name="pref_enable_insulinprofiles">abilitare almeno uno e massimo di tre profili</string>
     <string name="pref_select_basal_insulinprofiles">scegliere il profilo di basale dell’insulina.</string>
     <string name="pref_select_bolus_insulinprofiles">scegliere il profilo di bolo di insulina. utilizzato anche per micro e penna...</string>
-    <string name="enable_streaming_summary">Connettersi ai sensori Libre2 dopo la scansione. Questo impedirà al lettore Libre e a LibreLink di ricevere gli allarmi,</string>
     <string name="enable_streaming_title">Avvio della connessione bluetooth con i sensori Libre2</string>
     <string name="enable_streaming_always_allow">Connettersi sempre ai sensori Libre 2</string>
     <string name="enable_streaming_ask_each_time">chiedi ogni volta</string>

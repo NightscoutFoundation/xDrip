@@ -37,7 +37,10 @@ public enum CalibrationState {
     SensorFailed4(0x13, "Sensor Failed 4"),
     SensorFailed5(0x14, "Sensor Failed 5"),
     SensorFailed6(0x15, "Sensor Failed 6"),
-    SensorFailedStart(0x16, "Sensor Failed Start");
+    SensorFailedStart(0x16, "Sensor Failed Start"),
+    SensorStarted(0xC1, "Sensor Started"),
+    SensorStopped(0xC2, "Sensor Stopped"),
+    CalibrationSent(0xC3, "Calibration Sent");
 
     @Getter
     byte value;
@@ -48,6 +51,7 @@ public enum CalibrationState {
     private static final SparseArray<CalibrationState> lookup = new SparseArray<>();
     private static final ImmutableSet<CalibrationState> failed = ImmutableSet.of(SensorFailed, SensorFailed2, SensorFailed3, SensorFailed4, SensorFailed5, SensorFailed6, SensorFailedStart);
     private static final ImmutableSet<CalibrationState> stopped = ImmutableSet.of(Stopped, Ended, SensorFailed, SensorFailed2, SensorFailed3, SensorFailed4, SensorFailed5, SensorFailed6, SensorFailedStart);
+    private static final ImmutableSet<CalibrationState> transitional = ImmutableSet.of(WarmingUp, SensorStarted, SensorStopped, CalibrationSent);
 
 
     CalibrationState(int value, String text) {
@@ -108,14 +112,17 @@ public enum CalibrationState {
         return this == WarmingUp;
     }
 
+    public boolean transitional() { return transitional.contains(this); }
+
     public boolean ok() {
         return this == Ok;
     }
 
     public boolean readyForBackfill() {
-       return this != WarmingUp && this != Stopped && this != Unknown && this != NeedsFirstCalibration && this != NeedsSecondCalibration && this != Errors;
+        return this != WarmingUp && this != Stopped && this != Unknown && this != NeedsFirstCalibration && this != NeedsSecondCalibration && this != Errors;
     }
 
+    // TODO i18n
     public String getExtendedText() {
         switch (this) {
             case Ok:

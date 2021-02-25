@@ -94,6 +94,7 @@ import static com.eveningoutpost.dexdrip.watch.miband.message.OperationCodes.AUT
 import static com.eveningoutpost.dexdrip.watch.miband.message.OperationCodes.AUTH_SUCCESS;
 import static com.eveningoutpost.dexdrip.watch.miband.message.OperationCodes.COMMAND_ACK_FIND_PHONE_IN_PROGRESS;
 import static com.eveningoutpost.dexdrip.watch.miband.message.OperationCodes.COMMAND_DISABLE_CALL;
+import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 /**
  * <p>
@@ -192,8 +193,8 @@ public class MiBandService extends JamBaseBluetoothSequencer {
         l.add(new StatusItem("Software version", MiBand.getVersion()));
 
         l.add(new StatusItem("Mac address", MiBand.getMac()));
-        l.add(new StatusItem("Connected", II.isConnected ? "Yes" : "No"));
-        l.add(new StatusItem("Is authenticated", MiBand.isAuthenticated() ? "Yes" : "No"));
+        l.add(new StatusItem("Connected", II.isConnected ? gs(R.string.yes) : gs(R.string.no)));
+        l.add(new StatusItem("Is authenticated", MiBand.isAuthenticated() ? gs(R.string.yes) : gs(R.string.no)));
         if (II.isConnected) {
             int levelInPercent = batteryInfo.getLevelInPercent();
             String levelInPercentText;
@@ -276,7 +277,8 @@ public class MiBandService extends JamBaseBluetoothSequencer {
         try {
             if (shouldServiceRun()) {
                 final String authMac = MiBand.getPersistentAuthMac();
-                String mac = MiBand.getMac();
+                String mac
+                        = MiBand.getMac();
                 MiBandType currDevice = MiBand.getMibandType();
                 if ((currDevice != prevDeviceType) && currDevice != MiBandType.UNKNOWN) {
                     prevDeviceType = currDevice;
