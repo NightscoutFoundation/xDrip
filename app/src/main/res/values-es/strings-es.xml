@@ -75,7 +75,7 @@
     <string name="pref_pebble_trend_watchface">Pebble utilizar su esfera de tendencia</string>
     <string name="pref_summary_pebble_trend_watchface">Utilizar / instalar Pebble Tendencia su esfera (experimental)</string>
     <string name="pref_pebble_display_trend">Visualización de la tendencia</string>
-    <string name="pref_summary_display_trend">Mostrar la tendencia de BG en la esfera del reloj Pebble xDrip.</string>
+    <string name="pref_summary_display_trend">Mostrar la tendencia de Glucosa en la esfera xDrip del reloj Pebble.</string>
     <string name="pref_pebble_display_high_line">Mostrar Línea Alta</string>
     <string name="pref_pebble_display_low_line">Mostrar Línea Baja</string>
     <!-- Amazfit Settings -->
@@ -184,13 +184,13 @@
     <string name="glucose_units">Unidades de glucosa</string>
     <string name="mmol_or_mgdl_high_and_low">mmol/l o mg/dl, valores alto y bajo</string>
     <string name="general_settings">Configuración general</string>
-    <string name="high_value">Valor Alta</string>
-    <string name="low_value">Valor bajo</string>
+    <string name="high_value">Valor Alto</string>
+    <string name="low_value">Valor Bajo</string>
     <string name="end_user_license_agreement">Acuerdo de licencia de usuario final</string>
     <string name="save">Guardar</string>
     <string name="view_important_warning">Ver Aviso Importante</string>
     <string name="view_google_licenses">Ver licencias de Google</string>
-    <string name="not_for_medical_use">No para uso médico - única herramienta de investigación</string>
+    <string name="not_for_medical_use">No para uso médico - Sólo es una herramienta de investigación</string>
     <string name="deel_settings_for_algs">Ajustes avanzados para los algoritmos</string>
     <string name="low_level_prediction_values">Los valores de predicción de bajo nivel</string>
     <string name="glucose_drop_for_one_unit">Caída de glucosa para 1 Unidad</string>
@@ -219,7 +219,7 @@
     <string name="forecasted_low_alert">Alerta de baja pronosticada</string>
     <string name="extrapolate_data_to_try_to_predict_lows">Extrapolar datos para tratar de predecir los mínimos</string>
     <string name="alarm_at_forecasted_low_mins">Alarma en minutos bajas pronosticadas</string>
-    <string name="other_xdrip_plus_alerts">Otros alertas xDrip+</string>
+    <string name="other_xdrip_plus_alerts">Otras alertas xDrip+</string>
     <string name="xdrip_plus_display_settings">xDrip+ Ajustes de pantalla</string>
     <string name="display_customisations">Personalizaciones de pantalla</string>
     <string name="insulin_carb_ratios_etc_for_models">Insulina, ratios de carbohidratos, etc para los modelos</string>
@@ -384,7 +384,7 @@
     <string name="send_parakeet_map_location_to_followers">Enviar mapa de ubicación Parakeet a los seguidores</string>
     <string name="sync_parakeet_geolocation">Sincronizar GeoLocalización Parakeet</string>
     <string name="disable_all_sync_features">Desactivar todas las funciones de sincronización</string>
-    <string name="temporary_work_around_disable_all_sync_detail">Opción de trabajo en torno temporal, se detiene por completo toda la sincronización. Puede ser necesario reiniciar el sistema después de haber sido reactivado. Utilice con cuidado!</string>
+    <string name="temporary_work_around_disable_all_sync_detail">Opción de solución temporal, se detiene por completo toda sincronización. Puede ser necesario reiniciar el sistema después de haber sido reactivado. Utilice con cuidado!</string>
     <string name="automatic_updates_crash_reports_and_feedback">Actualizaciones automáticas, informes de fallos y contacto con el desarrollador</string>
     <string name="crowd_sourced_translation">Traducción</string>
     <string name="please_enter_your_question_or_comments_here">Por favor, introduzca su pregunta o comentario aquí.\n\nSi proporciona una dirección de correo electrónico es posible obtener una respuesta.\n\n</string>
@@ -401,7 +401,7 @@
     <string name="sdcard_not_writable_cannot_save">Sdcard no se puede escribir - no puede salvar</string>
     <string name="sdcard_not_readable">No sdcard legible</string>
     <string name="loading_settings_from_xdrip_mainline">Cargando ajustes de xDrip</string>
-    <string name="warning_settings_from_xdrip_and_plus_exist">Configuración de las advertencias de xDrip y xDrip+ existir - carga xDrip+</string>
+    <string name="warning_settings_from_xdrip_and_plus_exist">Atención existen ajustes de xDrip y xDrip+ - cargando xDrip+</string>
     <string name="new_version_date_colon">"Fecha de la versión nueva: "</string>
     <string name="old_version_date_colon">"Fecha de la versión antigua: "</string>
     <string name="speak_your_note_text">Di tu texto de la nota</string>
@@ -412,8 +412,8 @@
     <string name="forecast_lows">Bajas Previsión</string>
     <string name="raise_alarm_on_forecast_low">Dar la alarma en el pronóstico de baja</string>
     <string name="notify_when_predicted_low_time_reaches_threshold">Notificar cuando predijo el tiempo de baja alcanza el umbral</string>
-    <string name="predicted_low_sound">Predicho sonido de baja</string>
-    <string name="choose_sound_used_for_predicted_low_alarm">Permite seleccionar el sonido utilizado para la alarma de baja predicho.</string>
+    <string name="predicted_low_sound">Sonido de Baja pronosticada</string>
+    <string name="choose_sound_used_for_predicted_low_alarm">Permite seleccionar el sonido utilizado para la alarma de valo Bajo pronosticado.</string>
     <string name="notify_when_parakeet_device_stops_checking_in">Notificar cuando el dispositivo Patakeet deje de registrarse</string>
     <string name="parakeet_related_alerts">Alertas relacionadas con Parakeet</string>
     <string name="raise_parakeet_notification_silently_when_charging">Activar la notificación en silenciosa de Parakeet al cargar</string>
@@ -460,7 +460,7 @@
     <string name="calibration_data_long">Datos de calibración (largo)</string>
     <string name="calibration_data_short">Datos de calibración (corto)</string>
     <string name="store_sensor_location_to_help">Guarda la posición del sensor para ayudar a mejorar el algoritmo</string>
-    <string name="help_the_developers_improve_the_algorithm">Ayudan a los desarrolladores a mejorar el algoritmo xDrip.</string>
+    <string name="help_the_developers_improve_the_algorithm">Ayuda a los desarrolladores a mejorar el algoritmo xDrip.</string>
     <string name="help_the_community">Ayuda a la comunidad</string>
     <string name="double_tap_or_pinch_to_zoom">Doble toque o pellizcar para ampliar.</string>
     <string name="start_sensor">Inicio Sensor</string>
@@ -526,7 +526,7 @@
     <string name="adding">Añadiendo</string>
     <string name="high">alto</string>
     <string name="alert">alerta</string>
-    <string name="high_alert">Alerta alta</string>
+    <string name="high_alert">Alerta de alta</string>
     <string name="low_alert">Alerta de baja</string>
     <string name="battery">Batería</string>
     <string name="xbridge_battery">batería XBridge</string>
@@ -680,7 +680,7 @@
     <string name="show_expiry_time">Mostrar la caducidad del sensor en base a 14,5 días</string>
     <string name="show_sensor_age">Mostrar la antigüedad del sensor en la pantalla principal</string>
     <string name="change_sensor_total_days">Cambio de sensor días totales</string>
-    <string name="nfc_scanning_xdrip_open">El escaneo NFC solo ocurrirá cuando la aplicación xDrip + esté visible</string>
+    <string name="nfc_scanning_xdrip_open">El escaneo NFC solo ocurrirá cuando xDrip+ esté visible</string>
     <string name="nfc_scanning_launcher">El escaneo NFC también funcionará desde la pantalla del lanzador de aplicaciones</string>
     <string name="scan_when_app_closed">Escanear cuando no estás en xDrip+</string>
     <string name="vibrate_scanning_status">Vibrar para indicar el estado de escaneo</string>
@@ -765,8 +765,8 @@
     <string name="alert_seconds_reraise">Número de SEGUNDOS que deben pasar antes de enviar la misma alerta.</string>
     <string name="bg_falling_fast">Glucosa bajando rápido</string>
     <string name="bg_rising_fast">Glucosa subiendo rápido</string>
-    <string name="falling_threshold">Umbral bajando</string>
-    <string name="rising_threshold">Umbral subiendo</string>
+    <string name="falling_threshold">Umbral de bajada</string>
+    <string name="rising_threshold">Umbral de subida</string>
     <string name="set_sound_for_bg_alerts">Establecer el sonido usado para las alertas de glucosa.</string>
     <string name="alert_sound">Sonido de alarma</string>
     <string name="override_silent_mode_these">Anular el modo silencioso en estas alertas</string>
@@ -908,7 +908,7 @@
     <string name="use_conflict_msg">también puede intentar acceder al dispositivo transmisor y esto puede causar problemas con ambas aplicaciones</string>
     <string name="use_confict_msg_glimp">Puedes ajustar la configuración de Glimp: opciones -&gt; dispositivos -&gt; deseleccionar la opción Bluetooth</string>
     <string name="yes">Si</string>
-    <string name="xdrip_compatible_features">Caracteristicas %s xDrip</string>
+    <string name="xdrip_compatible_features">Caracteristicas %s xDrip+</string>
     <string name="garmin">Garmin</string>
     <string name="fitbit">Fitbit</string>
     <string name="enable_local_web_server_feature">¿Habilitar servidor local web para reloj Garmin?</string>
@@ -1150,7 +1150,7 @@
     <string name="need_permission_to_access_audio_files">Se requiere permiso para acceder a los archivos de audio</string>
     <string name="need_contacts_permission_to_select_message_recipients">Se requieren permisos para acceder a sus contactos para seleccionar los destinatarios de sus mensajes</string>
     <string name="need_storage_permission_to_access_all_ringtones">Se requieren permisos de acceso al almacenamiento para acceder a todos los tonos de llamada</string>
-    <string name="xdrip_needs_whitelisting_for_proper_performance">xDrip + necesita estar en la lista blanca para un rendimiento adecuado</string>
+    <string name="xdrip_needs_whitelisting_for_proper_performance">xDrip+ necesita estar en la lista blanca para un rendimiento adecuado</string>
     <string name="overwrite_slope_engineering_only">Sobrescribir pendiente (¡sólo ingeniería!)</string>
     <string name="overwrite_intercept_engineering_only">Sobrescribir Intercepción (¡sólo ingeniería!)</string>
     <string name="manual_overwrite_not_possible">¡No se puede sobrescribir manualmente!</string>
@@ -1263,7 +1263,7 @@
     <string name="title_lefun_screen_mac_address">Mostrar dirección MAC</string>
     <string name="summary_allow_samsung_workaround">Utilizar alternativas para evitar el comportamiento no estándar de Android en teléfonos Samsung. Sin esto, los recolectores generalmente no pueden obtener datos.</string>
     <string name="title_allow_samsung_workaround">Soluciones Alternativas de Samsung</string>
-    <string name="summary_medtrum_use_native">Utilizar calibración del transmisor en lugar de xDrip con prioridad</string>
+    <string name="summary_medtrum_use_native">Usar calibración del transmisor como principal en lugar de xDrip</string>
     <string name="title_medtrum_use_native">Medtrum Nativo</string>
     <string name="summary_medtrum_a_hex">Valor de prueba de diagnóstico Hex</string>
     <string name="title_medtrum_a_hex">Depuración de Medtrum</string>
@@ -1282,7 +1282,7 @@
     <string name="title_ob1_g5_preemptive_restart">Reinicios preventivos</string>
     <string name="summary_ob1_g5_use_insufficiently_calibrated">Seguir usando datos incluso si no hay suficientes calibraciones buenas (¡Experimental!)</string>
     <string name="title_ob1_g5_use_insufficiently_calibrated">Continuar sin calibraciones</string>
-    <string name="summary_ob1_g5_fallback_to_xdrip">Volver al algoritmo xDrip si G5 no proporciona datos de glucosa (¡potencialmente riesgoso!)</string>
+    <string name="summary_ob1_g5_fallback_to_xdrip">Volver al algoritmo xDrip si G5 no proporciona datos de glucosa (¡Potencialmente peligroso!)</string>
     <string name="title_ob1_g5_fallback_to_xdrip">Volver a xDrip</string>
     <string name="summary_ob1_minimize_scanning">Utilizar heurística para minimizar búsqueda de Bluetooth y ahorrar energía</string>
     <string name="title_ob1_minimize_scanning">Minimizar búsqueda</string>
