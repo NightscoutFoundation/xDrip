@@ -585,7 +585,7 @@
     <string name="process_broadcasted_calibrations">Verarbeite von anderen Apps empfangene Kalibrierungen.</string>
     <string name="spoken_readings_locale">Benutzerdefinierte Sprache für gesprochene Werte, z.B. de oder en_IN</string>
     <string name="speak_glucose_twice">Sprich den Glukosewert jedesmal zwei mal</string>
-    <string name="short_speak_readings_shortcut">Zeige eine Verknüfpung im ☰ Menü zur Spracheingabe von Werten</string>
+    <string name="short_speak_readings_shortcut">Zeige eine Verknüfpung im ☰ Menü zur Sprachausgabe von Werten</string>
     <string name="speak_readings_shortcut">Werte-Vorlesen-Verknüpfung</string>
     <string name="battery_optimization_off">Stelle auf Android 6+ sicher, dass die Akku-Optimierung ausgeschaltet ist. Empfohlene Einstellung</string>
     <string name="battery_optimization_on">Nicht nach der Batterie-Optimierung fragen. Nicht empfohlen</string>
