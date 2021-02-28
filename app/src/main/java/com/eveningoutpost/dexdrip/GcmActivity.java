@@ -21,6 +21,7 @@ import com.eveningoutpost.dexdrip.Models.BloodTest;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.DesertSync;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.Libre2RawValue;
 import com.eveningoutpost.dexdrip.Models.RollCall;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.Treatments;
@@ -287,6 +288,17 @@ public class GcmActivity extends FauxActivity {
             PersistentStore.setLong("gcm-bgs-batch-time", JoH.tsl());
             processBgsBatch(false);
         }
+    }
+
+    // Synchronization of Libre2 patched app received raw values,
+    // called from LibreReceiver only if option Libre2_showRawGraph is activated.
+    public synchronized static void syncLibre2RawReading(Libre2RawValue rawValue) {
+        if (rawValue == null) {
+            UserError.Log.wtf(TAG, "Cannot sync null libre2rawvalue - should never occur");
+            return;
+        }
+        Log.d(TAG, "syncLibre2RawReading called");
+        GcmActivity.sendMessage("l2rs", rawValue.toJSON());
     }
 
     // called only from interactive or evaluated new data

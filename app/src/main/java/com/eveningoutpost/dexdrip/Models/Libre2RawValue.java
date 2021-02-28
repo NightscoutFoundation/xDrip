@@ -2,6 +2,7 @@ package com.eveningoutpost.dexdrip.Models;
 
 
         import android.provider.BaseColumns;
+        import android.util.Log;
 
         import com.activeandroid.annotation.Column;
         import com.activeandroid.annotation.Table;
@@ -10,8 +11,14 @@ package com.eveningoutpost.dexdrip.Models;
         import java.util.Date;
         import java.util.List;
 
+        import com.google.gson.GsonBuilder;
+        import com.google.gson.annotations.Expose;
+        import org.json.JSONException;
+        import org.json.JSONObject;
+
 @Table(name = "Libre2RawValue2", id = BaseColumns._ID)
 public class Libre2RawValue extends PlusModel {
+    private static final String TAG = "libre2rawvalue";
 
     static final String[] schema = {
             "DROP TABLE Libre2RawValue;",
@@ -59,4 +66,41 @@ public class Libre2RawValue extends PlusModel {
     public static void updateDB() {
         fixUpTable(schema, false);
     }
+
+    public String toJSON() {
+        final JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("serial", serial);
+            jsonObject.put("timestamp", timestamp);
+            jsonObject.put("glucose", glucose);
+
+            return jsonObject.toString();
+        } catch (JSONException e) {
+            UserError.Log.wtf(TAG, "Error producing in toJSON: " + e);
+            if (Double.isNaN(glucose)) UserError.Log.e(TAG, "glucose is NaN");
+            if (Double.isNaN(timestamp)) UserError.Log.e(TAG, "timestamp is NaN");
+            return "";
+        }
+    }
+
+    public static Libre2RawValue fromJSON(String json) {
+        NewLibre2RawValue nl2rv = new GsonBuilder ().excludeFieldsWithoutExposeAnnotation ().create().fromJson(json, NewLibre2RawValue.class);
+        Libre2RawValue l2rv = new Libre2RawValue ();
+        l2rv.serial = nl2rv.serial;
+        l2rv.glucose = nl2rv.glucose;
+        l2rv.timestamp = nl2rv.timestamp;
+        Log.d(TAG, "Object form json: " + l2rv.serial + ", " + l2rv.glucose + ", " + l2rv.timestamp);
+        return l2rv;
+    }
+}
+
+class NewLibre2RawValue {
+    @Expose
+    double glucose;
+
+    @Expose
+    long timestamp;
+
+    @Expose
+    String serial;
 }

@@ -23,6 +23,7 @@ import com.eveningoutpost.dexdrip.Models.BloodTest;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.DesertSync;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.Libre2RawValue;
 import com.eveningoutpost.dexdrip.Models.LibreBlock;
 import com.eveningoutpost.dexdrip.Models.RollCall;
 import com.eveningoutpost.dexdrip.Models.Sensor;
@@ -559,6 +560,9 @@ public class GcmListenerSvc extends JamListenerSvc {
                     }
                 } else if (action.equals("libreBlock")) {
                     HandleLibreBlock(payload);
+                } else if (action.equals("l2rs")) {
+                    Libre2RawValue currentRawValue = Libre2RawValue.fromJSON (payload);
+                    currentRawValue.save();
                 } else {
                     Log.e(TAG, "Received message action we don't know about: " + action);
                 }
