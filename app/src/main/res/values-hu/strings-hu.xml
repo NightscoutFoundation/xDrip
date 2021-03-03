@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="title_activity_start_new_sensor">Új szenzor indítása</string>
+    <string name="ok">OK</string>
     <!-- MongoDB Settings -->
+    <string name="pref_title_mongodb_uri">URI</string>
     <!-- API Settings -->
     <!-- wifi Settings -->
     <!-- Location Settings -->
