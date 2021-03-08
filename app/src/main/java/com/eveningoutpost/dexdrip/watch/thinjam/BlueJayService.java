@@ -430,7 +430,7 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
             final BgReading bgReading = BgReading.last();
 
             if (bgReading == null || msSince(bgReading.timestamp) > Constants.MINUTE_IN_MS * 4) {
-                Ob1G5CollectionService.lastSensorState = CalibrationState.parse(info.state); // only update if newer?
+                Ob1G5CollectionService.processCalibrationStateLite(CalibrationState.parse(info.state), inboundTimestamp); // only update if newer?
                 if (D && info.glucose == 1) {
                     info.glucose = 123;         // TODO THIS IS DEBUG ONLY!!
                 }

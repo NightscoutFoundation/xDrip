@@ -1629,29 +1629,37 @@ public class Ob1G5CollectionService extends G5BaseService {
 
     private static volatile long lastProcessCalibrationState;
 
-    public static void processCalibrationState(final CalibrationState state, final long incomingTimestamp) {
+    public static void processCalibrationStateLite(final CalibrationState state, final long incomingTimestamp) {
         if (incomingTimestamp > lastProcessCalibrationState) {
-            processCalibrationState(state);
+            processCalibrationStateLite(state);
         } else {
             UserError.Log.d(TAG, "Ignoring calibration state as it is: " + JoH.dateTimeText(incomingTimestamp) + " vs local: " + JoH.dateTimeText(lastProcessCalibrationState));
         }
     }
 
-    public static void processCalibrationState(final CalibrationState state) {
-
+    public static boolean  processCalibrationStateLite(final CalibrationState state) {
         if (state == CalibrationState.Unknown) {
             UserError.Log.d(TAG, "Not processing push of unknown state as this is the unset state");
-            return;
+            return false;
         }
 
         if (JoH.msSince(lastProcessCalibrationState) < Constants.MINUTE_IN_MS) {
             UserError.Log.d(TAG, "Ignoring duplicate processCalibration State");
-            return;
+            return false;
         }
         lastProcessCalibrationState = tsl();
 
         lastSensorStatus = state.getExtendedText();
         lastSensorState = state;
+        return true;
+    }
+
+    public static void processCalibrationState(final CalibrationState state) {
+
+        if (!processCalibrationStateLite(state)) {
+            UserError.Log.d(TAG, "Not processing more calibration state as lite returned false");
+            return;
+        }
 
         storeCalibrationState(state);
 
@@ -1852,15 +1860,19 @@ public class Ob1G5CollectionService extends G5BaseService {
             builder.append(state.getString());
             return new SpannableString(builder);
         } else {
-            if (lastSensorState != null && lastSensorState != CalibrationState.Ok) {
-                if (!lastSensorState.sensorStarted() && isPendingStart()) {
-                    return Span.colorSpan("Starting Sensor", NOTICE.color());
-                } else if (lastSensorState.sensorStarted() && isPendingStop()) {
-                    return Span.colorSpan("Stopping Sensor", NOTICE.color());
-                } else if (lastSensorState.needsCalibration() && pendingCalibration()) {
-                    return Span.colorSpan("Sending calibration", NOTICE.color());
+            if (usingNativeMode()) {
+                if (lastSensorState != null && lastSensorState != CalibrationState.Ok) {
+                    if (!lastSensorState.sensorStarted() && isPendingStart()) {
+                        return Span.colorSpan("Starting Sensor", NOTICE.color());
+                    } else if (lastSensorState.sensorStarted() && isPendingStop()) {
+                        return Span.colorSpan("Stopping Sensor", NOTICE.color());
+                    } else if (lastSensorState.needsCalibration() && pendingCalibration()) {
+                        return Span.colorSpan("Sending calibration", NOTICE.color());
+                    } else {
+                        return Span.colorSpan(lastSensorState.getExtendedText(), lastSensorState.transitional() ? NOTICE.color() : lastSensorState.sensorFailed() ? CRITICAL.color() : BAD.color());
+                    }
                 } else {
-                    return Span.colorSpan(lastSensorState.getExtendedText(), lastSensorState.transitional() ? NOTICE.color() : lastSensorState.sensorFailed() ? CRITICAL.color() : BAD.color());
+                    return Span.colorSpan("", NORMAL.color()); // non native blank
                 }
             } else {
                 return null;
@@ -1980,7 +1992,9 @@ public class Ob1G5CollectionService extends G5BaseService {
         final VersionRequest2RxMessage vr2 = (VersionRequest2RxMessage) Ob1G5StateMachine.getFirmwareXDetails(tx_id, 2);
         try {
             if (vr1 != null) {
-                l.add(new StatusItem("Firmware Version", vr1.firmware_version_string, FirmwareCapability.isG6Rev2(vr1.firmware_version_string) ? NOTICE : NORMAL));
+                val known = FirmwareCapability.isKnownFirmware(vr1.firmware_version_string);
+                val unknown = !known ? (" " + "Unknown!" + "\n" + "Please report") : "";
+                l.add(new StatusItem("Firmware Version", vr1.firmware_version_string + unknown, !known ? CRITICAL : FirmwareCapability.isG6Rev2(vr1.firmware_version_string) ? NOTICE : NORMAL));
                 //l.add(new StatusItem("Build Version", "" + vr1.build_version));
                 if (vr1.version_code != 3) {
                     l.add(new StatusItem("Compat Version", "" + vr1.version_code, Highlight.BAD));
