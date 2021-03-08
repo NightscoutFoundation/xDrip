@@ -22,7 +22,7 @@ public class ConnectClient {
     protected String carelinkPassword;
     protected String carelinkCountry;
     protected static final String CARELINK_CONNECT_SERVER_EU = "carelink.minimed.eu";
-    protected static final String CARELINK_CONNET_SERVER_US = "carelink.minimed.com";
+    protected static final String CARELINK_CONNECT_SERVER_US = "carelink.minimed.com";
     protected static final String CARELINK_LANGUAGE_EN = "en";
     protected static final String CARELINK_LOCALE_EN = "en";
     protected static final String CARELINK_AUTH_TOKEN_COOKIE_NAME = "auth_tmp_token";
@@ -73,7 +73,10 @@ public class ConnectClient {
     }
 
     protected String careLinkServer() {
-        return(this.carelinkCountry == "us" ? CARELINK_CONNET_SERVER_US : CARELINK_CONNECT_SERVER_EU );
+        if(this.carelinkCountry.equals("us"))
+            return CARELINK_CONNECT_SERVER_US;
+        else
+            return CARELINK_CONNECT_SERVER_EU;;
     }
 
 
