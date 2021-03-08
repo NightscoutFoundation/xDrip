@@ -91,6 +91,19 @@ public class FirmwareCapability {
         return isFirmwarePreemptiveRestartCapable(getRawFirmwareVersionString(tx_id));
     }
 
+    public static boolean isKnownFirmware(final String version) {
+        return (version == null || version.equals("")
+                || KNOWN_G5_FIRMWARES.contains(version)
+                || KNOWN_G6_FIRMWARES.contains(version)
+                || KNOWN_G6_REV2_FIRMWARES.contains(version)
+                || KNOWN_G6_PLUS_FIRMWARES.contains(version));
+    }
+
+    public static boolean isTransmitterKnownFirmware(final String tx_id) {
+        final String version = getRawFirmwareVersionString(tx_id);
+        return isKnownFirmware(version);
+    }
+
     static long getWarmupPeriodForVersion(final String version) {
         return isG6Plus(version) ? Constants.HOUR_IN_MS : Constants.HOUR_IN_MS * 2;
     }
