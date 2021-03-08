@@ -76,7 +76,7 @@ public class ConnectClient {
         if(this.carelinkCountry.equals("us"))
             return CARELINK_CONNECT_SERVER_US;
         else
-            return CARELINK_CONNECT_SERVER_EU;;
+            return CARELINK_CONNECT_SERVER_EU;
     }
 
 
