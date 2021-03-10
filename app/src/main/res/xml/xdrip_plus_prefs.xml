@@ -464,6 +464,14 @@
                 android:key="plus_show_reminders"
                 android:summary="@string/show_reminder_features"
                 android:title="@string/enable_reminder_features" />
+            <Preference
+                android:key="show_accessibility_settings"
+                android:summary="If your phone has Always On Display you can enable the xDrip widget there by enabling the xDrip accessibility service from the Android System Settings page."
+                android:title="Enable xDrip Accessibility">
+                <intent
+                    android:action="android.settings.ACCESSIBILITY_SETTINGS"
+                    />
+            </Preference>
             <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:key="xdrip_plus_number_wall"
                 android:title="@string/title_xdrip_plus_number_wall">

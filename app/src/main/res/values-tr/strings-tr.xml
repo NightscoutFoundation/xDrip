@@ -146,7 +146,6 @@
     <string name="show_parakeet_map">Parakeet haritasını göster</string>
     <string name="switch_parakeet_to_setup_mode">Parakeet kurulum moduna geç</string>
     <string name="view_events_log">Olay Günlüklerini Görüntüle</string>
-    <string name="show_libre_trend">Libre eğilimini göster</string>
     <string name="libre_15_minutes_graph">Libre 15 dakika grafiği</string>
     <string name="libre_last_x_minutes_graph">Libre son %d dakikalar grafiği</string>
     <string name="share_config_via_qr_code">QR kodu ile paylaşın</string>
@@ -580,9 +579,7 @@
     <string name="repeatedly_restart_collection_service">Herhangi bir eksik veri ipucu toplama servisini tekrar tekrar başlat. Yalnızca veri kaybı alıyorsanız etkinleştirin.</string>
     <string name="aggressive_service_restarts">Agresif servis yeniden başlatılıyor</string>
     <string name="predictive_readings_old">Eski yöntem - Tavsiye edilmez! Geçmiş birkaç değere dayanarak her dakika okumayı tahmin etmeye çalışır.</string>
-    <string name="use_external_blukon_algorithm_summary">Harici libre algoritması kullan. (bluecon/NFC/LibreAlarm)</string>
     <string name="display_predictive_values">Tahmini Değerleri Göster</string>
-    <string name="use_external_blukon_algorithm">Harici libre algoritması.</string>
     <string name="calibrate_external_libre_algorithm_summary">OOP verisine xDrip kalibrasyon yöntemlerini uygulayın.</string>
     <string name="calibrate_external_libre_algorithm_title">OOP kalibrasyon algoritması.</string>
     <string name="retrieve_blukon_history_title">Libre geçmişini al</string>
@@ -677,8 +674,6 @@
     <string name="mongo_db_uri">Mongo DB Uri Adresi</string>
     <string name="skip_local_lan">192.168.x.x adresli yerel sunucular için yerel ağ bağlantısı olmadığında yükleme işlemini atlayın.</string>
     <string name="skip_lan_uploads">LAN yüklemelerini atla</string>
-    <string name="mongo_load_transmitter_data_title">Libre vericilerine yükle</string>
-    <string name="mongo_load_transmitter_data_summary">Birden fazla xDrip\'in BT cihazlarına bağlanmasına ve aldıkları verileri bulutta saklamasına izin ver. Bu, miaomiao veya aynı BT cihazını kullanan 2 ebeveynin transperant olarak libre için tüm ev kapsamına izin vermelidir.</string>
     <string name="influxdb_sync">InfluxDB senkronizasyonunu etkinleştir</string>
     <string name="influxdb_uri">InfluxDB Uri Adresi</string>
     <string name="influxdb_database_name">InfluxDB Veritabanı Adı</string>

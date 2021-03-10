@@ -12,16 +12,16 @@
     <string name="error_bluetooth_not_supported">Błąd: Bluetooth nie jest obsługiwany przez to urządzenie</string>
     <string name="unknown_device">Nierozpoznane urządzenie</string>
     <string name="connecting_to_device">Łączenie z urządzeniem</string>
-    <string name="title_activity_raw_data_table">Tabela Raw Data</string>
-    <string name="title_activity_calculated_data_table">Tabela danych z Obliczeniami</string>
+    <string name="title_activity_raw_data_table">Tabela danych surowych</string>
+    <string name="title_activity_calculated_data_table">Tabela obliczonych danych</string>
     <string name="title_activity_start_new_sensor">Uruchom nowy czujnik</string>
     <string name="title_activity_new_sensor_location">Lokalizacja nowego czujnika</string>
-    <string name="title_activity_stop_sensor">Zatrzymaj Sensor</string>
-    <string name="title_activity_nav_drawer">Nav szuflady</string>
-    <string name="navigation_drawer_open">Otwórz panel nawigacji</string>
-    <string name="navigation_drawer_close">Zamknij panel nawigacji</string>
-    <string name="title_activity_calibration_check_in">Aktywna Kalibracja</string>
-    <string name="title_activity_usb_connected">Podłącz.USB aktywny</string>
+    <string name="title_activity_stop_sensor">Zatrzymaj czujnik</string>
+    <string name="title_activity_nav_drawer">Menu nawigacyjne</string>
+    <string name="navigation_drawer_open">Otwórz menu nawigacyjne</string>
+    <string name="navigation_drawer_close">Zamknij menu nawigacyjne</string>
+    <string name="title_activity_calibration_check_in">Kalibracja czujnika</string>
+    <string name="title_activity_usb_connected">Łączność przez USB</string>
     <string name="snooze">Uśpij</string>
     <string name="snooze_hint">Uśpij alarmy na x minut</string>
     <string name="ok">Ok</string>
@@ -29,7 +29,7 @@
     <string name="no">Nie</string>
     <string name="pref_sensor_location_dont_ask_again"> Nie pytaj ponownie.</string>
     <string name="title_activity_error">"Lista błędów i zdarzeń"</string>
-    <string name="title_activity_main">Główna aktywność</string>
+    <string name="title_activity_main">Ekran główny</string>
     <string name="title_activity_fake_numbers">Fałszywe Numery</string>
     <string name="title_activity_edit_alert">Edytuj alarm</string>
     <string name="title_activity_double_calibration">Początkowa kalibracja</string>
@@ -65,8 +65,8 @@
     <string name="wifi_recievers_dialog_title">Wpisz adresy IP i porty odbiorników (w tym adresów MongoDB jeśli potrzebne)</string>
     <!-- Location Settings -->
     <string name="location_not_found_title">Lokalizacja nie jest Włączona</string>
-    <string name="location_not_found_message">Aby urchomić odnajdywanie urządzeń Bluetooth lokalizacja musi być aktywna. xDrip nie zapisuje swojej lokalizacji więc można ją wyłączyć po udanym powiązaniu.</string>
-    <string name="location_yes">Włączyć</string>
+    <string name="location_not_found_message">Aby uruchomić wyszukiwanie urządzeń Bluetooth lokalizacja musi być aktywna. xDrip nie potrzebuje twojej lokalizacji poza opcjonalną funkcją wysyłania wiadomości w nagłych przypadkach</string>
+    <string name="location_yes">Włącz</string>
     <!-- broadcast settings -->
     <string name="pref_title_broadcast_enabled">Nadawaj lokalnie</string>
     <string name="pref_summary_broadcast_enabled">Włącz lokalną transmisję danych, dzięki czemu inne aplikacje (np. NightWatch) mogą otrzymać nowe wartości</string>
@@ -80,12 +80,15 @@
     <string name="pref_pebble_display_low_line">Wyświetl linie dla niskich</string>
     <!-- Amazfit Settings -->
     <string name="pref_amazfit_enable">Włącz</string>
+    <string name="pref_amazfit_BG_alert_enable_summary">Wyślij aktywne alarmy o glikemii do smartwatcha</string>
     <string name="pref_amazfit_BG_alert_enable">Włącz</string>
     <string name="pref_amazfit_BG_alert_title">Alarmy glikemii</string>
+    <string name="pref_amazfit_other_alert_enable_summary">Wyślij inne alarmy do smartwatcha</string>
     <string name="pref_amazfit_other_alert_enable">Włącz</string>
     <string name="pref_amazfit_other_alert_title">Inne alarmy</string>
     <string name="pref_amazfit_watchface_graph_enable">Włącz</string>
     <string name="pref_amazfit_widget_graph_enable">Włącz</string>
+    <string name="pref_amazfit_widget_settings">Ustawienia widżetu (może obciążać baterię)</string>
     <string name="toast_crash">Coś poszło nie tak :( raport został wysłany, aby pomóc rozwiązać problem.</string>
     <string name="taskerConfigInstruction">Wystarczy kliknąć ikonę Tick tutaj, aby potwierdzić. Nie ma potrzeby, aby zmienić ciąg konfiguracji.</string>
     <string name="taskerConfiguration">Tasker Konfiguracja</string>
@@ -109,6 +112,7 @@
     <string name="undo_button">Przycisk Cofnij</string>
     <string name="showcase_undo">Przycisk Cofnij służy do wycofania wprowadzonych danych dotyczących Leczenia Symulacji, kalibracji i notatek\n\nPo 30 minutach będzie ukryty</string>
     <string name="add_note">Dodaj notatkę</string>
+    <string name="blood_test">Badanie krwi</string>
     <string name="share">Udostępnij</string>
     <string name="title_activity_profile_editor">Edytor profil leczenia</string>
     <string name="first_use_menu_to_scan">Najpierw użyj menu do skanowania urządzenia BT lub zmień źródło danych w ustawieniach!</string>
@@ -146,10 +150,12 @@
     <string name="show_parakeet_map">Pokaż położenie Parakeet</string>
     <string name="switch_parakeet_to_setup_mode">Przełączyć Parakeet w tryb serwisowy</string>
     <string name="view_events_log">Zobacz Event Log</string>
+    <string name="show_libre_trend">Pokaż trend z libre</string>
     <string name="share_config_via_qr_code">Udostepnij konfiguracje poprzez kod QR</string>
     <string name="check_for_updated_version">Sprawdź czy jest nowa wersja</string>
     <string name="send_feedback_to_developer">Wyślij odpowiedź do dewelopera</string>
     <string name="home_screen">Ekran główny</string>
+    <string name="event_logs">Dzienniki zdarzeń</string>
     <string name="calibration_graph">Wykres Kalibracji</string>
     <string name="glucose_units">Jednostki glukozy</string>
     <string name="mmol_or_mgdl_high_and_low">mmol/l lub mg/dl wysokiego i niskiego</string>
@@ -245,6 +251,7 @@
     <string name="adjust_all_by_a_factor">Dostosuj wszystko przez współczynnik</string>
     <string name="reset">Resetuj</string>
     <string name="customize_colours">Dostosuj kolory</string>
+    <string name="xdrip_plus_color_settings">Ustawienia kolorów xDrip+</string>
     <string name="glucose_values_and_lines">Glikemia i linie</string>
     <string name="high_glucose_values">Wysoka wartość stężenia glukozy</string>
     <string name="in_range_glucose_values">Dopuszczalne wartości glikemii</string>
@@ -484,6 +491,7 @@
     <string name="upload_logs">Dodaj Dzienniki</string>
     <string name="short_off_text_for_switches">WYŁ</string>
     <string name="short_on_text_for_switches">WŁ</string>
+    <string name="install_pebble_apps">Zainstaluj aplikacje Pebble</string>
     <string name="split">Podziel</string>
     <string name="delete">Usuń</string>
     <string name="pref_dialog_influxdb_username">Użytkownik</string>
@@ -492,7 +500,29 @@
     <string name="advanced_bluetooth_settings">Zaawansowane ustawienia Bluetooth</string>
     <string name="bluetooth_settings">Ustawienia Bluetooth</string>
     <string name="turn_bluetooth_on">Włącz Bluetooth</string>
+    <string name="percentage_below_range">Procent wartości poniżej zakresu.</string>
+    <string name="percentage_above_range">Procent wartości powyżej zakresu.</string>
+    <string name="show_standard_deviation">Pokaż odchylenie standardowe wartości.</string>
+    <string name="standard_deviation">Odchylenie standardowe</string>
+    <string name="advanced_calibration">Zaawansowana Kalibracja</string>
+    <string name="extra_calibration_options">Dodatkowe opcje dotyczące kalibracji</string>
+    <string name="data_sync">Synchronizacja danych</string>
+    <string name="cloud_upload">Przesyłanie do chmury</string>
+    <string name="user">Użytkownik</string>
+    <string name="password">Hasło</string>
+    <string name="glucose_meters">Glukometry</string>
+    <string name="glucose_meter_options">Opcje dla bezprzewodowych glukometrów</string>
+    <string name="auto_connect_to_meter">Automatycznie podłącz i pobieraj dane z kompatybilnego glukometru</string>
+    <string name="meter_connect_sound_effect">Efekty dźwiękowe</string>
+    <string name="maximum_value">Maksymalna wartość, którą uważasz za mieszczącą się w zakresie.</string>
+    <string name="minimum_value">Minimalna wartość, którą uważasz za mieszczącą się w zakresie.</string>
+    <string name="bg_falling_fast">Szybki spadek glikemii</string>
+    <string name="bg_rising_fast">Szybki wzrost glikemii</string>
+    <string name="force_english_text">Wymuś interfejs w j. angielskim</string>
     <!-- trend arrow for speak -->
+    <string name="Speak_everything_twice">Wymawiaj wszystko dwa razy</string>
+    <string name="Speech_speed">Prędkość mowy</string>
+    <string name="blueReader_turnoffvalue">Wartość w %</string>
     <string name="didnt_find_any_glucose_readings_in_that_time_period">Nie znaleziono pomiarów glikemii w tym okresie</string>
     <string name="sensor_stopped">Czujnik zatrzymany</string>
     <string name="blood_glucose_graph">Wykres glukozy we krwi</string>
