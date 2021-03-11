@@ -11,7 +11,8 @@ import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.Pref;
 import com.eveningoutpost.dexdrip.UtilityModels.SpeechUtil;
 import com.eveningoutpost.dexdrip.UtilityModels.VehicleMode;
-import com.eveningoutpost.dexdrip.xdrip;
+
+import android.content.res.Resources;
 
 import java.text.DecimalFormat;
 
@@ -113,30 +114,28 @@ public class BgToSpeech implements NamedSliderProcessor {
         SpeechUtil.say(text_to_speak);
     }
 
-    private static String mungeDeltaName(String delta_name) {
-
-
+    private static String mungeDeltaName(String delta_name, Resources res) {
         switch (delta_name) {
             case "DoubleDown":
-                delta_name = xdrip.getAppContext().getString(R.string.DoubleDown);
+                delta_name = res.getString(R.string.DoubleDown);
                 break;
             case "SingleDown":
-                delta_name = xdrip.getAppContext().getString(R.string.SingleDown);
+                delta_name = res.getString(R.string.SingleDown);
                 break;
             case "FortyFiveDown":
-                delta_name = xdrip.getAppContext().getString(R.string.FortyFiveDown);
+                delta_name = res.getString(R.string.FortyFiveDown);
                 break;
             case "Flat":
-                delta_name = xdrip.getAppContext().getString(R.string.Flat);
+                delta_name = res.getString(R.string.Flat);
                 break;
             case "FortyFiveUp":
-                delta_name = xdrip.getAppContext().getString(R.string.FortyFiveUp);
+                delta_name = res.getString(R.string.FortyFiveUp);
                 break;
             case "SingleUp":
-                delta_name = xdrip.getAppContext().getString(R.string.SingleUp);
+                delta_name = res.getString(R.string.SingleUp);
                 break;
             case "DoubleUp":
-                delta_name = xdrip.getAppContext().getString(R.string.DoubleUp);
+                delta_name = res.getString(R.string.DoubleUp);
                 break;
             case "NOT COMPUTABLE":
                 delta_name = "";
@@ -148,6 +147,7 @@ public class BgToSpeech implements NamedSliderProcessor {
     }
 
     private static String calculateText(double value, String delta_name) {
+        Resources res = SpeechUtil.getSpeechResources();
 
         final boolean doMgdl = (Pref.getString("units", "mgdl").equals("mgdl"));
         final boolean bg_to_speech_repeat_twice = (Pref.getBooleanDefaultFalse("bg_to_speech_repeat_twice"));
@@ -156,7 +156,7 @@ public class BgToSpeech implements NamedSliderProcessor {
         // TODO does some of this need unifying from best glucose etc?
         final DecimalFormat df = new DecimalFormat("#");
         if (value >= 400) {
-            text = xdrip.getAppContext().getString(R.string.high);
+            text = res.getString(R.string.high);
         } else if (value >= 40) {
             if (doMgdl) {
                 df.setMaximumFractionDigits(0);
@@ -175,12 +175,12 @@ public class BgToSpeech implements NamedSliderProcessor {
                     Log.e(TAG, "Null pointer for TTS in calculateText");
                 }
             }
-            if (delta_name != null) text += " " + mungeDeltaName(delta_name);
+            if (delta_name != null) text += " " + mungeDeltaName(delta_name, res);
             if (bg_to_speech_repeat_twice) text = text + TWICE_DELIMITER + text;
         } else if (value > 12) {
-            text = xdrip.getAppContext().getString(R.string.low);
+            text = res.getString(R.string.low);
         } else {
-            text = xdrip.getAppContext().getString(R.string.error);
+            text = res.getString(R.string.error);
         }
         Log.d(TAG, "calculated text: " + text);
         return text;

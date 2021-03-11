@@ -3,6 +3,8 @@ package com.eveningoutpost.dexdrip.UtilityModels;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.media.AudioManager;
 import android.os.PowerManager;
 import android.speech.tts.TextToSpeech;
@@ -31,6 +33,8 @@ public class SpeechUtil {
     public static final String TAG = "SpeechUtil";
     public static final String TWICE_DELIMITER = " ... ... ... "; // creates a pause hopefully works on all locales
     private static volatile TextToSpeech tts = null; // maintained instance
+
+    private static Resources speechResources = null; // cached access to strings
 
     // delay parameter allows you to force a millis delay before playing to avoid clash with notification sounds triggered at the same time
     @SuppressWarnings("WeakerAccess")
@@ -152,6 +156,25 @@ public class SpeechUtil {
         return speech_locale;
     }
 
+    // load localized resources for desired language
+    private static Resources getLocalizedResources(Locale desiredLocale) {
+        Context context = xdrip.getAppContext();
+        Configuration conf = context.getResources().getConfiguration();
+        conf = new Configuration(conf);
+        conf.setLocale(desiredLocale);
+        Context localizedContext = context.createConfigurationContext(conf);
+        return localizedContext.getResources();
+    }
+
+    // return correct string resources for speech language
+    public static Resources getSpeechResources() {
+        if (speechResources == null) {
+            return xdrip.getAppContext().getResources();
+        } else {
+            return speechResources;
+        }
+    }
+
     // set up an instance to Android TTS with our desired language and settings
     private synchronized static void initialize() {
         if (tts != null) return;
@@ -163,6 +186,13 @@ public class SpeechUtil {
                 final Locale speech_locale = chosenLocale();
 
                 UserError.Log.d(TAG, "Chosen locale: " + speech_locale);
+
+                try {
+                    speechResources = getLocalizedResources(speech_locale);
+                } catch (Exception e) {
+                    UserError.Log.e(TAG, "Can't load localized resources: " + e.toString());
+                    speechResources = null;
+                }
 
                 int set_language_result;
                 // try setting the language we want
