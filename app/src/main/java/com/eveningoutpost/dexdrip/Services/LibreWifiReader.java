@@ -14,6 +14,7 @@ import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.LibreBlock;
 import com.eveningoutpost.dexdrip.Models.Sensor;
+import com.eveningoutpost.dexdrip.Models.SensorSanity;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.ParakeetHelper;
@@ -57,7 +58,7 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
     private static final Gson gson = JoH.defaultGsonInstance();
 
     private final static long DEXCOM_PERIOD = 300000;
-
+    
     // This variables are for fake function only
     static int i = 0;
     static int added = 5;
@@ -405,9 +406,11 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
 
     public Void doInBackground(String... urls) {
         final PowerManager.WakeLock wl = JoH.getWakeLock("LibreWifiReader", 120000);
+        Log.e(TAG, "doInBackground called");
         try {
-            //getwakelock();
-            readData();
+            synchronized (LibreWifiReader.class) {
+                readData();
+            }
         } finally {
             JoH.releaseWakeLock(wl);
            // Log.d(TAG, "wakelock released " + lockCounter);
@@ -424,6 +427,7 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
         LibreBlock libreBlock = LibreBlock.getLatestForTrend(0L, JoH.tsl() + 5 * 60000); // Allow some packets from the future.
         if (libreBlock != null) {
             LastReportedTime = libreBlock.timestamp;
+            Log.e(TAG, "LastReportedTime = " + JoH.dateTimeText(LastReportedTime));
 
             // jamorham fix to avoid going twice to network when we just got a packet
             if ((new Date().getTime() - LastReportedTime) < DEXCOM_PERIOD - 2000) {
@@ -464,13 +468,15 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
             // Last in the array is the most updated reading we have.
             //TransmitterRawData LastReading = LastReadingArr[LastReadingArr.length -1];
 
-
             //if (LastReading.CaptureDateTime > LastReportedReading + 5000) {
             // Make sure we do not report packets from the far future...
+            
+            Log.d(TAG, "checking packet from " +  JoH.dateTimeText(LastReading.CaptureDateTime ));
+            
             if ((LastReading.CaptureDateTime > LastReportedTime + 4 * 60000) &&
                     LastReading.CaptureDateTime < new Date().getTime() + 120000) {
                 // We have a real new reading...
-                Log.d(TAG, "calling HandleGoodReading from " +  JoH.dateTimeText(LastReading.CaptureDateTime ));
+                Log.d(TAG, "will call with packet from " +  JoH.dateTimeText(LastReading.CaptureDateTime ));
 
                 byte data[] = Base64.decode(LastReading.BlockBytes, Base64.DEFAULT);
 
@@ -484,6 +490,7 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
                 }
                 boolean checksum_ok = NFCReaderX.HandleGoodReading(LastReading.SensorId, data, LastReading.CaptureDateTime, false, patchUid, patchInfo);
                 if (checksum_ok) {
+                    Log.d(TAG, "checksum ok updating LastReportedTime to " +  JoH.dateTimeText(LastReading.CaptureDateTime ));
                     // TODO use battery, and other interesting data.
                     LastReportedTime = LastReading.CaptureDateTime;
                     
@@ -493,6 +500,11 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
                     PersistentStore.setString("TomatoFirmware",LastReading.FwVersion);
                     Log.i(TAG, "LastReading.SensorId " + LastReading.SensorId);
                     PersistentStore.setString("LibreSN", LastReading.SensorId);
+                    
+                    if (SensorSanity.checkLibreSensorChangeIfEnabled(LastReading.SensorId)) {
+                        Log.e(TAG, "Problem with Libre Serial Number - not processing");
+                        return;
+                    }
                     
                     
                 } else {

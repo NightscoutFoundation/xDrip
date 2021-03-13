@@ -122,6 +122,10 @@ public class EventLogActivity extends BaseAppCompatActivity {
     // load in bulk of remaining data
     private void getOlderData() {
 
+        if (model.initial_items.size() == 0) {
+            UserError.Log.d(TAG, "No initial items loaded yet to find index from");
+            return;
+        }
         final long highestId = model.initial_items.get(model.initial_items.size() - 1).getId();
 
         final Thread t = new Thread(() -> {
@@ -405,10 +409,10 @@ public class EventLogActivity extends BaseAppCompatActivity {
             currentFilter = filter.or(getCurrentFilter()).toLowerCase().trim();
             visible.clear();
             synchronized (items) {
-            // skip filter on initial defaults for speed
-            if (isDefaultFilters()) {
-                visible.addAll(items);
-            } else {
+                // skip filter on initial defaults for speed
+                if (isDefaultFilters()) {
+                    visible.addAll(items);
+                } else {
                     for (UserError item : items) {
                         if (filterMatch(item)) {
                             visible.add(item);

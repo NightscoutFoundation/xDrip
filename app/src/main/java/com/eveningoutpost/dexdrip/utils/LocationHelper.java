@@ -30,10 +30,14 @@ public class LocationHelper {
      * @param context The current app context.
      * @return true if location is enabled, false otherwise.
      */
-    public static boolean isLocationEnabled(Context context) {
-        final LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+    public static boolean isLocationEnabled(final Context context) {
         try {
-            return locationManager == null || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+            final LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+            if (Build.VERSION.SDK_INT >= 28) {
+                return locationManager == null || locationManager.isLocationEnabled();
+            } else {
+                return locationManager == null || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+            }
         } catch (Exception e) {
             return true;
         }

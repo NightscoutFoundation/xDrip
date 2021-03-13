@@ -77,6 +77,7 @@ import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.Chart;
 
+import static com.eveningoutpost.dexdrip.Models.JoH.tolerantParseDouble;
 import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.X;
 import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.getCol;
 
@@ -228,8 +229,8 @@ public class BgGraphBuilder {
         calibrations = Calibration.latestForGraph(numValues, start - (3 * Constants.DAY_IN_MS), end);
         treatments = Treatments.latestForGraph(numValues, start, end + (120 * 60 * 1000));
         this.context = context;
-        this.highMark = tolerantParseDouble(prefs.getString("highValue", "170"));
-        this.lowMark = tolerantParseDouble(prefs.getString("lowValue", "70"));
+        this.highMark = tolerantParseDouble(prefs.getString("highValue", "170"), 170);
+        this.lowMark = tolerantParseDouble(prefs.getString("lowValue", "70"), 70);
         this.doMgdl = (prefs.getString("units", "mgdl").equals("mgdl"));
         defaultMinY = unitized(40);
         defaultMaxY = unitized(250);
@@ -239,10 +240,6 @@ public class BgGraphBuilder {
         hoursPreviewStep = isXLargeTablet(context) ? 2 : 1;
     }
 
-    private static double tolerantParseDouble(String str) throws NumberFormatException {
-        return Double.parseDouble(str.replace(",", "."));
-
-    }
 
     private double bgScale() {
         if (doMgdl)
@@ -1572,7 +1569,7 @@ public class BgGraphBuilder {
                                 final Pattern p = Pattern.compile(".*?pos:([0-9.]+).*");
                                 final Matcher m = p.matcher(treatment.enteredBy);
                                 if (m.matches()) {
-                                    pv.set(pv.getX(), (float) JoH.tolerantParseDouble(m.group(1)));
+                                    pv.set(pv.getX(), (float) tolerantParseDouble(m.group(1)));
                                 }
                             } catch (Exception e) {
                                 Log.d(TAG, "Exception matching position: " + e);

@@ -29,6 +29,9 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 
 import lombok.Setter;
+import lombok.val;
+
+import static com.eveningoutpost.dexdrip.Models.JoH.emptyString;
 
 public class NanoStatus {
 
@@ -198,7 +201,9 @@ public class NanoStatus {
     public static SpannableString getRemote(final String prefix) {
         // TODO apply timeout?
         try {
-            return SpannableSerializer.unserializeSpannableString(PersistentStore.getString(REMOTE_COLLECTOR_STATUS_STORE + prefix));
+            val result = PersistentStore.getString(REMOTE_COLLECTOR_STATUS_STORE + prefix);
+            if (emptyString(result)) return new SpannableString("");
+            return SpannableSerializer.unserializeSpannableString(result);
         } catch (Exception e) {
             return new SpannableString("");
         }

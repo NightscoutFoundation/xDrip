@@ -48,6 +48,8 @@ import com.bytehamster.lib.preferencesearch.SearchPreferenceResult;
 import com.bytehamster.lib.preferencesearch.SearchPreferenceResultListener;
 import com.eveningoutpost.dexdrip.BasePreferenceActivity;
 import com.eveningoutpost.dexdrip.BuildConfig;
+import com.eveningoutpost.dexdrip.G5Model.DexSyncKeeper;
+import com.eveningoutpost.dexdrip.G5Model.Ob1G5StateMachine;
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.DesertSync;
@@ -120,6 +122,8 @@ import java.util.Map;
 
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+
+import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On
@@ -2044,6 +2048,12 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                                 //
                             }
                             Log.d(TAG, "Trying to restart collector due to tx id change");
+                            Ob1G5StateMachine.emptyQueue();
+                            try {
+                                DexSyncKeeper.clear((String) newValue);
+                            } catch (Exception e) {
+                                //
+                            }
                             CollectionServiceStarter.restartCollectionService(xdrip.getAppContext());
                         }
                     }).start();
@@ -2427,7 +2437,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 }
 
 
-            builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            builder.setPositiveButton(gs(R.string.yes), new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
 
@@ -2453,13 +2463,13 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                             builder.setTitle("Snooze Control Install");
                             builder.setMessage("Install Pebble Snooze Button App?");
                             // inner
-                            builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                            builder.setPositiveButton(gs(R.string.yes), new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
                                     dialog.dismiss();
                                     context.startActivity(new Intent(context, InstallPebbleSnoozeControlApp.class));
                                 }
                             });
-                            builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                            builder.setNegativeButton(gs(R.string.no), new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     dialog.dismiss();
@@ -2471,7 +2481,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 // outer
                 }});
 
-            builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            builder.setNegativeButton(gs(R.string.no), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();

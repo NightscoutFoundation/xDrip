@@ -181,7 +181,7 @@
                         app:colorpicker_showHex="false" />
 
                     <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
-                        android:defaultValue="#00000000"
+                        android:defaultValue="#B3000000"
                         android:key="color_widget_chart_background"
                         android:title="@string/widget_chart_background"
                         app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
@@ -418,6 +418,10 @@
                     android:summary="@string/summary_illustrate_backfilled_data"
                     android:title="@string/title_illustrate_backfilled_data" />
                 <CheckBoxPreference
+                    android:key="widget_hide_graph"
+                    android:summary="Hide the graph on widgets (shows on next reading)"
+                    android:title="Hide widget graph" />
+                <CheckBoxPreference
                     android:dependency="engineering_mode"
                     android:key="illustrate_remote_data"
                     android:summary="Show data received remotely (diagnostic only)"
@@ -460,6 +464,14 @@
                 android:key="plus_show_reminders"
                 android:summary="@string/show_reminder_features"
                 android:title="@string/enable_reminder_features" />
+            <Preference
+                android:key="show_accessibility_settings"
+                android:summary="If your phone has Always On Display you can enable the xDrip widget there by enabling the xDrip accessibility service from the Android System Settings page."
+                android:title="Enable xDrip Accessibility">
+                <intent
+                    android:action="android.settings.ACCESSIBILITY_SETTINGS"
+                    />
+            </Preference>
             <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:key="xdrip_plus_number_wall"
                 android:title="@string/title_xdrip_plus_number_wall">
@@ -758,6 +770,14 @@
                 android:switchTextOff="@string/short_off_text_for_switches"
                 android:switchTextOn="@string/short_on_text_for_switches"
                 android:title="@string/title_plus_whole_house" />
+            <SwitchPreference
+                android:defaultValue="false"
+                android:dependency="plus_follow_master"
+                android:key="libre_whole_house_collector"
+                android:summary="@string/summary_libre_whole_house_collector"
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
+                android:title="@string/title_libre_whole_house_collector" />
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:dependency="plus_follow_master"

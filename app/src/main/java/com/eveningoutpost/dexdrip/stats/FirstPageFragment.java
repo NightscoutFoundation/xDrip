@@ -80,11 +80,14 @@ public class FirstPageFragment extends Fragment {
             if (total == 0) {
                 total = Long.MAX_VALUE;
             }
+            int abovePercent = (int) (aboveRange * 100.0 / total + 0.5);
+            int belowPercent = (int) (belowRange * 100.0 / total + 0.5);
+            int inPercent = 100 - abovePercent - belowPercent;
 
             TextView rangespercent = (TextView) localView.findViewById(R.id.textView_ranges_percent);
             TextView rangesabsolute = (TextView) localView.findViewById(R.id.textView_ranges_absolute);
 
-            updateText(localView, rangespercent, inRange * 100 / total + "%/" + aboveRange * 100 / total + "%/" + belowRange * 100 / total + "%");
+            updateText(localView, rangespercent, inPercent + "%/" + abovePercent + "%/" + belowPercent + "%");
             updateText(localView, rangesabsolute, inRange + "/" + aboveRange + "/" + belowRange);
 
             List<BgReadingStats> bgList = DBSearchUtil.getReadings(true);
