@@ -912,7 +912,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             bindPreferenceSummaryToValue(findPreference("persistent_high_repeat_mins"));
 
             Preference prefUpdateChannel = findPreference("update_channel");
-            if (BuildConfig.FLAVOR == "xdripcustom" && BuildConfig.XDRIP_UPDATER_URL != "") {
+            if (BuildConfig.FLAVOR == "custom") {
                 PreferenceScreen updateScreen = (PreferenceScreen) findPreference("xdrip_plus_update_settings");
                 updateScreen.removePreference(prefUpdateChannel);
             }

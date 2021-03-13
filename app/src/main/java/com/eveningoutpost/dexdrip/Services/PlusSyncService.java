@@ -179,7 +179,7 @@ public class PlusSyncService extends Service {
         private void updateCheckThenStop() {
             keeprunning = false;
             skipnext = true;
-            if (!(BuildConfig.FLAVOR == "xdripcustom" && BuildConfig.XDRIP_UPDATER_URL != "")) {
+            if (!(BuildConfig.FLAVOR == "custom")) {
                 UpdateActivity.checkForAnUpdate(context);
             }
             try {

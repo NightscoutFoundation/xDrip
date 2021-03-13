@@ -604,7 +604,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
         currentBgValueText.setText(""); // clear any design prototyping default
 
-        if (BuildConfig.FLAVOR == "xdripcustom" && BuildConfig.XDRIP_UPDATER_URL != "") {
+        if (BuildConfig.FLAVOR == "custom") {
             // use custom updater in not using mainstream xDrip distribution
             customUpdater = new CustomUpdater(this);
             if (PreferenceManager.getDefaultSharedPreferences(this)
@@ -3329,7 +3329,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     public void checkForUpdate(MenuItem myitem) {
         if (JoH.ratelimit("manual-update-check", 5)) {
             toast(getString(R.string.checking_for_update));
-            if (BuildConfig.FLAVOR == "xdripcustom" && BuildConfig.XDRIP_UPDATER_URL != "") {
+            if (BuildConfig.FLAVOR == "custom") {
                 // use custom updater in not using mainstream xDrip distribution
                 customUpdater.manualCheck();
             } else {

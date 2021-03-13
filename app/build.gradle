@@ -282,14 +282,18 @@ android {
             // your app, you can leave this block empty and Gradle uses configurations in
             // the defaultConfig block instead. You still need to create this flavor.
             // Otherwise, all variants use the "dev" flavor configurations.
+        }
+
+        custom {
+            minSdkVersion 21
+            versionNameSuffix "-cust"
+            matchingFallbacks = ['prod', 'fast']
 
             // create local.properties with properties to override build config
             def propsFile = project.rootProject.file("local.properties")
-            if (propsFile.exists()) {
-                def Properties properties = new Properties()
-                properties.load(propsFile.newDataInputStream())
-                buildConfigField "String", "XDRIP_UPDATER_URL", System.getenv('XDRIP_UPDATER_URL') ?: "\"" + properties.getProperty("XDRIP_UPDATER_URL", "") + "\""
-            }
+            def properties = new Properties()
+            properties.load(propsFile.newDataInputStream())
+            buildConfigField "String", "XDRIP_UPDATER_URL", System.getenv('XDRIP_UPDATER_URL') ?: "\"" + properties.getProperty("XDRIP_UPDATER_URL", "") + "\""
         }
     }
 
@@ -422,12 +426,12 @@ dependencies {
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.10'
 
     // used only in special flavour with custom updater
-    xdripcustomImplementation 'com.github.k2s:AppUpdater:d08208ce3b', {
+    customImplementation 'com.github.k2s:AppUpdater:d08208ce3b', {
         exclude group: 'com.android.support'
     }
 }
 
-tasks.withType(Test) { 
+tasks.withType(Test) {
   testLogging {
     exceptionFormat "full"
     events "started", "skipped", "passed", "failed"
