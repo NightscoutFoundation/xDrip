@@ -613,6 +613,7 @@
                 android:title="@string/predictive_simulations" />
 
             <PreferenceScreen
+                android:key="xdrip_plus_multiple_insulin_types_settings"
                 android:title="Multiple Insulin Types"
                 android:summary="Options for working with multiple insulin types">
                 <SwitchPreference
