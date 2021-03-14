@@ -1613,4 +1613,24 @@
     <string name="title_lower_fuzzer">Lower FUZZER</string>
     <string name="summary_lower_fuzzer">Lower the FUZZER value from 2.5 minutes to 37.5 seconds</string>
     <string name="without_camera_permission_cannot_scan_barcode">Without camera permission we cannot scan a barcode</string>
+    <string name="summary_create_missing_filtered">Make filtered data as needed</string>
+    <string name="title_create_missing_filtered">Create missing filtered</string>
+    <string name="summary_widget_hide_graph">Hide the graph on widgets (shows on next reading)</string>
+    <string name="title_widget_hide_graph">Hide widget graph</string>
+    <string name="summary_illustrate_remote_data">Show data received remotely (diagnostic only)</string>
+    <string name="title_illustrate_remote_data">Illustrate remote data</string>
+    <string name="summary_show_accessibility_settings">If your phone has Always On Display you can enable the xDrip widget there by enabling the xDrip accessibility service from the Android System Settings page.</string>
+    <string name="title_show_accessibility_settings">Enable xDrip Accessibility</string>
+    <string name="title_multiple_insulin_types_settings">Multiple Insulin Types</string>
+    <string name="summary_multiple_insulin_types_settings">Options for working with multiple insulin types</string>
+    <string name="title_multiple_insulin_types">Multiple Insulin Types</string>
+    <string name="summary_multiple_insulin_use_basal_activity">Plot Basal activity on graph and incorporate in predictive model</string>
+    <string name="title_multiple_insulin_use_basal_activity">Use Basal Activity</string>
+    <string name="title_xdrip_plus_snooze_broadcast">Local Broadcast</string>
+    <string name="summary_broadcast_snooze">Send snoozes to other apps on this handset</string>
+    <string name="title_broadcast_snooze">Local Broadcast</string>
+    <string name="summary_accept_broadcast_snooze">Accept snoozes from other apps on this handset</string>
+    <string name="title_accept_broadcast_snooze">Accept Local Broadcast</string>
+    <string name="title_bg_compensate_noise">\u26A0 Smooth sensor noise</string>
+    <string name="title_bg_compensate_noise_ultrasensitive">\u26A0 Smooth sensor noise ultrasensitive</string>
 </resources>
