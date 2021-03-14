@@ -2792,14 +2792,14 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         if (sensor_age > 0 && (DexCollectionType.hasLibre() || hasLibreblock())) {
             final String age_problem = (Pref.getBooleanDefaultFalse("nfc_age_problem") ? " \u26A0\u26A0\u26A0" : "");
             if (Pref.getBoolean("nfc_show_age", true)) {
-                sensorAge.setText("Age: " + JoH.qs(((double) sensor_age) / 1440, 1) + "d" + age_problem);
+                sensorAge.setText(getResources().getQuantityString(R.plurals.sensor_age, sensor_age, JoH.qs(((double) sensor_age) / 1440, 1)) + age_problem);
             } else {
                 try {
                     final double expires = JoH.tolerantParseDouble(Pref.getString("nfc_expiry_days", "14.5"), 14.5d) - ((double) sensor_age) / 1440;
-                    sensorAge.setText(((expires >= 0) ? ("Expires: " + JoH.qs(expires, 1) + "d") : "EXPIRED! ") + age_problem);
+                    sensorAge.setText(((expires >= 0) ? getResources().getQuantityString(R.plurals.sensor_expires, (int) expires, JoH.qs(expires, 1)) : getString(R.string.sensor_expired)) + age_problem);
                 } catch (Exception e) {
                     Log.e(TAG, "expiry calculation: " + e);
-                    sensorAge.setText("Expires: " + "???");
+                    sensorAge.setText(getString(R.string.expires_unknown));
                 }
             }
             sensorAge.setVisibility(View.VISIBLE);
