@@ -1028,6 +1028,7 @@ Je nutné zakázať v prípade, že chcete používať xdrip cifreník. (Požado
     <string name="yes_please">ÁNO, prosím</string>
     <string name="automated_calibration_enabled">Automatická kalibrácia je povolená</string>
     <string name="librealarm_data_format_appears_incompatible_protocol_changed_or_no_data">Dáta z LibreAlarm sú nekompatibilné!? Zmenil sa protokol, alebo nie sú dáta?</string>
+    <string name="sensor_age_has_gone_backwards">Vek senzora sa vrátil v čase!!</string>
     <string name="phone_has_no_nfc_reader">Telefón nemá čítačku NFC</string>
     <string name="nfc_is_not_enabled">NFC nie je povolené</string>
     <string name="not_so_quickly_wait_60_seconds">Nie tak rýchlo, počkaj 60 sekúnd</string>
