@@ -1660,11 +1660,11 @@
     <string name="expires_unknown">Expires: ???</string>
     <string name="sensor_expired">EXPIRED!</string>
     <plurals name="sensor_expires">
-        <item quantity="one">Expires: %dd</item>
-        <item quantity="other">Expires: %dd</item>
+        <item quantity="one">Expires: %sd</item>
+        <item quantity="other">Expires: %sd</item>
     </plurals>
     <plurals name="sensor_age">
-        <item quantity="one">Age: %dd</item>
-        <item quantity="other">Age: %dd</item>
+        <item quantity="one">Age: %sd</item>
+        <item quantity="other">Age: %sd</item>
     </plurals>
 </resources>
