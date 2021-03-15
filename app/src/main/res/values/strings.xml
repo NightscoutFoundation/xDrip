@@ -1635,7 +1635,7 @@
     <string name="title_bg_compensate_noise_ultrasensitive">\u26A0 Smooth sensor noise ultrasensitive</string>
     <string name="no_battery_optimization_whitelisting">Device does not appear to support battery optimization whitelisting!</string>
     <string name="no_i_really_know">No, I really know what I\'m doing</string>
-    <string name="use_for_calibration">Use %d for Calibration?</string>
+    <string name="use_for_calibration">Use %s for Calibration?</string>
     <string name="problem_loading_speech_lexicon">Problem loading speech lexicon!</string>
     <string name="type_treatment_eg">Type treatment\neg: units x.x</string>
     <string name="word_lexicon_not_loaded">Word lexicon not loaded!</string>
