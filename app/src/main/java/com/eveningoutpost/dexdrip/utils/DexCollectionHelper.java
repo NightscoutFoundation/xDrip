@@ -129,6 +129,10 @@ public class DexCollectionHelper {
                 bluetoothScanIfNeeded();
                 break;
 
+            case Follower:
+                new AndroidBarcode(activity).scan();
+                break;
+
             // TODO G4 Share Receiver
 
             // TODO Parakeet / Wifi ??

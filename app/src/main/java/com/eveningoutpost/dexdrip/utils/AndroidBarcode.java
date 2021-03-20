@@ -17,7 +17,7 @@ public class AndroidBarcode extends AppCompatActivity
         implements ActivityCompat.OnRequestPermissionsResultCallback {
     public static final String SCAN_INTENT = Intents.Scan.ACTION;
     Activity activity;
-    final static int MY_PERMISSIONS_REQUEST_CAMERA = 1003;
+    final public static int MY_PERMISSIONS_REQUEST_CAMERA = 1003;
     final static String TAG = "jamorham barcode";
 
     public AndroidBarcode(Activity activity) {

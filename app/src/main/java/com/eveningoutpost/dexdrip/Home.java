@@ -122,6 +122,7 @@ import com.eveningoutpost.dexdrip.ui.dialog.QuickSettingsDialogs;
 import com.eveningoutpost.dexdrip.ui.graphic.ITrendArrow;
 import com.eveningoutpost.dexdrip.ui.graphic.TrendArrowFactory;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
+import com.eveningoutpost.dexdrip.utils.AndroidBarcode;
 import com.eveningoutpost.dexdrip.utils.BgToSpeech;
 import com.eveningoutpost.dexdrip.utils.DatabaseUtil;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
@@ -3672,6 +3673,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 && permissions.length > 0 && grantResults.length > 0
                 && permissions[0].equals(WRITE_EXTERNAL_STORAGE) && grantResults[0] == 0) {
             SdcardImportExport.restoreSettingsNow(this);
+        } else if (requestCode == AndroidBarcode.MY_PERMISSIONS_REQUEST_CAMERA) {
+            new AndroidBarcode(this).onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
 
