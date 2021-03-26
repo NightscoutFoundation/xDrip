@@ -31,7 +31,7 @@ public class Bubble {
         if (activeBluetoothDevice == null || activeBluetoothDevice.name == null) {
             return false;
         }
-        return activeBluetoothDevice.name.contains("Bubble");
+        return activeBluetoothDevice.name.startsWith("Bubble");
     }
 
 
