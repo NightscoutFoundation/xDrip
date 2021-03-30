@@ -26,17 +26,15 @@ public class ReadingData {
 
 
     public static class TransferObject {
-        public long id;
         public ReadingData data;
 
         public TransferObject() {}
 
         public TransferObject(long id, ReadingData data) {
-            this.id = id;
             this.data = data;
         }
     }
-    
+
     // A function to calculate the smoothing based only on 3 points.
     private void CalculateSmothedData3Points() {
         for (int i=0; i < trend.size() - 2 ; i++) {
